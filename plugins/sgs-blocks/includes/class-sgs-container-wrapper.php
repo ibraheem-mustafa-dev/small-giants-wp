@@ -467,37 +467,42 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// no-inline contract.
 			$base_grid_real_decls = array();
 
-			// gap — section + layout kinds. When responsive gap tiers exist the base
-			// is emitted via the per-instance uid CSS instead (an inline base would
-			// override every @media tier — same convention as min-height below).
+			// Base OUTER real-property decls (Spec 32 no-inline contract) — min-height,
+			// box-shadow, background-* (base tier). Collected here and emitted as a
+			// scoped .$uid rule below (never inline), mirroring $base_grid_real_decls +
+			// $base_spacing. Custom properties (--sgs-*) are NOT collected here — they
+			// are explicitly allowed inline and stay in $styles.
+			$base_outer_decls = array();
+
+			// gap — section + layout kinds. No-inline contract (Spec 32): the base gap
+			// (no responsive tiers) routes to the scoped $grid_sel rule via
+			// $base_grid_real_decls, exactly like display/grid-template — never inline.
+			// (The tiered case already scopes in the responsive block below.) $grid_sel
+			// already follows $grid_on_inner, so gap co-locates with the display decl.
 			if ( ( $is_section || $is_layout ) && '' !== $gap && ! ( $gap_tablet || $gap_mobile ) ) {
-				if ( $grid_on_inner ) {
-					$inner_grid_decls[] = 'gap:' . sgs_container_gap_value( $gap );
-				} else {
-					$styles[] = 'gap:' . sgs_container_gap_value( $gap );
-				}
+				$base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap );
 			}
 
-			// Base min-height — section kind. When responsive variants exist it is
-			// emitted via the per-instance uid CSS below instead (so @media overrides
-			// can win); inline-only in the base-only case keeps existing output byte-
-			// identical and avoids forcing a uid on already-shipped content.
+			// Base min-height — section kind. When responsive variants exist the
+			// responsive branch below emits base + tiers on .$uid instead (mutually
+			// exclusive with this base-only case via $has_responsive_min_height).
 			if ( $is_section && $min_height && ! $has_responsive_min_height ) {
-				$styles[] = 'min-height:' . esc_attr( $min_height );
+				$base_outer_decls[] = 'min-height:' . esc_attr( $min_height );
 			}
 
 			if ( $shadow ) {
-				$styles[] = 'box-shadow:var(--wp--preset--shadow--' . esc_attr( $shadow ) . ')';
+				$base_outer_decls[] = 'box-shadow:var(--wp--preset--shadow--' . esc_attr( $shadow ) . ')';
 			}
 
-			// Background image — section kind only.
+			// Background image — section kind only. The base tier scopes to .$uid;
+			// the responsive tablet/mobile overrides emit as @media rules further below.
 			if ( $is_section && $has_bg_image && ! $has_bg_video ) {
-				$styles[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
-				$styles[] = 'background-size:' . esc_attr( $bg_size );
-				$styles[] = 'background-position:' . esc_attr( $bg_position );
-				$styles[] = 'background-repeat:' . esc_attr( $bg_repeat );
+				$base_outer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
+				$base_outer_decls[] = 'background-size:' . esc_attr( $bg_size );
+				$base_outer_decls[] = 'background-position:' . esc_attr( $bg_position );
+				$base_outer_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
 				if ( 'fixed' === $bg_attachment ) {
-					$styles[] = 'background-attachment:fixed';
+					$base_outer_decls[] = 'background-attachment:fixed';
 				}
 			}
 
@@ -801,7 +806,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			// Overlay HTML — section kind only; suppressed by no_overlay opt (C3).
 			// ----------------------------------------------------------------
-			$overlay_html = '';
+			$overlay_html  = '';
+			$overlay_decls = ''; // Emitted scoped on .{uid} .sgs-container__overlay below (no-inline).
 			if ( $is_section && ! $opt_no_overlay ) {
 				$has_any_bg         = $has_bg_image || $has_bg_video;
 				$has_overlay_colour = $overlay_colour || ( $overlay_gradient && $overlay_gradient_from );
@@ -810,7 +816,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( $overlay_gradient && $overlay_gradient_from ) {
 						$grad_from     = sgs_colour_value( $overlay_gradient_from );
 						$grad_to       = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
-						$overlay_style = sprintf(
+						$overlay_decls = sprintf(
 							'background-image:linear-gradient(%ddeg,%s,%s);opacity:%s',
 							$overlay_gradient_angle,
 							$grad_from,
@@ -818,13 +824,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 							esc_attr( $overlay_opacity / 100 )
 						);
 					} else {
-						$overlay_style = sprintf(
+						$overlay_decls = sprintf(
 							'background-color:%s;opacity:%s',
 							sgs_colour_value( $overlay_colour ),
 							esc_attr( $overlay_opacity / 100 )
 						);
 					}
-					$overlay_html = '<span class="sgs-container__overlay" style="' . esc_attr( $overlay_style ) . '" aria-hidden="true"></span>';
+					// No-inline contract (Spec 32): the overlay paint is emitted as a
+					// scoped `.{uid} .sgs-container__overlay` rule below — NOT inline on
+					// the span. safecss doesn't touch this raw-echoed span, but an inline
+					// property declaration still violates the contract + the --check gate.
+					$overlay_html = '<span class="sgs-container__overlay" aria-hidden="true"></span>';
 				}
 			}
 
@@ -912,6 +922,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// grid doesn't get lost by moving out of inline.
 			$has_base_grid = ! empty( $base_grid_real_decls );
 
+			// Base OUTER real-property rule predicate (Spec 32 no-inline contract) —
+			// true whenever any base min-height / box-shadow / background-* decl exists
+			// with no responsive tier to defer to. Forces a uid so these OUTER box
+			// properties get a scoped .$uid home instead of an inline style.
+			$has_base_outer = ! empty( $base_outer_decls );
+
 			// ----------------------------------------------------------------
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
@@ -934,6 +950,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_base_max_width
 				|| $has_base_band
 				|| $has_base_grid
+				|| $has_base_outer
+				|| '' !== $overlay_decls
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
 
@@ -982,6 +1000,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $has_base_max_width && $uid ) {
 				$responsive_css .= '.' . $uid . '{max-width:' . $base_max_width_css_value
 					. ( $base_max_width_margin_auto ? ';margin-inline:auto' : '' ) . '}';
+			}
+
+			// Base OUTER scoped rule (Spec 32 no-inline contract) — min-height /
+			// box-shadow / background-* (base tier), emitted on .$uid so nothing lands
+			// inline. Placed BEFORE the @media tiers below (source order) so a narrower-
+			// viewport tier (responsive min-height / bg override) still wins per viewport.
+			if ( $base_outer_decls && $uid ) {
+				$responsive_css .= '.' . $uid . '{' . implode( ';', $base_outer_decls ) . '}';
+			}
+
+			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
+			// span's background/opacity, emitted on `.{uid} .sgs-container__overlay`
+			// instead of inline on the span. $overlay_decls is pre-sanitised
+			// (sgs_colour_value + esc_attr on the opacity/angle).
+			if ( '' !== $overlay_decls && $uid ) {
+				$responsive_css .= '.' . $uid . ' .sgs-container__overlay{' . $overlay_decls . '}';
 			}
 
 			// Base content-band scoped rule (Spec 32, D293 no-inline contract) —

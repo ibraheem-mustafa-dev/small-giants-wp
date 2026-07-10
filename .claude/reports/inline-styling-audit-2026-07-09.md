@@ -9,25 +9,25 @@ Read-only detection instrument classifying how every SGS block emits its styling
 | Block | inline-supports | inline-render count | via-wrapper | drop-inert count | drop-unrouted count | tier-without-base | dominant shared-helper |
 |---|---|---|---|---|---|---|---|
 | sgs/accordion | color+spacing+__experimentalBorder+typography | 0 | yes | 19 | 10 | — | SGS_Container_Wrapper |
-| sgs/accordion-item | color+__experimentalBorder | 3 | yes | 0 | 2 | — | render.php (block-private) |
-| sgs/audio | spacing | 0 | no | 0 | 12 | — | none |
-| sgs/brand-strip | color+spacing+__experimentalBorder | 0 | no | 0 | 15 | — | none |
-| sgs/breadcrumbs | color+spacing+typography | 0 | no | 0 | 3 | — | render.php (block-private) |
-| sgs/business-info | color+spacing+typography | 1 | no | 0 | 4 | — | render.php (block-private) |
-| sgs/button | color+spacing | 2 | no | 0 | 96 | — | render.php (block-private) |
-| sgs/buybox | color+spacing | 0 | no | 0 | 9 | — | none |
-| sgs/card-grid | color+spacing+__experimentalBorder+typography+shadow | 2 | yes | 20 | 29 | — | render.php (block-private) |
-| sgs/cart | color+spacing | 0 | no | 0 | 4 | — | render.php (block-private) |
-| sgs/collapsible-text | color+spacing+typography | 0 | no | 0 | 3 | — | sgs_typography_css_rule |
-| sgs/container | color+spacing+__experimentalBorder+typography | 0 | yes | 24 | 1 | paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft | SGS_Container_Wrapper |
+| sgs/accordion-item | color+__experimentalBorder | 0 | yes | 0 | 2 | — | SGS_Container_Wrapper |
+| sgs/audio | spacing | 0 | no | 0 | 16 | — | none |
+| sgs/brand-strip | color+spacing+__experimentalBorder | 0 | no | 0 | 21 | borderRadius | none |
+| sgs/breadcrumbs | color+spacing+typography | 0 | no | 0 | 10 | — | none |
+| sgs/business-info | color+spacing+typography | 0 | no | 0 | 11 | — | none |
+| sgs/button | color+spacing+__experimentalBorder | 0 | no | 0 | 61 | borderRadius | render.php (block-private) |
+| sgs/buybox | color+spacing | 0 | no | 0 | 11 | — | none |
+| sgs/card-grid | color+spacing+__experimentalBorder+typography+shadow | 0 | yes | 20 | 31 | — | render.php (block-private) |
+| sgs/cart | color+spacing | 0 | no | 0 | 6 | — | render.php (block-private) |
+| sgs/collapsible-text | color+spacing+typography | 0 | no | 0 | 7 | — | sgs_typography_css_rule |
+| sgs/container | color+spacing+__experimentalBorder+typography | 0 | yes | 24 | 1 | — | SGS_Container_Wrapper |
 | sgs/content-collection | color+spacing+__experimentalBorder | 0 | yes | 20 | 13 | — | SGS_Container_Wrapper |
-| sgs/countdown-timer | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 14 | — | none |
-| sgs/counter | color+spacing+__experimentalBorder+typography | 2 | no | 0 | 8 | — | sgs_typography_css_rule |
-| sgs/cta-section | color+spacing+__experimentalBorder+typography+shadow | 4 | yes | 24 | 40 | paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft | SGS_Container_Wrapper |
-| sgs/decorative-image | (none) | 8 | no | 0 | 24 | — | render.php (block-private) |
+| sgs/countdown-timer | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 20 | borderRadius | none |
+| sgs/counter | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 16 | borderRadius | sgs_typography_css_rule |
+| sgs/cta-section | color+spacing+__experimentalBorder+typography+shadow | 0 | yes | 24 | 41 | — | SGS_Container_Wrapper |
+| sgs/decorative-image | (none) | 0 | no | 0 | 30 | — | none |
 | sgs/feature-grid | color+spacing+__experimentalBorder | 0 | yes | 20 | 7 | — | SGS_Container_Wrapper |
-| sgs/filter-search | spacing | 0 | no | 0 | 3 | — | none |
-| sgs/form | color+spacing+__experimentalBorder+typography | 7 | yes | 18 | 15 | — | render.php (block-private) |
+| sgs/filter-search | spacing | 0 | no | 0 | 5 | — | none |
+| sgs/form | color+spacing+__experimentalBorder+typography | 0 | yes | 18 | 17 | — | SGS_Container_Wrapper |
 | sgs/form-field-address | (none) | 0 | no | 0 | 11 | — | none |
 | sgs/form-field-checkbox | (none) | 0 | no | 0 | 9 | — | none |
 | sgs/form-field-consent | (none) | 0 | no | 0 | 11 | — | none |
@@ -44,44 +44,44 @@ Read-only detection instrument classifying how every SGS block emits its styling
 | sgs/form-field-tiles | color+__experimentalBorder | 0 | yes | 18 | 13 | — | SGS_Container_Wrapper |
 | sgs/form-review | (none) | 0 | no | 0 | 1 | — | none |
 | sgs/form-step | color+spacing+__experimentalBorder | 0 | yes | 0 | 0 | — | SGS_Container_Wrapper |
-| sgs/gallery | color+spacing+__experimentalBorder | 1 | yes | 0 | 23 | — | SGS_Container_Wrapper |
-| sgs/google-reviews | color+__experimentalBorder | 1 | yes | 20 | 28 | — | SGS_Container_Wrapper |
-| sgs/heading | color+spacing | 8 | no | 0 | 60 | — | render.php (block-private) |
-| sgs/hero | color+spacing+__experimentalBorder+typography | 13 | yes | 24 | 129 | paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft | SGS_Container_Wrapper |
-| sgs/icon | color+spacing | 2 | no | 0 | 12 | — | render.php (block-private) |
-| sgs/icon-list | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 6 | — | render.php (block-private) |
-| sgs/info-box | color+spacing+__experimentalBorder+typography+shadow | 0 | yes | 0 | 21 | — | render.php (block-private) |
-| sgs/label | color+spacing | 3 | no | 0 | 6 | — | render.php (block-private) |
-| sgs/media | __experimentalBorder | 9 | no | 0 | 50 | — | render.php (block-private) |
+| sgs/gallery | color+spacing+__experimentalBorder | 0 | yes | 0 | 23 | — | SGS_Container_Wrapper |
+| sgs/google-reviews | color+__experimentalBorder | 0 | yes | 20 | 28 | — | SGS_Container_Wrapper |
+| sgs/heading | color+spacing+__experimentalBorder | 0 | no | 0 | 37 | — | sgs_responsive_css_rule |
+| sgs/hero | color+spacing+__experimentalBorder+typography | 0 | yes | 24 | 98 | — | SGS_Container_Wrapper |
+| sgs/icon | color+spacing | 0 | no | 0 | 17 | — | render.php (block-private) |
+| sgs/icon-list | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 17 | borderRadius | none |
+| sgs/info-box | color+spacing+__experimentalBorder+typography+shadow | 0 | no | 0 | 27 | — | render.php (block-private) |
+| sgs/label | color+spacing | 0 | no | 0 | 22 | — | sgs_responsive_css_rule |
+| sgs/media | __experimentalBorder | 0 | no | 0 | 52 | borderRadius | none |
 | sgs/mega-menu | color | 0 | no | 0 | 12 | — | render.php (block-private) |
-| sgs/mobile-nav | color+spacing | 0 | no | 0 | 70 | — | sgs_typography_css_rule |
-| sgs/mobile-nav-toggle | color+spacing | 0 | no | 0 | 5 | — | none |
-| sgs/modal | color | 3 | no | 0 | 6 | — | render.php (block-private) |
+| sgs/mobile-nav | color+spacing | 0 | no | 0 | 72 | — | sgs_typography_css_rule |
+| sgs/mobile-nav-toggle | color+spacing | 0 | no | 0 | 9 | — | none |
+| sgs/modal | color | 0 | no | 0 | 9 | — | none |
 | sgs/multi-button | color+__experimentalBorder | 0 | yes | 0 | 10 | — | SGS_Container_Wrapper |
-| sgs/notice-banner | color+spacing+__experimentalBorder+typography | 0 | yes | 0 | 12 | — | SGS_Container_Wrapper |
-| sgs/option-picker | color+spacing+__experimentalBorder | 3 | yes | 0 | 8 | — | render.php (block-private) |
+| sgs/notice-banner | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 19 | — | none |
+| sgs/option-picker | color+spacing+__experimentalBorder | 0 | no | 0 | 34 | borderRadius | sgs_typography_css_rule |
 | sgs/post-grid | color+spacing+__experimentalBorder+typography | 0 | yes | 0 | 48 | — | SGS_Container_Wrapper |
-| sgs/pricing-table | color+spacing+__experimentalBorder+typography | 8 | yes | 18 | 11 | — | render.php (block-private) |
-| sgs/process-steps | color+spacing+__experimentalBorder+typography+shadow | 4 | no | 0 | 7 | — | render.php (block-private) |
-| sgs/product-card | color+spacing+__experimentalBorder | 2 | yes | 0 | 32 | — | sgs_typography_css_rule |
-| sgs/product-faq | color+spacing+__experimentalBorder+typography | 0 | yes | 0 | 2 | — | SGS_Container_Wrapper |
-| sgs/product-faq-item | color+__experimentalBorder | 0 | no | 0 | 4 | — | none |
-| sgs/product-search | spacing | 0 | no | 0 | 4 | — | none |
-| sgs/quote | color+__experimentalBorder+typography | 17 | yes | 0 | 33 | — | render.php (block-private) |
-| sgs/responsive-logo | spacing | 0 | no | 0 | 8 | — | none |
-| sgs/social-icons | color+spacing+typography | 3 | no | 0 | 3 | — | render.php (block-private) |
-| sgs/star-rating | color+spacing | 0 | no | 0 | 11 | — | none |
+| sgs/pricing-table | color+spacing+__experimentalBorder+typography | 0 | yes | 18 | 18 | — | SGS_Container_Wrapper |
+| sgs/process-steps | color+spacing+__experimentalBorder+typography+shadow | 0 | no | 0 | 18 | — | render.php (block-private) |
+| sgs/product-card | color+spacing+__experimentalBorder | 0 | yes | 0 | 32 | — | sgs_typography_css_rule |
+| sgs/product-faq | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 9 | — | none |
+| sgs/product-faq-item | color+__experimentalBorder | 0 | no | 0 | 2 | — | none |
+| sgs/product-search | spacing | 0 | no | 0 | 8 | — | none |
+| sgs/quote | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 36 | — | sgs_responsive_css_rule |
+| sgs/responsive-logo | spacing | 0 | no | 0 | 12 | — | none |
+| sgs/social-icons | color+spacing+typography | 0 | no | 0 | 10 | — | none |
+| sgs/star-rating | color+spacing | 0 | no | 0 | 15 | — | none |
 | sgs/tab | color+__experimentalBorder | 0 | yes | 0 | 1 | — | SGS_Container_Wrapper |
-| sgs/table-of-contents | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 10 | — | render.php (block-private) |
+| sgs/table-of-contents | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 18 | borderRadius | none |
 | sgs/tabs | color+spacing+__experimentalBorder | 0 | yes | 18 | 12 | — | SGS_Container_Wrapper |
-| sgs/team-member | color+spacing+__experimentalBorder+typography | 2 | yes | 0 | 30 | — | render.php (block-private) |
-| sgs/testimonial | color+spacing+__experimentalBorder+typography+shadow | 0 | yes | 0 | 39 | — | render.php (block-private) |
+| sgs/team-member | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 38 | — | render.php (block-private) |
+| sgs/testimonial | color+spacing+__experimentalBorder+typography+shadow | 0 | no | 0 | 46 | — | render.php (block-private) |
 | sgs/testimonial-slider | color+spacing+__experimentalBorder+typography | 0 | yes | 18 | 15 | — | SGS_Container_Wrapper |
-| sgs/text | spacing | 19 | no | 0 | 53 | — | render.php (block-private) |
-| sgs/timeline | color+spacing+__experimentalBorder+typography+shadow | 0 | no | 0 | 5 | — | render.php (block-private) |
-| sgs/trust-bar | color+spacing+__experimentalBorder | 2 | yes | 0 | 19 | paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft | SGS_Container_Wrapper |
+| sgs/text | spacing+__experimentalBorder | 0 | no | 0 | 42 | — | sgs_responsive_css_rule |
+| sgs/timeline | color+spacing+__experimentalBorder+typography+shadow | 0 | no | 0 | 14 | borderRadius | render.php (block-private) |
+| sgs/trust-bar | color+spacing+__experimentalBorder | 0 | yes | 0 | 19 | — | SGS_Container_Wrapper |
 | sgs/trustpilot-reviews | color+__experimentalBorder | 0 | yes | 20 | 31 | — | SGS_Container_Wrapper |
-| sgs/whatsapp-cta | color+spacing+__experimentalBorder | 2 | no | 0 | 6 | — | sgs_typography_css_rule |
+| sgs/whatsapp-cta | color+spacing+__experimentalBorder | 0 | no | 0 | 14 | borderRadius | sgs_typography_css_rule |
 
 ## Per-block detail
 
@@ -92,10 +92,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -113,7 +113,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":4})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":8})
 
 ---
 
@@ -124,13 +124,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\accordion-item\render.php:22` — `color` (`color:var(--wp--preset--color--%s)`)
-- `src\blocks\accordion-item\render.php:25` — `background-color` (`background-color:var(--wp--preset--color--%s)`)
-- `src\blocks\accordion-item\render.php:32` — `color` (`color:var(--wp--preset--color--%s)`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -145,7 +143,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":3,"SGS_Container_Wrapper":2})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":2})
 
 ---
 
@@ -156,7 +154,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `spacing`: margin, padding
+- `spacing`: margin, padding, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -168,7 +166,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- audioUrl, audioSource, audioId, audioMimeType, playerStyle, audioControls, audioLoop, audioAutoplay, audioPreload, accentColour, spectrumColour, title
+- paddingTablet, paddingMobile, marginTablet, marginMobile, audioUrl, audioSource, audioId, audioMimeType, playerStyle, audioControls, audioLoop, audioAutoplay, audioPreload, accentColour, spectrumColour, title
 
 **tier-without-base:** (none)
 
@@ -183,9 +181,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -197,9 +195,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- _comment_logos_media, logos, scrolling, scrollSpeed, scrollDirection, fadeEdges, fadeWidth, greyscale, maxHeight, hoverBackgroundColour, hoverTextColour, hoverBorderColour, hoverEffect, transitionDuration, transitionEasing
+- _comment_logos_media, logos, scrolling, scrollSpeed, scrollDirection, fadeEdges, fadeWidth, greyscale, maxHeight, hoverBackgroundColour, hoverTextColour, hoverBorderColour, hoverEffect, transitionDuration, transitionEasing, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
 **dominant shared-helper:** none ({})
 
@@ -212,9 +210,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, link
-- `spacing`: margin, padding
-- `typography`: fontSize
+- `color`: background, text, link, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `typography`: fontSize, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -226,11 +224,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- separator, showHome, homeLabel
+- separator, showHome, homeLabel, linkColour, separatorColour, currentColour, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":3})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -241,12 +239,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: text, background, link
-- `spacing`: margin, padding
-- `typography`: fontSize, fontFamily
+- `color`: text, background, link, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `typography`: fontSize, fontFamily, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\business-info\render.php:219` — `border` (`border:0;`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -255,11 +253,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- displayType, showIcon, linkPhone, linkEmail
+- displayType, showIcon, linkPhone, linkEmail, iconColour, textColour, labelColour, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":4})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -270,12 +268,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\button\render.php:536` — `margin` (`margin:{$mt} {$mr} {$mb} {$ml}`)
-- `src\blocks\button\render.php:566` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -284,11 +282,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- label, url, linkTarget, rel, download, isSubmit, inheritStyle, widthType, customWidth, customWidthUnit, widthTypeTablet, widthTypeMobile, customWidthTablet, customWidthUnitTablet, customWidthMobile, customWidthUnitMobile, minHeight, minHeightUnit, minHeightTablet, minHeightTabletUnit, minHeightMobile, minHeightMobileUnit, paddingTop, paddingRight, paddingBottom, paddingLeft, paddingTopTablet, paddingRightTablet, paddingBottomTablet, paddingLeftTablet, paddingTopMobile, paddingRightMobile, paddingBottomMobile, paddingLeftMobile, paddingUnit, marginTop, marginRight, marginBottom, marginLeft, marginTopTablet, marginRightTablet, marginBottomTablet, marginLeftTablet, marginTopMobile, marginRightMobile, marginBottomMobile, marginLeftMobile, marginUnit, fontFamily, fontWeight, fontStyle, textTransform, textDecoration, textDecorationHover, fontSize, fontSizeTablet, fontSizeMobile, lineHeight, lineHeightTablet, lineHeightMobile, letterSpacing, letterSpacingTablet, letterSpacingMobile, borderStyle, borderWidthTop, borderWidthRight, borderWidthBottom, borderWidthLeft, borderWidthUnit, borderRadiusTL, borderRadiusTR, borderRadiusBR, borderRadiusBL, borderRadiusTabletTL, borderRadiusTabletTR, borderRadiusTabletBR, borderRadiusTabletBL, borderRadiusMobileTL, borderRadiusMobileTR, borderRadiusMobileBR, borderRadiusMobileBL, borderRadiusUnit, boxShadow, boxShadowHover, hoverScale, transitionDuration, transitionEasing, icon, iconPosition, iconSizeTablet, iconSizeMobile, iconColourHover, iconTitle, ariaLabel, anchor, className
+- label, url, linkTarget, rel, download, isSubmit, inheritStyle, widthType, customWidth, customWidthUnit, widthTypeTablet, widthTypeMobile, customWidthTablet, customWidthUnitTablet, customWidthMobile, customWidthUnitMobile, minHeight, minHeightUnit, minHeightTablet, minHeightTabletUnit, minHeightMobile, minHeightMobileUnit, paddingTablet, paddingMobile, marginTablet, marginMobile, fontFamily, fontWeight, fontStyle, textTransform, textDecoration, textDecorationHover, fontSize, fontSizeTablet, fontSizeMobile, lineHeight, lineHeightTablet, lineHeightMobile, letterSpacing, letterSpacingTablet, letterSpacingMobile, borderStyle, borderWidth, borderRadiusTablet, borderRadiusMobile, boxShadow, boxShadowHover, hoverScale, transitionDuration, transitionEasing, icon, iconPosition, iconSize, iconSizeTablet, iconSizeMobile, iconColour, iconColourHover, iconTitle, ariaLabel, anchor, className
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":11,"sgs_responsive_css_rule":3})
+**dominant shared-helper:** render.php (block-private) ({"sgs_responsive_css_rule":3,"render.php (block-private)":7})
 
 ---
 
@@ -300,7 +298,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **1. INLINE-via-supports**
 - `color`: 
-- `spacing`: margin
+- `spacing`: margin, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -312,7 +310,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- soldOutLabel, unavailableLabel, notifyEnabled, notifyMeLabel, addToCartLabel, perUnitDenomination, showLadder, framingMode, decoyEnabled
+- marginTablet, marginMobile, soldOutLabel, unavailableLabel, notifyEnabled, notifyMeLabel, addToCartLabel, perUnitDenomination, showLadder, framingMode, decoyEnabled
 
 **tier-without-base:** (none)
 
@@ -327,15 +325,14 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 - `shadow`: shadow
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\card-grid\render.php:258` — `color` (`color:var(--wp--preset--color--`)
-- `src\blocks\card-grid\render.php:259` — `color` (`color:var(--wp--preset--color--`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -346,11 +343,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - columns, columnsMobile, gap, columnsTablet, gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile, gridTemplateRows, gridTemplateRowsTablet, gridTemplateRowsMobile, gridAutoRows, flexDirection, flexWrap, justifyContent, justifyItems, alignContent, alignItems, columnsDesktop, gapMobile, gapTablet
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- variant, _comment_items_media, items, hoverEffect, overlayStyle, hoverImageZoom, hoverGrayscale, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, source, productSource, productCollection, productCategories, productTags, productFeatured, productOnSale, productInStock, productLimit, productIds, productShowLadder, productEmptyMessage, queryPostType, queryPostsPerPage, queryCategory, layoutMode, direction, wrap, templateMode
+- variant, _comment_items_media, items, hoverEffect, overlayStyle, titleColour, subtitleColour, hoverImageZoom, hoverGrayscale, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, source, productSource, productCollection, productCategories, productTags, productFeatured, productOnSale, productInStock, productLimit, productIds, productShowLadder, productEmptyMessage, queryPostType, queryPostsPerPage, queryCategory, layoutMode, direction, wrap, templateMode
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":13,"sgs_typography_css_rule":8,"SGS_Container_Wrapper":3})
+**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":9,"sgs_typography_css_rule":8,"SGS_Container_Wrapper":3})
 
 ---
 
@@ -362,7 +359,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **1. INLINE-via-supports**
 - `color`: 
-- `spacing`: margin
+- `spacing`: margin, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -374,7 +371,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- displayMode, iconName, ariaLabel, showZero
+- displayMode, iconName, ariaLabel, showZero, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -389,9 +386,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: text, background
-- `spacing`: margin, padding
-- `typography`: textAlign
+- `color`: text, background, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `typography`: textAlign, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -403,7 +400,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- text, collapsible, collapsedLines
+- text, collapsible, collapsedLines, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -418,10 +415,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients, link, heading
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, gradients, link, heading, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -437,9 +434,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
 - templateMode
 
-**tier-without-base:** paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft
+**tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":76})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":55})
 
 ---
 
@@ -450,9 +447,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `spacing`: margin
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `spacing`: margin, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -481,10 +478,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, textAlign
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, textAlign, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -496,9 +493,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- targetDate, evergreenMode, evergreenHours, evergreenMinutes, expiredMessage, showDays, showHours, showMinutes, showSeconds, numberColour, labelColour, separatorColour, cardStyle, digitStyle
+- targetDate, evergreenMode, evergreenHours, evergreenMinutes, expiredMessage, showDays, showHours, showMinutes, showSeconds, numberColour, labelColour, separatorColour, cardStyle, digitStyle, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
 **dominant shared-helper:** none ({})
 
@@ -511,14 +508,13 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, text, link
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign
+- `color`: background, text, link, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\counter\render.php:50` — `color` (`color:`)
-- `src\blocks\counter\render.php:57` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -527,11 +523,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- number, prefix, suffix, label, duration, separator, icon, accentStroke
+- number, prefix, suffix, label, duration, separator, numberColour, labelColour, icon, accentStroke, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** sgs_typography_css_rule ({"render.php (block-private)":4,"sgs_typography_css_rule":8})
+**dominant shared-helper:** sgs_typography_css_rule ({"sgs_typography_css_rule":8})
 
 ---
 
@@ -542,32 +538,29 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 - `shadow`: shadow
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\cta-section\render.php:69` — `background-image` (`background-image:url(`)
-- `src\blocks\cta-section\render.php:70` — `background-size` (`background-size:cover`)
-- `src\blocks\cta-section\render.php:71` — `background-position` (`background-position:center`)
-- `src\blocks\cta-section\render.php:115` — `opacity` (`opacity:%s`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
 - no_overlay opt-out detected: yes
-- attrs nulled before delegation (incl. family expansion): backgroundImage, backgroundColor, backgroundMedia, backgroundImageOpacity, backgroundImageTablet, backgroundImageMobile, backgroundSize, backgroundPosition, backgroundRepeat, backgroundAttachment, backgroundOverlayColour, backgroundOverlayOpacity, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo
+- attrs nulled before delegation (incl. family expansion): backgroundImage, shadow, backgroundColor, backgroundMedia, backgroundImageOpacity, backgroundImageTablet, backgroundImageMobile, backgroundSize, backgroundPosition, backgroundRepeat, backgroundAttachment, backgroundOverlayColour, backgroundOverlayOpacity, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - columns, columnsMobile, columnsTablet, gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile, gap, gapTablet, gapMobile, gridItemPadding, gridItemBackground, gridItemBorderRadius, gridItemBorder, gridItemShadow, gridItemTextColour, gridTemplateRows, gridTemplateRowsTablet, gridTemplateRowsMobile, gridAutoRows, justifyItems, alignContent, justifyContent, flexDirection, flexWrap
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- headline, body, buttons, ribbon, backgroundColor, textColor, headlineColour, bodyColour, buttonColour, buttonBackground, backgroundImage, _comment_backgroundMedia, backgroundMedia, backgroundImageOpacity, stats, buttonStyle, buttonSize, buttonBorderColour, buttonBorderWidth, buttonBorderRadius, gradientPreset, transitionDuration, transitionEasing, textAlignMobile, textAlignTablet, textAlignDesktop, contentLayout, backgroundImageTablet, backgroundImageMobile, backgroundSize, backgroundPosition, backgroundRepeat, backgroundAttachment, backgroundOverlayColour, backgroundOverlayOpacity, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo, templateMode
+- headline, body, buttons, ribbon, backgroundColor, textColor, headlineColour, bodyColour, buttonColour, buttonBackground, backgroundImage, _comment_backgroundMedia, backgroundMedia, backgroundImageOpacity, stats, buttonStyle, buttonSize, buttonBorderColour, buttonBorderWidth, buttonBorderRadius, gradientPreset, transitionDuration, transitionEasing, textAlignMobile, textAlignTablet, textAlignDesktop, contentLayout, backgroundImageTablet, backgroundImageMobile, backgroundSize, backgroundPosition, backgroundRepeat, backgroundAttachment, backgroundOverlayColour, backgroundOverlayOpacity, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo, shadow, templateMode
 
-**tier-without-base:** paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft
+**tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":7,"SGS_Container_Wrapper":63})
+**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":3,"SGS_Container_Wrapper":41})
 
 ---
 
@@ -581,14 +574,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none declared)
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\decorative-image\render.php:73` — `position` (`position: absolute`)
-- `src\blocks\decorative-image\render.php:74` — `left` (`left:`)
-- `src\blocks\decorative-image\render.php:75` — `top` (`top:`)
-- `src\blocks\decorative-image\render.php:76` — `width` (`width:`)
-- `src\blocks\decorative-image\render.php:77` — `max-width` (`max-width:`)
-- `src\blocks\decorative-image\render.php:78` — `opacity` (`opacity:`)
-- `src\blocks\decorative-image\render.php:79` — `z-index` (`z-index:`)
-- `src\blocks\decorative-image\render.php:92` — `transform` (`transform:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -597,11 +583,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- _comment_decorMedia, decorMedia, imageId, imageUrl, imageAlt, rotation, flipX, parallaxStrength, fadeOnScroll, overflow, positionXTablet, positionYTablet, widthTablet, rotationTablet, hideOnTablet, positionXMobile, positionYMobile, widthMobile, rotationMobile, hideOnMobile, pathDrawOnScroll, pathDrawDurationMs, pathDrawTriggerOffset, pathDrawEasing
+- _comment_decorMedia, decorMedia, imageId, imageUrl, imageAlt, positionX, positionY, width, maxWidthPercent, rotation, opacity, zIndex, flipX, parallaxStrength, fadeOnScroll, overflow, positionXTablet, positionYTablet, widthTablet, rotationTablet, hideOnTablet, positionXMobile, positionYMobile, widthMobile, rotationMobile, hideOnMobile, pathDrawOnScroll, pathDrawDurationMs, pathDrawTriggerOffset, pathDrawEasing
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":14})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -612,9 +598,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -643,7 +629,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `spacing`: margin
+- `spacing`: margin, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -655,7 +641,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- attributeId, threshold, placeholder
+- attributeId, threshold, placeholder, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -670,19 +656,13 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\form\render.php:85` — `color` (`color:`)
-- `src\blocks\form\render.php:88` — `background-color` (`background-color:`)
-- `src\blocks\form\render.php:155` — `position` (`position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;`)
-- `src\blocks\form\render.php:155` — `left` (`position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;`)
-- `src\blocks\form\render.php:155` — `width` (`position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;`)
-- `src\blocks\form\render.php:155` — `height` (`position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;`)
-- `src\blocks\form\render.php:155` — `overflow` (`position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -693,11 +673,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - columns, columnsMobile, columnsTablet, gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile, gap, gapTablet, gapMobile, gridTemplateRows, gridTemplateRowsTablet, gridTemplateRowsMobile, gridAutoRows, justifyItems, alignContent, flexDirection, flexWrap, justifyContent
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- formName, submitLabel, submitStyle, successMessage, successRedirect, honeypot, requireLogin, rateLimit, formFocusRingColour, formFocusRingWidth, formFocusRingOpacity, formFocusRingOffset, customWidth, customWidthUnit, templateMode
+- formName, submitLabel, submitStyle, successMessage, successRedirect, honeypot, submitColour, submitBackground, requireLogin, rateLimit, formFocusRingColour, formFocusRingWidth, formFocusRingOpacity, formFocusRingOffset, customWidth, customWidthUnit, templateMode
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":10,"SGS_Container_Wrapper":5})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":9,"render.php (block-private)":1})
 
 ---
 
@@ -1059,8 +1039,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1116,9 +1096,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `spacing`: padding, blockGap
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `spacing`: padding, blockGap, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1147,12 +1127,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\gallery\render.php:191` — `aspect-ratio` (`aspect-ratio:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -1167,7 +1147,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":8,"SGS_Container_Wrapper":22})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":22,"render.php (block-private)":7})
 
 ---
 
@@ -1178,11 +1158,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\google-reviews\render.php:325` — `width` (`width:<?php echo esc_attr( $gr_pct ); ?>%`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -1197,7 +1177,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":1,"SGS_Container_Wrapper":3})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":3})
 
 ---
 
@@ -1208,18 +1188,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: text, background
-- `spacing`: margin, padding
+- `color`: text, background, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\heading\render.php:158` — `color` (`color:`)
-- `src\blocks\heading\render.php:165` — `font-weight` (`font-weight:`)
-- `src\blocks\heading\render.php:173` — `line-height` (`line-height:`)
-- `src\blocks\heading\render.php:176` — `letter-spacing` (`letter-spacing:`)
-- `src\blocks\heading\render.php:179` — `text-transform` (`text-transform:`)
-- `src\blocks\heading\render.php:182` — `font-family` (`font-family:`)
-- `src\blocks\heading\render.php:187` — `font-style` (`font-style:`)
-- `src\blocks\heading\render.php:192` — `text-decoration` (`text-decoration:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -1228,11 +1202,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- headingRole, content, level, subTag, anchor, fontSize, fontSizeTablet, fontSizeMobile, lineHeightUnit, marginTop, marginRight, marginBottom, marginLeft, marginTopTablet, marginRightTablet, marginBottomTablet, marginLeftTablet, marginTopMobile, marginRightMobile, marginBottomMobile, marginLeftMobile, marginUnit, paddingTop, paddingRight, paddingBottom, paddingLeft, paddingTopTablet, paddingRightTablet, paddingBottomTablet, paddingLeftTablet, paddingTopMobile, paddingRightMobile, paddingBottomMobile, paddingLeftMobile, paddingUnit, backgroundColour, borderRadius, borderRadiusUnit, borderRadiusTL, borderRadiusTR, borderRadiusBL, borderRadiusBR, borderWidthTop, borderWidthRight, borderWidthBottom, borderWidthLeft, borderWidthUnit, borderStyle, borderColour, boxShadow, boxShadowHover, hoverScale, hoverColour, hoverBackground, customWidth, customWidthUnit, textAlign, inheritStyle, transitionDuration, transitionEasing
+- headingRole, content, level, subTag, anchor, fontFamily, fontSize, fontSizeTablet, fontSizeMobile, fontWeight, lineHeight, lineHeightUnit, letterSpacing, letterSpacingUnit, textTransform, textColour, fontStyle, textDecoration, paddingTablet, paddingMobile, marginTablet, marginMobile, backgroundColour, borderWidth, borderStyle, borderColour, boxShadow, boxShadowHover, hoverScale, hoverColour, hoverBackground, customWidth, customWidthUnit, textAlign, inheritStyle, transitionDuration, transitionEasing
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":17,"sgs_responsive_css_rule":1})
+**dominant shared-helper:** sgs_responsive_css_rule ({"sgs_responsive_css_rule":1})
 
 ---
 
@@ -1243,40 +1217,28 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\hero\render.php:271` — `display` (`display:grid`)
-- `src\blocks\hero\render.php:624` — `background-color` (`background-color:%s;opacity:%s`)
-- `src\blocks\hero\render.php:624` — `opacity` (`background-color:%s;opacity:%s`)
-- `src\blocks\hero\render.php:675` — `display` (`display:flex`)
-- `src\blocks\hero\render.php:676` — `flex-direction` (`flex-direction:column`)
-- `src\blocks\hero\render.php:677` — `justify-content` (`justify-content:`)
-- `src\blocks\hero\render.php:680` — `background-color` (`background-color:`)
-- `src\blocks\hero\render.php:719` — `object-fit` (`object-fit:`)
-- `src\blocks\hero\render.php:723` — `object-position` (`object-position:`)
-- `src\blocks\hero\render.php:733` — `border-style` (`border-style:`)
-- `src\blocks\hero\render.php:734` — `border-width` (`border-width:`)
-- `src\blocks\hero\render.php:736` — `border-color` (`border-color:`)
-- `src\blocks\hero\render.php:790` — `background-color` (`background-color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
 - no_overlay opt-out detected: yes
-- attrs nulled before delegation (incl. family expansion): backgroundImage, backgroundImageTablet, backgroundImageMobile, backgroundVideo, bgVideo, bgVideoMobile, bgSvgContent, minHeight, minHeightTablet, minHeightMobile, backgroundAttachment, backgroundOverlayColour, backgroundOverlayOpacity, backgroundPosition, backgroundRepeat, backgroundSize, bgSvgAnimation, bgSvgAnimationSpeed, bgSvgMinHeight, bgSvgOpacity, bgSvgPosition, bgSvgTextShadow, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo
+- attrs nulled before delegation (incl. family expansion): topLeft, topRight, bottomLeft, bottomRight, radius, border, selector, css, style, typography, fontSize, , lineHeight, letterSpacing, textTransform, fontWeight, fontStyle,  .sgs-hero__headline, textAlign, left, center, right,  .sgs-hero__headline{text-align:, }, textColor, backgroundColor, has-text-color, has-, -color, has-background, -background-color, color, background, gradient, url, <video class="sgs-hero__video-bg" autoplay loop muted playsinline aria-hidden="true">, <source src="%s" type="video/mp4"></video>, <video class="sgs-hero__video-bg sgs-hero__video-bg--responsive" autoplay loop muted playsinline aria-hidden="true",  data-src-desktop="%s" data-src-mobile="%s">, id, high, auto, eager, lazy, class, sgs-hero__bg-img, aria-hidden, true, fetchpriority, loading, decoding, sync, async, alt,  sgs-hero__bg-img--parallax, /includes/render-helpers.php, full, <div class="sgs-hero__svg-bg" aria-hidden="true">, </div>, <span class="sgs-hero__overlay" aria-hidden="true"></span>, .,  .sgs-hero__overlay{background-color:, ;opacity:, position, bottom-left, light, number, suffix, label, <div class="sgs-hero__badge sgs-hero__badge--%s sgs-hero__badge--%s">, <span class="sgs-hero__badge-number">%s%s</span>, <span class="sgs-hero__badge-label">%s</span>, <div class="sgs-hero__badges">, <div class="sgs-hero__content">, type, video, sgs-hero__media,  sgs-hero__media--bleed, <div class=", ">, sgs/hero, sgs-hero__split-image, width, height, large,  sgs-hero__split-image--bleed, sgs-hero__split-image sgs-hero__split-image--mobile,  .sgs-hero__split-image--mobile{object-position:,  sgs-hero__split-image--desktop, @media (max-width:767px){.,  .sgs-hero__split-image--desktop{display:none}}, @media (min-width:768px){.,  .sgs-hero__split-image--mobile{display:none}}, <style id="%s">%s</style>, backgroundImage, backgroundImageTablet, backgroundImageMobile, backgroundVideo, bgVideo, bgVideoMobile, bgSvgContent, minHeight, minHeightTablet, minHeightMobile, backgroundAttachment, backgroundOverlayColour, backgroundOverlayOpacity, backgroundPosition, backgroundRepeat, backgroundSize, bgSvgAnimation, bgSvgAnimationSpeed, bgSvgMinHeight, bgSvgOpacity, bgSvgPosition, bgSvgTextShadow, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - alignContent, justifyContent, flexDirection, flexWrap, columns, columnsMobile, columnsTablet, gap, gapMobile, gapTablet, gridAutoRows, gridItemBackground, gridItemBorder, gridItemBorderRadius, gridItemPadding, gridItemShadow, gridItemTextColour, gridTemplateColumns, gridTemplateColumnsMobile, gridTemplateColumnsTablet, gridTemplateRows, gridTemplateRowsMobile, gridTemplateRowsTablet, justifyItems
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- variant, headline, subHeadline, alignment, backgroundImage, splitImage, _comment_splitMedia, splitMedia, splitImageMobile, splitImageMobileObjectPosition, label, backgroundVideo, svgContent, minHeight, minHeightTablet, minHeightMobile, badges, ctaPrimaryText, ctaPrimaryUrl, ctaPrimaryStyle, ctaPrimaryColour, ctaPrimaryBackground, ctaSecondaryText, ctaSecondaryUrl, ctaSecondaryStyle, ctaSecondaryColour, ctaSecondaryBackground, transitionDuration, transitionEasing, textAlignMobile, textAlignTablet, textAlignDesktop, bgVideo, bgVideoMobile, splitImageBleed, subHeadlineMaxWidth, splitImageMobileHeight, imageObjectFit, imageWidth, imageWidthTablet, imageWidthMobile, imageWidthUnit, imageHeight, imageHeightTablet, imageHeightMobile, imageHeightUnit, imageBorderRadiusTL, imageBorderRadiusTR, imageBorderRadiusBR, imageBorderRadiusBL, imageBorderRadiusTabletTL, imageBorderRadiusTabletTR, imageBorderRadiusTabletBR, imageBorderRadiusTabletBL, imageBorderRadiusMobileTL, imageBorderRadiusMobileTR, imageBorderRadiusMobileBR, imageBorderRadiusMobileBL, imageBorderRadiusUnit, imageBorderStyle, imagePaddingTop, imagePaddingRight, imagePaddingBottom, imagePaddingLeft, imagePaddingTopTablet, imagePaddingRightTablet, imagePaddingBottomTablet, imagePaddingLeftTablet, imagePaddingTopMobile, imagePaddingRightMobile, imagePaddingBottomMobile, imagePaddingLeftMobile, imagePaddingUnit, mediaBackgroundColour, contentPaddingTop, contentPaddingRight, contentPaddingBottom, contentPaddingLeft, contentPaddingTopTablet, contentPaddingRightTablet, contentPaddingBottomTablet, contentPaddingLeftTablet, contentPaddingTopMobile, contentPaddingRightMobile, contentPaddingBottomMobile, contentPaddingLeftMobile, contentPaddingUnit, mediaPaddingTop, mediaPaddingRight, mediaPaddingBottom, mediaPaddingLeft, mediaPaddingTopTablet, mediaPaddingRightTablet, mediaPaddingBottomTablet, mediaPaddingLeftTablet, mediaPaddingTopMobile, mediaPaddingRightMobile, mediaPaddingBottomMobile, mediaPaddingLeftMobile, mediaPaddingUnit, splitContentOrderMobile, verticalAlignment, headlineMarginBottom, headlineMarginBottomMobile, subHeadlineMarginBottom, subHeadlineMarginBottomMobile, _comment_ctaGap, ctaGap, ctaGapMobile, ctaGapTablet, ctaGapUnit, backgroundAttachment, backgroundImageMobile, backgroundImageTablet, backgroundPosition, backgroundRepeat, backgroundSize, bgSvgAnimation, bgSvgAnimationSpeed, bgSvgContent, bgSvgMinHeight, bgSvgOpacity, bgSvgPosition, bgSvgTextShadow, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo, templateMode
+- variant, headline, subHeadline, alignment, backgroundImage, overlayColour, overlayOpacity, splitImage, _comment_splitMedia, splitMedia, splitImageMobile, splitImageMobileObjectPosition, label, backgroundVideo, svgContent, minHeight, minHeightTablet, minHeightMobile, badges, ctaPrimaryText, ctaPrimaryUrl, ctaPrimaryStyle, ctaPrimaryColour, ctaPrimaryBackground, ctaSecondaryText, ctaSecondaryUrl, ctaSecondaryStyle, ctaSecondaryColour, ctaSecondaryBackground, transitionDuration, transitionEasing, textAlignMobile, textAlignTablet, textAlignDesktop, bgVideo, bgVideoMobile, splitImageBleed, subHeadlineMaxWidth, splitImageMobileHeight, imageObjectFit, imageObjectPosition, imageWidth, imageWidthTablet, imageWidthMobile, imageWidthUnit, imageHeight, imageHeightTablet, imageHeightMobile, imageHeightUnit, imageBorderRadius, imageBorderRadiusTablet, imageBorderRadiusMobile, imageBorderStyle, imageBorderWidth, imageBorderColour, imagePadding, imagePaddingTablet, imagePaddingMobile, mediaBackgroundColour, mediaBackground, contentPadding, contentPaddingTablet, contentPaddingMobile, mediaPadding, mediaPaddingTablet, mediaPaddingMobile, contentBackground, splitContentOrderMobile, verticalAlignment, headlineMarginBottom, headlineMarginBottomMobile, subHeadlineMarginBottom, subHeadlineMarginBottomMobile, _comment_ctaGap, ctaGap, ctaGapMobile, ctaGapTablet, ctaGapUnit, backgroundAttachment, backgroundImageMobile, backgroundImageTablet, backgroundOverlayColour, backgroundOverlayOpacity, backgroundPosition, backgroundRepeat, backgroundSize, bgSvgAnimation, bgSvgAnimationSpeed, bgSvgContent, bgSvgMinHeight, bgSvgOpacity, bgSvgPosition, bgSvgTextShadow, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo, templateMode
 
-**tier-without-base:** paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft
+**tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":33,"SGS_Container_Wrapper":51})
+**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":7,"SGS_Container_Wrapper":30})
 
 ---
 
@@ -1287,12 +1249,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\icon\render.php:85` — `color` (`color:`)
-- `src\blocks\icon\render.php:92` — `background-color` (`background-color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -1301,11 +1262,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- iconSource, iconName, emojiChar, dashiconName, wpIconName, backgroundShape, backgroundPadding, linkUrl, linkTarget, linkRel, ariaLabel, iconAlign
+- iconSource, iconName, emojiChar, dashiconName, wpIconName, iconColour, backgroundShape, backgroundPadding, paddingTablet, paddingMobile, marginTablet, marginMobile, linkUrl, linkTarget, linkRel, ariaLabel, iconAlign
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":8})
+**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":5})
 
 ---
 
@@ -1316,10 +1277,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, link
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign
+- `color`: background, text, link, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1331,11 +1292,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- items, icon, defaultIconSource, iconSize, dividers, gap
+- items, icon, defaultIconSource, iconColour, iconSize, dividers, textColour, gap, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile, borderWidth, borderColour, borderStyle
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":2})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -1346,29 +1307,27 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, link, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, link, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 - `shadow`: shadow
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
 
 **3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
+- calls SGS_Container_Wrapper::render(): no
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- mediaType, mediaEmoji, subtitle, image, _comment_boxMedia, boxMedia, iconPosition, icon, heading, description, cardStyle, hoverEffect, transitionDuration, transitionEasing, blockLink, blockLinkTarget, hoverGrayscale, staggerDelay, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing
+- mediaType, mediaEmoji, subtitle, image, _comment_boxMedia, boxMedia, iconPosition, icon, heading, description, cardStyle, hoverEffect, transitionDuration, transitionEasing, blockLink, blockLinkTarget, hoverGrayscale, staggerDelay, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, contentWidth, maxWidth, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":5,"SGS_Container_Wrapper":2})
+**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":5})
 
 ---
 
@@ -1379,13 +1338,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: text, background
-- `spacing`: margin
+- `color`: text, background, __experimentalSkipSerialization
+- `spacing`: margin, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\label\render.php:71` — `font-style` (`font-style:`)
-- `src\blocks\label\render.php:74` — `text-align` (`text-align:`)
-- `src\blocks\label\render.php:81` — `border-radius` (`border-radius:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -1394,11 +1351,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- text, fontSizeTablet, fontSizeMobile, fontStyle, textAlign, borderRadius
+- text, textColour, backgroundColour, fontFamily, fontSize, fontSizeTablet, fontSizeMobile, fontWeight, lineHeight, lineHeightUnit, letterSpacing, letterSpacingUnit, textTransform, fontStyle, textDecoration, textAlign, padding, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadius
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":19})
+**dominant shared-helper:** sgs_responsive_css_rule ({"sgs_responsive_css_rule":1})
 
 ---
 
@@ -1409,18 +1366,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `__experimentalBorder`: width, style, color
+- `__experimentalBorder`: radius, width, style, color, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\media\render.php:131` — `object-fit` (`object-fit:`)
-- `src\blocks\media\render.php:138` — `object-position` (`object-position:`)
-- `src\blocks\media\render.php:143` — `aspect-ratio` (`aspect-ratio:`)
-- `src\blocks\media\render.php:154` — `opacity` (`opacity:`)
-- `src\blocks\media\render.php:200` — `border-radius` (`border-radius:`)
-- `src\blocks\media\render.php:207` — `box-shadow` (`box-shadow:`)
-- `src\blocks\media\render.php:230` — `margin-left` (`margin-left:auto`)
-- `src\blocks\media\render.php:328` — `color` (`color:`)
-- `src\blocks\media\render.php:331` — `font-size` (`font-size:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -1429,11 +1378,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- mediaType, svgContent, svgAnimation, svgAnimationSpeed, videoUrl, videoSource, videoId, videoMimeType, videoPoster, videoPosterId, videoAutoplay, videoLoop, videoMuted, videoControls, videoPlaysInline, videoLazyLoad, imageId, imageUrl, imageAlt, imageWidth, imageHeight, maxWidth, maxWidthUnit, maxWidthMobile, maxWidthTablet, maxHeight, maxHeightUnit, maxHeightMobile, maxHeightTablet, height, heightUnit, heightMobile, heightTablet, objectFit, borderRadius, borderRadiusUnit, borderRadiusTL, borderRadiusTR, borderRadiusBL, borderRadiusBR, boxShadow, alignment, order, orderMobile, orderTablet, caption, captionTag, linkUrl, linkOpensNewTab, linkRel
+- mediaType, svgContent, svgAnimation, svgAnimationSpeed, videoUrl, videoSource, videoId, videoMimeType, videoPoster, videoPosterId, videoAutoplay, videoLoop, videoMuted, videoControls, videoPlaysInline, videoLazyLoad, imageId, imageUrl, imageAlt, imageWidth, imageHeight, maxWidth, maxWidthUnit, maxWidthMobile, maxWidthTablet, maxHeight, maxHeightUnit, maxHeightMobile, maxHeightTablet, height, heightUnit, heightMobile, heightTablet, aspectRatio, objectFit, objectPosition, borderRadiusTablet, borderRadiusMobile, boxShadow, opacity, alignment, order, orderMobile, orderTablet, caption, captionTag, captionColour, captionFontSize, captionFontSizeUnit, linkUrl, linkOpensNewTab, linkRel
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":15})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -1444,7 +1393,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
+- `color`: background, text, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1471,8 +1420,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: padding
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: padding, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1484,7 +1433,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- variant, accentColour, dividerColour, showCta, ctaText, ctaUrl, showContactShortcuts, showSocials, socialStyle, showSearch, showAccountTray, enableSwipe, desktopHamburger, staggerDelay, breakpoint, drawerWidth, drawerWidthMobile, drawerWidthTablet, drawerMaxWidth, drawerPosition, showLogo, logoMaxWidth, logoMaxWidthMobile, logoMaxWidthTablet, closeButtonSize, closeButtonSizeMobile, closeButtonSizeTablet, closeButtonStyle, ctaIcon, ctaStyle, showSecondaryCta, secondaryCtaText, secondaryCtaUrl, secondaryCtaIcon, secondaryCtaStyle, contactDisplayMode, showWhatsApp, showDividers, submenuIndent, submenuIndentMobile, submenuIndentTablet, socialIconSize, socialIconSizeMobile, socialIconSizeTablet, showTagline, taglineText, drawerBg, drawerText, drawerGradient, closeButtonBg, closeButtonColour, ctaBg, ctaTextColour, ctaBorderColour, secondaryCtaBg, secondaryCtaTextColour, linkColour, linkHoverColour, linkActiveColour, sublinkColour, sublinkHoverColour, backdropColour, focusColour, animationPreset, animationDuration, animationEasing, exitDuration, backdropOpacity, backdropBlur, backdropBlurAmount
+- variant, accentColour, dividerColour, showCta, ctaText, ctaUrl, showContactShortcuts, showSocials, socialStyle, showSearch, showAccountTray, enableSwipe, desktopHamburger, staggerDelay, breakpoint, drawerWidth, drawerWidthMobile, drawerWidthTablet, drawerMaxWidth, paddingTablet, paddingMobile, drawerPosition, showLogo, logoMaxWidth, logoMaxWidthMobile, logoMaxWidthTablet, closeButtonSize, closeButtonSizeMobile, closeButtonSizeTablet, closeButtonStyle, ctaIcon, ctaStyle, showSecondaryCta, secondaryCtaText, secondaryCtaUrl, secondaryCtaIcon, secondaryCtaStyle, contactDisplayMode, showWhatsApp, showDividers, submenuIndent, submenuIndentMobile, submenuIndentTablet, socialIconSize, socialIconSizeMobile, socialIconSizeTablet, showTagline, taglineText, drawerBg, drawerText, drawerGradient, closeButtonBg, closeButtonColour, ctaBg, ctaTextColour, ctaBorderColour, secondaryCtaBg, secondaryCtaTextColour, linkColour, linkHoverColour, linkActiveColour, sublinkColour, sublinkHoverColour, backdropColour, focusColour, animationPreset, animationDuration, animationEasing, exitDuration, backdropOpacity, backdropBlur, backdropBlurAmount
 
 **tier-without-base:** (none)
 
@@ -1499,8 +1448,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: text
-- `spacing`: padding, margin
+- `color`: text, __experimentalSkipSerialization
+- `spacing`: padding, margin, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1512,7 +1461,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- iconSize, ariaLabel, popoverTarget, toggleOpenIcon, toggleCloseIcon
+- iconSize, ariaLabel, popoverTarget, toggleOpenIcon, toggleCloseIcon, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -1530,9 +1479,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - `color`: 
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\modal\render.php:25` — `color` (`color:`)
-- `src\blocks\modal\render.php:28` — `background-color` (`background-color:`)
-- `src\blocks\modal\render.php:35` — `background-color` (`background-color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -1541,11 +1488,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- triggerText, triggerStyle, maxWidth, closeOnOverlay, overlayColour, overlayOpacity
+- triggerText, triggerStyle, triggerColour, triggerBackground, maxWidth, closeOnOverlay, modalBackground, overlayColour, overlayOpacity
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":6})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -1556,8 +1503,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1586,28 +1533,26 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, fontStyle
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, fontStyle, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
 
 **3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
+- calls SGS_Container_Wrapper::render(): no
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- icon, iconSource, iconName, showIcon, text, variant, textColour, textFontSize, displayMode, stickyPosition, dismissible, dismissBehaviour
+- icon, iconSource, iconName, showIcon, text, variant, textColour, textFontSize, contentWidth, maxWidth, iconColour, displayMode, stickyPosition, dismissible, dismissBehaviour, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":2,"render.php (block-private)":1})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -1618,29 +1563,25 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding, __experimentalDefaultControls
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization, __experimentalDefaultControls
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\option-picker\render.php:198` — `color` (`color:`)
-- `src\blocks\option-picker\render.php:201` — `margin-bottom` (`margin-bottom:`)
-- `src\blocks\option-picker\render.php:277` — `background` (`background:%s;`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
+- calls SGS_Container_Wrapper::render(): no
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- label, showLabel, optionItems, defaultSelected, contentImpact, typeKey, pillStyle, pillSize
+- label, showLabel, labelColour, labelMarginBottom, optionItems, defaultSelected, contentImpact, typeKey, pillStyle, pillSize, colourPreset, showSelectedTick, pillBgColour, pillTextColour, pillBorderColour, pillSelectedBgColour, pillSelectedTextColour, pillSelectedBorderColour, pillBorderRadius, pillSelectedBorderRadius, pillPadding, pillPaddingTablet, pillPaddingMobile, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile, borderWidth, borderStyle, borderColour, contentWidth, maxWidth
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":11,"sgs_typography_css_rule":11,"SGS_Container_Wrapper":2})
+**dominant shared-helper:** sgs_typography_css_rule ({"sgs_typography_css_rule":11})
 
 ---
 
@@ -1651,10 +1592,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1683,20 +1624,13 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\pricing-table\render.php:144` — `color` (`color:`)
-- `src\blocks\pricing-table\render.php:147` — `background-color` (`background-color:`)
-- `src\blocks\pricing-table\render.php:260` — `color` (`color:`)
-- `src\blocks\pricing-table\render.php:263` — `background-color` (`background-color:`)
-- `src\blocks\pricing-table\render.php:160` — `background-color` (`background-color:`)
-- `src\blocks\pricing-table\render.php:170` — `color` (`color:`)
-- `src\blocks\pricing-table\render.php:220` — `color` (`color:`)
-- `src\blocks\pricing-table\render.php:288` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -1707,11 +1641,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - columns, gap, gapTablet, gapMobile, gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile, gridTemplateRows, gridTemplateRowsTablet, gridTemplateRowsMobile, gridAutoRows, justifyItems, alignContent, columnsMobile, columnsTablet, flexDirection, flexWrap, justifyContent
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- billingToggle, toggleStyle, billingToggleMonthlyLabel, billingToggleYearlyLabel, plans, ctaStyle, popularBadgeText, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, templateMode
+- billingToggle, toggleStyle, billingToggleMonthlyLabel, billingToggleYearlyLabel, plans, titleColour, priceColour, featureColour, ctaStyle, ctaColour, ctaBackground, popularBadgeText, popularBadgeColour, popularBadgeBackground, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, templateMode
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":15,"SGS_Container_Wrapper":4})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":4})
 
 ---
 
@@ -1722,17 +1656,14 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 - `shadow`: shadow
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\process-steps\render.php:60` — `color` (`color:`)
-- `src\blocks\process-steps\render.php:63` — `background-color` (`background-color:`)
-- `src\blocks\process-steps\render.php:69` — `color` (`color:`)
-- `src\blocks\process-steps\render.php:75` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -1741,11 +1672,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- steps, connectorStyle, numberStyle, hoverEffect, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing
+- steps, connectorStyle, numberStyle, numberColour, numberBackground, titleColour, descriptionColour, hoverEffect, paddingTablet, paddingMobile, marginTablet, marginMobile, borderWidth, borderStyle, borderColour, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":13})
+**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":5})
 
 ---
 
@@ -1756,13 +1687,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `spacing`: margin
-- `__experimentalBorder`: radius, width, style, color
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `spacing`: margin, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, style, color, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\product-card\render.php:782` — `color` (`color:`)
-- `src\blocks\product-card\render.php:839` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -1777,7 +1707,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** sgs_typography_css_rule ({"render.php (block-private)":8,"sgs_button_element_style_css":14,"SGS_Container_Wrapper":2,"sgs_typography_css_rule":35})
+**dominant shared-helper:** sgs_typography_css_rule ({"sgs_button_element_style_css":14,"render.php (block-private)":16,"SGS_Container_Wrapper":2,"sgs_typography_css_rule":35})
 
 ---
 
@@ -1788,40 +1718,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
-
-**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- (none — clean)
-
-**3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
-
-**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
-- (none)
-
-**5. DROP-unrouted (declared, never reaches a CSS sink)**
-- headingLevel, iconPosition
-
-**tier-without-base:** (none)
-
-**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":6})
-
----
-
-### sgs/product-faq-item
-
-- `block.json`: src\blocks\product-faq-item/block.json
-- render.php: yes | style.css: no
-- scalarStylingLift declared: no
-
-**1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1833,7 +1733,35 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- question, isOpen, contentWidth, maxWidth
+- heading, headingLevel, iconPosition, contentWidth, maxWidth, paddingTablet, paddingMobile, marginTablet, marginMobile
+
+**tier-without-base:** (none)
+
+**dominant shared-helper:** none ({})
+
+---
+
+### sgs/product-faq-item
+
+- `block.json`: src\blocks\product-faq-item/block.json
+- render.php: yes | style.css: no
+- scalarStylingLift declared: no
+
+**1. INLINE-via-supports**
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+
+**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
+- (none — clean)
+
+**3. INLINE-via-wrapper**
+- calls SGS_Container_Wrapper::render(): no
+
+**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
+- (none)
+
+**5. DROP-unrouted (declared, never reaches a CSS sink)**
+- question, isOpen
 
 **tier-without-base:** (none)
 
@@ -1848,7 +1776,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `spacing`: margin, padding
+- `spacing`: margin, padding, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1860,7 +1788,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- displayMode, placeholder, buttonLabel, maxResults
+- displayMode, placeholder, buttonLabel, maxResults, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -1875,54 +1803,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
-
-**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\quote\render.php:173` — `color` (`color:`)
-- `src\blocks\quote\render.php:181` — `font-weight` (`font-weight:`)
-- `src\blocks\quote\render.php:183` — `font-family` (`font-family:`)
-- `src\blocks\quote\render.php:187` — `font-style` (`font-style:`)
-- `src\blocks\quote\render.php:188` — `text-decoration` (`text-decoration:`)
-- `src\blocks\quote\render.php:189` — `text-transform` (`text-transform:`)
-- `src\blocks\quote\render.php:190` — `letter-spacing` (`letter-spacing:`)
-- `src\blocks\quote\render.php:174` — `background-color` (`background-color:`)
-- `src\blocks\quote\render.php:191` — `border-radius` (`border-radius:{$tl} {$tr} {$br} {$bl}`)
-- `src\blocks\quote\render.php:193` — `border-radius` (`border-radius:`)
-- `src\blocks\quote\render.php:208` — `border-top-width` (`border-top-width:`)
-- `src\blocks\quote\render.php:211` — `border-right-width` (`border-right-width:`)
-- `src\blocks\quote\render.php:214` — `border-bottom-width` (`border-bottom-width:`)
-- `src\blocks\quote\render.php:217` — `border-left-width` (`border-left-width:`)
-- `src\blocks\quote\render.php:220` — `border-style` (`border-style:`)
-- `src\blocks\quote\render.php:222` — `border-color` (`border-color:`)
-- `src\blocks\quote\render.php:229` — `box-shadow` (`box-shadow:var(--sgs-quote-shadow)`)
-
-**3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
-
-**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
-- (none)
-
-**5. DROP-unrouted (declared, never reaches a CSS sink)**
-- attribution, attributionTag, attributionEnabled, attributionFontSize, attributionFontSizeTablet, attributionFontSizeMobile, attributionLineHeight, attributionLineHeightUnit, attributionMarginTop, attributionMarginTopTablet, attributionMarginTopMobile, borderRadiusTL, borderRadiusTR, borderRadiusBL, borderRadiusBR, borderWidthUnit, boxShadowHover, hoverScale, hoverColour, hoverBackground, marginTop, marginRight, marginBottom, marginLeft, marginUnit, paddingTop, paddingRight, paddingBottom, paddingLeft, paddingUnit, inheritStyle, transitionDuration, transitionEasing
-
-**tier-without-base:** (none)
-
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":27,"block-private helper: sgs_quote_build_slot_style":6,"sgs_responsive_css_rule":2,"SGS_Container_Wrapper":20})
-
----
-
-### sgs/responsive-logo
-
-- `block.json`: src\blocks\responsive-logo/block.json
-- render.php: yes | style.css: no
-- scalarStylingLift declared: no
-
-**1. INLINE-via-supports**
-- `spacing`: margin, padding
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1934,7 +1818,34 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- desktopLogoId, tabletLogoId, mobileLogoId, svgAnimationSource, animationStyle, width, linkToHome, alt
+- attribution, attributionTag, attributionEnabled, attributionColour, attributionFontSize, attributionFontSizeTablet, attributionFontSizeMobile, attributionFontWeight, attributionFontFamily, attributionFontStyle, attributionTextDecoration, attributionTextTransform, attributionLineHeight, attributionMarginTop, attributionMarginTopTablet, attributionMarginTopMobile, backgroundColour, borderWidth, borderStyle, borderColour, boxShadow, boxShadowHover, hoverScale, hoverColour, hoverBackground, paddingTablet, paddingMobile, marginTablet, marginMobile, contentWidth, maxWidth, maxWidthTablet, maxWidthMobile, inheritStyle, transitionDuration, transitionEasing
+
+**tier-without-base:** (none)
+
+**dominant shared-helper:** sgs_responsive_css_rule ({"sgs_responsive_css_rule":3})
+
+---
+
+### sgs/responsive-logo
+
+- `block.json`: src\blocks\responsive-logo/block.json
+- render.php: yes | style.css: no
+- scalarStylingLift declared: no
+
+**1. INLINE-via-supports**
+- `spacing`: margin, padding, __experimentalSkipSerialization
+
+**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
+- (none — clean)
+
+**3. INLINE-via-wrapper**
+- calls SGS_Container_Wrapper::render(): no
+
+**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
+- (none)
+
+**5. DROP-unrouted (declared, never reaches a CSS sink)**
+- desktopLogoId, tabletLogoId, mobileLogoId, svgAnimationSource, animationStyle, width, linkToHome, alt, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -1949,39 +1860,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
-- `typography`: textAlign
-
-**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\social-icons\render.php:56` — `gap` (`gap:var(--wp--preset--spacing--`)
-- `src\blocks\social-icons\render.php:82` — `width` (`width:%dpx;height:%dpx`)
-- `src\blocks\social-icons\render.php:82` — `height` (`width:%dpx;height:%dpx`)
-
-**3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): no
-
-**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
-- (none)
-
-**5. DROP-unrouted (declared, never reaches a CSS sink)**
-- icons, iconSize, style
-
-**tier-without-base:** (none)
-
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":6})
-
----
-
-### sgs/star-rating
-
-- `block.json`: src\blocks\star-rating/block.json
-- render.php: yes | style.css: yes
-- scalarStylingLift declared: no
-
-**1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `typography`: textAlign, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -1993,7 +1874,35 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- rating, maxRating, starSize, starColour, emptyColour, label, showNumeric, schemaEnabled, schemaItemName, schemaReviewCount, displayMode
+- icons, iconSize, iconColour, hoverColour, iconStyle, gap, paddingTablet, paddingMobile, marginTablet, marginMobile
+
+**tier-without-base:** (none)
+
+**dominant shared-helper:** none ({})
+
+---
+
+### sgs/star-rating
+
+- `block.json`: src\blocks\star-rating/block.json
+- render.php: yes | style.css: yes
+- scalarStylingLift declared: no
+
+**1. INLINE-via-supports**
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+
+**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
+- (none — clean)
+
+**3. INLINE-via-wrapper**
+- calls SGS_Container_Wrapper::render(): no
+
+**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
+- (none)
+
+**5. DROP-unrouted (declared, never reaches a CSS sink)**
+- rating, maxRating, starSize, starColour, emptyColour, label, showNumeric, schemaEnabled, schemaItemName, schemaReviewCount, displayMode, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -2008,8 +1917,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, gradients, text
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, gradients, text, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -2038,10 +1947,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, link
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight
+- `color`: background, text, link, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -2053,11 +1962,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- headingLevels, title, collapsible, defaultCollapsed, smoothScroll, scrollOffset, scrollSpy, listStyle, style, activeLinkColour
+- headingLevels, title, collapsible, defaultCollapsed, smoothScroll, scrollOffset, scrollSpy, listStyle, tocStyle, titleColour, linkColour, activeLinkColour, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":2})
+**dominant shared-helper:** none ({})
 
 ---
 
@@ -2068,9 +1977,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -2099,29 +2008,26 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, textAlign
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, textAlign, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\team-member\render.php:127` — `color` (`color:`)
-- `src\blocks\team-member\render.php:130` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
+- calls SGS_Container_Wrapper::render(): no
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- memberMedia, photo, name, role, bio, socialLinks, cardStyle, displayMode, photoShape, sgsHoverBgColour, sgsHoverTextColour, sgsHoverBorderColour, sgsHoverScale, sgsHoverShadow, sgsHoverDuration, sgsHoverImageZoom, sgsHoverGrayscale, sgsBlockLink, sgsBlockLinkTarget, hoverImageZoom, hoverGrayscale, transitionDuration, transitionEasing, blockLink, blockLinkTarget, staggerDelay, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, hoverOverlay
+- memberMedia, photo, name, role, bio, socialLinks, nameColour, roleColour, cardStyle, displayMode, photoShape, sgsHoverBgColour, sgsHoverTextColour, sgsHoverBorderColour, sgsHoverScale, sgsHoverShadow, sgsHoverDuration, sgsHoverImageZoom, sgsHoverGrayscale, sgsBlockLink, sgsBlockLinkTarget, hoverImageZoom, hoverGrayscale, transitionDuration, transitionEasing, blockLink, blockLinkTarget, staggerDelay, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, hoverOverlay, contentWidth, maxWidth, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":6,"SGS_Container_Wrapper":2})
+**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":2})
 
 ---
 
@@ -2132,29 +2038,27 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, text, link, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, link, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 - `shadow`: shadow
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
 
 **3. INLINE-via-wrapper**
-- calls SGS_Container_Wrapper::render(): yes
-- no_overlay opt-out detected: no
-- attrs nulled before delegation (incl. family expansion): (none)
+- calls SGS_Container_Wrapper::render(): no
 
 **4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- variant, quote, summaryPhrase, reviewerName, reviewerRole, orgName, avatarMedia, orgLogo, workMedia, showRating, ratingType, ratingStars, ratingScale, ratingScaleMax, reviewDate, verified, sourcePlatform, schemaEnabled, quoteFontSize, quoteColour, quoteFontStyle, quoteLineHeight, quoteMarginBottom, summaryFontSize, summaryColour, nameFontWeight, nameColour, roleColour, orgColour, ratingSize, ratingColour, _comment_legacyAvatar, avatar, hoverEffect, transitionDuration, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, _comment_wrapperAttrs
+- variant, quote, summaryPhrase, reviewerName, reviewerRole, orgName, avatarMedia, orgLogo, workMedia, showRating, ratingType, ratingStars, ratingScale, ratingScaleMax, reviewDate, verified, sourcePlatform, schemaEnabled, quoteFontSize, quoteColour, quoteFontStyle, quoteLineHeight, quoteMarginBottom, summaryFontSize, summaryColour, nameFontWeight, nameColour, roleColour, orgColour, ratingSize, ratingColour, _comment_legacyAvatar, avatar, hoverEffect, transitionDuration, sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, _comment_wrapperAttrs, contentWidth, maxWidth, _comment_boxTiers, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":7,"SGS_Container_Wrapper":2})
+**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":7})
 
 ---
 
@@ -2165,10 +2069,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -2197,28 +2101,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `spacing`: margin, padding
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\text\render.php:172` — `color` (`color:`)
-- `src\blocks\text\render.php:176` — `background-color` (`background-color:`)
-- `src\blocks\text\render.php:186` — `font-weight` (`font-weight:`)
-- `src\blocks\text\render.php:190` — `font-style` (`font-style:`)
-- `src\blocks\text\render.php:194` — `text-decoration` (`text-decoration:`)
-- `src\blocks\text\render.php:198` — `text-transform` (`text-transform:`)
-- `src\blocks\text\render.php:207` — `font-family` (`font-family:`)
-- `src\blocks\text\render.php:211` — `text-align` (`text-align:`)
-- `src\blocks\text\render.php:215` — `max-width` (`max-width:`)
-- `src\blocks\text\render.php:220` — `width` (`width:`)
-- `src\blocks\text\render.php:235` — `border-radius` (`border-radius:{$brtl} {$brtr} {$brbr} {$brbl}`)
-- `src\blocks\text\render.php:237` — `border-radius` (`border-radius:`)
-- `src\blocks\text\render.php:253` — `border` (`border:`)
-- `src\blocks\text\render.php:256` — `border-top` (`border-top:`)
-- `src\blocks\text\render.php:259` — `border-right` (`border-right:`)
-- `src\blocks\text\render.php:262` — `border-bottom` (`border-bottom:`)
-- `src\blocks\text\render.php:265` — `border-left` (`border-left:`)
-- `src\blocks\text\render.php:270` — `border-color` (`border-color:`)
-- `src\blocks\text\render.php:276` — `box-shadow` (`box-shadow:var(--wp--preset--shadow--`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -2227,11 +2114,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- text, fontSize, fontSizeTablet, fontSizeMobile, lineHeight, lineHeightTablet, lineHeightMobile, letterSpacing, letterSpacingTablet, letterSpacingMobile, fontFamily, marginTop, marginRight, marginBottom, marginLeft, marginTopTablet, marginRightTablet, marginBottomTablet, marginLeftTablet, marginTopMobile, marginRightMobile, marginBottomMobile, marginLeftMobile, paddingTop, paddingRight, paddingBottom, paddingLeft, paddingTopTablet, paddingRightTablet, paddingBottomTablet, paddingLeftTablet, paddingTopMobile, paddingRightMobile, paddingBottomMobile, paddingLeftMobile, dropCap, firstLetterColour, firstLetterFontSize, firstLetterFontSizeUnit, firstLetterFontWeight, borderRadiusTL, borderRadiusTR, borderRadiusBL, borderRadiusBR, borderStyle, boxShadow, boxShadowHover, hoverScale, hoverColour, hoverBackground, inheritStyle, transitionDuration, transitionEasing
+- text, textColour, fontSize, fontSizeTablet, fontSizeMobile, fontWeight, lineHeight, lineHeightTablet, lineHeightMobile, letterSpacing, letterSpacingTablet, letterSpacingMobile, fontStyle, textDecoration, textTransform, fontFamily, marginTablet, marginMobile, paddingTablet, paddingMobile, textAlign, maxWidth, maxWidthUnit, dropCap, firstLetterColour, firstLetterFontSize, firstLetterFontSizeUnit, firstLetterFontWeight, backgroundColour, borderWidth, borderStyle, borderColour, boxShadow, boxShadowHover, hoverScale, hoverColour, hoverBackground, customWidth, customWidthUnit, inheritStyle, transitionDuration, transitionEasing
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":38,"sgs_responsive_css_rule":5})
+**dominant shared-helper:** sgs_responsive_css_rule ({"sgs_responsive_css_rule":3})
 
 ---
 
@@ -2242,10 +2129,10 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
-- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle
+- `color`: background, text, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
+- `typography`: fontSize, lineHeight, textAlign, letterSpacing, textTransform, fontWeight, fontStyle, __experimentalSkipSerialization
 - `shadow`: shadow
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
@@ -2258,9 +2145,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- orientation, alignment, entries, connectorStyle, revealOnScroll
+- orientation, alignment, entries, connectorStyle, revealOnScroll, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile, borderWidth, borderColour, borderStyle
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
 **dominant shared-helper:** render.php (block-private) ({"render.php (block-private)":3})
 
@@ -2273,13 +2160,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\trust-bar\render.php:120` — `color` (`color:`)
-- `src\blocks\trust-bar\render.php:143` — `color` (`color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): yes
@@ -2292,9 +2178,9 @@ Read-only detection instrument classifying how every SGS block emits its styling
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
 - badgeStyle, items, title, titleColour, labelColour, badgeSize, iconCircleBackground, iconColour, iconCircleBorderRadius, textColour, showPendingInEditor, autoScroll, autoScrollSpeed, autoScrollPauseOnHover, overlayGradient, overlayGradientAngle, overlayGradientFrom, overlayGradientTo, templateMode
 
-**tier-without-base:** paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft
+**tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"render.php (block-private)":4,"sgs_typography_css_rule":14,"SGS_Container_Wrapper":96})
+**dominant shared-helper:** SGS_Container_Wrapper ({"sgs_typography_css_rule":14,"render.php (block-private)":2,"SGS_Container_Wrapper":75})
 
 ---
 
@@ -2305,8 +2191,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: no
 
 **1. INLINE-via-supports**
-- `color`: background, text, gradients
-- `__experimentalBorder`: radius, width, color, style
+- `color`: background, text, gradients, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, width, color, style, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
 - (none — clean)
@@ -2335,13 +2221,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - scalarStylingLift declared: yes
 
 **1. INLINE-via-supports**
-- `color`: 
-- `spacing`: margin, padding
-- `__experimentalBorder`: radius
+- `color`: __experimentalSkipSerialization
+- `spacing`: margin, padding, __experimentalSkipSerialization
+- `__experimentalBorder`: radius, __experimentalSkipSerialization
 
 **2. INLINE-via-render (violations — real CSS property in a style="..." site)**
-- `src\blocks\whatsapp-cta\render.php:52` — `color` (`color:`)
-- `src\blocks\whatsapp-cta\render.php:55` — `background-color` (`background-color:`)
+- (none — clean)
 
 **3. INLINE-via-wrapper**
 - calls SGS_Container_Wrapper::render(): no
@@ -2350,22 +2235,22 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- phoneNumber, message, variant, label, showOnMobile, showOnDesktop
+- phoneNumber, message, variant, label, showOnMobile, showOnDesktop, labelColour, backgroundColour, paddingTablet, paddingMobile, marginTablet, marginMobile, borderRadiusTablet, borderRadiusMobile
 
-**tier-without-base:** (none)
+**tier-without-base:** borderRadius
 
-**dominant shared-helper:** sgs_typography_css_rule ({"render.php (block-private)":4,"sgs_typography_css_rule":6})
+**dominant shared-helper:** sgs_typography_css_rule ({"sgs_typography_css_rule":6})
 
 ---
 
 ## Framework totals
 
 - Total blocks scanned: 74
-- Blocks with INLINE-via-render sites: 26 (131 total sites)
-- Blocks routing through SGS_Container_Wrapper: 29
+- Blocks with INLINE-via-render sites: 0 (0 total sites)
+- Blocks routing through SGS_Container_Wrapper: 22
 - Blocks with DROP-conditional-inert grid/flex attrs: 14 (281 total attrs)
-- Blocks with DROP-unrouted attrs: 73 (1295 total attrs)
-- Blocks with tier-without-base defect: 4
-  - sgs/container (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/cta-section (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/hero (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/trust-bar (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft)
-- Inline-styling surface routed via shared helpers: 545 sites (61.3%)
-- Inline-styling surface that is block-private: 344 sites (38.7%)
+- Blocks with DROP-unrouted attrs: 73 (1421 total attrs)
+- Blocks with tier-without-base defect: 10
+  - sgs/brand-strip (borderRadius); sgs/button (borderRadius); sgs/countdown-timer (borderRadius); sgs/counter (borderRadius); sgs/icon-list (borderRadius); sgs/media (borderRadius); sgs/option-picker (borderRadius); sgs/table-of-contents (borderRadius); sgs/timeline (borderRadius); sgs/whatsapp-cta (borderRadius)
+- Inline-styling surface routed via shared helpers: 432 sites (82.9%)
+- Inline-styling surface that is block-private: 89 sites (17.1%)

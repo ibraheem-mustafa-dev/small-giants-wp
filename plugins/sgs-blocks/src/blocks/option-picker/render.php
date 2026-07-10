@@ -597,13 +597,15 @@ foreach ( $valid_items as $item ) {
 			}
 		} elseif ( '' !== $color ) {
 			// Colour chip — the swatch background is a decorative DATA VALUE (the
-			// colour term's own swatch, not a styling property of the block), so a
-			// `background:` declaration here is the term's content, not block CSS —
-			// consistent with how sgs/media's image src is content, not a style.
+			// colour term's own swatch, not a styling property of the block). It
+			// is carried as a CSS custom-property VALUE (`--sgs-op-swatch-bg`) and
+			// painted by style.css, so NOTHING renders as an inline property
+			// declaration (no-inline contract, Spec 32) — mirroring the sibling
+			// `--sgs-op-swatch-text` var below.
 			$contrast_colour = sgs_wcag_text_colour_for_bg( $color );
 
 			$swatch_chip_html = sprintf(
-				'<span class="sgs-option-picker__swatch sgs-option-picker__swatch--colour" style="background:%s;" aria-hidden="true"></span>',
+				'<span class="sgs-option-picker__swatch sgs-option-picker__swatch--colour" style="--sgs-op-swatch-bg:%s;" aria-hidden="true"></span>',
 				esc_attr( $color )
 			);
 			$pill_extra_class = ' sgs-option-picker__pill--has-colour';
@@ -684,7 +686,9 @@ $root_attr_args = array(
 );
 if ( $var_decls ) {
 	// The ONLY inline `style` output permitted — CSS custom-property VALUES,
-	// never property declarations (Spec 32 FR-32-4).
+	// never property declarations (Spec 32 FR-32-4). Functional-colour values
+	// are normalised to hex by sgs_colour_value() so they survive WordPress's
+	// safecss_filter_attr() (which strips inline rgb()/rgba()/hsl()).
 	$root_attr_args['style'] = implode( ';', $var_decls ) . ';';
 }
 if ( $anchor ) {

@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-07-09T11:18:39.799Z",
+	"generatedAt": "2026-07-10T18:01:17.454Z",
 	"totalBlocks": 74,
 	"blocks": [
 		{
@@ -11,21 +11,25 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -124,10 +128,26 @@
 				"templateMode": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 4
+				"SGS_Container_Wrapper": 8
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -141,35 +161,18 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 22,
-					"property": "color",
-					"snippet": "color:var(--wp--preset--color--%s)",
-					"file": "src\\blocks\\accordion-item\\render.php"
-				},
-				{
-					"line": 25,
-					"property": "background-color",
-					"snippet": "background-color:var(--wp--preset--color--%s)",
-					"file": "src\\blocks\\accordion-item\\render.php"
-				},
-				{
-					"line": 32,
-					"property": "color",
-					"snippet": "color:var(--wp--preset--color--%s)",
-					"file": "src\\blocks\\accordion-item\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -200,10 +203,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 3,
 				"SGS_Container_Wrapper": 2
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
 		},
 		{
@@ -214,7 +216,8 @@
 			"inlineViaSupports": {
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -225,6 +228,10 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
 				"audioUrl",
 				"audioSource",
 				"audioId",
@@ -240,6 +247,22 @@
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
 				"audioUrl": {
 					"routed": false,
 					"via": null
@@ -300,17 +323,20 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"background"
+					"background",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -335,9 +361,17 @@
 				"hoverBorderColour",
 				"hoverEffect",
 				"transitionDuration",
-				"transitionEasing"
+				"transitionEasing",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"_comment_logos_media": {
 					"routed": false,
@@ -398,6 +432,30 @@
 				"transitionEasing": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -413,14 +471,17 @@
 				"color": [
 					"background",
 					"text",
-					"link"
+					"link",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
-					"fontSize"
+					"fontSize",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -433,7 +494,14 @@
 			"dropUnrouted": [
 				"separator",
 				"showHome",
-				"homeLabel"
+				"homeLabel",
+				"linkColour",
+				"separatorColour",
+				"currentColour",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -450,22 +518,36 @@
 					"via": null
 				},
 				"linkColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"separatorColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"currentColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 3
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -477,25 +559,21 @@
 				"color": [
 					"text",
 					"background",
-					"link"
+					"link",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"fontFamily"
+					"fontFamily",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 219,
-					"property": "border",
-					"snippet": "border:0;",
-					"file": "src\\blocks\\business-info\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -506,7 +584,14 @@
 				"displayType",
 				"showIcon",
 				"linkPhone",
-				"linkEmail"
+				"linkEmail",
+				"iconColour",
+				"textColour",
+				"labelColour",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -527,22 +612,36 @@
 					"via": null
 				},
 				"iconColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"labelColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 4
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -553,27 +652,20 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 536,
-					"property": "margin",
-					"snippet": "margin:{$mt} {$mr} {$mb} {$ml}",
-					"file": "src\\blocks\\button\\render.php"
-				},
-				{
-					"line": 566,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\button\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -603,32 +695,10 @@
 				"minHeightTabletUnit",
 				"minHeightMobile",
 				"minHeightMobileUnit",
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"paddingTopTablet",
-				"paddingRightTablet",
-				"paddingBottomTablet",
-				"paddingLeftTablet",
-				"paddingTopMobile",
-				"paddingRightMobile",
-				"paddingBottomMobile",
-				"paddingLeftMobile",
-				"paddingUnit",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft",
-				"marginTopTablet",
-				"marginRightTablet",
-				"marginBottomTablet",
-				"marginLeftTablet",
-				"marginTopMobile",
-				"marginRightMobile",
-				"marginBottomMobile",
-				"marginLeftMobile",
-				"marginUnit",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
 				"fontFamily",
 				"fontWeight",
 				"fontStyle",
@@ -645,24 +715,9 @@
 				"letterSpacingTablet",
 				"letterSpacingMobile",
 				"borderStyle",
-				"borderWidthTop",
-				"borderWidthRight",
-				"borderWidthBottom",
-				"borderWidthLeft",
-				"borderWidthUnit",
-				"borderRadiusTL",
-				"borderRadiusTR",
-				"borderRadiusBR",
-				"borderRadiusBL",
-				"borderRadiusTabletTL",
-				"borderRadiusTabletTR",
-				"borderRadiusTabletBR",
-				"borderRadiusTabletBL",
-				"borderRadiusMobileTL",
-				"borderRadiusMobileTR",
-				"borderRadiusMobileBR",
-				"borderRadiusMobileBL",
-				"borderRadiusUnit",
+				"borderWidth",
+				"borderRadiusTablet",
+				"borderRadiusMobile",
 				"boxShadow",
 				"boxShadowHover",
 				"hoverScale",
@@ -670,15 +725,19 @@
 				"transitionEasing",
 				"icon",
 				"iconPosition",
+				"iconSize",
 				"iconSizeTablet",
 				"iconSizeMobile",
+				"iconColour",
 				"iconColourHover",
 				"iconTitle",
 				"ariaLabel",
 				"anchor",
 				"className"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"label": {
 					"routed": false,
@@ -768,107 +827,19 @@
 					"routed": false,
 					"via": null
 				},
-				"paddingTop": {
+				"paddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"paddingRight": {
+				"paddingMobile": {
 					"routed": false,
 					"via": null
 				},
-				"paddingBottom": {
+				"marginTablet": {
 					"routed": false,
 					"via": null
 				},
-				"paddingLeft": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingUnit": {
-					"routed": false,
-					"via": null
-				},
-				"marginTop": {
-					"routed": false,
-					"via": null
-				},
-				"marginRight": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottom": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeft": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginUnit": {
+				"marginMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -972,75 +943,15 @@
 					"routed": false,
 					"via": null
 				},
-				"borderWidthTop": {
+				"borderWidth": {
 					"routed": false,
 					"via": null
 				},
-				"borderWidthRight": {
+				"borderRadiusTablet": {
 					"routed": false,
 					"via": null
 				},
-				"borderWidthBottom": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthLeft": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthUnit": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTabletTL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTabletTR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTabletBR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTabletBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusMobileTL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusMobileTR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusMobileBR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusMobileBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusUnit": {
+				"borderRadiusMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -1073,8 +984,8 @@
 					"via": null
 				},
 				"iconSize": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"iconSizeTablet": {
 					"routed": false,
@@ -1089,8 +1000,8 @@
 					"via": "render.php (block-private)"
 				},
 				"iconColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"iconColourHover": {
 					"routed": false,
@@ -1114,8 +1025,8 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 11,
-				"sgs_responsive_css_rule": 3
+				"sgs_responsive_css_rule": 3,
+				"render.php (block-private)": 7
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -1128,7 +1039,8 @@
 			"inlineViaSupports": {
 				"color": [],
 				"spacing": [
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -1139,6 +1051,8 @@
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
+				"marginTablet",
+				"marginMobile",
 				"soldOutLabel",
 				"unavailableLabel",
 				"notifyEnabled",
@@ -1151,6 +1065,14 @@
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
 				"soldOutLabel": {
 					"routed": false,
 					"via": null
@@ -1201,17 +1123,20 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -1220,26 +1145,14 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				],
 				"shadow": [
 					"shadow"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 258,
-					"property": "color",
-					"snippet": "color:var(--wp--preset--color--",
-					"file": "src\\blocks\\card-grid\\render.php"
-				},
-				{
-					"line": 259,
-					"property": "color",
-					"snippet": "color:var(--wp--preset--color--",
-					"file": "src\\blocks\\card-grid\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -1273,6 +1186,8 @@
 				"items",
 				"hoverEffect",
 				"overlayStyle",
+				"titleColour",
+				"subtitleColour",
 				"hoverImageZoom",
 				"hoverGrayscale",
 				"sgsAnimation",
@@ -1325,12 +1240,12 @@
 					"via": null
 				},
 				"titleColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"subtitleColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"titleFontSize": {
 					"routed": true,
@@ -1506,7 +1421,7 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 13,
+				"render.php (block-private)": 9,
 				"sgs_typography_css_rule": 8,
 				"SGS_Container_Wrapper": 3
 			},
@@ -1521,7 +1436,8 @@
 			"inlineViaSupports": {
 				"color": [],
 				"spacing": [
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -1535,7 +1451,9 @@
 				"displayMode",
 				"iconName",
 				"ariaLabel",
-				"showZero"
+				"showZero",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -1570,6 +1488,14 @@
 				"showZero": {
 					"routed": false,
 					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -1586,14 +1512,17 @@
 			"inlineViaSupports": {
 				"color": [
 					"text",
-					"background"
+					"background",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
-					"textAlign"
+					"textAlign",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -1606,7 +1535,11 @@
 			"dropUnrouted": [
 				"text",
 				"collapsible",
-				"collapsedLines"
+				"collapsedLines",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -1653,6 +1586,22 @@
 				"lineHeightUnit": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -1672,17 +1621,20 @@
 					"text",
 					"gradients",
 					"link",
-					"heading"
+					"heading",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -1691,7 +1643,8 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -1729,16 +1682,7 @@
 			"dropUnrouted": [
 				"templateMode"
 			],
-			"tierWithoutBase": [
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft"
-			],
+			"tierWithoutBase": [],
 			"attrRouting": {
 				"layout": {
 					"routed": true,
@@ -1924,115 +1868,31 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopTablet": {
+				"paddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingRightTablet": {
+				"paddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingBottomTablet": {
+				"marginTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingLeftTablet": {
+				"marginMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopMobile": {
+				"contentBandPadding": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingRightMobile": {
+				"contentBandPaddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTop": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingBottom": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeft": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftMobile": {
+				"contentBandPaddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -2050,7 +1910,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 76
+				"SGS_Container_Wrapper": 55
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -2064,16 +1924,19 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -2200,21 +2063,25 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"textAlign"
+					"textAlign",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -2238,9 +2105,17 @@
 				"labelColour",
 				"separatorColour",
 				"cardStyle",
-				"digitStyle"
+				"digitStyle",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"targetDate": {
 					"routed": false,
@@ -2297,6 +2172,30 @@
 				"digitStyle": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -2312,38 +2211,29 @@
 				"color": [
 					"background",
 					"text",
-					"link"
+					"link",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
 					"lineHeight",
-					"textAlign"
+					"textAlign",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 50,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\counter\\render.php"
-				},
-				{
-					"line": 57,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\counter\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -2357,10 +2247,20 @@
 				"label",
 				"duration",
 				"separator",
+				"numberColour",
+				"labelColour",
 				"icon",
-				"accentStroke"
+				"accentStroke",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"number": {
 					"routed": false,
@@ -2387,12 +2287,12 @@
 					"via": null
 				},
 				"numberColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"labelColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"labelFontSize": {
 					"routed": true,
@@ -2433,10 +2333,33 @@
 				"accentStroke": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 4,
 				"sgs_typography_css_rule": 8
 			},
 			"dominantHelper": "sgs_typography_css_rule",
@@ -2451,17 +2374,20 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -2470,43 +2396,20 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				],
 				"shadow": [
 					"shadow"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 69,
-					"property": "background-image",
-					"snippet": "background-image:url(",
-					"file": "src\\blocks\\cta-section\\render.php"
-				},
-				{
-					"line": 70,
-					"property": "background-size",
-					"snippet": "background-size:cover",
-					"file": "src\\blocks\\cta-section\\render.php"
-				},
-				{
-					"line": 71,
-					"property": "background-position",
-					"snippet": "background-position:center",
-					"file": "src\\blocks\\cta-section\\render.php"
-				},
-				{
-					"line": 115,
-					"property": "opacity",
-					"snippet": "opacity:%s",
-					"file": "src\\blocks\\cta-section\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": true,
 				"nulledAttrs": [
 					"backgroundImage",
+					"shadow",
 					"backgroundColor",
 					"backgroundMedia",
 					"backgroundImageOpacity",
@@ -2590,18 +2493,10 @@
 				"overlayGradientAngle",
 				"overlayGradientFrom",
 				"overlayGradientTo",
+				"shadow",
 				"templateMode"
 			],
-			"tierWithoutBase": [
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft"
-			],
+			"tierWithoutBase": [],
 			"attrRouting": {
 				"headline": {
 					"routed": false,
@@ -2796,8 +2691,8 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"shadow": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
 					"routed": true,
@@ -2895,67 +2790,19 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopTablet": {
+				"paddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingRightTablet": {
+				"paddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingBottomTablet": {
+				"marginTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftMobile": {
+				"marginMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -2963,51 +2810,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottom": {
+				"contentBandPadding": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottomMobile": {
+				"contentBandPaddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeft": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTop": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopTablet": {
+				"contentBandPaddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -3029,8 +2840,8 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 7,
-				"SGS_Container_Wrapper": 63
+				"render.php (block-private)": 3,
+				"SGS_Container_Wrapper": 41
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -3041,56 +2852,7 @@
 			"hasRenderPhp": true,
 			"hasStyleCss": true,
 			"inlineViaSupports": {},
-			"inlineViaRender": [
-				{
-					"line": 73,
-					"property": "position",
-					"snippet": "position: absolute",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 74,
-					"property": "left",
-					"snippet": "left:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 75,
-					"property": "top",
-					"snippet": "top:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 76,
-					"property": "width",
-					"snippet": "width:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 77,
-					"property": "max-width",
-					"snippet": "max-width:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 78,
-					"property": "opacity",
-					"snippet": "opacity:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 79,
-					"property": "z-index",
-					"snippet": "z-index:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				},
-				{
-					"line": 92,
-					"property": "transform",
-					"snippet": "transform:",
-					"file": "src\\blocks\\decorative-image\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -3103,7 +2865,13 @@
 				"imageId",
 				"imageUrl",
 				"imageAlt",
+				"positionX",
+				"positionY",
+				"width",
+				"maxWidthPercent",
 				"rotation",
+				"opacity",
+				"zIndex",
 				"flipX",
 				"parallaxStrength",
 				"fadeOnScroll",
@@ -3146,32 +2914,32 @@
 					"via": null
 				},
 				"positionX": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"positionY": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"width": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"maxWidthPercent": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"rotation": {
 					"routed": false,
 					"via": null
 				},
 				"opacity": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"zIndex": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"flipX": {
 					"routed": false,
@@ -3246,10 +3014,8 @@
 					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 14
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -3261,17 +3027,20 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -3367,7 +3136,8 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"spacing": [
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -3380,7 +3150,9 @@
 			"dropUnrouted": [
 				"attributeId",
 				"threshold",
-				"placeholder"
+				"placeholder",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -3393,6 +3165,14 @@
 					"via": null
 				},
 				"placeholder": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
 					"routed": false,
 					"via": null
 				}
@@ -3410,67 +3190,28 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 85,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\form\\render.php"
-				},
-				{
-					"line": 88,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\form\\render.php"
-				},
-				{
-					"line": 155,
-					"property": "position",
-					"snippet": "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;",
-					"file": "src\\blocks\\form\\render.php"
-				},
-				{
-					"line": 155,
-					"property": "left",
-					"snippet": "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;",
-					"file": "src\\blocks\\form\\render.php"
-				},
-				{
-					"line": 155,
-					"property": "width",
-					"snippet": "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;",
-					"file": "src\\blocks\\form\\render.php"
-				},
-				{
-					"line": 155,
-					"property": "height",
-					"snippet": "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;",
-					"file": "src\\blocks\\form\\render.php"
-				},
-				{
-					"line": 155,
-					"property": "overflow",
-					"snippet": "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;",
-					"file": "src\\blocks\\form\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -3503,6 +3244,8 @@
 				"successMessage",
 				"successRedirect",
 				"honeypot",
+				"submitColour",
+				"submitBackground",
 				"requireLogin",
 				"rateLimit",
 				"formFocusRingColour",
@@ -3548,12 +3291,12 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"submitColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"submitBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"progressBarColour": {
 					"routed": true,
@@ -3591,6 +3334,22 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
 				"customWidth": {
 					"routed": false,
 					"via": null
@@ -3609,10 +3368,10 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 10,
-				"SGS_Container_Wrapper": 5
+				"SGS_Container_Wrapper": 9,
+				"render.php (block-private)": 1
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
 		},
 		{
@@ -4545,13 +4304,15 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -4704,17 +4465,20 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"padding",
-					"blockGap"
+					"blockGap",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -4755,27 +4519,23 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 191,
-					"property": "aspect-ratio",
-					"snippet": "aspect-ratio:",
-					"file": "src\\blocks\\gallery\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -5019,8 +4779,8 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 8,
-				"SGS_Container_Wrapper": 22
+				"SGS_Container_Wrapper": 22,
+				"render.php (block-private)": 7
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -5034,23 +4794,18 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 325,
-					"property": "width",
-					"snippet": "width:<?php echo esc_attr( $gr_pct ); ?>%",
-					"file": "src\\blocks\\google-reviews\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -5236,7 +4991,6 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 1,
 				"SGS_Container_Wrapper": 3
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
@@ -5250,63 +5004,20 @@
 			"inlineViaSupports": {
 				"color": [
 					"text",
-					"background"
+					"background",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 158,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 165,
-					"property": "font-weight",
-					"snippet": "font-weight:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 173,
-					"property": "line-height",
-					"snippet": "line-height:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 176,
-					"property": "letter-spacing",
-					"snippet": "letter-spacing:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 179,
-					"property": "text-transform",
-					"snippet": "text-transform:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 182,
-					"property": "font-family",
-					"snippet": "font-family:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 187,
-					"property": "font-style",
-					"snippet": "font-style:",
-					"file": "src\\blocks\\heading\\render.php"
-				},
-				{
-					"line": 192,
-					"property": "text-decoration",
-					"snippet": "text-decoration:",
-					"file": "src\\blocks\\heading\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -5319,48 +5030,25 @@
 				"level",
 				"subTag",
 				"anchor",
+				"fontFamily",
 				"fontSize",
 				"fontSizeTablet",
 				"fontSizeMobile",
+				"fontWeight",
+				"lineHeight",
 				"lineHeightUnit",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft",
-				"marginTopTablet",
-				"marginRightTablet",
-				"marginBottomTablet",
-				"marginLeftTablet",
-				"marginTopMobile",
-				"marginRightMobile",
-				"marginBottomMobile",
-				"marginLeftMobile",
-				"marginUnit",
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"paddingTopTablet",
-				"paddingRightTablet",
-				"paddingBottomTablet",
-				"paddingLeftTablet",
-				"paddingTopMobile",
-				"paddingRightMobile",
-				"paddingBottomMobile",
-				"paddingLeftMobile",
-				"paddingUnit",
+				"letterSpacing",
+				"letterSpacingUnit",
+				"textTransform",
+				"textColour",
+				"fontStyle",
+				"textDecoration",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
 				"backgroundColour",
-				"borderRadius",
-				"borderRadiusUnit",
-				"borderRadiusTL",
-				"borderRadiusTR",
-				"borderRadiusBL",
-				"borderRadiusBR",
-				"borderWidthTop",
-				"borderWidthRight",
-				"borderWidthBottom",
-				"borderWidthLeft",
-				"borderWidthUnit",
+				"borderWidth",
 				"borderStyle",
 				"borderColour",
 				"boxShadow",
@@ -5398,8 +5086,8 @@
 					"via": null
 				},
 				"fontFamily": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontSize": {
 					"routed": false,
@@ -5418,142 +5106,54 @@
 					"via": null
 				},
 				"fontWeight": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"lineHeight": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"lineHeightUnit": {
 					"routed": false,
 					"via": null
 				},
 				"letterSpacing": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"letterSpacingUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textTransform": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontStyle": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textDecoration": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"marginTop": {
 					"routed": false,
 					"via": null
 				},
-				"marginRight": {
+				"paddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"marginBottom": {
+				"paddingMobile": {
 					"routed": false,
 					"via": null
 				},
-				"marginLeft": {
+				"marginTablet": {
 					"routed": false,
 					"via": null
 				},
-				"marginTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginUnit": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTop": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRight": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottom": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeft": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingUnit": {
+				"marginMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -5561,47 +5161,7 @@
 					"routed": false,
 					"via": null
 				},
-				"borderRadius": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusUnit": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBR": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthTop": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthRight": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthBottom": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthLeft": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthUnit": {
+				"borderWidth": {
 					"routed": false,
 					"via": null
 				},
@@ -5659,10 +5219,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 17,
 				"sgs_responsive_css_rule": 1
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": false
 		},
 		{
@@ -5674,17 +5233,20 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -5693,93 +5255,109 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 271,
-					"property": "display",
-					"snippet": "display:grid",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 624,
-					"property": "background-color",
-					"snippet": "background-color:%s;opacity:%s",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 624,
-					"property": "opacity",
-					"snippet": "background-color:%s;opacity:%s",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 675,
-					"property": "display",
-					"snippet": "display:flex",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 676,
-					"property": "flex-direction",
-					"snippet": "flex-direction:column",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 677,
-					"property": "justify-content",
-					"snippet": "justify-content:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 680,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 719,
-					"property": "object-fit",
-					"snippet": "object-fit:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 723,
-					"property": "object-position",
-					"snippet": "object-position:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 733,
-					"property": "border-style",
-					"snippet": "border-style:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 734,
-					"property": "border-width",
-					"snippet": "border-width:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 736,
-					"property": "border-color",
-					"snippet": "border-color:",
-					"file": "src\\blocks\\hero\\render.php"
-				},
-				{
-					"line": 790,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\hero\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": true,
 				"nulledAttrs": [
+					"topLeft",
+					"topRight",
+					"bottomLeft",
+					"bottomRight",
+					"radius",
+					"border",
+					"selector",
+					"css",
+					"style",
+					"typography",
+					"fontSize",
+					"",
+					"lineHeight",
+					"letterSpacing",
+					"textTransform",
+					"fontWeight",
+					"fontStyle",
+					" .sgs-hero__headline",
+					"textAlign",
+					"left",
+					"center",
+					"right",
+					" .sgs-hero__headline{text-align:",
+					"}",
+					"textColor",
+					"backgroundColor",
+					"has-text-color",
+					"has-",
+					"-color",
+					"has-background",
+					"-background-color",
+					"color",
+					"background",
+					"gradient",
+					"url",
+					"<video class=\"sgs-hero__video-bg\" autoplay loop muted playsinline aria-hidden=\"true\">",
+					"<source src=\"%s\" type=\"video/mp4\"></video>",
+					"<video class=\"sgs-hero__video-bg sgs-hero__video-bg--responsive\" autoplay loop muted playsinline aria-hidden=\"true\"",
+					" data-src-desktop=\"%s\" data-src-mobile=\"%s\">",
+					"id",
+					"high",
+					"auto",
+					"eager",
+					"lazy",
+					"class",
+					"sgs-hero__bg-img",
+					"aria-hidden",
+					"true",
+					"fetchpriority",
+					"loading",
+					"decoding",
+					"sync",
+					"async",
+					"alt",
+					" sgs-hero__bg-img--parallax",
+					"/includes/render-helpers.php",
+					"full",
+					"<div class=\"sgs-hero__svg-bg\" aria-hidden=\"true\">",
+					"</div>",
+					"<span class=\"sgs-hero__overlay\" aria-hidden=\"true\"></span>",
+					".",
+					" .sgs-hero__overlay{background-color:",
+					";opacity:",
+					"position",
+					"bottom-left",
+					"light",
+					"number",
+					"suffix",
+					"label",
+					"<div class=\"sgs-hero__badge sgs-hero__badge--%s sgs-hero__badge--%s\">",
+					"<span class=\"sgs-hero__badge-number\">%s%s</span>",
+					"<span class=\"sgs-hero__badge-label\">%s</span>",
+					"<div class=\"sgs-hero__badges\">",
+					"<div class=\"sgs-hero__content\">",
+					"type",
+					"video",
+					"sgs-hero__media",
+					" sgs-hero__media--bleed",
+					"<div class=\"",
+					"\">",
+					"sgs/hero",
+					"sgs-hero__split-image",
+					"width",
+					"height",
+					"large",
+					" sgs-hero__split-image--bleed",
+					"sgs-hero__split-image sgs-hero__split-image--mobile",
+					" .sgs-hero__split-image--mobile{object-position:",
+					" sgs-hero__split-image--desktop",
+					"@media (max-width:767px){.",
+					" .sgs-hero__split-image--desktop{display:none}}",
+					"@media (min-width:768px){.",
+					" .sgs-hero__split-image--mobile{display:none}}",
+					"<style id=\"%s\">%s</style>",
 					"backgroundImage",
 					"backgroundImageTablet",
 					"backgroundImageMobile",
@@ -5840,6 +5418,8 @@
 				"subHeadline",
 				"alignment",
 				"backgroundImage",
+				"overlayColour",
+				"overlayOpacity",
 				"splitImage",
 				"_comment_splitMedia",
 				"splitMedia",
@@ -5873,6 +5453,7 @@
 				"subHeadlineMaxWidth",
 				"splitImageMobileHeight",
 				"imageObjectFit",
+				"imageObjectPosition",
 				"imageWidth",
 				"imageWidthTablet",
 				"imageWidthMobile",
@@ -5881,60 +5462,24 @@
 				"imageHeightTablet",
 				"imageHeightMobile",
 				"imageHeightUnit",
-				"imageBorderRadiusTL",
-				"imageBorderRadiusTR",
-				"imageBorderRadiusBR",
-				"imageBorderRadiusBL",
-				"imageBorderRadiusTabletTL",
-				"imageBorderRadiusTabletTR",
-				"imageBorderRadiusTabletBR",
-				"imageBorderRadiusTabletBL",
-				"imageBorderRadiusMobileTL",
-				"imageBorderRadiusMobileTR",
-				"imageBorderRadiusMobileBR",
-				"imageBorderRadiusMobileBL",
-				"imageBorderRadiusUnit",
+				"imageBorderRadius",
+				"imageBorderRadiusTablet",
+				"imageBorderRadiusMobile",
 				"imageBorderStyle",
-				"imagePaddingTop",
-				"imagePaddingRight",
-				"imagePaddingBottom",
-				"imagePaddingLeft",
-				"imagePaddingTopTablet",
-				"imagePaddingRightTablet",
-				"imagePaddingBottomTablet",
-				"imagePaddingLeftTablet",
-				"imagePaddingTopMobile",
-				"imagePaddingRightMobile",
-				"imagePaddingBottomMobile",
-				"imagePaddingLeftMobile",
-				"imagePaddingUnit",
+				"imageBorderWidth",
+				"imageBorderColour",
+				"imagePadding",
+				"imagePaddingTablet",
+				"imagePaddingMobile",
 				"mediaBackgroundColour",
-				"contentPaddingTop",
-				"contentPaddingRight",
-				"contentPaddingBottom",
-				"contentPaddingLeft",
-				"contentPaddingTopTablet",
-				"contentPaddingRightTablet",
-				"contentPaddingBottomTablet",
-				"contentPaddingLeftTablet",
-				"contentPaddingTopMobile",
-				"contentPaddingRightMobile",
-				"contentPaddingBottomMobile",
-				"contentPaddingLeftMobile",
-				"contentPaddingUnit",
-				"mediaPaddingTop",
-				"mediaPaddingRight",
-				"mediaPaddingBottom",
-				"mediaPaddingLeft",
-				"mediaPaddingTopTablet",
-				"mediaPaddingRightTablet",
-				"mediaPaddingBottomTablet",
-				"mediaPaddingLeftTablet",
-				"mediaPaddingTopMobile",
-				"mediaPaddingRightMobile",
-				"mediaPaddingBottomMobile",
-				"mediaPaddingLeftMobile",
-				"mediaPaddingUnit",
+				"mediaBackground",
+				"contentPadding",
+				"contentPaddingTablet",
+				"contentPaddingMobile",
+				"mediaPadding",
+				"mediaPaddingTablet",
+				"mediaPaddingMobile",
+				"contentBackground",
 				"splitContentOrderMobile",
 				"verticalAlignment",
 				"headlineMarginBottom",
@@ -5949,6 +5494,8 @@
 				"backgroundAttachment",
 				"backgroundImageMobile",
 				"backgroundImageTablet",
+				"backgroundOverlayColour",
+				"backgroundOverlayOpacity",
 				"backgroundPosition",
 				"backgroundRepeat",
 				"backgroundSize",
@@ -5965,16 +5512,7 @@
 				"overlayGradientTo",
 				"templateMode"
 			],
-			"tierWithoutBase": [
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft"
-			],
+			"tierWithoutBase": [],
 			"attrRouting": {
 				"variant": {
 					"routed": false,
@@ -5997,12 +5535,12 @@
 					"via": null
 				},
 				"overlayColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"overlayOpacity": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"splitImage": {
 					"routed": false,
@@ -6173,8 +5711,8 @@
 					"via": null
 				},
 				"imageObjectPosition": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"imageWidth": {
 					"routed": false,
@@ -6208,55 +5746,15 @@
 					"routed": false,
 					"via": null
 				},
-				"imageBorderRadiusTL": {
+				"imageBorderRadius": {
 					"routed": false,
 					"via": null
 				},
-				"imageBorderRadiusTR": {
+				"imageBorderRadiusTablet": {
 					"routed": false,
 					"via": null
 				},
-				"imageBorderRadiusBR": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusBL": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusTabletTL": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusTabletTR": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusTabletBR": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusTabletBL": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusMobileTL": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusMobileTR": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusMobileBR": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusMobileBL": {
-					"routed": false,
-					"via": null
-				},
-				"imageBorderRadiusUnit": {
+				"imageBorderRadiusMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6264,79 +5762,23 @@
 					"routed": false,
 					"via": null
 				},
-				"imageBorderWidthTop": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"imageBorderWidthRight": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"imageBorderWidthBottom": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"imageBorderWidthLeft": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"imageBorderWidthUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+				"imageBorderWidth": {
+					"routed": false,
+					"via": null
 				},
 				"imageBorderColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"imagePaddingTop": {
 					"routed": false,
 					"via": null
 				},
-				"imagePaddingRight": {
+				"imagePadding": {
 					"routed": false,
 					"via": null
 				},
-				"imagePaddingBottom": {
+				"imagePaddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"imagePaddingLeft": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"imagePaddingUnit": {
+				"imagePaddingMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6345,116 +5787,36 @@
 					"via": null
 				},
 				"mediaBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"contentPaddingTop": {
 					"routed": false,
 					"via": null
 				},
-				"contentPaddingRight": {
+				"contentPadding": {
 					"routed": false,
 					"via": null
 				},
-				"contentPaddingBottom": {
+				"contentPaddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"contentPaddingLeft": {
+				"contentPaddingMobile": {
 					"routed": false,
 					"via": null
 				},
-				"contentPaddingTopTablet": {
+				"mediaPadding": {
 					"routed": false,
 					"via": null
 				},
-				"contentPaddingRightTablet": {
+				"mediaPaddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"contentPaddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"contentPaddingUnit": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingTop": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingRight": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingBottom": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingLeft": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"mediaPaddingUnit": {
+				"mediaPaddingMobile": {
 					"routed": false,
 					"via": null
 				},
 				"contentBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"splitContentOrderMobile": {
 					"routed": false,
@@ -6513,12 +5875,12 @@
 					"via": null
 				},
 				"backgroundOverlayColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"backgroundOverlayOpacity": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"backgroundPosition": {
 					"routed": false,
@@ -6644,119 +6006,19 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
 				"contentBandBackground": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottom": {
+				"contentBandPadding": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottomMobile": {
+				"contentBandPaddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeft": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTop": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopTablet": {
+				"contentBandPaddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -6775,11 +6037,27 @@
 				"maxWidthTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
+				},
+				"paddingTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"marginMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 33,
-				"SGS_Container_Wrapper": 51
+				"render.php (block-private)": 7,
+				"SGS_Container_Wrapper": 30
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
@@ -6792,27 +6070,16 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 85,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\icon\\render.php"
-				},
-				{
-					"line": 92,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\icon\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -6825,8 +6092,13 @@
 				"emojiChar",
 				"dashiconName",
 				"wpIconName",
+				"iconColour",
 				"backgroundShape",
 				"backgroundPadding",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
 				"linkUrl",
 				"linkTarget",
 				"linkRel",
@@ -6860,8 +6132,8 @@
 					"via": "render.php (block-private)"
 				},
 				"iconColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"backgroundColour": {
 					"routed": true,
@@ -6872,6 +6144,22 @@
 					"via": null
 				},
 				"backgroundPadding": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -6909,7 +6197,7 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 8
+				"render.php (block-private)": 5
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -6923,22 +6211,23 @@
 				"color": [
 					"background",
 					"text",
-					"link"
+					"link",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
-					"width",
-					"color",
-					"style"
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
 					"lineHeight",
-					"textAlign"
+					"textAlign",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -6952,11 +6241,24 @@
 				"items",
 				"icon",
 				"defaultIconSource",
+				"iconColour",
 				"iconSize",
 				"dividers",
-				"gap"
+				"textColour",
+				"gap",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile",
+				"borderWidth",
+				"borderColour",
+				"borderStyle"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"items": {
 					"routed": false,
@@ -6971,8 +6273,8 @@
 					"via": null
 				},
 				"iconColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"iconSize": {
 					"routed": false,
@@ -6983,18 +6285,52 @@
 					"via": null
 				},
 				"textColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"gap": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderWidth": {
+					"routed": false,
+					"via": null
+				},
+				"borderColour": {
+					"routed": false,
+					"via": null
+				},
+				"borderStyle": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 2
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -7007,17 +6343,20 @@
 					"background",
 					"text",
 					"link",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -7026,7 +6365,8 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				],
 				"shadow": [
 					"shadow"
@@ -7034,7 +6374,7 @@
 			},
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -7060,7 +6400,13 @@
 				"staggerDelay",
 				"sgsAnimation",
 				"sgsAnimationDuration",
-				"sgsAnimationEasing"
+				"sgsAnimationEasing",
+				"contentWidth",
+				"maxWidth",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -7169,17 +6515,32 @@
 					"via": null
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 5,
-				"SGS_Container_Wrapper": 2
+				"render.php (block-private)": 5
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -7192,32 +6553,15 @@
 			"inlineViaSupports": {
 				"color": [
 					"text",
-					"background"
+					"background",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 71,
-					"property": "font-style",
-					"snippet": "font-style:",
-					"file": "src\\blocks\\label\\render.php"
-				},
-				{
-					"line": 74,
-					"property": "text-align",
-					"snippet": "text-align:",
-					"file": "src\\blocks\\label\\render.php"
-				},
-				{
-					"line": 81,
-					"property": "border-radius",
-					"snippet": "border-radius:",
-					"file": "src\\blocks\\label\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -7226,10 +6570,26 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"text",
+				"textColour",
+				"backgroundColour",
+				"fontFamily",
+				"fontSize",
 				"fontSizeTablet",
 				"fontSizeMobile",
+				"fontWeight",
+				"lineHeight",
+				"lineHeightUnit",
+				"letterSpacing",
+				"letterSpacingUnit",
+				"textTransform",
 				"fontStyle",
+				"textDecoration",
 				"textAlign",
+				"padding",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
 				"borderRadius"
 			],
 			"tierWithoutBase": [],
@@ -7239,24 +6599,24 @@
 					"via": null
 				},
 				"textColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"backgroundColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontFamily": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontSize": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontSizeUnit": {
 					"routed": true,
-					"via": "render.php (block-private)"
+					"via": "sgs_responsive_css_rule"
 				},
 				"fontSizeTablet": {
 					"routed": false,
@@ -7267,56 +6627,60 @@
 					"via": null
 				},
 				"fontWeight": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"lineHeight": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"lineHeightUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"letterSpacing": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"letterSpacingUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textTransform": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontStyle": {
 					"routed": false,
 					"via": null
 				},
 				"textDecoration": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textAlign": {
 					"routed": false,
 					"via": null
 				},
-				"paddingTop": {
-					"routed": true,
-					"via": "render.php (block-private)"
+				"padding": {
+					"routed": false,
+					"via": null
 				},
-				"paddingRight": {
-					"routed": true,
-					"via": "render.php (block-private)"
+				"paddingTablet": {
+					"routed": false,
+					"via": null
 				},
-				"paddingBottom": {
-					"routed": true,
-					"via": "render.php (block-private)"
+				"paddingMobile": {
+					"routed": false,
+					"via": null
 				},
-				"paddingLeft": {
-					"routed": true,
-					"via": "render.php (block-private)"
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				},
 				"borderRadius": {
 					"routed": false,
@@ -7324,9 +6688,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 19
+				"sgs_responsive_css_rule": 1
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": false
 		},
 		{
@@ -7336,67 +6700,14 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"__experimentalBorder": [
+					"radius",
 					"width",
 					"style",
-					"color"
+					"color",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 131,
-					"property": "object-fit",
-					"snippet": "object-fit:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 138,
-					"property": "object-position",
-					"snippet": "object-position:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 143,
-					"property": "aspect-ratio",
-					"snippet": "aspect-ratio:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 154,
-					"property": "opacity",
-					"snippet": "opacity:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 200,
-					"property": "border-radius",
-					"snippet": "border-radius:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 207,
-					"property": "box-shadow",
-					"snippet": "box-shadow:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 230,
-					"property": "margin-left",
-					"snippet": "margin-left:auto",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 328,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\media\\render.php"
-				},
-				{
-					"line": 331,
-					"property": "font-size",
-					"snippet": "font-size:",
-					"file": "src\\blocks\\media\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -7437,25 +6748,29 @@
 				"heightUnit",
 				"heightMobile",
 				"heightTablet",
+				"aspectRatio",
 				"objectFit",
-				"borderRadius",
-				"borderRadiusUnit",
-				"borderRadiusTL",
-				"borderRadiusTR",
-				"borderRadiusBL",
-				"borderRadiusBR",
+				"objectPosition",
+				"borderRadiusTablet",
+				"borderRadiusMobile",
 				"boxShadow",
+				"opacity",
 				"alignment",
 				"order",
 				"orderMobile",
 				"orderTablet",
 				"caption",
 				"captionTag",
+				"captionColour",
+				"captionFontSize",
+				"captionFontSizeUnit",
 				"linkUrl",
 				"linkOpensNewTab",
 				"linkRel"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"mediaType": {
 					"routed": false,
@@ -7590,38 +6905,22 @@
 					"via": null
 				},
 				"aspectRatio": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"objectFit": {
 					"routed": false,
 					"via": null
 				},
 				"objectPosition": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadius": {
 					"routed": false,
 					"via": null
 				},
-				"borderRadiusUnit": {
+				"borderRadiusTablet": {
 					"routed": false,
 					"via": null
 				},
-				"borderRadiusTL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusTR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBR": {
+				"borderRadiusMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -7630,8 +6929,8 @@
 					"via": null
 				},
 				"opacity": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"alignment": {
 					"routed": false,
@@ -7658,16 +6957,16 @@
 					"via": null
 				},
 				"captionColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"captionFontSize": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"captionFontSizeUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"linkUrl": {
 					"routed": false,
@@ -7682,10 +6981,8 @@
 					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 15
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": true
 		},
 		{
@@ -7696,7 +6993,8 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -7805,10 +7103,12 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -7838,6 +7138,8 @@
 				"drawerWidthMobile",
 				"drawerWidthTablet",
 				"drawerMaxWidth",
+				"paddingTablet",
+				"paddingMobile",
 				"drawerPosition",
 				"showLogo",
 				"logoMaxWidth",
@@ -7965,6 +7267,14 @@
 					"via": null
 				},
 				"drawerMaxWidth": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
 					"routed": false,
 					"via": null
 				},
@@ -8234,11 +7544,13 @@
 			"hasStyleCss": true,
 			"inlineViaSupports": {
 				"color": [
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"padding",
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -8253,7 +7565,11 @@
 				"ariaLabel",
 				"popoverTarget",
 				"toggleOpenIcon",
-				"toggleCloseIcon"
+				"toggleCloseIcon",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -8276,6 +7592,22 @@
 				"toggleCloseIcon": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -8290,26 +7622,7 @@
 			"inlineViaSupports": {
 				"color": []
 			},
-			"inlineViaRender": [
-				{
-					"line": 25,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\modal\\render.php"
-				},
-				{
-					"line": 28,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\modal\\render.php"
-				},
-				{
-					"line": 35,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\modal\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -8319,8 +7632,11 @@
 			"dropUnrouted": [
 				"triggerText",
 				"triggerStyle",
+				"triggerColour",
+				"triggerBackground",
 				"maxWidth",
 				"closeOnOverlay",
+				"modalBackground",
 				"overlayColour",
 				"overlayOpacity"
 			],
@@ -8335,12 +7651,12 @@
 					"via": null
 				},
 				"triggerColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"triggerBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
 					"routed": false,
@@ -8351,8 +7667,8 @@
 					"via": null
 				},
 				"modalBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"overlayColour": {
 					"routed": false,
@@ -8363,10 +7679,8 @@
 					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 6
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -8378,13 +7692,15 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -8492,28 +7808,32 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
 					"lineHeight",
 					"textAlign",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -8527,10 +7847,17 @@
 				"variant",
 				"textColour",
 				"textFontSize",
+				"contentWidth",
+				"maxWidth",
+				"iconColour",
 				"displayMode",
 				"stickyPosition",
 				"dismissible",
-				"dismissBehaviour"
+				"dismissBehaviour",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -8567,16 +7894,16 @@
 					"via": null
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"iconColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"displayMode": {
 					"routed": false,
@@ -8593,13 +7920,26 @@
 				"dismissBehaviour": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"SGS_Container_Wrapper": 2,
-				"render.php (block-private)": 1
-			},
-			"dominantHelper": "SGS_Container_Wrapper",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -8611,42 +7951,23 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
 					"padding",
+					"__experimentalSkipSerialization",
 					"__experimentalDefaultControls"
 				],
 				"__experimentalBorder": [
 					"radius",
-					"width",
-					"color",
-					"style"
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 198,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\option-picker\\render.php"
-				},
-				{
-					"line": 201,
-					"property": "margin-bottom",
-					"snippet": "margin-bottom:",
-					"file": "src\\blocks\\option-picker\\render.php"
-				},
-				{
-					"line": 277,
-					"property": "background",
-					"snippet": "background:%s;",
-					"file": "src\\blocks\\option-picker\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -8654,14 +7975,42 @@
 			"dropUnrouted": [
 				"label",
 				"showLabel",
+				"labelColour",
+				"labelMarginBottom",
 				"optionItems",
 				"defaultSelected",
 				"contentImpact",
 				"typeKey",
 				"pillStyle",
-				"pillSize"
+				"pillSize",
+				"colourPreset",
+				"showSelectedTick",
+				"pillBgColour",
+				"pillTextColour",
+				"pillBorderColour",
+				"pillSelectedBgColour",
+				"pillSelectedTextColour",
+				"pillSelectedBorderColour",
+				"pillBorderRadius",
+				"pillSelectedBorderRadius",
+				"pillPadding",
+				"pillPaddingTablet",
+				"pillPaddingMobile",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile",
+				"borderWidth",
+				"borderStyle",
+				"borderColour",
+				"contentWidth",
+				"maxWidth"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"label": {
 					"routed": false,
@@ -8692,8 +8041,16 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"labelColour": {
+					"routed": false,
+					"via": null
+				},
+				"labelFontWeight": {
 					"routed": true,
-					"via": "render.php (block-private)"
+					"via": "sgs_typography_css_rule"
+				},
+				"labelMarginBottom": {
+					"routed": false,
+					"via": null
 				},
 				"optionItems": {
 					"routed": false,
@@ -8719,25 +8076,37 @@
 					"routed": false,
 					"via": null
 				},
+				"colourPreset": {
+					"routed": false,
+					"via": null
+				},
+				"showSelectedTick": {
+					"routed": false,
+					"via": null
+				},
 				"pillBgColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"pillTextColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"pillBorderColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"pillSelectedBgColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"pillSelectedTextColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"pillSelectedBorderColour": {
+					"routed": false,
+					"via": null
 				},
 				"pillFontSize": {
 					"routed": true,
@@ -8760,32 +8129,74 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"pillBorderRadius": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
-				"labelFontWeight": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
+				"pillSelectedBorderRadius": {
+					"routed": false,
+					"via": null
 				},
-				"labelMarginBottom": {
-					"routed": true,
-					"via": "render.php (block-private)"
+				"pillPadding": {
+					"routed": false,
+					"via": null
+				},
+				"pillPaddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"pillPaddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderWidth": {
+					"routed": false,
+					"via": null
+				},
+				"borderStyle": {
+					"routed": false,
+					"via": null
+				},
+				"borderColour": {
+					"routed": false,
+					"via": null
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 11,
-				"sgs_typography_css_rule": 11,
-				"SGS_Container_Wrapper": 2
+				"sgs_typography_css_rule": 11
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "sgs_typography_css_rule",
 			"scalarStylingLift": true
 		},
 		{
@@ -8797,21 +8208,25 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -9165,73 +8580,28 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 144,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 147,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 260,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 263,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 160,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 170,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 220,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				},
-				{
-					"line": 288,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\pricing-table\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -9263,8 +8633,15 @@
 				"billingToggleMonthlyLabel",
 				"billingToggleYearlyLabel",
 				"plans",
+				"titleColour",
+				"priceColour",
+				"featureColour",
 				"ctaStyle",
+				"ctaColour",
+				"ctaBackground",
 				"popularBadgeText",
+				"popularBadgeColour",
+				"popularBadgeBackground",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
@@ -9297,40 +8674,40 @@
 					"via": "SGS_Container_Wrapper"
 				},
 				"titleColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"priceColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"featureColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"ctaStyle": {
 					"routed": false,
 					"via": null
 				},
 				"ctaColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"ctaBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"popularBadgeText": {
 					"routed": false,
 					"via": null
 				},
 				"popularBadgeColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"popularBadgeBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"sgsAnimation": {
 					"routed": false,
@@ -9362,10 +8739,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 15,
 				"SGS_Container_Wrapper": 4
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false
 		},
 		{
@@ -9376,17 +8752,17 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
-					"width",
-					"color",
-					"style"
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -9395,38 +8771,14 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				],
 				"shadow": [
 					"shadow"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 60,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\process-steps\\render.php"
-				},
-				{
-					"line": 63,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\process-steps\\render.php"
-				},
-				{
-					"line": 69,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\process-steps\\render.php"
-				},
-				{
-					"line": 75,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\process-steps\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -9437,7 +8789,18 @@
 				"steps",
 				"connectorStyle",
 				"numberStyle",
+				"numberColour",
+				"numberBackground",
+				"titleColour",
+				"descriptionColour",
 				"hoverEffect",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderWidth",
+				"borderStyle",
+				"borderColour",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing"
@@ -9457,20 +8820,20 @@
 					"via": null
 				},
 				"numberColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"numberBackground": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"titleColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"descriptionColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"hoverBackgroundColour": {
 					"routed": true,
@@ -9485,6 +8848,34 @@
 					"via": "render.php (block-private)"
 				},
 				"hoverEffect": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderWidth": {
+					"routed": false,
+					"via": null
+				},
+				"borderStyle": {
+					"routed": false,
+					"via": null
+				},
+				"borderColour": {
 					"routed": false,
 					"via": null
 				},
@@ -9510,7 +8901,7 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 13
+				"render.php (block-private)": 5
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -9524,32 +8915,22 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
-					"margin"
+					"margin",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"style",
-					"color"
+					"color",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 782,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\product-card\\render.php"
-				},
-				{
-					"line": 839,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\product-card\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": false,
@@ -9788,6 +9169,46 @@
 					"routed": false,
 					"via": null
 				},
+				"pickerColourPreset": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerShowSelectedTick": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillBgColour": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillTextColour": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillBorderColour": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillBorderRadius": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillSelectedBgColour": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillSelectedTextColour": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillSelectedBorderColour": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
+				"pickerPillSelectedBorderRadius": {
+					"routed": true,
+					"via": "render.php (block-private)"
+				},
 				"titleFontSize": {
 					"routed": true,
 					"via": "sgs_typography_css_rule"
@@ -9950,8 +9371,8 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 8,
 				"sgs_button_element_style_css": 14,
+				"render.php (block-private)": 16,
 				"SGS_Container_Wrapper": 2,
 				"sgs_typography_css_rule": 35
 			},
@@ -9967,39 +9388,50 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
 			"dropConditionalInert": [],
 			"dropUnrouted": [
+				"heading",
 				"headingLevel",
-				"iconPosition"
+				"iconPosition",
+				"contentWidth",
+				"maxWidth",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
 				"heading": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"headingLevel": {
 					"routed": false,
@@ -10010,30 +9442,32 @@
 					"via": null
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
-				"gap": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+				"paddingTablet": {
+					"routed": false,
+					"via": null
 				},
-				"gapTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+				"paddingMobile": {
+					"routed": false,
+					"via": null
 				},
-				"gapMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"SGS_Container_Wrapper": 6
-			},
-			"dominantHelper": "SGS_Container_Wrapper",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -10045,13 +9479,15 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -10063,9 +9499,7 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"question",
-				"isOpen",
-				"contentWidth",
-				"maxWidth"
+				"isOpen"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10074,14 +9508,6 @@
 					"via": null
 				},
 				"isOpen": {
-					"routed": false,
-					"via": null
-				},
-				"contentWidth": {
-					"routed": false,
-					"via": null
-				},
-				"maxWidth": {
 					"routed": false,
 					"via": null
 				}
@@ -10098,7 +9524,8 @@
 			"inlineViaSupports": {
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -10112,7 +9539,11 @@
 				"displayMode",
 				"placeholder",
 				"buttonLabel",
-				"maxResults"
+				"maxResults",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10131,6 +9562,22 @@
 				"maxResults": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -10146,125 +9593,27 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
+				],
+				"spacing": [
+					"margin",
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
-					"width",
-					"color",
-					"style"
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 173,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 181,
-					"property": "font-weight",
-					"snippet": "font-weight:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 183,
-					"property": "font-family",
-					"snippet": "font-family:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 187,
-					"property": "font-style",
-					"snippet": "font-style:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 188,
-					"property": "text-decoration",
-					"snippet": "text-decoration:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 189,
-					"property": "text-transform",
-					"snippet": "text-transform:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 190,
-					"property": "letter-spacing",
-					"snippet": "letter-spacing:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 174,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 191,
-					"property": "border-radius",
-					"snippet": "border-radius:{$tl} {$tr} {$br} {$bl}",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 193,
-					"property": "border-radius",
-					"snippet": "border-radius:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 208,
-					"property": "border-top-width",
-					"snippet": "border-top-width:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 211,
-					"property": "border-right-width",
-					"snippet": "border-right-width:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 214,
-					"property": "border-bottom-width",
-					"snippet": "border-bottom-width:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 217,
-					"property": "border-left-width",
-					"snippet": "border-left-width:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 220,
-					"property": "border-style",
-					"snippet": "border-style:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 222,
-					"property": "border-color",
-					"snippet": "border-color:",
-					"file": "src\\blocks\\quote\\render.php"
-				},
-				{
-					"line": 229,
-					"property": "box-shadow",
-					"snippet": "box-shadow:var(--sgs-quote-shadow)",
-					"file": "src\\blocks\\quote\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -10273,33 +9622,36 @@
 				"attribution",
 				"attributionTag",
 				"attributionEnabled",
+				"attributionColour",
 				"attributionFontSize",
 				"attributionFontSizeTablet",
 				"attributionFontSizeMobile",
+				"attributionFontWeight",
+				"attributionFontFamily",
+				"attributionFontStyle",
+				"attributionTextDecoration",
+				"attributionTextTransform",
 				"attributionLineHeight",
-				"attributionLineHeightUnit",
 				"attributionMarginTop",
 				"attributionMarginTopTablet",
 				"attributionMarginTopMobile",
-				"borderRadiusTL",
-				"borderRadiusTR",
-				"borderRadiusBL",
-				"borderRadiusBR",
-				"borderWidthUnit",
+				"backgroundColour",
+				"borderWidth",
+				"borderStyle",
+				"borderColour",
+				"boxShadow",
 				"boxShadowHover",
 				"hoverScale",
 				"hoverColour",
 				"hoverBackground",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft",
-				"marginUnit",
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"paddingUnit",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"contentWidth",
+				"maxWidth",
+				"maxWidthTablet",
+				"maxWidthMobile",
 				"inheritStyle",
 				"transitionDuration",
 				"transitionEasing"
@@ -10319,8 +9671,8 @@
 					"via": null
 				},
 				"attributionColour": {
-					"routed": true,
-					"via": "block-private helper: sgs_quote_build_slot_style"
+					"routed": false,
+					"via": null
 				},
 				"attributionFontSize": {
 					"routed": false,
@@ -10339,32 +9691,32 @@
 					"via": "sgs_responsive_css_rule"
 				},
 				"attributionFontWeight": {
-					"routed": true,
-					"via": "block-private helper: sgs_quote_build_slot_style"
+					"routed": false,
+					"via": null
 				},
 				"attributionFontFamily": {
-					"routed": true,
-					"via": "block-private helper: sgs_quote_build_slot_style"
+					"routed": false,
+					"via": null
 				},
 				"attributionFontStyle": {
-					"routed": true,
-					"via": "block-private helper: sgs_quote_build_slot_style"
+					"routed": false,
+					"via": null
 				},
 				"attributionTextDecoration": {
-					"routed": true,
-					"via": "block-private helper: sgs_quote_build_slot_style"
+					"routed": false,
+					"via": null
 				},
 				"attributionTextTransform": {
-					"routed": true,
-					"via": "block-private helper: sgs_quote_build_slot_style"
+					"routed": false,
+					"via": null
 				},
 				"attributionLineHeight": {
 					"routed": false,
 					"via": null
 				},
 				"attributionLineHeightUnit": {
-					"routed": false,
-					"via": null
+					"routed": true,
+					"via": "sgs_responsive_css_rule"
 				},
 				"attributionMarginTop": {
 					"routed": false,
@@ -10383,64 +9735,24 @@
 					"via": "sgs_responsive_css_rule"
 				},
 				"backgroundColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadius": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadiusUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadiusTL": {
 					"routed": false,
 					"via": null
 				},
-				"borderRadiusTR": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBR": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthTop": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthRight": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthBottom": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthLeft": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthUnit": {
+				"borderWidth": {
 					"routed": false,
 					"via": null
 				},
 				"borderStyle": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"borderColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"boxShadow": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"boxShadowHover": {
 					"routed": false,
@@ -10458,125 +9770,37 @@
 					"routed": false,
 					"via": null
 				},
-				"marginTop": {
+				"paddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"marginRight": {
+				"paddingMobile": {
 					"routed": false,
 					"via": null
 				},
-				"marginBottom": {
+				"marginTablet": {
 					"routed": false,
 					"via": null
 				},
-				"marginLeft": {
+				"marginMobile": {
 					"routed": false,
 					"via": null
-				},
-				"marginUnit": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingTop": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRight": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottom": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeft": {
-					"routed": false,
-					"via": null
-				},
-				"paddingUnit": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidthTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidthMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"inheritStyle": {
 					"routed": false,
@@ -10592,12 +9816,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 27,
-				"block-private helper: sgs_quote_build_slot_style": 6,
-				"sgs_responsive_css_rule": 2,
-				"SGS_Container_Wrapper": 20
+				"sgs_responsive_css_rule": 3
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": true
 		},
 		{
@@ -10608,7 +9829,8 @@
 			"inlineViaSupports": {
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -10626,7 +9848,11 @@
 				"animationStyle",
 				"width",
 				"linkToHome",
-				"alt"
+				"alt",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10661,6 +9887,22 @@
 				"alt": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -10675,36 +9917,20 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
-					"textAlign"
+					"textAlign",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 56,
-					"property": "gap",
-					"snippet": "gap:var(--wp--preset--spacing--",
-					"file": "src\\blocks\\social-icons\\render.php"
-				},
-				{
-					"line": 82,
-					"property": "width",
-					"snippet": "width:%dpx;height:%dpx",
-					"file": "src\\blocks\\social-icons\\render.php"
-				},
-				{
-					"line": 82,
-					"property": "height",
-					"snippet": "width:%dpx;height:%dpx",
-					"file": "src\\blocks\\social-icons\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -10714,7 +9940,14 @@
 			"dropUnrouted": [
 				"icons",
 				"iconSize",
-				"style"
+				"iconColour",
+				"hoverColour",
+				"iconStyle",
+				"gap",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10727,26 +9960,40 @@
 					"via": null
 				},
 				"iconColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"hoverColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
-				"style": {
+				"iconStyle": {
 					"routed": false,
 					"via": null
 				},
 				"gap": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 6
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -10757,11 +10004,13 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -10782,7 +10031,11 @@
 				"schemaEnabled",
 				"schemaItemName",
 				"schemaReviewCount",
-				"displayMode"
+				"displayMode",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -10829,6 +10082,22 @@
 				"displayMode": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {},
@@ -10844,13 +10113,15 @@
 				"color": [
 					"background",
 					"gradients",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -10893,21 +10164,25 @@
 				"color": [
 					"background",
 					"text",
-					"link"
+					"link",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"lineHeight"
+					"lineHeight",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -10926,10 +10201,20 @@
 				"scrollOffset",
 				"scrollSpy",
 				"listStyle",
-				"style",
-				"activeLinkColour"
+				"tocStyle",
+				"titleColour",
+				"linkColour",
+				"activeLinkColour",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"headingLevels": {
 					"routed": false,
@@ -10963,27 +10248,49 @@
 					"routed": false,
 					"via": null
 				},
-				"style": {
+				"tocStyle": {
 					"routed": false,
 					"via": null
 				},
 				"titleColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"linkColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"activeLinkColour": {
 					"routed": false,
 					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
-			"helperCounts": {
-				"render.php (block-private)": 2
-			},
-			"dominantHelper": "render.php (block-private)",
+			"helperCounts": {},
+			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -10995,17 +10302,20 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -11126,39 +10436,30 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
-					"textAlign"
+					"textAlign",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 127,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\team-member\\render.php"
-				},
-				{
-					"line": 130,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\team-member\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -11170,6 +10471,8 @@
 				"role",
 				"bio",
 				"socialLinks",
+				"nameColour",
+				"roleColour",
 				"cardStyle",
 				"displayMode",
 				"photoShape",
@@ -11193,7 +10496,13 @@
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"hoverOverlay"
+				"hoverOverlay",
+				"contentWidth",
+				"maxWidth",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -11222,12 +10531,12 @@
 					"via": null
 				},
 				"nameColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"roleColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"cardStyle": {
 					"routed": false,
@@ -11334,17 +10643,32 @@
 					"via": null
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 6,
-				"SGS_Container_Wrapper": 2
+				"render.php (block-private)": 2
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": false
@@ -11359,17 +10683,20 @@
 					"background",
 					"text",
 					"link",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -11378,7 +10705,8 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				],
 				"shadow": [
 					"shadow"
@@ -11386,7 +10714,7 @@
 			},
 			"inlineViaRender": [],
 			"inlineViaWrapper": {
-				"usesWrapper": true,
+				"usesWrapper": false,
 				"noOverlayOptOut": false,
 				"nulledAttrs": []
 			},
@@ -11430,7 +10758,14 @@
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"_comment_wrapperAttrs"
+				"_comment_wrapperAttrs",
+				"contentWidth",
+				"maxWidth",
+				"_comment_boxTiers",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -11619,17 +10954,36 @@
 					"via": null
 				},
 				"contentWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
+					"routed": false,
+					"via": null
+				},
+				"_comment_boxTiers": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 7,
-				"SGS_Container_Wrapper": 2
+				"render.php (block-private)": 7
 			},
 			"dominantHelper": "render.php (block-private)",
 			"scalarStylingLift": true
@@ -11643,17 +10997,20 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -11662,7 +11019,8 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -11802,125 +11160,15 @@
 			"inlineViaSupports": {
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 172,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 176,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 186,
-					"property": "font-weight",
-					"snippet": "font-weight:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 190,
-					"property": "font-style",
-					"snippet": "font-style:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 194,
-					"property": "text-decoration",
-					"snippet": "text-decoration:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 198,
-					"property": "text-transform",
-					"snippet": "text-transform:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 207,
-					"property": "font-family",
-					"snippet": "font-family:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 211,
-					"property": "text-align",
-					"snippet": "text-align:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 215,
-					"property": "max-width",
-					"snippet": "max-width:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 220,
-					"property": "width",
-					"snippet": "width:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 235,
-					"property": "border-radius",
-					"snippet": "border-radius:{$brtl} {$brtr} {$brbr} {$brbl}",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 237,
-					"property": "border-radius",
-					"snippet": "border-radius:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 253,
-					"property": "border",
-					"snippet": "border:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 256,
-					"property": "border-top",
-					"snippet": "border-top:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 259,
-					"property": "border-right",
-					"snippet": "border-right:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 262,
-					"property": "border-bottom",
-					"snippet": "border-bottom:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 265,
-					"property": "border-left",
-					"snippet": "border-left:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 270,
-					"property": "border-color",
-					"snippet": "border-color:",
-					"file": "src\\blocks\\text\\render.php"
-				},
-				{
-					"line": 276,
-					"property": "box-shadow",
-					"snippet": "box-shadow:var(--wp--preset--shadow--",
-					"file": "src\\blocks\\text\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -11929,55 +11177,44 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"text",
+				"textColour",
 				"fontSize",
 				"fontSizeTablet",
 				"fontSizeMobile",
+				"fontWeight",
 				"lineHeight",
 				"lineHeightTablet",
 				"lineHeightMobile",
 				"letterSpacing",
 				"letterSpacingTablet",
 				"letterSpacingMobile",
+				"fontStyle",
+				"textDecoration",
+				"textTransform",
 				"fontFamily",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft",
-				"marginTopTablet",
-				"marginRightTablet",
-				"marginBottomTablet",
-				"marginLeftTablet",
-				"marginTopMobile",
-				"marginRightMobile",
-				"marginBottomMobile",
-				"marginLeftMobile",
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"paddingTopTablet",
-				"paddingRightTablet",
-				"paddingBottomTablet",
-				"paddingLeftTablet",
-				"paddingTopMobile",
-				"paddingRightMobile",
-				"paddingBottomMobile",
-				"paddingLeftMobile",
+				"marginTablet",
+				"marginMobile",
+				"paddingTablet",
+				"paddingMobile",
+				"textAlign",
+				"maxWidth",
+				"maxWidthUnit",
 				"dropCap",
 				"firstLetterColour",
 				"firstLetterFontSize",
 				"firstLetterFontSizeUnit",
 				"firstLetterFontWeight",
-				"borderRadiusTL",
-				"borderRadiusTR",
-				"borderRadiusBL",
-				"borderRadiusBR",
+				"backgroundColour",
+				"borderWidth",
 				"borderStyle",
+				"borderColour",
 				"boxShadow",
 				"boxShadowHover",
 				"hoverScale",
 				"hoverColour",
 				"hoverBackground",
+				"customWidth",
+				"customWidthUnit",
 				"inheritStyle",
 				"transitionDuration",
 				"transitionEasing"
@@ -11989,8 +11226,8 @@
 					"via": null
 				},
 				"textColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontSize": {
 					"routed": false,
@@ -12009,8 +11246,8 @@
 					"via": null
 				},
 				"fontWeight": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"lineHeight": {
 					"routed": false,
@@ -12045,136 +11282,48 @@
 					"via": null
 				},
 				"fontStyle": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textDecoration": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"textTransform": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"fontFamily": {
 					"routed": false,
 					"via": null
 				},
-				"marginTop": {
+				"marginTablet": {
 					"routed": false,
 					"via": null
 				},
-				"marginRight": {
+				"marginMobile": {
 					"routed": false,
 					"via": null
 				},
-				"marginBottom": {
+				"paddingTablet": {
 					"routed": false,
 					"via": null
 				},
-				"marginLeft": {
-					"routed": false,
-					"via": null
-				},
-				"marginUnit": {
-					"routed": true,
-					"via": "sgs_responsive_css_rule"
-				},
-				"marginTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginLeftMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTop": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRight": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottom": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeft": {
-					"routed": false,
-					"via": null
-				},
-				"paddingUnit": {
-					"routed": true,
-					"via": "sgs_responsive_css_rule"
-				},
-				"paddingTopTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTopMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingRightMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingBottomMobile": {
-					"routed": false,
-					"via": null
-				},
-				"paddingLeftMobile": {
+				"paddingMobile": {
 					"routed": false,
 					"via": null
 				},
 				"textAlign": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"maxWidth": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"maxWidthUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"dropCap": {
 					"routed": false,
@@ -12197,60 +11346,20 @@
 					"via": null
 				},
 				"backgroundColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadius": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadiusUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderRadiusTL": {
 					"routed": false,
 					"via": null
 				},
-				"borderRadiusTR": {
+				"borderWidth": {
 					"routed": false,
 					"via": null
-				},
-				"borderRadiusBL": {
-					"routed": false,
-					"via": null
-				},
-				"borderRadiusBR": {
-					"routed": false,
-					"via": null
-				},
-				"borderWidthTop": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthRight": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthBottom": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthLeft": {
-					"routed": true,
-					"via": "render.php (block-private)"
-				},
-				"borderWidthUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
 				},
 				"borderStyle": {
 					"routed": false,
 					"via": null
 				},
 				"borderColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"boxShadow": {
 					"routed": false,
@@ -12273,12 +11382,12 @@
 					"via": null
 				},
 				"customWidth": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"customWidthUnit": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"inheritStyle": {
 					"routed": false,
@@ -12294,10 +11403,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 38,
-				"sgs_responsive_css_rule": 5
+				"sgs_responsive_css_rule": 3
 			},
-			"dominantHelper": "render.php (block-private)",
+			"dominantHelper": "sgs_responsive_css_rule",
 			"scalarStylingLift": false
 		},
 		{
@@ -12308,17 +11416,17 @@
 			"inlineViaSupports": {
 				"color": [
 					"background",
-					"text"
+					"text",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
-					"width",
-					"color",
-					"style"
+					"__experimentalSkipSerialization"
 				],
 				"typography": [
 					"fontSize",
@@ -12327,7 +11435,8 @@
 					"letterSpacing",
 					"textTransform",
 					"fontWeight",
-					"fontStyle"
+					"fontStyle",
+					"__experimentalSkipSerialization"
 				],
 				"shadow": [
 					"shadow"
@@ -12345,9 +11454,20 @@
 				"alignment",
 				"entries",
 				"connectorStyle",
-				"revealOnScroll"
+				"revealOnScroll",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile",
+				"borderWidth",
+				"borderColour",
+				"borderStyle"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"orientation": {
 					"routed": false,
@@ -12380,6 +11500,42 @@
 				"revealStagger": {
 					"routed": true,
 					"via": "render.php (block-private)"
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderWidth": {
+					"routed": false,
+					"via": null
+				},
+				"borderColour": {
+					"routed": false,
+					"via": null
+				},
+				"borderStyle": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
@@ -12397,33 +11553,23 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 120,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\trust-bar\\render.php"
-				},
-				{
-					"line": 143,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\trust-bar\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": true,
 				"noOverlayOptOut": true,
@@ -12456,16 +11602,7 @@
 				"overlayGradientTo",
 				"templateMode"
 			],
-			"tierWithoutBase": [
-				"paddingTop",
-				"paddingRight",
-				"paddingBottom",
-				"paddingLeft",
-				"marginTop",
-				"marginRight",
-				"marginBottom",
-				"marginLeft"
-			],
+			"tierWithoutBase": [],
 			"attrRouting": {
 				"badgeStyle": {
 					"routed": false,
@@ -12859,67 +11996,19 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingTopTablet": {
+				"paddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingRightTablet": {
+				"paddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingBottomTablet": {
+				"marginTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"paddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"paddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginBottomMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"marginLeftMobile": {
+				"marginMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -12927,51 +12016,15 @@
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottom": {
+				"contentBandPadding": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottomMobile": {
+				"contentBandPaddingTablet": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
-				"contentBandPaddingBottomTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeft": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingLeftTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRight": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingRightTablet": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTop": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopMobile": {
-					"routed": true,
-					"via": "SGS_Container_Wrapper"
-				},
-				"contentBandPaddingTopTablet": {
+				"contentBandPaddingMobile": {
 					"routed": true,
 					"via": "SGS_Container_Wrapper"
 				},
@@ -12993,9 +12046,9 @@
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 4,
 				"sgs_typography_css_rule": 14,
-				"SGS_Container_Wrapper": 96
+				"render.php (block-private)": 2,
+				"SGS_Container_Wrapper": 75
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": true
@@ -13009,13 +12062,15 @@
 				"color": [
 					"background",
 					"text",
-					"gradients"
+					"gradients",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
 					"radius",
 					"width",
 					"color",
-					"style"
+					"style",
+					"__experimentalSkipSerialization"
 				]
 			},
 			"inlineViaRender": [],
@@ -13230,29 +12285,20 @@
 			"hasRenderPhp": true,
 			"hasStyleCss": true,
 			"inlineViaSupports": {
-				"color": [],
+				"color": [
+					"__experimentalSkipSerialization"
+				],
 				"spacing": [
 					"margin",
-					"padding"
+					"padding",
+					"__experimentalSkipSerialization"
 				],
 				"__experimentalBorder": [
-					"radius"
+					"radius",
+					"__experimentalSkipSerialization"
 				]
 			},
-			"inlineViaRender": [
-				{
-					"line": 52,
-					"property": "color",
-					"snippet": "color:",
-					"file": "src\\blocks\\whatsapp-cta\\render.php"
-				},
-				{
-					"line": 55,
-					"property": "background-color",
-					"snippet": "background-color:",
-					"file": "src\\blocks\\whatsapp-cta\\render.php"
-				}
-			],
+			"inlineViaRender": [],
 			"inlineViaWrapper": {
 				"usesWrapper": false,
 				"noOverlayOptOut": false,
@@ -13265,9 +12311,19 @@
 				"variant",
 				"label",
 				"showOnMobile",
-				"showOnDesktop"
+				"showOnDesktop",
+				"labelColour",
+				"backgroundColour",
+				"paddingTablet",
+				"paddingMobile",
+				"marginTablet",
+				"marginMobile",
+				"borderRadiusTablet",
+				"borderRadiusMobile"
 			],
-			"tierWithoutBase": [],
+			"tierWithoutBase": [
+				"borderRadius"
+			],
 			"attrRouting": {
 				"phoneNumber": {
 					"routed": false,
@@ -13294,8 +12350,8 @@
 					"via": null
 				},
 				"labelColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"labelFontSize": {
 					"routed": true,
@@ -13322,12 +12378,35 @@
 					"via": "sgs_typography_css_rule"
 				},
 				"backgroundColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
+				},
+				"paddingTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginMobile": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusTablet": {
+					"routed": false,
+					"via": null
+				},
+				"borderRadiusMobile": {
+					"routed": false,
+					"via": null
 				}
 			},
 			"helperCounts": {
-				"render.php (block-private)": 4,
 				"sgs_typography_css_rule": 6
 			},
 			"dominantHelper": "sgs_typography_css_rule",

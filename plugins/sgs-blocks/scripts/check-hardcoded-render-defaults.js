@@ -108,7 +108,7 @@ const SUFFIX_MAP = [
 	{ suffix: 'texttransform',  props: [ 'text-transform' ],           note: 'controls text transform' },
 	// Alignment
 	{ suffix: 'textalign',      props: [ 'text-align' ],               note: 'controls text alignment' },
-	{ suffix: 'alignment',      props: [ 'text-align', 'align-items' ],note: 'generic alignment attr' },
+	{ suffix: 'alignment',      props: [ 'text-align' ],                note: 'generic alignment attr → text-align (NOT align-items: a generic *Alignment attr governs text/content alignment or positions via a --align-* modifier class, not the flex/grid align-items axis — e.g. mega-menu panelAlignment sets sgs-mega-menu--align-* positioning, not align-items. align-items is covered by the alignitems + verticalalign suffixes.)' },
 	{ suffix: 'verticalalign',  props: [ 'vertical-align', 'align-items' ], note: 'vertical alignment' },
 	{ suffix: 'alignitems',     props: [ 'align-items' ],              note: 'flex/grid align-items' },
 	{ suffix: 'aligncontent',   props: [ 'align-content' ],            note: 'flex/grid align-content' },
@@ -707,9 +707,12 @@ function isLiteralConstant( value, property ) {
 	if ( PHP_DYNAMIC_RE.test( v ) ) {
 		return false; // PHP-generated value
 	}
-	// 100% on width/height is a structural reset ("fill available space"), not a
-	// layout constant that overrides an attr. Exempt it.
-	if ( /^100%$/.test( v ) && /^(width|height|max-width)$/.test( property ) ) {
+	// 100% / 100vw / 100vh on width/height/max-width is a structural "fill the
+	// available space / clamp to the viewport" reset, not a layout constant that
+	// overrides an attr. A `max-width:100vw` is a universal viewport-overflow
+	// safety clamp (e.g. on .sgs-mobile-nav) — NOT the drawer-width control (which
+	// governs a narrower value on the drawer element). Exempt it.
+	if ( /^100(%|vw|vh)$/.test( v ) && /^(width|height|max-width)$/.test( property ) ) {
 		return false;
 	}
 	// `1em` / `1.5em` etc. on width/height for inline SVG/icon elements scales

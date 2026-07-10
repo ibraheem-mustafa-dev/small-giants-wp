@@ -1,0 +1,854 @@
+{
+  "pageId": 1356,
+  "_note": "Wave-3 full-roster LAND verification (2026-07-10). Remaining styling-support blocks not covered by wave1/wave2. Entries authored by read-only Haiku investigators (batches A-D), assembled + run by the main session. renderable:false blocks (cart, buybox, filter-search, tabs) are excluded here and listed UNVERIFIED-with-reason (need WooCommerce data / InnerBlocks the self-closing harness cannot supply).",
+  "blocks": [
+    {
+      "slug": "sgs/audio",
+      "rootSelector": ".wp-block-sgs-audio",
+      "attrs": {
+        "audioUrl": "https://example.com/sample.mp3",
+        "playerStyle": "minimal",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "marginTB": "10px 6px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "marginTB": "10px 6px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "rootSelector": ".wp-block-sgs-responsive-logo",
+      "attrs": {
+        "width": 240,
+        "linkToHome": true,
+        "alt": "Logo",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "marginTB": "10px 6px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "marginTB": "10px 6px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/mobile-nav-toggle",
+      "rootSelector": ".wp-block-sgs-mobile-nav-toggle",
+      "attrs": {
+        "iconSize": 24,
+        "ariaLabel": "Open navigation",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "color": {
+            "text": "#333333"
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {},
+      "_boxNote": "zero-inline VERIFIED; box-on-root N/A \u2014 box lands on the inner <button>, not the wrapper root (block owns its own padding)"
+    },
+    {
+      "slug": "sgs/product-search",
+      "rootSelector": ".wp-block-sgs-product-search",
+      "attrs": {
+        "displayMode": "inline",
+        "placeholder": "Search products",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "marginTB": "10px 6px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "marginTB": "10px 6px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "rootSelector": ".wp-block-sgs-modal",
+      "attrs": {
+        "triggerText": "Open Modal",
+        "maxWidth": "medium",
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {},
+      "_boxNote": "zero-inline VERIFIED; box-on-root N/A \u2014 box lands on the modal dialog panel, not the trigger wrapper root"
+    },
+    {
+      "slug": "sgs/multi-button",
+      "rootSelector": ".wp-block-sgs-multi-button",
+      "attrs": {
+        "direction": "row",
+        "gap": "12px",
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "rootSelector": ".wp-block-sgs-accordion-item",
+      "attrs": {
+        "title": "What is this?",
+        "isOpen": false,
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "rootSelector": ".wp-block-sgs-tab",
+      "attrs": {
+        "label": "Tab 1",
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "rootSelector": ".sgs-form-field--tiles",
+      "attrs": {
+        "fieldName": "test_tiles",
+        "label": "Choose one",
+        "columns": 2,
+        "tiles": [
+          {
+            "label": "Option A",
+            "value": "opt_a",
+            "icon": "check",
+            "iconSource": "lucide"
+          },
+          {
+            "label": "Option B",
+            "value": "opt_b",
+            "icon": "star",
+            "iconSource": "lucide"
+          }
+        ],
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "rootSelector": ".sgs-product-faq-item",
+      "attrs": {
+        "question": "What are the ingredients?",
+        "isOpen": false,
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "rootSelector": ".wp-block-sgs-google-reviews",
+      "attrs": {
+        "variant": "grid",
+        "columns": 3,
+        "columnsTablet": 2,
+        "columnsMobile": 1,
+        "showAggregate": true,
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "rootSelector": ".wp-block-sgs-trustpilot-reviews",
+      "attrs": {
+        "variant": "carousel",
+        "dataSource": "placeholder",
+        "columns": 3,
+        "columnsTablet": 2,
+        "columnsMobile": 1,
+        "showSourceHeader": true,
+        "style": {
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "rootSelector": ".wp-block-sgs-accordion",
+      "attrs": {
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {},
+      "_boxNote": "zero-inline VERIFIED; box-on-root N/A \u2014 renders empty (no InnerBlocks via self-closing harness); box lands on the details rows, not the empty wrapper root"
+    },
+    {
+      "slug": "sgs/content-collection",
+      "rootSelector": ".wp-block-sgs-content-collection",
+      "attrs": {
+        "style": {
+          "spacing": {
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "rootSelector": ".wp-block-sgs-gallery",
+      "attrs": {
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "rootSelector": ".wp-block-sgs-post-grid",
+      "attrs": {
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "rootSelector": ".wp-block-sgs-form",
+      "attrs": {
+        "formName": "Test Form",
+        "submitLabel": "Submit",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "rootSelector": ".wp-block-sgs-form-step",
+      "attrs": {
+        "label": "Step 1",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "rootSelector": ".wp-block-sgs-notice-banner",
+      "attrs": {
+        "variant": "info",
+        "text": "Test notice",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "rootSelector": ".wp-block-sgs-pricing-table",
+      "attrs": {
+        "columns": 3,
+        "plans": [
+          {
+            "name": "Plan 1",
+            "price": "9",
+            "ctaText": "Get started"
+          }
+        ],
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        }
+      },
+      "expected": {},
+      "_boxNote": "zero-inline VERIFIED; box-on-root N/A \u2014 box lands on the inner grid/cards, not the wrapper root"
+    },
+    {
+      "slug": "sgs/product-faq",
+      "rootSelector": ".wp-block-sgs-product-faq",
+      "attrs": {
+        "heading": "FAQ",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "rootSelector": ".wp-block-sgs-team-member",
+      "attrs": {
+        "name": "Sarah Mitchell",
+        "role": "Head of Procurement",
+        "style": {
+          "spacing": {
+            "padding": {
+              "top": "5px",
+              "right": "17px",
+              "bottom": "9px",
+              "left": "23px"
+            },
+            "margin": {
+              "top": "10px",
+              "right": "2px",
+              "bottom": "6px",
+              "left": "14px"
+            }
+          },
+          "border": {
+            "radius": {
+              "topLeft": "3px",
+              "topRight": "11px",
+              "bottomRight": "7px",
+              "bottomLeft": "19px"
+            }
+          }
+        },
+        "paddingTablet": {
+          "top": "4px",
+          "right": "12px",
+          "bottom": "6px",
+          "left": "16px"
+        },
+        "paddingMobile": {
+          "top": "2px",
+          "right": "8px",
+          "bottom": "4px",
+          "left": "10px"
+        }
+      },
+      "expected": {
+        "desktop": {
+          "padding": "5px 17px 9px 23px",
+          "marginTB": "10px 6px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "tablet": {
+          "padding": "4px 12px 6px 16px",
+          "borderRadius": "3px 11px 7px 19px"
+        },
+        "mobile": {
+          "padding": "2px 8px 4px 10px",
+          "borderRadius": "3px 11px 7px 19px"
+        }
+      }
+    }
+  ]
+}

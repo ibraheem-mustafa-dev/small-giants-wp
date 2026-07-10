@@ -642,14 +642,17 @@ if ( $icon ) {
 			);
 		}
 
-		$icon_style = '';
+		// Icon size + resting colour are CLIENT controls, but they must NOT
+		// serialise as inline property declarations (no-inline contract,
+		// Spec 32). Route them to the block's own scoped <style> (emitted at
+		// step-4 below), mirroring the hover-icon-colour rule above. When no
+		// explicit size is set, style.css's `.sgs-button__icon svg{width:1em}`
+		// default already applies — so the size path emits nothing.
 		if ( $icon_size ) {
-			$icon_style .= "width:{$icon_size}px;height:{$icon_size}px;";
-		} else {
-			$icon_style .= 'width:var(--sgs-btn-icon-size,1em);height:var(--sgs-btn-icon-size,1em);';
+			$scoped_css_parts[] = "#{$uid} .sgs-button__icon svg{width:{$icon_size}px;height:{$icon_size}px;}";
 		}
 		if ( $icon_colour ) {
-			$icon_style .= 'color:' . sgs_colour_value( $icon_colour ) . ';';
+			$scoped_css_parts[] = "#{$uid} .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';
 		}
 
 		// wp_kses with SVG allowance for the icon.
@@ -723,8 +726,7 @@ if ( $icon ) {
 		);
 
 		$icon_html = sprintf(
-			'<span class="sgs-button__icon" style="%s" aria-hidden="true">%s</span>',
-			esc_attr( $icon_style ),
+			'<span class="sgs-button__icon" aria-hidden="true">%s</span>',
 			wp_kses( $icon_svg, $allowed_svg )
 		);
 	}

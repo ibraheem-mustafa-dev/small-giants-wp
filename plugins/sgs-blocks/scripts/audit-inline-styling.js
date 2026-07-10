@@ -1059,6 +1059,39 @@ function main() {
 	process.stdout.write( `  Blocks with tier-without-base defect: ${ tierWithoutBaseBlocks.length } (${ tierWithoutBaseBlocks.map( ( r ) => r.block ).join( ', ' ) })\n` );
 	process.stdout.write( `  Report written: ${ path.relative( ROOT, OUT_JSON ) }\n` );
 	process.stdout.write( `  Report written: ${ path.relative( ROOT, OUT_MD ) }\n` );
+
+	// --- ZERO-TOLERANCE --check gate (Spec 32 no-inline contract) ---------------
+	// A violation is a REAL CSS property declaration (not a --custom-property VALUE,
+	// which is the sanctioned override channel per FR-32-4) emitted INLINE: either a
+	// block render.php inline-render site, OR a real-property push into the shared
+	// SGS_Container_Wrapper's inline $styles sink. Wired into `prebuild` so an inline
+	// regression fails the build. Report files are still written above.
+	if ( process.argv.includes( '--check' ) ) {
+		const violations = [];
+		for ( const r of results ) {
+			for ( const f of r.inlineViaRender ) {
+				violations.push( `${ r.block }  (${ f.file }:${ f.line })  ${ f.property }` );
+			}
+		}
+		// Shared wrapper — its inline $styles sink (custom-property VALUES are skipped
+		// by the scanner; only real-property pushes count). Scoped rules ($responsive_css
+		// / $base_*_decls / $scoped_css) are not "style"-named sinks, so are not scanned.
+		const wrapperSrc = readIfExists( path.join( INCLUDES_DIR, 'class-sgs-container-wrapper.php' ) );
+		for ( const f of scanInlineRenderSites( wrapperSrc, captureLocalFunctions( stripComments( wrapperSrc ) ) ) ) {
+			violations.push( `SGS_Container_Wrapper  (includes/class-sgs-container-wrapper.php:${ f.line })  ${ f.property }` );
+		}
+
+		if ( violations.length ) {
+			process.stdout.write( `\n[audit-inline-styling --check] FAIL — ${ violations.length } inline styling violation(s):\n` );
+			for ( const v of violations ) process.stdout.write( `  X  ${ v }\n` );
+			process.stdout.write( '\nEvery SGS block + the shared wrapper must emit styling via scoped <style> rules\n' );
+			process.stdout.write( 'or block attributes — never an inline CSS property declaration (Spec 32). CSS\n' );
+			process.stdout.write( 'custom-property VALUES (--sgs-*) are permitted. Route the above to scoped CSS.\n' );
+			process.exitCode = 1;
+			return;
+		}
+		process.stdout.write( `\n[audit-inline-styling --check] PASS — 0 inline styling violations across ${ results.length } blocks + the shared wrapper.\n` );
+	}
 }
 
 main();

@@ -335,6 +335,9 @@
 	   on .sgs-option-picker__option — the chip itself is decorative. */
 	width: 1.125em;
 	height: 1.125em;
+	/* The chip's fill is the colour term's own swatch DATA VALUE, carried as a
+	   custom property by render.php so nothing serialises inline (Spec 32). */
+	background: var(--sgs-op-swatch-bg, transparent);
 	border: 1px solid rgba(0, 0, 0, 0.15);
 	/* Slight inset ring ensures the chip is visible against near-white BGs */
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);

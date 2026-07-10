@@ -27,30 +27,6 @@
       "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
     },
     {
-      "block": "sgs/mega-menu",
-      "file": "src\\blocks\\mega-menu\\style.css",
-      "property": "align-items",
-      "value": "center",
-      "attr": "panelAlignment",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
-      "block": "sgs/mega-menu",
-      "file": "src\\blocks\\mega-menu\\style.css",
-      "property": "align-items",
-      "value": "flex-start",
-      "attr": "panelAlignment",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
-      "block": "sgs/mobile-nav",
-      "file": "src\\blocks\\mobile-nav\\style.css",
-      "property": "max-width",
-      "value": "100vw",
-      "attr": "drawerWidth, drawerMaxWidth, logoMaxWidth",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
       "block": "sgs/pricing-table",
       "file": "src\\blocks\\pricing-table\\style.css",
       "property": "grid-template-columns",
