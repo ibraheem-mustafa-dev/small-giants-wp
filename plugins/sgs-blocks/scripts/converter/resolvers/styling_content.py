@@ -178,6 +178,19 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
         # B2 fix: capture bp_decls (the original discards them at line 4025).
         base_decls, bp_decls = collect_css_decls_for_element(element, css_rules)
         raw = base_decls.get(css_property)
+        # `background: <colour>` shorthand → background-color. Drafts commonly declare a
+        # flat pill/card background with the SHORTHAND (e.g. `.pill{background:var(--cream)}`
+        # / `.pill--active{background:rgba(230,138,149,0.1)}`), but the lift resolves the
+        # attr to css_property `background-color` — so the shorthand key is missed and the
+        # bg attr never emits (proven on the Mama's pack pills, 2026-07-10). Fall back to the
+        # `background` shorthand ONLY when it is colour-only (no gradient / image / url —
+        # those are NOT a flat colour and belong to the bgImage/gradient path). rgba()/hsla()
+        # commas live inside the paren so they are safe; a multi-layer shorthand has `url(`
+        # or `gradient`, both excluded here.
+        if raw is None and css_property == "background-color":
+            _bg_shorthand = base_decls.get("background")
+            if _bg_shorthand and "gradient" not in _bg_shorthand and "url(" not in _bg_shorthand:
+                raw = _bg_shorthand
         if not raw:
             # No base declaration — still check bp_decls for B2 companion-only case.
             # Fall through to breakpoint loop below; skip value-normalise for base.

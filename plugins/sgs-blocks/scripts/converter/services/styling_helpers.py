@@ -511,7 +511,22 @@ def collect_css_decls_for_element(
             if not parts:
                 continue
             last_part = parts[-1]
-            if last_part.startswith(".") and last_part[1:] in desc_classes:
+            # Match the final compound simple-selector's CLASS tokens. A pure compound
+            # class selector (`.a.b`) matches ONLY if the element carries EVERY class —
+            # `last_part[1:]` would be `a.b` (a dot inside), never a single class name, so
+            # the old single-membership test silently dropped it. This left the draft's
+            # selected-state rule `.sgs-x__pill.sgs-x__pill--active` unmatched, so every
+            # pill-selected colour resolved to the RESTING `.__pill` value (2026-07-10 bug).
+            # A state/pseudo selector (`.a:hover`) keeps a ':' → excluded (unchanged; a
+            # static draft element has no live pseudo-state). Higher class-count raises the
+            # `_sel_specificity` cls score, so the compound rule correctly beats the
+            # single-class base rule in the cascade below.
+            _last_compound = (
+                [c for c in last_part.split(".") if c]
+                if last_part.startswith(".") and ":" not in last_part
+                else []
+            )
+            if _last_compound and all(c in desc_classes for c in _last_compound):
                 # CLASS match: verify every ancestor token in parts[:-1] resolves
                 # to a real ancestor of node (fixes GF-B.2 cross-section CSS bleed).
                 # A compound single-element selector (no whitespace tokens before the
