@@ -273,7 +273,13 @@ def _compute_value(
     - font-size → raw string; if attr_type is 'number', split + return int/float
     - all other typography properties → raw CSS value as string
     """
-    if css_property in ("color", "background-color"):
+    if css_property in ("color", "background-color", "border-color"):
+        # border-color joins color/background-color here (2026-07-10): previously it fell
+        # through to the raw-string return below, so a draft `border-color: var(--border)`
+        # stored the DRAFT's own var name verbatim — a dangling reference on the SGS site
+        # (the theme has no `--border`), rendering as the fallback default. Routing it
+        # through extract_token_or_hex resolves the draft var to its concrete hex (or the
+        # theme palette slug when it snaps), so the colour actually paints.
         return extract_token_or_hex(raw)
 
     if css_property == "font-weight":

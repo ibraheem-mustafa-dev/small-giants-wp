@@ -372,6 +372,25 @@ def extract_token_or_hex(value: str) -> str | None:
         return m.group(1)
     if v.startswith("#"):
         return v.split()[0]
+    # rgb()/rgba()/hsl()/hsla() concrete colour literals — return verbatim. These are a
+    # per-instance client colour with no theme-token equivalent (e.g. a pale-tint
+    # `rgba(230,138,149,0.1)` selected-pill fill). Returning None here previously DROPPED
+    # the value entirely; token-snapping the RGB to an opaque palette slug would silently
+    # discard the alpha (a 10%-tint became solid primary). Bean 2026-07-10 — "just use the
+    # hexcode / concrete value". Spec 31 §3 step 6: per-client divergences emit as raw
+    # instance values. Take the first comma-free-at-top-level colour (single layer).
+    _vl = v.lower()
+    if _vl.startswith(("rgb(", "rgba(", "hsl(", "hsla(")):
+        # Grab the complete function up to its matching close-paren (commas live inside).
+        _depth = 0
+        for _i, _ch in enumerate(v):
+            if _ch == "(":
+                _depth += 1
+            elif _ch == ")":
+                _depth -= 1
+                if _depth == 0:
+                    return v[: _i + 1]
+        return v.split(";")[0].strip()
     return None
 
 
@@ -395,7 +414,9 @@ def _colour_value_to_style(raw: str) -> str | None:
     token_or_hex = extract_token_or_hex(raw)
     if token_or_hex is None:
         return None
-    if token_or_hex.startswith("#"):
+    # A concrete colour (hex or rgb/rgba/hsl literal) is emitted verbatim; only a bare
+    # palette SLUG is wrapped as the WP preset reference (a raw rgba is NOT a preset slug).
+    if token_or_hex.startswith("#") or token_or_hex.lower().startswith(("rgb", "hsl")):
         return token_or_hex
     return f"var:preset|color|{token_or_hex}"
 
