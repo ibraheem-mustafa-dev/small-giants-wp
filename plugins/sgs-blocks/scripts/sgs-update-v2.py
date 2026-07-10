@@ -1512,6 +1512,28 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/label", "paddingMobile"): {"box_family": "padding"},
     ("sgs/label", "marginTablet"): {"box_family": "margin"},
     ("sgs/label", "marginMobile"): {"box_family": "margin"},
+    # Wave-2 batch 1 (2026-07-10): 4 leaf/inline block-private blocks migrated
+    # to no-inline. padding/margin base route to WP-native style.spacing.* (already
+    # object-shaped, no seed); tier objects seeded here. table-of-contents +
+    # countdown-timer add border-radius tier objects (base radius -> WP-native
+    # style.border.radius, no seed). decorative-image is an absolute-position/
+    # transform block with no box family -> no seed (inline-render fix only).
+    ("sgs/collapsible-text", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/collapsible-text", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/collapsible-text", "marginTablet"): {"box_family": "margin"},
+    ("sgs/collapsible-text", "marginMobile"): {"box_family": "margin"},
+    ("sgs/table-of-contents", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/table-of-contents", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/table-of-contents", "marginTablet"): {"box_family": "margin"},
+    ("sgs/table-of-contents", "marginMobile"): {"box_family": "margin"},
+    ("sgs/table-of-contents", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/table-of-contents", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    ("sgs/countdown-timer", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/countdown-timer", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/countdown-timer", "marginTablet"): {"box_family": "margin"},
+    ("sgs/countdown-timer", "marginMobile"): {"box_family": "margin"},
+    ("sgs/countdown-timer", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/countdown-timer", "borderRadiusMobile"): {"box_family": "borderRadius"},
 }
 
 

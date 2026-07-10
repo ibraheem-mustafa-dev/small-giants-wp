@@ -5,6 +5,20 @@
  * requestAnimationFrame for smooth, performant scroll-linked transforms.
  * Respects prefers-reduced-motion. Less than 1KB minified.
  *
+ * NO-INLINE (no-inline styling contract §A, 2026-07-10): the base
+ * position/transform/opacity declarations live in the block's own scoped
+ * `<style>` (render.php), never inline. This script therefore never writes
+ * `img.style.transform` / `img.style.opacity` directly — it only mutates the
+ * two CSS CUSTOM PROPERTIES the scoped rule reads (`--sgs-di-py` for the
+ * parallax translateY offset, `--sgs-di-op` for the fade-on-scroll opacity).
+ * A `--var: value` is a value, not a CSS property declaration, so the
+ * element carries zero inline property declarations at any point in its
+ * lifecycle. (Writing `img.style.transform` directly would also have
+ * SILENTLY DROPPED the scoped translate/rotate/flip declaration — inline
+ * `style.transform` always wins over the scoped stylesheet rule by
+ * specificity, so any JS-set transform simply replaces it. Composing via
+ * `translateY(var(--sgs-di-py, 0px))` inside the scoped rule avoids that.)
+ *
  * @package SGS\Blocks
  */
 
@@ -69,13 +83,10 @@ function initDecorativeImageEffects() {
 
 			if ( parallaxStrength !== 0 ) {
 				const offset = ( scrollProgress - 0.5 ) * parallaxStrength * 2;
-				const currentTransform = img.style.transform || '';
-				const baseTransform = currentTransform.replace(
-					/translateY\([^)]+\)/g,
-					''
-				);
-				img.style.transform =
-					`${ baseTransform } translateY(${ offset }px)`.trim();
+				// Custom-property VALUE only — the scoped <style> rule composes
+				// this into the full transform (translate/rotate/flip + this
+				// offset). Never set img.style.transform directly here.
+				img.style.setProperty( '--sgs-di-py', `${ offset }px` );
 			}
 
 			// ── Fade on scroll ────────────────────────────────────────────────────
@@ -84,7 +95,9 @@ function initDecorativeImageEffects() {
 			if ( img.hasAttribute( 'data-fade-on-scroll' ) ) {
 				// clamp: 1 when progress ≤ 0.7, fading out as it approaches 1.
 				const fadeOpacity = Math.max( 0, Math.min( 1, ( 1 - scrollProgress ) / 0.3 ) );
-				img.style.opacity = fadeOpacity;
+				// Custom-property VALUE only — the scoped <style> rule reads
+				// var(--sgs-di-op, <base opacity>).
+				img.style.setProperty( '--sgs-di-op', String( fadeOpacity ) );
 			}
 		} );
 

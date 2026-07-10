@@ -78,7 +78,6 @@ function initTableOfContents() {
 			10
 		);
 		const enableScrollSpy = toc.dataset.scrollSpy === 'true';
-		const activeColour = toc.dataset.activeColour || '';
 
 		const links = toc.querySelectorAll( '.sgs-toc__link' );
 
@@ -145,16 +144,13 @@ function initTableOfContents() {
 						?.slice( 1 );
 					const isActive = linkId === activeId;
 
+					// Active colour is CSS-driven (scoped `.sgs-toc__link--active`
+					// rule emitted in render.php) — no runtime inline style
+					// (no-inline contract §A). Toggling the class is enough.
 					link.classList.toggle(
 						'sgs-toc__link--active',
 						isActive
 					);
-
-					if ( activeColour ) {
-						link.style.color = isActive
-							? activeColour
-							: '';
-					}
 				} );
 			};
 

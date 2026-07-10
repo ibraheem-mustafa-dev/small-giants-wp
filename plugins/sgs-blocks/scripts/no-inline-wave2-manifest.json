@@ -1,0 +1,81 @@
+{
+  "pageId": 1356,
+  "_note": "Wave-2 Round-1 LANDED harness (2026-07-10). Asymmetric base padding {5,17,9,23} + distinct tablet {4,12,6,16} / mobile {2,8,4,10}; asymmetric base margin {10,2,6,14} + tablet {8,2,4,12} / mobile {6,2,2,10}; radius blocks (toc, countdown-timer) add asymmetric corners base {TL7,TR13,BR25,BL19} + tablet {3,6,12,9} + mobile {2,4,8,6}. Expected padding = 'T R B L'; marginTB = 'T B'; borderRadius = 'TL TR BR BL'. sgs/heading is a ToC dependency (ToC parses post_content for headings) — inline-clean check only. decorative-image is absolute/transform (no box family) — inline-clean check only.",
+  "blocks": [
+    {
+      "slug": "sgs/heading",
+      "rootSelector": ".wp-block-sgs-heading",
+      "attrs": { "content": "Section One", "level": "h2" },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "rootSelector": ".wp-block-sgs-collapsible-text",
+      "attrs": {
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "collapsible": false,
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" },
+        "marginTablet": { "top": "8px", "right": "2px", "bottom": "4px", "left": "12px" },
+        "marginMobile": { "top": "6px", "right": "2px", "bottom": "2px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "8px 4px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "6px 2px" }
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "rootSelector": ".wp-block-sgs-table-of-contents",
+      "attrs": {
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } }, "border": { "radius": { "topLeft": "7px", "topRight": "13px", "bottomRight": "25px", "bottomLeft": "19px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" },
+        "marginTablet": { "top": "8px", "right": "2px", "bottom": "4px", "left": "12px" },
+        "marginMobile": { "top": "6px", "right": "2px", "bottom": "2px", "left": "10px" },
+        "borderRadiusTablet": { "topLeft": "3px", "topRight": "6px", "bottomRight": "12px", "bottomLeft": "9px" },
+        "borderRadiusMobile": { "topLeft": "2px", "topRight": "4px", "bottomRight": "8px", "bottomLeft": "6px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px", "borderRadius": "7px 13px 25px 19px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "8px 4px", "borderRadius": "3px 6px 12px 9px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "6px 2px", "borderRadius": "2px 4px 8px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "rootSelector": ".wp-block-sgs-countdown-timer",
+      "attrs": {
+        "evergreenMode": true,
+        "evergreenHours": 24,
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } }, "border": { "radius": { "topLeft": "7px", "topRight": "13px", "bottomRight": "25px", "bottomLeft": "19px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" },
+        "marginTablet": { "top": "8px", "right": "2px", "bottom": "4px", "left": "12px" },
+        "marginMobile": { "top": "6px", "right": "2px", "bottom": "2px", "left": "10px" },
+        "borderRadiusTablet": { "topLeft": "3px", "topRight": "6px", "bottomRight": "12px", "bottomLeft": "9px" },
+        "borderRadiusMobile": { "topLeft": "2px", "topRight": "4px", "bottomRight": "8px", "bottomLeft": "6px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px", "borderRadius": "7px 13px 25px 19px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "8px 4px", "borderRadius": "3px 6px 12px 9px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "6px 2px", "borderRadius": "2px 4px 8px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "rootSelector": ".sgs-decorative-image",
+      "attrs": {
+        "imageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2024/01/placeholder.png",
+        "positionX": 40,
+        "positionY": 30,
+        "width": 180,
+        "opacity": 0.8,
+        "rotation": 6
+      },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    }
+  ]
+}

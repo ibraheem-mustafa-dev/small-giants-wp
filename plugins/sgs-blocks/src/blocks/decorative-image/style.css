@@ -19,18 +19,23 @@
 	position: relative;
 }
 
-/* ─── Responsive Overrides (Tablet) ─── */
-@media (max-width: 781px) {
+/* ─── Responsive Overrides (Tablet) ───
+   Device-tier breakpoint (contract §B2: max-width:1023px) — hideOnTablet is
+   the block's own named Tablet device-tier attr, not an arbitrary visual
+   breakpoint, so it uses the 768/1024 standard, not a custom value. */
+@media (max-width: 1023px) {
 	.sgs-decorative-image[data-hide-tablet="true"] {
 		display: none;
 	}
 
-	/* Responsive position/width overrides handled by view.js —
-	   CSS attr() for typed values has no browser support. */
+	/* positionXTablet / positionYTablet / widthTablet / rotationTablet are
+	   NOT wired to any CSS/JS consumer (pre-existing gap, out of scope of
+	   this inline-styling migration — see block report). */
 }
 
-/* ─── Responsive Overrides (Mobile) ─── */
-@media (max-width: 480px) {
+/* ─── Responsive Overrides (Mobile) ───
+   Device-tier breakpoint (contract §B2: max-width:767px). */
+@media (max-width: 767px) {
 	.sgs-decorative-image[data-hide-mobile="true"] {
 		display: none;
 	}

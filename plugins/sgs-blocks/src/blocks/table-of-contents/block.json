@@ -24,21 +24,25 @@
         "color": {
             "background": true,
             "text": true,
-            "link": true
+            "link": true,
+            "__experimentalSkipSerialization": true
         },
         "typography": {
             "fontSize": true,
-            "lineHeight": true
+            "lineHeight": true,
+            "__experimentalSkipSerialization": true
         },
         "spacing": {
             "margin": true,
-            "padding": true
+            "padding": true,
+            "__experimentalSkipSerialization": true
         },
         "__experimentalBorder": {
             "radius": true,
             "width": true,
             "color": true,
-            "style": true
+            "style": true,
+            "__experimentalSkipSerialization": true
         }
     },
     "selectors": {
@@ -83,7 +87,7 @@
             "type": "string",
             "default": "numbered"
         },
-        "style": {
+        "tocStyle": {
             "type": "string",
             "default": "card"
         },
@@ -98,6 +102,30 @@
         "activeLinkColour": {
             "type": "string",
             "default": "primary"
+        },
+        "paddingTablet": {
+            "type": "object",
+            "default": {}
+        },
+        "paddingMobile": {
+            "type": "object",
+            "default": {}
+        },
+        "marginTablet": {
+            "type": "object",
+            "default": {}
+        },
+        "marginMobile": {
+            "type": "object",
+            "default": {}
+        },
+        "borderRadiusTablet": {
+            "type": "object",
+            "default": {}
+        },
+        "borderRadiusMobile": {
+            "type": "object",
+            "default": {}
         }
     },
     "render": "file:./render.php",
@@ -110,7 +138,7 @@
             "title": "Table of Contents",
             "collapsible": true,
             "listStyle": "numbered",
-            "style": "card"
+            "tocStyle": "card"
         }
     }
 }

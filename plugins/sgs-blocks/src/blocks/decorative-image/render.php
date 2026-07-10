@@ -2,8 +2,25 @@
 /**
  * Server-side render for the SGS Decorative Image block.
  *
- * Outputs an absolute-positioned image with inline styles for positioning,
- * rotation, opacity, and z-index. Supports responsive overrides and parallax.
+ * Outputs an absolute-positioned image. Positioning, rotation, opacity, and
+ * z-index are emitted into the block's OWN scoped `<style>` tag — NOTHING is
+ * emitted as an inline `style="property:…"` declaration on the rendered
+ * element (no-inline styling contract, Spec 32 /
+ * `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`).
+ *
+ * Scoping: this block declares `supports.anchor` — the scope token is
+ * therefore a CLASS (`.sgs-di-XXXXXXXX`), never an id, so it can never
+ * collide with a user-set anchor id (Spec 31 §B3), mirroring sgs/label +
+ * sgs/media.
+ *
+ * Runtime scroll effects (parallax / fade-on-scroll, `view.js`) mutate two
+ * CSS CUSTOM PROPERTIES (`--sgs-di-py` / `--sgs-di-op`) — never a real CSS
+ * property — so the element carries zero inline property declarations at
+ * any point in its lifecycle; the scoped `<style>` below is the only place
+ * the actual `transform`/`opacity` declarations exist.
+ *
+ * @since 2026-07-10  No-inline migration (scoped output + custom-property
+ *                     runtime hooks for parallax/fade).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
@@ -15,6 +32,15 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+// ---------------------------------------------------------------------------
+// 0. Security sanitiser (contract §D) — every value that reaches the scoped
+// CSS blob is cast through this before concatenation.
+// ---------------------------------------------------------------------------
+
+$sgs_css_num = static function ( $value, int $decimals = 4 ): float {
+	return is_numeric( $value ) ? round( (float) $value, $decimals ) : 0.0;
+};
 
 // Extract attributes with defaults.
 $image_id            = $attributes['imageId'] ?? null;
@@ -79,35 +105,58 @@ if ( empty( $decor_media['url'] ) && ! $image_url ) {
 	return;
 }
 
-// Build inline styles for desktop (pointer-events moved to style.css).
-$styles = array(
-	'position: absolute',
-	'left: ' . esc_attr( $position_x ) . '%',
-	'top: ' . esc_attr( $position_y ) . '%',
-	'width: ' . esc_attr( $width ) . 'px',
-	'max-width: ' . esc_attr( $max_width_percent ) . '%',
-	'opacity: ' . esc_attr( $opacity / 100 ),
-	'z-index: ' . esc_attr( $z_index ),
-);
+// ---------------------------------------------------------------------------
+// Scoped CSS assembly (contract §A). uid is a CLASS — this block declares
+// `supports.anchor`, so the scope token must never be an id (Spec 31 §B3).
+// ---------------------------------------------------------------------------
 
-// Build transform.
-$transforms = array(
-	'translate(-50%, -50%)',
-);
-if ( 0 !== $rotation ) {
-	$transforms[] = 'rotate(' . esc_attr( $rotation ) . 'deg)';
+$uid      = 'sgs-di-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.sgs-decorative-image';
+
+// Base declarations — position/size/opacity/z-index/transform. `opacity` and
+// the parallax translateY read from CSS custom properties so the runtime
+// scroll effects in view.js only ever mutate a --var VALUE, never a real CSS
+// property (keeps the element at zero inline property declarations even
+// after JS runs).
+$pos_x_css        = $sgs_css_num( $position_x, 2 );
+$pos_y_css        = $sgs_css_num( $position_y, 2 );
+$width_css        = $sgs_css_num( $width, 2 );
+$max_width_css    = $sgs_css_num( $max_width_percent, 2 );
+$opacity_css      = $sgs_css_num( $opacity / 100, 4 );
+$z_index_css      = (int) $sgs_css_num( $z_index, 0 );
+$rotation_css     = $sgs_css_num( $rotation, 2 );
+
+$transform_parts   = array( 'translate(-50%, -50%)' );
+if ( 0.0 !== $rotation_css ) {
+	$transform_parts[] = 'rotate(' . $rotation_css . 'deg)';
 }
 if ( $flip_x ) {
-	$transforms[] = 'scaleX(-1)';
+	$transform_parts[] = 'scaleX(-1)';
 }
-$styles[] = 'transform: ' . implode( ' ', $transforms );
+$transform_parts[] = 'translateY(var(--sgs-di-py, 0px))';
 
-$style_attr = implode( '; ', $styles );
+$root_decls = array(
+	'position:absolute',
+	'left:' . $pos_x_css . '%',
+	'top:' . $pos_y_css . '%',
+	'width:' . $width_css . 'px',
+	'max-width:' . $max_width_css . '%',
+	'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
+	'z-index:' . $z_index_css,
+	'transform:' . implode( ' ', $transform_parts ),
+);
+
+$scoped_css   = array();
+$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+
+// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+// CSS combinators like `>` intact (contract §D). Every value reaching
+// $scoped_css is pre-sanitised via $sgs_css_num (numeric cast) or a literal.
+$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 
 // Build data attributes — passed directly through $img_attrs for proper escaping.
 $img_attrs = array(
-	'class'       => 'sgs-decorative-image',
-	'style'       => $style_attr,
+	'class'       => 'sgs-decorative-image ' . $uid,
 	'aria-hidden' => 'true',
 	'role'        => 'presentation',
 	'alt'         => '',
@@ -172,10 +221,12 @@ if ( $is_video ) {
 		return;
 	}
 
-	// Build wrapper attributes mirroring the image data-* pipeline.
+	// Build wrapper attributes mirroring the image data-* pipeline. NO 'style'
+	// key — the wrapper carries zero inline property declarations; the
+	// positioning/transform/opacity rule lives in $style_tag_html above,
+	// scoped to $uid (contract §A).
 	$wrapper_attrs = array(
-		'class'       => 'sgs-decorative-image sgs-decorative-image--video',
-		'style'       => $style_attr,
+		'class'       => 'sgs-decorative-image sgs-decorative-image--video ' . $uid,
 		'aria-hidden' => 'true',
 		'role'        => 'presentation',
 	);
@@ -191,7 +242,8 @@ if ( $is_video ) {
 	}
 
 	printf(
-		'<span %1$s>%2$s</span>',
+		'%1$s<span %2$s>%3$s</span>',
+		$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
 		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
 		$video_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_render_media() escapes attributes internally.
 	);
@@ -199,11 +251,14 @@ if ( $is_video ) {
 }
 
 // Image branch: render using sgs_responsive_image helper — all attributes
-// escaped via $img_attrs.
-echo sgs_responsive_image(
+// escaped via $img_attrs. NO 'style' key on $img_attrs — the scoped
+// $style_tag_html (echoed first) carries the positioning/transform/opacity
+// rule (contract §A).
+echo $style_tag_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
+echo sgs_responsive_image( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
 	$image_id ? absint( $image_id ) : 0,
 	$image_url,
 	'', // Empty alt for decorative.
 	'large',
 	$img_attrs
-); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
+);

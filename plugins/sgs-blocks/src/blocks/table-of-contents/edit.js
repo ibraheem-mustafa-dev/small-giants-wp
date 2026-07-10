@@ -9,7 +9,11 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { DesignTokenPicker } from '../../components';
+import {
+	DesignTokenPicker,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import { colourVar } from '../../utils';
 
 const STYLE_OPTIONS = [
@@ -42,6 +46,52 @@ function slugify( text ) {
 		.replace( /^-+|-+$/g, '' );
 }
 
+/**
+ * Editor-only preview helper — mirrors render.php's scoped-CSS output so the
+ * canvas approximates the frontend after the native color/spacing/border/
+ * typography supports were flipped to `__experimentalSkipSerialization`
+ * (no-inline contract §A). The frontend NEVER inlines these; this object is
+ * only ever applied to the React editor canvas (mirrors sgs/label + sgs/media).
+ */
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) return undefined;
+	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+}
+
+function radiusShorthand( radius ) {
+	if ( ! radius ) return undefined;
+	if ( 'string' === typeof radius ) return radius;
+	const { topLeft, topRight, bottomRight, bottomLeft } = radius;
+	if ( ! topLeft && ! topRight && ! bottomRight && ! bottomLeft ) return undefined;
+	return [ topLeft, topRight, bottomRight, bottomLeft ].map( ( v ) => v || '0' ).join( ' ' );
+}
+
+function buildRootPreviewStyle( style ) {
+	const spacing = style?.spacing || {};
+	const border = style?.border || {};
+	const color = style?.color || {};
+	const typography = style?.typography || {};
+
+	const previewStyle = {
+		color: color.text || undefined,
+		backgroundColor: color.background || undefined,
+		padding: boxShorthand( spacing.padding ),
+		margin: boxShorthand( spacing.margin ),
+		borderRadius: radiusShorthand( border.radius ),
+		borderWidth: border.width || undefined,
+		borderStyle: border.style || undefined,
+		borderColor: border.color || undefined,
+		fontSize: typography.fontSize || undefined,
+		lineHeight: typography.lineHeight || undefined,
+	};
+
+	return Object.fromEntries(
+		Object.entries( previewStyle ).filter( ( [ , v ] ) => v !== undefined )
+	);
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		headingLevels,
@@ -52,10 +102,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		scrollOffset,
 		scrollSpy,
 		listStyle,
-		style: tocStyle,
+		tocStyle,
 		titleColour,
 		linkColour,
 		activeLinkColour,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		borderRadiusTablet,
+		borderRadiusMobile,
 	} = attributes;
 
 	// Detect headings from the current post content in the editor.
@@ -115,7 +172,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-toc--${ listStyle }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	// Editor-only preview style (mirrors render.php's scoped output — the
+	// frontend never inlines these; see buildRootPreviewStyle above).
+	const blockProps = useBlockProps( {
+		className,
+		style: buildRootPreviewStyle( style ),
+	} );
 
 	const ListTag = listStyle === 'numbered' ? 'ol' : 'ul';
 
@@ -130,7 +192,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ tocStyle }
 						options={ STYLE_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { style: val } )
+							setAttributes( { tocStyle: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -270,6 +332,71 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { activeLinkColour: val } )
 						}
+					/>
+				</PanelBody>
+
+				{ /*
+				 * Padding / margin / border-radius — WP-native base tiers
+				 * (style.spacing.padding / style.spacing.margin /
+				 * style.border.radius) unified with the SGS Tablet/Mobile
+				 * tier object attrs in ONE responsive control (mirrors
+				 * sgs/label + sgs/media). Border colour/width/style stay on
+				 * WP's own native "Border" panel (base only, no tiers).
+				 */ }
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ {
+							base: style?.border?.radius ?? {},
+							tablet: borderRadiusTablet ?? {},
+							mobile: borderRadiusMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+							} else {
+								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

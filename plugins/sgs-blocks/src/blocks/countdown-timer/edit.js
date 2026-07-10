@@ -6,10 +6,9 @@ import {
 	TextControl,
 	ToggleControl,
 	RangeControl,
-	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
-	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
+import { colourVar } from '../../utils';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -22,6 +21,72 @@ const DIGIT_STYLES = [
 	{ label: __( 'Simple', 'sgs-blocks' ), value: 'simple' },
 	{ label: __( 'Flip', 'sgs-blocks' ), value: 'flip' },
 ];
+
+/**
+ * Editor-canvas box shorthand preview — mirrors render.php's scoped shorthand
+ * output so the canvas matches the frontend (contract §E). Editor-only
+ * convenience; the frontend never emits these as inline styles (contract §A).
+ */
+function boxShorthand( box, order = [ 'top', 'right', 'bottom', 'left' ] ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const vals = order.map( ( key ) => box[ key ] );
+	if ( vals.every( ( v ) => ! v ) ) return undefined;
+	return vals.map( ( v ) => v || '0' ).join( ' ' );
+}
+
+/**
+ * Build the editor-canvas preview style object (base tier only — tablet/
+ * mobile tiers are not simulated on the fixed-width canvas, matching quote/
+ * media precedent).
+ */
+function buildPreviewStyle( attributes ) {
+	const { style, textAlign } = attributes;
+
+	const preview = {};
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	if ( paddingPreview ) {
+		preview.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin );
+	if ( marginPreview ) {
+		preview.margin = marginPreview;
+	}
+
+	const border = style?.border ?? {};
+	if ( border.style && border.style !== 'none' ) {
+		const borderWidthPreview = boxShorthand( border.width, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( typeof border.width === 'string' ) {
+			preview.borderWidth = border.width;
+		} else if ( borderWidthPreview ) {
+			preview.borderWidth = borderWidthPreview;
+		}
+		preview.borderStyle = border.style;
+		if ( border.color ) {
+			preview.borderColor = border.color;
+		}
+	}
+	if ( border.radius ) {
+		preview.borderRadius = typeof border.radius === 'string'
+			? border.radius
+			: boxShorthand( border.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	}
+
+	if ( style?.color?.text ) {
+		preview.color = style.color.text;
+	}
+	if ( style?.color?.background ) {
+		preview.backgroundColor = style.color.background;
+	}
+	if ( style?.typography?.fontSize ) {
+		preview.fontSize = style.typography.fontSize;
+	}
+	if ( textAlign ) {
+		preview.textAlign = textAlign;
+	}
+
+	return preview;
+}
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -36,6 +101,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		showSeconds,
 		cardStyle,
 		digitStyle,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		borderRadiusTablet,
+		borderRadiusMobile,
 	} = attributes;
 
 	const className = [
@@ -43,7 +115,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-countdown--${ cardStyle }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps( {
+		className,
+		style: buildPreviewStyle( attributes ),
+	} );
 
 	const units = [];
 	if ( showDays ) units.push( { value: '00', label: __( 'Days', 'sgs-blocks' ) } );
@@ -152,6 +227,61 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Label colour', 'sgs-blocks' ) }
 						value={ attributes.labelColour }
 						onChange={ ( val ) => setAttributes( { labelColour: val } ) }
+					/>
+				</PanelBody>
+
+				{ /*
+				 * Box families: base padding/margin/border-radius are WP-native
+				 * style.spacing.* / style.border.radius objects (already responsive-
+				 * capable at the base tier via the block's native Styles panel);
+				 * these controls add the SGS Tablet/Mobile tier overrides
+				 * (contract §B, mirrors sgs/quote + sgs/media).
+				 */ }
+				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ {
+							base: style?.border?.radius ?? {},
+							tablet: borderRadiusTablet ?? {},
+							mobile: borderRadiusMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+							} else {
+								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
