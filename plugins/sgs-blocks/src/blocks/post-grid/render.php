@@ -27,6 +27,21 @@ require_once dirname( __FILE__, 4 ) . '/includes/class-post-grid-rest.php';
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 
+// CSS length/unit sanitiser — for free-text style-engine values concatenated
+// into raw CSS declarations inside this block's scoped <style> tag. Strips
+// everything except letters, digits, dot, and % so a Contributor-authored
+// malicious value can never break out of the declaration. Mirrors sgs/hero's
+// proven sanitiser (contract §D).
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
+// declarations (border-style / font-weight / font-style) — letters + hyphen only.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
 // -------------------------------------------------------------------------
 // Normalise attributes with safe defaults.
 // -------------------------------------------------------------------------
@@ -319,6 +334,131 @@ if ( 'none' !== $pagination && $total_pages > 1 ) {
 $inner_html = ob_get_clean();
 
 // -------------------------------------------------------------------------
+// No-inline contract (Spec 32): block.json declares color/typography/spacing/
+// __experimentalBorder ALL with __experimentalSkipSerialization:true, so
+// get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render()
+// below) never auto-inlines them. Read the resolved values from
+// $attributes['style'] here and emit them into POST-GRID'S OWN scoped <style>
+// (composite caveat: do NOT pass these as wrapper `extra_styles` — that path
+// inlines). Base spacing (padding/margin) is a SEPARATE mechanism the wrapper
+// already handles scoped internally (reads $attributes['style']['spacing']
+// directly) — not duplicated here.
+// -------------------------------------------------------------------------
+$uid      = 'sgs-post-grid-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-post-grid';
+
+$post_grid_classes = array(
+	'sgs-post-grid',
+	'sgs-post-grid--' . $layout,
+	$uid,
+);
+
+$responsive_css = '';
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$post_grid_style_engine_args = array();
+
+	$color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $color_args ) ) {
+		$post_grid_style_engine_args['color'] = $color_args;
+	}
+
+	$border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+			$border_args['radius'] = $sgs_css_length( $radius_raw );
+		} elseif ( is_array( $radius_raw ) ) {
+			$radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+				if ( ! empty( $radius_raw[ $corner ] ) ) {
+					$radius_clean[ $corner ] = $sgs_css_length( $radius_raw[ $corner ] );
+				}
+			}
+			if ( ! empty( $radius_clean ) ) {
+				$border_args['radius'] = $radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $border_args ) ) {
+		$post_grid_style_engine_args['border'] = $border_args;
+	}
+
+	if ( ! empty( $post_grid_style_engine_args ) ) {
+		$post_grid_scoped_styles = wp_style_engine_get_styles(
+			$post_grid_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $post_grid_scoped_styles['css'] ) ) {
+			$responsive_css .= $post_grid_scoped_styles['css'];
+		}
+	}
+
+	// Typography — declared selector (block.json selectors.typography) targets
+	// .sgs-post-grid__title, so scope the rule there rather than $root_sel.
+	$typography_args = array();
+	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+		$typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+	}
+	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+		$typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+	}
+	if ( ! empty( $typography_args ) ) {
+		$typography_scoped = wp_style_engine_get_styles(
+			array( 'typography' => $typography_args ),
+			array( 'selector' => $root_sel . ' .sgs-post-grid__title' )
+		);
+		if ( ! empty( $typography_scoped['css'] ) ) {
+			$responsive_css .= $typography_scoped['css'];
+		}
+	}
+}
+
+// Skip-serialised `color` support also stops WP auto-adding the standard
+// has-*-color / has-*-background-color classes onto the wrapper — re-add them
+// manually (mirrors sgs/hero, sgs/quote) so preset palette colours still
+// resolve visually.
+$post_grid_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$post_grid_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $post_grid_preset_text_slug ) {
+	$post_grid_classes[] = 'has-text-color';
+	$post_grid_classes[] = 'has-' . $post_grid_preset_text_slug . '-color';
+}
+if ( '' !== $post_grid_preset_bg_slug ) {
+	$post_grid_classes[] = 'has-background';
+	$post_grid_classes[] = 'has-' . $post_grid_preset_bg_slug . '-background-color';
+}
+
+// Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
+// </style> breakout while leaving CSS combinators like `>` intact (contract
+// §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote + sgs/button).
+// Every value reaching $responsive_css is pre-sanitised ($sgs_css_length /
+// $sgs_css_keyword / wp_style_engine_get_styles), so no un-sanitised value
+// survives to here.
+if ( $responsive_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $responsive_css built from pre-sanitised values only.
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
+}
+
+// -------------------------------------------------------------------------
 // WS-4: emit via shared wrapper helper (kind='layout').
 // Own block classes + CSS vars + data-* ride through opts.
 // -------------------------------------------------------------------------
@@ -330,10 +470,7 @@ echo SGS_Container_Wrapper::render(
 	'layout',
 	array(
 		'tag'           => 'div',
-		'extra_classes' => array(
-			'sgs-post-grid',
-			'sgs-post-grid--' . $layout,
-		),
+		'extra_classes' => $post_grid_classes,
 		'extra_styles'  => array_values( $extra_styles ),
 		'extra_attrs'   => $extra_attrs,
 	)

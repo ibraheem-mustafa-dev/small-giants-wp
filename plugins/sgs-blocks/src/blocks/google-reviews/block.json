@@ -30,13 +30,15 @@
 		"color": {
 			"background": true,
 			"text": true,
-			"gradients": true
+			"gradients": true,
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"color": true,
-			"style": true
+			"style": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {

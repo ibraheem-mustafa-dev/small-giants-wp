@@ -20,6 +20,26 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 
+// CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
+// declarations inside this block's scoped <style> tag. Strips everything
+// except letters, digits, dot, and % so a value can never break out of the
+// declaration into a new CSS rule. Mirrors sgs/hero's proven sanitiser.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
+// declarations (border-style) — letters + hyphen only.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
+// CSS aspect-ratio sanitiser — the aspectRatio attr stores values like
+// "1/1", "4/3", "16/9". Allows digits, dot, and "/" only.
+$sgs_css_ratio = static function ( $value ) {
+	return preg_replace( '/[^0-9.\/]/', '', (string) $value );
+};
+
 // -------------------------------------------------------------------------
 // Normalise attributes with safe defaults.
 // -------------------------------------------------------------------------
@@ -141,8 +161,84 @@ $context_data = wp_json_encode( [
 ] );
 
 // -------------------------------------------------------------------------
+// NO-INLINE contract — scoped uid + WP-native color/border re-emit.
+// block.json declares color/spacing/__experimentalBorder ALL with
+// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
+// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
+// them. Spacing (padding/margin) is already handled scoped by the wrapper
+// itself; color + border are re-emitted here into the gallery's OWN scoped
+// <style> (composite caveat — never via wrapper `extra_styles`, which
+// inlines). Mirrors sgs/hero.
+// -------------------------------------------------------------------------
+$uid      = 'sgs-gallery-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-gallery';
+
+$gallery_responsive_css = '';
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$gallery_style_engine_args = array();
+
+	$gallery_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$gallery_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$gallery_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$gallery_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $gallery_color_args ) ) {
+		$gallery_style_engine_args['color'] = $gallery_color_args;
+	}
+
+	$gallery_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$gallery_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$gallery_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$gallery_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$gallery_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $gallery_radius_raw ) && '' !== $gallery_radius_raw ) {
+			$gallery_border_args['radius'] = $sgs_css_length( $gallery_radius_raw );
+		} elseif ( is_array( $gallery_radius_raw ) ) {
+			$gallery_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gallery_corner ) {
+				if ( ! empty( $gallery_radius_raw[ $gallery_corner ] ) ) {
+					$gallery_radius_clean[ $gallery_corner ] = $sgs_css_length( $gallery_radius_raw[ $gallery_corner ] );
+				}
+			}
+			if ( ! empty( $gallery_radius_clean ) ) {
+				$gallery_border_args['radius'] = $gallery_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $gallery_border_args ) ) {
+		$gallery_style_engine_args['border'] = $gallery_border_args;
+	}
+
+	if ( ! empty( $gallery_style_engine_args ) ) {
+		$gallery_scoped_styles = wp_style_engine_get_styles(
+			$gallery_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $gallery_scoped_styles['css'] ) ) {
+			$gallery_responsive_css .= $gallery_scoped_styles['css'];
+		}
+	}
+}
+
+// -------------------------------------------------------------------------
 // Wrapper class and data attributes.
 // -------------------------------------------------------------------------
+$gallery_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$gallery_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
 $wrapper_classes = implode( ' ', array_filter( [
 	'sgs-gallery',
 	'sgs-gallery--' . $layout,
@@ -153,6 +249,14 @@ $wrapper_classes = implode( ' ', array_filter( [
 	$hover_grayscale ? 'sgs-has-grayscale'             : '',
 	$stagger_delay   ? 'sgs-has-stagger'               : '',
 	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
+	$uid,
+	// Skip-serialised `color` support also stops WP auto-adding the standard
+	// has-*-color / has-*-background-color classes onto the wrapper — re-add
+	// them manually (mirrors sgs/hero) so preset palette colours still resolve.
+	'' !== $gallery_preset_text_slug ? 'has-text-color' : '',
+	'' !== $gallery_preset_text_slug ? 'has-' . $gallery_preset_text_slug . '-color' : '',
+	'' !== $gallery_preset_bg_slug   ? 'has-background' : '',
+	'' !== $gallery_preset_bg_slug   ? 'has-' . $gallery_preset_bg_slug . '-background-color' : '',
 ] ) );
 
 // Build extra_attrs — Interactivity API data-* attrs (view.js reads these).
@@ -201,10 +305,15 @@ ob_start();
 				);
 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
 
-				// Determine the aspect-ratio and stagger delay inline style for this item.
+				// Determine the aspect-ratio and stagger delay for this item. Both
+				// values ride as CSS custom-PROPERTY VALUES (never a raw property
+				// declaration) — style.css reads --sgs-item-aspect via a scoped
+				// `aspect-ratio: var(...)` rule so nothing here is an inline
+				// property declaration. $sgs_css_ratio allows digits, dot, and
+				// the "/" the aspect-ratio grammar needs (e.g. "16/9").
 				$item_style = '';
 				if ( $aspect_ratio ) {
-					$item_style .= 'aspect-ratio:' . esc_attr( $aspect_ratio ) . ';';
+					$item_style .= '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio ) . ';';
 				}
 				if ( $stagger_delay > 0 ) {
 					$item_style .= '--sgs-item-index:' . $index . ';';
@@ -425,6 +534,16 @@ ob_start();
 
 <?php
 $inner_html = ob_get_clean();
+
+// Output the gallery's own scoped <style> (color/border no-inline re-emit).
+// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+// CSS combinators like `>` intact. Every value reaching $gallery_responsive_css
+// is pre-sanitised ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles),
+// so no un-sanitised value survives to here.
+if ( $gallery_responsive_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gallery_responsive_css built from pre-sanitised values only.
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $gallery_responsive_css ) );
+}
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes all output internally; variables are pre-sanitised above.
 echo SGS_Container_Wrapper::render(

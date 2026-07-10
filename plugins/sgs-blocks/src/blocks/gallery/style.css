@@ -165,6 +165,9 @@
 	overflow:    hidden;
 	border-radius: var( --sgs-item-radius );
 	margin:      0;
+	/* No-inline contract: render.php sets --sgs-item-aspect as a custom-
+	   property VALUE (never a raw `aspect-ratio:` inline declaration). */
+	aspect-ratio: var( --sgs-item-aspect, auto );
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
@@ -357,6 +360,13 @@
 
 .sgs-gallery__lightbox--open {
 	display: flex;
+}
+
+/* Scroll-lock while the lightbox is open — view.js toggles this class on
+   <body> instead of writing document.body.style.overflow inline (no-inline
+   contract). */
+body.sgs-gallery-lightbox-open {
+	overflow: hidden;
 }
 
 /* Close button — top right */

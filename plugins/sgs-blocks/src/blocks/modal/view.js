@@ -85,11 +85,13 @@ function openModal( dialog, closeButton ) {
 	dialog.showModal();
 
 	// Lock body scroll — save current position to restore on close.
+	// Real properties (overflow / position / top / width) live in style.css
+	// on the `.sgs-modal-scroll-locked` class (no-inline styling contract,
+	// Spec 32); only the scroll-position VALUE is written here, as a CSS
+	// custom-property value (allowed).
 	const scrollY = window.scrollY;
-	document.body.style.overflow = 'hidden';
-	document.body.style.position = 'fixed';
-	document.body.style.top = `-${ scrollY }px`;
-	document.body.style.width = '100%';
+	document.body.classList.add( 'sgs-modal-scroll-locked' );
+	document.body.style.setProperty( '--sgs-modal-scroll-y', `-${ scrollY }px` );
 	dialog.dataset.scrollY = scrollY;
 
 	// Focus the close button (first focusable element).
@@ -110,10 +112,8 @@ function openModal( dialog, closeButton ) {
 function closeModal( dialog ) {
 	const scrollY = Number.parseInt( dialog.dataset.scrollY || '0', 10 );
 
-	document.body.style.overflow = '';
-	document.body.style.position = '';
-	document.body.style.top = '';
-	document.body.style.width = '';
+	document.body.classList.remove( 'sgs-modal-scroll-locked' );
+	document.body.style.removeProperty( '--sgs-modal-scroll-y' );
 	window.scrollTo( 0, scrollY );
 
 	dialog.close();
