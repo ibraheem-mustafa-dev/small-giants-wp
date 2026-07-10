@@ -47,17 +47,20 @@
 		"color": {
 			"background": true,
 			"text": true,
-			"gradients": true
+			"gradients": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"color": true,
-			"style": true
+			"style": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {
@@ -590,121 +593,37 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTopTablet": {
-			"type": "string",
-			"default": ""
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingRightTablet": {
-			"type": "string",
-			"default": ""
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingBottomTablet": {
-			"type": "string",
-			"default": ""
+		"marginTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"paddingLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftMobile": {
-			"type": "string",
-			"default": ""
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"contentBandBackground": {
 			"type": "string",
 			"default": ""
 		},
-		"contentBandPaddingBottom": {
-			"type": "string",
-			"default": ""
+		"contentBandPadding": {
+			"type": "object",
+			"default": {}
 		},
-		"contentBandPaddingBottomMobile": {
-			"type": "string",
-			"default": ""
+		"contentBandPaddingTablet": {
+			"type": "object",
+			"default": {}
 		},
-		"contentBandPaddingBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeft": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRight": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTop": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"contentBandPaddingTopTablet": {
-			"type": "string",
-			"default": ""
+		"contentBandPaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"contentWidthMobile": {
 			"type": "string",

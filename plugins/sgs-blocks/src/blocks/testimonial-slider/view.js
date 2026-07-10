@@ -22,6 +22,13 @@
  * work) but with no transition — matches the previous scroll-behavior:auto
  * fallback per WCAG 2.3.3.
  *
+ * No-inline contract (2026-07-10): the track position is driven entirely by a
+ * CSS custom PROPERTY VALUE (--sgs-slider-offset, allowed — a var value is not
+ * a property declaration) + a transition kill-switch class (.no-transition).
+ * Never write .style.transform/.style.transition — style.css owns the
+ * `transform: translateX(var(--sgs-slider-offset, 0))` + `transition` property
+ * declarations, keyed off the var + class (D298 mobile-nav pattern).
+ *
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
 
@@ -136,11 +143,11 @@ sliders.forEach( ( slider ) => {
 		if ( ! isInCloneZone( visualIndex ) ) {
 			return;
 		}
-		visualIndex     = cloneCount + wrapIndex( visualIndex - cloneCount );
-		list.style.transition = 'none';
-		list.style.transform  = `translateX(${ -( visualIndex * slideStep ) }px)`;
+		visualIndex = cloneCount + wrapIndex( visualIndex - cloneCount );
+		list.classList.add( 'no-transition' );
+		list.style.setProperty( '--sgs-slider-offset', `${ -( visualIndex * slideStep ) }px` );
 		void list.offsetWidth; // force reflow before re-enabling the transition
-		list.style.transition = '';
+		list.classList.remove( 'no-transition' );
 	}
 
 	/**
@@ -150,8 +157,8 @@ sliders.forEach( ( slider ) => {
 	 */
 	function render( animate ) {
 		const useTransition = animate && ! prefersReducedMotion;
-		list.style.transition = useTransition ? '' : 'none';
-		list.style.transform  = `translateX(${ -( visualIndex * slideStep ) }px)`;
+		list.classList.toggle( 'no-transition', ! useTransition );
+		list.style.setProperty( '--sgs-slider-offset', `${ -( visualIndex * slideStep ) }px` );
 		updateDots();
 		if ( ! useTransition ) {
 			resetIfInCloneZone();
@@ -255,7 +262,10 @@ sliders.forEach( ( slider ) => {
 			return;
 		}
 		isDragging = false;
-		list.style.transition = '';
+		track.classList.remove( 'is-dragging' );
+		// No .no-transition removal needed here — the subsequent render( true )
+		// call below (via goToSlide or directly) always sets the class to match
+		// its own `animate` argument, overriding whatever drag left behind.
 
 		const threshold = slideStep / 4;
 		if ( dragDelta > threshold ) {
@@ -274,7 +284,8 @@ sliders.forEach( ( slider ) => {
 			isDragging  = true;
 			dragStartX  = e.clientX;
 			dragDelta   = 0;
-			list.style.transition = 'none';
+			list.classList.add( 'no-transition' );
+			track.classList.add( 'is-dragging' );
 			track.setPointerCapture?.( e.pointerId );
 		} );
 
@@ -283,7 +294,7 @@ sliders.forEach( ( slider ) => {
 				return;
 			}
 			dragDelta = e.clientX - dragStartX;
-			list.style.transform = `translateX(${ -( visualIndex * slideStep ) + dragDelta }px)`;
+			list.style.setProperty( '--sgs-slider-offset', `${ -( visualIndex * slideStep ) + dragDelta }px` );
 		} );
 
 		track.addEventListener( 'pointerup', endDrag );

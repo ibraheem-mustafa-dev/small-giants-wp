@@ -213,6 +213,12 @@ a.sgs-trust-bar__badge:focus-visible {
 	animation: sgs-trust-bar-scroll var(--sgs-trust-bar-scroll-speed, 25s) linear infinite;
 }
 
+/* D298 pattern: view.js toggles this class on hover (pause-on-hover) instead
+   of writing animation-play-state inline — no-inline contract (§A). */
+.sgs-trust-bar__track--ready.is-paused {
+	animation-play-state: paused;
+}
+
 @keyframes sgs-trust-bar-scroll {
 	0%   { transform: translateX(0); }
 	100% { transform: translateX(calc(-1 * var(--sgs-scroll-distance))); }

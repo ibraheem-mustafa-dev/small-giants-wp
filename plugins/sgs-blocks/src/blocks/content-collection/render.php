@@ -169,8 +169,98 @@ if ( ! empty( $result_posts ) ) {
 
 /* ── 4. Wrapper: own classes and CSS vars for SGS_Container_Wrapper ─────────── */
 
+// ── No-inline contract (§A) — block.json declares color/spacing/border ALL with
+// __experimentalSkipSerialization:true, so get_block_wrapper_attributes() (called
+// inside SGS_Container_Wrapper::render() below) never auto-inlines them. Base
+// spacing (margin) is a SEPARATE mechanism the wrapper already handles scoped
+// internally (reads $attributes['style']['spacing'] directly) — not duplicated
+// here. Color + border are NOT touched by the wrapper, so this block emits them
+// into its OWN scoped <style> (mirrors sgs/hero L645-744).
+$cc_uid      = 'sgs-cc-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$cc_root_sel = '.' . $cc_uid . '.wp-block-sgs-content-collection';
+
+// CSS-length sanitiser — letters, digits, dot, % only (mirrors sgs/hero/sgs/button).
+$sgs_cc_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — free-text keyword attrs (border-style) — letters + hyphen only.
+$sgs_cc_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
+$cc_responsive_css = '';
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$cc_style_engine_args = array();
+
+	$cc_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$cc_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$cc_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$cc_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $cc_color_args ) ) {
+		$cc_style_engine_args['color'] = $cc_color_args;
+	}
+
+	$cc_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$cc_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$cc_border_args['style'] = $sgs_cc_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$cc_border_args['width'] = $sgs_cc_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$cc_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $cc_radius_raw ) && '' !== $cc_radius_raw ) {
+			$cc_border_args['radius'] = $sgs_cc_css_length( $cc_radius_raw );
+		} elseif ( is_array( $cc_radius_raw ) ) {
+			$cc_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $cc_corner ) {
+				if ( ! empty( $cc_radius_raw[ $cc_corner ] ) ) {
+					$cc_radius_clean[ $cc_corner ] = $sgs_cc_css_length( $cc_radius_raw[ $cc_corner ] );
+				}
+			}
+			if ( ! empty( $cc_radius_clean ) ) {
+				$cc_border_args['radius'] = $cc_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $cc_border_args ) ) {
+		$cc_style_engine_args['border'] = $cc_border_args;
+	}
+
+	if ( ! empty( $cc_style_engine_args ) ) {
+		$cc_scoped_styles = wp_style_engine_get_styles(
+			$cc_style_engine_args,
+			array( 'selector' => $cc_root_sel )
+		);
+		if ( ! empty( $cc_scoped_styles['css'] ) ) {
+			$cc_responsive_css .= $cc_scoped_styles['css'];
+		}
+	}
+}
+
+// Output the scoped <style> before the wrapper markup. wp_strip_all_tags (NOT
+// esc_html) blocks a </style> breakout while leaving CSS combinators intact
+// (contract §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote). Every
+// value reaching $cc_responsive_css is pre-sanitised above.
+if ( $cc_responsive_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $cc_responsive_css built from pre-sanitised values only.
+	printf( '<style id="%s">%s</style>', esc_attr( $cc_uid ), wp_strip_all_tags( $cc_responsive_css ) );
+}
+
 $cc_extra_classes = array(
 	'sgs-content-collection',
+	$cc_uid,
 );
 
 $cc_extra_styles = array(

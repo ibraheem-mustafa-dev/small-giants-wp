@@ -14,6 +14,20 @@
  *
  * R-22-14: explicit discriminators only — never branch on empty($content).
  *
+ * NO-INLINE (contract §A, 2026-07-09): color/typography/spacing/
+ * __experimentalBorder all declare __experimentalSkipSerialization in
+ * block.json. The wrapper handles base+tier padding/margin scoped internally
+ * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs, new
+ * this migration — box-group contract §B). color/typography/border are
+ * block-private (mirrors sgs/container's render.php pattern): extracted from
+ * $attributes['style'], emitted into a scoped `<style>` keyed to a
+ * content-hash uid CLASS, fed to the wrapper via `extra_classes`. The submit
+ * button's colour (previously inline style="") is now a scoped rule on
+ * `.uid .sgs-form__button--submit`; the honeypot's off-screen positioning
+ * (previously inline style="position:absolute;...") now relies solely on the
+ * pre-existing `.sgs-form__honeypot` rule in style.css — the div carries only
+ * its class.
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var \WP_Block $block      Block instance.
@@ -25,6 +39,14 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+
+// CSS-keyword sanitiser — letters + hyphen only (border-style — the only
+// free-text keyword sgs/form's declared supports concatenate into scoped CSS;
+// fontSize/lineHeight are string values passed straight to
+// wp_style_engine_get_styles(), which sanitises them internally).
+$sgs_form_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
 
 $form_id           = $attributes['formId'] ?? '';
 $form_name         = $attributes['formName'] ?? '';
@@ -99,17 +121,114 @@ $context = array(
 	'successRedirect' => $success_redirect,
 );
 
-// Build submit button inline styles.
-$submit_styles = array();
-if ( $submit_colour ) {
-	$submit_styles[] = 'color:' . sgs_colour_value( $submit_colour );
-}
-if ( $submit_background ) {
-	$submit_styles[] = 'background-color:' . sgs_colour_value( $submit_background );
-}
-$submit_style_attr = ! empty( $submit_styles ) ? ' style="' . implode( ';', $submit_styles ) . '"' : '';
+// ---------------------------------------------------------------------------
+// Block-private scoped color/typography/border supports (no-inline contract
+// §A) — mirrors sgs/container's render.php pattern. Base padding/margin +
+// their Tablet/Mobile tiers are handled separately, scoped, inside
+// SGS_Container_Wrapper::render() (reads $attributes['paddingTablet'] etc.
+// directly — no change needed here beyond the new block.json attrs).
+// ---------------------------------------------------------------------------
+$sgs_form_style_group      = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
+$sgs_form_supports_css     = '';
+$sgs_form_supports_classes = array( 'sgs-form' );
 
-// Build progress bar colour style.
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$sgs_form_style_engine_input = array();
+
+	if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {
+		$sgs_form_style_engine_input['color'] = $sgs_form_style_group['color'];
+	}
+
+	if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_group['border'] ) ) {
+		$sgs_form_border_raw = $sgs_form_style_group['border'];
+		$sgs_form_border     = array();
+		if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
+			$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
+		}
+		if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] ) {
+			$sgs_form_border['style'] = $sgs_form_css_keyword( $sgs_form_border_raw['style'] );
+		}
+		if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
+			$sgs_form_border['width'] = $sgs_form_border_raw['width'];
+		}
+		if ( isset( $sgs_form_border_raw['radius'] ) && '' !== $sgs_form_border_raw['radius'] ) {
+			$sgs_form_border['radius'] = $sgs_form_border_raw['radius'];
+		}
+		if ( ! empty( $sgs_form_border ) ) {
+			$sgs_form_style_engine_input['border'] = $sgs_form_border;
+		}
+	}
+
+	if ( ! empty( $sgs_form_style_engine_input ) ) {
+		$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
+
+		$sgs_form_engine_styles = wp_style_engine_get_styles(
+			$sgs_form_style_engine_input,
+			array( 'selector' => $sgs_form_sel )
+		);
+		if ( ! empty( $sgs_form_engine_styles['css'] ) ) {
+			$sgs_form_supports_css      .= $sgs_form_engine_styles['css'];
+			$sgs_form_supports_classes[] = $sgs_form_uid;
+		}
+	}
+
+	// Typography — declared selector (block.json selectors.typography.root,
+	// none declared for sgs/form, so scope to the block root itself).
+	$sgs_form_typography_args = array();
+	if ( isset( $sgs_form_style_group['typography']['fontSize'] ) && '' !== $sgs_form_style_group['typography']['fontSize'] ) {
+		$sgs_form_typography_args['fontSize'] = (string) $sgs_form_style_group['typography']['fontSize'];
+	}
+	if ( isset( $sgs_form_style_group['typography']['lineHeight'] ) && '' !== $sgs_form_style_group['typography']['lineHeight'] ) {
+		$sgs_form_typography_args['lineHeight'] = (string) $sgs_form_style_group['typography']['lineHeight'];
+	}
+	if ( ! empty( $sgs_form_typography_args ) ) {
+		if ( empty( $sgs_form_uid ) ) {
+			$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+			$sgs_form_supports_classes[] = $sgs_form_uid;
+		}
+		$sgs_form_typography_scoped = wp_style_engine_get_styles(
+			array( 'typography' => $sgs_form_typography_args ),
+			array( 'selector' => '.' . $sgs_form_uid . '.sgs-form' )
+		);
+		if ( ! empty( $sgs_form_typography_scoped['css'] ) ) {
+			$sgs_form_supports_css .= $sgs_form_typography_scoped['css'];
+		}
+	}
+}
+
+$sgs_form_preset_text = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$sgs_form_preset_bg   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $sgs_form_preset_text ) {
+	$sgs_form_supports_classes[] = 'has-text-color';
+	$sgs_form_supports_classes[] = 'has-' . $sgs_form_preset_text . '-color';
+}
+if ( '' !== $sgs_form_preset_bg ) {
+	$sgs_form_supports_classes[] = 'has-background';
+	$sgs_form_supports_classes[] = 'has-' . $sgs_form_preset_bg . '-background-color';
+}
+
+// Submit button colour — moved from inline style="" (contract §A) into a
+// scoped rule on `.uid .sgs-form__button--submit`. Uses the SAME uid as the
+// color/border/typography supports above (generated eagerly here when none
+// of those already needed one) so everything lands in ONE scoped <style>.
+if ( $submit_colour || $submit_background ) {
+	if ( empty( $sgs_form_uid ) ) {
+		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_submit_decls = array();
+	if ( $submit_colour ) {
+		$sgs_form_submit_decls[] = 'color:' . sgs_colour_value( $submit_colour );
+	}
+	if ( $submit_background ) {
+		$sgs_form_submit_decls[] = 'background-color:' . sgs_colour_value( $submit_background );
+	}
+	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
+}
+
+// Build progress bar colour style — a CSS custom-property VALUE (contract §A
+// allows `--x:y`, not a real property declaration), so this stays inline.
 $progress_style_attr = '';
 if ( $progress_colour ) {
 	$progress_style_attr = ' style="--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . '"';
@@ -172,7 +291,8 @@ if ( $is_multi_step ) :
 	<input type="hidden" name="_sgs_form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 
 	<?php if ( $honeypot ) : ?>
-		<div class="sgs-form__honeypot" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+		<?php // No-inline contract (§A): position/left/width/height/overflow moved to the pre-existing .sgs-form__honeypot rule in style.css — this div carries only its class. ?>
+		<div class="sgs-form__honeypot" aria-hidden="true">
 			<label for="sgs_hp_<?php echo esc_attr( $form_id ); ?>"><?php esc_html_e( 'Leave this field empty', 'sgs-blocks' ); ?></label>
 			<input type="text" id="sgs_hp_<?php echo esc_attr( $form_id ); ?>" name="sgs_hp_<?php echo esc_attr( $form_id ); ?>" tabindex="-1" autocomplete="off" />
 		</div>
@@ -208,7 +328,6 @@ if ( $is_multi_step ) :
 			<?php if ( $is_multi_step ) : ?>
 				data-wp-bind--hidden="!state.isLastStep"
 			<?php endif; ?>
-			<?php echo $submit_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with sgs_colour_value() ?>
 		>
 			<?php echo esc_html( $submit_label ); ?>
 		</button>
@@ -239,16 +358,19 @@ $inner_html = ob_get_clean();
 // element is the inner .sgs-form__inner child.
 // extra_attrs carry ALL Interactivity API data-* + form-specific identifiers
 // that view.js / the store / REST handler depend on.
-// extra_styles carry the focus-ring CSS custom properties that style.css reads.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-echo SGS_Container_Wrapper::render(
+// extra_styles carry the focus-ring CSS custom properties — these are CSS
+// custom-property VALUES (`--x:y`), allowed inline per contract §A (not a
+// real property declaration). extra_classes carries 'sgs-form' + the uid +
+// re-added preset has-* classes computed above (color/typography/border are
+// block-private, scoped in $sgs_form_supports_css).
+$sgs_form_output = SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$inner_html,
 	'layout',
 	array(
 		'tag'           => 'div',
-		'extra_classes' => array( 'sgs-form' ),
+		'extra_classes' => $sgs_form_supports_classes,
 		'extra_styles'  => array( $focus_ring_css_vars ),
 		'extra_attrs'   => array(
 			'data-wp-interactive'    => 'sgs/form',
@@ -258,4 +380,15 @@ echo SGS_Container_Wrapper::render(
 		),
 	)
 );
+
+if ( '' !== $sgs_form_supports_css ) {
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators intact — $sgs_form_supports_css is entirely style-engine-
+	// generated or built from sgs_colour_value()/sanitised values, so nothing
+	// un-sanitised survives here.
+	$sgs_form_output = '<style>' . wp_strip_all_tags( $sgs_form_supports_css ) . '</style>' . $sgs_form_output;
+}
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised; the prepended <style> is pre-sanitised above.
+echo $sgs_form_output;
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

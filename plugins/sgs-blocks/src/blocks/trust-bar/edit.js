@@ -9,11 +9,27 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
-// WS-4: shared container-wrapper editor controls (section kind = full surface).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+// No-inline migration (2026-07-10): trust-bar no longer uses the default
+// <ContainerWrapperControls> aggregator — its unconditional "Content band" /
+// "Responsive spacing" panels write to LEGACY FLAT attrs (contentBandPaddingTop,
+// paddingTopTablet, …), which are now REMOVED box-object attrs on this block
+// (paddingTablet/paddingMobile/marginTablet/marginMobile/contentBandPadding+
+// Tablet+Mobile). Import the individual panels still needed instead (mirrors
+// sgs/container's + sgs/hero's own edit.js) and roll trust-bar's own "Padding &
+// margin" / "Content band" panels below using ResponsiveBoxControl bound to the
+// object attrs.
+import {
+	WidthPanel,
+	LayoutPanel,
+	BackgroundPanel,
+	ShapeDividersPanel,
+	GridItemDefaultsPanel,
+	MIN_HEIGHT_OPTIONS,
+	SHADOW_OPTIONS,
+} from '../container/components/ContainerWrapperControls';
 
 /**
  * Resolve a gap attribute value to a valid CSS string for editor preview.
@@ -272,12 +288,137 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 
-				{ /* ── WS-4: mirrored sgs/container wrapper controls ─────────── */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="section"
-				/>
+				{ /* ── Section (outer): width + min-height ──────────────────── */ }
+				<PanelBody title={ __( 'Section (outer)', 'sgs-blocks' ) }>
+					<WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+					<ResponsiveControl label={ __( 'Min height', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'minHeight',
+								tablet: 'minHeightTablet',
+								mobile: 'minHeightMobile',
+							};
+							return (
+								<SelectControl
+									value={ attributes[ attrMap[ breakpoint ] ] || '' }
+									options={ MIN_HEIGHT_OPTIONS }
+									onChange={ ( val ) => setAttributes( { [ attrMap[ breakpoint ] ]: val } ) }
+									help={ breakpoint === 'desktop'
+										? __( 'Desktop / base. Tablet and mobile override it at narrower widths.', 'sgs-blocks' )
+										: undefined }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
+				</PanelBody>
+
+				{ /* ── Padding & margin (box-object tiers) ───────────────────── */ }
+				{ /* Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
+				     §5): base tier writes to the WP-native style.spacing object (also visible
+				     in the Styles > Dimensions panel); tablet/mobile write to the
+				     paddingTablet/paddingMobile + marginTablet/marginMobile object attrs
+				     read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
+				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.padding ?? {},
+							tablet: attributes.paddingTablet ?? {},
+							mobile: attributes.paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.margin ?? {},
+							tablet: attributes.marginTablet ?? {},
+							mobile: attributes.marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, margin: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Content band (Layer 2 __inner) — object attrs ─────────── */ }
+				<PanelBody title={ __( 'Content band', 'sgs-blocks' ) } initialOpen={ false }>
+					<p className="components-base-control__help">
+						{ __( 'Styles the inner content band (the max-width wrapper set by Content width). Only active when Content width is set.', 'sgs-blocks' ) }
+					</p>
+					<DesignTokenPicker
+						label={ __( 'Band background colour', 'sgs-blocks' ) }
+						value={ attributes.contentBandBackground || '' }
+						onChange={ ( val ) => setAttributes( { contentBandBackground: val } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Band padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.contentBandPadding ?? {},
+							tablet: attributes.contentBandPaddingTablet ?? {},
+							mobile: attributes.contentBandPaddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const attrMap = {
+								base: 'contentBandPadding',
+								tablet: 'contentBandPaddingTablet',
+								mobile: 'contentBandPaddingMobile',
+							};
+							setAttributes( { [ attrMap[ tier ] ]: next } );
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Layout (grid/flex, columns, gap) ──────────────────────── */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+
+				{ /* ── Grid item defaults ─────────────────────────────────────── */ }
+				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				{ /* ── Background (image/video/svg/overlay) ──────────────────── */ }
+				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
+
+				{ /* ── Shadow ─────────────────────────────────────────────────── */ }
+				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						value={ attributes.shadow || '' }
+						options={ SHADOW_OPTIONS }
+						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Shape dividers ─────────────────────────────────────────── */ }
+				<ShapeDividersPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				{ /* ── Variant + size ────────────────────────────────────────── */ }
 				<PanelBody title={ __( 'Style', 'sgs-blocks' ) }>

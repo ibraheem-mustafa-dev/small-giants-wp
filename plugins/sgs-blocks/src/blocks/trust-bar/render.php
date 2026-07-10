@@ -27,6 +27,19 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // --- Unique ID for scoped typography <style> ----------------------------------
 $uid = wp_unique_id( 'sgs-tb-' );
 
+// CSS-keyword sanitiser — free-text attrs (border-style etc.) concatenated into
+// raw CSS declarations inside this block's scoped <style> tag. Letters + hyphen
+// only. Mirrors sgs/hero's $sgs_css_keyword (no-inline migration contract §D).
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
+// CSS length/unit sanitiser — for free-text length values (border-width etc.)
+// concatenated into raw CSS declarations. Mirrors sgs/hero's $sgs_css_length.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 // --- Shared attributes --------------------------------------------------------
 $badge_style  = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
 $badge_size   = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
@@ -107,6 +120,93 @@ $tb_extra_classes = array(
 	esc_attr( $uid ),
 );
 
+// --- Scoped uid selector (used for color/border/typography below) ------------
+$uid_scope = '.' . esc_attr( $uid );
+$root_sel  = $uid_scope . '.wp-block-sgs-trust-bar';
+
+// --- No-inline contract (§A): WP-native color + border supports. -------------
+// block.json declares color/spacing/__experimentalBorder ALL with
+// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
+// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
+// them. Read the resolved values from $attributes['style'] here and emit them
+// into trust-bar's OWN scoped <style> (mirrors sgs/hero). Base spacing
+// (padding/margin) is a SEPARATE mechanism the wrapper already handles scoped
+// internally (reads $attributes['style']['spacing'] directly) — not duplicated
+// here.
+$tb_extra_scoped_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$tb_style_engine_args = array();
+
+	$tb_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$tb_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$tb_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$tb_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $tb_color_args ) ) {
+		$tb_style_engine_args['color'] = $tb_color_args;
+	}
+
+	$tb_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$tb_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$tb_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$tb_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$tb_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $tb_radius_raw ) && '' !== $tb_radius_raw ) {
+			$tb_border_args['radius'] = $sgs_css_length( $tb_radius_raw );
+		} elseif ( is_array( $tb_radius_raw ) ) {
+			$tb_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $tb_corner ) {
+				if ( ! empty( $tb_radius_raw[ $tb_corner ] ) ) {
+					$tb_radius_clean[ $tb_corner ] = $sgs_css_length( $tb_radius_raw[ $tb_corner ] );
+				}
+			}
+			if ( ! empty( $tb_radius_clean ) ) {
+				$tb_border_args['radius'] = $tb_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $tb_border_args ) ) {
+		$tb_style_engine_args['border'] = $tb_border_args;
+	}
+
+	if ( ! empty( $tb_style_engine_args ) ) {
+		$tb_scoped_styles = wp_style_engine_get_styles(
+			$tb_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $tb_scoped_styles['css'] ) ) {
+			$tb_extra_scoped_css .= $tb_scoped_styles['css'];
+		}
+	}
+}
+
+// Skip-serialised `color` support also stops WP auto-adding the standard
+// has-*-color / has-*-background-color classes onto the wrapper — re-add them
+// manually (mirrors sgs/hero + sgs/quote) so preset palette colours still
+// resolve visually.
+$tb_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$tb_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $tb_preset_text_slug ) {
+	$tb_extra_classes[] = 'has-text-color';
+	$tb_extra_classes[] = 'has-' . $tb_preset_text_slug . '-color';
+}
+if ( '' !== $tb_preset_bg_slug ) {
+	$tb_extra_classes[] = 'has-background';
+	$tb_extra_classes[] = 'has-' . $tb_preset_bg_slug . '-background-color';
+}
+
 $tb_extra_attrs = array(
 	'aria-label' => __( 'Trust signals', 'sgs-blocks' ),
 );
@@ -131,10 +231,13 @@ $tb_wrapper_opts = array(
 	'no_overlay'    => true,
 );
 
-// --- Title inline style (colour only — font-size/weight/style via helper) -----
-$title_style_attr = $title_colour_val
-	? ' style="' . esc_attr( 'color:' . $title_colour_val ) . '"'
-	: '';
+// --- Title colour (no-inline contract: scoped rule, not inline style=) -------
+// Colour is emitted into $tb_extra_scoped_css below (keyed on $uid_scope); the
+// element itself carries only its class — font-size/weight/style land via the
+// existing sgs_typography_css_rule() helper further down.
+if ( $title_colour_val ) {
+	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__title{color:' . esc_attr( $title_colour_val ) . '}';
+}
 
 // --- Optional title -----------------------------------------------------------
 // Guard against whitespace-only or HTML-only values (e.g. an empty <br> saved
@@ -143,8 +246,7 @@ $title_html        = '';
 $block_title_plain = trim( wp_strip_all_tags( $block_title ) );
 if ( $block_title_plain ) {
 	$title_html = sprintf(
-		'<p class="sgs-trust-bar__title"%s>%s</p>',
-		$title_style_attr,
+		'<p class="sgs-trust-bar__title">%s</p>',
 		wp_kses_post( $block_title )
 	);
 }
@@ -154,10 +256,14 @@ if ( $block_title_plain ) {
 // =============================================================================
 $items = $attributes['items'] ?? array();
 
-// --- Label inline style (colour only — font-size/weight/style via helper) -----
-$label_style_attr = $label_colour_val
-	? ' style="' . esc_attr( 'color:' . $label_colour_val ) . '"'
-	: '';
+// --- Label colour (no-inline contract: scoped rule, not inline style=) -------
+// Applies to the text-only / image-badge badge-label element; the icon-circle
+// variant's label colour is a separate mechanism (--sgs-trust-badge-text-colour
+// CSS var, emitted above). Colour lands in $tb_extra_scoped_css below (keyed on
+// $uid_scope); font-size/weight/style via sgs_typography_css_rule() further down.
+if ( $label_colour_val ) {
+	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge-label{color:' . esc_attr( $label_colour_val ) . '}';
+}
 
 // --- Build badge items HTML ---------------------------------------------------
 $items_html = '';
@@ -221,8 +327,7 @@ foreach ( $items as $item ) {
 
 	} elseif ( 'text-only' === $badge_style ) {
 		$inner_html = sprintf(
-			'<span class="sgs-trust-bar__badge-label"%s>%s</span>',
-			$label_style_attr,
+			'<span class="sgs-trust-bar__badge-label">%s</span>',
 			esc_html( $item_label )
 		);
 
@@ -256,8 +361,7 @@ foreach ( $items as $item ) {
 		}
 		if ( $item_label ) {
 			$badge_content .= sprintf(
-				'<span class="sgs-trust-bar__badge-label"%s>%s</span>',
-				$label_style_attr,
+				'<span class="sgs-trust-bar__badge-label">%s</span>',
 				esc_html( $item_label )
 			);
 		}
@@ -285,15 +389,20 @@ $badges_html = $auto_scroll
 // Label selector covers both variants:
 // .sgs-trust-bar__label      → icon-circle variant
 // .sgs-trust-bar__badge-label → text-only + image-badge variants
-$uid_scope   = '.' . esc_attr( $uid );
-$label_sel   = $uid_scope . ' .sgs-trust-bar__label,' . $uid_scope . ' .sgs-trust-bar__badge-label';
-$title_sel   = $uid_scope . ' .sgs-trust-bar__title';
-$typo_css    = sgs_typography_css_rule( $attributes, 'label', $label_sel );
-$typo_css   .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
-$style_block = $typo_css ? '<style>' . $typo_css . '</style>' : '';
+// $uid_scope already declared above (color/border scoped-emit block).
+$label_sel        = $uid_scope . ' .sgs-trust-bar__label,' . $uid_scope . ' .sgs-trust-bar__badge-label';
+$title_sel        = $uid_scope . ' .sgs-trust-bar__title';
+$typo_css         = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+$typo_css        .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
+// No-inline contract: combine the color/border scoped rules ($tb_extra_scoped_css,
+// built above — includes title/label colour) with typography into ONE <style> tag.
+$all_scoped_css   = $tb_extra_scoped_css . $typo_css;
+$style_block       = $all_scoped_css ? '<style>' . wp_strip_all_tags( $all_scoped_css ) . '</style>' : '';
 
 // WS-4: outer wrapper via the shared helper; trust-bar keeps its interior.
-// $style_block — built entirely from sgs_typography_css_rule() with no user data.
+// $style_block — built entirely from wp_style_engine_get_styles() +
+// sgs_typography_css_rule() + sanitised colour/keyword/length values, then
+// wp_strip_all_tags()'d (§D) — no raw user data.
 // $title_html  — built with wp_kses_post + esc_attr.
 // $badges_html — all user content escaped via esc_html/esc_url/esc_attr/sgs_get_lucide_icon.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped

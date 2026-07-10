@@ -98,13 +98,15 @@ wrappers.forEach( ( wrapper ) => {
 		track.classList.add( 'sgs-trust-bar__track--ready' );
 	}
 
-	// Pause on hover (controllable via block attribute).
+	// Pause on hover (controllable via block attribute). D298 pattern: toggle a
+	// class instead of writing the property inline — the declaration lives in
+	// style.css (`.sgs-trust-bar__track.is-paused`), never on the element.
 	if ( pauseOnHover ) {
 		wrapper.addEventListener( 'mouseenter', () => {
-			track.style.animationPlayState = 'paused';
+			track.classList.add( 'is-paused' );
 		} );
 		wrapper.addEventListener( 'mouseleave', () => {
-			track.style.animationPlayState = 'running';
+			track.classList.remove( 'is-paused' );
 		} );
 	}
 
