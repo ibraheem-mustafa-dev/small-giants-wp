@@ -1,9 +1,9 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: no-inline styling rollout — continue the ROSTER (52 styling-support blocks) to the full DONE bar
+thread: no-inline styling rollout — continue the ROSTER (59 styling-support blocks) to the full DONE bar
 generated: 2026-07-10
-primary_goal: "Continue the universal no-inline + box-object rollout. PROVEN + LANDED on button/container/heading/text/quote/media/hero + Wave-1 leaf blocks label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs (15 blocks) + the shared wrapper (max-width/contentWidth/band/GRID all scoped). The mechanism, the content-KIND→block-private principle (D294), the grid-scoping (D296), AND a reusable LANDED harness (scripts/no-inline-land-verify.js, D297) are all settled. What remains is TEMPLATED REPETITION across the rest of the roster: ~44 blocks that declare styling supports, each to the 11-condition DONE checklist, LANDED-verified via the harness, committed — run in phased waves. NEXT = Wave 2."
+primary_goal: "Continue the universal no-inline + box-object rollout. PROVEN + LANDED on 25 blocks: button/container/heading/text/quote/media/hero + Wave-1 leaf (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs) + Wave-2 (collapsible-text/table-of-contents/decorative-image/countdown-timer/icon-list/brand-strip/timeline/process-steps/mega-menu/mobile-nav) + the shared wrapper (max-width/contentWidth/band/GRID all scoped). The mechanism, the content-KIND→block-private principle (D294), the grid-scoping (D296), the reusable LANDED harness (scripts/no-inline-land-verify.js, D297), AND the keep-structure-nav pattern (D298) are all settled. What remains is TEMPLATED REPETITION across the rest of the roster: ~34 blocks, each to the 11-condition DONE checklist, LANDED-verified via the harness, committed — phased waves. NEXT = Wave 3 (content-KIND composites → block-private)."
 ---
 
 # NEXT SESSION — continue the no-inline ROSTER (52 blocks, phased waves)
@@ -21,10 +21,13 @@ yourself (STOP-16).
 
 ## ⛔ SCOPE REALITY (Bean-corrected 2026-07-09; count updated D297 2026-07-10)
 The real remaining scope is the FULL styling-support roster. DB ground truth:
-**59 blocks declare styling supports; 15 migrated (button/container/heading/text/quote/media/hero
-+ Wave-1 leaf: label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs);
-→ ~44 remaining** + F3-debt blocks (content-collection/form/mega-menu/mobile-nav/pricing-table/
-product-card) + a few no-support blocks with inline-render (decorative-image, modal, mega-menu).
+**59 blocks declare styling supports; 25 migrated (button/container/heading/text/quote/media/hero
++ Wave-1 leaf: label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs
++ Wave-2: collapsible-text/table-of-contents/decorative-image/countdown-timer/icon-list/brand-strip/
+timeline/process-steps/mega-menu/mobile-nav);
+→ ~34 remaining** + remaining F3-debt blocks (content-collection/form/pricing-table/product-card;
+mega-menu + mobile-nav's real dead-controls drained D298, 3 mis-tagged rows deferred → `P-F3-NAV-MISTAG-GATE`)
++ a few no-support blocks with inline-render (modal).
 This is a PHASED, MULTI-SESSION programme — you cannot LANDED-verify 44 blocks in one sitting.
 Close a clean WAVE per session. **Use the reusable harness for #10 (LANDED):**
 `node plugins/sgs-blocks/scripts/no-inline-land-verify.js <manifest.json>` — copy
@@ -55,6 +58,8 @@ on page 1356 and checks zero-inline + computed box at 375/768/1440 in ONE run.
 - **STOP-68 (CLOSED D296, but the lesson stands)** — grid CSS (`display:grid`/`grid-template-*`) is scoped in the SHARED wrapper (once, universally), NOT per block. Do not re-inline grid in any block; do not claim framework-wide zero-inline while any block still inlines a real property.
 - **STOP-39** — one SOLO coding subagent per shared file; disjoint block dirs may run parallel. NEVER 2+ concurrent writers on a shared file (wrapper / sgs-update-v2.py / converter).
 - **NEW this session — the subagent wrapper-rip-out trap:** a Sonnet migrator may unilaterally drop `SGS_Container_Wrapper` from a composite (it did on quote). QC every composite migration against the DB `wraps_block`/`container_kind` + the D294 principle before accepting. The `/qc-council` on the quote question is DONE — do not re-run it; apply the verdict.
+- **STOP-69 (NEW, D298) — the `*/`-in-JS-comment build trap.** A JS block comment containing `*/` as part of a token (e.g. `style.spacing.*/style.border.radius`) CLOSES the comment early → the rest becomes live code → webpack parse error. A migrator hit this on countdown-timer/edit.js; the `npm run build` caught it (STOP-16). Bake into every subagent prompt: NEVER write `*/` inside a JS block comment (space it: `style.spacing.* / style.border`). Always re-run `npm run build` yourself after subagent edits — the migrator can't (build dir is shared).
+- **F3-drain reality (D298) — `var(--x, <literal>)` does NOT zero a hardcoded-defaults baseline row.** The contract §E2 sanctions the `var(--sgs-x, <default>)` drain form, but the hardcoded-defaults gate still sees the literal in the fallback → the row stays flagged. To ACTUALLY delete a baseline row the default must be emitted from render.php (not left as the CSS fallback). ALSO: before draining an F3 row, TRACE that the baselined property is genuinely a dead-control-by-override — 3 of the nav rows were MIS-TAGGED (structural CSS / a viewport safety clamp, not the named control) and force-wiring them would silently break unrelated layout. Fix the gate's attr↔property precision, not the block (`P-F3-NAV-MISTAG-GATE`).
 
 ## Pre-flight self-attestation (answer in your first message)
 1. Read the DONE checklist + contract + D294/D295/D296? Quote one end condition + which pattern this wave's blocks use.
@@ -80,10 +85,10 @@ Derive the exact per-wave list from the DB each session (don't trust a cached li
 ### Wave 1 — single-element / leaf block-private ✅ DONE (D297, `ec5063a9`, 2026-07-10)
 ~~label, icon, counter, whatsapp-cta, social-icons, star-rating, business-info, breadcrumbs~~ — all 8 LANDED block-private (zero inline, box-objects, harness-verified at 375/768/1440). Also fixed the surfaced hero L4 per-area object-routing converter gap. **NEXT = Wave 2.**
 
-### Wave 2 (NEXT) — more leaf blocks + F3-drains
-collapsible-text, brand-strip, countdown-timer, timeline, process-steps, icon-list, table-of-contents, decorative-image (8 inline-render), + F3-drain: mega-menu, mobile-nav. ~4 at a time, parallel solo Sonnet (disjoint dirs). Most OFF page 8 → asymmetric on 1356 via the harness.
+### Wave 2 — leaf/array/timeline + 2 keep-structure navs ✅ DONE (D298, `d8923f4c`+`eeb17be4`+`60d55b23`, 2026-07-10)
+~~collapsible-text, table-of-contents, decorative-image, countdown-timer, icon-list, brand-strip, timeline, process-steps, mega-menu, mobile-nav~~ — all 10 LANDED (zero inline, box-objects, harness-verified 375/768/1440), 3 dispatch rounds. mega-menu + mobile-nav are KEEP-STRUCTURE navs (mobile-nav content-KIND but a genuine 7-zone drawer → NOT block-private — a per-block override of the D294 default). Real dead-control F3 overrides drained; 3 mis-tagged baseline rows deferred (`P-F3-NAV-MISTAG-GATE`). **NEXT = Wave 3.**
 
-### Wave 3 — content-KIND composites → BLOCK-PRIVATE (per D294, like quote)
+### Wave 3 (NEXT) — content-KIND composites → BLOCK-PRIVATE (per D294, like quote)
 info-box, testimonial, team-member, product-faq-item, notice-banner, option-picker, product-faq. (product-card, mobile-nav, tab, accordion-item, form-step: verify per-block whether they truly drop the wrapper or keep it — STOP-and-ask if a wrapper looks load-bearing.) Most ARE on page 8 → LANDED directly + re-clone. `/qc-council` any that touch shared render.
 
 ### Wave 4 — section/layout composites KEEPING the wrapper (like hero)
@@ -92,11 +97,16 @@ cta-section, card-grid, feature-grid, accordion(+item), tabs(+tab), gallery, goo
 ### Task 4 (FINAL — after the roster is green) — wire gates zero-tolerance + close
 Wire `audit-inline-styling.js --check` (0 inline) + `check-box-family-guard.py --check` into `prebuild` as zero-tolerance; reconcile Spec 31/32 + CLAUDE.md to "rollout complete"; `/handoff`.
 
-## DONE last session (D297, `ec5063a9`, 2026-07-10 — no action needed)
-- **Wave 1 — 8 leaf blocks LANDED** block-private (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs): supports skip-serialised + scoped, box padding/margin (+ counter/whatsapp radius) → objects with tiers, device tiers 1023/767, semantic root, sanitisers. box_family seeds central. Harness-verified ALL PASS at 375/768/1440.
-- **NEW reusable LANDED harness** `scripts/no-inline-land-verify.js` + `no-inline-wave1-manifest.json` — the #10 gate for every future wave. 8 visual-diff reports at repo-root `reports/visual-diff/`.
-- **Hero L4 per-area object-routing gap FIXED:** the routine `--stage 10` prune surfaced that hero's per-area padding CLONING was broken (L4 `fold_helpers.route_area_css_to_block_attrs` — the live path — + `grid_area.py` were flat-only after hero's D295 flat→object migration; `attr_for_area_property` returned None → silent gap; D295's "72/64 LANDED" was authored, not cloned). Made both L4 paths box-object-aware (mirrors `content_band`, gated on `box_family_for`). Suite 440 green, all gates green, LANDED on a page-8 reclone (hero content padding 72/64 @1440, 28/20/40 @375, zero inline).
-- **New lesson (reinforces STOP-34/43):** verify a converter fix on the REAL draft, not a synthetic unit test — the first fix location (`grid_area`) unit-tested green but wasn't even the live path (trace: 0 grid_area dispatches; `route_area_css_to_block_attrs` is live). And fact-check a prior "LANDED" claim against the draft + style.css before trusting it (D295's value was a coincidental-default false-win, Spec 31 §7b).
+## DONE last session (D298, `d8923f4c`+`eeb17be4`+`60d55b23`, 2026-07-10 — no action needed)
+- **Wave 2 — 10 blocks LANDED** across 3 dispatch rounds (solo Sonnet per block, disjoint dirs; every block re-gated by me — build gates + box-family-guard 0 + suite 440 pass — + harness-verified 375/768/1440; 10 visual-diff reports at repo-root):
+  - **R1** collapsible-text, table-of-contents, decorative-image, countdown-timer. ToC's "broken" bug fixed (attr named `style` collided with WP's reserved `style` → `tocStyle`). decorative-image = inline-render fix + parallax view.js re-inline trap closed.
+  - **R2** icon-list, brand-strip, timeline, process-steps (timeline+process-steps carry `shadow` → skip-serialised+scoped). brand-strip view.js `animationPlayState` inline → class; fade-edge `[style*=background]` sniff → `.has-background`.
+  - **R3** mega-menu, mobile-nav — KEEP-STRUCTURE navs (mobile-nav content-KIND but a genuine 7-zone drawer → NOT block-private; a per-block override of the D294 default). mega-menu panel inline `position:fixed;width:100vw` → scoped, dead `color` no-op now paints; mobile-nav 5 swipe view.js `.style.transform` → `.is-swiping` class + vars, stray 768/480 → 1023/767.
+- **box_family seeds central** in sgs-update-v2.py (Wave-2 batches 1–3). No version bumps/deprecations (D293).
+- **F3 finding (deferred, Bean-decided):** the real dead-control overrides on both navs drained to `var()`; 3 baseline rows (mega-menu align-items×2, mobile-nav max-width:100vw) traced MIS-TAGGED (structural CSS / safety clamp, not the named control) → NOT force-wired → gate-precision fix tracked `P-F3-NAV-MISTAG-GATE`. New STOP-69 + the `var()`-doesn't-zero-baseline lesson captured above.
+
+## DONE earlier (D297)
+- **Wave 1 — 8 leaf blocks LANDED** block-private (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs) + the reusable harness `scripts/no-inline-land-verify.js` built + a real hero L4 per-area object-routing converter gap found and fixed (`ec5063a9`).
 
 ## DONE earlier (D294–D296)
 - **Task 1 (`13fd1634`):** quote + media LANDED block-private; shared wrapper max-width/contentWidth/band inline→scoped.

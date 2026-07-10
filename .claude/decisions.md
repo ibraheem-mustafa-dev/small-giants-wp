@@ -6,7 +6,20 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-10 (LATEST) — D297: no-inline Wave-1 — 8 leaf blocks LANDED + hero L4 per-area object-routing converter gap fixed
+## 2026-07-10 (LATEST) — D298: no-inline Wave-2 — 10 blocks LANDED (4 leaf/inline + 4 array/timeline + 2 keep-structure navs)
+
+**D298 — no-inline rollout Wave 2: all 10 blocks migrated + LANDED across 3 dispatch rounds.** Branch main; commits `d8923f4c` (R1), `eeb17be4` (R2), `60d55b23` (R3); D-ceiling was D297. Continues D294–297. Orchestrated (Opus) + solo-Sonnet-per-block (disjoint dirs, parallel-safe FR-31-6.1/STOP-39); every block gated by me (STOP-16): `npm run build` prebuild gates + `check-box-family-guard.py --check` (0) + converter suite (440 pass) re-run; LANDED via the reusable harness `scripts/no-inline-land-verify.js` (asymmetric instances on page 1356, zero-inline + computed box at 375/768/1440), OPcache+LiteSpeed purged before each verify; visual-diff reports at repo-root `reports/visual-diff/`; path-scoped commits; no version bumps/deprecations (D293).
+
+- **R1** (`d8923f4c`): collapsible-text, table-of-contents, decorative-image, countdown-timer. ToC's "broken" bug ROOT-CAUSED + fixed (a custom attr literally named `style` collided with WP's reserved `style` object → renamed `tocStyle`). decorative-image was a pure inline-render fix (position/transform/opacity/z-index → scoped) + a parallax `view.js` re-inline trap closed (→ CSS var).
+- **R2** (`eeb17be4`): icon-list, brand-strip, timeline, process-steps (2 carry `shadow` support → skip-serialised + scoped). Two border routes both valid+used (quote-route custom `borderWidth` object vs media-route native). brand-strip `view.js` `animationPlayState` inline → class; its fade-edge `[style*=background]` sniff → `.has-background`.
+- **R3** (`60d55b23`): mega-menu + mobile-nav — KEEP-STRUCTURE InnerBlocks navs (mobile-nav is content-KIND but a genuine 7-zone drawer → NOT block-private; D294 default overridden per-block). mega-menu panel inline `style="position:fixed;width:100vw;…"` → scoped; its `color` support was a dead no-op, now paints. mobile-nav: 5 `view.js` swipe `.style.transform/transition` → `.is-swiping` class + CSS vars; stray 768/480 → 1023/767.
+- **F3-drain**: the REAL dead-control overrides on both navs drained to `var()`; but 3 baseline rows (mega-menu `align-items`×2 → panelAlignment; mobile-nav `max-width:100vw` → drawerMaxWidth) traced to structural CSS / a viewport safety clamp — **MIS-TAGGED, not dead-control debt**. Per prove-the-cause NOT force-wired; Bean-decided (defer): left baselined, gate-precision fix tracked (`P-F3-NAV-MISTAG-GATE`).
+- **Roster: 15/59 → 25/59; ~34 remain** (Wave 3 content-KIND composites → block-private; Wave 4 section/layout composites keep-wrapper; then Task 4 wire the 2 gates zero-tolerance). **NEXT = Wave 3.**
+- Lessons: a JS block comment containing `*/` (e.g. `style.spacing.*/style.border`) closes the comment early + breaks the webpack build — caught by the build (STOP-16), fixed, baked into every subsequent subagent prompt. The `var(--x, <literal>)` F3-drain form is contract-sanctioned but the hardcoded-defaults gate still counts the literal in the fallback — fully zeroing a row needs the default emitted from render.php.
+
+---
+
+## 2026-07-10 — D297: no-inline Wave-1 — 8 leaf blocks LANDED + hero L4 per-area object-routing converter gap fixed
 
 **D297 — no-inline rollout Wave 1: 8 single-element/leaf blocks migrated block-private + LANDED; plus a real D295 converter gap (hero L4 per-area padding cloning) found and fixed.** Branch main; commit `ec5063a9`; D-ceiling was D296. Continues D294–296.
 
