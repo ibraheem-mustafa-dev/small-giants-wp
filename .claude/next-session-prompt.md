@@ -1,153 +1,108 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: no-inline styling rollout — continue the ROSTER (59 styling-support blocks) to the full DONE bar
 generated: 2026-07-10
-primary_goal: "Continue the universal no-inline + box-object rollout. PROVEN + LANDED on 25 blocks: button/container/heading/text/quote/media/hero + Wave-1 leaf (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs) + Wave-2 (collapsible-text/table-of-contents/decorative-image/countdown-timer/icon-list/brand-strip/timeline/process-steps/mega-menu/mobile-nav) + the shared wrapper (max-width/contentWidth/band/GRID all scoped). The mechanism, the content-KIND→block-private principle (D294), the grid-scoping (D296), the reusable LANDED harness (scripts/no-inline-land-verify.js, D297), AND the keep-structure-nav pattern (D298) are all settled. What remains is TEMPLATED REPETITION across the rest of the roster: ~34 blocks, each to the 11-condition DONE checklist, LANDED-verified via the harness, committed — phased waves. NEXT = Wave 3 (content-KIND composites → block-private)."
+thread: no-inline rollout — LAND-COMPLETION + rollout close (post-INTEGRATION)
 ---
 
-# NEXT SESSION — continue the no-inline ROSTER (35 remaining + 6 reconcile)
+# NEXT SESSION — complete the no-inline LAND + close the rollout
 
-Invoke `/autopilot` first. The hard architecture is DONE + LANDED (D294–D298): the box-object
-no-inline mechanism, the content-KIND→block-private decision, hero, the universal grid-scoping,
-the reusable LANDED harness, and the keep-structure-nav pattern. What remains is applying the
-PROVEN recipe to the rest of the roster — each block LANDED-verified.
+Invoke `/autopilot` first. The INTEGRATION session (D300/D301) merged all 6 no-inline branches to `main`,
+made box_family fully declarative, fixed the hero dark-pink bug, and fixed 6 universal pill-cloning
+converter bugs. What remains is **finishing the LAND** (the rollout's outcome is code-complete but only
+spot-verified) + 4 close-out follow-ups.
 
-> **⚡ EXECUTION MODEL (Bean-chosen 2026-07-10): PARALLEL edit / SERIAL land.** The completion is
-> planned as parallel worktree edit-tracks + one integration/land session — see
-> **`.claude/plans/2026-07-10-no-inline-parallel-rollout.md`** (the authoritative remaining-roster
-> partition: Tracks A–E disjoint block sets + the RECONCILE-6 bucket + the integration spec + the
-> shared-resource protocol). To run a track: open a window, follow that plan's Track section + the
-> SHARED-RESOURCE PROTOCOL (own worktree, files-only, report seeds, no deploy/main-commit). To LAND:
-> run the INTEGRATION session (merge branches → central seeds → one deploy → harness-LAND all → Task 4).
-> The sequential Wave-3/Wave-4 plan below still works if you prefer ONE window at a time — same blocks, same bar.
-
-**Agent identity.** SGS block engineer executing a Bean-approved no-inline styling rollout. You
-ORCHESTRATE (Opus) + GATE + strictly QC; delegate each block to a SOLO Sonnet subagent (disjoint
-block dir → parallel-safe per FR-31-6.1). Haiku for mechanical, Sonnet for higher-need blocks.
-Prove every block LANDED on a live page before "done" (STOP-21/43/44); re-run gates + tests
-yourself (STOP-16).
-
-## ⛔ SCOPE REALITY (Bean-corrected 2026-07-09; count updated D297 2026-07-10)
-The real remaining scope is the FULL styling-support roster. DB ground truth:
-**59 blocks declare styling supports; 25 migrated (button/container/heading/text/quote/media/hero
-+ Wave-1 leaf: label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs
-+ Wave-2: collapsible-text/table-of-contents/decorative-image/countdown-timer/icon-list/brand-strip/
-timeline/process-steps/mega-menu/mobile-nav);
-→ ~34 remaining** + remaining F3-debt blocks (content-collection/form/pricing-table/product-card;
-mega-menu + mobile-nav's real dead-controls drained D298, 3 mis-tagged rows deferred → `P-F3-NAV-MISTAG-GATE`)
-+ a few no-support blocks with inline-render (modal).
-This is a PHASED, MULTI-SESSION programme — you cannot LANDED-verify 44 blocks in one sitting.
-Close a clean WAVE per session. **Use the reusable harness for #10 (LANDED):**
-`node plugins/sgs-blocks/scripts/no-inline-land-verify.js <manifest.json>` — copy
-`no-inline-wave1-manifest.json`, swap in the wave's blocks + asymmetric instances; it authors them
-on page 1356 and checks zero-inline + computed box at 375/768/1440 in ONE run.
+## State recap (plain English)
+`main` @ `89dcaf41`, build green, 440 converter tests pass, sandybrown + page 8 deployed/re-cloned. The ~35
+newly-merged blocks (Tracks A–E sets) emit no-inline styling + build green + the DB is reseeded, but only a
+spot-sample is LANDED-verified (wave-1 harness re-run, a custom-value proof, the page-8 hero/pill/product-card).
+Bean's 3 priorities are all verified live (hero responsive padding, custom values not preset-locked, pill 7/8).
+The pill's selected FILL is the one remaining fidelity gap (a `colourPreset='solid'` interaction, not converter).
 
 ## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. **`.claude/plans/block-migration-DONE-checklist.md`** — the 11 end conditions = definition of done per block. Tick them, don't re-derive.
-2. **`.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`** — the HOW (§A no-inline, §B box-group, §B2 device-tiers-only 1023/767, §B3 no-wrapper, §C spec/no-churn, §D security, §E editor, §E2 F3-drain).
-3. **`.claude/decisions.md` head (D294 + D295 + D296)** — the content-KIND principle + hero + grid-scoping + all context. Verify the D-ceiling: `grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1` (was D297).
-4. **Spec 31 §2/§3.A/§4/§13.4 + Spec 32 §6.1** — read Spec 31 IN FULL (Bean-locked, every session).
-5. **Proven exemplars to COPY:**
-   - Single-element block-private: `src/blocks/{button,heading,text}/` (element-as-root, class/id uid, full bar).
-   - Content-KIND composite → block-private: `src/blocks/quote/` (blockquote root, no wrapper, all CSS scoped).
-   - Section/layout composite keeping the wrapper: `src/blocks/hero/` + `includes/class-sgs-container-wrapper.php` (per-area families block-private-scoped; wrapper owns section box/width/band/GRID, all now scoped).
-
-## ⛔ THE D294 PRINCIPLE (which pattern each block uses — DO NOT re-litigate; qc-council-settled)
-- **content-KIND composites** (`container_kind='content'`) that use ONLY box+width → **BLOCK-PRIVATE** (like quote). They don't use the wrapper's grid/section machinery; converter routing is indifferent to `wraps_block` (verified). Applies to: info-box, testimonial, team-member, product-faq-item, notice-banner, option-picker, product-card, product-faq, tab, accordion-item, form-step, mobile-nav — BUT verify per-block whether one genuinely needs the wrapper's structure before dropping it (STOP-and-ask if unsure — §B3).
-- **section/layout-KIND composites** → **KEEP `SGS_Container_Wrapper`** (genuine grid/section). The wrapper is now fully scoped (spacing/max-width/contentWidth/band/GRID — D292/D294/D296), so keeping it is no-inline. Emit only the block's OWN extras block-private-scoped (like hero). Applies to: cta-section, modal, trust-bar (section); accordion, card-grid, feature-grid, form(+field-tiles), gallery, google-reviews, multi-button, post-grid, pricing-table, tabs, testimonial-slider, trustpilot-reviews, content-collection (layout).
-- **single-element / leaf blocks** (no wrapper) → **BLOCK-PRIVATE** (like heading/text/button): label, icon, counter, whatsapp-cta, social-icons, star-rating, business-info, breadcrumbs, collapsible-text, brand-strip, countdown-timer, timeline, process-steps, icon-list, table-of-contents, decorative-image, etc.
+1. `.claude/handoff.md` (this session's record) + `.claude/decisions.md` head (D300 + D301 + D294–D299).
+2. `.claude/plans/block-migration-DONE-checklist.md` (11 end conditions) + `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`.
+3. **Spec 31 IN FULL** (Bean-locked every session) + Spec 32 §6.1.
+4. `.claude/parking.md` head — the 5 open D300/D301 + D298 follow-up entries this session's tasks map to.
 
 ## ⛔ ANTI-PATTERN STOPs (carry forward + this session's new ones)
-- **STOP-16** — a subagent's "it works" is a HYPOTHESIS. Re-run yourself: `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib` (439 pass); `python check-box-family-guard.py --check`; `node check-dead-controls.js --check`; `node check-hardcoded-render-defaults.js --check`; `npm run build`.
-- **STOP-21 / 43 / 44** — LANDED only by deploying + (re-cloning if attr-shape changed) + live computed-style on a real page. Emit-green ≠ LANDED. Asymmetric instance (4 distinct sides + asymmetric corners) is the box-family proof.
-- **STOP-57 OVERRIDDEN (Bean D293)** — NO version bumps, NO deprecations (pre-production waste).
-- **STOP-66** — after a block.json attr-shape change, `/sgs-update` (`sgs-update-v2.py`, Stage 10) prunes the orphaned flat rows; run it (or `--stage 1` for seeds + `--stage 10` for prune) before re-clone. `sgs-db.py sql` is READ-ONLY.
-- **STOP-67** — the pre-commit visual-diff gate needs `<REPO_ROOT>/reports/visual-diff/<block>-<date>.md` (repo ROOT) with frontmatter `verdict: PASS` + `first_paint_capture_passed: true`. No report = commit blocked.
-- **STOP-68 (CLOSED D296, but the lesson stands)** — grid CSS (`display:grid`/`grid-template-*`) is scoped in the SHARED wrapper (once, universally), NOT per block. Do not re-inline grid in any block; do not claim framework-wide zero-inline while any block still inlines a real property.
-- **STOP-39** — one SOLO coding subagent per shared file; disjoint block dirs may run parallel. NEVER 2+ concurrent writers on a shared file (wrapper / sgs-update-v2.py / converter).
-- **NEW this session — the subagent wrapper-rip-out trap:** a Sonnet migrator may unilaterally drop `SGS_Container_Wrapper` from a composite (it did on quote). QC every composite migration against the DB `wraps_block`/`container_kind` + the D294 principle before accepting. The `/qc-council` on the quote question is DONE — do not re-run it; apply the verdict.
-- **STOP-69 (NEW, D298) — the `*/`-in-JS-comment build trap.** A JS block comment containing `*/` as part of a token (e.g. `style.spacing.*/style.border.radius`) CLOSES the comment early → the rest becomes live code → webpack parse error. A migrator hit this on countdown-timer/edit.js; the `npm run build` caught it (STOP-16). Bake into every subagent prompt: NEVER write `*/` inside a JS block comment (space it: `style.spacing.* / style.border`). Always re-run `npm run build` yourself after subagent edits — the migrator can't (build dir is shared).
-- **F3-drain reality (D298) — `var(--x, <literal>)` does NOT zero a hardcoded-defaults baseline row.** The contract §E2 sanctions the `var(--sgs-x, <default>)` drain form, but the hardcoded-defaults gate still sees the literal in the fallback → the row stays flagged. To ACTUALLY delete a baseline row the default must be emitted from render.php (not left as the CSS fallback). ALSO: before draining an F3 row, TRACE that the baselined property is genuinely a dead-control-by-override — 3 of the nav rows were MIS-TAGGED (structural CSS / a viewport safety clamp, not the named control) and force-wiring them would silently break unrelated layout. Fix the gate's attr↔property precision, not the block (`P-F3-NAV-MISTAG-GATE`).
+- **STOP-16** — a subagent/track "it works" is a HYPOTHESIS. Re-run yourself: `npm run build`; `python -m pytest converter/tests -q --import-mode=importlib` (440 pass); `python check-box-family-guard.py --check` (0).
+- **STOP-21 / 43 / 44** — LANDED only by deploy + (re-clone if attr-shape changed) + live computed-style at 375/768/1440. Emit-green ≠ LANDED. Asymmetric instance (4 distinct sides / corners) is the box-family proof.
+- **STOP-66** — after any block.json attr-shape change, `python scripts/sgs-update-v2.py --stage 1` (seeds) + `--stage 10` (prune orphans) before re-clone.
+- **STOP-67** — the pre-commit visual-diff gate needs `reports/visual-diff/<block>-<date>.md` at repo ROOT (`verdict: PASS` + `first_paint_capture_passed: true`) per changed block. No report = commit blocked (use `--no-verify` only for genuinely non-visual commits, path-scoped).
+- **STOP-68 (lesson stands)** — grid CSS is scoped in the SHARED wrapper (once), never per block. Do not re-inline grid.
+- **NEW (D301) — colour routing is by DB role, never a css_property name-list.** Route colour-resolution off `role='color'` (threaded through `_compute_value`); keep the concrete hex/rgba when no palette token matches. A hardcoded `(color,background-color,border-color)` list is a cheat — the next colour property silently breaks. Do NOT reintroduce it.
+- **NEW (D300) — box_family is DECLARATIVE.** Add box families in `block.json supports.sgs.boxFamilies`, NEVER grow the `ATTR_CLASSIFICATION_OVERRIDES` dict (Bean-directed).
+- **NEW — the harness/node runs via PowerShell**, not Git Bash (nvm4w shim broken). Python works in Bash.
+- **Path-scoped commits** — two threads share `main`; always `git commit -- <paths>`, never `git add -A`.
 
-## Pre-flight self-attestation (answer in your first message)
-1. Read the DONE checklist + contract + D294/D295/D296? Quote one end condition + which pattern this wave's blocks use.
-2. Branch `main`, D-ceiling verified (was D297), tree clean (ignore `lucide-icons.php`, `*.db` strays, generated `reports/phase4-*.txt` + `inline-styling-audit`)?
-3. For each block: LANDED on a live page (asymmetric where box families apply), all 11 conditions ticked, visual-diff report at repo-root, gates + tests re-run by me?
+## Skills to Invoke
 
-## The LANDED verify recipe (every block — PROVEN this session)
-1. Migrate block files (solo Sonnet, its dir only). I add box_family seeds CENTRALLY in `sgs-update-v2.py` (subagents never edit it).
-2. `cd plugins/sgs-blocks && npm run build` (prebuild gates: dead-controls, hardcoded-defaults, box-family AST — all must pass).
-3. `python scripts/build-deploy.py --target sandybrown --skip-build --blocks-only --allow-dirty`.
-4. `python scripts/sgs-update-v2.py --stage 1` (apply seeds + new attrs) + `--stage 10` (prune orphans, STOP-66).
-5. OPcache reset (HTTP `<?php opcache_reset()` to webroot + curl + rm) + LiteSpeed purge (Hostinger MCP `hosting_clearWebsiteCacheV1`, user `u945238940`, domain `sandybrown-nightingale-600381.hostingersite.com`).
-6. **If the block is ON page 8 (hero, product-card, trust-bar, testimonial, card-grid, feature-grid, info-box, cta-section, etc.):** re-clone page 8 (orchestrator cmd — see git history of this prompt / the recipe used this session) so stored content carries the new attrs, then LANDED-verify the LIVE block via Playwright at 375/768/1440 (zero inline subtree + computed values + no regression). **If NOT on page 8:** craft an asymmetric REST test instance on the EXISTING page 1356 (`/sgs-box-object-test/`; new pages 404 until rewrite flush) + Playwright anonymous cache-bust.
-7. Write `reports/visual-diff/<block>-<date>.md` (verdict PASS + first_paint true), commit path-scoped (`git commit -- <paths>`, never `git add -A`; the gate wants explicit `-- <paths>`).
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | ALWAYS INCLUDE — the `colourPreset` pill-fill design decision |
+| `/gap-analysis` | ALWAYS INCLUDE — grade outputs before delivery |
+| `/lifecycle` | ALWAYS INCLUDE — before any skill/agent/pipeline changes |
+| `/research` | ALWAYS INCLUDE — auto-routes to the right tier |
+| `/strategic-plan` | ALWAYS INCLUDE — order the LAND waves before executing |
+| `/qc-council` | any converter/shared-render change (blub-255) — e.g. the colourPreset emit decision |
+| `/sgs-clone` `/sgs-db` `/wp-blocks` | pipeline + schema ground truth |
+| `/handoff` `/capture-lesson` | session close |
 
----
+## MCP Servers & Tools
 
-## WAVE PLAN (do ONE wave per session; ~4–8 blocks/wave; gate each block yourself)
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright / chrome-devtools | LANDED computed-style + inline scan at 375/768/1440 (page 8 + page 1356) |
+| Hostinger MCP `hosting_clearWebsiteCacheV1` | LiteSpeed purge before live verify (user `u945238940`, domain `sandybrown-nightingale-600381.hostingersite.com`) |
+| `sgs-db.py sql` (READ) + `sgs-update-v2.py` (--stage 1/10) | DB ground truth + seed/prune |
+| REST app-pwd `.claude/secrets/sandybrown.env` | harness auth on page 1356 |
 
-Derive the exact per-wave list from the DB each session (don't trust a cached list):
-`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT container_kind, group_concat(block_slug) FROM block_composition WHERE wraps_block='sgs/container' AND container_kind IS NOT NULL GROUP BY container_kind"` for composites; `grep -lE '__experimentalSkipSerialization' src/blocks/*/block.json` for what's DONE.
-
-### Wave 1 — single-element / leaf block-private ✅ DONE (D297, `ec5063a9`, 2026-07-10)
-~~label, icon, counter, whatsapp-cta, social-icons, star-rating, business-info, breadcrumbs~~ — all 8 LANDED block-private (zero inline, box-objects, harness-verified at 375/768/1440). Also fixed the surfaced hero L4 per-area object-routing converter gap. **NEXT = Wave 2.**
-
-### Wave 2 — leaf/array/timeline + 2 keep-structure navs ✅ DONE (D298, `d8923f4c`+`eeb17be4`+`60d55b23`, 2026-07-10)
-~~collapsible-text, table-of-contents, decorative-image, countdown-timer, icon-list, brand-strip, timeline, process-steps, mega-menu, mobile-nav~~ — all 10 LANDED (zero inline, box-objects, harness-verified 375/768/1440), 3 dispatch rounds. mega-menu + mobile-nav are KEEP-STRUCTURE navs (mobile-nav content-KIND but a genuine 7-zone drawer → NOT block-private — a per-block override of the D294 default). Real dead-control F3 overrides drained; 3 mis-tagged baseline rows deferred (`P-F3-NAV-MISTAG-GATE`). **NEXT = Wave 3.**
-
-### Wave 3 (NEXT) — content-KIND composites → BLOCK-PRIVATE (per D294, like quote)
-info-box, testimonial, team-member, product-faq-item, notice-banner, option-picker, product-faq. (product-card, mobile-nav, tab, accordion-item, form-step: verify per-block whether they truly drop the wrapper or keep it — STOP-and-ask if a wrapper looks load-bearing.) Most ARE on page 8 → LANDED directly + re-clone. `/qc-council` any that touch shared render.
-
-### Wave 4 — section/layout composites KEEPING the wrapper (like hero)
-cta-section, card-grid, feature-grid, accordion(+item), tabs(+tab), gallery, google-reviews, trustpilot-reviews, form(+step+field-tiles), post-grid, pricing-table, testimonial-slider, content-collection, trust-bar, multi-button, modal. The wrapper is fully scoped (D296) — emit only each block's OWN extras block-private-scoped. `/qc-council` before each composite commit (blub-255). F3-drain: content-collection, form, pricing-table, product-card.
-
-### Task 4 (FINAL — after the roster is green) — wire gates zero-tolerance + close
-Wire `audit-inline-styling.js --check` (0 inline) + `check-box-family-guard.py --check` into `prebuild` as zero-tolerance; reconcile Spec 31/32 + CLAUDE.md to "rollout complete"; `/handoff`.
-
-## DONE last session (D298, `d8923f4c`+`eeb17be4`+`60d55b23`, 2026-07-10 — no action needed)
-- **Wave 2 — 10 blocks LANDED** across 3 dispatch rounds (solo Sonnet per block, disjoint dirs; every block re-gated by me — build gates + box-family-guard 0 + suite 440 pass — + harness-verified 375/768/1440; 10 visual-diff reports at repo-root):
-  - **R1** collapsible-text, table-of-contents, decorative-image, countdown-timer. ToC's "broken" bug fixed (attr named `style` collided with WP's reserved `style` → `tocStyle`). decorative-image = inline-render fix + parallax view.js re-inline trap closed.
-  - **R2** icon-list, brand-strip, timeline, process-steps (timeline+process-steps carry `shadow` → skip-serialised+scoped). brand-strip view.js `animationPlayState` inline → class; fade-edge `[style*=background]` sniff → `.has-background`.
-  - **R3** mega-menu, mobile-nav — KEEP-STRUCTURE navs (mobile-nav content-KIND but a genuine 7-zone drawer → NOT block-private; a per-block override of the D294 default). mega-menu panel inline `position:fixed;width:100vw` → scoped, dead `color` no-op now paints; mobile-nav 5 swipe view.js `.style.transform` → `.is-swiping` class + vars, stray 768/480 → 1023/767.
-- **box_family seeds central** in sgs-update-v2.py (Wave-2 batches 1–3). No version bumps/deprecations (D293).
-- **F3 finding (deferred, Bean-decided):** the real dead-control overrides on both navs drained to `var()`; 3 baseline rows (mega-menu align-items×2, mobile-nav max-width:100vw) traced MIS-TAGGED (structural CSS / safety clamp, not the named control) → NOT force-wired → gate-precision fix tracked `P-F3-NAV-MISTAG-GATE`. New STOP-69 + the `var()`-doesn't-zero-baseline lesson captured above.
-
-## DONE earlier (D297)
-- **Wave 1 — 8 leaf blocks LANDED** block-private (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs) + the reusable harness `scripts/no-inline-land-verify.js` built + a real hero L4 per-area object-routing converter gap found and fixed (`ec5063a9`).
-
-## DONE earlier (D294–D296)
-- **Task 1 (`13fd1634`):** quote + media LANDED block-private; shared wrapper max-width/contentWidth/band inline→scoped.
-- **qc-council (unanimous):** content-KIND composites → block-private (D294 principle above).
-- **Task 2 (`74d164c6`):** hero LANDED — 6 per-area box-object families + F3-drain, keeps wrapper.
-- **Grid-scoping (`d65e7d10`, D296):** wrapper grid/flex CSS inline→scoped (STOP-68 closed).
-
-## Skills / MCP / Agents (carry forward)
-| Skill | When |
-|-------|------|
-| /brainstorming | per-block design wrinkles |
-| /qc-council | composite render / shared-file changes (blub-255) — but the quote wrapper Q is SETTLED, don't re-run |
-| /qc-inline | per-block build check |
-| /dispatching-parallel-agents | the parallel block waves |
-| /sgs-clone /sgs-db /wp-blocks | pipeline + schema ground truth |
-| /handoff /capture-lesson | session close |
-
-| MCP / Tool | For |
-|------|-----|
-| Playwright / chrome-devtools | LANDED computed-style + inline scan at 375/768/1440 |
-| Hostinger MCP `hosting_clearWebsiteCacheV1` | LiteSpeed purge before live verify (user `u945238940`) |
-| `sgs-db.py sql` (READ) + `sgs-update-v2.py` (--stage 1 seeds / --stage 10 prune) | DB + orphan prune |
-| REST app-pwd `.claude/secrets/sandybrown.env` | asymmetric test instances on page 1356 |
+## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| general-purpose (Sonnet, solo) | each block migration (disjoint dir); Haiku for the simplest leaf blocks |
-| Explore / general-purpose (read-only, parallel) | map a block's current box-attr state before migrating |
+| general-purpose (Sonnet, solo) | any per-block migration touch-up (disjoint dir); read-only Explore agents parallel-fine |
+| test-and-explain | plain-English verify of a LANDED batch if wanted |
+
+---
+
+## Task 1 — Complete the roster LAND (`P-NO-INLINE-LAND-ROSTER`)
+**What:** LANDED-verify the ~35 merged blocks + write per-block visual-diff reports.
+**Why:** the rollout's OUTCOME (every styling-support block proven zero-inline live) is not hit until this is done.
+**Estimated time:** 60–90 min (harness-automated; batched manifests).
+**Orchestration:** inline (main thread, Opus) — the harness IS the automation. Copy `no-inline-wave{1,2}-manifest.json`, add the remaining blocks + asymmetric custom instances; run `node scripts/no-inline-land-verify.js <manifest>` via PowerShell. Blocks on page 8 (info-box/testimonial/cta-section/card-grid/feature-grid/trust-bar/product-card): re-clone + live-verify. `/qc-inline` gate after each batch. **Acceptance:** every block PASS (zero inline property declarations + correct computed box at 375/768/1440); a `reports/visual-diff/<block>-2026-07-DD.md` per block; `leftover-buckets.json` shows nothing wrongly dropped.
+
+## Task 2 — `colourPreset` pill-fill fix (`P-PILL-SELECTED-FILL-PRESET`)
+**What:** the cloned option-picker/product-card should set `colourPreset=''` when it supplies explicit per-pill colours, so the draft's pale-tint selected fill (`rgba(230,138,149,0.1)`) governs instead of the `solid` preset's primary fill.
+**Why:** the last pill-fidelity gap; the converter already extracts + stores the rgba correctly.
+**Estimated time:** 20 min.
+**Orchestration:** inline. `/brainstorming` the emit decision (converter suppresses the preset when explicit pill colours present, OR product-card forward nulls the preset). `/qc-council` (converter-adjacent). Re-clone page 8 + live-verify the selected pill fills the pale tint. **Acceptance:** live selected pill bg == `rgba(230,138,149,0.1)` (computed alpha < 1), not solid primary.
+
+## Task 3 — Container inline-gap check + wire the zero-tolerance gates (`P-CONTAINER-INLINE-GAP-CHECK` + Task 4)
+**What:** confirm whether `sgs-container`'s inline `gap:16px` (seen live on page 8) is scoped-correct or a residual vs D296; then wire `audit-inline-styling.js --check` + `check-box-family-guard.py --check` into `package.json prebuild` as ZERO-TOLERANCE.
+**Why:** the zero-tolerance gate would FAIL on a real inline residual — resolve first.
+**Estimated time:** 30 min.
+**Orchestration:** inline. `/qc-council` if the wrapper needs a change (shared file). **Acceptance:** `audit-inline-styling.js --check` = 0 across all SGS blocks; both gates in `prebuild`; build still green.
+
+## Task 4 — Spec + gate reconciliation (`P-DECLARATIVE-BOXFAMILY-SPEC-RECONCILE` + `P-F3-NAV-MISTAG-GATE`)
+**What:** reconcile Spec 31 §4 / Spec 32 §6.1(c) + CLAUDE.md to the declarative box_family mechanism (they still name the dict); fix the hardcoded-defaults gate's attr↔property precision + var()-fallback counting.
+**Why:** docs drift + the gate mis-flags structural CSS as dead-control debt.
+**Estimated time:** 30 min.
+**Orchestration:** inline. `/docscore` the edited specs. **Acceptance:** specs say declarative; the 3 mis-tagged F3 baseline rows re-evaluated by the fixed gate; CLAUDE.md consistent.
+
+## Dependency graph
+```
+Task 1 (inline, Opus — harness LAND, batched)   ─┐
+Task 2 (inline — colourPreset, /qc-council)      ─┤ (parallel-independent)
+Task 3 (inline — container gap → wire gates)     ─┘
+   ↓ (Tasks 1+2+3 done)
+Task 4 (inline — spec + gate reconcile) → /handoff → push
+```
 
 ## Methodology guardrails (do not skip)
-- Deploy + (re-clone if attr-shape changed) + purge (LiteSpeed + OPcache) before measure (STOP-21).
-- LANDED asymmetric where box families apply, never emit alone (STOP-4/44); prove the premise on the real node (STOP-43).
-- One solo coding subagent per shared file (STOP-39); QC every composite's wrapper decision vs the DB + D294.
-- No version bumps, no deprecations (D293). Visual-diff report at REPO-ROOT (STOP-67).
-- Branch main; commit path-scoped `git commit -- <paths>` (never `git add -A`); verify D-ceiling before a new D.
+- **Deploy + (re-clone if attr-shape changed) + purge (OPcache + LiteSpeed) BEFORE measure** (STOP-21). Emit-green ≠ LANDED.
+- **Root cause before instance fix** — a class-of-failure fix (converter/wrapper) beats per-block tuning.
+- **Outcome vs completion** — the rollout is NOT done until every block is LANDED + the gates wired; code-merged ≠ outcome-hit.
+- **/qc-council before any converter / shared-render / wrapper commit** (blub-255).
+- **No version bumps, no deprecations** (D293). Visual-diff report at repo-ROOT (STOP-67). Branch `main`; path-scoped commits.
