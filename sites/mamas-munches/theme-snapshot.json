@@ -231,16 +231,14 @@
         "typography": {
           "fontFamily": "var:preset|font-family|heading",
           "fontWeight": "700",
-          "lineHeight": "1.15",
-          "letterSpacing": "-0.022em"
+          "lineHeight": "1.15"
         }
       },
       "h2": {
         "typography": {
           "fontFamily": "var:preset|font-family|heading",
           "fontWeight": "600",
-          "lineHeight": "1.2",
-          "letterSpacing": "-0.015em"
+          "lineHeight": "1.2"
         }
       },
       "h3": {
