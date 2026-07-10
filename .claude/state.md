@@ -2,13 +2,16 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-09-D296
+last_updated: 2026-07-10-D297
 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## Human Summary
+**LATEST (D297, 2026-07-10) — no-inline Wave 1: 8 leaf blocks LANDED + a real hero L4 converter gap found and fixed.** Commit `ec5063a9` (main, pushed). The 8 single-element/leaf blocks (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs) migrated block-private + LANDED via a NEW reusable harness (`scripts/no-inline-land-verify.js` — use it every wave: authors asymmetric instances on page 1356, checks zero-inline + computed box at 375/768/1440). **Roster now 15/59; ~44 remain.** Separately, the routine `--stage 10` prune surfaced a REAL D295 gap: hero's per-area padding CLONING was broken (L4 `fold_helpers.route_area_css_to_block_attrs` + `grid_area.py` left on the flat model after hero → object migration); fixed both to be box-object-aware (mirrors `content_band`), 4 stale tests updated + 1 added, suite 440 green, all gates green, LANDED on a page-8 reclone (hero content padding 72/64 @1440, 28/20/40 @375, zero inline — was gapped). **NEXT = Wave 2** (more leaf blocks + F3-drains). See next-session-prompt.md. SoT = handoff.md + next-session-prompt.md.
+
+## Human Summary (prior — D296, 2026-07-09)
 **LATEST (D296, 2026-07-09) — the no-inline styling rollout advanced through quote/media/hero + a universal grid-scoping; the hard architecture is settled, a ~52-block roster remains (phased waves).** This session: **Task 1 (`13fd1634`)** quote + media LANDED block-private (zero inline, box-objects) + the shared wrapper max-width/contentWidth/band inline→scoped; **a qc-council (unanimous) settled the pattern selector — content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote), section/layout composites KEEP the wrapper (like hero) — D294**; **Task 2 (`74d164c6`)** hero (the biggest block) LANDED — 6 per-area box-object families + F3-drain, keeps the wrapper, blub-255 2-rater panel SHIP; **grid-scoping (`d65e7d10`, D296)** moved the shared wrapper's grid/flex CSS inline→scoped (STOP-68 CLOSED — 0 inline grid across all 95 live SGS elements, grids intact). **7/59 styling-support blocks now migrated** (button/container/heading/text/quote/media/hero); **~52 remain** — a phased, multi-session waved programme (Bean-corrected: the prompt's "~26" was a narrow slice). **NEXT SESSION = run a roster wave** (Wave 1 single-element leaf blocks → Wave 4 composites → Task 4 wire the 2 gates zero-tolerance). See `.claude/next-session-prompt.md` (the wave plan + MANDATORY READING GATE + STOP catalogue incl. STOP-68). SoT = handoff.md + next-session-prompt.md.
 
 ## Human Summary (prior — D293, superseded by D294-296)
@@ -38,12 +41,12 @@ note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds O
 - **Commit discipline:** commit by EXPLICIT PATH, never `git add -A`. `main` is the source of truth.
 
 ## ACTIVE WORKSTREAM — the no-inline styling ROSTER (~52 blocks, phased waves)
-- **NEXT SESSION = run a roster WAVE** to the 11-condition DONE checklist, each block LANDED-verified. 7/59 styling-support blocks done (button/container/heading/text/quote/media/hero); ~52 remain + 6 F3-debt blocks. The hard architecture (mechanism, the D294 pattern selector, grid-scoping) is SETTLED — the rest is templated repetition.
+- **NEXT SESSION = run the NEXT roster WAVE (Wave 2)** to the 11-condition DONE checklist, each block LANDED-verified. **15/59 styling-support blocks done** (button/container/heading/text/quote/media/hero + Wave-1 leaf: label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs); **~44 remain** + F3-debt blocks. The hard architecture (mechanism, D294 pattern selector, grid-scoping) is SETTLED — the rest is templated repetition. **Reusable LANDED harness now exists:** `plugins/sgs-blocks/scripts/no-inline-land-verify.js` + a per-wave manifest (copy `no-inline-wave1-manifest.json`) — the cheap #10 (LANDED) gate for every future wave.
 - **SoT for current status + the wave plan:** `.claude/next-session-prompt.md` (Wave 1 leaf blocks → Wave 2 more leaf + F3 → Wave 3 content-KIND composites BLOCK-PRIVATE → Wave 4 section/layout composites KEEP-WRAPPER → Task 4 wire gates) + `.claude/handoff.md`. READ THOSE + the MANDATORY READING GATE + STOP catalogue (incl. STOP-68).
 - **Pattern selector (D294):** content-KIND composites that use only box+width → block-private (like quote); section/layout composites → keep `SGS_Container_Wrapper` (like hero), which is now fully scoped (spacing/max-width/contentWidth/band/GRID — D292/D294/D296).
 - **Per-block recipe (PROVEN this session):** solo Sonnet migrates block files (its dir only) → I add box_family seeds centrally in `sgs-update-v2.py` → build + gates + deploy + `/sgs-update` (--stage 1 seeds / --stage 10 prune, STOP-66) + purge → LANDED (re-clone page 8 if on it, else asymmetric on page 1356) → visual-diff report at repo-root → commit path-scoped.
 - **Canonical spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` (§3.A CSS routing, §13.4 FR-31-5.2, §13.6 FR-31-21.1 composite-mirror + the D294 clarification, FR-31-22 box-object) + Spec 32 §6.1 (box-object contract) + the DONE-checklist + migration-contract plans.
-- **The cloning pipeline (L1-L4 cascade / L4 per-area extraction) is DONE (D290) — no longer the active thread.**
+- **The cloning pipeline (L1-L4 cascade / L4 per-area extraction) is DONE (D290) — no longer the active thread.** *(D297 nuance: L4 per-area RENDERING was done at D290, but the CLONING side for a block that migrated its per-area family to a box-OBJECT was still flat until D297 — now object-aware in `fold_helpers.route_area_css_to_block_attrs` + `grid_area.py`. If a FUTURE wave migrates another composite's per-area family to objects (mediaPadding/imagePadding/etc.), the same box-object routing already covers it universally — no per-block change.)*
 
 ## DONE / ARCHIVED — theme + WooCommerce layer (Spec 30, not an active thread)
 - Spec 30 COMPLETE + MERGED (D220). Deferred roadmap items live in parking.md.
