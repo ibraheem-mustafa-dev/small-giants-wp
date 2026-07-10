@@ -105,46 +105,13 @@
 	flex: 1;
 }
 
-/* Pack-size pills */
-.product-card .pill-group {
-	display: flex;
-	gap: 7px;
-	flex-wrap: wrap;
-	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
-	margin: 0;
-}
-
-.product-card .pill {
-	background: var(--wp--preset--color--surface, #fbf3dc);
-	border: 2px solid var(--wp--preset--color--border, #e8d5c0);
-	border-radius: 8px;
-	padding: 7px 13px;
-	font-family: 'Inter', sans-serif;
-	font-size: var(--sgs-product-card-pill-font-size, 13px);
-	font-weight: var(--sgs-product-card-pill-font-weight, 600);
-	color: var(--wp--preset--color--text-muted, #6b5c50);
-	cursor: pointer;
-	min-height: 44px;
-	display: flex;
-	align-items: center;
-	transition: all 0.15s;
-	line-height: var(--sgs-product-card-pill-line-height, 1);
-}
-
-.product-card .pill.active {
-	border-color: var(--wp--preset--color--primary, #e68a95);
-	background: rgba(230, 138, 149, 0.1);
-	color: var(--wp--preset--color--text, #3a2e26);
-}
-
-.product-card .pill:hover:not(.active) {
-	border-color: var(--wp--preset--color--primary-dark, #c56a7a);
-}
-
-.product-card .pill:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #e68a95);
-	outline-offset: 2px;
-}
+/*
+ * Pack-size pills: the legacy bespoke `.pill` / `.pill-group` design was REMOVED
+ * 2026-07-10 — both typed and bound pack pickers now render the real
+ * sgs/option-picker block, styled by its own stylesheet + the card-scoped
+ * `.product-card .sgs-option-picker` overrides above. (This also removed the
+ * `7px 13px` hardcode the F3 baseline mis-tagged onto innerPadding.)
+ */
 
 /* Price row */
 .product-card .price-row {
@@ -440,14 +407,17 @@
  */
 /*
  * 44px minimum touch target (project standard) for the configurator pills.
- * Card-scoped so the shared sgs/option-picker block + page-144 Typed clones are
- * untouched — only Bound configurator cards get the enlarged target.
+ * Card-scoped to .product-card so BOTH the Bound configurator picker AND the
+ * Typed built-in picker (both render the real sgs/option-picker block) get the
+ * identical enlarged 44px target — "typed uses the same setup as bound" (Bean,
+ * 2026-07-10; reverses the earlier --live-only gating that left typed clones
+ * with the shared block's smaller default).
  */
-.product-card--live .sgs-option-picker__option {
+.product-card .sgs-option-picker__option {
 	min-height: 44px;
 }
 
-.product-card--live .sgs-option-picker__pill {
+.product-card .sgs-option-picker__pill {
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
@@ -486,7 +456,12 @@
 	width: max-content;
 	max-width: 100%;
 	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--surface, #fff);
+	/*
+	 * No-inline (Spec 32): the per-instance WCAG auto-contrast colour is supplied
+	 * as the --sgs-pc-badge-fg custom-property VALUE inline (allowed); the DEFAULT
+	 * (no auto-contrast resolved) is the original surface/#fff.
+	 */
+	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--surface, #fff));
 	font-size: 12px;
 	font-weight: 600;
 	letter-spacing: 0.08em;
@@ -601,9 +576,12 @@
  * Resting (unselected) option pills get the brand-primary (pink) outline. The
  * shared option-picker default is the foreground/dark colour; the configurator
  * wants pink on every state (resting + considering), with the selected pill
- * filled pink. Set the picker's border custom-property card-scoped only.
+ * filled pink. Card-scoped to .product-card so BOTH typed built-in cards and
+ * Bound configurator cards get the identical pink outline (Bean 2026-07-10 —
+ * "typed uses the same setup as bound"; was --live-only, which left the typed
+ * picker on the shared dark default).
  */
-.product-card--live .sgs-option-picker {
+.product-card .sgs-option-picker {
 	--sgs-op-border: var( --wp--preset--color--primary, #e68a95 );
 }
 
@@ -906,6 +884,26 @@
 .product-card__best-value-badge {
 	margin-left: 4px;
 	flex-shrink: 0;
+	/*
+	 * No-inline (Spec 32): per-instance WCAG auto-contrast colour arrives as the
+	 * --sgs-pc-badge-fg custom-property VALUE inline (allowed); DEFAULT matches
+	 * the .product-card__discount-label sibling (surface/#fff on the primary pill).
+	 */
+	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--surface, #fff));
+}
+
+/*
+ * Specificity guard (0,3,0): both badges carry .wp-block-sgs-label
+ * .is-style-pill-wrap, and when a REAL sgs/label block coexists on the page its
+ * stylesheet enqueues `.wp-block-sgs-label.is-style-pill-wrap { color: … }`
+ * (0,2,0), which would otherwise beat the base badge rules above and leave the
+ * per-instance WCAG auto-contrast --sgs-pc-badge-fg VALUE defined-but-unread
+ * (pre-migration the inline `color:` at 1,0,0,0 always won). Re-assert the var
+ * at higher specificity so auto-contrast reliably lands in that coexistence case.
+ */
+.product-card--live .product-card__discount-label.is-style-pill-wrap,
+.product-card .product-card__best-value-badge.is-style-pill-wrap {
+	color: var(--sgs-pc-badge-fg, var(--wp--preset--color--surface, #fff));
 }
 
 /* Reduced motion — honour user preference (no transitions beyond opacity). */
@@ -1009,62 +1007,13 @@
 }
 
 /*
- * Pack pills group — matches .product-card .pill-group. The frontend picks
- * render via sgs/option-picker's own radiogroup markup; this preview mirrors
- * that structure (label wraps a hidden radio + the pill span) purely for the
- * editor canvas — see .sgs-product-card__pill-option below.
+ * The typed editor-preview pack pills previously used bespoke
+ * `.sgs-product-card__pill(-group/-option)` rules — REMOVED 2026-07-10. The
+ * editor preview now emits the real `.sgs-option-picker` markup (edit.js), so
+ * the shared option-picker stylesheet + the card-scoped override style it
+ * identically to the frontend/bound picker. (Also removed the second `7px 13px`
+ * hardcode the F3 baseline mis-tagged onto innerPadding.)
  */
-.product-card .sgs-product-card__pill-group {
-	display: flex;
-	gap: 7px;
-	flex-wrap: wrap;
-	margin: 0;
-}
-
-/* Editor-preview-only wrapper: hides the (non-interactive) radio, gives the
- * label a real touch target, matching sgs/option-picker's own pill option. */
-.product-card .sgs-product-card__pill-option {
-	display: inline-flex;
-	align-items: center;
-	cursor: default;
-	min-height: 44px;
-}
-
-.product-card .sgs-product-card__pill-option input[type="radio"] {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	margin: -1px;
-	padding: 0;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
-	appearance: none;
-}
-
-/* Individual pill — matches .product-card .pill; 44px min touch target. */
-.product-card .sgs-product-card__pill {
-	background: var( --wp--preset--color--surface, #fbf3dc );
-	border: 2px solid var( --wp--preset--color--border, #e8d5c0 );
-	border-radius: 8px;
-	padding: 7px 13px;
-	font-size: var(--sgs-product-card-pill-font-size, 13px);
-	font-weight: 600;
-	color: var( --wp--preset--color--text-muted, #6b5c50 );
-	min-height: 44px;
-	display: flex;
-	align-items: center;
-	line-height: 1;
-	transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.product-card .sgs-product-card__pill.active {
-	border-color: var( --wp--preset--color--primary, #e68a95 );
-	background: rgba( 230, 138, 149, 0.1 );
-	color: var( --wp--preset--color--text, #3a2e26 );
-	font-weight: 700;
-}
 
 /* Price row — matches .product-card .price-row. */
 .product-card .sgs-product-card__price-row {

@@ -106,6 +106,18 @@ if ( '' !== $inner_padding_css ) {
 	$inline_styles[] = '--sgs-product-card-inner-padding:' . $inner_padding_css . ';';
 }
 
+// CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
+// into the scoped <style> below (border width/radius = length; border style =
+// keyword). Strip everything outside the safe grammar so a Contributor-authored
+// value can never break out of the declaration into a new CSS rule. Mirrors
+// sgs/hero's proven sanitisers.
+$sgs_css_length  = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
 // ── Per-element typography (title heading + price) ──────────────────────
 // Font size/weight/style/line-height now come from the shared
 // TypographyControls component → sgs_typography_css_rule() scoped <style>
@@ -139,11 +151,109 @@ $classes[] = $sgs_card_uid;
 $sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-product-card__pill, .' . $sgs_card_uid . ' .pill' );
+// 'pill' typography now targets the REAL option-picker pill (both typed + bound
+// pack pickers render sgs/option-picker) — the legacy .sgs-product-card__pill /
+// .pill markup was removed 2026-07-10, so this control styles the live pills.
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag, .' . $sgs_card_uid . ' .trial-tag' );
-$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
+
+// ── Native styling supports (color + border) → scoped, NOT inline ────────
+// block.json declares supports.color + supports.__experimentalBorder with
+// __experimentalSkipSerialization, so get_block_wrapper_attributes() (called
+// inside SGS_Container_Wrapper::render() below) no longer auto-inlines them.
+// Read the resolved CUSTOM values from $attributes['style'] and emit them into
+// the card's OWN scoped <style> (mirrors sgs/hero render.php). Base spacing
+// (margin) is a SEPARATE mechanism the shared wrapper already handles scoped
+// internally (it reads $attributes['style']['spacing'] directly) — NOT
+// duplicated here, or it would double-emit. Preset (palette-slug) colours are
+// class-based, re-added below.
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$sgs_pc_style_engine_args = array();
+
+	$sgs_pc_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$sgs_pc_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$sgs_pc_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$sgs_pc_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $sgs_pc_color_args ) ) {
+		$sgs_pc_style_engine_args['color'] = $sgs_pc_color_args;
+	}
+
+	$sgs_pc_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$sgs_pc_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$sgs_pc_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$sgs_pc_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$sgs_pc_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
+			$sgs_pc_border_args['radius'] = $sgs_css_length( $sgs_pc_radius_raw );
+		} elseif ( is_array( $sgs_pc_radius_raw ) ) {
+			$sgs_pc_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
+				if ( ! empty( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ) {
+					$sgs_pc_radius_clean[ $sgs_pc_corner ] = $sgs_css_length( $sgs_pc_radius_raw[ $sgs_pc_corner ] );
+				}
+			}
+			if ( ! empty( $sgs_pc_radius_clean ) ) {
+				$sgs_pc_border_args['radius'] = $sgs_pc_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $sgs_pc_border_args ) ) {
+		$sgs_pc_style_engine_args['border'] = $sgs_pc_border_args;
+	}
+
+	if ( ! empty( $sgs_pc_style_engine_args ) ) {
+		$sgs_pc_scoped = wp_style_engine_get_styles(
+			$sgs_pc_style_engine_args,
+			array( 'selector' => '.' . $sgs_card_uid . '.wp-block-sgs-product-card' )
+		);
+		if ( ! empty( $sgs_pc_scoped['css'] ) ) {
+			$sgs_card_typo_css .= $sgs_pc_scoped['css'];
+		}
+	}
+}
+
+// Skip-serialised color/border supports also stop WP auto-adding the standard
+// has-*-color / has-*-background-color / has-*-border-color classes onto the
+// wrapper — re-add them from the preset (palette-slug) attrs (mirrors sgs/hero
+// + sgs/quote) so preset palette colours still resolve visually. Applies to
+// every render branch (all read $classes below).
+$sgs_pc_preset_text   = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$sgs_pc_preset_bg     = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$sgs_pc_preset_grad   = isset( $attributes['gradient'] ) ? sanitize_html_class( $attributes['gradient'] ) : '';
+$sgs_pc_preset_border = isset( $attributes['borderColor'] ) ? sanitize_html_class( $attributes['borderColor'] ) : '';
+if ( '' !== $sgs_pc_preset_text ) {
+	$classes[] = 'has-text-color';
+	$classes[] = 'has-' . $sgs_pc_preset_text . '-color';
+}
+if ( '' !== $sgs_pc_preset_bg ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $sgs_pc_preset_bg . '-background-color';
+}
+if ( '' !== $sgs_pc_preset_grad ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $sgs_pc_preset_grad . '-gradient-background';
+}
+if ( '' !== $sgs_pc_preset_border ) {
+	$classes[] = 'has-border-color';
+	$classes[] = 'has-' . $sgs_pc_preset_border . '-border-color';
+}
+
+$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 // Base opts shared across all branches (no WP Interactivity attrs).
 $base_opts = array(
@@ -168,7 +278,7 @@ if ( 'typed' === $source_mode ) {
 		'cta',
 		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary'
 	);
-	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
+	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 	// Built-in element render — the ONLY typed path. The FP-H InnerBlocks
 	// transition bridge retired 2026-07-04 (legacy clones are re-cloned with
@@ -206,7 +316,7 @@ $sgs_card_typo_css .= sgs_button_element_style_css(
 	'cta',
 	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart'
 );
-$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . $sgs_card_typo_css . '</style>' : '';
+$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 // Which preset the editor's "Apply preset" button last seeded — surfaced as a
 // data attribute on the built-in CTA for support/debugging, mirroring the
@@ -282,7 +392,10 @@ if ( null === $data ) {
 		</p>
 	</div>
 	<?php
-	$inner = ob_get_clean();
+	// Prepend the scoped <style> (native color/border + typography) so a card
+	// with custom styling still renders it in the empty state — skip-serialisation
+	// means the scoped tag is now the ONLY carrier (the auto-inline path is gone).
+	$inner = $sgs_card_typo_tag . ob_get_clean();
 
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-escaped HTML.
 	echo SGS_Container_Wrapper::render( $attributes, $block, $inner, 'content', $empty_opts );
@@ -871,7 +984,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<?php // B3: cosmetic discount badge — reuses the sgs/label pill-wrap convention (wp-block-sgs-label / is-style-pill-wrap) so it matches the design-system badge component. Styled self-contained in style.css because the label block's own CSS only enqueues when a real sgs/label block renders on the page. ?>
 					<span
 						class="wp-block-sgs-label is-style-pill-wrap product-card__discount-label"
-						<?php echo '' !== $discount_text_colour ? 'style="color:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
+						<?php echo '' !== $discount_text_colour ? 'style="--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
 						data-wp-bind--hidden="context.discountHidden"
 						data-wp-text="context.discountLabel"
 					><?php echo esc_html( $discount_label ); ?></span>
@@ -928,7 +1041,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 							?>
 						<span
 							class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"
-							<?php echo '' !== $discount_text_colour ? 'style="color:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
+							<?php echo '' !== $discount_text_colour ? 'style="--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
 						><?php echo esc_html( $badge_text ); ?></span>
 						<?php endif; ?>
 					</li>

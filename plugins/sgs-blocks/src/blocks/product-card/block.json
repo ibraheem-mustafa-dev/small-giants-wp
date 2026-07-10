@@ -39,17 +39,20 @@
 		"color": {
 			"background": true,
 			"gradients": true,
-			"text": true
+			"text": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
-			"padding": false
+			"padding": false,
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"style": true,
-			"color": true
+			"color": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
