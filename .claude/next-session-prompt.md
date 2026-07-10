@@ -6,12 +6,21 @@ generated: 2026-07-10
 primary_goal: "Continue the universal no-inline + box-object rollout. PROVEN + LANDED on 25 blocks: button/container/heading/text/quote/media/hero + Wave-1 leaf (label/icon/counter/whatsapp-cta/social-icons/star-rating/business-info/breadcrumbs) + Wave-2 (collapsible-text/table-of-contents/decorative-image/countdown-timer/icon-list/brand-strip/timeline/process-steps/mega-menu/mobile-nav) + the shared wrapper (max-width/contentWidth/band/GRID all scoped). The mechanism, the content-KIND→block-private principle (D294), the grid-scoping (D296), the reusable LANDED harness (scripts/no-inline-land-verify.js, D297), AND the keep-structure-nav pattern (D298) are all settled. What remains is TEMPLATED REPETITION across the rest of the roster: ~34 blocks, each to the 11-condition DONE checklist, LANDED-verified via the harness, committed — phased waves. NEXT = Wave 3 (content-KIND composites → block-private)."
 ---
 
-# NEXT SESSION — continue the no-inline ROSTER (52 blocks, phased waves)
+# NEXT SESSION — continue the no-inline ROSTER (35 remaining + 6 reconcile)
 
-Invoke `/autopilot` first. The hard architecture is DONE + LANDED (D294–D296): the box-object
-no-inline mechanism, the content-KIND→block-private decision, hero (the biggest block), and the
-universal grid-scoping. What remains is applying the PROVEN recipe to the rest of the roster —
-one wave at a time, each block LANDED-verified.
+Invoke `/autopilot` first. The hard architecture is DONE + LANDED (D294–D298): the box-object
+no-inline mechanism, the content-KIND→block-private decision, hero, the universal grid-scoping,
+the reusable LANDED harness, and the keep-structure-nav pattern. What remains is applying the
+PROVEN recipe to the rest of the roster — each block LANDED-verified.
+
+> **⚡ EXECUTION MODEL (Bean-chosen 2026-07-10): PARALLEL edit / SERIAL land.** The completion is
+> planned as parallel worktree edit-tracks + one integration/land session — see
+> **`.claude/plans/2026-07-10-no-inline-parallel-rollout.md`** (the authoritative remaining-roster
+> partition: Tracks A–E disjoint block sets + the RECONCILE-6 bucket + the integration spec + the
+> shared-resource protocol). To run a track: open a window, follow that plan's Track section + the
+> SHARED-RESOURCE PROTOCOL (own worktree, files-only, report seeds, no deploy/main-commit). To LAND:
+> run the INTEGRATION session (merge branches → central seeds → one deploy → harness-LAND all → Task 4).
+> The sequential Wave-3/Wave-4 plan below still works if you prefer ONE window at a time — same blocks, same bar.
 
 **Agent identity.** SGS block engineer executing a Bean-approved no-inline styling rollout. You
 ORCHESTRATE (Opus) + GATE + strictly QC; delegate each block to a SOLO Sonnet subagent (disjoint
