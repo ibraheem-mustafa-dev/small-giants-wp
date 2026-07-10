@@ -72,9 +72,6 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
     - attr MUST have role in ``('color', 'typography')`` — all other roles
       (select-from-enum, behaviour, content …) are excluded.
     - attr MUST have a non-empty ``derived_selector``.
-    - ``derived_selector`` MUST NOT contain a state pseudo token
-      (``__hover``, ``__active``, ``__focus``) — hover/focus variants are not
-      lifted from base draft CSS.
     - ``css_property`` for this attr MUST be non-NULL in ``property_suffixes``
       (correctly excludes ``quoteStyle``/``ratingSize`` whose suffixes
       ``Style``/``Size`` have NULL ``css_property``).
@@ -137,10 +134,13 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
         selector = info.get("derived_selector")
         if not selector or not isinstance(selector, str):
             continue
-        # Skip state pseudo-tokens — hover/active/focus variants are not
-        # read from base draft CSS.
-        if any(tok in selector for tok in ("__hover", "__active", "__focus")):
-            continue
+        # (Removed 2026-07-10, Bean-directed) The former blanket skip of
+        # ``__hover``/``__active``/``__focus`` derived_selectors was a temporary
+        # stopgap that DROPPED state styling instead of routing it. State attrs
+        # now lift like any other element: an attr keyed on a state selector
+        # (hover / persistent-selected) collects that selector's declarations
+        # and lands on its own state attr — the universal §3.B.0 machinery, no
+        # special case. (Spec 31 §3.B B2 / §3.B.0 / R-31-9.)
 
         # Resolve css_property by peeling the longest matching suffix from
         # attr_name (PascalCase tail).  Longest-first avoids 'Colour' being
