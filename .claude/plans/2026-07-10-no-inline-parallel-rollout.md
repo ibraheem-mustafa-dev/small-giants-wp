@@ -69,8 +69,8 @@ Pattern: keep-wrapper composites + parent/child pairs kept TOGETHER (accordion+i
 ### Track E — product-card → verify pattern (1, complex, own window)
 `product-card` — dual-mode (typed/bound), arrayContentLift, imageControls, F3 debt. Give it a dedicated session; `/qc-council` before its commit (touches a lot). Verify block-private vs keep-wrapper per D294.
 
-### RECONCILE bucket (NOT a fresh migration — integration/audit phase) — 6
-`button, container, text, media, business-info, social-icons` — these are box-migrated + LANDED, BUT still declare an ENABLED `color`/`typography` native support WITHOUT `__experimentalSkipSerialization` (text/media's `color:false` are false-positives — disabled, fine). Latent gap: those properties still auto-inline if set via the native Styles panel; the box-only harness didn't exercise them. The integration session runs `audit-inline-styling.js` across ALL blocks (Task 4 wires it zero-tolerance) → this catches them; flip the stray support to skip-serialised + scope it, re-LAND.
+### RECONCILE bucket — ✅ DONE (D298 reconcile, `ee01c887`, 2026-07-10)
+~~button, container, business-info, social-icons~~ — the 4 genuine cases (enabled `color`/`typography` native support without skip-serialisation → auto-inline) are FIXED + LANDED: skip-serialised + scoped, live-curl-confirmed the colour/typography paints scoped not inline (button `#fff/#123456`, container `#abcdef/21px` via the shared wrapper's `extra_classes` seam — no shared-file edit, business-info `19px`, social-icons defensive). `text` + `media` were false-positives (`color:false` = support DISABLED). **Bucket clear.** Residual assurance: the integration session's `audit-inline-styling.js --check` zero-tolerance wire (Task 4) is the belt-and-braces catch across ALL blocks.
 
 ---
 
