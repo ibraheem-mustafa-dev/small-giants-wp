@@ -17,6 +17,17 @@
  * attributes (read from $inner_block->parsed_block['attrs']) so structured
  * data is preserved without requiring the scalar testimonials array.
  *
+ * NO-INLINE (contract §A, 2026-07-10): the rendered subtree carries ZERO inline
+ * CSS property declarations. color/typography/spacing/__experimentalBorder all
+ * declare __experimentalSkipSerialization in block.json; the block's own color
+ * + typography values are emitted into THIS BLOCK'S OWN scoped `.{uid}` <style>
+ * (composite caveat — mirrors sgs/hero — these do NOT ride through the shared
+ * wrapper's `extra_styles`, which would inline them). Base spacing/border-radius/
+ * max-width remain the wrapper's own scoped mechanism (unchanged). The transition
+ * + hover-colour CSS custom-property VALUES ($css_vars below) are allowed inline
+ * (a `--x:y` var value is not a property declaration) and continue to ride the
+ * wrapper's `extra_styles`.
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — we iterate inner_blocks directly).
  * @var \WP_Block $block      Block instance.
@@ -28,6 +39,19 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+
+// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
+// declarations (textTransform / fontWeight / fontStyle / border-style) —
+// letters + hyphen only. Mirrors sgs/hero's proven sanitiser.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
+// CSS length/unit sanitiser — for free-text length values (letterSpacing,
+// border width/radius) concatenated into raw CSS declarations.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
 
 // ── Attribute extraction ───────────────────────────────────────────────────
 $layout         = $attributes['layout'] ?? 'full';
@@ -65,6 +89,136 @@ $allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-testimonial-slider--hover-' . esc_attr( $safe_hover_effect );
+}
+
+// ── Scoped-style uid (no-inline contract §A) ───────────────────────────────
+// Own uid, independent of the wrapper's internal responsive-CSS uid — used to
+// scope THIS BLOCK'S color/typography <style> below (mirrors sgs/hero). This
+// is a CLASS (contract §B3-style scoping) — the root also carries the WP
+// `anchor` id, so the scoped hook must never collide with it.
+$uid      = 'sgs-testimonial-slider-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-testimonial-slider';
+$classes[] = $uid;
+
+// ── Own WP-native color/typography/border supports — no-inline contract (§A). ──
+// block.json declares color/typography/spacing/__experimentalBorder ALL with
+// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
+// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
+// them. Read the resolved values from $attributes['style'] here and emit them
+// into THIS BLOCK'S OWN scoped <style> (composite caveat — do NOT pass these
+// as wrapper `extra_styles`, that path inlines). Base spacing/border-radius/
+// max-width is a SEPARATE mechanism the wrapper already handles scoped
+// internally — not duplicated here.
+$slider_scoped_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$slider_style_engine_args = array();
+
+	$slider_color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$slider_color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$slider_color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$slider_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $slider_color_args ) ) {
+		$slider_style_engine_args['color'] = $slider_color_args;
+	}
+
+	$slider_border_args = array();
+	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
+		$slider_border_args['color'] = (string) $attributes['style']['border']['color'];
+	}
+	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
+		$slider_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
+	}
+	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
+		$slider_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
+	}
+	if ( isset( $attributes['style']['border']['radius'] ) ) {
+		$slider_radius_raw = $attributes['style']['border']['radius'];
+		if ( is_string( $slider_radius_raw ) && '' !== $slider_radius_raw ) {
+			$slider_border_args['radius'] = $sgs_css_length( $slider_radius_raw );
+		} elseif ( is_array( $slider_radius_raw ) ) {
+			$slider_radius_clean = array();
+			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+				if ( ! empty( $slider_radius_raw[ $corner ] ) ) {
+					$slider_radius_clean[ $corner ] = $sgs_css_length( $slider_radius_raw[ $corner ] );
+				}
+			}
+			if ( ! empty( $slider_radius_clean ) ) {
+				$slider_border_args['radius'] = $slider_radius_clean;
+			}
+		}
+	}
+	if ( ! empty( $slider_border_args ) ) {
+		$slider_style_engine_args['border'] = $slider_border_args;
+	}
+
+	if ( ! empty( $slider_style_engine_args ) ) {
+		$slider_scoped_styles = wp_style_engine_get_styles(
+			$slider_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $slider_scoped_styles['css'] ) ) {
+			$slider_scoped_css .= $slider_scoped_styles['css'];
+		}
+	}
+
+	// Typography — the block itself renders no direct text node (the quote
+	// text belongs to the child sgs/testimonial InnerBlocks), so this scopes
+	// to the same root element WP was previously auto-inlining onto (parity
+	// with pre-migration behaviour), not the stale/unused block.json
+	// `selectors.typography` (.sgs-testimonial-slider__quote — no element in
+	// this block's own markup ever carried that class).
+	$slider_typography_args = array();
+	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+		$slider_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+	}
+	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+		$slider_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+	}
+	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
+		$slider_typography_args['letterSpacing'] = $sgs_css_length( $attributes['style']['typography']['letterSpacing'] );
+	}
+	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
+		$slider_typography_args['textTransform'] = $sgs_css_keyword( $attributes['style']['typography']['textTransform'] );
+	}
+	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
+		$slider_typography_args['fontWeight'] = $sgs_css_keyword( (string) $attributes['style']['typography']['fontWeight'] );
+	}
+	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
+		$slider_typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
+	}
+	if ( ! empty( $slider_typography_args ) ) {
+		$slider_typography_scoped = wp_style_engine_get_styles(
+			array( 'typography' => $slider_typography_args ),
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $slider_typography_scoped['css'] ) ) {
+			$slider_scoped_css .= $slider_typography_scoped['css'];
+		}
+	}
+	if ( isset( $attributes['style']['typography']['textAlign'] ) && '' !== $attributes['style']['typography']['textAlign'] ) {
+		$slider_scoped_css .= $root_sel . '{text-align:' . $sgs_css_keyword( $attributes['style']['typography']['textAlign'] ) . '}';
+	}
+}
+
+// Skip-serialised `color` support also stops WP auto-adding the standard
+// has-*-color / has-*-background-color classes onto the wrapper — re-add them
+// manually (mirrors sgs/hero + sgs/quote) so preset palette colours still
+// resolve visually.
+$slider_preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$slider_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $slider_preset_text_slug ) {
+	$classes[] = 'has-text-color';
+	$classes[] = 'has-' . $slider_preset_text_slug . '-color';
+}
+if ( '' !== $slider_preset_bg_slug ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $slider_preset_bg_slug . '-background-color';
 }
 
 // ── Own CSS vars — carried as extra_styles into the wrapper helper ─────────
@@ -267,13 +421,25 @@ if ( $is_split ) {
 	$carousel_inner = $slider_inner;
 }
 
+// ── Own scoped <style> (no-inline contract §A) ──────────────────────────────
+// $slider_scoped_css holds this block's color/typography/border output (built
+// above via wp_style_engine_get_styles, all pre-sanitised). wp_strip_all_tags
+// (NOT esc_html) blocks a Contributor CSS-injection payload from smuggling a
+// closing </style> while leaving `>` combinators intact — mirrors sgs/hero.
+$slider_style_tag = '';
+if ( $slider_scoped_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $slider_scoped_css built from pre-sanitised values only.
+	$slider_style_tag = sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $slider_scoped_css ) );
+}
+
 // ── WS-4 wrapper via SGS_Container_Wrapper ─────────────────────────────────
 // tag='div' — WCAG carousel region is a <div>; the __stage/__track structure
 // is preserved in $carousel_inner. CSS vars (transition, hover) ride in
-// extra_styles. Carousel data-* + ARIA region attributes ride in extra_attrs.
-// $schema_html is appended after the wrapper element (outside the landmark).
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML built with esc_* helpers throughout; $schema_html uses wp_json_encode.
-echo SGS_Container_Wrapper::render(
+// extra_styles (custom-property VALUES only — allowed inline per §A). Carousel
+// data-* + ARIA region attributes ride in extra_attrs. $schema_html is appended
+// after the wrapper element (outside the landmark).
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML built with esc_* helpers throughout; $schema_html uses wp_json_encode; $slider_style_tag pre-sanitised above.
+echo $slider_style_tag . SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
 	$carousel_inner,

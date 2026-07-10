@@ -152,6 +152,24 @@
 
 .sgs-accordion-item__content {
 	padding: 0 20px 16px;
+	overflow: hidden;
+}
+
+/*
+ * JS-driven height animation (view.js openItem/closeItem — no-inline contract,
+ * 2026-07-10). view.js writes ONLY a CSS custom-property VALUE
+ * (--sgs-accordion-height) + toggles these two classes — never a `height`,
+ * `overflow`, or `transition` property declaration directly on the element.
+ * .is-open sets the explicit pixel height view.js is animating between;
+ * .is-animating enables the transition only while the JS-driven swap is live
+ * (kept off the rest of the time so layout shifts elsewhere don't animate).
+ */
+.sgs-accordion-item__content.is-open {
+	height: var(--sgs-accordion-height, auto);
+}
+
+.sgs-accordion-item__content.is-animating {
+	transition: height 0.3s ease;
 }
 
 .sgs-accordion-item__content > :first-child {

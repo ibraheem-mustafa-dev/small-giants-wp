@@ -110,6 +110,13 @@ function initAccordions() {
 /**
  * Open an accordion item with smooth animation.
  * Also updates aria-expanded on the summary for legacy screen reader support.
+ *
+ * No-inline contract (2026-07-10): visual state is driven entirely by a CSS
+ * custom PROPERTY VALUE (--sgs-accordion-height, allowed — a var VALUE is not
+ * a property declaration) + two classes (.is-animating toggles the transition,
+ * .is-open toggles the settled height). Never write .style.height/.style.
+ * overflow/.style.transition — those declarations live in style.css keyed off
+ * the var/classes. Mirrors sgs/mobile-nav's swipe-gesture pattern (D298).
  */
 function openItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
@@ -121,33 +128,33 @@ function openItem( details, content, wrapper, animatingItems ) {
 		summary.setAttribute( 'aria-expanded', 'true' );
 	}
 
-	// Measure height after open.
+	// Measure height after open, seed the var at 0 (same tick, before paint —
+	// mirrors the original synchronous style.height='0px') so the transition
+	// animates from a known starting point with no flash of full height.
 	const height = wrapper.offsetHeight;
-	content.style.height = '0px';
-	content.style.overflow = 'hidden';
+	content.classList.add( 'is-open' );
+	content.style.setProperty( '--sgs-accordion-height', '0px' );
 
 	const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 	requestAnimationFrame( () => {
 		if ( ! prefersReducedMotion ) {
-			content.style.transition = 'height 0.3s ease';
+			content.classList.add( 'is-animating' );
 		}
-		content.style.height = height + 'px';
+		content.style.setProperty( '--sgs-accordion-height', height + 'px' );
 
 		content.addEventListener(
 			'transitionend',
 			() => {
-				content.style.height = '';
-				content.style.overflow = '';
-				content.style.transition = '';
+				content.classList.remove( 'is-animating' );
+				content.style.removeProperty( '--sgs-accordion-height' );
 				animatingItems.delete( details );
 			},
 			{ once: true }
 		);
 
 		if ( prefersReducedMotion ) {
-			content.style.height = '';
-			content.style.overflow = '';
+			content.style.removeProperty( '--sgs-accordion-height' );
 			animatingItems.delete( details );
 		}
 	} );
@@ -156,6 +163,8 @@ function openItem( details, content, wrapper, animatingItems ) {
 /**
  * Close an accordion item with smooth animation.
  * Also updates aria-expanded on the summary for legacy screen reader support.
+ *
+ * No-inline contract (2026-07-10): see openItem() above — var + class only.
  */
 function closeItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
@@ -167,24 +176,23 @@ function closeItem( details, content, wrapper, animatingItems ) {
 	}
 
 	const height = wrapper.offsetHeight;
-	content.style.height = height + 'px';
-	content.style.overflow = 'hidden';
+	content.classList.add( 'is-open' );
+	content.style.setProperty( '--sgs-accordion-height', height + 'px' );
 
 	const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 	requestAnimationFrame( () => {
 		if ( ! prefersReducedMotion ) {
-			content.style.transition = 'height 0.3s ease';
+			content.classList.add( 'is-animating' );
 		}
-		content.style.height = '0px';
+		content.style.setProperty( '--sgs-accordion-height', '0px' );
 
 		content.addEventListener(
 			'transitionend',
 			() => {
 				details.removeAttribute( 'open' );
-				content.style.height = '';
-				content.style.overflow = '';
-				content.style.transition = '';
+				content.classList.remove( 'is-animating', 'is-open' );
+				content.style.removeProperty( '--sgs-accordion-height' );
 				animatingItems.delete( details );
 			},
 			{ once: true }
@@ -192,8 +200,8 @@ function closeItem( details, content, wrapper, animatingItems ) {
 
 		if ( prefersReducedMotion ) {
 			details.removeAttribute( 'open' );
-			content.style.height = '';
-			content.style.overflow = '';
+			content.classList.remove( 'is-open' );
+			content.style.removeProperty( '--sgs-accordion-height' );
 			animatingItems.delete( details );
 		}
 	} );

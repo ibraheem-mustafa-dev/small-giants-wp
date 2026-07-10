@@ -24,6 +24,12 @@
 	touch-action: pan-y;
 }
 
+/* Pointer-drag state — toggled by view.js pointerdown/endDrag (class only,
+ * no inline style). */
+.sgs-testimonial-slider__track.is-dragging {
+	cursor: grabbing;
+}
+
 /* ===== List — JS-built wrapper, holds real + cloned slides ===== */
 /*
  * Built client-side by view.js (real slides moved in, clones appended/
@@ -35,11 +41,23 @@
  * whole row; the gap value MUST match the fallback used in the slide
  * flex-basis calc so slide widths exactly fill the track.
  */
+/*
+ * No-inline contract (2026-07-10): the track offset is a CSS custom PROPERTY
+ * VALUE (--sgs-slider-offset, written by view.js via .style.setProperty — a
+ * var value, not a property declaration) consumed by the `transform`
+ * declaration below. `.no-transition` is the transition kill-switch view.js
+ * toggles for instant snaps (clone-zone reset) and while dragging.
+ */
 .sgs-testimonial-slider__list {
 	display: flex;
 	gap: var(--wp--preset--spacing--30, 16px);
+	transform: translateX(var(--sgs-slider-offset, 0));
 	transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
 	will-change: transform;
+}
+
+.sgs-testimonial-slider__list.no-transition {
+	transition: none;
 }
 
 /* ===== Slide ===== */
