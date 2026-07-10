@@ -293,36 +293,42 @@ class Post_Grid_REST {
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
 		$card_index    = isset( $params['_card_index'] ) ? absint( $params['_card_index'] ) : 1;
 
-		// Per-element colour styles — resolved from slug or hex.
-		$title_style   = '';
-		$excerpt_style = '';
-		$meta_style    = '';
-		$badge_style   = '';
-		$readmore_style = '';
-
+		// Per-instance colour + aspect overrides flow as CSS custom-property
+		// VALUES on the card root (contract-allowed — a var value carries no
+		// property declaration and cannot beat :hover), consumed by style.css
+		// var() rules. AJAX-paginated cards are injected OUTSIDE the block's
+		// scoped <style>, so they must carry their own var values — hence the
+		// card root, not a #uid scoped rule. Zero inline property declarations
+		// anywhere in the card subtree (Spec 32 no-inline; R4, 2026-07-10).
+		$card_vars = [];
 		if ( ! empty( $params['titleColour'] ) ) {
-			$title_style = ' style="color:' . sgs_colour_value( $params['titleColour'] ) . '"';
+			$card_vars[] = '--sgs-pg-title-colour:' . sgs_colour_value( $params['titleColour'] );
 		}
 		if ( ! empty( $params['excerptColour'] ) ) {
-			$excerpt_style = ' style="color:' . sgs_colour_value( $params['excerptColour'] ) . '"';
+			$card_vars[] = '--sgs-pg-excerpt-colour:' . sgs_colour_value( $params['excerptColour'] );
 		}
 		if ( ! empty( $params['metaColour'] ) ) {
-			$meta_style = ' style="color:' . sgs_colour_value( $params['metaColour'] ) . '"';
+			$card_vars[] = '--sgs-pg-meta-colour:' . sgs_colour_value( $params['metaColour'] );
 		}
 		if ( ! empty( $params['readMoreColour'] ) ) {
-			$readmore_style = ' style="color:' . sgs_colour_value( $params['readMoreColour'] ) . '"';
+			$card_vars[] = '--sgs-pg-readmore-colour:' . sgs_colour_value( $params['readMoreColour'] );
 		}
-
-		$badge_styles = [];
 		if ( ! empty( $params['categoryBadgeColour'] ) ) {
-			$badge_styles[] = 'color:' . sgs_colour_value( $params['categoryBadgeColour'] );
+			$card_vars[] = '--sgs-pg-badge-colour:' . sgs_colour_value( $params['categoryBadgeColour'] );
 		}
 		if ( ! empty( $params['categoryBadgeBgColour'] ) ) {
-			$badge_styles[] = 'background-color:' . sgs_colour_value( $params['categoryBadgeBgColour'] );
+			$card_vars[] = '--sgs-pg-badge-bg:' . sgs_colour_value( $params['categoryBadgeBgColour'] );
 		}
-		if ( ! empty( $badge_styles ) ) {
-			$badge_style = ' style="' . implode( ';', $badge_styles ) . '"';
-		}
+		$card_vars[]     = '--sgs-pg-aspect:' . $aspect_ratio;
+		$card_style_attr = ! empty( $card_vars ) ? ' style="' . esc_attr( implode( ';', $card_vars ) ) . '"' : '';
+
+		// Per-element inline style slots are now empty — colour comes from the
+		// card var() cascade in style.css (R4 no-inline).
+		$title_style    = '';
+		$excerpt_style  = '';
+		$meta_style     = '';
+		$readmore_style = '';
+		$badge_style    = '';
 
 		$permalink = esc_url( get_permalink( $post_id ) );
 		$title     = esc_html( get_the_title( $post_id ) );
@@ -332,7 +338,7 @@ class Post_Grid_REST {
 		$img_priority = 0 === $card_index ? ' fetchpriority="high"' : '';
 
 		// Build card HTML.
-		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '">';
+		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '"' . $card_style_attr . '>';
 
 		// --- Image section -----------------------------------------------
 		if ( $show_image ) {
@@ -347,17 +353,15 @@ class Post_Grid_REST {
 
 			if ( has_post_thumbnail( $post_id ) ) {
 				$card .= sprintf(
-					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image" style="aspect-ratio:%s">%s</div></a>',
+					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image">%s</div></a>',
 					$permalink,
-					esc_attr( $aspect_ratio ),
 					get_the_post_thumbnail( $post_id, $image_size, $img_attrs )
 				);
 			} elseif ( 'minimal' !== $card_style ) {
 				// Placeholder shown for card/flat/overlay when no featured image is set.
 				$card .= sprintf(
-					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image sgs-post-grid__image--placeholder" style="aspect-ratio:%s"><div class="sgs-post-grid__image-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></a>',
-					$permalink,
-					esc_attr( $aspect_ratio )
+					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image sgs-post-grid__image--placeholder"><div class="sgs-post-grid__image-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></a>',
+					$permalink
 				);
 			}
 

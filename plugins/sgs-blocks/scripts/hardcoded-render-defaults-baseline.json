@@ -1,78 +1,70 @@
 {
- "_comment": "Accepted hardcoded-render-default findings (Gate B). Each entry is a pre-existing F3 violation accepted as layout debt. To FIX: replace the literal with var(--sgs-x, <default>) OR read the attr in render.php and emit it dynamically, then delete the baseline entry. To accept a NEW intentional hardcode: add an entry manually with a reason — do NOT re-run --write-baseline (it overwrites ALL accepted reasons).",
- "baselineSeededAt": "2026-06-09T21:27:06.524Z",
- "accepted": [
-  {
-   "block": "sgs/content-collection",
-   "file": "src\\blocks\\content-collection\\style.css",
-   "property": "grid-template-columns",
-   "value": "1fr",
-   "attr": "gridTemplateColumns",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/form",
-   "file": "src\\blocks\\form\\style.css",
-   "property": "gap",
-   "value": "0.5rem",
-   "attr": "gap",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/mega-menu",
-   "file": "src\\blocks\\mega-menu\\style.css",
-   "property": "max-width",
-   "value": "min(900px, calc(100vw - 2rem))",
-   "attr": "panelWidth, panelMaxWidth",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/mega-menu",
-   "file": "src\\blocks\\mega-menu\\style.css",
-   "property": "align-items",
-   "value": "center",
-   "attr": "panelAlignment",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/mega-menu",
-   "file": "src\\blocks\\mega-menu\\style.css",
-   "property": "align-items",
-   "value": "flex-start",
-   "attr": "panelAlignment",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/mobile-nav",
-   "file": "src\\blocks\\mobile-nav\\style.css",
-   "property": "max-width",
-   "value": "100vw",
-   "attr": "drawerWidth, drawerMaxWidth, logoMaxWidth",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/pricing-table",
-   "file": "src\\blocks\\pricing-table\\style.css",
-   "property": "grid-template-columns",
-   "value": "1fr",
-   "attr": "gridTemplateColumns",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "padding",
-   "value": "7px 13px",
-   "attr": "innerPadding",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  },
-  {
-   "block": "sgs/product-card",
-   "file": "src\\blocks\\product-card\\style.css",
-   "property": "padding",
-   "value": "4px 10px",
-   "attr": "innerPadding",
-   "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-  }
- ]
+  "_comment": "Accepted hardcoded-render-default findings (Gate B). Each entry is a pre-existing F3 violation accepted as layout debt. To FIX: replace the literal with var(--sgs-x, <default>) OR read the attr in render.php and emit it dynamically, then delete the baseline entry. To accept a NEW intentional hardcode: add an entry manually with a reason — do NOT re-run --write-baseline (it overwrites ALL accepted reasons).",
+  "baselineSeededAt": "2026-06-09T21:27:06.524Z",
+  "accepted": [
+    {
+      "block": "sgs/content-collection",
+      "file": "src\\blocks\\content-collection\\style.css",
+      "property": "grid-template-columns",
+      "value": "1fr",
+      "attr": "gridTemplateColumns",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/form",
+      "file": "src\\blocks\\form\\style.css",
+      "property": "gap",
+      "value": "0.5rem",
+      "attr": "gap",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/mega-menu",
+      "file": "src\\blocks\\mega-menu\\style.css",
+      "property": "max-width",
+      "value": "min(900px, calc(100vw - 2rem))",
+      "attr": "panelWidth, panelMaxWidth",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/mega-menu",
+      "file": "src\\blocks\\mega-menu\\style.css",
+      "property": "align-items",
+      "value": "center",
+      "attr": "panelAlignment",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/mega-menu",
+      "file": "src\\blocks\\mega-menu\\style.css",
+      "property": "align-items",
+      "value": "flex-start",
+      "attr": "panelAlignment",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/mobile-nav",
+      "file": "src\\blocks\\mobile-nav\\style.css",
+      "property": "max-width",
+      "value": "100vw",
+      "attr": "drawerWidth, drawerMaxWidth, logoMaxWidth",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/pricing-table",
+      "file": "src\\blocks\\pricing-table\\style.css",
+      "property": "grid-template-columns",
+      "value": "1fr",
+      "attr": "gridTemplateColumns",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    },
+    {
+      "block": "sgs/product-card",
+      "file": "src\\blocks\\product-card\\style.css",
+      "property": "padding",
+      "value": "4px 10px",
+      "attr": "innerPadding",
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+    }
+  ]
 }
