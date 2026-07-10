@@ -31,8 +31,18 @@ function render_custom_css( string $block_content, array $block ): string {
 	$uid      = 'sgs-c-' . substr( md5( $custom_css . ( $block['blockName'] ?? '' ) ), 0, 8 );
 	$safe_css = wp_strip_all_tags( $custom_css );
 
-	// Scope all rules: replace `&selector` with the uid class.
-	$scoped_css = str_replace( '&selector', '.' . $uid, $safe_css );
+	// Scope all rules: replace `&selector` with the uid class, DOUBLED.
+	// D303 (2026-07-10) — the residual must WIN over the block's own per-instance
+	// scoped rule at the residual's bounded @media band. The block emits its
+	// per-instance styling at CLASS level (`.uid.block-class` = specificity 0,2,0;
+	// Spec 31 FR-31-22.3, never `#uid`). Doubling the scope class (`.uid.uid` = 0,2,0)
+	// MATCHES that specificity, so the residual wins purely by SOURCE ORDER — it is
+	// appended after the block (below) — which is the WordPress-core (6.6 `:root
+	// :where()`) / Kadence / Spectra / GenerateBlocks idiom. NEVER an ID or
+	// `!important` escalation (the banned anti-pattern; Spec 31 §13.4 FR-31-5.2,
+	// Spec 32 §6.1(b)). `.uid.uid` matches an element carrying the class once.
+	$scope      = '.' . $uid . '.' . $uid;
+	$scoped_css = str_replace( '&selector', $scope, $safe_css );
 
 	// Prepend the uid class to the block wrapper.
 	$block_content = preg_replace(
@@ -52,7 +62,7 @@ function render_custom_css( string $block_content, array $block ): string {
 	// site-wide Additional CSS, which is emitted last. It also lets the cloning
 	// pipeline's non-device-breakpoint residual CSS (FR-31-5.2, e.g. an @media
 	// (min-width:1280px) padding band) override the block's base tier attr rule at
-	// that breakpoint. (Prepending let the block's own later <style> beat it.)
+	// that breakpoint. Prepending would let the block's own later style beat it.
 	return $block_content . $style;
 }
 add_filter( 'render_block', __NAMESPACE__ . '\render_custom_css', 10, 2 );

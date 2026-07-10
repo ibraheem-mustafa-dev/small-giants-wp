@@ -317,17 +317,17 @@ $scoped_css_parts = array();
 // Base non-responsive declarations (border-width/style, font, box-shadow) —
 // id-scoped external CSS, NOT inline on the element (Spec 32 FR-32-1).
 if ( $base_decls ) {
-	$scoped_css_parts[] = "#{$uid}.sgs-button{" . implode( ';', $base_decls ) . ';}';
+	$scoped_css_parts[] = ".{$uid}.sgs-button{" . implode( ';', $base_decls ) . ';}';
 }
 
 // Transition — applied on the element always (preset AND custom).
-$scoped_css_parts[] = "#{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
+$scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
 
 // Hover scale (skip if exactly 1.0 — no-op).
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val          = round( $hover_scale, 3 );
-	$scoped_css_parts[] = "#{$uid}.sgs-button:hover{transform:scale({$scale_val});}";
-	$scoped_css_parts[] = "#{$uid}.sgs-button:focus-visible{transform:scale({$scale_val});}";
+	$scoped_css_parts[] = ".{$uid}.sgs-button:hover{transform:scale({$scale_val});}";
+	$scoped_css_parts[] = ".{$uid}.sgs-button:focus-visible{transform:scale({$scale_val});}";
 }
 
 // Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars
@@ -351,12 +351,12 @@ if ( $box_shadow_hover['colour'] ) {
 }
 
 if ( $hover_rules ) {
-	$scoped_css_parts[] = "#{$uid}.sgs-button:hover,#{$uid}.sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
+	$scoped_css_parts[] = ".{$uid}.sgs-button:hover,.{$uid}.sgs-button:focus-visible{" . implode( ';', $hover_rules ) . ';}';
 }
 
 // Icon hover colour.
 if ( $icon_col_hov ) {
-	$scoped_css_parts[] = "#{$uid}.sgs-button:hover .sgs-button__icon,#{$uid}.sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
+	$scoped_css_parts[] = ".{$uid}.sgs-button:hover .sgs-button__icon,.{$uid}.sgs-button:focus-visible .sgs-button__icon{color:" . sgs_colour_value( $icon_col_hov ) . ';}';
 }
 
 // Typography + border-radius — base + tablet + mobile on the SAME
@@ -387,7 +387,7 @@ $scoped_css_parts[] = sgs_responsive_css_rule(
 			'mobile_attr'  => 'letterSpacingMobile',
 		),
 	),
-	"#{$uid}.sgs-button"
+	".{$uid}.sgs-button"
 );
 
 // Base padding/margin/border-radius — Box-object interface contract (b): the
@@ -413,7 +413,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( ! empty( $base_style_engine_args ) ) {
 		$base_scoped_styles = wp_style_engine_get_styles(
 			$base_style_engine_args,
-			array( 'selector' => "#{$uid}" )
+			array( 'selector' => ".{$uid}.sgs-button" )
 		);
 		if ( ! empty( $base_scoped_styles['css'] ) ) {
 			$scoped_css_parts[] = $base_scoped_styles['css'];
@@ -434,7 +434,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		}
 		$colour_scoped_styles = wp_style_engine_get_styles(
 			$colour_style_engine_args,
-			array( 'selector' => "#{$uid}" )
+			array( 'selector' => ".{$uid}.sgs-button" )
 		);
 		if ( ! empty( $colour_scoped_styles['css'] ) ) {
 			$scoped_css_parts[] = $colour_scoped_styles['css'];
@@ -488,7 +488,7 @@ if ( null !== $radius_tab_val ) {
 	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
 }
 if ( $tablet_box_decls ) {
-	$scoped_css_parts[] = '@media(max-width:1023px){' . "#{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
+	$scoped_css_parts[] = '@media(max-width:1023px){' . ".{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
 }
 
 $mobile_box_decls = array();
@@ -502,7 +502,7 @@ if ( null !== $radius_mob_val ) {
 	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
 }
 if ( $mobile_box_decls ) {
-	$scoped_css_parts[] = '@media(max-width:767px){' . "#{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';
+	$scoped_css_parts[] = '@media(max-width:767px){' . ".{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';
 }
 
 // Icon size CSS var — base + tablet + mobile on the SAME selector (Pattern A).
@@ -523,7 +523,7 @@ if ( $icon ) {
 				'cast'         => 'int',
 			),
 		),
-		"#{$uid}.sgs-button"
+		".{$uid}.sgs-button"
 	);
 }
 
@@ -536,13 +536,13 @@ if ( $icon ) {
 // !important to win (the "F4 pattern" !important workaround is retired).
 $min_height_decls = array();
 if ( $min_height ) {
-	$min_height_decls[] = "#{$uid}.sgs-button{min-height:{$min_height}{$min_height_unit};}";
+	$min_height_decls[] = ".{$uid}.sgs-button{min-height:{$min_height}{$min_height_unit};}";
 }
 if ( null !== $min_height_tab ) {
-	$min_height_decls[] = "@media(max-width:1023px){#{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
+	$min_height_decls[] = "@media(max-width:1023px){.{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
 }
 if ( null !== $min_height_mob ) {
-	$min_height_decls[] = "@media(max-width:767px){#{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
+	$min_height_decls[] = "@media(max-width:767px){.{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
 }
 if ( $min_height_decls ) {
 	$scoped_css_parts[] = implode( '', $min_height_decls );
@@ -576,15 +576,15 @@ if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
 
 	$base_width = $width_css_value( $width_type, $custom_width, $custom_width_unit );
 	if ( null !== $base_width ) {
-		$width_decls[] = "#{$uid}.sgs-button{width:{$base_width};}";
+		$width_decls[] = ".{$uid}.sgs-button{width:{$base_width};}";
 	}
 	$tab_width = $width_css_value( $width_type_tab, $custom_width_tab, $custom_width_tab_u );
 	if ( null !== $tab_width ) {
-		$width_decls[] = "@media(max-width:1023px){#{$uid}.sgs-button{width:{$tab_width};}}";
+		$width_decls[] = "@media(max-width:1023px){.{$uid}.sgs-button{width:{$tab_width};}}";
 	}
 	$mob_width = $width_css_value( $width_type_mob, $custom_width_mob, $custom_width_mob_u );
 	if ( null !== $mob_width ) {
-		$width_decls[] = "@media(max-width:767px){#{$uid}.sgs-button{width:{$mob_width};}}";
+		$width_decls[] = "@media(max-width:767px){.{$uid}.sgs-button{width:{$mob_width};}}";
 	}
 
 	if ( $width_decls ) {
@@ -649,10 +649,10 @@ if ( $icon ) {
 		// explicit size is set, style.css's `.sgs-button__icon svg{width:1em}`
 		// default already applies — so the size path emits nothing.
 		if ( $icon_size ) {
-			$scoped_css_parts[] = "#{$uid} .sgs-button__icon svg{width:{$icon_size}px;height:{$icon_size}px;}";
+			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon svg{width:{$icon_size}px;height:{$icon_size}px;}";
 		}
 		if ( $icon_colour ) {
-			$scoped_css_parts[] = "#{$uid} .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';
+			$scoped_css_parts[] = ".{$uid}.sgs-button .sgs-button__icon{color:" . sgs_colour_value( $icon_colour ) . ';}';
 		}
 
 		// wp_kses with SVG allowance for the icon.
@@ -794,7 +794,10 @@ $merged_style  = trim( $btn_style_str );
 $wrapper_attr = get_block_wrapper_attributes(
 	array(
 		'id'          => $uid,
-		'class'       => $merged_class,
+		// D303: $uid is ALSO a class so the class-scoped per-instance rules
+		// (`.{$uid}.sgs-button` = 0,2,0, never `#uid`) match this element and can be
+		// overridden by the appended sgsCustomCss residual by source order.
+		'class'       => trim( $merged_class . ' ' . $uid ),
 		'style'       => $merged_style,
 		'data-preset' => $safe_inherit_style,
 	)

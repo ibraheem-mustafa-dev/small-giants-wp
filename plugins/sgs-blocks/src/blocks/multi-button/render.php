@@ -79,7 +79,7 @@ $align_items_mobile = ! empty( $attributes['alignItemsMobile'] ) ? esc_attr( $at
 $uid = wp_unique_id( 'sgs-mb-' );
 
 // Build scoped responsive CSS using concatenation (WPCS: no variable interpolation in strings).
-$css  = '#' . $uid . '.sgs-multi-button{';
+$css  = '.' . $uid . '.sgs-multi-button{';
 $css .= 'display:flex;';
 $css .= 'flex-direction:' . $direction . ';';
 $css .= 'flex-wrap:' . $wrap . ';';
@@ -95,7 +95,7 @@ $css .= '}';
 // mobile band below instead of this one — the hero CTAs rendered column
 // at 768px when the draft wants row.
 $css .= '@media(max-width:1023px) and (min-width:768px){';
-$css .= '#' . $uid . '.sgs-multi-button{';
+$css .= '.' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
 $css .= 'gap:' . $gap_tab_css . ';';
@@ -105,7 +105,7 @@ $css .= '}}';
 
 // Mobile breakpoint (max 767px — device-tier standard; was 768px, see above).
 $css .= '@media(max-width:767px){';
-$css .= '#' . $uid . '.sgs-multi-button{';
+$css .= '.' . $uid . '.sgs-multi-button{';
 $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
 $css .= 'gap:' . $gap_mob_css . ';';
@@ -130,7 +130,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( ! empty( $mb_color_border ) ) {
 		$mb_style_engine_css = wp_style_engine_get_styles(
 			$mb_color_border,
-			array( 'selector' => '#' . $uid . '.sgs-multi-button' )
+			array( 'selector' => '.' . $uid . '.sgs-multi-button' )
 		);
 		if ( ! empty( $mb_style_engine_css['css'] ) ) {
 			$css .= $mb_style_engine_css['css'];
@@ -190,7 +190,7 @@ echo $mb_style . SGS_Container_Wrapper::render(
 	'content',
 	array(
 		'tag'           => 'div',
-		'extra_classes' => array_merge( array( 'sgs-multi-button' ), $mb_preset_classes ),
+		'extra_classes' => array_merge( array( 'sgs-multi-button', $uid ), $mb_preset_classes ),
 		'extra_attrs'   => array( 'id' => esc_attr( $uid ) ),
 	)
 );

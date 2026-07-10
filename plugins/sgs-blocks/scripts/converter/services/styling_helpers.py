@@ -63,6 +63,55 @@ def _media_condition_applies_at(media_cond: str, width: int) -> bool:
     return False
 
 
+def bound_residual_media_conds(media_cond: str) -> list[str]:
+    """Confine a non-device @media residual to the device TIER(s) its threshold
+    falls inside — the D303 bounding rule (Spec 31 §13.4 FR-31-5.2).
+
+    A residual carries a value the 3-tier attr model cannot represent. Emitted with
+    the draft's RAW media condition it would apply across EVERY width the condition
+    matches — so a ``min-width:600`` residual would bleed up and override the Tablet
+    and Desktop tiers (which already hold the correctly-FOLDED value). The fix:
+    clip the residual to only the tier slice(s) NOT fully spanned by the condition
+    (a fully-spanned tier is folded into that tier's attr, so needs no residual).
+
+    Symmetric for min/max and open-ended at the outer tiers:
+      ``min-width:600``  (in Mobile)  → ``@media (min-width: 600px) and (max-width: 767px)``
+      ``min-width:1280`` (in Desktop, top tier — nothing above) → ``@media (min-width: 1280px)``
+      ``max-width:1200`` (in Desktop) → ``@media (min-width: 1024px) and (max-width: 1200px)``
+      ``max-width:600``  (in Mobile, bottom tier)  → ``@media (max-width: 600px)``
+
+    Returns ONE bounded ``@media`` string per non-folded partial-tier interval (usually
+    one; a rare band spanning a folded middle tier yields two). A no-width media
+    condition (``print``/``orientation``/…) is out of scope — returned verbatim.
+    The device-tier boundary widths are the R-31-1 permitted-constant (``device_tier_ranges``).
+    """
+    ranges = db_lookup.device_tier_ranges()
+    inf = max(thi for _name, _tlo, thi in ranges)
+
+    mins = [int(m.group(1)) for m in _MEDIA_MIN_RE.finditer(media_cond)]
+    maxs = [int(m.group(1)) for m in _MEDIA_MAX_RE.finditer(media_cond)]
+    if not mins and not maxs:
+        return [media_cond]  # no-width media condition — bounding N/A (pre-existing follow-up)
+
+    lo = max(mins) if mins else 1
+    hi = min(maxs) if maxs else inf
+
+    conds: list[str] = []
+    for _name, tlo, thi in ranges:
+        olo, ohi = max(lo, tlo), min(hi, thi)
+        if olo > ohi:
+            continue  # no overlap with this tier
+        if lo <= tlo and thi <= hi:
+            continue  # tier FULLY spanned → folded into the tier attr, no residual needed
+        parts: list[str] = []
+        if olo > 1:
+            parts.append(f"(min-width: {olo}px)")
+        if ohi < inf:
+            parts.append(f"(max-width: {ohi}px)")
+        conds.append("@media " + " and ".join(parts) if parts else "@media all")
+    return conds
+
+
 # ---------------------------------------------------------------------------
 # Regex constants (convert.py:54-56 — verbatim copies)
 # ---------------------------------------------------------------------------
@@ -710,19 +759,25 @@ def collect_css_decls_for_element(
             int(v) for v in re.findall(r"(?:min|max)-width\s*:\s*(\d+)", media_cond)
         ]
         if any(t not in device_thresholds for t in thresholds):
+            # D303: confine the residual to the device tier its threshold falls
+            # inside, so it never bleeds into an adjacent tier that legitimately
+            # differs (the tier attrs + whole-tier folding above already hold any
+            # fully-spanned tier's value). Symmetric min/max; usually one band.
+            bounded_conds = bound_residual_media_conds(media_cond.strip())
             _LOG.info(
-                "F-ii residual (non-device breakpoint preserved, not snapped): "
-                "%s → %s [→ sgsCustomCss per FR-31-5.2]",
-                media_cond.strip(), sorted(media_decls),
+                "F-ii residual (non-device breakpoint preserved, bounded to tier per D303): "
+                "%s → %s [bands=%s → sgsCustomCss per FR-31-5.2]",
+                media_cond.strip(), sorted(media_decls), bounded_conds,
             )
             if residual_sink is not None:
-                residual_sink.append(
-                    ResidualBand(
-                        selector=residual_selector,
-                        media_cond=media_cond.strip(),
-                        decls=dict(media_decls),
+                for bounded_cond in bounded_conds:
+                    residual_sink.append(
+                        ResidualBand(
+                            selector=residual_selector,
+                            media_cond=bounded_cond,
+                            decls=dict(media_decls),
+                        )
                     )
-                )
 
     return out_base, out_bp
 

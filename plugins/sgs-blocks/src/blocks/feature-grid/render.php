@@ -117,7 +117,7 @@ if ( $use_auto_flex ) {
 	 * whenever a full row of items at that width no longer fits.
 	 * No media queries needed — fully intrinsic. render.php owns this <style>.
 	 */
-	$css = "#$uid.sgs-feature-grid {
+	$css = ".$uid.sgs-feature-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax({$min_item_width}{$min_item_unit}, 1fr));
 	gap: $gap_css;
@@ -139,7 +139,7 @@ if ( $use_auto_flex ) {
 	 * overrides. Desktop (>1024px): $columns_desktop. Tablet (769–1024px):
 	 * $columns_tablet. Mobile (≤768px): $columns_mobile.
 	 */
-	$css = "#$uid.sgs-feature-grid {
+	$css = ".$uid.sgs-feature-grid {
 	display: grid;
 	grid-template-columns: repeat($columns_desktop, 1fr);
 	gap: $gap_css;
@@ -147,13 +147,13 @@ if ( $use_auto_flex ) {
 	justify-items: $justify_items;
 }
 @media (max-width: 1024px) {
-	#$uid.sgs-feature-grid {
+	.$uid.sgs-feature-grid {
 		grid-template-columns: repeat($columns_tablet, 1fr);
 		gap: $gap_tablet_css;
 	}
 }
 @media (max-width: 768px) {
-	#$uid.sgs-feature-grid {
+	.$uid.sgs-feature-grid {
 		grid-template-columns: repeat($columns_mobile, 1fr);
 		gap: $gap_mobile_css;
 	}
@@ -166,11 +166,13 @@ if ( $use_auto_flex ) {
 // inside SGS_Container_Wrapper::render() below) never auto-inlines them. Read the
 // resolved values from $attributes['style'] here and emit them into this block's
 // OWN scoped <style>, reusing the same ID hook the grid engine already builds
-// (#$uid.sgs-feature-grid) rather than minting a second uid. Spacing (padding/
+// (.$uid.sgs-feature-grid) rather than minting a second uid. Spacing (padding/
 // margin) is a SEPARATE mechanism the shared wrapper already handles scoped
 // internally — not duplicated here.
-$root_sel = '#' . $uid . '.sgs-feature-grid';
-$classes  = array( 'sgs-feature-grid', $mode_class );
+$root_sel = '.' . $uid . '.sgs-feature-grid';
+// D303: $uid is ALSO a class (the wrapper applies it as an id via extra_attrs) so the
+// class-scoped `.{$uid}.sgs-feature-grid` colour/border rules match this element.
+$classes  = array( 'sgs-feature-grid', $mode_class, $uid );
 
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	$fg_style_engine_args = array();

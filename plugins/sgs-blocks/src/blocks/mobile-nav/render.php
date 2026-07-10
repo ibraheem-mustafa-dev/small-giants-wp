@@ -128,7 +128,7 @@ if ( 25 !== (int) $stagger_delay ) {
 
 // Layout — slide variant dimensions. drawerWidth has tablet/mobile tiers so
 // its base var is NOT inline (Pattern A) — it moves to the scoped <style> on
-// the same #sgs-mobile-nav selector as the @media tier re-declarations.
+// the same .sgs-mobile-nav selector as the @media tier re-declarations.
 // drawerMaxWidth has no tiers → stays inline.
 if ( 400 !== (int) $drawer_max_width ) {
 	$css_vars[] = '--sgs-mn-max-width:' . absint( $drawer_max_width ) . 'px';
@@ -149,7 +149,7 @@ if ( 60 !== (int) $backdrop_opacity ) {
 
 // submenuIndent / socialIconSize / logoMaxWidth / closeButtonSize all have
 // tablet/mobile tiers, so their base vars are NOT inline (Pattern A) — they
-// move to the scoped <style> below on the same #sgs-mobile-nav selector as
+// move to the scoped <style> below on the same .sgs-mobile-nav selector as
 // the @media tier re-declarations. The attrs are still read here so their
 // values/defaults are resolved for the base-rule builder.
 $logo_max_width    = $attributes['logoMaxWidth'] ?? 120;
@@ -286,15 +286,15 @@ $tagline_html = $renderer->render_tagline();
 // sgs_typography_css_rule() handles desktop + tablet + mobile breakpoints,
 // back-compat for legacy string values, and emits nothing when attrs are unset.
 // The block is "multiple": false so the fixed id is a safe unique scope.
-$link_sel    = '#sgs-mobile-nav .sgs-mobile-nav__link';
-$sublink_sel = '#sgs-mobile-nav .sgs-mobile-nav__sublink';
+$link_sel    = '.sgs-mobile-nav .sgs-mobile-nav__link';
+$sublink_sel = '.sgs-mobile-nav .sgs-mobile-nav__sublink';
 
 $typo_css  = sgs_typography_css_rule( $attributes, 'link', $link_sel );
 $typo_css .= sgs_typography_css_rule( $attributes, 'sublink', $sublink_sel );
 
 // ── Per-device responsive overrides (non-typography numeric attrs) ─────────────
 // Pattern A (D-migration): base + tablet + mobile vars all emitted on the SAME
-// #sgs-mobile-nav selector, base first then tablet then mobile, so cascade
+// .sgs-mobile-nav selector, base first then tablet then mobile, so cascade
 // order does the overriding (base vars were previously inline on the element,
 // which always beat the @media re-declarations; and mobile was emitted BEFORE
 // tablet, so at ≤480px the tablet rule wrongly won — both fixed here).
@@ -362,7 +362,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( ! empty( $color_args ) ) {
 		$color_scoped_styles = wp_style_engine_get_styles(
 			array( 'color' => $color_args ),
-			array( 'selector' => '#sgs-mobile-nav' )
+			array( 'selector' => '.sgs-mobile-nav' )
 		);
 		if ( ! empty( $color_scoped_styles['css'] ) ) {
 			$color_css = $color_scoped_styles['css'];
@@ -377,7 +377,7 @@ $padding_base_css = '';
 if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_padding_obj ) ) {
 	$padding_base_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'padding' => $base_padding_obj ) ),
-		array( 'selector' => '#sgs-mobile-nav' )
+		array( 'selector' => '.sgs-mobile-nav' )
 	);
 	if ( ! empty( $padding_base_styles['css'] ) ) {
 		$padding_base_css = $padding_base_styles['css'];
@@ -405,7 +405,7 @@ if ( $padding_base_css ) {
 	$style_parts[] = $padding_base_css;
 }
 if ( $base_vars ) {
-	$style_parts[] = '#sgs-mobile-nav{' . implode( ';', $base_vars ) . '}';
+	$style_parts[] = '.sgs-mobile-nav{' . implode( ';', $base_vars ) . '}';
 }
 
 $tablet_decls = $tablet_vars;
@@ -413,7 +413,7 @@ if ( null !== $padding_tablet_val ) {
 	$tablet_decls[] = 'padding:' . $padding_tablet_val;
 }
 if ( $tablet_decls ) {
-	$style_parts[] = '@media (max-width:1023px){#sgs-mobile-nav{' . implode( ';', $tablet_decls ) . '}}';
+	$style_parts[] = '@media (max-width:1023px){.sgs-mobile-nav{' . implode( ';', $tablet_decls ) . '}}';
 }
 
 $mobile_decls = $mobile_vars;
@@ -421,7 +421,7 @@ if ( null !== $padding_mobile_val ) {
 	$mobile_decls[] = 'padding:' . $padding_mobile_val;
 }
 if ( $mobile_decls ) {
-	$style_parts[] = '@media (max-width:767px){#sgs-mobile-nav{' . implode( ';', $mobile_decls ) . '}}';
+	$style_parts[] = '@media (max-width:767px){.sgs-mobile-nav{' . implode( ';', $mobile_decls ) . '}}';
 }
 
 if ( $style_parts ) {

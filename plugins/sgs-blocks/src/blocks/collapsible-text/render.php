@@ -80,7 +80,7 @@ if ( '' === $text ) {
 $uid      = wp_unique_id( 'sgs-collapsible-text-' );
 $root_sel = '.' . $uid . '.sgs-collapsible-text';
 
-$typography_selector = '#' . esc_attr( $uid ) . ' .sgs-collapsible-text__body';
+$typography_selector = '.' . esc_attr( $uid ) . ' .sgs-collapsible-text__body';
 $typography_css      = sgs_typography_css_rule( $attributes, '', $typography_selector );
 
 // ---------------------------------------------------------------------------

@@ -307,7 +307,11 @@ if ( ! $anchor ) {
 	// stable across fragment-cached renders. Same attrs → same id on every request.
 	$anchor = 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 }
-$scope = '#' . esc_attr( $anchor );
+// D303: scope per-instance CSS at CLASS level (`.wp-block-sgs-text.{anchor}` = 0,2,0),
+// never an ID, so the sgsCustomCss residual (0,2,0, appended last) can override it by
+// source order. The anchor token is also added as a CLASS on the wrapper (below) so
+// this selector matches; the id="…" is kept for operator anchors / linking.
+$scope = '.wp-block-sgs-text.' . esc_attr( $anchor );
 
 // ---------------------------------------------------------------------------
 // 6. Responsive scoped <style> block.
@@ -508,7 +512,10 @@ $responsive_css = trim( $css_base_decls . $css_base_spacing_radius . $css_base_a
 // inline on the element.
 // ---------------------------------------------------------------------------
 
-$wrapper_args = array( 'class' => 'wp-block-sgs-text' );
+// D303: the anchor token is added as a CLASS so the class-scoped per-instance CSS
+// selector (`.wp-block-sgs-text.{anchor}`, $scope above) matches; the id="…" is still
+// written below for operator anchors / linking.
+$wrapper_args = array( 'class' => 'wp-block-sgs-text ' . esc_attr( $anchor ) );
 // Pass anchor so get_block_wrapper_attributes() writes id="…" on the element —
 // this is the same id used to scope the responsive and hover <style> blocks.
 // The id MUST attach whenever scoped CSS exists (Pattern A: the base value now

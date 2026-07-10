@@ -90,6 +90,11 @@ $classes = array(
 if ( $highlight ) {
 	$classes[] = 'sgs-mega-menu--highlight';
 }
+// D303: add the per-instance id ALSO as a class so scoped CSS can target this
+// instance at CLASS level (`.{menu_id}.sgs-mega-menu` = 0,2,0), never an ID — so the
+// sgsCustomCss residual (0,2,0, appended last) can override it by source order. The
+// id="…" attribute is kept (aria-controls / JS targeting).
+$classes[] = $menu_id;
 
 // Build context for Interactivity API.
 $context = wp_json_encode(
@@ -145,7 +150,7 @@ if ( in_array( $panel_width, array( 'custom', 'content' ), true ) && $panel_max_
 // This block declares `"anchor": false`, so an ID selector is safe (no
 // collision risk with an operator-set anchor).
 $uid      = $menu_id;
-$root_sel = '#' . $uid;
+$root_sel = '.' . $uid . '.sgs-mega-menu';
 
 // WP-native `color` support (background/text) — skip-serialised in
 // block.json so WordPress never auto-inlines it (this render never calls
@@ -273,7 +278,7 @@ if ( $menu_template_part ) {
 // literal page HTML, never part of the combinable external stylesheet, so
 // it is immune to the LiteSpeed Combine merge — a strictly more robust fix
 // than the inline attribute it replaces).
-$panel_sel = '#' . $uid . '-panel';
+$panel_sel = '.' . $uid . '.sgs-mega-menu .sgs-mega-menu__panel';
 if ( 'full' === $panel_width ) {
 	// top uses CSS var set by JS repositionPanel(); default 0 = flush below header.
 	$scoped_css[] = $panel_sel . '{position:fixed;top:var(--sgs-mm-fixed-top,0);left:0;width:100vw;max-width:100vw;--sgs-mm-tx:0px;--sgs-mm-open-tx:0px;}';

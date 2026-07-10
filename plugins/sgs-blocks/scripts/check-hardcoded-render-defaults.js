@@ -573,9 +573,13 @@ function getScopedStyleProps( renderPhpSrc ) {
 	// Rather than full PHP parsing, we use a regex that captures content between
 	// double-quoted string regions that include #$ (good enough for this pattern).
 
-	// Find all occurrences of #$<word> and then look for CSS props in the
-	// surrounding string context (up to 500 chars in each direction).
-	const uidMarkerRe = /#\$[a-zA-Z_][a-zA-Z0-9_]*/g;
+	// Find all occurrences of #$<word> OR .$<word> and then look for CSS props in
+	// the surrounding string context (up to 500 chars in each direction). D303
+	// (2026-07-10): per-instance scoped selectors moved from ID (`#$uid`) to CLASS
+	// (`.$uid.block`, specificity 0,2,0 — never an ID) so the sgsCustomCss residual
+	// can override them by source order. This detection MUST match both forms, else
+	// it false-flags every D303-normalised block's style.css fallback as ungoverned.
+	const uidMarkerRe = /[#.]\$[a-zA-Z_][a-zA-Z0-9_]*/g;
 	let m;
 	while ( ( m = uidMarkerRe.exec( stripped ) ) !== null ) {
 		const start  = Math.max( 0, m.index - 50 );
