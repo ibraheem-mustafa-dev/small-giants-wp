@@ -1571,6 +1571,82 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # object, no seed). mega-menu is colour-only (no box family -> no seed).
     ("sgs/mobile-nav", "paddingTablet"): {"box_family": "padding"},
     ("sgs/mobile-nav", "paddingMobile"): {"box_family": "padding"},
+    # sgs/option-picker (2026-07-10, cloning-fidelity + no-inline pass): the
+    # option-picker's pill states are now converter-liftable via the universal
+    # styling-lift (Spec 31 §3.B B2 — the frozen __hover/__active/__focus
+    # exclusion was removed 2026-07-10, so a state-keyed derived_selector now
+    # routes correctly). RESTING attrs key on the base pill element
+    # (.sgs-option-picker__pill — already correct for pillTextColour/
+    # pillBorderColour, seeded 2026-07-05 — see the existing pillFontSize
+    # block above). SELECTED attrs key on the draft's STATIC `--active`
+    # modifier class: a mockup marks its selected pill by baking
+    # `sgs-option-picker__pill--active` directly into the markup (no live
+    # interaction in a static draft), and derived_selector resolution is a
+    # plain BeautifulSoup class match (`node.find(class_=...)`, no CSS
+    # pseudo-class support) — so ONLY a literal element class can be matched.
+    # pillBgColour was missing a role/derived_selector row entirely (verified
+    # against render.php: :164 emits it as `--sgs-op-bg` on the SAME pill
+    # element pillTextColour/pillBorderColour already route through).
+    ("sgs/option-picker", "pillBgColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillSelectedBgColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill--active"},
+    ("sgs/option-picker", "pillSelectedTextColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill--active"},
+    ("sgs/option-picker", "pillSelectedBorderColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill--active"},
+    # Border-radius — KEPT SCALAR (Spec 32 §6.1c discretion clause: a pill is
+    # semantically always uniform-radius, no per-corner design use-case, unlike
+    # button/heading/media/quote/text which DO merge to the 4-corner object —
+    # see this session's cloning report for the full reasoning). The attr is a
+    # CSS-length STRING ("6px"), matching the styling-lift's generic string value
+    # (SHIP-WITH-FIX: number->string migration removes the number/string mismatch
+    # AND makes an explicit "0"/"0px" distinguishable from unset). role='typography'
+    # is the SAME generic scalar-CSS-value bucket letter-spacing/line-height use in
+    # styling_content.py's `_compute_value` fallback (raw-string passthrough for any
+    # non-colour/font-weight/font-size css_property) — NOT a semantic mis-seed, it is
+    # the established mechanism for "any scalar element-level CSS value lifted by
+    # suffix", which the codebase names 'typography' for historical (font-first)
+    # reasons. UNVERIFIED: this session could not query a live sgs-framework.db
+    # (worktree copy has zero tables) to confirm property_suffixes has a resolvable
+    # 'BorderRadius' suffix -> css_property 'border-radius' row; the main session
+    # MUST verify this before/at the next /sgs-update (if the suffix is absent or
+    # NULL, these two rows are inert — no crash, just a silent non-lift, per the
+    # styling_content.py no-op floor).
+    ("sgs/option-picker", "pillBorderRadius"): {"role": "typography", "derived_selector": ".sgs-option-picker__pill"},
+    ("sgs/option-picker", "pillSelectedBorderRadius"): {"role": "typography", "derived_selector": ".sgs-option-picker__pill--active"},
+    # Root box-family migration (mirrors sgs/quote exactly — content-KIND,
+    # block-private, box+width only).
+    ("sgs/option-picker", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/option-picker", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/option-picker", "marginTablet"): {"box_family": "margin"},
+    ("sgs/option-picker", "marginMobile"): {"box_family": "margin"},
+    ("sgs/option-picker", "borderWidth"): {"box_family": "borderWidth"},
+    ("sgs/option-picker", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/option-picker", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    # pillPadding — SGS custom box family, NEW (2026-07-10): the pill is a
+    # content CHILD (not the block root), so there is no WP-native spacing
+    # support to route through; base + tiers are a dedicated box_family so a
+    # future converter accumulator pass can lift a draft's per-size pill
+    # padding onto it (currently authored-only via the editor BoxControl —
+    # no converter resolver targets `pillPadding*` yet, an honest gap, see
+    # the cloning report).
+    ("sgs/option-picker", "pillPadding"): {"box_family": "pillPadding"},
+    ("sgs/option-picker", "pillPaddingTablet"): {"box_family": "pillPadding"},
+    ("sgs/option-picker", "pillPaddingMobile"): {"box_family": "pillPadding"},
+    # sgs/product-card — R4 forward attrs (2026-07-10): liftable so a cloned
+    # card (a draft rendering its OWN `.sgs-product-card__pill` BEM elements,
+    # not a live sgs/option-picker block) routes the draft's pill CSS onto the
+    # card's own pickerPill* attrs, which render.php then forwards into every
+    # nested render_block('sgs/option-picker') call. Same resting/selected
+    # selector-pair convention as option-picker itself (static `--active`
+    # modifier class for the selected pill in the draft markup).
+    ("sgs/product-card", "pickerPillBgColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill"},
+    ("sgs/product-card", "pickerPillTextColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill"},
+    ("sgs/product-card", "pickerPillBorderColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill"},
+    ("sgs/product-card", "pickerPillSelectedBgColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill--active"},
+    ("sgs/product-card", "pickerPillSelectedTextColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill--active"},
+    ("sgs/product-card", "pickerPillSelectedBorderColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill--active"},
+    # Same discretion + same unverified-suffix caveat as option-picker's own
+    # pillBorderRadius/pillSelectedBorderRadius above.
+    ("sgs/product-card", "pickerPillBorderRadius"): {"role": "typography", "derived_selector": ".sgs-product-card__pill"},
+    ("sgs/product-card", "pickerPillSelectedBorderRadius"): {"role": "typography", "derived_selector": ".sgs-product-card__pill--active"},
 }
 
 

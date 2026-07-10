@@ -342,6 +342,57 @@
 			"default": "",
 			"description": "Bound/configurator mode only: colour for the in-card option-picker labels (Size/Flavour legends). Theme colour token slug (e.g. primary) or raw hex. Empty = default. Forwarded to each sgs/option-picker as labelColour."
 		},
+		"pickerColourPreset": {
+			"type": "string",
+			"default": "solid",
+			"enum": [ "", "soft", "solid" ],
+			"description": "Colour preset forwarded to each in-card sgs/option-picker as colourPreset. Default 'solid' preserves the pre-2026-07-10 bound-configurator look (primary border resting, solid-primary fill selected) now that the card no longer hardcodes the picker's border colour (R5 — see product-card/style.css)."
+		},
+		"pickerShowSelectedTick": {
+			"type": "boolean",
+			"default": true,
+			"description": "Forwarded to each in-card sgs/option-picker as showSelectedTick."
+		},
+		"pickerPillBgColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBgColour (resting pill background)."
+		},
+		"pickerPillTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillTextColour (resting pill text)."
+		},
+		"pickerPillBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBorderColour (resting pill border)."
+		},
+		"pickerPillBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillBorderRadius. CSS length string (e.g. 6px); empty = the option-picker's own default."
+		},
+		"pickerPillSelectedBgColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBgColour."
+		},
+		"pickerPillSelectedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedTextColour."
+		},
+		"pickerPillSelectedBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBorderColour (R2 decoupled selected border)."
+		},
+		"pickerPillSelectedBorderRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillSelectedBorderRadius. CSS length string (e.g. 6px); empty = match the resting pill radius."
+		},
 		"titleFontSize": {
 			"type": "number"
 		},

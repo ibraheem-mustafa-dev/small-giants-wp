@@ -173,7 +173,7 @@
 		linear-gradient(
 			135deg,
 			rgba(245, 208, 80, 0.08) 0%,
-			rgba(230, 138, 149, 0.06) 100%
+			rgba(31, 122, 122, 0.06) 100%
 		);
 }
 
@@ -185,7 +185,9 @@
 	font-size: var(--sgs-product-card-tag-font-size, 11px);
 	font-weight: var(--sgs-product-card-trial-tag-font-weight, 700);
 	padding: 4px 10px;
-	border-radius: 6px;
+	/* F3 (2026-07-10): sanctioned overridable-default — this badge is unrelated
+	   to the option-picker pill radius attrs; var() avoids a bare literal. */
+	border-radius: var(--sgs-product-card-tag-radius, 6px);
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
 	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
@@ -313,11 +315,11 @@
 	/* F6 (visual-polish): primary-dark border — >=3:1 vs white (WCAG 1.4.11
 	 * non-text contrast) and clearer primary/secondary hierarchy at 375px.
 	 * Was primary (pale pink, disappeared on white). */
-	border: 2px solid var(--wp--preset--color--primary-dark, #c56a7a);
+	border: 2px solid var(--wp--preset--color--primary-dark, #0F4C4C);
 }
 
 .product-card .sgs-button--secondary:hover {
-	background: var(--wp--preset--color--primary, #e68a95);
+	background: var(--wp--preset--color--primary, #1F7A7A);
 	color: var(--wp--preset--color--text, #3a2e26);
 }
 
@@ -573,17 +575,15 @@
 }
 
 /*
- * Resting (unselected) option pills get the brand-primary (pink) outline. The
- * shared option-picker default is the foreground/dark colour; the configurator
- * wants pink on every state (resting + considering), with the selected pill
- * filled pink. Card-scoped to .product-card so BOTH typed built-in cards and
- * Bound configurator cards get the identical pink outline (Bean 2026-07-10 —
- * "typed uses the same setup as bound"; was --live-only, which left the typed
- * picker on the shared dark default).
+ * R5 (2026-07-10): the card-scoped `--sgs-op-border` hardcode (client hex
+ * fallback (a client-brand hex) was REMOVED — a framework block must never bake a client
+ * colour into its CSS (blub.db `framework-block-client-hardcode-is-a-bug`).
+ * The picker's resting-primary-border look is now the 'solid' colourPreset
+ * (product-card/render.php $picker_style_attrs['colourPreset'], default
+ * 'solid'), forwarded into every in-card render_block('sgs/option-picker') —
+ * theme-token-driven (var(--wp--preset--color--primary)), never a client hex,
+ * and correctly re-skins per client via the snapshot's optionPickerPresets.
  */
-.product-card .sgs-option-picker {
-	--sgs-op-border: var( --wp--preset--color--primary, #e68a95 );
-}
 
 /*
  * Card hover affordance (was missing). Subtle lift + deeper shadow on hover —
@@ -600,7 +600,6 @@
 
 /* Reduced motion — respect user preference */
 @media (prefers-reduced-motion: reduce) {
-	.product-card .pill,
 	.product-card .sgs-button,
 	.product-card .product-card__cart-icon,
 	.product-card--live {
@@ -643,7 +642,7 @@
 
 /* Focus ring: primary pink at 2px — 3:1 on #fff ✓ WCAG AA focus indicator. */
 .product-card--live .product-card__title-link:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, #e68a95 );
+	outline: 2px solid var( --wp--preset--color--primary, #1F7A7A );
 	outline-offset: 2px;
 	border-radius: 2px;
 }
@@ -747,18 +746,18 @@
 
 /* Hover: show border affordance. */
 .product-card--live .product-card__thumb:hover {
-	border-color: var( --wp--preset--color--primary, #e68a95 );
+	border-color: var( --wp--preset--color--primary, #1F7A7A );
 }
 
 /* Focus ring for keyboard navigation. */
 .product-card--live .product-card__thumb:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, #e68a95 );
+	outline: 2px solid var( --wp--preset--color--primary, #1F7A7A );
 	outline-offset: 2px;
 }
 
 /* Active / selected thumb gets the primary ring. */
 .product-card--live .product-card__thumb[aria-current="true"] {
-	border-color: var( --wp--preset--color--primary, #e68a95 );
+	border-color: var( --wp--preset--color--primary, #1F7A7A );
 }
 
 /* Thumb image fills the button box. */
@@ -974,7 +973,7 @@
 .product-card .sgs-product-card__tag--featured {
 	/* WCAG-safe across ANY client palette: a light tint of the client primary
 	 * behind the palette's dark text colour. Hard-pairing #fff text with an
-	 * arbitrary client primary failed AA live (white on Mama's #e68a95 = 2.48:1,
+	 * arbitrary client primary failed AA live (white on a low-contrast client primary = 2.48:1,
 	 * axe 2026-06-10) — a tint + dark text stays ≥4.5:1 whatever the palette. */
 	background: color-mix( in srgb, var( --wp--preset--color--primary, #1f7a7a ) 22%, #ffffff );
 	color: var( --wp--preset--color--text, #3a2e26 );

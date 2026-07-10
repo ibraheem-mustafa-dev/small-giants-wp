@@ -1,10 +1,17 @@
 /**
  * SGS Option Picker — editor component.
  *
+ * NO-INLINE + NO-WRAPPER (LOCKED per-block no-inline migration contract
+ * §A/§B/§B3, 2026-07-09 — D294 content-KIND pattern, mirrors sgs/quote):
+ * the <fieldset> IS the block root — no SGS_Container_Wrapper delegation,
+ * no ContainerWrapperControls. This panel hand-rolls its own width/spacing/
+ * border controls, the same shape as sgs/quote's.
+ *
  * Renders a live pill preview in the canvas + full InspectorControls:
  * label text, showLabel toggle, option repeater (add/remove/reorder),
- * defaultSelected, pillStyle, pillSize, all five colour token controls,
- * and uniform TypographyControls for the label legend and the option pills.
+ * defaultSelected, pillStyle/pillSize, colour preset, resting + selected
+ * pill colours/border/radius, selected-tick toggle, pill padding (box
+ * object + tiers), root width/spacing/border, and typography controls.
  */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
@@ -13,7 +20,6 @@ import {
 	TextControl,
 	ToggleControl,
 	SelectControl,
-	RangeControl,
 	Button,
 	Flex,
 	FlexItem,
@@ -21,22 +27,16 @@ import {
 	Notice,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
+import {
+	DesignTokenPicker,
+	TypographyControls,
+	ResponsiveControl,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import { colourVar } from '../../utils';
 
-// ---------------------------------------------------------------------------
-// Width units — outer max-width / content band width (kept-scalar single-
-// value families, box-object interface contract §C).
-// ---------------------------------------------------------------------------
-
-const LENGTH_UNITS = [
-	{ value: 'px', label: 'px', default: 0 },
-	{ value: 'rem', label: 'rem', default: 0 },
-	{ value: 'em', label: 'em', default: 0 },
-	{ value: '%', label: '%', default: 0 },
-];
-
-/* ── Pill-style options ─────────────────────────────────────────────────── */
+/* ── Options ─────────────────────────────────────────────────────────────── */
 
 const PILL_STYLE_OPTIONS = [
 	{ label: __( 'Outlined (default)', 'sgs-blocks' ), value: 'outlined' },
@@ -50,21 +50,119 @@ const PILL_SIZE_OPTIONS = [
 	{ label: __( 'Large', 'sgs-blocks' ),            value: 'large'  },
 ];
 
+const COLOUR_PRESET_OPTIONS = [
+	{ label: __( '— Framework default —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Soft (pale-tint fill, outline, no tick)', 'sgs-blocks' ), value: 'soft' },
+	{ label: __( 'Solid (filled selected, tick)', 'sgs-blocks' ), value: 'solid' },
+];
+
+const BORDER_STYLE_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
+	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
+	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
+	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
+];
+
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+];
+
 /* ── Helpers ────────────────────────────────────────────────────────────── */
 
-/**
- * Ensure every option item has a unique, non-empty key.
- * Returns a copy of the items array with any duplicates or empty keys warned-about.
- */
 function hasDuplicateKeys( items ) {
 	const keys = items.map( ( it ) => it.key ).filter( Boolean );
 	return new Set( keys ).size !== keys.length;
+}
+
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder (contract §5).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+function buildRootPreviewStyle( attributes ) {
+	const {
+		style,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		maxWidth,
+		contentWidth,
+		pillBgColour,
+		pillTextColour,
+		pillBorderColour,
+		pillSelectedBgColour,
+		pillSelectedTextColour,
+		pillSelectedBorderColour,
+		pillBorderRadius,
+		pillSelectedBorderRadius,
+	} = attributes;
+
+	const rootStyle = {};
+
+	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		rootStyle.borderRadius = radiusPreview;
+	}
+
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderStyle && borderStyle !== 'none' ) {
+		if ( borderWidthPreview ) {
+			rootStyle.borderWidth = borderWidthPreview;
+		}
+		rootStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			rootStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
+				? borderColour
+				: colourVar( borderColour );
+		}
+	}
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		rootStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		rootStyle.margin = marginPreview;
+	}
+
+	if ( maxWidth ) {
+		rootStyle.maxWidth = maxWidth;
+	}
+	if ( contentWidth ) {
+		rootStyle.width = contentWidth;
+	}
+
+	// Pill colour/radius vars — CSS custom-property VALUES only (Spec 32
+	// FR-32-4), same channel render.php emits on the root element's style.
+	if ( pillBgColour )               rootStyle[ '--sgs-op-bg' ]              = colourVar( pillBgColour );
+	if ( pillTextColour )             rootStyle[ '--sgs-op-text' ]            = colourVar( pillTextColour );
+	if ( pillBorderColour )           rootStyle[ '--sgs-op-border' ]          = colourVar( pillBorderColour );
+	if ( pillSelectedBgColour )       rootStyle[ '--sgs-op-sel-bg' ]          = colourVar( pillSelectedBgColour );
+	if ( pillSelectedTextColour )     rootStyle[ '--sgs-op-sel-text' ]        = colourVar( pillSelectedTextColour );
+	if ( pillSelectedBorderColour )   rootStyle[ '--sgs-op-sel-border' ]      = colourVar( pillSelectedBorderColour );
+	if ( pillBorderRadius )           rootStyle[ '--sgs-op-pill-radius' ]     = pillBorderRadius + 'px';
+	if ( pillSelectedBorderRadius )   rootStyle[ '--sgs-op-sel-pill-radius' ] = pillSelectedBorderRadius + 'px';
+
+	return rootStyle;
 }
 
 /* ── Component ──────────────────────────────────────────────────────────── */
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		label,
 		showLabel,
 		labelColour,
@@ -73,40 +171,44 @@ export default function Edit( { attributes, setAttributes } ) {
 		defaultSelected,
 		pillStyle,
 		pillSize,
+		colourPreset,
+		showSelectedTick,
 		pillBgColour,
 		pillTextColour,
 		pillBorderColour,
 		pillSelectedBgColour,
 		pillSelectedTextColour,
+		pillSelectedBorderColour,
 		pillBorderRadius,
-		style,
-		maxWidth,
-		contentWidth,
+		pillSelectedBorderRadius,
+		pillPadding,
+		pillPaddingTablet,
+		pillPaddingMobile,
+		borderWidth,
+		borderStyle,
+		borderColour,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
 		marginMobile,
+		contentWidth,
+		maxWidth,
 	} = attributes;
 
+	// Contract §B3: NO wrapper <div> — the <fieldset> IS the block root
+	// (matches render.php). Same DOM shape/classes untouched view.js/editor.css
+	// depend on: .sgs-option-picker, .sgs-option-picker__options.
 	const blockProps = useBlockProps( {
+		as: 'fieldset',
 		className: [
 			'sgs-option-picker',
 			`sgs-option-picker--${ pillStyle }`,
 			`sgs-option-picker--${ pillSize }`,
-		].join( ' ' ),
+			colourPreset ? `sgs-option-picker--${ colourPreset }` : '',
+			showSelectedTick ? '' : 'sgs-option-picker--no-tick',
+		].filter( Boolean ).join( ' ' ),
+		style: buildRootPreviewStyle( attributes ),
 	} );
-
-	/* ── Inline CSS vars for the canvas preview ── */
-	// Typography (label + pill font-size/weight/style) is emitted server-side by
-	// sgs_typography_css_rule() via the scoped <style> tag in render.php.
-	// Only colour + border-radius vars are needed here for the editor preview.
-	const previewVars = {};
-	if ( pillBgColour )           previewVars[ '--sgs-op-bg' ]           = colourVar( pillBgColour );
-	if ( pillTextColour )         previewVars[ '--sgs-op-text' ]         = colourVar( pillTextColour );
-	if ( pillBorderColour )       previewVars[ '--sgs-op-border' ]       = colourVar( pillBorderColour );
-	if ( pillSelectedBgColour )   previewVars[ '--sgs-op-sel-bg' ]       = colourVar( pillSelectedBgColour );
-	if ( pillSelectedTextColour ) previewVars[ '--sgs-op-sel-text' ]     = colourVar( pillSelectedTextColour );
-	if ( pillBorderRadius )       previewVars[ '--sgs-op-pill-radius' ]  = pillBorderRadius + 'px';
 
 	/* ── Effective default: first option if defaultSelected is missing ── */
 	const effectiveDefault =
@@ -131,7 +233,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		);
 		setAttributes( { optionItems: updated } );
 
-		/* If the key being renamed was the defaultSelected, follow the rename */
 		if ( field === 'key' && optionItems[ index ].key === defaultSelected ) {
 			setAttributes( { defaultSelected: value } );
 		}
@@ -140,7 +241,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	function removeOption( index ) {
 		const updated = optionItems.filter( ( _, i ) => i !== index );
 		setAttributes( { optionItems: updated } );
-		/* Clear defaultSelected if the removed item was selected */
 		if ( optionItems[ index ].key === defaultSelected ) {
 			setAttributes( {
 				defaultSelected: updated.length > 0 ? updated[ 0 ].key : '',
@@ -161,7 +261,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const duplicateKeysExist = hasDuplicateKeys( optionItems );
 
-	/* ── Default-selected options for the SelectControl ── */
 	const defaultOptions = [
 		{
 			label: __( '— First option (auto) —', 'sgs-blocks' ),
@@ -413,6 +512,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<SelectControl
+						label={ __( 'Colour preset', 'sgs-blocks' ) }
+						help={ __(
+							'Soft = pale-tint fill + outline, no tick (matches a neutral draft look). Solid = filled selected pill with a tick (the previous default look). Leave on framework default to keep the neutral resting/selected colours below.',
+							'sgs-blocks'
+						) }
+						value={ colourPreset }
+						options={ COLOUR_PRESET_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { colourPreset: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -420,17 +532,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						showLineHeight={ false }
 						showStyle={ false }
 					/>
-					<RangeControl
-						label={ __( 'Pill border radius (px)', 'sgs-blocks' ) }
-						value={ pillBorderRadius || 0 }
+					{ /* Border-radius is a CSS-length STRING (number+unit), so the
+					   styling-lift's generic string value lands directly and an
+					   explicit "0"/"0px" is distinct from empty (= CSS default). */ }
+					<UnitControl
+						label={ __( 'Pill border radius', 'sgs-blocks' ) }
+						value={ pillBorderRadius || '' }
+						units={ LENGTH_UNITS }
 						onChange={ ( val ) =>
-							setAttributes( { pillBorderRadius: val ?? 0 } )
+							setAttributes( { pillBorderRadius: val ?? '' } )
 						}
-						min={ 0 }
-						max={ 50 }
-						step={ 1 }
-						allowReset
+						help={ __( 'Leave blank for the default. Set 0 for square corners.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
+					/>
+					{ /* Pill padding — SGS custom box-object family (base + tiers) —
+					   the pill is a content CHILD, not the block root, so there is
+					   no WP-native spacing support to route through. Empty object =
+					   the per-size default padding in style.css governs unchanged. */ }
+					<ResponsiveBoxControl
+						label={ __( 'Pill padding', 'sgs-blocks' ) }
+						values={ {
+							base: pillPadding ?? {},
+							tablet: pillPaddingTablet ?? {},
+							mobile: pillPaddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { pillPadding: next } );
+							} else {
+								setAttributes( { [ `pillPadding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 
@@ -479,36 +611,51 @@ export default function Edit( { attributes, setAttributes } ) {
 							} )
 						}
 					/>
+					<DesignTokenPicker
+						label={ __(
+							'Selected pill border',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Independent of the selected fill colour — set this to reproduce a decoupled "pale fill + coloured outline" selected pill. Leave empty to match the fill (previous behaviour).',
+							'sgs-blocks'
+						) }
+						value={ pillSelectedBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( { pillSelectedBorderColour: val } )
+						}
+					/>
+					{ /* CSS-length STRING (see Pill border radius above). */ }
+					<UnitControl
+						label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
+						help={ __( 'Leave blank to match the resting pill radius above. Set 0 for square corners.', 'sgs-blocks' ) }
+						value={ pillSelectedBorderRadius || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) =>
+							setAttributes( { pillSelectedBorderRadius: val ?? '' } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Show selection tick', 'sgs-blocks' ) }
+						help={ __(
+							'Off = no visible checkmark on the selected pill (matches a neutral outline-only selected look).',
+							'sgs-blocks'
+						) }
+						checked={ showSelectedTick }
+						onChange={ ( val ) =>
+							setAttributes( { showSelectedTick: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
-				{ /* Wrapper — width + spacing. NO-INLINE migration (2026-07-09):
-				   block-private, no shared SGS_Container_Wrapper (mirrors
-				   sgs/quote). Box-object interface contract §B/§E: base
-				   padding/margin route to WP-native style.spacing.* (skip-
-				   serialised → scoped, not inline); tiers are the
-				   paddingTablet/paddingMobile/marginTablet/marginMobile
-				   object attrs. maxWidth/contentWidth stay kept-scalar
-				   (contract §C). */ }
+				{ /* Width / spacing — hand-rolled (no shared wrapper, contract §B3
+				   content-KIND block-private pattern, mirrors sgs/quote). */ }
 				<PanelBody
-					title={ __( 'Wrapper', 'sgs-blocks' ) }
+					title={ __( 'Width / spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<UnitControl
-						label={ __( 'Outer max-width', 'sgs-blocks' ) }
-						value={ maxWidth || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 320px. Leave blank for no cap.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<UnitControl
-						label={ __( 'Content width', 'sgs-blocks' ) }
-						value={ contentWidth || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-						help={ __( 'Exact CSS length, e.g. 100%. Leave blank for full width.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						values={ {
@@ -538,6 +685,54 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
 						} }
+					/>
+					<UnitControl
+						label={ __( 'Content width', 'sgs-blocks' ) }
+						value={ contentWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 400px. Leave blank for natural width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* Border — box-object interface contract §1/§5: borderWidth is an
+				   SGS custom object attr (base only); border-radius routes to
+				   WP-native style.border.radius (skip-serialised → scoped). */ }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Border style', 'sgs-blocks' ) }
+						value={ borderStyle }
+						options={ BORDER_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ borderStyle !== 'none' && (
+						<DesignTokenPicker
+							label={ __( 'Border colour', 'sgs-blocks' ) }
+							value={ borderColour }
+							onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						/>
+					) }
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						values={ { base: borderWidth ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Root border radius', 'sgs-blocks' ) }
+						values={ { base: style?.border?.radius ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
 					/>
 				</PanelBody>
 
@@ -578,8 +773,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* ── Canvas preview ───────────────────────────────────── */ }
-			<fieldset { ...blockProps } style={ { ...blockProps.style, ...previewVars } }>
+			{ /* ── Canvas preview — <fieldset> IS the block root (§B3) ─────── */ }
+			<fieldset { ...blockProps }>
 				{ showLabel ? (
 					<legend
 						className="sgs-option-picker__label"

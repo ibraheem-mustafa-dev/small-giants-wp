@@ -18,10 +18,12 @@
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "admin-generic",
+	"render": "file:./render.php",
 	"supports": {
 		"align": false,
 		"html": false,
 		"anchor": true,
+		"className": true,
 		"color": {
 			"background": true,
 			"text": true,
@@ -31,17 +33,14 @@
 		"spacing": {
 			"margin": true,
 			"padding": true,
+			"__experimentalSkipSerialization": true,
 			"__experimentalDefaultControls": {
 				"margin": false,
 				"padding": false
-			},
-			"__experimentalSkipSerialization": true
+			}
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -79,6 +78,14 @@
 			"default": ""
 		},
 		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelMarginBottom": {
 			"type": "string",
 			"default": ""
 		},
@@ -130,6 +137,19 @@
 				"large"
 			]
 		},
+		"colourPreset": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"soft",
+				"solid"
+			]
+		},
+		"showSelectedTick": {
+			"type": "boolean",
+			"default": true
+		},
 		"pillBgColour": {
 			"type": "string",
 			"default": ""
@@ -147,6 +167,10 @@
 			"default": ""
 		},
 		"pillSelectedTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillSelectedBorderColour": {
 			"type": "string",
 			"default": ""
 		},
@@ -168,24 +192,24 @@
 			"default": ""
 		},
 		"pillBorderRadius": {
-			"type": "number",
-			"default": 0
-		},
-		"labelFontWeight": {
 			"type": "string",
 			"default": ""
 		},
-		"labelMarginBottom": {
+		"pillSelectedBorderRadius": {
 			"type": "string",
 			"default": ""
 		},
-		"contentWidth": {
-			"type": "string",
-			"default": ""
+		"pillPadding": {
+			"type": "object",
+			"default": {}
 		},
-		"maxWidth": {
-			"type": "string",
-			"default": ""
+		"pillPaddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"pillPaddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"paddingTablet": {
 			"type": "object",
@@ -202,13 +226,51 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			]
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
 	"viewScriptModule": "file:./view.js",
-	"render": "file:./render.php",
 	"example": {
 		"attributes": {
 			"label": "Pack size",
