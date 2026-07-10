@@ -2,57 +2,53 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-10
-session: INTEGRATION — D300/D301
+session: no-inline LAND-completion + universal safecss colour fix + pipeline-fidelity root-cause
 ---
 
-# Session Handoff — 2026-07-10 (INTEGRATION — D300/D301)
+# Session Handoff — 2026-07-10 (no-inline LAND + universal colour fix + typography-fidelity root-cause)
 
 ## Completed This Session
-1. **Merged all 6 no-inline branches into `main`** (Tracks A–E + `feat/option-picker-cloning`). Resolved the 2 collisions D299 introduced: option-picker → took D299 wholesale (superset of Track B); product-card → 3-way reconcile (D299 draft-fidelity base + Track E no-inline layered). Worktrees + branches removed. Commit `0a1f2d8f`.
-2. **Brand-purge:** removed every client-hex `#e68a95`/`#c56a7a`/pink-rgba fallback from product-card + option-picker → framework brand teal (`grep '#e68a95' == 0`; Spec 32 FR-32-6).
-3. **box_family made fully DECLARATIVE** (`6b4473de`) — Bean's "stop hardcoding into sgs-update": 40 blocks declare `supports.sgs.boxFamilies` in block.json; sgs-update `_collect_boxfamily_overrides` derives the column; removed all 137 `ATTR_CLASSIFICATION_OVERRIDES` box_family rows; **0 regressions** (live `/sgs-update --stage 1` `applied=363, 0 missing`, box_family=205).
-4. **hero dark-pink bug FIXED** (`6c8260cf`) — Bean-reported. The default gradient overpainted the transferred flat surface-pink; `has-background` now re-added for a custom `style.color.background`/gradient. Verified live: hero bg == trust-bar bg (flat #F5C2C8, no gradient).
-5. **post-grid R4 + F3** (`95707585`) — shared REST include (`class-post-grid-rest.php`) inline colour/bg/aspect → CSS-var VALUES on the card root; product-card `7px 13px` baseline row drained. **hero R6** (`423609bb`) — flat root padding/margin tiers → box-object.
-6. **Bean priority 1 — hero responsive padding** verified live: 375=`28px 20px 40px`, 768=`56px 48px`, 1440=`72px 64px` — each matches the draft per breakpoint.
-7. **Bean priority 2 — custom values NOT preset-locked** verified live: custom hex `#3366ff`/`#ffcc66`/`#802b00` + custom asymmetric px padding render via the scoped-var channel with **zero inline property declarations**; DesignTokenPicker + ResponsiveBoxControl both accept custom input; wave-1 harness ALL PASS.
-8. **Bean priority 3 — pill-cloning: 6 universal converter bugs fixed** (`5bb622d4`, `1d15d491`, `2b43a6df`, `89dcaf41`) — BgColour suffix, compound-selector matching, background+border shorthand, border-color resolution, rgba preservation. Pill went uniform-taupe → **7/8 draft-accurate** live.
-9. **Anti-cheat refactor (Bean-corrected):** the colour lift routes by DB-owned `role='color'`, NOT a hardcoded `css_property` list (D301) — any colour property resolves + falls back to concrete hex/rgba on no token match. 440 converter tests pass.
+1. **No-inline LAND complete.** Every SGS block emits zero inline styling on the live homepage. Fixed 3 leaks: button icon width/height/colour (→ scoped `#uid`), option-picker colour-swatch (`background:` → `--sgs-op-swatch-bg` var), and the shared `SGS_Container_Wrapper` base-only gap/min-height/box-shadow/background + bg-overlay span (→ scoped `.{uid}` rules). 41 blocks harness-verified zero-inline at 375/768/1440.
+2. **Universal safecss-safe colour resolver (the big one).** PROVEN live: WordPress `safecss_filter_attr()` (via `get_block_wrapper_attributes()`) silently STRIPS every functional-colour notation (`rgb/rgba/hsl/hsla/hwb/oklch/oklab/lch/lab`) — hex/named/`var()` survive. Fixed in the shared `sgs_colour_value()` (helpers-tokens.php): normalises ALL functional notations to hex (8-digit for alpha). Colour-space matrices verified vs sRGB primaries (red/green/blue/white/black exact). `sgs_shadow_value()` normalises embedded box-shadow colours too. This fixed the pill selected-fill tint `rgba(230,138,149,0.1)` (parking `P-PILL` was MIS-DIAGNOSED as a preset conflict — real cause is safecss).
+3. **Zero-tolerance inline gate built + wired.** `audit-inline-styling.js --check` fails the build on any real inline property declaration in a block render.php OR the shared wrapper (caught 3 wrapper leaks). Wired into `prebuild` with `check-box-family-guard.py --check`.
+4. **F3 gate precision fix.** `check-hardcoded-render-defaults.js`: generic `*Alignment` suffix → `text-align` only (not `align-items`); `100vw/100vh` on width/max-width exempted as viewport clamp. 3 mis-tagged nav rows removed from baseline (8→5); 0 net-new.
+5. **Spec 31 §4/FR-31-22.1 reconciled** to declarative box_family (block.json `supports.sgs.boxFamilies` via `_collect_boxfamily_overrides`).
+6. **Pipeline-fidelity root-cause (the priority for next session).** Ran a fresh Mama's clone + direct Playwright draft-vs-clone comparison. Content 100% faithful. The 5 rendered typography differences root-cause to TWO mechanisms — see Known Issues.
 
 ## Current State
-- **Branch:** `main` at `89dcaf41`
-- **Tests:** 440 converter tests pass (1 skipped); `npm run build` green (all prebuild gates); `check-box-family-guard.py --check` = 0
-- **Build:** passes
-- **Deploy:** sandybrown canary + page 8 re-cloned (Mama's homepage); OPcache + LiteSpeed purged
-- **Uncommitted changes:** none from this session (only pre-existing strays: lucide-icons.php, phase4 reports, inline-styling-audit, package-lock.json, *.db strays)
+- **Branch:** `main` at `c5be4ab1` (pushed)
+- **Tests:** 440 converter tests pass (1 skipped); `npm run build` green with all prebuild gates
+- **Build:** passes. **Deploy:** sandybrown page 8 re-cloned (fresh pipeline run `mamas-munches-homepage-2026-07-10-181016`), OPcache + LiteSpeed purged
+- **Uncommitted changes:** only pre-existing strays (lucide-icons.php, package-lock.json, phase4 reports, `*.db`, next-session-prompt) + this handoff's docs
 
 ## Known Issues / Blockers
-- **Pill selected FILL** renders solid pink not the draft's 10% tint — `colourPreset='solid'` default overrides the cloned rgba (`P-PILL-SELECTED-FILL-PRESET`). Converter side is correct.
-- **`sgs-container` inline `gap:16px`** seen on page 8 — verify vs D296 before wiring the zero-tolerance inline gate (`P-CONTAINER-INLINE-GAP-CHECK`).
-- **The rollout OUTCOME is NOT fully hit** — the ~35 merged blocks are code-complete + build-green but only spot-LANDED (`P-NO-INLINE-LAND-ROSTER`).
+**Pipeline typography-fidelity gaps (the next-session priority) — proven root cause, NOT one issue:**
+- **Mechanism 1 — residual render-precedence (`P-RESIDUAL-RENDER-PRECEDENCE` / STOP-64).** Draft uses non-SGS breakpoints (1280/1024/600). A typography value behind one (hero H1 58px @≥1280) is correctly captured as a residual in `sgsCustomCss` (`@media(min-width:1280){&selector{font-size:58px}}`) but it's class-scoped + appended, and the block renders typography at `#uid` (ID) specificity → residual LOSES → clone shows 52px not 58. Affects hero font-size + nav/button font-sizes behind min-width breakpoints.
+- **Mechanism 2 — theme typography default wins (effective-value not lifted).** Section headings emit `letterSpacing=None` → theme Fraunces default (−0.54px) applies, differing from draft. Same for line-heights the pipeline doesn't lift. Affects letter-spacing + line-height.
+- **Separate: option-picker pills** — selected/resting state fidelity (colour/bg/font-size/text-align).
 
 ## Next Priorities (in order)
-1. **Complete the LAND** — harness-verify the ~35 merged blocks at 375/768/1440, write per-block visual-diff reports (`P-NO-INLINE-LAND-ROSTER`).
-2. **`colourPreset` pill-fill fix** — clone sets `colourPreset=''` when it supplies explicit per-pill colours (`P-PILL-SELECTED-FILL-PRESET`).
-3. **Container inline-gap check** (`P-CONTAINER-INLINE-GAP-CHECK`), then wire the 2 zero-tolerance gates (Task 4).
-4. **Reconcile specs** — Spec 31 §4 / Spec 32 §6.1(c) + CLAUDE.md to the declarative box_family mechanism (`P-DECLARATIVE-BOXFAMILY-SPEC-RECONCILE`); fix `P-F3-NAV-MISTAG-GATE`.
+1. **Universal typography-fidelity fix** (both mechanisms) — see next-session-prompt.md Task 1. Fix residual render-precedence so sub-breakpoint typography paints, AND lift the effective computed typography for every text element so nothing falls to a theme default. Then re-run the direct Playwright comparison.
+2. **Option-picker pill state fidelity** (Task 2).
+3. Patterns-use-core-blocks (`P-PATTERNS-USE-CORE-BLOCKS`) — Bean DEPRIORITISED; pipeline fidelity first.
 
 ## Files Modified
 | File path | What changed |
 |---|---|
-| `plugins/sgs-blocks/src/blocks/*/block.json` (40) | `supports.sgs.boxFamilies` declarations (declarative box_family) |
-| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | `_collect_boxfamily_overrides` reader; removed 137 dict box_family rows |
-| `plugins/sgs-blocks/scripts/converter/resolvers/styling_content.py` | role-based colour routing; background/border shorthand; border-color |
-| `plugins/sgs-blocks/scripts/converter/services/styling_helpers.py` | compound-selector matching; rgb/rgba/hsl literal preservation |
-| `plugins/sgs-blocks/scripts/migrations/2026-07-10-property-suffixes-bg-colour.py` | NEW — `BgColour`→background-color suffix |
-| `plugins/sgs-blocks/src/blocks/{option-picker,product-card}/*` | D299 merge + reconcile + brand-purge |
-| `plugins/sgs-blocks/src/blocks/hero/{render.php,block.json,edit.js}` | bg-gradient suppression fix + R6 flat-tier migration |
-| `plugins/sgs-blocks/includes/class-post-grid-rest.php` + `post-grid/style.css` | R4 CSS-var conversion |
+| `plugins/sgs-blocks/includes/helpers-tokens.php` | universal `sgs_functional_colour_to_hex` + hwb/oklch/oklab/lch/lab conversions + `sgs_normalise_css_functional_colours`; `sgs_colour_value`/`sgs_shadow_value` normalise functional colours to hex |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | base-only gap/min-height/box-shadow/background + overlay → scoped `.{uid}` rules |
+| `plugins/sgs-blocks/scripts/audit-inline-styling.js` | `--check` mode (block + wrapper inline scan) |
+| `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` + baseline | F3 precision (alignment→text-align, 100vw exempt); baseline 8→5 |
+| `plugins/sgs-blocks/package.json` | prebuild wires audit + box-family gates |
+| `plugins/sgs-blocks/src/blocks/{button,option-picker}/*` | icon + swatch inline → scoped/var |
+| `.claude/specs/31-*.md`, `.claude/parking.md` | declarative box_family reconcile; parking resolutions + follow-ups |
+| `reports/visual-diff/*-2026-07-10.md` | 5 LANDED reports |
 
 ## Notes for Next Session
-- **The harness runs via PowerShell** (`node scripts/no-inline-land-verify.js <manifest>`) — the Git Bash node shim is broken (nvm4w "This: command not found"); Python works in Bash. Main repo needed `npm install` (worktrees held the real node_modules).
-- **Do NOT reintroduce a css_property allowlist for colour routing** (D301) — route by `role='color'`, keep concrete hex/rgba on no token match.
-- **Declarative box_family is the single source of truth now** — add box families in block.json, NOT the dict.
-- Re-clone: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:8`. Purge after: OPcache (HTTP `opcache_reset` → curl → rm) + LiteSpeed (Hostinger MCP `hosting_clearWebsiteCacheV1`, user `u945238940`).
+- **safecss strips functional colours** — the single most reusable finding. Any inline colour VALUE must be hex/named/var (not rgb/hsl/oklch). The universal fix is in `sgs_colour_value`; the scoped `<style>` channel (echoed via `wp_strip_all_tags`) is NOT safecss-filtered, so scoped rules can carry functional colours.
+- **The leftover-buckets is NOT a fidelity signal** (`P-LOG-ACCURACY-DOUBT`): the 361 entries are mostly block-schema slots the draft doesn't use. The direct Playwright comparison (content-matched computed styles) is the dependable signal — computed-parity.js had instrument bugs (Bean-flagged; STOP-48/49).
+- **Fresh pipeline artefacts:** `pipeline-state/mamas-munches-homepage-2026-07-10-181016/` (leftover-buckets, computed-parity). Comparison script: `scratchpad/draft-vs-clone.js` + `draft-vs-clone-report.json` + draft/clone screenshots.
+- Re-clone: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:8`. Purge after (OPcache HTTP + LiteSpeed MCP).
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — orchestration plan for LAND-completion + the 4 rollout-close follow-ups.
+See `.claude/next-session-prompt.md` — orchestration plan for the universal typography-fidelity fix + pill fidelity.
