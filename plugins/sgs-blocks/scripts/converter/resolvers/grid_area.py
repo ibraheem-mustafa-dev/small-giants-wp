@@ -38,6 +38,7 @@ from converter.services.styling_helpers import split_value_unit, strip_important
 from converter.services.tier_suffix import tier_suffix
 from converter.services.validate import attr_is_number, validate
 from converter.services.value_serialise import value_serialise
+from converter.db import db_lookup
 from converter.db.db_lookup import attr_for_area_property, unit_companion_attr
 
 # Per-area properties NOT routed (mirrors convert.py's _area_excluded set: a grid
@@ -53,6 +54,47 @@ _AREA_EXCLUDED = frozenset({
 # number-only and MISSED the Step-12 'integer' widening; ONE implementation
 # now serves all four resolvers (R-31-9).
 _attr_is_number = attr_is_number
+
+
+def _area_box_write(decl: Any, ctx: Any, area: str) -> Write | None:
+    """Route a per-area ``padding-{side}`` declaration into the owning block's
+    merged ``{area}Padding{Tier}`` box-object attr (box-object interface contract
+    §3/§4, FR-31-22), mirroring ``content_band._content_band_box_write`` for the
+    L4 GRID-PER-AREA layer.
+
+    When a composite migrated its per-area padding flat→OBJECT (D295 sgs/hero:
+    ``contentPadding``/``mediaPadding``/``imagePadding`` incl. Tablet/Mobile
+    tiers), the flat ``attr_for_area_property`` path returns None (the flat
+    ``contentPaddingTop`` no longer exists), so this diverts the side decl into
+    the object attr BEFORE that flat chain — the orchestrator accumulator
+    (``ElementResult.attrs``) folds the four ``{side: value}`` writes into the one
+    object attr. Gated on ``db_lookup.box_family_for``, NEVER an attr-name regex
+    (§3.A step-3b AST gate).
+
+    Returns ``None`` (never a GAP — caller falls through to the flat chain) when
+    the box-object path doesn't apply: a non-padding per-area property
+    (``background-color`` → ``contentBackground``), or a block still on flat
+    per-area attrs (``box_family_for`` None). No block-slug literal.
+    """
+    prop = decl.property
+    if not prop.startswith("padding-"):
+        return None
+    side = prop[len("padding-"):]
+    if side not in ("top", "right", "bottom", "left"):
+        return None
+
+    area_prefix = area[0].lower() + area[1:]
+    family = f"{area_prefix}Padding"
+    object_attr = tier_suffix(family, decl.tier, ctx.conn)
+    # Gate on the DB box_family classification (§3.A step-3b), NEVER a name regex.
+    box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
+    if box_family is None:
+        return None
+
+    # Box-object value = a CSS length STRING with its unit inline (Spec 32 §6.1(a);
+    # e.g. "32px"), never a number + Unit companion — the object holds all sides.
+    value = value_serialise("string", None, strip_important(decl.value).strip())
+    return Write(attr=object_attr, value={side: value}, property=prop, tier=decl.tier)
 
 
 def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
@@ -80,6 +122,15 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             ctx, decl, GapOrigin.NO_DESTINATION,
             f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
         )
+
+    # Box-object contract (§3.A step-3b / FR-31-22): a padding-side decl
+    # accumulates into the owner's merged {area}Padding{Tier} OBJECT attr when
+    # box_family gates it (D295 hero migrated per-area padding flat→object),
+    # BEFORE the legacy flat per-area attr chain runs. Non-box per-area props
+    # (background) return None here and fall through unchanged.
+    box_write = _area_box_write(decl, ctx, area)
+    if box_write is not None:
+        return box_write
 
     base_attr = attr_for_area_property(ctx.block_slug, area, prop)
     if base_attr is None:

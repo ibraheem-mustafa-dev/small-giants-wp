@@ -10,7 +10,14 @@ import {
   RangeControl,
   ToggleControl,
 } from "@wordpress/components";
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls } from "../../components";
+import {
+  DesignTokenPicker,
+  IconPicker,
+  IconPreview,
+  TypographyControls,
+  ResponsiveBoxControl,
+  ResponsiveBorderRadiusControl,
+} from "../../components";
 import { colourVar } from "../../utils";
 
 
@@ -21,8 +28,18 @@ function formatNumber(num, separator) {
   return String(num);
 }
 
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5).
+function boxShorthand(box, keys) {
+  if (!box || "object" !== typeof box) return undefined;
+  if (!keys.some((key) => box[key])) return undefined;
+  return keys.map((key) => box[key] || "0").join(" ");
+}
+
 export default function Edit({ attributes, setAttributes }) {
   const {
+    style,
     number,
     prefix,
     suffix,
@@ -33,6 +50,12 @@ export default function Edit({ attributes, setAttributes }) {
     labelColour,
     icon,
     accentStroke,
+    paddingTablet,
+    paddingMobile,
+    marginTablet,
+    marginMobile,
+    borderRadiusTablet,
+    borderRadiusMobile,
   } = attributes;
 
   const className = [
@@ -42,7 +65,18 @@ export default function Edit({ attributes, setAttributes }) {
     .filter(Boolean)
     .join(" ");
 
-  const blockProps = useBlockProps({ className });
+  // Base padding/margin/border-radius preview — WP-native style.spacing.* /
+  // style.border.radius objects (contract §B; box-model order top/right/
+  // bottom/left, radius order top-left/top-right/bottom-right/bottom-left).
+  const wrapperPreviewStyle = {};
+  const paddingPreview = boxShorthand(style?.spacing?.padding, ["top", "right", "bottom", "left"]);
+  if (paddingPreview) wrapperPreviewStyle.padding = paddingPreview;
+  const marginPreview = boxShorthand(style?.spacing?.margin, ["top", "right", "bottom", "left"]);
+  if (marginPreview) wrapperPreviewStyle.margin = marginPreview;
+  const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
+  if (radiusPreview) wrapperPreviewStyle.borderRadius = radiusPreview;
+
+  const blockProps = useBlockProps({ className, style: wrapperPreviewStyle });
 
   const numberStyle = {
     color: colourVar(numberColour) || undefined,
@@ -136,6 +170,65 @@ export default function Edit({ attributes, setAttributes }) {
             checked={accentStroke}
             onChange={(val) => setAttributes({ accentStroke: val })}
             __nextHasNoMarginBottom
+          />
+        </PanelBody>
+
+        {/* Spacing — Box-object interface contract §B/§E: padding/margin base
+            routes to WP-native style.spacing.* (skip-serialised → scoped, not
+            inline); tiers are the paddingTablet/paddingMobile +
+            marginTablet/marginMobile object attrs. */}
+        <PanelBody title={__("Spacing", "sgs-blocks")} initialOpen={false}>
+          <ResponsiveBoxControl
+            label={__("Padding", "sgs-blocks")}
+            values={{
+              base: style?.spacing?.padding ?? {},
+              tablet: paddingTablet ?? {},
+              mobile: paddingMobile ?? {},
+            }}
+            onChange={(tier, next) => {
+              if ("base" === tier) {
+                setAttributes({ style: { ...style, spacing: { ...style?.spacing, padding: next } } });
+              } else {
+                setAttributes({ [`padding${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
+              }
+            }}
+          />
+          <ResponsiveBoxControl
+            label={__("Margin", "sgs-blocks")}
+            values={{
+              base: style?.spacing?.margin ?? {},
+              tablet: marginTablet ?? {},
+              mobile: marginMobile ?? {},
+            }}
+            onChange={(tier, next) => {
+              if ("base" === tier) {
+                setAttributes({ style: { ...style, spacing: { ...style?.spacing, margin: next } } });
+              } else {
+                setAttributes({ [`margin${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
+              }
+            }}
+          />
+        </PanelBody>
+
+        {/* Border radius — base routes to WP-native style.border.radius
+            (skip-serialised → scoped, not inline; border width/style/colour
+            stay on the native WP Border panel in the Styles tab); tiers are
+            the borderRadiusTablet/borderRadiusMobile object attrs. */}
+        <PanelBody title={__("Border radius", "sgs-blocks")} initialOpen={false}>
+          <ResponsiveBorderRadiusControl
+            label={__("Border radius", "sgs-blocks")}
+            values={{
+              base: style?.border?.radius ?? {},
+              tablet: borderRadiusTablet ?? {},
+              mobile: borderRadiusMobile ?? {},
+            }}
+            onChange={(tier, next) => {
+              if ("base" === tier) {
+                setAttributes({ style: { ...style, border: { ...style?.border, radius: next } } });
+              } else {
+                setAttributes({ [`borderRadius${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
+              }
+            }}
           />
         </PanelBody>
       </InspectorControls>

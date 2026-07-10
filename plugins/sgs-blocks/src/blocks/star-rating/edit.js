@@ -7,6 +7,49 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
+import { ResponsiveBoxControl } from '../../components';
+
+// Box-object interface contract §1: a 4-side box is an object with named
+// keys, each an already-unit-bearing CSS length string or absent (unset
+// side). Build an editor-preview shorthand from the object — mirrors
+// render.php's box-shorthand builder so the canvas preview matches the
+// frontend (contract §5, mirrors sgs/heading).
+function boxShorthand( box ) {
+	if ( ! box ) {
+		return '';
+	}
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) {
+		return '';
+	}
+	const t = top || '0';
+	const r = right || '0';
+	const b = bottom || '0';
+	const l = left || '0';
+	return `${ t } ${ r } ${ b } ${ l }`;
+}
+
+/** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
+function buildWrapperStyle( attributes ) {
+	const { style } = attributes;
+	const wrapperStyle = {};
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin );
+	if ( marginPreview ) {
+		wrapperStyle.margin = marginPreview;
+	}
+	if ( style?.color?.text ) {
+		wrapperStyle.color = style.color.text;
+	}
+	if ( style?.color?.background ) {
+		wrapperStyle.backgroundColor = style.color.background;
+	}
+	return wrapperStyle;
+}
 
 const DISPLAY_MODE_OPTIONS = [
 	{ label: __( 'Stars only', 'sgs-blocks' ), value: 'stars-only' },
@@ -44,10 +87,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		schemaItemName,
 		schemaReviewCount,
 		displayMode,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
+	// No-inline (contract §A/§5): the `spacing`/`color` supports declare
+	// __experimentalSkipSerialization in block.json, so useBlockProps() no
+	// longer auto-applies them — rebuild the base-tier preview manually here
+	// (mirrors sgs/heading's buildWrapperStyle) so the canvas matches the
+	// frontend's scoped <style> output at desktop width.
 	const blockProps = useBlockProps( {
 		className: `sgs-star-rating sgs-star-rating--${ displayMode }`,
+		style: buildWrapperStyle( attributes ),
 	} );
 
 	const stars = [];
@@ -111,6 +165,44 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { emptyColour: val } ) }
 						type="color"
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* Box-object interface contract §B/§E: padding/margin base routes to
+				   WP-native style.spacing.* (mirrors sgs/heading); tiers are the
+				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs.
+				   The spacing support declares __experimentalSkipSerialization so base
+				   serialises scoped, not inline. */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 

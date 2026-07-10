@@ -1,31 +1,25 @@
 /* ===== SGS Label — Frontend + Editor ===== */
+/* NO-INLINE (per-block no-inline migration contract §A, 2026-07-10): the
+   rendered <span> carries ZERO inline CSS property declarations. Every
+   per-instance value (colour, font-size, padding, border-radius, etc.) is
+   emitted by render.php into a per-instance scoped `.{uid}.wp-block-sgs-label`
+   <style> tag, which ALWAYS wins over the class-level defaults below (equal
+   specificity — two classes each — but later document order). The rules
+   below are the no-customisation baseline only (mirrors sgs/heading). */
 
 /* ----- Base (all variants) ----- */
 .wp-block-sgs-label {
-	/* Default values — overridden per-instance via CSS custom properties set inline */
-	--sgs-label-colour: var(--wp--preset--color--primary);
-	--sgs-label-bg: var(--wp--preset--color--primary);
-	--sgs-label-font-size: 12px;
-	--sgs-label-font-weight: 600;
-	--sgs-label-line-height: 1.2em;
-	--sgs-label-letter-spacing: 0.08em;
-	--sgs-label-text-transform: uppercase;
-	--sgs-label-text-decoration: none;
-	--sgs-label-border-radius: 6px;
-	--sgs-label-padding: 4px 12px 4px 12px;
-	--sgs-label-font-family: inherit;
-
 	/* Base = span default (inline). pill-fill/pill-wrap variants below opt into
 	   block/inline-block scoped to their own rule — the base must not force it. */
 	display: inline;
-	color: var(--sgs-label-colour);
-	font-family: var(--sgs-label-font-family);
-	font-size: var(--sgs-label-font-size);
-	font-weight: var(--sgs-label-font-weight);
-	line-height: var(--sgs-label-line-height);
-	letter-spacing: var(--sgs-label-letter-spacing);
-	text-transform: var(--sgs-label-text-transform);
-	text-decoration: var(--sgs-label-text-decoration);
+	color: var(--wp--preset--color--primary);
+	font-family: inherit;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.2em;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: none;
 
 	/* Reset margin for span/div wrappers so layout isn't unexpected */
 	margin: 0;
@@ -42,17 +36,13 @@
 .wp-block-sgs-label.is-style-pill-fill {
 	display: block;
 	width: 100%;
-	background-color: var(--sgs-label-bg);
-	padding: var(--sgs-label-padding);
-	border-radius: var(--sgs-label-border-radius);
+	background-color: var(--wp--preset--color--primary);
+	padding: 4px 12px 4px 12px;
+	border-radius: 6px;
 	text-align: center;
-	/* Ensure text colour reads against the background (operator responsibility,
-	   but provide a legible contrast-safe default via the colour token pair) */
-	color: var(--wp--preset--color--surface, #ffffff);
-}
-
-/* Opt-out override: operator can re-apply --sgs-label-colour via inspector */
-.wp-block-sgs-label.is-style-pill-fill:not([style*="--sgs-label-colour"]) {
+	/* Legible contrast-safe default; the scoped .uid colour rule (always
+	   emitted, since textColour defaults to `primary`) overrides this when
+	   the operator has an explicit choice. */
 	color: var(--wp--preset--color--surface, #ffffff);
 }
 
@@ -61,21 +51,15 @@
 	display: inline-block;
 	width: max-content;
 	max-width: 100%;
-	background-color: var(--sgs-label-bg);
-	padding: var(--sgs-label-padding);
-	border-radius: var(--sgs-label-border-radius);
-	color: var(--wp--preset--color--surface, #ffffff);
-}
-
-.wp-block-sgs-label.is-style-pill-wrap:not([style*="--sgs-label-colour"]) {
+	background-color: var(--wp--preset--color--primary);
+	padding: 4px 12px 4px 12px;
+	border-radius: 6px;
 	color: var(--wp--preset--color--surface, #ffffff);
 }
 
 /* ----- Responsive font size overrides (tablet / mobile) ----- */
 /* Scoped per-instance via a <style> block emitted by render.php using       */
-/* #uid.wp-block-sgs-label selectors — mirrors the sgs/text + sgs/heading    */
-/* pattern. CSS attr() for non-`content` properties is unimplemented in      */
-/* stable browsers so the previous data-attribute approach had no effect.    */
+/* .{uid}.wp-block-sgs-label selectors — mirrors the sgs/heading pattern.    */
 
 /* ===== Reduced motion — no animated states on this block ===== */
 /* (Label has no transitions; rule kept as placeholder for

@@ -11,7 +11,7 @@ import {
 	TextControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls } from '../../components';
+import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 
 const TEXT_TRANSFORM_OPTIONS = [
@@ -82,9 +82,21 @@ function parseUnit( raw, currentUnit ) {
 }
 
 /**
- * Build the inline style object for the label element.
- * CSS custom properties are used so style.css rules
- * can reference --sgs-label-* vars in pill variants.
+ * Build the box-family editor-canvas preview shorthand — mirrors render.php's
+ * hand-built box shorthand so the canvas matches the frontend (contract §5).
+ */
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) return undefined;
+	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+}
+
+/**
+ * Build the editor-canvas preview style object for the label element.
+ * This is editor-only convenience (mirrors sgs/heading) — the frontend
+ * render.php emits every declaration into a scoped `.{uid}` <style> tag,
+ * never inline (contract §A).
  */
 function buildStyle( attributes ) {
 	const {
@@ -102,50 +114,42 @@ function buildStyle( attributes ) {
 		textDecoration,
 		fontStyle,
 		textAlign,
-		paddingTop,
-		paddingRight,
-		paddingBottom,
-		paddingLeft,
+		padding,
 		borderRadius,
 		className,
+		style,
 	} = attributes;
 
-	const style = {
-		'--sgs-label-colour': colourVar( textColour ) || undefined,
-		'--sgs-label-bg': colourVar( backgroundColour ) || undefined,
-		'--sgs-label-font-size': fontSize
-			? `${ fontSize }${ fontSizeUnit }`
-			: undefined,
-		'--sgs-label-font-weight': fontWeight || undefined,
-		'--sgs-label-line-height': lineHeight
-			? `${ lineHeight }${ lineHeightUnit }`
-			: undefined,
-		'--sgs-label-letter-spacing': letterSpacing
+	const marginPreview = boxShorthand( style?.spacing?.margin );
+
+	const previewStyle = {
+		color: colourVar( textColour ) || undefined,
+		fontFamily: fontFamily || undefined,
+		fontSize: fontSize ? `${ fontSize }${ fontSizeUnit }` : undefined,
+		fontWeight: fontWeight || undefined,
+		lineHeight: lineHeight ? `${ lineHeight }${ lineHeightUnit }` : undefined,
+		letterSpacing: ( letterSpacing !== null && letterSpacing !== undefined )
 			? `${ letterSpacing }${ letterSpacingUnit }`
 			: undefined,
-		'--sgs-label-text-transform': textTransform || undefined,
-		'--sgs-label-text-decoration': textDecoration || undefined,
-		'--sgs-label-border-radius': `${ borderRadius }px`,
-		// Direct CSS properties (not consumed as vars by style.css).
+		textTransform: textTransform || undefined,
+		textDecoration: textDecoration || undefined,
+		borderRadius: borderRadius ? `${ borderRadius }px` : undefined,
 		fontStyle: fontStyle || undefined,
 		textAlign: textAlign || undefined,
+		margin: marginPreview,
 	};
 
-	// Emit padding custom property whenever a pill style is active.
+	// Padding preview only for pill variants (matches render.php's is_pill gate).
 	const isPillStyle = typeof className === 'string' &&
 		( className.includes( 'is-style-pill-fill' ) || className.includes( 'is-style-pill-wrap' ) );
 	if ( isPillStyle ) {
-		style[ '--sgs-label-padding' ] =
-			`${ paddingTop }px ${ paddingRight }px ${ paddingBottom }px ${ paddingLeft }px`;
-	}
-
-	if ( fontFamily ) {
-		style[ '--sgs-label-font-family' ] = fontFamily;
+		previewStyle.padding = boxShorthand( padding );
+		previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
 	}
 
 	// Remove undefined values so the DOM stays clean.
 	return Object.fromEntries(
-		Object.entries( style ).filter( ( [ , v ] ) => v !== undefined )
+		Object.entries( previewStyle ).filter( ( [ , v ] ) => v !== undefined )
 	);
 }
 
@@ -153,6 +157,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
 		className,
+		style,
 		textColour,
 		backgroundColour,
 		fontSize,
@@ -168,10 +173,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		textDecoration,
 		fontStyle,
 		textAlign,
-		paddingTop,
-		paddingRight,
-		paddingBottom,
-		paddingLeft,
+		padding,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 		borderRadius,
 	} = attributes;
 
@@ -318,48 +324,44 @@ export default function Edit( { attributes, setAttributes } ) {
 							step={ 1 }
 							__nextHasNoMarginBottom
 						/>
-						<RangeControl
-							label={ __( 'Padding top (px)', 'sgs-blocks' ) }
-							value={ paddingTop }
-							onChange={ ( val ) =>
-								setAttributes( { paddingTop: val } )
-							}
-							min={ 0 }
-							max={ 40 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Padding right (px)', 'sgs-blocks' ) }
-							value={ paddingRight }
-							onChange={ ( val ) =>
-								setAttributes( { paddingRight: val } )
-							}
-							min={ 0 }
-							max={ 60 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Padding bottom (px)', 'sgs-blocks' ) }
-							value={ paddingBottom }
-							onChange={ ( val ) =>
-								setAttributes( { paddingBottom: val } )
-							}
-							min={ 0 }
-							max={ 40 }
-							__nextHasNoMarginBottom
-						/>
-						<RangeControl
-							label={ __( 'Padding left (px)', 'sgs-blocks' ) }
-							value={ paddingLeft }
-							onChange={ ( val ) =>
-								setAttributes( { paddingLeft: val } )
-							}
-							min={ 0 }
-							max={ 60 }
-							__nextHasNoMarginBottom
+						<ResponsiveBoxControl
+							label={ __( 'Padding', 'sgs-blocks' ) }
+							values={ {
+								base: padding ?? {},
+								tablet: paddingTablet ?? {},
+								mobile: paddingMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { padding: next } );
+								} else {
+									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
 						/>
 					</PanelBody>
 				) }
+
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<RichText

@@ -2,6 +2,28 @@
 /**
  * Server-side render for the SGS WhatsApp CTA block.
  *
+ * NO-INLINE (LOCKED per-block no-inline migration contract, 2026-07-10):
+ * the rendered subtree carries ZERO inline CSS property declarations. Button
+ * colour/background and every wrapper box/border declaration are emitted
+ * into the block's own scoped `.{uid}` <style> tag. WP styling supports
+ * (spacing / __experimentalBorder) declare `__experimentalSkipSerialization`
+ * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ * (`color` support is declared false/false — inert; skip-serialised too for
+ * forward-compat, but no native colour is ever emitted by it.)
+ *
+ * BOX-GROUP (contract §B): padding / margin / border-radius are box objects.
+ * Base padding/margin/border-radius = WP-native style.spacing.* /
+ * style.border.radius objects (emitted scoped via wp_style_engine_get_styles);
+ * tiers = paddingTablet/paddingMobile/marginTablet/marginMobile/
+ * borderRadiusTablet/borderRadiusMobile object attrs (scoped @media 1023/767).
+ *
+ * Contract §B3 (single-semantic-element blocks): the <a> IS the block root —
+ * NO wrapper <div> (mirrors sgs/button, D288). It carries the BEM block class,
+ * the BEM element class (__btn), the variant/visibility classes, the scoped
+ * uid CLASS, and the anchor `id`.
+ *
+ * @since 2026-07-10  no-inline + single-root migration.
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused - no InnerBlocks).
  * @var \WP_Block $block      Block instance.
@@ -21,7 +43,7 @@ $show_on_mobile  = $attributes['showOnMobile'] ?? true;
 $show_on_desktop = $attributes['showOnDesktop'] ?? true;
 $label_colour    = sgs_colour_value( $attributes['labelColour'] ?? '' );
 $bg_colour       = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
-$uid             = wp_unique_id( 'sgs-wa-' );
+$anchor          = isset( $attributes['anchor'] ) ? sanitize_html_class( $attributes['anchor'] ) : '';
 
 // Do not render if no phone number is set.
 if ( ! $phone_number ) {
@@ -36,6 +58,91 @@ if ( $encoded_message ) {
 	$wa_url .= '?text=' . $encoded_message;
 }
 
+// ---------------------------------------------------------------------------
+// Box-object interface contract §1 + security §D sanitisers, plus shorthand
+// builders (mirrors sgs/heading + sgs/button).
+// ---------------------------------------------------------------------------
+
+// CSS-length sanitiser — strips everything except digits, dot, %, and unit
+// letters so an object-attr side/corner value can never break out of its
+// declaration.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// Box-model shorthand: top right bottom left.
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+// CSS border-radius shorthand order is top-left top-right bottom-right bottom-left.
+$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
+	$tr = $sgs_css_length( $box['topRight'] ?? '' );
+	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
+	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
+	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
+		return null;
+	}
+	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
+};
+
+// Base padding/margin — WP-native style.spacing.* objects (skip-serialised in
+// block.json), passed straight to the style engine which formats + sanitises.
+$base_padding_obj = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_padding_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_margin_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+
+// Base border-radius — WP-native style.border.radius (string = uniform, or an
+// object with topLeft/topRight/bottomLeft/bottomRight keys), skip-serialised.
+$base_border_radius = null;
+if ( isset( $attributes['style']['border']['radius'] ) ) {
+	$radius_raw = $attributes['style']['border']['radius'];
+	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
+		$base_border_radius = $radius_raw;
+	} elseif ( is_array( $radius_raw ) ) {
+		$radius_clean   = array();
+		$has_any_corner = false;
+		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
+			if ( '' !== $radius_clean[ $corner ] ) {
+				$has_any_corner = true;
+			}
+		}
+		if ( $has_any_corner ) {
+			$base_border_radius = $radius_clean;
+		}
+	}
+}
+
+// Responsive tiers — SGS custom object attrs.
+$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+
 // Visibility classes.
 $visibility_classes = array();
 if ( ! $show_on_mobile ) {
@@ -45,36 +152,128 @@ if ( ! $show_on_desktop ) {
 	$visibility_classes[] = 'sgs-whatsapp-cta--hide-desktop';
 }
 
-// Wrapper classes.
-$wrapper_classes = array_merge(
+// ---------------------------------------------------------------------------
+// Scoped CSS assembly. uid is content-addressed (mirrors sgs/heading) and
+// used as a CLASS (never an id) — the anchor id, when set, is free to occupy
+// the element's single `id`.
+// ---------------------------------------------------------------------------
+
+$uid      = 'sgs-wac-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-whatsapp-cta';
+
+$scoped_css = array();
+
+// --- Button colour/background (scoped — previously an inline style attr). ---
+$btn_decls = array();
+if ( $label_colour ) {
+	$btn_decls[] = 'color:' . $label_colour;
+}
+if ( $bg_colour ) {
+	$btn_decls[] = 'background-color:' . $bg_colour;
+}
+if ( $btn_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
+}
+
+// --- Base spacing + border-radius via the stable core style engine (skip-
+// serialised in block.json — exactly how WP core outputs `layout` support). ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_style_engine_args['spacing'] = $base_spacing;
+	}
+
+	if ( null !== $base_border_radius ) {
+		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin/border-radius tiers — hand-built shorthand,
+// scoped @media on the SAME root selector (tablet ≤1023px, mobile ≤767px). ---
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
+
+$tablet_box_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+}
+if ( null !== $radius_tab_val ) {
+	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
+}
+if ( $tablet_box_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+}
+
+$mobile_box_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+}
+if ( null !== $radius_mob_val ) {
+	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
+}
+if ( $mobile_box_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+}
+
+// --- Scoped typography for the label element (unchanged mechanism — the
+// label span is still a nested child of the root). ---
+$label_selector = '.' . $uid . ' .sgs-whatsapp-cta__label';
+$typo_css       = sgs_typography_css_rule( $attributes, 'label', $label_selector );
+if ( '' !== $typo_css ) {
+	$scoped_css[] = $typo_css;
+}
+
+// ---------------------------------------------------------------------------
+// Root element classes + attributes. Contract §B3: the <a> IS the block root
+// (no wrapper <div>) — it carries the block class, the BEM element class
+// (__btn — this element also plays the role of the "button"), the variant +
+// visibility classes, and the scoped uid class.
+// ---------------------------------------------------------------------------
+
+$root_classes = array_merge(
 	array(
+		'wp-block-sgs-whatsapp-cta',
 		'sgs-whatsapp-cta',
 		'sgs-whatsapp-cta--' . sanitize_html_class( $variant ),
+		'sgs-whatsapp-cta__btn',
+		$uid,
 	),
 	$visibility_classes
 );
 
-// Button inline styles (colour only — typography handled via scoped <style>).
-$btn_styles = array();
-if ( $label_colour ) {
-	$btn_styles[] = 'color:' . $label_colour;
+$root_attr_args = array( 'class' => implode( ' ', $root_classes ) );
+if ( $anchor ) {
+	$root_attr_args['id'] = $anchor;
 }
-if ( $bg_colour ) {
-	$btn_styles[] = 'background-color:' . $bg_colour;
-}
-$btn_style_attr = $btn_styles
-	? ' style="' . esc_attr( implode( ';', $btn_styles ) ) . '"'
-	: '';
-
-// Scoped typography for the label element.
-$label_selector = '.' . $uid . ' .sgs-whatsapp-cta__label';
-$typo_css       = sgs_typography_css_rule( $attributes, 'label', $label_selector );
-
-// Wrapper attributes from block supports (spacing, border, anchor, etc.).
-$wrapper_classes[]  = $uid;
-$wrapper_attributes = get_block_wrapper_attributes(
-	array( 'class' => implode( ' ', $wrapper_classes ) )
-);
+$wrapper_attributes = get_block_wrapper_attributes( $root_attr_args );
 
 // Accessible label: use custom label, fall back to generic.
 $accessible_label = $label ? $label : __( 'Chat on WhatsApp', 'sgs-blocks' );
@@ -118,25 +317,27 @@ $whatsapp_svg .= ' fill="currentColor" aria-hidden="true" focusable="false">';
 $whatsapp_svg .= '<path d="' . $svg_path_1 . $svg_path_2 . $svg_path_3 . '"/>';
 $whatsapp_svg .= '</svg>';
 
-if ( '' !== $typo_css ) {
-	echo '<style>' . $typo_css . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_typography_css_rule() returns safe CSS built from sanitised floats, whitelisted unit strings, and enum-validated values.
+if ( $scoped_css ) {
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators like `>` intact (matches sgs/heading + SGS_Container_Wrapper).
+	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length,
+	// allowlists/enums, sgs_colour_value(), wp_style_engine_get_styles(),
+	// sgs_typography_css_rule()), so no un-sanitised value survives here.
+	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
 }
 
 ?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup. ?>>
-	<a
-		href="<?php echo esc_url( $wa_url ); ?>"
-		class="sgs-whatsapp-cta__btn"
-		<?php echo $btn_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value is built from esc_attr()-wrapped output. ?>
-		target="_blank"
-		rel="noopener noreferrer"
-		<?php echo $aria_label_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value is built from esc_attr()-wrapped output. ?>
-	>
-		<?php echo $whatsapp_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is a hardcoded constant with no user input. ?>
-		<?php if ( 'floating' !== $variant && $label ) : ?>
-			<span class="sgs-whatsapp-cta__label"><?php echo esc_html( $label ); ?></span>
-		<?php elseif ( 'floating' === $variant ) : ?>
-			<span class="sgs-sr-only"><?php echo esc_html( $accessible_label ); ?></span>
-		<?php endif; ?>
-	</a>
-</div>
+<a
+	href="<?php echo esc_url( $wa_url ); ?>"
+	<?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup. ?>
+	target="_blank"
+	rel="noopener noreferrer"
+	<?php echo $aria_label_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- value is built from esc_attr()-wrapped output. ?>
+>
+	<?php echo $whatsapp_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG is a hardcoded constant with no user input. ?>
+	<?php if ( 'floating' !== $variant && $label ) : ?>
+		<span class="sgs-whatsapp-cta__label"><?php echo esc_html( $label ); ?></span>
+	<?php elseif ( 'floating' === $variant ) : ?>
+		<span class="sgs-sr-only"><?php echo esc_html( $accessible_label ); ?></span>
+	<?php endif; ?>
+</a>

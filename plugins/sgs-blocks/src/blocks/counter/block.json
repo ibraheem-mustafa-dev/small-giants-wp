@@ -25,22 +25,26 @@
         "color": {
             "background": true,
             "text": true,
-            "link": true
+            "link": true,
+            "__experimentalSkipSerialization": true
         },
         "typography": {
             "fontSize": true,
             "lineHeight": true,
-            "textAlign": true
+            "textAlign": true,
+            "__experimentalSkipSerialization": true
         },
         "spacing": {
             "margin": true,
-            "padding": true
+            "padding": true,
+            "__experimentalSkipSerialization": true
         },
         "__experimentalBorder": {
             "radius": true,
             "width": true,
             "color": true,
-            "style": true
+            "style": true,
+            "__experimentalSkipSerialization": true
         },
         "interactivity": true
     },
@@ -119,7 +123,13 @@
         "accentStroke": {
             "type": "boolean",
             "default": false
-        }
+        },
+        "paddingTablet": { "type": "object", "default": {} },
+        "paddingMobile": { "type": "object", "default": {} },
+        "marginTablet": { "type": "object", "default": {} },
+        "marginMobile": { "type": "object", "default": {} },
+        "borderRadiusTablet": { "type": "object", "default": {} },
+        "borderRadiusMobile": { "type": "object", "default": {} }
     },
     "editorScript": "file:./index.js",
     "editorStyle": "file:./index.css",

@@ -41,11 +41,18 @@ def test_area_resolver_skips_band_alias_for_cta_section():
         )
 
 
-def test_area_resolver_binds_direct_per_area_attr_for_hero():
-    """hero registers contentPaddingTop (its own grid-area column) — the resolver binds
-    it directly, unaffected by the band-alias skip."""
-    assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-top") == "contentPaddingTop"
-    assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-left") == "contentPaddingLeft"
+def test_area_resolver_routes_per_area_padding_to_object_for_hero():
+    """Post-D295 (no-inline box-object rollout) hero migrated its per-area padding
+    flat→OBJECT (``contentPadding``, box_family-seeded), so the FLAT per-area
+    resolver returns None for a padding side — the box-object path
+    (``grid_area._area_box_write``) routes the side into the ``contentPadding``
+    object instead (folded by the orchestrator accumulator). A NON-box per-area
+    attr (background, tested below) still resolves flat."""
+    assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-top") is None
+    assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-left") is None
+    # the per-area padding OBJECT family IS declared (box_family seeded, D295).
+    assert db_lookup.box_family_for("sgs/hero", "contentPadding") is not None
+    assert db_lookup.box_family_for("sgs/hero", "contentPaddingTablet") is not None
 
 
 def test_area_resolver_non_band_secondary_suffix_still_resolves():
@@ -55,4 +62,29 @@ def test_area_resolver_non_band_secondary_suffix_still_resolves():
     assert got is not None and "Band" not in got, (
         f"hero media background-color resolved to {got!r} — a non-band per-area "
         f"attr was expected (the band-skip over-filtered)."
+    )
+
+
+def test_route_area_css_folds_per_area_padding_to_object_for_hero():
+    """The LIVE L4 path (assembly step 3d → fold_helpers.route_area_css_to_block_attrs)
+    routes a hero ``__content`` wrapper's padding into the ``contentPadding`` OBJECT attr
+    (D295 box-object migration, FR-31-22), NOT the retired flat ``contentPadding{Side}``
+    attrs that ``attr_for_area_property`` can no longer resolve. Locks the fold_helpers
+    box-object routing verified LANDED on page 8 (72/64 @1440, 28/20/40 @375)."""
+    from bs4 import BeautifulSoup
+    from converter.services.fold_helpers import route_area_css_to_block_attrs
+
+    node = BeautifulSoup('<div class="sgs-hero__content"></div>', "html.parser").find(True)
+    css_rules = {".sgs-hero__content": {"padding": "28px 20px 40px 20px"}}
+    parent_attrs: dict = {}
+    route_area_css_to_block_attrs(node, "content", "sgs/hero", parent_attrs, css_rules)
+
+    # The four padding sides fold into ONE contentPadding object (base tier).
+    assert parent_attrs.get("contentPadding") == {
+        "top": "28px", "right": "20px", "bottom": "40px", "left": "20px",
+    }
+    # No flat per-side contentPadding{Side} attr is written (the object holds all sides).
+    assert not any(
+        k.startswith("contentPadding") and k not in ("contentPadding", "contentPaddingTablet", "contentPaddingMobile")
+        for k in parent_attrs
     )

@@ -2,6 +2,18 @@
 /**
  * Server-side render for the SGS Star Rating block.
  *
+ * NO-INLINE (per-block no-inline migration contract, 2026-07-10): the rendered
+ * subtree carries ZERO inline CSS property declarations. The WP `color` and
+ * `spacing` supports declare `__experimentalSkipSerialization` in block.json
+ * so `get_block_wrapper_attributes()` never auto-inlines them; base padding /
+ * margin / colour are instead emitted into the block's own scoped `.{uid}`
+ * <style> tag (mirrors sgs/heading), and the paddingTablet/paddingMobile/
+ * marginTablet/marginMobile object attrs add the responsive tiers as scoped
+ * media rules (breakpoints 1023/767, contract §B2). Star fill/size/gap are
+ * SVG/markup attributes (width/height/fill on <svg>), not CSS `style=`
+ * declarations, so they are left untouched — content-KIND composite,
+ * block-private (D294).
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var \WP_Block $block      Block instance.
@@ -44,9 +56,158 @@ if ( $is_tp_flat ) {
 	$star_colour = '#00B67A'; // Official Trustpilot brand green — the flat-preset fill.
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( array(
-	'class' => 'sgs-star-rating sgs-star-rating--' . esc_attr( $display_mode ),
-) );
+// ---------------------------------------------------------------------------
+// No-inline: box-object interface contract §1 sanitiser + box shorthand
+// builder (mirrors sgs/heading + sgs/button + sgs/container).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+// Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
+$base_padding_obj = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_padding_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_margin_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+
+// Responsive spacing tiers — SGS object attrs { top, right, bottom, left }.
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+// WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
+// Custom hex/rgb → emitted scoped via the style engine; preset SLUGS → the
+// standard has-* classes re-added manually below.
+$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+// ---------------------------------------------------------------------------
+// Scoped CSS assembly. Root selector uses a CLASS (not the wrapper's `id`,
+// which stays free for the block's `anchor` support / ToC targets).
+// ---------------------------------------------------------------------------
+
+$uid      = 'sgs-str-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-star-rating';
+
+$scoped_css = array();
+
+// --- Base spacing + colour — skip-serialised, emitted scoped via the core
+// style engine (exactly how WP core outputs `layout` support). ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_style_engine_args['spacing'] = $base_spacing;
+	}
+
+	$color_args = array();
+	if ( '' !== $style_color_text ) {
+		$color_args['text'] = $style_color_text;
+	}
+	if ( '' !== $style_color_bg ) {
+		$color_args['background'] = $style_color_bg;
+	}
+	if ( ! empty( $color_args ) ) {
+		$base_style_engine_args['color'] = $color_args;
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the same root selector (contract §B2: tablet
+// max-width:1023px, mobile max-width:767px). ---
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_box_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_box_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+}
+
+$mobile_box_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_box_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+}
+
+// ---------------------------------------------------------------------------
+// Root element classes + attributes. NO 'style' key is passed — the root
+// carries ZERO inline property declarations; everything above is in the
+// scoped <style> tag emitted below.
+// ---------------------------------------------------------------------------
+
+$root_classes = array( 'sgs-star-rating', 'sgs-star-rating--' . esc_attr( $display_mode ), $uid );
+
+if ( '' !== $preset_text_slug ) {
+	$root_classes[] = 'has-text-color';
+	$root_classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$root_classes[] = 'has-background';
+	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
+}
+
+$wrapper_attributes = get_block_wrapper_attributes(
+	array(
+		'class' => implode( ' ', $root_classes ),
+	)
+);
 
 // Build the stars markup.
 $stars_html = '';
@@ -65,13 +226,18 @@ for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 	if ( $i <= floor( $rating ) ) {
 		$fill = $star_colour;
 	} elseif ( $i === ceil( $rating ) && fmod( $rating, 1 ) >= 0.25 ) {
-		$grad_id    = $unique_id . '-half-' . $i;
-		$fill       = "url(#$grad_id)";
+		$grad_id     = $unique_id . '-half-' . $i;
+		$fill        = "url(#$grad_id)";
 		$stars_html .= sprintf(
 			'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' .
 			'<defs><linearGradient id="%s"><stop offset="50%%" stop-color="%s"/><stop offset="50%%" stop-color="%s"/></linearGradient></defs>' .
 			'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%s"/></svg>',
-			$star_size, $star_size, esc_attr( $grad_id ), $star_colour, $empty_colour, $fill
+			$star_size,
+			$star_size,
+			esc_attr( $grad_id ),
+			$star_colour,
+			$empty_colour,
+			$fill
 		);
 		continue;
 	} else {
@@ -81,7 +247,9 @@ for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 	$stars_html .= sprintf(
 		'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' .
 		'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%s"/></svg>',
-		$star_size, $star_size, $fill
+		$star_size,
+		$star_size,
+		$fill
 	);
 }
 
@@ -118,22 +286,35 @@ $schema_html = '';
 if ( $schema_enabled && $schema_item_name ) {
 	$schema_html = sprintf(
 		'<script type="application/ld+json">%s</script>',
-		wp_json_encode( array(
-			'@context'        => 'https://schema.org',
-			'@type'           => 'Product',
-			'name'            => $schema_item_name,
-			'aggregateRating' => array(
-				'@type'       => 'AggregateRating',
-				'ratingValue' => $rating,
-				'bestRating'  => $max_rating,
-				'worstRating' => 1,
-				'reviewCount' => $schema_review_count,
+		wp_json_encode(
+			array(
+				'@context'        => 'https://schema.org',
+				'@type'           => 'Product',
+				'name'            => $schema_item_name,
+				'aggregateRating' => array(
+					'@type'       => 'AggregateRating',
+					'ratingValue' => $rating,
+					'bestRating'  => $max_rating,
+					'worstRating' => 1,
+					'reviewCount' => $schema_review_count,
+				),
 			),
-		), JSON_UNESCAPED_SLASHES )
+			JSON_UNESCAPED_SLASHES
+		)
 	);
 }
 
 ?>
+<?php if ( $scoped_css ) : ?>
+	<?php
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators like `>` intact (contract §D — matches sgs/heading). Every
+	// value reaching $scoped_css is pre-sanitised ($sgs_css_length / allowlists /
+	// wp_style_engine_get_styles / sanitize_html_class), so no un-sanitised
+	// value survives here.
+	?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is safe. ?>>
 	<div class="sgs-star-rating__stars" role="img" aria-label="<?php echo esc_attr( $aria_label ); ?>">
 		<?php echo $stars_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from controlled SVG templates above. ?>

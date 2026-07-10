@@ -56,7 +56,11 @@
 		"labelColour": {
 			"type": "string",
 			"default": "text-muted"
-		}
+		},
+		"paddingTablet": { "type": "object", "default": {} },
+		"paddingMobile": { "type": "object", "default": {} },
+		"marginTablet": { "type": "object", "default": {} },
+		"marginMobile": { "type": "object", "default": {} }
 	},
 	"supports": {
 		"html": false,
@@ -64,7 +68,8 @@
 		"color": {
 			"text": true,
 			"background": true,
-			"link": true
+			"link": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -72,7 +77,8 @@
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {

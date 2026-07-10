@@ -1,0 +1,132 @@
+{
+  "pageId": 1356,
+  "_note": "Wave-1 no-inline LANDED harness. Each block: asymmetric base padding {5,17,9,23} + distinct tablet {4,12,6,16} + mobile {2,8,4,10}; asymmetric base margin {10,2,6,14} (no tiers); counter+whatsapp-cta also asymmetric border-radius corners TL TR BR BL. Expected computed strings are 'Top Right Bottom Left' (padding/margin) and 'TL TR BR BL' (radius).",
+  "blocks": [
+    {
+      "slug": "sgs/social-icons",
+      "rootSelector": ".wp-block-sgs-social-icons",
+      "attrs": {
+        "icons": [ { "platform": "facebook", "url": "https://facebook.com" }, { "platform": "instagram", "url": "https://instagram.com" } ],
+        "iconSize": 24, "iconStyle": "filled", "gap": "20",
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "rootSelector": ".wp-block-sgs-star-rating",
+      "attrs": {
+        "rating": 4, "label": "Rated 4 of 5",
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "rootSelector": ".wp-block-sgs-business-info",
+      "attrs": {
+        "displayType": "hours",
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "rootSelector": ".wp-block-sgs-breadcrumbs",
+      "attrs": {
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "rootSelector": ".wp-block-sgs-counter",
+      "attrs": {
+        "number": 1234, "label": "Happy clients",
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } }, "border": { "radius": { "topLeft": "4px", "topRight": "12px", "bottomRight": "8px", "bottomLeft": "20px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" },
+        "borderRadiusTablet": { "topLeft": "3px", "topRight": "10px", "bottomRight": "6px", "bottomLeft": "16px" },
+        "borderRadiusMobile": { "topLeft": "2px", "topRight": "8px", "bottomRight": "4px", "bottomLeft": "12px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px", "borderRadius": "4px 12px 8px 20px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px", "borderRadius": "3px 10px 6px 16px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px", "borderRadius": "2px 8px 4px 12px" }
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "rootSelector": ".wp-block-sgs-whatsapp-cta",
+      "attrs": {
+        "phoneNumber": "441234567890", "label": "Chat on WhatsApp",
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } }, "border": { "radius": { "topLeft": "4px", "topRight": "12px", "bottomRight": "8px", "bottomLeft": "20px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" },
+        "borderRadiusTablet": { "topLeft": "3px", "topRight": "10px", "bottomRight": "6px", "bottomLeft": "16px" },
+        "borderRadiusMobile": { "topLeft": "2px", "topRight": "8px", "bottomRight": "4px", "bottomLeft": "12px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "borderRadius": "4px 12px 8px 20px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "borderRadius": "3px 10px 6px 16px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "borderRadius": "2px 8px 4px 12px" }
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "rootSelector": ".wp-block-sgs-icon",
+      "attrs": {
+        "iconSource": "lucide", "iconName": "star",
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" }, "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px" }
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "rootSelector": ".wp-block-sgs-label",
+      "attrs": {
+        "text": "Our signature", "className": "is-style-pill-fill",
+        "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" },
+        "borderRadius": 8,
+        "style": { "spacing": { "margin": { "top": "10px", "right": "2px", "bottom": "6px", "left": "14px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px", "marginTB": "10px 6px", "borderRadius": "8px 8px 8px 8px" },
+        "tablet":  { "padding": "4px 12px 6px 16px", "marginTB": "10px 6px" },
+        "mobile":  { "padding": "2px 8px 4px 10px", "marginTB": "10px 6px" }
+      }
+    }
+  ]
+}

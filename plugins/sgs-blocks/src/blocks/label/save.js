@@ -1,9 +1,9 @@
 /**
  * Label block — dynamic save.
  *
- * Returns null: all frontend output is handled by render.php.
- * The pre-conversion static save shape is preserved in deprecated.js (v1)
- * so WordPress can validate and migrate existing stored content.
+ * Returns null: all frontend output is handled by render.php. No deprecated.js
+ * (plugin-wide no-deprecations policy, D270) — pre-existing stored instances
+ * are re-cloned or recovered via the Site Editor's "Attempt Block Recovery".
  *
  * @return {null}
  */

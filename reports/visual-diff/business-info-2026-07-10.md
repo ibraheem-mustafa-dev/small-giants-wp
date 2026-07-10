@@ -1,0 +1,37 @@
+---
+doc_type: reference
+title: "Visual-diff / LANDED report — sgs/business-info no-inline migration"
+block: sgs/business-info
+date: 2026-07-10
+wave: "no-inline rollout Wave 1 (leaf blocks)"
+verdict: PASS
+first_paint_capture_passed: true
+---
+
+# sgs/business-info — no-inline + box-object migration (LANDED)
+
+**Verdict: PASS.** Migrated block-private to the no-inline styling contract (D294 pattern
+selector: leaf composite → block-private). Verified LANDED live on the sandybrown canary test page
+(page 1356, `/sgs-box-object-test/`) at 375 / 768 / 1440 via the reusable harness
+`plugins/sgs-blocks/scripts/no-inline-land-verify.js` + `no-inline-wave1-manifest.json`.
+
+## Evidence (harness, all breakpoints)
+- **Zero inline** (condition #1): `getAttribute('style')` on the block root + every descendant
+  carries NO CSS property declaration (only permitted `--var:value` values). Harness inline-scan clean.
+- **Box computed values** (condition #10, asymmetric instance — 4 distinct sides):
+  - padding: `5px 17px 9px 23px` @1440 → `4px 12px 6px 16px` @768 → `2px 8px 4px 10px` @375 (tier cascade lands).
+  - margin (block-controlled axis top/bottom): `10px` top / `6px` bottom lands. (margin left/right is owned by
+    WP core's `is-layout-constrained` centering `!important` on every top-level block — not a block-fidelity signal, unchanged pre/post migration.)
+
+## Migration summary
+- **Supports skip-serialised** (`__experimentalSkipSerialization: true`): spacing, color. render.php reads
+  `$attributes['style']` and emits scoped `#uid`/`.uid` CSS via `wp_style_engine_get_styles`.
+- **New box-object attrs**: paddingTablet, paddingMobile, marginTablet, marginMobile. Flat per-side/per-corner attrs + `*Unit` companions removed; `box_family`
+  seeded centrally in `sgs-update-v2.py`.
+- **Device tiers only**: `@media(max-width:1023px)` + `@media(max-width:767px)`.
+- **No version bump, no deprecations** (D293). Block-private (no shared-wrapper hack).
+- Block-specific: moved iframe style="border:0" to style.css; LocalBusiness schema preserved
+
+## Gates
+- `npm run build` prebuild gates (dead-controls, hardcoded-defaults, box-family AST) + webpack compile: PASS.
+- Static: zero residual inline property declarations, zero flat box attrs, breakpoints 1023/767 only.

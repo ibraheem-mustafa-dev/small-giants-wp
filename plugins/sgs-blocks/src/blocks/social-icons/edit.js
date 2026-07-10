@@ -10,7 +10,17 @@ import {
 	FlexItem,
 	FlexBlock,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl } from '../../components';
+
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5).
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const keys = [ 'top', 'right', 'bottom', 'left' ];
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
 
 const PLATFORMS = [
 	'facebook', 'twitter', 'linkedin', 'instagram', 'youtube',
@@ -26,10 +36,41 @@ const STYLE_OPTIONS = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { icons, iconSize, iconColour, hoverColour, style, gap } = attributes;
+	const {
+		icons,
+		iconSize,
+		iconColour,
+		hoverColour,
+		iconStyle,
+		gap,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+	} = attributes;
+
+	// Box-object interface contract §5: base padding/margin preview mirrors the
+	// WP-native style.spacing.* object read by render.php's style engine call.
+	// NOTE: `style` here is WP's native style-support object attribute (holds
+	// style.spacing/style.color) — distinct from this block's own `iconStyle`
+	// attribute (plain/filled/outlined/pill variant), which previously shared
+	// the name `style` and collided with WP's object. Renamed 2026-07-10.
+	const basePadding = style?.spacing?.padding;
+	const baseMargin = style?.spacing?.margin;
+	const previewStyle = {};
+	const paddingPreview = boxShorthand( basePadding );
+	if ( paddingPreview ) {
+		previewStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( baseMargin );
+	if ( marginPreview ) {
+		previewStyle.margin = marginPreview;
+	}
 
 	const blockProps = useBlockProps( {
-		className: `sgs-social-icons sgs-social-icons--${ style }`,
+		className: `sgs-social-icons sgs-social-icons--${ iconStyle }`,
+		style: previewStyle,
 	} );
 
 	const updateIcon = ( index, field, value ) => {
@@ -88,9 +129,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
 						label={ __( 'Style', 'sgs-blocks' ) }
-						value={ style }
+						value={ iconStyle }
 						options={ STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { style: val } ) }
+						onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
@@ -115,6 +156,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Hover colour', 'sgs-blocks' ) }
 						value={ hoverColour }
 						onChange={ ( val ) => setAttributes( { hoverColour: val } ) }
+					/>
+				</PanelBody>
+
+				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
+				   margin base routes to WP-native style.spacing.* (skip-serialised,
+				   emitted scoped by render.php); tiers are the paddingTablet/
+				   paddingMobile + marginTablet/marginMobile object attrs. */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

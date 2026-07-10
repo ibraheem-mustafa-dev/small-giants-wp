@@ -23,11 +23,13 @@
         "color": {
             "text": true,
             "background": true,
-            "link": false
+            "link": false,
+            "__experimentalSkipSerialization": true
         },
         "spacing": {
             "margin": true,
-            "padding": false
+            "padding": false,
+            "__experimentalSkipSerialization": true
         }
     },
     "selectors": {
@@ -104,21 +106,25 @@
             "enum": [ "", "left", "center", "right", "justify", "start", "end" ],
             "default": ""
         },
-        "paddingTop": {
-            "type": "number",
-            "default": 4
+        "padding": {
+            "type": "object",
+            "default": { "top": "4px", "right": "12px", "bottom": "4px", "left": "12px" }
         },
-        "paddingRight": {
-            "type": "number",
-            "default": 12
+        "paddingTablet": {
+            "type": "object",
+            "default": {}
         },
-        "paddingBottom": {
-            "type": "number",
-            "default": 4
+        "paddingMobile": {
+            "type": "object",
+            "default": {}
         },
-        "paddingLeft": {
-            "type": "number",
-            "default": 12
+        "marginTablet": {
+            "type": "object",
+            "default": {}
+        },
+        "marginMobile": {
+            "type": "object",
+            "default": {}
         },
         "borderRadius": {
             "type": "number",

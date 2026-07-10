@@ -12,7 +12,24 @@
  * already-published posts continue to round-trip via their stored save
  * HTML; only new (cv2-emitted) instances flow through this renderer.
  *
+ * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-09):
+ * the rendered `<span>` carries ZERO inline CSS property declarations. Every
+ * declaration is emitted into the block's OWN scoped `.{uid}` <style> tag.
+ * The `color`/`spacing` WP supports declare `__experimentalSkipSerialization`
+ * in block.json so get_block_wrapper_attributes() never auto-inlines them.
+ *
+ * BOX-GROUP (contract §B): `padding` is a SGS custom object attr (this block
+ * has no WP-native `spacing.padding` support — padding is pill-gated, so it
+ * cannot be a plain WP style.spacing.padding value). Tiers = paddingTablet /
+ * paddingMobile object attrs (scoped @media 1023/767), pill-gated identically
+ * to the base. `margin` IS a WP-native style.spacing.margin object (skip-
+ * serialised, scoped via wp_style_engine_get_styles); marginTablet/
+ * marginMobile tiers are SGS custom object attrs, NOT pill-gated.
+ * `borderRadius` stays a single scalar number (one uniform value, not a
+ * 4-corner family — Spec 32 §6.1(c)) but is rendered scoped, never inline.
+ *
  * @since 2026-05-16  P-PHASE8-2 render.php audit
+ * @since 2026-07-10  No-inline migration (padding object + scoped output).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
@@ -25,6 +42,24 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+// ---------------------------------------------------------------------------
+// 1. Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
+// values and a CSS-keyword sanitiser for free-text properties (mirrors
+// sgs/heading + sgs/container).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
+
+// ---------------------------------------------------------------------------
+// 2. Extract attributes with defaults.
+// ---------------------------------------------------------------------------
+
 $text = $attributes['text'] ?? '';
 // User-facing HTML-tag chooser removed (2026-07-05) — the converter never
 // emitted this attr; sgs/label always renders a <span>.
@@ -33,29 +68,23 @@ $text_colour       = $attributes['textColour'] ?? '';
 $background_colour = $attributes['backgroundColour'] ?? '';
 $font_family       = $attributes['fontFamily'] ?? '';
 $font_size         = $attributes['fontSize'] ?? '';
-// fontSizeUnit reaches the scoped responsive <style> block below (tablet/mobile
-// font-size overrides) — sanitise so a free-text value cannot break out of the
-// declaration into a new CSS rule (was esc_attr()-only, which does not strip
-// ;{}()). Letters/digits/dot/% only — a legitimate unit never needs more.
-$font_size_unit    = preg_replace( '/[^A-Za-z0-9.%]/', '', (string) ( $attributes['fontSizeUnit'] ?? 'px' ) );
-$font_size_tablet  = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
-$font_size_mobile  = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
-$font_weight       = $attributes['fontWeight'] ?? '';
-$line_height       = $attributes['lineHeight'] ?? '';
-$line_height_unit  = $attributes['lineHeightUnit'] ?? '';
+$font_size_unit    = $sgs_css_keyword( $attributes['fontSizeUnit'] ?? 'px' );
+if ( '' === $font_size_unit ) {
+	$font_size_unit = 'px';
+}
+$font_size_tablet = isset( $attributes['fontSizeTablet'] ) ? $attributes['fontSizeTablet'] : null;
+$font_size_mobile = isset( $attributes['fontSizeMobile'] ) ? $attributes['fontSizeMobile'] : null;
+$font_weight      = $attributes['fontWeight'] ?? '';
+$line_height      = $attributes['lineHeight'] ?? '';
+$line_height_unit = $attributes['lineHeightUnit'] ?? '';
 // Decode the "unitless" sentinel so line-height emits a bare number (e.g. 1.65 not 1.65unitless).
 $line_height_unit    = ( 'unitless' === $line_height_unit ) ? '' : $line_height_unit;
 $letter_spacing      = $attributes['letterSpacing'] ?? '';
 $letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'px';
 $text_transform      = $attributes['textTransform'] ?? '';
 $text_decoration     = $attributes['textDecoration'] ?? '';
-$padding_top         = $attributes['paddingTop'] ?? '';
-$padding_right       = $attributes['paddingRight'] ?? '';
-$padding_bottom      = $attributes['paddingBottom'] ?? '';
-$padding_left        = $attributes['paddingLeft'] ?? '';
 $border_radius       = $attributes['borderRadius'] ?? '';
 
-// New attrs: font-style + text-align.
 $font_style_raw      = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
 $allowed_font_styles = array( 'normal', 'italic' );
 $font_style          = in_array( $font_style_raw, $allowed_font_styles, true ) ? $font_style_raw : '';
@@ -64,91 +93,254 @@ $text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( 
 $allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
 
-// CSS custom-property map (parity with save.js buildStyle()).
-$style_parts = array();
-if ( $text_colour ) {
-	$style_parts[] = '--sgs-label-colour:' . sgs_colour_value( $text_colour );
-}
-if ( $background_colour ) {
-	$style_parts[] = '--sgs-label-bg:' . sgs_colour_value( $background_colour );
-}
-if ( '' !== $font_size && null !== $font_size ) {
-	$style_parts[] = '--sgs-label-font-size:' . esc_attr( $font_size . $font_size_unit );
-}
-if ( $font_weight ) {
-	$style_parts[] = '--sgs-label-font-weight:' . esc_attr( $font_weight );
-}
-if ( '' !== $line_height && null !== $line_height ) {
-	$style_parts[] = '--sgs-label-line-height:' . esc_attr( $line_height . $line_height_unit );
-}
-if ( '' !== $letter_spacing && null !== $letter_spacing ) {
-	$style_parts[] = '--sgs-label-letter-spacing:' . esc_attr( $letter_spacing . $letter_spacing_unit );
-}
-if ( $text_transform ) {
-	$style_parts[] = '--sgs-label-text-transform:' . esc_attr( $text_transform );
-}
-if ( $text_decoration ) {
-	$style_parts[] = '--sgs-label-text-decoration:' . esc_attr( $text_decoration );
-}
-// font-style and text-align are direct CSS properties (not consumed as vars).
-if ( $font_style ) {
-	$style_parts[] = 'font-style:' . esc_attr( $font_style );
-}
-if ( $text_align ) {
-	$style_parts[] = 'text-align:' . esc_attr( $text_align );
-}
-if ( '' !== $border_radius && null !== $border_radius ) {
-	$br_px         = intval( $border_radius ) . 'px';
-	$style_parts[] = '--sgs-label-border-radius:' . $br_px;
-	// Also emit as a direct property so non-pill variants (which lack the
-	// var(--sgs-label-border-radius) CSS rule) still respect the attr value.
-	$style_parts[] = 'border-radius:' . $br_px;
-}
-// Emit padding custom property for pill styles (derived from block-style className).
+// Pill gating (D294-clarified pattern preserved — padding only paints for the
+// two pill block-styles; the plain eyebrow style has zero padding).
 $extra_classes = isset( $attributes['className'] ) ? $attributes['className'] : '';
 $is_pill       = ( false !== strpos( $extra_classes, 'is-style-pill-fill' ) )
 	|| ( false !== strpos( $extra_classes, 'is-style-pill-wrap' ) );
-if ( $is_pill ) {
-	$style_parts[] = '--sgs-label-padding:' . intval( $padding_top ) . 'px ' . intval( $padding_right ) . 'px ' . intval( $padding_bottom ) . 'px ' . intval( $padding_left ) . 'px';
+
+// Padding — SGS custom object attr { top, right, bottom, left }, base + tiers,
+// ALL pill-gated (matches the pre-migration behaviour: non-pill variants never
+// received padding).
+$padding_obj        = is_array( $attributes['padding'] ?? null ) ? $attributes['padding'] : array();
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+
+// Margin — WP-native style.spacing.margin object (skip-serialised → emitted
+// scoped via the style engine below), NOT pill-gated. Tiers are SGS custom
+// object attrs, also not pill-gated.
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+		if ( is_string( $margin_value ) && '' !== $margin_value ) {
+			$base_margin_obj[ $margin_side ] = $margin_value;
+		}
+	}
+}
+$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+// WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
+$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+// ---------------------------------------------------------------------------
+// 3. Build the root element's declarations (scoped, NOT inline).
+// ---------------------------------------------------------------------------
+
+$root_decls = array();
+
+if ( $text_colour ) {
+	$root_decls[] = 'color:' . sgs_colour_value( $text_colour );
+}
+// Background is pill-gated (matches pre-migration behaviour): the plain
+// eyebrow variant's CSS forces `background:none` — backgroundColour only
+// ever painted via the pill CSS rules consuming the old --sgs-label-bg var,
+// so it must stay pill-gated here or it would override is-style-plain.
+if ( $is_pill && $background_colour ) {
+	$root_decls[] = 'background-color:' . sgs_colour_value( $background_colour );
+}
+if ( $font_weight ) {
+	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
+	if ( '' !== $font_weight_safe ) {
+		$root_decls[] = 'font-weight:' . $font_weight_safe;
+	}
+}
+if ( '' !== $line_height && null !== $line_height ) {
+	$lh_unit      = ( '' === $line_height_unit ) ? '' : $sgs_css_keyword( $line_height_unit );
+	$root_decls[] = 'line-height:' . floatval( $line_height ) . $lh_unit;
+}
+if ( '' !== $letter_spacing && null !== $letter_spacing ) {
+	$ls_unit      = $sgs_css_keyword( $letter_spacing_unit );
+	$root_decls[] = 'letter-spacing:' . floatval( $letter_spacing ) . $ls_unit;
+}
+if ( $text_transform ) {
+	$text_transform_safe = $sgs_css_keyword( $text_transform );
+	if ( '' !== $text_transform_safe ) {
+		$root_decls[] = 'text-transform:' . $text_transform_safe;
+	}
+}
+if ( $text_decoration ) {
+	// Free-text historically; sanitise as a keyword (letters/hyphen only) —
+	// covers the legitimate values ('none', 'underline', 'line-through', etc.).
+	$text_decoration_safe = $sgs_css_keyword( $text_decoration );
+	if ( '' !== $text_decoration_safe ) {
+		$root_decls[] = 'text-decoration:' . $text_decoration_safe;
+	}
 }
 if ( $font_family ) {
-	$style_parts[] = '--sgs-label-font-family:' . esc_attr( $font_family );
+	$font_family_safe = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $font_family );
+	if ( '' !== $font_family_safe ) {
+		$root_decls[] = 'font-family:' . $font_family_safe;
+	}
 }
-
-$style_attr = $style_parts ? implode( ';', $style_parts ) : '';
+if ( $font_style ) {
+	$root_decls[] = 'font-style:' . $font_style;
+}
+if ( $text_align ) {
+	$root_decls[] = 'text-align:' . $text_align;
+}
+if ( '' !== $border_radius && null !== $border_radius ) {
+	$root_decls[] = 'border-radius:' . intval( $border_radius ) . 'px';
+}
 
 // ---------------------------------------------------------------------------
-// Responsive font-size — scoped <style> block per instance.
-// CSS attr() for non-`content` properties is unimplemented in stable browsers;
-// the data-attribute pattern in the original style.css was ineffective.
-// This follows the same pattern as sgs/text and sgs/heading.
+// 4. Scoped CSS assembly. uid is a CLASS (this block has no anchor support,
+// but the class pattern mirrors sgs/heading/sgs/container so every scoped
+// rule targets `.{uid}.wp-block-sgs-label`).
 // ---------------------------------------------------------------------------
 
-$uid        = 'sgs-lbl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$responsive = array();
-if ( null !== $font_size_tablet && '' !== $font_size_tablet ) {
-	$responsive[] = '@media(max-width:1024px){#' . esc_attr( $uid ) . '.wp-block-sgs-label{font-size:' . floatval( $font_size_tablet ) . esc_attr( $font_size_unit ) . ';}}';
-}
-if ( null !== $font_size_mobile && '' !== $font_size_mobile ) {
-	$responsive[] = '@media(max-width:767px){#' . esc_attr( $uid ) . '.wp-block-sgs-label{font-size:' . floatval( $font_size_mobile ) . esc_attr( $font_size_unit ) . ';}}';
+$uid      = 'sgs-lbl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-label';
+
+$scoped_css = array();
+
+if ( $root_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 }
 
-// Wrapper class — get_block_wrapper_attributes() automatically merges in
-// the block's `className` attr (which carries `is-style-{value}` when a
-// block-style is active), so no manual is-style-* construction is needed.
-$wrapper_args = array(
-	'id'    => $uid,
-	'class' => 'wp-block-sgs-label',
+// --- Base font-size — base + tablet + mobile on the SAME selector so the
+// narrower tier wins by cascade order, never inline. ---
+$font_size_css = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'fontSize',
+			'css'          => 'font-size',
+			'unit_default' => $font_size_unit,
+			'tablet_attr'  => 'fontSizeTablet',
+			'mobile_attr'  => 'fontSizeMobile',
+			'cast'         => 'int',
+		),
+	),
+	$root_sel
 );
-if ( $style_attr ) {
-	$wrapper_args['style'] = $style_attr;
-}
-$wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
-
-if ( $responsive ) {
-	printf( '<style>%s</style>', implode( '', $responsive ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+if ( '' !== $font_size_css ) {
+	$scoped_css[] = $font_size_css;
 }
 
+// --- Base margin (WP-native style.spacing.margin, skip-serialised) emitted
+// scoped via the stable core style engine. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
+	}
+}
+
+// --- Base padding — SGS custom object attr, hand-built shorthand, PILL-GATED
+// (only pill-fill/pill-wrap variants receive padding — matches pre-migration
+// behaviour where non-pill variants never emitted --sgs-label-padding). ---
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+if ( $is_pill ) {
+	$padding_val = $sgs_box_shorthand( $padding_obj );
+	if ( null !== $padding_val ) {
+		$scoped_css[] = "{$root_sel}{padding:{$padding_val};}";
+	}
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
+// mobile max-width:767px). Padding tiers are pill-gated; margin tiers are not. ---
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_decls = array();
+if ( $is_pill && null !== $padding_tab_val ) {
+	$tablet_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
+}
+
+$mobile_decls = array();
+if ( $is_pill && null !== $padding_mob_val ) {
+	$mobile_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
+}
+
+// --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via
+// the style engine; preset SLUGS get the standard has-* classes re-added
+// manually in step 5. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$color_args = array();
+	if ( '' !== $style_color_text ) {
+		$color_args['text'] = $style_color_text;
+	}
+	if ( '' !== $style_color_bg ) {
+		$color_args['background'] = $style_color_bg;
+	}
+	if ( ! empty( $color_args ) ) {
+		$color_scoped_styles = wp_style_engine_get_styles(
+			array( 'color' => $color_args ),
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $color_scoped_styles['css'] ) ) {
+			$scoped_css[] = $color_scoped_styles['css'];
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
+// 5. Build the root element's classes + attributes.
+//
+// uid is a CLASS (not an id) — matches the sgs/heading/sgs/container scoped
+// pattern. is-style-* / align* classes are merged in automatically by
+// get_block_wrapper_attributes() via the block's className attribute. NO
+// 'style' key is passed — the root carries ZERO inline property declarations
+// (contract §A); every declaration lives in the scoped <style> above.
+// ---------------------------------------------------------------------------
+
+$root_classes = array( 'wp-block-sgs-label', $uid );
+
+if ( '' !== $preset_text_slug ) {
+	$root_classes[] = 'has-text-color';
+	$root_classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$root_classes[] = 'has-background';
+	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
+}
+
+$wrapper_attrs = get_block_wrapper_attributes(
+	array( 'class' => implode( ' ', $root_classes ) )
+);
+
+if ( $scoped_css ) :
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators like `>` intact (contract §D). Every value reaching
+	// $scoped_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword /
+	// allowlists / floatval / wp_style_engine_get_styles / sgs_colour_value),
+	// so no un-sanitised value survives here.
+	?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
+<?php endif; ?>
+<?php
 printf(
 	'<%1$s %2$s>%3$s</%1$s>',
 	tag_escape( $tag_name ),

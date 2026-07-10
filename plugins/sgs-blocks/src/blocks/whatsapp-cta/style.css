@@ -56,7 +56,10 @@
 }
 
 /* ===== Inline variant ===== */
-.sgs-whatsapp-cta--inline .sgs-whatsapp-cta__btn {
+/* Root = the single <a> element (contract §B3): variant + BEM-element classes
+   are both on the same node now, so this is a compound selector, not a
+   descendant one. */
+.sgs-whatsapp-cta--inline.sgs-whatsapp-cta__btn {
 	padding: 12px 24px;
 	min-height: 44px;
 	font-size: var(--wp--preset--font-size--medium);
@@ -67,7 +70,7 @@
 	width: 100%;
 }
 
-.sgs-whatsapp-cta--banner .sgs-whatsapp-cta__btn {
+.sgs-whatsapp-cta--banner.sgs-whatsapp-cta__btn {
 	width: 100%;
 	justify-content: center;
 	padding: 16px 24px;
@@ -94,7 +97,7 @@
 	pointer-events: auto;
 }
 
-.sgs-whatsapp-cta--floating .sgs-whatsapp-cta__btn {
+.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn {
 	width: 56px;
 	height: 56px;
 	border-radius: 50%;

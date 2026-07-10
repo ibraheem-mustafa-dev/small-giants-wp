@@ -11,8 +11,17 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
+
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5). Mirrors sgs/heading's helper.
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
 
 const BG_SHAPES = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
@@ -69,6 +78,7 @@ function currentIconName( attrs ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		iconSource,
 		iconSize,
 		iconColour,
@@ -82,6 +92,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverShapeColour,
 		hoverScale,
 		iconAlign,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';
@@ -99,7 +113,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Outline shape: transparent background + coloured border; no solid fill.
 	const isOutline = backgroundShape === 'outline';
 
-	const style = {
+	// Editor-canvas preview only — mirrors render.php's scoped output so the
+	// canvas matches the frontend (contract §5). The frontend itself carries
+	// ZERO inline literal declarations (color/background-color/padding/margin);
+	// those are scoped there. CSS custom-property VALUES (--sgs-icon-*) remain
+	// inline on both editor + frontend — the contract explicitly permits them.
+	const previewStyle = {
 		'--sgs-icon-size': `${ iconSize }px`,
 		color: colourVar( iconColour ) || undefined,
 		backgroundColor:
@@ -114,7 +133,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-icon-hover-scale': hoverScale || undefined,
 	};
 
-	const blockProps = useBlockProps( { className, style } );
+	// Base padding/margin preview — WP-native style.spacing.* objects
+	// (box-object interface contract §B; box-model order top/right/bottom/left).
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		previewStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		previewStyle.margin = marginPreview;
+	}
+
+	const blockProps = useBlockProps( { className, style: previewStyle } );
 
 	// Map the IconPicker's { source, name } back onto the block's per-source attrs.
 	const handleIconChange = ( { source, name } ) => {
@@ -245,6 +275,44 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 1.5 }
 						step={ 0.05 }
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
+				   margin base routes to WP-native style.spacing.* (skip-serialised —
+				   scoped, not inline, on the frontend); tiers are the
+				   paddingTablet/paddingMobile + marginTablet/marginMobile object
+				   attrs (scoped @media 1023/767). */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 

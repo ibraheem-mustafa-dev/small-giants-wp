@@ -1468,6 +1468,50 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/hero", "contentBandPadding"): {"box_family": "contentBandPadding"},
     ("sgs/hero", "contentBandPaddingTablet"): {"box_family": "contentBandPadding"},
     ("sgs/hero", "contentBandPaddingMobile"): {"box_family": "contentBandPadding"},
+    # Wave-1 leaf blocks (2026-07-10, D297): 8 single-element/leaf blocks migrated
+    # block-private to no-inline. Each adds SGS padding/margin tier objects (base
+    # padding/margin route to WP-native style.spacing.*, already object-shaped, no
+    # seed). counter + whatsapp-cta also add border-radius tier objects (base radius
+    # -> WP-native style.border.radius, no seed). label has NO WP padding support
+    # (padding:false), so its BASE padding is a custom SGS object -> seeded here;
+    # its borderRadius stays a single scalar (uniform, not a 4-corner family -> no seed).
+    ("sgs/social-icons", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/social-icons", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/social-icons", "marginTablet"): {"box_family": "margin"},
+    ("sgs/social-icons", "marginMobile"): {"box_family": "margin"},
+    ("sgs/star-rating", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/star-rating", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/star-rating", "marginTablet"): {"box_family": "margin"},
+    ("sgs/star-rating", "marginMobile"): {"box_family": "margin"},
+    ("sgs/business-info", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/business-info", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/business-info", "marginTablet"): {"box_family": "margin"},
+    ("sgs/business-info", "marginMobile"): {"box_family": "margin"},
+    ("sgs/breadcrumbs", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/breadcrumbs", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/breadcrumbs", "marginTablet"): {"box_family": "margin"},
+    ("sgs/breadcrumbs", "marginMobile"): {"box_family": "margin"},
+    ("sgs/icon", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/icon", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/icon", "marginTablet"): {"box_family": "margin"},
+    ("sgs/icon", "marginMobile"): {"box_family": "margin"},
+    ("sgs/counter", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/counter", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/counter", "marginTablet"): {"box_family": "margin"},
+    ("sgs/counter", "marginMobile"): {"box_family": "margin"},
+    ("sgs/counter", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/counter", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    ("sgs/whatsapp-cta", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/whatsapp-cta", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/whatsapp-cta", "marginTablet"): {"box_family": "margin"},
+    ("sgs/whatsapp-cta", "marginMobile"): {"box_family": "margin"},
+    ("sgs/whatsapp-cta", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/whatsapp-cta", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    ("sgs/label", "padding"): {"box_family": "padding"},
+    ("sgs/label", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/label", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/label", "marginTablet"): {"box_family": "margin"},
+    ("sgs/label", "marginMobile"): {"box_family": "margin"},
 }
 
 

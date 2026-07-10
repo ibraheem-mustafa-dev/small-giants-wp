@@ -12,6 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
+import { ResponsiveBoxControl } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -33,7 +34,17 @@ const LINK_PHONE_TYPES = new Set( [ 'phone' ] );
 const LINK_EMAIL_TYPES = new Set( [ 'email' ] );
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { displayType, showIcon, linkPhone, linkEmail } = attributes;
+	const {
+		displayType,
+		showIcon,
+		linkPhone,
+		linkEmail,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: `sgs-business-info-wrap sgs-business-info-wrap--${ displayType }`,
@@ -90,6 +101,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</PanelBody>
 				) }
+
+				{ /* ── Spacing panel ── Box-object interface contract §B: padding/margin
+				   base routes to WP-native style.spacing.* (skip-serialised in block.json
+				   so it serialises scoped, not inline — mirrors sgs/heading); tiers are the
+				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs. */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>

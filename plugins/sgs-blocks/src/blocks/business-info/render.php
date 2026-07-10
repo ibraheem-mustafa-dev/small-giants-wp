@@ -243,8 +243,11 @@ switch ( $display_type ) {
 			// Strip <br> back to commas for the maps search query.
 			$query   = trim( preg_replace( '/\s*<br\s*\/?>\s*/i', ', ', $address_raw ) );
 			$map_url = 'https://maps.google.com/maps?q=' . rawurlencode( $query ) . '&z=15&hl=en&t=m&output=embed&iwloc=near';
-			$html    = sprintf(
-				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" width="100%%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
+			// NO-INLINE: `border:0` moved to the .sgs-business-map iframe rule in
+			// style.css (frontend-only concern, not user-configurable) — the
+			// iframe no longer carries a `style` attribute.
+			$html = sprintf(
+				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" width="100%%" height="400" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
 				esc_url( $map_url ),
 				esc_attr__( 'Business location map', 'sgs-blocks' )
 			);
@@ -254,20 +257,185 @@ switch ( $display_type ) {
 		break;
 }
 
-// Emit colour CSS custom properties so style.css can consume them.
-$wrapper_styles = array(
-	'--sgs-bi-icon-colour:' . sgs_colour_value( $icon_colour ),
-	'--sgs-bi-text-colour:' . sgs_colour_value( $text_colour ),
-	'--sgs-bi-label-colour:' . sgs_colour_value( $label_colour ),
+// ---------------------------------------------------------------------------
+// NO-INLINE (per-block no-inline migration contract §A, 2026-07-10): the
+// rendered subtree carries ZERO inline CSS property declarations. The colour
+// bridge (--sgs-bi-icon-colour/--sgs-bi-text-colour/--sgs-bi-label-colour,
+// consumed by style.css) and the WP `spacing`/`color` supports (both declare
+// __experimentalSkipSerialization in block.json so get_block_wrapper_attributes()
+// never auto-inlines them) are all emitted into the block's own scoped
+// `.{uid}` <style> tag instead. This is a content-KIND single-container
+// block (box+width only, no grid/section machinery) — block-private per the
+// D294 pattern, mirroring sgs/heading's mechanism.
+//
+// BOX-GROUP (contract §B): base padding/margin come from WP-native
+// style.spacing.* (skip-serialised, emitted scoped via the core style
+// engine); paddingTablet/paddingMobile/marginTablet/marginMobile are SGS
+// object attrs, hand-built shorthand, scoped @media 1023/767.
+// ---------------------------------------------------------------------------
+
+// CSS-length sanitiser — strips everything except digits, dot, %, and unit
+// letters so an object-attr side value can never break out of its
+// declaration (contract §D; mirrors sgs/heading + sgs/container).
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+$uid      = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid;
+
+$scoped_css = array();
+
+// --- Colour bridge (icon/text/label) — was an inline `style` attr, now a
+// scoped custom-property declaration; style.css's var(--sgs-bi-*, fallback)
+// consumption is unchanged. ---
+$scoped_css[] = "{$root_sel}{--sgs-bi-icon-colour:" . sgs_colour_value( $icon_colour ) . ';--sgs-bi-text-colour:' . sgs_colour_value( $text_colour ) . ';--sgs-bi-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+
+// --- WP-native color/spacing supports (skip-serialised) — read the base
+// style.spacing.* / style.color.* objects and emit scoped via the stable
+// core style engine (exactly how sgs/heading + WP core `layout` support do
+// it). ---
+$base_padding_obj = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_padding_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+			$base_margin_obj[ $spacing_side ] = $spacing_value;
+		}
+	}
+}
+
+$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_style_engine_args['spacing'] = $base_spacing;
+	}
+
+	$color_args = array();
+	if ( '' !== $style_color_text ) {
+		$color_args['text'] = $style_color_text;
+	}
+	if ( '' !== $style_color_bg ) {
+		$color_args['background'] = $style_color_bg;
+	}
+	if ( ! empty( $color_args ) ) {
+		$base_style_engine_args['color'] = $color_args;
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the same wrapper selector (contract §B2: tablet
+// max-width:1023px, mobile max-width:767px). ---
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_box_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_box_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+}
+
+$mobile_box_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_box_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+}
+
+// --- Root classes: existing wrap + variant modifier + the scoped uid class,
+// plus the WP `has-*-color` preset classes (skip-serialised, so re-added
+// manually — mirrors sgs/heading step 6). ---
+$root_classes = array(
+	'sgs-business-info-wrap',
+	'sgs-business-info-wrap--' . esc_attr( $display_type ),
+	$uid,
 );
 
+if ( '' !== $preset_text_slug ) {
+	$root_classes[] = 'has-text-color';
+	$root_classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$root_classes[] = 'has-background';
+	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
+}
+
+// No 'style' key is passed — the wrapper carries ZERO inline property
+// declarations (contract §A); everything is in the scoped <style> above.
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class' => 'sgs-business-info-wrap sgs-business-info-wrap--' . esc_attr( $display_type ),
-		'style' => implode( ';', $wrapper_styles ) . ';',
+		'class' => implode( ' ', $root_classes ),
 	)
 );
 
+$scoped_style_html = '';
+if ( $scoped_css ) {
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
+	// leaving CSS combinators intact (contract §D — matches sgs/heading +
+	// SGS_Container_Wrapper). Every value reaching $scoped_css is
+	// pre-sanitised ($sgs_css_length / sgs_colour_value / wp_style_engine_get_styles),
+	// so no un-sanitised value survives here.
+	$scoped_style_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+}
+
 // $wrapper_attributes is pre-escaped by get_block_wrapper_attributes() (core).
 // $html is composed entirely from internally-escaped pieces (esc_html/esc_url/esc_attr).
-printf( '<div %s>%s</div>', $wrapper_attributes, $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+// $scoped_style_html is pre-sanitised + wp_strip_all_tags-guarded above.
+printf( '%s<div %s>%s</div>', $scoped_style_html, $wrapper_attributes, $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

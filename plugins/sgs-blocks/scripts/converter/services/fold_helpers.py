@@ -321,9 +321,37 @@ def route_area_css_to_block_attrs(
                       layer="AREA_PER_SLOT_MAX_WIDTH", dest_attr=_mw_per_slot_attr)
     # -------------------------------------------------------------------------
 
+    # --- Box-object per-area padding (FR-31-22 / Spec 31 §3.A step-3b) ----------
+    # When the owning composite migrated its per-area padding flat→OBJECT (D295
+    # hero: contentPadding/mediaPadding/imagePadding incl. Tablet/Mobile tiers),
+    # the flat attr_for_area_property path can no longer resolve
+    # {area}Padding{Side} (the flat attrs were pruned). Route the four padding
+    # sides into the {area}Padding{Tier} OBJECT attr instead — base_decls
+    # (desktop-effective) → the base object, bp Tablet/Mobile overrides → the tier
+    # objects. Gated on db_lookup.box_family_for (NEVER a name regex, §3.A step-3b
+    # AST gate); a no-op for blocks still on flat per-area attrs. The four
+    # padding-side props are then skipped in the flat loop below.
+    _skip_padding_flat = False
+    _pad_object_base = f"{area[0].lower()}{area[1:]}Padding"
+    if db_lookup.box_family_for(owning_block, _pad_object_base) is not None:
+        _skip_padding_flat = True
+        for _tier_sfx, _src in (("", base_decls), ("Tablet", tab), ("Mobile", mob_override)):
+            _obj: dict = {}
+            for _side in ("top", "right", "bottom", "left"):
+                _v = _src.get(f"padding-{_side}")
+                if _v is not None:
+                    _obj[_side] = strip_important(_v).strip()
+            if not _obj:
+                continue
+            _dest = f"{_pad_object_base}{_tier_sfx}" if _tier_sfx else _pad_object_base
+            if _dest in block_attr_names:
+                parent_attrs.setdefault(_dest, _obj)
+
     for css_prop in sorted(all_props):
         if css_prop in _area_excluded or css_prop.startswith("--"):
             continue
+        if _skip_padding_flat and css_prop.startswith("padding-"):
+            continue  # routed into the box-object above
         attr_base = db_lookup.attr_for_area_property(owning_block, area, css_prop)
         if attr_base is None:
             source_class = next(
