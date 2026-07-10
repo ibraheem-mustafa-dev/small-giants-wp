@@ -347,7 +347,13 @@ Design ratified 2026-06-01 via D144. Phase A + Phase B BUILT + SHIPPED 2026-06-0
 
 **FR-24-15 -- `sgs/option-picker` atomic block.** Radio-group semantics via visually-hidden `<input type=radio>` + `<label>` + pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event. NOT `sgs/button`. SHIPPED 2026-06-02 (commit `ee6807d3`). Battle-ready for standalone use and converter emit target.
 
-Source toggle (Typed/Bound) appears in both the block toolbar AND the inspector (one attr, two controls) (D144.5). Pill style: filled inside product-card / outlined as global default; three CSS states: resting / hover+focus ("considering") / `:checked` ("selected") (D144.3).
+Source toggle (Typed/Bound) appears in both the block toolbar AND the inspector (one attr, two controls) (D144.5). Pill style: three CSS states — resting / hover+focus ("considering") / `:checked` ("selected") (D144.3).
+
+**Pill styling is per-instance + CLONEABLE + preset-driven (D299, 2026-07-10 — supersedes the fixed "filled inside product-card / outlined as global default" model).** Each pill state is an editor control backed by a LIFTABLE attr, so the cloning pipeline copies a draft's exact pill design (the draft's pill vars are theme-token-aligned → a var-name→token mapping, not arbitrary extraction):
+- **Resting:** `pillBgColour`/`pillTextColour`/`pillBorderColour` → `--sgs-op-bg`/`-text`/`-border`; `pillBorderRadius` → `--sgs-op-pill-radius`.
+- **Selected:** `pillSelectedBgColour`/`pillSelectedTextColour`/`pillSelectedBorderColour` (border DECOUPLED from fill) → `--sgs-op-sel-bg`/`-sel-text`/`-sel-border`; `pillSelectedBorderRadius`; `showSelectedTick` (the tick is optional).
+- **Named presets** (button-preset pattern, Spec 32/D291 — `.sgs-option-picker--{preset}` from `--wp--custom--option-picker-presets--*` tokens): **`soft`** (draft cream/tint, no tick) + **`solid`** (pink-fill + tick). A preset SEEDS the pill-state attrs, each then editable.
+- The old card-scoped `--sgs-op-border:primary` hardcode is REMOVED; product-card forwards the pill-style attrs into `render_block('sgs/option-picker')`. Build on `feat/option-picker-cloning` (files-only, PENDING land + `/sgs-update` DB seed). All new + old option-picker attrs also pass the no-inline DONE-checklist.
 
 **FR-24-16 -- No-JS default state.** Default variation fully rendered server-side; no pill interaction required to see product info.
 

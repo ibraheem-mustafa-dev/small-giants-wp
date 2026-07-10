@@ -1118,7 +1118,7 @@ A drafted product card uses ONE block prefix — `sgs-product-card` — for the 
 | `sgs-product-card__body` | (structural) |
 | `sgs-product-card__title` (on the `<h3>`) | `productName` (explicit class REQUIRED — corrected by Bean 2026-06-10: an unclassed `<h3>` falls back to the atomic tag-mapping table, which emits a `core/heading` CHILD block and contradicts the zero-InnerBlocks built-in card; the tag-mapping fallback is for legacy drafts only, never the standard) |
 | `sgs-product-card__description` | `description` |
-| `sgs-product-card__pill-group` / `__pill` / `__pill--active` | `packSizes` (display); live modes use the option-picker subsystem |
+| `sgs-product-card__pill-group` / `__pill` / `__pill--active` | `packSizes` (labels + selected index); both typed + bound render the real `sgs/option-picker`. **Pill STYLING clones too (D299):** the draft's resting `.__pill` + selected `.__pill--active` CSS lifts to the option-picker's pill-state colour/border-radius attrs (resting `pillBg/Text/BorderColour`; selected `pillSelectedBg/Text/BorderColour`) via the universal styling lift — NOT a fixed SGS design. See Spec 27 FR-24-15. |
 | `sgs-product-card__price-row` / `__price` / `__price-note` | `priceLarge` / `priceNote` |
 | `sgs-product-card__tag--trial` | `trialTag` (rendered IN-BODY above the title) |
 | `sgs-product-card__tag--featured` | `featuredTag` (rendered as a media-OVERLAY badge in `sgs-product-card__media-wrap` when `variantStyle='featured'`; falls back in-body when imageless) |
