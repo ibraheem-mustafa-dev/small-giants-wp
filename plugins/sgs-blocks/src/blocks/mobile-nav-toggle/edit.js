@@ -1,10 +1,21 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, TextControl } from '@wordpress/components';
-import { IconPicker, IconPreview } from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl } from '../../components';
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { iconSize, ariaLabel, popoverTarget, toggleOpenIcon, toggleCloseIcon } = attributes;
+	const {
+		iconSize,
+		ariaLabel,
+		popoverTarget,
+		toggleOpenIcon,
+		toggleCloseIcon,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-mobile-nav-toggle',
@@ -44,6 +55,42 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ popoverTarget }
 						onChange={ ( value ) => setAttributes( { popoverTarget: value } ) }
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

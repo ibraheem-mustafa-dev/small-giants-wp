@@ -32,6 +32,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// ---------------------------------------------------------------------------
+// NO-INLINE (per-block no-inline migration contract): a CSS-length sanitiser
+// for hand-built box shorthand values (mirrors sgs/label + sgs/heading).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 // -------------------------------------------------------------------------
 // Attributes.
 // -------------------------------------------------------------------------
@@ -61,6 +70,84 @@ $status_id = $uid . '-status';
 $label_id  = $uid . '-label';
 
 // -------------------------------------------------------------------------
+// NO-INLINE scoped-styling uid (separate from the ARIA uid above — a CLASS,
+// not an id, matching the sgs/label / sgs/heading / sgs/container pattern).
+// Deterministic per attribute-set so repeat renders reuse the same class.
+// -------------------------------------------------------------------------
+$sgs_style_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
+
+$sgs_scoped_css = array();
+
+// --- Base padding/margin — WP-native style.spacing objects (skip-serialised
+// in block.json → not auto-inlined by get_block_wrapper_attributes()).
+// Emitted scoped via the stable core style engine. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$sgs_spacing_args = array();
+	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+		$sgs_spacing_args['padding'] = $attributes['style']['spacing']['padding'];
+	}
+	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+		$sgs_spacing_args['margin'] = $attributes['style']['spacing']['margin'];
+	}
+	if ( ! empty( $sgs_spacing_args ) ) {
+		$sgs_base_scoped = wp_style_engine_get_styles(
+			array( 'spacing' => $sgs_spacing_args ),
+			array( 'selector' => $sgs_style_sel )
+		);
+		if ( ! empty( $sgs_base_scoped['css'] ) ) {
+			$sgs_scoped_css[] = $sgs_base_scoped['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
+// shorthand, scoped @media on the SAME selector (contract: tablet
+// max-width:1023px, mobile max-width:767px). ---
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$sgs_padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$sgs_padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$sgs_margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$sgs_margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$sgs_padding_tab_val = $sgs_box_shorthand( $sgs_padding_tablet_obj );
+$sgs_padding_mob_val = $sgs_box_shorthand( $sgs_padding_mobile_obj );
+$sgs_margin_tab_val  = $sgs_box_shorthand( $sgs_margin_tablet_obj );
+$sgs_margin_mob_val  = $sgs_box_shorthand( $sgs_margin_mobile_obj );
+
+$sgs_tablet_decls = array();
+if ( null !== $sgs_padding_tab_val ) {
+	$sgs_tablet_decls[] = "padding:{$sgs_padding_tab_val}";
+}
+if ( null !== $sgs_margin_tab_val ) {
+	$sgs_tablet_decls[] = "margin:{$sgs_margin_tab_val}";
+}
+if ( $sgs_tablet_decls ) {
+	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_style_sel}{" . implode( ';', $sgs_tablet_decls ) . ';}}';
+}
+
+$sgs_mobile_decls = array();
+if ( null !== $sgs_padding_mob_val ) {
+	$sgs_mobile_decls[] = "padding:{$sgs_padding_mob_val}";
+}
+if ( null !== $sgs_margin_mob_val ) {
+	$sgs_mobile_decls[] = "margin:{$sgs_margin_mob_val}";
+}
+if ( $sgs_mobile_decls ) {
+	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_style_sel}{" . implode( ';', $sgs_mobile_decls ) . ';}}';
+}
+
+// -------------------------------------------------------------------------
 // i18n strings carried as data-attributes for view.js.
 // -------------------------------------------------------------------------
 $i18n_no_results = esc_attr__( 'No products found', 'sgs-blocks' );
@@ -81,7 +168,7 @@ $rest_url = esc_url( rest_url( 'sgs/v1/product-search' ) );
 if ( 'icon' === $display ) {
 	$wrapper_attrs = get_block_wrapper_attributes(
 		array(
-			'class'                   => 'sgs-product-search sgs-product-search--icon',
+			'class'                   => 'sgs-product-search sgs-product-search--icon ' . $sgs_style_uid,
 			'data-sgs-product-search' => '',
 			'data-display'            => 'icon',
 			'data-rest'               => $rest_url,
@@ -92,10 +179,11 @@ if ( 'icon' === $display ) {
 		)
 	);
 } else {
-	// Inline mode — wrapper is byte-for-byte identical to v1.0.0.
+	// Inline mode — wrapper carries the same classes as v1.0.0 plus the
+	// no-inline scoped-styling uid class.
 	$wrapper_attrs = get_block_wrapper_attributes(
 		array(
-			'class'                   => 'sgs-product-search',
+			'class'                   => 'sgs-product-search ' . $sgs_style_uid,
 			'data-sgs-product-search' => '',
 			'data-rest'               => $rest_url,
 			'data-no-results'         => $i18n_no_results,
@@ -199,6 +287,9 @@ $form_html = ob_get_clean();
 // Output — branch by display mode.
 // -------------------------------------------------------------------------
 ?>
+<?php if ( $sgs_scoped_css ) : ?>
+<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
 <?php if ( 'icon' === $display ) : ?>
 	<details class="sgs-product-search__disclosure">

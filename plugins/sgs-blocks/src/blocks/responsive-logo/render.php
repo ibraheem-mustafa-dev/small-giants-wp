@@ -28,6 +28,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// ---------------------------------------------------------------------------
+// Security sanitisers (no-inline contract §D) — mirrors sgs/label/render.php.
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 // ── Attribute extraction ──────────────────────────────────────────────────────
 
 $desktop_logo_id  = isset( $attributes['desktopLogoId'] ) ? absint( $attributes['desktopLogoId'] ) : 0;
@@ -91,11 +99,99 @@ if ( 'draw-on-load' === $animation_style ) {
 	$animation_modifier = ' sgs-responsive-logo--animate-scroll';
 }
 
+// ── No-inline scoped box CSS (padding/margin, base + tablet/mobile tiers) ────
+// uid is a CLASS (matches sgs/heading/sgs/container/sgs/label scoped pattern);
+// the root's ONLY inline declaration remains the pre-existing var-only
+// `--logo-width` custom property (allowed by the no-inline contract — CSS
+// custom-property VALUES are not property declarations).
+
+$uid      = 'sgs-rl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sel      = '.' . $uid . '.wp-block-sgs-responsive-logo';
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$scoped_css = array();
+
+// --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
+// scoped via the stable core style engine. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
+		? $attributes['style']['spacing']['padding']
+		: array();
+	$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
+		? $attributes['style']['spacing']['margin']
+		: array();
+
+	if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
+		$spacing_args = array();
+		if ( ! empty( $base_padding_obj ) ) {
+			$spacing_args['padding'] = $base_padding_obj;
+		}
+		if ( ! empty( $base_margin_obj ) ) {
+			$spacing_args['margin'] = $base_margin_obj;
+		}
+		$base_scoped_styles = wp_style_engine_get_styles(
+			array( 'spacing' => $spacing_args ),
+			array( 'selector' => $sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
+// shorthand, scoped @media on the SAME selector (contract §B2: tablet
+// max-width:1023px, mobile max-width:767px). ---
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{" . implode( ';', $tablet_decls ) . ';}}';
+}
+
+$mobile_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{" . implode( ';', $mobile_decls ) . ';}}';
+}
+
 // ── Wrapper attributes via get_block_wrapper_attributes() ────────────────────
+// KEEPS the pre-existing var-only `--logo-width` inline style (allowed —
+// custom-property value, not a property declaration) and adds the scoped uid
+// class alongside it.
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class'          => 'sgs-responsive-logo' . $animation_modifier,
+		'class'          => 'sgs-responsive-logo' . $animation_modifier . ' ' . $uid,
 		'style'          => '--logo-width:' . absint( $width ) . 'px',
 		'data-animation' => 'none' !== $animation_style ? esc_attr( $animation_style ) : false,
 	)
@@ -178,6 +274,18 @@ if ( $link_to_home ) {
 }
 
 $inner_html = ob_get_clean();
+
+// ── Scoped CSS output (no-inline contract §A) ────────────────────────────────
+// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
+// combinators intact. Every value reaching $scoped_css is pre-sanitised
+// ($sgs_css_length / wp_style_engine_get_styles), so no un-sanitised value
+// survives here.
+
+if ( $scoped_css ) :
+	?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
+	<?php
+endif;
 
 // ── Final output ──────────────────────────────────────────────────────────────
 

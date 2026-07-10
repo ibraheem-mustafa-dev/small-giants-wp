@@ -19,11 +19,13 @@
     "html": false,
     "color": {
       "text": true,
-      "background": false
+      "background": false,
+      "__experimentalSkipSerialization": true
     },
     "spacing": {
       "padding": true,
-      "margin": true
+      "margin": true,
+      "__experimentalSkipSerialization": true
     }
   },
   "attributes": {
@@ -46,6 +48,22 @@
     "toggleCloseIcon": {
       "type": "string",
       "default": "x"
+    },
+    "paddingTablet": {
+      "type": "object",
+      "default": {}
+    },
+    "paddingMobile": {
+      "type": "object",
+      "default": {}
+    },
+    "marginTablet": {
+      "type": "object",
+      "default": {}
+    },
+    "marginMobile": {
+      "type": "object",
+      "default": {}
     }
   },
   "editorScript": "file:./index.js",

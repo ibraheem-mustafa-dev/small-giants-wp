@@ -20,7 +20,8 @@
 		"html": false,
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
 		"align": [ "wide" ]
 	},
@@ -40,6 +41,22 @@
 		"maxResults": {
 			"type": "integer",
 			"default": 10
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

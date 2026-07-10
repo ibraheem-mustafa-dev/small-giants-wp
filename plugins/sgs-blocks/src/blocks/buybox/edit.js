@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl, Icon } from '@wordpress/components';
+import { ResponsiveBoxControl } from '../../components';
 
 /**
  * Editor view for sgs/buybox.
@@ -19,6 +20,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		notifyMeLabel,
 		addToCartLabel,
 		perUnitDenomination,
+		style,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -102,6 +106,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

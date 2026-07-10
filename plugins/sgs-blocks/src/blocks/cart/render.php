@@ -36,6 +36,21 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
+// ---------------------------------------------------------------------------
+// NO-INLINE (per-block migration contract, 2026-07-10): margin is a WP-native
+// style.spacing.margin object (skip-serialised in block.json → NOT auto-
+// inlined by get_block_wrapper_attributes()). Emitted scoped via the core
+// style engine below, mirroring sgs/label. marginTablet/marginMobile are SGS
+// custom object attrs, hand-built shorthand, scoped @media (contract §B2:
+// tablet max-width:1023px, mobile max-width:767px). The pre-existing
+// `--sgs-cart-*` custom-property inline style is a VALUE, not a property
+// declaration — allowed by the contract and left untouched.
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
 // ── Attribute resolution ──────────────────────────────────────────────────────
 $display_mode      = $attributes['displayMode'] ?? 'link';
 $icon_name         = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'shopping-cart' ) );
@@ -56,7 +71,8 @@ $cart_url = $wc_active ? wc_get_cart_url() : home_url( '/cart' );
 // The view.js module replaces this via the Store API within ~200 ms.
 $ssr_count = 0;
 
-// ── Inline CSS custom properties ─────────────────────────────────────────────
+// ── Inline CSS custom properties (VALUES only — allowed by the no-inline
+// contract; the root carries zero inline CSS property DECLARATIONS) ─────────
 $styles = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
@@ -64,8 +80,58 @@ $styles = array(
 	'--sgs-cart-badge-text-colour:' . sgs_colour_value( $badge_text_colour ),
 );
 
+// ── Margin — WP-native style.spacing.margin object (skip-serialised), NOT
+// auto-inlined. Tiers are SGS custom object attrs, hand-built shorthand. ─────
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+		if ( is_string( $margin_value ) && '' !== $margin_value ) {
+			$base_margin_obj[ $margin_side ] = $margin_value;
+		}
+	}
+}
+$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+// ── uid/selector — CLASS pattern mirrors sgs/label/sgs/heading/sgs/container.
+$uid  = 'sgs-cart-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sel  = '.' . $uid . '.wp-block-sgs-cart';
+
+$scoped_css = array();
+
+if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+	$base_margin_styles = wp_style_engine_get_styles(
+		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
+		array( 'selector' => $sel )
+	);
+	if ( ! empty( $base_margin_styles['css'] ) ) {
+		$scoped_css[] = $base_margin_styles['css'];
+	}
+}
+
+$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+
+if ( null !== $margin_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{margin:{$margin_tab_val};}}";
+}
+if ( null !== $margin_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{margin:{$margin_mob_val};}}";
+}
+
 // ── Wrapper classes ───────────────────────────────────────────────────────────
-$wrapper_classes = array( 'sgs-cart' );
+$wrapper_classes = array( 'sgs-cart', $uid );
 if ( ! $wc_active ) {
 	$wrapper_classes[] = 'sgs-cart--wc-inactive';
 }
@@ -92,6 +158,9 @@ $count_label = sprintf(
 $trigger_label = $aria_label . ' (' . $count_label . ')';
 
 ?>
+<?php if ( $scoped_css ) : ?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> breakout. ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- from WP core. ?>>
 	<a
 		href="<?php echo esc_url( $cart_url ); ?>"

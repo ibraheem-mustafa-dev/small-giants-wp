@@ -15,6 +15,16 @@
  * threshold is met (it does not depend on JS to appear). view.js only wires
  * the filtering interaction.
  *
+ * NO-INLINE (LOCKED per-block no-inline migration contract, 2026-07-10): the
+ * rendered wrapper carries ZERO inline CSS property declarations. `margin`
+ * is a WP-native style.spacing.margin object; `spacing` declares
+ * `__experimentalSkipSerialization` in block.json so
+ * get_block_wrapper_attributes() never auto-inlines it — it is instead
+ * emitted scoped via wp_style_engine_get_styles() into this block's own
+ * `.{uid}` <style> tag. marginTablet / marginMobile are SGS custom object
+ * attrs (not WP-native), scoped @media(max-width:1023px)/767px on the same
+ * selector.
+ *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (unused — no InnerBlocks).
  * @var \WP_Block $block      Block instance.
@@ -23,6 +33,26 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// ---------------------------------------------------------------------------
+// Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
+// values (mirrors sgs/label + sgs/heading + sgs/container).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
 
 $attribute_id = absint( $attributes['attributeId'] ?? 0 );
 
@@ -82,14 +112,64 @@ $attribute_label = function_exists( 'wc_attribute_label' )
 $shown_template = __( '%1$d of %2$d options shown', 'sgs-blocks' );
 $none_text      = __( 'No matching options', 'sgs-blocks' );
 
+// ---------------------------------------------------------------------------
+// Scoped CSS assembly (contract §A). $style_uid is a CLASS — mirrors the
+// sgs/heading/sgs/label/sgs/container scoped pattern. Kept distinct from
+// $uid above (wp_unique_id, used for the input/label/status ARIA wiring).
+// ---------------------------------------------------------------------------
+
+$style_uid = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel  = '.' . $style_uid . '.wp-block-sgs-filter-search';
+
+$scoped_css = array();
+
+// Base margin — WP-native style.spacing.margin object (skip-serialised in
+// block.json), emitted scoped via the stable core style engine.
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+		if ( is_string( $margin_value ) && '' !== $margin_value ) {
+			$base_margin_obj[ $margin_side ] = $margin_value;
+		}
+	}
+}
+if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
+	}
+}
+
+// Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
+// scoped @media on the same selector (contract §B2: tablet max-width:1023px,
+// mobile max-width:767px).
+$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+
+if ( null !== $margin_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
+}
+if ( null !== $margin_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{margin:{$margin_mob_val};}}";
+}
+
 $wrapper_attrs = get_block_wrapper_attributes(
 	array(
-		'class'                  => 'sgs-filter-search',
+		'class'                  => 'sgs-filter-search ' . $style_uid,
 		'data-sgs-filter-search' => '',
 	)
 );
 
 ?>
+<?php if ( $scoped_css ) : ?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> breakout. ?></style>
+<?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is safe. ?>>
 
 	<?php // Visually-hidden label — associates with the input for screen readers. ?>

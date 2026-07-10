@@ -7,7 +7,7 @@ import {
 	TextControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 
 /**
@@ -30,6 +30,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		badgeTextColour,
 		ariaLabel,
 		showZero,
+		style: blockStyle,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	// WooCommerce availability flag — injected by render.php via wp_localize_script
@@ -114,6 +117,27 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ ariaLabel }
 						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: blockStyle?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...blockStyle, spacing: { ...blockStyle?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

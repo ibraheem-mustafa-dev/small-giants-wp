@@ -8,7 +8,7 @@ import {
 	Button,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
 
 const STYLE_OPTIONS = [
 	{ value: 'minimal', label: __( 'Minimal Pill', 'sgs-blocks' ), hint: __( 'Quiet: play + progress + timecode', 'sgs-blocks' ) },
@@ -33,6 +33,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		accentColour,
 		spectrumColour,
 		title,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	const blockProps = useBlockProps( { className: `sgs-audio sgs-audio--${ playerStyle }` } );
@@ -151,6 +156,39 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Spectrum (reactive)', 'sgs-blocks' ) }
 						value={ spectrumColour }
 						onChange={ ( value ) => setAttributes( { spectrumColour: value } ) }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

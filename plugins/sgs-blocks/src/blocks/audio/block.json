@@ -24,10 +24,27 @@
         "align": ["wide", "full"],
         "spacing": {
             "margin": true,
-            "padding": true
+            "padding": true,
+            "__experimentalSkipSerialization": true
         }
     },
     "attributes": {
+        "paddingTablet": {
+            "type": "object",
+            "default": {}
+        },
+        "paddingMobile": {
+            "type": "object",
+            "default": {}
+        },
+        "marginTablet": {
+            "type": "object",
+            "default": {}
+        },
+        "marginMobile": {
+            "type": "object",
+            "default": {}
+        },
         "audioUrl": {
             "type": "string",
             "default": "",

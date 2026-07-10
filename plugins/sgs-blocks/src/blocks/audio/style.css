@@ -159,12 +159,25 @@
 	height: 92px;
 	transform: rotate( -90deg );
 }
+/* Progress arc — view.js writes ONLY --sgs-arc-dash / --sgs-arc-offset custom
+ * properties (no-inline contract); this rule consumes them. Fallback 251.3
+ * ( = 2 * PI * 40, the ring's circumference ) matches the pre-migration
+ * JS-set initial state (full circle, zero progress shown). */
+.sgs-audio__arc {
+	stroke-dasharray: var( --sgs-arc-dash, 251.3 );
+	stroke-dashoffset: var( --sgs-arc-offset, 251.3 );
+}
 .sgs-audio__glow {
 	position: absolute;
 	inset: 8px;
 	border-radius: 50%;
 	background: radial-gradient( circle, color-mix( in srgb, var( --sgs-audio-accent ) 55%, transparent ), transparent 68% );
-	opacity: 0;
+	/* Runtime-reactive values — view.js writes ONLY the --sgs-glow-* custom
+	 * properties (no-inline contract); the concrete opacity/transform
+	 * properties live here, consuming those vars with the pre-migration
+	 * defaults (idle = invisible, no scale) as fallbacks. */
+	opacity: var( --sgs-glow-opacity, 0 );
+	transform: scale( var( --sgs-glow-scale, 1 ) );
 	pointer-events: none;
 }
 .sgs-audio__ring .sgs-audio__play {
@@ -184,7 +197,10 @@
 .sgs-audio__viz--pulse {
 	border-radius: var( --sgs-audio-radius );
 	padding: 20px;
-	background: color-mix( in srgb, currentColor 6%, transparent );
+	/* view.js writes ONLY the --sgs-viz-bg custom property (no-inline contract);
+	 * this rule consumes it, falling back to the original static idle
+	 * background when the var is unset (quiet / not-yet-reactive). */
+	background: var( --sgs-viz-bg, color-mix( in srgb, currentColor 6%, transparent ) );
 	transition: background 0.06s linear;
 }
 .sgs-audio--gradient-pulse .sgs-audio__transport {

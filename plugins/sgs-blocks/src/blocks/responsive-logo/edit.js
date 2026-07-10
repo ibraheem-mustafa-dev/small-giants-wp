@@ -13,6 +13,7 @@ import {
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
+import { ResponsiveBoxControl } from '../../components';
 
 const ANIMATION_STYLE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
@@ -112,6 +113,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		width,
 		linkToHome,
 		alt,
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	// We store URLs in the editor state via onSelect but don't persist them
@@ -285,6 +291,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ alt }
 						onChange={ ( val ) => setAttributes( { alt: val } ) }
 						rows={ 2 }
+					/>
+				</PanelBody>
+
+				{ /* ── Panel 4: Spacing ── */ }
+				<PanelBody
+					title={ __( 'Spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

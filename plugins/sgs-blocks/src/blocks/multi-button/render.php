@@ -113,10 +113,58 @@ $css .= 'justify-content:' . $justify_content_mobile . ';';
 $css .= 'align-items:' . $align_items_mobile . ';';
 $css .= '}}';
 
+// NO-INLINE (2026-07-10): `color` + `__experimentalBorder` supports are declared
+// `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
+// (called inside SGS_Container_Wrapper::render()) never auto-inlines them as a
+// `style="…"` attribute on the wrapper. Emit them scoped to the SAME
+// `#{uid}.sgs-multi-button` selector the flex CSS already targets, via the
+// stable core style engine (mirrors sgs/label's pattern).
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$mb_color_border = array();
+	if ( isset( $attributes['style']['color'] ) && is_array( $attributes['style']['color'] ) ) {
+		$mb_color_border['color'] = $attributes['style']['color'];
+	}
+	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
+		$mb_color_border['border'] = $attributes['style']['border'];
+	}
+	if ( ! empty( $mb_color_border ) ) {
+		$mb_style_engine_css = wp_style_engine_get_styles(
+			$mb_color_border,
+			array( 'selector' => '#' . $uid . '.sgs-multi-button' )
+		);
+		if ( ! empty( $mb_style_engine_css['css'] ) ) {
+			$css .= $mb_style_engine_css['css'];
+		}
+	}
+}
+
+// Preset colour/gradient SLUGS (e.g. backgroundColor:"primary") don't carry a raw
+// value for the style engine above — WP paints them via the standard has-* classes
+// instead. Re-add those classes onto the wrapper (mirrors sgs/label's step 5).
+$mb_preset_classes       = array();
+$mb_preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$mb_preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$mb_preset_gradient_slug = isset( $attributes['gradient'] ) ? sanitize_html_class( $attributes['gradient'] ) : '';
+if ( '' !== $mb_preset_bg_slug ) {
+	$mb_preset_classes[] = 'has-background';
+	$mb_preset_classes[] = 'has-' . $mb_preset_bg_slug . '-background-color';
+}
+if ( '' !== $mb_preset_text_slug ) {
+	$mb_preset_classes[] = 'has-text-color';
+	$mb_preset_classes[] = 'has-' . $mb_preset_text_slug . '-color';
+}
+if ( '' !== $mb_preset_gradient_slug ) {
+	$mb_preset_classes[] = 'has-background';
+	$mb_preset_classes[] = 'has-' . $mb_preset_gradient_slug . '-gradient-background';
+}
+
 // WS-4: the outer wrapper is now the shared sgs/container element. multi-button keeps
 // its own scoped flex CSS (#uid.sgs-multi-button) + the id via extra_attrs; the buttons
 // ($content) become the interior. The mirror adds the container width capability.
-$mb_style = '<style>' . esc_html( $css ) . '</style>';
+// wp_strip_all_tags (NOT esc_html) blocks a `</style>` breakout while leaving CSS
+// combinators intact (contract §D) — every value reaching $css is either hand-built
+// from sanitised scalars above or the output of wp_style_engine_get_styles().
+$mb_style = '<style>' . wp_strip_all_tags( $css ) . '</style>';
 
 // H6 fix (2026-07-05, proven live -- STOP-43): kind was 'layout', which also makes
 // SGS_Container_Wrapper emit ITS OWN display:flex / flex-wrap / align-items /
@@ -134,7 +182,7 @@ $mb_style = '<style>' . esc_html( $css ) . '</style>';
 // padding/spacing -- an already-exercised pattern, e.g. sgs/quote, sgs/testimonial,
 // sgs/product-card) and drops the wrapper's flex/grid + duplicate-gap emission,
 // which multi-button never used. Zero shared-file edit.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $mb_style is esc_html'd CSS; SGS_Container_Wrapper::render() escapes its output internally; $content is WP-rendered inner blocks.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $mb_style CSS is wp_strip_all_tags()'d; SGS_Container_Wrapper::render() escapes its output internally; $content is WP-rendered inner blocks.
 echo $mb_style . SGS_Container_Wrapper::render(
 	$attributes,
 	$block,
@@ -142,7 +190,7 @@ echo $mb_style . SGS_Container_Wrapper::render(
 	'content',
 	array(
 		'tag'           => 'div',
-		'extra_classes' => array( 'sgs-multi-button' ),
+		'extra_classes' => array_merge( array( 'sgs-multi-button' ), $mb_preset_classes ),
 		'extra_attrs'   => array( 'id' => esc_attr( $uid ) ),
 	)
 );

@@ -296,15 +296,19 @@ function enhance( root ) {
 		const arc = ring.querySelector( '.sgs-audio__arc' );
 		const glow = ring.querySelector( '.sgs-audio__glow' );
 		const C = 2 * Math.PI * 40;
-		arc.style.strokeDasharray = C;
-		arc.style.strokeDashoffset = C;
+		// Progress ring — write CSS custom-property VALUES, never raw properties
+		// (no-inline contract: a --var write is allowed, a direct .style.strokeDasharray
+		// write is a forbidden inline property declaration). Consumed by the
+		// `.sgs-audio__arc` stylesheet rule in style.css.
+		arc.style.setProperty( '--sgs-arc-dash', String( C ) );
+		arc.style.setProperty( '--sgs-arc-offset', String( C ) );
 		audio.addEventListener( 'timeupdate', () => {
 			const p = audio.duration ? audio.currentTime / audio.duration : 0;
-			arc.style.strokeDashoffset = C * ( 1 - p );
+			arc.style.setProperty( '--sgs-arc-offset', String( C * ( 1 - p ) ) );
 		} );
 		runReactive( root, audio, ( f, t, level ) => {
-			glow.style.opacity = String( Math.min( 1, level * 2.2 ) );
-			glow.style.transform = 'scale(' + ( 1 + level * 0.5 ) + ')';
+			glow.style.setProperty( '--sgs-glow-opacity', String( Math.min( 1, level * 2.2 ) ) );
+			glow.style.setProperty( '--sgs-glow-scale', String( 1 + level * 0.5 ) );
 		} );
 		return;
 	}
@@ -319,7 +323,10 @@ function enhance( root ) {
 		viz.append( transport );
 		runReactive( root, audio, ( freq, t, level ) => {
 			if ( ! freq ) {
-				viz.style.background = '';
+				// Quiet: remove the override so the CSS default (color-mix background,
+				// style.css `.sgs-audio__viz--pulse`) shows through — never a raw
+				// `.style.background` write (no-inline contract).
+				viz.style.removeProperty( '--sgs-viz-bg' );
 				return;
 			}
 			let lo = 0, hi = 0;
@@ -330,7 +337,10 @@ function enhance( root ) {
 			const hue = 190 - bias * 150;
 			const light = 24 + level * 44;
 			const sat = 55 + level * 20;
-			viz.style.background = 'linear-gradient(135deg, hsl(' + hue + ' ' + sat + '% ' + light + '%), hsl(' + ( hue + 24 ) + ' ' + sat + '% ' + Math.max( 14, light - 14 ) + '%))';
+			viz.style.setProperty(
+				'--sgs-viz-bg',
+				'linear-gradient(135deg, hsl(' + hue + ' ' + sat + '% ' + light + '%), hsl(' + ( hue + 24 ) + ' ' + sat + '% ' + Math.max( 14, light - 14 ) + '%))'
+			);
 		} );
 		return;
 	}
