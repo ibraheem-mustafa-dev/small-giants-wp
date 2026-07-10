@@ -191,6 +191,21 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
             _bg_shorthand = base_decls.get("background")
             if _bg_shorthand and "gradient" not in _bg_shorthand and "url(" not in _bg_shorthand:
                 raw = _bg_shorthand
+        # `border: <width> <style> <colour>` shorthand → border-color. Drafts commonly
+        # declare a pill/card border with the shorthand (e.g. `.pill{border:2px solid
+        # var(--border)}`); the lift resolves *BorderColour to css_property `border-color`,
+        # so the shorthand key is missed and the border-colour never emits. Extract the
+        # colour token (var()/hex/rgb/hsl/keyword) from the shorthand — the width + line-
+        # style tokens are ignored. Proven on the Mama's resting pill border (2026-07-10).
+        if raw is None and css_property == "border-color":
+            _border_sh = base_decls.get("border")
+            if _border_sh:
+                for _tok in _border_sh.split():
+                    if _tok.startswith(("var(", "#", "rgb", "hsl")) or _tok in (
+                        "transparent", "currentColor", "currentcolor", "inherit",
+                    ):
+                        raw = _tok
+                        break
         if not raw:
             # No base declaration — still check bp_decls for B2 companion-only case.
             # Fall through to breakpoint loop below; skip value-normalise for base.
