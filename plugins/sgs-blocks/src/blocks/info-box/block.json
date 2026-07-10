@@ -24,7 +24,8 @@
 			"background": true,
 			"text": true,
 			"link": true,
-			"gradients": true
+			"gradients": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -33,18 +34,23 @@
 			"letterSpacing": true,
 			"textTransform": true,
 			"fontWeight": true,
-			"fontStyle": true
+			"fontStyle": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
-		"shadow": true,
+		"shadow": {
+			"__experimentalSkipSerialization": true
+		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"color": true,
-			"style": true
+			"style": true,
+			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"imageControls": true,
@@ -176,6 +182,22 @@
 		"maxWidth": {
 			"type": "string",
 			"default": ""
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

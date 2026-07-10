@@ -313,6 +313,11 @@
 	border: 1px solid rgba(0, 0, 0, 0.15);
 	/* Slight inset ring ensures the chip is visible against near-white BGs */
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+	/* No-inline contract (2026-07-09): render.php emits ONLY the custom
+	   property --sgs-op-swatch (a var-only declaration) on the <span>'s
+	   inline style. The real `background:` declaration lives HERE, in the
+	   static stylesheet, scoped to this class. */
+	background: var(--sgs-op-swatch);
 }
 
 /* When a colour swatch is present, apply the auto-contrast text colour

@@ -20,6 +20,37 @@
  * Schema.org Review JSON-LD is emitted (gated by schemaEnabled) reading the
  * typed scalar attrs.
  *
+ * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration
+ * contract §A/§B/§B3, 2026-07-09): sgs/testimonial is a CONTENT-kind composite
+ * that only ever used the shared wrapper's box+width machinery (WS-4
+ * container-mirror = width/spacing only — no grid/section/background/overlay),
+ * so SGS_Container_Wrapper is dropped — the same block-private pattern proven
+ * on sgs/quote. The block's OWN root `<div>` is built via
+ * get_block_wrapper_attributes(); the rendered subtree carries ZERO inline CSS
+ * property declarations. Every declaration (native color/typography/spacing/
+ * border/shadow supports, the outer width, AND every per-element typography
+ * override that previously rode an inline `style="…"` attribute on the quote/
+ * summary/name/role/org/rating nodes) is emitted into the block's OWN scoped
+ * `.{uid}` <style> tag. WP styling supports all declare
+ * `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
+ * never auto-inlines them. Hover state stays CSS custom-property VALUES only
+ * (`style="--sgs-x:y"` on the root — a value, not a declaration, so contract-
+ * compliant).
+ *
+ * BOX-GROUP (contract §B): base padding/margin route to WP-native
+ * style.spacing.* (skip-serialised, emitted scoped via the style engine);
+ * tiers are the new paddingTablet/paddingMobile/marginTablet/marginMobile
+ * object attrs (scoped @media 1023/767, hand-built shorthand — matches quote).
+ *
+ * @since 2026-06-11  D8 rebuild — typed dynamic block.
+ * @since 2026-07-10  100% no-inline + box-group migration: dropped
+ *                    SGS_Container_Wrapper (block-private, quote pattern);
+ *                    every per-element inline style="" converted to scoped
+ *                    `.{uid} .element{…}` rules; padding/margin tiers → object
+ *                    attrs; color/typography/spacing/border/shadow supports →
+ *                    __experimentalSkipSerialization + scoped style engine
+ *                    output.
+ *
  * @var array     $attributes Block attributes.
  * @var string    $content    Unused (typed rebuild — no InnerBlocks).
  * @var \WP_Block $block      Block instance.
@@ -30,7 +61,23 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+
+// ---------------------------------------------------------------------------
+// 0. Security §D sanitisers — mirror sgs/quote + sgs/button + sgs/container.
+// ---------------------------------------------------------------------------
+
+// CSS-length sanitiser — strips everything except digits, dot, %, and unit
+// letters so an object-attr side/corner value can never break out of its
+// declaration.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
+// declarations. Strips everything except letters + hyphen.
+$sgs_css_keyword = static function ( $value ) {
+	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
+};
 
 // ── Variant + content fields (typed, all optional) ──────────────────────────
 // Effective variant resolution (context inheritance from sgs/testimonial-slider):
@@ -85,11 +132,12 @@ $source_platform  = trim( (string) ( $attributes['sourcePlatform'] ?? '' ) );
 
 $schema_enabled = ! empty( $attributes['schemaEnabled'] );
 
-// ── Per-element typography (empty → CSS token default via :not([style*=...])) ─
+// ── Per-element typography (empty → CSS token default via the block's own
+// scoped CSS; NOTHING is emitted inline any more — contract §A). ────────────
 $quote_font_size   = sgs_font_size_value( $attributes['quoteFontSize'] ?? '' );
 $quote_colour      = sgs_colour_value( $attributes['quoteColour'] ?? '' );
 $quote_style       = in_array( $attributes['quoteFontStyle'] ?? '', array( 'italic', 'normal' ), true ) ? $attributes['quoteFontStyle'] : '';
-$quote_line_height = trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) );
+$quote_line_height = $sgs_css_length( trim( (string) ( $attributes['quoteLineHeight'] ?? '' ) ) );
 $quote_margin_bot  = sgs_container_gap_value( $attributes['quoteMarginBottom'] ?? '' );
 $summary_font_size = sgs_font_size_value( $attributes['summaryFontSize'] ?? '' );
 $summary_colour    = sgs_colour_value( $attributes['summaryColour'] ?? '' );
@@ -109,41 +157,237 @@ $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
 $hover_effect            = $attributes['hoverEffect'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
-$hover_scale             = $attributes['hoverScale'] ?? '';
+$hover_scale              = $attributes['hoverScale'] ?? '';
 $hover_shadow            = $attributes['hoverShadow'] ?? '';
 $stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
 
+// ── Width (WS-4 container-mirror, content kind: kept-scalar, no tiers) ─────
+$content_width = $attributes['contentWidth'] ?? '';
+$max_width     = $attributes['maxWidth'] ?? '';
+
+// ── Anchor + scope id (contract §B3: uid is a CLASS, not an id, so the anchor
+// element `id` stays free for ToC targets). ─────────────────────────────────
+$anchor   = $attributes['anchor'] ?? '';
+$uid      = 'sgs-testimonial-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-testimonial';
+
+// ---------------------------------------------------------------------------
+// 1. Scoped CSS accumulator + per-element rule builder. Every declaration
+// that used to ride an inline `style="…"` attribute on an element now lands
+// here as `{$root_sel} .element{prop:val;}` (contract §A).
+// ---------------------------------------------------------------------------
+
+$scoped_css = array();
+
 /**
- * Build an inline style attribute string from a colour + font-size pair.
+ * Build one scoped CSS rule from a prop => value map. Empty values are
+ * dropped; an all-empty map returns ''.
  *
- * Only emits the properties that are non-empty so the CSS `:not([style*="color"])`
- * token fallback continues to win when no override is set.
- *
- * @param string $colour    Resolved colour value (already sgs_colour_value()'d).
- * @param string $font_size Resolved font-size value (already sgs_font_size_value()'d).
- * @return string ` style="..."` or empty string.
+ * @param string $selector_suffix Descendant selector appended to $root_sel.
+ * @param array  $decls           prop => value map (values pre-sanitised by caller).
+ * @return string CSS rule text, or '' when nothing to emit.
  */
-$sgs_testimonial_style_attr = static function ( $colour, $font_size = '', $extra = array() ) {
-	$decls = array();
-	if ( '' !== $colour ) {
-		$decls[] = 'color:' . $colour;
-	}
-	if ( '' !== $font_size ) {
-		$decls[] = 'font-size:' . $font_size;
-	}
-	foreach ( $extra as $prop => $val ) {
-		if ( '' !== $val ) {
-			$decls[] = $prop . ':' . $val;
+$sgs_el_rule = function ( $selector_suffix, array $decls ) use ( $root_sel ) {
+	$pairs = array();
+	foreach ( $decls as $prop => $val ) {
+		if ( '' !== (string) $val ) {
+			$pairs[] = $prop . ':' . $val;
 		}
 	}
-	if ( empty( $decls ) ) {
+	if ( empty( $pairs ) ) {
 		return '';
 	}
-	return ' style="' . esc_attr( implode( ';', $decls ) ) . '"';
+	return $root_sel . ' ' . $selector_suffix . '{' . implode( ';', $pairs ) . ';}';
 };
 
+// Rating (shared class across both the stars + scale rating nodes).
+$rating_rule = $sgs_el_rule( '.sgs-testimonial__rating', array( 'color' => $rating_colour ) );
+if ( '' !== $rating_rule ) {
+	$scoped_css[] = $rating_rule;
+}
+
+// Summary phrase.
+$summary_rule = $sgs_el_rule(
+	'.sgs-testimonial__summary',
+	array(
+		'color'     => $summary_colour,
+		'font-size' => $summary_font_size,
+	)
+);
+if ( '' !== $summary_rule ) {
+	$scoped_css[] = $summary_rule;
+}
+
+// Quote.
+$quote_rule = $sgs_el_rule(
+	'.sgs-testimonial__quote',
+	array(
+		'color'         => $quote_colour,
+		'font-size'     => $quote_font_size,
+		'font-style'    => $quote_style,
+		'line-height'   => $quote_line_height,
+		'margin-bottom' => $quote_margin_bot,
+	)
+);
+if ( '' !== $quote_rule ) {
+	$scoped_css[] = $quote_rule;
+}
+
+// Reviewer name.
+$name_rule = $sgs_el_rule(
+	'.sgs-testimonial__name',
+	array(
+		'color'       => $name_colour,
+		'font-weight' => $name_font_weight,
+	)
+);
+if ( '' !== $name_rule ) {
+	$scoped_css[] = $name_rule;
+}
+
+// Reviewer role.
+$role_rule = $sgs_el_rule( '.sgs-testimonial__role', array( 'color' => $role_colour ) );
+if ( '' !== $role_rule ) {
+	$scoped_css[] = $role_rule;
+}
+
+// Organisation.
+$org_rule = $sgs_el_rule( '.sgs-testimonial__org', array( 'color' => $org_colour ) );
+if ( '' !== $org_rule ) {
+	$scoped_css[] = $org_rule;
+}
+
+// ---------------------------------------------------------------------------
+// 2. Root box/visual declarations — WP-native color/typography/spacing/
+// border/shadow supports (all skip-serialised in block.json), emitted scoped
+// via the stable core style engine (exactly how WP core outputs `layout`
+// support). Pass style.border + style.typography through wholesale (both are
+// fully-supported native families here — no custom SGS scalar duplicates of
+// them, unlike sgs/quote which only has native radius).
+// ---------------------------------------------------------------------------
+
+$style_arr = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$spacing_arr = array();
+	if ( isset( $style_arr['spacing']['padding'] ) && is_array( $style_arr['spacing']['padding'] ) ) {
+		$spacing_arr['padding'] = $style_arr['spacing']['padding'];
+	}
+	if ( isset( $style_arr['spacing']['margin'] ) && is_array( $style_arr['spacing']['margin'] ) ) {
+		$spacing_arr['margin'] = $style_arr['spacing']['margin'];
+	}
+	if ( ! empty( $spacing_arr ) ) {
+		$base_style_engine_args['spacing'] = $spacing_arr;
+	}
+
+	if ( isset( $style_arr['border'] ) && is_array( $style_arr['border'] ) && ! empty( $style_arr['border'] ) ) {
+		$base_style_engine_args['border'] = $style_arr['border'];
+	}
+
+	$color_args = array();
+	if ( isset( $style_arr['color']['text'] ) && '' !== $style_arr['color']['text'] ) {
+		$color_args['text'] = (string) $style_arr['color']['text'];
+	}
+	if ( isset( $style_arr['color']['background'] ) && '' !== $style_arr['color']['background'] ) {
+		$color_args['background'] = (string) $style_arr['color']['background'];
+	}
+	if ( isset( $style_arr['color']['gradient'] ) && '' !== $style_arr['color']['gradient'] ) {
+		$color_args['gradient'] = (string) $style_arr['color']['gradient'];
+	}
+	if ( ! empty( $color_args ) ) {
+		$base_style_engine_args['color'] = $color_args;
+	}
+
+	if ( isset( $style_arr['typography'] ) && is_array( $style_arr['typography'] ) && ! empty( $style_arr['typography'] ) ) {
+		$base_style_engine_args['typography'] = $style_arr['typography'];
+	}
+
+	if ( isset( $style_arr['shadow'] ) && '' !== $style_arr['shadow'] ) {
+		$base_style_engine_args['shadow'] = $style_arr['shadow'];
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Outer width (kept-scalar family, contract §C — no tiers on this block). ---
+$width_decls = array();
+if ( $max_width ) {
+	$mw_safe = $sgs_css_length( $max_width );
+	if ( '' !== $mw_safe ) {
+		$width_decls[] = 'max-width:' . $mw_safe;
+		$width_decls[] = 'margin-inline:auto';
+	}
+}
+if ( $content_width ) {
+	$cw_safe = $sgs_css_length( $content_width );
+	if ( '' !== $cw_safe ) {
+		$width_decls[] = 'width:' . $cw_safe;
+	}
+}
+if ( $width_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $width_decls ) . ';}';
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the SAME root selector (contract §B/§B2: tablet
+// max-width:1023px, mobile max-width:767px). Base padding/margin above is
+// WP-native style.spacing.*; these are the NEW paddingTablet/paddingMobile/
+// marginTablet/marginMobile object attrs. ---
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_box_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_box_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+}
+
+$mobile_box_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_box_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+}
+
 // ── Wrapper classes ─────────────────────────────────────────────────────────
-$classes   = array( 'sgs-testimonial' );
+$classes   = array( 'sgs-testimonial', $uid );
 $classes[] = 'sgs-testimonial--' . sanitize_html_class( $variant );
 if ( $hover_effect && 'none' !== $hover_effect ) {
 	$classes[] = 'sgs-testimonial--hover-' . sanitize_html_class( $hover_effect );
@@ -158,7 +402,22 @@ if ( $stagger_delay ) {
 	$classes[] = 'sgs-has-stagger';
 }
 
-// ── Wrapper inline styles (CSS custom properties) ───────────────────────────
+// Preset colour slugs — the `color` support is skip-serialised, so re-add the
+// standard has-* classes manually (matches sgs/quote — they set the colour
+// from the theme palette and are consumed by theme.json / editor CSS).
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+if ( '' !== $preset_text_slug ) {
+	$classes[] = 'has-text-color';
+	$classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
+}
+
+// ── Wrapper inline styles — CSS custom-property VALUES ONLY (contract §A: a
+// `--var:value` VALUE is allowed; it is never a real property declaration). ─
 $styles = array();
 if ( $hover_background_colour ) {
 	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
@@ -198,7 +457,7 @@ if ( $show_rating ) {
 			? (string) (int) $rating_scale
 			: (string) $rating_scale;
 		$max          = ( '' !== $rating_scale_max ) ? $rating_scale_max : '10';
-		$rating_html  = '<div class="sgs-testimonial__rating sgs-testimonial__rating--scale"' . $sgs_testimonial_style_attr( $rating_colour ) . '>';
+		$rating_html  = '<div class="sgs-testimonial__rating sgs-testimonial__rating--scale">';
 		$rating_html .= '<span class="sgs-testimonial__score">' . esc_html( $score ) . '</span>';
 		$rating_html .= '<span class="sgs-testimonial__score-max"> / ' . esc_html( $max ) . '</span>';
 		$rating_html .= '</div>';
@@ -230,7 +489,7 @@ if ( $show_rating ) {
 		}
 		/* translators: %s: star rating value out of 5. */
 		$label        = sprintf( esc_attr__( '%s out of 5 stars', 'sgs-blocks' ), (string) $rating_stars );
-		$rating_html  = '<div class="sgs-testimonial__rating sgs-testimonial__stars"' . $sgs_testimonial_style_attr( $rating_colour ) . ' role="img" aria-label="' . $label . '">';
+		$rating_html  = '<div class="sgs-testimonial__rating sgs-testimonial__stars" role="img" aria-label="' . $label . '">';
 		$rating_html .= $stars;
 		$rating_html .= '</div>';
 	}
@@ -277,33 +536,29 @@ if ( ! empty( $work_media['url'] ) ) {
 	}
 }
 
-// ── Text nodes (gated) ──────────────────────────────────────────────────────
+// ── Text nodes (gated) — NO inline style="" any more; every declaration is
+// in the scoped <style> block built above (contract §A). ───────────────────
 $summary_html = '';
 if ( '' !== $summary_phrase ) {
-	$summary_html = '<p class="sgs-testimonial__summary"' . $sgs_testimonial_style_attr( $summary_colour, $summary_font_size ) . '>' . wp_kses_post( $summary_phrase ) . '</p>';
+	$summary_html = '<p class="sgs-testimonial__summary">' . wp_kses_post( $summary_phrase ) . '</p>';
 }
 
 $quote_html = '';
 if ( '' !== $quote ) {
-	$quote_extra = array(
-		'font-style'    => $quote_style,
-		'line-height'   => $quote_line_height,
-		'margin-bottom' => $quote_margin_bot,
-	);
-	$quote_html  = '<blockquote class="sgs-testimonial__quote"' . $sgs_testimonial_style_attr( $quote_colour, $quote_font_size, $quote_extra ) . '>' . wp_kses_post( $quote ) . '</blockquote>';
+	$quote_html = '<blockquote class="sgs-testimonial__quote">' . wp_kses_post( $quote ) . '</blockquote>';
 }
 
 // Attribution: name / role / org — each gated, only emit the cite block if any present.
 $attribution_html = '';
 $attr_parts       = array();
 if ( '' !== $reviewer_name ) {
-	$attr_parts[] = '<cite class="sgs-testimonial__name"' . $sgs_testimonial_style_attr( $name_colour, '', array( 'font-weight' => $name_font_weight ) ) . '>' . esc_html( $reviewer_name ) . '</cite>';
+	$attr_parts[] = '<cite class="sgs-testimonial__name">' . esc_html( $reviewer_name ) . '</cite>';
 }
 if ( '' !== $reviewer_role ) {
-	$attr_parts[] = '<span class="sgs-testimonial__role"' . $sgs_testimonial_style_attr( $role_colour ) . '>' . esc_html( $reviewer_role ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__role">' . esc_html( $reviewer_role ) . '</span>';
 }
 if ( '' !== $org_name ) {
-	$attr_parts[] = '<span class="sgs-testimonial__org"' . $sgs_testimonial_style_attr( $org_colour ) . '>' . esc_html( $org_name ) . '</span>';
+	$attr_parts[] = '<span class="sgs-testimonial__org">' . esc_html( $org_name ) . '</span>';
 }
 if ( ! empty( $attr_parts ) ) {
 	$attribution_html = '<div class="sgs-testimonial__meta">' . implode( '', $attr_parts ) . '</div>';
@@ -404,19 +659,43 @@ if ( '' === trim( $inner_html ) ) {
 	return;
 }
 
-// WS-4: CONTENT kind = width/spacing only (no bg/overlay/grid). The block's own
-// colour/border/hover CSS rides on $classes + CSS custom properties ($styles).
-// R-22-14: no empty($content) branching — all nodes are explicitly gated above.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: text via wp_kses_post(); media via sgs_render_media(); attrs via esc_attr()/sanitize_html_class(); schema via wp_json_encode().
-echo SGS_Container_Wrapper::render(
-	$attributes,
-	$block,
-	$inner_html,
-	'content',
-	array(
-		'tag'           => 'div',
-		'extra_classes' => $classes,
-		'extra_styles'  => $styles,
-	)
+// ---------------------------------------------------------------------------
+// 3. Build the root element's attributes. Contract §A: NO 'style' key carries
+// a real property declaration — only the var-only hover/transition custom
+// properties (`$styles`, all `--sgs-*`). Everything else lives in the scoped
+// <style> block above.
+// ---------------------------------------------------------------------------
+
+$root_attr_args = array(
+	'class' => implode( ' ', $classes ),
 );
+if ( $anchor ) {
+	$root_attr_args['id'] = esc_attr( $anchor );
+}
+if ( $styles ) {
+	$root_attr_args['style'] = implode( ';', $styles );
+}
+$wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
+
+// ---------------------------------------------------------------------------
+// 4. Render.
+// R-22-14: no empty($content) branching — all nodes are explicitly gated above.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: text via wp_kses_post()/esc_html(); media via sgs_render_media(); attrs via esc_attr()/sanitize_html_class(); schema via wp_json_encode(); CSS via wp_strip_all_tags() + the sanitisers above.
+// ---------------------------------------------------------------------------
+?>
+<?php if ( $scoped_css ) : ?>
+<style>
+	<?php
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
+	// + sgs/quote). Every value reaching $scoped_css is pre-sanitised
+	// ($sgs_css_length / $sgs_css_keyword / sgs_colour_value / sgs_font_size_value /
+	// sgs_container_gap_value / in_array allowlists / wp_style_engine_get_styles),
+	// so no un-sanitised value survives to here.
+	echo wp_strip_all_tags( implode( '', $scoped_css ) );
+	?>
+</style>
+<?php endif; ?>
+<div <?php echo $wrapper_attrs; ?>><?php echo $inner_html; ?></div>
+<?php
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

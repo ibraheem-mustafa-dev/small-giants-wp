@@ -23,11 +23,26 @@ import {
 	TextControl,
 	ToggleControl,
 	BaseControl,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
-// WS-4: shared container-wrapper editor controls (content kind = width/spacing only).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+
+// No-inline migration contract §B3 (D294): testimonial is a content-KIND
+// composite using only box+width, so it migrates BLOCK-PRIVATE — dropped
+// SGS_Container_Wrapper (render.php) and, correspondingly, the shared
+// ContainerWrapperControls import here (its 'content' kind panel writes to
+// the LEGACY flat paddingTopTablet/… attrs, not the box-object
+// paddingTablet/paddingMobile/marginTablet/marginMobile this block now uses —
+// same reasoning as sgs/quote's edit.js, which also builds its own
+// ResponsiveBoxControl-driven Width panel instead of using the shared one).
+
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+];
 
 /**
  * The 7 variants, each with a tiny inline SVG thumbnail so clients pick by eye.
@@ -140,6 +155,13 @@ const VARIANTS = [
 
 export default function Edit( { attributes, setAttributes, context } ) {
 	const {
+		style,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		contentWidth,
+		maxWidth,
 		variant,
 		quote,
 		summaryPhrase,
@@ -768,12 +790,77 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						/>
 				</PanelBody>
 
-				{ /* ── Width / spacing (WS-4 container-mirror, content kind) ── */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="content"
-				/>
+				{ /* ── Width / spacing (WS-4 container-mirror, content kind).
+				     Box-object interface contract §B/§E: padding/margin base
+				     routes to WP-native style.spacing.* (skip-serialised →
+				     scoped, not inline); tiers are the paddingTablet/
+				     paddingMobile + marginTablet/marginMobile object attrs
+				     (mirrors sgs/quote's block-private Wrapper panel). ── */ }
+				<PanelBody
+					title={ __( 'Width & spacing', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( {
+									style: {
+										...style,
+										spacing: { ...style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next,
+								} );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( {
+									style: {
+										...style,
+										spacing: { ...style?.spacing, margin: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next,
+								} );
+							}
+						} }
+					/>
+					<UnitControl
+						label={ __( 'Outer max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length applied as max-width (e.g. 800px). Leave blank for no cap.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Content width', 'sgs-blocks' ) }
+						value={ contentWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
 
 				{ /* ── SEO schema ── */ }
 				<PanelBody
