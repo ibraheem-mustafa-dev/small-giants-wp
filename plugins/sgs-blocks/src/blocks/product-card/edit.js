@@ -15,6 +15,7 @@ import {
 	TextControl,
 	TextareaControl,
 	__experimentalNumberControl as NumberControl,
+	__experimentalUnitControl as UnitControl,
 	ComboboxControl,
 	ToggleControl,
 	CheckboxControl,
@@ -30,6 +31,14 @@ import ServerSideRender from '@wordpress/server-side-render';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
+
+/** CSS-length units for the picker border-radius UnitControls (R4 forward). */
+const PICKER_RADIUS_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+];
 
 /*
  * Override-able elements (Bean design, FP-H final unit): 'name', 'description',
@@ -605,6 +614,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaBehaviour,
 		pickerLabelFontSize,
 		pickerLabelColour,
+		pickerColourPreset,
+		pickerShowSelectedTick,
+		pickerPillBgColour,
+		pickerPillTextColour,
+		pickerPillBorderColour,
+		pickerPillBorderRadius,
+		pickerPillSelectedBgColour,
+		pickerPillSelectedTextColour,
+		pickerPillSelectedBorderColour,
+		pickerPillSelectedBorderRadius,
 		titleColour,
 		priceColour,
 		descColour,
@@ -1395,49 +1414,118 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Picker labels panel (connected products only) ── */ }
-					{ isBound && (
-						<PanelBody
-							title={ __( 'Picker labels', 'sgs-blocks' ) }
-							initialOpen={ false }
-						>
-							<p style={ { marginTop: 0 } }>
-								{ __(
-									'Style the in-card option labels (e.g. Size, Flavour) shown above each set of pills.',
-									'sgs-blocks'
-								) }
-							</p>
-							<TextControl
-								label={ __(
-									'Picker label font size',
-									'sgs-blocks'
-								) }
-								help={ __(
-									'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
-									'sgs-blocks'
-								) }
-								value={ pickerLabelFontSize || '' }
-								onChange={ ( v ) =>
-									setAttributes( {
-										pickerLabelFontSize: v,
-									} )
-								}
-								__nextHasNoMarginBottom
-							/>
-							<DesignTokenPicker
-								label={ __(
-									'Picker label colour',
-									'sgs-blocks'
-								) }
-								value={ pickerLabelColour }
-								onChange={ ( v ) =>
-									setAttributes( {
-										pickerLabelColour: v,
-									} )
-								}
-							/>
-						</PanelBody>
-					) }
+				{ /* ── Picker style panel (R4 — pill-style forwarding to every
+				   in-card sgs/option-picker: typed pack-size pills AND
+				   bound/connected axis pickers, all 3 render_block call
+				   sites in render.php/product-card-builtin-render.php). ── */ }
+					<PanelBody
+						title={ __( 'Picker style', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<p style={ { marginTop: 0 } }>
+							{ __(
+								'Style the in-card option pickers (pack size / flavour / etc). Forwarded to every sgs/option-picker the card renders.',
+								'sgs-blocks'
+							) }
+						</p>
+						<TextControl
+							label={ __(
+								'Picker label font size',
+								'sgs-blocks'
+							) }
+							help={ __(
+								'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
+								'sgs-blocks'
+							) }
+							value={ pickerLabelFontSize || '' }
+							onChange={ ( v ) =>
+								setAttributes( {
+									pickerLabelFontSize: v,
+								} )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<DesignTokenPicker
+							label={ __(
+								'Picker label colour',
+								'sgs-blocks'
+							) }
+							value={ pickerLabelColour }
+							onChange={ ( v ) =>
+								setAttributes( {
+									pickerLabelColour: v,
+								} )
+							}
+						/>
+						<SelectControl
+							label={ __( 'Picker colour preset', 'sgs-blocks' ) }
+							help={ __(
+								'Solid (default) matches the previous look. Soft = pale-tint fill, outline, no tick.',
+								'sgs-blocks'
+							) }
+							value={ pickerColourPreset }
+							options={ [
+								{ label: __( 'Solid (default)', 'sgs-blocks' ), value: 'solid' },
+								{ label: __( 'Soft', 'sgs-blocks' ), value: 'soft' },
+								{ label: __( '— Framework default —', 'sgs-blocks' ), value: '' },
+							] }
+							onChange={ ( v ) => setAttributes( { pickerColourPreset: v } ) }
+							__nextHasNoMarginBottom
+						/>
+						<ToggleControl
+							label={ __( 'Show selection tick', 'sgs-blocks' ) }
+							checked={ pickerShowSelectedTick }
+							onChange={ ( v ) => setAttributes( { pickerShowSelectedTick: v } ) }
+							__nextHasNoMarginBottom
+						/>
+						<DesignTokenPicker
+							label={ __( 'Resting pill background', 'sgs-blocks' ) }
+							value={ pickerPillBgColour }
+							onChange={ ( v ) => setAttributes( { pickerPillBgColour: v } ) }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Resting pill text', 'sgs-blocks' ) }
+							value={ pickerPillTextColour }
+							onChange={ ( v ) => setAttributes( { pickerPillTextColour: v } ) }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Resting pill border', 'sgs-blocks' ) }
+							value={ pickerPillBorderColour }
+							onChange={ ( v ) => setAttributes( { pickerPillBorderColour: v } ) }
+						/>
+						<UnitControl
+							label={ __( 'Pill border radius', 'sgs-blocks' ) }
+							value={ pickerPillBorderRadius || '' }
+							units={ PICKER_RADIUS_UNITS }
+							onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
+							help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<DesignTokenPicker
+							label={ __( 'Selected pill background', 'sgs-blocks' ) }
+							value={ pickerPillSelectedBgColour }
+							onChange={ ( v ) => setAttributes( { pickerPillSelectedBgColour: v } ) }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Selected pill text', 'sgs-blocks' ) }
+							value={ pickerPillSelectedTextColour }
+							onChange={ ( v ) => setAttributes( { pickerPillSelectedTextColour: v } ) }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Selected pill border', 'sgs-blocks' ) }
+							help={ __( 'Independent of the fill (R2). Leave empty to match the fill.', 'sgs-blocks' ) }
+							value={ pickerPillSelectedBorderColour }
+							onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderColour: v } ) }
+						/>
+						<UnitControl
+							label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
+							value={ pickerPillSelectedBorderRadius || '' }
+							units={ PICKER_RADIUS_UNITS }
+							onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
+							help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
 
 				{ /* ── Content overrides panel (connected products only) ── */ }
 				{ isBound && (

@@ -117,7 +117,12 @@
 .product-card .pill {
 	background: var(--wp--preset--color--surface, #fbf3dc);
 	border: 2px solid var(--wp--preset--color--border, #e8d5c0);
-	border-radius: 8px;
+	/* F3 (2026-07-10): sanctioned overridable-default (var, never a bare literal) —
+	   this legacy `.pill` shape is distinct from the shared sgs/option-picker pill
+	   (which is styled by its own pickerPill-prefixed and pillBorderRadius attrs,
+	   forwarded per R4/R1); this var lets a future control own it without another
+	   F3 hit. */
+	border-radius: var(--sgs-product-card-pill-radius, 8px);
 	padding: 7px 13px;
 	font-family: 'Inter', sans-serif;
 	font-size: var(--sgs-product-card-pill-font-size, 13px);
@@ -218,7 +223,9 @@
 	font-size: var(--sgs-product-card-tag-font-size, 11px);
 	font-weight: var(--sgs-product-card-trial-tag-font-weight, 700);
 	padding: 4px 10px;
-	border-radius: 6px;
+	/* F3 (2026-07-10): sanctioned overridable-default — this badge is unrelated
+	   to the option-picker pill radius attrs; var() avoids a bare literal. */
+	border-radius: var(--sgs-product-card-tag-radius, 6px);
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
 	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
@@ -598,14 +605,15 @@
 }
 
 /*
- * Resting (unselected) option pills get the brand-primary (pink) outline. The
- * shared option-picker default is the foreground/dark colour; the configurator
- * wants pink on every state (resting + considering), with the selected pill
- * filled pink. Set the picker's border custom-property card-scoped only.
+ * R5 (2026-07-10): the card-scoped `--sgs-op-border` hardcode (client hex
+ * fallback #e68a95) was REMOVED — a framework block must never bake a client
+ * colour into its CSS (blub.db `framework-block-client-hardcode-is-a-bug`).
+ * The picker's resting-primary-border look is now the 'solid' colourPreset
+ * (product-card/render.php $picker_style_attrs['colourPreset'], default
+ * 'solid'), forwarded into every in-card render_block('sgs/option-picker') —
+ * theme-token-driven (var(--wp--preset--color--primary)), never a client hex,
+ * and correctly re-skins per client via the snapshot's optionPickerPresets.
  */
-.product-card--live .sgs-option-picker {
-	--sgs-op-border: var( --wp--preset--color--primary, #e68a95 );
-}
 
 /*
  * Card hover affordance (was missing). Subtle lift + deeper shadow on hover —
@@ -1043,11 +1051,17 @@
 	appearance: none;
 }
 
-/* Individual pill — matches .product-card .pill; 44px min touch target. */
+/* Individual pill — matches .product-card .pill; 44px min touch target.
+   NOTE: this legacy `.sgs-product-card__pill` shape is a DIFFERENT element
+   from the shared sgs/option-picker pill (`.sgs-option-picker__pill`) that
+   the card's real pack-size/flavour pickers render via render_block() — see
+   R4/R1 pickerPill* attrs on product-card + pillBgColour etc on
+   sgs/option-picker itself. */
 .product-card .sgs-product-card__pill {
 	background: var( --wp--preset--color--surface, #fbf3dc );
 	border: 2px solid var( --wp--preset--color--border, #e8d5c0 );
-	border-radius: 8px;
+	/* F3 (2026-07-10): sanctioned overridable-default (var, never bare literal). */
+	border-radius: var(--sgs-product-card-pill-radius, 8px);
 	padding: 7px 13px;
 	font-size: var(--sgs-product-card-pill-font-size, 13px);
 	font-weight: 600;

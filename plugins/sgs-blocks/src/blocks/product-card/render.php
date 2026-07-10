@@ -66,6 +66,41 @@ $inner_padding  = isset( $attributes['innerPadding'] ) ? (string) $attributes['i
 $picker_label_font_size = isset( $attributes['pickerLabelFontSize'] ) ? sanitize_text_field( $attributes['pickerLabelFontSize'] ) : '';
 $picker_label_colour    = isset( $attributes['pickerLabelColour'] ) ? sanitize_text_field( $attributes['pickerLabelColour'] ) : '';
 
+// R4 forward: pill-style attrs (R1 set) for the in-card option-picker(s). Each
+// is a no-op on the option-picker side when '' / 0 / null (its own render.php
+// guards on non-empty), so an un-set card looks unchanged. pickerColourPreset
+// defaults 'solid' — see R5 note in style.css for why (replaces the removed
+// card-scoped --sgs-op-border hardcode).
+$picker_colour_preset       = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
+$picker_show_selected_tick  = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+$picker_pill_bg_colour      = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
+$picker_pill_text_colour    = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
+$picker_pill_border_colour  = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
+// Border-radius forwards are CSS-length STRINGS (e.g. "6px") — the option-picker
+// side reads them as strings, gates on '' !== and sanitises via $sgs_css_length,
+// so an explicit "0"/"0px" survives and empty = the picker's own default.
+$picker_pill_border_radius  = isset( $attributes['pickerPillBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillBorderRadius'] ) : '';
+$picker_pill_sel_bg_colour  = isset( $attributes['pickerPillSelectedBgColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedBgColour'] ) : '';
+$picker_pill_sel_text_col   = isset( $attributes['pickerPillSelectedTextColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedTextColour'] ) : '';
+$picker_pill_sel_border_col = isset( $attributes['pickerPillSelectedBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedBorderColour'] ) : '';
+$picker_pill_sel_radius_raw = isset( $attributes['pickerPillSelectedBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillSelectedBorderRadius'] ) : '';
+
+// Bundled into every render_block('sgs/option-picker') attrs array below —
+// kept as one array so the 3 call-sites (typed standalone + 2 here) stay in
+// sync without repeating each key by hand.
+$picker_style_attrs = array(
+	'colourPreset'             => $picker_colour_preset,
+	'showSelectedTick'         => $picker_show_selected_tick,
+	'pillBgColour'             => $picker_pill_bg_colour,
+	'pillTextColour'           => $picker_pill_text_colour,
+	'pillBorderColour'         => $picker_pill_border_colour,
+	'pillBorderRadius'         => $picker_pill_border_radius,
+	'pillSelectedBgColour'     => $picker_pill_sel_bg_colour,
+	'pillSelectedTextColour'   => $picker_pill_sel_text_col,
+	'pillSelectedBorderColour' => $picker_pill_sel_border_col,
+	'pillSelectedBorderRadius' => $picker_pill_sel_radius_raw,
+);
+
 // showPickers: when false, suppress all in-card option-picker renders (variable
 // and non-variable paths). Default true = existing behaviour unchanged (R-22-9).
 $sgs_show_pickers = isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true;
@@ -830,22 +865,25 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					echo render_block(
 						array(
 							'blockName' => 'sgs/option-picker',
-							'attrs'     => array(
-								'label'           => $axis['label'],
-								'showLabel'       => true,
-								'optionItems'     => array_map(
-									static function ( $t ) {
-										return array(
-											'key'   => $t['slug'],
-											'label' => $t['label'],
-										);
-									},
-									$axis['terms']
+							'attrs'     => array_merge(
+								array(
+									'label'           => $axis['label'],
+									'showLabel'       => true,
+									'optionItems'     => array_map(
+										static function ( $t ) {
+											return array(
+												'key'   => $t['slug'],
+												'label' => $t['label'],
+											);
+										},
+										$axis['terms']
+									),
+									'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
+									'typeKey'         => $axis['taxonomy'],
+									'labelFontSize'   => $picker_label_font_size,
+									'labelColour'     => $picker_label_colour,
 								),
-								'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
-								'typeKey'         => $axis['taxonomy'],
-								'labelFontSize'   => $picker_label_font_size,
-								'labelColour'     => $picker_label_colour,
+								$picker_style_attrs
 							),
 						)
 					);
@@ -1253,15 +1291,18 @@ ob_start();
 		echo render_block(
 			array(
 				'blockName' => 'sgs/option-picker',
-				'attrs'     => array(
-					'label'           => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
-					'showLabel'       => true,
-					'optionItems'     => $picker_options,
-					'defaultSelected' => $first_key,
-					'contentImpact'   => $picker_impacts,
-					'typeKey'         => $sgs_pill_type_key,
-					'labelFontSize'   => $picker_label_font_size,
-					'labelColour'     => $picker_label_colour,
+				'attrs'     => array_merge(
+					array(
+						'label'           => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
+						'showLabel'       => true,
+						'optionItems'     => $picker_options,
+						'defaultSelected' => $first_key,
+						'contentImpact'   => $picker_impacts,
+						'typeKey'         => $sgs_pill_type_key,
+						'labelFontSize'   => $picker_label_font_size,
+						'labelColour'     => $picker_label_colour,
+					),
+					$picker_style_attrs
 				),
 			)
 		);

@@ -55,6 +55,25 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 		$sgs_pcard_cta2    = isset( $attributes['cta2Text'] ) ? sanitize_text_field( (string) $attributes['cta2Text'] ) : '';
 		$sgs_pcard_cta2url = isset( $attributes['cta2Url'] ) ? (string) $attributes['cta2Url'] : '';
 
+		// R4 forward: pill-style attrs (R1 set) for the typed in-card
+		// sgs/option-picker. Each is a no-op on the option-picker side when
+		// '' / 0 / null — mirrors the bound/non-variable render.php sites
+		// (product-card/render.php $picker_style_attrs).
+		$sgs_pcard_picker_style_attrs = array(
+			'colourPreset'             => isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid',
+			'showSelectedTick'         => array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true,
+			'pillBgColour'             => isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '',
+			'pillTextColour'           => isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '',
+			'pillBorderColour'         => isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '',
+			// Border-radius forwards are CSS-length STRINGS (option-picker gates on
+			// '' !== + sanitises via $sgs_css_length; explicit "0" survives).
+			'pillBorderRadius'         => isset( $attributes['pickerPillBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillBorderRadius'] ) : '',
+			'pillSelectedBgColour'     => isset( $attributes['pickerPillSelectedBgColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedBgColour'] ) : '',
+			'pillSelectedTextColour'   => isset( $attributes['pickerPillSelectedTextColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedTextColour'] ) : '',
+			'pillSelectedBorderColour' => isset( $attributes['pickerPillSelectedBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillSelectedBorderColour'] ) : '',
+			'pillSelectedBorderRadius' => isset( $attributes['pickerPillSelectedBorderRadius'] ) ? sanitize_text_field( (string) $attributes['pickerPillSelectedBorderRadius'] ) : '',
+		);
+
 		// Heading level — clamp to 2|3|4; integer, not a user string.
 		$sgs_pcard_hlevel = max( 2, min( 4, (int) ( $attributes['headingLevel'] ?? 3 ) ) );
 
@@ -164,12 +183,15 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 					echo render_block(
 						array(
 							'blockName' => 'sgs/option-picker',
-							'attrs'     => array(
-								'label'           => __( 'Pack size', 'sgs-blocks' ),
-								'showLabel'       => false,
-								'optionItems'     => $sgs_pcard_picker_items,
-								'defaultSelected' => $sgs_pcard_picker_default,
-								'typeKey'         => 'pack-size',
+							'attrs'     => array_merge(
+								array(
+									'label'           => __( 'Pack size', 'sgs-blocks' ),
+									'showLabel'       => false,
+									'optionItems'     => $sgs_pcard_picker_items,
+									'defaultSelected' => $sgs_pcard_picker_default,
+									'typeKey'         => 'pack-size',
+								),
+								$sgs_pcard_picker_style_attrs
 							),
 						)
 					);
