@@ -2,6 +2,35 @@
 /**
  * Server-side render for the SGS Mega Menu block.
  *
+ * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
+ * the rendered `<li>` root and every descendant carry ZERO inline CSS
+ * *property declarations*. `--custom-property:value` declarations on the
+ * wrapper (colour vars consumed by style.css) are VALUES, not property
+ * declarations, so they stay inline per the contract. The one genuine
+ * property-declaration block (the full-width panel's `position:fixed`
+ * safety-net, previously an inline `style=` attribute) is now emitted into
+ * this instance's OWN scoped `<style>` tag instead — this is *more* robust
+ * against the original LiteSpeed CSS Combine problem than a raw inline
+ * attribute, because a per-instance `<style>` tag is literal page HTML, not
+ * part of a combinable/cacheable external stylesheet, so LiteSpeed's
+ * stylesheet-combine pass never touches it (see memory:
+ * feedback_litespeed_gotchas.md).
+ *
+ * The `color` (background/text) WP support declares
+ * `__experimentalSkipSerialization` in block.json; this render reads
+ * `$attributes['style']['color']` itself and emits it scoped to the block
+ * root via `wp_style_engine_get_styles` (this block never calls
+ * `get_block_wrapper_attributes()`, so WP was never auto-inlining this
+ * support in the first place — the control was previously a no-op; this is
+ * now wired up for real).
+ *
+ * F3 DRAIN (contract §E2): the panel's `max-width` literal
+ * `min(900px, calc(100vw - 2rem))` in style.css is now the CSS var
+ * *fallback default* for `--sgs-mega-menu-max-width`, which the
+ * `panelMaxWidth` attr now drives for BOTH `content` and `custom` width
+ * modes (previously the attr only applied to `custom`, so the same control
+ * did nothing in `content` mode).
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var \WP_Block $block      Block instance.
@@ -12,6 +41,19 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+// ---------------------------------------------------------------------------
+// 0. Security sanitisers (contract §D) — a permissive-but-safe CSS-value
+// sanitiser for the free-text `panelMaxWidth` attr (must allow `calc()`/
+// `min()` expressions with spaces, parens, commas, %, so the plain
+// css-length sanitiser used elsewhere — digits/letters/%/. only — is too
+// strict here). Blocks the CSS-breakout characters (`;`, `{`, `}`, `<`,
+// `>`, quotes, `/`, `:`) that `esc_attr()` alone does not.
+// ---------------------------------------------------------------------------
+
+$sgs_css_value = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%()\-,\s]/', '', (string) $value );
+};
 
 // Extract attributes.
 $label               = $attributes['label'] ?? '';
@@ -81,18 +123,78 @@ if ( 'hover' === $open_on ) {
 
 // Build wrapper CSS custom properties.
 // Colour vars drive trigger text, hover states, and panel background
-// so style.css never needs hardcoded palette values.
+// so style.css never needs hardcoded palette values. These are
+// `--var:value` DECLARATIONS whose VALUE is what varies — permitted inline
+// per contract §A ("a `--custom-property: value` VALUE is allowed").
 $wrapper_styles = array(
 	'--sgs-mm-panel-bg:'        . sgs_colour_value( $panel_bg_colour ),
 	'--sgs-mm-link-colour:'     . sgs_colour_value( $link_colour ),
 	'--sgs-mm-link-hover:'      . sgs_colour_value( $link_hover_colour ),
 	'--sgs-mm-link-hover-bg:'   . sgs_colour_value( $link_hover_bg ),
 );
-if ( 'custom' === $panel_width && $panel_max_width ) {
-	$wrapper_styles[] = '--sgs-mega-menu-max-width:' . esc_attr( $panel_max_width );
+// F3 DRAIN — panelMaxWidth now drives BOTH `content` and `custom` width
+// modes (previously `custom` only, so the control did nothing in `content`
+// mode). style.css's base `.sgs-mega-menu__panel` rule consumes this var
+// with `min(900px, calc(100vw - 2rem))` as its fallback default.
+if ( in_array( $panel_width, array( 'custom', 'content' ), true ) && $panel_max_width ) {
+	$wrapper_styles[] = '--sgs-mega-menu-max-width:' . $sgs_css_value( $panel_max_width );
 }
 
-// Convert wrapper attributes to HTML string.
+// Unique scoped-CSS id for this instance — reuses $menu_id (already unique
+// via wp_unique_id(), alphanumeric + hyphen, safe as a raw CSS id selector).
+// This block declares `"anchor": false`, so an ID selector is safe (no
+// collision risk with an operator-set anchor).
+$uid      = $menu_id;
+$root_sel = '#' . $uid;
+
+// WP-native `color` support (background/text) — skip-serialised in
+// block.json so WordPress never auto-inlines it (this render never calls
+// get_block_wrapper_attributes() anyway, so it was previously a dead
+// control). Emitted scoped to the block root via the stable core style
+// engine, matching sgs/label + sgs/quote.
+$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+$scoped_css = array();
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$color_args = array();
+	if ( '' !== $style_color_text ) {
+		$color_args['text'] = $style_color_text;
+	}
+	if ( '' !== $style_color_bg ) {
+		$color_args['background'] = $style_color_bg;
+	}
+	if ( ! empty( $color_args ) ) {
+		$color_scoped_styles = wp_style_engine_get_styles(
+			array( 'color' => $color_args ),
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $color_scoped_styles['css'] ) ) {
+			$scoped_css[] = $color_scoped_styles['css'];
+		}
+	}
+}
+
+if ( '' !== $preset_text_slug ) {
+	$classes[] = 'has-text-color';
+	$classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
+}
+
+// Re-derive the class list string now the has-*-color classes may have
+// been appended above.
+$wrapper_attr['class'] = implode( ' ', $classes );
+$wrapper_attr['id']    = $uid;
+
+// Convert wrapper attributes to HTML string. NO 'style' key carrying a real
+// CSS property declaration is added here — only the `--var:value` vars
+// above (contract §A permits custom-property VALUES inline).
 $wrapper_attr_string = '';
 foreach ( $wrapper_attr as $key => $value ) {
 	$wrapper_attr_string .= sprintf( ' %s="%s"', esc_attr( $key ), esc_attr( $value ) );
@@ -162,26 +264,45 @@ if ( $menu_template_part ) {
 }
 
 // Build panel HTML.
-// Full-width panels need position:fixed inline because LiteSpeed CSS Combine
-// merges the full-width rule with the align-centre rule, dropping position:fixed.
-// Cloudflare then caches the broken combined CSS for up to 30 days. Inline style
-// guarantees correct positioning regardless of CSS optimiser or CDN behaviour.
-$panel_style = '';
+// Full-width panels need guaranteed position:fixed because LiteSpeed CSS
+// Combine can merge the full-width rule with the align-centre rule in the
+// external style.css bundle, dropping position:fixed; Cloudflare then caches
+// the broken combined CSS for up to 30 days. Previously this was solved with
+// a raw inline `style=` attribute; it is now emitted into THIS instance's
+// own scoped `<style>` tag below instead (a per-render `<style>` tag is
+// literal page HTML, never part of the combinable external stylesheet, so
+// it is immune to the LiteSpeed Combine merge — a strictly more robust fix
+// than the inline attribute it replaces).
+$panel_sel = '#' . $uid . '-panel';
 if ( 'full' === $panel_width ) {
 	// top uses CSS var set by JS repositionPanel(); default 0 = flush below header.
-	$panel_style = ' style="position:fixed;top:var(--sgs-mm-fixed-top,0);left:0;width:100vw;max-width:100vw;--sgs-mm-tx:0px;--sgs-mm-open-tx:0px"';
+	$scoped_css[] = $panel_sel . '{position:fixed;top:var(--sgs-mm-fixed-top,0);left:0;width:100vw;max-width:100vw;--sgs-mm-tx:0px;--sgs-mm-open-tx:0px;}';
 }
 $panel_html = sprintf(
-	'<div id="%s-panel" class="sgs-mega-menu__panel"%s role="menu" data-wp-bind--hidden="!context.isOpen" data-wp-on--keydown="actions.handlePanelKeydown">%s</div>',
+	'<div id="%s-panel" class="sgs-mega-menu__panel" role="menu" data-wp-bind--hidden="!context.isOpen" data-wp-on--keydown="actions.handlePanelKeydown">%s</div>',
 	esc_attr( $menu_id ),
-	$panel_style,
 	$panel_content
 );
 
-// Output.
+// Output. The scoped <style> tag is nested INSIDE the <li> (as its first
+// child) rather than as a preceding sibling — the parent <ul> (core/
+// navigation's container) only permits <li> + script-supporting elements as
+// DIRECT children per the HTML list content model (the exact ARIA-list-
+// structure concern the original wrapper-attr comment above already flags),
+// whereas a <li>'s own content model is unrestricted flow content, so a
+// <style> tag nested inside it is fully conforming. wp_strip_all_tags (NOT
+// esc_html) blocks a </style> breakout while leaving CSS combinators intact
+// (contract §D); every value reaching $scoped_css is pre-sanitised
+// (wp_style_engine_get_styles / hand-built literals with no user input
+// beyond the uid, which is process-generated).
+$style_html = '';
+if ( $scoped_css ) {
+	$style_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
+}
 printf(
-	'<li%s>%s%s</li>',
+	'<li%s>%s%s%s</li>',
 	$wrapper_attr_string,
+	$style_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via wp_strip_all_tags above.
 	$trigger_html,
 	$panel_html
 );

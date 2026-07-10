@@ -1,0 +1,29 @@
+{
+  "pageId": 1356,
+  "_note": "Wave-2 Round-3 LANDED harness (2026-07-10). The 2 keep-structure navs. mega-menu is colour-only (no box family) -> inline-scan only, with a background+text colour set to prove the colour support serialises scoped not inline. mobile-nav (singleton drawer) -> asymmetric padding base {5,17,9,23} + tablet {4,12,6,16} / mobile {2,8,4,10} on #sgs-mobile-nav, plus inline-scan of the whole drawer subtree.",
+  "blocks": [
+    {
+      "slug": "sgs/mega-menu",
+      "rootSelector": ".sgs-mega-menu",
+      "attrs": {
+        "label": "Products",
+        "style": { "color": { "background": "#123456", "text": "#ffffff" } }
+      },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    },
+    {
+      "slug": "sgs/mobile-nav",
+      "rootSelector": "#sgs-mobile-nav",
+      "attrs": {
+        "style": { "spacing": { "padding": { "top": "5px", "right": "17px", "bottom": "9px", "left": "23px" } } },
+        "paddingTablet": { "top": "4px", "right": "12px", "bottom": "6px", "left": "16px" },
+        "paddingMobile": { "top": "2px", "right": "8px", "bottom": "4px", "left": "10px" }
+      },
+      "expected": {
+        "desktop": { "padding": "5px 17px 9px 23px" },
+        "tablet":  { "padding": "4px 12px 6px 16px" },
+        "mobile":  { "padding": "2px 8px 4px 10px" }
+      }
+    }
+  ]
+}

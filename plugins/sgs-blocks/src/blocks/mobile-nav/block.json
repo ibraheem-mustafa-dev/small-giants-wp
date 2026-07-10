@@ -27,10 +27,12 @@
 		"multiple": false,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {
@@ -123,6 +125,14 @@
 		"drawerMaxWidth": {
 			"type": "number",
 			"default": 400
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
 		},
 		"drawerPosition": {
 			"type": "string",

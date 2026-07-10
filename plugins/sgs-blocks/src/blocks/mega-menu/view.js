@@ -56,14 +56,22 @@ function repositionPanel( wrapper ) {
 	}
 
 	// Non-full-width: detect and fix right-edge overflow.
-	panel.style.left = '';
-	panel.style.right = '';
+	// NO-INLINE (contract §A/§C): the override is expressed as CSS
+	// custom-property VALUES (--sgs-mm-overflow-left/-right), never a
+	// direct .style.left/.style.right property assignment. Every
+	// left/right-setting panel rule in style.css reads this same override
+	// pair (`var(--sgs-mm-overflow-left, <its own default>)`), so clearing
+	// the vars restores whichever alignment/layout rule the cascade would
+	// otherwise pick, and setting them forces right-alignment regardless of
+	// which rule currently wins by specificity.
+	panel.style.removeProperty( '--sgs-mm-overflow-left' );
+	panel.style.removeProperty( '--sgs-mm-overflow-right' );
 	requestAnimationFrame( () => {
 		const rect = panel.getBoundingClientRect();
 		const overflow = rect.right - window.innerWidth;
 		if ( overflow > 0 ) {
-			panel.style.left = 'auto';
-			panel.style.right = '0';
+			panel.style.setProperty( '--sgs-mm-overflow-left', 'auto' );
+			panel.style.setProperty( '--sgs-mm-overflow-right', '0' );
 		}
 	} );
 }

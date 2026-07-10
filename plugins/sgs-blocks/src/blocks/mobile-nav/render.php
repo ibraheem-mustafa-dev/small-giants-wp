@@ -23,6 +23,25 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/class-mobile-nav-renderer.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+// ── Security sanitisers (contract §D) — CSS-length sanitiser for box/side
+// values, mirrors sgs/label + sgs/container. ──────────────────────────────
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// Box shorthand builder for the padding tiers (SGS custom object attrs —
+// paddingTablet/paddingMobile). Mirrors sgs/label's $sgs_box_shorthand.
+$sgs_mn_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
 // ── Extract structural attributes ────────────────────────────────────────────
 $variant           = $attributes['variant'] ?? 'overlay';
 $accent            = $attributes['accentColour'] ?? 'accent';
@@ -184,6 +203,22 @@ if ( $backdrop_blur ) {
 
 $inline_style = implode( ';', $css_vars );
 
+// ── WP-native color/spacing supports (skip-serialised in block.json → NOT
+// auto-inlined by get_block_wrapper_attributes()). Values still land in
+// $attributes['style'] — emitted scoped below via wp_style_engine_get_styles,
+// exactly the sgs/label / sgs/container pattern (contract §A). ─────────────
+$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+// Padding — WP-native style.spacing.padding object (base tier, skip-
+// serialised) + SGS custom object attrs for the tablet/mobile tiers
+// (contract §B: base stays the WP-native object, tiers are SGS objects).
+$base_padding_obj    = is_array( $attributes['style']['spacing']['padding'] ?? null ) ? $attributes['style']['spacing']['padding'] : array();
+$padding_tablet_obj  = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj  = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+
 // ── Build wrapper classes ─────────────────────────────────────────────────────
 $classes = array(
 	'sgs-mobile-nav',
@@ -198,6 +233,18 @@ if ( ! $show_dividers ) {
 $drawer_position = $attributes['drawerPosition'] ?? 'top';
 if ( 'top' !== $drawer_position ) {
 	$classes[] = 'sgs-mobile-nav--pos-' . sanitize_html_class( $drawer_position );
+}
+
+// WP-native colour PRESET classes (custom hex/rgb values are emitted scoped
+// below, but a preset slug relies on the standard has-*-color class + the
+// theme's own .has-{slug}-color / .has-{slug}-background-color rule).
+if ( '' !== $preset_text_slug ) {
+	$classes[] = 'has-text-color';
+	$classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$classes[] = 'has-background';
+	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 
 // ── Get block wrapper attributes ──────────────────────────────────────────────
@@ -251,8 +298,8 @@ $typo_css .= sgs_typography_css_rule( $attributes, 'sublink', $sublink_sel );
 // order does the overriding (base vars were previously inline on the element,
 // which always beat the @media re-declarations; and mobile was emitted BEFORE
 // tablet, so at ≤480px the tablet rule wrongly won — both fixed here).
-// Mobile breakpoint : max-width 480px. Tablet breakpoint : max-width 768px
-// (this block's pre-existing values — placement, not breakpoints, is in scope).
+// Device tiers (contract §B2, fixed 2026-07-10 — were previously a stray
+// 768px/480px pair): Tablet = max-width:1023px, Mobile = max-width:767px.
 $base_vars   = array();
 $mobile_vars = array();
 $tablet_vars = array();
@@ -302,22 +349,79 @@ foreach ( $responsive_attrs as $base => $cfg ) {
 	}
 }
 
-// Build the combined <style> tag — typography rules + numeric responsive overrides.
-// CSS content is constructed entirely from validated values and hardcoded safe strings.
+// ── WP-native colour support, emitted scoped (contract §A) ────────────────
+$color_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$color_args = array();
+	if ( '' !== $style_color_text ) {
+		$color_args['text'] = $style_color_text;
+	}
+	if ( '' !== $style_color_bg ) {
+		$color_args['background'] = $style_color_bg;
+	}
+	if ( ! empty( $color_args ) ) {
+		$color_scoped_styles = wp_style_engine_get_styles(
+			array( 'color' => $color_args ),
+			array( 'selector' => '#sgs-mobile-nav' )
+		);
+		if ( ! empty( $color_scoped_styles['css'] ) ) {
+			$color_css = $color_scoped_styles['css'];
+		}
+	}
+}
+
+// ── WP-native padding support (base) + SGS padding tiers, emitted scoped
+// (contract §A/§B). Base uses the style engine (WP-native object); tiers use
+// the hand-built box shorthand (SGS custom object attrs, no WP support). ──
+$padding_base_css = '';
+if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_padding_obj ) ) {
+	$padding_base_styles = wp_style_engine_get_styles(
+		array( 'spacing' => array( 'padding' => $base_padding_obj ) ),
+		array( 'selector' => '#sgs-mobile-nav' )
+	);
+	if ( ! empty( $padding_base_styles['css'] ) ) {
+		$padding_base_css = $padding_base_styles['css'];
+	}
+}
+
+$padding_tablet_val = $sgs_mn_box_shorthand( $padding_tablet_obj );
+$padding_mobile_val = $sgs_mn_box_shorthand( $padding_mobile_obj );
+
+// Build the combined <style> tag — typography rules + numeric responsive overrides
+// + colour/padding supports. CSS content is constructed entirely from validated
+// values, the WP style engine (pre-escaped), and hardcoded safe strings.
+// Device tiers are EXACTLY max-width:1023px (tablet) / max-width:767px (mobile)
+// per the no-inline migration contract §B2 — no stray breakpoints.
 $mobile_style_tag = '';
 $style_parts      = array();
 
 if ( $typo_css ) {
 	$style_parts[] = $typo_css;
 }
+if ( $color_css ) {
+	$style_parts[] = $color_css;
+}
+if ( $padding_base_css ) {
+	$style_parts[] = $padding_base_css;
+}
 if ( $base_vars ) {
 	$style_parts[] = '#sgs-mobile-nav{' . implode( ';', $base_vars ) . '}';
 }
-if ( $tablet_vars ) {
-	$style_parts[] = '@media (max-width:768px){#sgs-mobile-nav{' . implode( ';', $tablet_vars ) . '}}';
+
+$tablet_decls = $tablet_vars;
+if ( null !== $padding_tablet_val ) {
+	$tablet_decls[] = 'padding:' . $padding_tablet_val;
 }
-if ( $mobile_vars ) {
-	$style_parts[] = '@media (max-width:480px){#sgs-mobile-nav{' . implode( ';', $mobile_vars ) . '}}';
+if ( $tablet_decls ) {
+	$style_parts[] = '@media (max-width:1023px){#sgs-mobile-nav{' . implode( ';', $tablet_decls ) . '}}';
+}
+
+$mobile_decls = $mobile_vars;
+if ( null !== $padding_mobile_val ) {
+	$mobile_decls[] = 'padding:' . $padding_mobile_val;
+}
+if ( $mobile_decls ) {
+	$style_parts[] = '@media (max-width:767px){#sgs-mobile-nav{' . implode( ';', $mobile_decls ) . '}}';
 }
 
 if ( $style_parts ) {

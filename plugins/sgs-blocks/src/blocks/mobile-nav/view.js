@@ -186,7 +186,11 @@ function setupSwipe( drawer ) {
 			startY = e.clientY;
 			deltaX = 0;
 			tracking = true;
-			drawer.style.transition = 'none';
+			// No-inline contract (2026-07-10): visual state is driven entirely by
+			// a class (transition kill switch, in style.css) + two CSS custom
+			// PROPERTY VALUES (--sgs-mn-swipe-x/-y, allowed — a var VALUE is not a
+			// property declaration). Never write .style.transform/.style.transition.
+			drawer.classList.add( 'is-swiping' );
 		},
 		{ passive: true }
 	);
@@ -204,15 +208,15 @@ function setupSwipe( drawer ) {
 			// If vertical scroll is greater, abort gesture.
 			if ( Math.abs( deltaY ) > Math.abs( deltaX ) && Math.abs( deltaX ) < 10 ) {
 				tracking = false;
-				drawer.style.transition = '';
-				drawer.style.transform = '';
+				resetSwipeState( drawer );
 				return;
 			}
 
 			// Apply real-time follow based on variant direction.
 			const translate = getSwipeTranslate( variant, deltaX );
 			if ( translate !== null ) {
-				drawer.style.transform = translate;
+				drawer.style.setProperty( '--sgs-mn-swipe-x', translate.x );
+				drawer.style.setProperty( '--sgs-mn-swipe-y', translate.y );
 			}
 		},
 		{ passive: true }
@@ -223,44 +227,59 @@ function setupSwipe( drawer ) {
 			return;
 		}
 		tracking = false;
-		drawer.style.transition = '';
+		drawer.classList.remove( 'is-swiping' );
 
 		if ( shouldCloseOnSwipe( variant, deltaX ) ) {
 			closeDrawer( drawer );
 		} else {
-			// Spring snap back.
-			drawer.style.transform = '';
+			// Spring snap back — clearing the swipe vars lets the variant's own
+			// transform rule (with its transition) take over again.
+			drawer.style.removeProperty( '--sgs-mn-swipe-x' );
+			drawer.style.removeProperty( '--sgs-mn-swipe-y' );
 		}
 	} );
 
 	drawer.addEventListener( 'pointercancel', () => {
 		tracking = false;
-		drawer.style.transition = '';
-		drawer.style.transform = '';
+		resetSwipeState( drawer );
 	} );
 }
 
 /**
- * Get the CSS transform value for swipe follow based on variant.
+ * Clear swipe-tracking visual state (class + custom-property values only —
+ * no inline property declarations, per the no-inline styling contract).
+ *
+ * @param {HTMLElement} drawer The drawer element.
+ */
+function resetSwipeState( drawer ) {
+	drawer.classList.remove( 'is-swiping' );
+	drawer.style.removeProperty( '--sgs-mn-swipe-x' );
+	drawer.style.removeProperty( '--sgs-mn-swipe-y' );
+}
+
+/**
+ * Get the swipe-follow translation as custom-property VALUES (not a
+ * `transform` property declaration — consumed by the `.is-swiping` CSS rule
+ * in style.css via `translate(var(--sgs-mn-swipe-x), var(--sgs-mn-swipe-y))`).
  *
  * @param {string} variant Drawer variant.
  * @param {number} dx      Horizontal delta in pixels.
- * @return {string|null} CSS transform value, or null if no swipe in this direction.
+ * @return {{x: string, y: string}|null} Custom-property values, or null if no swipe in this direction.
  */
 function getSwipeTranslate( variant, dx ) {
 	switch ( variant ) {
 		case 'slide-left':
 			// Only allow swiping left to close.
-			return dx < 0 ? `translateX(${ dx }px)` : null;
+			return dx < 0 ? { x: `${ dx }px`, y: '0px' } : null;
 		case 'slide-right':
 			// Only allow swiping right to close.
-			return dx > 0 ? `translateX(${ dx }px)` : null;
+			return dx > 0 ? { x: `${ dx }px`, y: '0px' } : null;
 		case 'overlay':
 			// Allow swiping down to close.
-			return dx < 0 ? `translateY(${ -Math.abs( dx ) }px)` : null;
+			return dx < 0 ? { x: '0px', y: `${ -Math.abs( dx ) }px` } : null;
 		case 'bottom-sheet':
 			// Allow swiping down to close.
-			return dx > 0 ? `translateY(${ dx }px)` : null;
+			return dx > 0 ? { x: '0px', y: `${ dx }px` } : null;
 		default:
 			return null;
 	}
@@ -304,7 +323,7 @@ function closeDrawer( drawer ) {
 		}
 		unlockScroll();
 	}
-	drawer.style.transform = '';
+	resetSwipeState( drawer );
 }
 
 /**

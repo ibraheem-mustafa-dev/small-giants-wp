@@ -1566,6 +1566,11 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/process-steps", "marginTablet"): {"box_family": "margin"},
     ("sgs/process-steps", "marginMobile"): {"box_family": "margin"},
     ("sgs/process-steps", "borderWidth"): {"box_family": "borderWidth"},
+    # Wave-2 batch 3 (2026-07-10): the 2 keep-structure InnerBlocks navs.
+    # mobile-nav adds padding tier objects (base padding -> WP-native style.spacing.*,
+    # object, no seed). mega-menu is colour-only (no box family -> no seed).
+    ("sgs/mobile-nav", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/mobile-nav", "paddingMobile"): {"box_family": "padding"},
 }
 
 

@@ -136,11 +136,23 @@
 .sgs-mega-menu__panel {
 	position:         absolute;
 	top:              100%;
-	left:             0;
+	/* --sgs-mm-overflow-left/-right are set by view.js's repositionPanel()
+	   right-edge overflow correction as CUSTOM-PROPERTY VALUES (never a
+	   direct .style.left/.style.right assignment — contract §A/§C: an
+	   override is a CSS custom-property value, not an inline declaration).
+	   Every left/right-setting panel rule below reads the same override
+	   pair so the JS correction wins regardless of which alignment/layout
+	   rule the cascade would otherwise pick. */
+	left:             var(--sgs-mm-overflow-left, 0);
+	right:            var(--sgs-mm-overflow-right, auto);
 	z-index:          1000;
 	display:          none;          /* JS/Interactivity removes [hidden] */
 	min-width:        var(--sgs-mm-panel-min-width);
-	max-width:        min(900px, calc(100vw - 2rem)); /* prevent panel exceeding viewport */
+	/* F3 drain (contract §E2): panelMaxWidth attr drives this for content/
+	   custom width modes; min(900px, calc(100vw - 2rem)) is the fallback
+	   default (safety net preventing the panel exceeding the viewport when
+	   no attr value is set — e.g. full-width mode, which overrides below). */
+	max-width:        var(--sgs-mega-menu-max-width, min(900px, calc(100vw - 2rem)));
 	padding:          var(--sgs-mm-panel-padding);
 	background-color: var(--sgs-mm-panel-bg, var(--wp--preset--color--surface, #fff));
 	border-top:       3px solid var(--wp--preset--color--accent, currentColor);
@@ -210,8 +222,8 @@
 
 .sgs-mega-menu--layout-contained .sgs-mega-menu__panel,
 .sgs-mega-menu--panel-content .sgs-mega-menu__panel {
-	left:      50%;
-	right:     auto;
+	left:      var(--sgs-mm-overflow-left, 50%);
+	right:     var(--sgs-mm-overflow-right, auto);
 	max-width: var(--wp--style--global--content-size, 1200px);
 	--sgs-mm-tx:      -50%;
 	--sgs-mm-open-tx: -50%;
@@ -555,21 +567,21 @@
    ============================================================ */
 
 .sgs-mega-menu--align-left .sgs-mega-menu__panel {
-	left:  0;
-	right: auto;
+	left:  var(--sgs-mm-overflow-left, 0);
+	right: var(--sgs-mm-overflow-right, auto);
 }
 
 .sgs-mega-menu--align-centre .sgs-mega-menu__panel,
 .sgs-mega-menu--align-center .sgs-mega-menu__panel {
-	left:  50%;
-	right: auto;
+	left:  var(--sgs-mm-overflow-left, 50%);
+	right: var(--sgs-mm-overflow-right, auto);
 	--sgs-mm-tx:      -50%;
 	--sgs-mm-open-tx: -50%;
 }
 
 .sgs-mega-menu--align-right .sgs-mega-menu__panel {
-	left:  auto;
-	right: 0;
+	left:  var(--sgs-mm-overflow-left, auto);
+	right: var(--sgs-mm-overflow-right, 0);
 }
 
 /* ============================================================

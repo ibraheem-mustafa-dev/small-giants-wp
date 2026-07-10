@@ -179,7 +179,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ panelWidth === 'custom' && (
+					{ ( panelWidth === 'custom' ||
+						panelWidth === 'content' ) && (
 						<TextControl
 							label={ __( 'Max width', 'sgs-blocks' ) }
 							value={ panelMaxWidth }
@@ -187,7 +188,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { panelMaxWidth: val } )
 							}
 							help={ __(
-								'CSS value, e.g., 800px or 60vw',
+								'CSS value, e.g., 800px, 60vw, or min(900px, calc(100vw - 2rem))',
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom

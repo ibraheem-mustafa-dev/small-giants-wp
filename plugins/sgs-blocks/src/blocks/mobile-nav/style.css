@@ -118,7 +118,10 @@
 	bottom: 0;
 	left: 0;
 	right: auto;
-	width: min(85vw, 400px);
+	/* F3 drain (2026-07-10): driven by the drawerWidth/drawerMaxWidth controls
+	   (render.php --sgs-mn-width / --sgs-mn-max-width) instead of a hardcoded
+	   85vw/400px literal — the controls were previously dead by override. */
+	width: min(var(--sgs-mn-width, 85%), var(--sgs-mn-max-width, 400px));
 	transform: translateX(-100%);
 }
 
@@ -133,7 +136,8 @@
 	bottom: 0;
 	right: 0;
 	left: auto;
-	width: min(85vw, 400px);
+	/* F3 drain (2026-07-10): see .sgs-mobile-nav--slide-left above. */
+	width: min(var(--sgs-mn-width, 85%), var(--sgs-mn-max-width, 400px));
 	transform: translateX(100%);
 }
 
@@ -156,6 +160,19 @@
 .sgs-mobile-nav--bottom-sheet:popover-open,
 .sgs-mobile-nav--bottom-sheet.is-open {
 	transform: translateY(0);
+}
+
+/* ─── Swipe-to-Close Follow (no-inline contract, 2026-07-10) ─────────────────
+ * view.js drives the real-time drag follow purely via the `.is-swiping` class
+ * (kills the transition) + two custom-PROPERTY VALUES (--sgs-mn-swipe-x/-y,
+ * set via style.setProperty — a var value, never a `transform`/`transition`
+ * property declaration). This rule consumes them; !important is required to
+ * win over the variant's own :popover-open/.is-open transform rule at equal
+ * specificity regardless of source order.
+ */
+.sgs-mobile-nav.is-swiping {
+	transition: none !important;
+	transform: translate(var(--sgs-mn-swipe-x, 0px), var(--sgs-mn-swipe-y, 0px)) !important;
 }
 
 /* ─── Exit Animation — snappier, no spring bounce on close ──────────────────── */

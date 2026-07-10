@@ -25,7 +25,7 @@ import {
 	RangeControl,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, ResponsiveControl } from '../../components';
+import { DesignTokenPicker, IconPicker, ResponsiveControl, ResponsiveBoxControl } from '../../components';
 import ColoursPanel from './ColoursPanel';
 import NavigationPanel from './NavigationPanel';
 import AnimationPanel from './AnimationPanel';
@@ -254,6 +254,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ drawerPosition }
 						options={ DRAWER_POSITION_OPTIONS }
 						onChange={ ( value ) => setAttributes( { drawerPosition: value } ) }
+					/>
+					{ /* Drawer inner padding — WP-native style.spacing.padding base tier
+					     (skip-serialised, rendered scoped in render.php) + SGS
+					     paddingTablet/paddingMobile object tiers. */ }
+					<ResponsiveBoxControl
+						label={ __( 'Drawer Padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.padding ?? {},
+							tablet: attributes.paddingTablet ?? {},
+							mobile: attributes.paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
 					/>
 				</PanelBody>
 
