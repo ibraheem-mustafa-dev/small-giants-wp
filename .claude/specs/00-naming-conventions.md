@@ -113,6 +113,14 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_com
 
 **Routing stays name-free.** The converter reads EITHER the `--content-width` declaration OR the `max-width` + `margin:auto` signature on a slug-None direct-descendant wrapper (FR-22-4.1) — NEVER the `__inner`/`__card-inner` class name (precedent: D85 removed those slot aliases for causing wrong collapse). This is a documented CSS-signature mapping, not a class-name match.
 
+### 3.4 State styling → the `--active` selected-state signal + `:hover` (the state-modifier mapping, D299)
+
+**Rule:** Bean-authored SGS-BEM drafts express an element's **selected / active** state with the BEM **`--active` modifier** on that element (`.sgs-<block>__<el>--active`) **plus `aria-pressed="true"`** on the interactive control; the **resting (unselected)** state carries the bare element class with no state modifier (and `aria-pressed="false"`). Transient states use the standard CSS pseudo-classes (`:hover`, `:focus-visible`). Example (a pack-size pill): `.sgs-product-card__pill { … }` (resting) and `.sgs-product-card__pill--active { … }` (selected) with `<button aria-pressed="true">`.
+
+**Why:** these are the deterministic **state signals** the converter's universal styling lift (Spec 31 §3.B B2) keys each state's `derived_selector` on — the resting rule → the block's resting colour/box attrs (`pillBgColour`, `hoverBackgroundColour`'s base sibling, …), the `--active` rule → the block's **selected-state** attrs (`pillSelectedBgColour`/`pillSelectedBorderColour`/…), and a `:hover` rule → the block's `hover*` attrs. So a draft's full multi-state pill/toggle design clones faithfully, not just its resting appearance. (Enabled 2026-07-10 by D299 removing the stale converter exclusion that dropped state styling; the same convention drives every state-bearing block, not just pickers — R-31-9.)
+
+**Routing stays name-free.** The lift matches by the attr's `derived_selector` (a documented per-attr DB mapping, e.g. resting `.sgs-<block>__pill` / selected `.sgs-<block>__pill--active`), never by hardcoding a class-name literal — the `--active`/`:hover` grammar is the STATE signal, exactly as `--content-width` (§3.3) is the width-layer signal.
+
 ---
 
 ## 4. PHP function prefixes

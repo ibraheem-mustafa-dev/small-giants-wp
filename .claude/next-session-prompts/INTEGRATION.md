@@ -18,8 +18,24 @@ once would clobber each other.
 
 ## ⛔ PREREQUISITE
 Every edit track's branch is committed AND its report written. Confirm: `git branch --list 'feat/no-inline-track-*'`
-+ each `reports/no-inline-track-*-report.md` exists. If a track is incomplete, land the ready ones and note
-the rest.
++ each `reports/no-inline-track-*-report.md` exists. **ALSO confirm the D299 option-picker branch:**
+`git branch --list 'feat/option-picker-cloning'` + `reports/option-picker-cloning-report.md`. If a track is
+incomplete, land the ready ones and note the rest.
+
+## ⛔ ALSO IN THIS SESSION — D299 option-picker cloning-fidelity + the unplanned converter fix (fold into the sequence below)
+Two D299 items land alongside the no-inline rollout (see `decisions.md` D299):
+1. **Unplanned converter fix ALREADY ON MAIN (`247dc544`) — VERIFY LIVE, don't re-do.** The stale
+   `__hover/__active/__focus` exclusion in `resolvers/styling_content.py` was removed (440 tests pass), so
+   hover + persistent-selected state styling now CLONE for the ~10 blocks that declare hover colour attrs
+   (brand-strip, button, card-grid, cta-section, gallery, heading, hero, …) + the option-picker. It's a
+   converter BEHAVIOUR change — on your page-8 reclone, spot-check that a hover block's `hover*` colours +
+   the option-picker's selected pill now populate from the draft (they were silently dropped before). If a
+   clone regresses, that's the signal, not a new bug.
+2. **`feat/option-picker-cloning` (D299 build, files-only, `/subagent-driven-development`) — merge + LAND like a track, PLUS its central steps.** It makes `sgs/option-picker` faithfully cloneable (resting + selected pill colour/border-radius, `pillSelectedBorderColour`/`pillSelectedBorderRadius`/`showSelectedTick`, soft/solid presets, card-forwarding, hardcode removal) AND brings the block to the no-inline DONE-checklist. Read `reports/option-picker-cloning-report.md` for the exact attrs/seeds. **This block is SHARED** (buybox + content-collection also render it) — its LAND must also confirm buybox + content-collection still render correctly.
+   - **Central DB seeds (step 3):** add the report's pill-state `ATTR_CLASSIFICATION_OVERRIDES` (role=color + `derived_selector` resting `.__pill` / selected `.__pill--active`; `box_family`/`box_side` for the radius object) to `scripts/sgs-update-v2.py` — same edit as the box_family batch.
+   - **Theme preset tokens:** register the soft/solid `--wp--custom--option-picker-presets--*` tokens (button-preset channel — see the report; `scripts/extract-*-presets.py`-style default or theme-snapshot, per the report).
+   - **LAND (step 7) — the CLONING is the point, not just no-inline:** on the page-8 reclone, verify the draft's pill styling actually copies — resting (cream/beige) + selected (pink-outline tint-fill, no tick) match the draft at 375/768/1440, NOT the SGS pink default; AND the standard asymmetric no-inline instance for the block. Verify BOTH the typed card picker AND a bound (WC variable) card picker if a fixture is feasible.
+   - **`/qc-council`** this before its commit (shared block + converter-adjacent — blub-255).
 
 ## ⛔ MANDATORY READING GATE (read IN FULL)
 1. The MASTER plan `.claude/plans/2026-07-10-no-inline-parallel-rollout.md` (§INTEGRATION spec).
@@ -53,3 +69,7 @@ the rest.
 ## DONE = rollout COMPLETE
 Every styling-support block emits zero inline CSS (audit-inline-styling clean), the 2 gates wired zero-tolerance,
 `P-F3-NAV-MISTAG-GATE` fixed, Spec 31/32 + CLAUDE.md say "rollout complete", docs reconciled, pushed.
+**PLUS D299:** `feat/option-picker-cloning` merged + LANDED (option-picker no-inline + the draft's resting +
+selected pill styling CLONES faithfully on the page-8 reclone, verified live; buybox + content-collection still
+render); the `247dc544` state-lift fix verified live (a hover block + the picker selected state now clone from
+the draft); `decisions.md`/`state.md` note the option-picker cloning complete.
