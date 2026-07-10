@@ -27,6 +27,50 @@ const CHEVRON_SVG = (
 	</svg>
 );
 
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object (border-radius corner set) — mirrors render.php's use of
+// wp_style_engine_get_styles so the canvas preview matches the frontend.
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+// NO-INLINE migration (2026-07-10): color + __experimentalBorder now declare
+// __experimentalSkipSerialization, so useBlockProps() no longer auto-applies
+// them in the editor canvas either — reproduce a desktop-only preview here
+// (matches sgs/quote + sgs/brand-strip's editor preview pattern).
+function buildWrapperStyle( attributes ) {
+	const { style } = attributes;
+	const wrapperStyle = {};
+
+	if ( style?.color?.text ) {
+		wrapperStyle.color = style.color.text;
+	}
+	if ( style?.color?.background ) {
+		wrapperStyle.backgroundColor = style.color.background;
+	}
+	if ( style?.color?.gradient ) {
+		wrapperStyle.backgroundImage = style.color.gradient;
+	}
+
+	if ( style?.border?.width ) {
+		wrapperStyle.borderWidth = style.border.width;
+	}
+	if ( style?.border?.style ) {
+		wrapperStyle.borderStyle = style.border.style;
+	}
+	if ( style?.border?.color ) {
+		wrapperStyle.borderColor = style.border.color;
+	}
+	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		wrapperStyle.borderRadius = radiusPreview;
+	}
+
+	return wrapperStyle;
+}
+
 export default function Edit( { attributes, setAttributes, context } ) {
 	const { question, isOpen } = attributes;
 	// Items start open in the editor so the answer is always editable.
@@ -36,6 +80,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-faq-item',
+		style: buildWrapperStyle( attributes ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(

@@ -19,11 +19,22 @@ import {
 	FlexItem,
 	FlexBlock,
 	Notice,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls } from '../../components';
+import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
-// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+
+// ---------------------------------------------------------------------------
+// Width units — outer max-width / content band width (kept-scalar single-
+// value families, box-object interface contract §C).
+// ---------------------------------------------------------------------------
+
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+];
 
 /* ── Pill-style options ─────────────────────────────────────────────────── */
 
@@ -68,6 +79,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillSelectedBgColour,
 		pillSelectedTextColour,
 		pillBorderRadius,
+		style,
+		maxWidth,
+		contentWidth,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -463,12 +481,65 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* Width / spacing (WS-4 container mirror) */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="content"
-				/>
+				{ /* Wrapper — width + spacing. NO-INLINE migration (2026-07-09):
+				   block-private, no shared SGS_Container_Wrapper (mirrors
+				   sgs/quote). Box-object interface contract §B/§E: base
+				   padding/margin route to WP-native style.spacing.* (skip-
+				   serialised → scoped, not inline); tiers are the
+				   paddingTablet/paddingMobile/marginTablet/marginMobile
+				   object attrs. maxWidth/contentWidth stay kept-scalar
+				   (contract §C). */ }
+				<PanelBody
+					title={ __( 'Wrapper', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<UnitControl
+						label={ __( 'Outer max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 320px. Leave blank for no cap.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Content width', 'sgs-blocks' ) }
+						value={ contentWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 100%. Leave blank for full width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
 
 				{ /* Converter metadata */ }
 				<PanelBody

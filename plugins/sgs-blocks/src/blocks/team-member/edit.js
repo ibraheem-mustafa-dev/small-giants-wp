@@ -1,3 +1,32 @@
+/**
+ * edit.js — Block editor component for sgs/team-member.
+ *
+ * NO-INLINE + NO-WRAPPER migration (LOCKED per-block no-inline migration
+ * contract §A/§B/§B3, 2026-07-09; matches sgs/quote's proven block-private
+ * pattern, D294): the root <div> IS the block root — no SGS_Container_Wrapper
+ * delegation, no `ContainerWrapperControls` (that component writes the OLD
+ * per-side scalar tablet/mobile attrs — paddingTopTablet etc — which are
+ * incompatible with the new box-OBJECT contract this block now uses:
+ * paddingTablet/paddingMobile/marginTablet/marginMobile).
+ *
+ * Because color/typography/spacing/__experimentalBorder all declare
+ * `__experimentalSkipSerialization` in block.json, WP's automatic style
+ * preview in the canvas is suppressed for those supports too — so, exactly
+ * like sgs/quote, this file manually rebuilds a desktop-only preview style
+ * object (buildWrapperStyle) mirroring render.php's scoped-CSS output and
+ * applies it via `style` on the SAME root element. The editor canvas is
+ * allowed to use inline style for live preview — only the SAVED/RENDERED
+ * frontend output must be inline-free, and this block is dynamic
+ * (render.php), so nothing here is persisted to post_content.
+ *
+ * Padding/margin are edited via ResponsiveBoxControl (box-object interface
+ * contract): base routes to WP-native style.spacing.padding/margin, tablet/
+ * mobile route to the paddingTablet/paddingMobile/marginTablet/marginMobile
+ * object attrs. Border width/colour/style/radius stay on WP's native
+ * automatic Styles-tab panels (no custom UI needed — team-member declares
+ * FULL native __experimentalBorder support, unlike quote's mixed custom+
+ * native border).
+ */
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
@@ -10,9 +39,9 @@ import {
 	ToggleControl,
 	TextControl,
 	Button,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -49,6 +78,13 @@ const PLATFORM_OPTIONS = [
 	{ label: __( 'Snapchat', 'sgs-blocks' ),     value: 'snapchat' },
 	{ label: __( 'Telegram', 'sgs-blocks' ),     value: 'telegram' },
 	{ label: __( 'Discord', 'sgs-blocks' ),      value: 'discord' },
+];
+
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
 ];
 
 /**
@@ -90,8 +126,74 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 	);
 }
 
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+// Editor preview style builder — desktop styles only; responsive tiers +
+// nameColour/roleColour scoped rules render via PHP.
+function buildWrapperStyle( attributes ) {
+	const { style, textColor, backgroundColor, contentWidth, maxWidth } = attributes;
+	const wrapperStyle = {};
+
+	const textPreview = style?.color?.text || ( textColor ? colourVar( textColor ) : '' );
+	if ( textPreview ) {
+		wrapperStyle.color = textPreview;
+	}
+	const bgPreview = style?.color?.background || ( backgroundColor ? colourVar( backgroundColor ) : '' );
+	if ( bgPreview ) {
+		wrapperStyle.backgroundColor = bgPreview;
+	}
+	if ( style?.color?.gradient ) {
+		wrapperStyle.backgroundImage = style.color.gradient;
+	}
+
+	if ( style?.typography?.fontSize ) {
+		wrapperStyle.fontSize = style.typography.fontSize;
+	}
+
+	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		wrapperStyle.borderRadius = radiusPreview;
+	}
+	if ( style?.border?.width ) {
+		wrapperStyle.borderWidth = style.border.width;
+	}
+	if ( style?.border?.style ) {
+		wrapperStyle.borderStyle = style.border.style;
+	}
+	if ( style?.border?.color ) {
+		wrapperStyle.borderColor = style.border.color;
+	}
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		wrapperStyle.margin = marginPreview;
+	}
+
+	if ( maxWidth ) {
+		wrapperStyle.maxWidth = maxWidth;
+		wrapperStyle.marginInline = 'auto';
+	}
+	if ( contentWidth ) {
+		wrapperStyle.width = contentWidth;
+	}
+
+	return wrapperStyle;
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		memberMedia,
 		photo,
 		name,
@@ -104,6 +206,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverOverlay,
 		displayMode,
 		socialLinks,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		contentWidth,
+		maxWidth,
 	} = attributes;
 
 	const isCompact = 'compact' === displayMode;
@@ -157,15 +265,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	// Contract §B3: NO extra wrapper — this <div> IS the block root (matches
+	// render.php). buildWrapperStyle mirrors the scoped frontend CSS since
+	// the skip-serialised supports suppress WP's automatic canvas preview.
+	const blockProps = useBlockProps( {
+		className,
+		style: buildWrapperStyle( attributes ),
+	} );
 
 	return (
 		<>
-			<ContainerWrapperControls
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				kind="content"
-			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Card Settings', 'sgs-blocks' ) }>
 					<SelectControl
@@ -214,6 +323,65 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Role colour', 'sgs-blocks' ) }
 						value={ roleColour }
 						onChange={ ( val ) => setAttributes( { roleColour: val } ) }
+					/>
+				</PanelBody>
+
+				{ /* Box-object interface contract §B/§E: padding/margin base routes
+				   to WP-native style.spacing.* (skip-serialised → scoped, not
+				   inline); tiers are the paddingTablet/paddingMobile +
+				   marginTablet/marginMobile object attrs. Border width/colour/
+				   style/radius stay on WP's native automatic Styles panels. */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				{ /* Width — outer maxWidth + content band width (kept-scalar,
+				   base only — matches the pre-existing contract for this block). */ }
+				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
+					<UnitControl
+						label={ __( 'Max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Content width', 'sgs-blocks' ) }
+						value={ contentWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 300px. Leave blank for auto.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

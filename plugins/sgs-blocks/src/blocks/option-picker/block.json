@@ -25,7 +25,8 @@
 		"color": {
 			"background": true,
 			"text": true,
-			"gradients": true
+			"gradients": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
@@ -33,13 +34,15 @@
 			"__experimentalDefaultControls": {
 				"margin": false,
 				"padding": false
-			}
+			},
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"color": true,
-			"style": true
+			"style": true,
+			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"scalarStylingLift": true
@@ -183,6 +186,22 @@
 		"maxWidth": {
 			"type": "string",
 			"default": ""
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

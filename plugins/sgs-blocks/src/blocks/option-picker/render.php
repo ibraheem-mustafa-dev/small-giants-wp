@@ -2,12 +2,22 @@
 /**
  * Server-side render for the SGS Option Picker block.
  *
- * WS-4 composite-mirror: CONTENT kind — width/spacing layers only via
- * SGS_Container_Wrapper::render(). The outer <fieldset> wrapper carries
- * block-wrapper attributes; the radio pills + legend stay in $inner_html.
+ * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (per-block no-inline migration
+ * contract §A/§B/§B3, 2026-07-09; matches the sgs/quote pattern): CONTENT
+ * kind — box (width/spacing/border/colour) only, never used the shared
+ * wrapper's grid/section/background machinery, so SGS_Container_Wrapper is
+ * dropped. The <fieldset> IS the block root, built via
+ * get_block_wrapper_attributes(). Every CSS declaration (colour vars aside —
+ * those are custom-PROPERTY values, not real declarations) lives in the
+ * block's own scoped `.{uid}` <style> tag: WP colour/spacing/border
+ * supports all declare `__experimentalSkipSerialization` in block.json so
+ * get_block_wrapper_attributes() never auto-inlines them; padding/margin
+ * tiers are box object attrs (paddingTablet/paddingMobile/marginTablet/
+ * marginMobile), scoped @media 1023/767 on the SAME root selector.
  *
- * view.js reads data attributes from .sgs-option-picker__options (inside
- * $inner_html) — these do NOT need to be on the outer wrapper.
+ * The radio pills + legend stay in $inner_html. view.js reads data
+ * attributes from .sgs-option-picker__options (inside $inner_html) — these
+ * do NOT need to be on the outer wrapper.
  *
  * R-22-14: explicit discriminators, never empty($content).
  * No WP Interactivity API store — plain DOM events via view.js.
@@ -22,6 +32,11 @@
  *   - Colour swatch: _sgs_swatch_color set → colour chip + label text,
  *                    with build-time WCAG auto-contrast applied to the
  *                    pill text (FR-27-I2 sgs_wcag_text_colour_for_bg()).
+ *                    The chip's colour reaches the DOM as the CSS custom
+ *                    property `--sgs-op-swatch` (a var-only declaration,
+ *                    contract-allowed) — the real `background:` decl lives
+ *                    in the block's static style.css, scoped to
+ *                    .sgs-option-picker__swatch--colour.
  *   - No meta:       existing text pill rendered byte-for-byte unchanged
  *                    (additive-safety guarantee for Typed clones).
  *
@@ -33,9 +48,9 @@
  * the no-swatch path completely.
  *
  * SEC-3 compliance: all values emitted to HTML attributes use esc_attr()
- * or esc_url(); inline-style hex is validated with sanitize_hex_color()
- * at emit-time (defence-in-depth beyond the save-time sanitise in
- * class-configurator-meta.php).
+ * or esc_url(); the swatch hex custom-property is validated with
+ * sanitize_hex_color() at emit-time (defence-in-depth beyond the save-time
+ * sanitise in class-configurator-meta.php).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — no InnerBlocks).
@@ -47,7 +62,18 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
+
+// ---------------------------------------------------------------------------
+// Box-object interface contract §1 + security §D sanitisers (mirrors
+// sgs/quote + sgs/heading + sgs/button).
+// ---------------------------------------------------------------------------
+
+// CSS-length sanitiser — strips everything except digits, dot, %, and unit
+// letters so an object-attr side/corner value can never break out of its
+// declaration.
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
 
 /* ── Attribute extraction ────────────────────────────────────────────────── */
 
@@ -67,6 +93,8 @@ $pill_border_colour   = $attributes['pillBorderColour'] ?? '';
 $pill_sel_bg_colour   = $attributes['pillSelectedBgColour'] ?? '';
 $pill_sel_text_colour = $attributes['pillSelectedTextColour'] ?? '';
 $pill_border_radius   = $attributes['pillBorderRadius'] ?? 0;
+$max_width            = $attributes['maxWidth'] ?? '';
+$content_width        = $attributes['contentWidth'] ?? '';
 
 /* ── Guard: render nothing if no options ─────────────────────────────────── */
 
@@ -244,41 +272,42 @@ if ( '' !== $swatch_taxonomy ) {
 	}
 }
 
-/* ── Build $inner_html: legend + options div (data attrs stay here) ──────── */
+/* ── Root scope selector (contract §A/§B3) ────────────────────────────────── */
 
-/* ── Scoped typography <style> block ─────────────────────────────────────── */
-
-// Selectors are scoped to the uid class that travels with the fieldset wrapper.
+// Selectors are scoped to the uid class that travels with the fieldset root.
 // When option-picker is nested inside sgs/product-card via render_block(), the
 // uid is unique per block instance so styles never leak across cards.
-$sel_label = '.' . $uid . ' .sgs-option-picker__label';
-$sel_pill  = '.' . $uid . ' .sgs-option-picker__pill';
+$root_sel  = '.' . $uid;
+$sel_label = $root_sel . ' .sgs-option-picker__label';
+$sel_pill  = $root_sel . ' .sgs-option-picker__pill';
+
+/* ── Scoped typography (label + pill) ─────────────────────────────────────── */
 
 $typography_css = sgs_typography_css_rule( $attributes, 'label', $sel_label )
 	. sgs_typography_css_rule( $attributes, 'pill', $sel_pill );
 
-$style_tag = '' !== $typography_css
-	? '<style>' . $typography_css . '</style>'
-	: '';
-
-// Colour and margin-bottom on the legend remain as inline style (not typography).
-$label_style_parts = array();
+/*
+ * ── Legend colour + margin-bottom — SCOPED (contract §A), NOT inline ───────
+ * Was: inline style="" on the <legend>. Now: a rule on $sel_label alongside
+ * the typography rule above, exactly like the rest of the block's CSS.
+ */
+$label_decls = array();
 if ( '' !== $label_colour ) {
-	$label_style_parts[] = 'color:' . sgs_colour_value( $label_colour );
+	$label_decls[] = 'color:' . sgs_colour_value( $label_colour );
 }
 if ( '' !== $label_margin_bottom ) {
-	$label_style_parts[] = 'margin-bottom:' . $label_margin_bottom;
+	$mb_safe = $sgs_css_length( $label_margin_bottom );
+	if ( '' !== $mb_safe ) {
+		$label_decls[] = 'margin-bottom:' . $mb_safe;
+	}
 }
-$label_style_attr = ! empty( $label_style_parts )
-	? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"'
-	: '';
+$css_label_style = $label_decls ? ( $sel_label . '{' . implode( ';', $label_decls ) . ';}' ) : '';
 
-// Legend — visible or screen-reader-only.
+// Legend — visible or screen-reader-only. No inline style attribute any more.
 if ( $show_label ) {
 	$legend_html = sprintf(
-		'<legend id="%s" class="sgs-option-picker__label"%s>%s</legend>',
+		'<legend id="%s" class="sgs-option-picker__label">%s</legend>',
 		esc_attr( $legend_id ),
-		$label_style_attr,
 		esc_html( $label )
 	);
 } else {
@@ -355,16 +384,18 @@ foreach ( $valid_items as $item ) {
 			 * always meets 4.5:1 against the swatch background when that
 			 * background bleeds onto the pill (e.g. filled/ghost styles).
 			 *
-			 * The CSS custom property --sgs-op-swatch-text is scoped to this
-			 * specific pill's inline style so it does not affect other pills.
-			 *
-			 * The colour chip background is inlined on the <span>; the hex
-			 * is already validated by sanitize_hex_color() above.
+			 * The CSS custom properties --sgs-op-swatch-text and --sgs-op-swatch
+			 * are scoped to this specific pill/chip's inline style so they do
+			 * not affect other pills. Both are custom-PROPERTY values (contract-
+			 * allowed), never a real `background:` declaration — the actual
+			 * `background: var(--sgs-op-swatch)` rule lives in the block's
+			 * static style.css, scoped to .sgs-option-picker__swatch--colour.
+			 * The hex is already validated by sanitize_hex_color() above.
 			 */
 			$contrast_colour = sgs_wcag_text_colour_for_bg( $color );
 
 			$swatch_chip_html = sprintf(
-				'<span class="sgs-option-picker__swatch sgs-option-picker__swatch--colour" style="background:%s;" aria-hidden="true"></span>',
+				'<span class="sgs-option-picker__swatch sgs-option-picker__swatch--colour" style="--sgs-op-swatch:%s;" aria-hidden="true"></span>',
 				esc_attr( $color )
 			);
 			$pill_extra_class = ' sgs-option-picker__pill--has-colour';
@@ -412,18 +443,210 @@ $options_div_html = sprintf(
 	$pills_html              // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_* functions above.
 );
 
-$inner_html = $style_tag . $legend_html . $options_div_html;
+/*
+ * ── Wrapper (root) box declarations — colour / spacing / border / width ────
+ * Box-object interface contract §B/§E: base padding/margin/border route to
+ * WP-native style.* (skip-serialised → scoped, not inline); tiers are the
+ * paddingTablet/paddingMobile/marginTablet/marginMobile object attrs.
+ * maxWidth/contentWidth stay KEPT-SCALAR single-value families (contract §C).
+ */
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised; arrays are caller-built with esc_attr().
-echo SGS_Container_Wrapper::render(
-	$attributes,
-	$block,
-	$inner_html,
-	'content',
-	array(
-		'tag'           => 'fieldset',
-		'extra_classes' => $extra_classes,
-		'extra_styles'  => $extra_styles,
-	)
+$scoped_css = array();
+
+// --- Legend + typography (built above) ---
+if ( $css_label_style ) {
+	$scoped_css[] = $css_label_style;
+}
+if ( $typography_css ) {
+	$scoped_css[] = $typography_css;
+}
+
+// --- Root max-width / content-width (kept-scalar, base only) ---
+$wrapper_decls = array();
+if ( $max_width ) {
+	$mw_safe = $sgs_css_length( $max_width );
+	if ( '' !== $mw_safe ) {
+		$wrapper_decls[] = 'max-width:' . $mw_safe;
+		$wrapper_decls[] = 'margin-inline:auto';
+	}
+}
+if ( $content_width ) {
+	$cw_safe = $sgs_css_length( $content_width );
+	if ( '' !== $cw_safe ) {
+		$wrapper_decls[] = 'width:' . $cw_safe;
+	}
+}
+if ( $wrapper_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
+}
+
+// --- WP-native colour/spacing/border supports — skip-serialised, emitted
+// scoped via the stable core style engine (same API WP core uses for
+// `layout` support; matches sgs/quote + sgs/heading + sgs/button). ---
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$base_padding_obj = array();
+	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+		foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+			if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+				$base_padding_obj[ $spacing_side ] = $spacing_value;
+			}
+		}
+	}
+	$base_margin_obj = array();
+	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+		foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+			if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+				$base_margin_obj[ $spacing_side ] = $spacing_value;
+			}
+		}
+	}
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_style_engine_args['spacing'] = $base_spacing;
+	}
+
+	// Border is FULLY WP-native here (radius/width/color/style all declared in
+	// supports.__experimentalBorder) — pass the whole style.border object
+	// straight through, exactly as WP core's own border support would render
+	// it, just scoped to $root_sel instead of auto-inlined.
+	if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) && ! empty( $attributes['style']['border'] ) ) {
+		$base_style_engine_args['border'] = $attributes['style']['border'];
+	}
+
+	$color_args = array();
+	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+		$color_args['text'] = (string) $attributes['style']['color']['text'];
+	}
+	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+		$color_args['background'] = (string) $attributes['style']['color']['background'];
+	}
+	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+		$color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+	}
+	if ( ! empty( $color_args ) ) {
+		$base_style_engine_args['color'] = $color_args;
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the SAME root selector (contract §B/§B2: tablet
+// max-width:1023px, mobile max-width:767px). ---
+$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_box_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_box_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+}
+
+$mobile_box_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_box_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+}
+
+/* ── Build $inner_html: legend + options div (data attrs stay here) ──────── */
+
+$inner_html = $legend_html . $options_div_html;
+
+/*
+ * ── Build the root element's classes + attributes ───────────────────────
+ * Contract §B3: the <fieldset> IS the block root — no extra wrapper div.
+ * It carries get_block_wrapper_attributes(), the block classes, the scoped
+ * uid CLASS ($uid, already in $extra_classes), and the anchor `id`. The
+ * ONLY 'style' value passed is the pre-built --sgs-op-* custom-property
+ * string ($extra_styles) — custom-PROPERTY values are contract-allowed;
+ * every real CSS declaration lives in the scoped <style> above.
+ */
+
+$root_classes = $extra_classes; // sgs-option-picker, --style, --size, uid.
+
+// Preset colour slugs — the `color` support is skip-serialised, so re-add the
+// standard has-* classes manually (they set the colour from the theme palette).
+if ( '' !== $preset_text_slug ) {
+	$root_classes[] = 'has-text-color';
+	$root_classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$root_classes[] = 'has-background';
+	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
+}
+
+$root_attr_args = array(
+	'class' => implode( ' ', $root_classes ),
 );
-// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+if ( $extra_styles ) {
+	$root_attr_args['style'] = implode( ';', $extra_styles ) . ';';
+}
+$anchor = $attributes['anchor'] ?? '';
+if ( $anchor ) {
+	$root_attr_args['id'] = esc_attr( $anchor );
+}
+$wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
+
+/* ── Render ────────────────────────────────────────────────────────────── */
+?>
+<?php if ( $scoped_css ) : ?>
+<style>
+	<?php
+	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+	// CSS combinators like `>` intact (contract §D — matches sgs/quote +
+	// sgs/heading + SGS_Container_Wrapper). Every value reaching $scoped_css is
+	// pre-sanitised ($sgs_css_length / sgs_colour_value / wp_style_engine_get_styles
+	// / sgs_typography_css_rule / sanitize_html_class), so no un-sanitised value
+	// survives to here.
+	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	?>
+</style>
+<?php endif; ?>
+<fieldset <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></fieldset>

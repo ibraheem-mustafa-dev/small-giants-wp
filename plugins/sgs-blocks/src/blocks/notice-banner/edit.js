@@ -4,11 +4,29 @@ import {
 	InspectorControls,
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
-import { IconPicker, IconPreview, DesignTokenPicker } from '../../components';
+import {
+	PanelBody,
+	SelectControl,
+	ToggleControl,
+	Notice,
+	__experimentalUnitControl as UnitControl,
+} from '@wordpress/components';
+import {
+	IconPicker,
+	IconPreview,
+	DesignTokenPicker,
+	ResponsiveBoxControl,
+} from '../../components';
 import { colourVar } from '../../utils';
-// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+
+// Box-object interface contract — length units for the kept-scalar maxWidth /
+// contentWidth attrs (base only, matches the pre-existing attribute set).
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'em', label: 'em' },
+	{ value: '%', label: '%' },
+];
 
 const DISPLAY_MODE_OPTIONS = [
 	{ label: __( 'Inline', 'sgs-blocks' ), value: 'inline' },
@@ -80,8 +98,44 @@ const NOTICE_BANNER_TEMPLATE = [
 	],
 ];
 
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder (base tier only;
+// tablet/mobile preview is via PHP `@media`, matches sgs/quote's pattern).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+// Editor canvas preview only (desktop styles; responsive via PHP). No-inline
+// contract note: the SAVED/RENDERED frontend output is dynamic (render.php)
+// and carries zero inline declarations — this inline style exists only for
+// the live editor preview, same exception documented in sgs/quote's edit.js.
+function buildWrapperStyle( attributes ) {
+	const { style, maxWidth, contentWidth } = attributes;
+	const wrapperStyle = {};
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		wrapperStyle.margin = marginPreview;
+	}
+	if ( maxWidth ) {
+		wrapperStyle.maxWidth = maxWidth;
+	}
+	if ( contentWidth ) {
+		wrapperStyle.width = contentWidth;
+	}
+
+	return wrapperStyle;
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		variant,
 		showIcon,
 		iconSource,
@@ -90,6 +144,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		stickyPosition,
 		dismissible,
 		dismissBehaviour,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		maxWidth,
+		contentWidth,
 	} = attributes;
 
 	const isAnnouncement = 'announcement' === displayMode;
@@ -103,7 +163,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps( {
+		className,
+		style: isAnnouncement ? undefined : buildWrapperStyle( attributes ),
+	} );
 	const innerBlocksProps = useInnerBlocksProps( {}, {
 		template: NOTICE_BANNER_TEMPLATE,
 	} );
@@ -113,14 +176,61 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{ /* WS-4: mirrored sgs/container wrapper controls (content kind = width/spacing only).
-				     Only shown in inline mode — announcement mode is always full-width + fixed. */ }
+				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
+				     dropped SGS_Container_Wrapper (D294) in favour of block-private
+				     scoped output (matches sgs/quote). Padding/margin route to the
+				     WP-native style.spacing.* object (base) + custom Tablet/Mobile
+				     box-object tiers; only shown in inline mode — announcement mode
+				     is always full-width + fixed. */ }
 				{ ! isAnnouncement && (
-					<ContainerWrapperControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						kind="content"
-					/>
+					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
+						<UnitControl
+							label={ __( 'Outer max-width', 'sgs-blocks' ) }
+							value={ maxWidth || '' }
+							units={ LENGTH_UNITS }
+							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<UnitControl
+							label={ __( 'Content width', 'sgs-blocks' ) }
+							value={ contentWidth || '' }
+							units={ LENGTH_UNITS }
+							onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+							help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<ResponsiveBoxControl
+							label={ __( 'Padding', 'sgs-blocks' ) }
+							values={ {
+								base: style?.spacing?.padding ?? {},
+								tablet: paddingTablet ?? {},
+								mobile: paddingMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+								} else {
+									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
+						/>
+						<ResponsiveBoxControl
+							label={ __( 'Margin', 'sgs-blocks' ) }
+							values={ {
+								base: style?.spacing?.margin ?? {},
+								tablet: marginTablet ?? {},
+								mobile: marginMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+								} else {
+									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								}
+							} }
+						/>
+					</PanelBody>
 				) }
 				<PanelBody title={ __( 'Banner Settings', 'sgs-blocks' ) }>
 					<SelectControl

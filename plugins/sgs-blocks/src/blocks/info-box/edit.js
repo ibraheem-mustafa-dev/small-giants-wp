@@ -9,10 +9,10 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-// WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing only).
-import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { ResponsiveBoxControl } from '../../components';
 
 /**
  * FR-22-6 migration: all card content (icon/media, heading, subtitle,
@@ -23,7 +23,25 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
  * Inspector controls cover only WRAPPER-level styling/layout that render.php
  * actually consumes:
  *   - cardStyle, hoverEffect, iconPosition (drive wrapper BEM classes)
- *   - the shared sgs/container wrapper controls (width/spacing, content kind)
+ *   - Width (maxWidth / contentWidth — kept-scalar, base only)
+ *   - Spacing (padding / margin — base via WP-native Dimensions panel,
+ *     tablet/mobile via the paddingTablet/paddingMobile/marginTablet/
+ *     marginMobile object attrs)
+ *   - Border / Colour / Typography / Shadow are native WP supports — their
+ *     editor UI is rendered automatically by the Styles inspector tab and
+ *     needs no custom control here (`__experimentalSkipSerialization` only
+ *     affects the RENDERED/SAVED output, not editor-UI availability).
+ *
+ * NO-INLINE (LOCKED per-block no-inline migration contract §A, 2026-07-10):
+ * render.php now scopes ALL of color/typography/spacing/border/shadow into
+ * the block's own `<style>` tag rather than auto-inlining them, so
+ * `useBlockProps()` no longer receives these via WP's native mechanism in
+ * the editor canvas either. `buildPreviewStyle()` below manually mirrors
+ * render.php's scoped declarations as an inline preview style on the SAME
+ * root element — the editor canvas is allowed to use inline style for live
+ * preview (only the SAVED/RENDERED frontend output must be inline-free), and
+ * this block is dynamic (render.php), so nothing here is persisted to
+ * post_content.
  *
  * HC2 cleanup (2026-06-08): the per-element colour / font-size / icon-size and
  * legacy-link controls were removed. They were dead — the child blocks
@@ -31,6 +49,87 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
  * font size and link, so the parent controls set attributes render.php never
  * read. The removed attrs survive only in deprecated.js for back-compat.
  */
+
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+];
+
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5). Desktop-tier only (responsive
+// tiers apply via PHP @media, not previewable in the fixed-width canvas).
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) return undefined;
+	return [ top || '0', right || '0', bottom || '0', left || '0' ].join( ' ' );
+}
+
+/**
+ * Editor-preview style builder — desktop styles only; responsive/border/
+ * colour/typography per-instance edge cases are resolved authoritatively by
+ * render.php. This mirrors the common cases so the canvas is a reasonable
+ * WYSIWYG approximation.
+ *
+ * @param {Object} attributes Block attributes.
+ * @returns {Object} React inline-style object.
+ */
+function buildPreviewStyle( attributes ) {
+	const { style, contentWidth, maxWidth } = attributes;
+	const preview = {};
+
+	const bg = style?.color?.background;
+	if ( bg ) preview.backgroundColor = bg;
+	const text = style?.color?.text;
+	if ( text ) preview.color = text;
+	const gradient = style?.color?.gradient;
+	if ( gradient ) preview.backgroundImage = gradient;
+
+	const border = style?.border;
+	if ( border ) {
+		if ( border.style && border.style !== 'none' ) {
+			if ( border.width ) preview.borderWidth = border.width;
+			preview.borderStyle = border.style;
+			if ( border.color ) preview.borderColor = border.color;
+		}
+		const radius = border.radius;
+		if ( typeof radius === 'string' && radius ) {
+			preview.borderRadius = radius;
+		} else if ( radius && typeof radius === 'object' ) {
+			const r = boxShorthand( {
+				top: radius.topLeft,
+				right: radius.topRight,
+				bottom: radius.bottomRight,
+				left: radius.bottomLeft,
+			} );
+			if ( r ) preview.borderRadius = r;
+		}
+	}
+
+	if ( style?.shadow ) {
+		preview.boxShadow = /^#|^rgb|^var\(/.test( style.shadow )
+			? style.shadow
+			: `var(--wp--preset--shadow--${ style.shadow })`;
+	}
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	if ( paddingPreview ) preview.padding = paddingPreview;
+	const marginPreview = boxShorthand( style?.spacing?.margin );
+	if ( marginPreview ) preview.margin = marginPreview;
+
+	if ( maxWidth ) {
+		preview.maxWidth = maxWidth;
+		preview.marginInline = 'auto';
+	}
+	if ( contentWidth ) {
+		preview.width = contentWidth;
+	}
+
+	return preview;
+}
 
 const CARD_STYLE_OPTIONS = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -124,9 +223,16 @@ const INFO_BOX_TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
+		style,
 		cardStyle,
 		hoverEffect,
 		iconPosition,
+		contentWidth,
+		maxWidth,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	// -------------------------------------------------------------------------
@@ -219,7 +325,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		`sgs-info-box--media-${ iconPosition }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	// NO-INLINE contract §A: color/typography/spacing/border/shadow supports
+	// are skip-serialised (block.json), so useBlockProps() no longer applies
+	// them automatically. buildPreviewStyle() mirrors render.php's scoped
+	// declarations here so the canvas stays a faithful WYSIWYG (editor-only —
+	// this block is dynamic, so nothing here persists to post_content).
+	const blockProps = useBlockProps( { className, style: buildPreviewStyle( attributes ) } );
 
 	// FR-22-6: single InnerBlocks slot covers ALL card content.
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -243,12 +354,63 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* WS-4: mirrored sgs/container wrapper controls (content kind = width/spacing). */ }
-				<ContainerWrapperControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					kind="content"
-				/>
+				{ /* ===== Width (kept-scalar, base only — matches render.php scope) ===== */ }
+				<PanelBody title={ __( 'Width', 'sgs-blocks' ) } initialOpen={ false }>
+					<UnitControl
+						label={ __( 'Outer max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Leave blank for no cap.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Content width', 'sgs-blocks' ) }
+						value={ contentWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 900px. Leave blank for full width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ===== Spacing — box-object interface contract §B/§E: base routes to
+				   WP-native style.spacing.* (Dimensions panel, skip-serialised → scoped,
+				   not inline); tiers are the paddingTablet/paddingMobile +
+				   marginTablet/marginMobile object attrs. ===== */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
+
 				{ /* ===== Card Style ===== */ }
 				<PanelBody title={ __( 'Card Style', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
