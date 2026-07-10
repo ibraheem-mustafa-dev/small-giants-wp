@@ -104,6 +104,14 @@
 					"contentBandPadding",
 					"contentBandPaddingTablet",
 					"contentBandPaddingMobile"
+				],
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
 				]
 			}
 		}
@@ -795,70 +803,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"paddingLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"marginTopMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginRightMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginBottomMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"marginLeftMobile": {
-			"type": "string",
-			"default": ""
-		},
 		"contentBandBackground": {
 			"type": "string",
 			"default": ""
@@ -890,6 +834,22 @@
 		"maxWidthTablet": {
 			"type": "string",
 			"default": ""
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",

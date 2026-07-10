@@ -40,7 +40,6 @@ import {
 	BackgroundPanel,
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
-	ResponsiveSpacingPanel,
 	SHADOW_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 
@@ -1173,7 +1172,59 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<ResponsiveSpacingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* Root padding & margin — box-object interface contract (mirrors
+					sgs/cta-section + sgs/container). Base writes the WP-native
+					style.spacing object; tablet/mobile write the paddingTablet/
+					paddingMobile + marginTablet/marginMobile object attrs the shared
+					wrapper reads at @media tiers. Replaces the legacy
+					<ResponsiveSpacingPanel> whose flat paddingTopTablet… attrs the
+					wrapper never read (dead controls, R6 2026-07-10). */ }
+				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.padding ?? {},
+							tablet: attributes.paddingTablet ?? {},
+							mobile: attributes.paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, padding: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: attributes.style?.spacing?.margin ?? {},
+							tablet: attributes.marginTablet ?? {},
+							mobile: attributes.marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( tier === 'base' ) {
+								setAttributes( {
+									style: {
+										...attributes.style,
+										spacing: { ...attributes.style?.spacing, margin: next },
+									},
+								} );
+							} else {
+								setAttributes( {
+									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
+								} );
+							}
+						} }
+					/>
+				</PanelBody>
 
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
 					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
