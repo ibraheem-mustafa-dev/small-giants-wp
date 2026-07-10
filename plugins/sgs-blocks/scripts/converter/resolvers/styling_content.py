@@ -216,7 +216,7 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
         # Normalise and emit the BASE attr value.
         attr_type = info.get("attr_type", "string")
         if base_raw:
-            _emit_value(lifted, attr_name, css_property, attr_type, base_raw, catalogue)
+            _emit_value(lifted, attr_name, css_property, attr_type, base_raw, catalogue, role)
 
         # B2 FIX — consume bp_decls → emit {attr}{bp_suffix} companions.
         # Mirrors _lift_typography_to_block_attrs (convert.py:1718-1748):
@@ -242,13 +242,13 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
             companion_attr = f"{attr_name}{bp_suffix}"
             if companion_attr in catalogue:
                 # Per-device attr exists → emit to companion.
-                _emit_value(lifted, companion_attr, css_property, attr_type, bp_raw_val, catalogue)
+                _emit_value(lifted, companion_attr, css_property, attr_type, bp_raw_val, catalogue, role)
             else:
                 # A-collapse: no per-device attr (e.g. quoteColourDesktop absent).
                 # Write to base attr via setdefault so the Desktop-bp value is not
                 # overwritten by a later base-decl write (matching convert.py:1744-1748).
                 lifted.setdefault(attr_name,
-                                  _compute_value(css_property, attr_type, bp_raw_val, attr_name, catalogue))
+                                  _compute_value(css_property, attr_type, bp_raw_val, attr_name, catalogue, role))
 
     return {k: v for k, v in lifted.items() if v is not None}
 
@@ -264,6 +264,7 @@ def _compute_value(
     raw: str,
     attr_name: str,
     catalogue: dict,
+    role: str | None = None,
 ) -> object | None:
     """Compute a normalised attr value from a raw CSS string.
 
@@ -273,13 +274,18 @@ def _compute_value(
     - font-size → raw string; if attr_type is 'number', split + return int/float
     - all other typography properties → raw CSS value as string
     """
-    if css_property in ("color", "background-color", "border-color"):
-        # border-color joins color/background-color here (2026-07-10): previously it fell
-        # through to the raw-string return below, so a draft `border-color: var(--border)`
-        # stored the DRAFT's own var name verbatim — a dangling reference on the SGS site
-        # (the theme has no `--border`), rendering as the fallback default. Routing it
-        # through extract_token_or_hex resolves the draft var to its concrete hex (or the
-        # theme palette slug when it snaps), so the colour actually paints.
+    # A colour-ROLE attr resolves its value as a colour — a theme-palette token slug when
+    # it snaps, else the concrete hex / rgba. The token-vs-concrete decision (the
+    # match-vs-no-match branch) lives inside extract_token_or_hex; when no palette token
+    # matches, the concrete value is kept (never a dangling draft var, never dropped).
+    # Routing is driven by the DB-owned attr `role`, NEVER a hardcoded css_property
+    # allowlist (R-31-1): ANY colour property — color / background-color / border-color /
+    # outline-color / fill / caret-color / text-decoration-color / … — routes here iff its
+    # attr carries role='color'. (Bean 2026-07-10: a hardcoded name-list silently drops the
+    # NEXT colour property and makes routing depend on the property NAME instead of whether
+    # the value actually resolves against the palette — a value could snap on one client's
+    # global colours and be missing on another, so match-failure, not the name, must decide.)
+    if role == "color":
         return extract_token_or_hex(raw)
 
     if css_property == "font-weight":
@@ -311,6 +317,7 @@ def _emit_value(
     attr_type: str,
     raw: str,
     catalogue: dict,
+    role: str | None = None,
 ) -> None:
     """Compute and write a value into ``lifted``.
 
@@ -318,7 +325,7 @@ def _emit_value(
     companion attr (e.g. ``quoteFontSizeUnit``) when the block declares it —
     mirroring convert.py:4065-4068.
     """
-    value = _compute_value(css_property, attr_type, raw, target_attr, catalogue)
+    value = _compute_value(css_property, attr_type, raw, target_attr, catalogue, role)
     if value is None:
         return
     lifted[target_attr] = value
