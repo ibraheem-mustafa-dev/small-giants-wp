@@ -1534,6 +1534,38 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/countdown-timer", "marginMobile"): {"box_family": "margin"},
     ("sgs/countdown-timer", "borderRadiusTablet"): {"box_family": "borderRadius"},
     ("sgs/countdown-timer", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    # Wave-2 batch 2 (2026-07-10): 4 leaf/array/timeline block-private blocks.
+    # padding/margin base -> WP-native style.spacing.* (object, no seed); tiers seeded.
+    # icon-list/timeline/process-steps take the quote route for border (custom
+    # borderWidth object + scalar colour/style, radius base native); brand-strip keeps
+    # native border wholesale (radius tiers only). process-steps has no responsive
+    # radius (no radius tier attrs). box-shadow (timeline/process-steps) stays the
+    # native shadow support, scoped -> NOT a box family, no seed.
+    ("sgs/icon-list", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/icon-list", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/icon-list", "marginTablet"): {"box_family": "margin"},
+    ("sgs/icon-list", "marginMobile"): {"box_family": "margin"},
+    ("sgs/icon-list", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/icon-list", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    ("sgs/icon-list", "borderWidth"): {"box_family": "borderWidth"},
+    ("sgs/brand-strip", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/brand-strip", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/brand-strip", "marginTablet"): {"box_family": "margin"},
+    ("sgs/brand-strip", "marginMobile"): {"box_family": "margin"},
+    ("sgs/brand-strip", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/brand-strip", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    ("sgs/timeline", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/timeline", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/timeline", "marginTablet"): {"box_family": "margin"},
+    ("sgs/timeline", "marginMobile"): {"box_family": "margin"},
+    ("sgs/timeline", "borderRadiusTablet"): {"box_family": "borderRadius"},
+    ("sgs/timeline", "borderRadiusMobile"): {"box_family": "borderRadius"},
+    ("sgs/timeline", "borderWidth"): {"box_family": "borderWidth"},
+    ("sgs/process-steps", "paddingTablet"): {"box_family": "padding"},
+    ("sgs/process-steps", "paddingMobile"): {"box_family": "padding"},
+    ("sgs/process-steps", "marginTablet"): {"box_family": "margin"},
+    ("sgs/process-steps", "marginMobile"): {"box_family": "margin"},
+    ("sgs/process-steps", "borderWidth"): {"box_family": "borderWidth"},
 }
 
 

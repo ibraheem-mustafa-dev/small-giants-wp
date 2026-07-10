@@ -1,7 +1,13 @@
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
-import { PanelBody, SelectControl, TextControl, Button } from "@wordpress/components";
-import { DesignTokenPicker, IconPicker, IconPreview } from "../../components";
+import { PanelBody, SelectControl, TextControl, ToggleControl, Button } from "@wordpress/components";
+import {
+  DesignTokenPicker,
+  IconPicker,
+  IconPreview,
+  ResponsiveBoxControl,
+  ResponsiveBorderRadiusControl,
+} from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 
 const ICON_SIZE_OPTIONS = [
@@ -15,6 +21,18 @@ const GAP_OPTIONS = [
   { label: __("Normal", "sgs-blocks"), value: "20" },
   { label: __("Relaxed", "sgs-blocks"), value: "30" },
   { label: __("Spacious", "sgs-blocks"), value: "40" },
+];
+
+const BORDER_STYLE_OPTIONS = [
+  { label: __("None", "sgs-blocks"), value: "none" },
+  { label: __("Solid", "sgs-blocks"), value: "solid" },
+  { label: __("Dashed", "sgs-blocks"), value: "dashed" },
+  { label: __("Dotted", "sgs-blocks"), value: "dotted" },
+  { label: __("Double", "sgs-blocks"), value: "double" },
+  { label: __("Groove", "sgs-blocks"), value: "groove" },
+  { label: __("Ridge", "sgs-blocks"), value: "ridge" },
+  { label: __("Inset", "sgs-blocks"), value: "inset" },
+  { label: __("Outset", "sgs-blocks"), value: "outset" },
 ];
 
 // Legacy per-item slug → Lucide name (for items authored before the visual picker).
@@ -44,6 +62,19 @@ function resolveItemIcon(item, fallback) {
     return { source: "lucide", name: LEGACY_ICON_MAP[item.icon] || item.icon };
   }
   return fallback;
+}
+
+/**
+ * Box-object interface contract §1: build an editor-preview shorthand from a
+ * box/corner object — mirrors render.php's hand-built shorthand so the canvas
+ * matches the frontend (contract §5). Editor-canvas preview only — the SAVED/
+ * RENDERED frontend output is dynamic (render.php) and emits everything
+ * scoped, never inline (contract §A).
+ */
+function boxShorthand(box, keys) {
+  if (!box || "object" !== typeof box) return undefined;
+  if (!keys.some((key) => box[key])) return undefined;
+  return keys.map((key) => box[key] || "0").join(" ");
 }
 
 function ItemEditor({ item, fallback, onChange, onRemove }) {
@@ -93,6 +124,16 @@ export default function Edit({ attributes, setAttributes }) {
     iconSize,
     textColour,
     gap,
+    style,
+    paddingTablet,
+    paddingMobile,
+    marginTablet,
+    marginMobile,
+    borderRadiusTablet,
+    borderRadiusMobile,
+    borderWidth,
+    borderColour,
+    borderStyle,
   } = attributes;
 
   const fallback = {
@@ -100,13 +141,33 @@ export default function Edit({ attributes, setAttributes }) {
     name: defaultIconName || "check",
   };
 
+  // Editor-canvas preview only (contract §A note above) — mirrors render.php's
+  // scoped output so the canvas matches the frontend.
+  const previewStyle = {};
+  const paddingPreview = boxShorthand(style?.spacing?.padding, ["top", "right", "bottom", "left"]);
+  if (paddingPreview) previewStyle.padding = paddingPreview;
+  const marginPreview = boxShorthand(style?.spacing?.margin, ["top", "right", "bottom", "left"]);
+  if (marginPreview) previewStyle.margin = marginPreview;
+  const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
+  if (radiusPreview) previewStyle.borderRadius = radiusPreview;
+  if (style?.color?.text) previewStyle.color = style.color.text;
+  if (style?.color?.background) previewStyle.backgroundColor = style.color.background;
+  if (borderStyle && borderStyle !== "none") {
+    const borderWidthPreview = boxShorthand(borderWidth, ["top", "right", "bottom", "left"]);
+    if (borderWidthPreview) previewStyle.borderWidth = borderWidthPreview;
+    previewStyle.borderStyle = borderStyle;
+    if (borderColour) {
+      previewStyle.borderColor = /^#|^rgb|^hsl/.test(borderColour) ? borderColour : colourVar(borderColour);
+    }
+  }
+
   const blockProps = useBlockProps({
     className: `sgs-icon-list sgs-icon-list--icon-${iconSize}`,
+    style: { ...previewStyle, gap: spacingVar(gap) || undefined },
   });
 
   const iconStyle = { color: colourVar(iconColour) || undefined };
   const textStyle = { color: colourVar(textColour) || undefined };
-  const listStyle = { gap: spacingVar(gap) || undefined };
 
   const updateItem = (index, updatedItem) => {
     const updated = [...items];
@@ -181,9 +242,90 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ textColour: val })}
           />
         </PanelBody>
+
+        {/* Box-object interface contract §B/§E: padding/margin base routes to
+           WP-native style.spacing.* (skip-serialised → scoped, not inline);
+           tiers are the paddingTablet/paddingMobile + marginTablet/
+           marginMobile object attrs. */}
+        <PanelBody title={__("Spacing", "sgs-blocks")} initialOpen={false}>
+          <ResponsiveBoxControl
+            label={__("Padding", "sgs-blocks")}
+            values={{
+              base: style?.spacing?.padding ?? {},
+              tablet: paddingTablet ?? {},
+              mobile: paddingMobile ?? {},
+            }}
+            onChange={(tier, next) => {
+              if ("base" === tier) {
+                setAttributes({ style: { ...style, spacing: { ...style?.spacing, padding: next } } });
+              } else {
+                setAttributes({ [`padding${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
+              }
+            }}
+          />
+          <ResponsiveBoxControl
+            label={__("Margin", "sgs-blocks")}
+            values={{
+              base: style?.spacing?.margin ?? {},
+              tablet: marginTablet ?? {},
+              mobile: marginMobile ?? {},
+            }}
+            onChange={(tier, next) => {
+              if ("base" === tier) {
+                setAttributes({ style: { ...style, spacing: { ...style?.spacing, margin: next } } });
+              } else {
+                setAttributes({ [`margin${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
+              }
+            }}
+          />
+        </PanelBody>
+
+        {/* Box-object interface contract §1/§5: borderWidth is an SGS custom
+           object attr (base only, no tiers — matches the pre-existing
+           base-only contract); border-radius routes to WP-native
+           style.border.radius + SGS tier objects (skip-serialised → scoped). */}
+        <PanelBody title={__("Border", "sgs-blocks")} initialOpen={false}>
+          <SelectControl
+            label={__("Border style", "sgs-blocks")}
+            value={borderStyle}
+            options={BORDER_STYLE_OPTIONS}
+            onChange={(val) => setAttributes({ borderStyle: val })}
+            __nextHasNoMarginBottom
+          />
+          {borderStyle !== "none" && (
+            <>
+              <DesignTokenPicker
+                label={__("Border colour", "sgs-blocks")}
+                value={borderColour}
+                onChange={(val) => setAttributes({ borderColour: val ?? "" })}
+              />
+              <ResponsiveBoxControl
+                label={__("Border width", "sgs-blocks")}
+                values={{ base: borderWidth ?? {} }}
+                showResponsive={false}
+                onChange={(tier, next) => setAttributes({ borderWidth: next })}
+              />
+            </>
+          )}
+          <ResponsiveBorderRadiusControl
+            label={__("Border radius", "sgs-blocks")}
+            values={{
+              base: style?.border?.radius ?? {},
+              tablet: borderRadiusTablet ?? {},
+              mobile: borderRadiusMobile ?? {},
+            }}
+            onChange={(tier, next) => {
+              if ("base" === tier) {
+                setAttributes({ style: { ...style, border: { ...style?.border, radius: next } } });
+              } else {
+                setAttributes({ [`borderRadius${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
+              }
+            }}
+          />
+        </PanelBody>
       </InspectorControls>
 
-      <ul {...blockProps} style={{ ...blockProps.style, ...listStyle }}>
+      <ul {...blockProps}>
         {items.map((item, index) => {
           const resolved = resolveItemIcon(item, fallback);
           return (

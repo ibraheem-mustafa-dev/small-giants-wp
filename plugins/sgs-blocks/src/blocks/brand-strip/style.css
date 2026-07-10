@@ -93,6 +93,13 @@
 	animation: sgs-brand-scroll var(--sgs-scroll-speed, 25s) linear infinite;
 }
 
+/* Pause on hover — toggled by view.js as a CLASS (no-inline migration
+   contract §A: an inline `.style.animationPlayState` write is a real CSS
+   property declaration, not a `--var` value, so it is forbidden inline). */
+.sgs-brand-strip__track--paused {
+	animation-play-state: paused;
+}
+
 @keyframes sgs-brand-scroll {
 	0% {
 		transform: translateX(0);
@@ -132,11 +139,15 @@
 	background: linear-gradient(to left, var(--sgs-fade-bg, var(--wp--preset--color--surface, #fff)), transparent);
 }
 
-/* Match fade colour to block background if set */
-.sgs-brand-strip[style*="background-color"]::before {
+/* Match fade colour to block background if set. `.has-background` is a real
+   CLASS (no-inline migration contract §A — background-color is no longer an
+   inline style, so it can no longer be attribute-selector-sniffed via
+   `[style*="background-color"]`; the block root now carries `.has-background`
+   whenever a custom or preset background colour is set — see render.php). */
+.sgs-brand-strip.has-background::before {
 	background: linear-gradient(to right, var(--wp--custom--color--background, currentColor), transparent);
 }
-.sgs-brand-strip[style*="background-color"]::after {
+.sgs-brand-strip.has-background::after {
 	background: linear-gradient(to left, var(--wp--custom--color--background, currentColor), transparent);
 }
 

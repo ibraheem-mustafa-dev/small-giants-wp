@@ -91,12 +91,15 @@ strips.forEach( ( strip ) => {
 		track.classList.add( 'sgs-brand-strip__track--ready' );
 	}
 
-	// Pause on hover.
+	// Pause on hover — toggles a CLASS, not an inline style property (no-inline
+	// migration contract §A: `.style.animationPlayState` would write a real
+	// inline CSS property declaration; `.sgs-brand-strip__track--paused` is a
+	// scoped class rule in style.css instead).
 	strip.addEventListener( 'mouseenter', () => {
-		track.style.animationPlayState = 'paused';
+		track.classList.add( 'sgs-brand-strip__track--paused' );
 	} );
 	strip.addEventListener( 'mouseleave', () => {
-		track.style.animationPlayState = 'running';
+		track.classList.remove( 'sgs-brand-strip__track--paused' );
 	} );
 
 	init();

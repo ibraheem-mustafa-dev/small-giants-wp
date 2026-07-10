@@ -8,6 +8,31 @@
  * the minimum number of times needed for seamless infinite scroll.
  * CSS @keyframes handles the animation on the GPU compositor thread.
  *
+ * NO-INLINE, BLOCK-PRIVATE (LOCKED per-block no-inline migration contract
+ * §A/§B, 2026-07-10): the rendered root `<div>` carries ZERO inline CSS
+ * property declarations — every WP-native styling support (color/spacing/
+ * __experimentalBorder) declares `__experimentalSkipSerialization` in
+ * block.json, and every value is emitted scoped into the block's OWN
+ * `.{uid}` <style> tag via the stable core API `wp_style_engine_get_styles()`
+ * (exactly how WP core outputs `layout` support). A `--var: value` custom
+ * property VALUE on the root (scroll speed, logo max-height, fade width,
+ * hover colours, transition duration/easing) is a VALUE, not a property
+ * declaration, so it stays on the element per contract §A.
+ *
+ * BOX-GROUP (contract §B): padding/margin/border-radius are WP-native
+ * `style.spacing.*` / `style.border.radius` objects (already object-shaped) —
+ * emitted scoped, not inline. Tablet/Mobile tiers are SGS custom object attrs
+ * (paddingTablet/paddingMobile/marginTablet/marginMobile/borderRadiusTablet/
+ * borderRadiusMobile). Border width/style/colour are WP-native `style.border`
+ * values (this block declares full __experimentalBorder support, unlike
+ * sgs/quote's bespoke scalar attrs) — passed wholesale to the style engine,
+ * base only (no tiers, matches the DONE checklist's border-radius-only tier
+ * requirement).
+ *
+ * @since 2026-07-10  No-inline migration: WP supports skip-serialised +
+ *                    scoped output; padding/margin/border-radius tier attrs
+ *                    added; view.js animation-pause moved off inline style.
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var \WP_Block $block      Block instance.
@@ -19,7 +44,19 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-// Extract attributes with defaults.
+// ---------------------------------------------------------------------------
+// 1. Security sanitiser (contract §D) — CSS-length sanitiser for box/side
+// values (mirrors sgs/label + sgs/quote + sgs/media).
+// ---------------------------------------------------------------------------
+
+$sgs_css_length = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+};
+
+// ---------------------------------------------------------------------------
+// 2. Extract attributes with defaults.
+// ---------------------------------------------------------------------------
+
 $logos               = $attributes['logos'] ?? array();
 $scrolling           = $attributes['scrolling'] ?? false;
 $scroll_speed        = $attributes['scrollSpeed'] ?? 'medium';
@@ -48,7 +85,51 @@ $allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 $safe_direction    = in_array( $scroll_direction, array( 'left', 'right' ), true ) ? $scroll_direction : 'left';
 
-// Build wrapper classes.
+// ---------------------------------------------------------------------------
+// 3. WP-native style groups (skip-serialised in block.json → NOT auto-inlined
+// by get_block_wrapper_attributes()). Padding/margin base are already
+// object-shaped ({top,right,bottom,left}); border is passed wholesale (this
+// block has full native width/style/color/radius support, unlike sgs/quote's
+// bespoke scalar borderWidth attr).
+// ---------------------------------------------------------------------------
+
+$native_bg      = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_bg_slug = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
+$base_padding_obj = array();
+if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
+	foreach ( $attributes['style']['spacing']['padding'] as $padding_side => $padding_value ) {
+		if ( is_string( $padding_value ) && '' !== $padding_value ) {
+			$base_padding_obj[ $padding_side ] = $padding_value;
+		}
+	}
+}
+$base_margin_obj = array();
+if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
+	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+		if ( is_string( $margin_value ) && '' !== $margin_value ) {
+			$base_margin_obj[ $margin_side ] = $margin_value;
+		}
+	}
+}
+
+$native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
+
+$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+
+// ---------------------------------------------------------------------------
+// 4. Build wrapper classes. `has-background`/`has-{slug}-background-color`
+// re-added manually (skip-serialisation suppresses WP's automatic class
+// addition too, not just the inline style — matches sgs/label + sgs/quote).
+// ---------------------------------------------------------------------------
+
+$has_background = ( '' !== $native_bg || '' !== $preset_bg_slug );
+
 $classes = array( 'sgs-brand-strip' );
 if ( $greyscale ) {
 	$classes[] = 'sgs-brand-strip--greyscale';
@@ -65,8 +146,18 @@ if ( $fade_edges ) {
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-brand-strip--hover-' . esc_attr( $safe_hover_effect );
 }
+if ( $has_background ) {
+	$classes[] = 'has-background';
+	if ( '' !== $preset_bg_slug ) {
+		$classes[] = 'has-' . $preset_bg_slug . '-background-color';
+	}
+}
 
-// Build CSS custom properties.
+// ---------------------------------------------------------------------------
+// 5. Build CSS custom properties (VALUES, not property declarations — allowed
+// inline per contract §A). Unchanged from the pre-migration behaviour.
+// ---------------------------------------------------------------------------
+
 $css_vars = array_merge(
 	sgs_transition_vars( $attributes ),
 	array(
@@ -87,9 +178,127 @@ if ( $hover_border_colour ) {
 	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
+// ---------------------------------------------------------------------------
+// 6. Scoped CSS assembly. uid is a CLASS (this block declares `anchor: true`,
+// so an `id` may be present on the wrapper attrs — the scoped selector must
+// never collide with it, contract §B3).
+// ---------------------------------------------------------------------------
+
+$uid      = 'sgs-brandstrip-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-brand-strip';
+
+$scoped_css = array();
+
+// --- Base spacing (padding/margin) + native border (width/style/colour/
+// radius) + native background colour — all skip-serialised WP supports,
+// emitted scoped via the stable core style engine. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	$base_style_engine_args = array();
+
+	$base_spacing = array();
+	if ( ! empty( $base_padding_obj ) ) {
+		$base_spacing['padding'] = $base_padding_obj;
+	}
+	if ( ! empty( $base_margin_obj ) ) {
+		$base_spacing['margin'] = $base_margin_obj;
+	}
+	if ( ! empty( $base_spacing ) ) {
+		$base_style_engine_args['spacing'] = $base_spacing;
+	}
+
+	if ( ! empty( $native_border ) ) {
+		$base_style_engine_args['border'] = $native_border;
+	}
+
+	if ( '' !== $native_bg ) {
+		$base_style_engine_args['color'] = array( 'background' => $native_bg );
+	}
+
+	if ( ! empty( $base_style_engine_args ) ) {
+		$base_scoped_styles = wp_style_engine_get_styles(
+			$base_style_engine_args,
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $base_scoped_styles['css'] ) ) {
+			$scoped_css[] = $base_scoped_styles['css'];
+		}
+	}
+}
+
+// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
+// scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
+// mobile max-width:767px). ---
+$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
+	$top    = $sgs_css_length( $box['top'] ?? '' );
+	$right  = $sgs_css_length( $box['right'] ?? '' );
+	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
+	$left   = $sgs_css_length( $box['left'] ?? '' );
+	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
+		return null;
+	}
+	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
+};
+
+$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
+$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
+$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
+$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+
+$tablet_decls = array();
+if ( null !== $padding_tab_val ) {
+	$tablet_decls[] = "padding:{$padding_tab_val}";
+}
+if ( null !== $margin_tab_val ) {
+	$tablet_decls[] = "margin:{$margin_tab_val}";
+}
+if ( $tablet_decls ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
+}
+
+$mobile_decls = array();
+if ( null !== $padding_mob_val ) {
+	$mobile_decls[] = "padding:{$padding_mob_val}";
+}
+if ( null !== $margin_mob_val ) {
+	$mobile_decls[] = "margin:{$margin_mob_val}";
+}
+if ( $mobile_decls ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
+}
+
+// --- Border-radius tiers — SGS custom tier OBJECT attrs, routed through the
+// same stable core style-engine API as the base rule above. ---
+if ( function_exists( 'wp_style_engine_get_styles' ) ) {
+	if ( ! empty( $border_radius_tablet_obj ) ) {
+		$radius_tab_out = wp_style_engine_get_styles(
+			array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $radius_tab_out['css'] ) ) {
+			$scoped_css[] = '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
+		}
+	}
+	if ( ! empty( $border_radius_mobile_obj ) ) {
+		$radius_mob_out = wp_style_engine_get_styles(
+			array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+			array( 'selector' => $root_sel )
+		);
+		if ( ! empty( $radius_mob_out['css'] ) ) {
+			$scoped_css[] = '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
+// 7. Build the root element's classes + attributes. NO 'style' key beyond the
+// var-only custom-property set — the root carries ZERO inline CSS PROPERTY
+// declarations (contract §A); every declaration lives in the scoped <style>
+// above.
+// ---------------------------------------------------------------------------
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class' => implode( ' ', $classes ),
+		'class' => implode( ' ', array_merge( $classes, array( $uid ) ) ),
 		'style' => implode( ';', $css_vars ) . ';',
 	)
 );
@@ -140,9 +349,22 @@ if ( ! empty( $logos ) ) {
 	}
 }
 
-// Output: single set inside track. view.js clones as needed for infinite scroll.
+// ---------------------------------------------------------------------------
+// 8. Output. wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
+// leaving CSS combinators like `>` intact (contract §D). Every value reaching
+// $scoped_css is pre-sanitised ($sgs_css_length / wp_style_engine_get_styles),
+// so no un-sanitised value survives here. Single set inside track — view.js
+// clones as needed for infinite scroll.
+// ---------------------------------------------------------------------------
+
+if ( $scoped_css ) :
+	?>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
+	<?php
+endif;
+
 printf(
-	'<div %s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set">%s</div></div></div>',
-	$wrapper_attributes,
-	$logos_html
+	'<div %1$s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set">%2$s</div></div></div>',
+	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	$logos_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
 );

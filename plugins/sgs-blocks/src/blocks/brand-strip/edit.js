@@ -11,7 +11,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -105,9 +105,73 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 	);
 }
 
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5). Editor-only convenience; the
+// frontend render.php emits every declaration scoped, never inline
+// (contract §A).
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) return undefined;
+	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+}
+
+/**
+ * Build the editor-canvas preview style for the root element (background/
+ * padding/margin/border — all WP-native supports, skip-serialised in
+ * block.json so WordPress no longer auto-previews them; hand-built here to
+ * match render.php's scoped output, mirroring sgs/quote + sgs/media).
+ */
+function buildWrapperStyle( attributes ) {
+	const { style } = attributes;
+	const wrapperStyle = {};
+
+	if ( style?.color?.background ) {
+		wrapperStyle.backgroundColor = style.color.background;
+	}
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin );
+	if ( marginPreview ) {
+		wrapperStyle.margin = marginPreview;
+	}
+
+	const border = style?.border;
+	if ( border?.style && border.style !== 'none' ) {
+		const borderWidthPreview = boxShorthand(
+			'object' === typeof border.width ? border.width : undefined
+		);
+		wrapperStyle.borderWidth = borderWidthPreview || border.width || undefined;
+		wrapperStyle.borderStyle = border.style;
+		if ( border.color ) {
+			wrapperStyle.borderColor = border.color;
+		}
+	} else if ( border?.color || border?.width ) {
+		// Colour/width set without an explicit style — WP defaults to solid.
+		wrapperStyle.borderWidth = border.width || undefined;
+		wrapperStyle.borderStyle = 'solid';
+		if ( border.color ) {
+			wrapperStyle.borderColor = border.color;
+		}
+	}
+	const radiusPreview = boxShorthand(
+		'object' === typeof border?.radius ? border.radius : undefined
+	);
+	wrapperStyle.borderRadius = radiusPreview || border?.radius || undefined;
+
+	return Object.fromEntries(
+		Object.entries( wrapperStyle ).filter( ( [ , v ] ) => v !== undefined )
+	);
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		logos,
+		style,
 		scrolling,
 		scrollSpeed,
 		scrollDirection,
@@ -121,6 +185,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect,
 		transitionDuration,
 		transitionEasing,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		borderRadiusTablet,
+		borderRadiusMobile,
 	} = attributes;
 
 	const updateLogo = ( index, updated ) => {
@@ -157,6 +227,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className,
 		style: {
+			// WP-native background/spacing/border preview — skip-serialised in
+			// block.json, so WordPress no longer auto-previews these; hand-built
+			// to mirror render.php's scoped output (contract §A/§E).
+			...buildWrapperStyle( attributes ),
 			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
 			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
 			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
@@ -254,6 +328,62 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+				</PanelBody>
+
+				{ /* Box-object interface contract §B/§E: base padding/margin/border-
+				   radius route to the WP-native Dimensions/Border panels (colour,
+				   spacing, border are still native `supports` — only the FRONTEND
+				   serialisation is skipped). Tablet/Mobile tiers are SGS object
+				   attrs, edited here (mirrors sgs/quote + sgs/media). */ }
+				<PanelBody
+					title={ __( 'Box & border (tablet / mobile)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ {
+							base: style?.border?.radius ?? {},
+							tablet: borderRadiusTablet ?? {},
+							mobile: borderRadiusMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+							} else {
+								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
 				</PanelBody>
 
 				<PanelBody

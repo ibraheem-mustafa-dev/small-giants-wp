@@ -14,7 +14,13 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker } from '../../components';
+import {
+	DesignTokenPicker,
+	IconPicker,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
+import { colourVar } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -34,6 +40,94 @@ const CONNECTOR_OPTIONS = [
 	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 ];
+
+const BORDER_STYLE_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
+	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
+	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
+	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
+];
+
+// Box-object interface contract §1: build an editor-preview shorthand from a
+// box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+/**
+ * Build the editor-canvas preview style for the root `<ol>` — mirrors
+ * render.php's scoped output (base tier only; responsive tiers are PHP-only,
+ * per the other no-inline-migrated blocks). Native WP supports
+ * (color/typography/spacing/border-radius/shadow) declare
+ * `__experimentalSkipSerialization`, which ALSO suppresses useBlockProps()'s
+ * own inline-style generation in the editor — so the canvas needs this
+ * manual reconstruction for visual parity, exactly like sgs/quote.
+ */
+function buildRootPreviewStyle( attributes ) {
+	const { style, borderWidth, borderStyle, borderColour } = attributes;
+	const previewStyle = {};
+
+	const colourText = style?.color?.text;
+	if ( colourText ) {
+		previewStyle.color = colourText;
+	}
+	const colourBg = style?.color?.background;
+	if ( colourBg ) {
+		previewStyle.backgroundColor = colourBg;
+	}
+
+	if ( style?.shadow ) {
+		previewStyle.boxShadow = style.shadow;
+	}
+
+	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		previewStyle.borderRadius = radiusPreview;
+	} else if ( typeof style?.border?.radius === 'string' && style.border.radius ) {
+		previewStyle.borderRadius = style.border.radius;
+	}
+
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
+			previewStyle.borderWidth = borderWidthPreview;
+		}
+		previewStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			previewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour )
+				? borderColour
+				: colourVar( borderColour );
+		}
+	}
+
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		previewStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		previewStyle.margin = marginPreview;
+	}
+
+	const typography = style?.typography ?? {};
+	if ( typography.fontSize ) previewStyle.fontSize = typography.fontSize;
+	if ( typography.lineHeight ) previewStyle.lineHeight = typography.lineHeight;
+	if ( typography.textAlign ) previewStyle.textAlign = typography.textAlign;
+	if ( typography.letterSpacing ) previewStyle.letterSpacing = typography.letterSpacing;
+	if ( typography.textTransform ) previewStyle.textTransform = typography.textTransform;
+	if ( typography.fontWeight ) previewStyle.fontWeight = typography.fontWeight;
+	if ( typography.fontStyle ) previewStyle.fontStyle = typography.fontStyle;
+
+	return previewStyle;
+}
 
 // ── Entry editor sub-component ──────────────────────────────────────────────
 
@@ -146,6 +240,7 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		orientation,
 		alignment,
 		entries,
@@ -154,6 +249,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		dateColour,
 		revealOnScroll,
 		revealStagger,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
+		borderRadiusTablet,
+		borderRadiusMobile,
+		borderWidth,
+		borderColour,
+		borderStyle,
 	} = attributes;
 
 	// Build preview class list mirroring render.php.
@@ -164,6 +268,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-timeline--connector-${ connectorStyle }`,
 	].filter( Boolean ).join( ' ' );
 
+	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
+	// custom-property VALUES stay inline (a `--var:value` is not a property
+	// declaration). Everything else (colour/typography/spacing/border/shadow)
+	// is reconstructed from the skip-serialised style object for editor-canvas
+	// parity with render.php's scoped output (contract §5).
 	const blockProps = useBlockProps( {
 		className: previewClasses,
 		style: {
@@ -173,6 +282,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-date-colour': dateColour
 				? `var(--wp--preset--color--${ dateColour })`
 				: undefined,
+			...buildRootPreviewStyle( attributes ),
 		},
 	} );
 
@@ -254,6 +364,87 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Connector colour', 'sgs-blocks' ) }
 						value={ connectorColour }
 						onChange={ ( val ) => setAttributes( { connectorColour: val } ) }
+					/>
+				</PanelBody>
+
+				{/* ── Spacing ── Box-object interface contract §B/§E: padding/margin
+				   base routes to WP-native style.spacing.* (skip-serialised → scoped,
+				   not inline); tiers are the paddingTablet/paddingMobile +
+				   marginTablet/marginMobile object attrs. */}
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+				</PanelBody>
+
+				{/* ── Border ── Box-object interface contract §1/§5: borderWidth is
+				   an SGS custom object attr (base only, no tiers — no WP-native
+				   per-side width support); border-radius routes to WP-native
+				   style.border.radius (base) + borderRadiusTablet/Mobile tiers. */}
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Border style', 'sgs-blocks' ) }
+						value={ borderStyle }
+						options={ BORDER_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ borderStyle !== 'none' && (
+						<>
+							<DesignTokenPicker
+								label={ __( 'Border colour', 'sgs-blocks' ) }
+								value={ borderColour }
+								onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+							/>
+							<ResponsiveBoxControl
+								label={ __( 'Border width', 'sgs-blocks' ) }
+								values={ { base: borderWidth ?? {} } }
+								showResponsive={ false }
+								onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+							/>
+						</>
+					) }
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ {
+							base: style?.border?.radius ?? {},
+							tablet: borderRadiusTablet ?? {},
+							mobile: borderRadiusMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+							} else {
+								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 

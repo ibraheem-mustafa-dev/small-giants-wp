@@ -17,7 +17,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { DesignTokenPicker, IconPicker, IconPreview } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
 import { colourVar } from '../../utils';
 
 const CONNECTOR_OPTIONS = [
@@ -31,6 +31,27 @@ const NUMBER_STYLE_OPTIONS = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 ];
+
+const BORDER_STYLE_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
+	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
+	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
+	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
+	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
+];
+
+// Box-object interface contract §1/§5: build an editor-preview shorthand from
+// a box object — mirrors render.php's box-shorthand builder so the canvas
+// preview matches the frontend (contract §5).
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
 
 function StepEditor( { step, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
@@ -87,6 +108,7 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		style,
 		steps,
 		connectorStyle,
 		numberStyle,
@@ -100,6 +122,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect,
 		transitionDuration,
 		transitionEasing,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		paddingTablet,
+		paddingMobile,
+		marginTablet,
+		marginMobile,
 	} = attributes;
 
 	const className = [
@@ -109,9 +138,38 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect && hoverEffect !== 'none' ? `sgs-process-steps--hover-${ hoverEffect }` : '',
 	].filter( Boolean ).join( ' ' );
 
+	// Box-object interface contract §5: editor-canvas preview of the base
+	// (desktop) box families, mirroring render.php's scoped output so the
+	// canvas matches the frontend. Tablet/mobile tiers are @media-scoped and
+	// intentionally not previewed on the desktop canvas.
+	const wrapperPreviewStyle = {};
+	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( borderWidthPreview ) {
+		wrapperPreviewStyle.borderWidth = borderWidthPreview;
+		if ( borderStyle && 'none' !== borderStyle ) {
+			wrapperPreviewStyle.borderStyle = borderStyle;
+		}
+		if ( borderColour ) {
+			wrapperPreviewStyle.borderColor = colourVar( borderColour ) || undefined;
+		}
+	}
+	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		wrapperPreviewStyle.padding = paddingPreview;
+	}
+	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( marginPreview ) {
+		wrapperPreviewStyle.margin = marginPreview;
+	}
+	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( borderRadiusPreview ) {
+		wrapperPreviewStyle.borderRadius = borderRadiusPreview;
+	}
+
 	const blockProps = useBlockProps( {
 		className,
 		style: {
+			...wrapperPreviewStyle,
 			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
 			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
 			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
@@ -303,6 +361,74 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { transitionEasing: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ /* ── Border panel ── Box-object interface contract §1/§5: borderWidth
+				   is an SGS custom object attr (base only, no tiers); border-radius
+				   routes to WP-native style.border.radius (skip-serialised → scoped,
+				   matches sgs/heading + sgs/quote). */ }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Border style', 'sgs-blocks' ) }
+						value={ borderStyle }
+						options={ BORDER_STYLE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						value={ borderColour }
+						onChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						values={ { base: borderWidth ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+					/>
+					<ResponsiveBorderRadiusControl
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						values={ { base: style?.border?.radius ?? {} } }
+						showResponsive={ false }
+						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
+					/>
+				</PanelBody>
+
+				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
+				   margin base routes to WP-native style.spacing.* (skip-serialised →
+				   scoped); tiers are the paddingTablet/paddingMobile + marginTablet/
+				   marginMobile object attrs. */ }
+				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Margin', 'sgs-blocks' ) }
+						values={ {
+							base: style?.spacing?.margin ?? {},
+							tablet: marginTablet ?? {},
+							mobile: marginMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+							} else {
+								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+							}
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>

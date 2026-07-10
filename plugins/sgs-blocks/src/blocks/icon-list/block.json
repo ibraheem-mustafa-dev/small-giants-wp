@@ -23,22 +23,23 @@
 		"color": {
 			"background": true,
 			"text": true,
-			"link": true
+			"link": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
 			"lineHeight": true,
-			"textAlign": true
+			"textAlign": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
+			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"arrayContentLift": true
@@ -115,6 +116,43 @@
 		"gap": {
 			"type": "string",
 			"default": "20"
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadiusMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+			"default": "none"
 		}
 	},
 	"render": "file:./render.php",

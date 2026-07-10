@@ -24,7 +24,8 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -33,18 +34,20 @@
 			"letterSpacing": true,
 			"textTransform": true,
 			"fontWeight": true,
-			"fontStyle": true
+			"fontStyle": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
-			"padding": true
+			"padding": true,
+			"__experimentalSkipSerialization": true
 		},
-		"shadow": true,
+		"shadow": {
+			"__experimentalSkipSerialization": true
+		},
 		"__experimentalBorder": {
 			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
+			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"arrayContentLift": true
@@ -131,6 +134,45 @@
 		"hoverEffect": {
 			"type": "string",
 			"default": "none"
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "none"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
 		},
 		"transitionDuration": {
 			"type": "string",
