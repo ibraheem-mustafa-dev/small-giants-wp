@@ -151,7 +151,10 @@ $classes[] = $sgs_card_uid;
 $sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-product-card__pill, .' . $sgs_card_uid . ' .pill' );
+// 'pill' typography now targets the REAL option-picker pill (both typed + bound
+// pack pickers render sgs/option-picker) — the legacy .sgs-product-card__pill /
+// .pill markup was removed 2026-07-10, so this control styles the live pills.
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag, .' . $sgs_card_uid . ' .trial-tag' );
