@@ -674,6 +674,49 @@ export default function Edit( { attributes, setAttributes } ) {
 		? cta2Style
 		: 'secondary';
 
+	// Typed-mode editor parity (no-inline migration): color/spacing/border supports
+	// are __experimentalSkipSerialization, so useBlockProps() no longer applies the
+	// WP-native colour/border to the editor wrapper. Bound mode uses ServerSideRender
+	// (already faithful to render.php's scoped <style> + re-added has-* classes), but
+	// the typed NATIVE preview must re-apply them here so the editor mirrors the
+	// frontend. Editor inline style is allowed for live preview (only the SAVED /
+	// dynamic-rendered frontend must be inline-free — this block is render.php-driven).
+	// Mirrors render.php's scoped emission + preset has-* class re-add exactly.
+	const nativeStyle = attributes.style || {};
+	const typedPreviewStyle = {};
+	const typedPreviewClasses = [];
+	if ( ! isBound ) {
+		const nc = nativeStyle.color || {};
+		if ( nc.text ) typedPreviewStyle.color = nc.text;
+		if ( nc.background ) typedPreviewStyle.background = nc.background;
+		if ( nc.gradient ) typedPreviewStyle.background = nc.gradient;
+		const nb = nativeStyle.border || {};
+		if ( nb.color ) typedPreviewStyle.borderColor = nb.color;
+		if ( nb.style ) typedPreviewStyle.borderStyle = nb.style;
+		if ( nb.width ) typedPreviewStyle.borderWidth = nb.width;
+		if ( typeof nb.radius === 'string' && nb.radius ) {
+			typedPreviewStyle.borderRadius = nb.radius;
+		} else if ( nb.radius && typeof nb.radius === 'object' ) {
+			if ( nb.radius.topLeft ) typedPreviewStyle.borderTopLeftRadius = nb.radius.topLeft;
+			if ( nb.radius.topRight ) typedPreviewStyle.borderTopRightRadius = nb.radius.topRight;
+			if ( nb.radius.bottomLeft ) typedPreviewStyle.borderBottomLeftRadius = nb.radius.bottomLeft;
+			if ( nb.radius.bottomRight ) typedPreviewStyle.borderBottomRightRadius = nb.radius.bottomRight;
+		}
+		// Preset (palette-slug) colours are class-based — mirror render.php's re-add.
+		if ( attributes.textColor ) {
+			typedPreviewClasses.push( 'has-text-color', `has-${ attributes.textColor }-color` );
+		}
+		if ( attributes.backgroundColor ) {
+			typedPreviewClasses.push( 'has-background', `has-${ attributes.backgroundColor }-background-color` );
+		}
+		if ( attributes.gradient ) {
+			typedPreviewClasses.push( 'has-background', `has-${ attributes.gradient }-gradient-background` );
+		}
+		if ( attributes.borderColor ) {
+			typedPreviewClasses.push( 'has-border-color', `has-${ attributes.borderColor }-border-color` );
+		}
+	}
+
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
 	// it — otherwise the preview shows a double `.product-card` (double
@@ -686,9 +729,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						'product-card',
 						isTrial ? 'trial-card' : '',
 						isFeatured ? 'featured-card' : '',
+						...typedPreviewClasses,
 					]
 						.filter( Boolean )
 						.join( ' ' ),
+					style: typedPreviewStyle,
 			  }
 	);
 
@@ -1568,41 +1613,41 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 
 						{ /*
-						 * Pack pills preview — mirrors the frontend sgs/option-picker
-						 * radiogroup structure (label + hidden radio + pill span) so the
-						 * editor canvas looks like the live card. Non-interactive
-						 * (readOnly) — the frontend picker is the real, self-contained
-						 * sgs/option-picker block; this is a visual-only stand-in.
-						 * Keeps the existing .sgs-product-card__pill class + CSS
-						 * (still consumed here) — only the wrapper markup is new.
+						 * Pack pills preview — uses the REAL sgs/option-picker markup +
+						 * classes (.sgs-option-picker / __options / __option / __pill,
+						 * outlined+medium) so the shared option-picker stylesheet (loaded
+						 * in the editor) styles it byte-identically to the frontend +
+						 * bound-mode picker: "typed uses the same setup as bound" (Bean,
+						 * 2026-07-10). The card-scoped .product-card .sgs-option-picker
+						 * override supplies the pink resting outline; the :checked sibling
+						 * rule + ::before tick give the selected pill its filled state.
+						 * Non-interactive (readOnly) — the frontend picker is the real,
+						 * self-contained sgs/option-picker block; this is a visual stand-in.
 						 */ }
 						{ ( packSizes || [] ).length > 0 && (
 							<div
-								className="sgs-product-card__pill-group"
+								className="sgs-option-picker sgs-option-picker--outlined sgs-option-picker--medium"
 								role="radiogroup"
 								aria-label={ __( 'Pack size', 'sgs-blocks' ) }
 							>
-								{ packSizes.map( ( pill, i ) => (
-									<label
-										key={ i }
-										className="sgs-product-card__pill-option"
-									>
-										<input
-											type="radio"
-											name="sgs-product-card-preview-pack-size"
-											checked={ !! pill.selected }
-											readOnly
-										/>
-										<span
-											className={
-												'sgs-product-card__pill' +
-												( pill.selected ? ' active' : '' )
-											}
+								<div className="sgs-option-picker__options">
+									{ packSizes.map( ( pill, i ) => (
+										<label
+											key={ i }
+											className="sgs-option-picker__option"
 										>
-											{ pill.label }
-										</span>
-									</label>
-								) ) }
+											<input
+												type="radio"
+												name="sgs-product-card-preview-pack-size"
+												checked={ !! pill.selected }
+												readOnly
+											/>
+											<span className="sgs-option-picker__pill">
+												{ pill.label }
+											</span>
+										</label>
+									) ) }
+								</div>
 							</div>
 						) }
 
