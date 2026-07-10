@@ -31,7 +31,8 @@
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
-			"textAlign": true
+			"textAlign": true,
+			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"arrayContentLift": true

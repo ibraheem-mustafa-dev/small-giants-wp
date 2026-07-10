@@ -21,7 +21,8 @@
         "color": {
             "background": true,
             "text": true,
-            "link": false
+            "link": false,
+            "__experimentalSkipSerialization": true
         },
         "spacing": {
             "margin": true,

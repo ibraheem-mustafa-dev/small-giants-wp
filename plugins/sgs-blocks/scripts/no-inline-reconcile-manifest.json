@@ -1,0 +1,30 @@
+{
+  "pageId": 1356,
+  "_note": "Reconcile-4 verify (2026-07-10): button/container/business-info/social-icons residual native color/typography now skip-serialised+scoped. Each instance SETS the previously-auto-inlining support (button color, container color+border+typography, business-info fontSize, social-icons textAlign). expected {} = zero-inline scan only (the harness box-assert doesn't cover colour/typography; a curl-grep separately confirms the scoped rule paints).",
+  "blocks": [
+    {
+      "slug": "sgs/button",
+      "rootSelector": ".wp-block-sgs-button",
+      "attrs": { "text": "Buy now", "url": "#", "style": { "color": { "background": "#123456", "text": "#ffffff" } } },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    },
+    {
+      "slug": "sgs/container",
+      "rootSelector": ".wp-block-sgs-container",
+      "attrs": { "style": { "color": { "background": "#abcdef" }, "typography": { "fontSize": "21px" }, "border": { "color": "#654321", "width": "3px", "style": "solid" } } },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    },
+    {
+      "slug": "sgs/business-info",
+      "rootSelector": ".wp-block-sgs-business-info",
+      "attrs": { "displayType": "hours", "style": { "typography": { "fontSize": "19px" } } },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "rootSelector": ".wp-block-sgs-social-icons",
+      "attrs": { "icons": [ { "platform": "facebook", "url": "https://facebook.com" } ], "style": { "typography": { "textAlign": "center" } } },
+      "expected": { "desktop": {}, "tablet": {}, "mobile": {} }
+    }
+  ]
+}

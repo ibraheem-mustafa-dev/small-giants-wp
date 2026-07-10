@@ -28,7 +28,8 @@
 			"text": true,
 			"gradients": true,
 			"link": true,
-			"heading": true
+			"heading": true,
+			"__experimentalSkipSerialization": true
 		},
 		"typography": {
 			"fontSize": true,
@@ -37,7 +38,8 @@
 			"letterSpacing": true,
 			"textTransform": true,
 			"fontWeight": true,
-			"fontStyle": true
+			"fontStyle": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
@@ -48,7 +50,8 @@
 			"radius": true,
 			"width": true,
 			"color": true,
-			"style": true
+			"style": true,
+			"__experimentalSkipSerialization": true
 		}
 	},
 	"selectors": {

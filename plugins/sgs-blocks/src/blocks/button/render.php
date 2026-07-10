@@ -173,6 +173,21 @@ $colour_bg_hover     = isset( $attributes['colourBackgroundHover'] ) ? $attribut
 $colour_border       = isset( $attributes['colourBorder'] ) ? $attributes['colourBorder'] : '';
 $colour_border_hover = isset( $attributes['colourBorderHover'] ) ? $attributes['colourBorderHover'] : '';
 
+// WP-native `color` support (skip-serialised — Spec 32 no-inline contract):
+// get_block_wrapper_attributes() no longer auto-inlines these, but
+// $attributes['style']['color'] / textColor / backgroundColor are still
+// populated by core when an operator (or a clone) sets a colour via the
+// native Styles panel. Custom hex/rgb values are emitted into the block's
+// own scoped <style> below (step 4); preset SLUGS get the standard
+// has-text-color / has-{slug}-color / has-background /
+// has-{slug}-background-color classes re-added manually in step 5 (mirrors
+// sgs/label's pattern — WP suppresses its own class output once
+// skipSerialization is set).
+$style_colour_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_colour_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug  = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug    = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+
 // Hover text-decoration ('none' | 'underline') — reproduces a draft link that
 // underlines on hover. Only 'underline' emits; 'none' leaves the base decoration
 // untouched on hover.
@@ -404,6 +419,27 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$scoped_css_parts[] = $base_scoped_styles['css'];
 		}
 	}
+
+	// WP-native `color` support (skip-serialised) — a custom hex/rgb value set
+	// via the Styles panel is emitted scoped instead of auto-inlined. Preset
+	// slug values (textColor/backgroundColor) never reach $attributes['style'];
+	// those get the has-* classes in step 5 instead.
+	if ( '' !== $style_colour_text || '' !== $style_colour_bg ) {
+		$colour_style_engine_args = array( 'color' => array() );
+		if ( '' !== $style_colour_text ) {
+			$colour_style_engine_args['color']['text'] = $style_colour_text;
+		}
+		if ( '' !== $style_colour_bg ) {
+			$colour_style_engine_args['color']['background'] = $style_colour_bg;
+		}
+		$colour_scoped_styles = wp_style_engine_get_styles(
+			$colour_style_engine_args,
+			array( 'selector' => "#{$uid}" )
+		);
+		if ( ! empty( $colour_scoped_styles['css'] ) ) {
+			$scoped_css_parts[] = $colour_scoped_styles['css'];
+		}
+	}
 }
 
 // Responsive padding/margin/border-radius tiers — box-object attrs, hand-built
@@ -568,6 +604,18 @@ if ( $has_width_tier || 'custom' === $width_type || 'full' === $width_type ) {
 $btn_classes = array( 'sgs-button' );
 if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true ) ) {
 	$btn_classes[] = 'sgs-button--' . $inherit_style;
+}
+
+// WP-native colour support (skip-serialised): re-add the standard preset
+// has-* classes WP would otherwise emit itself, so a preset (as opposed to
+// custom-hex) colour choice still paints via the theme's palette CSS.
+if ( '' !== $preset_text_slug ) {
+	$btn_classes[] = 'has-text-color';
+	$btn_classes[] = 'has-' . $preset_text_slug . '-color';
+}
+if ( '' !== $preset_bg_slug ) {
+	$btn_classes[] = 'has-background';
+	$btn_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 
 // Base margin is no longer built as an inline wrapper style — Box-object

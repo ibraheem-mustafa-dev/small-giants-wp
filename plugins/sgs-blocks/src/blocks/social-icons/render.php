@@ -3,14 +3,21 @@
  * Server-side render for the SGS Social Icons block.
  *
  * NO-INLINE (per-block no-inline migration contract §A): the rendered subtree
- * carries ZERO inline CSS property declarations. WP `color`/`spacing` supports
- * declare `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them — base padding/
- * margin/text-colour/background-colour are instead emitted scoped via
- * wp_style_engine_get_styles() into the block's own <style> tag, mirroring
- * sgs/heading. The row `gap`, the per-icon-item colour custom properties, and
- * the per-icon-item size (previously inline `style="width:...;height:..."`)
- * all move into the same scoped stylesheet.
+ * carries ZERO inline CSS property declarations. WP `color`/`spacing`/
+ * `typography` supports declare `__experimentalSkipSerialization` in
+ * block.json so get_block_wrapper_attributes() never auto-inlines them — base
+ * padding/margin/text-colour/background-colour/typography are instead emitted
+ * scoped via wp_style_engine_get_styles() into the block's own <style> tag,
+ * mirroring sgs/heading + sgs/quote. The row `gap`, the per-icon-item colour
+ * custom properties, and the per-icon-item size (previously inline
+ * `style="width:...;height:..."`) all move into the same scoped stylesheet.
+ *
+ * @since 2026-07-10  Closed a residual gap: `typography` support was declared
+ * (textAlign) without `__experimentalSkipSerialization`, so any populated
+ * `style.typography` value would have auto-inlined onto the wrapper. Now
+ * skip-serialised + read back and emitted scoped (same mechanism as color/
+ * spacing above), so the wrapper stays inline-free regardless of which
+ * typography sub-features are enabled in future.
  *
  * BOX-GROUP (contract §B): padding/margin are box objects. Base = WP-native
  * style.spacing.padding/margin (skip-serialised); tiers = paddingTablet/
@@ -124,6 +131,15 @@ $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (stri
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
+// WP `typography` support values (skip-serialised in block.json → NOT
+// auto-inlined). Only `textAlign` is currently enabled in supports.typography
+// (rendered as a `has-text-align-*` class by get_block_wrapper_attributes(),
+// unaffected by skip-serialisation), but fontSize/lineHeight are read
+// defensively here so the wrapper stays inline-free if either is enabled in
+// future — mirrors sgs/quote's identical read of style.typography.
+$style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
+$style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
+
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly — content-hash uid is a CLASS (this block has a genuine
 // multi-child root: a row of <a> icon items, so the existing container div
@@ -176,6 +192,17 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 	if ( ! empty( $color_args ) ) {
 		$base_style_engine_args['color'] = $color_args;
+	}
+
+	$typography_args = array();
+	if ( '' !== $style_font_size ) {
+		$typography_args['fontSize'] = $style_font_size;
+	}
+	if ( '' !== $style_line_height ) {
+		$typography_args['lineHeight'] = $style_line_height;
+	}
+	if ( ! empty( $typography_args ) ) {
+		$base_style_engine_args['typography'] = $typography_args;
 	}
 
 	if ( ! empty( $base_style_engine_args ) ) {

@@ -73,7 +73,8 @@
 		},
 		"typography": {
 			"fontSize": true,
-			"fontFamily": true
+			"fontFamily": true,
+			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
