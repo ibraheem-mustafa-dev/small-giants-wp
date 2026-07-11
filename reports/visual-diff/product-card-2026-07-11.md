@@ -31,6 +31,19 @@ Root cause (proven live): converter never emitted `ctaStyle` (grep=0) → both d
 - Draft `.sgs-button--primary` = `background:var(--primary); color:var(--text); border-color:var(--primary)` → solid pink / dark / pink. **Featured matches.**
 - Draft `.sgs-button--secondary` = `background:transparent; color:var(--text); border-color:var(--primary)` → transparent / dark / pink. **Trial matches.**
 
+## CORRECTION (2026-07-11, after Bean caught hover + border defects)
+The first pass verified only resting-state contrast + class names — it did NOT test hover and mis-recorded the trial border. Root cause of the residual defects: the product-card's OWN `style.css` rules (`.product-card .sgs-button--primary/secondary` rest + `:hover`, 0,2,0) OVERRODE the shared button channel with divergent values (secondary border → primary-dark `#C56A7A` not primary `#E68A95`; secondary:hover text stayed dark not white; primary:hover border → `#8B3A47` not `#3A2E26`). The snapshot `buttonPresets` are perfect (match the draft), so removing these per-block divergences (R-31-9 composite-mirror) makes the CTA inherit the faithful channel. Version bumped 1.16.11→1.16.12 to cache-bust the version-pinned block stylesheet (a style.css-only change can't reach a cached browser otherwise).
+
+**Full live verification — rest AND hover (Playwright `.hover()`, fresh `?ver=1.16.12`):**
+| | Featured (primary) | Trial (secondary) | Draft |
+|---|---|---|---|
+| rest bg | #E68A95 | transparent | ✓ |
+| rest text | #3A2E26 | #3A2E26 | ✓ |
+| rest border | #E68A95 | #E68A95 | ✓ (was #C56A7A) |
+| hover bg | #3A2E26 | #3A2E26 | ✓ |
+| hover text | #FFFAF5 (white) | #FFFAF5 (white) | ✓ (trial was dark) |
+| hover border | #3A2E26 | #3A2E26 | ✓ |
+
 ## What changed
 - **Converter (`walk.py` + `db_lookup` + `assembly` refactor):** the nested CTA's BEM `--modifier` lifts onto the composite's `ctaStyle` — the SAME `preset_style_for_element` mechanism a standalone `sgs/button` uses for `inheritStyle` (Spec 31 §13.5; R-31-9 universal; new `style_preset_attrs_for_identity` surfaces the behaviour-role style attr `content_attrs_for_identity` excludes). Regression test added.
 - **Colour (block.json):** all 6 `ctaColour*` preset defaults emptied → a preset CTA injects no explicit colour and inherits the shared `sgs-button--{style}` class channel per variant (composite-mirror; STOP-D228 injected-default removal). WCAG-correct per client.

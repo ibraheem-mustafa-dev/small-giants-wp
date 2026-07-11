@@ -235,29 +235,24 @@
 	font-size: 15px;
 }
 
-.product-card .sgs-button--primary {
-	background: var(--wp--preset--color--primary, #1F7A7A);
-	/*
-	 * Overridable REST text — framework default white (teal primary = 5.09:1 ✓).
-	 * Light-palette variations (e.g. Mama's pink #E68A95, where white = 2.49:1
-	 * FAIL) MUST override --sgs-product-card-btn-text to a dark value to pass
-	 * WCAG §1.4.3. See styles/mamas-munches.css.
-	 */
-	color: var(--sgs-product-card-btn-text, #ffffff);
-	border: 2px solid var(--wp--preset--color--primary, #1F7A7A);
-}
-
-.product-card .sgs-button--primary:hover {
-	/*
-	 * WCAG A11Y (QC #9 fix): hover uses --sgs-product-card-btn-hover-bg
-	 * (defaults to primary-dark) with white text.
-	 * Framework: #0F4C4C + white = 9.73:1 ✓. Light palette overrides must
-	 * supply a dark enough bg via --sgs-product-card-btn-hover-bg.
-	 */
-	background: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #0F4C4C));
-	border-color: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #0F4C4C));
-	color: var(--sgs-product-card-btn-hover-text, #ffffff);
-}
+/*
+ * Composite-mirror (R-31-9 / Spec 31 §13.6, D310+): the CTA's colour (rest AND
+ * hover, background/text/border) is governed ENTIRELY by the shared sgs/button
+ * class channel — `.sgs-button` base + `.sgs-button--{primary,secondary,outline}`
+ * setting the six `--sgs-btn-*` vars from the per-client
+ * `--wp--custom--button-presets--{preset}--{role}` tokens (button/style.css
+ * L58-83). Those tokens are the FAITHFUL per-client values (they equal what the
+ * draft's `.sgs-button--{preset}` rules declare), so mirroring them = draft
+ * parity + WCAG-correct per client. The former `.product-card .sgs-button--primary`
+ * / `--secondary` rest+hover rules (and the `--sgs-product-card-btn-*` vars) were a
+ * per-block DIVERGENCE that overrode the channel with different values (secondary
+ * border→primary-dark not primary; secondary:hover text stayed dark not white;
+ * primary:hover border→#8B3A47 not text) — removed per the composite-mirror rule.
+ * A per-instance colour override still wins via sgs_button_element_style_css()'s
+ * `.{uid} .sgs-product-card__cta--primary` rule (0,2,0, appended) when a client sets
+ * a ctaColour* value; empty (default) = inherit the channel. Layout defaults stay in
+ * the `:where(.product-card) .sgs-button` rule above.
+ */
 
 /*
  * Bound-card add-to-cart — icon + label, centred. The SVG uses currentColor so
@@ -307,21 +302,16 @@
 	-webkit-appearance: none;
 }
 
-.product-card .sgs-button--secondary {
-	background: transparent;
-	/* Text colour for readability (AA — primary-dark on white failed 3.67:1 live,
-	 * axe 2026-06-10); the brand identity comes from the primary border + hover. */
-	color: var(--wp--preset--color--text, #3a2e26);
-	/* F6 (visual-polish): primary-dark border — >=3:1 vs white (WCAG 1.4.11
-	 * non-text contrast) and clearer primary/secondary hierarchy at 375px.
-	 * Was primary (pale pink, disappeared on white). */
-	border: 2px solid var(--wp--preset--color--primary-dark, #0F4C4C);
-}
-
-.product-card .sgs-button--secondary:hover {
-	background: var(--wp--preset--color--primary, #1F7A7A);
-	color: var(--wp--preset--color--text, #3a2e26);
-}
+/*
+ * `.sgs-button--secondary` (rest + hover) colour removed — see the composite-mirror
+ * note above the primary block. The secondary CTA now inherits its transparent
+ * background, primary (#E68A95) border, dark text, and hover (dark bg + white text +
+ * dark border) from the shared `.sgs-button--secondary` preset channel = the draft's
+ * secondary button, faithfully. (The prior F6 primary-dark border was a per-block
+ * divergence from the draft; if a client's secondary border needs stronger non-text
+ * contrast, adjust that client's `buttonPresets.secondary.border` token, not a
+ * per-block override.)
+ */
 
 /*
  * ── Bound variable-card price + stock slots (U3) ────────────────────────────
