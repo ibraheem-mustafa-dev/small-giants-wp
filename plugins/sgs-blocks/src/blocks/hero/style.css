@@ -478,9 +478,13 @@ section.sgs-hero {
 		font-size: clamp(1.75rem, 4vw, 2.5rem);
 	}
 
-	.sgs-hero--split {
-		gap: var(--wp--preset--spacing--40);
-	}
+	/* NO hardcoded split gap (D228, 2026-07-11). The draft's .sgs-hero declares
+	   no grid gap, so the split columns are flush (400/400 at 800px). The old
+	   `.sgs-hero--split { gap: var(--wp--preset--spacing--40) }` (16px) overrode
+	   that faithfully-absent value — it narrowed the content column by ~5px so
+	   the hero H1 wrapped "Made for the" → "Made for" a word early at ~800px
+	   (proven live vs draft). Any real draft gap is transferred to the
+	   gap/gapTablet/gapMobile attrs and emitted by SGS_Container_Wrapper. */
 }
 
 /* Mobile */
