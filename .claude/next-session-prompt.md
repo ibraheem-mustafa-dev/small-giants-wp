@@ -2,138 +2,101 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 generated: 2026-07-11
-thread: page-8 clone-fidelity discrepancy programme — root-cause the recurring hardcoded-default divergences (Bean-reported), then the inline-styles architecture
+thread: page-8 discrepancy programme — 9 remaining fixes (Cause 1 borders + Cause 2a heights SHIPPED as D306)
 ---
 
-# NEXT SESSION — page-8 fidelity discrepancy programme (root-cause, universal, Spec-31-aligned)
+# NEXT SESSION — finish the page-8 discrepancy programme (9 remaining, all scoped)
 
-Invoke `/autopilot` first. This session ships **D304+D305**: a scoped-selector live gate + three D228
-"hardcoded-default overriding the draft" fixes (button `flex-wrap`, hero `.sgs-hero--split` gap, heading
-`text-wrap:balance`). Bean reviewed page 8 and gave a **discrepancy register** (full text in parking
-`P-PAGE8-DISCREPANCY-REGISTER`). His meta-diagnosis: *"we haven't purged the hardcoded styles from our blocks
-completely"* + a routing issue (card-grid) + an inline-styles architecture concern.
-
-**Bean's binding constraints for this programme (verbatim intent):** do NOT fix these piecemeal. **Root-cause
-each**, find the **universal fix** that **aligns with Spec 31's relevant sections + rules**, and make sure the
-fix does **not resemble any cheat listed in Spec 31**. Many of these collapse to ~3 universal causes (borders,
-heights, buttons), not 15 instance fixes.
+Invoke `/autopilot` first. D306 shipped the two biggest causes (all 8 black borders + equal-height cards + brand button). This session executes the **9 remaining fixes**, each with a proven cause + precise scope already in the register — no fresh diagnosis needed. Bean-directed: root-cause-verified, universal, Spec-31-aligned, no cheats; every fix LANDED-proven before it's "done".
 
 ## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. `.claude/handoff.md` (D304+D305 session) + `.claude/decisions.md` head (D305 + D304 + D301/D302/D303).
-2. **Spec 31 IN FULL** (Bean-locked every session) — esp. §3.A CSS routing + §3 F-fork + §13.4 FR-31-5.1
-   (absent-value → CSS initial), FR-31-5.2, FR-31-22 (box-object), §13.6 composite-mirror + the D294
-   clarification, §7b (verify vs draft), AND the **cheat catalogue** (so your fix does not resemble one).
-3. Spec 32 §6.1 (box-object / no-inline contract) — for the inline-styles track.
-4. `.claude/parking.md` head — **`P-PAGE8-DISCREPANCY-REGISTER`** (the full grouped register) +
-   `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` (the brand-spacing line-height may be this).
-5. Surfaces you WILL likely touch: `converter/services/assembly.py`, `converter/services/styling_helpers.py`
-   (`collect_css_decls_for_element`), `converter/services/root_supports.py`, the block `render.php`/`style.css`
-   for card-grid / product-card / option-picker / label / info-box / notice-banner / testimonial / trustpilot,
-   the shared `class-sgs-container-wrapper.php`.
+1. `.claude/reports/2026-07-11-page8-discrepancy-diagnosis.md` — **THE register: all 22 items + the "PRECISE FIX SCOPES for the 9 remaining" section** (file:lines, DB findings, per-fix approach). This is your work-list.
+2. `.claude/handoff.md` (D306) + `.claude/decisions.md` head (D306 + D305).
+3. **Spec 31 IN FULL** (Bean-locked every session) — esp. §3.A CSS routing, §3 F-fork, §13.4 FR-31-5.1 (absent→initial), FR-31-5.2, §13.5 FR-31-20 (variant/preset detection), §13.6 composite-mirror + D294 clarification, §7b (verify vs draft), AND the cheat catalogue.
+4. Spec 32 §6.1 (box-object / no-inline contract) — for the label + inline-styles work.
 
-## ⛔ ANTI-PATTERN STOPs (carry forward + this session's)
-- **STOP-16** — a subagent/"it works"/build-green is a HYPOTHESIS. Re-run yourself: `npm run build` (PowerShell);
-  `python -m pytest plugins/sgs-blocks/scripts/converter/tests -q --import-mode=importlib` (440 pass, 1 skip).
-- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache reset + **CDN cache clear** + live computed-style
-  at 375/768/1440. This session a stale CDN-cached CSS misled a live measure for ~20 min (the versioned
-  `style-index.css?ver=` edge-caches; `hosting_clearWebsiteCacheV1` was needed, not just LiteSpeed rm).
-- **STOP-static-vs-live (NEW, D304)** — for any "does this class / style actually land?" question, use the LIVE
-  DOM (Playwright computed-style / `audit-scoped-selector-live.js`), NEVER static PHP parsing. A static analyser
-  gave 26 FALSE POSITIVES this session (can't follow array_merge / variable class-arrays / esc_attr / wrapper
-  extra_classes). Fact-check your OWN tool output before presenting it (prove-the-cause).
-- **STOP-D228 (NEW, reinforced 3× this session)** — a framework default (block/theme/wrapper) that overrides the
-  draft's faithfully-ABSENT value is a CHEAT to REMOVE/GATE, not a contract to keep. The fix = emit the draft's
-  effective value (declared, else the CSS-initial); scope it universally (never per-block carve-out, R-31-9).
-  Bean's whole discrepancy list is this pattern.
-- **STOP-60** — a converter change that adds new attrs to cloned output changes conformance goldens. Re-run the
-  suite; re-seed deliberately + LANDED-proof-cited (NOT a blanket re-seed).
+## ⛔ ANTI-PATTERN STOPs (carried forward + this session's)
+- **STOP-16** — a subagent/"it works"/build-green is a HYPOTHESIS. Re-run yourself: `npm run build` (PowerShell); `python -m pytest plugins/sgs-blocks/scripts/converter/tests -q --import-mode=importlib` (440 pass, 1 skip).
+- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache reset + **CDN clear (`hosting_clearWebsiteCacheV1`, user u945238940, domain sandybrown-…hostingersite.com)** + live computed-style at 375/768/1440. A stale CDN copy misled measures repeatedly.
+- **STOP-static-vs-live** — for any "does this class/style land?" use the LIVE DOM (Playwright computed-style / matched-rule enumeration), NEVER static PHP/CSS parsing.
+- **STOP-D228** — a framework default (block/theme/wrapper) that overrides the draft's faithfully-ABSENT value is a CHEAT to REMOVE/GATE (emit the draft's effective value, else CSS-initial). Universal, never per-block carve-out (R-31-9).
+- **STOP-WP-CORE-SERIALISATION (NEW, D306)** — a schema-valid emitted `style.*` value can be DROPPED by WP-core's style engine if the property's style-engine definition lacks `css_vars` (proven: shorthand `border-color` drops `var:preset|color|`). When a lifted style value doesn't render, check the WP-core `class-wp-style-engine.php` definition, not just our converter. Fix = emit a form WP serialises (direct `var(...)` / concrete).
+- **STOP-VERIFY-CLAIM (NEW, D306)** — do NOT state "X isn't recognised / isn't a button / doesn't target Y" from a failed grep or an inference. Bean caught two such false claims this session (find-out-more IS a button; iconSize IS universal). Verify against the emitted markup / block editor / render code before asserting.
+- **STOP-60** — a converter change adding new attrs to cloned output changes conformance goldens. Re-run the suite; re-seed deliberately + LANDED-cited, never blanket.
 - **STOP-44** — a schema-valid emitted attr can be a render no-op; verify the LIVE painted value.
-- **STOP-48/49** — do NOT trust `computed-parity.js` numbers or leftover-buckets; the dependable signal = direct
-  Playwright content-matched computed-style comparison + Bean's eye. IGNORE header/footer + the accepted
-  testimonial static-grid→slider when judging fidelity.
-- **STOP-67** — pre-commit visual-diff gate needs `reports/visual-diff/<block>-<date>.md` (EXACT name,
-  `verdict: PASS` + `first_paint_capture_passed: true`) per CHANGED block. The commit hook BLOCKS without it.
-- **STOP-34** — verify a converter fix on the REAL draft node (`build_block_markup(recognise_section(node), node,
-  ...)`), not a synthetic fixture. (This session's D305 emit was verified on the real hero H1.)
-- **safecss strips functional colours** — any INLINE colour VALUE must be hex/named/var (D302). Relevant to the
-  black-border track (a stripped border-colour → currentColor → black is a candidate root cause).
-- **Harness/node runs via PowerShell** (nvm4w shim broken in Git Bash). Python works in Bash.
-- **Path-scoped commits** — `git commit -m <msg> -- <paths>` (message BEFORE `--`); `git add <file>` for NEW
-  files first. Never `git add -A`. Don't pipe git to tail. **No version bumps / deprecations (pre-production).**
-- **DB seed not in git** — a new block.json attr needs `/sgs-update --stage 1` to reach `block_attributes`
-  (the converter's `db_lookup.block_attrs` reads the DB). block.json is the source of truth.
+- **STOP-48/49** — do NOT trust `computed-parity.js` numbers or leftover-buckets; the signal = direct Playwright content-matched computed-style + Bean's eye. IGNORE header/footer + the accepted testimonial static-grid→slider.
+- **STOP-67** — pre-commit visual-diff gate BLOCKS the commit without `reports/visual-diff/<block>-<date>.md` (EXACT name, `verdict: PASS` + `first_paint_capture_passed: true`) per CHANGED block (a block whose `src/` changed). Non-visual/logic-only changes: `git commit --no-verify` is the sanctioned bypass.
+- **STOP-34** — verify a converter fix on the REAL draft node, not a synthetic fixture.
+- **safecss strips functional colours** — any INLINE colour VALUE must be hex/named/var (D302); the scoped `<style>` channel is not filtered.
+- **Harness/node via PowerShell** (nvm4w shim broken in Git Bash). Python works in Bash.
+- **Path-scoped commits** — `git commit -m <msg> -- <paths>`; `git add <file>` for NEW files. Never `git add -A`. No version bumps / deprecations (pre-production). No co-author line. Verify branch (`main`) + D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`) before commit.
+- **DB seed not in git** — a new block.json attr/`css_property` needs `/sgs-update --stage 1` to reach the DB.
+- **Re-clone command:** `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup "sites/mamas-munches/mockups/homepage/index.html" --auto-section --client mamas-munches --page homepage --media-map sites/mamas-munches/research/sandybrown-media-map.json --deploy-target page:8`. Deploy plugin first: `python plugins/sgs-blocks/scripts/build-deploy.py --skip-build --allow-dirty`.
 
-## Tasks (root-cause investigation programme — see `P-PAGE8-DISCREPANCY-REGISTER` for the full symptom list)
+## Skills to Invoke
+| Skill | When |
+|---|---|
+| `/brainstorming` | fix-shape design for the shared-surface changes (hover-typography helper, label pill-style detection) |
+| `/gap-analysis` | grade before delivery |
+| `/lifecycle` | any skill/agent/pipeline change |
+| `/research` | if a fix needs gold-standard reference (auto-routes tier) |
+| `/strategic-plan` | order the 9 fixes + shared-surface design-gates |
+| `/systematic-debugging` | prove each remaining cause on the live DOM before fixing |
+| `/qc-council` | shared-surface fixes (converter / shared wrapper / shared typography helper) before dispatch (blub.db 255) |
+| `/sgs-clone` `/sgs-db` `/wp-blocks` | ground truth (variant_slots, css_property, block schema) |
+| `/handoff` `/capture-lesson` | session close |
 
-### Task 0 — Re-clone page 8 (FIRST; ~10 min)
-- **What:** re-run the clone on the Mama's draft → page 8, so its headings pick up D305 `textWrap:wrap` and the
-  baseline reflects the current converter. **Why:** page 8's hero H1 still renders `balance` (cloned pre-D305);
-  and every discrepancy below must be judged against a fresh clone. **Orchestration:** inline (Opus). `/sgs-clone`
-  or `sgs-clone-orchestrator.py`. **Acceptance:** hero H1 renders greedy "Made for the" live at 800px; page 8 =
-  current converter output. Deploy + OPcache + CDN clear + verify.
+## MCP Servers & Tools
+| Tool | For |
+|---|---|
+| Playwright / chrome-devtools MCP | live computed-style 375/768/1440 + matched-rule enumeration (THE landed gate) |
+| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN edge cache — mandatory before a live CSS measure (user u945238940) |
+| REST app-pwd `.claude/secrets/sandybrown.env` | user `Claude`; pass creds inline (env file has unquoted specials — don't `source`) |
 
-### Task 1 — The recurring BLACK BORDER (universal; biggest ROI)
-- **What:** borders render **black** in the clone but the draft uses the border token (`#E8D5C0`) or accent
-  (`#F5D050` for the trial card's dashed border). Appears on: featured + trial product cards, both gift cards,
-  announcement-bar container, info boxes, testimonial cards, trustpilot bar. **Root-cause hypothesis:** one
-  cause — border-colour not transferred → defaults to `currentColor`/black (candidate: safecss strips a
-  functional border-colour value, D302; OR the border-colour is never lifted; OR a block/wrapper default).
-  **Constraint:** universal fix (border-colour transfer for ALL blocks), Spec 31 §3.A routing, no cheat.
-  **Acceptance:** every listed section's border renders the draft's colour live.
+## Agents to Delegate To
+| Agent | When |
+|---|---|
+| general-purpose (Sonnet) | parallel read-only traces (no browser — Playwright is single-instance); SOLO for coding (one writer) |
+| feature-dev:code-reviewer | pre-commit review on converter/shared-surface fixes |
 
-### Task 2 — Card equal-height (product cards + gift cards)
-- **What:** cards in a group render different heights; the draft standardises them (card-grid items stretch to
-  equal height). Bean: *"think the source is it routed to sgs/container instead of card-grid"* and/or card-grid
-  items aren't `align-items: stretch`. **Root-cause:** the routing (why product/gift card groups become
-  containers not card-grids) + the grid-item stretch. Spec 31 recognition + §13.6 composite-mirror.
-  **Acceptance:** cards in a row are equal height live at all widths.
+## Tasks (each scope + file:lines in the register's "PRECISE FIX SCOPES" section)
 
-### Task 3 — Button style fidelity
-- Featured card button: white text / primary default instead of the draft's black-on-token; Trial card button:
-  renders identical to featured when the draft is a **secondary** style; Brand "Read The Full Story": fixed-size
-  left-aligned, draft is **full-width centred**; Announcement "Find out more": missing the draft's underline
-  hover. **Root-cause:** button preset / `inheritStyle` / width not transferred faithfully (D228 defaults).
+### Task 1 — product-card buttons (2 items; highest visibility)
+**What:** featured CTA white text → route to shared `--wp--custom--button-presets--*` channel (`product-card/style.css:238-248`); trial CTA primary→secondary → lift `--secondary` modifier → `ctaPreset` (`array_content.py:148,176`, DB `inherit_style_presets()`) + emit `sgs-button--{$ctaPreset}` (`product-card/render.php:530`).
+**Orchestration:** inline (Opus) design + SOLO coding subagent; `/qc-council` the shared-channel change. **Acceptance:** featured button dark-on-token, trial button secondary style, live at 3 breakpoints.
 
-### Task 4 — Component injected-default sweep (the D228 purge Bean flagged)
-- Option-picker: a **tick mark** on the selected pill not in the draft; pills wider than draft (blank
-  left space reserved for an unset colour swatch). Label highlight: trial "NEW? START HERE" should stretch
-  full-width; gift labels render a tight capsule vs the draft's padded rounded box. Info-box: text **margins**
-  injected that the draft lacks. Disclaimer: missing the white background box + border (same token as featured
-  card); text first-line much longer than the draft's balanced 2 lines. Emojis smaller than the draft.
-  Trustpilot bar taller than the draft. **Root-cause each** as an injected default; universal removal/gate.
+### Task 2 — emoji size (1-row DB seed)
+**What:** seed `sgs/icon.iconSize.css_property='font-size'` (block.json declaration → `/sgs-update --stage 1`), so the converter routes the draft `.sgs-info-box__icon{font-size:32px}` → `iconSize`. **Orchestration:** inline. **Acceptance:** emojis render 32px live (matches draft).
 
-### Task 5 — Brand-section spacing / line-height
-- Bigger gaps between paragraphs + heading↔quote than the draft. **May be** the theme base line-height (the
-  parked `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` — theme base vs draft base). **Verify it isn't a separate
-  injected margin** before attributing it to the token pipeline.
+### Task 3 — labels (gift + trial; 2 items)
+**What:** converter detects a padded-box label (draft bg+padding+radius) → set the pill block-style (`is-style-pill-fill` full-width trial / `is-style-pill-wrap` capsule gift, `label/render.php:96-105` pill-gate) + transfer real padding/bg/radius as attrs. **Orchestration:** `/brainstorming` fix-shape (block-style detection) + SOLO coding. **Acceptance:** trial label full-width, gift labels padded rounded box, live.
 
-### Task 6 — Inline-styles architecture (Bean's separate concern; Spec 32)
-- **What:** CSS is still emitted INTO the HTML via assorted tags — `<style>`, style-id, section-style-class,
-  div-style, section-style — rather than appearing in the DevTools Styles panel like the draft. Bean reads this
-  as a cheat (the CSS is still inline, just relocated). **Investigate** against Spec 32 §6.1 no-inline contract:
-  which emissions are legitimate scoped `<style>` (the contract) vs genuine inline `style="…"` that must move.
-  Distinguish the two precisely before changing anything.
+### Task 4 — brand + info-box margins (2 items)
+**What:** trace why the converter emits `sgs/text` margins over the draft's `*{margin:0}` reset (mis-lift vs default); stop the gap-spacing double-count. **Orchestration:** `/systematic-debugging` on the live DOM + converter trace first. **Acceptance:** brand para + info-box text spacing matches draft.
 
-## Orchestration
-- Tasks 1–5 are ROOT-CAUSE-FIRST: `/systematic-debugging` to prove each cause on the live DOM vs the draft
-  BEFORE any fix; group symptoms by shared cause; `/qc-council` on any shared-surface fix (converter / wrapper /
-  shared helper) before dispatch. Read-only trace agents (general-purpose Sonnet) may run in parallel; coding is
-  SOLO (one writer). Task 0 gates all others (need a fresh clone). Present the grouped root-cause register to
-  Bean (diagnosis-first) before fixing.
+### Task 5 — announcement hover + disclaimer box + option-picker tick + trustpilot padding (4 items)
+**What:** (a) hover: add hover typography to the shared `helpers-typography.php` (universal, Bean-directed) + converter lifts draft `:hover` typography onto the hover attrs; (b) disclaimer: recognise as a container/box (bg+border), not sgs/text; (c) option-picker: keep tick, redesign `::before` so unselected pills don't reserve space (`option-picker/style.css:106-130`); (d) trustpilot: transfer draft padding `18px 24px`. **Orchestration:** each SOLO; `/qc-council` the shared-helper hover addition. **Acceptance:** each verified live vs draft.
 
-## Skills | MCP | Agents
-- `/systematic-debugging` (prove each cause), `/brainstorming` (fix shape), `/qc-council` (shared-surface),
-  `/gap-analysis` (grade), `/sgs-clone` `/sgs-db` `/wp-blocks` (ground truth), `/handoff` `/capture-lesson`.
-- Playwright / chrome-devtools MCP (live computed-style 375/768/1440 + matched-rule enumeration — the tool that
-  cracked the text-wrap cause this session); **Hostinger MCP `hosting_clearWebsiteCacheV1`** (CDN edge cache —
-  mandatory before a live CSS measure); REST app-pwd `.claude/secrets/sandybrown.env` (user `Claude`, pass creds
-  inline — the env file has unquoted specials, don't `source` it).
-- general-purpose (Sonnet, SOLO writer / parallel read-only traces); feature-dev:code-reviewer pre-commit.
+### Task 6 — inline-styles architecture (Bean's SEPARATE concern; AFTER the fixes)
+**What:** investigate the various `<style>`/style-id/section-style emissions Bean flagged as "still inline, just relocated" — distinguish legitimate scoped `<style>` (Spec 32 §6.1 contract) from genuine inline `style="…"`. Do NOT change anything until precisely classified. **Orchestration:** read-only investigation + present to Bean.
+
+## Dependency graph
+```
+Task 1 (product-card buttons) ──┐
+Task 2 (emoji seed) ────────────┤  (independent; batch code changes)
+Task 3 (labels) ────────────────┤
+Task 4 (margins) ───────────────┘
+        ↓  ONE deploy + reclone + CDN clear
+   LANDED verify all at 375/768/1440  →  visual-diff reports  →  commit (D307)
+        ↓
+Task 5 (hover/disclaimer/tick/trustpilot)  →  deploy + verify  →  commit
+        ↓
+Task 6 (inline-styles investigation — separate, present to Bean)
+```
 
 ## Methodology guardrails (do not skip)
-- Read the governing spec IN FULL. Root cause before instance fix (group by shared cause; the black border is
-  ONE cause across 7 sections, not 7 fixes). Deploy + OPcache + **CDN clear** + live computed-style BEFORE measure.
-- Design-gate + Bean approval on any shared-surface change (converter / wrapper / shared helper). Branch `main`;
-  path-scoped commits; no version bumps / deprecations. Every fix universal (R-31-9), no cheat (Spec 31 catalogue).
-- Verify the LIVE painted value (STOP-44), on the REAL draft node for converter fixes (STOP-34). Bean's eye is
-  co-authoritative (R-31-13).
+- Read the governing spec IN FULL. Root cause before instance fix; group by shared cause.
+- Deploy + OPcache + **CDN clear** + live computed-style BEFORE any measure (STOP-21).
+- Design-gate + `/qc-council` on shared-surface changes (converter / shared wrapper / shared typography helper) before building.
+- Branch `main`; path-scoped commits; no version bumps / deprecations; no co-author line.
+- Every fix universal (R-31-9), no cheat (Spec 31 catalogue). Verify the LIVE painted value (STOP-44), on the REAL draft node (STOP-34). Bean's eye co-authoritative (R-31-13). Never assert a fact from a failed grep/inference (STOP-VERIFY-CLAIM).

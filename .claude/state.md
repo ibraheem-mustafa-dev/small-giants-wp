@@ -2,13 +2,16 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-11-D305
+last_updated: 2026-07-11-D306
 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
 # small-giants-wp — State Snapshot (lean)
 
 ## Human Summary
+**LATEST (D306, 2026-07-11).** Commit `0908ff92` pushed to `main`; build green; converter suite 440 pass. **The page-8 discrepancy programme: full evidence-based diagnosis of Bean's 22 items → 3 universal causes, and the two biggest FIXED + LANDED.** **Cause 1 — 8 black borders:** root cause is WORDPRESS CORE (not our converter — Bean's architecture worry answered) — WP 7.0.1 style-engine drops a `var:preset|color|` value for shorthand `border-color` (its definition lacks `css_vars`); the converter emits border-colour correctly, WP drops it at render. Fix: `root_supports.py` emits `style.border.color` as a direct `var(--wp--preset--color--{slug})`. LANDED: #E8D5C0 / #F5D050 accurate. **Cause 2a — unequal cards + brand button:** flipped `container.verticalAlign` default `start`→`''` + wrapper fallback → CSS-initial stretch (FR-31-5.1); LANDED cards 495/495, brand button full-width. **9 items remain, all scoped** (register `.claude/reports/2026-07-11-page8-discrepancy-diagnosis.md` "PRECISE FIX SCOPES"). **Bean's 3 architecture Qs answered with DB/code ground truth:** Q1 gift-label padding is pill-gated (not a default); Q2 base typography IS universal, only HOVER typography missing (button-only); Q3 `iconSize.css_property=None` unseeded → seed `='font-size'`. **NEXT:** execute the 9 remaining fixes (next-session-prompt.md Tasks 1–5) + the separate inline-styles/Spec-32 investigation (Task 6). SoT = handoff.md + next-session-prompt.md.
+
+## Human Summary (prior — D304+D305, 2026-07-11)
 **LATEST (D304+D305, 2026-07-11).** Commits `6f52fb91` (D304 scoped-selector gate), `a042df37` (Task-2 reframe + parking merge), `fc05fe70` (multi-button flex-wrap), `b8789ae7` (hero gap), `272df589` (D305 heading text-wrap) — all pushed to `main`; build green; converter suite 440 pass. **D304:** the multi-button scoped-selector bug-class is NOT present across the roster (live audit, 0 dead); shipped `audit-scoped-selector-live.js` (plant-tested, wired into `build-deploy.py --audit-scoped-page 8`); a static analyser gave 26 FALSE POSITIVES → dropped. **D305 + 2 siblings:** three D228 "framework default overriding the draft's absent value" fixes — multi-button `flex-wrap` `wrap`→`nowrap` (buttons stacked at 800px), hero `.sgs-hero--split` 16px gap removed (column 5px too narrow), heading `text-wrap:balance`→draft-greedy for CLONED headings (new `textWrap` attr + converter step 3a3, authored keep balance). **Task 2 REFRAMED** (Bean): the typography ancestor-walk is superseded by a draft→theme-token extractor (header/footer setup pipeline) — `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`. **NEXT:** re-clone page 8 (lands D305) → the **page-8 discrepancy programme** (`P-PAGE8-DISCREPANCY-REGISTER`: universal black-border cause, card equal-height, button fidelity, D228 component-default sweep, inline-styles/Spec-32). SoT = handoff.md + next-session-prompt.md.
 
 ## Human Summary (prior — D303, 2026-07-11)
