@@ -156,10 +156,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		captionReveal,
 		captionColour,
 		captionBgColour,
-		hoverOverlayColour,
-		hoverScale,
-		hoverImageZoom,
-		hoverEffect,
+		overlayColourHover,
+		scaleHover,
+		imageZoomHover,
+		effectHover,
 		transitionDuration,
 		transitionEasing,
 		carouselAutoplay,
@@ -241,11 +241,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-transition-easing':   transitionEasing,
 	};
 
-	if ( hoverScale ) {
-		inlineStyles[ '--sgs-hover-scale' ] = hoverScale;
+	if ( scaleHover ) {
+		inlineStyles[ '--sgs-hover-scale' ] = scaleHover;
 	}
-	if ( hoverOverlayColour ) {
-		inlineStyles[ '--sgs-hover-overlay' ] = colourVar( hoverOverlayColour );
+	if ( overlayColourHover ) {
+		inlineStyles[ '--sgs-hover-overlay' ] = colourVar( overlayColourHover );
 	}
 	if ( captionColour ) {
 		inlineStyles[ '--sgs-caption-colour' ] = colourVar( captionColour );
@@ -255,7 +255,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const blockProps = useBlockProps( {
-		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ hoverEffect }`,
+		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }`,
 		style:     inlineStyles,
 	} );
 
@@ -419,8 +419,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover overlay colour', 'sgs-blocks' ) }
-						value={ hoverOverlayColour }
-						onChange={ set( 'hoverOverlayColour' ) }
+						value={ overlayColourHover }
+						onChange={ set( 'overlayColourHover' ) }
 					/>
 				</PanelBody>
 
@@ -428,15 +428,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Hover Effects', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverEffect }
+						value={ effectHover }
 						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ set( 'hoverEffect' ) }
+						onChange={ set( 'effectHover' ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Hover scale (card)', 'sgs-blocks' ) }
-						value={ parseFloat( hoverScale ) || 1 }
-						onChange={ ( val ) => setAttributes( { hoverScale: String( val ) } ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
 						min={ 1 }
 						max={ 1.1 }
 						step={ 0.01 }
@@ -444,8 +444,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ToggleControl
 						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						checked={ hoverImageZoom }
-						onChange={ set( 'hoverImageZoom' ) }
+						checked={ imageZoomHover }
+						onChange={ set( 'imageZoomHover' ) }
 						help={ __( 'Zooms the image inside the card on hover.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>

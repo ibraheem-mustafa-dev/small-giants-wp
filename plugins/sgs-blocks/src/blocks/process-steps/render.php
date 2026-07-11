@@ -78,10 +78,10 @@ $number_colour           = $attributes['numberColour'] ?? '';
 $number_background       = $attributes['numberBackground'] ?? '';
 $title_colour            = $attributes['titleColour'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
-$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
-$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
-$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
-$hover_effect            = $attributes['hoverEffect'] ?? 'none';
+$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
+$hover_text_colour       = $attributes['textColourHover'] ?? '';
+$hover_border_colour     = $attributes['borderColourHover'] ?? '';
+$hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '';
 $transition_easing       = $attributes['transitionEasing'] ?? '';
 

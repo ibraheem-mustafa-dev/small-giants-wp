@@ -145,15 +145,15 @@
 			"type": "string",
 			"default": ""
 		},
-		"hoverIconColour": {
+		"iconColourHover": {
 			"type": "string",
 			"default": "accent-text"
 		},
-		"hoverShapeColour": {
+		"shapeColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "number",
 			"default": 1.1
 		},

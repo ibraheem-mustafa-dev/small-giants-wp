@@ -216,24 +216,24 @@
 			"type": "string",
 			"default": "surface"
 		},
-		"hoverBackgroundColour": {
+		"backgroundColourHover": {
 			"type": "string"
 		},
-		"hoverTextColour": {
+		"textColourHover": {
 			"type": "string"
 		},
-		"hoverBorderColour": {
+		"borderColourHover": {
 			"type": "string"
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverShadow": {
+		"shadowHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverImageZoom": {
+		"imageZoomHover": {
 			"type": "boolean",
 			"default": true
 		},

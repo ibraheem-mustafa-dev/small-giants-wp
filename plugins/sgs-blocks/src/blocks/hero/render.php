@@ -11,7 +11,7 @@
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, overlayColour, overlayOpacity,
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
- *   backgroundVideo, svgContent, minHeight*, badges, hoverBackground/Text/Border,
+ *   backgroundVideo, svgContent, minHeight*, badges, background/text/border colourHover,
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
  *   splitImageBleed, ctaPrimary/SecondaryHover*,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
@@ -165,9 +165,9 @@ $sub_headline_margin_bottom        = $attributes['subHeadlineMarginBottom'] ?? n
 $sub_headline_margin_bottom_mobile = $attributes['subHeadlineMarginBottomMobile'] ?? null;
 $split_image_mobile_height  = $attributes['splitImageMobileHeight'] ?? null;
 
-$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
-$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
-$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
+$hover_text_colour       = $attributes['textColourHover'] ?? '';
+$hover_border_colour     = $attributes['borderColourHover'] ?? '';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 

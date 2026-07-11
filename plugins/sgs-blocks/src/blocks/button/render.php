@@ -217,7 +217,7 @@ $box_shadow         = isset( $attributes['boxShadow'] ) && is_array( $attributes
 $box_shadow_hover   = isset( $attributes['boxShadowHover'] ) && is_array( $attributes['boxShadowHover'] ) ? array_merge( $box_shadow_default, $attributes['boxShadowHover'] ) : $box_shadow_default;
 
 // Effects.
-$hover_scale         = isset( $attributes['hoverScale'] ) ? (float) $attributes['hoverScale'] : 1.0;
+$hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_easing   = isset( $attributes['transitionEasing'] ) ? sanitize_text_field( $attributes['transitionEasing'] ) : 'ease';
 

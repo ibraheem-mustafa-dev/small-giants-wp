@@ -103,9 +103,9 @@ $link_url           = $attributes['linkUrl'] ?? '';
 $link_target        = $attributes['linkTarget'] ?? '_self';
 $link_rel           = $attributes['linkRel'] ?? '';
 $aria_label         = $attributes['ariaLabel'] ?? '';
-$hover_icon_colour  = $attributes['hoverIconColour'] ?? $attributes['hoverColour'] ?? 'accent-text';
-$hover_shape_colour = $attributes['hoverShapeColour'] ?? '';
-$hover_scale        = (float) ( $attributes['hoverScale'] ?? 1.1 );
+$hover_icon_colour  = $attributes['iconColourHover'] ?? 'accent-text';
+$hover_shape_colour = $attributes['shapeColourHover'] ?? '';
+$hover_scale        = (float) ( $attributes['scaleHover'] ?? 1.1 );
 
 // Validate linkTarget — only allow known safe values.
 if ( ! in_array( $link_target, array( '_self', '_blank' ), true ) ) {

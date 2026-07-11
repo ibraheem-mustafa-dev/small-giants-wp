@@ -75,10 +75,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		showArrows,
 		slidesVisible,
 		cardStyle,
-		hoverBackgroundColour,
-		hoverTextColour,
-		hoverBorderColour,
-		hoverEffect,
+		backgroundColourHover,
+		textColourHover,
+		borderColourHover,
+		effectHover,
 		transitionDuration,
 		transitionEasing,
 	} = attributes;
@@ -93,9 +93,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
-			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
-			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+			'--sgs-hover-bg': backgroundColourHover ? colourVar( backgroundColourHover ) : undefined,
+			'--sgs-hover-text': textColourHover ? colourVar( textColourHover ) : undefined,
+			'--sgs-hover-border': borderColourHover ? colourVar( borderColourHover ) : undefined,
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 		},
@@ -239,25 +239,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Hover States', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverEffect }
+						value={ effectHover }
 						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { hoverEffect: val } ) }
+						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						value={ hoverBackgroundColour }
-						onChange={ ( val ) => setAttributes( { hoverBackgroundColour: val } ) }
+						value={ backgroundColourHover }
+						onChange={ ( val ) => setAttributes( { backgroundColourHover: val } ) }
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						value={ hoverTextColour }
-						onChange={ ( val ) => setAttributes( { hoverTextColour: val } ) }
+						value={ textColourHover }
+						onChange={ ( val ) => setAttributes( { textColourHover: val } ) }
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						value={ hoverBorderColour }
-						onChange={ ( val ) => setAttributes( { hoverBorderColour: val } ) }
+						value={ borderColourHover }
+						onChange={ ( val ) => setAttributes( { borderColourHover: val } ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

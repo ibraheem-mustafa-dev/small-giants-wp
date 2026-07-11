@@ -22,7 +22,7 @@ import { ResponsiveBoxControl } from '../../components';
  *
  * Inspector controls cover only WRAPPER-level styling/layout that render.php
  * actually consumes:
- *   - cardStyle, hoverEffect, iconPosition (drive wrapper BEM classes)
+ *   - cardStyle, effectHover, iconPosition (drive wrapper BEM classes)
  *   - Width (maxWidth / contentWidth — kept-scalar, base only)
  *   - Spacing (padding / margin — base via WP-native Dimensions panel,
  *     tablet/mobile via the paddingTablet/paddingMobile/marginTablet/
@@ -225,7 +225,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		style,
 		cardStyle,
-		hoverEffect,
+		effectHover,
 		iconPosition,
 		contentWidth,
 		maxWidth,
@@ -321,7 +321,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const className = [
 		'sgs-info-box',
 		`sgs-info-box--${ cardStyle }`,
-		`sgs-info-box--hover-${ hoverEffect }`,
+		`sgs-info-box--hover-${ effectHover }`,
 		`sgs-info-box--media-${ iconPosition }`,
 	].join( ' ' );
 
@@ -422,9 +422,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverEffect }
+						value={ effectHover }
 						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { hoverEffect: val } ) }
+						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

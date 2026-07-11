@@ -72,11 +72,11 @@ $show_captions   = (bool) ( $attributes['showCaptions'] ?? false );
 $caption_reveal  = (bool) ( $attributes['captionReveal'] ?? false );
 $image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
-$hover_scale     = sanitize_text_field( $attributes['hoverScale'] ?? '' );
-$hover_img_zoom  = (bool) ( $attributes['hoverImageZoom'] ?? true );
-$hover_effect    = sanitize_key( $attributes['hoverEffect'] ?? 'zoom' );
-$hover_grayscale = (bool) ( $attributes['hoverGrayscale'] ?? false );
-$hover_shadow    = sanitize_key( $attributes['hoverShadow'] ?? '' );
+$hover_scale     = sanitize_text_field( $attributes['scaleHover'] ?? '' );
+$hover_img_zoom  = (bool) ( $attributes['imageZoomHover'] ?? true );
+$hover_effect    = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
+$hover_grayscale = (bool) ( $attributes['grayscaleHover'] ?? false );
+$hover_shadow    = sanitize_key( $attributes['shadowHover'] ?? '' );
 $stagger_delay   = absint( $attributes['staggerDelay'] ?? 0 );
 $trans_duration  = absint( $attributes['transitionDuration'] ?? 300 );
 $trans_easing    = sanitize_text_field( $attributes['transitionEasing'] ?? 'ease' );
@@ -90,7 +90,7 @@ $carousel_show_arrows = (bool) ( $attributes['carouselShowArrows'] ?? true );
 // are always emitted even when the attribute is absent from stored post content.
 $caption_colour       = $attributes['captionColour']      ?? 'text-inverse';
 $caption_bg_colour    = $attributes['captionBgColour']    ?? 'primary-dark';
-$hover_overlay_colour = $attributes['hoverOverlayColour'] ?? 'primary-dark';
+$hover_overlay_colour = $attributes['overlayColourHover'] ?? 'primary-dark';
 
 // -------------------------------------------------------------------------
 // Build inline CSS custom properties.

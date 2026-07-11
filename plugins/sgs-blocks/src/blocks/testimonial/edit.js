@@ -193,14 +193,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		ratingColour,
 		ratingSize,
 		nameFontWeight,
-		hoverEffect,
-		hoverBackgroundColour,
-		hoverTextColour,
-		hoverBorderColour,
+		effectHover,
+		backgroundColourHover,
+		textColourHover,
+		borderColourHover,
 		transitionDuration,
 		transitionEasing,
-		hoverScale,
-		hoverShadow,
+		scaleHover,
+		shadowHover,
 	} = attributes;
 
 	// Effective variant = this card's own explicit choice, else the parent
@@ -238,14 +238,14 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			'--sgs-hover-bg': hoverBackgroundColour
-				? colourVar( hoverBackgroundColour )
+			'--sgs-hover-bg': backgroundColourHover
+				? colourVar( backgroundColourHover )
 				: undefined,
-			'--sgs-hover-text': hoverTextColour
-				? colourVar( hoverTextColour )
+			'--sgs-hover-text': textColourHover
+				? colourVar( textColourHover )
 				: undefined,
-			'--sgs-hover-border': hoverBorderColour
-				? colourVar( hoverBorderColour )
+			'--sgs-hover-border': borderColourHover
+				? colourVar( borderColourHover )
 				: undefined,
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
@@ -676,7 +676,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 				>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverEffect }
+						value={ effectHover }
 						options={ [
 							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 							{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
@@ -684,29 +684,29 @@ export default function Edit( { attributes, setAttributes, context } ) {
 							{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 						] }
 						onChange={ ( val ) =>
-							setAttributes( { hoverEffect: val } )
+							setAttributes( { effectHover: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover background', 'sgs-blocks' ) }
-						value={ hoverBackgroundColour }
+						value={ backgroundColourHover }
 						onChange={ ( val ) =>
-							setAttributes( { hoverBackgroundColour: val } )
+							setAttributes( { backgroundColourHover: val } )
 						}
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover text', 'sgs-blocks' ) }
-						value={ hoverTextColour }
+						value={ textColourHover }
 						onChange={ ( val ) =>
-							setAttributes( { hoverTextColour: val } )
+							setAttributes( { textColourHover: val } )
 						}
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover border', 'sgs-blocks' ) }
-						value={ hoverBorderColour }
+						value={ borderColourHover }
 						onChange={ ( val ) =>
-							setAttributes( { hoverBorderColour: val } )
+							setAttributes( { borderColourHover: val } )
 						}
 					/>
 					<TextControl
@@ -740,7 +740,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					/>
 						<SelectControl
 							label={ __( 'Hover scale', 'sgs-blocks' ) }
-							value={ hoverScale }
+							value={ scaleHover }
 							options={ [
 								{ label: __( 'None', 'sgs-blocks' ), value: '' },
 								{
@@ -761,7 +761,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								},
 							] }
 							onChange={ ( val ) =>
-								setAttributes( { hoverScale: val } )
+								setAttributes( { scaleHover: val } )
 							}
 							help={ __(
 								'Grows the card on hover (GPU-composited transform).',
@@ -771,7 +771,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						/>
 						<SelectControl
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
-							value={ hoverShadow }
+							value={ shadowHover }
 							options={ [
 								{ label: __( 'None', 'sgs-blocks' ), value: '' },
 								{ label: __( 'Small', 'sgs-blocks' ), value: 'sm' },
@@ -780,7 +780,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 								{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 							] }
 							onChange={ ( val ) =>
-								setAttributes( { hoverShadow: val } )
+								setAttributes( { shadowHover: val } )
 							}
 							help={ __(
 								'Shadow elevation applied on hover (theme shadow preset).',

@@ -152,9 +152,9 @@ $border_colour         = $attributes['borderColour'] ?? '';
 
 $box_shadow       = $attributes['boxShadow'] ?? '';
 $box_shadow_hover = $attributes['boxShadowHover'] ?? '';
-$hover_scale      = isset( $attributes['hoverScale'] ) && null !== $attributes['hoverScale'] ? (float) $attributes['hoverScale'] : null;
-$hover_colour     = $attributes['hoverColour'] ?? '';
-$hover_bg         = $attributes['hoverBackground'] ?? '';
+$hover_scale      = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
+$hover_colour     = $attributes['textColourHover'] ?? '';
+$hover_bg         = $attributes['backgroundColourHover'] ?? '';
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;

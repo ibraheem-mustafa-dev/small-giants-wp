@@ -198,15 +198,15 @@
 			"type": "string",
 			"default": ""
 		},
-		"hoverBackgroundColour": {
+		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverTextColour": {
+		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverBorderColour": {
+		"borderColourHover": {
 			"type": "string",
 			"default": ""
 		},

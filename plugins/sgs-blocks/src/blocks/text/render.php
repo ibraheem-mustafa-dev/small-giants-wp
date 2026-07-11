@@ -150,9 +150,9 @@ $box_shadow       = $attributes['boxShadow'] ?? '';
 $box_shadow_hover = $attributes['boxShadowHover'] ?? '';
 
 // Hover state.
-$hover_scale      = isset( $attributes['hoverScale'] ) ? (float) $attributes['hoverScale'] : null;
-$hover_colour     = $attributes['hoverColour'] ?? '';
-$hover_background = $attributes['hoverBackground'] ?? '';
+$hover_scale      = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
+$hover_colour     = $attributes['textColourHover'] ?? '';
+$hover_background = $attributes['backgroundColourHover'] ?? '';
 
 // Width override.
 $custom_width      = $attributes['customWidth'] ?? '';

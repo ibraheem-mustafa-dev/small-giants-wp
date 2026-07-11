@@ -138,9 +138,9 @@ $transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
 $allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
 $transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
 
-$hover_scale      = isset( $attributes['hoverScale'] ) && null !== $attributes['hoverScale'] ? (float) $attributes['hoverScale'] : null;
-$hover_colour     = $attributes['hoverColour'] ?? '';
-$hover_background = $attributes['hoverBackground'] ?? '';
+$hover_scale      = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
+$hover_colour     = $attributes['textColourHover'] ?? '';
+$hover_background = $attributes['backgroundColourHover'] ?? '';
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );

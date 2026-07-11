@@ -170,7 +170,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		columnsMobile,
 		gap,
 		aspectRatio,
-		hoverEffect,
+		effectHover,
 		titleColour,
 		subtitleColour,
 		source,
@@ -204,7 +204,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
-		`sgs-card-grid--hover-${ hoverEffect }`,
+		`sgs-card-grid--hover-${ effectHover }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -459,10 +459,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverEffect }
+						value={ effectHover }
 						options={ HOVER_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { hoverEffect: val } )
+							setAttributes( { effectHover: val } )
 						}
 						__nextHasNoMarginBottom
 					/>

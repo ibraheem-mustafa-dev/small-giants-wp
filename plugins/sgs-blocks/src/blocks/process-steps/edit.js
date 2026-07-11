@@ -116,10 +116,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberBackground,
 		titleColour,
 		descriptionColour,
-		hoverBackgroundColour,
-		hoverTextColour,
-		hoverBorderColour,
-		hoverEffect,
+		backgroundColourHover,
+		textColourHover,
+		borderColourHover,
+		effectHover,
 		transitionDuration,
 		transitionEasing,
 		borderWidth,
@@ -135,7 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-process-steps',
 		`sgs-process-steps--connector-${ connectorStyle }`,
 		`sgs-process-steps--number-${ numberStyle }`,
-		hoverEffect && hoverEffect !== 'none' ? `sgs-process-steps--hover-${ hoverEffect }` : '',
+		effectHover && effectHover !== 'none' ? `sgs-process-steps--hover-${ effectHover }` : '',
 	].filter( Boolean ).join( ' ' );
 
 	// Box-object interface contract §5: editor-canvas preview of the base
@@ -170,9 +170,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		className,
 		style: {
 			...wrapperPreviewStyle,
-			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
-			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
-			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+			'--sgs-hover-bg': backgroundColourHover ? colourVar( backgroundColourHover ) : undefined,
+			'--sgs-hover-text': textColourHover ? colourVar( textColourHover ) : undefined,
+			'--sgs-hover-border': borderColourHover ? colourVar( borderColourHover ) : undefined,
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 		},
@@ -307,32 +307,32 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverEffect }
+						value={ effectHover }
 						options={ HOVER_EFFECT_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { hoverEffect: val } )
+							setAttributes( { effectHover: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						value={ hoverBackgroundColour }
+						value={ backgroundColourHover }
 						onChange={ ( val ) =>
-							setAttributes( { hoverBackgroundColour: val } )
+							setAttributes( { backgroundColourHover: val } )
 						}
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						value={ hoverTextColour }
+						value={ textColourHover }
 						onChange={ ( val ) =>
-							setAttributes( { hoverTextColour: val } )
+							setAttributes( { textColourHover: val } )
 						}
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						value={ hoverBorderColour }
+						value={ borderColourHover }
 						onChange={ ( val ) =>
-							setAttributes( { hoverBorderColour: val } )
+							setAttributes( { borderColourHover: val } )
 						}
 					/>
 					<TextControl

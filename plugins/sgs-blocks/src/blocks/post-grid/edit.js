@@ -276,12 +276,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		categoryBadgeBgColour,
 		readMoreColour,
 		cardBgColour,
-		hoverBackgroundColour,
-		hoverTextColour,
-		hoverBorderColour,
-		hoverScale,
-		hoverShadow,
-		hoverImageZoom,
+		backgroundColourHover,
+		textColourHover,
+		borderColourHover,
+		scaleHover,
+		shadowHover,
+		imageZoomHover,
 		transitionDuration,
 		transitionEasing,
 		carouselAutoplay,
@@ -655,23 +655,23 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Hover Effects', 'sgs-blocks' ) } initialOpen={ false }>
 					<DesignTokenPicker
 						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						value={ hoverBackgroundColour }
-						onChange={ set( 'hoverBackgroundColour' ) }
+						value={ backgroundColourHover }
+						onChange={ set( 'backgroundColourHover' ) }
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						value={ hoverTextColour }
-						onChange={ set( 'hoverTextColour' ) }
+						value={ textColourHover }
+						onChange={ set( 'textColourHover' ) }
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						value={ hoverBorderColour }
-						onChange={ set( 'hoverBorderColour' ) }
+						value={ borderColourHover }
+						onChange={ set( 'borderColourHover' ) }
 					/>
 					<RangeControl
 						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ parseFloat( hoverScale ) || 1 }
-						onChange={ ( val ) => setAttributes( { hoverScale: String( val ) } ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
 						min={ 1 }
 						max={ 1.1 }
 						step={ 0.01 }
@@ -679,15 +679,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __( 'Hover shadow', 'sgs-blocks' ) }
-						value={ hoverShadow }
+						value={ shadowHover }
 						options={ SHADOW_OPTIONS }
-						onChange={ set( 'hoverShadow' ) }
+						onChange={ set( 'shadowHover' ) }
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						checked={ hoverImageZoom }
-						onChange={ set( 'hoverImageZoom' ) }
+						checked={ imageZoomHover }
+						onChange={ set( 'imageZoomHover' ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl

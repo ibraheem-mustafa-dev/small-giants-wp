@@ -119,7 +119,7 @@ _NATIVE_FEATURE_ROUTES: dict[str, dict] = {
     "hover-zoom": {
         "channel": "block-attribute",
         # SGS-native hover-image-zoom toggle (Phase 2 framework feature).
-        "attr": "hoverImageZoom",
+        "attr": "imageZoomHover",
         "transform": lambda value: bool(value),
     },
 }

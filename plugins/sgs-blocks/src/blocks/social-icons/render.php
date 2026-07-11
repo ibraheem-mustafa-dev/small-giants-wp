@@ -39,7 +39,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 $icons              = $attributes['icons'] ?? array();
 $icon_size          = (int) ( $attributes['iconSize'] ?? 24 );
 $icon_colour        = $attributes['iconColour'] ?? 'text-muted';
-$hover_colour_token = $attributes['hoverColour'] ?? 'primary';
+$hover_colour_token = $attributes['iconColourHover'] ?? 'primary';
 $style_type_raw     = $attributes['iconStyle'] ?? 'plain';
 $gap_raw            = $attributes['gap'] ?? '20';
 $anchor             = $attributes['anchor'] ?? '';

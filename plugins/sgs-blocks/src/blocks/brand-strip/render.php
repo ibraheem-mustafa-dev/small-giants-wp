@@ -65,10 +65,10 @@ $fade_edges          = $attributes['fadeEdges'] ?? false;
 $fade_width          = $attributes['fadeWidth'] ?? 60;
 $greyscale           = $attributes['greyscale'] ?? true;
 $max_height          = $attributes['maxHeight'] ?? 80;
-$hover_bg_colour     = $attributes['hoverBackgroundColour'] ?? '';
-$hover_text_colour   = $attributes['hoverTextColour'] ?? '';
-$hover_border_colour = $attributes['hoverBorderColour'] ?? '';
-$hover_effect        = $attributes['hoverEffect'] ?? 'none';
+$hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
+$hover_text_colour   = $attributes['textColourHover'] ?? '';
+$hover_border_colour = $attributes['borderColourHover'] ?? '';
+$hover_effect        = $attributes['effectHover'] ?? 'none';
 $transition_duration = $attributes['transitionDuration'] ?? '300';
 $transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
 

@@ -80,7 +80,7 @@
 			"type": "string",
 			"default": "text-muted"
 		},
-		"hoverColour": {
+		"iconColourHover": {
 			"type": "string",
 			"default": "primary"
 		},

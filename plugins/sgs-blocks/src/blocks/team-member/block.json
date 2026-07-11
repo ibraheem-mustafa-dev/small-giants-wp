@@ -150,19 +150,19 @@
 			"type": "boolean",
 			"default": false
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverShadow": {
+		"shadowHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverImageZoom": {
+		"imageZoomHover": {
 			"type": "boolean",
 			"default": false
 		},
-		"hoverGrayscale": {
+		"grayscaleHover": {
 			"type": "boolean",
 			"default": false
 		},
@@ -198,7 +198,7 @@
 			"type": "string",
 			"default": "default"
 		},
-		"hoverOverlay": {
+		"overlayHover": {
 			"type": "boolean",
 			"default": false
 		},

@@ -88,9 +88,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkUrl,
 		linkTarget,
 		ariaLabel,
-		hoverIconColour,
-		hoverShapeColour,
-		hoverScale,
+		iconColourHover,
+		shapeColourHover,
+		scaleHover,
 		iconAlign,
 		paddingTablet,
 		paddingMobile,
@@ -127,10 +127,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 		'--sgs-icon-outline-colour':
 			backgroundColour && isOutline ? colourVar( backgroundColour ) : undefined,
-		'--sgs-icon-hover-colour': colourVar( hoverIconColour ) || undefined,
+		'--sgs-icon-hover-colour': colourVar( iconColourHover ) || undefined,
 		'--sgs-icon-hover-shape-colour':
-			hoverShapeColour ? colourVar( hoverShapeColour ) : undefined,
-		'--sgs-icon-hover-scale': hoverScale || undefined,
+			shapeColourHover ? colourVar( shapeColourHover ) : undefined,
+		'--sgs-icon-hover-scale': scaleHover || undefined,
 	};
 
 	// Base padding/margin preview — WP-native style.spacing.* objects
@@ -253,8 +253,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>
 					<DesignTokenPicker
 						label={ __( 'Icon colour on hover', 'sgs-blocks' ) }
-						value={ hoverIconColour }
-						onChange={ ( val ) => setAttributes( { hoverIconColour: val } ) }
+						value={ iconColourHover }
+						onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
 					/>
 					{ backgroundShape !== 'none' && (
 						<DesignTokenPicker
@@ -263,14 +263,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								'Background (or border for Outline) colour when hovered. Leave empty to keep unchanged.',
 								'sgs-blocks'
 							) }
-							value={ hoverShapeColour }
-							onChange={ ( val ) => setAttributes( { hoverShapeColour: val } ) }
+							value={ shapeColourHover }
+							onChange={ ( val ) => setAttributes( { shapeColourHover: val } ) }
 						/>
 					) }
 					<RangeControl
 						label={ __( 'Scale on hover', 'sgs-blocks' ) }
-						value={ hoverScale }
-						onChange={ ( val ) => setAttributes( { hoverScale: val } ) }
+						value={ scaleHover }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
 						min={ 1 }
 						max={ 1.5 }
 						step={ 0.05 }

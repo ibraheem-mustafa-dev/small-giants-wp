@@ -40,7 +40,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		icons,
 		iconSize,
 		iconColour,
-		hoverColour,
+		iconColourHover,
 		iconStyle,
 		gap,
 		style,
@@ -154,8 +154,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover colour', 'sgs-blocks' ) }
-						value={ hoverColour }
-						onChange={ ( val ) => setAttributes( { hoverColour: val } ) }
+						value={ iconColourHover }
+						onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
 					/>
 				</PanelBody>
 

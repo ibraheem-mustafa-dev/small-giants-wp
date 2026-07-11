@@ -116,7 +116,7 @@
 			"type": "string",
 			"default": "16/10"
 		},
-		"hoverEffect": {
+		"effectHover": {
 			"type": "string",
 			"default": "zoom"
 		},
@@ -162,13 +162,13 @@
 		"subtitleFontSizeMobile": {
 			"type": "number"
 		},
-		"hoverBackgroundColour": {
+		"backgroundColourHover": {
 			"type": "string"
 		},
-		"hoverTextColour": {
+		"textColourHover": {
 			"type": "string"
 		},
-		"hoverBorderColour": {
+		"borderColourHover": {
 			"type": "string",
 			"default": "primary"
 		},
@@ -180,19 +180,19 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverShadow": {
+		"shadowHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverImageZoom": {
+		"imageZoomHover": {
 			"type": "boolean",
 			"default": false
 		},
-		"hoverGrayscale": {
+		"grayscaleHover": {
 			"type": "boolean",
 			"default": false
 		},

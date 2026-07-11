@@ -183,7 +183,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		hoverScale,
+		scaleHover,
 		transitionDuration,
 		transitionEasing,
 		boxShadow,
@@ -619,8 +619,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
 					<RangeControl
 						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ hoverScale }
-						onChange={ ( val ) => setAttributes( { hoverScale: val } ) }
+						value={ scaleHover }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
 						min={ 0.9 }
 						max={ 1.2 }
 						step={ 0.01 }

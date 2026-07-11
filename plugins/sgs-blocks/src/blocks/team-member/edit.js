@@ -203,7 +203,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		roleColour,
 		cardStyle,
 		photoShape,
-		hoverOverlay,
+		overlayHover,
 		displayMode,
 		socialLinks,
 		paddingTablet,
@@ -306,8 +306,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						<ToggleControl
 							label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
 							help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
-							checked={ hoverOverlay }
-							onChange={ ( val ) => setAttributes( { hoverOverlay: val } ) }
+							checked={ overlayHover }
+							onChange={ ( val ) => setAttributes( { overlayHover: val } ) }
 							__nextHasNoMarginBottom
 						/>
 					) }

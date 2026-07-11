@@ -252,19 +252,19 @@
 		"avatar": {
 			"type": "object"
 		},
-		"hoverBackgroundColour": {
+		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverTextColour": {
+		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverBorderColour": {
+		"borderColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverEffect": {
+		"effectHover": {
 			"type": "string",
 			"default": "none"
 		},
@@ -276,11 +276,11 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverShadow": {
+		"shadowHover": {
 			"type": "string",
 			"default": ""
 		},

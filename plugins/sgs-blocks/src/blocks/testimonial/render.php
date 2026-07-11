@@ -151,14 +151,14 @@ $rating_colour     = sgs_colour_value( $attributes['ratingColour'] ?? '' );
 $rating_size       = isset( $attributes['ratingSize'] ) && (int) $attributes['ratingSize'] > 0 ? absint( $attributes['ratingSize'] ) : 16;
 
 // ── Hover / animation (shell-level) ─────────────────────────────────────────
-$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
-$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
-$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
-$hover_effect            = $attributes['hoverEffect'] ?? 'none';
+$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
+$hover_text_colour       = $attributes['textColourHover'] ?? '';
+$hover_border_colour     = $attributes['borderColourHover'] ?? '';
+$hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
-$hover_scale              = $attributes['hoverScale'] ?? '';
-$hover_shadow            = $attributes['hoverShadow'] ?? '';
+$hover_scale              = $attributes['scaleHover'] ?? '';
+$hover_shadow            = $attributes['shadowHover'] ?? '';
 $stagger_delay           = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
 
 // ── Width (WS-4 container-mirror, content kind: kept-scalar, no tiers) ─────

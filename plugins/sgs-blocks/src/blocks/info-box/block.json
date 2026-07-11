@@ -125,19 +125,19 @@
 			"type": "string",
 			"default": "elevated"
 		},
-		"hoverEffect": {
+		"effectHover": {
 			"type": "string",
 			"default": "lift"
 		},
-		"hoverBackgroundColour": {
+		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverTextColour": {
+		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverBorderColour": {
+		"borderColourHover": {
 			"type": "string",
 			"default": ""
 		},
@@ -149,11 +149,11 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverShadow": {
+		"shadowHover": {
 			"type": "string",
 			"default": ""
 		},
@@ -165,7 +165,7 @@
 			"type": "boolean",
 			"default": false
 		},
-		"hoverGrayscale": {
+		"grayscaleHover": {
 			"type": "boolean",
 			"default": false
 		},

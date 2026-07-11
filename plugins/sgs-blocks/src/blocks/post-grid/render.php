@@ -78,17 +78,17 @@ $pagination      = sanitize_key( $attributes['pagination'] ?? 'none' );
 $show_filters    = (bool) ( $attributes['showFilters'] ?? false );
 $filter_taxonomy = sanitize_key( $attributes['filterTaxonomy'] ?? 'category' );
 
-$hover_scale    = sanitize_text_field( $attributes['hoverScale'] ?? '' );
-$hover_shadow   = sanitize_text_field( $attributes['hoverShadow'] ?? '' );
-$hover_img_zoom = (bool) ( $attributes['hoverImageZoom'] ?? true );
+$hover_scale    = sanitize_text_field( $attributes['scaleHover'] ?? '' );
+$hover_shadow   = sanitize_text_field( $attributes['shadowHover'] ?? '' );
+$hover_img_zoom = (bool) ( $attributes['imageZoomHover'] ?? true );
 
 // Hover colour shifts — resolved from token slug or raw CSS colour. Emitted as
 // CSS custom properties on the wrapper (inherited by the card) and consumed by
 // the `.sgs-post-grid__card:hover` rules in style.css. Mirrors the info-box
 // `--sgs-hover-bg/text/border` pattern.
-$hover_bg       = ! empty( $attributes['hoverBackgroundColour'] ) ? sgs_colour_value( $attributes['hoverBackgroundColour'] ) : '';
-$hover_text     = ! empty( $attributes['hoverTextColour'] ) ? sgs_colour_value( $attributes['hoverTextColour'] ) : '';
-$hover_border   = ! empty( $attributes['hoverBorderColour'] ) ? sgs_colour_value( $attributes['hoverBorderColour'] ) : '';
+$hover_bg       = ! empty( $attributes['backgroundColourHover'] ) ? sgs_colour_value( $attributes['backgroundColourHover'] ) : '';
+$hover_text     = ! empty( $attributes['textColourHover'] ) ? sgs_colour_value( $attributes['textColourHover'] ) : '';
+$hover_border   = ! empty( $attributes['borderColourHover'] ) ? sgs_colour_value( $attributes['borderColourHover'] ) : '';
 $trans_duration = absint( $attributes['transitionDuration'] ?? 300 );
 $trans_easing   = sanitize_text_field( $attributes['transitionEasing'] ?? 'ease' );
 

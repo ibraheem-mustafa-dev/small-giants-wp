@@ -9,7 +9,7 @@
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   ribbon, layout, gradientPreset, backgroundImage, backgroundMedia,
- *   backgroundImageOpacity, stats, hoverBackground/Text/Border colour,
+ *   backgroundImageOpacity, stats, background/text/border colourHover,
  *   transitionDuration, transitionEasing,
  *   textAlignMobile/Tablet/Desktop (responsive CSS targeting children).
  *
@@ -86,9 +86,9 @@ $has_image_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'i
 $has_video_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'video';
 $stats        = $attributes['stats'] ?? array();
 
-$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
-$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
-$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+$hover_background_colour = $attributes['backgroundColourHover'] ?? '';
+$hover_text_colour       = $attributes['textColourHover'] ?? '';
+$hover_border_colour     = $attributes['borderColourHover'] ?? '';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 

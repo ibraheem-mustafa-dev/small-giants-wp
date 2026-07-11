@@ -40,8 +40,8 @@
  * was removed in the FR-22-6 migration. R-22-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
- *   cardStyle, hoverEffect, iconPosition, hoverBackgroundColour, hoverTextColour,
- *   hoverBorderColour, hoverScale, hoverShadow, hoverGrayscale,
+ *   cardStyle, effectHover, iconPosition, backgroundColourHover, textColourHover,
+ *   borderColourHover, scaleHover, shadowHover, grayscaleHover,
  *   transitionDuration, transitionEasing, blockLink, blockLinkTarget,
  *   sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
  *
@@ -77,14 +77,14 @@ $sgs_css_length = static function ( $value ) {
 // 2. Extract LAYOUT/STYLING scalar attributes with defaults.
 // ---------------------------------------------------------------------------
 $sgs_card_style     = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
-$sgs_hover_effect   = isset( $attributes['hoverEffect'] ) ? $attributes['hoverEffect'] : 'lift';
+$sgs_hover_effect   = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
 $sgs_icon_position  = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
-$sgs_hover_bg       = isset( $attributes['hoverBackgroundColour'] ) ? $attributes['hoverBackgroundColour'] : '';
-$sgs_hover_text     = isset( $attributes['hoverTextColour'] ) ? $attributes['hoverTextColour'] : '';
-$sgs_hover_border   = isset( $attributes['hoverBorderColour'] ) ? $attributes['hoverBorderColour'] : '';
-$sgs_hover_scale    = isset( $attributes['hoverScale'] ) ? $attributes['hoverScale'] : '';
-$sgs_hover_shadow   = isset( $attributes['hoverShadow'] ) ? $attributes['hoverShadow'] : '';
-$sgs_hover_gray     = isset( $attributes['hoverGrayscale'] ) ? (bool) $attributes['hoverGrayscale'] : false;
+$sgs_hover_bg       = isset( $attributes['backgroundColourHover'] ) ? $attributes['backgroundColourHover'] : '';
+$sgs_hover_text     = isset( $attributes['textColourHover'] ) ? $attributes['textColourHover'] : '';
+$sgs_hover_border   = isset( $attributes['borderColourHover'] ) ? $attributes['borderColourHover'] : '';
+$sgs_hover_scale    = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
+$sgs_hover_shadow   = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
+$sgs_hover_gray     = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
 $sgs_block_link     = isset( $attributes['blockLink'] ) ? $attributes['blockLink'] : '';
 $sgs_block_link_tgt = isset( $attributes['blockLinkTarget'] ) ? (bool) $attributes['blockLinkTarget'] : false;
 

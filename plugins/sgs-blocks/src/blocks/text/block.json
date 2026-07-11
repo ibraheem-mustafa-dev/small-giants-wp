@@ -222,14 +222,14 @@
 			"type": "string",
 			"default": ""
 		},
-		"hoverScale": {
+		"scaleHover": {
 			"type": "number"
 		},
-		"hoverColour": {
+		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"hoverBackground": {
+		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},

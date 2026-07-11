@@ -302,9 +302,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColour,
 		boxShadow,
 		boxShadowHover,
-		hoverScale,
-		hoverColour,
-		hoverBackground,
+		scaleHover,
+		textColourHover,
+		backgroundColourHover,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -642,20 +642,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					<TextControl
 						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
-						value={ hoverScale }
-						onChange={ ( val ) => setAttributes( { hoverScale: val } ) }
+						value={ scaleHover }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
 						placeholder="1.03"
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
 						label={ __( 'Text colour on hover', 'sgs-blocks' ) }
-						value={ hoverColour }
-						onChange={ ( val ) => setAttributes( { hoverColour: val ?? '' } ) }
+						value={ textColourHover }
+						onChange={ ( val ) => setAttributes( { textColourHover: val ?? '' } ) }
 					/>
 					<DesignTokenPicker
 						label={ __( 'Background on hover', 'sgs-blocks' ) }
-						value={ hoverBackground }
-						onChange={ ( val ) => setAttributes( { hoverBackground: val ?? '' } ) }
+						value={ backgroundColourHover }
+						onChange={ ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ) }
 					/>
 					<TextControl
 						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
