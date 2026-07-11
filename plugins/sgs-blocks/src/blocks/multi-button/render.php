@@ -63,9 +63,15 @@ $justify_content        = isset( $attributes['justifyContent'] ) ? esc_attr( $at
 $justify_content_tablet = ! empty( $attributes['justifyContentTablet'] ) ? esc_attr( $attributes['justifyContentTablet'] ) : $justify_content;
 $justify_content_mobile = ! empty( $attributes['justifyContentMobile'] ) ? esc_attr( $attributes['justifyContentMobile'] ) : $justify_content;
 
-$wrap        = isset( $attributes['wrap'] ) ? esc_attr( $attributes['wrap'] ) : 'wrap';
+// Default `nowrap` = the CSS initial value (D228: a hardcoded non-initial default
+// that overrides the draft's faithfully-ABSENT flex-wrap is a cheat to remove). A
+// draft button group with no `flex-wrap` (e.g. `.sgs-hero__ctas`) is `nowrap` — the
+// buttons stay in a ROW (shrinking to fit) until the device-tier `flex-direction`
+// switches to column at 767px. The old `wrap` default made two buttons spill onto a
+// second line at ~800px inside the narrow 2-column hero band (proven live 2026-07-11).
+$wrap        = isset( $attributes['wrap'] ) ? esc_attr( $attributes['wrap'] ) : 'nowrap';
 $wrap_tablet = ! empty( $attributes['wrapTablet'] ) ? esc_attr( $attributes['wrapTablet'] ) : $wrap;
-$wrap_mobile = ! empty( $attributes['wrapMobile'] ) ? esc_attr( $attributes['wrapMobile'] ) : 'wrap';
+$wrap_mobile = ! empty( $attributes['wrapMobile'] ) ? esc_attr( $attributes['wrapMobile'] ) : 'nowrap';
 
 $align_items = isset( $attributes['alignItems'] ) ? esc_attr( $attributes['alignItems'] ) : 'center';
 // Cross-axis alignment is responsive (D288). Mobile defaults to `stretch` — mobile
