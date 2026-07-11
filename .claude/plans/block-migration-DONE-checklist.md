@@ -19,10 +19,16 @@ re-derive them.
 - [ ] **1. Zero inline.** `getAttribute('style')` on the rendered block root AND every
   descendant has NO CSS property declaration (a `--var: value` VALUE is allowed). Verified
   live with `getAttribute('style')` on the whole subtree + `audit-inline-styling.js` = clean.
-- [ ] **2. Supports skip-serialised.** Every WP styling support the block declares
-  (`spacing`/`color`/`__experimentalBorder`/`typography`/`shadow`) carries
+- [ ] **2. Supports skip-serialised + CLASS-scoped (D303).** Every WP styling support the block
+  declares (`spacing`/`color`/`__experimentalBorder`/`typography`/`shadow`) carries
   `__experimentalSkipSerialization: true`; render.php reads `$attributes['style']` and emits
-  scoped `#uid`/`.uid` CSS via `wp_style_engine_get_styles`.
+  scoped CSS via `wp_style_engine_get_styles` at **CLASS-level specificity** (`.{$uid}.{block-class}`
+  = 0,2,0), **NEVER `#{$uid}`** (D303) — so the appended `sgsCustomCss` residual can override it by
+  source order (no ID/`!important` escalation; Spec 31 FR-31-22.3 / Spec 32 §6.1(b)). **CRITICAL: `$uid`
+  MUST be on the element as a CLASS** (in `extra_classes` / the class list / anchor-as-class), not only
+  as an `id`/`extra_attrs.id` — else `.uid…` matches nothing and the scoped rule is a SILENT render
+  no-op that a GREEN build can't see (the multi-button regression; STOP-21 — verify LIVE, memory
+  `normalise-scope-needs-uid-as-class-not-just-selector`).
 - [ ] **3. Box families are objects.** Every qualifying 4-side family (padding/margin/
   borderWidth/per-area) → `{top,right,bottom,left}`; 4-corner (borderRadius) → `{topLeft,…}`
   — INCLUDING Tablet/Mobile tiers. Zero flat per-side/per-corner attrs, zero `*Unit`
@@ -51,7 +57,7 @@ re-derive them.
   (the pre-commit visual-diff gate requires this); commit path-scoped.
 
 ## Proven exemplars (copy the pattern)
-- **button** (`9f281337`) — block-private, element-as-root, ID uid. Single-element reference.
+- **button** (`9f281337`; scope normalised to CLASS uid at D303 `83d133aa`) — block-private, element-as-root, **class uid** (`.uid.sgs-button`; was ID pre-D303). Single-element reference.
 - **heading + text** (`3e266090`) — block-private single-element, full bar.
 - **quote** (`13fd1634`, D294) — **content-KIND composite → BLOCK-PRIVATE** (blockquote root, no `SGS_Container_Wrapper`, class uid, all CSS + box-objects scoped). The reference for content-KIND composites (qc-council-settled: they use only box+width, so drop the wrapper — see Spec 31 FR-31-21.1).
 - **media** (`13fd1634`, D294) — block-private atomic (img/figure), radius→WP-native + tiers.
