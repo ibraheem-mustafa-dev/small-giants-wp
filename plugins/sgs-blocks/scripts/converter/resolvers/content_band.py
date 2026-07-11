@@ -33,7 +33,11 @@ from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.fold_helpers import _resolve_co_declared_var
 from converter.services.gap_writer import gap_writer
-from converter.services.styling_helpers import split_value_unit, strip_important
+from converter.services.styling_helpers import (
+    extract_token_or_hex,
+    split_value_unit,
+    strip_important,
+)
 from converter.services.tier_suffix import tier_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -149,6 +153,39 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # Resolve a co-declared var() (max-width:var(--content-width)); identity
     # unless the value is a self-contained var with a fallback.
     resolved = _resolve_co_declared_var(strip_important(decl.value).strip(), {})
+
+    # --- box-family SELF-MERGE + colour-role: mirrors outer_box.resolve's D307
+    # branches EXACTLY (ONE mechanism, R-31-9) for a declaration that fell
+    # through the CONTENT/GRID layers to the OUTER fallback in the priority
+    # chain above (e.g. sgs/text's border-width/-color at CONTENT layer —
+    # `_layer_priorities` tries CONTENT then OUTER; OUTER resolves via
+    # attr_resolve's D307 fallback to borderWidth/borderColour, but this
+    # resolver's OWN serialisation must match outer_box's, not fall through
+    # to the generic string-verbatim branch below, which would write a bare
+    # "1px" into an attr_type='object' destination (render.php's is_array()
+    # guard drops it) or leave a raw "var(--border)" un-tokenised).
+    if db_lookup.box_family_for(ctx.block_slug, attr) == attr:
+        from converter.services.root_supports import (
+            _parse_padding_shorthand as _parse_box_shorthand_value,
+        )
+        sides = _parse_box_shorthand_value(resolved)
+        if sides is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
+                f"box shorthand for merged object attr {attr!r}",
+            )
+        return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
+
+    if db_lookup.attr_is_colour_role(ctx.block_slug, attr):
+        v = extract_token_or_hex(resolved)
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is neither a token slug, hex, "
+                f"nor rgb/hsl colour literal",
+            )
+        return Write(attr=attr, value=v, property=prop, tier=decl.tier)
 
     # Spec 31 §3.A.5: serialise by block_attributes.attr_type. A numeric attr
     # (sgs/text.maxWidth, button paddings/minHeight) stores the bare number +

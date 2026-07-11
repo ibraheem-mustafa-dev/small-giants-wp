@@ -226,6 +226,19 @@ def reset_colour_resolution() -> None:
     _BUTTON_PRESETS_MAP = {}
 
 
+def _theme_palette_slugs() -> frozenset[str]:
+    """The set of VALID theme palette slugs (``_THEME_PALETTE_MAP`` values).
+
+    D307 slug-validation guard (``extract_token_or_hex``): a bare draft
+    ``var(--X)`` slug may be emitted only when X names a real theme palette
+    entry — otherwise it becomes an undefined ``var(--wp--preset--color--X)``
+    at render (the D306 bug class). Empty when no palette is configured (feature
+    inert) → NO bare-var slug validates, so every un-snapped draft var falls
+    through to hex/gap rather than emitting an unresolvable token.
+    """
+    return frozenset(_THEME_PALETTE_MAP.values())
+
+
 def _load_theme_palette_map(client_slug: str, repo_root: Any) -> dict[str, str]:
     """Load ``{hex: slug}`` from ``<repo_root>/sites/<client>/theme-snapshot.json``.
 
@@ -414,11 +427,53 @@ def extract_token_or_hex(value: str) -> str | None:
     A draft-scoped ``var(--X)`` (X ∈ the draft `:root` colour map) is first
     resolved to its concrete hex + snapped to the theme palette slug — see
     ``_resolve_draft_colour_var`` (inert unless a theme palette is configured).
+
+    A bare CSS keyword colour (``white``/``black`` — the ``_CSS_NAMED_COLOURS``
+    map ``_colour_value_to_style`` already uses for the WP-native style.* path,
+    D307) is normalised to its hex equivalent BEFORE the var/hex/rgb checks —
+    reusing the SAME lookup, not a second hand-rolled keyword map, so a
+    block's own colour attr (e.g. ``backgroundColour``/``borderColour``) gets
+    the identical named-colour resolution the native lift already has.
+
+    **Slug-validation guard (D307 code-review blocker fix).** A returned token
+    slug MUST be one a WordPress theme can actually resolve, else it renders as
+    an UNDEFINED ``var(--wp--preset--color--<slug>)`` that falls back to
+    ``currentColor`` (the D306 ghost-border bug class). Two slug sources, two
+    validities:
+
+      * ``var(--wp--preset--color--X)`` — an EXPLICIT WP preset reference. X is a
+        valid theme token BY CONSTRUCTION (the draft author named the real WP
+        token); returned unconditionally. ``_resolve_draft_colour_var`` also
+        rewrites a *resolvable* draft ``var(--X)`` into this shape (draft
+        ``:root{--X:#hex}`` → exact-match theme palette slug), so a snapped
+        draft var arrives here already in preset form.
+
+      * a BARE ``var(--X)`` that survived ``_resolve_draft_colour_var``
+        UN-snapped (palette feature inert, or X is not a known draft ``:root``
+        colour, or X's hex had no exact palette match — the last case already
+        returns the concrete hex upstream, so it never reaches here as a bare
+        var) is NOT a validated slug. It is returned ONLY when X is a REAL theme
+        palette slug (``_THEME_PALETTE_MAP`` values); otherwise the function
+        FALLS THROUGH to the hex/rgb branches and ultimately ``None`` — so the
+        caller keeps the concrete value or gaps HONESTLY, never emitting an
+        unvalidated preset slug (Spec 31 §3 step 6 + the D306 fix mirror the
+        rgb/hsl branch's own token-snap-MISS → keep-literal behaviour).
     """
     v = _resolve_draft_colour_var(value.strip())
+    named = _CSS_NAMED_COLOURS.get(v.lower())
+    if named is not None:
+        return named
     m = _VAR_TOKEN_RE.search(v)
     if m:
-        return m.group(1)
+        slug = m.group(1)
+        # An explicit WP preset reference is a valid token by construction.
+        if "wp--preset--color--" in m.group(0):
+            return slug
+        # A bare draft var(--X): return the slug ONLY if X is a real theme
+        # palette slug; else fall through (never emit an unvalidated slug).
+        if slug in _theme_palette_slugs():
+            return slug
+        # not palette-validated → fall through to hex/rgb/None below.
     if v.startswith("#"):
         return v.split()[0]
     # rgb()/rgba()/hsl()/hsla() concrete colour literals — return verbatim. These are a

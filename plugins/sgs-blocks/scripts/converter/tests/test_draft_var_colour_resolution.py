@@ -56,10 +56,20 @@ def test_draft_var_also_covers_primary():
     assert _colour_value_to_style("var(--primary)") == "var:preset|color|primary"
 
 
-def test_unmapped_var_degrades_gracefully():
-    """var(--unknown) (not a draft :root prop) is left unchanged — prior behaviour."""
+def test_unmapped_var_emits_no_unvalidated_slug():
+    """var(--unknown) (not a draft :root prop, not a palette slug) must NOT emit an
+    unvalidated slug (the D307 code-review blocker fix, D306 bug class).
+
+    Prior behaviour returned the raw ``unknown`` slug → an UNDEFINED
+    ``var(--wp--preset--color--unknown)`` that falls to currentColor at render.
+    Corrected: a bare draft var whose name is neither a resolvable draft :root
+    colour NOR a real theme palette slug falls through to None (honest gap), so
+    the caller keeps the concrete value or gaps — never an undefined preset var.
+    """
     configure_colour_resolution(_DRAFT_MAP, _PALETTE_MAP)
-    assert _colour_value_to_style("var(--unknown)") == "var:preset|color|unknown"
+    # 'unknown' is not in _PALETTE_MAP values {border-subtle, primary} → no slug.
+    assert extract_token_or_hex("var(--unknown)") is None
+    assert _colour_value_to_style("var(--unknown)") is None
 
 
 def test_draft_var_without_palette_match_falls_to_hex():
@@ -69,9 +79,17 @@ def test_draft_var_without_palette_match_falls_to_hex():
 
 
 def test_inert_without_configured_palette():
-    """With no palette configured the feature is inert — behaviour-identical."""
+    """With no palette configured the snap feature is inert.
+
+    An EXPLICIT WP preset reference still resolves (valid token by construction),
+    and a concrete hex passes through. But a BARE draft ``var(--X)`` no longer
+    emits an unvalidated ``var:preset|color|X`` slug (the D307 blocker fix) —
+    with no palette to validate against, there is nothing to prove X is a real
+    theme token, so it falls through to an honest gap rather than an undefined
+    ``var(--wp--preset--color--X)`` at render.
+    """
     # No configure() call → maps empty.
-    assert _colour_value_to_style("var(--border)") == "var:preset|color|border"
+    assert _colour_value_to_style("var(--border)") is None          # was buggy "var:preset|color|border"
     assert _colour_value_to_style("var(--wp--preset--color--primary)") == "var:preset|color|primary"
     assert _colour_value_to_style("#E8D5C0") == "#E8D5C0"
 

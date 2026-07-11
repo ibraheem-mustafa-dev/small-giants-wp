@@ -32,6 +32,7 @@ from converter.models import ResidualBand
 from converter.services.root_supports import (
     lift_root_supports_to_style,
     _ALWAYS_STRIP_SHORTHANDS,
+    expand_background_border_shorthand,
 )
 from converter.db import db_lookup
 
@@ -122,6 +123,20 @@ def _build_css_attrs(
         base_decls, bp_decls = collect_css_decls_for_element(
             node, css_rules, residual_sink=residual_sink
         )
+
+        # ---- Step 1b: background/border shorthand expansion (D307) ----
+        # lift_root_supports_to_style (step 2a below) does this SAME expansion
+        # on its OWN internal collect_css_decls_for_element copy — but that
+        # copy is never returned to this caller. Without expanding HERE too, a
+        # longhand the native-supports gate REJECTS (e.g. sgs/text declares no
+        # color/__experimentalBorder.width|style|color support — see
+        # expand_background_border_shorthand's docstring) never reaches
+        # process_element at all: the raw background/border shorthand keys in
+        # THIS decls copy get stripped by _ALWAYS_STRIP_SHORTHANDS below with
+        # no expanded longhand in their place — a silent drop, not a gap.
+        expand_background_border_shorthand(base_decls, slug=rec.slug)
+        for _tier_decls in bp_decls.values():
+            expand_background_border_shorthand(_tier_decls, slug=rec.slug)
 
         # ---- Step 2a: root-supports native style.* lift (convert.py:774-956) ----
         # Emits padding/background-color/border-radius etc. as WP style.* attrs

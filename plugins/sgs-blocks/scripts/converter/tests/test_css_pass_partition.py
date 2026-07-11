@@ -23,6 +23,7 @@ from bs4 import BeautifulSoup
 
 from converter.recognition import recognise
 from converter.services.extraction import build_block_markup
+from converter.services import styling_helpers as sh
 
 
 def _node(html: str):
@@ -43,8 +44,23 @@ def test_text_color_flows_to_textcolour_attr_not_dropped():
     rec = recognise(node)
     assert rec.slug == "sgs/text", f"fixture must recognise as sgs/text, got {rec.slug}"
 
-    css_rules = {".sgs-section-heading__intro": {"color": "var(--text-muted)"}}
-    markup = build_block_markup(rec, node, css_rules=css_rules, is_root=True)
+    # Configure colour resolution the way the live pipeline does (converter.entry
+    # .convert_section) so the draft `var(--text-muted)` snaps to the real theme
+    # palette slug. D307 (code-review): a bare draft var is emitted as a slug ONLY
+    # when it validates against a configured theme palette — otherwise it would be
+    # an undefined var(--wp--preset--color--text-muted) at render (D306 bug class).
+    # This test exercises the PARTITION routing (color → textColour, not the
+    # blanket strip), so it must feed the same validated-colour context production
+    # does, not rely on the old unvalidated inert passthrough.
+    sh.reset_colour_resolution()
+    sh.configure_colour_resolution(
+        {"text-muted": "#6b5c50"}, {"#6b5c50": "text-muted"}
+    )
+    try:
+        css_rules = {".sgs-section-heading__intro": {"color": "var(--text-muted)"}}
+        markup = build_block_markup(rec, node, css_rules=css_rules, is_root=True)
+    finally:
+        sh.reset_colour_resolution()
 
     assert '"textColour":"text-muted"' in markup, (
         f"color decl must land as textColour on a block with no native color "

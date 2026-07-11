@@ -95,11 +95,23 @@ from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.gap_writer import gap_writer
-from converter.services.styling_helpers import split_value_unit
+from converter.services.styling_helpers import (
+    extract_token_or_hex,
+    split_value_unit,
+    strip_important,
+)
 from converter.services.tier_suffix import tier_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
 from converter.services.value_serialise import value_serialise
+
+# NOTE: root_supports._parse_padding_shorthand (the generic 1-4-value CSS
+# box-model parser D307 reuses for the box-family self-merge branch below) is
+# imported LAZILY inside resolve(), not at module scope — root_supports.py
+# imports converter.orchestrator, which imports converter.resolvers (this
+# package, for REGISTRY), which imports this module — a module-level import
+# here would be a circular-import cycle. The deferred import is safe: by the
+# time resolve() actually runs, orchestrator/resolvers are fully loaded.
 
 # WHICH properties this L1/OUTER resolver attempts is a DB FACT, not an in-code
 # list (corrected 2026-07-04, Bean-caught): a property is liftable ⇔ it has a
@@ -228,6 +240,13 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # The preset list is read from design_tokens at call-time (R-31-1 DB-first — not
     # hardcoded). Slugs carry the 'shadow-' prefix in the DB; the wrapper expects the
     # suffix only (e.g. 'md', not 'shadow-md').
+    #
+    # MUST run BEFORE the box-family/colour-role branches below: the shadow attr's
+    # OWN DB role is 'color' (GROUND-TRUTH in this module's header — role=color wins
+    # over role=visual via rowid ordering when attr_for_layer_property resolves
+    # 'box-shadow'), so a colour-role check ahead of this would intercept a raw
+    # box-shadow value and mis-serialise it via extract_token_or_hex instead of the
+    # preset-slug snap.
     if prop == "box-shadow":
         slug = _shadow_token_snap(decl.value, ctx.conn)
         if slug is None:
@@ -242,6 +261,52 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         # attr on sgs/container (enum_values IS NULL for the shadow attr), so validate()
         # already passed above (attr existence only). Write the slug directly.
         return Write(attr=attr, value=slug, property=prop, tier=decl.tier)
+
+    # --- box-family SELF-MERGE: a single flat declaration destined for a MERGED
+    # per-side object attr (attr_type='object', e.g. sgs/text's borderWidth =
+    # {top,right,bottom,left}) must expand to all four sides in ONE Write, never
+    # a scalar (render.php's is_array() guard silently drops a bare string —
+    # D307). Gated on db_lookup.box_family_for(block, attr) == attr ITSELF (the
+    # attr IS its own family base — distinct from the padding-per-side merge
+    # case where 4 SEPARATE declarations each contribute one key and the
+    # ElementResult.attrs() per-key merge assembles them, §box-object interface
+    # contract §3/§4). Reuses root_supports' generic 1-4-value CSS box-model
+    # parser (the SAME rule padding/margin already use) rather than a second
+    # hand-rolled parser (R-31-9).
+    if db_lookup.box_family_for(ctx.block_slug, attr) == attr:
+        from converter.services.root_supports import (
+            _parse_padding_shorthand as _parse_box_shorthand_value,
+        )
+        sides = _parse_box_shorthand_value(strip_important(decl.value))
+        if sides is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
+                f"box shorthand for merged object attr {attr!r}",
+            )
+        return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
+
+    # --- colour-role attrs: SAME value-resolution the typography resolver uses
+    # (extract_token_or_hex — bare token slug / hex / rgb() literal / named-
+    # colour-to-hex, D307) for any OUTER-resolved attr the DB classifies
+    # role='color' (e.g. border-color -> borderColour). Gated on
+    # db_lookup.attr_is_colour_role (a proper DB accessor, not a Python
+    # literal-comparison in resolver body — keeps the role check inside
+    # db_lookup.py's SQL, out of gates/no_slug_literal.py's scan scope,
+    # mirroring how services/validate.py's attr_is_number does its type
+    # check inside SQL rather than a Python == in a resolver). background-
+    # color never reaches here (it is a pre-layer typography sink,
+    # dispatch_table.py), so this exists for border-color and any future
+    # OUTER colour attr.
+    if db_lookup.attr_is_colour_role(ctx.block_slug, attr):
+        v = extract_token_or_hex(strip_important(decl.value))
+        if v is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{prop} value {decl.value!r} is neither a token slug, hex, "
+                f"nor rgb/hsl colour literal",
+            )
+        return Write(attr=attr, value=v, property=prop, tier=decl.tier)
 
     # Step 5: serialise by attr type. A numeric OUTER attr (e.g. a numeric gap)
     # stores the number + a Unit companion (Spec 31 §3.A.5) — a list[Write] for the

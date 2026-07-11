@@ -562,6 +562,37 @@ def box_family_for(block_slug: str, attr_name: str) -> "str | None":
     return row[0] or None
 
 
+@functools.lru_cache(maxsize=1024)
+def attr_is_colour_role(block_slug: str, attr_name: str) -> bool:
+    """True iff the block's attr is DB-classified ``role='color'``.
+
+    D307: the sole legitimate gate for whether an OUTER/CONTENT-layer
+    resolver should route a value through colour serialisation
+    (``extract_token_or_hex`` — token slug / hex / rgb() literal / named-
+    colour-to-hex) rather than the generic string/numeric branches. The
+    comparison against the literal ``'color'`` lives HERE (inside the SQL
+    WHERE clause, a string, not a Python ``==``) rather than in a resolver
+    body specifically so the ``gates/no_slug_literal.py`` AST gate — which
+    taints any local derived from an expression touching ``ctx.block_slug``
+    and flags a subsequent literal comparison — never sees a
+    ``role == "color"`` Compare node in ``resolvers/`` or ``services/``
+    (out of the gate's scan scope, same reasoning as ``attr_is_number`` in
+    ``services/validate.py`` doing its type check inside SQL). Callers
+    branch on the boolean return, never on the attr NAME (regex/suffix) —
+    the same discipline ``box_family_for`` already enforces.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ? AND role = 'color'",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row is not None
+
+
 @functools.lru_cache(maxsize=256)
 def tag_identity_attrs(block_slug: str) -> dict[str, frozenset[str]]:
     """Return {attr_name: allowed_tag_values} for the block's tag-identity attrs.

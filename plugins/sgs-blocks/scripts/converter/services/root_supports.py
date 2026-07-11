@@ -122,6 +122,73 @@ _LIFT_CSS_PROPS: frozenset[str] = frozenset(
 _ALWAYS_STRIP_SHORTHANDS: frozenset[str] = frozenset(["background", "border"])
 
 
+def expand_background_border_shorthand(
+    decls: dict[str, str], *, slug: str | None = None,
+) -> None:
+    """Normalise ``background``/``border`` shorthand into longhands, IN PLACE.
+
+    Extracted (D307, 2026-07-11) from the base-tier block below so the SAME
+    expansion is available to a caller that does NOT go through the native-
+    supports consumption gate — ``css_pass._build_css_attrs`` collects its OWN
+    ``base_decls``/``bp_decls`` copy (a separate ``collect_css_decls_for_element``
+    call from this module's own internal one), so a longhand this function's
+    caller REJECTS via ``_support_allows`` (e.g. sgs/text's ``color: false`` /
+    ``__experimentalBorder`` declaring only ``radius``) previously never
+    reached ``process_element`` at all: the RAW ``background``/``border`` keys
+    in css_pass's copy were never expanded, so ``_ALWAYS_STRIP_SHORTHANDS``
+    stripped them with nothing to fall through in their place — a SILENT drop
+    with no gap ever recorded (caught 2026-07-11 tracing the ingredients-
+    disclaimer clone: ``background:white``/``border:1px solid var(--border)``
+    on sgs/text never reached ``outer_box``/``typography`` at all).
+
+    Does NOT delete the original ``background``/``border`` keys — both call
+    sites (this module's own internal consumption loop, and
+    ``css_pass._ALWAYS_STRIP_SHORTHANDS``-driven partition) always-strip those
+    two shorthand keys regardless; this only ADDS the longhand keys when
+    absent, never removes/mutates the shorthand it read.
+
+    ``slug`` is accepted for the gradient-background debug-log call site only
+    (module logging convenience) — never consulted for any branching decision
+    (R-31-1: no slug-gated behaviour).
+    """
+    if "background" in decls and "background-color" not in decls:
+        bg = decls["background"].strip()
+        if bg and "url(" not in bg and "gradient" not in bg:
+            for tok in bg.split():
+                if tok in ("white", "black", "transparent"):
+                    decls["background-color"] = tok
+                    break
+                # extract_token_or_hex is the canonical checker; inline here to
+                # avoid importing _extract_token_or_hex (private to styling_helpers).
+                if tok.startswith("#") or tok.startswith("var("):
+                    decls["background-color"] = tok
+                    break
+            else:
+                if len(bg.split()) == 1:
+                    decls["background-color"] = bg
+        elif bg and "gradient" in bg:
+            # Fix #6 (convert.py:825-844): CSS gradient backgrounds have no
+            # converter destination.  WP's style.color.gradient slot requires a
+            # preset slug lookup unavailable at clone time.  DROP with trace note.
+            _LOG.debug(
+                "[root_supports] gradient_background_gap slug=%s raw=%r — "
+                "CSS gradient background has no converter destination. "
+                "Gap candidate: add style.color.gradient to _root_lift_rules "
+                "when a gradient-slug resolver is available.",
+                slug, bg,
+            )
+
+    if "border" in decls and "border-width" not in decls:
+        parts = decls["border"].strip().split()
+        for tok in parts:
+            if any(u in tok for u in ("px", "em", "rem", "pt")):
+                decls.setdefault("border-width", tok)
+            elif tok in ("solid", "dashed", "dotted", "double", "none"):
+                decls.setdefault("border-style", tok)
+            elif tok.startswith("#") or tok.startswith("var("):
+                decls.setdefault("border-color", tok)
+
+
 # ---------------------------------------------------------------------------
 # Private helpers — ported from convert.py (no frozen-engine import)
 # ---------------------------------------------------------------------------
@@ -381,46 +448,11 @@ def lift_root_supports_to_style(
     # BASE TIER — convert.py:813-880
     # -------------------------------------------------------------------------
     if base_decls:
-        # Normalise background shorthand: extract colour when no gradient/url.
-        # convert.py:815-844.
-        if "background" in base_decls and "background-color" not in base_decls:
-            bg = base_decls["background"].strip()
-            if bg and "url(" not in bg and "gradient" not in bg:
-                for tok in bg.split():
-                    if tok in ("white", "black", "transparent"):
-                        base_decls["background-color"] = tok
-                        break
-                    # extract_token_or_hex is the canonical checker; inline here to
-                    # avoid importing _extract_token_or_hex (private to styling_helpers).
-                    if tok.startswith("#") or tok.startswith("var("):
-                        base_decls["background-color"] = tok
-                        break
-                else:
-                    if len(bg.split()) == 1:
-                        base_decls["background-color"] = bg
-            elif bg and "gradient" in bg:
-                # Fix #6 (convert.py:825-844): CSS gradient backgrounds have no
-                # converter destination.  WP's style.color.gradient slot requires a
-                # preset slug lookup unavailable at clone time.  DROP with trace note.
-                _LOG.debug(
-                    "[root_supports] gradient_background_gap slug=%s raw=%r — "
-                    "CSS gradient background has no converter destination. "
-                    "Gap candidate: add style.color.gradient to _root_lift_rules "
-                    "when a gradient-slug resolver is available.",
-                    slug, bg,
-                )
-
-        # Normalise border shorthand: expand to border-width/style/color.
-        # convert.py:845-853.
-        if "border" in base_decls and "border-width" not in base_decls:
-            parts = base_decls["border"].strip().split()
-            for tok in parts:
-                if any(u in tok for u in ("px", "em", "rem", "pt")):
-                    base_decls.setdefault("border-width", tok)
-                elif tok in ("solid", "dashed", "dotted", "double", "none"):
-                    base_decls.setdefault("border-style", tok)
-                elif tok.startswith("#") or tok.startswith("var("):
-                    base_decls.setdefault("border-color", tok)
+        # Normalise background/border shorthand into longhands — convert.py:815-853,
+        # extracted (D307) to the shared expand_background_border_shorthand so
+        # css_pass._build_css_attrs can apply the IDENTICAL expansion to its own
+        # decls copy (see that function's docstring for why a second copy exists).
+        expand_background_border_shorthand(base_decls, slug=slug)
 
         # Apply root lift rules — convert.py:855-866.
         for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
