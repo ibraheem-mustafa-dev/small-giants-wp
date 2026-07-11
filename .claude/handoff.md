@@ -1,77 +1,55 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-generated: 2026-07-10
-session: D303 — universal residual render-precedence (bound + class-match + source-order, no ID) + M2 theme-side letter-spacing fix
+generated: 2026-07-11
+session: D304+D305 — scoped-selector gate + 3 D228 hardcoded-default fixes (button wrap, hero gap, heading text-wrap) + Task-2 reframe
 ---
 
-# Session Handoff — 2026-07-10 (D303: pipeline typography-fidelity — both mechanisms fixed + LANDED)
+# Session Handoff — 2026-07-11 (D304+D305)
 
-## Completed This Session (both next-session-prompt Tasks DONE + verified live)
+## Completed This Session
 
-1. **Task 1 / Mechanism 1 — universal residual render-precedence (D303). LANDED + pushed (`83d133aa`).**
-   The hero H1 now renders the draft's **58px @≥1280** (was 52px). Root-caused LIVE (matched-rule
-   trace), research-backed (WP 6.6 `:root :where()` + Kadence/Spectra/GenerateBlocks all use
-   equal-low-specificity + source-order, never ID/`!important`), Bean design-gated. Four-part universal
-   architecture:
-   - **BOUND** — each `sgsCustomCss` residual confined to the device tier its threshold falls inside
-     (`styling_helpers.bound_residual_media_conds`), symmetric min/max, so `min-width:600` → `600–767`
-     (can't bleed into tablet/desktop) and `min-width:1280` stays open-ended (top tier).
-   - **MATCH+ORDER** — residual scoped `.uid.uid` (0,2,0) matches the block's class rule + wins by source
-     order (appended last), no ID (`custom-css.php`).
-   - **NORMALISE** — the 7 blocks that self-rolled at `#uid` (button, text, feature-grid, multi-button,
-     mega-menu, mobile-nav, collapsible-text) moved to class-level + `$uid` added to their class list.
-   - **F3 gate** — `check-hardcoded-render-defaults.js` E8 now recognises `.uid` class-scoped overrides.
-   - Spec 31 FR-31-5.2/22.3 + Spec 32 §6.1(b) amended; decision D303.
-   - **Live-verified** 375/768/1440: H1 34/52/58 (residual wins only ≥1280); 7 blocks render correctly;
-     bounded residuals dormant outside their band. Per-block visual-diff reports written.
+1. **Task 1 — scoped-selector match bug-class: audit CLEAN + live gate shipped (D304, `6f52fb91`).** The multi-button bug-class (a scoped rule `.uid.block` whose class the element never carries → silent no-op) is NOT present: live DOM audit of the real homepage clone (page 8, 94 scope classes) + a 54-block roster page (~61) = **0 dead**. Gate `scripts/audit-scoped-selector-live.js` (plant-tested; wired into `build-deploy.py --audit-scoped-page 8`; npm `check:scoped-selector`). A first STATIC analyser gave 26 false positives → dropped (Bean's call; STOP-21).
+2. **Task 2 — REFRAMED (Bean) + parking consolidated (`a042df37`).** The per-element typography ancestor-walk is superseded by a **draft→theme-token extractor** as the opening step of the header/footer setup pipeline (blocks inherit the correct base BY CONSTRUCTION). Merged 3 entries into `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`.
+3. **Button wrap fix (`fc05fe70`).** Hero buttons stacked at ~800px because multi-button defaulted `flex-wrap:wrap` (draft = `nowrap`). Default → `nowrap`. LANDED: row at 768–860, column at 767.
+4. **Hero gap fix (`b8789ae7`).** Hero H1 column was 5px too narrow — hero/style.css hardcoded a 16px `.sgs-hero--split` gap the draft lacks. Removed → columns 400/400, content flush = draft.
+5. **Heading text-wrap fidelity — Option 1 (D305, `272df589`).** Hero H1 wrapped "Made for" not the draft's "Made for the" — root cause `text-wrap:balance` on all headings (theme `core-blocks-critical.css`) vs the draft's greedy `wrap`. New `sgs/heading.textWrap` attr; render emits it at `.uid.wp-block-sgs-heading` (0,2,0, beats theme `h1..h6`); converter `assembly.py` step 3a3 sets it to the draft's effective wrap on cloned headings (DB-gated, FR-31-5.1); authored headings keep balance. Verified live; DB seeded via `/sgs-update --stage 1`.
 
-2. **Task 2 — option-picker pills. RESOLVED** (already fixed by D301/D302 + the re-clone): selected pill
-   = 10% pink tint, resting = cream/beige/muted, font-size 14px, text-align left. Verified live.
-
-3. **Task 1 / Mechanism 2 — section-heading letter-spacing. Fixed THEME-SIDE (`da58ea48`).** Root cause:
-   the Mama's snapshot imposed arbitrary `h1 -0.022em`/`h2 -0.015em` (copied identically into all 6 client
-   snapshots, not from any draft). Removed them → section h2s render **`normal`** (matching the draft);
-   hero h1 keeps its **−1px** (from the block lift). Pushed to sandybrown `wp_global_styles`; verified live.
+**Unifying theme:** fixes 3, 4, 5 are the SAME D228 pattern — a framework default overriding the draft's faithfully-absent value. Bean's discrepancy list (Next Priorities) says the hardcoded-default purge is incomplete.
 
 ## Current State
-- **Branch:** `main` — pushed through `83d133aa` (D303 core). Local commit `da58ea48` (mamas snapshot M2)
-  + this handoff's doc commits NOT yet pushed — push at session end.
-- **Tests:** 440 converter tests pass. **Build:** green (all prebuild gates incl. cheat-gate 0-new, F5/F6,
-  visual-diff). **Deploy:** sandybrown plugin + page-8 re-clone + snapshot all deployed; OPcache reset.
+- **Branch:** `main` at `272df589` — all 5 commits pushed.
+- **Tests:** converter suite **440 pass, 1 skip**. **Build:** green (all prebuild gates). **Deploy:** sandybrown plugin deployed; page 1356 carries verification test blocks.
+- **Uncommitted changes:** handoff docs only (this commit).
 
-## Known Issues / Follow-ups (parked precisely)
-- **`P-EFFECTIVE-VALUE-TYPOGRAPHY-LIFT`** (Bean-directed "we should have a mechanism that can deal with it if
-  necessary") — the GENERAL robustness mechanism: the converter should lift the draft's EFFECTIVE
-  (inherited/initial) letter-spacing + line-height so a clone overrides ANY theme default, not just the
-  arbitrary one removed this session. Spec 31 FR-31-5.1 extended from text-align → letter-spacing/line-height.
-  Fresh-session build (changes conformance goldens — STOP-60 care). The theme-side fix holds the current
-  clone meanwhile.
-- **`P-SNAPSHOT-ARBITRARY-LETTER-SPACING`** — the other 5 client snapshots carry the same arbitrary heading
-  letter-spacing; batch-remove when each is next built.
-- **MEMORY.md at 22KB** — compact to <17KB (one line per entry) next housekeeping pass.
+## Known Issues / Blockers
+- **Page 8 hero H1 still renders `balance` live** — its headings were cloned BEFORE D305; a re-clone lands the greedy wrap. This is next-session Task 0.
+- None block the next session.
 
 ## Next Priorities (in order)
-1. **Track B — scoped-selector-match bug-CLASS audit + structural gate** (`P-SCOPED-SELECTOR-MATCH-AUDIT-AND-GATE`). The multi-button issue's class: a block emits a scoped rule but the element doesn't carry that class → silent render no-op a green build can't see. Roster-wide audit + a live-harness gate. Ordered first (protects Track A's own emissions).
-2. **Track A — effective-value typography-lift MECHANISM** (`P-EFFECTIVE-VALUE-TYPOGRAPHY-LIFT`). Lift the draft's inherited/initial letter-spacing + line-height so a clone overrides ANY theme default (Spec 31 FR-31-5.1 extended). Changes conformance goldens — design-gate + STOP-60 care.
-3. Housekeeping: batch-remove the arbitrary heading letter-spacing from the other 5 client snapshots (`P-SNAPSHOT-ARBITRARY-LETTER-SPACING`); compact MEMORY.md (<17KB).
+1. **Re-clone page 8** — lands D305 text-wrap live + refreshes the baseline for the discrepancy investigations below.
+2. **Root-cause the recurring BLACK BORDER** (featured/trial product cards, gift cards, announcement bar, info boxes, testimonial cards, trustpilot bar) — one universal cause: border-colour not transferred → defaults black. Biggest bang (≈7 sections).
+3. **Card equal-height** (product + gift cards) — Bean: routed to sgs/container instead of card-grid, or card-grid items not `stretch`.
+4. **The rest of Bean's discrepancy register** — buttons, option-picker, label highlight, ingredients, brand spacing, trustpilot height — grouped by root cause in `P-PAGE8-DISCREPANCY-REGISTER`.
+5. **Inline-styles architecture** (Spec 32) — Bean: CSS still emitted into HTML via assorted `<style>`/style-id/section-style/div-style tags, not the DevTools styles panel like the draft; reads as a cheat.
 
-## Files Modified (D303)
-| File | What |
+## Files Modified
+| File | What changed |
 |---|---|
-| `plugins/sgs-blocks/scripts/converter/services/styling_helpers.py` | `bound_residual_media_conds` (tier-confined bounding) + F-ii wiring |
-| `plugins/sgs-blocks/includes/custom-css.php` | residual scoped `.uid.uid` (class-match) |
-| `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` | E8 recognises `.uid` class-scoped overrides |
-| `plugins/sgs-blocks/src/blocks/{button,text,feature-grid,multi-button,mega-menu,mobile-nav,collapsible-text}/render.php` | `#uid`→`.uid.block` + `$uid` added to class list |
-| `sites/mamas-munches/theme-snapshot.json` | removed arbitrary h1/h2 letterSpacing (M2) |
-| `.claude/specs/31-*.md`, `32-*.md`, `decisions.md` (D303), `parking.md` | architecture + follow-ups |
-| `reports/visual-diff/{feature-grid,multi-button,text}-2026-07-10.md` | LANDED reports |
+| `plugins/sgs-blocks/scripts/audit-scoped-selector-live.js` (NEW) | live scoped-selector gate + plant-test + manifest push |
+| `plugins/sgs-blocks/scripts/build-deploy.py` | post-deploy scoped-selector audit step |
+| `plugins/sgs-blocks/scripts/scoped-selector-audit-manifest.json` (NEW) | 54-block roster manifest |
+| `plugins/sgs-blocks/src/blocks/multi-button/{render.php,block.json}` | flex-wrap default `wrap`→`nowrap` |
+| `plugins/sgs-blocks/src/blocks/hero/style.css` | removed hardcoded `.sgs-hero--split` 16px gap |
+| `plugins/sgs-blocks/src/blocks/heading/{render.php,block.json}` | `textWrap` attr + scoped emission |
+| `plugins/sgs-blocks/scripts/converter/services/assembly.py` | step 3a3 — cloned headings get draft's effective text-wrap |
+| `.claude/{decisions.md,parking.md,memory/parking-archive.md}`, `reports/visual-diff/{multi-button,hero,heading}-2026-07-11.md` | records + LANDED reports |
 
-## Key Lesson (captured)
-- **`normalise-scope-needs-uid-as-class-not-just-selector`** — moving per-instance scope `#uid`→`.uid`
-  needs the uid ALSO as a CLASS on the element; several blocks apply it as an id only, so a selector-only
-  change is a silent render no-op (build GREEN, multi-button rendered `display:block`) — caught only by the
-  live 375/768/1440 check. STOP-21 reinforced (emit-green ≠ LANDED).
+## Notes for Next Session
+- **The DB seed is not in git** — `sgs/heading.textWrap` was seeded to `~/.claude/skills/sgs-wp-engine/sgs-framework.db` via `/sgs-update --stage 1`. On a fresh clone, re-run stage 1 (block.json is the source of truth).
+- **Cache clears matter** — a plugin CSS/render change needs `build-deploy.py` + OPcache reset AND `hosting_clearWebsiteCacheV1` (the CDN edge-caches the versioned CSS; a stale live measure misled me for ~20 min this session).
+- **The static-analyser lesson** — for "does this class/style land?" questions, use the live DOM (the audit script / Playwright computed-style), never static PHP parsing (26 false positives this session; STOP-21).
+- **Bean's discrepancies are NOT to be fixed piecemeal** — root-cause each (borders, heights, buttons are likely 3 universal causes, not 15 fixes), universal + Spec-31-aligned, no cheats.
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` — the effective-value typography-lift MECHANISM (`P-EFFECTIVE-VALUE-TYPOGRAPHY-LIFT`).
+See `.claude/next-session-prompt.md` — the page-8 fidelity discrepancy investigation programme.
