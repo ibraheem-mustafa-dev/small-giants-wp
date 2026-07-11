@@ -629,7 +629,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		descColour,
 		priceNoteColour,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
-		ctaPreset,
 		ctaColourBackground,
 		ctaColourText,
 		ctaColourBorder,
@@ -1044,28 +1043,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ CTA_STYLE_OPTIONS }
 						onChange={ ( v ) => {
 							/*
-							 * Typed mode only: the cta* colour/border/weight attrs now
-							 * ALSO style the typed CTA (change #1). Their block.json
-							 * defaults are seeded from BUTTON_PRESETS.primary, so
-							 * switching to secondary/outline without reseeding would
-							 * leave a primary-coloured button under a
-							 * .sgs-button--secondary/outline class. Reseed on every
-							 * style change — same preset-as-seed mechanism as the CTA
-							 * Button Style panel's "Apply preset" button — so the typed
-							 * CTA colours always match the chosen style. Bound mode is
-							 * untouched (its own ctaPreset + Apply-preset flow governs
-							 * cta* there; ctaStyle carries no bound-markup effect).
+							 * ctaStyle is now the SINGLE style attribute driving the
+							 * sgs-button--{ctaStyle} class in BOTH typed and bound
+							 * markup (the separate style-preset attr was merged away — D-merge). The cta*
+							 * colour/border/weight attrs style the button in both
+							 * modes, so every style change reseeds them from
+							 * BUTTON_PRESETS[v] regardless of typed/bound — otherwise
+							 * switching to secondary/outline would leave a
+							 * primary-coloured button under a
+							 * .sgs-button--secondary/outline class. The "Reset colours
+							 * to preset" button below covers the case where the picked
+							 * value is unchanged (onChange doesn't refire) but the user
+							 * wants to snap hand-tweaked colours back to the preset.
 							 */
-							if ( isBound ) {
-								setAttributes( { ctaStyle: v } );
-								return;
-							}
 							const preset = BUTTON_PRESETS[ v ];
 							setAttributes( {
 								ctaStyle: v,
 								...( preset
 									? {
-											ctaPreset: v,
 											ctaColourBackground: preset.colourBackground,
 											ctaColourText: preset.colourText,
 											ctaColourBorder: preset.colourBorder,
@@ -1168,33 +1163,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
-						<SelectControl
-							label={ __( 'Style preset', 'sgs-blocks' ) }
-							value={ ctaPreset || 'primary' }
-							options={ [
-								{
-									value: 'primary',
-									label: __( 'Primary', 'sgs-blocks' ),
-								},
-								{
-									value: 'secondary',
-									label: __( 'Secondary', 'sgs-blocks' ),
-								},
-								{
-									value: 'outline',
-									label: __( 'Outline', 'sgs-blocks' ),
-								},
-							] }
-							onChange={ ( v ) =>
-								setAttributes( { ctaPreset: v } )
-							}
-							__nextHasNoMarginBottom
-						/>
+						{ /*
+						 * Style (primary/secondary/outline) is now set ONLY by the
+						 * unified "Primary button style" SelectControl above —
+						 * the separate style-preset attr was merged into ctaStyle (D-merge). A
+						 * SelectControl's onChange cannot re-fire when the picked
+						 * value is unchanged, so a user who has hand-tweaked a
+						 * colour needs an explicit button to snap the colours back
+						 * to the CURRENT style's preset values.
+						 */ }
 						<Button
 							variant="secondary"
 							onClick={ () => {
 								const preset =
-									BUTTON_PRESETS[ ctaPreset || 'primary' ];
+									BUTTON_PRESETS[ ctaStyle || 'primary' ];
 								if ( ! preset ) {
 									return;
 								}
@@ -1217,7 +1199,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							} }
 							style={ { marginBottom: 16 } }
 						>
-							{ __( 'Apply preset', 'sgs-blocks' ) }
+							{ __( 'Reset colours to preset', 'sgs-blocks' ) }
 						</Button>
 						<SelectControl
 							label={ __( 'Width', 'sgs-blocks' ) }

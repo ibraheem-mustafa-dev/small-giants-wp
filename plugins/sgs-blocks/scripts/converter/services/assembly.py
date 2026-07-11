@@ -268,31 +268,20 @@ def build_block_markup(
         and "inheritStyle" not in attrs
         and db_lookup.block_attrs(rec.slug).get("inheritStyle", {}).get("attr_type") == "string"
     ):
-        _presets = db_lookup.inherit_style_presets()
         _node_classes = section_root.get("class", []) if hasattr(section_root, "get") else []
         _own_block_name = (rec.slug or "").split("/", 1)[-1]
-        _matched = False
-        for _cls in (_node_classes or []):
-            if not isinstance(_cls, str):
-                continue
-            _bem = db_lookup.parse_sgs_bem(_cls)
-            if _bem is None or not _bem.modifier:
-                continue
-            _mod = _bem.modifier.lower()
-            if _mod in _presets:
-                attrs["inheritStyle"] = _mod
-                _matched = True
-                break
-            # A modifier that is not itself a preset value resolves through the
-            # slots alias→default_attrs channel (db_lookup.inherit_style_for_modifier,
-            # R-31-1): the DB's `ghost-button`/`button-ghost` aliases carry
-            # {"inheritStyle": "outline"}, so a draft `--ghost` maps with no code
-            # literal; a future synonym is a slots-row seed, zero code change.
-            _alias_style = db_lookup.inherit_style_for_modifier(_mod, rec.slug)
-            if _alias_style:
-                attrs["inheritStyle"] = _alias_style
-                _matched = True
-                break
+        # Shared preset-modifier detection (db_lookup.preset_style_for_element): a
+        # direct preset modifier via inherit_style_presets(), else the slots
+        # alias→default_attrs channel (inherit_style_for_modifier — the DB's
+        # `ghost-button`/`button-ghost` aliases carry {"inheritStyle":"outline"}, so a
+        # draft `--ghost` maps with no code literal). This is the SAME mechanism the
+        # composite nested-CTA mirror uses (walk.py foreign-identity arm — e.g.
+        # sgs/product-card ctaStyle mirroring sgs/button) — ONE implementation, no
+        # inline duplication (R-31-9).
+        _resolved_style = db_lookup.preset_style_for_element(_node_classes, rec.slug)
+        _matched = _resolved_style is not None
+        if _matched:
+            attrs["inheritStyle"] = _resolved_style
         # UX-Q2 (Part 7, D279): no modifier resolved a preset/alias. When the
         # draft element ALSO carries no BARE root class of its OWN family
         # (e.g. a plain contextual <a> with zero sgs-button-* signal at all —

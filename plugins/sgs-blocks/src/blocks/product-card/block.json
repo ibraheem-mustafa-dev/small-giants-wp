@@ -141,45 +141,35 @@
 			"type": "string",
 			"default": ""
 		},
-		"ctaPreset": {
-			"type": "string",
-			"default": "primary",
-			"enum": [
-				"primary",
-				"secondary",
-				"outline"
-			],
-			"description": "Which BUTTON_PRESETS entry the 'Apply preset' control last seeded into ctaColour*/ctaBorder*/ctaFontWeight. Presets only seed values — every value below stays independently editable afterwards."
-		},
 		"ctaColourBackground": {
 			"type": "string",
-			"default": "primary",
-			"description": "Bound-mode built-in CTA (.product-card__view / .product-card__add-to-cart) background colour. Theme token slug or raw CSS colour."
+			"default": "",
+			"description": "Built-in CTA background colour override. EMPTY (default) = inherit the shared button-preset channel via the sgs-button--{style} class (so a --secondary/--outline CTA gets its transparent background, a --primary gets the solid fill — mirroring a standalone sgs/button). Set a token slug or raw colour only to override."
 		},
 		"ctaColourText": {
 			"type": "string",
-			"default": "text-inverse",
-			"description": "Bound-mode built-in CTA text colour. Theme token slug or raw CSS colour."
+			"default": "",
+			"description": "Built-in CTA text colour override. EMPTY (default) = inherit the shared button-preset colour channel via the sgs-button--{style} class (composite-mirror, WCAG-correct per client — a light-primary palette gets dark CTA text automatically). Set a theme token slug or raw CSS colour only to override. (Was 'text-inverse', which force-painted near-white and failed WCAG on light palettes — D-pending.)"
 		},
 		"ctaColourBorder": {
 			"type": "string",
-			"default": "primary",
-			"description": "Bound-mode built-in CTA border colour. Theme token slug or raw CSS colour."
+			"default": "",
+			"description": "Built-in CTA border colour override. EMPTY (default) = inherit the shared button-preset channel via the sgs-button--{style} class. Set only to override."
 		},
 		"ctaColourBackgroundHover": {
 			"type": "string",
-			"default": "text",
-			"description": "Bound-mode built-in CTA hover background colour."
+			"default": "",
+			"description": "Built-in CTA hover background colour override. EMPTY (default) = inherit the shared button-preset hover channel via the sgs-button--{style} class. Set only to override."
 		},
 		"ctaColourTextHover": {
 			"type": "string",
-			"default": "text-inverse",
-			"description": "Bound-mode built-in CTA hover text colour."
+			"default": "",
+			"description": "Built-in CTA hover text colour override. EMPTY (default) = inherit the shared button-preset hover colour channel via the sgs-button--{style} class. Set only to override. (Was 'text-inverse' — WCAG footgun on light palettes.)"
 		},
 		"ctaColourBorderHover": {
 			"type": "string",
-			"default": "text",
-			"description": "Bound-mode built-in CTA hover border colour."
+			"default": "",
+			"description": "Built-in CTA hover border colour override. EMPTY (default) = inherit the shared button-preset hover channel via the sgs-button--{style} class. Set only to override."
 		},
 		"ctaBorderStyle": {
 			"type": "string",
@@ -290,7 +280,12 @@
 		"ctaStyle": {
 			"type": "string",
 			"default": "primary",
-			"description": "Primary CTA visual style — maps to the sgs-button--{ctaStyle} modifier class (sgs-button--primary / sgs-button--secondary vocabulary in style.css)."
+			"enum": [
+				"primary",
+				"secondary",
+				"outline"
+			],
+			"description": "Primary CTA visual style (primary/secondary/outline) — maps to the sgs-button--{ctaStyle} modifier class, mirroring a standalone sgs/button's inheritStyle. The cloning converter lifts the draft CTA's --modifier here (Spec 31 §13.5). Picking a style in the editor also seeds the ctaColour*/ctaBorder*/ctaFontWeight fields; leaving those empty makes the CTA inherit the shared button-preset colour channel (composite-mirror, WCAG-correct per client)."
 		},
 		"cta2Text": {
 			"type": "string",

@@ -87,6 +87,28 @@ def test_real_draft_featured_card_lifts_both_cta_attrs():
     assert '"ctaUrl":"/product/zookies/"' in markup, markup[:800]
 
 
+def test_real_draft_cta_style_preset_mirrors_the_nested_button_modifier():
+    """STYLE-PRESET MIRROR (Spec 31 §13.5): the nested CTA's BEM style --modifier
+    lifts onto the composite's OWN `ctaStyle` attr, exactly as a standalone
+    sgs/button clones its inheritStyle. Featured card CTA is `sgs-button--primary`
+    → ctaStyle:primary; trial card CTA is `sgs-button--secondary` → ctaStyle:secondary.
+    Run through the REAL production entry point against the REAL draft (STOP-34).
+    Regression guard for the D-pending converter mirror fix + STOP-60 (a new attr in
+    the emitted output)."""
+    tag, css = _real_draft_section("featured-product")
+    markup = run_converter_full(tag, css)["block_markup"]
+    cards = markup.split("<!-- wp:sgs/product-card ")
+    assert len(cards) == 3, f"expected 2 product-card comments, got {len(cards) - 1}"
+    featured_card, trial_card = cards[1], cards[2]
+    # The load-bearing fix: the trial CTA's --secondary modifier reaches ctaStyle.
+    assert '"ctaStyle":"secondary"' in trial_card, trial_card[:800]
+    assert '"ctaStyle":"primary"' in featured_card, featured_card[:800]
+    # Composite-mirror colour: a preset CTA injects NO explicit text colour — it
+    # inherits the shared button-preset channel (WCAG-correct per client).
+    assert '"ctaColourText"' not in trial_card, trial_card[:800]
+    assert '"ctaColourText"' not in featured_card, featured_card[:800]
+
+
 def test_real_draft_trial_card_gets_its_own_distinct_cta_not_the_featured_cards():
     """The second ('trial') product card in the same real section has its
     OWN CTA (<a href="/product/trial-pack/" class="sgs-button

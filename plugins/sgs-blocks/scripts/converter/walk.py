@@ -371,6 +371,33 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
                     if alt_attr and alt_attr not in lifted_attrs:
                         results.append(ScalarLift(attr=alt_attr, value=alt_value))
                         lifted_attrs.add(alt_attr)
+            # STYLE-PRESET MIRROR (Spec 31 §13.5): lift the nested element's style
+            # --modifier onto the parent's OWN string style-preset attr that mirrors
+            # the foreign identity's inheritStyle — e.g. sgs/product-card `ctaStyle`
+            # mirroring the nested sgs/button --primary/--secondary, exactly as a
+            # STANDALONE sgs/button clones inheritStyle (services/assembly.py step 5,
+            # via the SHARED db_lookup.preset_style_for_element — ONE impl, R-31-9).
+            # These attrs are role 'behaviour' (NOT content), so equivalent_block_for/
+            # content_attrs_for_identity DELIBERATELY exclude them (FR-31-2.2) — hence
+            # style_preset_attrs_for_identity, which reuses the SAME
+            # canonical_slot→standalone_block map minus the content-role filter.
+            # Gated DB-drivenly on the identity being a preset-style block (declares a
+            # string inheritStyle); no attr-name/slug literal (R-31-1).
+            if (
+                db_lookup.block_attrs(identity_slug)
+                .get("inheritStyle", {})
+                .get("attr_type") == "string"
+            ):
+                _preset = db_lookup.preset_style_for_element(own_classes, identity_slug)
+                if _preset is not None:
+                    for _style_attr in db_lookup.style_preset_attrs_for_identity(
+                        rec.slug, identity_slug
+                    ):
+                        if _style_attr in lifted_attrs:
+                            continue
+                        results.append(ScalarLift(attr=_style_attr, value=_preset))
+                        lifted_attrs.add(_style_attr)
+                        consumed_ids.add(id(el))
             continue
         if element in array_owned_tokens:
             continue  # the array arm owns this unit (§3.B4)

@@ -2671,6 +2671,75 @@ def inherit_style_presets() -> frozenset:
     return frozenset(vals)
 
 
+def preset_style_for_element(classes, slug: str | None) -> str | None:
+    """Resolve a button-style preset (``primary``/``secondary``/``outline``) from an
+    element's OWN ``--modifier`` BEM classes.
+
+    The SHARED mechanism behind BOTH the standalone ``sgs/button`` ``inheritStyle``
+    clone (``services/assembly.py`` step 5) AND a composite's nested built-in CTA
+    style attr (``walk.py`` foreign-identity arm, e.g. ``sgs/product-card`` ``ctaStyle``
+    mirroring ``sgs/button``). Factored out so there is ONE implementation (Spec 31
+    §13.5 preset-modifier detection; R-31-9 universal, R-31-1 DB-driven — no attr-name
+    or slug literal). ``inherit_style_presets()`` resolves a direct preset modifier;
+    ``inherit_style_for_modifier()`` resolves the slots alias channel (e.g. ``--ghost``
+    → ``outline``). ``slug`` = the block whose alias vocabulary to consult (the button
+    identity). Returns the resolved preset string, or ``None`` when no modifier resolves
+    — the caller decides the fallback (assembly's ``'custom'`` vs a composite leaving
+    its block default)."""
+    presets = inherit_style_presets()
+    for cls in (classes or []):
+        if not isinstance(cls, str):
+            continue
+        bem = parse_sgs_bem(cls)
+        if bem is None or not bem.modifier:
+            continue
+        mod = bem.modifier.lower()
+        if mod in presets:
+            return mod
+        alias = inherit_style_for_modifier(mod, slug)
+        if alias:
+            return alias
+    return None
+
+
+def style_preset_attrs_for_identity(parent_slug: str, identity_slug: str) -> list[str]:
+    """Return ``parent_slug``'s OWN string style-preset attr(s) that mirror the
+    ``identity_slug`` block's ``inheritStyle`` — i.e. ``role='behaviour'`` string
+    attrs whose ``canonical_slot`` maps (via ``slots.standalone_block``) to
+    ``identity_slug``. e.g. ``('sgs/product-card','sgs/button') -> ['ctaStyle']``.
+
+    Distinct from ``content_attrs_for_identity``/``equivalent_block_for``, which
+    EXCLUDE non-content roles (FR-31-2.2 positive-allowlist) and so never surface a
+    style-preset attr. This uses the SAME ``canonical_slot → standalone_block`` Tier-A
+    map, minus the content-role filter — so the composite nested-CTA mirror
+    (``walk.py`` foreign-identity arm) can find ``ctaStyle`` the way the standalone
+    button finds ``inheritStyle``. DB-driven, no attr-name/slug literal (R-31-1); the
+    caller gates on the identity declaring a string ``inheritStyle`` and resolves the
+    value via ``preset_style_for_element`` (Spec 31 §13.5)."""
+    if not parent_slug or not identity_slug:
+        return []
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, canonical_slot, role, attr_type "
+            "FROM block_attributes WHERE block_slug = ?",
+            (parent_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+    slot_map = _slot_alias_to_standalone()
+    out: list[str] = []
+    for attr_name, canonical_slot, role, attr_type in rows:
+        if (
+            role == "behaviour"
+            and attr_type == "string"
+            and canonical_slot
+            and slot_map.get(canonical_slot.lower()) == identity_slug
+        ):
+            out.append(attr_name)
+    return out
+
+
 @functools.lru_cache(maxsize=256)
 def variation_attrs_for(block_slug: str, variation_name: str) -> dict:
     """Return the full attribute seed for a block variation, or {} if none.
