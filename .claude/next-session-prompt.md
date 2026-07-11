@@ -2,16 +2,32 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 generated: 2026-07-10
-thread: effective-value typography-lift MECHANISM (pipeline robustness) — the general safety net Bean directed
+thread: (A) effective-value typography-lift MECHANISM + (B) scoped-selector-match bug-class audit & gate — both Bean-directed
 ---
 
-# NEXT SESSION — effective-value typography-lift mechanism (`P-EFFECTIVE-VALUE-TYPOGRAPHY-LIFT`)
+# NEXT SESSION — TWO tracks Bean directed: (A) the typography-lift MECHANISM + (B) the multi-button bug-CLASS
 
 Invoke `/autopilot` first. **D303 shipped both fidelity tasks** (residual render-precedence — hero H1 58px
-LANDED; pills; section-heading letter-spacing fixed theme-side). Bean's remaining directive: *"we should
-have a mechanism that can deal with it if necessary."* The pipeline still only lifts EXPLICITLY-declared
-typography — an INHERITED or CSS-initial (`normal`) draft value is never lifted, so any theme default that
-differs silently wins. Build the general mechanism so a clone ALWAYS matches the draft's typography.
+LANDED; pills; section-heading letter-spacing fixed theme-side). Bean directed two follow-ups for this session:
+*"look into the mechanism and investigate the bugs or gaps causing issues like the multi-button issue."*
+
+## Track A — effective-value typography-lift MECHANISM (`P-EFFECTIVE-VALUE-TYPOGRAPHY-LIFT`)
+The pipeline still only lifts EXPLICITLY-declared typography — an INHERITED or CSS-initial (`normal`) draft
+value is never lifted, so any theme default that differs silently wins. Build the general mechanism so a clone
+ALWAYS matches the draft's typography (design in the parking entry). *"We should have a mechanism that can deal
+with it if necessary."*
+
+## Track B — scoped-selector-match bug-CLASS audit + structural gate (`P-SCOPED-SELECTOR-MATCH-AUDIT-AND-GATE`)
+The multi-button regression is a CLASS of bug: a block emits a scoped rule (`.uid.block{…}`) but the element
+doesn't carry `.uid` as a class (uid applied as an `id`, via `extra_attrs.id`, or omitted) → the rule matches
+NOTHING → **silent render no-op, invisible to a GREEN build, masked by presets/theme/wrapper defaults.** Two
+deliverables: (1) roster-wide AUDIT that every block's scoped selectors actually match the rendered element;
+(2) a STRUCTURAL GATE (Rule 10) that catches a scoped rule whose class the element never carries — prefer
+extending the live `scripts/no-inline-land-verify.js` harness (STOP-21: a static check can't prove the class
+lands). Full design in the parking entry.
+
+**Order:** Track B first (it's a correctness/coverage safety net that also de-risks Track A's own scoped
+emissions), then Track A. Both are converter/render-surface work — `/systematic-debugging` + design-gate + `/qc-council`.
 
 ## State recap (plain English)
 `main` pushed @ `83d133aa` (D303 core) + `da58ea48` (snapshot M2) + handoff docs. Build green (440 tests +
