@@ -64,6 +64,31 @@ export const SGS_FONT_STYLE_OPTIONS = [
 	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
 ];
 
+// text-decoration / text-transform enums (match the PHP helper's allowlists in
+// sgs_typography_css_rule — none/underline/line-through/overline and
+// none/uppercase/lowercase/capitalize). '' = inherit (emit nothing).
+export const SGS_TEXT_DECORATION_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
+	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
+	{ label: __( 'Overline', 'sgs-blocks' ), value: 'overline' },
+];
+
+export const SGS_TEXT_TRANSFORM_OPTIONS = [
+	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'UPPERCASE', 'sgs-blocks' ), value: 'uppercase' },
+	{ label: __( 'lowercase', 'sgs-blocks' ), value: 'lowercase' },
+	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
+];
+
+// Units for the letter-spacing UnitControl (px/em; '' clears).
+const LETTER_SPACING_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+];
+
 /**
  * Units available in the font-size UnitControl.
  * Matching the PHP helper's accepted unit set (px/em/rem, stripped to [a-z]).
@@ -118,6 +143,15 @@ export function typographyAttrKeys( prefix ) {
 		fontStyle: typographyAttrName( prefix, 'FontStyle' ),
 		lineHeight: typographyAttrName( prefix, 'LineHeight' ),
 		lineHeightUnit: typographyAttrName( prefix, 'LineHeightUnit' ),
+		textDecoration: typographyAttrName( prefix, 'TextDecoration' ),
+		textTransform: typographyAttrName( prefix, 'TextTransform' ),
+		letterSpacing: typographyAttrName( prefix, 'LetterSpacing' ),
+		letterSpacingUnit: typographyAttrName( prefix, 'LetterSpacingUnit' ),
+		// Hover companions (D309). Consumed only when showHover is enabled AND the
+		// block declares + renders them (else the dead-control gate flags it).
+		fontWeightHover: typographyAttrName( prefix, 'FontWeightHover' ),
+		textDecorationHover: typographyAttrName( prefix, 'TextDecorationHover' ),
+		textTransformHover: typographyAttrName( prefix, 'TextTransformHover' ),
 	};
 }
 
@@ -196,8 +230,22 @@ export default function TypographyControls( {
 	showStyle = true,
 	showLineHeight = true,
 	showResponsive = true,
+	showDecoration = false,
+	showTransform = false,
+	showLetterSpacing = false,
+	showHover = false,
 } ) {
 	const k = typographyAttrKeys( prefix );
+
+	const currentLetterSpacingUnit = attributes[ k.letterSpacingUnit ] || 'px';
+
+	function onLetterSpacingChange( raw ) {
+		const { num, unit } = parseUnitValue( raw, currentLetterSpacingUnit );
+		setAttributes( {
+			[ k.letterSpacing ]: num,
+			[ k.letterSpacingUnit ]: unit,
+		} );
+	}
 
 	// Shared unit across all breakpoints. Default 'px' if unset.
 	const currentFontSizeUnit = attributes[ k.fontSizeUnit ] || 'px';
@@ -308,6 +356,68 @@ export default function TypographyControls( {
 					onChange={ onLineHeightChange }
 					__nextHasNoMarginBottom
 				/>
+			) }
+
+			{ showLetterSpacing && (
+				<UnitControl
+					label={ __( 'Letter spacing', 'sgs-blocks' ) }
+					value={ composeUnitValue(
+						attributes[ k.letterSpacing ],
+						currentLetterSpacingUnit
+					) }
+					units={ LETTER_SPACING_UNITS }
+					onChange={ onLetterSpacingChange }
+					__nextHasNoMarginBottom
+				/>
+			) }
+
+			{ showDecoration && (
+				<SelectControl
+					label={ __( 'Text decoration', 'sgs-blocks' ) }
+					value={ attributes[ k.textDecoration ] || '' }
+					options={ SGS_TEXT_DECORATION_OPTIONS }
+					onChange={ ( val ) => setAttributes( { [ k.textDecoration ]: val } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+
+			{ showTransform && (
+				<SelectControl
+					label={ __( 'Text transform', 'sgs-blocks' ) }
+					value={ attributes[ k.textTransform ] || '' }
+					options={ SGS_TEXT_TRANSFORM_OPTIONS }
+					onChange={ ( val ) => setAttributes( { [ k.textTransform ]: val } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+
+			{ /* Hover typography (D309). Opt-in: only render for a block that
+			     DECLARES + renders the {prop}Hover companions, else the
+			     dead-control gate flags it. */ }
+			{ showHover && (
+				<>
+					<SelectControl
+						label={ __( 'Text decoration (hover)', 'sgs-blocks' ) }
+						value={ attributes[ k.textDecorationHover ] || '' }
+						options={ SGS_TEXT_DECORATION_OPTIONS }
+						onChange={ ( val ) => setAttributes( { [ k.textDecorationHover ]: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Text transform (hover)', 'sgs-blocks' ) }
+						value={ attributes[ k.textTransformHover ] || '' }
+						options={ SGS_TEXT_TRANSFORM_OPTIONS }
+						onChange={ ( val ) => setAttributes( { [ k.textTransformHover ]: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Font weight (hover)', 'sgs-blocks' ) }
+						value={ attributes[ k.fontWeightHover ] || '' }
+						options={ SGS_FONT_WEIGHT_OPTIONS }
+						onChange={ ( val ) => setAttributes( { [ k.fontWeightHover ]: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</>
 			) }
 		</>
 	);

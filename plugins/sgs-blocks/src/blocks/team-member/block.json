@@ -110,38 +110,6 @@
 			"type": "string",
 			"default": "circle"
 		},
-		"sgsHoverBgColour": {
-			"type": "string",
-			"default": ""
-		},
-		"sgsHoverTextColour": {
-			"type": "string",
-			"default": ""
-		},
-		"sgsHoverBorderColour": {
-			"type": "string",
-			"default": ""
-		},
-		"sgsHoverScale": {
-			"type": "number",
-			"default": 0
-		},
-		"sgsHoverShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"sgsHoverDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsHoverImageZoom": {
-			"type": "boolean",
-			"default": false
-		},
-		"sgsHoverGrayscale": {
-			"type": "boolean",
-			"default": false
-		},
 		"sgsBlockLink": {
 			"type": "string",
 			"default": ""

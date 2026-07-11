@@ -328,6 +328,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						showStyle={ true }
 						showLineHeight={ true }
 						showResponsive={ true }
+						showLetterSpacing={ true }
+						showDecoration={ true }
+						showTransform={ true }
 					/>
 
 					{ /* Line height tablet/mobile via ResponsiveControl (TypographyControls
