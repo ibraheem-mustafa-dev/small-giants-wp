@@ -1816,3 +1816,141 @@ Hard iteration-cap and rationalisation-table integration confirmed present in th
 > **P-SCALAR-LIFT-ROLLOUT-LANDED — RESOLVED (D285 same-session, 2026-07-06).** Re-cloned + deployed page 8 (`--deploy-target page:8`); isolated-Playwright verified the live product-card `__price` computes **28px / weight 700** at 375/768/1440 = the draft's exact `__price` typography, lifted by the enabled capability. §7b guards cleared (2 cards present; block has NO default priceFontSize so not coincidental; deployed emit carries explicit `priceFontSize:28`). MOVE to `memory/parking-archive.md` at next `/handoff`. · **Bucket:** Cloning pipeline / fidelity.
 
 > **P-PARITY-DRAFT-TIER-SAMPLING** — found by the D280 close Playwright cross-check (STOP-49 extension). `computed-parity.js` flagged the trust-bar text at 1440 as draft=13px vs clone=14px — but 14px is the CORRECT value (the draft's `@media (min-width:1024px)` tier applies at 1440; the live clone is right). The instrument is reading the draft's BASE tier (13px) instead of the tier that actually applies at the measured viewport width — a false-negative that slightly UNDERSTATES CSS parity (and would mask a real desktop-tier drop). Fix = when rendering/reading the draft at 375/768/1440, resolve the value the applicable `@media` cascade produces at THAT width, matching how the live clone is read. Low blast radius (a handful of responsive typography rows). **Status: RESOLVED-DIFFERENTLY (D281, `aa4e4151`) — the draft-tier-sampling HYPOTHESIS was DISPROVEN by live evidence** (a non-collision trust-bar text read 13→13→14 at 375/768/1440, exactly right). The REAL instrument bug was duplicate-text first-write-wins: "Handmade in Birmingham" is on TWO elements (a 12px section-heading label + the 13/14px trust-bar badge), and the content-keyed collector silently dropped the 2nd occurrence — fixed with occurrence-ordinal keys (`key#N`). Parity 79/80/81→80/81/81. MOVE to `memory/parking-archive.md` at next `/handoff`. · **Bucket:** Tooling / measurement.
+
+
+## Archived 2026-07-11 (D303 sweep — pre-D276 legacy, superseded)
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: variation-d0-d2 pixel-diff; subsumed by kept P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER + chrome-skip D141]**
+**P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner. Gated on Phase 1.5 hitting per-section ≤1% (per `.claude/plans/2026-05-25-phase-1-universal-extraction.md` + `.claude/plans/archive/2026-05-24-phase-2-header-footer-cloner.md`). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile. **PARTIAL 2026-06-01 (D141):** the converter's chrome-skip extension now skips top-level `<header>`/`<footer>`/`<nav>` whose BEM segment is itself chrome — so freshly-cloned pages no longer EMIT the duplicate `<header class="sgs-header">` into page content. Full closure still needs the Phase 2 header/footer cloner (template-part shape).
+**Status:** OPEN
+**Trigger:** Phase 2 kickoff.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: Stage-11 pixel-diff (PURGED 2026-07-04, R-31-4)]**
+**P-INGREDIENTS-1440-REGRESSION-AFTER-INLINE-CSS** — NEW 2026-05-25 (after D70). Stage 11 ingredients-section at 1440px regressed from 31.5% → 53.9% (+22.4pp) post-fix while same section dropped -22pp at 375 and -20pp at 768 (clear net win at the other two viewports). Hypothesis A: a desktop rule in variation-d0-d2.css overrides framework defaults at 1440 with a partial cascade conflict. Hypothesis B: screenshot-timing — page wasn't fully painted when Playwright captured. Hypothesis C: a desktop-specific rule in variation CSS doesn't match the live DOM shape exactly. **Trigger:** trace investigation — pixel-diff/section.sgs-ingredients-1440x900/diff.json + mockup.png + sgs.png + heatmap.png in run mamas-munches-homepage-2026-05-25-060541. Re-run /sgs-clone to rule out timing artefact first.
+**Status:** OPEN
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: Step-1.6 G1; superseded by D276 universal walker]**
+**P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES** — NEW 2026-05-24 (scoped narrow). Step 1.6 (G1 closure) ships OPEN-block emit for `sgs/hero` only this phase, plus FR1 branch-(b) pattern-reference emission in Step 1.5. All other composite blocks (info-box, product-card, card-grid, etc.) continue to emit self-closing. **Why scoped narrow:** no DB column today cleanly identifies "container-shaped composite block" — `blocks.parent_block`, `block_supports`, `patterns.block_composition`, `block_attributes.output_signature` each describe partial facets but none excludes info-box / product-card from a "container-outer + InnerBlocks" definition. Investigated candidates: (a) add `is_pattern_shaped` boolean to `blocks`, hand-curated; (b) new `/sgs-update` stage that static-analyses each `render.php` for `<InnerBlocks />` inside an outer container element; (c) manual `block.json` annotation under `supports.sgs.containerShaped: true`.
+**Status:** DEFERRED
+**Trigger:** After Phase 1 ships AND Stage 11 per-section pixel-diff results show empirical evidence of WHICH other composite blocks visibly need OPEN-block emit from body sections emitting self-closing today.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: match.json/confidence_matrix Stage-2 gate; convert.py DELETED D276]**
+**P-MATCH-JSON-GATE-REDEFINITION** — NEW 2026-05-24 (KJC required). The Phase 1 plan Step 1.7 gate condition (c) says "match.json shows 0 of the 5 originally-falling-through body sections still emitting sgs/container at confidence < 0.5". This gate is structurally impossible to meet with a Stage 4 walker pre-pass alone — match.json is produced by Stage 2 confidence_matrix, which runs before Stage 4. Three options: (A) redefine gate to use leftover-buckets `unrecognised_section` count (already at 0 post commit `124e1d06` — cheapest, factually correct); (B) add post-Stage-4 confidence refinement pass that infers confidence from block_markup; (C) update Stage 2 confidence_matrix to query DB child-block presence for unregistered section slugs.
+**Status:** DEFERRED
+**Trigger:** Bean decision needed before Step 1.7 QA gate evaluation. Present options A/B/C at that session start — Option A is recommended (cheapest, factually correct).
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: convert.py:124e1d06 pixel-diff; DELETED D276]**
+**P-WALKER-PREPASS-REGRESSION-TRIAGE** — HIGH — blocks Step 1.7 closure. Commit `124e1d06` causes visual regressions in featured-product (375: +53.2pp, 768: +34.7pp) and ingredients-section (all viewports: +23.6 to +33.8pp) while improving brand (-6 to -28.7pp) and gift-section (-12 to -31.9pp). Root cause: the pre-pass guard correctly prevented `composite_element` from claiming BEM-element wrappers as `sgs/text` — but the structurally correct output (individual blocks) renders further from the mockup visually because per-block CSS hasn't been lifted yet (Step 1.7.5).
+**Status:** OPEN
+**Bean decision (pick one, ~2 min):**
+1. **Proceed to Step 1.7.5** _(recommended)_ — accept regressions as structural correctness; Steps 1.7.5+1.7.6 CSS lift will close them. Net direction is right.
+2. **Revert `124e1d06`** — safer if Steps 1.7.5/1.7.6 are delayed >1 session; keeps the baseline clean at the cost of re-landing the pre-pass commit later.
+3. **CSS-lift first** — add CSS-lift for the regressing sections before Step 1.7 is closed; most thorough but adds ~1-2 hrs before the gate clears.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: convert.py:3013; DELETED D276]**
+**P-G2-PAGE-ID-SCOPE-STRIP** — PARTIAL-RESOLVED 2026-05-23 (Wave B2). Original hypothesis (scope-prefix blocks cv2 lookup) is CLOSED: Playwright confirmed 0 `.page-id-N` scoped rules detected at the live render; the scope-strip at convert.py:3013-3015 is working. NEW finding: trust-bar emits empty `value` slot + label carrying all text → visual duplication artefact. **Closure path for the residual:** rolled into P-WAVE-2-RESHAPE — `slot_list.py` querying `property_suffixes` for non-text slots resolves this universal-extraction gap.
+**Status:** PARTIAL
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: cv2 Wave-2; superseded by D276 modular rebuild]**
+**P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — G1 + G3 + G5 reframed as ONE wiring gap, not three separate problems. The SGS-framework.db has all the mapping data needed (`property_suffixes` 117 rows, `slot_synonyms` 89 rows, `block_attributes` 1755 rows, `modifier_suffixes` 19 rows, plus pattern composition data on `patterns.block_composition` JSON column) but cv2 doesn't query all of it consistently. Wave 2 = one architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. See decisions.md Decision 26. **Trigger:** Wave 2 of next session.
+**Status:** OPEN
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: convert.py line-refs; DELETED D276]**
+**P-FR1-VARIATION-BUF-CONSISTENCY** — PARTIAL-RESOLVED 2026-05-22 commit `8ceb8787` (Wave 2 Change 1) for the FR1 fast path (block-root branch, `convert.py:3839-3867`). **/qc-council 2026-05-23 found two sibling call-sites with the same pattern still open:** (a) **essence-match tier** at `convert.py:3926` — lifts then returns at `3936-3937` without `variation_buf.append`; (b) **composite-element-to-standalone-block** at `convert.py:3970` — lifts then returns at `3990-3991` without `variation_buf.append`. Same one-line fix applies to both. **Trigger:** Task 4 Wave 2 reshape — pair with G1+G3+G5 wiring fix. ~10 min for the two sibling sites once Wave 2 starts.
+**Status:** PARTIAL
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: mostly resolved eaa226f0; residual re deleted mechanisms]**
+**P-CLONING-PIPELINE-FLOW-DOC-DRIFT** — 2026-05-21 reality check found that the entry-point chain "verified 2026-05-13" predates the 2026-05-20 architectural rewrite (`css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` added but ASCII chain not refreshed). Plus G2 Step 1+2 changes (orchestrator-side CSS merge into `_section_css` + cv2 scope strip) aren't documented yet. **UPDATE 2026-06-07:** the ASCII-chain/historical-framing complaint was resolved by `eaa226f0` (2026-06-07); remaining = add the G2 Step 1+2 (`affca3f1`: `_section_css` merge + cv2 scope-strip) section to cloning-pipeline-flow.md.
+**Status:** PARTIAL (ASCII-chain/historical-framing resolved `eaa226f0`; remaining = add the G2 Step 1+2 `affca3f1` section to cloning-pipeline-flow.md)
+**Trigger:** Before the next architectural pipeline change that modifies the stage boundary or script chain. G2 Step 1+2 changes (commit `affca3f1`) are the immediate outstanding update.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: cv2 page-144 pixel-diff; new engine emits hero InnerBlocks; convert.py/pixel-diff gone]**
+**P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **STATUS: Phase 3 infrastructure shipped (`79158da5`) but live-page-144 end-to-end verification PENDING — that is the actual closure step.** Decision 12 adds adjacent-slot grouping; hero CTAs should emit as nested InnerBlocks via `blocks.parent_block` lookup, but no Playwright run on the live URL has confirmed the CTAs render.
+**Status:** OPEN
+**Trigger:** Before next pixel-diff session on hero (~15 min Playwright verification run on page 144). Pair with P-G3-STAGE-3-VISUAL-SLOT-MAPPING in the same run.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: cv2 Stage-3 slot_list page-144; superseded by D276 walker]**
+**P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. **STATUS: Phase 3 + Phase 6 infrastructure shipped (`79158da5` + `d307c8b0`) but live-page-144 end-to-end verification PENDING — that is the actual closure step.** Decision 12's `_lift_inner_blocks` rewrite reads `slot_synonyms.standalone_block` via `db.standalone_block_for()`; Phase 6 backfills `block_supports` gaps that expose visual slot controls. No live verification has confirmed visual slots now resolve.
+**Status:** OPEN
+**Trigger:** Same Playwright run as P-G1-HERO-INNERBLOCKS (page 144, before next pixel-diff session). Pair both verifications in one 15-min run to amortise overhead.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: pixel-diff.py GONE (verified)]**
+**P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **PARTIAL-RESOLVED 2026-05-28** by Spec 22 Phase 0.3 work on `scripts/pixel-diff.py`: chrome-detect (`#wpadminbar` + first `header.wp-block-template-part`) + chrome-hide (`visibility:hidden` pre-screenshot, only on `is_sgs=True` captures of sticky/fixed chrome) + new `--wait-fonts` flag. Empirical: hero-clone-poc 1440 54.5% → 10.3% (-44.2pp); Mama's hero 1440 69.6% → 60.8% (-8.8pp). Most non-chrome-affected cells unchanged. Trust-bar / brand-1440 / hero-768 / hero-375 dimensions baseline unchanged.
+**Status:** PARTIAL — closed for sticky template-part-header overlay (the primary 60px chrome bleed). Residual: cv2-emitted `<header class="sgs-header">` body content is NOT hidden (correctly — it's part of the comparison surface, gated on `.wp-block-template-part` class check). **Note (D88 2026-05-27 — /qc-council Task 5 Rater A correction):** Mama's brand-375 +2.4pp shift (53.2% → 55.6%) is NOT flake — three byte-identical-PNG re-runs confirmed determinism. It's a REAL methodology shift from the 83px sticky-chrome hide at 375. Implication: every chrome-affected Mama's cell partially-stale on 2026-05-26 mean 63.0% baseline; Wave B (2026-05-27) re-capture confirmed at full-page scale: new baseline `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` overall mean 62.99% → 58.91% (-4.08pp); Spec 22 body cells aggregate 57.83% → 57.14%. Hero 1440 -8.8pp confirmed. brand-375 +2.4pp persists (0 chrome detected on this cell; wait_fonts=true; effect is wait_fonts-stabilisation not chrome-hide — net honest, not regressed). 23/23 captured cells had chrome-detected + wait_fonts=true telemetry. 2 footer captures failed (Wave B halted reporting per brief threshold; main session accepted per D88 context). Phase 1.5 stretch goal owns any further measurement-script tuning.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: cv2-era per-block pixel-diff mismatches; superseded by D276]**
+**P-G5-PER-BLOCK-DOM-SHAPE-FIXES** — Per-block mismatches between mockup and render output:
+
+- brand-strip: mockup `<blockquote>` vs render `<section>`
+- testimonial-slider: mockup 3-col static grid vs render single-card carousel (needs Block Style Variation `displayMode: grid` via P2.iii infrastructure)
+- trust-bar: mockup `__badge` + `__text` + inline SVG vs render `__item` + `__label` + Lucide slugs
+**Trigger:** Wave 3 of next session (G5), parallel subagents per block.
+**Status:** OPEN
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: convert.py:_load_d1; DELETED D276]**
+**P-F5-D1-MEDIA-FIELD-RESPONSIVE-FLOW** — D1 sidecar preserves `media` field but reader at `convert.py:_load_d1_assignments` only merges base values. Responsive variants (`@media (min-width: 1024px)` → `Desktop` attr) never flow. Hero 375 mobile +13.3pt regression from this. Fix: map media-condition → breakpoint slug → responsive-variant-attr name. **Trigger:** Wave 3 of next session (F5), parallel with G5.
+**Status:** OPEN
+
+
+**P-P1Bx-COMMA-MEDIA-INNER** — P1.B.x's `_scope_media_rule()` only scopes the first part of comma-grouped inner selectors. `@media (...) { .sgs-hero, .sgs-cta { ... } }` produces `.page-id-144 .sgs-hero, .sgs-cta { ... }` — `.sgs-cta` left unscoped. Low-frequency edge case. **Trigger:** next css_router maintenance pass.
+**Status:** OPEN
+
+
+**P-P1Bx-NESTED-SUPPORTS** — Nested `@supports` inside `@media` produces invalid CSS. Recurse the scope-injection OR pass through unchanged. Low-frequency. **Trigger:** next css_router maintenance pass.
+**Status:** OPEN
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: cv2 essence_match path gone (D276)]**
+**P-P2III-ESSENCE-MATCH-TIER-GATE** — `essence_match_variation` tier in cv2 walker only fires when `target == "sgs/container"`. Theoretical edge case: an existing-but-stub block at slug X with a sibling concept Y wouldn't trigger the variation tier. Low-priority. **Trigger:** first real-world variation-detection run.
+**Status:** DEFERRED
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: RESOLVED — tools/recogniser-v2 verified GONE]**
+**P-LEGACY-FILES-PHYSICAL-DELETION** — `tools/recogniser-v2/extract.py` + `extract_strategies.py` + `overrides/hero.py` (1942 LOC) remain on disk; unreachable from orchestrator. Physical deletion deferred until universal extraction handles hero via D1/D3 (no per-block legacy).
+**Status:** OPEN
+**Trigger:** Phase 1 G5 (per-block DOM-shape fixes) verification PASSES on hero universal-handling at all 3 viewports. "Wave 3" in earlier entry text = current Phase 1 G5 wave.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: author-noted N/A after Wave-2b revert]**
+**P-TEST-POLLUTION-HYGIENE** — `test_licensed_in_description_rejected` fails after `test_staged_merge` (now N/A after Wave 2b revert, but underlying state-leak pattern likely affects other cross-file runs).
+**Status:** DEFERRED
+**Trigger:** Revisit on first cross-file pytest ordering failure. No active failure observed since Wave 2b revert.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: old-engine doc-followups; Spec 16 archived]**
+**P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks. **UPDATE 2026-06-07:** FR36/FR37/FR40 §12.9 sub-item DROPPED — Spec 16 archived → moot. Keep the flow-doc + stages-doc update items.
+**Status:** OPEN (flow-doc + stages-doc updates remain; FR36/FR37/FR40 dropped — Spec 16 archived)
+**Trigger:** Next doc-op session specifically targeting cloning-pipeline-flow.md. "Phase 4" in the original trigger = `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — check that plan's scope before opening this entry.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: pixel-diff PURGED (verified gone)]**
+### P-PIXEL-DIFF-PER-SECTION-NOISE-FLOOR — confirm ±2pp variability (~30 min)
+**Status:** OPEN
+
+
+**What:** XS-8/9/10 measurement run (2026-05-30) showed sgs-social-proof pixel-diff moved +2.04pp despite block_markup being byte-identical pre/post (verified). This indicates inherent per-section pixel-diff variability of ~±2pp from font rendering / screenshot timing / browser state. Need to formalise this noise floor so future fix-cycles correctly attribute small per-section deltas.
+
+**Fix shape:**
+1. Run /sgs-clone 3-5 times on identical code state
+2. Compute per-section pixel-diff variance across runs
+3. Document the ±N noise floor in .claude/specs/21-PIPELINE-STATE-ARTEFACTS.md Stage 11 section
+4. Update diagnostic register methodology: per-section deltas within noise floor are reported as "no significant change" not "improvement/regression"
+
+**Trigger:** Before Wave 4 (XS-3) measurement cycle, since wrapper-slot fixes are predicted to produce per-section deltas large enough to need noise floor calibration to distinguish signal from variance.
+
+> **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: pixel-diff PURGED (verified gone)]**
+### P-MEASUREMENT-CONTEXT-PARITY — Pixel-diff baseline has 30%+ wrapper-context noise floor
+**Status:** OPEN
+
+
+**What:** Brand pixel diff stayed at ~36/13/39% across multiple variations even after universal lift + Path B (sgs/media + sgs/text) + naked-img figure removal + real image upload. Root cause is NOT converter quality — it's wrapper-context noise in the measurement.
+
+**Evidence (2026-05-17):** `.sgs-brand` crop dimensions at 1440 viewport:
+- post 66 (mockup baseline): 780 × 791
+- post 65 (SGS converter output): 1000 × 705
+
+Different DOM wrapper contexts: post 66 is plain mockup HTML inside WP content area; post 65 has SGS sgs/container parent applying its own padding/max-width. The 30%+ floor cannot be closed without rendering both sides in identical contexts.
+
+**Approach options:**
+1. **Standalone-page renderer** — both mockup and converter output rendered as bare HTML pages (no WP theme chrome), pixel-diff between those. New infrastructure (~2-4 hrs).
+2. **Identical-wrapper mode** — modify post 66 to wrap mockup HTML in the same SGS-container DOM as post 65. Brittle; depends on the section-shape Bean is cloning. (~1 hr).
+3. **Reduced-noise selector** — pixel-diff a finer-grained selector (e.g. just `.sgs-brand__image` element) rather than the whole section. Eliminates wrapper noise but loses cross-element context.
+
+**Trigger:** Next brand+hero walkdown session OR when Bean reviews the 2026-05-17 close.
+
+Captured: 2026-05-17.
