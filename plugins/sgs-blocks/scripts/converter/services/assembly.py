@@ -132,6 +132,24 @@ def build_block_markup(
                 if _node_tag in _ti_allowed:
                     attrs.setdefault(_ti_attr, _node_tag)
 
+    # step 3a3: text-wrap fidelity (D305). The theme applies `text-wrap: balance`
+    # to ALL headings (core-blocks-critical.css `h1..h6`) — a deliberate
+    # enhancement for AUTHORED content. A CLONED heading must instead render the
+    # DRAFT's EFFECTIVE text-wrap: the declared value, else the CSS-initial `wrap`
+    # (greedy), which overrides the theme so the clone matches the draft's line
+    # breaks (proven live: a balanced hero H1 wrapped "Made for" instead of the
+    # draft's "Made for the"). Gated on the block DECLARING a `textWrap` attr
+    # (DB-driven — only sgs/heading does, so this is inert on every other block),
+    # so it is universal and carve-out-free (R-31-9). FR-31-5.1 (absent → CSS
+    # initial) + the step-3a2 tag-identity / step-3b layout-trigger precedent
+    # (DB-gated attr declaration + node-structural CSS signal, no slug literal).
+    # An AUTHORED heading leaves textWrap empty → inherits the theme's balance.
+    if rec.slug is not None and "textWrap" in db_lookup.block_attrs(rec.slug):
+        _eff_wrap = collect_css_decls_for_element(section_root, _css_rules)[0].get(
+            "text-wrap", "wrap"
+        )
+        attrs.setdefault("textWrap", _eff_wrap)
+
     # step 3b: §2.3 ARRANGEMENT layout trigger. A container whose OWN CSS is
     # display:grid / display:flex must emit the `layout` attr — the wrapper renders
     # display:grid ONLY when 'grid'===$layout (class-sgs-container-wrapper.php:490);
