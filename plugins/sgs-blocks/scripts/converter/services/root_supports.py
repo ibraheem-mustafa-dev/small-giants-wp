@@ -441,6 +441,22 @@ def lift_root_supports_to_style(
             raw = strip_important(base_decls[css_prop])
             if kind == "colour":
                 v = _colour_value_to_style(raw)
+                # D306 — WP-core style-engine gap (verified WP 7.0.1,
+                # class-wp-style-engine.php:128): the SHORTHAND `border.color`
+                # definition carries no `css_vars` map (unlike `color.background`,
+                # `color.text`, and the per-side `border.{top,right,bottom,left}`),
+                # so wp_style_engine_get_styles() cannot resolve a
+                # `var:preset|color|SLUG` value for border-color and SILENTLY drops
+                # it — the whole "black border" family. Emit border-color as a
+                # DIRECT CSS var, which the engine serialises verbatim as a literal.
+                # Universal across every __experimentalBorder block (no carve-out);
+                # width/style/radius are unaffected (they are not colour-kind).
+                if (
+                    v is not None
+                    and style_path == ["border", "color"]
+                    and v.startswith("var:preset|color|")
+                ):
+                    v = "var(--wp--preset--color--" + v.rsplit("|", 1)[1] + ")"
             else:
                 v = _preserve_unit(raw)
             if v is not None:

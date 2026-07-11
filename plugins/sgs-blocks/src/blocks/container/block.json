@@ -224,7 +224,7 @@
 		},
 		"verticalAlign": {
 			"type": "string",
-			"default": "start"
+			"default": ""
 		},
 		"shapeDividerTop": {
 			"type": "string",

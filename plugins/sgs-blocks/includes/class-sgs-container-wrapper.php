@@ -200,10 +200,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// WS-A dual-key fallback (2026-06-12): read EITHER align attr name —
 			// `verticalAlign` (container/hero/cta/trust-bar) or `alignItems` (grid-
 			// mirror blocks: feature-grid/card-grid/gallery). verticalAlign wins when
-			// both set (back-compat); default stays `start` (NOT flipped). Universal
-			// bridge that paints a block's emitted align value, fixing IN-C without an
-			// 8-block rename or client re-save.
-			$vertical_align = $attributes['verticalAlign'] ?? $attributes['alignItems'] ?? 'start';
+			// both set (back-compat). Default flipped `start`→'' (D306, 2026-07-11):
+			// a blank align falls to the CSS-initial `stretch` (see the guards below),
+			// so a cloned grid/flex with NO draft `align-items` renders equal-height
+			// columns like the draft (FR-31-5.1 absent→initial). The injected `start`
+			// default was the cause of unequal product/gift cards + the brand button
+			// not stretching full-width. Blast-radius verified: on page 8 every
+			// container relying on the old `start` default wants `stretch`.
+			$vertical_align = $attributes['verticalAlign'] ?? $attributes['alignItems'] ?? '';
 
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
