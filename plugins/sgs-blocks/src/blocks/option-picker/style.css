@@ -90,6 +90,7 @@
 /* ── Pill base ─────────────────────────────────────────────────────── */
 
 .sgs-option-picker__pill {
+	position: relative; /* anchor for the absolutely-positioned selection tick (::before) */
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -103,14 +104,12 @@
 	line-height: 1;
 	white-space: nowrap;
 	/*
-	 * Fix 1 (WCAG): reserve space for the selection-tick indicator so the pill
-	 * width never changes when selected — no layout shift.
-	 * The ::after pseudo-element draws the tick; it is always present but
-	 * transparent when unchecked, visible when checked (via the sibling rule below).
-	 * The extra left padding + gap to the tick use the same value so text stays
-	 * visually centred on hover/unselected states.
+	 * WCAG selection tick: the ::before tick is ABSOLUTELY positioned (see below),
+	 * so it is OUT OF FLOW — an unselected pill reserves NO tick space and matches
+	 * the draft's tight pill width, and revealing the tick on :checked causes NO
+	 * layout shift (the pill width is identical selected/unselected). Bean-directed
+	 * 2026-07-11 (page-8 discrepancy programme): draft pills reserve no tick space.
 	 */
-	gap: 0.3em;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
 	            color            var(--wp--custom--transition--fast, 0.15s ease),
 	            border-color     var(--wp--custom--transition--fast, 0.15s ease),
@@ -128,13 +127,14 @@
  */
 .sgs-option-picker__pill::before {
 	content: "";
-	display: inline-block;
+	position: absolute;          /* out of flow — reserves no width; no shift on select */
+	left: 0.7em;                 /* sits in the pill's left padding; centred text unaffected */
+	top: 50%;
 	width:  0.5em;
 	height: 0.28em;
 	border-left:  0.12em solid transparent;
 	border-bottom: 0.12em solid transparent;
-	transform: rotate(-45deg) translateY(-0.06em);
-	flex-shrink: 0;
+	transform: translateY(-70%) rotate(-45deg);
 	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
 }
 

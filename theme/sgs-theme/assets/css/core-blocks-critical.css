@@ -31,6 +31,38 @@ img {
 	display: block;
 }
 
+/* Flow-content margin reset — text/flow elements start with NO default margin;
+   all spacing is controlled explicitly by block attributes + container gaps.
+   This reproduces the `*{margin:0}` reset that SGS-BEM drafts author (paired
+   with the box-sizing reset above), which the cloning pipeline must reflect —
+   without it, cloned <p>/<h*>/<blockquote> leak the browser's default margins
+   the draft switched off, so cloned text spacing runs too large (page-8
+   discrepancy programme Fix 3, Bean-approved 2026-07-11).
+
+   WRAPPED IN @layer reset (Bean-requested research, 2 researchers + WP core
+   evidence — gutenberg#53717): a BARE `p{margin:0}` element selector (0,0,1)
+   OVERRIDES WordPress's block-gap rule `:where(.is-layout-flow) > *` (0,0,0),
+   collapsing the spacing between plain paragraphs/headings on hand-built pages
+   (a documented WP regression). @layer demotes this reset BELOW all unlayered
+   author CSS, so it YIELDS to WP's block-gap AND to WP block-library class
+   rules AND to any SGS block's own scoped/inline margin — while still beating
+   the UA default (author origin always beats UA regardless of layer). Net:
+   cloned non-flow text (info-box, brand) loses its leaked UA margins; WP's
+   block-gap on authored flow content is untouched. Lists (ul/ol) excluded —
+   zeroing their padding breaks bullet indentation; no list defect reported. */
+@layer reset {
+	p,
+	h1, h2, h3, h4, h5, h6,
+	blockquote,
+	figure,
+	figcaption,
+	dl,
+	dd,
+	pre {
+		margin: 0;
+	}
+}
+
 /* Universal reduced-motion rule (WP/MDN canonical pattern, ref:
    wordpress.org/support accessibility guidance, MDN media query docs).
    Replaces piecemeal per-block reduced-motion rules. */

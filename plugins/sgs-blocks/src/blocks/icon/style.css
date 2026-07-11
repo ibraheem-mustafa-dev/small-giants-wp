@@ -33,6 +33,16 @@
 	height: var(--sgs-icon-size, 32px);
 }
 
+/* Emoji glyph — sized by the SAME --sgs-icon-size custom property that drives
+   the SVG/Lucide box (a plain <span>, so it needs an explicit font-size or it
+   renders at the inherited base ~16px inside a correctly-sized box). Universal:
+   every emoji icon now honours iconSize. Fixed 2026-07-11 (page-8 discrepancy
+   programme Fix 1 — the ingredient-education emojis rendered 16px in a 32px box). */
+.sgs-icon__emoji {
+	font-size: var(--sgs-icon-size, 32px);
+	line-height: 1;
+}
+
 /* SVG container — fills the root */
 .sgs-icon__svg {
 	display: inline-flex;
