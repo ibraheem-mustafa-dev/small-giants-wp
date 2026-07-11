@@ -1,0 +1,1643 @@
+{
+ "pageId": 1356,
+ "blocks": [
+  {
+   "slug": "sgs/button",
+   "rootSelector": ".wp-block-sgs-button",
+   "attrs": {
+    "text": "Buy now",
+    "url": "#",
+    "style": {
+     "color": {
+      "background": "#123456",
+      "text": "#ffffff"
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/container",
+   "rootSelector": ".wp-block-sgs-container",
+   "attrs": {
+    "style": {
+     "color": {
+      "background": "#abcdef"
+     },
+     "typography": {
+      "fontSize": "21px"
+     },
+     "border": {
+      "color": "#654321",
+      "width": "3px",
+      "style": "solid"
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/business-info",
+   "rootSelector": ".wp-block-sgs-business-info",
+   "attrs": {
+    "displayType": "hours",
+    "style": {
+     "typography": {
+      "fontSize": "19px"
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/social-icons",
+   "rootSelector": ".wp-block-sgs-social-icons",
+   "attrs": {
+    "icons": [
+     {
+      "platform": "facebook",
+      "url": "https://facebook.com"
+     }
+    ],
+    "style": {
+     "typography": {
+      "textAlign": "center"
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/star-rating",
+   "rootSelector": ".wp-block-sgs-star-rating",
+   "attrs": {
+    "rating": 4,
+    "label": "Rated 4 of 5",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/breadcrumbs",
+   "rootSelector": ".wp-block-sgs-breadcrumbs",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/counter",
+   "rootSelector": ".wp-block-sgs-counter",
+   "attrs": {
+    "number": 1234,
+    "label": "Happy clients",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "4px",
+       "topRight": "12px",
+       "bottomRight": "8px",
+       "bottomLeft": "20px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "10px",
+     "bottomRight": "6px",
+     "bottomLeft": "16px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "8px",
+     "bottomRight": "4px",
+     "bottomLeft": "12px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/whatsapp-cta",
+   "rootSelector": ".wp-block-sgs-whatsapp-cta",
+   "attrs": {
+    "phoneNumber": "441234567890",
+    "label": "Chat on WhatsApp",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "4px",
+       "topRight": "12px",
+       "bottomRight": "8px",
+       "bottomLeft": "20px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "10px",
+     "bottomRight": "6px",
+     "bottomLeft": "16px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "8px",
+     "bottomRight": "4px",
+     "bottomLeft": "12px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/icon",
+   "rootSelector": ".wp-block-sgs-icon",
+   "attrs": {
+    "iconSource": "lucide",
+    "iconName": "star",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/label",
+   "rootSelector": ".wp-block-sgs-label",
+   "attrs": {
+    "text": "Our signature",
+    "className": "is-style-pill-fill",
+    "padding": {
+     "top": "5px",
+     "right": "17px",
+     "bottom": "9px",
+     "left": "23px"
+    },
+    "borderRadius": 8,
+    "style": {
+     "spacing": {
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/heading",
+   "rootSelector": ".wp-block-sgs-heading",
+   "attrs": {
+    "content": "Section One",
+    "level": "h2"
+   }
+  },
+  {
+   "slug": "sgs/collapsible-text",
+   "rootSelector": ".wp-block-sgs-collapsible-text",
+   "attrs": {
+    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "collapsible": false,
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/table-of-contents",
+   "rootSelector": ".wp-block-sgs-table-of-contents",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "7px",
+       "topRight": "13px",
+       "bottomRight": "25px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "6px",
+     "bottomRight": "12px",
+     "bottomLeft": "9px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "4px",
+     "bottomRight": "8px",
+     "bottomLeft": "6px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/countdown-timer",
+   "rootSelector": ".wp-block-sgs-countdown-timer",
+   "attrs": {
+    "evergreenMode": true,
+    "evergreenHours": 24,
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "7px",
+       "topRight": "13px",
+       "bottomRight": "25px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "6px",
+     "bottomRight": "12px",
+     "bottomLeft": "9px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "4px",
+     "bottomRight": "8px",
+     "bottomLeft": "6px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/decorative-image",
+   "rootSelector": ".sgs-decorative-image",
+   "attrs": {
+    "imageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2024/01/placeholder.png",
+    "positionX": 40,
+    "positionY": 30,
+    "width": 180,
+    "opacity": 0.8,
+    "rotation": 6
+   }
+  },
+  {
+   "slug": "sgs/icon-list",
+   "rootSelector": ".wp-block-sgs-icon-list",
+   "attrs": {
+    "items": [
+     {
+      "text": "Fresh ingredients",
+      "iconSource": "lucide",
+      "iconName": "check"
+     },
+     {
+      "text": "Fast delivery",
+      "iconSource": "lucide",
+      "iconName": "truck"
+     }
+    ],
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "7px",
+       "topRight": "13px",
+       "bottomRight": "25px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "borderWidth": {
+     "top": "2px",
+     "right": "4px",
+     "bottom": "2px",
+     "left": "4px"
+    },
+    "borderStyle": "solid",
+    "borderColour": "#333333",
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "6px",
+     "bottomRight": "12px",
+     "bottomLeft": "9px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "4px",
+     "bottomRight": "8px",
+     "bottomLeft": "6px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/brand-strip",
+   "rootSelector": ".wp-block-sgs-brand-strip",
+   "attrs": {
+    "logos": [
+     {
+      "name": "Brand A",
+      "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2024/01/a.png"
+     },
+     {
+      "name": "Brand B",
+      "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2024/01/b.png"
+     }
+    ],
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "7px",
+       "topRight": "13px",
+       "bottomRight": "25px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "6px",
+     "bottomRight": "12px",
+     "bottomLeft": "9px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "4px",
+     "bottomRight": "8px",
+     "bottomLeft": "6px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/timeline",
+   "rootSelector": ".sgs-timeline",
+   "attrs": {
+    "entries": [
+     {
+      "title": "Founded",
+      "date": "2010",
+      "description": "The beginning."
+     },
+     {
+      "title": "Grew",
+      "date": "2015",
+      "description": "Expansion."
+     }
+    ],
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "7px",
+       "topRight": "13px",
+       "bottomRight": "25px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "borderWidth": {
+     "top": "2px",
+     "right": "4px",
+     "bottom": "2px",
+     "left": "4px"
+    },
+    "borderStyle": "solid",
+    "borderColour": "#333333",
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    },
+    "borderRadiusTablet": {
+     "topLeft": "3px",
+     "topRight": "6px",
+     "bottomRight": "12px",
+     "bottomLeft": "9px"
+    },
+    "borderRadiusMobile": {
+     "topLeft": "2px",
+     "topRight": "4px",
+     "bottomRight": "8px",
+     "bottomLeft": "6px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/process-steps",
+   "rootSelector": ".sgs-process-steps",
+   "attrs": {
+    "steps": [
+     {
+      "title": "Choose",
+      "description": "Pick your box."
+     },
+     {
+      "title": "Cook",
+      "description": "Follow the card."
+     }
+    ],
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "borderWidth": {
+     "top": "2px",
+     "right": "4px",
+     "bottom": "2px",
+     "left": "4px"
+    },
+    "borderStyle": "solid",
+    "borderColour": "#333333",
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    },
+    "marginTablet": {
+     "top": "8px",
+     "right": "2px",
+     "bottom": "4px",
+     "left": "12px"
+    },
+    "marginMobile": {
+     "top": "6px",
+     "right": "2px",
+     "bottom": "2px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/mega-menu",
+   "rootSelector": ".sgs-mega-menu",
+   "attrs": {
+    "label": "Menu",
+    "url": "#"
+   }
+  },
+  {
+   "slug": "sgs/mobile-nav",
+   "rootSelector": "#sgs-mobile-nav",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/audio",
+   "rootSelector": ".wp-block-sgs-audio",
+   "attrs": {
+    "audioUrl": "https://example.com/sample.mp3",
+    "playerStyle": "minimal",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/responsive-logo",
+   "rootSelector": ".wp-block-sgs-responsive-logo",
+   "attrs": {
+    "width": 240,
+    "linkToHome": true,
+    "alt": "Logo",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/mobile-nav-toggle",
+   "rootSelector": ".wp-block-sgs-mobile-nav-toggle",
+   "attrs": {
+    "iconSize": 24,
+    "ariaLabel": "Open navigation",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "color": {
+      "text": "#333333"
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/product-search",
+   "rootSelector": ".wp-block-sgs-product-search",
+   "attrs": {
+    "displayMode": "inline",
+    "placeholder": "Search products",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/modal",
+   "rootSelector": ".wp-block-sgs-modal",
+   "attrs": {
+    "triggerText": "Open Modal",
+    "maxWidth": "medium",
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/multi-button",
+   "rootSelector": ".wp-block-sgs-multi-button",
+   "attrs": {
+    "direction": "row",
+    "gap": "12px",
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/accordion-item",
+   "rootSelector": ".wp-block-sgs-accordion-item",
+   "attrs": {
+    "title": "What is this?",
+    "isOpen": false,
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/tab",
+   "rootSelector": ".wp-block-sgs-tab",
+   "attrs": {
+    "label": "Tab 1",
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/form-field-tiles",
+   "rootSelector": ".sgs-form-field--tiles",
+   "attrs": {
+    "fieldName": "test_tiles",
+    "label": "Choose one",
+    "columns": 2,
+    "tiles": [
+     {
+      "label": "Option A",
+      "value": "opt_a",
+      "icon": "check",
+      "iconSource": "lucide"
+     },
+     {
+      "label": "Option B",
+      "value": "opt_b",
+      "icon": "star",
+      "iconSource": "lucide"
+     }
+    ],
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/product-faq-item",
+   "rootSelector": ".sgs-product-faq-item",
+   "attrs": {
+    "question": "What are the ingredients?",
+    "isOpen": false,
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/google-reviews",
+   "rootSelector": ".wp-block-sgs-google-reviews",
+   "attrs": {
+    "variant": "grid",
+    "columns": 3,
+    "columnsTablet": 2,
+    "columnsMobile": 1,
+    "showAggregate": true,
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/trustpilot-reviews",
+   "rootSelector": ".wp-block-sgs-trustpilot-reviews",
+   "attrs": {
+    "variant": "carousel",
+    "dataSource": "placeholder",
+    "columns": 3,
+    "columnsTablet": 2,
+    "columnsMobile": 1,
+    "showSourceHeader": true,
+    "style": {
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/accordion",
+   "rootSelector": ".wp-block-sgs-accordion",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/content-collection",
+   "rootSelector": ".wp-block-sgs-content-collection",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/gallery",
+   "rootSelector": ".wp-block-sgs-gallery",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/post-grid",
+   "rootSelector": ".wp-block-sgs-post-grid",
+   "attrs": {
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/form",
+   "rootSelector": ".wp-block-sgs-form",
+   "attrs": {
+    "formName": "Test Form",
+    "submitLabel": "Submit",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/form-step",
+   "rootSelector": ".wp-block-sgs-form-step",
+   "attrs": {
+    "label": "Step 1",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/notice-banner",
+   "rootSelector": ".wp-block-sgs-notice-banner",
+   "attrs": {
+    "variant": "info",
+    "text": "Test notice",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/pricing-table",
+   "rootSelector": ".wp-block-sgs-pricing-table",
+   "attrs": {
+    "columns": 3,
+    "plans": [
+     {
+      "name": "Plan 1",
+      "price": "9",
+      "ctaText": "Get started"
+     }
+    ],
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    }
+   }
+  },
+  {
+   "slug": "sgs/product-faq",
+   "rootSelector": ".wp-block-sgs-product-faq",
+   "attrs": {
+    "heading": "FAQ",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/team-member",
+   "rootSelector": ".wp-block-sgs-team-member",
+   "attrs": {
+    "name": "Sarah Mitchell",
+    "role": "Head of Procurement",
+    "style": {
+     "spacing": {
+      "padding": {
+       "top": "5px",
+       "right": "17px",
+       "bottom": "9px",
+       "left": "23px"
+      },
+      "margin": {
+       "top": "10px",
+       "right": "2px",
+       "bottom": "6px",
+       "left": "14px"
+      }
+     },
+     "border": {
+      "radius": {
+       "topLeft": "3px",
+       "topRight": "11px",
+       "bottomRight": "7px",
+       "bottomLeft": "19px"
+      }
+     }
+    },
+    "paddingTablet": {
+     "top": "4px",
+     "right": "12px",
+     "bottom": "6px",
+     "left": "16px"
+    },
+    "paddingMobile": {
+     "top": "2px",
+     "right": "8px",
+     "bottom": "4px",
+     "left": "10px"
+    }
+   }
+  },
+  {
+   "slug": "sgs/feature-grid",
+   "rootSelector": ".wp-block-sgs-feature-grid",
+   "attrs": {}
+  },
+  {
+   "slug": "sgs/hero",
+   "rootSelector": ".wp-block-sgs-hero",
+   "attrs": {
+    "headline": "Hero headline"
+   }
+  },
+  {
+   "slug": "sgs/cta-section",
+   "rootSelector": ".wp-block-sgs-cta-section",
+   "attrs": {
+    "headline": "CTA headline",
+    "body": "Some body text"
+   }
+  },
+  {
+   "slug": "sgs/card-grid",
+   "rootSelector": ".wp-block-sgs-card-grid",
+   "attrs": {
+    "items": [
+     {
+      "title": "Card one",
+      "description": "desc one"
+     },
+     {
+      "title": "Card two",
+      "description": "desc two"
+     }
+    ]
+   }
+  },
+  {
+   "slug": "sgs/info-box",
+   "rootSelector": ".wp-block-sgs-info-box",
+   "attrs": {
+    "title": "Info title",
+    "description": "body"
+   }
+  },
+  {
+   "slug": "sgs/media",
+   "rootSelector": ".wp-block-sgs-media",
+   "attrs": {
+    "mediaUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-includes/images/media/default.png",
+    "mediaType": "image"
+   }
+  },
+  {
+   "slug": "sgs/quote",
+   "rootSelector": ".wp-block-sgs-quote",
+   "attrs": {
+    "attribution": "A customer"
+   }
+  },
+  {
+   "slug": "sgs/testimonial",
+   "rootSelector": ".wp-block-sgs-testimonial",
+   "attrs": {
+    "quote": "Great service",
+    "name": "Jane"
+   }
+  },
+  {
+   "slug": "sgs/testimonial-slider",
+   "rootSelector": ".wp-block-sgs-testimonial-slider",
+   "attrs": {}
+  },
+  {
+   "slug": "sgs/option-picker",
+   "rootSelector": ".wp-block-sgs-option-picker",
+   "attrs": {
+    "label": "Size",
+    "optionItems": [
+     {
+      "label": "S",
+      "value": "s"
+     },
+     {
+      "label": "M",
+      "value": "m"
+     }
+    ]
+   }
+  },
+  {
+   "slug": "sgs/trust-bar",
+   "rootSelector": ".wp-block-sgs-trust-bar",
+   "attrs": {}
+  }
+ ]
+}

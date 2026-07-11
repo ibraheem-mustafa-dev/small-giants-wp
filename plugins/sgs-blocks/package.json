@@ -23,7 +23,9 @@
     "lint:js": "wp-scripts lint-js src/",
     "lint:css": "wp-scripts lint-style src/",
     "format": "wp-scripts format src/",
-    "ledger-check": "python -m pytest scripts/ledger/tests/ -q && python scripts/ledger/declare_input.py --check"
+    "ledger-check": "python -m pytest scripts/ledger/tests/ -q && python scripts/ledger/declare_input.py --check",
+    "check:scoped-selector": "node scripts/audit-scoped-selector-live.js --page 8",
+    "check:scoped-selector-plant": "node scripts/audit-scoped-selector-live.js --plant"
   },
   "devDependencies": {
     "@wordpress/icons": "^11.6.0",

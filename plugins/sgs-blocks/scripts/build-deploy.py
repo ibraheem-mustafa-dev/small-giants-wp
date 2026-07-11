@@ -243,6 +243,30 @@ def step_local_cleanup(dry_run: bool) -> int:
     return 0
 
 
+def step_scoped_selector_audit(page_id: str, dry_run: bool) -> int:
+    """Post-deploy structural gate (P-SCOPED-SELECTOR-MATCH, D303): run the LIVE
+    scoped-selector audit against the just-deployed canary page. Catches the
+    "scoped rule whose class the element never carries" bug class (multi-button)
+    on the painted DOM — the STOP-21-authoritative signal a static check can't
+    give. Returns the audit exit code (non-zero = dead per-instance selectors)."""
+    if dry_run:
+        log(f"[scoped-audit] SKIPPED (--dry-run); would audit page {page_id}")
+        return 0
+    audit_js = Path(__file__).resolve().parent / "audit-scoped-selector-live.js"
+    cmd = ["node", str(audit_js), "--page", str(page_id)]
+    log(f"[scoped-audit] {' '.join(cmd)}")
+    try:
+        rc = subprocess.call(cmd)
+    except Exception as e:  # noqa: BLE001
+        log(f"[scoped-audit] WARNING: could not run audit ({e}) — skipping")
+        return 0
+    if rc != 0:
+        log("[scoped-audit] FAIL: dead per-instance scoped selectors on the deployed page")
+    else:
+        log("[scoped-audit] PASS: every per-instance scope class lands on an element")
+    return rc
+
+
 def step_verify(url: str) -> None:
     """Optional post-deploy HTTP check. Warns on failure; never aborts."""
     log(f"[verify] GET {url}")
@@ -285,6 +309,10 @@ def parse_args() -> argparse.Namespace:
                    help="Permit deploy with a dirty git working tree.")
     p.add_argument("--verify-url", default=None,
                    help="Optional URL to GET after deploy for a smoke check.")
+    p.add_argument("--audit-scoped-page", default=None,
+                   help="Post-deploy: page_id to run the live scoped-selector "
+                        "match audit against (P-SCOPED-SELECTOR-MATCH gate). "
+                        "e.g. 8 (the sandybrown homepage clone).")
     return p.parse_args()
 
 
@@ -368,6 +396,14 @@ def main() -> int:
         step_verify(args.verify_url)
     elif args.verify_url and args.dry_run:
         log(f"[verify] SKIPPED (--dry-run); would GET {args.verify_url}")
+
+    # Post-deploy structural gate: live scoped-selector match audit.
+    if args.audit_scoped_page:
+        rc = step_scoped_selector_audit(args.audit_scoped_page, args.dry_run)
+        if rc != 0:
+            print("[ABORTED] reason: scoped-selector-audit-failed "
+                  "(dead per-instance selectors on the deployed page)", flush=True)
+            return 1
 
     elapsed = int(time.time() - t0)
     print(f"[DONE] sgs-deploy completed in {elapsed}s", flush=True)

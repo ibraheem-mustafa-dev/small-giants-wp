@@ -6,7 +6,13 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-10 (LATEST) — D303: universal residual render-precedence + tier-confined bounding architecture (bound + fold + match-specificity + source-order + normalise; NO ID escalation)
+## 2026-07-11 (LATEST) — D304: scoped-selector match bug-class audit CLEAN + live structural gate shipped (P-SCOPED-SELECTOR-MATCH, Task 1 of the typography/robustness track)
+
+**D304 — the multi-button bug-class (a per-instance scoped rule `.uid.block` whose class the element never carries → silent render no-op) is NOT present across the roster; a LIVE structural gate now prevents regression.** Branch main. **Audit result:** live DOM audit (`audit-scoped-selector-live.js`) of the real homepage clone (sandybrown page 8 — 94 scope classes) + a 54-block roster test page (~61 classes) = **0 dead** at 375/768/1440; highest-risk blocks (feature-grid = the id-applier; multi-button; the 7 D303 self-rollers) confirmed landing. No defects to fix. **Method lesson (STOP-21):** a first STATIC PHP analyser reported 26 findings — fact-checked vs real render.php + the Explore agent's read, ALL 26 were FALSE POSITIVES (static PHP can't follow `array_merge`/variable-held class arrays/`esc_attr()` wrapping/shared-wrapper `extra_classes`); it was DELETED (Bean: "live gate + drop static"). **Gate:** the live audit extracts each per-instance scope class token (hash-form `sgs-x-<6+hex>` or numeric `sgs-x-<n>` used as a scope; standalone utility classes like `sgs-cols-tablet-4` excluded) and asserts each `getElementsByClassName≥1` — plant-tested (fires on an injected id-only regression, silent on a correct block). Wired into `build-deploy.py --audit-scoped-page 8` (aborts deploy on any dead selector) + npm `check:scoped-selector` / `check:scoped-selector-plant`. Report: `.claude/reports/2026-07-11-scoped-selector-match-audit.md`. Residual: non-`sgs`-prefixed uids (mega-menu `mega-menu-<n>`) not token-matched but agent-confirmed correct. D-ceiling was D303.
+
+---
+
+## 2026-07-10 — D303: universal residual render-precedence + tier-confined bounding architecture (bound + fold + match-specificity + source-order + normalise; NO ID escalation)
 
 **D303 — the universal, theme-wide fix for the two proven pipeline typography-fidelity gaps (D302 root-cause).** Branch main, commits `83d133aa` (M1 core, pushed) + `da58ea48` (M2 snapshot). **SHIPPED + LANDED + verified live 375/768/1440.** Spec 31 §3 F-fork + §13.4 FR-31-5.2 + FR-31-22.3 + Spec 32 §6.1(b) amended. D-ceiling was D302.
 
