@@ -51,6 +51,11 @@ session: D303 — universal residual render-precedence (bound + class-match + so
   letter-spacing; batch-remove when each is next built.
 - **MEMORY.md at 22KB** — compact to <17KB (one line per entry) next housekeeping pass.
 
+## Next Priorities (in order)
+1. **Track B — scoped-selector-match bug-CLASS audit + structural gate** (`P-SCOPED-SELECTOR-MATCH-AUDIT-AND-GATE`). The multi-button issue's class: a block emits a scoped rule but the element doesn't carry that class → silent render no-op a green build can't see. Roster-wide audit + a live-harness gate. Ordered first (protects Track A's own emissions).
+2. **Track A — effective-value typography-lift MECHANISM** (`P-EFFECTIVE-VALUE-TYPOGRAPHY-LIFT`). Lift the draft's inherited/initial letter-spacing + line-height so a clone overrides ANY theme default (Spec 31 FR-31-5.1 extended). Changes conformance goldens — design-gate + STOP-60 care.
+3. Housekeeping: batch-remove the arbitrary heading letter-spacing from the other 5 client snapshots (`P-SNAPSHOT-ARBITRARY-LETTER-SPACING`); compact MEMORY.md (<17KB).
+
 ## Files Modified (D303)
 | File | What |
 |---|---|
