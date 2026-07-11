@@ -1891,14 +1891,6 @@ Hard iteration-cap and rationalisation-table integration confirmed present in th
 **P-F5-D1-MEDIA-FIELD-RESPONSIVE-FLOW** — D1 sidecar preserves `media` field but reader at `convert.py:_load_d1_assignments` only merges base values. Responsive variants (`@media (min-width: 1024px)` → `Desktop` attr) never flow. Hero 375 mobile +13.3pt regression from this. Fix: map media-condition → breakpoint slug → responsive-variant-attr name. **Trigger:** Wave 3 of next session (F5), parallel with G5.
 **Status:** OPEN
 
-
-**P-P1Bx-COMMA-MEDIA-INNER** — P1.B.x's `_scope_media_rule()` only scopes the first part of comma-grouped inner selectors. `@media (...) { .sgs-hero, .sgs-cta { ... } }` produces `.page-id-144 .sgs-hero, .sgs-cta { ... }` — `.sgs-cta` left unscoped. Low-frequency edge case. **Trigger:** next css_router maintenance pass.
-**Status:** OPEN
-
-
-**P-P1Bx-NESTED-SUPPORTS** — Nested `@supports` inside `@media` produces invalid CSS. Recurse the scope-injection OR pass through unchanged. Low-frequency. **Trigger:** next css_router maintenance pass.
-**Status:** OPEN
-
 > **[ARCHIVED 2026-07-11 D303 sweep — SUPERSEDED-BY-D276: cv2 essence_match path gone (D276)]**
 **P-P2III-ESSENCE-MATCH-TIER-GATE** — `essence_match_variation` tier in cv2 walker only fires when `target == "sgs/container"`. Theoretical edge case: an existing-but-stub block at slug X with a sibling concept Y wouldn't trigger the variation tier. Low-priority. **Trigger:** first real-world variation-detection run.
 **Status:** DEFERRED

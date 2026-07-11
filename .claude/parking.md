@@ -343,6 +343,12 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 **Status:** OPEN
 
 
+> **[RESTORED 2026-07-11 — css_router.py is LIVE (used by sgs-clone-orchestrator + converter/resolvers/grid.py), so these edge cases are still valid; wrongly swept by a slug-parse bug.]**
+**P-P1Bx-COMMA-MEDIA-INNER** — P1.B.x's `_scope_media_rule()` only scopes the first part of comma-grouped inner selectors. `@media (...) { .sgs-hero, .sgs-cta { ... } }` produces `.page-id-144 .sgs-hero, .sgs-cta { ... }` — `.sgs-cta` left unscoped. Low-frequency edge case. **Trigger:** next css_router maintenance pass.
+**Status:** OPEN
+**P-P1Bx-NESTED-SUPPORTS** — Nested `@supports` inside `@media` produces invalid CSS. Recurse the scope-injection OR pass through unchanged. Low-frequency. **Trigger:** next css_router maintenance pass.
+**Status:** OPEN
+
 **P-P2II-CSS-VALUE-RE-TIGHTEN** — `_CSS_VALUE_RE = re.compile(r"^[^;{}<>\"]*$")` in `stage_attribute_promotion.py` permits single quotes, backticks, parentheses. Defence-in-depth (esc_attr() in PHP is real guard) but worth tightening. **Trigger:** next P2.ii maintenance pass.
 **Status:** OPEN
 
