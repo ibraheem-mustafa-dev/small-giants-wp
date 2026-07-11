@@ -101,6 +101,15 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # Tier-suffixed primary destination (fontSize / fontSizeTablet / fontSizeMobile).
     tgt = tier_suffix(primary_attr, decl.tier, ctx.conn)
 
+    # Interaction-state suffix AFTER the tier suffix (D309, universal hover): a
+    # draft `:hover` declaration lands on the block's `{attr}Hover` companion
+    # (v1 hover is base-tier only, so tgt == primary_attr here). The subsequent
+    # validate(ctx, tgt, ...) gates on the block actually declaring that state
+    # attr — a block without it emits an honest gap, never a wrong write.
+    state = getattr(decl, "state", None)
+    if state:
+        tgt = f"{tgt}{state}"
+
     # --- colour properties: bare slug / hex (Bug-1) ------------------------------
     if prop in _COLOUR_PROPS:
         if not validate(ctx, tgt, raw):

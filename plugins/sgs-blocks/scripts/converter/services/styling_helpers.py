@@ -25,6 +25,7 @@ tree in EXECUTION Step 9, Phase 3, 2026-07-04).
 from __future__ import annotations
 
 import logging
+import functools
 import re
 from typing import Any
 
@@ -835,6 +836,93 @@ def collect_css_decls_for_element(
                     )
 
     return out_base, out_bp
+
+
+# ---------------------------------------------------------------------------
+# Interaction-state (:hover/:focus/:active) collection (D309, universal hover)
+# ---------------------------------------------------------------------------
+
+
+@functools.lru_cache(maxsize=1)
+def _state_pseudo_to_suffix() -> dict[str, str]:
+    """{css-pseudo (lowercase) : StateSuffix} from modifier_suffixes(kind='state').
+
+    e.g. {'hover': 'Hover', 'active': 'Active', 'focus': 'Focus', 'disabled':
+    'Disabled'}. DB-owned vocabulary (R-31-1) — no hardcoded pseudo list."""
+    return {s.lower(): s for s in db_lookup.modifier_suffixes("state")}
+
+
+def _strip_state_from_selector(sel: str, pseudo: str) -> str | None:
+    """Return `sel` with a trailing `:{pseudo}` stripped from each comma part's
+    FINAL compound, keeping ONLY the parts that actually targeted that state.
+
+    `a:hover`            → `a`
+    `.x:hover`           → `.x`
+    `.a:hover, .b`       → `.a`          (the plain `.b` half is NOT a hover rule)
+    `.x::before`         → None          (`::` pseudo-element, not a state)
+    `.a` (no pseudo)     → None          (not a state rule)
+
+    The `(?<!:)` guard means a `::pseudo-element` is never mistaken for a state.
+    Preserves the ` :: ` @media sentinel so the reused base matcher still folds a
+    state rule nested inside an @media block."""
+    if " :: " in sel:
+        media_part, sel_part = sel.split(" :: ", 1)
+        prefix = media_part + " :: "
+    else:
+        prefix = ""
+        sel_part = sel
+    kept: list[str] = []
+    for part in sel_part.split(","):
+        p = part.strip()
+        if not p:
+            continue
+        tokens = p.split()
+        last = tokens[-1]
+        m = re.search(r"(?<!:):" + re.escape(pseudo) + r"$", last)
+        if not m:
+            continue
+        tokens[-1] = last[: m.start()]
+        if not tokens[-1]:
+            continue  # a bare `:hover` with no element to attach to
+        kept.append(" ".join(tokens))
+    if not kept:
+        return None
+    return prefix + ", ".join(kept)
+
+
+def collect_state_decls_for_element(
+    node: Tag, css_rules: dict
+) -> dict[str, dict[str, str]]:
+    """Collect interaction-state declarations for `node`, keyed by StateSuffix.
+
+    Returns ``{StateSuffix: {css_property: value}}`` (e.g.
+    ``{'Hover': {'text-decoration': 'underline'}}``).
+
+    Mechanism (D309): for each recognised state pseudo, build a state-only copy of
+    the rules with the pseudo stripped, then run the PROVEN
+    ``collect_css_decls_for_element`` matcher on it — its ``base_decls`` ARE the
+    state's effective values, matched against the node by the identical
+    class-compound/tag-equality/ancestor logic. Running on a SEPARATE stripped-rules
+    dict keeps state collection fully isolated from the real resting-base
+    collection, so a ``:hover`` declaration can NEVER leak into the base bucket (the
+    fall-through trap the qc-council flagged is impossible by construction). No
+    matcher duplication, no new specificity logic. v1 is base-tier only (WP hover
+    is not responsive); a state @media band folds into the state's base value."""
+    out: dict[str, dict[str, str]] = {}
+    for pseudo, suffix in _state_pseudo_to_suffix().items():
+        stripped: dict[str, dict[str, str]] = {}
+        for sel, decls in css_rules.items():
+            ns = _strip_state_from_selector(sel, pseudo)
+            if ns is None:
+                continue
+            # Exact-duplicate stripped selector → merge, later-wins (rare).
+            stripped[ns] = {**stripped.get(ns, {}), **decls}
+        if not stripped:
+            continue
+        base, _bp = collect_css_decls_for_element(node, stripped)
+        if base:
+            out[suffix] = base
+    return out
 
 
 # ---------------------------------------------------------------------------

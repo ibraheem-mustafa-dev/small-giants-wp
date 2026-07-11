@@ -26,6 +26,7 @@ from converter.recognition import build_ctx
 from converter.orchestrator import process_element
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
+    collect_state_decls_for_element,
     serialise_residual_bands,
 )
 from converter.models import ResidualBand
@@ -181,6 +182,22 @@ def _build_css_attrs(
         for bp_suffix, tier_decls in partitioned_bp.items():
             for prop, val in tier_decls.items():
                 decls.append(Decl(property=prop, value=val, tier=bp_suffix))
+
+        # ---- Step 3b: interaction-state Decls (D309, universal hover) ----
+        # Collected on the SAME node/rules, keyed by StateSuffix ('Hover'…). Not
+        # partitioned against `consumed` — the root-supports native lift handles
+        # BASE style.* only, so a state property is never a lift-consumed base
+        # prop. Shorthand-expanded for parity with base (a `:hover{background:…}`
+        # → background-color). Emitted as Base-tier Decls carrying the state; the
+        # resolver appends the suffix + validates the block declares the
+        # `{attr}{State}` companion (else an honest gap — R-31-9 universal).
+        state_decls = collect_state_decls_for_element(node, css_rules)
+        for state_suffix, sdecls in state_decls.items():
+            expand_background_border_shorthand(sdecls, slug=rec.slug)
+            for prop, val in sdecls.items():
+                decls.append(
+                    Decl(property=prop, value=val, tier="Base", state=state_suffix)
+                )
 
         # ---- Step 4/5: dispatch and merge ----
         # Native style.* attrs are emitted first; process_element writes to different

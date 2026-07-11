@@ -1374,6 +1374,13 @@ _TYPO_COLOUR_CSS_PROPS: tuple[str, ...] = ("color", "background-color")
 _TYPO_LIFT_TYPOGRAPHY_CSS_PROPS: tuple[str, ...] = (
     "font-size", "line-height", "letter-spacing",
     "font-weight", "font-style", "text-align",
+    # Brought into scope 2026-07-11 (D309, universal hover): a draft's
+    # text-decoration/text-transform must transfer faithfully — the announcement
+    # `a:hover{text-decoration:underline}` is the first live consumer (its Hover
+    # companion routes via the state axis). Both are string enums (kind_override
+    # 'string' → no Unit companion). font-family stays out (font-stack/token
+    # handling is a separate concern).
+    "text-decoration", "text-transform",
 )
 
 

@@ -23,6 +23,7 @@ from bs4 import Tag
 
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
+    collect_state_decls_for_element,
     css_value_to_attr,
     extract_token_or_hex,
     split_value_unit,
@@ -249,6 +250,28 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
                 # overwritten by a later base-decl write (matching convert.py:1744-1748).
                 lifted.setdefault(attr_name,
                                   _compute_value(css_property, attr_type, bp_raw_val, attr_name, catalogue, role))
+
+        # State (hover/focus/active) companions (D309, universal hover).
+        # The SAME matched element's :hover/:focus/:active declarations →
+        # {attr}{StateSuffix} when the block DECLARES that companion (no A-collapse
+        # for state — there is no base fallback). Mirrors the bp companion loop;
+        # DB-owned state suffix vocabulary. background shorthand → background-color
+        # falls back exactly as the base pass above.
+        state_decls = collect_state_decls_for_element(element, css_rules)
+        for state_suffix, sdecls in state_decls.items():
+            st_raw = sdecls.get(css_property)
+            if st_raw is None and css_property == "background-color":
+                _sh = sdecls.get("background")
+                if _sh and "gradient" not in _sh and "url(" not in _sh:
+                    st_raw = _sh
+            if not st_raw:
+                continue
+            st_raw = strip_important(st_raw).strip()
+            if not st_raw:
+                continue
+            state_attr = f"{attr_name}{state_suffix}"
+            if state_attr in catalogue:
+                _emit_value(lifted, state_attr, css_property, attr_type, st_raw, catalogue, role)
 
     return {k: v for k, v in lifted.items() if v is not None}
 

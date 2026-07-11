@@ -26,6 +26,14 @@ class Decl:
     property: str
     value: str
     tier: str  # Base|Mobile|Tablet|Desktop|Other:<cond> — see DEVICE_TIERS + A4
+    # Interaction-state modifier suffix (D309, universal hover). None = the
+    # resting/base state. When set (e.g. 'Hover' from modifier_suffixes(kind=
+    # 'state')) a resolver appends it AFTER the tier suffix so a draft
+    # `:hover` declaration lands on the block's `{attr}Hover` companion. v1 is
+    # base-tier only (WP hover is not responsive); a state Decl always carries
+    # tier='Base'. Trailing default → every existing positional/keyword Decl(...)
+    # construction is unchanged (backward-safe).
+    state: str | None = None
 
     @property
     def is_device_tier(self) -> bool:
