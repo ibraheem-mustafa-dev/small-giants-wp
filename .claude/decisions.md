@@ -6,7 +6,18 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-11 (LATEST) — D307: page-8 discrepancy programme — 4 CSS-layer fixes SHIPPED + LANDED (emoji, universal margin reset, option-picker tick, trustpilot)
+## 2026-07-11 (LATEST) — D308: page-8 Fix 6 — converter routes sgs/text OUTER background + border to its existing attrs (disclaimer box) SHIPPED + LANDED
+
+**D308 — a cloned disclaimer paragraph dropped its background + border; now transfers.** Branch `feat/text-box-and-universal-hover`, commit `8b45a417` (NOT yet merged to main). Built via `/subagent-driven-development` (solo implementer + cross-model code-review + `/qc-inline`). Root cause proven on the REAL node (STOP-34) + verified LIVE.
+
+- **The gap (converter, NOT the block).** `sgs/text` ALREADY declares + renders (scoped/no-inline) `backgroundColour`/`borderColour`/`borderStyle`/`borderWidth` (object). Bean's "extend sgs/text" premise was corrected: the block was complete; the converter's OUTER resolver `attr_for_layer_property('sgs/text','',prop)` returned None for background/border because the name-build capitalises the suffix (`BackgroundColour`) and the DB-existence check misses the camelCase attr (`backgroundColour`) — while `attr_for_property` resolves them correctly. Everything else (padding/radius/max-width/margin/font) already transferred.
+- **Fix (Spec 31 §3.A step 2 + step 6, D308).** (a) `attr_resolve` adds an ADDITIVE OUTER fallback to `attr_for_property` — fires only when the name-build returns None + `layer=='OUTER'` + the fallback attr exists on the block (zero→one, MF-4-safe, no regression to blocks whose name-build hits); universal, DB-driven, no slug literal (no_slug_literal gate CLEAN). (b) `outer_box`/`content_band` gained a colour-role branch + a box-family self-merge (border-width shorthand → `{top,right,bottom,left}` object gated on DB `box_family`, FR-31-22). (c) `root_supports.expand_background_border_shorthand` shared + run on `css_pass`'s own decl copy so a native-support-REJECTED longhand reaches the dispatch. (d) **BLOCKER caught by code-review + fixed:** `extract_token_or_hex` now validates a resolved `var()` slug against the REAL theme palette — emits a valid token / hex / honest gap, never the raw capture `"border"` (which → undefined `var(--wp--preset--color--border)` → dark currentColor, the D306 bug class). Draft `--border:#E8D5C0` snaps to `border-subtle`.
+- **LANDED live (sandybrown page 8, reclone `…171511`, CDN cleared):** ingredients disclaimer at 375 + 1440 = white bg, 1px **#E8D5C0** (`border-subtle`) border, 10px radius, 16/20 padding, 620 max-width — exact draft match, correct LIGHT border colour. Converter suite **445 pass** (440 + 5 new disclaimer regression tests; 2 tests that encoded the old unvalidated-slug passthrough corrected, not blanket-reseeded); no goldens touched. F5/F6 commit gates + anti-mirror + no_slug_literal all clean. `/qc-inline`: Spec 31 §3.A/§3-step-6 + Spec 32 no-inline compliant, no cheats (R-31-1/9/15), universal.
+- **Deferred to next session:** Fix 5 (universal hover — Bean's "modify the existing collector, don't build a new route" + the two-CSS-family universality he flagged), Fix 2 (product-card CTA = full button capability), Fix 4 (labels pill-box). D-ceiling was D307.
+
+---
+
+## 2026-07-11 — D307: page-8 discrepancy programme — 4 CSS-layer fixes SHIPPED + LANDED (emoji, universal margin reset, option-picker tick, trustpilot)
 
 **D307 — the CSS-layer remainder of the page-8 programme: 4 items fixed + LANDED live (sandybrown page 8, 375/768/1440, CDN-cleared).** Branch main. Each cause proven on the LIVE DOM before fixing (STOP-VERIFY-CLAIM) — the register's stated mechanisms were wrong on 3 of 4, corrected by live tracing. Reports: `reports/visual-diff/{icon,option-picker,theme-margin-reset}-2026-07-11.md`.
 
