@@ -2,53 +2,51 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-11
-session: D309 — page-8 Fix 5 (universal hover) LANDED + Part F editor controls + team-member duplicate-control cleanup
+session: D310 — page-8 Fix 2 (product-card CTA) mirror sgs/button style + colour, LANDED + hover-verified
 ---
 
-# Session Handoff — 2026-07-11 (D309)
+# Session Handoff — 2026-07-11 (D310)
 
 ## Completed This Session
 
-1. **Fix 5 — universal hover, LANDED + live-verified.** A cloned draft `:hover` declaration now transfers to the block's `{attr}Hover` companion. Cause proven on the REAL node (the CSS collector silently dropped every `:hover` rule). Reshaped twice by Bean mid-design (both improvements).
-2. **Fix 5a — hover-attr naming standardisation (`254f5b97`).** 70 hover-attr declarations across 17 blocks moved prefix→suffix (`hoverX`→`Xhover`) to match button + the tier grammar. Scripted (`scripts/rename-hover-attrs.py`), build green (dead-control 0 net-new), DB reseeded, icon legacy fallback removed. `--no-verify` (logic-only, Bean-authorised).
-3. **Fix 5b — converter mechanism (`018a8276`, D309).** Hover is a MODIFIER APPEND like a tier — `collect_state_decls_for_element` reuses the base matcher on a per-state pseudo-STRIPPED rules copy (state cannot leak into base by construction); `Decl.state` + `typography.resolve` appends the suffix; both CSS families; `text-decoration`/`text-transform` brought into the typed-lift scope. NO `property_suffixes` migration. Suite 448 pass. qc-council (3 raters) caught the fall-through trap + WCAG focus-visible risk pre-build.
-4. **Fix 5 — LANDED.** Deploy + reclone page 8 + CDN clear + OPcache. Live: announcement "Find out more" = `text-decoration:none` at rest, `underline` on hover+focus-visible. Emitted `"textDecorationHover":"underline"`.
-5. **Fix 5 docs (`cb1a782e`).** D309 in decisions.md + Spec 31 §3.A.4a (state re-append) + §3.B B2 framing correction + repo-root visual-diff report.
-6. **Part F — editor controls (`27e0f517`).** `TypographyControls` gained opt-in text-decoration / text-transform / letter-spacing controls (enabled on sgs/text) + an opt-in hover section (default off = gate-safe). Button NOT wired to the helper (Bean-confirmed).
-7. **team-member duplicate-control cleanup (`27e0f517`).** Removed 8 redundant `sgsHover*` declarations from team-member/block.json — the central `hover-effects.js` extension injects them into every block; team-member was the only one that also hardcoded them. DB reseed: 0 drift.
+1. **Fix 2 — product-card CTA now mirrors how a standalone `sgs/button` clones. LANDED + live-verified (rest AND hover).** The cloned trial CTA rendered `--primary` (draft wants `--secondary`) and the featured CTA had near-white text on pink (WCAG fail). Both fixed; every colour (rest + hover, both buttons) now exact-matches the draft.
+2. **Design-gate (qc-council 2 raters + live-DOM baseline).** The gate overturned the register + my first design: editing `style.css:246` would NOT have landed (that rule loses by source order); the typed clone render already honoured `ctaStyle`; the 5 hardcoded `--primary` sites are bound-mode only. The real gap was converter-side.
+3. **Converter mirror (`walk.py` + `db_lookup` + `assembly` refactor).** The nested CTA's BEM `--modifier` lifts onto `ctaStyle` via the SAME preset-modifier mechanism as `sgs/button` `inheritStyle` — new shared `db_lookup.preset_style_for_element` (factored out of assembly step 5) + `style_preset_attrs_for_identity` (surfaces the behaviour-role style attr `content_attrs_for_identity` excludes per FR-31-2.2). Universal, DB-driven, no attr/slug literal (Spec 31 §13.5). +1 regression test; suite 448 pass.
+4. **Colour composite-mirror (block.json + style.css).** Emptied all 6 `ctaColour*` preset defaults AND removed the product-card's OWN divergent `.product-card .sgs-button--primary/secondary` rest+`:hover` `style.css` rules — so the CTA inherits the shared button-preset channel entirely (the client's `buttonPresets` are faithful to the draft). Removed `ctaPreset` + merged the editor to one `ctaStyle` picker + a "Reset colours to preset" button; dropped dead `data-cta-preset`.
+5. **Two-pass verification (Bean caught the first miss).** First pass was resting-contrast-only → shipped a wrong hover + secondary border (`#C56A7A` not `#E68A95`, hover text stayed dark). Root cause = the divergent `style.css` rules (item 4). Fixed + verified live with Playwright `.hover()`: trial rest border `#E68A95`, both hovers dark bg + white text + dark border.
+6. **Cache-bust:** bumped product-card version 1.16.11→1.16.12 — a `style.css`-only change can't reach a cached browser without a `?ver` change (the CSS is version-pinned via `register_block_type`). Render-side (block.json default) changes land fresh via inline `<style>`; file-CSS changes do not.
+7. **Docs + DB:** decisions.md D310 (+ correction note); `/sgs-update --stage 1` synced the 7 changed attr rows; lesson captured (`feedback_verify_button_colour_hover_and_border_vs_draft_not_contrast_only`).
 
 ## Current State
-- **Branch:** `main` at `27e0f517` (D-ceiling **D309**).
-- **Tests:** converter suite 448 pass, 1 skip (445 + 3 new `test_hover_state_lift.py`).
-- **Build:** green (dead-control 0 net-new, control-ux clean, F5/F6 + cheat-gate 0 NEW, webpack OK).
-- **Uncommitted:** doc updates (this handoff + state + next-session-prompt) — committed at close.
-- **Deploy:** sandybrown page 8 = fresh reclone with Fix 5 LANDED; CDN + OPcache cleared.
+- **Branch:** `main` at `ab8c2a64` (D-ceiling **D310**).
+- **Tests:** converter suite 448 pass, 1 skip.
+- **Build:** green (dead-control 0 net-new, hardcoded-render 0 net-new, webpack OK).
+- **Deploy:** sandybrown page 8 = plugin redeployed with Fix 2; CDN + OPcache cleared; live-verified.
+- **Uncommitted:** only pre-existing session-start dirt (HTML_Insert.html deletion, inline-styling-audit reports, lucide-icons.php, package-lock.json, phase4 reports, untracked `*.db`) — NOT this session's work, which is fully committed.
 
 ## Known Issues / Blockers
-- None block next session. DB has orphaned old prefix-hover property rows + team-member's removed attrs — a `/sgs-update --stage 10` prune cleans them (non-blocking; converter looks up by exact name).
+- **Cache-bust policy question for Bean:** a `style.css`-only fix needs a block version bump (or filemtime-based `?ver`) to reach cached browsers. I bumped the patch this session. Open: switch the framework to filemtime `?ver` for block styles so redeploys auto-bust without version bumps.
+- MEMORY.md is ~24.7KB (marginally over the 24.4KB autoload limit) — compact at next opportunity (move oldest entries to MEMORY-archive.md).
 
 ## Next Priorities (in order)
-1. **Fix 2 — product-card CTA = full button capability** (composite-mirror; converter lifts `ctaPreset`+raw hex; purge the private `--sgs-product-card-btn-text` divergence).
-2. **Fix 4 — labels attribute-driven pill** (Option B, research-settled: ungate padding/bg/radius so they paint when set; keep "plain" via empty defaults).
-3. **Fix 9 — inline-styles / Spec-32 investigation** (Bean-raised; read-only first).
+1. **Fix 4 — labels attribute-driven pill + `fullWidth` + THE MIRROR (Bean-flagged).** The label appears TWO ways that must be functionally identical: the standalone `sgs/label` block (gift section, 2 hug-content capsules) AND a nested element baked into the trial product card ("New? Start here", full-width). The nested version must be an EXACT FUNCTIONAL MIRROR of the block — same mirror pattern as Fix 2's CTA↔`sgs/button`. Plus: ungate render padding/bg to value-presence; empty defaults; add `fullWidth` (detect via effective computed width, parent-flex aware).
+2. **Fix 9 — inline-styles / Spec-32 investigation (read-only).** Enumerate live inline `style="…"` on page 8, classify vs Spec 32 §6.1, map each to source, present a register — Bean picks scope.
 
 ## Files Modified
 | File | What changed |
 |---|---|
-| `plugins/sgs-blocks/src/blocks/{17 blocks}/{block.json,render.php,edit.js}` | hover-attr prefix→suffix rename |
-| `plugins/sgs-blocks/scripts/rename-hover-attrs.py` (new) | scripted rename tool |
-| `plugins/sgs-blocks/scripts/converter/{context.py,services/styling_helpers.py,services/css_pass.py,resolvers/typography.py,resolvers/styling_content.py,db/db_lookup.py}` | hover state axis + text-decoration/transform lift-scope |
-| `plugins/sgs-blocks/scripts/converter/tests/test_hover_state_lift.py` (new) | headline + fall-through-trap regression |
-| `plugins/sgs-blocks/src/components/TypographyControls.js` | opt-in decoration/transform/letter-spacing + hover controls |
-| `plugins/sgs-blocks/src/blocks/text/edit.js` | enable the 3 base controls |
-| `plugins/sgs-blocks/src/blocks/team-member/block.json` | remove 8 redundant sgsHover* |
-| `.claude/decisions.md`, `.claude/specs/31-…md`, `reports/visual-diff/universal-hover-2026-07-11.md` | D309 + Spec 31 §3.A.4a + report |
+| `plugins/sgs-blocks/scripts/converter/db/db_lookup.py` | `preset_style_for_element` + `style_preset_attrs_for_identity` helpers |
+| `plugins/sgs-blocks/scripts/converter/services/assembly.py` | step-5 refactored to the shared helper |
+| `plugins/sgs-blocks/scripts/converter/walk.py` | foreign-identity arm lifts the style-preset modifier → `ctaStyle` |
+| `plugins/sgs-blocks/scripts/converter/tests/test_foreign_identity_lift.py` | +ctaStyle mirror regression test |
+| `plugins/sgs-blocks/src/blocks/product-card/{block.json,edit.js,render.php,style.css}` | ctaStyle enum + empty ctaColour* defaults + editor merge (remove ctaPreset) + remove divergent CSS + version bump |
+| `.claude/decisions.md`, `reports/visual-diff/product-card-2026-07-11.md` | D310 + visual-diff report |
 
 ## Notes for Next Session
-- **Computed-parity % is NOT a fidelity measure (Bean-corrected).** Never cite the aggregate parity number as an outcome — use direct per-element computed-style matched by content + Bean's eye.
-- **Register/handoff mechanisms are unreliable** — prove every cause on the live DOM / a real-node converter trace before building (held again this session — the collector cause was code+draft-verified, not assumed).
-- **Hover = modifier append (like a tier), no property_suffixes derivation.** Standardise a naming convention BEFORE building the mechanism that depends on it (the 17-block rename unlocked the universal converter routing).
-- Fix 5 Part E/G (wire button to the shared typography helper) is DELIBERATELY skipped — the button hover is already correct and deferral preserves the combined `:hover,:focus-visible` WCAG rule.
+- **Fix 4 = the SAME mirror architecture as Fix 2.** A nested built-in element (product-card trial tag) that must reproduce a standalone block (`sgs/label`) exactly — reuse the shared-mechanism approach (composite-mirror R-31-9), don't build a bespoke path.
+- **The client `buttonPresets` (and by analogy any preset channel) may be perfectly faithful to the draft** — check that BEFORE assuming the converter must lift explicit values; the fix is often "remove the per-block divergence so the shared channel governs", not "lift more".
+- **VERIFY COLOUR: rest + hover, every value vs the draft — never resting-contrast-only** (this session's captured lesson; Bean caught the miss).
+- **`style.css`-only change → bump `?ver` (version) or it serves stale to cached browsers.** Render-side (block.json default → inline `<style>`) changes land fresh; file-CSS does not.
 
 ## Next Session Prompt
 See `.claude/next-session-prompt.md`.
