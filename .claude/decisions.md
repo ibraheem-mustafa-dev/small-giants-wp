@@ -6,7 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-12 (LATEST) — D312: per-block `<style>`-tag consolidation SHIPPED + LANDED (P-STYLE-TAG-CONSOLIDATION)
+## 2026-07-12 (LATEST) — D313: page-8 accessibility fixed at the DRAFT source (Bean-locked "fix the mockup, not the clone")
+
+**D313 — the two Lighthouse-flagged page-8 a11y items were fixed by editing the DRAFT mockup + re-cloning, never the clone or the converter.** Branch `main`, commit `904fe02e` (pushed). **Bean-locked principle:** "we should not depart from the draft at all" — a fidelity/a11y issue that is INHERITED FROM THE DRAFT is corrected at the source-of-truth (the mockup) so the clone stays a faithful mirror; NO clone-side patch, NO converter carve-out. Verified the draft actually had each issue before fixing.
+
+- **Proven all 5 Lighthouse a11y flags were draft-inherited, not clone bugs:** gift-capsule text = the draft's `.sgs-gift-section__card-tag { color: var(--primary-dark) }` (#C56A7A on surface-pink = 2.34); ghost button + Trustpilot = draft colours; ingredient cards = the draft's `<h2>…<h4>` (skips h3). The clone reproduced them correctly.
+- **Fixed in the draft + re-cloned page 8:** gift-tag `var(--primary-dark)`→`var(--text)` (on-brand charcoal #3A2E26; contrast on surface-pink 2.34→**8.4**, WCAG AA); the 4 ingredient headings `<h4>`→`<h3>` + the `.sgs-info-box h4`→`h3` selector (section hierarchy now h2→h3, no skip). LANDED live (charcoal 8.4, all H3).
+- **Left faithful-to-draft (Bean's call):** the "Find out more" ghost button (3.67) + Trustpilot brand green (#00b67a) — the mockup's own design; changing them would depart from the draft.
+- **Lighthouse (mobile):** Performance CWV green (LCP 274ms / CLS 0.06), Best Practices 100, SEO 100, Accessibility 95→**96** (remaining 2 contrast flags = the intentionally-kept draft colours). Full DOM audit confirmed 0 body SGS `<style>`, 1 head `<link>`, and zero SGS-block forbidden inline `style=` declarations. Memory: `test-with-actual-cache-layer-and-self-consistent-render` (D312); D313 principle captured as `fix-a11y-at-draft-source-not-the-clone`.
+- **NEXT (Bean-directed):** (1) an exhaustive draft-vs-live DOM diff to PROVE the 100% clone; (2) rebuild the computed-parity tool (`scripts/parity/computed-parity.js`, Stage 11.6) to be universally trustworthy (tags/classes/elements/content/CSS, no cheating, validated vs a manual ledger).
+
+## 2026-07-12 — D312: per-block `<style>`-tag consolidation SHIPPED + LANDED (P-STYLE-TAG-CONSOLIDATION)
 
 **D312 — the ~100 per-block scoped `<style>` tags (~33KB, page 8) are consolidated into ONE head stylesheet, operator-selectable file vs inline.** Branch `main`, commits `9dfcaa6e` (design + Spec 32 v1.2/FR-32-11) + `72c0387a` (collector) + `c30dd5e2` (final modes + settings), all pushed. Full research + `/qc-council` GO-WITH-FIXES trail. Canonical: Spec 32 §6.2.
 
