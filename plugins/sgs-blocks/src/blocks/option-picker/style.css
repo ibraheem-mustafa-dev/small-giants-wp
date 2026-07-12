@@ -119,23 +119,40 @@
 }
 
 /*
- * Selection-tick indicator — always present, transparent when unselected.
- * This reserves the width so selecting a pill never shifts adjacent pills.
- * aria-hidden is set on this via content so screen readers ignore it (the
- * radio :checked state is the semantic truth).
+ * Selection-tick indicator — an IN-FLOW flex item shown only on the SELECTED pill.
+ * Being in-flow (not an absolute overlay) is what gives a real, consistent GAP
+ * between the tick and the value (`margin-right` below) and guarantees the tick can
+ * NEVER overlap the label text at any viewport — the previous absolute `left:0.7em`
+ * overlay sat over the centred text and collided with it on tight pills
+ * (Bean-reported 2026-07-12). It is `display:none` when unselected, so an unselected
+ * pill reserves NO tick space and keeps the draft's tight width (Bean-directed
+ * 2026-07-11 "draft pills reserve no tick space"); it is revealed IN FLOW on :checked
+ * (below), so only the selected pill carries the tick + its small leading gap.
+ * `.sgs-option-picker--no-tick` keeps it hidden entirely (below).
  * CSS-drawn check: a rotated L-shape via border.
  */
 .sgs-option-picker__pill::before {
 	content: "";
-	position: absolute;          /* out of flow — reserves no width; no shift on select */
-	left: 0.7em;                 /* sits in the pill's left padding; centred text unaffected */
-	top: 50%;
-	width:  0.5em;
-	height: 0.28em;
-	border-left:  0.12em solid transparent;
-	border-bottom: 0.12em solid transparent;
-	transform: translateY(-70%) rotate(-45deg);
+	display: none;               /* revealed in-flow on the selected pill only (below) */
+	flex: 0 0 auto;
+	width: 0.5em;
+	height: 0.3em;
+	margin-right: 0.3em;         /* the small space-bar-sized gap between the tick and the value */
+	box-sizing: border-box;
+	border-left:  0.14em solid transparent;
+	border-bottom: 0.14em solid transparent;
+	transform: translateY(-0.12em) rotate(-45deg);   /* draw the check + optically centre it */
 	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+/*
+ * Reveal the tick IN FLOW on the selected pill (frontend :checked + editor
+ * class-preview), across all 3 pill styles, unless --no-tick. The per-style rules
+ * below add the tick COLOUR; this shared rule puts it in flow (+ its leading gap).
+ */
+.sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before,
+.sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option--selected .sgs-option-picker__pill::before {
+	display: inline-block;
 }
 
 /* ── Size variants ─────────────────────────────────────────────────── */

@@ -45,6 +45,13 @@
 	border-color:     var(--sgs-op-sel-bg,   var(--wp--preset--color--primary, #0F7E80));
 }
 
+/* Reveal the selection-tick COLOUR on the canvas-selected pill (mirrors the frontend
+   :checked reveal; style.css's shared rule already puts the tick in flow + its gap). */
+.sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option--selected .sgs-option-picker__pill::before {
+	border-left-color:   var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--wp--preset--color--base, #fff));
+}
+
 /* ── Editor canvas padding so fieldset doesn't flush to block outline ─ */
 
 .wp-block-sgs-option-picker.sgs-option-picker {

@@ -6,7 +6,15 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-12 (LATEST) — D315: parity-tool BUILT to Spec 20 v1.1.0 (visible-fidelity), validated vs the D314 ledger
+## 2026-07-12 (LATEST) — D316: selection-tick gap fix (universal, option-picker + product-card pills)
+
+**D316 — the selected pill's ✓ tick + value now have a small space-bar gap and can never overlap; universal across `sgs/option-picker` and `sgs/product-card` pack pills.** Branch `main` (D-ceiling D315→D316). Bean-reported 2026-07-12: "no gap between the tick and the value; some resolutions the tick overlaps the number."
+
+- **Root cause:** the tick was an ABSOLUTELY-positioned `::before` at `left:0.7em` OVER the centred pill text — an out-of-flow overlay collides with the value on tight pills at some widths.
+- **Fix (one place, universal):** the tick `::before` is now an IN-FLOW flex item with `margin-right:0.3em` (the gap), shown only on the SELECTED pill (`display:none` when unselected → unselected pills keep the draft-tight width, honouring Bean's 2026-07-11 "draft pills reserve no tick space"). In-flow ⇒ the tick structurally CANNOT overlap the value at any resolution. Product-card pack pills render via `render_block('sgs/option-picker')` (typed + bound), so they share `.sgs-option-picker__pill` — the single `style.css` change covers both blocks (the old `.sgs-product-card__pill` rules were removed 2026-07-10). Added the matching editor-preview tick-colour reveal (`editor.css`, `--selected` class).
+- **Verified LIVE (page 8, sandybrown):** selected "8-pack" pill renders `✓ 8-pack` with `::before` `display:block`, `margin-right ≈ 4.2px` (0.3em), dark tick on the pale-tint pill; no overlap at 1440 AND 375 (screenshots); unselected pills tight. `?ver=0.1.10` fresh (version bumped for CSS cache-bust — the permitted pre-production bump, STOP-CSS-VER-CACHE-BUST). Caches cleared (OPcache web-pool + LiteSpeed purge-all + Hostinger CDN). Bean sent the cropped pairs.
+
+## 2026-07-12 — D315: parity-tool BUILT to Spec 20 v1.1.0 (visible-fidelity), validated vs the D314 ledger
 
 **D315 — rebuilt `computed-parity.js` (Stage 11.6) to the locked Spec 20 v1.1.0 so its number tracks VISIBLE fidelity; validated against the independent D314 ledger, never self-report.** Branch `main` (D-ceiling D314→D315). Council-gated + code-reviewed (trust-bearing instrument, blub.db 255).
 
