@@ -2,108 +2,106 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-12
-session: D311 — page-8 Fix 4 (labels) padding-ungate + product-card trial-tag full mirror, LANDED; Fix 9 inline-styles investigation (SGS compliant; <style>-tag bloat parked)
+session: D312 — P-STYLE-TAG-CONSOLIDATION shipped (render_block chokepoint + unified head output buffer + file/head modes + settings page); generate-then-serve reproduced failing under LiteSpeed then replaced
 ---
 
 # Session Handoff — 2026-07-12
 
 ## Completed This Session
-1. **Fix 4 (page-8 labels) SHIPPED + LANDED — D311, commit `cef1fca9` (pushed).** The gift-card `sgs/label` capsules rendered with NO padding (a tight chip) because `label/render.php` gated padding behind the `is-style-pill-*` class; the product-card trial tag hugged (`width:max-content`) instead of stretching like the CTA.
-2. **New shared helper `includes/helpers-box.php :: sgs_label_box_css_rule($box,$selector)`** — emits a label-style box (padding base+tiers, radius, background, display/fullWidth) as SCOPED class-level CSS from a normalised struct. Both `sgs/label` AND the product-card trial tag call it → byte-identical (composite-mirror R-31-9 / Spec 31 §13.6 D294).
-3. **label:** padding + custom-bg ungated to value-presence; new display model (fullWidth→block+100%, box→inline-block, bare→block), suppressed when an `is-style-*` class is present; defaults `padding {}`/`borderRadius 0`/`backgroundColour ""` + new `fullWidth` bool. Static pill chrome `style.css` kept (borrowed by product-card badges).
-4. **product-card:** trial tag via the shared helper (`tagFullWidth` default true) + new client-editable `tagPadding`/`tagBackgroundColour`/`tagTextColour`/`tagBorderRadius`/`tagFullWidth` attrs; `width:max-content` moved base→`--featured` (protects the featured overlay) + F3 var-default padding/radius. Featured badge NOT mirrored (empty on this draft + a capability).
-5. **/qc-council (2 cross-model raters) BOTH returned RESHAPE pre-build** — caught the featured-badge strip, the pill-fill display collapse, and dropped a speculative converter fullWidth heuristic. Design de-risked before any code.
-6. **Verified LANDED live** (sandybrown page 8, reclone `…001022`, CDN+OPcache cleared) at 375/768/1440: gift capsules padded hug (4/10, surface-pink, radius 6); trial tag full-width; the 4 section eyebrows stay bare (regression-safe).
-7. **Fix 9 (inline-styles, read-only) — SGS blocks 100% Spec-32 compliant.** Zero forbidden inline `style="…"` attributes from any SGS block; the 21 residual are all WP-core/WooCommerce/a11y/theme header+footer. Register: `.claude/reports/2026-07-12-fix9-inline-styles-register.md`.
-8. **Bean-flagged the `<style>` TAGS** — SGS emits ~100 per-block scoped `<style>` tags (33KB) into the body; sanctioned by Spec 32 §6.1 but real bloat. Parked as `P-STYLE-TAG-CONSOLIDATION` (WP Style Engine store consolidation, framework-wide, design-gated).
-9. **Docs:** D311 logged, state.md repointed, parking entry added; MEMORY.md compacted 25.5KB→15KB (moved 2026-06-29…07-04 stubs to MEMORY-archive.md); memory lesson captured.
+1. **Spec 32 → v1.2 (FR-32-11 + §6.2)** — encoded the CSS-consolidation contract as source of truth BEFORE any code (Bean-directed). Commit `9dfcaa6e`.
+2. **`/qc-council` (3 cross-model raters) = GO-WITH-FIXES** — caught the editor-parity predicate bug (`!is_admin()` is false during REST → would unstyle 8 ServerSideRender blocks), the 6 emit-shapes, and predicted the LiteSpeed-freeze. Corrections folded into design + spec.
+3. **Collector built as a single `render_block` chokepoint** (`includes/class-sgs-css-registry.php`) — lifts every `sgs/*` block's `<style>` from rendered HTML into one buffer (dedup by content hash, D303 residual order preserved). Dissolves the 6-shapes risk; touches no per-block render.php. Commit `72c0387a`.
+4. **Delivery = ONE output buffer** injecting into `<head>` every render (self-consistent under caching). **Two operator modes** (`sgs_css_output_mode`, default `file`): `file` = cached content-hashed external `<link>` (immutable cache header, atomic write, epoch invalidation + LiteSpeed purge + GC); `head` = inline `<style>` (draft's model, self-contained). Commit `c30dd5e2`.
+5. **Settings page** (`includes/class-css-output-settings.php`, SGS → CSS Output) — mode choice + recommended-optimisation-plugin table (LiteSpeed/Autoptimize/WP Rocket/Perfmatters + exact setting). Renders live.
+6. **Bean-directed test: installed LiteSpeed Cache on the canary.** First VERIFIED no cache plugin was installed. Then reproduced the generate-then-serve model FAILING live under LiteSpeed page cache (froze cold inline) → replaced with the unified buffer. File mode now stable under LiteSpeed.
+7. **Both modes LANDED + live-verified** (sandybrown page 8): 1 head style/link, 0 body `<style>`, correct cascade + computed values 375/768/1440, D303 intact, editor parity (block-renderer REST keeps inline), 0 console errors.
+8. **Docs:** D312 logged; P-STYLE-TAG-CONSOLIDATION moved parking → archive (CLOSED); memory lesson `test-with-actual-cache-layer-and-self-consistent-render` captured. Commit `c85bb91c`.
 
 ## Current State
-- **Branch:** `main` at `26107886` (all pushed)
-- **Tests:** converter unit suite 449 pass / 1 skip; conformance goldens 15 pre-existing red / 36 pass (0 new from this session)
-- **Build:** passes (all prebuild gates green incl. F3, dead-controls, cheat-gate)
-- **Uncommitted changes:** none this session (build/ is gitignored; the untracked `sgs-framework.db` + pre-existing `phase4-*.txt`/`lucide-icons.php`/`package-lock.json` dirt are not this session's)
-- **Live:** sandybrown page 8 carries the landed Fix 4
+- **Branch:** `main` at `c85bb91c` (all pushed)
+- **Tests:** converter unit suite unaffected (render-side PHP only — no converter/JS change); conformance goldens unchanged (15 pre-existing red, 0 new)
+- **Build:** n/a this session (no JS/CSS `src/` change; PHP-only deploy via `build-deploy.py --skip-build`)
+- **Uncommitted changes:** none from this session (pre-existing untracked `sgs-framework.db` + `phase4-*.txt` dirt is not this session's)
+- **Live:** sandybrown page 8 = file mode (default), external `<link>` consolidated CSS; **LiteSpeed Cache now installed + active** on the canary (page cache)
 
 ## Known Issues / Blockers
-- 15 pre-existing stale conformance goldens (accordion/cta-section/hero/product-card/quote/trust-bar/gift-section/…) — predate this work; reseed with LANDED proof when touched. Not a blocker.
-- Per-element GEOMETRY transfer for the product-card tag (`tagPadding`/`tagBorderRadius`) is NOT converter-routed (colour/typography only) — moot on page 8 (draft = defaults); a design-gated shared-mechanism change if ever needed.
+- LiteSpeed Cache is now active on sandybrown (installed to test file mode). Its CSS async/critical-CSS optimisation (QUIC.cloud) is NOT configured — optional, per the settings-page guidance. If it ever misbehaves, `wp plugin deactivate litespeed-cache`.
+- None blocking the next session.
 
 ## Next Priorities (in order)
-1. **`P-STYLE-TAG-CONSOLIDATION`** (Bean parked "next session") — research the WP Style Engine store (`wp_enqueue_stored_styles()`) + how Kadence/Spectra/GenerateBlocks avoid per-block `<style>` scatter; design collapsing ~100 body `<style>` tags into one footer block; `/qc-council` before any framework-wide build.
-2. `P-PATTERNS-USE-CORE-BLOCKS` — SGS theme patterns/parts use core `wp:heading`/`wp:paragraph` (which inline WP supports) instead of `sgs/*` blocks; a dedicated pattern-modernisation session.
-3. `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` — the header/footer setup pipeline that mechanically extracts the draft's base tokens into theme.json (ends snapshot drift).
+1. **`P-PATTERNS-USE-CORE-BLOCKS`** — SGS theme patterns/parts use core `wp:heading`/`wp:paragraph` (which inline WP supports) instead of `sgs/*` blocks; a dedicated pattern-modernisation session.
+2. **`P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`** — the header/footer setup pipeline that mechanically extracts the draft's base tokens into theme.json (ends snapshot drift).
+3. **`P-PAGE8-DISCREPANCY-REGISTER` (PARTIAL)** — 9 remaining page-8 fidelity fixes (`.claude/reports/2026-07-11-page8-discrepancy-diagnosis.md`).
 
 ## Files Modified
 | File path | What changed |
 |---|---|
-| plugins/sgs-blocks/includes/helpers-box.php | NEW — `sgs_label_box_css_rule()` + shared sanitisers |
-| plugins/sgs-blocks/includes/render-helpers.php | require helpers-box.php |
-| plugins/sgs-blocks/src/blocks/label/{block.json,render.php,edit.js} | ungate padding/bg + display model + fullWidth attr + defaults |
-| plugins/sgs-blocks/src/blocks/product-card/{block.json,render.php,edit.js,style.css} | trial-tag mirror via helper + tag box attrs + width:max-content reshape + F3 var-defaults |
-| plugins/sgs-blocks/includes/product-card-builtin-render.php | uid class on trial span |
-| plugins/sgs-blocks/scripts/sgs-update-v2.py | ATTR_CLASSIFICATION_OVERRIDES for the tag box attrs |
-| .claude/{decisions.md,state.md,parking.md} | D311 + state repoint + P-STYLE-TAG-CONSOLIDATION |
-| reports/visual-diff/{label,product-card}-2026-07-12.md | STOP-67 visual-diff reports |
-| .claude/reports/2026-07-12-fix9-inline-styles-register.md | Fix 9 register + `<style>`-tag addendum |
+| plugins/sgs-blocks/includes/class-sgs-css-registry.php | NEW — collector chokepoint + unified head output buffer + file/head modes + epoch/GC/atomic-write |
+| plugins/sgs-blocks/includes/class-css-output-settings.php | NEW — SGS → CSS Output settings page + plugin guidance |
+| plugins/sgs-blocks/sgs-blocks.php | require the registry + settings class; register the settings page |
+| .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md | v1.2 — FR-32-11 + §6.2 (final shipped architecture) |
+| .claude/plans/2026-07-12-style-tag-consolidation-design.md | NEW — design + research trail + BUILT note |
+| .claude/{decisions.md,parking.md} + memory/parking-archive.md | D312; P-STYLE-TAG-CONSOLIDATION archived |
+| reports/visual-diff/css-consolidation-2026-07-12.md + 2 jpeg | LANDED evidence + settings-page screenshot |
 
 ## Notes for Next Session
-- **A committed golden can be STALE** — my Fix-4 padding finding held vs a golden that lacked padding; the current converter DID emit it (conformance was already red on that fixture). Real-node trace of the CURRENT converter is ground truth; re-run the conformance test + check the whole-suite red count before conceding to a rater citing a golden.
-- **No block version bump was needed** — every visible change lands render-side via inline `<style>`; the trial full-width rule wins over any stale base `width:max-content` by source order. Only a `style.css`-ONLY change with no render-side counterpart needs a `?ver` bump.
-- **The page-8 discrepancy programme is now COMPLETE** — Fix 4 shipped, Fix 9 confirmed no SGS work needed. Next fronts are the parked architectural items.
-- `/sgs-update --stage 1` was run to seed the 6 new attr rows — the DB (not git-tracked) knows them; the git seed is the `sgs-update-v2.py` override edit.
+- **The generate-then-serve external-CSS model does NOT survive a full-page cache** — reproduced live under LiteSpeed (froze the cold inline response). The shipped fix makes EVERY render self-consistent (output buffer injects into head each render), so the cached HTML always carries the correct link/style. Memory: `test-with-actual-cache-layer-and-self-consistent-render`.
+- **Verify what's actually installed before recommending a solution that leans on it** — I recommended "let LiteSpeed optimise the file" before checking; no LiteSpeed plugin was installed. Bean: "research first, no guessing."
+- **CSS delivery is now operator-selectable** — `file` (default, needs an optimisation plugin for best CWV) vs `head` (self-contained). Settings page documents when each is optimal. The `sgs_css_output_mode` filter also overrides.
+- Editor parity predicate is `!is_admin() && !wp_is_serving_rest_request()` — do not simplify to `!is_admin()` (breaks ServerSideRender editor previews).
 
 ## Next Session Prompt
 
 ~~~
-You are the SGS cloning-pipeline developer. The page-8 discrepancy programme is COMPLETE (Fix 4 labels shipped + landed D311; Fix 9 confirmed every SGS block is Spec-32 no-inline compliant). The next front is `P-STYLE-TAG-CONSOLIDATION` — Bean parked it this session. Invoke `/autopilot` first.
+You are the SGS cloning-pipeline / framework developer. The per-block `<style>`-tag consolidation (P-STYLE-TAG-CONSOLIDATION / D312) is COMPLETE + LANDED. The next fronts are the remaining parked architectural items. Invoke `/autopilot` first.
 
-Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context, then work the priorities below.
+Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context, then pick a priority with Bean.
 
 ## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. `.claude/handoff.md` (this session) + `.claude/decisions.md` head (D311, D310, D309).
-2. **Spec 31 IN FULL** (Bean-locked every session) — esp. §3.A CSS routing, §13.4 FR-31-5.2, §13.6 composite-mirror + D294, FR-31-22 box-object, §7b, the cheat catalogue.
-3. **Spec 32 §6.1** (box-object / no-inline) — the `<style>`-consolidation work reshapes HOW the sanctioned scoped `<style>` is emitted; read it before touching the shared render helpers.
-4. `.claude/parking.md` head — `P-STYLE-TAG-CONSOLIDATION` (the task) + `P-PATTERNS-USE-CORE-BLOCKS` + `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`.
-5. `.claude/reports/2026-07-12-fix9-inline-styles-register.md` — the `<style>`-tag facts (144 tags, 107 body, 83 SGS, 33KB) + the WP Style Engine store fix.
+1. `.claude/handoff.md` (this session) + `.claude/decisions.md` head (D312, D311, D310).
+2. **Spec 31 IN FULL** (Bean-locked every session) — §3.A CSS routing, §13.4 FR-31-5.2, §13.6 composite-mirror + D294, FR-31-22 box-object, §7b, the cheat catalogue.
+3. **Spec 32 §6.1 + §6.2** (styling contract + the CSS-consolidation FR-32-11, shipped this session).
+4. `.claude/parking.md` head — `P-PATTERNS-USE-CORE-BLOCKS`, `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`, `P-PAGE8-DISCREPANCY-REGISTER`.
 
 ## ⛔ ANTI-PATTERN STOPs (carried forward + this session's — NEVER subtract, D101)
-- **STOP-GOLDEN-CAN-BE-STALE (NEW, D311)** — a committed conformance golden can be STALE (diverged from the current converter by an unre-seeded improvement). Prove a converter emit claim with a real-node trace of the CURRENT converter, not by reading a golden. When a golden and your trace disagree, run the conformance test + check the whole-suite red count — a pre-existing red means the golden is stale, not your finding. A render-side-only change can't newly break a golden. (`feedback_golden_can_be_stale_realnode_trace_is_ground_truth`.)
-- **STOP-STYLE-TAG-IS-NOT-STYLE-ATTR (NEW, D311)** — a `<style>` TAG is NOT an inline `style="…"` ATTRIBUTE; Spec 32 §6.1(b) sanctions the block's own scoped `<style>` as THE no-inline mechanism. So "no inline `style=` attributes" ≠ "no embedded CSS". When judging inline-styling, check BOTH: the `style="…"` attributes AND the count/size of per-block `<style>` tags (page 8 = ~100 tags / 33KB — the real bloat Bean flagged).
-- **STOP-VERIFY-COLOUR-HOVER-AND-VS-DRAFT (D310)** — verifying a cloned button/label/CTA colour = measure REST **and** HOVER (Playwright `.hover()`) and compare EVERY value to the DRAFT's exact rule — never resting-contrast-only. A composite's OWN `style.css .block .sgs-x--y` rules (0,2,0) override the shared channel — enumerate matched rules to find which wins.
-- **STOP-CSS-VER-CACHE-BUST (D310)** — a `style.css`-ONLY change (no render-side counterpart) is served STALE to a cached browser because the block stylesheet `?ver` is pinned to `block.json` version. Bump the block version (or filemtime `?ver`). Render-side inline `<style>` changes DO land fresh.
-- **STOP-PARITY-NOT-A-MEASURE (D309)** — the computed-parity % is NOT a fidelity measure (over-counts font-stacks + clone-only props). NEVER cite the aggregate number as an outcome. Signal = direct per-element computed-style matched by CONTENT + Bean's eye.
-- **STOP-STANDARDISE-NAMING-FIRST (D309)** — when a mechanism depends on a naming convention, STANDARDISE it across the ecosystem FIRST, then build. A modifier (tier/state) is a SUFFIX on the base attr; recognise capability by whether the block DECLARES the attr, never a name-guess.
-- **STOP-REGISTER-MECHANISMS-UNRELIABLE** — a pre-diagnosed register lists SYMPTOMS but its stated CAUSES are often wrong. Prove each cause on the live DOM OR a real-node converter trace (`recognise` + `build_block_markup` / `convert_section` on the actual draft node) FIRST. Register = item list only.
-- **STOP-CDN-STALE-CACHE** — a block CSS change at an UNCHANGED `?ver` serves stale to a cached browser; verify via `fetch(url,{cache:'no-store'})`; always `hosting_clearWebsiteCacheV1` + OPcache before any live CSS measure.
-- **STOP-16** — a subagent/"it works"/build-green is a HYPOTHESIS. Re-run yourself: `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib` (449 pass, 1 skip); `npm run build` (PowerShell — nvm shim broken in Git Bash; Python works in Bash).
-- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy/reclone + OPcache + CDN clear (+ version bump if style.css-only) + live computed-style.
-- **STOP-static-vs-live** — for "does this class/style actually land?" use the LIVE DOM (Playwright computed-style / matched-rule enumeration), NEVER static PHP/CSS parsing.
+- **STOP-VERIFY-CACHE-LAYER-INSTALLED (NEW, D312)** — before recommending or building anything that leans on a cache/CDN optimiser, VERIFY it is actually installed/active (`wp plugin list`, response headers) — don't assume from the host. No LiteSpeed Cache plugin was installed when I recommended leaning on it.
+- **STOP-SELF-CONSISTENT-RENDER-UNDER-CACHE (NEW, D312)** — a delivery whose correctness needs a "warm up" across requests (generate-then-serve) is FROZEN by a full-page cache (reproduced live under LiteSpeed). Prefer a design where EVERY render is self-consistent (e.g. output-buffer inject) so any cached render is correct. Test WITH the cache layer installed, not on a bare stack.
+- **STOP-STYLE-TAG-IS-NOT-STYLE-ATTR (D311)** — a `<style>` TAG is NOT an inline `style="…"` ATTRIBUTE; Spec 32 §6.1(b) sanctions the block's own scoped `<style>`. When judging inline-styling, check BOTH the `style=` attributes AND the `<style>` tag count/placement.
+- **STOP-GOLDEN-CAN-BE-STALE (D311)** — a committed conformance golden can be STALE; prove a converter emit claim with a real-node trace of the CURRENT converter, not by reading a golden. A render-side-only change can't newly break a golden.
+- **STOP-VERIFY-COLOUR-HOVER-AND-VS-DRAFT (D310)** — verifying a cloned button/label/CTA colour = measure REST **and** HOVER (`.hover()`) vs the DRAFT's exact rule, never resting-contrast-only. A composite's own `style.css .block .sgs-x--y` (0,2,0) overrides the shared channel.
+- **STOP-CSS-VER-CACHE-BUST (D310)** — a `style.css`-ONLY change is served STALE (block stylesheet `?ver` pinned to block.json version) → bump the version. Render-side inline `<style>` / output-buffer changes land fresh.
+- **STOP-PARITY-NOT-A-MEASURE (D309)** — the computed-parity % is NOT a fidelity measure; NEVER cite the aggregate number. Signal = direct per-element computed-style matched by CONTENT + Bean's eye.
+- **STOP-STANDARDISE-NAMING-FIRST (D309)** — standardise a naming convention across the ecosystem FIRST, then build the mechanism; recognise capability by whether the block DECLARES the attr, never a name-guess.
+- **STOP-REGISTER-MECHANISMS-UNRELIABLE** — a pre-diagnosed register lists SYMPTOMS but its CAUSES are often wrong. Prove each cause on the live DOM OR a real-node converter trace FIRST.
+- **STOP-CDN-STALE-CACHE** — a block CSS change at an UNCHANGED `?ver` serves stale; always `hosting_clearWebsiteCacheV1` + OPcache (+ `wp litespeed-purge all` now LiteSpeed is active) before any live CSS measure.
+- **STOP-16** — a subagent/"it works"/build-green is a HYPOTHESIS. Re-run yourself: `cd plugins/sgs-blocks/scripts && python -m pytest converter/tests -q --import-mode=importlib`; `npm run build` (PowerShell — nvm shim broken in Git Bash).
+- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy/reclone + OPcache + CDN + LiteSpeed clear + live computed-style.
+- **STOP-static-vs-live** — for "does this class/style land?" use the LIVE DOM, NEVER static PHP/CSS parsing.
 - **STOP-34** — verify a converter fix on the REAL draft node, not a synthetic fixture.
-- **STOP-D228** — a framework default overriding the draft's faithfully-ABSENT/present value is a CHEAT to REMOVE/GATE. Universal, never per-block (R-31-9).
-- **STOP-WP-CORE-SERIALISATION (D306)** — a schema-valid emitted `style.*` value can be DROPPED by WP-core's style engine if the property's definition lacks `css_vars`. Emit a form WP serialises (direct `var(...)` / concrete).
-- **STOP-COLOUR-SLUG-VALIDATION (D308)** — never emit a bare `var()` capture as a colour slug without validating it exists in the theme palette (undefined preset var → `currentColor` dark). Emit valid token / hex / honest gap.
-- **STOP-VERIFY-CLAIM** — do NOT assert "X isn't recognised / doesn't target Y / lacks Z" from a failed grep or inference. Verify against emitted markup / render code / block editor / live DOM first.
-- **STOP-60** — a converter change adding new attrs to cloned output changes conformance goldens (re-run the suite; re-seed deliberately + cited, never blanket). A render-side-only change does NOT change the emit.
+- **STOP-D228** — a framework default overriding the draft's faithfully-ABSENT/present value is a CHEAT to REMOVE/GATE. Universal (R-31-9).
+- **STOP-WP-CORE-SERIALISATION (D306)** — a schema-valid emitted `style.*` value can be DROPPED by WP-core if the property definition lacks `css_vars`. Emit a form WP serialises.
+- **STOP-COLOUR-SLUG-VALIDATION (D308)** — never emit a bare `var()` capture as a colour slug without validating it exists in the theme palette.
+- **STOP-VERIFY-CLAIM** — do NOT assert "X isn't recognised / lacks Z" from a failed grep. Verify against emitted markup / render code / live DOM first.
+- **STOP-60** — a converter change adding attrs changes conformance goldens (reseed deliberately + cited). A render-side-only change does NOT change the emit.
 - **STOP-44** — a schema-valid emitted attr can be a render no-op; verify the LIVE painted value.
 - **STOP-48/49** — do NOT trust `computed-parity.js` numbers or leftover-buckets; IGNORE header/footer + the accepted testimonial static-grid→slider.
-- **STOP-67** — pre-commit visual-diff report per CHANGED block at repo-ROOT `reports/visual-diff/<block>-<date>.md` with frontmatter `verdict: PASS` + `first_paint_capture_passed: true` (commit gate greps these; filename MUST be `<block>-<date>.md`).
-- **safecss strips functional colours (D302)** — any INLINE colour VALUE must be hex/named/var; the scoped `<style>` channel (`wp_strip_all_tags`) is NOT filtered.
-- **Path-scoped commits** — `git commit -F <msgfile> -- <paths>` (heredoc-on-stdin gets consumed by hooks → empty message; use a message FILE via `cat > file << 'EOF'`). `git add <file>` for NEW files; never `git add -A`. No version bumps / deprecations pre-production (except a cache-bust bump per STOP-CSS-VER-CACHE-BUST). No co-author line. Verify branch + D-ceiling before commit.
-- **DB seed not in git** — a new block.json attr / `property_suffixes` row needs `/sgs-update --stage 1` (or a dated `migrations/*.py`) to reach the DB (sgs-framework.db isn't git-tracked; the git seed is the sgs-update-v2.py override / migration file).
-- **One writer per file** — parallel coding subagents only across DISJOINT files; never 2+ concurrent writers on one file. A SOLO coding subagent (foreground, named files, main-session-verified) is optimal for a coupled surface.
-- **Re-clone command:** `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup "sites/mamas-munches/mockups/homepage/index.html" --auto-section --client mamas-munches --page homepage --media-map sites/mamas-munches/research/sandybrown-media-map.json --deploy-target page:8`. Deploy plugin first if render/CSS changed: `python plugins/sgs-blocks/scripts/build-deploy.py --skip-build --allow-dirty` (after `npm run build`).
+- **STOP-67** — pre-commit visual-diff report per CHANGED block at repo-ROOT `reports/visual-diff/<block>-<date>.md` (frontmatter `verdict: PASS` + `first_paint_capture_passed: true`).
+- **safecss strips functional colours (D302)** — any INLINE colour VALUE must be hex/named/var; the scoped `<style>` channel is NOT filtered.
+- **Path-scoped commits** — `git commit -F <msgfile> -- <paths>` (message FILE). `git add <file>` for NEW files; never `git add -A`. No version bumps / deprecations pre-production (except a cache-bust bump per STOP-CSS-VER-CACHE-BUST). No co-author line. Verify branch + D-ceiling before commit.
+- **DB seed not in git** — a new block.json attr / `property_suffixes` row needs `/sgs-update --stage 1` (or a dated `migrations/*.py`) to reach the DB.
+- **One writer per file** — parallel coding subagents only across DISJOINT files; a SOLO coding subagent (foreground, named files, main-verified) is optimal for a coupled surface.
+- **Re-clone command:** `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup "sites/mamas-munches/mockups/homepage/index.html" --auto-section --client mamas-munches --page homepage --media-map sites/mamas-munches/research/sandybrown-media-map.json --deploy-target page:8`. Deploy plugin (PHP-only) if render/CSS changed: `python plugins/sgs-blocks/scripts/build-deploy.py --skip-build --allow-dirty`.
 
 ## Skills to Invoke
 | Skill | When |
 |---|---|
-| `/brainstorming` | design the `<style>`-consolidation architecture (store vs enqueued file) before building |
+| `/brainstorming` | design any pattern-modernisation / token-extraction architecture before building |
 | `/gap-analysis` | grade before delivery |
 | `/lifecycle` | any skill/agent/pipeline change |
-| `/research` | gold-standard reference — WP Style Engine store + Kadence/Spectra/GenerateBlocks CSS-emission patterns |
-| `/strategic-plan` | order the framework-wide `<style>`-consolidation rollout |
+| `/research` | gold-standard reference before non-trivial design (Bean: research first, no guessing) |
+| `/strategic-plan` | order a multi-file rollout |
 | `/systematic-debugging` | prove any cause on the live DOM / real node before fixing |
-| `/qc-council` | any shared-surface render-helper change before dispatch (blub.db 255) |
+| `/qc-council` | any shared-surface / converter / pipeline change before dispatch (blub.db 255) |
 | `/qc-inline` | per-change QC (Spec 31/32 compliance + no cheats + universal) |
 | `/sgs-clone` `/sgs-db` `/wp-blocks` | ground truth (block schema, box_family, css_property, presets) |
 | `/handoff` `/capture-lesson` | session close |
@@ -111,10 +109,10 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context, then work the 
 ## MCP Servers & Tools
 | Tool | For |
 |---|---|
-| Playwright / chrome-devtools MCP | live computed-style + `<style>`-tag enumeration + matched-rule inspection (THE landed gate) |
-| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear before any live CSS measure (user u945238940, domain sandybrown-…hostingersite.com) |
+| Playwright / chrome-devtools MCP | live computed-style + `<style>`/`<link>` enumeration + matched-rule inspection (THE landed gate) |
+| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear before any live CSS measure (user u945238940) — plus `wp litespeed-purge all` (LiteSpeed now active) |
 | REST app-pwd `.claude/secrets/sandybrown.env` | user `Claude`; pass creds inline (env has unquoted specials — don't `source`) |
-| `/library-docs` | WP Style Engine store API (`wp_style_engine_get_styles` context + `wp_enqueue_stored_styles`) |
+| `/library-docs` | up-to-date WP / library docs |
 
 ## Agents to Delegate To
 | Agent | When |
@@ -122,28 +120,14 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context, then work the 
 | general-purpose (Sonnet) | solo coding subagent (one writer, named files) + read-only traces/raters (parallel) |
 | feature-dev:code-reviewer | pre-commit cross-model review on any shared render-helper change |
 
-## Research Approach
-1. `/research` (or `/library-docs`) the WP Style Engine store: `wp_style_engine_get_styles($css, ['context' => 'sgs-blocks'])` + `wp_enqueue_stored_styles()` — how core collects block-support CSS into ONE `<style>` in the footer.
-2. Inspect Kadence / Spectra / GenerateBlocks live pages (or docs) for how they emit per-instance CSS (single collected block vs enqueued dynamic file vs per-block `<style>`).
-3. Map SGS's current emitters (`SGS_Container_Wrapper`, `sgs_label_box_css_rule`, `sgs_typography_css_rule`, per-block render.php scoped `<style>`) to the store API; decide the migration shape.
-
----
-
-## Task 1 — `P-STYLE-TAG-CONSOLIDATION`: research + design (do NOT build without design approval)
-**What:** SGS emits ~100 per-block scoped `<style>` tags (33KB) into the page body (verified live page 8: 144 total, 107 body, 83 SGS). Research the WP-native fix (Style Engine "store") + competitors, then design collapsing the scatter into one footer block (or an enqueued cacheable file).
-**Why:** cleaner output + cacheability; Bean's flagged bloat. Measurable: ~100 body `<style>` tags → 1 (or enqueued file).
-**Estimated time:** ~30 min research + ~30 min design (the build is a separate, larger phase).
-**Orchestration:** `/research` (WP store + competitors) → `/brainstorming` (design) → present to Bean → `/qc-council` on the shared-render-helper change BEFORE any build. Execution inline for research/design; the eventual build is framework-wide — solo implementer, one writer, per-block LANDED verification.
-**Depends on:** none. **/qc gate after:** design → `/qc-council` before build.
-**Acceptance:** a design Bean approves for how the ~100 per-block `<style>` tags collapse (store-into-one-footer-block vs enqueued file), with the shared helpers identified as the change surface. NO code until approved.
-
-## Task 2 — (only if Bean redirects) other open parking items
-`P-PATTERNS-USE-CORE-BLOCKS` or `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`. Each is its own dedicated session; do NOT start without Bean picking it.
+## Task 1 — pick with Bean: `P-PATTERNS-USE-CORE-BLOCKS` OR `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` OR the page-8 residuals
+**What:** each is its own dedicated session (see parking.md heads). Do NOT start without Bean selecting one.
+**Acceptance:** N/A until Bean picks.
 
 ## Methodology guardrails (do not skip)
 - Read the governing spec IN FULL. Prove the cause on the LIVE DOM / real node before building. NEVER cite computed-parity % as a measure.
-- A `<style>` TAG ≠ a `style="…"` ATTRIBUTE (STOP-STYLE-TAG-IS-NOT-STYLE-ATTR); a committed golden can be STALE (STOP-GOLDEN-CAN-BE-STALE) — real-node trace is ground truth.
-- Design-gate + `/qc-council` on shared-surface render-helper changes before building (blub.db 255). Every fix universal (R-31-9), no cheat. Verify the LIVE painted value (STOP-44). Bean's eye co-authoritative (R-31-13).
+- Verify a cache/optimiser is actually installed before leaning on it (STOP-VERIFY-CACHE-LAYER-INSTALLED). Test caching behaviour WITH the cache layer present (STOP-SELF-CONSISTENT-RENDER-UNDER-CACHE).
+- Design-gate + `/qc-council` on shared-surface changes before building (blub.db 255). Every fix universal (R-31-9), no cheat. Verify the LIVE painted value (STOP-44). Bean's eye co-authoritative (R-31-13).
 - Branch appropriately (core SGS = `main`); path-scoped commits (message FILE); no co-author line. `/qc-inline` per change; end with `/handoff`.
-- **Deploy before measure** — build + deploy + OPcache + CDN clear before any live measurement (STOP-21/CDN).
+- **Deploy before measure** — build + deploy + OPcache + CDN clear + `wp litespeed-purge all` before any live measurement (STOP-21/CDN).
 ~~~
