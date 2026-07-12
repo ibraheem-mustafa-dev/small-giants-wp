@@ -14,7 +14,7 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 ## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
 1. `.claude/handoff.md` (D312/D313) + `.claude/decisions.md` head (D313, D312, D311).
 2. **Spec 31 IN FULL** (Bean-locked every session) — §3.A CSS routing, §13.4 FR-31-5.2, §13.6 composite-mirror + D294, FR-31-22 box-object, §7b, the cheat catalogue.
-3. **Spec 20 (`.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`) IN FULL** — the computed-parity tool + Stage 11.6 + rule 4a. This is the tool Task 2 rebuilds; read what it CLAIMS to do vs what it does.
+3. **Spec 20 (`.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`) IN FULL** — the CANONICAL spec for the parity tool Task 2 rebuilds (v1.0.0, FR-20-1..8). It already defines: FR-20-1 effective-value **content-matched** comparison (`getComputedStyle`, keyed by text content NOT class), FR-20-2 universal draft-agnostic capture, FR-20-4 unmatched-element surfacing, FR-20-6 documented-limits-not-silent-gaps, FR-20-8 Stage 11.6 wiring. Read what it CLAIMS vs what the tool DOES (it over-counts — STOP-48/49). **Note:** Bean's ask (match tags + classes + elements + content + CSS) is BROADER than Spec 20 v1.0.0 (computed-CSS-focused) → Task 2 AMENDS Spec 20 first (spec-first, like Spec 32 this session), then builds to it.
 4. `.claude/parking.md` head — `P-PATTERNS-USE-CORE-BLOCKS`, `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`, `P-PAGE8-DISCREPANCY-REGISTER`.
 5. The parity tool source: `plugins/sgs-blocks/scripts/parity/computed-parity.js` + how Stage 11.6 calls it in `sgs-clone-orchestrator.py`.
 
@@ -91,25 +91,28 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 - Depends on: none. Parallel with: none. /qc gate after: no (it's a read-only investigation; Bean reviews the ledger).
 **Acceptance:** a per-section ledger (draft element → clone element, or MISSING/DIVERGENT with the exact tag/class/content/CSS delta), covering EVERY section, with header/footer + the accepted testimonial static-grid→slider explicitly noted as out-of-contract (memory `clone-fidelity-excludes-header-footer`). Any genuine gap → root-caused + presented to Bean (fix at the DRAFT or the converter per STOP-FIX-DRAFT-NOT-CLONE / R-31-9).
 
-## Task 2 — Rebuild the parity tool to be universally trustworthy
-**What:** fix `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Stage 11.6) so it ACTUALLY measures clone fidelity for ANY draft/blocks — matching tags + classes + elements + content + CSS — with pinpoint accuracy Bean can trust. No cheating to pass this one page. It must correctly PAIR draft↔clone elements and report exactly what matches vs diverges, per dimension, so Bean can point it at other drafts and see success/failure precisely.
-**Why:** the current tool over-counts (STOP-48/49) so its % can't be trusted; Bean needs a dependable instrument to test the pipeline on future drafts.
-**Estimated time:** ~45–60 min (design + build + validate).
+## Task 2 — Rebuild the parity tool to be universally trustworthy (SPEC-FIRST — amend Spec 20)
+**What:** make the computed-parity tool (`plugins/sgs-blocks/scripts/parity/computed-parity.js`, Stage 11.6) ACTUALLY measure clone fidelity for ANY draft/blocks — matching **tags + classes + elements + content + CSS** — with pinpoint accuracy Bean can trust. No cheating to pass this one page. It must correctly PAIR draft↔clone elements and report exactly what matches vs diverges, per dimension.
+**Why:** the current tool over-counts (STOP-48/49) so its % can't be trusted; Bean needs a dependable instrument to test the pipeline on future drafts. It ALREADY has a spec (Spec 20) — but Bean's tag/class/element scope is broader than Spec 20 v1.0.0's computed-CSS focus.
+**Estimated time:** ~45–60 min (spec amend + design + build + validate).
 **Orchestration:**
-- `/brainstorming` the matching model first (how to PAIR elements: by normalised text content — ~96% present per rule 4a — plus structural position; what counts as a match per dimension; how to exclude out-of-contract chrome). Then `/qc-council` on the fix-shapes (it's a measurement instrument — a wrong design gives Bean false confidence). Then a SOLO implementer (one writer).
-- Depends on: Task 1 (Task 1's manual ledger is the ground truth the tool must reproduce). Parallel with: none.
+- **STEP 0 — SPEC FIRST (do NOT skip; Spec-Scope Binding):** read Spec 20 IN FULL. Bean's ask adds **tag + class + element-structure matching** on top of the existing content-matched computed-CSS (FR-20-1). AMEND Spec 20 to v1.1.0 with the added dimensions as new FRs (e.g. FR-20-9 tag/class/element-structure matching; extend FR-20-4 unmatched surfacing to all dimensions), a bumped `spec_version` + `status_history` entry — BEFORE writing tool code. This is exactly the spec-first sequence used for Spec 32 (FR-32-11) this session.
+- Then `/brainstorming` the matching model (PAIR elements by normalised text content — ~96% present, FR-20-1/rule 4a — plus structural position; define "match" per dimension; exclude out-of-contract chrome per memory `clone-fidelity-excludes-header-footer`). Then `/qc-council` on the fix-shapes (it's a trust-bearing instrument — a wrong design gives Bean false confidence). Then a SOLO implementer (one writer).
+- Depends on: Task 1 (its manual ledger is the ground truth the tool must reproduce). Parallel with: none.
 - /qc gate after: yes — `/qc-council` on the design + `/qc-inline` on the build; then VALIDATE the tool's output against Task 1's hand-built ledger (they must agree).
-**Acceptance:** the rebuilt tool, run on page 8, produces a per-element/per-dimension report (tags/classes/elements/content/CSS) that MATCHES Task 1's hand-verified ledger (no false matches, no false gaps); Bean can read exactly where the clone succeeds/fails; and it runs on a DIFFERENT draft without hardcoded page-8 assumptions (universal, R-31-9). Spec 20 updated to the rebuilt tool's real behaviour. Do NOT declare done on a self-reported number — the tool's verdict must agree with the independent manual ledger.
+**Acceptance:** (a) Spec 20 amended to define the full tag/class/element/content/CSS matching (spec-first); (b) the rebuilt tool, run on page 8, produces a per-element/per-dimension report that MATCHES Task 1's hand-verified ledger (no false matches, no false gaps) AND satisfies the amended Spec 20's FRs; (c) it runs on a DIFFERENT draft with no hardcoded page-8 assumptions (universal, R-31-9, FR-20-2); (d) Spec 20 `last_verified` + test-strategy rows updated. Do NOT declare done on a self-reported number — the tool's verdict must agree with the independent manual ledger.
 
 ## Dependency graph
 ```
 Task 1 (inline, Opus — exhaustive draft-vs-live DOM ledger)
   ↓ (ledger = ground truth)
+Task 2 STEP 0: amend Spec 20 → v1.1.0 (add tag/class/element FRs) — SPEC FIRST
+  ↓
 Task 2 design (/brainstorming) → /qc-council on fix-shapes
   ↓
 Task 2 build (solo implementer, one writer) → /qc-inline
-  ↓ VALIDATE tool output == Task 1 ledger
-Commit + Spec 20 update
+  ↓ VALIDATE tool output == Task 1 ledger AND == amended Spec 20 FRs
+Commit (tool + Spec 20 together)
 ```
 
 ## Methodology guardrails (do not skip)
