@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- FR-20-11 fixture (DRAFT). A below-fold loading="lazy" image sits after a tall spacer. The
+     tool force-loads deferred content (scroll full height + loading=eager + decode + settle)
+     BEFORE capture, so the image is measured as PRESENT at real size — never false-flagged as
+     missing/zero (the D314 story-image false-negative). Draft == clone, so a correct run drops
+     zero images. -->
+<html lang="en"><head><meta charset="utf-8"><title>parity fixture</title><style>
+  html,body{margin:0;font-family:Arial,sans-serif}
+  .spacer{height:2600px}
+  .story{padding:24px}
+  .story img{width:300px;height:200px;object-fit:cover;border-radius:12px;display:block}
+</style></head><body>
+  <section class="spacer">Above the fold content goes here at the top of the page.</section>
+  <section class="story">
+    <img loading="lazy" alt="baked with love photo"
+         src="data:image/svg+xml;utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='300'%20height='200'%3E%3Crect%20width='300'%20height='200'%20fill='%23e88a95'/%3E%3C/svg%3E">
+  </section>
+</body></html>

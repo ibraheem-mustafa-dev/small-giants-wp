@@ -1,0 +1,13 @@
+<!doctype html>
+<!-- FR-20-1 fixture (DRAFT). Base font-size 16px; the <p> has NO explicit font-size so it
+     INHERITS the base. The clone counterpart sets base 18px. A content-matched compare must
+     report font-size 16px->18px on this inherited-base paragraph (the case source-declaration-
+     diff and class-keying both MISS). -->
+<html lang="en"><head><meta charset="utf-8"><title>parity fixture</title><style>
+  html,body{margin:0;font-size:16px;font-family:Georgia,serif;color:#222}
+  section{padding:20px}
+</style></head><body>
+  <section>
+    <p>The quick brown fox jumps over the lazy dog every single morning without fail.</p>
+  </section>
+</body></html>

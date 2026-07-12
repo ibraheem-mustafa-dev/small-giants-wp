@@ -6,7 +6,18 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-12 (LATEST) — D314: page-8 100%-clone proof + C description-colour FIXED + parity-tool spec-amended (Spec 20 v1.1.0)
+## 2026-07-12 (LATEST) — D315: parity-tool BUILT to Spec 20 v1.1.0 (visible-fidelity), validated vs the D314 ledger
+
+**D315 — rebuilt `computed-parity.js` (Stage 11.6) to the locked Spec 20 v1.1.0 so its number tracks VISIBLE fidelity; validated against the independent D314 ledger, never self-report.** Branch `main` (D-ceiling D314→D315). Council-gated + code-reviewed (trust-bearing instrument, blub.db 255).
+
+- **Baseline (measured live, page 8):** old tool 77% (2335/3023 meaningful props). Bucket analysis: font-family-same-primary 267 (39% of all misses), sub-visible twins 143, appearance/interactivity 30.
+- **`/qc-council` (3 raters, converged OK) hardened the fix-shapes — the load-bearing correction: sub-visible buckets must be gated by a per-pair INVISIBILITY PREDICATE, never blanket-suppressed by label** (a blanket exclude hides a real gap = the exact untrustworthiness the rebuild kills). Rules built: font-family PRIMARY-only (differing primary still scores); blocklist `interactivity`; `appearance` scored on form controls; line-height sub-visible ONLY single-line; margin→0 sub-visible ONLY when clone parent flex/grid gap ≥ dropped margin & not last child; align-items normal↔stretch = match; justify-content/flex-grow/display flex↔block KEPT SCORED.
+- **Added dims:** TAG scored separately (FR-20-9) — reproduces the ledger's `button→span`/`p→div` exactly; class names captured context-only never scored (FR-20-10); force-load lazy/below-fold before capture (FR-20-11).
+- **`feature-dev:code-reviewer` caught 3 real bugs, ALL in the unsafe (hide-a-gap) direction — all fixed + guarded:** (1) inline `clientHeight===0` made the single-line guard always true → inline default now `getClientRects().length` + `false` when unproven; (2) native `<button>` UA grey bg made the styled-guard hide a real `appearance:none` → appearance now scored whenever either side is a form control; (3) margin-absorbed fired on clone-ADDED margins → now requires clone=0 & draft>0.
+- **Tests:** `fixtures/` + `smoke-test.js` — 11/11 pass (FR-20-1 base-font, FR-20-9 tag, FR-20-10 class-agnostic 100%+static grep, FR-20-11 lazy, + 3 FR-20-3a guard cases for the code-review bugs). Draft-agnostic proven (4 non-page-8 pairs run with zero edits; no page/client/selector literal — FR-20-2).
+- **Result: 88% raw CSS | TAG 79% | content 100% | 49 sub-visible excluded.** 287/350 (82%) of scored misses are exactly the ledger dispositions (A pills + B shadow + D banner accepted; testimonials out-of-contract). Applying the same dispositions → ~98% (ledger said 94–95%; higher now because C+E were fixed at D314). **The raw 88% is honest + lower ONLY because the tool page-agnostically counts the accepted/excluded items (FR-20-2 forbids it applying dispositions) — it PAIRS with Bean's eye (§FR-20-7/R-31-13), never closes alone.** Genuine in-contract residual = 63 tiny layout-representation props. **Bean signed off ("I accept all that you've done").** Stage 11.6 orchestrator keys unchanged (rebuilt report is a superset — additive `tag`/`sub_visible` dims). Memory: `sub-visible-parity-buckets-need-invisibility-predicate-not-label`.
+
+## 2026-07-12 — D314: page-8 100%-clone proof + C description-colour FIXED + parity-tool spec-amended (Spec 20 v1.1.0)
 
 **D314 — proved the page-8 clone is ~95% (not 100%), fixed the one systemic converter gap it exposed (C), amended Spec 20 v1.1.0 for the next-session parity-tool rebuild, and deferred E.** Branch `main` (D-ceiling D313→D314). Two Bean-directed tasks; Task 2 (parity-tool build) deferred to next session with the design LOCKED in Spec 20 v1.1.0 + the ledger.
 

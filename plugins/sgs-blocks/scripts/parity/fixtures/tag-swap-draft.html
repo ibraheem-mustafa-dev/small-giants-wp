@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- FR-20-9 fixture (DRAFT). A <button> pill with the same text + identical explicit styling as
+     the clone's <span>. The tool must report a tag divergence (button->span) SEPARATELY, while
+     the CSS still matches (a tag swap must not dilute the CSS score, and vice-versa). -->
+<html lang="en"><head><meta charset="utf-8"><title>parity fixture</title><style>
+  html,body{margin:0;font-family:Arial,sans-serif}
+  section{padding:20px}
+  .pill{display:inline-block;background:#eee;color:#333;border:1px solid #ccc;border-radius:8px;
+        padding:8px 16px;font-size:14px;font-weight:600;line-height:20px;-webkit-appearance:none;appearance:none;margin:0}
+</style></head><body>
+  <section>
+    <p class="lead">Choose your pack size below to continue.</p>
+    <button class="pill draft-pill">Add to basket now</button>
+  </section>
+</body></html>

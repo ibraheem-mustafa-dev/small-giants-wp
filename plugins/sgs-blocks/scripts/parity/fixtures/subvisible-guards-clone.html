@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- FR-20-3a guard fixture (CLONE). Same structure/content as the draft, but with the three
+     divergences that MUST STILL SCORE (never be bucketed as sub-visible):
+       1. link line-height 24px -> 32px  (multi-line -> real visible leading gap)
+       2. button appearance auto -> none (visible UA-chrome strip on a native control)
+       3. flex child margin-right 0 -> 16px (clone ADDS spacing; not an absorbed margin) -->
+<html lang="en"><head><meta charset="utf-8"><title>parity guard fixture</title><style>
+  html,body{margin:0;font-family:Arial,sans-serif}
+  section{padding:20px}
+  .wrap{max-width:220px}
+  .lnk{line-height:32px}
+  .btn{background:none;border:none;padding:0;font:inherit;appearance:none;-webkit-appearance:none}
+  .row{display:flex;gap:20px}
+  .row .second{margin-right:16px}
+</style></head><body>
+  <section>
+    <p class="wrap">Intro copy and then <a href="#" class="lnk">a rather long inline hyperlink that will certainly wrap onto two separate lines within this narrow paragraph</a> trailing words.</p>
+    <button class="btn">Proceed to the checkout now</button>
+    <div class="row"><span>First flex item label</span><span class="second">Second flex item label</span></div>
+  </section>
+</body></html>

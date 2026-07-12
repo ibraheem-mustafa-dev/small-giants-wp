@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- FR-20-9 fixture (CLONE). A <span> rendered as the pill, identical styling to the draft's
+     <button>. Tag divergence button->span must be reported; CSS must still match. Class names
+     differ deliberately (Rule 1) and must NOT be scored (FR-20-10). -->
+<html lang="en"><head><meta charset="utf-8"><title>parity fixture</title><style>
+  html,body{margin:0;font-family:Arial,sans-serif}
+  section{padding:20px}
+  .pill{display:inline-block;background:#eee;color:#333;border:1px solid #ccc;border-radius:8px;
+        padding:8px 16px;font-size:14px;font-weight:600;line-height:20px;-webkit-appearance:none;appearance:none;margin:0}
+</style></head><body>
+  <section>
+    <p class="lead">Choose your pack size below to continue.</p>
+    <span class="pill wp-block-sgs-label">Add to basket now</span>
+  </section>
+</body></html>
