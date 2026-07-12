@@ -14,8 +14,10 @@ import {
 	SelectControl,
 	TextControl,
 	TextareaControl,
+	RangeControl,
 	__experimentalNumberControl as NumberControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalBoxControl as BoxControl,
 	ComboboxControl,
 	ToggleControl,
 	CheckboxControl,
@@ -895,6 +897,54 @@ export default function Edit( { attributes, setAttributes } ) {
 									}
 									__nextHasNoMarginBottom
 								/>
+							) }
+							{ isTrial && (
+								<>
+									<ToggleControl
+										label={ __( 'Tag full width', 'sgs-blocks' ) }
+										help={ __(
+											'Stretch the trial tag to the full width of the card body (matches the draft) instead of hugging its text.',
+											'sgs-blocks'
+										) }
+										checked={ !! attributes.tagFullWidth }
+										onChange={ ( v ) =>
+											setAttributes( { tagFullWidth: v } )
+										}
+										__nextHasNoMarginBottom
+									/>
+									<DesignTokenPicker
+										label={ __( 'Tag background colour', 'sgs-blocks' ) }
+										value={ attributes.tagBackgroundColour || '' }
+										onChange={ ( v ) =>
+											setAttributes( { tagBackgroundColour: v } )
+										}
+									/>
+									<DesignTokenPicker
+										label={ __( 'Tag text colour', 'sgs-blocks' ) }
+										value={ attributes.tagTextColour || '' }
+										onChange={ ( v ) =>
+											setAttributes( { tagTextColour: v } )
+										}
+									/>
+									<RangeControl
+										label={ __( 'Tag border radius (px)', 'sgs-blocks' ) }
+										value={ attributes.tagBorderRadius }
+										onChange={ ( v ) =>
+											setAttributes( { tagBorderRadius: v } )
+										}
+										min={ 0 }
+										max={ 50 }
+										step={ 1 }
+										__nextHasNoMarginBottom
+									/>
+									<BoxControl
+										label={ __( 'Tag padding', 'sgs-blocks' ) }
+										values={ attributes.tagPadding ?? {} }
+										onChange={ ( next ) =>
+											setAttributes( { tagPadding: next } )
+										}
+									/>
+								</>
 							) }
 							{ isFeatured && (
 								<TextControl

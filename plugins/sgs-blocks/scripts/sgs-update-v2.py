@@ -1132,6 +1132,22 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # trialTag: selector hygiene — the real element is __tag--trial
     #   (builtin-render.php:106), not a derived guess.
     ("sgs/product-card", "trialTag"): {"derived_selector": ".sgs-product-card__tag--trial"},
+    # ---- Trial-tag BOX attrs (2026-07-12, no-inline label/trial-tag mirror) ----
+    # The in-body trial tag renders through the SHARED sgs_label_box_css_rule()
+    # helper (render.php typed branch), scoped to the trial span's uid+BEM. Point
+    # every tag-box attr at the DRAFT's real trial-tag element so the universal
+    # lift reads the right rule. The two COLOUR attrs (role='color') transfer via
+    # the existing universal styling lift (styling_content.py — colour/typography
+    # only). The two GEOMETRY attrs (tagPadding/tagBorderRadius) are NOT lifted by
+    # the current engine (styling_helpers.py: geometry radius/padding is
+    # intentionally not routed) — seeded here for selector hygiene + a future
+    # per-element geometry lift; on page 8 they are moot (the draft trial tag's
+    # 4px 10px / 6px EQUAL the SGS style.css defaults). tagFullWidth is a card-
+    # design constant (block.json default true), not a lifted value.
+    ("sgs/product-card", "tagBackgroundColour"): {"role": "color", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
+    ("sgs/product-card", "tagTextColour"): {"role": "color", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
+    ("sgs/product-card", "tagBorderRadius"): {"role": "visual", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
+    ("sgs/product-card", "tagPadding"): {"role": "visual", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
     # ctaUrl: mis-seeded role='content' (generic text role) instead of
     #   'link-href' — builtin-render.php emits the CTA as
     #   <a href="$cta_url" class="sgs-product-card__button">, i.e. this attr

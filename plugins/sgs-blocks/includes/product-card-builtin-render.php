@@ -33,10 +33,14 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 	/**
 	 * Render the typed built-in card inner HTML from block attributes.
 	 *
-	 * @param array $attributes Block attributes.
+	 * @param array  $attributes Block attributes.
+	 * @param string $card_uid   Per-instance uid class (also on the wrapper) — added
+	 *                           to the in-body TRIAL tag so render.php's scoped
+	 *                           `.{uid}.sgs-product-card__tag--trial` box rule
+	 *                           (sgs_label_box_css_rule) targets it. '' = none.
 	 * @return string Safe HTML — all outputs escaped at call site.
 	 */
-	function sgs_product_card_builtin_render( array $attributes ) {
+	function sgs_product_card_builtin_render( array $attributes, string $card_uid = '' ) {
 
 		// ── Sanitised attribute reads ─────────────────────────────────────────
 
@@ -122,7 +126,7 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 			<?php
 			if ( 'trial' === $sgs_pcard_variant && '' !== $sgs_pcard_trial ) :
 				?>
-				<span class="sgs-product-card__tag sgs-product-card__tag--trial"><?php echo esc_html( $sgs_pcard_trial ); ?></span>
+				<span class="sgs-product-card__tag sgs-product-card__tag--trial<?php echo '' !== $card_uid ? ' ' . esc_attr( $card_uid ) : ''; ?>"><?php echo esc_html( $sgs_pcard_trial ); ?></span>
 				<?php
 			elseif ( '' !== $sgs_pcard_feat_badge && '' === $sgs_pcard_image ) :
 				// Image-less featured card — in-body fallback (stays in flow).

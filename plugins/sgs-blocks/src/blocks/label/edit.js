@@ -9,6 +9,7 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
+	ToggleControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
@@ -116,11 +117,13 @@ function buildStyle( attributes ) {
 		textAlign,
 		padding,
 		borderRadius,
+		fullWidth,
 		className,
 		style,
 	} = attributes;
 
 	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const paddingPreview = boxShorthand( padding );
 
 	const previewStyle = {
 		color: colourVar( textColour ) || undefined,
@@ -133,18 +136,34 @@ function buildStyle( attributes ) {
 			: undefined,
 		textTransform: textTransform || undefined,
 		textDecoration: textDecoration || undefined,
-		borderRadius: borderRadius ? `${ borderRadius }px` : undefined,
 		fontStyle: fontStyle || undefined,
 		textAlign: textAlign || undefined,
 		margin: marginPreview,
 	};
 
-	// Padding preview only for pill variants (matches render.php's is_pill gate).
-	const isPillStyle = typeof className === 'string' &&
-		( className.includes( 'is-style-pill-fill' ) || className.includes( 'is-style-pill-wrap' ) );
-	if ( isPillStyle ) {
-		previewStyle.padding = boxShorthand( padding );
-		previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+	// Box (padding / background / radius) paints on VALUE-PRESENCE — mirrors
+	// render.php's ungated helper (no pill gate).
+	previewStyle.padding = paddingPreview;
+	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+	const hasRadius = borderRadius !== undefined && borderRadius !== null &&
+		borderRadius !== '' && Number( borderRadius ) !== 0;
+	previewStyle.borderRadius = hasRadius ? `${ borderRadius }px` : undefined;
+
+	// Display model — mirrors render.php. When an is-style-* variant class owns
+	// display, emit none (the variant CSS decides). Otherwise: fullWidth →
+	// block+100%, a boxed label → inline-block, a bare eyebrow → block.
+	const hasStyleVariant = typeof className === 'string' &&
+		className.includes( 'is-style-' );
+	if ( ! hasStyleVariant ) {
+		const boxPresent = !! paddingPreview || !! backgroundColour || hasRadius;
+		if ( fullWidth ) {
+			previewStyle.display = 'block';
+			previewStyle.width = '100%';
+		} else if ( boxPresent ) {
+			previewStyle.display = 'inline-block';
+		} else {
+			previewStyle.display = 'block';
+		}
 	}
 
 	// Remove undefined values so the DOM stays clean.
@@ -156,7 +175,6 @@ function buildStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
-		className,
 		style,
 		textColour,
 		backgroundColour,
@@ -179,15 +197,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 		borderRadius,
+		fullWidth,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
 		style: buildStyle( attributes ),
 	} );
-
-	// Pill-specific panels are visible when a pill block-style is active.
-	const isPill = typeof className === 'string' &&
-		( className.includes( 'is-style-pill-fill' ) || className.includes( 'is-style-pill-wrap' ) );
 
 	return (
 		<>
@@ -203,15 +218,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { textColour: val } )
 						}
 					/>
-					{ isPill && (
-						<DesignTokenPicker
-							label={ __( 'Background colour', 'sgs-blocks' ) }
-							value={ backgroundColour }
-							onChange={ ( val ) =>
-								setAttributes( { backgroundColour: val } )
-							}
-						/>
-					) }
+					<DesignTokenPicker
+						label={ __( 'Background colour', 'sgs-blocks' ) }
+						value={ backgroundColour }
+						onChange={ ( val ) =>
+							setAttributes( { backgroundColour: val } )
+						}
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -308,39 +321,49 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ isPill && (
-					<PanelBody
-						title={ __( 'Pill Shape', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<RangeControl
-							label={ __( 'Border radius (px)', 'sgs-blocks' ) }
-							value={ borderRadius }
-							onChange={ ( val ) =>
-								setAttributes( { borderRadius: val } )
+				<PanelBody
+					title={ __( 'Box', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Stretch to full width', 'sgs-blocks' ) }
+						help={ __(
+							'Make the label span the full width of its container (block, 100% wide) instead of hugging its text.',
+							'sgs-blocks'
+						) }
+						checked={ !! fullWidth }
+						onChange={ ( val ) =>
+							setAttributes( { fullWidth: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Border radius (px)', 'sgs-blocks' ) }
+						value={ borderRadius }
+						onChange={ ( val ) =>
+							setAttributes( { borderRadius: val } )
+						}
+						min={ 0 }
+						max={ 50 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						values={ {
+							base: padding ?? {},
+							tablet: paddingTablet ?? {},
+							mobile: paddingMobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							if ( 'base' === tier ) {
+								setAttributes( { padding: next } );
+							} else {
+								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
-							min={ 0 }
-							max={ 50 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							values={ {
-								base: padding ?? {},
-								tablet: paddingTablet ?? {},
-								mobile: paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { padding: next } );
-								} else {
-									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-					</PanelBody>
-				) }
+						} }
+					/>
+				</PanelBody>
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }

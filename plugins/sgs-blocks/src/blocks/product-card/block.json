@@ -525,6 +525,31 @@
 		"tagFontSizeMobile": {
 			"type": "number"
 		},
+		"tagPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the in-body trial tag { top, right, bottom, left }. Rendered scoped via the shared sgs_label_box_css_rule() helper (mirrors sgs/label). The cloning converter lifts the draft .sgs-product-card__tag--trial padding here."
+		},
+		"tagBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the in-body trial tag. Theme token slug or raw CSS colour. Empty = the style.css default (accent tint). Cloning converter lifts the draft trial-tag background-color here."
+		},
+		"tagTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for the in-body trial tag. Theme token slug or raw CSS colour. Empty = the style.css default. Cloning converter lifts the draft trial-tag color here."
+		},
+		"tagBorderRadius": {
+			"type": "number",
+			"default": 0,
+			"description": "Border radius (px) for the in-body trial tag. 0 = the style.css default. Cloning converter lifts the draft trial-tag border-radius here."
+		},
+		"tagFullWidth": {
+			"type": "boolean",
+			"default": true,
+			"description": "When true the in-body trial tag stretches to full width (block, 100%) instead of hugging its text. Defaults TRUE because the trial tag is a full-width child of the flex-column card body by design (draft canon) — a card-design constant, not a converter-detected value (the parent-flex fullWidth heuristic was dropped per council). Toggle off to make the trial tag hug its text."
+		},
 		"showPickers": {
 			"type": "boolean",
 			"default": true,

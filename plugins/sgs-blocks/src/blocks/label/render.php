@@ -43,14 +43,11 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
-// 1. Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
-// values and a CSS-keyword sanitiser for free-text properties (mirrors
-// sgs/heading + sgs/container).
+// 1. Security sanitisers (contract §D) — a CSS-keyword sanitiser for free-text
+// properties (mirrors sgs/heading + sgs/container). Box/side CSS-length values
+// are sanitised inside the shared sgs_label_box_css_rule() helper
+// (sgs_css_length_sanitise), so no local length closure is needed here.
 // ---------------------------------------------------------------------------
-
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
 
 $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
@@ -93,15 +90,18 @@ $text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( 
 $allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
 
-// Pill gating (D294-clarified pattern preserved — padding only paints for the
-// two pill block-styles; the plain eyebrow style has zero padding).
-$extra_classes = isset( $attributes['className'] ) ? $attributes['className'] : '';
-$is_pill       = ( false !== strpos( $extra_classes, 'is-style-pill-fill' ) )
-	|| ( false !== strpos( $extra_classes, 'is-style-pill-wrap' ) );
+// Style-variant detection. Padding / background / radius now paint on VALUE-
+// PRESENCE (ungated 2026-07-12): the pill block-styles are one-click convenience
+// presets that SET those values, no longer the gate that renders them. The only
+// thing still keyed on a variant is the DISPLAY model — when an is-style-* class
+// is present the variant's own CSS owns display, so render.php emits none.
+$extra_classes     = isset( $attributes['className'] ) ? $attributes['className'] : '';
+$has_style_variant = ( false !== strpos( $extra_classes, 'is-style-' ) );
+$full_width        = ! empty( $attributes['fullWidth'] );
 
-// Padding — SGS custom object attr { top, right, bottom, left }, base + tiers,
-// ALL pill-gated (matches the pre-migration behaviour: non-pill variants never
-// received padding).
+// Padding — SGS custom object attr { top, right, bottom, left }, base + tiers.
+// Ungated 2026-07-12 (value-presence): padding paints whenever a value is set,
+// emitted via the shared sgs_label_box_css_rule() helper below.
 $padding_obj        = is_array( $attributes['padding'] ?? null ) ? $attributes['padding'] : array();
 $padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
 $padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
@@ -135,13 +135,9 @@ $root_decls = array();
 if ( $text_colour ) {
 	$root_decls[] = 'color:' . sgs_colour_value( $text_colour );
 }
-// Background is pill-gated (matches pre-migration behaviour): the plain
-// eyebrow variant's CSS forces `background:none` — backgroundColour only
-// ever painted via the pill CSS rules consuming the old --sgs-label-bg var,
-// so it must stay pill-gated here or it would override is-style-plain.
-if ( $is_pill && $background_colour ) {
-	$root_decls[] = 'background-color:' . sgs_colour_value( $background_colour );
-}
+// Background, border-radius, padding + the display model are BOX properties,
+// emitted below via the shared sgs_label_box_css_rule() helper (the SAME
+// renderer the product-card trial tag uses) — never here in $root_decls.
 if ( $font_weight ) {
 	$font_weight_safe = preg_replace( '/[^a-zA-Z0-9]/', '', (string) $font_weight );
 	if ( '' !== $font_weight_safe ) {
@@ -181,9 +177,6 @@ if ( $font_style ) {
 }
 if ( $text_align ) {
 	$root_decls[] = 'text-align:' . $text_align;
-}
-if ( '' !== $border_radius && null !== $border_radius ) {
-	$root_decls[] = 'border-radius:' . intval( $border_radius ) . 'px';
 }
 
 // ---------------------------------------------------------------------------
@@ -233,55 +226,69 @@ if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_ob
 	}
 }
 
-// --- Base padding — SGS custom object attr, hand-built shorthand, PILL-GATED
-// (only pill-fill/pill-wrap variants receive padding — matches pre-migration
-// behaviour where non-pill variants never emitted --sgs-label-padding). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
+// --- BOX (padding base + tiers, radius, background) + DISPLAY model — emitted
+// through the shared sgs_label_box_css_rule() helper: the SAME renderer the
+// product-card trial tag uses, so label + product-card produce byte-identical
+// box CSS (Bean's composite-mirror requirement, R-31-9). Padding + background +
+// radius paint on VALUE-PRESENCE (ungated 2026-07-12). ---
+$base_padding_shorthand = sgs_box_object_shorthand( $padding_obj );
 
-if ( $is_pill ) {
-	$padding_val = $sgs_box_shorthand( $padding_obj );
-	if ( null !== $padding_val ) {
-		$scoped_css[] = "{$root_sel}{padding:{$padding_val};}";
+// A meaningful (non-zero, present) border-radius. A stored 0 is treated as
+// "no rounding" and not emitted — keeps a bare eyebrow free of a pointless
+// `border-radius:0px` (regression guard: bare eyebrows stay box-free).
+$has_radius   = ( '' !== (string) $border_radius && 0 !== intval( $border_radius ) );
+$radius_value = $has_radius ? $border_radius : '';
+
+// Box-present = either background channel (native style.color.background OR the
+// custom backgroundColour attr), a non-empty base padding, or a meaningful
+// border-radius. Drives the display model.
+$box_present = ( '' !== $style_color_bg )
+	|| ( '' !== $background_colour )
+	|| ( null !== $base_padding_shorthand )
+	|| $has_radius;
+
+// Display model (contract §C): a bare eyebrow renders display:block (so its
+// margin-bottom paints); a boxed label hugs at inline-block; a full-width label
+// spans the row (block + width:100%). Suppressed entirely when an is-style-*
+// variant class is present — that variant's own CSS owns display.
+$label_display   = '';
+$label_fullwidth = false;
+if ( ! $has_style_variant ) {
+	if ( $full_width ) {
+		$label_fullwidth = true;
+	} elseif ( $box_present ) {
+		$label_display = 'inline-block';
+	} else {
+		$label_display = 'block';
 	}
 }
 
-// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
-// scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
-// mobile max-width:767px). Padding tiers are pill-gated; margin tiers are not. ---
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
-
-$tablet_decls = array();
-if ( $is_pill && null !== $padding_tab_val ) {
-	$tablet_decls[] = "padding:{$padding_tab_val}";
+$box_css = sgs_label_box_css_rule(
+	array(
+		'padding'       => $padding_obj,
+		'paddingTablet' => $padding_tablet_obj,
+		'paddingMobile' => $padding_mobile_obj,
+		'radius'        => $radius_value,
+		'background'    => $background_colour,
+		'display'       => $label_display,
+		'fullWidth'     => $label_fullwidth,
+	),
+	$root_sel
+);
+if ( '' !== $box_css ) {
+	$scoped_css[] = $box_css;
 }
+
+// --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
+// (contract §B2: tablet max-width:1023px, mobile max-width:767px). Margin tiers
+// are never gated. (Padding tiers are handled inside the box helper above.) ---
+$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
 if ( null !== $margin_tab_val ) {
-	$tablet_decls[] = "margin:{$margin_tab_val}";
-}
-if ( $tablet_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
-}
-
-$mobile_decls = array();
-if ( $is_pill && null !== $padding_mob_val ) {
-	$mobile_decls[] = "padding:{$padding_mob_val}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$mobile_decls[] = "margin:{$margin_mob_val}";
-}
-if ( $mobile_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{margin:{$margin_mob_val};}}";
 }
 
 // --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via
@@ -334,7 +341,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 if ( $scoped_css ) :
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword /
+	// $scoped_css is pre-sanitised (the box helper's length/keyword sanitisers / $sgs_css_keyword /
 	// allowlists / floatval / wp_style_engine_get_styles / sgs_colour_value),
 	// so no un-sanitised value survives here.
 	?>

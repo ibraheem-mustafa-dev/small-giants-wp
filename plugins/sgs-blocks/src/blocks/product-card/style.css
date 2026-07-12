@@ -941,18 +941,23 @@
 	gap: var( --wp--preset--spacing--20, 0.75rem );
 }
 
-/* Tag badges — trial and featured variants. */
+/* Tag badges — trial and featured variants.
+ * NOTE: `width:max-content` (hug) is NOT on the base rule — the in-body TRIAL tag
+ * stretches full-width in the flex-column card body to match the draft (its
+ * full-width is driven by render.php's tagFullWidth box rule). Only the FEATURED
+ * tag hugs (below), so the overlay badge + image-less fallback size to content. */
 .product-card .sgs-product-card__tag {
 	display: inline-flex;
 	align-items: center;
 	font-size: var(--sgs-product-card-tag-font-size, 11px);
 	font-weight: 700;
-	padding: 4px 10px;
-	border-radius: 6px;
+	/* Overridable defaults — the tagPadding / tagBorderRadius attrs own these; the
+	 * trial tag's render.php box rule overrides them, featured falls to the default. */
+	padding: var(--sgs-product-card-tag-padding, 4px 10px);
+	border-radius: var(--sgs-product-card-tag-radius, 6px);
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
 	margin: 0;
-	width: max-content;
 }
 
 .product-card .sgs-product-card__tag--trial {
@@ -967,6 +972,9 @@
 	 * axe 2026-06-10) — a tint + dark text stays ≥4.5:1 whatever the palette. */
 	background: color-mix( in srgb, var( --wp--preset--color--primary, #1f7a7a ) 22%, #ffffff );
 	color: var( --wp--preset--color--text, #3a2e26 );
+	/* Featured hugs its content (overlay badge + image-less fallback) — the base
+	 * rule no longer sets width:max-content, so it is re-asserted here. */
+	width: max-content;
 }
 
 /* Title — same rules as .product-card h3 for the new BEM class. */

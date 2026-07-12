@@ -313,13 +313,42 @@ if ( 'typed' === $source_mode ) {
 		'cta',
 		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary'
 	);
+
+	// In-body TRIAL tag box (padding / background / radius / display) — rendered
+	// through the SHARED sgs_label_box_css_rule() helper, the SAME renderer
+	// sgs/label uses, so the trial tag and a full-width sgs/label produce
+	// byte-identical box CSS (Bean's mirror requirement). Scoped at CLASS
+	// specificity to the trial tag's own uid+BEM compound selector (the uid is
+	// added to the trial span in product-card-builtin-render.php) so it beats the
+	// base `.product-card .sgs-product-card__tag` rule by source order without an
+	// !important and never touches the featured overlay badge. tagFullWidth drives
+	// the full-width display (the converter sets it true for cloned trial tags).
+	$sgs_tag_radius_raw = $attributes['tagBorderRadius'] ?? 0;
+	$sgs_tag_box_css    = sgs_label_box_css_rule(
+		array(
+			'padding'    => is_array( $attributes['tagPadding'] ?? null ) ? $attributes['tagPadding'] : array(),
+			'radius'     => ( 0 !== intval( $sgs_tag_radius_raw ) ) ? $sgs_tag_radius_raw : '',
+			'background' => (string) ( $attributes['tagBackgroundColour'] ?? '' ),
+			'fullWidth'  => ! empty( $attributes['tagFullWidth'] ),
+		),
+		'.' . $sgs_card_uid . '.sgs-product-card__tag--trial'
+	);
+	// Text colour — the box helper handles background but not colour (mirrors the
+	// label split: colour is a $root_decls concern), so emit it on the same rule.
+	$sgs_tag_text_colour = sgs_colour_value( (string) ( $attributes['tagTextColour'] ?? '' ) );
+	if ( '' !== $sgs_tag_text_colour ) {
+		$sgs_tag_box_css .= '.' . $sgs_card_uid . '.sgs-product-card__tag--trial{color:' . $sgs_tag_text_colour . ';}';
+	}
+	$sgs_card_typo_css .= $sgs_tag_box_css;
+
 	$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 	// Built-in element render — the ONLY typed path. The FP-H InnerBlocks
 	// transition bridge retired 2026-07-04 (legacy clones are re-cloned with
 	// native typed attrs; the block has no InnerBlocks slot).
-	// Prepend the scoped typography + CTA <style>.
-	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes );
+	// Prepend the scoped typography + CTA <style>. Pass the uid so the trial tag
+	// carries it (the box rule above scopes to it).
+	$builtin_inner = $sgs_card_typo_tag . sgs_product_card_builtin_render( $attributes, $sgs_card_uid );
 
 	// BEM modifier classes on the wrapper.
 	$builtin_classes   = $classes;

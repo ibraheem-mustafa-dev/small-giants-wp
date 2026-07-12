@@ -27,6 +27,14 @@
  *   helpers-container.php           — sgs_sanitize_grid_template,
  *                                     sgs_container_gap_value
  *
+ *   helpers-box.php                 — sgs_css_length_sanitise,
+ *                                     sgs_css_keyword_sanitise,
+ *                                     sgs_box_object_shorthand,
+ *                                     sgs_label_box_css_rule (shared label-style
+ *                                     box renderer for sgs/label + product-card
+ *                                     trial tag — one implementation, no
+ *                                     per-block divergence)
+ *
  *   helpers-svg-kses.php            — sgs_svg_kses_allowed_tags
  *
  *   helpers-button-style.php        — sgs_button_element_style_css (reusable
@@ -59,3 +67,4 @@ require_once __DIR__ . '/helpers-value-ladder.php';
 require_once __DIR__ . '/helpers-container.php';
 require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';
+require_once __DIR__ . '/helpers-box.php';
