@@ -9,6 +9,8 @@ spec_ref: 32-COMPONENT-STYLING-TOKEN-CONTRACT.md §6.2 / FR-32-11
 
 # Design — `P-STYLE-TAG-CONSOLIDATION` (per-block `<style>`-tag bloat)
 
+> **✅ BUILT + LANDED 2026-07-12 — the shipped architecture differs from the design below; canonical record is Spec 32 §6.2(a)–(d).** Two changes emerged during build + live testing: (1) the collector is a single `render_block` **chokepoint** (lifts `<style>` from rendered HTML), not ~60 per-block emit-site edits — it dissolves the 6-shapes risk. (2) The generate-then-serve external-file model (below) was **reproduced FAILING live under the LiteSpeed page cache** (it froze the cold inline response), so delivery is now a **single output buffer** that injects into the `<head>` every render (self-consistent under caching; no pointer, no cold/warm, no freeze), with **two operator-selectable modes** (SGS → CSS Output): `file` (external cached `<link>`, DEFAULT) and `head` (inline `<style>`, self-contained). A settings page + recommended-optimisation-plugin list ship with it. Both modes live-verified (page 8, both under LiteSpeed and without). The design below is retained for the research + rationale trail.
+
 **Status:** DESIGN-APPROVED (Bean 2026-07-12). Build gated by `/qc-council` on the shared render surface. Governing specs: Spec 31 (§3.A, §13.4 FR-31-5.2, §13.6), Spec 32 §6.1 + §6.2/FR-32-11 (this design, now encoded).
 
 ---

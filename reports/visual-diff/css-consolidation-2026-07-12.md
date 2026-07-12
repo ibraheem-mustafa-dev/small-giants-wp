@@ -50,4 +50,18 @@ is intact in the consolidated buffer.
 
 ## Verdict
 PASS. Phase 1 (inline footer consolidation) landed with zero visual regression + editor parity intact.
-Phase 2 (external-file default, 0 body tags + 1 head `<link>`) follows.
+
+## FINAL ARCHITECTURE (shipped, supersedes the footer-inline of Phase 1)
+
+The delivery was reshaped during build + live testing (canonical: Spec 32 §6.2):
+- **Collector = one `render_block` chokepoint** (lifts `<style>` from rendered HTML) — not ~60 emit-site edits.
+- **Delivery = one output buffer injecting into `<head>` every render** — self-consistent under caching. The earlier generate-then-serve external-file model was **reproduced FAILING live under the LiteSpeed page cache** (froze the cold inline response); the unified buffer removes the pointer/cold-warm/freeze entirely.
+- **Two operator-selectable modes** (SGS → CSS Output settings page, `sgs_css_output_mode`, default `file`):
+  - `file` (default): cached content-hashed external `<link>` in head, immutable `Cache-Control`, LiteSpeed/Autoptimize/WP Rocket/Perfmatters can defer it (settings page lists the exact setting per plugin).
+  - `head`: inline `<style>` in head (the draft's own model), self-contained, no plugin dependency.
+
+**LANDED (page 8, 2026-07-12):**
+- `head` mode: `<style id="sgs-blocks-collected">` in head, 0 body tags, computed values correct.
+- `file` mode UNDER LiteSpeed (installed to test): `<link id="sgs-blocks-collected-css">` in head, 0 body tags, stable across loads (no freeze), immutable cache header confirmed, cascade correct (link after block CSS), computed values correct.
+- Editor parity: block-renderer REST keeps `<style>` inline (both modes).
+- Settings page renders (SGS → CSS Output): mode choice + optimisation-plugin guidance. Screenshot: `css-output-settings-2026-07-12.jpeg`.

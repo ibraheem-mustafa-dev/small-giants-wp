@@ -164,6 +164,11 @@ require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 // (priority 10) runs before this collector's lift filter (priority 99).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-css-registry.php';
 
+// SGS → CSS Output settings page (choose file vs inline-head delivery + the
+// recommended optimisation-plugin guidance).
+require_once SGS_BLOCKS_PATH . 'includes/class-css-output-settings.php';
+Css_Output_Settings::register();
+
 // Register the JS-added sgs* extension attributes server-side (for every
 // className-supporting block) so the ServerSideRender block-renderer route
 // stops rejecting them with "Invalid parameter(s): attributes". Attribute list
