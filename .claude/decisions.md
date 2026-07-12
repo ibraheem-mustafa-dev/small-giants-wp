@@ -6,7 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-12 (LATEST) — D313: page-8 accessibility fixed at the DRAFT source (Bean-locked "fix the mockup, not the clone")
+## 2026-07-12 (LATEST) — D314: page-8 100%-clone proof + C description-colour FIXED + parity-tool spec-amended (Spec 20 v1.1.0)
+
+**D314 — proved the page-8 clone is ~95% (not 100%), fixed the one systemic converter gap it exposed (C), amended Spec 20 v1.1.0 for the next-session parity-tool rebuild, and deferred E.** Branch `main` (D-ceiling D313→D314). Two Bean-directed tasks; Task 2 (parity-tool build) deferred to next session with the design LOCKED in Spec 20 v1.1.0 + the ledger.
+
+- **Task 1 — exhaustive independent draft-vs-live DOM ledger** (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`, deliberately a DIFFERENT methodology from computed-parity.js). Verdict: **~95% faithful, NOT 100%.** 5 divergences, all clone-side. **A (pill selected-state) + B (info-box `--elevated` shadow) ACCEPTED** (Bean). **D (`<a>`→button) SAFE/KEEP** — proven on the real converter that an INLINE `<a>` stays inline inside `sgs/text` (only a STANDALONE bare `<a>`→`sgs/button`), so Bean's inline-hyperlink worry does not occur. Caught + killed a false "missing story image" (lazy-load screenshot artifact — the image renders fine; live-DOM probe was right).
+- **C (description colour/font drop) — ROOT-CAUSED + FIXED + LANDED.** Systemic: product-card `descColour`/`descFontSize`/`descLineHeight` had `role=NULL` + `derived_selector=NULL` (missed in the D285 title pass) → the D301 role-driven router couldn't route them → block default `--text` won. Fix = seed `role`+`derived_selector='.sgs-product-card__description'` via `ATTR_CLASSIFICATION_OVERRIDES` (sgs-update-v2.py, R-31-1 channel) → `/sgs-update --stage 1` → re-clone page 8. STOP-44 pre-checked (render.php consumes desc* :165/:188). **Verified live: descriptions now `rgb(107,92,80)`/#6B5C50, 14px, 1.55** — exactly the draft. 449 converter tests pass (no regression).
+- **E (product-card CTA padding drop) — DEFERRED (D284-entangled).** Live-proven E is ONLY the product-card CTA (standalone buttons transfer padding faithfully). NOT a role-seed like C: `ctaPaddingX/Y` have no `property_suffixes` row + padding isn't a scalar-styling-lift role + cta* is owned by the D284 `sgs_button_element_style_css`. Needs new routing infra or a `__cta` CSS-default alignment — bundled with the parity-tool build next session.
+- **Scoring correction (Bean-challenged, right):** the v1.0.0 tool's 76% badly UNDER-counts visible fidelity. Honest: 76% raw → 84% (drop font-family-stack + `interactivity`/`appearance` false buckets) → 89% (accepted A/B) → **~94–95% visible** (drop sub-visible representational twins). Captured as **Spec 20 FR-20-3a**.
+- **Task 2 SPEC-FIRST done: Spec 20 → v1.1.0** (FR-20-9 tag/structure scored dims, FR-20-10 class-info-only per Rule 1, FR-20-11 lazy-load force-load guard, FR-20-3a visible-fidelity thresholding, extended FR-20-4). The tool BUILD is next session, validated against the D314 ledger (agreement, never self-report).
+
+## 2026-07-12 — D313: page-8 accessibility fixed at the DRAFT source (Bean-locked "fix the mockup, not the clone")
 
 **D313 — the two Lighthouse-flagged page-8 a11y items were fixed by editing the DRAFT mockup + re-cloning, never the clone or the converter.** Branch `main`, commit `904fe02e` (pushed). **Bean-locked principle:** "we should not depart from the draft at all" — a fidelity/a11y issue that is INHERITED FROM THE DRAFT is corrected at the source-of-truth (the mockup) so the clone stays a faithful mirror; NO clone-side patch, NO converter carve-out. Verified the draft actually had each issue before fixing.
 

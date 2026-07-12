@@ -2,71 +2,43 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-12
-session: D312 (CSS consolidation) + D313 (page-8 a11y fixed at the DRAFT source, re-cloned) — Lighthouse 96/100/100 + green CWV
+session: D314 — page-8 100%-clone proof (~95%, not 100%) + C description-colour FIXED live + Spec 20 v1.1.0 (parity-tool build deferred) + E deferred
 ---
 
-# Session Handoff — 2026-07-12
+# Session Handoff — 2026-07-12 (D314)
 
 ## Completed This Session
-1. **Spec 32 → v1.2 (FR-32-11 + §6.2)** — encoded the CSS-consolidation contract as source of truth BEFORE any code (Bean-directed). Commit `9dfcaa6e`.
-2. **`/qc-council` (3 cross-model raters) = GO-WITH-FIXES** — caught the editor-parity predicate bug (`!is_admin()` is false during REST → would unstyle 8 ServerSideRender blocks), the 6 emit-shapes, and predicted the LiteSpeed-freeze. Corrections folded into design + spec.
-3. **Collector built as a single `render_block` chokepoint** (`includes/class-sgs-css-registry.php`) — lifts every `sgs/*` block's `<style>` from rendered HTML into one buffer (dedup by content hash, D303 residual order preserved). Dissolves the 6-shapes risk; touches no per-block render.php. Commit `72c0387a`.
-4. **Delivery = ONE output buffer** injecting into `<head>` every render (self-consistent under caching). **Two operator modes** (`sgs_css_output_mode`, default `file`): `file` = cached content-hashed external `<link>` (immutable cache header, atomic write, epoch invalidation + LiteSpeed purge + GC); `head` = inline `<style>` (draft's model, self-contained). Commit `c30dd5e2`.
-5. **Settings page** (`includes/class-css-output-settings.php`, SGS → CSS Output) — mode choice + recommended-optimisation-plugin table (LiteSpeed/Autoptimize/WP Rocket/Perfmatters + exact setting). Renders live.
-6. **Bean-directed test: installed LiteSpeed Cache on the canary.** First VERIFIED no cache plugin was installed. Then reproduced the generate-then-serve model FAILING live under LiteSpeed page cache (froze cold inline) → replaced with the unified buffer. File mode now stable under LiteSpeed.
-7. **Both modes LANDED + live-verified** (sandybrown page 8): 1 head style/link, 0 body `<style>`, correct cascade + computed values 375/768/1440, D303 intact, editor parity (block-renderer REST keeps inline), 0 console errors.
-8. **Docs:** D312 logged; P-STYLE-TAG-CONSOLIDATION moved parking → archive (CLOSED); memory lesson `test-with-actual-cache-layer-and-self-consistent-render` captured. Commit `c85bb91c`.
-9. **Full DOM audit (live page 8):** the ~100 per-block body `<style>` tags are gone — 1 cached head `<link>`, 0 SGS `<style>` in the body. **Zero SGS blocks emit a forbidden inline `style=` declaration** (all SGS inline styles are permitted CSS-variable values); the ~15 real inline declarations are WP-core/WooCommerce/theme header+footer + core-blocks-in-patterns (`P-PATTERNS-USE-CORE-BLOCKS`). The 16 SGS `<style>` in the HEAD are block base `style.css` that WP itself inlines (separate layer).
-10. **Lighthouse audit:** Performance CWV green (LCP 274ms, CLS 0.06), Best Practices 100, SEO 100, Accessibility 95→**96**. Located the exact a11y failures.
-11. **Page-8 a11y fixed at the DRAFT source, then re-cloned (D313, `904fe02e`) — Bean-locked "fix the mockup not the clone".** Gift-card tag contrast 2.34→**8.4** (draft `--primary-dark`→`--text` charcoal, on-palette); ingredient headings `<h4>`→`<h3>` (+ the `.sgs-info-box h4` selector) so the section hierarchy is h2→h3 (no skip). LANDED live. Ghost button (3.67) + Trustpilot green (brand) left faithful-to-draft (Bean's call).
+1. **Task 1 — exhaustive independent draft-vs-live DOM ledger** (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`). Deliberately a DIFFERENT methodology from `computed-parity.js` (curated human-check prop set + live `getComputedStyle` probes + screenshot pairs at 375/768/1440) so it is an independent ground truth. **Verdict: ~95% faithful, NOT 100%** — 5 clone-side divergences.
+2. **Dispositions (Bean):** **A** (pack-pill selected-state + ✓) **ACCEPTED**; **B** (info-box `--elevated` card shadow) **ACCEPTED**; **D** (`<a>`→button routing) **SAFE — KEEP**; **C** (description colour/font) **FIXED + LANDED**; **E** (product-card CTA padding) **DEFERRED** (D284-entangled).
+3. **D root cause + Bean's test answered:** proven on the REAL converter (`convert_section`) that an INLINE `<a>` inside a `<p>` stays inline HTML inside `sgs/text` (`{"text":"… <a href>link</a> …"}`), NOT a button — only a STANDALONE bare `<a>`→`sgs/button` (`html_tag_to_core_block: a→sgs/button`). So Bean's "buttons mid-text" worry does NOT occur → keep the routing.
+4. **C root-caused + FIXED + verified LIVE.** Systemic gap: product-card `descColour`/`descFontSize`/`descLineHeight` had `role=NULL` + `derived_selector=NULL` (missed in the D285 title-family pass) → the D301 role-driven CSS router couldn't see them → draft `var(--text-muted)` dropped to the block default `--text`. Fix = seed `role`+`derived_selector='.sgs-product-card__description'` via `ATTR_CLASSIFICATION_OVERRIDES` (`sgs-update-v2.py`, R-31-1 channel) → `/sgs-update --stage 1` → re-clone page 8. STOP-44 pre-checked (render.php consumes desc* at :165/:188). **LANDED live: both descriptions now `rgb(107,92,80)` (#6B5C50), 14px, 1.55** — exactly the draft.
+5. **Task 2 SPEC-FIRST: Spec 20 → v1.1.0** (the parity-tool rebuild's contract, BUILT NEXT SESSION). Added FR-20-9 (tag + element-structure as scored dims), FR-20-10 (class names = INFORMATIONAL only, per Rule 1), FR-20-11 (force-load lazy/below-fold before measuring — the D314 story-image false-negative guard), FR-20-3a (visible-fidelity thresholding — the tool must not count sub-visible representational twins), extended FR-20-4.
+6. **Scoring correction (Bean-challenged, correct):** the current tool's 76% badly under-counts. Honest: 76% raw → 84% (drop font-family-fallback-stack + `interactivity`/`appearance` false buckets, 297 props) → 89% (accepted A/B, 146 props) → **~94–95% VISIBLE** (drop sub-visible twins: line-height reps, margin-absorbed-by-gap, `display:flex↔block`, `align-items:normal↔stretch`, flex-grow). Bean's "high 90s" was right.
+7. **A false alarm caught + killed:** my first full-page screenshots showed the brand-story image "missing" — a **lazy-load artifact** (below-fold `loading=lazy` image not yet painted when `fullPage` fired). Live-DOM probe was right; the image renders fine. → FR-20-11.
 
 ## Current State
-- **Branch:** `main` at `904fe02e` (all pushed)
-- **Tests:** converter unit suite unaffected (render-side PHP only — no converter/JS change); conformance goldens unchanged (15 pre-existing red, 0 new)
-- **Build:** n/a this session (no JS/CSS `src/` change; PHP-only deploy via `build-deploy.py --skip-build`)
-- **Uncommitted changes:** none from this session (pre-existing untracked `sgs-framework.db` + `phase4-*.txt` dirt is not this session's)
-- **Live:** sandybrown page 8 = file mode (default), external `<link>` consolidated CSS; **LiteSpeed Cache now installed + active** on the canary (page cache)
+- **Branch:** `main`, D-ceiling **D314**. Committed this session (see Files Modified).
+- **Live:** sandybrown page 8 re-cloned this session with the C fix. Description = muted brown #6B5C50 / 14px / 1.55 (verified). LiteSpeed + CDN purged.
+- **Tests:** converter suite **449 passed, 1 skipped** (no regression from the DB seed).
+- **DB:** `~/.claude/skills/sgs-wp-engine/sgs-framework.db` reseeded (Stage 1) — NOT in git; regenerated from the committed `sgs-update-v2.py` override via `/sgs-update`.
 
 ## Known Issues / Blockers
-- LiteSpeed Cache is now active on sandybrown (installed to test file mode). Its CSS async/critical-CSS optimisation (QUIC.cloud) is NOT configured — optional, per the settings-page guidance. If it ever misbehaves, `wp plugin deactivate litespeed-cache`.
-- None blocking the next session.
+- **E is the only open page-8 fidelity gap** (product-card CTA padding 12/20 vs draft 14/24). Deferred — needs new routing infra (no `PaddingX/PaddingY` property_suffixes + padding isn't a scalar-styling-lift role) OR a `__cta` CSS-default alignment; cta* is D284-owned. Bundle with the parity-tool build.
+- None blocking.
 
 ## Next Priorities (in order) — Bean-directed
-1. **Confirm the 100% clone via an exhaustive draft-vs-live DOM diff** — Bean believes it's 100% visually; PROVE it element-by-element (tags/classes/elements/content/CSS), assuming nothing. Produce a per-section transferred/missing ledger.
-2. **Rebuild the computed-parity tool to be universally trustworthy** — `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Stage 11.6) must actually work for ANY draft/blocks (match tags/classes/elements/content/CSS), no cheating to pass this page; validate its verdict against Task 1's manual ledger. This is what makes the pipeline testable on other drafts.
-3. (Then, later) the parked architectural items: `P-PATTERNS-USE-CORE-BLOCKS`, `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE`.
-
-Full orchestration in `.claude/next-session-prompt.md`.
+1. **Fix E** (product-card CTA padding) — the last page-8 fidelity gap. Design-gate the approach (new suffixes+box-CSS→scalar routing vs `__cta` CSS-default alignment).
+2. **Build the parity-tool rebuild to Spec 20 v1.1.0** (design LOCKED). Validate its verdict against the D314 ledger (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`) — must AGREE (~94–95% visible), never self-report. Core fixes: font-family primary-only, blocklist `interactivity`/`appearance`, threshold sub-visible twins (FR-20-3a), add tag/structure/class-info dims (FR-20-9/10), lazy-load force-load (FR-20-11).
 
 ## Files Modified
-| File path | What changed |
+| File | What |
 |---|---|
-| plugins/sgs-blocks/includes/class-sgs-css-registry.php | NEW — collector chokepoint + unified head output buffer + file/head modes + epoch/GC/atomic-write |
-| plugins/sgs-blocks/includes/class-css-output-settings.php | NEW — SGS → CSS Output settings page + plugin guidance |
-| plugins/sgs-blocks/sgs-blocks.php | require the registry + settings class; register the settings page |
-| .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md | v1.2 — FR-32-11 + §6.2 (final shipped architecture) |
-| .claude/plans/2026-07-12-style-tag-consolidation-design.md | NEW — design + research trail + BUILT note |
-| .claude/{decisions.md,parking.md} + memory/parking-archive.md | D312; P-STYLE-TAG-CONSOLIDATION archived |
-| reports/visual-diff/css-consolidation-2026-07-12.md + 2 jpeg | LANDED evidence + settings-page screenshot |
-| sites/mamas-munches/mockups/homepage/index.html | D313 a11y: gift-tag colour → `--text`; 4 ingredient headings h4→h3 + `.sgs-info-box h4` selector (re-cloned to page 8) |
+| plugins/sgs-blocks/scripts/sgs-update-v2.py | C fix — desc* `ATTR_CLASSIFICATION_OVERRIDES` (role + derived_selector) |
+| .claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md | v1.1.0 — FR-20-9/10/11/3a + extended FR-20-4 (parity-tool contract) |
+| reports/visual-diff/page8-dom-ledger-2026-07-12.md | NEW — independent DOM ledger + C/D/E root causes + dispositions + scoring correction |
+| .claude/decisions.md | D314 |
 
 ## Notes for Next Session
-- **The generate-then-serve external-CSS model does NOT survive a full-page cache** — reproduced live under LiteSpeed (froze the cold inline response). The shipped fix makes EVERY render self-consistent (output buffer injects into head each render), so the cached HTML always carries the correct link/style. Memory: `test-with-actual-cache-layer-and-self-consistent-render`.
-- **Verify what's actually installed before recommending a solution that leans on it** — I recommended "let LiteSpeed optimise the file" before checking; no LiteSpeed plugin was installed. Bean: "research first, no guessing."
-- **CSS delivery is now operator-selectable** — `file` (default, needs an optimisation plugin for best CWV) vs `head` (self-contained). Settings page documents when each is optimal. The `sgs_css_output_mode` filter also overrides.
-- Editor parity predicate is `!is_admin() && !wp_is_serving_rest_request()` — do not simplify to `!is_admin()` (breaks ServerSideRender editor previews).
-
-## Next Session Prompt
-
-~~~
-You are the SGS cloning-pipeline developer. Two Bean-directed tasks, in order: (1) PROVE the page-8 clone is 100% via an exhaustive draft-vs-live DOM diff (tags/classes/elements/content/CSS), assuming nothing; (2) rebuild the computed-parity tool (`plugins/sgs-blocks/scripts/parity/computed-parity.js`, Stage 11.6) to be universally trustworthy for any draft/blocks — no cheating to pass this page — validated against Task 1's manual ledger. Invoke `/autopilot` first.
-
-**The FULL orchestration (mandatory reading gate, the complete STOP catalogue, per-task orchestration blocks, dependency graph, and methodology guardrails) is in `.claude/next-session-prompt.md` — read it in full before acting.** Do NOT act from this summary alone.
-
-Headlines:
-- **Skills:** `/brainstorming` `/gap-analysis` `/lifecycle` `/research` `/strategic-plan` `/systematic-debugging` `/qc-council` `/qc-inline` `/visual-qa` `/sgs-clone` `/sgs-db` `/wp-blocks`.
-- **MCP/tools:** Playwright + chrome-devtools (the draft-vs-live DOM diff); Hostinger `hosting_clearWebsiteCacheV1` + `wp litespeed-purge all` (LiteSpeed now active); REST creds `.claude/secrets/sandybrown.env` (user `Claude`).
-- **Agents:** general-purpose (Sonnet) parallel per-section diff investigators + solo parity-tool implementer; feature-dev:code-reviewer pre-commit on the tool.
-- **New STOP (D313):** fix a11y/fidelity issues at the DRAFT source + re-clone, never on the clone or via a converter carve-out (Bean-locked). Current computed-parity % is NOT trustworthy until Task 2 fixes it (STOP-48/49).
-- **Guardrails:** read Spec 31 + Spec 20 IN FULL; prove every parity mis-count on the real draft-vs-live pair; deploy/re-clone + OPcache + CDN + `wp litespeed-purge all` before any live measure; `/qc-council` the parity-tool design before building; validate the tool's verdict against the independent manual ledger, never its own self-report.
-~~~
+- **The parity tool over-counts BROADLY, not just font-family** — sub-visible representational twins (line-height px reps, margin absorbed by flex-gap, display flex↔block, align-items normal↔stretch) are the second big bucket. FR-20-3a is the requirement; validate against the D314 ledger's ~94–95%.
+- **C's fix pattern is reusable:** null-`role`/null-`derived_selector` on a block's scalar-styling attr = the D301 router can't route it. Other blocks likely have the same latent gap (`priceNoteColour`, `ctaColour*`, etc.) — audit before enabling (`enabling-a-capability-wakes-latent-misseeds`).
+- **E is NOT a role-seed** (padding path differs from color/typography). Don't try the C fix on it.

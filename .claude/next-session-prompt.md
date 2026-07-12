@@ -2,12 +2,14 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 generated: 2026-07-12
-thread: post-D312/D313 — (1) confirm 100% clone via draft-vs-live DOM diff; (2) rebuild the parity tool to be universally trustworthy
+thread: post-D314 — (1) fix E (product-card CTA padding, the last page-8 fidelity gap); (2) BUILD the parity-tool rebuild to Spec 20 v1.1.0 (design LOCKED), validated vs the D314 ledger
 ---
 
-# NEXT SESSION — prove the clone is 100%, then make the parity tool actually measure it
+# NEXT SESSION — fix E (CTA padding), then BUILD the parity tool to the locked Spec 20 v1.1.0
 
-You are the SGS cloning-pipeline developer. The `<style>`-tag consolidation shipped (D312) and the page-8 a11y items were fixed at the DRAFT source + re-cloned (D313). Bean now wants two things, in order: **(1)** a THOROUGH, assumption-free DOM comparison between the draft and the live clone to confirm we have a genuine 100% clone (he believes we do visually — verify it, don't assume); **(2)** rebuild the computed-parity tool so it ACTUALLY works — universal for any draft/blocks, matching tags + classes + elements + content + CSS, with pinpoint accuracy Bean can trust (no cheating to just pass this one page). Invoke `/autopilot` first.
+You are the SGS cloning-pipeline developer. **D314 completed Task 1** (proved page-8 is ~95%, not 100%), **fixed C** (product-card description colour — null-role seeding gap, LANDED live), confirmed **D safe** (inline `<a>` stays inline, keep the routing), and **amended Spec 20 → v1.1.0** as the parity-tool contract. A + B are Bean-accepted. **Two tasks remain, in order:** **(1)** fix **E** — the product-card CTA padding drop (12/20 vs draft 14/24), the last page-8 fidelity gap; **(2)** BUILD the parity-tool rebuild to the LOCKED Spec 20 v1.1.0, validating its verdict against the independent D314 ledger (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`) — it must AGREE (~94–95% visible), never self-report. Invoke `/autopilot` first.
+
+**E is NOT a role-seed like C** (proven D314): `ctaPaddingX/Y` have no `property_suffixes` row + padding isn't a scalar-styling-lift role + cta* is owned by the D284 `sgs_button_element_style_css` on `.sgs-product-card__cta--primary`. Design-gate the approach: new suffixes + a box-CSS→scalar path, OR align the `__cta` CSS default to the framework button standard (`.sgs-button` = padding 14/24, min-height 48, display inline-flex). Standalone buttons already transfer padding faithfully — E is EXCLUSIVELY the product-card CTA.
 
 Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 
@@ -19,7 +21,11 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 5. The parity tool source: `plugins/sgs-blocks/scripts/parity/computed-parity.js` + how Stage 11.6 calls it in `sgs-clone-orchestrator.py`.
 
 ## ⛔ ANTI-PATTERN STOPs (carried forward + this session's — NEVER subtract, D101)
-- **STOP-FIX-DRAFT-NOT-CLONE (NEW, D313)** — an a11y/fidelity issue that is INHERITED FROM THE DRAFT is fixed at the DRAFT source (edit the mockup, then re-clone), NEVER patched on the clone and NEVER via a converter carve-out (Bean-locked: "we should not depart from the draft at all"). The clone stays a faithful mirror of the (corrected) draft. Verify the draft actually has the issue before deciding (a draft-inherited issue vs a clone bug are handled differently).
+- **STOP-NULL-ROLE-BLOCKS-ROUTING (NEW, D314)** — a block scalar-styling attr with `role=NULL` (and/or `derived_selector=NULL`) in `block_attributes` is INVISIBLE to the D301 role-driven CSS router → the draft's value silently drops to the block default (this was C: product-card `descColour`/`descFontSize`/`descLineHeight`). Fix = seed `role`+`derived_selector` via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py` (R-31-1 channel, NOT manual SQL) → `/sgs-update --stage 1`. STOP-44 pre-check FIRST (does render.php consume the attr?), and `enabling-a-capability-wakes-latent-misseeds` (audit before enabling). Other blocks likely carry the same latent gap.
+- **STOP-LAZY-LOAD-FALSE-NEGATIVE (NEW, D314)** — a below-fold `loading="lazy"` image is in the DOM but may NOT be painted/sized when a headless `fullPage` screenshot or computed capture fires → it false-flags as "missing"/zero-size (caught D314 on the brand-story image; the live-DOM probe was right). ALWAYS force-load deferred content (scroll full height / `loading='eager'` + `decode()` + settle) before measuring. Now Spec 20 FR-20-11.
+- **STOP-PARITY-OVERCOUNTS-SUBVISIBLE (NEW, D314)** — the v1.0.0 computed-parity % under-counts visible fidelity BROADLY: font-family fallback-stack (37% of mismatches, same primary font), clone-only/UA props (`interactivity`/`appearance`), AND sub-visible representational twins (line-height px reps, margin absorbed by flex-gap, `display:flex↔block`, `align-items:normal↔stretch`, flex-grow). 76% raw = ~94–95% VISIBLE. Never cite the raw % as fidelity; the rebuilt tool (Spec 20 FR-20-3a) must track VISIBLE fidelity + agree with the D314 ledger.
+- **STOP-E-IS-NOT-A-ROLE-SEED (NEW, D314)** — E (product-card CTA padding) looks like C but is NOT a role-seed: `ctaPaddingX/Y` have no `property_suffixes` row, padding isn't a scalar-styling-lift role, and cta* is D284-owned. Don't apply the C fix to it.
+- **STOP-FIX-DRAFT-NOT-CLONE (D313)** — an a11y/fidelity issue that is INHERITED FROM THE DRAFT is fixed at the DRAFT source (edit the mockup, then re-clone), NEVER patched on the clone and NEVER via a converter carve-out (Bean-locked: "we should not depart from the draft at all"). The clone stays a faithful mirror of the (corrected) draft. Verify the draft actually has the issue before deciding (a draft-inherited issue vs a clone bug are handled differently).
 - **STOP-PARITY-NOT-A-MEASURE (D309, ELEVATED)** — the CURRENT computed-parity % is NOT trustworthy (over-counts font-stacks + clone-only props; STOP-48/49). Task 2 is to FIX this so the number CAN be trusted. Until it is fixed + Bean-validated, do NOT cite the aggregate % as an outcome; the signal is a direct per-element compare (matched by content) + Bean's eye.
 - **STOP-VERIFY-CACHE-LAYER-INSTALLED (D312)** — before leaning on a cache/CDN optimiser, VERIFY it is installed/active (`wp plugin list`, response headers). LiteSpeed Cache IS now installed on sandybrown (page cache active) — `wp litespeed-purge all` before any live measure.
 - **STOP-SELF-CONSISTENT-RENDER-UNDER-CACHE (D312)** — a delivery whose correctness needs a cross-request "warm up" is frozen by a full-page cache (reproduced live). Prefer a design where every render is self-consistent. Test WITH the cache layer installed.
@@ -82,37 +88,34 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 
 ---
 
-## Task 1 — Confirm the 100% clone: exhaustive draft-vs-live DOM diff
-**What:** thoroughly compare the DRAFT (`sites/mamas-munches/mockups/homepage/index.html`) against the LIVE clone (sandybrown page 8) and produce a per-element ledger of what transferred and what did NOT — tags, classes, elements, text content, and computed CSS. Assume NOTHING; check every section.
-**Why:** Bean believes visually it's 100% but wants it PROVEN element-by-element before trusting it — the ground truth Task 2's tool must reproduce.
-**Estimated time:** ~30 min.
+## Task 1 — Fix E (product-card CTA padding drop)
+**What:** the product-card CTA renders padding 12/20 (its `__cta` default) instead of the draft's 14/24 (`.sgs-button` standard); min-height 44 vs 48; display block vs inline-flex. Fix so the CTA matches the draft. **Live-proven D314:** E is EXCLUSIVELY the product-card CTA — STANDALONE buttons already transfer padding faithfully (14/24, 48).
+**Why:** the last open page-8 fidelity gap (Bean does NOT accept it).
+**Estimated time:** ~20–30 min.
 **Orchestration:**
-- Execution: inline (main) to drive Playwright on both draft (open the mockup file's rendered form — serve it locally since `file://` is blocked in the MCP; e.g. `python -m http.server` in the mockup dir, or a scratch copy) and the live clone; dispatch parallel per-section read-only investigators (general-purpose Sonnet) if it sprawls.
-- Depends on: none. Parallel with: none. /qc gate after: no (it's a read-only investigation; Bean reviews the ledger).
-**Acceptance:** a per-section ledger (draft element → clone element, or MISSING/DIVERGENT with the exact tag/class/content/CSS delta), covering EVERY section, with header/footer + the accepted testimonial static-grid→slider explicitly noted as out-of-contract (memory `clone-fidelity-excludes-header-footer`). Any genuine gap → root-caused + presented to Bean (fix at the DRAFT or the converter per STOP-FIX-DRAFT-NOT-CLONE / R-31-9).
+- **NOT a role-seed (STOP-E-IS-NOT-A-ROLE-SEED):** `ctaPaddingX/Y` have no `property_suffixes` row, padding isn't a scalar-styling-lift role, cta* is D284-owned (`sgs_button_element_style_css` on `.sgs-product-card__cta--primary`). **Design-gate the approach (Bean sign-off):** (a) add `PaddingX/PaddingY` (or `Padding`) property_suffixes + a box-CSS→scalar-attr path routing to `ctaPaddingX/Y`; OR (b) align the product-card `__cta` style.css default to the framework button standard (padding 14/24, min-height 48, display inline-flex) — simpler, but per-block-default not faithful-transfer. Recommend (b) if the draft always uses standard-button CTAs, (a) for true universality.
+- Verify LANDED: reclone page 8 (`--deploy-target page:8`) + clear caches + live computed-style (padding 14/24, min-height 48) vs draft.
+- /qc gate after: `/qc-inline`.
+**Acceptance:** the product-card CTAs render padding 14/24 (matching the draft) on the live page 8, verified by live computed-style; no regression to standalone buttons; converter suite green.
 
-## Task 2 — Rebuild the parity tool to be universally trustworthy (SPEC-FIRST — amend Spec 20)
-**What:** make the computed-parity tool (`plugins/sgs-blocks/scripts/parity/computed-parity.js`, Stage 11.6) ACTUALLY measure clone fidelity for ANY draft/blocks — matching **tags + classes + elements + content + CSS** — with pinpoint accuracy Bean can trust. No cheating to pass this one page. It must correctly PAIR draft↔clone elements and report exactly what matches vs diverges, per dimension.
-**Why:** the current tool over-counts (STOP-48/49) so its % can't be trusted; Bean needs a dependable instrument to test the pipeline on future drafts. It ALREADY has a spec (Spec 20) — but Bean's tag/class/element scope is broader than Spec 20 v1.0.0's computed-CSS focus.
-**Estimated time:** ~45–60 min (spec amend + design + build + validate).
+## Task 2 — BUILD the parity-tool rebuild to Spec 20 v1.1.0 (design LOCKED)
+**What:** make `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Stage 11.6) trustworthy per the LOCKED Spec 20 v1.1.0 — track VISIBLE fidelity, add tag/structure/class-info dims, force-load lazy content. **The spec amend (STEP 0) is DONE (D314)** — Spec 20 is v1.1.0.
+**Why:** the current tool reports 76% while visible fidelity is ~94–95% (STOP-PARITY-OVERCOUNTS-SUBVISIBLE); Bean needs a dependable instrument for future drafts.
+**Estimated time:** ~40–50 min.
 **Orchestration:**
-- **STEP 0 — SPEC FIRST (do NOT skip; Spec-Scope Binding):** read Spec 20 IN FULL. Bean's ask adds **tag + class + element-structure matching** on top of the existing content-matched computed-CSS (FR-20-1). AMEND Spec 20 to v1.1.0 with the added dimensions as new FRs (e.g. FR-20-9 tag/class/element-structure matching; extend FR-20-4 unmatched surfacing to all dimensions), a bumped `spec_version` + `status_history` entry — BEFORE writing tool code. This is exactly the spec-first sequence used for Spec 32 (FR-32-11) this session.
-- Then `/brainstorming` the matching model (PAIR elements by normalised text content — ~96% present, FR-20-1/rule 4a — plus structural position; define "match" per dimension; exclude out-of-contract chrome per memory `clone-fidelity-excludes-header-footer`). Then `/qc-council` on the fix-shapes (it's a trust-bearing instrument — a wrong design gives Bean false confidence). Then a SOLO implementer (one writer).
-- Depends on: Task 1 (its manual ledger is the ground truth the tool must reproduce). Parallel with: none.
-- /qc gate after: yes — `/qc-council` on the design + `/qc-inline` on the build; then VALIDATE the tool's output against Task 1's hand-built ledger (they must agree).
-**Acceptance:** (a) Spec 20 amended to define the full tag/class/element/content/CSS matching (spec-first); (b) the rebuilt tool, run on page 8, produces a per-element/per-dimension report that MATCHES Task 1's hand-verified ledger (no false matches, no false gaps) AND satisfies the amended Spec 20's FRs; (c) it runs on a DIFFERENT draft with no hardcoded page-8 assumptions (universal, R-31-9, FR-20-2); (d) Spec 20 `last_verified` + test-strategy rows updated. Do NOT declare done on a self-reported number — the tool's verdict must agree with the independent manual ledger.
+- Read Spec 20 v1.1.0 IN FULL. Core fixes (all evidence-quantified in the D314 ledger): (1) **font-family primary-only** (kills 37% false bucket); (2) **blocklist `interactivity`+`appearance`**; (3) **threshold sub-visible representational twins** (line-height reps, margin-absorbed-by-gap, `display:flex↔block`, `align-items:normal↔stretch`, flex-grow) — FR-20-3a; (4) **add tag + element-structure scored dims** (FR-20-9) + **class-info-only capture** (FR-20-10); (5) **force-load lazy/below-fold before measuring** (FR-20-11).
+- `/brainstorming` the matching model, then `/qc-council` on the fix-shapes (trust-bearing instrument, blub.db 255), then a SOLO implementer (one writer). `feature-dev:code-reviewer` pre-commit.
+- Depends on: the D314 ledger (the ground truth). /qc gate: `/qc-council` design + `/qc-inline` build.
+**Acceptance:** the rebuilt tool, run on page 8, reports a CSS % within a few points of the D314 ledger's ~94–95% VISIBLE verdict (font-family primary-only, false buckets blocklisted, sub-visible twins thresholded), plus per-dimension tag/structure reports matching the ledger's recorded divergences; runs on a DIFFERENT draft with no page-8 hardcoding (FR-20-2); Spec 20 `last_verified` + test-strategy updated. **Do NOT declare done on the self-reported number — it must agree with the independent D314 ledger.**
 
 ## Dependency graph
 ```
-Task 1 (inline, Opus — exhaustive draft-vs-live DOM ledger)
-  ↓ (ledger = ground truth)
-Task 2 STEP 0: amend Spec 20 → v1.1.0 (add tag/class/element FRs) — SPEC FIRST
-  ↓
-Task 2 design (/brainstorming) → /qc-council on fix-shapes
-  ↓
-Task 2 build (solo implementer, one writer) → /qc-inline
-  ↓ VALIDATE tool output == Task 1 ledger AND == amended Spec 20 FRs
-Commit (tool + Spec 20 together)
+Task 1: fix E (design-gate approach → build → reclone → verify live vs draft) → /qc-inline
+  ↓ (page 8 now ~100% of in-contract fidelity)
+Task 2: BUILD parity tool to Spec 20 v1.1.0 (spec already LOCKED, D314)
+  /brainstorming matching model → /qc-council fix-shapes → solo build → /qc-inline
+  ↓ VALIDATE tool output == D314 ledger (~94–95% visible) AND == Spec 20 v1.1.0 FRs
+Commit (tool + any Spec 20 last_verified bump together)
 ```
 
 ## Methodology guardrails (do not skip)

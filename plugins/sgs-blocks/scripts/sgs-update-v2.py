@@ -1074,6 +1074,21 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/product-card", "titleFontWeight"): {"derived_selector": ".sgs-product-card__title"},
     ("sgs/product-card", "titleLineHeight"): {"derived_selector": ".sgs-product-card__title"},
     ("sgs/product-card", "titleLineHeightUnit"): {"derived_selector": ".sgs-product-card__title"},
+    # product-card DESCRIPTION family (D314, 2026-07-12): desc* was MISSED in the
+    # D285 title-family pass (role=NULL + derived_selector=NULL), so the draft's
+    # `.sgs-product-card__description { color:var(--text-muted); font-size:14px }`
+    # never routed and the clone fell to the block default `--text`. NOT entangled
+    # with the D284 cta* rework — render.php consumes descColour (:165) + the 'desc'
+    # typography family (:188) at `.sgs-product-card__description` (verified render
+    # source, STOP-44); the draft class is `.sgs-product-card__description`. Seed both
+    # role (canonical assignment skipped it) + derived_selector, mirroring title*.
+    ("sgs/product-card", "descColour"): {"role": "color", "derived_selector": ".sgs-product-card__description"},
+    ("sgs/product-card", "descFontSize"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
+    ("sgs/product-card", "descFontSizeUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
+    ("sgs/product-card", "descFontSizeTablet"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
+    ("sgs/product-card", "descFontSizeMobile"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
+    ("sgs/product-card", "descLineHeight"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
+    ("sgs/product-card", "descLineHeightUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
     # ---- scalar-styling-lift residual selector-drift (D285 completeness pass) ----
     # Render-verified only (STOP-43): each corrected selector is where the block's
     # render actually paints the attr. product-card tag*: the tag chip is __tag
