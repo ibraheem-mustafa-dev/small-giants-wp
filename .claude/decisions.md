@@ -6,7 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-12 (LATEST) — D311: page-8 Fix 4 — label padding ungate + product-card trial-tag full mirror SHIPPED + LANDED
+## 2026-07-12 (LATEST) — D312: per-block `<style>`-tag consolidation SHIPPED + LANDED (P-STYLE-TAG-CONSOLIDATION)
+
+**D312 — the ~100 per-block scoped `<style>` tags (~33KB, page 8) are consolidated into ONE head stylesheet, operator-selectable file vs inline.** Branch `main`, commits `9dfcaa6e` (design + Spec 32 v1.2/FR-32-11) + `72c0387a` (collector) + `c30dd5e2` (final modes + settings), all pushed. Full research + `/qc-council` GO-WITH-FIXES trail. Canonical: Spec 32 §6.2.
+
+- **Collector = one `render_block` chokepoint**, NOT ~60 per-block emit-site edits. A late (`priority 99`) filter lifts every `sgs/*` block's `<style>` out of its rendered HTML into a per-request buffer (dedup by content hash; D303 residual-last order preserved). Captures all 6 emit shapes the council found (incl. the container wrapper's prepended tag + `custom-css.php`'s appended residual) without touching either file; universal (R-31-9). Dissolves the "6-shapes audit" risk the council flagged.
+- **Delivery = ONE output buffer** (`template_redirect`) injects the consolidated CSS into the `<head>` (before `</head>`, after block `style.css` → overrides win) on EVERY front-end render → self-consistent under full-page caching (no pointer, no cold/warm, no freeze). **Two modes** (SGS → CSS Output settings, `sgs_css_output_mode`, default `file`): `file` = cached content-hashed external `<link>` (immutable `Cache-Control` .htaccess, atomic tmp+rename, epoch-invalidated on save_post/template/global-styles/deploy + `litespeed_purge_all` + GC; an optimisation plugin defers it); `head` = inline `<style>` in head (the draft's own model), self-contained. Settings page lists LiteSpeed/Autoptimize/WP Rocket/Perfmatters + the exact setting.
+- **Key build finding (Bean-directed test):** the initially-designed generate-then-serve external-file model was **reproduced FAILING live under the LiteSpeed page cache** (froze the cold inline response — exactly the council's prediction) → replaced by the unified buffer. First verified **no LiteSpeed Cache plugin was installed** (only sgs-blocks+woocommerce), then installed it on the canary to test file mode. Research (web.dev 14KB rule + "LiteSpeed optimises external not inline") corrected a hasty inline-in-head lean. Memory: `test-with-actual-cache-layer-and-self-consistent-render`.
+- **Editor parity (live-verified):** frontend-only gate `! is_admin() && ! wp_is_serving_rest_request()` — block-renderer REST (`context=edit`) keeps the block `<style>` inline; naive `! is_admin()` would have unstyled 8 ServerSideRender blocks in the editor.
+- **LANDED (sandybrown page 8, both modes, incl. under LiteSpeed):** 1 head style/link, 0 body `<style>`, correct cascade + computed values 375/768/1440, D303 intact, 0 console errors, settings page renders. Render-side PHP only (no converter/JS; conformance goldens unaffected); no block version bump.
+
+## 2026-07-12 — D311: page-8 Fix 4 — label padding ungate + product-card trial-tag full mirror SHIPPED + LANDED
 
 **D311 — the gift-card `sgs/label` capsules now paint their padding, and the product-card trial tag is a full functional mirror of a standalone label.** Branch `main`, commit `cef1fca9` (pushed). Bean-directed FULL MIRROR (chose it over the minimal fix). Every cause proven on the LIVE page-8 DOM + a real-node converter trace BEFORE building; design settled via `/qc-council` (2 cross-model raters, BOTH returned RESHAPE — the gate paid off).
 
