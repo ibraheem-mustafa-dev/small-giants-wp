@@ -2,7 +2,7 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-11-D310
+last_updated: 2026-07-12-D311
 note: "LEAN snapshot. Full history -> memory/state-archive.md. This file holds ONLY the current pointer; detail lives in handoff.md + next-session-prompt.md (the SoT). Do NOT restate D-numbers / counts / commit hashes here - they drift. <=24576 bytes."
 ---
 
