@@ -158,6 +158,12 @@ require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 // Custom CSS per block — server-side scoped <style> output.
 require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 
+// Scoped-CSS consolidation (Spec 32 §6.2 / FR-32-11) — lifts every SGS block's
+// per-instance <style> tag into ONE consolidated output (front end only; editor
+// keeps inline). Loads AFTER custom-css.php so its render_block residual filter
+// (priority 10) runs before this collector's lift filter (priority 99).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-css-registry.php';
+
 // Register the JS-added sgs* extension attributes server-side (for every
 // className-supporting block) so the ServerSideRender block-renderer route
 // stops rejecting them with "Invalid parameter(s): attributes". Attribute list
