@@ -198,7 +198,13 @@
    framework's global .sgs-button structural rule applies uniformly; the
    product-card-scoped rules below win on specificity for anything they set). */
 .product-card .sgs-button {
-	display: inline-block;
+	/* display + min-height MIRROR the shared .sgs-button base (inline-flex / 48px)
+	 * — the former `display:inline-block` + `min-height:44px` were a per-block
+	 * LAYOUT divergence (composite-mirror, FR-31-21.1 / D314): they overrode the
+	 * framework button's own defaults so a cloned CTA rendered smaller than the
+	 * draft's standard `.sgs-button`. Extends the D310 colour composite-mirror fix
+	 * (lines below) to layout. Base .sgs-button = display:inline-flex; min-height:48px.
+	 * A per-instance ctaPaddingY/X / minHeight still wins via sgs_button_element_style_css(). */
 	text-align: center;
 	/*
 	 * padding, border-radius and font-size are ATTR-DRIVEN in bound mode —
@@ -214,7 +220,6 @@
 	text-decoration: none;
 	cursor: pointer;
 	transition: all 0.15s;
-	min-height: 44px;
 	box-sizing: border-box;
 	line-height: var(--sgs-product-card-btn-line-height, 1.4);
 }
@@ -231,7 +236,10 @@
  */
 :where(.product-card) .sgs-button {
 	border-radius: 10px;
-	padding: 12px 20px;
+	/* padding MIRRORS the shared .sgs-button base (14px 24px) — the former
+	 * `12px 20px` was a per-block LAYOUT divergence (composite-mirror FR-31-21.1 /
+	 * D314); removed so a cloned CTA matches the draft's standard `.sgs-button`
+	 * padding. A per-instance ctaPaddingY/X still wins via the helper (0,2,0). */
 	font-size: 15px;
 }
 

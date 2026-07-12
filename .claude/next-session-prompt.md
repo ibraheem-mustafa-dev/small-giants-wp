@@ -2,14 +2,14 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 generated: 2026-07-12
-thread: post-D314 — (1) fix E (product-card CTA padding, the last page-8 fidelity gap); (2) BUILD the parity-tool rebuild to Spec 20 v1.1.0 (design LOCKED), validated vs the D314 ledger
+thread: post-D314 — BUILD the parity-tool rebuild to Spec 20 v1.1.0 (design LOCKED), validated vs the D314 ledger. (Page-8 in-contract fidelity COMPLETE: A/B accepted, C+E fixed, D safe.)
 ---
 
-# NEXT SESSION — fix E (CTA padding), then BUILD the parity tool to the locked Spec 20 v1.1.0
+# NEXT SESSION — BUILD the parity tool to the locked Spec 20 v1.1.0
 
-You are the SGS cloning-pipeline developer. **D314 completed Task 1** (proved page-8 is ~95%, not 100%), **fixed C** (product-card description colour — null-role seeding gap, LANDED live), confirmed **D safe** (inline `<a>` stays inline, keep the routing), and **amended Spec 20 → v1.1.0** as the parity-tool contract. A + B are Bean-accepted. **Two tasks remain, in order:** **(1)** fix **E** — the product-card CTA padding drop (12/20 vs draft 14/24), the last page-8 fidelity gap; **(2)** BUILD the parity-tool rebuild to the LOCKED Spec 20 v1.1.0, validating its verdict against the independent D314 ledger (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`) — it must AGREE (~94–95% visible), never self-report. Invoke `/autopilot` first.
+You are the SGS cloning-pipeline developer. **D314 closed out page-8 in-contract fidelity:** proved it's ~95% not 100%, **fixed C** (product-card description + price-note colour — null-role seeding, LANDED), **fixed E** (product-card CTA padding — composite-mirror, LANDED 14/24/48/flex), confirmed **D safe** (inline `<a>` stays inline), A+B Bean-accepted. **The sole remaining Bean task:** BUILD the parity-tool rebuild to the LOCKED Spec 20 v1.1.0, validating its verdict against the independent D314 ledger (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`) — it must AGREE (~94–95% visible), never self-report. Invoke `/autopilot` first.
 
-**E is NOT a role-seed like C** (proven D314): `ctaPaddingX/Y` have no `property_suffixes` row + padding isn't a scalar-styling-lift role + cta* is owned by the D284 `sgs_button_element_style_css` on `.sgs-product-card__cta--primary`. Design-gate the approach: new suffixes + a box-CSS→scalar path, OR align the `__cta` CSS default to the framework button standard (`.sgs-button` = padding 14/24, min-height 48, display inline-flex). Standalone buttons already transfer padding faithfully — E is EXCLUSIVELY the product-card CTA.
+**Also (small):** the remaining C-type same-type sweep — `sgs/mobile-nav` (focus/active/sublink) + `sgs/trust-bar` (shapeDivider*Colour) have the same null-role gap but DIFFERENT mechanisms (state selectors / SVG pseudo-element), so verify each before seeding (do NOT blind-seed — wake-latent-misseeds).
 
 Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 
@@ -88,17 +88,13 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 
 ---
 
-## Task 1 — Fix E (product-card CTA padding drop)
-**What:** the product-card CTA renders padding 12/20 (its `__cta` default) instead of the draft's 14/24 (`.sgs-button` standard); min-height 44 vs 48; display block vs inline-flex. Fix so the CTA matches the draft. **Live-proven D314:** E is EXCLUSIVELY the product-card CTA — STANDALONE buttons already transfer padding faithfully (14/24, 48).
-**Why:** the last open page-8 fidelity gap (Bean does NOT accept it).
-**Estimated time:** ~20–30 min.
-**Orchestration:**
-- **NOT a role-seed (STOP-E-IS-NOT-A-ROLE-SEED):** `ctaPaddingX/Y` have no `property_suffixes` row, padding isn't a scalar-styling-lift role, cta* is D284-owned (`sgs_button_element_style_css` on `.sgs-product-card__cta--primary`). **Design-gate the approach (Bean sign-off):** (a) add `PaddingX/PaddingY` (or `Padding`) property_suffixes + a box-CSS→scalar-attr path routing to `ctaPaddingX/Y`; OR (b) align the product-card `__cta` style.css default to the framework button standard (padding 14/24, min-height 48, display inline-flex) — simpler, but per-block-default not faithful-transfer. Recommend (b) if the draft always uses standard-button CTAs, (a) for true universality.
-- Verify LANDED: reclone page 8 (`--deploy-target page:8`) + clear caches + live computed-style (padding 14/24, min-height 48) vs draft.
-- /qc gate after: `/qc-inline`.
-**Acceptance:** the product-card CTAs render padding 14/24 (matching the draft) on the live page 8, verified by live computed-style; no regression to standalone buttons; converter suite green.
+## Task 2 (small) — the remaining C-type same-type sweep
+**What:** the D314 C-type audit found the null-role scalar-styling gap in 2 more blocks: `sgs/mobile-nav` (`focusColour`/`linkActiveColour`/`sublinkColour`/`sublinkFontSize`/`sublinkFontWeight`) + `sgs/trust-bar` (`shapeDividerTopColour`/`shapeDividerBottomColour`). Unlike product-card desc*/priceNote* (clean text-element lifts, DONE D314), these are DIFFERENT mechanisms — **state selectors** (focus/active) and an **SVG shape-divider pseudo-element**. Verify each before seeding.
+**Why:** completeness of the C-type universality (R-31-9), but LOW priority — these aren't page-8 gaps.
+**Orchestration:** per attr, confirm (a) the render selector it paints at, (b) whether it's a `:hover`/`:focus`/`:active` STATE (route via the D309 state suffix, not a base derived_selector) or an SVG fill (may not be a clean text-element lift at all). Seed via `ATTR_CLASSIFICATION_OVERRIDES` only where a clean element+role exists; document any that don't fit. Do NOT blind-seed (`enabling-a-capability-wakes-latent-misseeds`). `/sgs-update --stage 1` → reclone a page exercising those blocks → verify live.
+**Acceptance:** each of the 7 attrs is either seeded-and-verified-live OR documented with why it isn't a clean lift.
 
-## Task 2 — BUILD the parity-tool rebuild to Spec 20 v1.1.0 (design LOCKED)
+## Task 1 — BUILD the parity-tool rebuild to Spec 20 v1.1.0 (design LOCKED)
 **What:** make `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Stage 11.6) trustworthy per the LOCKED Spec 20 v1.1.0 — track VISIBLE fidelity, add tag/structure/class-info dims, force-load lazy content. **The spec amend (STEP 0) is DONE (D314)** — Spec 20 is v1.1.0.
 **Why:** the current tool reports 76% while visible fidelity is ~94–95% (STOP-PARITY-OVERCOUNTS-SUBVISIBLE); Bean needs a dependable instrument for future drafts.
 **Estimated time:** ~40–50 min.
@@ -110,12 +106,12 @@ Read `.claude/handoff.md` + `.claude/CLAUDE.md` for full context.
 
 ## Dependency graph
 ```
-Task 1: fix E (design-gate approach → build → reclone → verify live vs draft) → /qc-inline
-  ↓ (page 8 now ~100% of in-contract fidelity)
-Task 2: BUILD parity tool to Spec 20 v1.1.0 (spec already LOCKED, D314)
+Task 1 (PRIMARY): BUILD parity tool to Spec 20 v1.1.0 (spec already LOCKED, D314; page-8 fidelity DONE)
   /brainstorming matching model → /qc-council fix-shapes → solo build → /qc-inline
   ↓ VALIDATE tool output == D314 ledger (~94–95% visible) AND == Spec 20 v1.1.0 FRs
 Commit (tool + any Spec 20 last_verified bump together)
+
+Task 2 (small, independent): remaining C-type sweep (mobile-nav/trust-bar) — verify each before seeding
 ```
 
 ## Methodology guardrails (do not skip)

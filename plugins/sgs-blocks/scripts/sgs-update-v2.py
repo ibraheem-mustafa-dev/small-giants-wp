@@ -1089,6 +1089,18 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/product-card", "descFontSizeMobile"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
     ("sgs/product-card", "descLineHeight"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
     ("sgs/product-card", "descLineHeightUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
+    # product-card PRICE-NOTE family (D314 same-type sweep): the C-type null-role gap
+    # is NOT desc-only — the price-note ALSO drops. Draft `.sgs-product-card__price-note
+    # { font-size:13px; color:var(--text-muted) }` never routed (role=NULL). render.php
+    # consumes priceNoteColour (:166) + the 'priceNote' typography family (:193) at
+    # `.sgs-product-card__price-note` (verified render source, STOP-44). Same clean
+    # text-element pattern as desc*. (priceFromLabel* = bound-mode WC label, no typed
+    # draft element — seeded for completeness, harmless no-op on typed clones.)
+    ("sgs/product-card", "priceNoteColour"): {"role": "color", "derived_selector": ".sgs-product-card__price-note"},
+    ("sgs/product-card", "priceNoteFontSize"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
+    ("sgs/product-card", "priceNoteFontSizeUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
+    ("sgs/product-card", "priceNoteFontSizeTablet"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
+    ("sgs/product-card", "priceNoteFontSizeMobile"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
     # ---- scalar-styling-lift residual selector-drift (D285 completeness pass) ----
     # Render-verified only (STOP-43): each corrected selector is where the block's
     # render actually paints the attr. product-card tag*: the tag chip is __tag

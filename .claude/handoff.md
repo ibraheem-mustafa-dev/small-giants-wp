@@ -22,13 +22,17 @@ session: D314 — page-8 100%-clone proof (~95%, not 100%) + C description-colou
 - **Tests:** converter suite **449 passed, 1 skipped** (no regression from the DB seed).
 - **DB:** `~/.claude/skills/sgs-wp-engine/sgs-framework.db` reseeded (Stage 1) — NOT in git; regenerated from the committed `sgs-update-v2.py` override via `/sgs-update`.
 
+## Also completed (Bean-directed follow-on, same session)
+- **E (product-card CTA padding) — FIXED + LANDED** via composite-mirror (FR-31-21.1): block.json `ctaPaddingX/Y` defaults 20/12→24/14 (aligned to the `sgs/button` standard, found the real source by enumerating live matched rules) + removed the divergent `style.css` `:where()` padding/min-height/display. CTAs now render 14/24, 48, flex (draft-exact). No reclone (default read at render).
+- **C-type + E-type same-type sweep + QC:** E-type = only product-card diverges (unique). C-type = swept product-card `priceNote*` (verified #6B5C50/13px); documented `sgs/mobile-nav` (state colours) + `sgs/trust-bar` (SVG shape-divider) as a future scoped pass (different mechanisms — not blindly seeded per wake-latent-misseeds). Converter 449 pass; build gates green.
+
 ## Known Issues / Blockers
-- **E is the only open page-8 fidelity gap** (product-card CTA padding 12/20 vs draft 14/24). Deferred — needs new routing infra (no `PaddingX/PaddingY` property_suffixes + padding isn't a scalar-styling-lift role) OR a `__cta` CSS-default alignment; cta* is D284-owned. Bundle with the parity-tool build.
+- **Page 8 in-contract fidelity is now complete** (A/B accepted, C+E fixed, D safe). Remaining C-type same-type items (mobile-nav state colours, trust-bar shape-divider) are a small future scoped pass — not blocking.
 - None blocking.
 
 ## Next Priorities (in order) — Bean-directed
-1. **Fix E** (product-card CTA padding) — the last page-8 fidelity gap. Design-gate the approach (new suffixes+box-CSS→scalar routing vs `__cta` CSS-default alignment).
-2. **Build the parity-tool rebuild to Spec 20 v1.1.0** (design LOCKED). Validate its verdict against the D314 ledger (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`) — must AGREE (~94–95% visible), never self-report. Core fixes: font-family primary-only, blocklist `interactivity`/`appearance`, threshold sub-visible twins (FR-20-3a), add tag/structure/class-info dims (FR-20-9/10), lazy-load force-load (FR-20-11).
+1. **Build the parity-tool rebuild to Spec 20 v1.1.0** (design LOCKED). Validate its verdict against the D314 ledger (`reports/visual-diff/page8-dom-ledger-2026-07-12.md`) — must AGREE (~94–95% visible), never self-report. Core fixes: font-family primary-only, blocklist `interactivity`/`appearance`, threshold sub-visible twins (FR-20-3a), add tag/structure/class-info dims (FR-20-9/10), lazy-load force-load (FR-20-11).
+2. **(small) The remaining C-type same-type sweep** — `sgs/mobile-nav` focus/active/sublink + `sgs/trust-bar` shapeDivider* null-role attrs. Different mechanisms (state selectors / SVG pseudo) — verify each before seeding.
 
 ## Files Modified
 | File | What |
