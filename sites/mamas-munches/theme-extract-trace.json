@@ -1,0 +1,195 @@
+[
+  {
+    "kind": "gap",
+    "reason": "dead :root token (declared, zero resting usage)",
+    "name": "accent-dark",
+    "value": "#7A6500"
+  },
+  {
+    "kind": "gap",
+    "reason": "dead :root token (declared, zero resting usage)",
+    "name": "cookie-brown",
+    "value": "#8B6F4E"
+  },
+  {
+    "kind": "gap",
+    "reason": "dead :root token (declared, zero resting usage)",
+    "name": "success",
+    "value": "#2E7D4F"
+  },
+  {
+    "kind": "token",
+    "slug": "accent",
+    "_source": "declared",
+    "role": "surface-alt",
+    "confidence": 0.7,
+    "value": "#f5d050",
+    "reason": "name-tiebreak 'accent'→accent (usage role surface-alt conf 0.70)",
+    "usage": "background on content-selector (.sgs-product-card__tag--trial)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "border-subtle",
+    "_source": "declared",
+    "role": "border-subtle",
+    "confidence": 0.7,
+    "value": "#e8d5c0",
+    "reason": "name-tiebreak 'border'→border-subtle (usage role border-subtle conf 0.70)",
+    "usage": "border-color on interactive-selector (.sgs-button--ghost)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "primary",
+    "_source": "declared",
+    "role": "primary",
+    "confidence": 0.9,
+    "value": "#e68a95",
+    "reason": "identity role primary (usage-context)",
+    "usage": "background on interactive-selector (.sgs-button--primary)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "primary-dark",
+    "_source": "declared",
+    "role": "link-colour",
+    "confidence": 0.8,
+    "value": "#c56a7a",
+    "reason": "name-tiebreak 'primary-dark'→primary-dark (usage role link-colour conf 0.80)",
+    "usage": "color on link-selector (.sgs-announcement-bar--send-to-ward a)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "surface-alt",
+    "_source": "declared",
+    "role": "surface-alt",
+    "confidence": 0.7,
+    "value": "#fff9f0",
+    "reason": "name-tiebreak 'surface-alt'→surface-alt (usage role surface-alt conf 0.70)",
+    "usage": "background on content-selector (.sgs-brand)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "surface",
+    "_source": "declared",
+    "role": "surface",
+    "confidence": 0.95,
+    "value": "#fbf3dc",
+    "reason": "identity role surface (usage-context)",
+    "usage": "background on base-selector (body)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "custom-surface-pink",
+    "_source": "declared",
+    "role": "surface-alt",
+    "confidence": 0.7,
+    "value": "#f5c2c8",
+    "reason": "custom (usage role surface-alt conf 0.70, no free slug)",
+    "usage": "background on content-selector (.sgs-hero)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "text",
+    "_source": "declared",
+    "role": "text",
+    "confidence": 0.95,
+    "value": "#3a2e26",
+    "reason": "identity role text (usage-context)",
+    "usage": "color on base-selector (body)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "text-inverse",
+    "_source": "declared",
+    "role": "link-colour",
+    "confidence": 0.8,
+    "value": "#fffaf5",
+    "reason": "name-tiebreak 'text-inverse'→text-inverse (usage role link-colour conf 0.80)",
+    "usage": "color on link-selector (.sgs-footer__social a)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "text-muted",
+    "_source": "declared",
+    "role": "text",
+    "confidence": 0.6,
+    "value": "#6b5c50",
+    "reason": "name-tiebreak 'text-muted'→text-muted (usage role text conf 0.60)",
+    "usage": "color on content-selector (.sgs-featured-product .sgs-section-heading__intro)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "base",
+    "what": "styles.typography",
+    "_source": "declared",
+    "reason": "computed on representative <p> 'She was struggling with breastfe'",
+    "fontSize": "16px",
+    "lineHeight": "1.6",
+    "root_px": 16.0
+  },
+  {
+    "kind": "base",
+    "what": "styles.elements.heading",
+    "_source": "declared",
+    "reason": "mode line-height ratio 1.2 across non-chrome headings (ratios=[1.15, 1.2]); hero outlier excluded",
+    "lineHeight": "1.2",
+    "letterSpacing": "(omitted)"
+  },
+  {
+    "kind": "font-loading",
+    "reason": "draft font <link>/@import hrefs carried",
+    "links": [
+      "https://fonts.googleapis.com",
+      "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600&display=swap",
+      "https://fonts.gstatic.com"
+    ],
+    "note": "PARTIAL: heading face loads via link on the live page; theme.json woff2 fontFace embedding is a follow-up (FR-33-3 sub-clause)"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.primary",
+    "_source": "declared",
+    "reason": "computed rest+hover diff on sgs-button sgs-button--primary",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,hover-background,hover-text,hover-border"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.secondary",
+    "_source": "declared",
+    "reason": "computed rest+hover diff on sgs-button sgs-button--secondary",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,hover-background,hover-text,hover-border"
+  },
+  {
+    "kind": "preset",
+    "slot": "buttonPresets.outline",
+    "_source": "declared",
+    "reason": "computed rest+hover diff on sgs-brand__cta sgs-button sgs-button--ghost",
+    "keys": "background,text,border,border-width,border-radius,font-size,font-weight,min-height,hover-background,hover-border"
+  },
+  {
+    "kind": "layout",
+    "what": "contentSize",
+    "_source": "declared",
+    "reason": "container max-width 1280px",
+    "value": "1280px"
+  }
+]

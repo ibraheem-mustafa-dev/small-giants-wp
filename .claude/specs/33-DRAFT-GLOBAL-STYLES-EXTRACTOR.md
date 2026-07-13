@@ -1,15 +1,17 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: 0.2.0-DRAFT
+spec_version: 1.0.0
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-status: draft (adversarial-council GO-conditional applied; ready for build)
+last_verified: 2026-07-13 (D318 — Pass A built + proven live on Mama's page 8: D303 dead, base 16px / heading 1.2)
+status: built (Pass A / declared spine shipped + live-proven; Pass B advisory + FR-33-12 ordering gate = follow-up)
 status_history:
   - 2026-07-13 — v0.1.0 authored (corpus-grounded, 10 FRs).
   - 2026-07-13 — v0.2.0 after a 6-persona /adversarial-council (Cynic/Spec-Lawyer/Ship-PM/Extraction-Correctness/Support-Realist/Systems-Integration; all C-band, GO-conditional). Applied every convergent must-fix. Bean-directed shape: keep the COMPLETE spine (all DECLARED value types in v1 — colour/typography/spacing/radius/shadow/buttons/layout), because the cost/risk is the DERIVATION mechanism, not the breadth of value types. The declared-vs-derived line is the trust boundary: declared (Pass A) auto-applies after computed-validation; derived (Pass B) is PROVISIONAL/advisory, never auto-pushed to a live theme. Fixed the FR-33-1 precedence contradiction that would have re-shipped D303; defined the role-inference rule table; pinned ΔE + determinism; reuse-by-composition (freeze the live hex-only helper); added provenance trace + golden fixtures + deploy-safety gates + bootstrap-ordering + forward contracts. All 4 open questions RESOLVED into FRs.
+  - 2026-07-13 — v1.0.0 (D318): BUILT + live-proven on Mama's. Hybrid Node(measure.js)+Python(extract) at `plugins/sgs-blocks/scripts/theme-extractor/`. SHIPPED: FR-33-1 (provenance + computed-wins), FR-33-2 (role rule-table + ΔE alpha-axis dedup), FR-33-3 (base from rendered `<p>` + mode-heading-lh + rem-vs-real-root — D303 killed), FR-33-4 (declared spine: colour/typography/buttons(open-bag rest+hover)/contentSize/clamp-verbatim), FR-33-7 (trace + goldens + schema-validate), FR-33-8 (determinism, byte-identical), FR-33-9 (conservation/gap-log), FR-33-10 (composed `build_draft_root_token_map`, frozen hex helper unchanged), FR-33-11 (push-theme-snapshot `--backup`/`--rollback`/drift-warn). 16 tests green; proven live on sandybrown page 8 (base 16px, heading 1.2, buttons faithful — caught+fixed a transparent→black alpha-drop bug via live measurement). FOLLOW-UP: FR-33-5 (Pass B advisory), FR-33-6 (dark-theme safety), FR-33-12 (orchestrator fail-closed ordering gate), FR-33-13 (header/footer namespace + colour-var parking re-point); migrate the transitional component `styles.css` out of the snapshot.
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
   - 17-HEADER-FOOTER-ARCHITECTURE.md (Part 2 sibling — the header/footer converter, built AFTER this; reserves the header/footer token namespace, FR-33-13)

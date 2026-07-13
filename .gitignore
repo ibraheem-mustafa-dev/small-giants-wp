@@ -122,3 +122,7 @@ theme/sgs-theme/styles/typography/
 .claude/specs/02-SGS-BLOCKS-REFERENCE.md
 .claude/sgs-framework.db
 plugins/sgs-blocks/scripts/orchestrator/sgs-framework.db
+
+# Spec 33 extractor runtime artifacts (live-payload backups + pre-deploy working copies)
+sites/*/theme-snapshot-backups/
+sites/*/theme-snapshot.pre-*.json

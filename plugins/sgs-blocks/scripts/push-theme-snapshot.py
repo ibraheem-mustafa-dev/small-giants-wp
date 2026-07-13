@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import datetime
 import json
 import os
 import subprocess
@@ -433,6 +434,82 @@ def push_snapshot(target: str, port: int, server_path: str, local_path: Path) ->
     return True
 
 
+# ---------------------------------------------------------------------------
+# FR-33-11 deploy safety: backup-before-overwrite + one-command rollback + drift-warn.
+# ---------------------------------------------------------------------------
+def _backup_dir(client: str) -> Path:
+    d = repo_root() / "sites" / client / "theme-snapshot-backups"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def persist_backup(client: str, target_domain: str, server_theme: dict | None,
+                   global_styles: dict | None, stamp: str) -> Path | None:
+    """Persist the CURRENT live layers (disk theme.json + wp_global_styles) to a timestamped file.
+
+    Returns the backup path, or None if there was nothing to back up (fresh target). This is the
+    rollback source of truth (FR-33-11) — never overwrite live without one.
+    """
+    if server_theme is None and global_styles is None:
+        print("[push-theme-snapshot] WARN: live payload unavailable — no backup written "
+              "(cannot rollback this push).", file=sys.stderr)
+        return None
+    payload = {"_backup_meta": {"client": client, "target_domain": target_domain, "stamp": stamp},
+               "server_theme_json": server_theme,
+               "wp_global_styles": global_styles}
+    path = _backup_dir(client) / f"{target_domain}-{stamp}.backup.json"
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"[push-theme-snapshot] backed up live payload → {path.relative_to(repo_root())}")
+    return path
+
+
+def drift_warning(local: dict, global_styles: dict | None) -> None:
+    """WARN if the live wp_global_styles carries operator keys absent from the snapshot (Site-Editor
+    hand-edits that this push would clobber). Not fatal — surfaced for a go/no-go decision."""
+    if not global_styles:
+        return
+    live = collect_keys({"styles": global_styles.get("styles") or {},
+                         "settings": global_styles.get("settings") or {}})
+    ours = collect_keys({"styles": local.get("styles") or {}, "settings": local.get("settings") or {}})
+    survivors = sorted(live - ours)
+    if survivors:
+        print(f"[push-theme-snapshot] ⚠ DRIFT WARNING: {len(survivors)} operator override key(s) in "
+              f"the live layer are NOT in this snapshot — pushing will leave them orphaned. "
+              f"First: {survivors[:5]}", file=sys.stderr)
+
+
+def do_rollback(args) -> int:
+    """Restore a backup file to the live target (disk theme.json + wp_global_styles)."""
+    path = Path(args.rollback)
+    if not path.is_absolute():
+        path = _backup_dir(args.client) / path.name if not path.exists() else path
+    if not path.is_file():
+        print(f"[push-theme-snapshot] rollback file not found: {path}", file=sys.stderr)
+        return 1
+    data = json.loads(path.read_text(encoding="utf-8"))
+    theme = data.get("server_theme_json")
+    gstyles = data.get("wp_global_styles")
+    if theme is None:
+        print("[push-theme-snapshot] backup has no server_theme_json — cannot restore disk layer.",
+              file=sys.stderr)
+        return 1
+    server_path = f"domains/{args.target_domain}/public_html/wp-content/themes/sgs-theme/theme.json"
+    wp_root = f"domains/{args.target_domain}/public_html"
+    tmp = _backup_dir(args.client) / "_rollback-restore.json"
+    tmp.write_text(json.dumps(theme, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[push-theme-snapshot] ROLLBACK: restoring {path.name} → {args.target_domain}")
+    if not push_snapshot(args.target, args.port, server_path, tmp):
+        return 1
+    creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
+    if creds and gstyles:
+        post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
+        if post_id is not None:
+            post_global_styles(args.target_domain, post_id, gstyles, _basic_auth_header(*creds))
+    flush_cache(args.target, args.port, wp_root)
+    print("[push-theme-snapshot] rollback complete.")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--client", required=True, help="Client slug (matches sites/<slug>/)")
@@ -453,7 +530,15 @@ def main() -> int:
         default=None,
         help="WP application password (spaces stripped automatically)",
     )
+    parser.add_argument("--no-backup", action="store_true",
+                        help="Skip the pre-overwrite live-payload backup (FR-33-11 — not advised)")
+    parser.add_argument("--rollback", default=None, metavar="BACKUP_FILE",
+                        help="Restore a backup (filename under sites/<client>/theme-snapshot-backups/ "
+                             "or an absolute path) to the live target and exit")
     args = parser.parse_args()
+
+    if args.rollback:
+        return do_rollback(args)
 
     local = load_local_snapshot(args.client)
     local_path = repo_root() / "sites" / args.client / "theme-snapshot.json"
@@ -471,6 +556,7 @@ def main() -> int:
 
     print(diff_summary(local, server, global_styles))
     print()
+    drift_warning(local, global_styles)
 
     if args.no_push:
         print("[push-theme-snapshot] --no-push set — exiting without upload")
@@ -494,6 +580,11 @@ def main() -> int:
         if answer != "y":
             print("[push-theme-snapshot] aborted by operator")
             return 0
+
+    # FR-33-11: back up the CURRENT live payload BEFORE overwriting (rollback source of truth).
+    if not args.no_backup:
+        stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        persist_backup(args.client, args.target_domain, server, global_styles, stamp)
 
     # Step 1: SCP theme.json to disk + cache flush (existing behaviour).
     if not push_snapshot(args.target, args.port, server_path, local_path):

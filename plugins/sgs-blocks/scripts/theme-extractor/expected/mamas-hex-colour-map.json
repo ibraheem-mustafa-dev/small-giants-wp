@@ -1,0 +1,15 @@
+{
+  "accent": "#f5d050",
+  "accent-dark": "#7a6500",
+  "border": "#e8d5c0",
+  "cookie-brown": "#8b6f4e",
+  "primary": "#e68a95",
+  "primary-dark": "#c56a7a",
+  "success": "#2e7d4f",
+  "surface-alt": "#fff9f0",
+  "surface-cream": "#fbf3dc",
+  "surface-pink": "#f5c2c8",
+  "text": "#3a2e26",
+  "text-inverse": "#fffaf5",
+  "text-muted": "#6b5c50"
+}
