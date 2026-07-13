@@ -19,6 +19,22 @@ function init() {
 		return;
 	}
 
+	// Re-parent the drawer to <body> so it is a SIBLING of .wp-site-blocks,
+	// not a descendant (2026-07-13 bug fix). The open handler sets `inert` on
+	// .wp-site-blocks to freeze the background for the modal — but `inert`
+	// applies to the whole subtree, and the drawer lived INSIDE .wp-site-blocks,
+	// so opening it disabled itself (every link/button became unclickable, and
+	// hit-testing returned <body>). The Popover API promotes the drawer to the
+	// top layer for PAINTING, so it looked open, but `inert` follows the DOM
+	// tree, not the paint tree. Moving it out to <body> keeps the background
+	// freeze working while leaving the drawer interactive. `popovertarget`
+	// resolves by id, so the trigger still opens it after the move.
+	// Proven live: elementFromPoint reaches the drawer links AND the background
+	// stays inert-frozen after the move.
+	if ( drawer.parentElement !== document.body ) {
+		document.body.appendChild( drawer );
+	}
+
 	const trigger = document.querySelector(
 		'[popovertarget="sgs-mobile-nav"]'
 	);
