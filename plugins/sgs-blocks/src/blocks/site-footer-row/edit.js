@@ -4,8 +4,12 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, RangeControl } from '@wordpress/components';
-import { ResponsiveControl, SpacingControl } from '../../components';
+import {
+	PanelBody,
+	SelectControl,
+	RangeControl,
+} from '@wordpress/components';
+import { ResponsiveOverride, SpacingControl } from '../../components';
 import { ResponsiveSpacingPanel } from '../container/components/ContainerWrapperControls';
 
 const ALLOWED_BLOCKS = [
@@ -38,33 +42,41 @@ const ROW_LABELS = {
 	bottom: __( 'Bottom bar — copyright / legal / attribution', 'sgs-blocks' ),
 };
 
+// Client-friendly columns number <-> the CSS grid-template-columns the engine stores.
+const columnsToTemplate = ( n ) => ( n <= 1 ? '1fr' : `repeat(${ n }, 1fr)` );
+const templateToColumns = ( tpl ) => {
+	if ( ! tpl ) {
+		return 1;
+	}
+	const repeatMatch = /repeat\(\s*(\d+)/.exec( tpl );
+	if ( repeatMatch ) {
+		return parseInt( repeatMatch[ 1 ], 10 );
+	}
+	// Fall back to counting explicit track tokens (e.g. "1fr 2fr 1fr").
+	return tpl.trim().split( /\s+/ ).filter( Boolean ).length || 1;
+};
+
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		rowSlot,
-		layout,
-		columns,
-		gap,
-		justifyContent,
-	} = attributes;
+	const { rowSlot, layout, gap, gridTemplateColumns, justifyContent } =
+		attributes;
 
 	const isGrid = 'grid' === layout;
 
-	// Editor preview mirrors the frontend: grid rows preview as a column grid,
-	// flex rows as a wrapping cluster. The never-overflow guarantee (min-width:0)
-	// comes from style.css; this inline preview just aids editing.
+	// Editor preview mirrors the frontend: grid rows preview as a column grid at
+	// the desktop tier, flex rows as a wrapping cluster.
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
 				gridTemplateColumns:
-					attributes.gridTemplateColumns ||
-					`repeat(${ Math.max( 1, columns || 1 ) }, 1fr)`,
-				gap: gap || '48px',
+					( gridTemplateColumns && gridTemplateColumns.desktop ) ||
+					'repeat(3, 1fr)',
+				gap: ( gap && gap.desktop ) || '48px',
 		  }
 		: {
 				display: 'flex',
 				flexWrap: 'wrap',
 				alignItems: 'center',
-				gap: gap || 'clamp(0.5rem, 2vw, 1.5rem)',
+				gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
 				justifyContent: justifyContent || 'flex-start',
 		  };
 
@@ -76,7 +88,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
 		templateLock: false,
-		orientation: isGrid ? 'horizontal' : 'horizontal',
+		orientation: 'horizontal',
 		renderAppender: undefined,
 	} );
 
@@ -91,44 +103,32 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 
 					{ isGrid && (
-						<>
-							<RangeControl
-								label={ __( 'Columns (desktop)', 'sgs-blocks' ) }
-								value={ columns || 1 }
-								onChange={ ( val ) =>
-									setAttributes( { columns: val } )
-								}
-								min={ 1 }
-								max={ 6 }
-								help={ __(
-									'Up to 6 columns. Columns collapse to a single column below the mobile breakpoint.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-							/>
-							<ResponsiveControl label={ __( 'Columns per device', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrMap = {
-										desktop: 'columns',
-										tablet: 'columnsTablet',
-										mobile: 'columnsMobile',
-									};
-									const attr = attrMap[ breakpoint ];
-									const max = 'mobile' === breakpoint ? 3 : 'tablet' === breakpoint ? 4 : 6;
-									return (
-										<RangeControl
-											value={ attributes[ attr ] || 1 }
-											onChange={ ( val ) =>
-												setAttributes( { [ attr ]: val } )
-											}
-											min={ 1 }
-											max={ max }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
-						</>
+						<ResponsiveOverride
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							value={ gridTemplateColumns }
+							onChange={ ( obj ) =>
+								setAttributes( { gridTemplateColumns: obj } )
+							}
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
+								const shown = inherited ? effectiveValue : ownValue;
+								return (
+									<RangeControl
+										value={ templateToColumns( shown ) }
+										onChange={ ( val ) =>
+											setOwnValue( columnsToTemplate( val ) )
+										}
+										min={ 1 }
+										max={ 6 }
+										help={ __(
+											'Columns at this device. Set fewer on mobile (e.g. 1) — leave a device blank to inherit the one above.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+									/>
+								);
+							} }
+						</ResponsiveOverride>
 					) }
 
 					{ ! isGrid && (
@@ -147,25 +147,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 
-					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'gap',
-								tablet: 'gapTablet',
-								mobile: 'gapMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							return (
-								<SpacingControl
-									freeInput
-									value={ attributes[ attr ] || '' }
-									onChange={ ( val ) =>
-										setAttributes( { [ attr ]: val } )
-									}
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					<ResponsiveOverride
+						label={ __( 'Gap', 'sgs-blocks' ) }
+						value={ gap }
+						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SpacingControl
+								freeInput
+								value={ ownValue }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ setOwnValue }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 				<ResponsiveSpacingPanel
 					attributes={ attributes }

@@ -22,7 +22,12 @@ import {
 	TextControl,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, TypographyControls } from '../../components';
+import {
+	DesignTokenPicker,
+	TypographyControls,
+	ResponsiveOverride,
+	SpacingControl,
+} from '../../components';
 import {
 	WidthPanel,
 	ResponsiveSpacingPanel,
@@ -272,16 +277,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
+					<ResponsiveOverride
 						label={ __( 'Gap between links', 'sgs-blocks' ) }
 						value={ gap }
-						onChange={ ( val ) => setAttributes( { gap: val } ) }
-						help={ __(
-							"CSS length, e.g. '28px' or '1.5rem'.",
-							'sgs-blocks'
+						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SpacingControl
+								freeInput
+								value={ ownValue }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ setOwnValue }
+							/>
 						) }
-						__nextHasNoMarginBottom
-					/>
+					</ResponsiveOverride>
 					<WidthPanel
 						attributes={ attributes }
 						setAttributes={ setAttributes }

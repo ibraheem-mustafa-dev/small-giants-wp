@@ -136,19 +136,16 @@ if ( '' !== $link_hover ) {
 	$css .= $root_sel . ' .sgs-adaptive-nav__link:hover,' . $root_sel . ' .sgs-adaptive-nav__link:focus-visible{color:var(--wp--preset--color--' . $link_hover . ');}';
 }
 
-// 2d. Flex row (gap / justify / wrap / vertical-align) on the list — base + tiers.
-$list_sel   = $root_sel . ' .sgs-adaptive-nav__list';
-$gap        = $sgs_css_length( $attributes['gap'] ?? '' );
-$gap_tablet = $sgs_css_length( $attributes['gapTablet'] ?? '' );
-$gap_mobile = $sgs_css_length( $attributes['gapMobile'] ?? '' );
-$justify    = $sgs_css_keyword( $attributes['justifyContent'] ?? '' );
-$wrap       = $sgs_css_keyword( $attributes['flexWrap'] ?? '' );
-$valign     = $sgs_css_keyword( $attributes['verticalAlign'] ?? '' );
+// 2d. Flex row (justify / wrap / vertical-align) on the nav list. The GAP between
+// links is the FR-S9-6 {desktop,tablet,mobile} object model — emitted via the shared
+// sgs_emit_responsive_css() on this block's OWN <ul> (a block-owned element, not a
+// wrapper capability; @media tiers, matching the nav's existing viewport behaviour).
+$list_sel = $root_sel . ' .sgs-adaptive-nav__list';
+$justify  = $sgs_css_keyword( $attributes['justifyContent'] ?? '' );
+$wrap     = $sgs_css_keyword( $attributes['flexWrap'] ?? '' );
+$valign   = $sgs_css_keyword( $attributes['verticalAlign'] ?? '' );
 
 $list_decls = array();
-if ( '' !== $gap ) {
-	$list_decls[] = 'gap:' . $gap;
-}
 if ( '' !== $justify ) {
 	$list_decls[] = 'justify-content:' . $justify;
 }
@@ -161,11 +158,17 @@ if ( '' !== $valign ) {
 if ( $list_decls ) {
 	$css .= $list_sel . '{' . implode( ';', $list_decls ) . ';}';
 }
-if ( '' !== $gap_tablet ) {
-	$css .= '@media(max-width:1023px){' . $list_sel . '{gap:' . $gap_tablet . ';}}';
-}
-if ( '' !== $gap_mobile ) {
-	$css .= '@media(max-width:767px){' . $list_sel . '{gap:' . $gap_mobile . ';}}';
+if ( function_exists( 'sgs_emit_responsive_css' ) ) {
+	$css .= sgs_emit_responsive_css(
+		$list_sel,
+		array(
+			array(
+				'value' => $attributes['gap'] ?? array(),
+				'css'   => 'gap',
+			),
+		),
+		array( 'container' => false )
+	);
 }
 
 // 2e. Collapse tier — the single source of truth for the bar/burger breakpoint.

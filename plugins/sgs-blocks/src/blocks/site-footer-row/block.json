@@ -67,29 +67,9 @@
 			"type": "string",
 			"default": "grid"
 		},
-		"columns": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
 		"gridTemplateColumns": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"gridTemplateColumnsMobile": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": { "desktop": "repeat(3, 1fr)", "mobile": "1fr" }
 		},
 		"flexWrap": {
 			"type": "string",
@@ -104,16 +84,8 @@
 			"default": "top"
 		},
 		"gap": {
-			"type": "string",
-			"default": "48px"
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": "32px"
+			"type": "object",
+			"default": { "desktop": "48px", "mobile": "32px" }
 		},
 		"maxWidth": {
 			"type": "string",

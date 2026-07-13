@@ -130,6 +130,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// path is byte-identical. This never reorders/mutates $attributes, so the
 			// uid md5 is untouched (STOP-NO-KSORT).
 			$object_model = ( ( $opts['responsive_model'] ?? '' ) === 'object' );
+			// Grid gate: only suppress the legacy columns/grid emission when an OBJECT
+			// gridTemplateColumns is actually present. A block that opted in but whose
+			// stored instance still carries flat grid attrs (migration pending, D270
+			// re-clone) keeps rendering its grid via the legacy path until re-saved —
+			// so flipping the flag never breaks an un-migrated instance's columns.
+			$object_grid = $object_model && is_array( $attributes['gridTemplateColumns'] ?? null );
 
 			// ----------------------------------------------------------------
 			// Extract attributes (mirrors container/render.php exactly).
@@ -563,7 +569,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// Object model owns grid-template-columns via sgs_emit_responsive_css();
 					// suppress the legacy columns/base fallback under $object_model so the
 					// two don't both emit (the columns default would win as repeat(2,1fr)).
-					if ( ! ( $grid_template_tablet || $grid_template_mobile ) && ! $object_model ) {
+					if ( ! ( $grid_template_tablet || $grid_template_mobile ) && ! $object_grid ) {
 						$gd[] = 'grid-template-columns:' . $gtc_base;
 					}
 					// D288: only impose align-items when a value is set — a blank
@@ -778,13 +784,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// the legacy sgs-cols-* shorthand under $object_model (else the columns
 				// default 2/2/1 would emit sgs-cols-2 etc. and fight the object grid).
 				$has_base_template = '' !== trim( (string) $grid_template );
-				if ( ! $has_base_template && ! $object_model ) {
+				if ( ! $has_base_template && ! $object_grid ) {
 					$classes[] = 'sgs-cols-' . absint( $columns );
 				}
-				if ( ! $has_base_template && ! $object_model && $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
+				if ( ! $has_base_template && ! $object_grid && $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
 					$classes[] = 'sgs-cols-tablet-' . absint( $columns_tablet );
 				}
-				if ( ! $has_base_template && ! $object_model && $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
+				if ( ! $has_base_template && ! $object_grid && $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 					$classes[] = 'sgs-cols-mobile-' . absint( $columns_mobile );
 				}
 			}
