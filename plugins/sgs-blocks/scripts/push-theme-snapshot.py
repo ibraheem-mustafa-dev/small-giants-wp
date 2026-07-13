@@ -463,6 +463,23 @@ def persist_backup(client: str, target_domain: str, server_theme: dict | None,
     return path
 
 
+def strip_advisory(snapshot: dict) -> tuple[dict, int]:
+    """Return (copy-with-advisory-removed, count). FR-33-5: a DERIVED (Pass B) token is provisional/
+    advisory and MUST NOT be pushed to the live theme without explicit human confirmation. Derived
+    tokens are marked ``advisory: true`` on the palette entry; here they are dropped from the deployed
+    payload unless the operator passes ``--include-advisory``.
+    """
+    import copy as _copy
+    out = _copy.deepcopy(snapshot)
+    removed = 0
+    pal = ((out.get("settings") or {}).get("color") or {}).get("palette")
+    if isinstance(pal, list):
+        kept = [e for e in pal if not (isinstance(e, dict) and e.get("advisory"))]
+        removed = len(pal) - len(kept)
+        out["settings"]["color"]["palette"] = kept
+    return out, removed
+
+
 def drift_warning(local: dict, global_styles: dict | None) -> None:
     """WARN if the live wp_global_styles carries operator keys absent from the snapshot (Site-Editor
     hand-edits that this push would clobber). Not fatal — surfaced for a go/no-go decision."""
@@ -532,6 +549,11 @@ def main() -> int:
     )
     parser.add_argument("--no-backup", action="store_true",
                         help="Skip the pre-overwrite live-payload backup (FR-33-11 — not advised)")
+    parser.add_argument("--include-advisory", action="store_true",
+                        help="Deploy DERIVED (advisory) Pass-B tokens too (FR-33-5). By default any "
+                             "palette entry marked advisory:true is stripped from the pushed payload "
+                             "(disk theme.json + wp_global_styles) — derived tokens are provisional and "
+                             "need explicit human confirmation. Pass this flag to include them.")
     parser.add_argument("--rollback", default=None, metavar="BACKUP_FILE",
                         help="Restore a backup (filename under sites/<client>/theme-snapshot-backups/ "
                              "or an absolute path) to the live target and exit")
@@ -581,29 +603,45 @@ def main() -> int:
             print("[push-theme-snapshot] aborted by operator")
             return 0
 
+    # FR-33-5: strip DERIVED (advisory) tokens from BOTH deployed layers unless --include-advisory.
+    deploy = local
+    push_path = local_path
+    if not args.include_advisory:
+        stripped, n_adv = strip_advisory(local)
+        if n_adv:
+            deploy = stripped
+            push_path = repo_root() / "sites" / args.client / "theme-snapshot.deploy.tmp.json"
+            push_path.write_text(json.dumps(deploy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            print(f"[push-theme-snapshot] FR-33-5: stripped {n_adv} advisory (derived) palette token(s) "
+                  f"from the push — pass --include-advisory to deploy them.")
+
     # FR-33-11: back up the CURRENT live payload BEFORE overwriting (rollback source of truth).
     if not args.no_backup:
         stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         persist_backup(args.client, args.target_domain, server, global_styles, stamp)
 
-    # Step 1: SCP theme.json to disk + cache flush (existing behaviour).
-    if not push_snapshot(args.target, args.port, server_path, local_path):
-        return 1
+    try:
+        # Step 1: SCP theme.json to disk + cache flush (existing behaviour).
+        if not push_snapshot(args.target, args.port, server_path, push_path):
+            return 1
 
-    # Step 2 (FR-26-D2): write snapshot styles+settings to the live
-    # wp_global_styles database post so the user layer matches the disk snapshot.
-    post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
-    if post_id is None:
-        print(
-            "[push-theme-snapshot] ERROR: could not determine wp_global_styles post ID — "
-            "disk push completed but live user-layer was NOT updated.",
-            file=sys.stderr,
-        )
-        return 1
+        # Step 2 (FR-26-D2): write snapshot styles+settings to the live
+        # wp_global_styles database post so the user layer matches the disk snapshot.
+        post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
+        if post_id is None:
+            print(
+                "[push-theme-snapshot] ERROR: could not determine wp_global_styles post ID — "
+                "disk push completed but live user-layer was NOT updated.",
+                file=sys.stderr,
+            )
+            return 1
 
-    if not post_global_styles(args.target_domain, post_id, local, auth_header):
-        # post_global_styles already printed a loud error.
-        return 1
+        if not post_global_styles(args.target_domain, post_id, deploy, auth_header):
+            # post_global_styles already printed a loud error.
+            return 1
+    finally:
+        if push_path != local_path:
+            push_path.unlink(missing_ok=True)
 
     # Flush AFTER the REST write so the rendered global-styles inline CSS picks
     # up the new user-layer data immediately (the POST self-invalidates the

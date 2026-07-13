@@ -200,3 +200,88 @@ def test_frozen_colour_map_unchanged():
     got = build_draft_root_colour_map(_css())
     expected = json.loads((EXPECTED / "mamas-hex-colour-map.json").read_text(encoding="utf-8"))
     assert got == expected   # widening/altering the frozen helper (D306/D307 risk) fails here
+
+
+# ── FR-33-6 — dark-theme / preview-shell background safety ────────────────────────────────────────
+def test_fr336_mamas_background_is_content_cream():
+    # Mama's: widest content-containing ancestor is body itself (cream); no shell markers → no regression.
+    assert extract._theme_background(_facts(), []) == "rgb(251, 243, 220)"
+
+
+def test_fr336_dark_preview_shell_ignored_via_positive_signal():
+    facts = {
+        "body": {"backgroundColor": "rgb(42,42,42)"},
+        "sections": [
+            {"path": "html>body", "area": 9000000, "inChrome": False, "hasParagraph": True, "hasHeading": True, "backgroundColor": "rgb(42,42,42)"},
+            {"path": "html>body>div.device-frame", "area": 8000000, "inChrome": False, "hasParagraph": True, "hasHeading": True, "backgroundColor": "rgb(42,42,42)"},
+            {"path": "html>body>div.device-frame>main", "area": 6000000, "inChrome": False, "hasParagraph": True, "hasHeading": True, "backgroundColor": "rgb(255,255,255)"},
+        ],
+        "previewShellMarkers": [{"selector": ".device-frame", "path": "html>body>div.device-frame"}],
+    }
+    # the shell wrapper + everything enclosing it (body/html) are excluded → the inner light region wins
+    assert extract._theme_background(facts, []) == "rgb(255,255,255)"
+
+
+def test_fr336_legit_dark_theme_kept_without_markers():
+    facts = {
+        "body": {"backgroundColor": "rgb(18,18,18)"},
+        "sections": [{"path": "html>body", "area": 9000000, "inChrome": False, "hasParagraph": True, "hasHeading": True, "backgroundColor": "rgb(18,18,18)"}],
+        "previewShellMarkers": [],
+    }
+    assert extract._theme_background(facts, []) == "rgb(18,18,18)"   # darkness alone never discards
+
+
+# ── FR-33-5 — Pass B advisory derivation ──────────────────────────────────────────────────────────
+import derive  # noqa: E402
+from token_map import parse_base_rules  # noqa: E402
+
+_TOKENLESS_CSS = ("body{background:#ffffff;color:#222222}.btn,.cta{background:#0066cc;color:#fff}"
+                  "a{color:#0066cc}.card{border-color:#dddddd}.success{color:#2e7d4f}")
+
+
+def test_fr335_token_less_derives_advisory_palette_not_frequency_inverted():
+    pal = derive.derive_palette(parse_base_rules(_TOKENLESS_CSS), [])
+    assert pal, "a token-less draft should derive a palette"
+    assert all(e["_source"] == "derived" and e.get("advisory") is True for e in pal)
+    primary = next((e["color"] for e in pal if e["slug"] == "primary"), None)
+    assert primary == "#0066cc"   # the button/link colour, NOT the most-frequent (raw frequency inverts)
+
+
+def test_fr335_nothing_usable_returns_empty():
+    # only a translucent decorative colour → nothing usable → [] (caller keeps the framework baseline)
+    assert derive.derive_palette(parse_base_rules("body::before{background:rgba(0,0,0,0.02)}"), []) == []
+
+
+def test_fr335_build_snapshot_token_less_uses_advisory_palette():
+    facts = {"root": {"fontSize": "16px"},
+             "body": {"backgroundColor": "rgb(255,255,255)", "color": "rgb(34,34,34)", "fontFamily": "Arial"},
+             "paragraphs": [{"path": "html>body>p", "inChrome": False, "area": 10000, "textLen": 20,
+                             "fontFamily": "Arial", "fontSize": "16px", "lineHeight": "25.6px", "fontWeight": "400"}],
+             "headings": {}, "buttons": [],
+             "sections": [{"path": "html>body", "area": 100000, "inChrome": False, "hasParagraph": True,
+                           "hasHeading": False, "backgroundColor": "rgb(255,255,255)"}],
+             "previewShellMarkers": []}
+    baseline = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
+    html = f"<html><head><style>{_TOKENLESS_CSS}</style></head><body><p>content here yes</p></body></html>"
+    snap = extract.build_snapshot("synthetic", extract.extract_css(html), facts, html, baseline, [])
+    pal = snap["settings"]["color"]["palette"]
+    assert pal and all(e.get("_source") == "derived" for e in pal)
+
+
+def test_fr335_mamas_pass_a_full_no_derived():
+    pal = _snapshot()["settings"]["color"]["palette"]
+    assert pal and not any(e.get("_source") == "derived" or e.get("advisory") for e in pal)
+
+
+def test_fr335_push_strips_advisory_tokens():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("pts_test", SCRIPTS / "push-theme-snapshot.py")
+    pts = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(pts)
+    snap = {"settings": {"color": {"palette": [
+        {"slug": "primary", "color": "#e68a95", "_source": "declared"},
+        {"slug": "surface", "color": "#ffffff", "_source": "derived", "advisory": True}]}}}
+    out, n = pts.strip_advisory(snap)
+    assert n == 1
+    assert [e["slug"] for e in out["settings"]["color"]["palette"]] == ["primary"]
+    assert len(snap["settings"]["color"]["palette"]) == 2   # original untouched (deepcopy)

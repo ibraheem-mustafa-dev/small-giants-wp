@@ -22,6 +22,7 @@ import pathlib
 import subprocess
 import sys
 
+import derive as derive_mod
 import palette as palette_mod
 import presets as presets_mod
 import typography as typo_mod
@@ -92,17 +93,26 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     settings = snap.setdefault("settings", {})
     styles = snap.setdefault("styles", {})
 
-    # PALETTE (FR-33-1/2/9)
+    # PALETTE — Pass A (declared :root, FR-33-1/2/9); Pass B advisory fallback when the draft declares
+    # no tokens (FR-33-5). Nothing usable → keep the deep-copied framework baseline palette UNCHANGED.
     pal = palette_mod.build_palette(root_tokens, base_rules, facts, trace)
-    settings.setdefault("color", {})["palette"] = pal
-    slug_by_hex = {e["color"].lower(): e["slug"] for e in pal if e["color"].startswith("#")}
+    if not pal:
+        pal = derive_mod.derive_palette(base_rules, trace)  # Pass B (advisory) or []
+    if pal:
+        settings.setdefault("color", {})["palette"] = pal
+    else:
+        pal = ((settings.get("color", {}) or {}).get("palette", [])) or []  # baseline (from deepcopy)
+        trace.append({"kind": "derive-skip", "reason": "Pass A + Pass B recovered nothing usable → "
+                      "framework baseline palette kept UNCHANGED (never a guessed theme)"})
+    slug_by_hex = {e["color"].lower(): e["slug"] for e in pal
+                   if isinstance(e.get("color"), str) and e["color"].startswith("#")}
 
     # BASE TYPOGRAPHY (FR-33-3 — the drift-killer)
     styles["typography"] = typo_mod.base_typography(facts, trace)
 
-    # styles.color: computed body bg/text → slugs
+    # styles.color: computed content-background + body text → slugs (FR-33-6)
     body = facts.get("body", {})
-    bg_hex = _hex(body.get("backgroundColor", ""))
+    bg_hex = _hex(_theme_background(facts, trace))
     txt_hex = _hex(body.get("color", ""))
     styles["color"] = {
         "background": _var_or_hex(bg_hex, slug_by_hex, "color"),
@@ -178,6 +188,52 @@ def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     trace.append({"kind": "merge", "reason": f"additive merge onto existing snapshot: {added} extra "
                   f"palette slug(s) preserved + component css/blocks/patterns carried forward"})
     return snap
+
+
+def _theme_background(facts: dict, trace: list) -> str:
+    """FR-33-6 — the theme background = the COMPUTED background of the widest block-level ancestor that
+    CONTAINS the main content flow, NOT ``<body>`` blindly.
+
+    A dark background is discarded ONLY on a POSITIVE preview-shell signal (a matched marker element,
+    with its DOM path): the shell wrapper + everything enclosing it (body/html) are excluded, so the
+    widest CONTENT region INSIDE the shell wins. With no marker, the widest content-containing
+    candidate wins even if dark — a legit dark-branded site keeps its dark background (never discarded
+    by darkness alone). Ambiguous / no candidate → fall back to the body background (gap-logged).
+    """
+    body_bg = (facts.get("body", {}) or {}).get("backgroundColor", "")
+    sections = facts.get("sections", []) or []
+    marker_paths = [m.get("path", "") for m in (facts.get("previewShellMarkers", []) or [])
+                    if isinstance(m, dict) and m.get("path")]
+
+    def _transparent(bg: str) -> bool:
+        b = (bg or "").strip().lower().replace(" ", "")
+        return b in ("", "transparent", "rgba(0,0,0,0)")
+
+    def _shell_or_ancestor(path: str) -> bool:
+        # path IS a shell marker, or an ANCESTOR of one (its path is a '>'-segment prefix of a marker
+        # path) → the dark shell wrapper and the body/html enclosing it are not the theme background.
+        return any(path == mp or mp.startswith(path + ">") for mp in marker_paths)
+
+    cands = [s for s in sections
+             if (s.get("hasParagraph") or s.get("hasHeading")) and not s.get("inChrome")
+             and not _transparent(s.get("backgroundColor", ""))]
+    if marker_paths:
+        cands = [s for s in cands if not _shell_or_ancestor(s.get("path", ""))]
+    cands.sort(key=lambda s: -(s.get("area") or 0))
+
+    if cands:
+        chosen = cands[0]
+        trace.append({"kind": "base", "what": "styles.color.background", "_source": "declared",
+                      "reason": f"widest content-containing ancestor '{chosen.get('path','')}' "
+                                f"(area {chosen.get('area')}"
+                                + (f", {len(marker_paths)} preview-shell marker(s) excluded" if marker_paths else "")
+                                + ")",
+                      "value": chosen.get("backgroundColor", "")})
+        return chosen.get("backgroundColor", body_bg)
+    trace.append({"kind": "gap", "what": "styles.color.background",
+                  "reason": "no content-containing background candidate — fell back to body background",
+                  "value": body_bg})
+    return body_bg
 
 
 def _hex(v: str):

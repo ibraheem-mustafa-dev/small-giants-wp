@@ -142,10 +142,19 @@ const CAPTURE_SRC = function () {
   });
 
   // Structural preview-shell markers (FR-33-6 positive signal — never darkness alone).
+  // Record each matched element's PATH (not just the selector) so the Python layer can exclude
+  // the shell wrapper + its ancestors from the background candidates — the shell class can sit on
+  // any wrapper div, not <body>, so a selector-only signal cannot locate it (FR-33-6 harness case).
   const previewShellMarkers = [];
+  const seenShell = new Set();
   ['.viewport-switcher', '.device-frame', '.review-harness', '[data-preview-shell]',
     '[class*="device-frame"]', '[class*="viewport"]'].forEach((sel) => {
-    if (document.querySelector(sel)) previewShellMarkers.push(sel);
+    document.querySelectorAll(sel).forEach((el) => {
+      const path = nodePath(el);
+      if (seenShell.has(path)) return;
+      seenShell.add(path);
+      previewShellMarkers.push({ selector: sel, path });
+    });
   });
 
   return { root, body, paragraphs, headings, links, buttons, sections, previewShellMarkers };
