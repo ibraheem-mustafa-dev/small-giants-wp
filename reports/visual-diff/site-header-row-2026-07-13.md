@@ -46,3 +46,36 @@ report records the row-specific acceptance.
 ## Verdict: **PASS** — the never-overflow Cluster + empty-row zero-output +
 no-inline all verified live; the row is the mechanism that fixes the header
 overflow by construction.
+
+---
+
+# D327 addendum (2026-07-13) — FR-S9-6 gap → {desktop,tablet,mobile} object model
+
+`gap` migrated from flat `gap`/`gapTablet`/`gapMobile` to the FR-S9-6 object model;
+`render.php` now passes `responsive_model=object` so the shared `SGS_Container_Wrapper`
+emits the responsive gap CSS via `sgs_emit_responsive_css()` (wrapper-owned — R-31-9
+mirror preserved). The opt-in branch forces the two-layer container-query structure:
+`container-type:inline-size` on the outer, `display:flex` + `gap` on `.sgs-container__inner`.
+
+## Live per-tier proof (sandybrown homepage header; caches cleared OPcache+LiteSpeed+CDN)
+
+| Check | Result |
+|-------|--------|
+| Outer `container-type` | `inline-size` ✅ |
+| Outer `display` | `block` (flex moved to inner) ✅ |
+| `.sgs-container__inner` renders + `display:flex` | yes ✅ |
+| Inner `gap` @ 1440 (desktop tier) | `16px` ✅ |
+| Inner `gap` @ 375 with a `mobile:40px` override (temp test value) | `40px` ✅ — tier-diff + override apply live |
+| Inner `gap` @ 375 after revert to `{desktop:"16px"}` | `16px` ✅ — mobile inherits desktop |
+| Reflow @ 1440 / 375 (`scrollWidth <= innerWidth`) | no overflow ✅ (no regression) |
+| Console | only a pre-existing `favicon.ico` 404 ✅ |
+
+## Regression safety
+- Shared-wrapper change gated on `$opts['responsive_model']='object']`; flag-off path
+  byte-identical for the 50+ other blocks (diff-verified — every change gated or an
+  inert `is_array` guard). WooCommerce injection still gone; header still renders.
+- 34/34 engine unit tests green.
+
+## D327 verdict: **PASS** — wrapper object-mode responsive engine proven end-to-end on
+the real render path. Remaining: expand this block to maxWidth/padding/margin/contentWidth
+objects, then reshape `site-footer-row` + `adaptive-nav` (same proven pattern).
