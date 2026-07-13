@@ -1,0 +1,20 @@
+/**
+ * SGS Site Header — frontend styles.
+ *
+ * The header shell is a full-width stack of rows. The never-overflow behaviour
+ * lives on each row (sgs/site-header-row); the shell only guarantees the header
+ * fills its width and never itself introduces horizontal overflow.
+ * Instance values (padding, colours, max-width) are injected as scoped <style>
+ * by SGS_Container_Wrapper / render.php — never inline (Spec 32).
+ */
+
+.sgs-site-header {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Rows stack vertically; the wrapper's content band caps the inner width. */
+.sgs-site-header > .sgs-container__inner,
+.sgs-site-header {
+	max-width: 100%;
+}

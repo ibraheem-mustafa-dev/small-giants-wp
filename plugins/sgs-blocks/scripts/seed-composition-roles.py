@@ -172,6 +172,23 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    {
+        # sgs/site-header (2026-07-13, Spec 17 §S9 / FR-S9-2, D323) — section-KIND
+        # header shell; mirrors cta-section/hero (section-root). wraps_block +
+        # container_kind='section' are set by sync-container-wrapping-blocks.py --apply.
+        "block_slug": "sgs/site-header",
+        "wraps_block": None,
+        "composition_role": "section-root",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/site-header-row (2026-07-13, Spec 17 §S9 / FR-S9-7) — layout-KIND
+        # never-overflow cluster row; mirrors card-grid/feature-grid (content-block).
+        "block_slug": "sgs/site-header-row",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

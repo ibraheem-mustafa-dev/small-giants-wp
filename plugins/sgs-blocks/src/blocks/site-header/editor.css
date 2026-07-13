@@ -1,0 +1,10 @@
+/**
+ * SGS Site Header — editor-only styles.
+ *
+ * Mirrors the frontend shell so the editor preview matches the deployed header.
+ */
+
+.editor-styles-wrapper .sgs-site-header {
+	width: 100%;
+	box-sizing: border-box;
+}

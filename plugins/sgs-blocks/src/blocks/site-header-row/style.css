@@ -1,0 +1,35 @@
+/**
+ * SGS Header Row — frontend styles.
+ *
+ * The intrinsic never-overflow "cluster" (FR-S9-7). The flex container itself
+ * (display:flex, flex-wrap, gap, align-items, justify-content) is owned by the
+ * shared SGS_Container_Wrapper via block attributes (layout='flex', flexWrap,
+ * gap, verticalAlign, justifyContent) — NOT hardcoded here (Gate B / no-inline,
+ * composite-mirror R-31-9). This file only adds the two non-attr hardening rules
+ * that make the cluster actually never overflow, plus the touch-target floor.
+ *
+ * `min-width:0` lets flex children shrink instead of forcing horizontal
+ * overflow; `flex-shrink:0` keeps the logo legible. Together with the wrapper's
+ * flex-wrap:wrap default, this fixes the sub-400px WCAG 1.4.10 header overflow
+ * by construction, with no per-element hacks.
+ */
+
+/* Let every flex child shrink to fit instead of forcing the row wider than the
+   viewport. Covers both the flat case and the wrapper's content-band __inner. */
+.sgs-site-header-row > *,
+.sgs-site-header-row > .sgs-container__inner > * {
+	min-width: 0;
+}
+
+/* The logo stays legible — never crushed below its natural size. */
+.sgs-site-header-row .wp-block-site-logo,
+.sgs-site-header-row .wp-block-site-logo img {
+	flex-shrink: 0;
+}
+
+/* Interactive controls keep a 44px minimum touch target (WCAG 2.5.8). */
+.sgs-site-header-row .wp-block-sgs-mobile-nav-toggle button,
+.sgs-site-header-row .wc-block-mini-cart__button {
+	min-width: 44px;
+	min-height: 44px;
+}

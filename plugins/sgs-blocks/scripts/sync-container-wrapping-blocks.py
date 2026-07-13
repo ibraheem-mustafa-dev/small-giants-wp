@@ -1097,12 +1097,18 @@ def main() -> int:
 
     # Ground-truth validation
     EXPECTED = {
-        "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar"},
+        # sgs/site-header added 2026-07-13 (Spec 17 §S9 / FR-S9-2, D323 header system):
+        # section-KIND header shell (containerKind override) that stacks up to 3
+        # sgs/site-header-row children; delegates its outer frame to SGS_Container_Wrapper.
+        "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar", "sgs/site-header"},
         "layout": {
             "sgs/card-grid", "sgs/content-collection", "sgs/feature-grid", "sgs/gallery",
             "sgs/multi-button", "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
             "sgs/google-reviews", "sgs/form-field-tiles", "sgs/testimonial-slider",
             "sgs/tabs", "sgs/accordion", "sgs/form",
+            # sgs/site-header-row added 2026-07-13 (Spec 17 §S9 / FR-S9-7): the never-overflow
+            # cluster row inside sgs/site-header (containerKind override: layout).
+            "sgs/site-header-row",
         },
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",

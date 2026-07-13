@@ -126,6 +126,11 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No headers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor header layouts selectable as a site header variant.', 'sgs-blocks' ),
+					// FR-S9-11 (2026-07-13, D323): a new Advanced Header opens pre-seeded with
+					// the specialised sgs/site-header block (never-overflow 3-row shell) rather
+					// than a bare canvas. ADD (no prior 'template' key existed). The footer CPT
+					// template is deferred to P3 with sgs/site-footer (that block is not built yet).
+					'template'    => array( array( 'sgs/site-header' ) ),
 				)
 			)
 		);
