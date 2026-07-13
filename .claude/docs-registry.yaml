@@ -9,7 +9,7 @@
 # ONLY if it is a project FOUNDATION altered regularly AND read at/near session start.
 
 generated: 2026-05-15
-last_updated: 2026-07-02
+last_updated: 2026-07-13
 project: small-giants-wp
 
 canonical_docs:
@@ -48,6 +48,7 @@ canonical_docs:
   - {path: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md, scope: spec_version_canonical, doc_type: spec, spec_version: 27, thread: sgs-theme, status: master, note: "MASTER SGS product/WooCommerce layer. Phases 1+2 + Cluster-D SHIPPED; only R5 (AI-builder) remains, gated behind a 2nd shop client."}
   - {path: .claude/specs/28-SGS-SMART-BULK-PRICING.md,   scope: spec_version_canonical, doc_type: spec, spec_version: 28, thread: sgs-theme, status: complete}
   - {path: .claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md, scope: spec_version_canonical, doc_type: spec, spec_version: 30, status: complete, thread: sgs-theme, note: "All 4 phases SHIPPED (D220). FR-30-12 product-page clone ungated (cloning thread)."}
+  - {path: .claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md, scope: spec_version_canonical, doc_type: spec, spec_version: 33, status: complete, thread: header-footer-setup-pipeline, note: "Part 1 of the header/footer setup pipeline — draft global-styles extractor -> theme-snapshot.json (the OPENING pipeline step, before Stage 0; converter reads it, FR-33-12). v1.2.0 (D325): FR-33-14 ADDED — Tier-1 business-DATA auto-fill companion (sync-business-info.py + POST /sgs/v1/site-info, wired into upload_and_patch.py Part-1 deploy). Part 2 = Spec 17 §S9 header/footer clone."}
   - {path: .claude/specs/common-wp-styling-errors.md,   scope: forever_append_only, doc_type: errors-catalogue}
   - {path: .claude/go-live-checklist.md,                scope: forever_ref, doc_type: reference, thread: sgs-theme, note: "Pre-launch WC shop gate (Spec 30 §FR-30-13). Run once per client before first live payment."}
   - {path: .claude/reports/2026-06-01-product-card-option-picker-design.md, scope: forever_until_ratified_or_superseded, doc_type: reference, note: "Product-card variation-sets + sgs/option-picker design (D144). Phase A+B SHIPPED; Phase D (clone-emit) + E (collection) pending."}

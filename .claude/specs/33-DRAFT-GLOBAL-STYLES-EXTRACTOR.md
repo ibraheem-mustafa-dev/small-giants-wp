@@ -13,6 +13,7 @@ status_history:
   - 2026-07-13 — v0.2.0 after a 6-persona /adversarial-council (Cynic/Spec-Lawyer/Ship-PM/Extraction-Correctness/Support-Realist/Systems-Integration; all C-band, GO-conditional). Applied every convergent must-fix. Bean-directed shape: keep the COMPLETE spine (all DECLARED value types in v1 — colour/typography/spacing/radius/shadow/buttons/layout), because the cost/risk is the DERIVATION mechanism, not the breadth of value types. The declared-vs-derived line is the trust boundary: declared (Pass A) auto-applies after computed-validation; derived (Pass B) is PROVISIONAL/advisory, never auto-pushed to a live theme. Fixed the FR-33-1 precedence contradiction that would have re-shipped D303; defined the role-inference rule table; pinned ΔE + determinism; reuse-by-composition (freeze the live hex-only helper); added provenance trace + golden fixtures + deploy-safety gates + bootstrap-ordering + forward contracts. All 4 open questions RESOLVED into FRs.
   - 2026-07-13 — v1.0.0 (D318): BUILT + live-proven on Mama's. Hybrid Node(measure.js)+Python(extract) at `plugins/sgs-blocks/scripts/theme-extractor/`. SHIPPED: FR-33-1 (provenance + computed-wins), FR-33-2 (role rule-table + ΔE alpha-axis dedup), FR-33-3 (base from rendered `<p>` + mode-heading-lh + rem-vs-real-root — D303 killed), FR-33-4 (declared spine: colour/typography/buttons(open-bag rest+hover)/contentSize/clamp-verbatim), FR-33-7 (trace + goldens + schema-validate), FR-33-8 (determinism, byte-identical), FR-33-9 (conservation/gap-log), FR-33-10 (composed `build_draft_root_token_map`, frozen hex helper unchanged), FR-33-11 (push-theme-snapshot `--backup`/`--rollback`/drift-warn). 16 tests green; proven live on sandybrown page 8 (base 16px, heading 1.2, buttons faithful — caught+fixed a transparent→black alpha-drop bug via live measurement). FOLLOW-UP: FR-33-5 (Pass B advisory), FR-33-6 (dark-theme safety), FR-33-12 (orchestrator fail-closed ordering gate), FR-33-13 (header/footer namespace + colour-var parking re-point); migrate the transitional component `styles.css` out of the snapshot.
   - 2026-07-13 — v1.1.0 (D320/D321/D322): the FOLLOW-UP set SHIPPED — Part 1 COMPLETE (13/13 FRs). **FR-33-12 (D320):** orchestrator fail-closed freshness gate — reads the `_sgsExtractor.draft_css_sha256` EMBEDDED in the canonical `theme-snapshot.json` (a code-review caught the first design tying it to the generated file, not the file the converter reads) + shared `scripts/shared_utils.py` single-source hash. **FR-33-5 (D321):** Pass B advisory derivation (`derive.py`) — token-less draft → derived palette by usage-context role (never frequency), `_source:derived`+confidence+`advisory:true`, translucent skipped, nothing-usable→baseline+skip; `push-theme-snapshot` strips advisory unless `--include-advisory`. **FR-33-6 (D321):** dark-theme/preview-shell safety (`extract._theme_background` + `measure.js` marker-path capture — a qc-council forensics rater caught that markers carried no path) — widest content-containing ancestor, dark discarded only on a positive shell signal, legit dark kept. **FR-33-13 (D322):** `settings.custom.header`/`.footer` reserved + reconciliation note (Spec 17 uses Customiser/JS-var, not this namespace — Part 2 decides) + `build_draft_root_token_map` parking re-point; the transitional component `styles.css` MIGRATED out of the Mama's snapshot (focus-visible → theme `utilities.css`; dead is-style/hero-cta/page-hack rules dropped; product-card client vars kept); button now consumes the open-bag `hover-transform` token (FR-33-4 render-side closure). 26 tests green; deployed + live-verified clean on sandybrown page 8.
+  - 2026-07-13 — v1.2.0 (D325, Bean-directed): FR-33-14 ADDED + BUILT — Tier-1 business-DATA auto-fill companion to the global-STYLES extraction. `scripts/sync-business-info.py` extracts high-confidence machine-signal fields (email `mailto:` / phone `tel:` / socials known-domain / copyright `©`) from the draft and fill-if-empty-writes them to the Site Info store via the NEW capability-gated `POST /sgs/v1/site-info`; wired to run automatically at the Part-1 deploy moment in `orchestrator/upload_and_patch.py` (same `--client`+push gating as the theme-snapshot push, non-fatal). Tier 2 (tagline/address/hours — semantic guesses) DEFERRED to a review flow (parallels FR-33-5). Standalone live-proven on sandybrown; pipeline wiring static-verified.
   - 2026-07-13 — v1.1.1 (post-D322, no FR change, additive): the header/footer/nav design-gate (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean-approved) named the concrete Part-2 emit target and a new consumer relationship for Part 1's output. **Consumer link (new):** `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` — the specialised container blocks the design-gate approved for inside the header/footer template parts — default their colours/typography/spacing from the SAME `theme-snapshot.json` this spec generates (global-styles consumer, no new extraction surface; see design-gate §4b). **Part 2 emit target (concrete):** Part 2 (draft header/footer → WP) now emits these three named blocks, not `core/group` — this spec's role stays unchanged (it still only produces the token source Part 2 and the new blocks read). **FR-33-13 linkage (noted, not resolved):** the reserved `settings.custom.header`/`.footer` namespace is one candidate source for the new blocks' header-specific settings; the design-gate leaves the tokenise-vs-Customiser choice as a Part 2 design-gate item (§15 Q1 area) — not decided here. No FR text changed; this is a forward-reference update only.
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
@@ -276,6 +277,40 @@ message; a run after a fresh extraction proceeds.
   consume (stop re-parsing `:root`).
 **Done when:** the snapshot reserves the header/footer namespace; FR-33-10's token map is a callable
 service; a note re-points the colour-var parking entries.
+
+### FR-33-14 — Business-data auto-fill companion (Tier 1) — BUILT + LIVE (D325, Bean-directed 2026-07-13)
+
+**Behaviour:** alongside the global-STYLES extraction+push this spec owns, Part 1 also auto-fills the
+site's **business DATA** (the `Sgs_Site_Info` store — email/phone/socials/copyright/…) from the draft,
+so a cloned site's header/footer render real contact details with no manual re-entry. Runs
+AUTOMATICALLY as part of the Part-1 pipeline at the same deploy moment as the theme-snapshot push
+(`scripts/orchestrator/upload_and_patch.py`, gated by `--client` + the same `--push-theme-snapshot`
+opt-in), via `scripts/sync-business-info.py`. NON-FATAL by design (business data is nice-to-have; a
+failure never blocks a deploy).
+
+**Tier boundary (the trust line, mirrors FR-33-1's declared-vs-derived split):**
+- **Tier 1 (BUILT, auto-applied):** ONLY high-confidence machine-signal fields — email (`mailto:`),
+  phone (`tel:`), socials (an `<a href>` to a known social domain; `#` placeholders skipped),
+  copyright (the `©` line). Extracted by regex on the raw draft (the fields survive as literal text
+  even inside JS template strings). Written **fill-if-empty** (never overwrites an operator's value).
+- **Tier 2 (DEFERRED, review-not-auto-write):** semantic guesses — tagline, address, opening hours —
+  are NOT auto-written; they need an operator-confirm/suggestions flow (parallels FR-33-5's advisory
+  Pass B). OPEN.
+
+**Write channel:** the NEW capability-gated `POST /wp-json/sgs/v1/site-info`
+(`includes/class-sgs-site-info-rest.php`, `edit_theme_options`) — key-allowlisted to
+`Sgs_Site_Info::known_keys()`, per-key sanitised via `Sgs_Site_Info::set()`, fill-if-empty default;
+dispositions written/unchanged/skipped_existing/skipped_invalid/skipped_empty/failed. This is the ONLY
+remote write path into the Site Info store (reads stay server-side + escaped). Consumed on the render
+side by the `sgs/business-info` block (per-type inserter variations) + `Org_Website_Schema`
+(`sameAs`/`contactPoint`).
+
+**Acceptance (met live on sandybrown):** the Mama's draft yields email + copyright (socials are `#`
+placeholders → skipped; phone/hours/address absent → not touched); fill-if-empty skips an existing
+value; a forced write persists the full copyright string. **Standalone script live-proven end-to-end;
+the upload_and_patch wiring is static-verified (draft glob resolves the Mama's mockup) — a full-pipeline
+integration run is pending a real `/sgs-clone` run.**
+**Depends on:** FR-33-11 (push moment / creds), Spec 17 FR-S9-3 (business-info block consumer), FR-S4-3 (Site Info store).
 
 ## Test strategy (holistic)
 

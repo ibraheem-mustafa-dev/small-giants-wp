@@ -60,13 +60,17 @@ The root fix for §4 AND the proper nav. Full research + design + build (do NOT 
 Set the header builder up as a **clear, dedicated, guided place in the Site Editor** — the equivalent of Astra/Spectra's builder UX but block-native: header-type presets in the Replace picker, clearly-labelled rows, an overflow→drawer drop-zone, a device switcher, sticky/transparent presets. This is the FR-S9-6 editor-UX + FR-S9-8 per-device work, framed as one coherent "Header" building experience. Document + design this as its own gate before building the editor UX.
 
 ### Smaller deferred items (each a named follow-up)
-- **Cart empty-state toggle** (Bean): cart should be settable to not render/load unless the cart has items; make it a toggleable per-instance setting. `sgs/cart` already has `showZero` (badge only) — extend to a full "hide when empty" option. Also: **cart only on ecommerce sites** — the framework-default header includes `sgs/cart`; confirm whether non-WC clients should get a cart-free default variant.
-- **`sgs/responsive-logo` per-breakpoint images** — the block supports desktop/tablet/mobile logo IDs; currently falls back to the site `custom_logo`. Wire the per-breakpoint logo assets for Mama's when available.
+- **Cart empty-state toggle** (Bean): **SHIPPED D325** — `sgs/cart` gained a `hideWhenEmpty` per-instance attr (hides the whole element until count>0, JS-driven post-hydration since SSR count is always 0). Distinct from `showZero` (badge only). (Non-WC cart-free default variant still OPEN.)
+- **`sgs/responsive-logo` per-breakpoint images** — the block supports desktop/tablet/mobile logo IDs; currently falls back to the site `custom_logo`. Wire the per-breakpoint logo assets for Mama's when available. **STILL OPEN** — no per-breakpoint logo assets on disk (only a generic logo + one research SVG).
 - **1px bottom divider** — the old header had a `1px surface-alt` bottom border; dropped in the MVP (the block's colour/border re-emit is uniform, not per-side). Add per-side border support to the header render, or a theme rule.
-- **Desktop nav distribution** — currently the 3-child `space-between` gives logo | nav(centre) | icons(right) which matches the draft; verify once adaptive-nav replaces core/navigation.
-- **P3 `sgs/site-footer`** (FR-S9-3) — rows + up-to-6 columns + bottom bar; **reuses `sgs/site-header-row`**.
-- **P4 per-device adaptation** (FR-S9-8) + transparent-on-scroll toggle (FR-S9-9).
-- **P5 cloning-pipeline Part 2** (FR-S9-11) — draft header/footer rows → the new blocks.
+- **Desktop nav distribution** — currently the 3-child `space-between` gives logo | nav(centre) | icons(right) which matches the draft; verify once adaptive-nav replaces core/navigation. (adaptive-nav SHIPPED D326.)
+- **P3 `sgs/site-footer`** (FR-S9-3) — **SHIPPED + LIVE D325.** Built `sgs/site-footer` (section KIND) + a DEDICATED `sgs/site-footer-row` (layout KIND, grid columns — up to 6 → 1 at mobile via `gridTemplateColumnsMobile`) rather than extending the shared header-row (file-disjoint from Track A). Live-verified 3-col desktop/tablet → 1-col mobile, empty-row zero-output, `<footer>` landmark, no inline styles. FR-S1-2 thin `footer.html` delegation; `sgs_footer` CPT template lock added.
+- **Business data via `sgs/business-info` block, not bindings (Bean steer, D325):** the footer's data fields use `sgs/business-info` with a draggable inserter VARIATION per data type (Phone/Email/Address/Opening Hours/Social Links/Copyright/Tagline/Map), each reading live from the Site Info store. The `sgs/site-info` block-binding source was ALSO fixed + booted (was never registered — 3 latent bugs) and kept.
+- **Tier-1 pipeline business-info auto-fill (Bean ask, D325):** `scripts/sync-business-info.py` extracts high-confidence fields (email `mailto:`, phone `tel:`, socials known-domain, copyright `©`) from a draft → POSTs to the NEW capability-gated `POST /sgs/v1/site-info` (fill-if-empty, never overwrites). Live-verified. **Tier 2 (tagline/address/hours — semantic guesses) OPEN — needs a review-not-auto-write flow.**
+- **Org JSON-LD (D325):** `Org_Website_Schema` now emits `sameAs` (socials) + `contactPoint` (phone/email) + Site-Info address fallback from the same store.
+- **P4 per-device adaptation** (FR-S9-8) + transparent-on-scroll toggle (FR-S9-9). **OPEN.**
+- **P5 cloning-pipeline Part 2** (FR-S9-11) — draft header/footer rows → the new blocks. **OPEN** (Tier-1 business-data auto-fill is a first slice of pipeline→site population).
+- **Site-Editor header-builder editor-UX design-gate** (FR-S9-6/8, Track B Task 2) — **NOT done; OPEN.**
 
 ## 6. SGS-first block audit (Bean's steer — use SGS blocks, not WP core)
 | Header element | Now | Target |

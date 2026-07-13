@@ -5,6 +5,55 @@ generated: 2026-07-13
 session: D326 — sgs/adaptive-nav SHIPPED; core/navigation replaced; WC block-hooks injection gone by construction
 ---
 
+# Session Handoff — 2026-07-13 (D325 — Track B: footer + business-info + Tier-1 pipeline)
+
+> Parallel footer track (ran alongside Track A's D326 adaptive-nav on the same working tree). Track A's D326 handoff is preserved below. The shared next front (FR-S9-6) is in `next-session-prompt.md`.
+
+## Completed This Session
+1. **P3 `sgs/site-footer` + dedicated `sgs/site-footer-row` SHIPPED + live** (FR-S9-3). Grid columns collapse 3→1 at mobile (explicit `gridTemplateColumnsMobile:"1fr"` — an explicit base ratio suppresses the `sgs-cols-mobile-1` shorthand, D228). Empty-row zero-output, `<footer>` landmark, no inline styles. `footer.html` → ≤3-line `wp:pattern` delegation (FR-S1-2); `sgs_footer` CPT template lock added. Commits `944dad03`+`5ae5bfaf`.
+2. **Business data via `sgs/business-info` block, not bindings (Bean steer).** Added 8 draggable inserter VARIATIONS (Phone/Email/Address/Opening Hours/Social Links/Copyright/Tagline/Map), each reading live from Site Info. Footer rewired off `sgs/site-info` paragraph bindings onto the block. Commit `3015add4`.
+3. **Fixed the `sgs/site-info` binding source (3 pre-existing latent bugs it had NEVER worked through):** never-called boot; invalid `can_user_edit_value` arg (WP rejects the whole registration → returns false); `array $block` type-hint on `get_value` (WP passes `WP_Block` → TypeError → HTTP 500, caught live, fixed). Kept as an alternative channel. Commit `5ae5bfaf`.
+4. **`sgs/cart` `hideWhenEmpty` toggle** (`a6c08ff3`) + **`Org_Website_Schema` `sameAs`+`contactPoint`+address from Site Info** (`66ecd8d3`).
+5. **Tier-1 pipeline business-info auto-fill (Bean ask):** `scripts/sync-business-info.py` extracts high-confidence fields (email `mailto:`/phone `tel:`/socials known-domain/copyright `©`) from a draft → POSTs to the NEW capability-gated `POST /sgs/v1/site-info` (`class-sgs-site-info-rest.php`, `edit_theme_options`, key-allowlisted, **fill-if-empty — never overwrites**). Live-verified on sandybrown. Commit `d1b688b9`.
+6. **Wired Tier-1 to run AUTOMATICALLY in the pipeline (Bean ask, mid-handoff):** `orchestrator/upload_and_patch.py` now runs `sync-business-info.py` at the Part-1 deploy moment (Spec 33 FR-33-14 companion), same `--client`+push gating as the theme-snapshot push, NON-FATAL. Static-verified (compiles + draft glob resolves); full-pipeline run pending a real `/sgs-clone`.
+
+## Current State
+- **Branch:** `main` — footer/cart/schema/binding/business-info/Tier-1 at `c5903c7a` (+ pipeline-wiring + these doc updates pending this handoff's commit).
+- **Tests:** no suite; `npm run build` passes all prebuild gates. `php -l` clean on all new PHP.
+- **Build:** passes. **Deploy:** all live on sandybrown; site healthy (200 after a brief self-inflicted 500 from the binding type-hint, fixed same-session).
+
+## Known Issues / Blockers
+- **Tier-2 business-info (tagline/address/hours — semantic guesses) is OPEN** — needs a review-not-auto-write flow (parallels Spec 33 FR-33-5 advisory Pass B).
+- **Tier-1 pipeline wiring is static-verified only** — a full `/sgs-clone` integration run hasn't exercised the `upload_and_patch.py` business-info block end-to-end.
+
+## Next Priorities (in order)
+1. **Shared FR-S9-6 responsive-override engine** (the joint next front — see Track A's D326 handoff + `next-session-prompt.md`; footer + header + nav are all flat-tier).
+2. **Tier-2 business-info review flow** (tagline/address/hours suggestions the operator confirms).
+3. **Full-pipeline `/sgs-clone` run** to exercise the auto business-info fill end-to-end.
+
+## Files Modified
+| File | What changed |
+|------|-------------|
+| `plugins/sgs-blocks/src/blocks/site-footer/*` + `site-footer-row/*` (NEW) | The footer block pair (grid columns) |
+| `plugins/sgs-blocks/src/blocks/business-info/block.json` | 8 per-type inserter variations |
+| `plugins/sgs-blocks/src/blocks/cart/*` | `hideWhenEmpty` toggle |
+| `plugins/sgs-blocks/includes/class-sgs-site-info.php` | `known_keys()` + `build_sanitisers()` refactor |
+| `plugins/sgs-blocks/includes/class-sgs-site-info-binding.php` | 2 registration-fatal bugs fixed |
+| `plugins/sgs-blocks/includes/class-sgs-site-info-rest.php` (NEW) | Capability-gated `POST /sgs/v1/site-info` |
+| `plugins/sgs-blocks/includes/class-org-website-schema.php` | `sameAs`/`contactPoint`/address from Site Info |
+| `plugins/sgs-blocks/sgs-blocks.php` | Boot binding source + REST endpoint |
+| `plugins/sgs-blocks/scripts/sync-business-info.py` (NEW) | Tier-1 extractor + push |
+| `plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py` | Auto-run Tier-1 at Part-1 deploy |
+| `theme/sgs-theme/{parts/footer.html,patterns/framework-footer-default.php,style.css}` | Footer wiring (business-info blocks) |
+| `.claude/{decisions,plans/2026-07-13-header-builder-remaining-work}.md` + `specs/{17,33}.md` + `docs-registry.yaml` | Doc reconciliation |
+
+## Notes for Next Session
+- **`sgs/site-info` binding lesson (memory `verify-block-binding-registration-on-live-registry`):** a WP binding source that "exists" in code can be entirely dead — verify on the LIVE registry, never pass `can_user_edit_value` (invalid in WP core), and `get_value` param 2 is a `WP_Block` not `array`.
+- **Grid mobile-collapse gotcha:** an explicit base `gridTemplateColumns` suppresses the `sgs-cols-mobile-N` shorthand (D228) — mobile collapse needs an explicit `gridTemplateColumnsMobile`.
+- **Business data flows ONLY through Site Info** now (block variations + schema + the Tier-1 REST fill all read/write the one store) — no hardcoded client data anywhere.
+
+---
+
 # Session Handoff — 2026-07-13 (D326)
 
 ## Completed This Session
