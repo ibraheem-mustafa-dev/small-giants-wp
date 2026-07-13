@@ -25,10 +25,12 @@ session: D327 — FR-S9-6 responsive-override engine built + wrapper opt-in bran
 ## Known Issues / Blockers
 - None block the next session. The footer/nav live instances currently render via the graceful LEGACY path (identical output); re-saving them switches to the object path (D270) — optional polish, not a bug.
 
-## Next Priorities (in order)
-1. **Re-save the footer + nav template-part instances** (Site Editor) so they use the object model directly, then live-confirm — closes the migration.
+## Next Priorities (in order — BEAN'S DIRECTIVE 2026-07-14: finish §S9 → confirm ALL of Spec 17 covered → THEN Spec 33 Part 2)
+1. **Re-save the footer + nav template-part instances** (Site Editor) so they use the object model directly, then live-confirm — closes the FR-S9-6 migration.
 2. **Migrate the box props** (padding/margin) + adaptive-nav `linkFontSize` to the object model — the engine + wrapper already support box props (route to outer); needs a box editor control + removing the orphan flat tier attrs.
-3. **`/sgs-update`** re-register the changed block attrs + a broader **`/qc` + `/a11y-audit`** pass across all 3 blocks (editor device-switcher keyboard + inherited-indicator).
+3. **`/sgs-update`** re-register the changed block attrs + a broader **`/qc` + `/a11y-audit`** pass across all 3 blocks.
+4. **CONFIRM every point in Spec 17 §S9 is TOTALLY covered** (Bean's gate) — audit FR-S9-1..11 and BUILD the still-open ones: FR-S9-8 (per-device content adaptation), FR-S9-9 (sticky/transparent-on-scroll toggle), FR-S9-10 (global defaults + Site Info), FR-S9-11 (CPT `sgs_footer` template + DB reseed). Multi-session; each FR built + live-verified; present an FR-by-FR coverage audit for sign-off.
+5. **THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5): `/sgs-clone` extracts a draft's header/footer once per site → emits `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` by BEM role. HARD gate: do NOT start until Task 4 confirms Spec 17 totally covered.
 
 ## Files Modified
 | File path | What changed |
