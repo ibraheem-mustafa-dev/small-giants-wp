@@ -154,6 +154,11 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No footers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor footer layouts selectable as a site footer variant.', 'sgs-blocks' ),
+					// FR-S9-3 (2026-07-13, D325): a new Advanced Footer opens pre-seeded with
+					// the specialised sgs/site-footer block (columns row + bottom bar) rather
+					// than a bare canvas. ADD (no prior 'template' key existed) — mirrors the
+					// sgs_header CPT template added at D323/D324.
+					'template'    => array( array( 'sgs/site-footer' ) ),
 				)
 			)
 		);

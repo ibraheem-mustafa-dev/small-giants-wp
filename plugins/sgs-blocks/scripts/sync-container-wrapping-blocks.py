@@ -1100,7 +1100,9 @@ def main() -> int:
         # sgs/site-header added 2026-07-13 (Spec 17 §S9 / FR-S9-2, D323 header system):
         # section-KIND header shell (containerKind override) that stacks up to 3
         # sgs/site-header-row children; delegates its outer frame to SGS_Container_Wrapper.
-        "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar", "sgs/site-header"},
+        # sgs/site-footer added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325 footer system):
+        # section-KIND footer shell delegating to SGS_Container_Wrapper.
+        "section": {"sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar", "sgs/site-header", "sgs/site-footer"},
         "layout": {
             "sgs/card-grid", "sgs/content-collection", "sgs/feature-grid", "sgs/gallery",
             "sgs/multi-button", "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
@@ -1109,6 +1111,13 @@ def main() -> int:
             # sgs/site-header-row added 2026-07-13 (Spec 17 §S9 / FR-S9-7): the never-overflow
             # cluster row inside sgs/site-header (containerKind override: layout).
             "sgs/site-header-row",
+            # sgs/adaptive-nav added 2026-07-13 (Spec 17 §S9 / FR-S9-4): layout-KIND nav
+            # container (replaces core/navigation in the header); delegates outer frame to
+            # SGS_Container_Wrapper (containerKind override: layout).
+            "sgs/adaptive-nav",
+            # sgs/site-footer-row added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325): the footer row
+            # inside sgs/site-footer — a column grid (up to 6 cols → 1 on mobile) or flex cluster.
+            "sgs/site-footer-row",
         },
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",

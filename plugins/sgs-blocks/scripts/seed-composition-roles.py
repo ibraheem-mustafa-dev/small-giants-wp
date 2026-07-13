@@ -189,6 +189,34 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    {
+        # sgs/adaptive-nav (2026-07-13, Spec 17 §S9 / FR-S9-4) — layout-KIND nav
+        # container; renders the desktop bar from one wp_navigation source + collapses
+        # to the drawer. Replaces core/navigation in the header. Mirrors
+        # site-header-row (content-block). wraps_block + container_kind='layout' set
+        # by sync-container-wrapping-blocks.py --apply.
+        "block_slug": "sgs/adaptive-nav",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/site-footer (2026-07-13, Spec 17 §S9 / FR-S9-3, D325) — section-KIND
+        # footer shell; mirrors site-header (section-root). wraps_block +
+        # container_kind='section' are set by sync-container-wrapping-blocks.py --apply.
+        "block_slug": "sgs/site-footer",
+        "wraps_block": None,
+        "composition_role": "section-root",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/site-footer-row (2026-07-13, Spec 17 §S9 / FR-S9-3, D325) — layout-KIND
+        # column-grid / cluster footer row; mirrors site-header-row (content-block).
+        "block_slug": "sgs/site-footer-row",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

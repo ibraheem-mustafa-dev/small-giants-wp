@@ -52,15 +52,18 @@ final class Sgs_Site_Info_Binding {
 			return;
 		}
 
+		// NOTE: do NOT pass 'can_user_edit_value' — it is NOT a recognised key in
+		// WP core's register_block_bindings_source() (WP 6.5–7.0). Passing it makes
+		// core reject the ENTIRE registration (returns false), which is why this
+		// source silently never registered and every sgs/site-info binding rendered
+		// its raw placeholder text. Editability is governed by the block itself, not
+		// the binding source. Proven live on sandybrown WP 7.0 (D325).
 		\register_block_bindings_source(
 			'sgs/site-info',
 			array(
-				'label'               => \__( 'SGS Site Info', 'sgs-blocks' ),
-				'get_value_callback'  => array( self::class, 'get_value' ),
-				'uses_context'        => array(),
-				'can_user_edit_value' => static function (): bool {
-					return \current_user_can( 'edit_theme_options' );
-				},
+				'label'              => \__( 'SGS Site Info', 'sgs-blocks' ),
+				'get_value_callback' => array( self::class, 'get_value' ),
+				'uses_context'       => array(),
 			)
 		);
 	}
@@ -79,7 +82,7 @@ final class Sgs_Site_Info_Binding {
 	 * @param  string              $attr    Attribute name being bound (unused; required by WP callback signature).
 	 * @return string                       Escaped HTML or URL string.
 	 */
-	public static function get_value( array $args, array $block, string $attr ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	public static function get_value( array $args, $block = null, string $attr = '' ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- $block is a WP_Block object (NOT array) + $attr is passed by WP core's block-bindings callback (class-wp-block-bindings-source.php); both unused here but must accept core's arg types or the callback fatals.
 		$key = isset( $args['key'] ) ? (string) $args['key'] : '';
 
 		if ( '' === $key ) {

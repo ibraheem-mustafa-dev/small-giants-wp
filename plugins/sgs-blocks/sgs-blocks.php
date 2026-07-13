@@ -232,8 +232,14 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-fields.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-notices.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-binding.php';
 Sgs_Site_Info::register();
 Sgs_Site_Info_Admin::register();
+// FR-S9-10 (D325): boot the sgs/site-info block-bindings source so header/footer
+// paragraphs bound to copyright/tagline/socials/contact resolve on the frontend.
+// Was never wired (the class documented "Call this from the main plugin file" but
+// nothing did) — the sgs/site-footer pattern is the first consumer that surfaced it.
+Sgs_Site_Info_Binding::register();
 
 // SGS existing-site safety guard (FR-S7-3) — gates seeding on plugin upgrade.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-migrations.php';
