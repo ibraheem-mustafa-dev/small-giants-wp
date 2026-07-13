@@ -2,9 +2,10 @@
 
 <!--
 spec_id: 1
-spec_version: 1.3.0
-last_verified: 2026-06-12
+spec_version: 1.4.0
+last_verified: 2026-07-13
 status_history:
+  - 2026-07-13: v1.4.0 — Header/footer/nav block system approved (design-gate `plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean sign-off): `parts/header.html`/`parts/footer.html` now host the specialised container blocks `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` (replacing the plain `core/group` wrapper) — header/footer REMAIN template parts (this spec's architecture is unchanged; the blocks live *inside* it). Blocks default from `theme.json`/`wp_global_styles` tokens + the Spec 33 draft-extracted `theme-snapshot.json`, and bind to the `sgs/site-info` store (Spec 17 §S4) so brand/contact data is entered once. New §Header/Footer/Nav Block System documents the theme-level responsibilities (global-style defaults, never-overflow responsive model, off-canvas drawer a11y fix); block-level FRs owned by Spec 17.
   - 2026-06-12: v1.3.0 — Added WooCommerce layer (Spec 30: templates, parts, woocommerce.css, sgs-shop-filters.js); search header patterns (3 patterns, sgs-headers category); collapsible-text SEO block note; updated theme version to 1.5.2; corrected WordPress requirements (WooCommerce dependency now present); updated File Structure to match real filesystem (parts, patterns, assets).
 -->
 
@@ -72,11 +73,11 @@ sgs-theme/
 │   └── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30, D210)
 │
 ├── parts/
-│   ├── header.html                 # Consolidated site header (logo, nav, CTA, mode controls) — search-free default
+│   ├── header.html                 # Consolidated site header — search-free default. WILL host sgs/site-header (+ sgs/adaptive-nav) once P1/P2 land — design-approved 2026-07-13, build-pending (see §Header/Footer/Nav Block System below; Spec 17 owns the block FRs)
 │   ├── header-shrink.html          # Header variant: shrink-on-scroll
 │   ├── header-sticky.html          # Header variant: always sticky
 │   ├── header-transparent.html     # Header variant: transparent with scroll reveal
-│   ├── footer.html                 # Site footer (columns, copyright, socials)
+│   ├── footer.html                 # Site footer (columns, copyright, socials). WILL host sgs/site-footer once P3 lands — design-approved 2026-07-13, build-pending
 │   ├── footer-minimal.html         # Minimal footer (for landing pages)
 │   ├── sidebar.html                # Optional sidebar template part
 │   ├── mega-menu-about.html        # Mega-menu panel: About
@@ -353,8 +354,9 @@ Standard header with:
 - Navigation menu (centre or right, configurable via block settings)
 - CTA button (right, accent colour)
 - Sticky behaviour via `header-behaviour.js` (adds `.is-scrolled` class for shrink/shadow effect; supports modes: static, sticky, transparent, transparent-sticky, smart-reveal, shrink, hidden — see legacy header-system-design spec for full mode reference)
-- Mobile: hamburger menu with slide-out drawer
+- Mobile: hamburger menu with slide-out drawer (`sgs/mobile-nav`, off-canvas drawer)
 - Announcement bar slot above header (optional, toggled via customiser or block)
+- **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/adaptive-nav` inside it — see §Header/Footer/Nav Block System.
 
 ### Footer Template Part (`parts/footer.html`)
 
@@ -363,8 +365,37 @@ Standard footer with:
 - Company info, nav links, contact details, social icons
 - Copyright line with dynamic year
 - WhatsApp floating button (optional, configured per site)
+- **Once P3 lands** (design-approved 2026-07-13, build-pending), the footer content will be composed of `sgs/site-footer` (named rows + up-to-N columns) — see §Header/Footer/Nav Block System.
 
 ---
+
+## Header/Footer/Nav Block System (2026-07-13)
+
+> Block-level FRs, block roster detail, structure/row model, drawer a11y contract, and per-breakpoint override mechanics are **owned by [Spec 17 — Header/Footer Architecture](17-HEADER-FOOTER-ARCHITECTURE.md)**. This section documents only the THEME's responsibilities: what lives in the template parts, and what the theme provides as shared defaults. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (Bean-approved 2026-07-13).
+
+### Architecture — still template parts, not a monolithic header block
+
+The theme continues to provide the header/footer as WordPress **template parts** (`parts/header.html` / `parts/footer.html`, the `sgs_header`/`sgs_footer` CPT + rules engine, Spec 17). What changed: the plain `core/group` wrapper inside those parts is replaced by three new **specialised container blocks** (modelled on `sgs/card-grid`/`sgs/feature-grid`, not a header-replaces-FSE block):
+
+| Block | Role | Renders via |
+|---|---|---|
+| `sgs/site-header` | Header shell — 3 optional named rows (top utility / middle primary / bottom message) | `SGS_Container_Wrapper` (KIND: section) |
+| `sgs/site-footer` | Footer shell — named rows + up-to-N columns | `SGS_Container_Wrapper` (KIND: section) |
+| `sgs/adaptive-nav` | One nav-bar↔burger menu, 4-tier breakpoint | `SGS_Container_Wrapper` (KIND: layout) + nav logic |
+| `sgs/mobile-nav` (reused) | Off-canvas drawer — P0 unclickable-drawer bug fixed 2026-07-13 | existing block, hardened |
+
+A block that *subsumes* the template-part/Site-Info/rules system remains forbidden (the `no-header-footer-block.py` hook still blocks bare `header`/`footer`/`nav` block slugs); it now allow-lists `src/blocks/{site-header,site-footer,adaptive-nav}/` for these three specialised containers only.
+
+### Theme-owned defaults — global styles + Site Info
+
+Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
+
+1. **Global style tokens** — this file's `theme.json` settings (§Design Tokens above) and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
+2. **SGS Site Info store** (Spec 17 §S4, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.
+
+### Responsive model (never-overflow) + the drawer a11y fix
+
+The header/footer never overflow at any width down to 320px by construction — a Cluster layout (`flex-wrap` + `min-width:0` + fluid `clamp()` spacing) plus a per-breakpoint override model (768/1024 + a custom-px 4th tier, shared source per R-31-1) rather than per-element overflow hacks. This closed a live WCAG 2.2 Reflow bug. The `sgs/mobile-nav` off-canvas drawer's P0 bug (drawer inherited `inert` from `.wp-site-blocks` because it was a DOM descendant, freezing its own links) was root-caused and fixed 2026-07-13; the drawer is now the a11y benchmark (focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock). Full mechanics: Spec 17.
 
 ## WooCommerce Layer (Spec 30 — shipped 2026-06-11/12)
 

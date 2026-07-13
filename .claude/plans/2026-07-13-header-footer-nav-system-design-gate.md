@@ -27,7 +27,7 @@ Grounded in a holistic study of how the leading systems actually work (read from
 
 > Header/footer remain WordPress template parts (Spec 17: parts + patterns + `sgs_header`/`sgs_footer` CPT + rules engine + Site Info bindings). A specialised header/footer/nav **container** block used *inside* the template part is PERMITTED (like card-grid). A block that subsumes the template-part/Site-Info/rules system is still FORBIDDEN.
 
-**Actions (part of build):** update `no-header-footer-block.py` to allow `src/blocks/{site-header,site-footer,adaptive-nav}/` while still blocking bare `header`/`footer`/`nav`; update the memory + Spec 17 + CLAUDE.md to the evolved rule. This is a conscious owner decision, not a regex dodge.
+**Actions (part of build):** update the `header-footer-are-template-parts-not-blocks` memory + Spec 17 + CLAUDE.md to record the evolved rule. **NOTE (fact-checked 2026-07-13):** `no-header-footer-block.py` needs **no code change** — its regex matches only the exact segments `header`/`footer`/`nav`, so `site-header`/`site-footer`/`adaptive-nav`/`mobile-nav` are already permitted; the hook still blocks the real anti-pattern (bare `header`/`footer`/`nav` dirs). This is a conscious owner decision recorded in the human-readable rule, not a regex dodge.
 
 ## 3. The blocks (specialised containers, modelled on feature-grid)
 
@@ -53,6 +53,15 @@ Each: 5-file pattern (`block.json`+`render.php`+`edit.js`+`save.js`+`index.js`),
 - **Bottom bar** — trademark, company name, terms/policy, attribution link.
 
 **Typed element palette** (not freeform — better for non-coder clients, per Blocksy): logo, adaptive-nav, search, cart, account, button/CTA, contact, social, HTML, widget-area. Elements come from Site Info bindings where applicable (no hardcoded client data — Spec 17 §S4; GOV.UK's "brand chrome vs client nav" split).
+
+## 4b. Global defaults + Site Info access (Bean requirement 2026-07-13)
+
+Every element/setting in **both** `sgs/site-header` and `sgs/site-footer` (and `sgs/adaptive-nav`) MUST have access to, and default from, two shared sources — so the same data is consistent across header AND footer with no duplication:
+
+1. **Global style defaults** — the site's `theme.json` / `wp_global_styles` tokens (colours, typography, spacing) and, for cloned sites, the Spec 33 draft-extracted `theme-snapshot.json`. Header/footer elements inherit these as their defaults (a client never re-enters brand colours/fonts per block); per-instance overrides remain available (§8). No hardcoded values (R-31-1).
+2. **SGS Site Info store** (Spec 17 §S4 — `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, opening hours, socials, copyright, attribution link. Both header and footer bind to the **same** store, so updating Site Info once updates every header/footer instance everywhere. Empty bindings render friendly hints with deep-links (Spec 17 M10).
+
+**Acceptance:** a contact/logo/social value set once in Site Info renders identically in header and footer without re-entry; brand colours/fonts come from global styles, not per-block literals; verified on ≥2 clients. This is the GOV.UK "brand-chrome data is centralised" principle applied to SGS.
 
 ## 5. Navigation — combined adaptive nav (Bean's idea, validated by Bricks+Elementor)
 
@@ -103,7 +112,7 @@ Base layout = **Cluster** (`display:flex; flex-wrap:wrap; gap` + `min-width:0` o
 
 ## 11. Integration + plumbing
 
-- **Spec 17:** the `framework-header-default` / footer patterns + the `sgs_header`/`sgs_footer` CPT template (`[['core/group']]` → the new blocks). **CPT swap done now** (Bean). `parts/header.html` + `patterns/framework-header-default.php` update together (byte-identical duplicates).
+- **Spec 17:** the `framework-header-default` / footer patterns + the `sgs_header`/`sgs_footer` CPT template. **Fact-checked 2026-07-13:** `class-sgs-block-cpts.php` currently sets **no `template` key** (FR-S3-4's `[['core/group']]` was never implemented — pre-existing drift), so this is an **ADD** (seed `[['sgs/site-header']]` / `[['sgs/site-footer']]`), not a swap. **Done now** (Bean). `parts/header.html` + `patterns/framework-header-default.php` update together (byte-identical duplicates).
 - **DB reseed (`/sgs-update`):** `blocks` + `block_supports` + `block_attributes` auto; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`; `variant_slots` + `blocks.variant_attr` if the blocks declare layout/nav variants. Verify every new row.
 - **Cloning pipeline Part 2** (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER`): the walker maps a draft's header/footer rows onto the named slots by BEM role (Spec 31 R-31-2/R-31-8), fewer rows → empty slots logged (R-31-4, no silent skip), more → gap-candidate not truncation.
 - **Doc updates:** Spec 17 (new FRs), Spec 32 (nav/drawer no-inline), CLAUDE.md, decisions.md, the hook + memory (rule evolution), the responsive-override model doc.

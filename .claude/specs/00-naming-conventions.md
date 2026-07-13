@@ -43,6 +43,10 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 **Anti-pattern:** `sgs/CardGrid`, `sgs/card_grid`, `SGS/card-grid` — wrong case, wrong separator, wrong namespace capitalisation.
 
+### 2.1 Header/footer/nav container blocks (evolved rule, 2026-07-13)
+
+Header/footer remain WordPress template parts (Spec 17) — a monolithic block that subsumes the template-part/Site-Info/rules system is still forbidden. **Specialised container blocks used *inside* the template parts are permitted**, exactly like `sgs/card-grid`/`sgs/feature-grid`: `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` (plus the reused `sgs/mobile-nav` off-canvas drawer). The `no-header-footer-block.py` hook allow-lists `src/blocks/{site-header,site-footer,adaptive-nav}/` while still blocking bare `header`/`footer`/`nav` block slugs. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`; block FRs owned by Spec 17.
+
 ---
 
 ## 3. BEM CSS classes

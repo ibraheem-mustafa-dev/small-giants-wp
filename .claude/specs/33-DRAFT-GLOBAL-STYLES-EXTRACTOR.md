@@ -1,21 +1,23 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: 1.1.0
+spec_version: 1.1.1
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-last_verified: 2026-07-13 (D322 — ALL 13 FRs shipped + live-proven on Mama's page 8; component-CSS migrated out of the snapshot; focus-visible + buttons + rule-9 verified clean)
-status: COMPLETE (v1.1.0 — Part 1 done: all 13 FRs shipped + live-verified. Deferred: other-5-client rollout behind per-client reclone (FR-33-11); Part 2 = header/footer clone, Spec 17)
+last_verified: 2026-07-13 (D322 — ALL 13 FRs shipped + live-proven on Mama's page 8; component-CSS migrated out of the snapshot; focus-visible + buttons + rule-9 verified clean; header/footer/nav design-gate cross-reference added same day, no FR change)
+status: COMPLETE (v1.1.1 — Part 1 done: all 13 FRs shipped + live-verified. Deferred: other-5-client rollout behind per-client reclone (FR-33-11); Part 2 = header/footer clone, now emitting `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` per the 2026-07-13 header/footer/nav design-gate)
 status_history:
   - 2026-07-13 — v0.1.0 authored (corpus-grounded, 10 FRs).
   - 2026-07-13 — v0.2.0 after a 6-persona /adversarial-council (Cynic/Spec-Lawyer/Ship-PM/Extraction-Correctness/Support-Realist/Systems-Integration; all C-band, GO-conditional). Applied every convergent must-fix. Bean-directed shape: keep the COMPLETE spine (all DECLARED value types in v1 — colour/typography/spacing/radius/shadow/buttons/layout), because the cost/risk is the DERIVATION mechanism, not the breadth of value types. The declared-vs-derived line is the trust boundary: declared (Pass A) auto-applies after computed-validation; derived (Pass B) is PROVISIONAL/advisory, never auto-pushed to a live theme. Fixed the FR-33-1 precedence contradiction that would have re-shipped D303; defined the role-inference rule table; pinned ΔE + determinism; reuse-by-composition (freeze the live hex-only helper); added provenance trace + golden fixtures + deploy-safety gates + bootstrap-ordering + forward contracts. All 4 open questions RESOLVED into FRs.
   - 2026-07-13 — v1.0.0 (D318): BUILT + live-proven on Mama's. Hybrid Node(measure.js)+Python(extract) at `plugins/sgs-blocks/scripts/theme-extractor/`. SHIPPED: FR-33-1 (provenance + computed-wins), FR-33-2 (role rule-table + ΔE alpha-axis dedup), FR-33-3 (base from rendered `<p>` + mode-heading-lh + rem-vs-real-root — D303 killed), FR-33-4 (declared spine: colour/typography/buttons(open-bag rest+hover)/contentSize/clamp-verbatim), FR-33-7 (trace + goldens + schema-validate), FR-33-8 (determinism, byte-identical), FR-33-9 (conservation/gap-log), FR-33-10 (composed `build_draft_root_token_map`, frozen hex helper unchanged), FR-33-11 (push-theme-snapshot `--backup`/`--rollback`/drift-warn). 16 tests green; proven live on sandybrown page 8 (base 16px, heading 1.2, buttons faithful — caught+fixed a transparent→black alpha-drop bug via live measurement). FOLLOW-UP: FR-33-5 (Pass B advisory), FR-33-6 (dark-theme safety), FR-33-12 (orchestrator fail-closed ordering gate), FR-33-13 (header/footer namespace + colour-var parking re-point); migrate the transitional component `styles.css` out of the snapshot.
   - 2026-07-13 — v1.1.0 (D320/D321/D322): the FOLLOW-UP set SHIPPED — Part 1 COMPLETE (13/13 FRs). **FR-33-12 (D320):** orchestrator fail-closed freshness gate — reads the `_sgsExtractor.draft_css_sha256` EMBEDDED in the canonical `theme-snapshot.json` (a code-review caught the first design tying it to the generated file, not the file the converter reads) + shared `scripts/shared_utils.py` single-source hash. **FR-33-5 (D321):** Pass B advisory derivation (`derive.py`) — token-less draft → derived palette by usage-context role (never frequency), `_source:derived`+confidence+`advisory:true`, translucent skipped, nothing-usable→baseline+skip; `push-theme-snapshot` strips advisory unless `--include-advisory`. **FR-33-6 (D321):** dark-theme/preview-shell safety (`extract._theme_background` + `measure.js` marker-path capture — a qc-council forensics rater caught that markers carried no path) — widest content-containing ancestor, dark discarded only on a positive shell signal, legit dark kept. **FR-33-13 (D322):** `settings.custom.header`/`.footer` reserved + reconciliation note (Spec 17 uses Customiser/JS-var, not this namespace — Part 2 decides) + `build_draft_root_token_map` parking re-point; the transitional component `styles.css` MIGRATED out of the Mama's snapshot (focus-visible → theme `utilities.css`; dead is-style/hero-cta/page-hack rules dropped; product-card client vars kept); button now consumes the open-bag `hover-transform` token (FR-33-4 render-side closure). 26 tests green; deployed + live-verified clean on sandybrown page 8.
+  - 2026-07-13 — v1.1.1 (post-D322, no FR change, additive): the header/footer/nav design-gate (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`, Bean-approved) named the concrete Part-2 emit target and a new consumer relationship for Part 1's output. **Consumer link (new):** `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` — the specialised container blocks the design-gate approved for inside the header/footer template parts — default their colours/typography/spacing from the SAME `theme-snapshot.json` this spec generates (global-styles consumer, no new extraction surface; see design-gate §4b). **Part 2 emit target (concrete):** Part 2 (draft header/footer → WP) now emits these three named blocks, not `core/group` — this spec's role stays unchanged (it still only produces the token source Part 2 and the new blocks read). **FR-33-13 linkage (noted, not resolved):** the reserved `settings.custom.header`/`.footer` namespace is one candidate source for the new blocks' header-specific settings; the design-gate leaves the tokenise-vs-Customiser choice as a Part 2 design-gate item (§15 Q1 area) — not decided here. No FR text changed; this is a forward-reference update only.
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
   - 17-HEADER-FOOTER-ARCHITECTURE.md (Part 2 sibling — the header/footer converter, built AFTER this; reserves the header/footer token namespace, FR-33-13)
+  - .claude/plans/2026-07-13-header-footer-nav-system-design-gate.md (Bean-approved 2026-07-13 — names Part 2's concrete emit target as `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
   - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
   - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked idea this formalises)
   - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
@@ -32,6 +34,16 @@ absorbed_by: none
 > SGS template parts. Part 1 first: prerequisite for Part 2 AND for every body clone (the converter
 > reads the snapshot this generates — FR-33-12), fixes the D303 drift class, lower-risk, and unblocks
 > two parked colour-var bugs.
+>
+> **Part 2's emit target is now concrete (2026-07-13 header/footer/nav design-gate, Bean-approved):**
+> Part 2 clones a draft's header/footer rows onto the new specialised container blocks
+> `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`)
+> — NOT `core/group`. Those blocks also become a downstream CONSUMER of this spec's output: every
+> element/setting on them defaults its colours/typography/spacing from the `theme-snapshot.json` Part 1
+> generates (the design-gate's §4b "global defaults + Site Info access" requirement), so a client's
+> brand tokens flow through Part 1 into header/footer/nav with no re-entry. This does not change any
+> FR in this spec — Part 1 still only produces the token source; it is read by the same
+> `push-theme-snapshot.py` deploy path plus, now, by the new blocks' default-resolution at render time.
 
 > **⛔ THE ONE RULE THAT MAKES THIS WORK (read before any FR).** This spec exists to kill D303 — a
 > block inheriting the WRONG base because something trusted a DECLARED value over the RENDERED one.
@@ -81,6 +93,11 @@ against the draft's **actual computed `documentElement` font-size**, never a har
 
 **Out of scope (the NOT list):**
 - NOT the header/footer converter (Part 2 / Spec 17) — but reserves its token namespace now (FR-33-13).
+  Part 2's concrete emit target (`sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, per the
+  2026-07-13 header/footer/nav design-gate) is named here for cross-reference only; building those
+  blocks, and deciding whether their header-specific settings live in the reserved
+  `settings.custom.header`/`.footer` namespace or a Customiser/JS-var channel, is a Part 2 decision
+  (design-gate §15 open-decisions area), not resolved by this spec.
 - NOT the Spec 26 FR-26-C derived-globals post-pass — that is a FORWARD CONTRACT, inert until Spec 26
   Phase 3 (FR-33-13); this spec must not build a half-merge against unbuilt code.
 - NOT a new theming/deploy channel — feeds the EXISTING `theme-snapshot.json` → `push-theme-snapshot.py`.
@@ -248,6 +265,13 @@ message; a run after a fresh extraction proceeds.
   COMPONENT tokens (sticky/scrolled header bg, header height, logo max-height, nav-link hover,
   mobile-nav breakpoint) are Part 2's, in a reserved `settings.custom.header`/`.footer` namespace —
   declared now so Part 2 does not force a Part 1 re-spec (Bean Q6).
+  **2026-07-13 update:** Part 2's owner is now concretely `sgs/site-header`/`sgs/site-footer`/
+  `sgs/adaptive-nav` (header/footer/nav design-gate). Those blocks' GLOBAL defaults (brand colour/
+  typography/spacing) come from Part 1's `theme-snapshot.json` output directly — that linkage needs
+  no namespace decision, it is the existing global-styles consumption every block already gets.
+  Whether the blocks' HEADER-SPECIFIC settings (sticky bg, header height, etc.) land in this reserved
+  `settings.custom.header`/`.footer` namespace, or a Customiser/JS-var channel as Spec 17 currently
+  uses, is still an open Part 2 design-gate item — noted here, not decided.
 - The new `build_draft_root_token_map()` is exposed as a service the parked `P-DRAFT-CSSVAR-*` entries
   consume (stop re-parsing `:root`).
 **Done when:** the snapshot reserves the header/footer namespace; FR-33-10's token map is a callable
@@ -312,7 +336,11 @@ fluid) + `fluid`; `settings.spacing.spacingSizes` (8-step `10`–`80`); `setting
 border/border-width/border-radius/padding/font-size/font-weight/min-height/hover-*), borderRadius
 (small/medium/large/pill), transition/duration/easing, focus-ring}`; `settings.layout.{contentSize
 1200, wideSize 1400}`; `styles.typography` (base body); `styles.elements.{h1..h6, heading, link,
-button}`. **NEW namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13).
+button}`. **NEW namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13; Part 2's
+concrete owner is `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` per the 2026-07-13
+header/footer/nav design-gate — those blocks' GLOBAL colour/typography/spacing defaults read the
+`settings.color.palette`/`settings.typography.*`/`settings.spacing.*` slots above directly; whether
+their header-specific settings use this reserved namespace is still open, see FR-33-13).
 Deploy: `push-theme-snapshot.py` → disk `theme.json` + `POST /wp/v2/global-styles/{id}` (wp_global_styles;
 overwrites the operator layer — FR-33-11 backup/diff/rollback guards this).
 **WP fluid typography:** `settings.typography.fluid:true` auto-computes `clamp()` from a size; per-size

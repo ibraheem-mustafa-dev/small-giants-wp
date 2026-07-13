@@ -1,16 +1,17 @@
 ---
 doc_type: spec
 spec_version: 17
-revision: 3
+revision: 4
 project: small-giants-wp
 title: Header/Footer Architecture (WP 7.0 canonical, per-site)
 date: 2026-05-19
-last_verified: 2026-06-12
+last_verified: 2026-07-13
 status: active
 status_history:
   - 2026-05-19: council-passed (ready to implement)
   - 2026-05-24: normalised to canonical enum (council-passed → active)
   - 2026-06-12: search block + 3 header search patterns (D214)
+  - 2026-07-13: §S9 Header/Footer/Nav block SYSTEM folded in (design-gate approved) — sgs/site-header, sgs/site-footer, sgs/adaptive-nav + sgs/mobile-nav drawer rework; P0 drawer fix SHIPPED
 input_brief: .claude/plans/strategy/2026-05-19-header-footer-research-brief.md
 council_outcome: .claude/reports/council-outcome-spec-17.md
 parent_session: small-giants-wp-2026-05-19-phase-9b-foundation
@@ -20,6 +21,7 @@ target_php_version: "8.0+"
 companion_docs:
   - .claude/CLAUDE.md
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md (canonical cloning-pipeline spec)
+  - .claude/plans/2026-07-13-header-footer-nav-system-design-gate.md (source design-gate for §S9)
 update_triggers:
   - architectural_change
   - fr_addition
@@ -74,6 +76,15 @@ WP 6.9 already provides every primitive needed. The framework `parts/header.html
 | Header/footer template parts (centred, split, minimal) | Brand-agnostic starting templates | **100% PRESERVED** |
 | Block-level variations (`register_block_variation`) | Variants within one block (button primary/secondary/outline) | **PRESERVED** |
 
+**Fourth concept, added 2026-07-13 (§S9, design-gate approved):**
+
+| Concept | What it is | Fate |
+|---|---|---|
+| Specialised header/footer/nav CONTAINER blocks (`sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav`) | A container composite (equivalent to `sgs/card-grid`/`sgs/feature-grid`) used *inside* the existing template part | **PERMITTED** — new, §S9 |
+| A monolithic header/footer/nav block that subsumes the template-part/CPT/rules/Site-Info system | The thing this spec has always forbidden | **STILL FORBIDDEN** |
+
+The template-part + pattern + CPT + rules-engine + Site Info architecture described in this paragraph is unchanged and remains the outer container for header/footer content. §S9 below adds a new inner layer: instead of (or alongside) hand-authored core blocks inside `patterns/framework-header-default.php`, a pattern may now place a single `sgs/site-header` (or `sgs/site-footer`) block, which itself delegates rendering to `SGS_Container_Wrapper` exactly like every other SGS container composite. This is a conscious, Bean-directed rule evolution (not a relaxation of the anti-pattern this spec was written to prevent) — see §S9 FR-S9-1 for the exact boundary and the enforcement-hook update.
+
 ## 4. Hard constraints
 
 | Constraint | Source | Non-negotiable |
@@ -115,7 +126,7 @@ WP 6.9 already provides every primitive needed. The framework `parts/header.html
 
 ---
 
-# 6. Spec sections (8 total)
+# 6. Spec sections (9 total)
 
 Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer test strategy (unit/integration/E2E/regression), dependencies, universal-benefit tag.
 
@@ -329,6 +340,8 @@ The table below lists all registered framework header patterns. Each is in `them
 **Tests:** Post type registered with correct capabilities; published post triggers admin-side pattern registration; unauthenticated REST read returns 401; frontend page load on a site with 50 published `sgs_header` posts shows no pattern-registration overhead.
 **Depends on:** FR-S3-1
 **Universal-benefit:** Yes
+
+**Addendum 2026-07-13 (§S9, FR-S9-11) — CPT template swap to the new blocks + a verified code-reality gap.** The `sgs_header` / `sgs_footer` editor template (the array a fresh CPT post opens with) swaps from `[['core/group']]` to `[['sgs/site-header']]` / `[['sgs/site-footer']]` respectively, so an operator creating an Advanced Header/Footer starts from the new specialised container rather than a bare group. **Verified against live code 2026-07-13:** `plugins/sgs-blocks/includes/class-sgs-block-cpts.php::register_post_types()` currently does **not** pass a `'template'` key at all in either `register_post_type()` call (the `$shared` array has no `template` entry) — so the `template: [['core/group']]` acceptance criterion above was never actually implemented; new `sgs_header`/`sgs_header` posts currently open with WordPress's default empty canvas, not a pre-seeded `core/group`. FR-S9-11 build must add the `'template' => [['sgs/site-header']]` / `[['sgs/site-footer']]` key as a NEW addition to `$shared`-derived args (not a swap of pre-existing code) — flagged here for the fact-check pass this design-gate rollout requested.
 
 ---
 
@@ -653,6 +666,223 @@ The table below lists all registered framework header patterns. Each is in `them
 
 ---
 
+## §S9 — Header/Footer/Nav Block SYSTEM (added 2026-07-13, design-gate approved)
+
+**Plain English:** A best-in-class header/footer/nav system built on top of the template-part architecture above, not replacing it. Three new specialised container blocks (`sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav`) live *inside* the existing `parts/header.html` / `parts/footer.html` pattern content, plus a hardened rework of the existing `sgs/mobile-nav` off-canvas drawer. Grounded in a study of five real systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) + the Indus Foods live reference + a research-council on the responsive model. Source design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (APPROVED, Bean sign-off 2026-07-13, all recommended defaults). Fixes two live bugs: the sub-384px WCAG 1.4.10 header reflow overflow, and the unclickable off-canvas drawer (root cause proven, fix SHIPPED + live-verified 2026-07-13 — see FR-S9-5).
+
+**Phasing (post sign-off):** P0 drawer fix (SHIPPED) → P1 `sgs/site-header` → P2 `sgs/adaptive-nav` → P3 `sgs/site-footer` → P4 per-device content adaptation polish + transparent-on-scroll toggle → P5 cloning-pipeline Part 2. Each phase closes only via the §12 QC gate in the design-gate doc (reflow / drawer / WCAG / no-inline / per-device / universality / behaviour-layer non-regression / editor-operator UX), run live on the real page per this spec's methodology (never on assertion output alone).
+
+### FR-S9-1 — Rule evolution: specialised header/footer/nav container blocks permitted inside template parts
+
+**Behaviour:** `.claude/hooks/no-header-footer-block.py` and the `header-footer-are-template-parts-not-blocks` memory currently forbid ANY block at `plugins/sgs-blocks/src/blocks/{header,footer,nav}/`. Bean's clarification (2026-07-13): a **specialised CONTAINER block** used *inside* the template part — equivalent to `sgs/card-grid`/`sgs/feature-grid` — is a different thing to the monolithic header/footer block this hook exists to prevent, and is now PERMITTED. The rule evolves to: *"Header/footer remain WordPress template parts (parts + patterns + `sgs_header`/`sgs_footer` CPT + rules engine + Site Info bindings, all preserved verbatim per §3 above). A specialised header/footer/nav container block used inside the template part is PERMITTED. A block that subsumes the template-part/CPT/rules/Site-Info system is still FORBIDDEN."*
+
+**Verified against live code 2026-07-13:** `no-header-footer-block.py`'s regex is `plugins[\\/]sgs-blocks[\\/]src[\\/]blocks[\\/](header|footer|nav)([\\/]|$)` — it matches only the EXACT path segments `header`, `footer`, `nav` immediately after `blocks/`. Directory names `site-header`, `site-footer`, and `adaptive-nav` do **not** match this pattern (the regex requires the literal string `header`/`footer`/`nav` to begin right after `blocks/`, not merely be a substring of the segment) — so the hook already permits `src/blocks/{site-header,site-footer,adaptive-nav}/` without modification, and continues to correctly block a literal `src/blocks/header/`, `src/blocks/footer/`, or `src/blocks/nav/`. This is a **no-op-by-construction** finding, not a change to make — flagged here so a future session doesn't spend effort "updating" a hook that already does the right thing. The existing `src/blocks/mobile-nav/` directory (used by FR-S9-5) is unaffected for the same reason.
+
+**Acceptance criteria:**
+- `no-header-footer-block.py` continues to block `Write`/`Edit` on `src/blocks/header/`, `src/blocks/footer/`, `src/blocks/nav/` (regression check — do not weaken)
+- `no-header-footer-block.py` allows `Write`/`Edit` on `src/blocks/site-header/`, `src/blocks/site-footer/`, `src/blocks/adaptive-nav/`, `src/blocks/mobile-nav/` (already true; add a fixture test asserting it stays true)
+- The `header-footer-are-template-parts-not-blocks` memory entry updated with the fourth-concept boundary (mirrors the §3 addendum above)
+- CLAUDE.md's non-negotiable rules / gotchas updated to state the evolved boundary in one sentence, cross-referencing this FR
+
+**Model:** Sonnet
+**Tests:** Hook fixture: `Write` to `src/blocks/header/block.json` → blocked (exit 2); `Write` to `src/blocks/site-header/block.json` → allowed (exit 0); `Write` to `src/blocks/adaptive-nav/edit.js` → allowed; `Write` to `src/blocks/nav/index.js` → blocked.
+**Depends on:** None
+**Universal-benefit:** Yes
+
+### FR-S9-2 — `sgs/site-header` block (3 optional named rows, typed element palette)
+
+**Behaviour:** A specialised section-KIND composite delegating outer rendering to `SGS_Container_Wrapper::render($attrs, $block, $inner, 'section', $opts)` (verbatim `$attrs` — the uid hash depends on it, per the composite-mirror rule, CLAUDE.md). Standard 5-file block pattern (`block.json`+`render.php`+`edit.js`+`save.js`+`index.js`), auto-registered by the existing `build/blocks` scandir loop — no new registration wiring. Three fixed, independently-configurable, optionally-empty named rows (Blocksy/Kadence-validated pattern):
+- **Top row** — thin utility strip: contact (phone/email), search, social, ecom icons
+- **Middle row** (primary) — logo + nav + primary CTA/cart
+- **Bottom row** — message / selling point / overflow / business info
+
+An empty row emits **zero output** — no wrapper, no padding (fixes the empty-slot padding-bleed found in council research). Elements come from a **typed palette**, not freeform blocks (better for non-coder clients per Blocksy): logo, adaptive-nav, search, cart, account, button/CTA, contact, social, HTML, widget-area.
+
+**Acceptance criteria:**
+- Registered slug `sgs/site-header`; `supports.sgs.containerKind` declares section KIND per the composite-mirror mechanism (Spec 31 §13.6)
+- 3 rows each independently show/hide; an empty row produces no DOM node and no computed padding/margin (verified via live Playwright `getBoundingClientRect` — zero height, zero contribution to sibling spacing)
+- Each row accepts only elements from the typed palette (logo/adaptive-nav/search/cart/account/button/contact/social/HTML/widget-area) — no arbitrary core-block insertion inside a row slot
+- Renders correctly via `SGS_Container_Wrapper` with the same wrapper capability set as `sgs/card-grid`/`sgs/feature-grid` (padding, max-width, contentWidth, gap, background) — no divergent per-block CSS hack (R-31-9)
+- Placed inside `patterns/framework-header-default.php` (replacing/alongside the current hand-authored core-block markup) without breaking the pattern's `Block Types: core/template-part/header` registration or its appearance in the Site Editor "Replace" picker (FR-S3-1)
+
+**Model:** Sonnet
+**Tests:** Live Playwright at 320/375/768/1024/1440: empty-row zero-output check; typed-palette element rendering per row; wrapper capability parity vs `sgs/card-grid` (same attr set, same computed padding/max-width behaviour). No-inline check (Spec 32): wrapper carries no inline `style=""`.
+**Depends on:** FR-S9-1, §S1 (pattern-delegation), §S4 (Site Info store), FR-S9-10 (global defaults)
+**Universal-benefit:** Yes
+
+### FR-S9-3 — `sgs/site-footer` block (rows + up to 6 columns + bottom bar)
+
+**Behaviour:** Same architecture as FR-S9-2 (section-KIND composite, `SGS_Container_Wrapper`, typed palette, empty-row-zero-output). Named rows:
+- **Top row** — CTA / newsletter
+- **Middle row** — up to **6 columns** (Blocksy's max), collapsing to 1 column below the mobile breakpoint tier (FR-S9-6); columns hold logo, about, links, business info, map link, social
+- **Bottom bar** — trademark, company name, terms/policy, attribution link
+
+**Acceptance criteria:**
+- Registered slug `sgs/site-footer`; section KIND; same wrapper-capability-parity requirement as FR-S9-2
+- Column count 1–6, operator-configurable; live-verified column→1 collapse at the mobile breakpoint tier on both mamas-munches and indus-foods (R-31-9 universality)
+- Bottom bar renders trademark/company-name/terms/attribution from Site Info bindings (FR-S9-10) where applicable — no hardcoded client copyright string
+- Placed inside `patterns/framework-footer-default.php` without breaking FR-S1-2 (`parts/footer.html` ≤3 lines, no hardcoded personal data — FR-S4-5 linter stays green)
+
+**Model:** Sonnet
+**Tests:** Live Playwright: 6-column desktop layout → 1-column mobile collapse at both breakpoint tiers (768/1024 + custom); Site Info binding round-trip (set once, renders in both header AND footer per FR-S9-10); FR-S4-5 linter run clean against the new pattern file.
+**Depends on:** FR-S9-1, FR-S9-6, FR-S9-10, §S1, §S4
+**Universal-benefit:** Yes
+
+### FR-S9-4 — `sgs/adaptive-nav` block (one menu, 4-tier collapse, mega-menu drill-down, overflow auto-collapse)
+
+**Behaviour:** Layout-KIND composite, one menu source rendering a desktop nav bar that collapses to a burger triggering the `sgs/mobile-nav` drawer (FR-S9-5). Breakpoint set across **4 tiers: Desktop / Tablet / Mobile / custom-px** (Elementor + Bricks pattern — the tier is a per-nav setting, not hardcoded). **Default = one-tree-restyled** (desktop tree re-styled for mobile); **escape hatch = independent mobile tree** via the drawer (Bricks' explicit named choice) — document the dropdown `position:absolute`→`static` gotcha inside the drawer. **Mega-menu:** per-item nestable content (columns, a Content-Block for rich content), full-width or element-targeted; on mobile it becomes **drill-down multilevel navigation + auto back-link** (scales to depth better than a flat accordion), with AJAX lazy-load for heavy mega-menu content. **Desktop overflow safety:** items that don't fit the available width auto-collapse into a "more" menu — the intrinsic never-overflow guarantee extended to navigation specifically.
+
+**Acceptance criteria:**
+- Registered slug `sgs/adaptive-nav`; `supports.sgs.containerKind` declares layout KIND; delegates outer rendering to `SGS_Container_Wrapper` per composite-mirror
+- ONE menu data source (WP nav menu / page-list) renders both the desktop bar and the collapsed state — no duplicated/divergent mobile menu content by default
+- 4 configurable collapse tiers, the custom-px tier reading from the SAME shared breakpoint source as FR-S9-6 (R-31-1 — no per-block hardcode)
+- Mega-menu items drill down + show a working back-link at the mobile/drawer tier; desktop mega-menu supports full-width and element-targeted placement
+- Desktop nav items that overflow the available width auto-collapse into a "more" menu with no manual configuration required
+- Opens `sgs/mobile-nav` (FR-S9-5) at the collapsed tier; passes through the a11y contract (focus trap, ESC, `aria-expanded`) end to end
+
+**Model:** Opus (mega-menu drill-down + overflow-collapse state machine complexity)
+**Tests:** Live Playwright per tier (desktop bar visible above the tier breakpoint, burger visible below); mega-menu open → drill-down → back-link → close full keyboard traversal; desktop overflow test (inject enough nav items to force auto-collapse, verify "more" menu appears and contains the overflowed items); custom-px tier configured to a non-default value and verified live.
+**Depends on:** FR-S9-1, FR-S9-5, FR-S9-6, FR-S9-7
+**Universal-benefit:** Yes
+
+### FR-S9-5 — `sgs/mobile-nav` off-canvas drawer rework: P0 unclickable-drawer bug fix (SHIPPED) + GOV.UK-grade a11y contract
+
+**Behaviour — the bug (root-caused, live-verified, FIXED 2026-07-13):** `view.js` set `inert` on `.wp-site-blocks` when the drawer opened, but the drawer (`#sgs-mobile-nav`) was itself a **descendant** of `.wp-site-blocks` — so it froze itself. The Popover top-layer painted it open-looking while `inert` (which follows the DOM tree, not paint order) made every link inside unreachable. A/B proven: removing `inert` restored clickability. **Fix shipped:** the drawer is now re-parented to be a **direct child of `<body>`** (a sibling of `.wp-site-blocks`) before `showPopover()` is called, so `inert` on `.wp-site-blocks` no longer reaches it. **Status: SHIPPED + live-verified 2026-07-13** — every link/button inside the open drawer is reachable via `document.elementFromPoint()` returning the link itself, not `BODY`.
+
+**Behaviour — the a11y contract (from GOV.UK, the only rigorous public spec of the 5 systems studied; commercial builders under-document this — SGS's differentiator):**
+- Progressive enhancement: the nav is plain HTML by default; the toggle button's `aria-controls`/`aria-expanded` wiring activates only once JS confirms it has loaded
+- Real focus trap while open; ESC-to-close; backdrop click-to-dismiss; body-scroll-lock while open
+- Background made `inert`/`aria-hidden` on every OTHER sibling of `<body>` — WITHOUT trapping the drawer itself (the exact mechanism that fixes the P0 bug)
+- Redundant state signalling: class change + `aria-current="true"` + a no-CSS fallback (state is never colour-only, WCAG 1.4.1)
+- Configurable screen-reader labels (`menuButtonLabel` / `navigationLabel` attrs) — never hardcoded English, so client sites can localise
+- Published keyboard contract: Tab / Space-Enter to open / ESC to close; focus lands on the first interactive element inside the drawer on open (Material's rule); 44px minimum touch targets throughout
+
+**Acceptance criteria:**
+- Drawer is a direct child of `<body>` at open time (verified: `drawerEl.parentElement === document.body`) — regression-guarded so this can't silently regress back under `.wp-site-blocks`
+- Every link/button inside the open drawer returns itself (not `BODY` or an ancestor) from `document.elementFromPoint(x, y)` at its own centre point — this is the exact test that caught the original bug
+- Focus trap: Tab from the last focusable element cycles to the first (and Shift+Tab from the first cycles to the last); focus never escapes to background content while open
+- ESC closes the drawer and returns focus to the triggering toggle button
+- Backdrop click closes the drawer
+- Body scroll is locked while the drawer is open (no background scroll bleed) and restored on close
+- Background content (everything outside the drawer, under `.wp-site-blocks`) is `inert`/`aria-hidden` while the drawer is open; the drawer itself is never inert
+- `aria-controls` + `aria-expanded` on the toggle button correctly reflect open/closed state; state is also signalled by a CSS class AND `aria-current`, not colour alone
+- `menuButtonLabel` / `navigationLabel` are block attrs with sane English defaults, translatable, never hardcoded in markup
+- Full keyboard traversal (open → navigate → mega-menu drill-down if present → back-link → close) works with no mouse
+- 44px minimum touch target on the toggle button and every drawer link
+
+**Model:** Opus (a11y-critical, security/trust-sensitive surface)
+**Tests:** Live Playwright at 375px: open drawer, `elementFromPoint` on every link returns the link (regression test for the exact P0 bug); Tab-cycle focus-trap assertion; ESC-close + focus-return assertion; axe-core pass with zero violations on the open-drawer state; keyboard-only full traversal including mega-menu drill-down (depends on FR-S9-4); body-scroll-lock assertion (`document.body.style.overflow` or equivalent, scroll position unchanged after close).
+**Depends on:** None (drawer fix is independent of the other §S9 blocks — this is why it shipped as P0 first)
+**Universal-benefit:** Yes
+
+### FR-S9-6 — Per-breakpoint responsive override model (new blocks only, no migration)
+
+**Behaviour:** Each responsive property on the three new blocks (`sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav`) is stored as `{desktop: <val>, tablet: <val|null>, mobile: <val|null>}`, where `null` means "inherit from the tier above" and `desktop` is always concrete. **New-blocks-only** — no migration of existing SGS blocks' attribute shapes (avoids Gutenberg invalid-content errors on existing content and honours the no-migrations/no-deprecations policy, D270/D293). **Wider surface (Bean's choice):** every property on every row is overridable per breakpoint, with the intrinsic layout (Cluster + `clamp()`, FR-S9-7) as the default so most clients never need to touch it. **Cascade:** mobile-first-up, fixed direction — not operator-reassignable (Bricks shipped bugs from making cascade direction configurable). A tier's CSS rule is emitted ONLY where that tier's value diverges from the tier below (no redundant rule emission). **Per-side inheritance** for box properties: `mobile.top ?? tablet.top ?? desktop.top`, independently per side. **Attribute key order is canonicalised before the `uid` md5 hash** (else re-saving the same content churns the uid and busts caches) — covered by a golden "re-save produces the same uid" regression test. **Breakpoints:** 768/1024 as the default device-tier standard (matches `~/.claude/rules/visual-standards.md` + the existing SGS device-tier convention, per CLAUDE.md's "Responsive breakpoint discipline" section), plus a **custom-px 4th tier**, all reading from **one shared breakpoint source** (R-31-1 — never a per-block hardcode, like GOV.UK's shared breakpoint map). **Container queries + media queries together (Bean's choice):** `container-type: inline-size` is declared on the block's own legitimate container wrapper (not a bare element — no D293 violation), so the block also adapts to its own width when reused in a narrower context (e.g. a sidebar); a `@media` fallback runs alongside for browsers/contexts where the container query doesn't apply.
+
+**Editor UX:** a device switcher with proper tab semantics, 44px targets, keyboard operability; an inherited (not overridden) value is shown visually greyed **plus an icon and `aria-label`** (never colour alone — WCAG 1.4.1); a keyboard-reachable "reset to inherited" button (not right-click-only, which is undiscoverable and inaccessible). SGS-owned components — do not depend on WordPress's `__experimental` device-switcher component, which is not a stable public API.
+
+**Acceptance criteria:**
+- Data model `{desktop, tablet, mobile}` with `null`-means-inherit implemented on all overridable properties of the three new blocks; verified NOT retrofitted onto any existing block's attribute schema
+- CSS emission: a tier's rule appears in the scoped `<style>` only when that tier's resolved value differs from the tier below (verified by inspecting the emitted `<style>` block for a fixture with two tiers set identically)
+- Per-side box inheritance verified independently (set `mobile.top` only, confirm `right`/`bottom`/`left` still resolve from `desktop`)
+- Golden test: save a block, capture its `uid`; re-save with no content change; `uid` unchanged
+- Breakpoint values (768/1024 + configurable custom-px) read from one shared source (grep-clean of any second hardcoded 768/1024 pair specific to these three blocks)
+- `container-type: inline-size` present on the block's container wrapper; verified the block renders correctly both at full page width and nested inside a narrower container (e.g. a sidebar widget area)
+- Device switcher: keyboard-operable tab semantics (arrow-key navigation, `role="tablist"`), 44px targets; inherited-value indicator carries both a non-colour visual cue AND an `aria-label`; reset-to-inherited reachable via Tab + Enter/Space (not right-click-only)
+
+**Model:** Opus (data-model + hashing/canonicalisation design, cross-block shared infrastructure)
+**Tests:** Unit: uid-canonicalisation function tested against key-order permutations of the same attribute set (all permutations produce the same hash); CSS-emission tier-diff logic tested against fixtures. Integration: golden re-save uid-stability test. E2E: Playwright device-switcher keyboard traversal + inherited-indicator `aria-label` assertion + reset-to-inherited click-and-verify. Regression: existing (non-§S9) blocks' attribute schemas byte-unchanged (grep/diff against pre-§S9 block.json files).
+**Depends on:** None (foundational; FR-S9-2/3/4 consume this model)
+**Universal-benefit:** Yes — the shared breakpoint source + canonicalisation pattern is reusable by any future responsive-override block
+
+### FR-S9-7 — Never-overflow layout (Cluster + `clamp()`)
+
+**Behaviour:** Base layout for all three new blocks is the **Cluster** pattern (`display:flex; flex-wrap:wrap; gap`) with `min-width:0` on every child (prevents flex items forcing overflow) and `flex-shrink:0` on the logo element specifically (prevents the logo being crushed to unreadable size), combined with fluid `clamp()`-based spacing and the container-query tiers from FR-S9-6. This makes header/footer **never overflow at any width down to 320px** with zero per-element hacks — solving the original emergency (sub-384px WCAG 1.4.10 header horizontal-overflow bug) intrinsically rather than via a targeted patch. Free enhancements riding on this: `interpolate-size: allow-keywords` for a JS-free drawer-height animation, and `@property` for a smooth `--sgs-header-height` custom-property transition.
+
+**Acceptance criteria:**
+- Live Playwright reflow check at 320/360/375/414/768/1024/1280/1440: `document.documentElement.scrollWidth <= window.innerWidth` at every width, on both `sgs/site-header` and `sgs/site-footer`
+- No element (including cart icon, burger toggle, logo) renders past the viewport edge at any tested width
+- Logo never shrinks below a legible minimum size (verified via `flex-shrink:0` + a `clamp()` floor)
+- Cart/burger toggle maintains ≥44px touch target at every tested width
+- Solves the specific EMERGENCY bug this design-gate names: sub-384px header horizontal-overflow (WCAG 1.4.10 Reflow) — verified fixed at 320/360/375 specifically
+
+**Model:** Sonnet
+**Tests:** Live Playwright reflow sweep (the 8 widths above) on real deployed pages, per the emergency task this spec's own changelog names; `scrollWidth`/`innerWidth` assertion; visual screenshot diff at each width saved to `reports/visual-diff/` (per STOP-67).
+**Depends on:** FR-S9-2, FR-S9-3, FR-S9-6 (container-query tiers)
+**Universal-benefit:** Yes
+
+### FR-S9-8 — Per-device content adaptation
+
+**Behaviour:** No system studied (Bricks/Elementor/Blocksy/Material/GOV.UK) has a magic "swap content per device" primitive — all use place-element-then-toggle-per-device. SGS follows the same proven pattern: **every element** gets a per-tier **visibility** toggle (show desktop / hide mobile, etc.); **nav/CTA/contact elements** get a `showLabel`/`iconOnly` boolean (Blocksy's Trigger pattern — e.g. email text collapses to an email icon with a working `mailto:` link); a **move-to-drawer** mechanism where the drawer (FR-S9-5) is a separate drop-zone and items placed there render ONLY in the drawer, not in the header row. **Reference pattern (Indus Foods, live):** at ≤1024 both header rows merge to a slim bar showing logo + a single "Call" **button** (text-to-button, not just an icon); email/social **drop from the header into the drawer**; footer columns go 3→1 at 768. This is the template pattern new client builds should follow: one clean device-tier flip for header+footer, secondary items relocate to the drawer, and the primary contact channel becomes a prominent button rather than shrinking to an icon.
+
+**Acceptance criteria:**
+- Every typed-palette element (FR-S9-2/3) has a per-tier visibility toggle independent of its content
+- Nav/CTA/contact elements expose `showLabel`/`iconOnly`; `iconOnly` email renders a working `mailto:` link, `iconOnly` phone renders a working `tel:` link
+- Move-to-drawer: an element flagged for the drawer drop-zone renders exclusively inside `sgs/mobile-nav` (FR-S9-5) at the collapsed tier, not duplicated in the collapsed header row
+- The Indus Foods reference pattern reproduced and live-verified: ≤1024 slim header (logo + Call button), email/social moved to drawer, footer 3→1 columns at 768
+
+**Model:** Sonnet
+**Tests:** Live Playwright per tier: visibility-toggle correctness; `iconOnly` email/phone links resolve to correct `mailto:`/`tel:` hrefs; move-to-drawer element absent from the collapsed header row and present inside the open drawer; Indus Foods reference-pattern reproduction verified on the Indus Foods site specifically (R-31-9 universality — also verified it generalises to mamas-munches, not just Indus).
+**Depends on:** FR-S9-2, FR-S9-3, FR-S9-5, FR-S9-6
+**Universal-benefit:** Yes
+
+### FR-S9-9 — Sticky / transparent-at-rest-to-solid-on-scroll (no-code toggle)
+
+**Behaviour:** Per-**row-combination** sticky behaviour (Blocksy's model: All rows / Main row only / Top+Main / etc.), delivered through the EXISTING SGS body-class behaviour layer (`plugins/sgs-blocks/includes/class-sgs-header-behaviours.php`, `assets/css/header-behaviours.css`, `src/header-behaviours/view.js`) plus the existing `--sgs-header-height` ResizeObserver and `scroll-padding-top` anchor-offset fix (WCAG 2.4.11) — **all preserved verbatim**, this FR extends the existing mechanism to the new blocks rather than replacing it. New: **transparent-at-rest → solid-on-scroll as a no-code toggle** in the block inspector (beating Elementor, which requires hand-written CSS for this) — options modelled on Material's 3 scroll behaviours (pinned / enter-always / exit-until-collapsed). State changes route through a CSS custom-property token, never a hardcoded inline declaration (Material's discipline + Spec 32 no-inline contract).
+
+**Acceptance criteria:**
+- `sgs/site-header` inspector exposes sticky row-combination options + the transparent→solid toggle with the 3 Material scroll-behaviour choices, no CSS authoring required by the operator
+- The existing `class-sgs-header-behaviours.php` body-class strategy, `--sgs-header-height` ResizeObserver, and `scroll-padding-top` anchor fix (WCAG 2.4.11) are unchanged in behaviour and continue passing their existing tests (regression, not rebuild)
+- Transparent-at-rest → solid-on-scroll state is expressed via a CSS custom property (token), never an inline `style=""` declaration (Spec 32 no-inline contract)
+- Dark-mode variants of the sticky/transparent states render correctly (contrast maintained through the transition)
+
+**Model:** Sonnet
+**Tests:** Regression suite for `class-sgs-header-behaviours.php` / `header-behaviours.css` / `view.js` re-run green post-integration; live Playwright scroll simulation verifying transparent→solid transition + each of the 3 Material scroll-behaviour options; no-inline grep on the rendered wrapper markup; dark-mode contrast check during the transition.
+**Depends on:** FR-S9-2, existing Phase 2A behaviour layer (§ "Phase 2A Additions" below)
+**Universal-benefit:** Yes
+
+### FR-S9-10 — Global style defaults + shared Site Info access (both blocks, one source of truth)
+
+**Behaviour:** Every element/setting in `sgs/site-header`, `sgs/site-footer`, AND `sgs/adaptive-nav` has access to, and defaults from, two shared sources — so the same data is consistent across header AND footer with zero duplication (Bean requirement, 2026-07-13):
+1. **Global style defaults** — the site's `theme.json`/`wp_global_styles` tokens (colours, typography, spacing), and for cloned sites the Spec 33 draft-extracted `theme-snapshot.json`. Header/footer elements inherit these as defaults; per-instance overrides remain available via FR-S9-6. No hardcoded values (R-31-1).
+2. **SGS Site Info store** — the SAME `sgs_site_info` `wp_options` record + `sgs/site-info` block-bindings source already canonical for this spec (§S4, FR-S4-1/2): logo, phone, email, address, opening hours, socials, copyright, attribution link. Both header and footer blocks bind to this one store, so an operator updating Site Info once updates every header/footer instance everywhere. Empty bindings render the existing friendly hints with deep-links (FR-S4-2's `M10` contract) — no new hint mechanism invented.
+
+**Acceptance criteria:**
+- A contact/logo/social value set once in Site Info (via the existing FR-S4-3 admin page or Customiser) renders identically in `sgs/site-header` and `sgs/site-footer` without re-entry
+- Brand colours/fonts in the new blocks come from `theme.json`/`wp_global_styles`/`theme-snapshot.json` tokens, never a per-block literal (grep-clean, matching the FR-S4-5 sweep discipline)
+- Verified on ≥2 clients (mamas-munches AND indus-foods, per R-31-9 universality)
+- No new Site Info schema, no new binding source, no new admin page — this FR wires the EXISTING FR-S4-1/2/3 infrastructure into the three new blocks, it does not duplicate it
+
+**Model:** Sonnet
+**Tests:** Set a Site Info value once via the admin page; verify it renders in both a `sgs/site-header` instance and a `sgs/site-footer` instance on the same page with no per-block re-entry; grep sweep for hardcoded colour/font literals in the three new blocks' render.php/style.css; repeat the whole check on both mamas-munches and indus-foods.
+**Depends on:** FR-S4-1, FR-S4-2, FR-S4-3, FR-S9-2, FR-S9-3, FR-S9-4
+**Universal-benefit:** Yes
+
+### FR-S9-11 — CPT template swap + DB reseed + cloning-pipeline Part 2 plumbing
+
+**Behaviour:** Three integration steps close out the §S9 rollout:
+1. **CPT template swap** — `sgs_header`/`sgs_footer` (FR-S3-4) editor template swaps to open on the new blocks. As verified above (FR-S3-4 addendum), the live code currently sets no `template` key at all, so this is a NEW addition of `'template' => [['sgs/site-header']]` / `[['sgs/site-footer']]`, not a swap of pre-existing `[['core/group']]`. `parts/header.html` + `patterns/framework-header-default.php` (and the footer equivalents) update together as byte-identical duplicates per the existing pattern-delegation model (§S1).
+2. **DB reseed via `/sgs-update`** — `blocks` + `block_supports` + `block_attributes` pick up the three new blocks automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` populated via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`; `variant_slots` + `blocks.variant_attr` populated if any of the three blocks declare layout/nav variants (`supports.sgs.variants` in block.json, per FR-22-20). Every new/changed row spot-verified after the run — do not assume the seeder ran clean.
+3. **Cloning-pipeline Part 2** (parking entry `P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER`, referenced in §1's audience table above) — the walker maps a draft's header/footer rows onto the three new blocks' named slots by BEM role (Spec 31 R-31-2/R-31-8): fewer draft rows than slots → the extra slots are logged as empty per R-31-4 (no silent skip); more draft rows/content than slots → logged as a gap candidate, never silently truncated.
+
+**Acceptance criteria:**
+- `class-sgs-block-cpts.php::register_post_types()` gains a `'template'` entry for both CPTs pointing at the corresponding new block
+- New `sgs_header`/`sgs_footer` posts open pre-populated with `sgs/site-header`/`sgs/site-footer` in the block editor (verified live — not just reading the PHP array)
+- `/sgs-update` run post-deploy; `blocks` table contains all 3 new slugs with correct `container_kind`; spot-check ≥1 row per new table/column touched
+- Cloning pipeline Part 2 is scoped as its own follow-on build (P5 in the design-gate phasing) — this FR only requires the INTEGRATION POINTS (slot names, BEM-role mapping table) to be documented, not the full walker change implemented within §S9's own build
+- No FR-S9 block ships without its DB rows being live-queryable via `/sgs-db` (R-31-8 — schema enumeration before "missing X")
+
+**Model:** Opus (CPT/security-adjacent registration change + DB-schema integration)
+**Tests:** Live: create a new `sgs_header` post, confirm the block editor opens with `sgs/site-header` pre-inserted; `/sgs-db` query confirms all 3 new blocks + their `container_kind`/`variant_slots` rows; FR-S1-1/FR-S1-2 pattern-delegation regression (existing patterns still register + appear in the Replace picker); parking.md entry `P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` updated to reference the new slot-mapping documentation as its build input.
+**Depends on:** FR-S9-2, FR-S9-3, FR-S3-4, §S1
+**Universal-benefit:** Yes
+
+### §S9 Guardrails (mirrors the design-gate's own §14, restated here for spec-local enforcement)
+
+Composite-mirror — no divergent per-block CSS path (Spec 31 §13.6). No hardcoded client values anywhere in the three new blocks — Site Info + tokens only (FR-S9-10, R-31-1). No block version bumps or deprecations pre-production (D293/D270 — re-clone, not deprecate). Universal, no carve-outs (R-31-9) — every fix/capability applies to all qualifying rows/elements, not a per-client exception. STOP-21/CSS-VER/CDN/LiteSpeed cache-bust sequence run before every live measurement (this spec's own §12-equivalent QC gate lives in the design-gate doc, §12). Path-scoped commits on `main` per this spec's existing git-workflow convention; verify D-ceiling before starting; no co-author lines in commits.
+
+---
+
 # 7. Cross-cutting concerns
 
 ## 7.1 Security
@@ -745,6 +975,7 @@ Spec ships successfully if all observable on sandybrown canary site:
 | 2026-05-19 | v2.1 | Promoted P-S17-A to in-scope. Added §S8 Two-Axis Style Variations (FR-S8-1 + FR-S8-2). Updated §6 header to 8 spec sections. All 8 existing variations split into `styles/colours/` + `styles/typography/` axes; 16 new files created; 8 bundled top-level files annotated. 44/44 tests passing. |
 | 2026-05-21 | v3 | Architecture staging doc decisions applied: §3 architecture paragraph rewritten (variation-triggered seeding removed; explicit CLI / activation hook replaces it). FR-S2-1 and FR-S2-2 retired (variation trigger no longer exists). §S5-2 variation picker retired (Decision 18 deletes the variation system). §S8 two-axis style variations retired (variations deleted entirely). New §Customiser migration section added (Decision 21). Cross-reference to Spec 18 added as canonical Customiser pattern. |
 | 2026-06-12 | r3 | D214 additions: FR-S1-5 (sgs/product-search as a header-eligible block; `inline` + `icon` displayMode; opt-in design principle; theme version bump gotcha). FR-S3-1 extended with a full shipped header pattern roster table (10 patterns); three new search patterns added — `sgs/header-search-bar-above`, `sgs/header-search-bar-below`, `sgs/header-search-icon` (all `Block Types: core/template-part/header`, `Categories: sgs-headers`). Framework-default header confirmed search-free. |
+| 2026-07-13 | r4 | **§S9 Header/Footer/Nav block SYSTEM folded in** (design-gate `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`, APPROVED, Bean sign-off, all recommended defaults). New §9th spec section (§6 header "8 total" → "9 total"), 11 FRs (FR-S9-1 through FR-S9-11) covering: rule evolution permitting specialised header/footer/nav container blocks inside template parts (FR-S9-1 — verified the enforcement hook already permits the new slugs by construction); `sgs/site-header` (FR-S9-2) and `sgs/site-footer` (FR-S9-3) — 3 named rows, typed element palette, empty-row-zero-output; `sgs/adaptive-nav` (FR-S9-4) — one menu, 4-tier collapse, mega-menu drill-down, desktop overflow auto-collapse; `sgs/mobile-nav` off-canvas drawer rework (FR-S9-5) — the P0 unclickable-drawer bug (drawer re-parented to `<body>`, no longer trapped by its own parent's `inert`) SHIPPED + live-verified 2026-07-13, plus a GOV.UK-grade a11y contract (focus trap, ESC, body-scroll-lock, redundant state, configurable SR labels); per-breakpoint responsive override model, new-blocks-only (FR-S9-6); never-overflow Cluster+`clamp()` layout solving the sub-384px WCAG 1.4.10 reflow emergency intrinsically (FR-S9-7); per-device content adaptation incl. the Indus Foods reference pattern (FR-S9-8); sticky/transparent-on-scroll no-code toggle extending the existing behaviour layer (FR-S9-9); global style defaults + shared Site Info access across header AND footer with zero duplication (FR-S9-10); CPT template swap + DB reseed + cloning-pipeline Part 2 plumbing (FR-S9-11 — also documents a verified live-code gap: FR-S3-4's `template: [['core/group']]` acceptance criterion was never actually implemented, current code sets no `template` key at all). §3 architecture paragraph gained a "fourth concept" addendum table. FR-S3-4 gained a verified-code-reality addendum. Research basis: Bricks, Elementor, Blocksy, Material 3, GOV.UK + Indus Foods live reference + research-council. |
 
 ---
 
