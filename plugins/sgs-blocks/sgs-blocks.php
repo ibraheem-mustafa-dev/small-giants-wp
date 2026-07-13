@@ -233,8 +233,12 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-fields.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-notices.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-binding.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-rest.php';
 Sgs_Site_Info::register();
 Sgs_Site_Info_Admin::register();
+// Tier-1 pipeline business-info sync — capability-gated remote write endpoint
+// (POST /sgs/v1/site-info, fill-if-empty). D325.
+Sgs_Site_Info_Rest::register();
 // FR-S9-10 (D325): boot the sgs/site-info block-bindings source so header/footer
 // paragraphs bound to copyright/tagline/socials/contact resolve on the frontend.
 // Was never wired (the class documented "Call this from the main plugin file" but

@@ -97,8 +97,22 @@ final class Sgs_Site_Info {
 	 * Build the sanitiser map and register hooks. Called once on plugin load.
 	 */
 	public static function register(): void {
-		// Build the sanitiser map here so closures can reference WP functions
-		// that are guaranteed to exist after plugins_loaded.
+		self::build_sanitisers();
+
+		// GDPR personal-data exporter.
+		\add_filter( 'wp_privacy_personal_data_exporters', array( __CLASS__, 'register_privacy_exporter' ) );
+	}
+
+	/**
+	 * Populate the per-key sanitiser map (the canonical well-known-key list).
+	 *
+	 * Idempotent + side-effect-free (no hooks) so it can be called on demand by
+	 * known_keys() before register() has run. Closures reference WP functions
+	 * guaranteed to exist after plugins_loaded.
+	 *
+	 * @return void
+	 */
+	private static function build_sanitisers(): void {
 		$text    = 'sanitize_text_field';
 		$email   = 'sanitize_email';
 		$url     = 'esc_url_raw';
@@ -122,9 +136,6 @@ final class Sgs_Site_Info {
 			// Social URLs.
 			\array_fill_keys( \array_map( fn( $s ) => "socials.{$s}", $socials ), $url )
 		);
-
-		// GDPR personal-data exporter.
-		\add_filter( 'wp_privacy_personal_data_exporters', array( __CLASS__, 'register_privacy_exporter' ) );
 	}
 
 	// -------------------------------------------------------------------------
@@ -179,6 +190,22 @@ final class Sgs_Site_Info {
 	 */
 	public static function all(): array {
 		return self::load_store();
+	}
+
+	/**
+	 * The canonical list of well-known Site Info keys (the sanitiser-map keys).
+	 *
+	 * Single source of truth for any caller that needs to allowlist writable
+	 * fields (e.g. the pipeline business-info sync REST endpoint) without
+	 * hardcoding a parallel list that could drift. Populated in register().
+	 *
+	 * @return string[] Dot-notation keys, e.g. 'phone', 'socials.facebook'.
+	 */
+	public static function known_keys(): array {
+		if ( empty( self::$sanitisers ) ) {
+			self::build_sanitisers();
+		}
+		return array_keys( self::$sanitisers );
 	}
 
 	// -------------------------------------------------------------------------
