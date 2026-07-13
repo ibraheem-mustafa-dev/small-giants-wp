@@ -73,6 +73,10 @@ def run_orchestrator(
         "--converter-v2",
         "--mode",
         "draft",
+        # This harness runs the orchestrator extract-only (no live deploy), so the
+        # FR-33-12 theme-snapshot freshness gate does not apply — skip it explicitly
+        # (the gate stays fail-closed for real clone runs; this is the sole opt-out).
+        "--skip-freshness-gate",
     ]
 
     try:

@@ -70,6 +70,7 @@ Every row cites the function that actually runs it, in `plugins/sgs-blocks/scrip
 
 | # | Stage name | Function (file:line) | Primary output | Notes |
 |---|-----------|----------------------|----------------|-------|
+| -1 | Draft global-styles extraction (Spec 33) | `plugins/sgs-blocks/scripts/theme-extractor/extract.py` (standalone, run before the orchestrator) | `sites/<client>/theme-snapshot.json` | OPENING step of the whole pipeline — runs BEFORE Stage 0, before any block conversion. Measures the draft's rendered computed styles and generates the client's theme-snapshot (theme.json v3 global styles) that Stage 0 loads and that the converter's colour token-snap (§3.A step 6, Spec 31) exact-hex-snaps draft colours against. Hard prerequisite, not optional: FR-33-12 (Spec 33) fails the `/sgs-clone` run CLOSED if the snapshot wasn't generated/validated for the current draft — see Spec 33. |
 | 0 | Theme cache | inline in `main()` (loads `theme/sgs-theme/theme.json` + client variation, lines 2281–2314) | `run_ctx["theme_json"]` (in-memory, no separate JSON artefact) | No preflight/mutex call here — see "Dropped claims" below |
 | 0.1 | BEM compliance lint | `stage_0_1_bem_lint()` (:121) | `stage-0.1-bem-lint.json` | modes: strict (halt) / draft (warn) / legacy (bypass) |
 | 0.5 | Token-usage lint | `stage_0_5_token_lint()` (:193) | `stage-0.5-token-lint.json` | additive mode writes new-token candidates, not violations |
@@ -95,6 +96,10 @@ Every row cites the function that actually runs it, in `plugins/sgs-blocks/scrip
 ## Live entry-point chain
 
 ```
+0.  plugins/sgs-blocks/scripts/theme-extractor/extract.py (Spec 33)   ✓ OPENING STEP
+       ↓ generates sites/<client>/theme-snapshot.json — hard prerequisite,
+         FR-33-12 fails closed if missing/stale for the current draft
+       ↓ then
 1.  /sgs-clone command
        ↓ invokes
 2.  plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py main()   ✓ ENTRY POINT

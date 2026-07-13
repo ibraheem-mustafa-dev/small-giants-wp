@@ -21,6 +21,38 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 
 ---
 
+## Stage -1 — Draft global-styles extraction (Spec 33)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ WHERE: plugins/sgs-blocks/scripts/theme-extractor/extract.py — a standalone │
+│        script run BEFORE the /sgs-clone orchestrator, not a stage inside    │
+│        sgs-clone-orchestrator.py's main().                                  │
+│                                                                             │
+│ WHAT IT DOES (plain English): the OPENING step of the whole cloning         │
+│ pipeline. Reads the client's draft mockup, MEASURES the computed styles on  │
+│ the rendered page (colour, typography, presets), and generates the         │
+│ client's sites/<client>/theme-snapshot.json (theme.json v3 global styles)  │
+│ so every cloned block inherits the correct base by construction. It is a   │
+│ HARD PREREQUISITE of any block clone: the converter exact-hex-snaps draft   │
+│ colours against settings.color.palette in this generated snapshot          │
+│ (`converter/services/styling_helpers.py:_load_theme_palette_map`, lines    │
+│ 258-261) — Stage 0 (Theme cache, below) then loads the snapshot this       │
+│ produces.                                                                   │
+│                                                                             │
+│ FILES (R):    the draft mockup HTML+CSS                                    │
+│ FILES (W):    sites/<client>/theme-snapshot.json                           │
+│ DB tables:    none                                                          │
+│ STATUS:       LIVE (built) — FR-33-12 fail-closed freshness gate: the       │
+│               orchestrator refuses to run a clone if theme-snapshot.json    │
+│               was not generated/validated for the CURRENT draft (see       │
+│               Spec 33, `.claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md`, │
+│               FR-33-12). Never optional, never skipped.                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Stage 0 — Theme cache (inline, no wrapper function)
 
 ```
