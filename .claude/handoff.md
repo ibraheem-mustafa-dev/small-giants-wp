@@ -26,9 +26,9 @@ session: D320-D322 — Spec 33 Part 1 COMPLETE (all 13 FRs): freshness gate + Pa
 - None block the next session. The FR-33-12 gate is live — any `/sgs-clone` run now requires a fresh extractor snapshot for the client (or `--skip-freshness-gate` for extract-only/diagnostic runs).
 
 ## Next Priorities (in order)
-1. **Roll out the extractor to the other 5 client snapshots** (indus-foods, helping-doctors, + 3) — each behind its OWN reclone + per-client visual/computed-parity (FR-33-11 Mama's-only rule; do NOT snapshot-push without a reclone — that was the D318/D319 pink regression).
-2. **Part 2 — header/footer clone (Spec 17).** The header/footer SETUP pipeline's second half: clone the draft header/footer into SGS template parts. Decide the FR-33-13 tokenise-vs-Customiser question first (Part 1 reserved `settings.custom.header`/`.footer`; Spec 17's built model uses the Customiser + JS-measured height).
-3. **Optional block-quality:** wire a client draft with a button hover-transform to prove the D322 hover-transform capability end-to-end (Mama's is colour-invert, so it's currently inert-but-verified).
+1. **[EMERGENCY — NEXT SESSION, Bean-inserted 2026-07-13] Header horizontal-overflow below 384px.** The site header overflows the viewport on small screens: below ~384px the header element row runs out of space, doesn't wrap/collapse, and the account + cart icons escape the page bounds (visible on horizontal swipe); content "recedes from the right". WCAG 2.2 Reflow (SC 1.4.10) failure. Header = `theme/sgs-theme/parts/header.html` + `assets/css/*` — the breakpoints stop at 599/782px, nothing handles <384px. Full task + investigation plan in `next-session-prompt.md`. **This is the ONLY next-session task; the two below move to the session after.**
+2. **[SESSION AFTER] Roll out the extractor to the other 5 client snapshots** — each behind its OWN reclone + per-client parity (FR-33-11 Mama's-only rule; NEVER a snapshot-only push — that was the D318/D319 pink regression).
+3. **[SESSION AFTER] Part 2 — header/footer clone (Spec 17).** Decide the FR-33-13 tokenise-vs-Customiser question first. NOTE: overlaps the emergency header work — carry that context forward so they don't conflict.
 
 ## Files Modified
 | File | What changed |
