@@ -2,52 +2,55 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-13
-session: D315/D316/D317 — parity tool rebuilt (Spec 20 v1.1.0) + universal pill tick-gap fix + Task-2 dead-control finding + Spec 33 (draft global-styles extractor) designed→council→v0.2 (build-ready)
+session: D318 — Spec 33 Part 1 BUILT (draft global-styles extractor) + D303 killed live on Mama's
 ---
 
-# Session Handoff — 2026-07-13 (D315/D316/D317)
+# Session Handoff — 2026-07-13 (D318)
 
 ## Completed This Session
-1. **Task 1 — rebuilt `computed-parity.js` (Stage 11.6) to Spec 20 v1.1.0.** The tool now tracks VISIBLE fidelity: font-family primary-only, blocklist `interactivity`/`appearance`(non-control), sub-visible representational twins → unscored `sub_visible[]` bucket, tag scored separately (FR-20-9), class names context-only (FR-20-10), force-load lazy content (FR-20-11). Baseline 77% → **88% raw** on page 8.
-2. **qc-council + code-review hardened it (trust instrument).** Council's load-bearing correction: sub-visible buckets must be gated by a per-pair INVISIBILITY PREDICATE, never a blanket label-exclude. `feature-dev:code-reviewer` caught **3 real bugs, all in the unsafe hide-a-gap direction** (inline `clientHeight===0`; native `<button>` UA-bg appearance; margin-absorbed direction) — all fixed + guarded.
-3. **Validated vs the independent D314 ledger (never self-report).** 82% of the tool's 350 scored "misses" are exactly the ledger's dispositioned items (A pills + B shadow + D banner accepted; testimonials out-of-contract); applying the same dispositions → ~98% (ledger ~94–95%); tag divergences reproduced exactly; content 100%. The raw 88% is honest + lower only because it's page-agnostic (FR-20-2). **Bean signed off.**
-4. **Fixtures + smoke test — 11/11 pass** (`scripts/parity/fixtures/` + `smoke-test.js`): FR-20-1 base-font, FR-20-9 tag, FR-20-10 class-agnostic 100%+static grep, FR-20-11 lazy, + 3 FR-20-3a guard cases for the code-review bugs. Draft-agnostic proven (4 non-page-8 pairs, zero edits).
-5. **Pill tick-gap fix (D316) — universal + live-verified.** Bean-reported: the selected pill's ✓ tick had no gap and overlapped the value at some widths. Root cause: an absolutely-positioned `::before` overlay. Fix: in-flow tick + `margin-right:0.3em`, shown only on the selected pill (unselected stays draft-tight). Product-card pack pills render via `render_block('sgs/option-picker')` → one `style.css` change covers both blocks. Verified live at 1440 + 375 (`✓ 8-pack`, no overlap); screenshots + visual-diff report.
-6. **Task 2 (D314 deferred C-type sweep) — all 7 attrs proven DEAD render paths.** mobile-nav focus/active/sublink + trust-bar shapeDivider* have null role, and nothing consumes them (vars emitted-but-unread / declared-only). Seeding role would route a draft value into a render no-op (STOP-44). **Seeded none;** parked as block-quality debt (`P-DEAD-NULL-ROLE-CONTROLS`).
-7. **D317 — chose the next front + designed Part 1 to a build-ready spec.** Bean picked the header/footer setup pipeline (2 parts: Part 1 = draft→theme global-styles extractor; Part 2 = header/footer clone). Grounded in WP docs + a focused research pass + a full survey of ALL `sites/` drafts (3 real design systems + a token-less scrape). Wrote **Spec 33 v0.1**, ran a **6-persona `/adversarial-council`** (GO-conditional — caught that FR-33-1 "declared wins" would re-ship D303, the undefined role algorithm, Pass-B palette inversion, and the 6-live-snapshot blast radius), then reshaped to **v0.2** (`e77eec79`): COMPLETE spine (all declared value types, Bean's call) tiered by PROVENANCE (declared auto after computed-validation; derived advisory-gated) + every convergent fix + all 4 open questions resolved. NO code built — design only.
+1. **BUILT the Spec 33 draft global-styles extractor** — `plugins/sgs-blocks/scripts/theme-extractor/` (9 modules: `measure.js` + `colour/token_map/roles/palette/typography/presets/extract/schema_validate`). Hybrid Node(Playwright)+Python, outside `converter/` so free to use `tinycss2`+`colormath`. Executed Phases 1-4 of `.claude/plans/go-parallel-blum.md`.
+2. **The iron law (FR-33-1/3) — D303 killed by construction.** Emitted value is ALWAYS the COMPUTED value on a rendered node; declared CSS supplies only name/role. Base body = the longest main-content `<p>` (16px); heading line-height = the MODE ratio across non-chrome headings (1.2 — the hero's 1.15 is an outlier excluded by construction; naive "first h1" IS the hero → would re-ship the drift); rem vs real computed root.
+3. **Palette (FR-33-2)** — role by usage-context (`:hover` selectors excluded from identity), two-pass slug assignment (identity roles first, then a logged name-tiebreak): primary=coral #E68A95 (the button bg, not the near-white footer link); ΔE≤1 dedup, alpha a separate axis; translucent + dead `:root` tokens gap-logged.
+4. **Guards** — 16 tests (`theme-extractor/tests`), byte-identical re-run (determinism FR-33-8), frozen `build_draft_root_colour_map` asserted unchanged (golden FR-33-10), theme.json v3 schema-validate (FR-33-7), no converter regression (import-ban scoped to `converter/`; freeze unit test green).
+5. **Deploy safety (FR-33-11)** — `push-theme-snapshot.py` gained default-on `--backup` (persists live disk theme.json + wp_global_styles), one-command `--rollback`, and a Site-Editor drift warning.
+6. **PROVEN LIVE on Mama's sandybrown page 8** (Bean chose full cutover) — deployed the generated snapshot (backup taken; OPcache+LiteSpeed cleared). base 16px/1.6, brand quote 16px, h2/h3 1.2, hero h1 1.15 faithful, buttons faithful; all baseline theme.json keys preserved.
+7. **Two bugs caught via LIVE measurement (STOP-VERIFY-COLOUR), not code review** — (1) an early merge-from-partial would have stripped 136 baseline keys; fixed by merging generated-full + carried-forward component CSS. (2) `presets.py` dropped alpha → the draft's transparent secondary/outline buttons rendered opaque BLACK; fixed to preserve alpha + regression test.
+8. **Docs** — Spec 33 → v1.0.0 (built); D318 decision; state.md + parking (`P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` → PARTIAL); 2 lessons captured.
 
 ## Current State
-- **Branch:** `main` at `e77eec79` (pushed: 331f9523 parity, b2c2db29 pill, ed772825 Task-2 parking, 5f2ec850 handoff, 2f4cd443 Spec 33 v0.1, e77eec79 Spec 33 v0.2). D-ceiling **D317**.
-- **Tests:** parity smoke test 11/11. Converter suite NOT re-run (unaffected — no converter/walker code touched this session; changes = parity JS + option-picker CSS + docs).
-- **Build:** `npm run build` green (prebuild gates passed); deployed to sandybrown; caches cleared (OPcache web-pool + LiteSpeed + CDN).
-- **Live:** sandybrown page 8 — pill fix landed (`?ver=0.1.10`); parity tool reports 88% raw / TAG 79% / content 100%.
-- **DB:** unchanged this session (Task 2 seeded nothing).
+- **Branch:** `main` at `e0a73b04` (pushed).
+- **Tests:** extractor 16/16 pass; converter freeze/import-ban unit tests green; full converter suite NOT re-run (no converter code touched — extractor is decoupled).
+- **Build:** n/a this session (Python/data/docs only — no `npm run build` needed; no block CSS/JS changed).
+- **Uncommitted changes:** the handoff docs being written now (state.md, handoff.md, next-session-prompt.md, parking.md) — committed at Gate 2.
+- **Live:** sandybrown page 8 driven by the generated snapshot; D303 dead; caches cleared.
 
 ## Known Issues / Blockers
-- None blocking. The parity tool's raw % is intentionally page-agnostic — it pairs with Bean's eye, never closes alone (FR-20-7 / R-31-13).
+- **Transitional component CSS in the Mama's snapshot** — the hand-authored `styles.css` (buttons/hero-CTA/focus-ring) is carried forward in `sites/mamas-munches/theme-snapshot.json` to avoid regression, but the extractor emits global tokens/base only; this CSS should migrate to theme/block CSS (Phase 6).
+- **Full pipeline reclone NOT run** — the D303 proof holds on the deployed snapshot + existing page (theme-level inheritance + buttonPresets driving live button colour). The FR-33-12 ordering gate + a full reclone are Phase 5.
+- Dashboard down (WinError 10061) — 2 lessons marked `pending_upload`; POST to `/api/learning` when up.
 
 ## Next Priorities (in order)
-1. **BUILD Spec 33 v0.2 — the draft global-styles extractor (Part 1).** The spec is build-ready (council-gated). Build the complete-spine, provenance-tiered extractor; PROVE on Mama's only (D303 gone: brand quote 16px, heading lh 1.2). Full orchestration in next-session-prompt.md.
-2. **(then) Part 2 — header/footer clone** (Spec 17), once Part 1 is proven. Part 1 reserved the `settings.custom.header/footer` namespace for it (FR-33-13).
-3. **(smaller, parallel) Block-quality** — `P-DEAD-NULL-ROLE-CONTROLS` (wire-or-remove 7 dead controls) + `P-PATTERNS-USE-CORE-BLOCKS`.
+1. **Phase 5 — FR-33-12 orchestrator fail-closed freshness gate** (extractor must run + validate before ANY block clone; insert in `sgs-clone-orchestrator.py` after Stage-0 theme load ~line 2373, before conversion ~line 2416; reuse the `(client_slug, hash(css))` pattern from `styling_helpers.py:276`, persisted) + `cloning-pipeline-flow.md`/`spec-31 §3.A`/`../CLAUDE.md` doc updates.
+2. **Phase 6 — FR-33-5 Pass B advisory** (derived tokens `_source:derived`+confidence, never auto-live; nothing-usable→baseline+skip; parser-fail→HALT) + FR-33-6 dark-theme/preview-shell safety + FR-33-13 header/footer namespace reserve + re-point `P-DRAFT-CSSVAR-*` at `build_draft_root_token_map()`.
+3. **Migrate the transitional component `styles.css`** out of the Mama's snapshot into theme/block CSS, then re-verify no regression.
+4. **(later)** Roll out to the other 5 client snapshots (each behind its own reclone + parity, FR-33-11); then Part 2 = header/footer clone (Spec 17).
 
 ## Files Modified
 | File | What changed |
 |---|---|
-| plugins/sgs-blocks/scripts/parity/computed-parity.js | Rebuilt to Spec 20 v1.1.0 (visible-fidelity, tag/class/lazy dims, predicate-gated sub_visible) |
-| plugins/sgs-blocks/scripts/parity/fixtures/ (11 new files) | 5 fixture pairs + smoke-test.js (regression guards) |
-| plugins/sgs-blocks/src/blocks/option-picker/{style,editor}.css + block.json | In-flow tick + gap (D316); version 0.1.9→0.1.10 (cache-bust) |
-| .claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md | last_verified / status_history — tool BUILT + validated |
-| .claude/decisions.md | D315 (parity build) + D316 (pill fix + Task-2 finding) |
-| .claude/parking.md | P-DEAD-NULL-ROLE-CONTROLS |
-| reports/visual-diff/option-picker-2026-07-12.md (+2 PNGs, gitignored) | STOP-67 visual-diff report for the pill fix |
-| .claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md | NEW — Spec 33 v0.1→v0.2 (draft global-styles extractor, Part 1; council-gated, build-ready) |
-| .claude/decisions.md | + D317 (Spec 33 design + council + v0.2) |
+| plugins/sgs-blocks/scripts/theme-extractor/ (9 new modules + tests/ + expected/) | NEW — the extractor package |
+| plugins/sgs-blocks/scripts/push-theme-snapshot.py | `--backup`/`--rollback`/drift-warn (FR-33-11) |
+| sites/mamas-munches/theme-snapshot.json | deployed: generated globals + carried-forward component CSS |
+| sites/mamas-munches/theme-snapshot.generated.json, theme-extract-trace.json | NEW — pure extractor output + provenance trace |
+| .claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md | → v1.0.0 (built), FRs shipped, last_verified |
+| .claude/decisions.md | D318 |
+| .claude/state.md, parking.md | D318 summary; P-DRAFT-TOKEN-EXTRACTION → PARTIAL |
+| .claude/plans/go-parallel-blum.md | NEW — the D318 build plan (approved) |
 
 ## Notes for Next Session
-- **The parity tool is now the trustworthy instrument — USE it, don't hand-roll.** Its raw % is honest-but-page-agnostic; to judge in-contract fidelity, read its full mismatch list + apply dispositions (or `--exclude` known out-of-contract text), then Bean's eye closes it (FR-20-7).
-- **New lesson:** sub-visible parity buckets need an invisibility PREDICATE, not a label exclude (`feedback_sub_visible_parity_buckets_need_invisibility_predicate`).
-- **The dead-control gate has a blind spot** — it treats `$attributes['x']` read-into-a-CSS-var as "consumed" even when the var is never used in CSS. That's how the 7 P-DEAD-NULL-ROLE-CONTROLS attrs pass it. Consider extending it to follow attr→var→CSS.
+- **The extractor is DECOUPLED from the converter** — it lives outside `converter/`, adds no converter dependency, and touched no converter code. The `converter/tests/test_import_ban.py` is scoped to `converter/` only, so `tinycss2`/`colormath` are fine in the extractor.
+- **The generated snapshot is a FULL baseline-overlaid theme.json** (extract.py deep-copies `theme/sgs-theme/theme.json`) — because `push-theme-snapshot` SCPs it AS the server theme.json (full replacement). Never deploy a partial or a generated-onto-partial merge (strips baseline keys).
+- **Outcome (Gate 3.5):** OUTCOME ACHIEVED for the checkpoint Bean chose (D303-dead-live + committed). CODE SHIPPED, OUTCOME NOT YET HIT for the FULL Spec 33 scope — FR-33-5/6/12/13 + the component-CSS migration + other-5-client rollout are named Phase 5-6 stages, not "out of scope".
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (orchestration plan + carried-forward STOP catalogue + reading gate).
+See `.claude/next-session-prompt.md` (Phase 5-6 orchestration + carried-forward STOP catalogue + reading gate).
