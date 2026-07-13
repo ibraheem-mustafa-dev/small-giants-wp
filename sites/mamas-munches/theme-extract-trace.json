@@ -1,23 +1,5 @@
 [
   {
-    "kind": "gap",
-    "reason": "dead :root token (declared, zero resting usage)",
-    "name": "accent-dark",
-    "value": "#7A6500"
-  },
-  {
-    "kind": "gap",
-    "reason": "dead :root token (declared, zero resting usage)",
-    "name": "cookie-brown",
-    "value": "#8B6F4E"
-  },
-  {
-    "kind": "gap",
-    "reason": "dead :root token (declared, zero resting usage)",
-    "name": "success",
-    "value": "#2E7D4F"
-  },
-  {
     "kind": "token",
     "slug": "accent",
     "_source": "declared",
@@ -31,6 +13,18 @@
   },
   {
     "kind": "token",
+    "slug": "accent-dark",
+    "_source": "declared",
+    "role": "custom",
+    "confidence": 0.0,
+    "value": "#7a6500",
+    "reason": "raw draft-token slug (usage role custom conf 0.00, no baseline match)",
+    "usage": "no confident usage-context match",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
     "slug": "border-subtle",
     "_source": "declared",
     "role": "border-subtle",
@@ -38,6 +32,18 @@
     "value": "#e8d5c0",
     "reason": "name-tiebreak 'border'→border-subtle (usage role border-subtle conf 0.70)",
     "usage": "border-color on interactive-selector (.sgs-button--ghost)",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
+    "slug": "cookie-brown",
+    "_source": "declared",
+    "role": "custom",
+    "confidence": 0.0,
+    "value": "#8b6f4e",
+    "reason": "raw draft-token slug (usage role custom conf 0.00, no baseline match)",
+    "usage": "no confident usage-context match",
     "aliases": "",
     "delta_e_snap": 0.0
   },
@@ -67,6 +73,18 @@
   },
   {
     "kind": "token",
+    "slug": "success",
+    "_source": "declared",
+    "role": "custom",
+    "confidence": 0.0,
+    "value": "#2e7d4f",
+    "reason": "name-tiebreak 'success'→success (usage role custom conf 0.00)",
+    "usage": "no confident usage-context match",
+    "aliases": "",
+    "delta_e_snap": 0.0
+  },
+  {
+    "kind": "token",
     "slug": "surface-alt",
     "_source": "declared",
     "role": "surface-alt",
@@ -91,12 +109,12 @@
   },
   {
     "kind": "token",
-    "slug": "custom-surface-pink",
+    "slug": "surface-pink",
     "_source": "declared",
     "role": "surface-alt",
     "confidence": 0.7,
     "value": "#f5c2c8",
-    "reason": "custom (usage role surface-alt conf 0.70, no free slug)",
+    "reason": "raw draft-token slug (usage role surface-alt conf 0.70, no baseline match)",
     "usage": "background on content-selector (.sgs-hero)",
     "aliases": "",
     "delta_e_snap": 0.0
@@ -191,5 +209,9 @@
     "_source": "declared",
     "reason": "container max-width 1280px",
     "value": "1280px"
+  },
+  {
+    "kind": "merge",
+    "reason": "additive merge onto existing snapshot: 8 extra palette slug(s) preserved + component css/blocks/patterns carried forward"
   }
 ]

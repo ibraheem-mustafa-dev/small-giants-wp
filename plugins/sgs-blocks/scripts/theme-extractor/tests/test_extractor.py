@@ -85,6 +85,41 @@ def test_primary_is_the_coral_button_background():
     assert by["surface"] == "#fbf3dc"
 
 
+def test_client_colour_keeps_raw_token_slug_not_custom():
+    # Regression guard (D318 pink): a client colour with no baseline-slug match keeps its OWN draft
+    # token name as the slug (surface-pink), NEVER `custom-surface-pink` and NEVER dropped — else
+    # every already-cloned block referencing var(--wp--preset--color--surface-pink) breaks.
+    snap = _snapshot()
+    slugs = [e["slug"] for e in snap["settings"]["color"]["palette"]]
+    assert "surface-pink" in slugs
+    assert "custom-surface-pink" not in slugs
+    # every declared solid :root colour is emitted, not dropped as "dead"
+    for s in ("success", "cookie-brown", "accent-dark"):
+        assert s in slugs, f"{s} declared in :root but dropped from palette"
+
+
+def test_additive_merge_preserves_existing_slugs():
+    # `merge_onto` must PRESERVE existing slugs the draft can't provide (warm-axis / aliases) while
+    # the generated globals/base win — the non-destructive deploy (FR-33-11).
+    import extract
+    trace = []
+    snap = {"settings": {"color": {"palette": [{"slug": "surface-pink", "color": "#f5c2c8"},
+                                                {"slug": "primary", "color": "#e68a95"}]}},
+            "styles": {"typography": {"fontSize": "16px"}}}
+    existing = {"settings": {"color": {"palette": [{"slug": "surface-pink", "color": "#OLD"},
+                                                   {"slug": "surface-peach", "color": "#fac47e"},
+                                                   {"slug": "footer-bg", "color": "#3a2e26"}]},
+                             "custom": {"sgs": {"headerPattern": "x"}}},
+                "styles": {"css": ".focus{outline:1px}"}}
+    out = extract.merge_onto(snap, existing, trace)
+    slugs = {e["slug"]: e["color"] for e in out["settings"]["color"]["palette"]}
+    assert slugs["surface-pink"] == "#f5c2c8"   # generated wins on a shared slug
+    assert slugs["surface-peach"] == "#fac47e"  # existing extra preserved
+    assert slugs["footer-bg"] == "#3a2e26"      # existing extra preserved
+    assert out["styles"]["css"] == ".focus{outline:1px}"  # component CSS carried forward
+    assert out["settings"]["custom"]["sgs"]["headerPattern"] == "x"
+
+
 def test_role_by_context_success():
     ev = [{"propfam": "background", "role_ctx": "success", "property": "background",
            "selector": ".badge.success", "colour": parse_colour("#2e7d4f")}]

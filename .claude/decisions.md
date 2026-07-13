@@ -6,7 +6,15 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-13 (LATEST) — D318: Spec 33 Part 1 BUILT — the draft global-styles extractor; D303 killed live on Mama's
+## 2026-07-13 (LATEST) — D319: extractor palette made ADDITIVE — fixes the D318 pink regression (Bean-caught live)
+
+**D319 — the extractor palette is now additive by construction; the D318 palette-rename regression is fixed.** Branch `main`. Bean caught it live: after the D318 deploy, sections with `surface-pink` background (hero band, trust bar, gift section) + the gift-card labels went CREAM.
+
+- **Cause (proven on the live DOM):** the D318 palette generator renamed `surface-pink`→`custom-surface-pink` (my `custom-` prefix for any non-baseline-slug colour) AND dropped declared tokens it saw no resting usage for (`success`/`cookie-brown`/`accent-dark`) AND its generated palette was a SUBSET missing hand-added colours the draft can't provide (`surface-peach`/warm-axis/`footer-bg`/`client-*` aliases). The already-cloned blocks reference `var(--wp--preset--color--surface-pink)` (baked into their markup) → now UNDEFINED → transparent → cream. Live probe: `--…--surface-pink` = `rgba(0,0,0,0)`, my `custom-surface-pink` defined but unreferenced. **This VIOLATED my own FR-33-11** ("NO snapshot-only push of a regenerated palette to a client whose pages aren't re-cloned in the same change").
+- **Fix (Bean-directed "add the customs, don't ruin the palette; reclone fixes the new setup"):** (1) `palette.py` — a client colour keeps its OWN draft-token name as the slug (`surface-pink`, never `custom-`/dropped); EVERY declared solid `:root` colour is emitted (usage only informs the ROLE, never whether to emit). (2) `extract.py --merge-onto <existing>` — ADDITIVELY merges the generated globals/base onto an existing client snapshot: generated wins on shared slugs (carries the drift fix), but every existing slug the draft can't provide is PRESERVED + component `styles.css`/pattern refs carried forward. Non-destructive by construction.
+- **LANDED live (sandybrown page 8):** all pink restored (hero/trust/gift/labels = `rgb(245,194,200)`); surface-pink + surface-peach + all 21 slugs defined; base 16px; h2 lh 1.2; primary coral, secondary transparent; 0 console errors. 18 tests (2 new guards: raw-name-not-custom + additive-merge-preserves-extras). **Architectural rule:** a regenerated palette is NEVER a straight replace on an already-cloned site — it is additive + gated by a reclone (FR-33-11/12). Lesson `feedback_extractor_palette_must_be_additive_not_destructive_replace`.
+
+## 2026-07-13 — D318: Spec 33 Part 1 BUILT — the draft global-styles extractor; D303 killed live on Mama's
 
 **D318 — the universal draft→theme global-styles/token extractor is BUILT, tested, and proven live on Mama's; D303 is dead by construction.** Branch `main` (D-ceiling D317→D318). Executed Phases 1-4 of `.claude/plans/go-parallel-blum.md` (Bean-chosen checkpoint: drive to D303-dead-live, then commit).
 

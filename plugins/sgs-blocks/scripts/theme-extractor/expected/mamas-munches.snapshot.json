@@ -11,15 +11,21 @@
           "_source": "declared"
         },
         {
+          "slug": "accent-dark",
+          "color": "#7a6500",
+          "name": "Accent Dark",
+          "_source": "declared"
+        },
+        {
           "slug": "border-subtle",
           "color": "#e8d5c0",
           "name": "Border Subtle",
           "_source": "declared"
         },
         {
-          "slug": "custom-surface-pink",
-          "color": "#f5c2c8",
-          "name": "Surface Pink",
+          "slug": "cookie-brown",
+          "color": "#8b6f4e",
+          "name": "Cookie Brown",
           "_source": "declared"
         },
         {
@@ -35,6 +41,12 @@
           "_source": "declared"
         },
         {
+          "slug": "success",
+          "color": "#2e7d4f",
+          "name": "Success",
+          "_source": "declared"
+        },
+        {
           "slug": "surface",
           "color": "#fbf3dc",
           "name": "Surface",
@@ -44,6 +56,12 @@
           "slug": "surface-alt",
           "color": "#fff9f0",
           "name": "Surface Alt",
+          "_source": "declared"
+        },
+        {
+          "slug": "surface-pink",
+          "color": "#f5c2c8",
+          "name": "Surface Pink",
           "_source": "declared"
         },
         {

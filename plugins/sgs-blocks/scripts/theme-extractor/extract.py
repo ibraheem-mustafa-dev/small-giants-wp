@@ -136,6 +136,33 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     return snap
 
 
+def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
+    """ADDITIVELY merge the generated ``snap`` onto an EXISTING client snapshot (FR-33-11 non-destruct).
+
+    The generated globals/base/palette WIN (they carry the drift fix); but every EXISTING slug the
+    generated palette does NOT cover is PRESERVED (warm-axis / aliases / colours the draft can't
+    provide), as is the client's hand-authored component CSS + pattern refs. This is what makes a
+    deploy to an already-cloned site non-breaking (the D318 pink regression = a destructive replace).
+    """
+    gen_slugs = {e.get("slug") for e in snap.get("settings", {}).get("color", {}).get("palette", [])}
+    ex_pal = existing.get("settings", {}).get("color", {}).get("palette", []) or []
+    added = 0
+    for e in ex_pal:
+        if e.get("slug") and e.get("slug") not in gen_slugs:
+            snap.setdefault("settings", {}).setdefault("color", {}).setdefault("palette", []).append(e)
+            added += 1
+    ex_styles, ex_custom = existing.get("styles", {}), existing.get("settings", {}).get("custom", {})
+    for key in ("css", "blocks"):
+        if ex_styles.get(key) and not snap.get("styles", {}).get(key):
+            snap.setdefault("styles", {})[key] = ex_styles[key]
+    for key in ("sgs", "maxWidth"):
+        if key in ex_custom:
+            snap.setdefault("settings", {}).setdefault("custom", {})[key] = ex_custom[key]
+    trace.append({"kind": "merge", "reason": f"additive merge onto existing snapshot: {added} extra "
+                  f"palette slug(s) preserved + component css/blocks/patterns carried forward"})
+    return snap
+
+
 def _hex(v: str):
     from colour import parse_colour
     c = parse_colour(v)
@@ -156,6 +183,9 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=None)
     ap.add_argument("--trace", default=None)
     ap.add_argument("--repo-root", default=None)
+    ap.add_argument("--merge-onto", default=None,
+                    help="path to an EXISTING client snapshot — additively preserve its extra palette "
+                         "slugs + component CSS (non-destructive deploy to an already-cloned site)")
     args = ap.parse_args(argv)
 
     repo = _repo_root(args.repo_root)
@@ -173,6 +203,11 @@ def main(argv=None) -> int:
 
     trace: list = []
     snap = build_snapshot(args.client, css, facts, html, baseline, trace)
+
+    if args.merge_onto:
+        existing_path = pathlib.Path(args.merge_onto)
+        if existing_path.is_file():
+            snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace)
 
     ok, errors = validate_theme_json(snap)
     if not ok:

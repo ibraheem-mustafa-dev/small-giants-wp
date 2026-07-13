@@ -103,7 +103,11 @@ def build_palette(root_tokens: dict, base_rules: list, facts: dict, trace: list)
                     {"selector": sel, "role_ctx": selector_role(sel), "propfam": _prop_family(prop),
                      "property": prop, "name": n, "colour": parse_colour(root_tokens[n])})
 
-    # Classify each SOLID token; translucent + dead → trace/gap.
+    # Classify each SOLID token. EVERY declared :root colour is emitted (a named brand token is the
+    # client's intentional palette — dropping it renames/breaks any block/pattern that references it
+    # by slug, the D318 pink-regression). Only TRANSLUCENT one-offs → trace. A token with no resting
+    # colour-usage still emits (role 'custom' → raw-name slug); "usage" only informs the ROLE, never
+    # whether to emit.
     solid = []          # (name, Colour, first_offset)
     offset = 0
     for name in sorted(root_tokens):
@@ -112,10 +116,6 @@ def build_palette(root_tokens: dict, base_rules: list, facts: dict, trace: list)
             continue
         if col.alpha < 0.999:
             trace.append({"kind": "gap", "reason": "translucent token → trace, not palette (decorative)",
-                          "name": name, "value": root_tokens[name]})
-            continue
-        if not usage_by_token[name]:
-            trace.append({"kind": "gap", "reason": "dead :root token (declared, zero resting usage)",
                           "name": name, "value": root_tokens[name]})
             continue
         solid.append((name, col, offset))
@@ -156,8 +156,11 @@ def build_palette(root_tokens: dict, base_rules: list, facts: dict, trace: list)
                 a["slug_reason"] = f"name-tiebreak '{n}'→{cand} (usage role {a['role']} conf {a['conf']:.2f})"
                 break
         if slug is None:
-            slug = f"custom-{a['primary_name']}"
-            a["slug_reason"] = f"custom (usage role {a['role']} conf {a['conf']:.2f}, no free slug)"
+            # Keep the client colour's OWN draft-token name as the slug (NEVER a custom- prefix or a
+            # dropped entry) so blocks that reference it by name resolve — the D318 pink regression
+            # was `surface-pink` → `custom-surface-pink` breaking every block using --…--surface-pink.
+            slug = a["primary_name"]
+            a["slug_reason"] = f"raw draft-token slug (usage role {a['role']} conf {a['conf']:.2f}, no baseline match)"
         slug_of[id(a["cluster"])] = slug
         slug_used.add(slug)
 
