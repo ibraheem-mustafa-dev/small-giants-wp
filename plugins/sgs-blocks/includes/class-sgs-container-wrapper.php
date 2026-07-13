@@ -121,17 +121,37 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$is_layout  = 'layout' === $kind;
 			// content kind = only maxWidth/align/contentWidth/padding; used by content-level composites.
 
+			// FR-S9-6 opt-in: the §S9 header/footer/nav blocks store responsive
+			// properties as the {desktop,tablet,mobile} object model and pass this
+			// flag so sgs_emit_responsive_css() (called below) owns their responsive
+			// CSS. When set, the legacy flat-scalar responsive paths are neutralised
+			// (the is_array guards below + the ! $object_model gates further down).
+			// Flag ABSENT (every other block) → this feature is inert and the scalar
+			// path is byte-identical. This never reorders/mutates $attributes, so the
+			// uid md5 is untouched (STOP-NO-KSORT).
+			$object_model = ( ( $opts['responsive_model'] ?? '' ) === 'object' );
+
 			// ----------------------------------------------------------------
 			// Extract attributes (mirrors container/render.php exactly).
 			// ----------------------------------------------------------------
+			// is_array guards: an object-model value here is treated as "not set"
+			// (its own default) so the legacy scalar path can't stringify an array.
+			// For a flat scalar (every existing block) is_array()===false → the value
+			// passes through unchanged → byte-identical. Columns keep their NUMERIC
+			// defaults (2/2/1) — absint('') would render repeat(0,1fr)/sgs-cols-0.
 			$layout               = $attributes['layout'] ?? '';
 			$columns              = $attributes['columns'] ?? 2;
+			$columns              = is_array( $columns ) ? 2 : $columns;
 			$columns_mobile       = $attributes['columnsMobile'] ?? 1;
+			$columns_mobile       = is_array( $columns_mobile ) ? 1 : $columns_mobile;
 			$columns_tablet       = $attributes['columnsTablet'] ?? 2;
+			$columns_tablet       = is_array( $columns_tablet ) ? 2 : $columns_tablet;
 			$grid_template        = $attributes['gridTemplateColumns'] ?? '';
+			$grid_template        = is_array( $grid_template ) ? '' : $grid_template;
 			$grid_template_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
 			$grid_template_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
 			$gap                  = $attributes['gap'] ?? '';
+			$gap                  = is_array( $gap ) ? '' : $gap;
 			$gap_tablet           = $attributes['gapTablet'] ?? '';
 			$gap_mobile           = $attributes['gapMobile'] ?? '';
 
@@ -192,8 +212,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			$shadow    = $attributes['shadow'] ?? '';
 			$max_width = $attributes['maxWidth'] ?? '';
+			$max_width = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
 			$content_width     = $attributes['contentWidth'] ?? '';
+			$content_width     = is_array( $content_width ) ? '' : $content_width;
 			$min_height        = $attributes['minHeight'] ?? '';
 			$min_height_tablet = $attributes['minHeightTablet'] ?? '';
 			$min_height_mobile = $attributes['minHeightMobile'] ?? '';
@@ -460,7 +482,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				'' !== $band_background
 			);
 
-			$grid_on_inner    = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
+			$grid_on_inner = ( ( 'grid' === $layout || 'flex' === $layout ) && $has_band_props && null === $opt_wrap_inner );
+			// Object model (FR-S9-6): force the two-layer structure so the flex/grid
+			// container (where gap applies) is the __inner — a DESCENDANT of the
+			// container-type outer — so @container queries can respond to the block's
+			// own width (an element cannot size-query itself). Paired with the $do_wrap
+			// force further down so the __inner element actually renders.
+			if ( $object_model && ( 'grid' === $layout || 'flex' === $layout ) ) {
+				$grid_on_inner = true;
+			}
 			$inner_grid_decls = array();
 			// Base grid/flex REAL properties (display, template, align, wrap, justify,
 			// grid-template-rows, grid-auto-rows) — no-inline deferral (Spec 32, D293).
@@ -530,7 +560,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gtc_base = '' !== trim( (string) $grid_template )
 						? sgs_sanitize_grid_template( $grid_template )
 						: 'repeat(' . absint( $columns ) . ',1fr)';
-					if ( ! ( $grid_template_tablet || $grid_template_mobile ) ) {
+					// Object model owns grid-template-columns via sgs_emit_responsive_css();
+					// suppress the legacy columns/base fallback under $object_model so the
+					// two don't both emit (the columns default would win as repeat(2,1fr)).
+					if ( ! ( $grid_template_tablet || $grid_template_mobile ) && ! $object_model ) {
 						$gd[] = 'grid-template-columns:' . $gtc_base;
 					}
 					// D288: only impose align-items when a value is set — a blank
@@ -741,14 +774,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// the desktop guard to all tiers — same principle as D228 ("hardcoded/default
 			// shorthands that override a faithfully-transferred template are cheats").
 			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
+				// Object model owns grid columns via sgs_emit_responsive_css(); suppress
+				// the legacy sgs-cols-* shorthand under $object_model (else the columns
+				// default 2/2/1 would emit sgs-cols-2 etc. and fight the object grid).
 				$has_base_template = '' !== trim( (string) $grid_template );
-				if ( ! $has_base_template ) {
+				if ( ! $has_base_template && ! $object_model ) {
 					$classes[] = 'sgs-cols-' . absint( $columns );
 				}
-				if ( ! $has_base_template && $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
+				if ( ! $has_base_template && ! $object_model && $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
 					$classes[] = 'sgs-cols-tablet-' . absint( $columns_tablet );
 				}
-				if ( ! $has_base_template && $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
+				if ( ! $has_base_template && ! $object_model && $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 					$classes[] = 'sgs-cols-mobile-' . absint( $columns_mobile );
 				}
 			}
@@ -955,6 +991,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_base_band
 				|| $has_base_grid
 				|| $has_base_outer
+				|| $object_model
 				|| '' !== $overlay_decls
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
@@ -1450,6 +1487,74 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$svg_fg_html = ( $has_bg_svg && 'foreground' === $bg_svg_position ) ? $svg_html : '';
 
 			// ----------------------------------------------------------------
+			// FR-S9-6 object-model responsive CSS (opt-in, wrapper-owned).
+			// Emitted via the shared sgs_emit_responsive_css() so the composite-mirror
+			// + auto-propagation hold (R-31-9). Inner props (gap / grid-template-columns)
+			// route to $grid_sel — the __inner, a DESCENDANT of the container-type outer
+			// — with @container + @media, so the block adapts to its OWN width when
+			// nested narrow. Outer box props (max-width / padding / margin) route to
+			// .$uid with @media (an element can't size-@container itself). contentWidth
+			// → band max-width on the __inner. Only object-shaped attrs contribute; a
+			// flat value never reaches here (the block passes objects only under the flag).
+			if ( $object_model && $uid ) {
+				$obj_outer_sel = '.' . $uid;
+
+				// container-type on the OUTER element establishes the query container the
+				// __inner reads (FR-S9-6 "adapts to its own width when reused narrow").
+				$responsive_css .= $obj_outer_sel . '{container-type:inline-size}';
+
+				$obj_inner_props = array();
+				if ( isset( $attributes['gap'] ) && is_array( $attributes['gap'] ) ) {
+					$obj_inner_props[] = array(
+						'value' => $attributes['gap'],
+						'css'   => 'gap',
+					);
+				}
+				if ( isset( $attributes['gridTemplateColumns'] ) && is_array( $attributes['gridTemplateColumns'] ) ) {
+					$obj_inner_props[] = array(
+						'value' => $attributes['gridTemplateColumns'],
+						'css'   => 'grid-template-columns',
+					);
+				}
+				if ( isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
+					$obj_inner_props[] = array(
+						'value' => $attributes['contentWidth'],
+						'css'   => 'max-width',
+					);
+				}
+				if ( $obj_inner_props && '' !== $grid_sel ) {
+					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $obj_inner_props, array( 'container' => true ) );
+				}
+
+				$obj_outer_props = array();
+				if ( isset( $attributes['maxWidth'] ) && is_array( $attributes['maxWidth'] ) ) {
+					$obj_outer_props[] = array(
+						'value' => $attributes['maxWidth'],
+						'css'   => 'max-width',
+					);
+				}
+				if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
+					$obj_outer_props[] = array(
+						'value'        => $attributes['padding'],
+						'css'          => 'padding',
+						'box'          => true,
+						'unit_default' => 'px',
+					);
+				}
+				if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
+					$obj_outer_props[] = array(
+						'value'        => $attributes['margin'],
+						'css'          => 'margin',
+						'box'          => true,
+						'unit_default' => 'px',
+					);
+				}
+				if ( $obj_outer_props ) {
+					$responsive_css .= sgs_emit_responsive_css( $obj_outer_sel, $obj_outer_props, array( 'container' => false ) );
+				}
+			}
+
+			// ----------------------------------------------------------------
 			// Responsive <style> tag — prepended to output.
 			// ----------------------------------------------------------------
 			$style_tag = '';
@@ -1478,6 +1583,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// full-bleed grids unchanged). The wrap_inner caller override is byte-
 			// identical (hero-split / product-card still depend on it).
 			$do_wrap = null !== $opt_wrap_inner ? (bool) $opt_wrap_inner : $has_band_props;
+			// Object model (FR-S9-6): the __inner must render so the forced
+			// $grid_on_inner target (.uid>.sgs-container__inner) exists for the
+			// flex/grid + gap rules and the @container queries.
+			if ( $object_model && ( 'grid' === $layout || 'flex' === $layout ) ) {
+				$do_wrap = true;
+			}
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an
