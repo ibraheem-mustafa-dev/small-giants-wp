@@ -51,3 +51,15 @@ Live Playwright on the real homepage, `document.documentElement.scrollWidth <= i
 - DB: `block_composition` rows present for both blocks with correct `container_kind` (section/layout) + `composition_role` (section-root/content-block); roster validation PASS.
 
 ## Verdict: **PASS** — the live WCAG header-overflow emergency is fixed and verified 320→1440; no-inline + content-parity + zero-output all hold. Two cosmetic deltas deferred to named stages.
+
+---
+
+## v2 addendum (2026-07-13, same session — SGS-first + draft-faithful)
+
+Post-Bean-feedback iteration (still `verdict: PASS` on the BLOCKS' own acceptance; header composition has ONE proven open item, below):
+- **SGS-first swaps:** `sgs/cart` (was woocommerce/mini-cart), `sgs/responsive-logo` (was core/site-logo; falls back to site `custom_logo`). Cart + burger grouped into `core/group.sgs-header-icons` → the draft's 3-child `logo | nav | icons` structure.
+- **Designed collapse (not a wrap):** nav `display:none` <768 (lives in the drawer), inline from 768+; burger only <768; cart + logo always. Verified live at 375: nav hidden, logo+cart+burger visible, `scrollWidth ≤ innerWidth`, 0 overflow. Matches the mamas-munches draft `.mm-header`.
+- **`overlayMenu:"never"`** on the nav (no double-hamburger).
+
+### OPEN (deferred to P2 `sgs/adaptive-nav` — PROVEN cause, not a block defect)
+WooCommerce auto-injects `woocommerce/mini-cart` + `woocommerce/customer-account` **after `core/navigation`** via the WP Block Hooks API (WC `MiniCart.php`/`CustomerAccount.php` anchor `core/navigation`; `hooked_block_types` priority 9). These render as a stray second cart + account icon in the header. NOT a defect in `sgs/site-header`/`-row` — it's the header using `core/navigation`. Fix = P2 `sgs/adaptive-nav` replaces `core/navigation` (WC has nothing to anchor to). Full detail: `.claude/plans/2026-07-13-header-builder-remaining-work.md`. The header is therefore visually INTERIM until P2.

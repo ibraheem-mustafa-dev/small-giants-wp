@@ -22,7 +22,10 @@ const TEMPLATE = [
 		'sgs/site-header-row',
 		{ rowSlot: 'middle', justifyContent: 'space-between' },
 		[
-			[ 'core/site-logo', { width: 180, shouldSyncIcon: true } ],
+			// Logo (left). SGS per-breakpoint logo block (falls back to the site
+			// custom_logo when no per-breakpoint images set). Draft: logo | nav | icons.
+			[ 'sgs/responsive-logo', { width: 180, linkToHome: true } ],
+			// Primary nav (centre on desktop; hidden <768 → lives in the drawer).
 			[
 				'core/navigation',
 				{
@@ -32,11 +35,22 @@ const TEMPLATE = [
 						typography: { fontWeight: '600' },
 						spacing: { blockGap: 'var:preset|spacing|40' },
 					},
-					layout: { type: 'flex', justifyContent: 'right' },
+					overlayMenu: 'never',
 				},
 			],
-			[ 'sgs/mobile-nav-toggle', {} ],
-			[ 'woocommerce/mini-cart', { hasHiddenPrice: true, cartIcon: 'bag' } ],
+			// Icons cluster (right): cart (always) + burger (only <768). Grouped so the
+			// row has exactly 3 flex children → logo-left / nav-centre / icons-right.
+			[
+				'core/group',
+				{
+					className: 'sgs-header-icons',
+					layout: { type: 'flex', flexWrap: 'nowrap' },
+				},
+				[
+					[ 'sgs/cart', {} ],
+					[ 'sgs/mobile-nav-toggle', {} ],
+				],
+			],
 		],
 	],
 	[ 'sgs/site-header-row', { rowSlot: 'bottom' } ],

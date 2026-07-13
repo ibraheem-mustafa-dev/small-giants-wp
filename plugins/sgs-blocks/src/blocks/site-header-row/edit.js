@@ -9,9 +9,11 @@ import { ResponsiveControl, SpacingControl } from '../../components';
 import { ResponsiveSpacingPanel } from '../container/components/ContainerWrapperControls';
 
 const ALLOWED_BLOCKS = [
+	'sgs/responsive-logo',
 	'core/site-logo',
 	'core/site-title',
 	'core/navigation',
+	'core/group',
 	'core/paragraph',
 	'core/html',
 	'core/social-links',
@@ -20,6 +22,7 @@ const ALLOWED_BLOCKS = [
 	'sgs/button',
 	'sgs/product-search',
 	'sgs/business-info',
+	'sgs/cart',
 	'woocommerce/mini-cart',
 ];
 

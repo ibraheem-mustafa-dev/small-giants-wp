@@ -22,7 +22,9 @@
 }
 
 /* The logo stays legible — never crushed below its natural size. */
+.sgs-site-header-row .wp-block-sgs-responsive-logo,
 .sgs-site-header-row .wp-block-site-logo,
+.sgs-site-header-row .wp-block-sgs-responsive-logo img,
 .sgs-site-header-row .wp-block-site-logo img {
 	flex-shrink: 0;
 }

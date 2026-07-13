@@ -7,7 +7,7 @@
  * Keywords: header, sgs, framework, default, logo, navigation
  * Viewport Width: 1440
  * Inserter: true
- * Description: Minimal default SGS header — logo + primary nav + cart + mobile-nav drawer, built on the never-overflow sgs/site-header block (3 rows, intrinsic reflow).
+ * Description: Minimal default SGS header — logo + primary nav + cart + mobile-nav drawer, built on the never-overflow sgs/site-header block. Nav collapses into the drawer below 768px (designed collapse, not a wrap).
  *
  * @package SGS\Theme
  */
@@ -19,13 +19,17 @@
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
-<!-- wp:site-logo {"width":180,"shouldSyncIcon":true} /-->
+<!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
 
-<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
+<!-- wp:navigation {"textColor":"text","overlayMenu":"never","style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
 
-<!-- wp:sgs/mobile-nav-toggle /-->
+<!-- wp:group {"className":"sgs-header-icons","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group sgs-header-icons">
+	<!-- wp:sgs/cart /-->
 
-<!-- wp:woocommerce/mini-cart {"hasHiddenPrice":true,"iconColorValue":"var(--wp--preset--color--text, #3A2E26)","productCountColorValue":"var(--wp--preset--color--text, #3A2E26)","cartIcon":"bag","style":{"typography":{"fontSize":"var(--wp--preset--font-size--small)"}}} /-->
+	<!-- wp:sgs/mobile-nav-toggle /-->
+</div>
+<!-- /wp:group -->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"rowSlot":"bottom"} -->

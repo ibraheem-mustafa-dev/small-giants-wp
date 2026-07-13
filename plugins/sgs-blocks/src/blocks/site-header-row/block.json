@@ -45,9 +45,11 @@
 		}
 	},
 	"allowedBlocks": [
+		"sgs/responsive-logo",
 		"core/site-logo",
 		"core/site-title",
 		"core/navigation",
+		"core/group",
 		"core/paragraph",
 		"core/html",
 		"core/social-links",
@@ -56,6 +58,7 @@
 		"sgs/button",
 		"sgs/product-search",
 		"sgs/business-info",
+		"sgs/cart",
 		"woocommerce/mini-cart"
 	],
 	"attributes": {
