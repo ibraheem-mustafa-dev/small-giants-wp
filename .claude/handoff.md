@@ -2,58 +2,54 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-13
-session: D318/D319 — Spec 33 Part 1 BUILT (draft global-styles extractor) + D303 killed live; palette made additive (pink regression fixed)
+session: D320-D322 — Spec 33 Part 1 COMPLETE (all 13 FRs): freshness gate + Pass B advisory + dark-theme + namespace + component-CSS migration
 ---
 
-# Session Handoff — 2026-07-13 (D318/D319)
+# Session Handoff — 2026-07-13 (D320/D321/D322)
 
 ## Completed This Session
-0. **D319 — extractor palette made ADDITIVE (Bean-caught pink regression fixed).** After the D318 deploy, `surface-pink` sections (hero/trust-bar/gift) + gift-card labels went CREAM — the palette generator renamed `surface-pink`→`custom-surface-pink`, dropped declared tokens, and was a subset missing hand-added colours → already-cloned blocks' `var(--…--surface-pink)` went undefined. Fix: raw-token-name slugs + emit-all-declared + `extract.py --merge-onto <existing>` (additive, preserves extras + component CSS). LANDED live (all pink restored, 21 slugs, 0 errors); 18 tests. Also archived 3 complete plans. Commit `067d7bbe`.
-1. **BUILT the Spec 33 draft global-styles extractor** — `plugins/sgs-blocks/scripts/theme-extractor/` (9 modules: `measure.js` + `colour/token_map/roles/palette/typography/presets/extract/schema_validate`). Hybrid Node(Playwright)+Python, outside `converter/` so free to use `tinycss2`+`colormath`. Executed Phases 1-4 of `.claude/plans/go-parallel-blum.md`.
-2. **The iron law (FR-33-1/3) — D303 killed by construction.** Emitted value is ALWAYS the COMPUTED value on a rendered node; declared CSS supplies only name/role. Base body = the longest main-content `<p>` (16px); heading line-height = the MODE ratio across non-chrome headings (1.2 — the hero's 1.15 is an outlier excluded by construction; naive "first h1" IS the hero → would re-ship the drift); rem vs real computed root.
-3. **Palette (FR-33-2)** — role by usage-context (`:hover` selectors excluded from identity), two-pass slug assignment (identity roles first, then a logged name-tiebreak): primary=coral #E68A95 (the button bg, not the near-white footer link); ΔE≤1 dedup, alpha a separate axis; translucent + dead `:root` tokens gap-logged.
-4. **Guards** — 16 tests (`theme-extractor/tests`), byte-identical re-run (determinism FR-33-8), frozen `build_draft_root_colour_map` asserted unchanged (golden FR-33-10), theme.json v3 schema-validate (FR-33-7), no converter regression (import-ban scoped to `converter/`; freeze unit test green).
-5. **Deploy safety (FR-33-11)** — `push-theme-snapshot.py` gained default-on `--backup` (persists live disk theme.json + wp_global_styles), one-command `--rollback`, and a Site-Editor drift warning.
-6. **PROVEN LIVE on Mama's sandybrown page 8** (Bean chose full cutover) — deployed the generated snapshot (backup taken; OPcache+LiteSpeed cleared). base 16px/1.6, brand quote 16px, h2/h3 1.2, hero h1 1.15 faithful, buttons faithful; all baseline theme.json keys preserved.
-7. **Two bugs caught via LIVE measurement (STOP-VERIFY-COLOUR), not code review** — (1) an early merge-from-partial would have stripped 136 baseline keys; fixed by merging generated-full + carried-forward component CSS. (2) `presets.py` dropped alpha → the draft's transparent secondary/outline buttons rendered opaque BLACK; fixed to preserve alpha + regression test.
-8. **Docs** — Spec 33 → v1.0.0 (built); D318 decision; state.md + parking (`P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` → PARTIAL); 2 lessons captured.
+1. **Spec 33 Part 1 is COMPLETE — all 13 FRs shipped + live-verified.** The draft global-styles extractor's follow-up set (FR-33-5/6/12/13 + the component-CSS migration) is done. Spec 33 → v1.1.0 COMPLETE. Three commits, all on `main`, pushed.
+2. **FR-33-12 fail-closed freshness gate (D320, `03d98c97`).** `/sgs-clone` now HALTs unless the canonical `theme-snapshot.json` carries an `_sgsExtractor.draft_css_sha256` matching the current draft. New `scripts/shared_utils.py` = single-source `extract_css`/`css_sha256` (no hash drift). A `feature-dev` code review caught a blocker in the first design (freshness tied to the generated file, not the file the converter reads) — fixed by embedding the key IN the canonical snapshot.
+3. **FR-33-5 Pass B advisory + FR-33-6 dark-theme (D321, `f8e8ab1e`).** `derive.py` derives a palette for token-less drafts (usage-context role, not frequency; `advisory:true`, never auto-live; `push-theme-snapshot --include-advisory` gates it). `extract._theme_background` picks the widest content-containing ancestor (dark discarded only on a positive preview-shell signal; `measure.js` now records marker DOM paths — a qc-council forensics rater caught the original had no path data).
+4. **FR-33-13 namespace + component-CSS migration + button hover-transform (D322, `3e03e810`).** Snapshot reserves `settings.custom.header`/`.footer` (+ reconciliation note: Spec 17 uses Customiser/JS-var, so Part 2 decides). The transitional `styles.css` (2273→117 chars) migrated: dead rules (is-style buttons/hero-cta/page-hacks) dropped, focus-visible → theme `utilities.css`, product-card client vars kept. Button now consumes the open-bag `hover-transform` token.
+5. **Deployed + LIVE-VERIFIED clean on sandybrown page 8** — focus-visible `solid` from `utilities.css?ver=1.5.8`; `--sgs-op-sel-text`=#3A2E26; buttons rest `rgb(230,138,149)`/hover `rgb(65,50,43)` unchanged; hover-transform inert `none`; 0 console errors; visual intact 1440+375. LiteSpeed v7.8.1 confirmed active (dev-setup.md corrected).
+6. **Process caught two real errors pre-ship:** the code review (freshness gate wrong file) + the council spec-lawyer (dropping hover-transform violated FR-33-4 open-bag → reversed to the render-side fix).
 
 ## Current State
-- **Branch:** `main` at `067d7bbe` (pushed: e0a73b04 D318 build, a30c8901 D318 handoff, 067d7bbe D319 palette fix).
-- **Tests:** extractor 18/18 pass; converter freeze/import-ban unit tests green; full converter suite NOT re-run (no converter code touched — extractor is decoupled).
-- **Build:** n/a this session (Python/data/docs only — no `npm run build` needed; no block CSS/JS changed).
-- **Uncommitted changes:** the handoff docs being written now (state.md, handoff.md, next-session-prompt.md, parking.md) — committed at Gate 2.
-- **Live:** sandybrown page 8 driven by the generated snapshot; D303 dead; caches cleared.
+- **Branch:** `main` at `3e03e810` (pushed; D320 `03d98c97` → D321 `f8e8ab1e` → D322 `3e03e810`).
+- **Tests:** extractor 26/26 pass (8 new this session); converter/orchestrator suites green; frozen hex-helper golden (FR-33-10) intact; determinism byte-identical. (60 pre-existing failures in `test_two_axis_style_variations.py` are missing style-variation data files, unrelated.)
+- **Build:** plugin built + deployed; theme deployed. `build/` is gitignored (source-only commits).
+- **Uncommitted changes:** only pre-existing session-start dirty files (HTML_Insert.html, reports/inline-styling-audit, lucide-icons.php, package-lock.json, phase4-*.txt, *.db, rr.json) — NOT touched this session.
+- **Live:** sandybrown page 8 driven by the reduced snapshot + migrated theme CSS; caches cleared (OPcache + LiteSpeed + CDN).
 
 ## Known Issues / Blockers
-- **Transitional component CSS in the Mama's snapshot** — the hand-authored `styles.css` (buttons/hero-CTA/focus-ring) is carried forward in `sites/mamas-munches/theme-snapshot.json` to avoid regression, but the extractor emits global tokens/base only; this CSS should migrate to theme/block CSS (Phase 6).
-- **Full pipeline reclone NOT run** — the D303 proof holds on the deployed snapshot + existing page (theme-level inheritance + buttonPresets driving live button colour). The FR-33-12 ordering gate + a full reclone are Phase 5.
-- Dashboard down (WinError 10061) — 2 lessons marked `pending_upload`; POST to `/api/learning` when up.
+- None block the next session. The FR-33-12 gate is live — any `/sgs-clone` run now requires a fresh extractor snapshot for the client (or `--skip-freshness-gate` for extract-only/diagnostic runs).
 
 ## Next Priorities (in order)
-1. **Phase 5 — FR-33-12 orchestrator fail-closed freshness gate** (extractor must run + validate before ANY block clone; insert in `sgs-clone-orchestrator.py` after Stage-0 theme load ~line 2373, before conversion ~line 2416; reuse the `(client_slug, hash(css))` pattern from `styling_helpers.py:276`, persisted) + `cloning-pipeline-flow.md`/`spec-31 §3.A`/`../CLAUDE.md` doc updates.
-2. **Phase 6 — FR-33-5 Pass B advisory** (derived tokens `_source:derived`+confidence, never auto-live; nothing-usable→baseline+skip; parser-fail→HALT) + FR-33-6 dark-theme/preview-shell safety + FR-33-13 header/footer namespace reserve + re-point `P-DRAFT-CSSVAR-*` at `build_draft_root_token_map()`.
-3. **Migrate the transitional component `styles.css`** out of the Mama's snapshot into theme/block CSS, then re-verify no regression.
-4. **(later)** Roll out to the other 5 client snapshots (each behind its own reclone + parity, FR-33-11); then Part 2 = header/footer clone (Spec 17).
+1. **Roll out the extractor to the other 5 client snapshots** (indus-foods, helping-doctors, + 3) — each behind its OWN reclone + per-client visual/computed-parity (FR-33-11 Mama's-only rule; do NOT snapshot-push without a reclone — that was the D318/D319 pink regression).
+2. **Part 2 — header/footer clone (Spec 17).** The header/footer SETUP pipeline's second half: clone the draft header/footer into SGS template parts. Decide the FR-33-13 tokenise-vs-Customiser question first (Part 1 reserved `settings.custom.header`/`.footer`; Spec 17's built model uses the Customiser + JS-measured height).
+3. **Optional block-quality:** wire a client draft with a button hover-transform to prove the D322 hover-transform capability end-to-end (Mama's is colour-invert, so it's currently inert-but-verified).
 
 ## Files Modified
 | File | What changed |
 |---|---|
-| plugins/sgs-blocks/scripts/theme-extractor/ (9 new modules + tests/ + expected/) | NEW — the extractor package |
-| plugins/sgs-blocks/scripts/push-theme-snapshot.py | `--backup`/`--rollback`/drift-warn (FR-33-11) |
-| sites/mamas-munches/theme-snapshot.json | deployed: generated globals + carried-forward component CSS |
-| sites/mamas-munches/theme-snapshot.generated.json, theme-extract-trace.json | NEW — pure extractor output + provenance trace |
-| .claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md | → v1.0.0 (built), FRs shipped, last_verified |
-| .claude/decisions.md | D318 |
-| .claude/state.md, parking.md | D318 summary; P-DRAFT-TOKEN-EXTRACTION → PARTIAL |
-| .claude/plans/go-parallel-blum.md | NEW — the D318 build plan (approved) |
+| plugins/sgs-blocks/scripts/shared_utils.py | NEW — single-source extract_css + css_sha256/draft_css_sha256 |
+| plugins/sgs-blocks/scripts/theme-extractor/{extract.py, derive.py, measure.js} | freshness embed + Pass B + dark-theme + namespace reserve; derive.py NEW |
+| plugins/sgs-blocks/scripts/theme-extractor/tests/test_extractor.py | +8 tests (FR-33-5/6 + advisory strip) |
+| plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py | `_freshness_gate` + `--skip-freshness-gate` |
+| plugins/sgs-blocks/scripts/push-theme-snapshot.py | `strip_advisory` + `--include-advisory` |
+| scripts/qc-correctness-regression.py | passes `--skip-freshness-gate` |
+| plugins/sgs-blocks/src/blocks/button/{style.css, block.json} | hover-transform consumption; version 1.5.0→1.5.1 |
+| theme/sgs-theme/assets/css/utilities.css + style.css | focus-visible migrated in; Version 1.5.7→1.5.8 |
+| sites/mamas-munches/theme-snapshot.json | styles.css reduced to rule 9; header/footer reserved; _sgsExtractor |
+| reports/visual-diff/button-2026-07-13.md | NEW — button visual-diff (PASS) |
+| .claude/{decisions.md, parking.md, dev-setup.md, specs/33-*.md} | D320/321/322; parking re-point; LiteSpeed fix; spec → v1.1.0 |
 
 ## Notes for Next Session
-- **The extractor palette is ADDITIVE (D319)** — client colours keep their raw draft-token-name slug; deploy to an existing site via `extract.py --merge-onto <existing>` (preserves extra slugs + component CSS). NEVER a straight palette replace on an already-cloned site (breaks slug references → the pink regression). A reclone is the correct end-state (Phase 5 / FR-33-12), but was NOT needed to un-break — additive preserved every slug name.
-- **Plans archived (D319)** — `2026-07-04-new-engine-to-parity-delete-converter-v2.md` (+ its execution companion stays as a spec-31 design record), `2026-07-05-css-property-column-design.md`, `2026-07-05-preset-sync-design.md` → `.claude/plans/archive/`. CLAUDE.md pointers updated. A fuller plan-archive sweep (the other July design docs referenced by specs 31/32) was left — they're active-spec design records.
-- **The extractor is DECOUPLED from the converter** — it lives outside `converter/`, adds no converter dependency, and touched no converter code. The `converter/tests/test_import_ban.py` is scoped to `converter/` only, so `tinycss2`/`colormath` are fine in the extractor.
-- **The generated snapshot is a FULL baseline-overlaid theme.json** (extract.py deep-copies `theme/sgs-theme/theme.json`) — because `push-theme-snapshot` SCPs it AS the server theme.json (full replacement). Never deploy a partial or a generated-onto-partial merge (strips baseline keys).
-- **Outcome (Gate 3.5):** OUTCOME ACHIEVED for the checkpoint Bean chose (D303-dead-live + committed). CODE SHIPPED, OUTCOME NOT YET HIT for the FULL Spec 33 scope — FR-33-5/6/12/13 + the component-CSS migration + other-5-client rollout are named Phase 5-6 stages, not "out of scope".
+- **The FR-33-12 gate reads the EMBEDDED `_sgsExtractor` key in `theme-snapshot.json`**, not a sibling file — so the freshness proof is tied to the exact file the converter loads. Regenerating a client snapshot additively (`extract.py --merge-onto <snapshot> --out <snapshot>`) keeps the hash if the draft CSS is unchanged.
+- **Pass B (derive.py) only fires when Pass A is empty** (token-less draft) — Mama's is token-rich so it never fires. Advisory tokens are `advisory:true` + stripped by push unless `--include-advisory`.
+- **The component-CSS migration was mostly dropping DEAD cruft** (live-DOM-confirmed: is-style buttons 0 matches, .sgs-hero__ctas 0 refs, page-29/144 404). Only focus-visible (→theme) + product-card vars (kept) were load-bearing.
+- **LiteSpeed IS active on sandybrown (v7.8.1)** — always `wp litespeed-purge all` after a CSS deploy (dev-setup.md was stale, now corrected).
 
 ## Next Session Prompt
-See `.claude/next-session-prompt.md` (Phase 5-6 orchestration + carried-forward STOP catalogue + reading gate).
+See `.claude/next-session-prompt.md` (other-5-client rollout + Part 2 orchestration + carried-forward STOP catalogue + reading gate).

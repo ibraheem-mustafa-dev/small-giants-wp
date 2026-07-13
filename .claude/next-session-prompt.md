@@ -2,117 +2,112 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 generated: 2026-07-13
-thread: post-D318 — Spec 33 Part 1 BUILT + live-proven. Phase 5 (FR-33-12 ordering gate + docs) then Phase 6 (Pass B advisory + dark-theme + namespace + component-CSS migration).
+thread: post-D322 — Spec 33 Part 1 COMPLETE (13/13 FRs). Next: other-5-client extractor rollout + Part 2 (header/footer clone, Spec 17).
 ---
 
-# NEXT SESSION — Spec 33 Part 1 Phases 5-6 (ordering gate + Pass B + migration)
+# NEXT SESSION — Spec 33 rollout to the other 5 clients + Part 2 (header/footer clone)
 
-You are the SGS cloning-pipeline developer. **D318 BUILT + live-proved Spec 33 Part 1 (the draft global-styles extractor) — D303 is dead on Mama's by construction.** This session finishes Spec 33: **Phase 5** (the orchestrator fail-closed freshness gate + pipeline/spec-31/CLAUDE.md docs) then **Phase 6** (Pass B advisory derivation, dark-theme safety, header/footer namespace, and migrating the transitional component CSS out of the Mama's snapshot). Invoke `/autopilot` first. The build plan is `.claude/plans/go-parallel-blum.md`.
+You are the SGS cloning-pipeline developer. **Spec 33 Part 1 (the draft global-styles extractor) is COMPLETE — all 13 FRs shipped + live-proven on Mama's (D320/D321/D322).** This session rolls the extractor out to the other 5 client snapshots (each behind its OWN reclone — FR-33-11), then begins **Part 2** (the header/footer clone, Spec 17). Invoke `/autopilot` first.
 
-Read `.claude/handoff.md` (D318) + `.claude/CLAUDE.md` for full context.
+Read `.claude/handoff.md` (D320-322) + `.claude/CLAUDE.md` for full context.
 
 ## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. `.claude/handoff.md` (D318) + `.claude/decisions.md` head (D318, D317, D316).
-2. **Spec 33 IN FULL** (`.claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md`) — now v1.0.0 (built). Note the ⛔ iron law, FR-33-5 (Pass B advisory — Phase 6), FR-33-6 (dark-theme — Phase 6), FR-33-12 (bootstrap ordering — Phase 5), FR-33-13 (forward contracts — Phase 6).
-3. **Spec 31 IN FULL** (Bean-locked every session) — §3.A CSS routing + the converter's colour token-snap (`styling_helpers._load_theme_palette_map` → `configure_colour_resolution_from_run`) that reads the snapshot the extractor GENERATES (FR-33-12 ordering, `styling_helpers.py:276` freshness key).
-4. The BUILT extractor: `plugins/sgs-blocks/scripts/theme-extractor/` (extract.py orchestrates; palette/typography/presets are the value builders; measure.js is the computed reader). Run its tests first: `cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests -q --import-mode=importlib` (expect 18 green).
-5. `.claude/parking.md` head — `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` (PARTIAL — the Phase 5-6 remainder), `P-DRAFT-CSSVAR-*` (consume the new `build_draft_root_token_map()` service).
-6. The reuse/not-break pieces: `sgs-clone-orchestrator.py` (Stage-0 theme load ~line 2373, conversion ~line 2416 — where the FR-33-12 gate goes), `push-theme-snapshot.py` (now has --backup/--rollback).
-7. The FROZEN helper `converter/services/styling_helpers.py::build_draft_root_colour_map` (golden-guarded, byte-identical — never widen) + the extractor's `expected/*.snapshot.json` + `mamas-hex-colour-map.json` goldens (your regression net — a Pass B / gate change must keep them + the 18 tests green).
+1. `.claude/handoff.md` (D320-322) + `.claude/decisions.md` head (D322, D321, D320).
+2. **Spec 33 IN FULL** (`.claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md`) — now v1.1.0 COMPLETE. Note FR-33-11 (Mama's-ONLY proof; other clients each need their own reclone + parity — a snapshot-push without a reclone = the D318/D319 pink regression) + FR-33-13 (the header/footer namespace reserved for Part 2 + the reconciliation note).
+3. **Spec 31 IN FULL** (Bean-locked every session) — the block pipeline the reclone drives.
+4. **Spec 17 IN FULL** (`.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md`) before ANY Part 2 work — its BUILT model drives header/footer via the Customiser + inline `wp_head` CSS + a JS-measured `--sgs-header-height`, NOT the `settings.custom.header`/`.footer` namespace Part 1 reserved. The tokenise-vs-Customiser decision is Part 2's first design-gate.
+5. The BUILT extractor: `plugins/sgs-blocks/scripts/theme-extractor/`. Run its tests first: `cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests -q --import-mode=importlib` (expect 26 green).
+6. `.claude/parking.md` head — `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` (now Part-1-complete; residual = other-5 rollout + Part 2), `P-DRAFT-CSSVAR-*` (consume `token_map.build_draft_root_token_map()`).
 
-**First action (single next step):** run `cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests -q --import-mode=importlib` (expect 18 green) to confirm the built extractor is intact, THEN start Task 1 (the FR-33-12 orchestrator freshness gate) with a `/qc-council` on the fix-shape first.
+**First action (single next step):** run `cd plugins/sgs-blocks/scripts && python -m pytest theme-extractor/tests -q --import-mode=importlib` (expect 26 green), THEN pick a client for the first rollout (indus-foods is the most-built) and read its draft + `sites/<client>/CLAUDE.md`.
 
 ## ⛔ ANTI-PATTERN STOPs (carried forward + this session's — NEVER subtract, D101)
-- **STOP-PALETTE-ADDITIVE (NEW, D319)** — a regenerated theme palette deployed to an ALREADY-CLONED site MUST be additive: keep each colour's raw draft-token-name slug (`surface-pink`, never `custom-`/dropped), emit ALL declared tokens, and `extract.py --merge-onto <existing>` (preserve extras + component CSS). A rename/drop/subset breaks every block referencing the old slug → undefined var → transparent → cream (Bean-caught live). NEVER a straight palette replace; gate a palette change by a reclone (FR-33-11/12). (`feedback_extractor_palette_must_be_additive_not_destructive_replace`.)
-- **STOP-PRESERVE-ALPHA (NEW, D318)** — serialising a computed colour MUST preserve alpha: transparent(0)→"transparent", partial→rgba, opaque→hex. Dropping it turned the draft's transparent buttons opaque BLACK live. Branch on alpha; never assume opaque. (`feedback_preserve_alpha_when_serialising_computed_colour`.)
-- **STOP-MEASURE-LIVE-BEFORE-CUTOVER (NEW, D318)** — before a prove-the-fix-live deploy, MEASURE the current live state first: the symptom may already be fixed (change is STRUCTURAL not visible → tell Bean) AND a clean cutover may drop load-bearing hand-authored CSS. (`feedback_measure_live_before_prove_the_fix_cutover`.)
-- **STOP-MERGE-FULL-NOT-PARTIAL (NEW, D318)** — `push-theme-snapshot` SCPs the snapshot AS the server theme.json (FULL replacement). Deploy a FULL baseline-overlaid snapshot; NEVER a partial or generated-onto-partial merge (strips customTemplates/appearanceTools/borderRadius — 136 keys). extract.py deep-copies the baseline → it's already full; keep it that way.
-- **STOP-33-COMPUTED-VALUE-WINS (D317, SHIPPED — keep enforcing)** — the emitted VALUE is ALWAYS the COMPUTED value on a real rendered node, never a raw source declaration; a `:root`/base declaration supplies only the NAME/ROLE. Reading `body{}`/a section override as "the base" re-ships D303 (base typography = computed on a representative rendered `<p>`; heading lh = MODE across non-chrome headings, hero excluded). (Spec 33 FR-33-1/3.)
-- **STOP-33-PASSB-ADVISORY (D317 — Phase 6 GATE)** — a DERIVED (Pass B) token is PROVISIONAL/advisory, confidence-scored, NEVER auto-pushed live without confirmation; role from USAGE-CONTEXT (which property/selector), NEVER raw frequency (frequency inverts a palette). Nothing usable → framework baseline UNCHANGED + loud logged skip; parser-fail → HALT. (FR-33-5.)
-- **STOP-33-DEPLOY-SAFETY (D317)** — the other 5 client snapshots are DEFERRED behind their own reclone + per-client visual/computed-parity. Before any `wp_global_styles` push: --backup (now default-on) + `--dry-run` diff → human go/no-go → `--yes`; drift-warn on operator Site-Editor edits. (FR-33-11.)
-- **STOP-33-REUSE-BY-COMPOSITION (D317, SHIPPED)** — `build_draft_root_token_map()` is the NEW composed service; `build_draft_root_colour_map` (hex-only) stays BYTE-IDENTICAL — a golden asserts it. Widening it re-opens D306/D307. (FR-33-10.)
-- **STOP-33-DETERMINISM (D317, SHIPPED)** — re-run on an unchanged draft → BYTE-IDENTICAL snapshot; else the diff-approve review + git are meaningless. (FR-33-8.)
-- **STOP-33-ORDERING (D317 — Phase 5 BUILD)** — the extractor is a HARD prerequisite of ANY block clone (the converter snaps against the palette it generates); `/sgs-clone` MUST fail-closed if the snapshot wasn't produced/validated for the current draft hash. (FR-33-12.)
-- **STOP-FIX-DRAFT-NOT-CLONE (D313)** — a draft-INHERITED a11y/fidelity issue is fixed at the DRAFT source (edit mockup, re-clone), never on the clone/converter. A genuine clone DIVERGENCE = a converter/block fix (R-31-9).
-- **STOP-VERIFY-CACHE-LAYER-INSTALLED (D312)** — verify a cache/CDN optimiser is installed/active before leaning on it. LiteSpeed IS installed on sandybrown — `wp litespeed-purge all` before any live measure.
-- **STOP-STYLE-TAG-IS-NOT-STYLE-ATTR (D311)** — a `<style>` TAG is NOT an inline `style="…"` ATTRIBUTE; Spec 32 §6.1(b) sanctions the block's scoped `<style>`. Check BOTH.
-- **STOP-GOLDEN-CAN-BE-STALE (D311)** — prove a converter emit claim with a real-node trace of the CURRENT converter, not by reading a golden. A render-side-only change can't newly break a golden.
+- **STOP-EMBED-FRESHNESS-IN-GATED-FILE (NEW, D320)** — a freshness/staleness gate MUST read the key from the EXACT file the consumer reads (embedded `_sgsExtractor.draft_css_sha256` in `theme-snapshot.json`), NOT a sibling record that can drift from it. A code-review caught the first design tying freshness to `theme-snapshot.generated.json` while the converter reads `theme-snapshot.json`. Extends STOP-21.
+- **STOP-COUNCIL-SPEC-AUTHORITY (NEW, D321)** — when two council raters split (forensics "safe to drop" vs spec-lawyer "spec violation"), the SPEC is authoritative. Dropping `hover-transform` was blast-radius-safe but violated FR-33-4's open-bag "captured whole" contract; correct closure = the consumer paints it, not the producer filters it.
+- **STOP-MARKER-NEEDS-PATH-NOT-JUST-SELECTOR (NEW, D321)** — a "which selector matched" signal cannot LOCATE an element; to exclude a shell/wrapper by ancestry you must capture its DOM path. `measure.js` previewShellMarkers now records `{selector, path}`.
+- **STOP-GLOBAL-RULE-BELONGS-IN-THEME-ASSET-NOT-SNAPSHOT (NEW, D322)** — the client's deployed `theme.json` IS the snapshot (full replace), so a FRAMEWORK-wide rule (global focus-visible) must live in a theme ASSET CSS (`assets/css/utilities.css`), not the client snapshot. Only client-specific values belong in the snapshot.
+- **STOP-DEAL-WITH-FOLLOWUPS-NOW (NEW, D322, Bean)** — do not accumulate follow-ups; deal with them THIS session (small tasks / decisions especially), or explicitly as the next-session task. Use subagents if context is a concern.
+- **STOP-PALETTE-ADDITIVE (D319)** — a regenerated theme palette deployed to an ALREADY-CLONED site MUST be additive: keep each colour's raw draft-token-name slug, emit ALL declared tokens, `extract.py --merge-onto <existing>`. A rename/drop/subset breaks every block referencing the old slug → cream. NEVER a straight palette replace; gate a palette change by a reclone (FR-33-11/12).
+- **STOP-PRESERVE-ALPHA (D318)** — serialising a computed colour MUST preserve alpha (transparent→"transparent", partial→rgba, opaque→hex). Dropping it turned transparent buttons opaque BLACK.
+- **STOP-MEASURE-LIVE-BEFORE-CUTOVER (D318)** — before a prove-the-fix-live deploy, MEASURE the current live state first (the symptom may already be fixed; a cutover may drop load-bearing hand-authored CSS).
+- **STOP-33-COMPUTED-VALUE-WINS (D317)** — the emitted VALUE is ALWAYS the COMPUTED value on a real rendered node; a `:root`/base declaration supplies only the NAME/ROLE. Reading `body{}`/a section override as "the base" re-ships D303.
+- **STOP-33-PASSB-ADVISORY (D317/D321 SHIPPED)** — a DERIVED (Pass B) token is PROVISIONAL/advisory, confidence-scored, NEVER auto-pushed live without confirmation; role from USAGE-CONTEXT, never raw frequency. Nothing usable → framework baseline UNCHANGED + logged skip; parser-fail → HALT.
+- **STOP-33-DEPLOY-SAFETY / FR-33-11 (D317)** — the other 5 client snapshots are DEFERRED behind their own reclone + per-client visual/computed-parity. Before any `wp_global_styles` push: `--backup` (default-on) + diff → human go/no-go → `--yes`. NEVER a snapshot-only push of a regenerated palette to a client whose pages aren't re-cloned in the same change.
+- **STOP-33-DETERMINISM (D317 SHIPPED)** — re-run on an unchanged draft → BYTE-IDENTICAL snapshot.
+- **STOP-33-ORDERING / FR-33-12 (D320 SHIPPED)** — the extractor is a HARD prerequisite of ANY block clone; `/sgs-clone` fails-closed if the deployed snapshot's `_sgsExtractor` hash ≠ the current draft (`--skip-freshness-gate` for extract-only runs only).
+- **STOP-FIX-DRAFT-NOT-CLONE (D313)** — a draft-INHERITED a11y/fidelity issue is fixed at the DRAFT source (edit mockup, re-clone), never on the clone/converter.
+- **STOP-VERIFY-CACHE-LAYER-INSTALLED (D312/D322)** — LiteSpeed v7.8.1 IS active on sandybrown; `wp litespeed-purge all` + OPcache + CDN (`hosting_clearWebsiteCacheV1`) before ANY live CSS measure.
+- **STOP-STYLE-TAG-IS-NOT-STYLE-ATTR (D311)** — a `<style>` TAG is NOT an inline `style="…"` ATTRIBUTE; check BOTH.
+- **STOP-GOLDEN-CAN-BE-STALE (D311)** — prove a converter emit with a real-node trace of the CURRENT converter, not by reading a golden.
 - **STOP-VERIFY-COLOUR-HOVER-AND-VS-DRAFT (D310)** — verifying a cloned colour = measure REST + HOVER (`.hover()`) vs the DRAFT's exact rule, never resting-contrast-only.
-- **STOP-CSS-VER-CACHE-BUST (D310/D316)** — a `style.css`/`editor.css`-ONLY change is served stale (`?ver` pinned to block.json version) → bump the version (the ONE permitted pre-production bump). Render-side inline/output-buffer + wp_global_styles POST land fresh.
-- **STOP-STANDARDISE-NAMING-FIRST (D309)** — standardise a naming convention across the ecosystem first, then build the mechanism; recognise capability by whether the block DECLARES the attr, never a name-guess.
+- **STOP-CSS-VER-CACHE-BUST (D310/D316/D322)** — a `style.css`/`editor.css`-ONLY change is served stale (`?ver` pinned to the block/theme version) → bump the version (button block.json / theme style.css Version). Render-side inline + wp_global_styles POST land fresh.
+- **STOP-STANDARDISE-NAMING-FIRST (D309)** — standardise a naming convention across the ecosystem first, then build the mechanism.
 - **STOP-REGISTER-MECHANISMS-UNRELIABLE** — a pre-diagnosed register lists SYMPTOMS but its CAUSES are often wrong. Prove each cause on the live DOM OR a real-node converter trace FIRST.
-- **STOP-CDN-STALE-CACHE** — a block CSS change at an UNCHANGED `?ver` serves stale; `hosting_clearWebsiteCacheV1` (Hostinger MCP, user u945238940) + OPcache web-pool reset + `wp litespeed-purge all` before any live CSS measure.
-- **STOP-16** — a subagent/"it works"/build-green is a HYPOTHESIS. Re-run yourself: `python -m pytest theme-extractor/tests -q` + (if converter touched) `python -m pytest converter/tests scripts/tests -q --import-mode=importlib`. Node/npm via PowerShell (nvm shim broken in Git Bash).
-- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy/reclone + OPcache + CDN + LiteSpeed clear + live computed-style.
+- **STOP-16** — a subagent/"it works"/build-green is a HYPOTHESIS. Re-run yourself: `python -m pytest theme-extractor/tests -q` + (converter touched) `python -m pytest converter/tests tests -q --import-mode=importlib`. Node/npm via PowerShell (nvm shim broken in Git Bash).
+- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy/reclone + OPcache + LiteSpeed + CDN clear + live computed-style.
 - **STOP-static-vs-live** — for "does this class/style land/apply?" use the LIVE DOM (Playwright computed-style / matched-rules), NEVER static PHP/CSS parsing.
 - **STOP-34** — verify a converter fix on the REAL draft node, not a synthetic fixture.
 - **STOP-D228** — a framework default overriding the draft's faithfully-ABSENT/present value is a CHEAT to REMOVE/GATE. Universal (R-31-9).
-- **STOP-WP-CORE-SERIALISATION (D306)** — a schema-valid emitted `style.*` value can be DROPPED by WP-core if the property definition lacks `css_vars`. Emit a form WP serialises.
+- **STOP-WP-CORE-SERIALISATION (D306)** — a schema-valid emitted `style.*` value can be DROPPED by WP-core if the property definition lacks `css_vars`.
 - **STOP-COLOUR-SLUG-VALIDATION (D308)** — never emit a bare `var()` capture as a colour slug without validating it exists in the theme palette.
 - **STOP-VERIFY-CLAIM** — do NOT assert "X isn't recognised / lacks Z" from a failed grep. Verify against emitted markup / render code / live DOM first.
 - **STOP-60** — a converter change adding attrs changes conformance goldens (reseed deliberately + cited). A render-side-only change does NOT change the emit.
 - **STOP-44** — a schema-valid emitted attr can be a render no-op; verify the LIVE painted value.
 - **STOP-48/49 (RESOLVED D315)** — `computed-parity.js` is trustworthy; still ignore header/footer + the accepted testimonial static-grid→slider when judging fidelity.
-- **STOP-SUBVISIBLE-NEEDS-PREDICATE (D315, carried)** — a clone-fidelity tool's "sub-visible" bucket MUST be gated by a per-pair rendered-INVISIBILITY predicate, never a blanket property-name exclude.
-- **STOP-PARITY-RAW-IS-PAGE-AGNOSTIC (D315, carried)** — the parity tool's RAW % is page-agnostic (FR-20-2), reads LOWER than a human-dispositioned ledger by the accepted/out-of-contract set; apply dispositions + Bean's eye, never engineer the raw number up.
-- **STOP-DEAD-CONTROL-GATE-BLIND (D316, carried)** — `check-dead-controls.js` treats `$attributes['x']` read into a CSS var as "consumed" even when the var is never used in CSS. Verify the LIVE painted value (STOP-44).
-- **STOP-SELF-CONSISTENT-RENDER-UNDER-CACHE (D312, carried)** — a delivery needing a cross-request warm-up is frozen by a full-page cache; prefer self-consistent renders; test WITH the cache installed.
-- **STOP-67** — pre-commit visual-diff report per CHANGED block at repo-ROOT `reports/visual-diff/<block>-<date>.md` (`verdict: PASS` + `first_paint_capture_passed: true`), enforced by `.git/hooks/pre-commit`. (A pure-Python/spec/data change does NOT hit this gate — use `--no-verify` — but DOES hit the path-scope guard.)
+- **STOP-SUBVISIBLE-NEEDS-PREDICATE (D315)** — a clone-fidelity tool's "sub-visible" bucket MUST be gated by a per-pair rendered-INVISIBILITY predicate, never a blanket property-name exclude.
+- **STOP-PARITY-RAW-IS-PAGE-AGNOSTIC (D315)** — the parity tool's RAW % is page-agnostic; apply dispositions + Bean's eye, never engineer the raw number up.
+- **STOP-67** — pre-commit visual-diff report per CHANGED block at repo-ROOT `reports/visual-diff/<block>-<date>.md` (`verdict: PASS` + `first_paint_capture_passed: true`). Pure-Python/spec/data → `--no-verify` (no visual-diff gate) but DOES hit the path-scope guard.
 - **safecss strips functional colours (D302)** — any INLINE colour VALUE must be hex/named/var; the scoped `<style>` channel is NOT filtered.
-- **Path-scoped commits** — `git commit -F <msgfile> -- <paths>` (message FILE, explicit pathspec — a bare `git commit` is BLOCKED by the path-scope gate even with `--no-verify`). `git add <file>` for NEW files; never `git add -A`. No version bumps / deprecations pre-production (except a cache-bust bump). No co-author. Verify branch + D-ceiling before commit.
-- **DB seed not in git** — a new block.json attr / `property_suffixes` row needs `/sgs-update --stage 1` (or a dated `migrations/*.py`) to reach the DB. (Spec 33 reserves a theme.json namespace, not a DB row — likely no DB seed; confirm.)
-- **One writer per file** — parallel coding subagents only across DISJOINT files; a SOLO coding subagent (foreground, named files, main-verified) is optimal for a coupled surface like the orchestrator gate.
+- **Path-scoped commits** — `git commit -F <msgfile> -- <paths>` (message FILE, explicit pathspec). `git add <file>` for NEW files; never `git add -A`. No co-author. Verify branch (`main`) + D-ceiling before commit.
+- **DB seed not in git** — a new block.json attr / `property_suffixes` row needs `/sgs-update --stage 1` (or a dated `migrations/*.py`) to reach the DB.
+- **One writer per file** — parallel coding subagents only across DISJOINT files; a SOLO coding subagent (foreground, named files, main-verified) is optimal for a coupled surface.
 
 ## Skills to Invoke
 | Skill | When |
 |---|---|
-| `/brainstorming` | design the FR-33-12 gate placement + Pass B advisory shape before coding (if any ambiguity remains after the spec) |
-| `/strategic-plan` + `/phase-planner` | order Phase 5-6 (gate → docs → Pass B → dark-theme → namespace → migration) |
-| `/gap-analysis` | grade the completed Spec 33 against ALL 13 FRs before declaring done |
+| `/brainstorming` | design the Part 2 header/footer approach + the tokenise-vs-Customiser decision (FR-33-13) before coding |
+| `/gap-analysis` | grade each client rollout before declaring it done; grade the Part 2 design |
 | `/lifecycle` | any skill/agent/pipeline change |
-| `/research` | gold-standard reference (theme.json fluid, WP global-styles cascade) if an implementation detail needs it |
-| `/systematic-debugging` | prove each fix on the REAL draft node / live DOM (STOP-33-COMPUTED-VALUE-WINS) |
-| `/qc-council` | validate any fix-shape on the shared theming/orchestrator surface (high-blast-radius) |
+| `/research` | gold-standard reference (WP template parts, header patterns) for Part 2 |
+| `/strategic-plan` + `/phase-planner` | order the 5-client rollout + Part 2 phases |
+| `/systematic-debugging` | prove each per-client fidelity issue on the REAL draft node / live DOM |
+| `/qc-council` | validate any fix-shape on the shared theming/converter surface (high-blast-radius) |
 | `/qc-inline` | per-change QC |
-| `/sgs-clone` `/sgs-db` `/wp-blocks` | ground truth (orchestrator stages, theme palette, the converter's snapshot read) |
-| `/visual-qa` | any live reclone proof |
+| `/sgs-clone` `/sgs-db` `/wp-blocks` | ground truth (reclone each client, DB schema) |
+| `/visual-qa` | every per-client reclone proof |
 | `/handoff` `/capture-lesson` | session close |
 
 ## MCP Servers & Tools
 | Tool | For |
 |---|---|
-| Playwright / chrome-devtools MCP | THE computed-value reads (getComputedStyle on rendered nodes) + any live reclone proof |
-| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear before any live measure (user u945238940); + `wp litespeed-purge all` |
+| Playwright / chrome-devtools MCP | THE computed-value reads (getComputedStyle on rendered nodes) + every live reclone proof |
+| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear before any live measure (user u945238940); + `wp litespeed-purge all` + OPcache |
 | REST app-pwd `.claude/secrets/sandybrown.env` | user `Claude`; pass creds inline (env has unquoted specials — don't `source`) |
 
 ## Agents to Delegate To
 | Agent | When |
 |---|---|
-| general-purpose (Sonnet) | a SOLO implementer for the orchestrator FR-33-12 gate (coupled surface); parallel read-only investigators for corpus goldens / other-client audit |
-| feature-dev:code-reviewer | pre-commit review of the orchestrator gate + Pass B (shared/trust-bearing surfaces) |
+| general-purpose (Sonnet) | per-client reclone investigators (live DOM fidelity per client, disjoint) + the deploy+verify mechanics |
+| feature-dev:code-reviewer | pre-commit review of any shared converter/theming surface change |
+| wp-sgs-developer | heavy Part 2 header/footer template-part build |
 
-## Task orchestration (Phase 5-6)
-1. **Task 1 — FR-33-12 orchestrator freshness gate** (inline/Opus or solo Sonnet). Insert a fail-closed gate in `sgs-clone-orchestrator.py` after Stage-0 theme load (~line 2373), before conversion (~line 2416): halt if `theme-snapshot.json` wasn't produced/validated by the extractor for the current draft's CSS hash (persist a `(client_slug, hash(css))` freshness record; reuse the pattern at `styling_helpers.py:276`). Acceptance: a stale/absent generated snapshot fails-closed with a clear message; a fresh one proceeds. `/qc-council` first (shared pipeline surface). **Depends on:** none. **Parallel with:** Task 2 (docs).
-2. **Task 2 — Pipeline/spec docs** (Haiku/Sonnet). Add the extractor as the opening pipeline step to `cloning-pipeline-flow.md`/`-stages.md`; note in Spec 31 §3.A that the palette the converter snaps against is generated by Spec 33 + the FR-33-12 gate; add the extractor + bootstrap-ordering to `../CLAUDE.md`. **Parallel with:** Task 1.
-3. **Task 3 — Pass B advisory + dark-theme** (inline/Opus). FR-33-5 derived tokens (`_source:derived`+confidence, `advisory`, never auto-live; relative-share-within-role threshold; nothing-usable→baseline+skip; parser-fail→HALT) + FR-33-6 dark-theme/preview-shell safety (background from the widest content-containing ancestor; preview-shell only on a POSITIVE structural signal). `/qc-council` first. **Depends on:** Task 1. **/qc gate after:** yes.
-4. **Task 4 — FR-33-13 namespace + migration** (Sonnet). Reserve `settings.custom.header`/`.footer`; re-point `P-DRAFT-CSSVAR-*` at `build_draft_root_token_map()`; **migrate the transitional component `styles.css` (buttons/hero-CTA/focus-ring) out of the Mama's snapshot into theme/block CSS**, re-verify no regression live. **Depends on:** Task 3.
-5. **Close** — `/gap-analysis` the completed Spec 33 vs all 13 FRs; `/handoff`.
+## Task orchestration (rollout + Part 2)
+1. **Task 1 — roll the extractor out to indus-foods** (inline/Opus + Sonnet reclone). Run the extractor on the indus-foods draft → generate + merge-onto its snapshot → RECLONE its pages via `/sgs-clone` (the FR-33-12 gate now requires it) → live visual + computed-parity (Stage 11.6) → Bean's eye. **Depends on:** none. **/qc gate after:** yes (visual-qa). Repeat per client (helping-doctors, + 3) — each its OWN reclone + parity (STOP-33-DEPLOY-SAFETY).
+2. **Task 2 — Part 2 design-gate (header/footer clone, Spec 17)** (inline/Opus, `/brainstorming`). FIRST resolve FR-33-13's tokenise-vs-Customiser question (Spec 17's built model = Customiser + JS-measured height; Part 1 reserved the `settings.custom.header`/`.footer` namespace). Then design the draft→template-part header/footer converter. **Depends on:** Task 1 proving the extractor generalises. **Design-gate + Bean approval before building** (R-31 shared-mechanism rule).
+3. **Close** — `/gap-analysis` each rollout + the Part 2 design; `/handoff`.
 
 ## Dependency graph
 ```
-Task 1 (gate, Opus/Sonnet) ── /qc-council
-Task 2 (docs, Haiku/Sonnet)   ┘ (parallel)
+Task 1 (indus-foods rollout, Opus+Sonnet) ── /visual-qa ── repeat per client
         ↓
-Task 3 (Pass B + dark-theme, Opus) ── /qc-council → /qc-inline gate
+Task 2 (Part 2 header/footer design-gate, Opus) ── /brainstorming → Bean approval
         ↓
-Task 4 (namespace + component-CSS migration, Sonnet) ── live re-verify
-        ↓
-/gap-analysis (all 13 FRs) → commit + merge-to-main → /handoff
+/gap-analysis → commit + /handoff
 ```
 
 ## Methodology guardrails (do not skip)
-- **Deploy/reclone/clear-caches before any live measure** (STOP-21/CDN/LiteSpeed). Prove on Mama's ONLY; other 5 deferred (STOP-33-DEPLOY-SAFETY).
+- **Deploy/reclone/clear-caches before any live measure** (STOP-21/CDN/LiteSpeed). Each client proven on its OWN reclone; NEVER a snapshot-only push (STOP-33-DEPLOY-SAFETY / the D318/D319 pink regression).
 - **Root cause before instance fix** — prove each cause on the live DOM OR a real-node converter trace first (STOP-REGISTER-MECHANISMS-UNRELIABLE / STOP-static-vs-live).
-- **Outcome vs completion** — Spec 33 is "done" only when ALL 13 FRs land (the FULL spec scope, STOP-29), not when Phase 5 ships. Map every deferral to a named FR/stage.
-- **`/qc-council` BEFORE any commit** touching the orchestrator / shared theming surface (blub.db 255). Freeze the hex-only helper byte-identical (golden). Re-run must be byte-identical.
-- **Path-scoped commits** (message FILE, `-- <paths>`); no co-author; verify branch (`main`) + D-ceiling first. Pure-Python/spec/data → `--no-verify` (no visual-diff gate) but still hits the path-scope guard. End with `/handoff`.
+- **Outcome vs completion** — a client rollout is "done" only when its pages RECLONE + pass parity + Bean's eye, not when the snapshot regenerates (STOP-21).
+- **`/qc-council` BEFORE any commit** touching the converter / shared theming surface (blub.db 255). Freeze the hex-only helper byte-identical. Re-run must be byte-identical.
+- **Path-scoped commits** (message FILE, `-- <paths>`); no co-author; verify branch (`main`) + D-ceiling first. End with `/handoff`.
