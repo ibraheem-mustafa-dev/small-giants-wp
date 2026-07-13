@@ -83,6 +83,10 @@
 			"type": "boolean",
 			"default": false
 		},
+		"hideWhenEmpty": {
+			"type": "boolean",
+			"default": false
+		},
 		"marginTablet": {
 			"type": "object",
 			"default": {}

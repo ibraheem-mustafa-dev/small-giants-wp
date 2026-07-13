@@ -101,6 +101,7 @@ function updateCartWidgets( count ) {
 
 	document.querySelectorAll( '.sgs-cart' ).forEach( ( widget ) => {
 		const showZero = widget.dataset.showZero === 'true';
+		const hideWhenEmpty = widget.dataset.hideWhenEmpty === '1';
 		const trigger = widget.querySelector( '[data-sgs-cart-trigger]' );
 		const badge = widget.querySelector( '[data-sgs-cart-count]' );
 
@@ -117,6 +118,12 @@ function updateCartWidgets( count ) {
 
 		// Toggle has-items modifier on the root widget.
 		widget.classList.toggle( 'sgs-cart--has-items', count > 0 );
+
+		// Hide-until-has-items: reveal the whole trigger once the real
+		// count is known to be > 0; re-hide it if the cart empties again.
+		if ( hideWhenEmpty ) {
+			widget.classList.toggle( 'sgs-cart--hidden-empty', count === 0 );
+		}
 
 		// Update accessible label on the trigger link.
 		const baseLabel =

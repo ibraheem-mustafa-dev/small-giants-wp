@@ -60,6 +60,7 @@ $badge_colour      = $attributes['badgeColour'] ?? 'accent';
 $badge_text_colour = $attributes['badgeTextColour'] ?? 'accent-text';
 $aria_label        = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
 $show_zero         = ! empty( $attributes['showZero'] );
+$hide_when_empty   = ! empty( $attributes['hideWhenEmpty'] );
 
 // ── WooCommerce availability check ────────────────────────────────────────────
 $wc_active = function_exists( 'WC' ) && ! is_null( WC() );
@@ -135,13 +136,20 @@ $wrapper_classes = array( 'sgs-cart', $uid );
 if ( ! $wc_active ) {
 	$wrapper_classes[] = 'sgs-cart--wc-inactive';
 }
+// Hide the whole trigger on first paint (pre-hydration) when the SSR count
+// is 0 and the operator has opted in — view.js reveals it once the real
+// Store API count is known to be > 0.
+if ( $hide_when_empty && 0 === $ssr_count ) {
+	$wrapper_classes[] = 'sgs-cart--hidden-empty';
+}
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
-		'class'             => implode( ' ', $wrapper_classes ),
-		'style'             => implode( ';', $styles ) . ';',
-		'data-show-zero'    => $show_zero ? 'true' : 'false',
-		'data-display-mode' => esc_attr( $display_mode ),
+		'class'                => implode( ' ', $wrapper_classes ),
+		'style'                => implode( ';', $styles ) . ';',
+		'data-show-zero'       => $show_zero ? 'true' : 'false',
+		'data-hide-when-empty' => $hide_when_empty ? '1' : '0',
+		'data-display-mode'    => esc_attr( $display_mode ),
 	)
 );
 

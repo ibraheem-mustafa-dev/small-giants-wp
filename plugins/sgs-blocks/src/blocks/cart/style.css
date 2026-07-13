@@ -99,6 +99,17 @@
 	display: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
+/* ── Hide-until-has-items state ────────────────────────────────────────────── */
+/*
+ * Added server-side (SSR count is always 0) when hideWhenEmpty is enabled,
+ * so the whole trigger is hidden on first paint before hydration.
+ * view.js removes this class once the real Store API count is > 0, and
+ * re-adds it if the cart returns to empty.
+ */
+.sgs-cart--hidden-empty {
+	display: none;
+}
+
 /* ── Editor preview shim ────────────────────────────────────────────────────── */
 /*
  * The trigger is rendered as a <span> in the editor (not an <a>),

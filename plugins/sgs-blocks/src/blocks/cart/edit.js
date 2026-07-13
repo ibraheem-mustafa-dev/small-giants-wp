@@ -30,6 +30,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		badgeTextColour,
 		ariaLabel,
 		showZero,
+		hideWhenEmpty,
 		style: blockStyle,
 		marginTablet,
 		marginMobile,
@@ -100,6 +101,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						checked={ showZero }
 						onChange={ ( val ) => setAttributes( { showZero: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Hide cart until it has items', 'sgs-blocks' ) }
+						help={ __(
+							'When on, the cart icon is hidden entirely until at least one item is in the cart.',
+							'sgs-blocks'
+						) }
+						checked={ hideWhenEmpty }
+						onChange={ ( val ) =>
+							setAttributes( { hideWhenEmpty: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
