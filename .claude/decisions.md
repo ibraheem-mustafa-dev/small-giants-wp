@@ -6,7 +6,22 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-13 (LATEST) — D323: Header/Footer/Nav SYSTEM design-gate APPROVED + P0 drawer-fix SHIPPED + 6-doc rollout
+## 2026-07-13 (LATEST) — D324: Header P1 shipped (sgs/site-header + row); WC Block-Hooks root-caused; architecture-fix-over-workaround
+
+**D324 — P1 of the header/footer/nav system SHIPPED and live-verified (sub-400px WCAG overflow emergency FIXED); a stray WooCommerce mini-cart/account in the header was root-caused to the WP Block Hooks API and fixed by architecture, not a workaround filter.** Branch `main` (D-ceiling D323→D324). Commits `a1433f82` (v1) + `c575a41d` (v2), pushed.
+
+- **Built two new blocks:** `sgs/site-header` (section KIND) + `sgs/site-header-row` (layout KIND, the never-overflow cluster row). Both delegate to `SGS_Container_Wrapper` per the composite-mirror rule (R-31-9/Spec 31 §13.6). 3 optional named rows, empty-row zero-output. Live-verified on the sandybrown canary at 320/375/414/768/1440: `scrollWidth<=innerWidth`, 0 overflow, no inline `style=""`, toggle+cart 44×44 touch targets.
+- **The sub-400px WCAG 2.2 SC 1.4.10 header horizontal-overflow emergency is FIXED.**
+- **v2 rebuild — SGS-native swap:** replaced `woocommerce/mini-cart` with `sgs/cart` and `core/site-logo` with `sgs/responsive-logo`; grouped cart+burger into `core/group.sgs-header-icons`. Designed collapse-to-drawer behaviour: nav `display:none` below 768 (lives in the drawer), burger visible only below 768, cart+logo always visible — matching the mamas-munches draft faithfully.
+- **`sgs_header` CPT gained a `template` key** (`'template' => [['sgs/site-header']]`) in `class-sgs-block-cpts.php` — this was previously absent (confirmed live code had no `template` key at all, so this is an ADD not a swap, matching the FR-S3-4 addendum's fact-check). Footer template deferred to P3.
+- **Confirmed the header is genuinely block-based in the Site Editor** (not a Customiser-driven builder — the WordPress Customiser is legacy tooling for classic themes; this is a block theme, so the Site Editor + template parts + blocks is the correct and only mechanism, consistent with §S1's architecture).
+- **PROVEN root cause of the stray WooCommerce mini-cart + customer-account in the header:** WooCommerce auto-injects `woocommerce/mini-cart` and `woocommerce/customer-account` after ANY `core/navigation` block via the WP Block Hooks API. Verified directly in WooCommerce source: `src/Blocks/BlockTypes/MiniCart.php` and `CustomerAccount.php` both register `'anchor' => 'core/navigation'` via `add_filter('hooked_block_types', ..., 9)`; the `BlockHooksTrait.php` docblock confirms the mechanism. This is not an inferred cause — it's read directly off the hooking code.
+- **Bean's decision: fix via architecture, not a workaround filter.** A `hooked_block_types` suppressor filter was built and validated as functionally working, then REVERTED per Bean — the correct closure is P2 (`sgs/adaptive-nav`, FR-S9-4) replacing `core/navigation` in the header, so WooCommerce has no `core/navigation` anchor left to hook onto and the injection stops by construction. Documented as the "ROOT FIX" note on FR-S9-4 in Spec 17 §S9 and in `.claude/plans/2026-07-13-header-builder-remaining-work.md`.
+- **NEXT:** P2 `sgs/adaptive-nav` — both the scoped nav block AND the architectural fix for the WC Block-Hooks injection. Once it ships, remove the interim nav-visibility CSS hack in `sgs/site-header/style.css`.
+
+---
+
+## 2026-07-13 — D323: Header/Footer/Nav SYSTEM design-gate APPROVED + P0 drawer-fix SHIPPED + 6-doc rollout
 
 **D323 — the header/footer/nav work: design-gate approved (Bean sign-off, all recommended defaults), the unclickable mobile-nav drawer FIXED live, and the approved design folded into 6 canonical docs.** Branch `main` (D-ceiling D322→D323). Commits `24e5d167` (P0 fix + visual-diff report) + `4f88ee5a` (6-doc rollout), pushed. Design-gate `220f4200`.
 
