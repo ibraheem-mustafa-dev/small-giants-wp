@@ -28,7 +28,7 @@
 ## Authoritative pointers
 
 - **Canonical cloning-pipeline spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (Spec 31)
-- **LIVE canonical cloning plan:** `plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md` — the converter completion plan — EXECUTED IN FULL (D276, 2026-07-05). Historical; live front = the post-programme QC session (next-session-prompt.md). All prior plans/designs archived to `plans/archive/` 2026-07-04 (residuals → parking `P-W3-ARCHIVE-RESIDUALS`).
+- **Converter-completion plan (ARCHIVED — historical):** `plans/archive/2026-07-04-new-engine-to-parity-delete-converter-v2.md` — EXECUTED IN FULL (D276, 2026-07-05); archived 2026-07-13. Live front = the post-programme QC session (next-session-prompt.md). All prior plans/designs archived to `plans/archive/` (residuals → parking `P-W3-ARCHIVE-RESIDUALS`).
 - **Pipeline overview:** `cloning-pipeline-flow.md` (stage-index + cross-cutting principles); per-stage detail → `cloning-pipeline-stages.md`
 - **Binding methodology rules:** `decisions.md` (search for "binding" + recent D-numbers) — DO NOT restate inline here. Spec 31 §13.1 binding rules: R-31-1 through R-31-15 (R-31-14 added 2026-05-27 per D92 — no legacy fallback hacks in FR-31-6 migrations).
 - **Clone-fidelity measurement:** `specs/20-CLONE-FIDELITY-MEASUREMENT.md` (computed-parity tool + Stage 11.6 + rule 4a — the canonical rendered-fidelity signal). Old Spec 20 (log surfacing) + Spec 21 (pipeline-state artefact inventory) SUPERSEDED + archived to `memory/specs-archive/`; the input-side artefacts are debug-only, not the fidelity signal.
