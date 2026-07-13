@@ -7,7 +7,7 @@
  * Keywords: footer, sgs, framework, default, contact, socials, links
  * Viewport Width: 1440
  * Inserter: true
- * Description: Default SGS footer — the sgs/site-footer block with a columns row (brand + links + contact) and a bottom bar. All business-data slots are bound to the sgs/site-info source. No hardcoded client data.
+ * Description: Default SGS footer — the sgs/site-footer block with a columns row (brand + links + contact) and a bottom bar. All business-data slots use the sgs/business-info block (per-type variants) reading live from Business Details. No hardcoded client data.
  *
  * Built on the specialised sgs/site-footer container block (FR-S9-3): a
  * full-bleed section band whose content centres at the theme content width, a
@@ -18,11 +18,13 @@
  * Column 1: brand logo + tagline + social links
  * Column 2: quick navigation links
  * Column 3: contact details — address, phone, email, opening hours
- * Bottom bar: copyright (bound) + SGS studio attribution.
+ * Bottom bar: copyright + SGS studio attribution.
  *
- * All business-data slots are bound to the sgs/site-info source; empty fields
- * display a friendly admin hint (Wave 1C behaviour). Generic link labels are
- * not personal data (FR-S4-5 linter stays green).
+ * Every business-data field uses the sgs/business-info block set to the matching
+ * displayType variant (tagline/socials/address/phone/email/hours/copyright),
+ * which reads live from the central Site Info store — no hardcoded client data,
+ * no per-field bindings. Generic link labels are not personal data (FR-S4-5
+ * linter stays green).
  *
  * @package SGS\Theme
  */
@@ -38,31 +40,9 @@
 
 			<!-- wp:site-logo {"width":180,"shouldSyncIcon":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:paragraph {"className":"sgs-site-footer__tagline","textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"tagline"}}}},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
-			<p class="sgs-site-footer__tagline has-surface-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">placeholder</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"displayType":"description","textColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"left"},"style":{"spacing":{"blockGap":"var:preset|spacing|20","margin":{"top":"var:preset|spacing|30"}}}} -->
-			<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--30)">
-
-				<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"socials.facebook"}}}}} -->
-				<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-				<!-- /wp:paragraph -->
-
-				<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"socials.instagram"}}}}} -->
-				<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-				<!-- /wp:paragraph -->
-
-				<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"socials.linkedin"}}}}} -->
-				<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-				<!-- /wp:paragraph -->
-
-				<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"socials.twitter"}}}}} -->
-				<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-				<!-- /wp:paragraph -->
-
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
 
 		</div>
 		<!-- /wp:group -->
@@ -110,49 +90,17 @@
 			<h2 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Contact</h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"address"}}}},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--20)">placeholder</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"phone"}}}},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|10"}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--10)">placeholder</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|10"}}}} /-->
 
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"email"}}}},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">placeholder</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
 			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}}}} -->
 			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--10);margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h3>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.mon"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.tue"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.wed"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.thu"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.fri"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.sat"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"textColor":"surface","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.sun"}}}}} -->
-			<p class="has-surface-color has-text-color has-small-font-size">placeholder</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","labelColour":"surface","fontSize":"small"} /-->
 
 		</div>
 		<!-- /wp:group -->
@@ -161,9 +109,7 @@
 
 	<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","gap":"8px","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|accent","width":"1px"}}}} -->
 
-		<!-- wp:paragraph {"textColor":"accent","fontSize":"small","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"copyright"}}}}} -->
-		<p class="has-accent-color has-text-color has-small-font-size">placeholder</p>
-		<!-- /wp:paragraph -->
+		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"accent","fontSize":"small"} /-->
 
 		<!-- wp:paragraph {"textColor":"accent","fontSize":"small"} -->
 		<p class="has-accent-color has-text-color has-small-font-size">| <a href="https://smallgiantsstudio.co.uk/">Website by Small Giants Studio</a></p>

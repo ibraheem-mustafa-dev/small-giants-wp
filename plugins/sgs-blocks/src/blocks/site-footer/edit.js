@@ -14,9 +14,10 @@ const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
 
 // Three rows matching the draft `.mm-footer`: an optional top strip (CTA /
 // newsletter, empty by default → zero output), a columns grid (brand + link
-// groups, collapsing to 1 column below 768), and a centred bottom bar whose
-// copyright text is BOUND to the shared Site Info store (no hardcoded client
-// copyright — FR-S9-10 / FR-S4-5). Generic link labels are not personal data.
+// groups, collapsing to 1 column below 768), and a centred bottom bar. Every
+// business-data field (tagline/socials/copyright) uses the sgs/business-info
+// block, which reads live from Business Details (no hardcoded client data, no
+// per-field bindings — FR-S9-10 / FR-S4-5). Generic link labels are not personal data.
 const TEMPLATE = [
 	[ 'sgs/site-footer-row', { rowSlot: 'top', layout: 'flex' } ],
 	[
@@ -35,28 +36,14 @@ const TEMPLATE = [
 			gap: '48px',
 		},
 		[
-			// Column 1 — brand: logo + tagline (bound) + social links.
+			// Column 1 — brand: logo + tagline + socials from Business Details.
 			[
 				'core/group',
 				{ className: 'sgs-site-footer__brand', layout: { type: 'constrained' } },
 				[
 					[ 'sgs/responsive-logo', { width: 160, linkToHome: true } ],
-					[
-						'core/paragraph',
-						{
-							className: 'sgs-site-footer__tagline',
-							placeholder: __( 'Add a short tagline…', 'sgs-blocks' ),
-							metadata: {
-								bindings: {
-									content: {
-										source: 'sgs/site-info',
-										args: { key: 'tagline' },
-									},
-								},
-							},
-						},
-					],
-					[ 'core/social-links', { size: 'has-normal-icon-size' } ],
+					[ 'sgs/business-info', { displayType: 'description' } ],
+					[ 'sgs/business-info', { displayType: 'socials' } ],
 				],
 			],
 			// Column 2 — Shop links.
@@ -101,22 +88,7 @@ const TEMPLATE = [
 		'sgs/site-footer-row',
 		{ rowSlot: 'bottom', layout: 'flex', justifyContent: 'center' },
 		[
-			[
-				'core/paragraph',
-				{
-					className: 'sgs-site-footer__copyright',
-					align: 'center',
-					placeholder: __( 'Copyright…', 'sgs-blocks' ),
-					metadata: {
-						bindings: {
-							content: {
-								source: 'sgs/site-info',
-								args: { key: 'copyright' },
-							},
-						},
-					},
-				},
-			],
+			[ 'sgs/business-info', { displayType: 'copyright' } ],
 		],
 	],
 ];

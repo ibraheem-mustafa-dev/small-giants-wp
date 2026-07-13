@@ -74,6 +74,88 @@
 			"default": {}
 		}
 	},
+	"variations": [
+		{
+			"name": "phone",
+			"title": "Business Phone",
+			"description": "The business phone number from Business Details — click-to-call.",
+			"icon": "phone",
+			"keywords": [ "phone", "tel", "call", "contact", "number" ],
+			"attributes": { "displayType": "phone" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "email",
+			"title": "Business Email",
+			"description": "The business email address from Business Details — click-to-email.",
+			"icon": "email",
+			"keywords": [ "email", "mail", "contact", "address" ],
+			"attributes": { "displayType": "email" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "address",
+			"title": "Business Address",
+			"description": "The business postal address from Business Details.",
+			"icon": "location",
+			"keywords": [ "address", "location", "postal", "where" ],
+			"attributes": { "displayType": "address" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "hours",
+			"title": "Opening Hours",
+			"description": "The weekly opening hours from Business Details.",
+			"icon": "clock",
+			"keywords": [ "hours", "opening", "times", "schedule", "open" ],
+			"attributes": { "displayType": "hours" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "socials",
+			"title": "Social Links",
+			"description": "The social profile links from Business Details, as icons.",
+			"icon": "share",
+			"keywords": [ "social", "socials", "facebook", "instagram", "links" ],
+			"attributes": { "displayType": "socials" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "copyright",
+			"title": "Copyright Line",
+			"description": "The copyright / trademark line from Business Details.",
+			"icon": "editor-textcolor",
+			"keywords": [ "copyright", "trademark", "legal", "footer" ],
+			"attributes": { "displayType": "copyright" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "description",
+			"title": "Business Tagline",
+			"description": "The short business tagline / description from Business Details.",
+			"icon": "editor-paragraph",
+			"keywords": [ "tagline", "description", "strapline", "about", "slogan" ],
+			"attributes": { "displayType": "description" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
+		{
+			"name": "map",
+			"title": "Business Map",
+			"description": "An embedded map link to the business location from Business Details.",
+			"icon": "location-alt",
+			"keywords": [ "map", "directions", "google maps", "location" ],
+			"attributes": { "displayType": "map" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		}
+	],
 	"supports": {
 		"html": false,
 		"anchor": true,
