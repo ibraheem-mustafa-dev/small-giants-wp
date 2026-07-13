@@ -1,18 +1,21 @@
 ---
 doc_type: spec
 spec_id: 33
-spec_version: 0.1.0-DRAFT
+spec_version: 0.2.0-DRAFT
 project: small-giants-wp
 thread: header-footer-setup-pipeline (Part 1 of 2)
 title: "Universal Draft Global-Styles / Token Extractor"
 created: 2026-07-13
-status: draft (design-gate + /adversarial-council PENDING before build)
+status: draft (adversarial-council GO-conditional applied; ready for build)
+status_history:
+  - 2026-07-13 — v0.1.0 authored (corpus-grounded, 10 FRs).
+  - 2026-07-13 — v0.2.0 after a 6-persona /adversarial-council (Cynic/Spec-Lawyer/Ship-PM/Extraction-Correctness/Support-Realist/Systems-Integration; all C-band, GO-conditional). Applied every convergent must-fix. Bean-directed shape: keep the COMPLETE spine (all DECLARED value types in v1 — colour/typography/spacing/radius/shadow/buttons/layout), because the cost/risk is the DERIVATION mechanism, not the breadth of value types. The declared-vs-derived line is the trust boundary: declared (Pass A) auto-applies after computed-validation; derived (Pass B) is PROVISIONAL/advisory, never auto-pushed to a live theme. Fixed the FR-33-1 precedence contradiction that would have re-shipped D303; defined the role-inference rule table; pinned ΔE + determinism; reuse-by-composition (freeze the live hex-only helper); added provenance trace + golden fixtures + deploy-safety gates + bootstrap-ordering + forward contracts. All 4 open questions RESOLVED into FRs.
 references:
-  - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals is the complementary source)
-  - 17-HEADER-FOOTER-ARCHITECTURE.md (Part 2 sibling — the header/footer converter, built AFTER this)
-  - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE≤1 reused here)
-  - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked idea this spec formalises)
-  - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's :root map)
+  - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
+  - 17-HEADER-FOOTER-ARCHITECTURE.md (Part 2 sibling — the header/footer converter, built AFTER this; reserves the header/footer token namespace, FR-33-13)
+  - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
+  - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked idea this formalises)
+  - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
 corpus_basis: sites/{mamas-munches,indus-foods,_dogfood} authored draft mockups (8 files, 3 design systems) — full union inventory in §Appendix A
 supersedes: none
 absorbed_by: none
@@ -20,227 +23,296 @@ absorbed_by: none
 
 # Spec 33 — Universal Draft Global-Styles / Token Extractor
 
-> **This is Part 1 of the 2-part header/footer setup pipeline** (Bean-directed 2026-07-13). Part 1
-> (this spec) = extract the draft's GLOBAL design tokens + base styles into the site's theme, so
-> every block inherits the correct base BY CONSTRUCTION. Part 2 (Spec 17 work) = clone the draft's
-> header/footer into SGS template parts. Part 1 first: it is a prerequisite for Part 2, it fixes a
-> whole class of body-clone drift bugs, and it is lower-risk (data into theme settings). It also
-> unblocks two parked colour-var bugs (`P-DRAFT-CSSVAR-*`), which need exactly the `:root` map this
-> produces.
+> **Part 1 of the 2-part header/footer setup pipeline** (Bean-directed 2026-07-13). Part 1 (this spec)
+> = extract the draft's GLOBAL design tokens + base styles into the site's theme so every block
+> inherits the correct base BY CONSTRUCTION. Part 2 (Spec 17) = clone the draft header/footer into
+> SGS template parts. Part 1 first: prerequisite for Part 2 AND for every body clone (the converter
+> reads the snapshot this generates — FR-33-12), fixes the D303 drift class, lower-risk, and unblocks
+> two parked colour-var bugs.
+
+> **⛔ THE ONE RULE THAT MAKES THIS WORK (read before any FR).** This spec exists to kill D303 — a
+> block inheriting the WRONG base because something trusted a DECLARED value over the RENDERED one.
+> So the iron law here is: **the emitted VALUE is always the COMPUTED value on a real rendered node,
+> never a raw source declaration** (the project `measurement-vs-eye` rule). A source `:root`/base
+> declaration is only ever used for the token's NAME/ROLE vocabulary, never as the value to ship.
+> Any FR that emits a declared value without computed-validation is a D303 re-offence.
 
 ## Problem
 
-A clone run today READS a hand-maintained per-client `theme-snapshot.json`; nothing GENERATES it
-from the draft. That is the source of a proven drift class: all 6 client snapshots carry a
-fabricated `h1: 1.15` line-height + `-0.022em`/`-0.015em` letter-spacing that **no draft ever
-declared** (the real Mama's draft says `h1,h2,h3{line-height:1.2}` with zero letter-spacing). Because
-the theme base ≠ the draft base, every cloned block inherits the wrong base value — the D303
-"brand quote renders 16→18px" bug is exactly this (the paragraph has no explicit `font-size`, so it
-inherits the theme base 18px instead of the draft base 16px).
-
-The block pipeline (Spec 31) already transfers each block's OWN explicit CSS faithfully. What is
-missing is the **global layer**: the draft's `:root` tokens + base-element rules (`body`, `h1–h6`,
-`a`) that define the inherited defaults. Extracting them into the theme's global settings closes the
-drift at the token layer — far lower blast-radius than the rejected ancestor-walk (which re-emitted
-inherited values onto every leaf and re-seeded all conformance goldens, STOP-60).
+A clone run today READS a hand-maintained `theme-snapshot.json`; nothing GENERATES it from the draft.
+That is the drift source: all 6 client snapshots carry a fabricated `h1: 1.15` line-height +
+`-0.022em`/`-0.015em` letter-spacing that **no draft ever declared** (the real Mama's draft says
+`h1,h2,h3{line-height:1.2}`, zero letter-spacing). Because the theme base ≠ the draft base, every
+cloned block inherits the wrong base — the D303 "brand quote renders 16→18px" bug is exactly this (a
+`<p>` with no explicit font-size inherits the theme base 18px, not the draft base 16px).
 
 ## Solution overview
 
-A **universal, draft-agnostic extractor** reads a draft mockup and emits a **generated
-`theme-snapshot.json`** (structured theme.json v3 slots — NOT a raw-CSS blob), which the EXISTING
-`push-theme-snapshot.py` deploys to `theme.json` + `wp_global_styles` (the live layer). It runs as
-the opening step of the header/footer setup pipeline, once per site.
+A **universal, draft-agnostic extractor** reads a draft and emits a **generated `theme-snapshot.json`**
+(structured theme.json v3 slots — NOT a raw-CSS blob), which the EXISTING `push-theme-snapshot.py`
+deploys to `theme.json` + `wp_global_styles`. It runs once per site, as the opening step of the
+header/footer setup pipeline AND as a hard prerequisite of any body clone (FR-33-12).
 
-**Two passes (the "ready for any possibility" core — grounded in the real corpus, §Appendix A):**
-- **Pass A — declared:** parse the draft's `<head>` global `<style>` + font `<link>`/`@import`:
-  the `:root` custom properties (resolving `var()` chains) AND the base-element rules
-  (`body`/`h1–h6`/`a`/`p`/reset). This is the clean case (Mama's, Indus, dogfood all declare `:root`).
-- **Pass B — computed + frequency (universality fallback):** for tokens NOT declared as `:root`
-  (the common case — 7/8 drafts hardcode fonts in base rules; 0/8 declare type-size/line-height/
-  radius/shadow tokens; the Spectra scrape declares no `:root` at all): read `getComputedStyle` on
-  the rendered `body`/`h1–h6`/`a`, and **frequency-cluster the colour + spacing literals across the
-  whole stylesheet** to recover a palette + spacing scale even when nothing is named. Computed values
-  are ground truth (the project `measurement-vs-eye` rule).
+**The complete spine — one build, all value types, tiered by TRUST (not split by value type).** v1
+extracts EVERY value type the draft declares (colour, typography, type-scale, spacing, radius, shadow,
+buttons, layout) — breadth is cheap once the `<head>` is parsed. The trust boundary is provenance, not
+value type:
 
-**Classification is by ROLE + VALUE-TYPE, never by token NAME** (the corpus proves names are
-unreliable: the SAME role `success=#2E7D4F` is `--success` in one system and `--green` in another;
-Mama's uses role-names, Indus uses literal-colour-names). This is the D301 "route by role, not a
-hardcoded name list" rule applied to theming.
+- **DECLARED (Pass A):** parse the draft's `<head>` `:root` + base/preset rules (via `tinycss2`, not
+  regex) → resolve each token's ROLE + VALUE, **validate the value against the COMPUTED value on a
+  real rendered node**, then auto-apply. Trustworthy. Serves all 3 corpus design systems.
+- **DERIVED (Pass B):** for values the draft does NOT declare (recover a palette/spacing scale by
+  usage-context clustering) → emit as **PROVISIONAL/advisory**, confidence-scored, **never
+  auto-pushed to a live theme** without human confirmation (FR-33-5). A draft with nothing usable →
+  the framework baseline UNCHANGED + a loud logged skip (never a silent guessed theme).
 
-**Output maps onto theme slots the SGS theme ALREADY has** (§Appendix B): `settings.color.palette`,
-`settings.typography.fontFamilies`/`fontSizes` (fluid), `settings.spacing`, `settings.shadow`,
-`settings.custom.{borderRadius,buttonPresets}`, `settings.layout`, `styles.typography`,
-`styles.elements.{h1..h6,link,button}`. Colours dedupe + snap at **ΔE≤1** (the same threshold the
-block pipeline's token-snap uses, Spec 31 §3.A step 6). Fluid `clamp()` values are preserved
-verbatim / emitted via theme.json's native fluid typography — never flattened to one viewport.
+**Classification is by ROLE inferred from USAGE-CONTEXT (which CSS property, on which selector role),
+never by token NAME and never by raw frequency** — the corpus proves names are unreliable (same hex
+`#2E7D4F` is `--success` and `--green`), and raw frequency INVERTS a palette (the most frequent colour
+is body-text/border-grey, not the brand primary). Frequency ranks only WITHIN a role bucket.
+
+**Output maps onto slots the SGS theme already has** (§Appendix B). Colours dedupe at **ΔE≤1
+(CIEDE2000, sRGB→Lab), alpha as a separate axis**. Fluid `clamp()` is preserved **verbatim as the
+size value** (never recomputed via WP's fluid formula — that changes the curve). `rem` is resolved
+against the draft's **actual computed `documentElement` font-size**, never a hardcoded 16px.
 
 **Out of scope (the NOT list):**
-- NOT the header/footer converter (Part 2 / Spec 17).
-- NOT the derived-globals post-pass (Spec 26 FR-26-C reads the CONVERTED BLOCKS' values; this reads
-  the draft's DECLARED globals — complementary sources that merge into the same snapshot).
-- NOT a new theming/deploy channel — it feeds the EXISTING `theme-snapshot.json` → `push-theme-snapshot.py`.
+- NOT the header/footer converter (Part 2 / Spec 17) — but reserves its token namespace now (FR-33-13).
+- NOT the Spec 26 FR-26-C derived-globals post-pass — that is a FORWARD CONTRACT, inert until Spec 26
+  Phase 3 (FR-33-13); this spec must not build a half-merge against unbuilt code.
+- NOT a new theming/deploy channel — feeds the EXISTING `theme-snapshot.json` → `push-theme-snapshot.py`.
 - NOT a per-client special case — one universal extractor, no `if client==` branch (blub.db 269 / R-31-9).
 
 ## Functional requirements
 
-### FR-33-1 — Two-pass universal extraction (declared + computed/frequency)
-The extractor MUST run Pass A (parse declared `:root` + base rules via a CSS parser — `tinycss2`,
-already a project dep — NOT regex) AND Pass B (computed-style read of rendered base elements +
-frequency-cluster of colour/spacing literals) for every draft. A token declared in `:root` takes
-precedence; a token only implied by base rules or repeated literals is recovered by Pass B. Neither
-pass alone is sufficient (Pass A misses the 7/8 drafts that hardcode fonts; Pass B is the only path
-for the token-less Spectra scrape).
-**Done when:** on a draft with a full `:root` (Mama's) every declared token is extracted via Pass A;
-AND on a synthetic token-less draft (no `:root`, fonts+colours only in base/component rules) the
-palette + base typography are still recovered via Pass B.
+### FR-33-1 — Provenance-tiered extraction; COMPUTED value wins, declared wins only the name
+Every emitted token MUST carry a `_source` provenance (`declared` | `derived`). The emitted VALUE MUST
+be the COMPUTED value read on a representative rendered node, NEVER a raw source declaration — a
+`:root`/base declaration supplies only the token's NAME/ROLE vocabulary. Where a declared value and
+the computed value disagree beyond ΔE≤1 (or a length delta), the computed value wins and the
+divergence is written to the reconciliation log. A `:root` token that is declared but has ZERO
+computed usage (a dead token) MUST be gap-logged, NOT emitted. `declared` tokens (validated) auto-apply;
+`derived` tokens are advisory (FR-33-5).
+**Done when:** a fixture where `:root{--primary:#c00}` but the rendered CTA computes `#b00` emits
+`#b00` (computed) + logs the delta; a declared-but-unused `:root` token is gap-logged, not in the
+palette; every emitted token has a `_source` field.
 
-### FR-33-2 — Colour palette → `settings.color.palette` (role+value-aware, ΔE-deduped, unioned)
-Every colour the draft defines (declared `:root` hex/rgba/gradient tokens AND Pass-B frequency-ranked
-literals) MUST be extracted and mapped to the theme palette by **role inferred from usage + value**,
-never by token name. Near-identical colours dedupe at **ΔE≤1**; the canonical SGS slug vocabulary
-(§Appendix B: `primary`/`primary-dark`/`accent`/`surface`/`surface-alt`/`text`/`text-muted`/
-`text-inverse`/`border-subtle`/`success`/`error`/`footer-bg` …) is the mapping target, with raw hex
-preserved when no slug fits (`customGradient`/`customDuotone` on, Spec 26 FR-26-B1). Where one draft
-across multiple pages drifts (Mama's `--border` vs `--border-subtle`, `--red`/`--whatsapp` added
-per-page), the extractor UNIONS the low-frequency one-offs, never drops them.
-**Done when:** Mama's 13 `:root` colours + Indus's 12 literal-named colours + dogfood's 8 each map to
-a palette with no ΔE≤1 duplicates and no dropped one-off (`--red`/`--whatsapp` present); a colour used
-only as `rgba(...)` in a rule (not `:root`) is still captured.
+### FR-33-2 — Role by usage-context (a defined rule table), + ΔE dedup fully specified
+Colour/token ROLE MUST be inferred by a **priority-ordered rule table keyed on (CSS property × selector
+role × within-role frequency)**, never by token name and never by cross-role raw frequency. Minimum
+table (extend in build, but this is the contract):
+| Signal | Candidate role |
+|---|---|
+| `background`/`background-color` on `body`/`html`/`.section`/large-area ancestor, high L* | `surface` / `surface-alt` |
+| `color` on body text / `p` / base, low L* | `text` / `text-muted` |
+| high-chroma value on `.btn`/`.cta`/`a`/`a:hover` `background` | `primary` / `accent` |
+| `border-color` / thin-border usage | `border-subtle` |
+| value on a `.success`/`.error`/status selector | `success` / `error` |
+| **no confident (≥ threshold) role match** | **raw-hex `custom-<name>` — NEVER force a slug** |
+Each mapping carries a **confidence score**; below the floor → `custom` (conservation, FR-33-9), never a
+mis-slugged guess. Colours dedupe at **ΔE≤1 (CIEDE2000, sRGB→Lab); ALPHA is a separate axis (never
+dedup across alpha)**; on a merge the **`declared` token beats `derived`; among equals, first
+source-order wins**; the loser's name is logged as an ALIAS (not silently vanished).
+**Done when:** Mama's role-named + Indus literal-colour-named + dogfood tokens each map to correct
+roles via the table (not names); `success=#2E7D4F` lands `success` whether named `--success` or
+`--green`; a colour used as BOTH border and heading resolves by the higher-priority property or falls
+to `custom` with a logged ambiguity; `rgba(x,1)` and `rgba(x,0.1)` do NOT dedup.
 
-### FR-33-3 — Typography families + type scale (synthesised when un-tokenised; fluid-preserving)
-Font FAMILIES MUST be extracted whether declared as a `--font-*` token (1/8 drafts) OR hardcoded in
-`body`/`h1–h3` rules (7/8) — synthesise a `fontFamilies` entry (body/heading/display) from the base
-rules when no token exists, handling all three loading mechanisms (`<link>` google-fonts,
-`@import` inside `<style>`, system-font/none). Type SIZES/weights/line-heights/letter-spacing (0/8
-declared as `:root` tokens) MUST be DERIVED from the base + heading + preset rules into
-`settings.typography.fontSizes` + `styles.elements.{h1..h6,link}` + `styles.typography`. Any
-`clamp()`/`calc()`/`min()` value is preserved verbatim or emitted via theme.json's native fluid
-typography (`fluid:true` / per-size `fluid:{min,max}`) — NEVER flattened to a single-viewport px
-(the responsive-value rule / CLAUDE.md Rule 6). Unit variety (px vs rem type, px vs em letter-spacing)
-is normalised unit-aware.
-**Done when:** Mama's (Fraunces heading / Inter body, px sizes, `line-height:1.2` headings / `1.6`
-body, no letter-spacing) AND Indus (DM Serif Display / DM Sans, rem sizes) AND dogfood (system-ui /
-Georgia, a `clamp()` `--pad-block`) each produce correct `fontFamilies` + `styles.elements` + a
-type scale with clamp preserved; the emitted heading line-height is the draft's `1.2`, NOT the
-fabricated `1.15`.
+### FR-33-3 — Base body/heading typography from COMPUTED nodes (the drift-killer)
+The theme base (`styles.typography` + `styles.color`) MUST be the COMPUTED font-family/size/
+line-height/colour/background read on a **representative rendered `<p>` in the main content flow** —
+the cascade result of `html` + `body` + any content wrapper — NOT the `body{}` selector's declared
+value (reading `body{}` when a wrapper overrides it re-creates D303). `rem` values MUST resolve against
+the draft's actual computed `documentElement` font-size (never assume 16px). Font FAMILIES: `body` ←
+the base rule; `heading` ← `h1`→`h2`→`h3` (first present); `display` ← an explicit `--font-display`
+token or the heading family, else omitted (never synthesised from nothing). Emit the FULL fallback
+STACK (`Fraunces, Georgia, serif`) AND ensure the primary family is actually loaded — deploy the
+`@font-face`/Google-fonts link into the theme (an extracted-but-unloaded family renders as fallback).
+A value the draft NEVER declared (e.g. the fabricated `1.15`/letter-spacing) MUST NOT be synthesised
+into the output.
+**Done when:** re-cloning Mama's with the generated snapshot renders the brand quote at the draft base
+**16px** (D303 gone), heading line-height **1.2** (not 1.15), letter-spacing absent; a fixture with
+`html{font-size:62.5%}` resolves rem correctly (not ×1.6 wrong); the heading font actually loads.
 
-### FR-33-4 — Base body typography → `styles.typography` (the drift-killer)
-The draft's base `body` rule (font-family, font-size, line-height, colour, background) MUST become the
-theme's top-level `styles.typography` + `styles.color` so EVERY block inherits the draft base by
-construction. A dark PREVIEW-SHELL `body{background:#2a2a2a}` (the Claude App Design review mockup's
-viewport-switcher chrome) MUST NOT be mistaken for the theme background — the real background is the
-draft's `--surface-*` token; the extractor distinguishes a preview harness from the page (heuristic:
-a `body` bg that is a near-black with `min-height:100vh` + no matching `:root` surface token is a
-preview shell → ignore, use the surface token).
-**Done when:** re-cloning Mama's with the generated snapshot renders the brand quote at the draft
-base 16px (not 18px) — the D303 bug is gone; and the Claude-mockup dark shell bg is NOT emitted as
-the theme background.
+### FR-33-4 — Complete DECLARED value-type coverage (the full spine, all in v1)
+Pass A MUST extract EVERY value type the draft DECLARES, into its theme slot (§Appendix B): colour
+palette (FR-33-2); typography families + sizes + weights + line-heights + letter-spacing
+(`fontFamilies`/`fontSizes`/`styles.elements.{h1..h6,link}`); spacing tokens →
+`settings.spacing.spacingSizes`; radius → `settings.custom.borderRadius`; shadow →
+`settings.shadow.presets`; buttons → `settings.custom.buttonPresets.{primary,secondary,outline}`;
+`contentSize`/`wideSize` from `.container`/`.section` `max-width` OR a `--content-width`/`--measure`
+token (scan BEYOND `:root`). A `clamp()`/`calc()`/`min()` value is emitted **verbatim as the size
+string** (theme.json accepts it), never recomputed. Button presets are an **OPEN property bag** — the
+DIFF between rest-state and `:hover`-state declarations, verbatim (NOT an "idiom A vs B" enum), so a
+hover that changes colour AND transform is captured whole; `!important` stripped, value kept.
+**Done when:** dogfood spacing tokens + Mama's `.container` contentSize + button `border-radius:10px`
++ both hover shapes (Mama's colour-invert, Indus transform-lift) each land in the correct slot with
+no `!important`; a declared `clamp()` size is emitted verbatim.
 
-### FR-33-5 — Spacing / radius / shadow / layout (token-or-derived)
-Spacing scale MUST be read from spacing tokens when present (dogfood `--gap-section`/`--pad-block`/
-`--measure`) OR derived from repeated padding/margin/gap literals (Mama's/Indus hardcode all spacing)
-→ `settings.spacing.spacingSizes`. `contentSize`/`wideSize` MUST be discovered from `.container`/
-`.section` `max-width` OR a `--content-width`/`--measure` token — scanning BEYOND `:root` (Mama's
-declares `--content-width:1280px` inline on `.sgs-header__inner`, not in `:root`). Radius + shadow
-(0/8 tokenised) are derived from preset-class values → `settings.custom.borderRadius` +
-`settings.shadow.presets`.
-**Done when:** dogfood's spacing tokens land as spacingSizes; Mama's `.container` `max-width:1280px`
-lands as `contentSize`; button `border-radius:10px` lands as a borderRadius token.
+### FR-33-5 — Pass B derivation is PROVISIONAL/advisory (never auto-live); token-less → baseline+skip
+For values the draft does NOT declare, Pass B MAY derive them (usage-context role clustering per
+FR-33-2, computed-value read) BUT its output MUST be tagged `_source: derived` + a confidence score
+and MUST NOT be pushed to the live `wp_global_styles` without explicit human confirmation (the
+snapshot marks derived slots `advisory`; `push-theme-snapshot.py` gates them). Because Pass B is
+advisory, its promotion thresholds are NOT a precision-critical calibration — use a **relative share
+within a role bucket** (not an absolute count, which is authoring-density-dependent) and hold the
+token-less Spectra scrape as VALIDATION, not calibration data. A draft where BOTH passes recover
+nothing usable MUST emit the framework baseline UNCHANGED + a loud logged skip — NEVER a silent
+guessed theme, NEVER a partial-deploy. Parser failure / malformed CSS → HALT with a clear error, do
+not proceed to deploy.
+**Done when:** a token-less synthetic draft's derived palette is marked `advisory` + does not deploy
+to live without confirmation; a draft with nothing usable emits the baseline + a logged skip (not an
+empty/guessed theme); Pass B never inverts a palette (role from context, FR-33-2).
 
-### FR-33-6 — Button presets → `settings.custom.buttonPresets` (both hover idioms, no `!important`)
-The draft's global button classes (`.sgs-button--primary/secondary/ghost` BEM OR `.btn-primary/
-secondary` plain OR Indus `.nav-cta`) MUST be extracted into `buttonPresets.{primary,secondary,
-outline}` — background/text/border/radius/padding/font + the hover state. The two hover IDIOMS the
-corpus uses MUST both be captured: colour-invert (Mama's: bg→text colour) and transform-lift (Indus:
-`translateY(-2px)` + box-shadow). `!important` (Indus `.nav-cta`) is stripped — the VALUE is captured,
-not the important flag.
-**Done when:** Mama's 3 button variants + Indus's gold/translucent variants map to buttonPresets with
-correct rest + hover; no `!important` survives.
+### FR-33-6 — Dark-theme / preview-shell safety (never silent-discard a real background)
+The theme background MUST be taken from the COMPUTED background of the **widest block-level ancestor
+that actually CONTAINS the main content flow** (the common ancestor of the headings/paragraphs), NOT
+from `<body>` blindly. A dark `<body>` background is NEVER auto-discarded by darkness alone — a
+preview shell is identified only by a POSITIVE structural signal (a `.viewport-switcher`/`.device-frame`
+/ known review-harness DOM class or marker); if the signal is ambiguous, the background is
+gap-logged for one-glance confirmation, never silently dropped (a legit dark-branded site must survive).
+**Done when:** the Claude-App-Design dark preview shell (`body{background:#2a2a2a}` + a review-harness
+wrapper) is ignored via the positive signal; a synthetic legit dark-theme draft (`body` dark, no
+harness wrapper) KEEPS its dark background (not discarded).
 
-### FR-33-7 — Generated snapshot deployed via the existing channel (ends the drift)
-The extractor's output MUST be a `theme-snapshot.json` written to `sites/<client>/` in the STRUCTURED
-theme.json v3 slot shape (NOT the current raw-`styles.css`-blob-with-`!important` pattern the
-hand-maintained snapshots degraded into — align with Spec 26's intended structured direction), then
-deployed by the EXISTING `push-theme-snapshot.py` (disk `theme.json` + `wp_global_styles` REST). The
-6 currently-drifted snapshots (mamas-munches, eye-care-ward-end, sgs-construction, sgs-healthcare,
-sgs-mosque, + variants) MUST be REGENERATED from their drafts, ending the hand-maintained drift class.
-**Done when:** `push-theme-snapshot.py --client <c> --dry-run` on a generated snapshot shows the
-structured slots (no degenerate `[{"slug":"px","size":"px"}]`, no fabricated letter-spacing); a full
-push + reclone renders the draft base faithfully.
+### FR-33-7 — Provenance trace + golden fixtures + schema validation ("correct" = a diff, not an opinion)
+The extractor MUST emit a `theme-extract-trace.json`: one row per emitted token — `_source` pass,
+source selector + property, role-inference reason, ΔE-snap target + distance, confidence. Every FR
+"Done when" that says "correct" MUST be a DIFF against a checked-in `expected/<draft>.snapshot.json`
+golden per corpus draft (not an adjective). The emitted `theme-snapshot.json` MUST be validated against
+theme.json v3's schema BEFORE handoff to `push-theme-snapshot.py` (a malformed emit must fail here,
+not at the REST push).
+**Done when:** running on any corpus draft produces a trace explaining every token's origin; each
+corpus draft has an `expected/*.snapshot.json` the output is diffed against; a deliberately malformed
+emit is caught by the schema check pre-deploy.
 
-### FR-33-8 — Edge-case coverage (the corpus's 15 varieties)
-The extractor MUST handle, without a per-client branch: two token-naming philosophies (role vs
-literal-colour); intra-brand token drift (union, not one canonical set); typography with no `--font`
-token (synthesise); zero type/radius/shadow tokens (derive); a `:root` value that is a CSS function
-(`clamp()` token); three reset shapes (`*,::before,::after` vs `*`, varying order — normalise not
-string-match); three font-loading mechanisms; the dark preview-shell bg (ignore); unit-system variety
-(unit-aware normalise); `!important` in presets (strip); ad-hoc per-page colours (union); content-width
-outside `:root`; and the token-less/Spectra scrape (Pass-B computed fallback OR an explicit
-logged-skip — never a silent wrong-guess).
-**Done when:** each of the 3 design systems + the token-less synthetic fixture extracts correctly with
-ONE code path; the §Appendix A union inventory is the acceptance coverage set.
+### FR-33-8 — Determinism / idempotence (re-run → byte-identical)
+Re-running the extractor on an UNCHANGED draft MUST produce a BYTE-IDENTICAL snapshot. All clustering/
+promotion/dedup MUST use a total deterministic order (sort by `frequency-within-role desc`,
+`first-appearance byte-offset asc`, `canonical-hex asc`; ΔE-cluster canonical = lowest first-offset).
+Without this, git diffs + the FR-33-11 diff-approve review are meaningless and drift is reintroduced by
+the very tool built to kill it.
+**Done when:** the extractor runs twice on an unchanged draft → byte-identical output (a hard test).
 
-### FR-33-9 — No silent drops; universal; reuse existing primitives
-Every global declaration MUST be either extracted-to-a-slot OR logged as a gap-candidate (conservation,
-mirroring the block pipeline's `attribute_gap_candidates` discipline) — never silently dropped. The
-extractor MUST reuse (extend, not duplicate) the existing `converter/services/styling_helpers.py
-build_draft_root_colour_map` (today hex-only → extend to non-hex tokens + `var()`-chain resolution)
-and the ΔE token-snap. No hardcoded per-client dict (R-31-1); no `if client==` branch (blub.db 269).
-**Done when:** a grep finds no client literal in the extractor; every draft `:root`/base declaration
-appears in the snapshot OR the gap log; `build_draft_root_colour_map` is extended (not re-implemented).
+### FR-33-9 — Conservation (extract-to-slot OR gap-log; no silent drops; picker not flooded)
+Every global declaration MUST be extracted-to-a-slot OR logged as a gap-candidate — never silently
+dropped (mirrors the block pipeline's `attribute_gap_candidates`). Intra-palette ΔE merges log the
+loser as an alias (FR-33-2). Role-bearing/named colours → the palette; sub-threshold DECORATIVE
+one-offs (a shadow-rgba used once) → the trace/gap-log, NOT the client's colour picker (don't flood
+the palette with 30 junk swatches). Dead `:root` tokens → gap-log (FR-33-1).
+**Done when:** every draft `:root`/base declaration appears in the snapshot OR the gap-log; a
+once-used decorative rgba is in the trace, not the palette; a grep finds no client literal.
 
-### FR-33-10 — Relationship contracts (Spec 26 + 17 + the parked colour-var bugs)
-The extractor is the DECLARED-global source; Spec 26 FR-26-C is the DERIVED-global (from converted
-blocks) source — they MUST merge into the same snapshot without conflict (declared wins on an explicit
-draft token; derived fills gaps). The `:root` map the extractor builds MUST be consumable by
-`P-DRAFT-CSSVAR-COLOUR-RESOLUTION` + `P-DRAFT-CSSVAR-SEED-READD` (they currently re-parse `:root` —
-wire them to this map). Part 2 (Spec 17 header/footer converter) runs AFTER this, consuming the
-generated theme (so the cloned header/footer inherits the correct tokens).
-**Done when:** the extractor's `:root` map is exposed as a reusable service; the two colour-var
-parking entries are re-pointed to consume it (or a note records the follow-up).
+### FR-33-10 — Reuse by COMPOSITION, not by widening the live helper
+The extractor MUST add a NEW `build_draft_root_token_map()` (hex + non-hex + `var()`-chain resolution +
+fallback handling). The EXISTING `converter/services/styling_helpers.py::build_draft_root_colour_map`
+(hex-only, feeding the LIVE converter's exact-hex snap + the D307 `_theme_palette_slugs()` guard) MUST
+stay BYTE-IDENTICAL — widening its return would feed the converter unresolvable entries and risk
+re-opening the D306/D307 ghost-border bug. A golden asserts the hex-only map's output is unchanged for
+the Mama's draft.
+**Done when:** `build_draft_root_colour_map`'s output is byte-identical for Mama's (golden guard); the
+extractor consumes the new composed token map; no converter regression.
+
+### FR-33-11 — Deploy safety: prove on Mama's; backup + rollback; diff-approve; drift-detect
+v1 proves on **Mama's ONLY** (it carries the D303 bug + is the canary). The other 5 client snapshots
+are DEFERRED, each behind its own re-clone + a per-client visual/computed-parity (Stage 11.6) pass —
+NO snapshot-only push of a regenerated palette to a client whose pages aren't re-cloned in the same
+change. Before every `wp_global_styles` push, the pusher MUST fetch-and-back-up the CURRENT live
+payload to a timestamped file + document a one-command `--rollback`. Before overwrite, it MUST diff the
+live payload against the LAST-DEPLOYED snapshot and WARN if the live layer was hand-edited in the Site
+Editor since (else silent clobber of an operator tweak). Each client push is `--dry-run` diff → human
+go/no-go → `--yes` (SAFE_TARGETS enforced).
+**Done when:** Mama's regenerates + passes the FR-33-3 reclone + Bean's eye BEFORE any other client;
+a `--rollback` restores the prior live payload; a hand-edited live layer triggers a warning pre-push.
+
+### FR-33-12 — Bootstrap ordering (extractor is a hard prerequisite of ANY block clone)
+Because the converter token-snaps draft colours against the theme palette this extractor GENERATES
+(`styling_helpers._load_theme_palette_map` → `configure_colour_resolution_from_run`, Spec 31 §3.A),
+the extractor MUST run + validate for the current draft BEFORE any block conversion for that client.
+The `/sgs-clone` orchestrator MUST fail-closed if `theme-snapshot.json` was not produced/validated by
+the extractor for the current draft hash (reuse the existing `(client_slug, hash(css))` key as the
+freshness check). This changes the whole-pipeline run order — state it.
+**Done when:** a `/sgs-clone` run with a stale/absent generated snapshot fails-closed with a clear
+message; a run after a fresh extraction proceeds.
+
+### FR-33-13 — Forward contracts (Spec 26 acyclicity + Part 2 namespace + colour-var reuse)
+- **Spec 26 merge = FORWARD CONTRACT, inert until Spec 26 Phase 3.** This spec MUST NOT build a
+  half-merge. Acyclicity is fixed NOW: Spec 33 OWNS declared `settings.*` tokens (write-once per
+  draft); Spec 26 FR-26-C, WHEN built, may only FILL slots absent from Part 1's output and writes to
+  the variation DELTA layer (`styles.elements.*`/`buttonPresets.*`), NEVER back into Part 1's snapshot
+  nor into the palette the converter snaps against (prevents the theme→converter→theme oscillation).
+- **Part 2 namespace reserved NOW:** Part 1 owns GLOBAL/base + generic presets only; header/footer
+  COMPONENT tokens (sticky/scrolled header bg, header height, logo max-height, nav-link hover,
+  mobile-nav breakpoint) are Part 2's, in a reserved `settings.custom.header`/`.footer` namespace —
+  declared now so Part 2 does not force a Part 1 re-spec (Bean Q6).
+- The new `build_draft_root_token_map()` is exposed as a service the parked `P-DRAFT-CSSVAR-*` entries
+  consume (stop re-parsing `:root`).
+**Done when:** the snapshot reserves the header/footer namespace; FR-33-10's token map is a callable
+service; a note re-points the colour-var parking entries.
 
 ## Test strategy (holistic)
 
 | FR | Static / structural | Behavioural (real run) | Cross-check | Regression guard |
 |----|---------------------|------------------------|-------------|------------------|
-| FR-33-1 | grep: tinycss2 parse, no regex `:root` scrape; computed-pass present | run on Mama's (declared) + a token-less synthetic → both recover base | vs the §App A inventory | fixture: token-less draft |
-| FR-33-2 | ΔE≤1 dedup asserted; no client literal | 3 systems' colours → palette, no dup, one-offs kept | vs the 3 verbatim token sets (§App A) | fixture: rgba-only-in-rule colour |
-| FR-33-3 | clamp preserved (grep no px-flatten) | 3 systems → families+scale; heading lh=1.2 | vs draft rules | fixture: clamp() type + rem units |
-| FR-33-4 | preview-shell heuristic documented | reclone Mama's → quote 16px (D303 gone) | vs live computed-style | fixture: dark-shell body bg ignored |
-| FR-33-5 | contentSize scans beyond :root | dogfood tokens + Mama's .container both land | vs §App A §D | — |
-| FR-33-6 | `!important` stripped | both hover idioms captured | vs §App A §D | fixture: transform-lift + colour-invert |
-| FR-33-7 | structured slots, no CSS-blob | dry-run shows structured snapshot; 6 regenerated | vs push-theme-snapshot diff | the fabricated-letter-spacing must not reappear |
-| FR-33-8 | one code path, no client branch | all 3 systems + token-less pass | §App A = coverage | each edge case a fixture |
-| FR-33-9 | grep no client literal; gap-log present | every decl → slot or gap | conservation count | — |
-| FR-33-10 | :root map exposed as service | colour-var entries consume it | vs Spec 26 merge | — |
+| FR-33-1 | every token has `_source`; grep: no raw-declaration emit for values | fixture declared≠computed → computed wins + logged | vs golden | dead-token → gap-log |
+| FR-33-2 | role table present; ΔE=CIEDE2000; alpha-axis asserted | 3 systems → roles by table not name | vs the 3 verbatim token sets | rgba alpha not deduped; ambiguous → custom |
+| FR-33-3 | rem resolves vs computed root; no fabricated values | reclone Mama's → quote 16px, lh 1.2, font loads | vs live computed-style | 62.5%-root fixture; D303 guard |
+| FR-33-4 | clamp verbatim; `!important` stripped; hover = open bag | all declared types + both hover shapes land | vs §App A §D | fixture per value type |
+| FR-33-5 | derived tagged `advisory`; relative-share threshold | token-less → advisory + no auto-live; nothing usable → baseline+skip | vs Pass-B-inverts-palette | parser-fail → halt |
+| FR-33-6 | positive preview signal required | dark shell ignored; legit dark theme KEPT | vs the shell fixture | legit-dark-theme fixture |
+| FR-33-7 | trace row per token; schema-validate pre-push | every draft → trace + golden diff | vs `expected/*.json` | malformed emit caught |
+| FR-33-8 | deterministic sort keys | run twice → byte-identical | git diff clean | idempotence hard gate |
+| FR-33-9 | grep no client literal; decorative→trace | every decl → slot or gap | conservation count | picker-not-flooded fixture |
+| FR-33-10 | hex-map byte-identical golden | extractor uses composed map | vs converter output | no converter regression |
+| FR-33-11 | backup-before-write + `--rollback`; diff-approve | Mama's only; rollback restores; drift warns | vs live payload | other-5 deferred behind reclone |
+| FR-33-12 | orchestrator fail-closed gate | stale snapshot → fail; fresh → proceed | vs `(client,hash)` key | — |
+| FR-33-13 | header/footer namespace reserved; token map = service | — | vs Spec 26/17 | colour-var entries re-pointed |
 
-## Open questions (for the design-gate / `/adversarial-council`)
-1. **Snapshot = full theme.json or Spec-26 delta?** Spec 26 FR-26-A1 wants per-client DELTA files (only divergences from a framework baseline). Generating a delta is cleaner long-term but couples this spec to Spec 26's unbuilt variation model. Recommend: generate a FULL structured snapshot now (matches the current deploy path), leave delta-conversion to Spec 26. (Decide at the gate.)
-2. **Token-less / Spectra scrape (Class 3):** Pass-B computed fallback vs explicit skip-with-log. Recommend: attempt Pass-B computed extraction (headless render + getComputedStyle + frequency), fall to a logged gap if the render is unusable — never a silent wrong palette.
-3. **Palette slug mapping when a draft has MORE colours than the 16 SGS slugs** (Mama's `--cookie-brown`, Indus `--whatsapp`): keep as raw-hex custom entries vs extend the slug vocabulary. Recommend: raw-hex custom palette entries (FR-26-B1 already allows), don't force a slug.
-4. **Frequency thresholds for Pass B** (min occurrences to promote a literal to a palette/spacing token; the ΔE cluster radius). Recommend: reuse ΔE≤1 for colour dedup; a ≥3-occurrence + ≥ dominant-share rule for promotion (mirrors Spec 26 FR-26-C2). Empirically calibrate against the corpus at build.
+## Open questions — RESOLVED (baked into the FRs above; recorded here for the audit trail)
+1. **Full snapshot vs Spec-26 delta → FULL now** (matches the deploy path; delta is a clean downstream transform diffing the full output against baseline, not an extractor re-plumb). FR-33-4/7.
+2. **Token-less / Spectra fallback vs skip → advisory Pass B + baseline-on-empty** (never a silent guess; Pass B output is provisional/gated). FR-33-5.
+3. **Extra colours beyond the 16 slugs → named raw-hex custom entries, two-tier** (real colours → custom palette entry; decorative one-offs → trace, not the picker). FR-33-2/9.
+4. **Frequency thresholds → not precision-critical (Pass B advisory-gated); role by usage-context not raw frequency; relative-share within a role, not absolute count; validate on held-out drafts.** FR-33-2/5/8.
 
 ## Appendix A — Corpus union inventory (the acceptance coverage set)
-Full empirical inventory of every global declared default/preset/variable across the real draft
-corpus (`sites/{mamas-munches,indus-foods,_dogfood}`, 8 authored mockups, 3 design systems) —
-captured 2026-07-13. The extractor's acceptance = correctly handling every row here. Verbatim token
-sets, the two naming philosophies (role-named vs literal-colour-named), base-element rule matrix, the
-4 font families + 3 loading mechanisms, the button/eyebrow/container preset patterns, and the 15
-edge cases (intra-brand drift, un-tokenised typography, clamp `:root` values, three reset shapes, the
-dark preview-shell trap, unit variety, `!important`, token-less Spectra scrape) are recorded in the
-session investigation feeding this spec (D317 handoff). KEY COVERAGE ANCHORS:
-- **Colour roles + naming range:** primary/`--navy`, accent/`--gold`, text/`--text-dark`, success/`--green` (same hex #2E7D4F, different name), border/`--border`-vs-`--border-subtle`, plus one-offs `--cookie-brown`/`--whatsapp`/`--red`.
-- **Typography:** Fraunces+Inter (Mama's, px), DM Serif Display+DM Sans (Indus, rem), system-ui+Georgia (dogfood, clamp) — 7/8 hardcode the family (no `--font` token); 0/8 tokenise sizes/lh/tracking.
-- **Base elements carrying globals:** `*`(reset, 3 shapes), `html`, `body`, `h1–h4`, `p`, `img`, `a`.
-- **Presets:** `.container`/`.section` (contentSize 1200–1280), `.sgs-button--*`/`.btn-*` (2 hover idioms), `.sgs-section-heading__label`/`.section-label` (eyebrow), skip-link, focus-visible, reduced-motion.
+Full empirical inventory of every global declared default/preset/variable across the real draft corpus
+(`sites/{mamas-munches,indus-foods,_dogfood}`, 8 authored mockups, 3 design systems), captured
+2026-07-13. The extractor's acceptance = correctly handling every row (via a golden per draft, FR-33-7).
+KEY COVERAGE ANCHORS:
+- **Colour roles + naming range (two philosophies):** role-named (`--primary`/`--surface-*`/`--text*`,
+  Mama's+dogfood) vs literal-colour-named (`--navy`/`--gold`/`--green`/`--white`, Indus). Same role,
+  different name (success `#2E7D4F` = `--success`/`--green`). Intra-brand drift (`--border` vs
+  `--border-subtle`; `--accent-dark`/`--cookie-brown` present/absent across Mama's 4 files). One-offs
+  `--cookie-brown`/`--whatsapp`/`--red`. Value types: 6-hex, `rgba()`, `var()`-ref, `clamp()` token,
+  gradient (in rules).
+- **Typography:** Fraunces+Inter (Mama's, px), DM Serif Display+DM Sans (Indus, **rem**), system-ui+
+  Georgia (dogfood, **clamp**). 7/8 hardcode the family (no `--font` token → synthesise from base
+  rules). 0/8 tokenise sizes/lh/tracking (derive from base+heading+preset). Unit variety (px vs rem;
+  px vs em tracking). Three font-loading mechanisms (`<link>`, `@import`, system/none).
+- **Base elements carrying globals:** `*` (reset, 3 shapes — normalise), `html`, `body`, `h1–h4`, `p`,
+  `img`, `a`.
+- **Presets:** `.container`/`.section` (contentSize 1200–1280), `.sgs-button--*`/`.btn-*` (2 hover
+  shapes — colour-invert vs transform-lift), `.sgs-section-heading__label`/`.section-label` (eyebrow),
+  skip-link, focus-visible, reduced-motion.
+- **15 edge cases** (FR-33-4/5/6 coverage): two naming philosophies; intra-brand drift (union);
+  un-tokenised typography (synthesise); zero type/radius/shadow tokens (derive, advisory); `:root`
+  CSS-function value (`clamp()`); three reset shapes (normalise); three font-loading mechanisms; the
+  dark PREVIEW-SHELL trap (FR-33-6); unit variety (unit-aware, rem-root-resolved); `!important` (strip);
+  ad-hoc per-page colours (union); content-width outside `:root` (scan beyond); token-less Spectra
+  scrape (Pass-B advisory or baseline-skip).
 
-## Appendix B — Target theme.json slots (the SGS theme baseline, verified)
+## Appendix B — Target theme.json slots (SGS theme baseline, verified) + WP fluid facts
 `theme/sgs-theme/theme.json` provides: `settings.color.palette` (16 named slugs, raw hex OK);
 `settings.typography.fontFamilies` (body/heading/display/dm-sans + fontFace) + `fontSizes` (7-step,
 fluid) + `fluid`; `settings.spacing.spacingSizes` (8-step `10`–`80`); `settings.shadow.presets`
-(sm/md/lg/glow); `settings.custom.{buttonPresets(primary/secondary/outline), borderRadius(small/
-medium/large/pill), transition/duration/easing, focus-ring}`; `settings.layout.{contentSize 1200,
-wideSize 1400}`; `styles.typography` (base body); `styles.elements.{h1..h6, heading, link, button}`.
-Deploy: `push-theme-snapshot.py` → disk `theme.json` + `POST /wp/v2/global-styles/{id}` (wp_global_styles).
-WP fluid typography: `settings.typography.fluid:true` auto-computes `clamp()` from a size, OR per-size
-`fluid:{min,max}` for explicit control — the extractor emits sizes + fluid config, never hand-writes clamp.
+(sm/md/lg/glow); `settings.custom.{buttonPresets(primary/secondary/outline — each: background/text/
+border/border-width/border-radius/padding/font-size/font-weight/min-height/hover-*), borderRadius
+(small/medium/large/pill), transition/duration/easing, focus-ring}`; `settings.layout.{contentSize
+1200, wideSize 1400}`; `styles.typography` (base body); `styles.elements.{h1..h6, heading, link,
+button}`. **NEW namespace this spec reserves:** `settings.custom.header`/`.footer` (Part 2, FR-33-13).
+Deploy: `push-theme-snapshot.py` → disk `theme.json` + `POST /wp/v2/global-styles/{id}` (wp_global_styles;
+overwrites the operator layer — FR-33-11 backup/diff/rollback guards this).
+**WP fluid typography:** `settings.typography.fluid:true` auto-computes `clamp()` from a size; per-size
+`fluid:{min,max}` gives explicit control. **BUT a draft's authored `clamp()` MUST be emitted verbatim as
+the `size` string (theme.json accepts it)** — routing it through WP's fluid formula recomputes a
+different curve (FR-33-4). Reserve `fluid:{min,max}` only for sizes the draft did NOT already clamp.
