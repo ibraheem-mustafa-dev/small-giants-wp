@@ -240,3 +240,13 @@ body.admin-bar html {
 	background-color: var(--sgs-link-hover-bg, var(--wp--preset--color--primary));
 	color: var(--sgs-link-hover-text, #fff);
 }
+
+/* Global keyboard-focus ring (WCAG 2.2 AA). Framework a11y default for EVERY client — migrated
+   out of the per-client theme snapshot (Spec 33 D322) where it was mislocated; it is not
+   client-specific, so it belongs in the theme, applied on every site. Uses the client's own
+   --text token so the ring reads against their palette. */
+*:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text);
+	outline-offset: 2px;
+	border-radius: 4px;
+}

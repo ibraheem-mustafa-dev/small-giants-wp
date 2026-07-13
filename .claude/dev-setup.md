@@ -422,7 +422,7 @@ extensions/
 
 **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
 
-> **LiteSpeed note (2026-05-05):** LiteSpeed Cache plugin deleted from dev sites (palestine-lives.org + sandybrown). No LiteSpeed purge needed for those sites. Check `wp plugin list | grep litespeed` on production sites before deploying.
+> **LiteSpeed note (updated 2026-07-13, D322):** LiteSpeed Cache **IS active on sandybrown** (v7.8.1 — re-installed at D312, re-confirmed live D322; the old "deleted 2026-05-05" claim is STALE). ALWAYS `wp litespeed-purge all` on sandybrown after a CSS/render deploy, in addition to OPcache reset + the Hostinger CDN clear (`hosting_clearWebsiteCacheV1`). Check `wp plugin list --status=active | grep -i litespeed` on any target before deciding.
 
 ### Full deployment (recommended — tar method)
 

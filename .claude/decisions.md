@@ -6,7 +6,17 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-13 (LATEST) — D321: Spec 33 Phase 6a — FR-33-6 dark-theme safety + FR-33-5 Pass B advisory (extractor)
+## 2026-07-13 (LATEST) — D322: Spec 33 Phase 6b — FR-33-13 namespace + component-CSS migration; ALL 13 FRs SHIPPED (Spec 33 Part 1 COMPLETE)
+
+**D322 — the transitional component CSS is out of the Mama's snapshot, the header/footer namespace is reserved, and Spec 33 Part 1 is DONE (13/13 FRs).** Branch `main` (D-ceiling D321→D322). Deployed + live-verified clean on sandybrown page 8.
+
+- **FR-33-13 namespace (`extract.py`):** the generated snapshot now RESERVES `settings.custom.header` / `.footer` (empty objects; WP emits no var from them — inert) for Part 2 (Spec 17), with a RECONCILIATION NOTE that Spec 17's BUILT model drives header/footer via the Customiser + inline CSS + a JS-measured `--sgs-header-height`, NOT this namespace — so Part 2 must decide tokenise-vs-Customiser (Bean-directed "reserve + note", not adopt). `build_draft_root_token_map()` re-pointed for the parked `P-DRAFT-CSSVAR-*` entries.
+- **Component-CSS migration (the transitional `styles.css` blob in `sites/mamas-munches/theme-snapshot.json`, 2273→117 chars):** a live-DOM investigation classified all 10 rules — rules 1-8 are DEAD (legacy `is-style-*` buttons: 0 live matches, buttons use the Spec-32 `--primary` classes; `.sgs-hero__ctas`: 0 repo refs; page-29/144 hacks: both 404) → DROPPED; rule 0 (global `*:focus-visible`) → MIGRATED to the framework theme `assets/css/utilities.css` (it's a framework a11y default, not client-specific — and the client's deployed theme.json IS the snapshot, so a global rule must live in a theme ASSET, not the snapshot); rule 9 (product-card / option-picker client override `--sgs-*` vars) → KEPT (live + load-bearing, consumed at `:root`). Theme Version 1.5.7→1.5.8, button block.json 1.5.0→1.5.1 (cache-bust).
+- **Button hover-transform consumption (the FIX-3 render-side closure from D321):** `button/style.css` now applies `--wp--custom--button-presets--{slot}--hover-transform` via a `--sgs-btn-transform-hover` var (`none` fallback = current behaviour; the per-instance `scaleHover` rule still wins by specificity; reduced-motion preserved) — so the open-bag hover-transform the extractor emits (FR-33-4) actually paints. Bean directive: deal with follow-ups now, don't defer.
+- **Deployed + LIVE-VERIFIED clean (sandybrown page 8, real browser + real hover):** focus-visible outline `solid` now served from `utilities.css?ver=1.5.8` (no inline wp_global_styles focus rule — migration proven); `--sgs-op-sel-text` = `#3A2E26` (rule 9 intact); primary button resting `rgb(230,138,149)` + hover `rgb(65,50,43)` (unchanged — dead rules removed cleanly); hover-transform inert `none`; 0 console errors; visual intact 1440+375. LiteSpeed v7.8.1 confirmed active (dev-setup.md corrected). 26 extractor tests green; snapshot regeneration additive (only styles.css reduced + header/footer added, `_sgsExtractor` hash unchanged so the FR-33-12 gate still passes).
+- **Spec 33 Part 1 → v1.1.0 COMPLETE: all 13 FRs shipped** (FR-33-1..4/7..11 D318; FR-33-12 D320; FR-33-5/6 D321; FR-33-13 + migration D322). REMAINING (separate, deferred): roll out to the other 5 client snapshots (each behind its own reclone + parity, FR-33-11); Part 2 = header/footer CLONE (Spec 17).
+
+## 2026-07-13 — D321: Spec 33 Phase 6a — FR-33-6 dark-theme safety + FR-33-5 Pass B advisory (extractor)
 
 **D321 — the extractor now handles dark/preview-shell backgrounds safely and can DERIVE a provisional palette for token-less drafts (advisory, never auto-live).** Branch `main` (D-ceiling D320→D321). Pure-Python extractor build; proved on synthetic fixtures + Mama's unaffected.
 
