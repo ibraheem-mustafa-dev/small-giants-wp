@@ -1,93 +1,107 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-generated: 2026-07-13
-thread: BUILD the shared FR-S9-6 {desktop,tablet,mobile} responsive-override engine ONCE + wire all row/nav blocks to it
+generated: 2026-07-14
+thread: CLOSE the FR-S9-6 migration (re-save footer/nav instances) + extend the object model to the box props (padding/margin) + nav linkFontSize
 ---
 
-# NEXT SESSION — BUILD the shared responsive-override engine (FR-S9-6)
+# NEXT SESSION — close the FR-S9-6 migration + extend to box props
 
-You are the SGS WordPress block + frontend developer. The header (P1 D324 + nav P2 D326) and footer (P3 D325) blocks are all SHIPPED + live. This session builds the **shared `{desktop,tablet,mobile}` per-property responsive-override engine** ONCE and wires the three row/nav blocks to it. Invoke `/autopilot` first.
+You are the SGS WordPress block + frontend developer. The FR-S9-6 `{desktop,tablet,mobile}` responsive-override engine is BUILT, wired to all 3 §S9 row/nav blocks (`sgs/site-header-row`, `sgs/site-footer-row`, `sgs/adaptive-nav`), and PROVEN LIVE (D327). This session closes the migration (re-save the live instances) and extends the object model to the box props. Invoke `/autopilot` first.
 
-## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. **`.claude/handoff.md`** — this session's record (D326) + what shipped.
-2. **`.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` §S9 FR-S9-6 IN FULL** (the responsive-override model spec) + Spec 17 end-to-end (Bean-locked: read the governing spec fully each session).
-3. **`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` §8** (per-breakpoint override model — data model, cascade, canonicalisation, editor UX).
-4. **`.claude/parking.md`** → `P-ADAPTIVE-NAV-P2B` (item 3 = this build) + `P-DRAWER-MOVABLE-OVERFLOW-DROPZONE`.
-5. **The 3 target blocks' current flat-tier attrs:** `plugins/sgs-blocks/src/blocks/{site-header-row,site-footer-row,adaptive-nav}/block.json` (all `gapTablet`/`maxWidthMobile` flat — the thing you're replacing) + **`SGS_Container_Wrapper`** (`includes/class-sgs-container-wrapper.php`) — how it reads flat-tier attrs + computes the uid.
+Read `.claude/handoff.md` + `CLAUDE.md` + `.claude/plans/go-rippling-cascade.md` for full context, then work the priorities.
 
 ## Why this next
-FR-S9-6 (the `{desktop,tablet,mobile}` null-inherit per-property override model) is the ONE foundational §S9 FR that **no track has built** — header, footer, AND nav all ship on the simpler flat-tier attrs (`object-model=0`, verified on-disk). The footer track deferred it too. So there is **nothing to copy** — it is a fresh build. The upside (Bean's build-once intent): all three blocks are identical flat-tier, so build the engine ONCE and wire all three together, no divergence to reconcile.
+D327 built the engine + wrapper opt-in branch + editor + wired all 3 blocks (gap everywhere + footer grid), proven live. Two things remain to fully land FR-S9-6: (1) the footer/nav live instances render via the graceful LEGACY path (identical output) until re-saved to the object shape; (2) the box props (padding/margin) + nav `linkFontSize` aren't on the object model yet (the engine + wrapper already support box props — route to the outer, box-aware).
 
-## Track B (D325) — shipped this session + open follow-ups (secondary to FR-S9-6)
-The footer track (parallel to D326) SHIPPED: `sgs/site-footer` + `sgs/site-footer-row`, `sgs/cart` `hideWhenEmpty`, `Org_Website_Schema` `sameAs`/`contactPoint`, the `sgs/business-info` block now has 8 draggable per-type variations (footer data reads live from Site Info, not bindings), and a **Tier-1 pipeline business-info auto-fill** (`sync-business-info.py` + capability-gated `POST /sgs/v1/site-info`, wired into `orchestrator/upload_and_patch.py` as a Spec 33 FR-33-14 Part-1 companion). **Open follow-ups (lower priority than FR-S9-6):** (a) **Tier-2 business-info** — tagline/address/hours are semantic guesses that need a review-not-auto-write flow (parallels FR-33-5); (b) a **full `/sgs-clone` run** to exercise the auto business-info fill end-to-end (only static-verified so far); (c) FR-S9-8 Site-Editor header-builder editor-UX design-gate (Track B Task 2, not done). Full detail: `.claude/handoff.md` (D325 section).
+## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
+1. `.claude/handoff.md` (D327 record) + `.claude/decisions.md` D327.
+2. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` §S9 FR-S9-6 IN FULL + Spec 17 end-to-end (Bean-locked: read the governing spec fully each session).
+3. `.claude/plans/go-rippling-cascade.md` — the engine + wrapper execution spec + council-validated mechanics + DEFERRED list.
+4. `plugins/sgs-blocks/includes/{class-sgs-breakpoints.php,helpers-responsive.php}` + `class-sgs-container-wrapper.php` (the `$object_model`/`$object_grid` branch) + `src/components/ResponsiveOverride.js`.
 
 ## ⛔ ANTI-PATTERN STOPs (carried forward — NEVER subtract, D101)
-- **STOP-GROUND-TRUTH-CHECK-PARALLEL-TRACK (D326, NEW)** — before assuming a parallel track built something, VERIFY on-disk (grep the actual files). My "adopt the footer track's shared engine" was a false premise — the footer track deferred FR-S9-6; all blocks are flat-tier. Read ground truth, don't infer from a doc claim.
-- **STOP-NO-KSORT-WRAPPER-UID (D326, NEW)** — the shared-wrapper uid = `md5(wp_json_encode($attributes))` and its docblock FORBIDS `ksort`/key-reorder (churns EVERY container block's uid → pixel drift). The object-model must guarantee key order at WRITE-time (edit.js + block.json default order), never by mutating the hash input. Verify existing blocks' uids are unchanged after the engine lands.
-- **STOP-WHOLE-PAGE-SCROLLWIDTH-POLLUTED (D326, NEW)** — `document.documentElement.scrollWidth` is polluted by the testimonial-slider carousel (off-screen slides, accepted exception). To judge a block's own overflow, measure per-element `el.closest('header,...')`/`inHeader`, not the page's scrollWidth.
-- **STOP-READ-TRUTH-NOT-ASSUME (D324)** — read theme files + plugin/WC source + the SPEC for ground truth BEFORE theorising. Prove the cause in the source, not by assumption.
-- **STOP-CSS-VER-CACHE-BUST (D310/D316/D322)** — a `style.css`/theme-CSS-only change is served stale unless `theme/sgs-theme/style.css` Version is bumped; a block CSS change bumps that `block.json` version.
-- **STOP-VERIFY-CACHE-LAYER (D312/D322)** — LiteSpeed v7.8.1 active on sandybrown; `wp litespeed-purge all` + OPcache + CDN (`hosting_clearWebsiteCacheV1`) before ANY live CSS/JS measure.
-- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache + LiteSpeed + CDN clear + live computed-value. (This session caught 3 bugs live that all passed the build.)
-- **STOP-static-vs-live (D304/D305)** — for "does this rule apply / what renders?" use the LIVE DOM, never static PHP/CSS parsing.
-- **STOP-67** — a changed BLOCK needs a pre-commit visual-diff report at `reports/visual-diff/<block>-<date>.md` (`verdict: PASS` + `first_paint_capture_passed: true`).
-- **STOP-16** — a subagent / "it works" / build-green is a HYPOTHESIS. Re-run + re-verify yourself. Node/npm via PowerShell (nvm shim broken in Git Bash). This session's subagent shipped a `display:contents` layout bug + 2 view.js bugs — all caught by main-agent live re-verify.
-- **STOP-WP-HOOKS-VALIDATE (D324)** — validate any WP hook via `/wp-hooks` before wiring it.
-- **STOP-PARALLEL-TRACK-SWEEP (D326)** — a parallel session on the same working tree can sweep your uncommitted shared-file edits into ITS commit. Commit path-scoped + promptly; verify D-ceiling + branch before every commit.
-- **STOP-VERIFY-BINDING-REGISTRATION (D325, NEW)** — a WP block-bindings source (or any registered thing) that "exists" in code can be entirely DEAD. Verify it's on the LIVE registry + renders the real value, not just that the class exists. Never pass `can_user_edit_value` to `register_block_bindings_source` (NOT a valid WP-core arg → the whole registration silently returns false). A binding `get_value` callback's param 2 is a `WP_Block` object, NOT `array` (a wrong type-hint → TypeError → HTTP 500). The `sgs/site-info` source was dead for its whole life until the footer surfaced all 3 (memory `verify-block-binding-registration-on-live-registry`).
-- **STOP-GRID-MOBILE-COLLAPSE-NEEDS-EXPLICIT-TEMPLATE (D325, NEW)** — an explicit base `gridTemplateColumns` on a wrapper grid SUPPRESSES the `sgs-cols-mobile-N`/`sgs-cols-tablet-N` shorthand classes (D228 gate). To collapse columns at a tier you MUST set an explicit `gridTemplateColumns{Tablet,Mobile}` responsive value, not just `columns{Tablet,Mobile}`. Caught live (footer stayed 3-col at 375 until fixed).
-- **Composite-mirror (R-31-9 / D294)** — delegate outer render to `SGS_Container_Wrapper`; no divergent per-block styling path. No inline `style=""` (Spec 32). No block version bumps as deprecations (D270/D293).
+- **STOP-NO-KSORT (D326/D327)** — the shared-wrapper uid = `md5(wp_json_encode($attributes))`; NEVER `ksort`/reorder the hash input. Object-model key order is a WRITE-TIME guarantee (`makeResponsive` + block.json default order). Verify existing blocks' uids unchanged after any wrapper edit.
+- **STOP-WRAPPER-OWNED-VS-BLOCK-OWNED (D327, NEW)** — a WRAPPER capability (row flex gap/width/padding) is emitted BY the wrapper via `responsive_model=object`; a block's OWN internal element (nav `<ul>`) uses the shared `sgs_emit_responsive_css()` directly in its render.php. Don't route a block-owned element through the wrapper flag (double-emit) or a wrapper capability block-private (fork — qc-council NON-COMPLIANT).
+- **STOP-CONTAINER-TYPE-SELF-QUERY (D327, NEW)** — an element cannot size-`@container` itself. container-type goes on the OUTER; the styled flex/grid + tier rules go on a DESCENDANT (`.sgs-container__inner`). Verify live that the block adapts nested-narrow, not just at viewport.
+- **STOP-GRACEFUL-MIGRATION (D327, NEW)** — flipping `responsive_model=object` must NOT break a flat-stored instance. The `$object_grid` gate + `is_array` gap guard + emitter `normalise_object` handle it; verify a NON-re-saved instance still renders before/after any wrapper change.
+- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache + `wp litespeed-purge all` + Hostinger `hosting_clearWebsiteCacheV1` (CDN) + live computed-value. The whole feature was confirmed live only after this sequence.
+- **STOP-CSS-VER-CACHE-BUST (D310/D316/D322)** — a `style.css`/theme-CSS-only change is stale unless `theme/sgs-theme/style.css` Version bumps; a block CSS change bumps that `block.json` version (render-side scoped `<style>` lands fresh).
+- **STOP-static-vs-live (D304/D305)** — for "does this rule apply / what renders?" use the LIVE DOM (Playwright computed-style), never static PHP/CSS parsing.
+- **STOP-67** — a changed BLOCK needs a pre-commit visual-diff report at `reports/visual-diff/<block>-<date>.md` (`verdict: PASS` + `first_paint_capture_passed: true`). The commit gate enforces it.
+- **STOP-16** — a subagent / "it works" / build-green is a HYPOTHESIS. Re-verify live yourself. Node/npm via PowerShell (nvm shim broken in Git Bash).
+- **STOP-WINDOWS-BASH-STALE** — Git Bash `git add` has a stale view of Write-tool-created files; stage + commit via PowerShell (Windows = ground truth).
+- **STOP-PARALLEL-TRACK-SWEEP (D326)** — commit path-scoped + promptly; verify D-ceiling + branch before every commit.
+- **Composite-mirror (R-31-9 / D294)** — no divergent per-block styling path; no inline `style=""` (Spec 32); no block version bumps as deprecations (D270/D293).
+
+## ⛔ PRE-FLIGHT SELF-ATTESTATION (answer before first Write/Edit)
+1. Have I read Spec 17 §S9 FR-S9-6 IN FULL + the plan this session?
+2. For the prop I'm migrating — is it a WRAPPER capability (→ flag) or a block's OWN element (→ shared emitter direct)?
+3. Will I verify on the LIVE DOM after the full cache-clear sequence (STOP-21), not on build-green?
+4. Have I verified the D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`) + branch = `main` before committing?
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | ALWAYS — the data-model + cascade + canonicalisation design decisions |
-| `/gap-analysis` | ALWAYS — grade the engine vs FR-S9-6 acceptance criteria |
+| `/brainstorming` | ALWAYS — box-object editor UX design decisions |
+| `/gap-analysis` | ALWAYS — grade the migration vs FR-S9-6 acceptance |
 | `/lifecycle` | ALWAYS — before any skill/agent change |
-| `/research` | ALWAYS — WP responsive-attr patterns; Kadence/Spectra/GenerateBlocks device-tier models |
-| `/strategic-plan` | ALWAYS — order the engine build + the 3-block wiring |
-| `/qc-council` | validate the shared-wrapper change before dispatch (blub.db 255) — it's a cross-block sensitive surface |
-| `/sgs-wp-engine` + `/sgs-update` | SGS block dev + DB register |
-| `/qc` · `/visual-qa` · `/a11y-audit` | live breakpoint verification of all 3 blocks after wiring |
+| `/research` | ALWAYS — WP BoxControl responsive patterns if needed |
+| `/strategic-plan` | ALWAYS — order the box-prop migration + re-save |
+| `/qc-council` | validate any further shared-wrapper change before dispatch (blub.db 255) |
+| `/sgs-wp-engine` + `/sgs-update` | SGS block dev + DB re-register |
+| `/qc` · `/visual-qa` · `/a11y-audit` | live breakpoint + device-switcher keyboard verification |
 
 ## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| Playwright / chrome-devtools MCP (or a standalone `node` Playwright script — MCP browser was locked this session) | live per-tier computed-value verification on all 3 blocks |
+| Playwright MCP (`browser_navigate`/`browser_evaluate`/`browser_resize`) | live per-tier computed-value verification (used all D327) |
 | Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear (user `u945238940`, domain `sandybrown-nightingale-600381.hostingersite.com`) + `wp litespeed-purge all` + OPcache before any live measure |
 | `/wp-blocks` + `/sgs-db` | schema/DB ground truth before any "missing X" claim |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| general-purpose (Sonnet) | scaffold the editor device-switcher component + per-block wiring (re-verify live yourself, STOP-16) |
-| `wp-sgs-developer` | heavy shared-wrapper/engine build (if registered) |
-| `feature-dev:code-reviewer` (or /qc-council raters) | review the shared-wrapper change before commit |
+| general-purpose (Sonnet) | box-editor component + per-block box-prop wiring (re-verify live yourself, STOP-16) |
+| `wp-sgs-developer` | heavy shared-wrapper/engine work (if registered) |
+| `feature-dev:code-reviewer` (or /qc-council raters) | review any shared-wrapper change before commit |
 
-## Task 1: Design + build the shared responsive-override engine (FR-S9-6)
-**What:** a shared `{desktop, tablet, mobile}` per-property override data model (`null`=inherit-tier-above, `desktop` always concrete), consumed by `SGS_Container_Wrapper`, that emits a tier's CSS rule ONLY where it diverges from the tier below, with per-side box inheritance, container-query + media-query tiers, and a shared breakpoint source (768/1024 + custom-px).
-**Why:** the foundational cross-block responsive model (FR-S9-6) that the header rows, footer rows, and nav all currently fake with flat-tier attrs.
-**Orchestration:** inline (main, Opus) for the wrapper/data-model design; `/qc-council` the wrapper change before dispatch; delegate the editor device-switcher React component to Sonnet.
-**Acceptance (FR-S9-6 full scope):** data model + null-inherit cascade + tier-diff emission + per-side box inheritance + shared breakpoint source (grep-clean of a second hardcoded 768/1024) + `container-type:inline-size` + the SGS-owned device-switcher (keyboard tabs, 44px, non-colour inherited-indicator, reset-to-inherited) + a golden "re-save = same uid" test. Existing (non-§S9) blocks' uids + CSS byte-unchanged (STOP-NO-KSORT).
-**/qc gate after:** yes — `/qc-council` (shared surface) + live per-tier verify.
+## Task 1: Close the migration — re-save footer + nav instances
+**What:** open the header + footer template parts in the Site Editor, re-save the `sgs/site-footer-row` + `sgs/adaptive-nav` instances so they carry the object-model defaults, then live-confirm they render via the object path (not legacy).
+**Why:** the graceful gate means they currently render via legacy (identical output); re-saving completes the FR-S9-6 migration.
+**Estimated time:** ~10 min.
+**Orchestration:** inline (main) via Playwright editor login (canary creds `.claude/secrets/sandybrown.env`); re-verify live per tier.
+**Acceptance:** footer/nav instances store `{desktop,...}` object attrs; live per-tier values unchanged (footer 3→1, gap 48→32; nav 28px); uid stable on re-save.
+**/qc gate after:** yes — live per-tier verify.
 
-## Task 2: Wire the 3 row/nav blocks to the engine
-**What:** migrate `sgs/site-header-row`, `sgs/site-footer-row`, `sgs/adaptive-nav` from flat-tier attrs to the object model, wiring their edit.js to the device-switcher and render.php to the engine.
-**Why:** one consistent responsive model across the whole header + footer.
-**Orchestration:** inline or 1 Sonnet subagent per block (disjoint dirs); re-verify each live yourself.
-**Acceptance:** all 3 blocks live-verified at 320/768/1024/1440 — per-tier overrides apply, inherited values resolve, uid stable on re-save, no regression to the shipped header/footer/nav behaviour (WC blocks still gone, collapse still correct). Visual-diff report per block (STOP-67).
-**Depends on:** Task 1.
-**/qc gate after:** yes — `/qc` + `/visual-qa` + `/a11y-audit`.
+## Task 2: Migrate the box props (padding/margin) + nav linkFontSize
+**What:** extend the object model to padding/margin on all 3 blocks (the wrapper object-emit already routes box props to the outer, box-aware) + adaptive-nav `linkFontSize` via the shared emitter; replace the orphan flat tier attrs + `ResponsiveSpacingPanel` with a `ResponsiveOverride` + BoxControl.
+**Why:** completes FR-S9-6 "every property overridable per breakpoint" for these blocks.
+**Estimated time:** ~30 min.
+**Orchestration:** `/brainstorming` the box-editor UX first; inline or 1 Sonnet subagent per block; re-verify each live.
+**Acceptance:** padding/margin object model live-verified per tier + per-side inheritance; no dead controls; no regression.
+**Depends on:** Task 1. **/qc gate after:** yes — `/qc` + `/visual-qa` + `/a11y-audit`.
+
+## Task 3: DB re-register + full gate pass
+**What:** `/sgs-update` to re-register the changed attrs; `/qc` + `/a11y-audit` across all 3 blocks incl. the editor device-switcher (keyboard tablist traversal + inherited-indicator aria-label + reset-to-inherited).
+**Why:** FR-S9-6 editor-UX acceptance + DB ground-truth.
+**Estimated time:** ~15 min.
+**Acceptance:** `/sgs-db` shows updated attrs; a11y clean; device-switcher keyboard-operable.
+**Depends on:** Task 2.
 
 ## Dependency graph
 ```
-Task 1 (inline Opus + /qc-council the wrapper change)
-  ↓  live per-tier verify + golden uid test
-Task 2 (per-block wiring, disjoint — verify each live)
-  ↓  /qc + /visual-qa + /a11y-audit
-Commit + merge-to-main (path-scoped; verify D-ceiling + branch)
+Task 1 (inline, re-save + live verify)
+  ↓
+Task 2 (box props — /brainstorming UX → per-block, verify each live)
+  ↓ /qc + /visual-qa + /a11y-audit
+Task 3 (/sgs-update + full gate pass)
+  ↓
+Commit + push (path-scoped; verify D-ceiling + branch = main)
 ```
 
 ## Methodology guardrails (do not skip)
-- **Read the truth first** (spec + on-disk block.json + wrapper code), then design. **Deploy before measure** (STOP-21). **Root cause before instance fix.** **Outcome vs completion** — the outcome is all 3 blocks on ONE working responsive model, live-verified per tier; engine-built ≠ done. **/qc-council the shared-wrapper change BEFORE dispatch.** **Never `ksort` the uid.** **Ground-truth-check before assuming a parallel track built anything.**
+- **Deploy before measure (STOP-21)** — build + deploy + OPcache + LiteSpeed + CDN clear BEFORE any live measure.
+- **Root cause before instance fix** — for a rendering miss, prove the cause on the LIVE DOM / a real render trace first.
+- **Outcome vs completion** — the outcome is all 3 blocks on the FULL object model (incl. box props), live-verified per tier; engine-built ≠ done.
+- **/qc-council any shared-wrapper change BEFORE dispatch.** Never ksort the uid. Verify graceful migration (flat-stored instance still renders).
