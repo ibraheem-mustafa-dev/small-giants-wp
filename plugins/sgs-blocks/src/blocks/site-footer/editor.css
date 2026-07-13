@@ -1,0 +1,10 @@
+/**
+ * SGS Site Footer — editor-only styles.
+ *
+ * Mirrors the frontend shell so the editor preview matches the deployed footer.
+ */
+
+.editor-styles-wrapper .sgs-site-footer {
+	width: 100%;
+	box-sizing: border-box;
+}

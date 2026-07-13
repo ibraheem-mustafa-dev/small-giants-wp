@@ -1,0 +1,19 @@
+/**
+ * SGS Footer Row — editor-only styles.
+ *
+ * Mirrors the frontend row so the editor preview matches the deployed footer,
+ * plus makes an empty row visible/selectable (it renders zero output on the
+ * frontend, but must be editable in the Site Editor).
+ */
+
+.editor-styles-wrapper .sgs-site-footer-row > * {
+	min-width: 0;
+}
+
+/* Empty rows: give operators a visible, clickable target in the editor. */
+.editor-styles-wrapper .sgs-site-footer-row:not(:has(> * )),
+.editor-styles-wrapper .sgs-site-footer-row .block-list-appender:only-child {
+	min-height: 40px;
+	outline: 1px dashed rgba( 0, 0, 0, 0.15 );
+	outline-offset: 2px;
+}

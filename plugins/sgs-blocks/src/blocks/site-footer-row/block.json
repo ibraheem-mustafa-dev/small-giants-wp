@@ -1,0 +1,163 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/site-footer-row",
+	"version": "0.1.0",
+	"title": "SGS Footer Row",
+	"category": "sgs-layout",
+	"icon": "columns",
+	"description": "One row of a site footer — either a never-overflow cluster (top strip / bottom bar) or a column grid (up to 6 columns collapsing to 1 below the mobile tier). Lives inside sgs/site-footer.",
+	"keywords": [
+		"footer row",
+		"site footer",
+		"columns",
+		"cluster"
+	],
+	"textdomain": "sgs-blocks",
+	"parent": [
+		"sgs/site-footer"
+	],
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"containerKind": "layout"
+		}
+	},
+	"allowedBlocks": [
+		"core/group",
+		"sgs/responsive-logo",
+		"core/site-logo",
+		"core/site-title",
+		"core/heading",
+		"core/paragraph",
+		"core/list",
+		"core/social-links",
+		"core/html",
+		"sgs/business-info",
+		"sgs/button",
+		"core/buttons"
+	],
+	"attributes": {
+		"rowSlot": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": "grid"
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "wrap"
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": ""
+		},
+		"verticalAlign": {
+			"type": "string",
+			"default": "top"
+		},
+		"gap": {
+			"type": "string",
+			"default": "48px"
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": "32px"
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": "full"
+		},
+		"contentWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTopTablet": { "type": "string", "default": "" },
+		"paddingRightTablet": { "type": "string", "default": "" },
+		"paddingBottomTablet": { "type": "string", "default": "" },
+		"paddingLeftTablet": { "type": "string", "default": "" },
+		"paddingTopMobile": { "type": "string", "default": "" },
+		"paddingRightMobile": { "type": "string", "default": "" },
+		"paddingBottomMobile": { "type": "string", "default": "" },
+		"paddingLeftMobile": { "type": "string", "default": "" },
+		"marginTopTablet": { "type": "string", "default": "" },
+		"marginRightTablet": { "type": "string", "default": "" },
+		"marginBottomTablet": { "type": "string", "default": "" },
+		"marginLeftTablet": { "type": "string", "default": "" },
+		"marginTopMobile": { "type": "string", "default": "" },
+		"marginRightMobile": { "type": "string", "default": "" },
+		"marginBottomMobile": { "type": "string", "default": "" },
+		"marginLeftMobile": { "type": "string", "default": "" }
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

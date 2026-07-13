@@ -1,0 +1,18 @@
+/**
+ * SGS Site Footer — frontend styles.
+ *
+ * The footer shell is a full-width stack of rows. The never-overflow behaviour
+ * and the column grid live on each row (sgs/site-footer-row). Instance values
+ * (padding, colours, max-width) are injected as scoped <style> by
+ * SGS_Container_Wrapper — never inline (Spec 32).
+ */
+
+.sgs-site-footer {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.sgs-site-footer,
+.sgs-site-footer > .sgs-container__inner {
+	max-width: 100%;
+}
