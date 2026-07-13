@@ -2,54 +2,47 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-13
-session: D320-D322 — Spec 33 Part 1 COMPLETE (all 13 FRs): freshness gate + Pass B advisory + dark-theme + namespace + component-CSS migration
+session: D323 — Header/Footer/Nav SYSTEM design-gate APPROVED + P0 unclickable-drawer fix SHIPPED + 6-doc rollout
 ---
 
-# Session Handoff — 2026-07-13 (D320/D321/D322)
+# Session Handoff — 2026-07-13 (D323)
 
 ## Completed This Session
-1. **Spec 33 Part 1 is COMPLETE — all 13 FRs shipped + live-verified.** The draft global-styles extractor's follow-up set (FR-33-5/6/12/13 + the component-CSS migration) is done. Spec 33 → v1.1.0 COMPLETE. Three commits, all on `main`, pushed.
-2. **FR-33-12 fail-closed freshness gate (D320, `03d98c97`).** `/sgs-clone` now HALTs unless the canonical `theme-snapshot.json` carries an `_sgsExtractor.draft_css_sha256` matching the current draft. New `scripts/shared_utils.py` = single-source `extract_css`/`css_sha256` (no hash drift). A `feature-dev` code review caught a blocker in the first design (freshness tied to the generated file, not the file the converter reads) — fixed by embedding the key IN the canonical snapshot.
-3. **FR-33-5 Pass B advisory + FR-33-6 dark-theme (D321, `f8e8ab1e`).** `derive.py` derives a palette for token-less drafts (usage-context role, not frequency; `advisory:true`, never auto-live; `push-theme-snapshot --include-advisory` gates it). `extract._theme_background` picks the widest content-containing ancestor (dark discarded only on a positive preview-shell signal; `measure.js` now records marker DOM paths — a qc-council forensics rater caught the original had no path data).
-4. **FR-33-13 namespace + component-CSS migration + button hover-transform (D322, `3e03e810`).** Snapshot reserves `settings.custom.header`/`.footer` (+ reconciliation note: Spec 17 uses Customiser/JS-var, so Part 2 decides). The transitional `styles.css` (2273→117 chars) migrated: dead rules (is-style buttons/hero-cta/page-hacks) dropped, focus-visible → theme `utilities.css`, product-card client vars kept. Button now consumes the open-bag `hover-transform` token.
-5. **Deployed + LIVE-VERIFIED clean on sandybrown page 8** — focus-visible `solid` from `utilities.css?ver=1.5.8`; `--sgs-op-sel-text`=#3A2E26; buttons rest `rgb(230,138,149)`/hover `rgb(65,50,43)` unchanged; hover-transform inert `none`; 0 console errors; visual intact 1440+375. LiteSpeed v7.8.1 confirmed active (dev-setup.md corrected).
-6. **Process caught two real errors pre-ship:** the code review (freshness gate wrong file) + the council spec-lawyer (dropping hover-transform violated FR-33-4 open-bag → reversed to the render-side fix).
+1. **Root-caused the emergency header overflow** (below ~400px, WCAG 2.2 SC 1.4.10 Reflow fail) live on the sandybrown canary: the header row is `flex-wrap:nowrap` with a 180px logo + 3× 44px icons (burger/account/cart); no responsive rule below 480px, so the icons overflow. The header is a `core/group` with inline CSS — not an SGS block.
+2. **Redirected (Bean) into designing header/footer/nav as a SYSTEM.** Ran a large research programme — 5 documented systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) read holistically from their real docs; the Indus Foods live reference; a research-council on the per-breakpoint override model.
+3. **Wrote + got sign-off on the design-gate** `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (all 5 open decisions = recommended defaults).
+4. **Shipped P0 — the unclickable mobile-nav drawer fix, live-verified.** `view.js` set `inert` on `.wp-site-blocks` (the drawer's own ancestor) → the drawer froze itself. Fix: re-parent the drawer to `<body>`. Deployed to sandybrown + full cache clear; 15/15 drawer links reachable (was 0/15), background still frozen, ESC works. Visual-diff report at `reports/visual-diff/mobile-nav-2026-07-13.md`.
+5. **Rolled the approved design into 6 canonical docs** (Spec 17 heavy — new §S9 with 11 FRs; Spec 02 main; Spec 01; Spec 00; Spec 33; architecture.md), all additive (D101). Added the global-defaults + Site-Info access requirement (FR-S9-10).
+6. **Ran a subagent cross-check + fact-check pass** (Bean point 3): 6/6 ground-truth checks passed; fixed 3 "described-as-built-when-build-pending" drifts + 2 refinements (hook needs no code change; CPT template is an ADD not a swap).
 
 ## Current State
-- **Branch:** `main` at `3e03e810` (pushed; D320 `03d98c97` → D321 `f8e8ab1e` → D322 `3e03e810`).
-- **Tests:** extractor 26/26 pass (8 new this session); converter/orchestrator suites green; frozen hex-helper golden (FR-33-10) intact; determinism byte-identical. (60 pre-existing failures in `test_two_axis_style_variations.py` are missing style-variation data files, unrelated.)
-- **Build:** plugin built + deployed; theme deployed. `build/` is gitignored (source-only commits).
-- **Uncommitted changes:** only pre-existing session-start dirty files (HTML_Insert.html, reports/inline-styling-audit, lucide-icons.php, package-lock.json, phase4-*.txt, *.db, rr.json) — NOT touched this session.
-- **Live:** sandybrown page 8 driven by the reduced snapshot + migrated theme CSS; caches cleared (OPcache + LiteSpeed + CDN).
+- **Branch:** `main` at `4f88ee5a` (docs) — P0 fix at `24e5d167`, design-gate at `220f4200`.
+- **Tests:** no suite run this session (JS-only fix + docs); the P0 fix built green (prebuild dead-control + conformance gates passed).
+- **Build:** `npm run build` passes.
+- **Uncommitted changes:** pre-existing (not this session's) — `HTML_Insert.html`, inline-styling-audit reports, `lucide-icons.php`, `package-lock.json`, phase4 reports, untracked `sgs-framework.db`. Left as-is.
+- **Deploy:** P0 drawer fix LIVE on sandybrown canary; verified.
 
 ## Known Issues / Blockers
-- None block the next session. The FR-33-12 gate is live — any `/sgs-clone` run now requires a fresh extractor snapshot for the client (or `--skip-freshness-gate` for extract-only/diagnostic runs).
+- **The emergency header overflow (<~400px) is STILL LIVE.** It is fixed *by design* in P1 (`sgs/site-header` with the never-overflow Cluster layout) but P1 is not built. Nothing else blocks the next session.
 
 ## Next Priorities (in order)
-1. **[EMERGENCY — NEXT SESSION, Bean-inserted 2026-07-13] Header horizontal-overflow below 384px.** The site header overflows the viewport on small screens: below ~384px the header element row runs out of space, doesn't wrap/collapse, and the account + cart icons escape the page bounds (visible on horizontal swipe); content "recedes from the right". WCAG 2.2 Reflow (SC 1.4.10) failure. Header = `theme/sgs-theme/parts/header.html` + `assets/css/*` — the breakpoints stop at 599/782px, nothing handles <384px. Full task + investigation plan in `next-session-prompt.md`. **This is the ONLY next-session task; the two below move to the session after.**
-2. **[SESSION AFTER] Roll out the extractor to the other 5 client snapshots** — each behind its OWN reclone + per-client parity (FR-33-11 Mama's-only rule; NEVER a snapshot-only push — that was the D318/D319 pink regression).
-3. **[SESSION AFTER] Part 2 — header/footer clone (Spec 17).** Decide the FR-33-13 tokenise-vs-Customiser question first. NOTE: overlaps the emergency header work — carry that context forward so they don't conflict.
+1. **P1 — build `sgs/site-header`** (3 named rows, typed palette, Cluster+`clamp()` never-overflow, per-breakpoint override, delegates to `SGS_Container_Wrapper`). Swap the header pattern + add the CPT template. This also fixes the live WCAG overflow. Live-verify 320→1440.
+2. **P2 — build `sgs/adaptive-nav`** (one menu → burger at a 4-tier breakpoint incl custom-px; mega-menu drill-down) integrated with the fixed drawer.
+3. **P3 — build `sgs/site-footer`** (rows + up-to-6 columns).
 
 ## Files Modified
 | File | What changed |
-|---|---|
-| plugins/sgs-blocks/scripts/shared_utils.py | NEW — single-source extract_css + css_sha256/draft_css_sha256 |
-| plugins/sgs-blocks/scripts/theme-extractor/{extract.py, derive.py, measure.js} | freshness embed + Pass B + dark-theme + namespace reserve; derive.py NEW |
-| plugins/sgs-blocks/scripts/theme-extractor/tests/test_extractor.py | +8 tests (FR-33-5/6 + advisory strip) |
-| plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py | `_freshness_gate` + `--skip-freshness-gate` |
-| plugins/sgs-blocks/scripts/push-theme-snapshot.py | `strip_advisory` + `--include-advisory` |
-| scripts/qc-correctness-regression.py | passes `--skip-freshness-gate` |
-| plugins/sgs-blocks/src/blocks/button/{style.css, block.json} | hover-transform consumption; version 1.5.0→1.5.1 |
-| theme/sgs-theme/assets/css/utilities.css + style.css | focus-visible migrated in; Version 1.5.7→1.5.8 |
-| sites/mamas-munches/theme-snapshot.json | styles.css reduced to rule 9; header/footer reserved; _sgsExtractor |
-| reports/visual-diff/button-2026-07-13.md | NEW — button visual-diff (PASS) |
-| .claude/{decisions.md, parking.md, dev-setup.md, specs/33-*.md} | D320/321/322; parking re-point; LiteSpeed fix; spec → v1.1.0 |
+|------|-------------|
+| `plugins/sgs-blocks/src/blocks/mobile-nav/view.js` | P0 fix — re-parent drawer to `<body>` |
+| `reports/visual-diff/mobile-nav-2026-07-13.md` | P0 visual-diff/verification report |
+| `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` | The approved system design-gate (+ §4b global-defaults/Site-Info, fact-check refinements) |
+| `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` | New §S9 (11 FRs) + §3 rule-evolution addendum + changelog r4 |
+| `.claude/specs/{02-SGS-BLOCKS,01-SGS-THEME,00-naming-conventions,33-DRAFT-GLOBAL-STYLES-EXTRACTOR}.md` | Additive rollout of the new blocks + rule evolution |
+| `.claude/architecture.md` | Header/Footer/Nav system section + Key Decision 29 |
+| `.claude/decisions.md`, `.claude/state.md` | D323 recorded |
 
 ## Notes for Next Session
-- **The FR-33-12 gate reads the EMBEDDED `_sgsExtractor` key in `theme-snapshot.json`**, not a sibling file — so the freshness proof is tied to the exact file the converter loads. Regenerating a client snapshot additively (`extract.py --merge-onto <snapshot> --out <snapshot>`) keeps the hash if the draft CSS is unchanged.
-- **Pass B (derive.py) only fires when Pass A is empty** (token-less draft) — Mama's is token-rich so it never fires. Advisory tokens are `advisory:true` + stripped by push unless `--include-advisory`.
-- **The component-CSS migration was mostly dropping DEAD cruft** (live-DOM-confirmed: is-style buttons 0 matches, .sgs-hero__ctas 0 refs, page-29/144 404). Only focus-visible (→theme) + product-card vars (kept) were load-bearing.
-- **LiteSpeed IS active on sandybrown (v7.8.1)** — always `wp litespeed-purge all` after a CSS deploy (dev-setup.md was stale, now corrected).
-
-## Next Session Prompt
-See `.claude/next-session-prompt.md` (other-5-client rollout + Part 2 orchestration + carried-forward STOP catalogue + reading gate).
+- **The rule evolved, consciously:** header/footer/nav STAY template parts; a specialised CONTAINER block inside the part is now permitted (like `sgs/card-grid`) — the `no-header-footer-block.py` hook already permits `site-header`/`site-footer`/`adaptive-nav` (its regex only blocks bare `header`/`footer`/`nav`), so no hook code change; update the memory when P1 lands.
+- **The CPT template is an ADD, not a swap** — `class-sgs-block-cpts.php` currently sets no `template` key at all (FR-S3-4's `[['core/group']]` was never implemented).
+- **Model the new blocks on `feature-grid`** — 5-file pattern; delegate outer render to `SGS_Container_Wrapper::render($attrs,$block,$inner,'section'|'layout',opts)` with `$attrs` VERBATIM (the uid hash depends on it); auto-registered by the `build/blocks` scandir loop. DB reseed via `/sgs-update`.
+- **Drawer a11y = SGS's edge** — commercial builders under-document it; GOV.UK Service Navigation is the gold-standard contract to hit (focus-trap, ESC, `aria-controls`, progressive enhancement).
