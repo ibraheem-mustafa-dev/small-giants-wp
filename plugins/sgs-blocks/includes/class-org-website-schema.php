@@ -16,9 +16,10 @@
  * NEVER use esc_attr() / esc_html() as a JSON escape — those are HTML contexts.
  *
  * Fields emitted ONLY from data that exists:
- *   Organization — name / url / logo / address (WC-gated) / hasMerchantReturnPolicy
- *                  / hasShippingService. sameAs + contactPoint SCOPED OUT (F5:
- *                  no UI writer exists yet; emit only data that exists).
+ *   Organization — name / url / logo / address (WC store address primary,
+ *                  Sgs_Site_Info 'address' fallback) / hasMerchantReturnPolicy
+ *                  / hasShippingService / sameAs (Sgs_Site_Info 'socials.*') /
+ *                  contactPoint (Sgs_Site_Info 'phone' / 'email').
  *   WebSite      — @type / @id / name / url / publisher / alternateName (if set).
  *                  NO SearchAction.
  *
@@ -103,12 +104,28 @@ final class Org_Website_Schema {
 			$org['logo'] = $logo_url;
 		}
 
-		// Address (WC-gated): build PostalAddress from WC store settings.
+		// Address: WC store settings primary, Sgs_Site_Info 'address' fallback.
+		$address = null;
 		if ( \function_exists( 'WC' ) ) {
 			$address = self::build_address();
-			if ( null !== $address ) {
-				$org['address'] = $address;
-			}
+		}
+		if ( null === $address ) {
+			$address = self::build_address_from_site_info();
+		}
+		if ( null !== $address ) {
+			$org['address'] = $address;
+		}
+
+		// sameAs — social profile URLs from the Site Info store.
+		$same_as = self::build_same_as();
+		if ( ! empty( $same_as ) ) {
+			$org['sameAs'] = $same_as;
+		}
+
+		// contactPoint — phone / email from the Site Info store.
+		$contact_point = self::build_contact_point();
+		if ( null !== $contact_point ) {
+			$org['contactPoint'] = $contact_point;
 		}
 
 		// hasMerchantReturnPolicy — reuse sgs_configurator_returns (F1 country rule).
@@ -290,5 +307,103 @@ final class Org_Website_Schema {
 		}
 
 		return $address;
+	}
+
+	/**
+	 * Build a PostalAddress fallback from the Sgs_Site_Info 'address' field.
+	 *
+	 * Only called when build_address() (WC store settings) resolved to null.
+	 * Guarded by class_exists() so the emitter never fatals when the Site
+	 * Info store isn't loaded.
+	 *
+	 * @return array|null PostalAddress array, or null when unavailable/empty.
+	 */
+	private static function build_address_from_site_info(): ?array {
+		if ( ! \class_exists( '\SGS\Blocks\Sgs_Site_Info' ) ) {
+			return null;
+		}
+
+		$raw = (string) Sgs_Site_Info::get( 'address', '' );
+		if ( '' === $raw ) {
+			return null;
+		}
+
+		// The Site Info store allows <br> tags in 'address'; flatten to a
+		// single plain-text streetAddress line for JSON-LD.
+		$street = \sanitize_text_field(
+			\str_replace( array( '<br>', '<br/>', '<br />' ), ', ', $raw )
+		);
+		if ( '' === $street ) {
+			return null;
+		}
+
+		return array(
+			'@type'         => 'PostalAddress',
+			'streetAddress' => $street,
+		);
+	}
+
+	/**
+	 * Collect valid social profile URLs from the Site Info store into a
+	 * sameAs array. Guarded by class_exists(); skips empty/invalid URLs.
+	 *
+	 * @return string[] Numeric array of absolute URLs (may be empty).
+	 */
+	private static function build_same_as(): array {
+		if ( ! \class_exists( '\SGS\Blocks\Sgs_Site_Info' ) ) {
+			return array();
+		}
+
+		$networks = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp' );
+		$urls     = array();
+
+		foreach ( $networks as $network ) {
+			$raw = (string) Sgs_Site_Info::get( "socials.{$network}", '' );
+			if ( '' === $raw ) {
+				continue;
+			}
+			$url = \esc_url_raw( $raw );
+			if ( '' === $url || false === \filter_var( $url, \FILTER_VALIDATE_URL ) ) {
+				continue;
+			}
+			$urls[] = $url;
+		}
+
+		return \array_values( $urls );
+	}
+
+	/**
+	 * Build a ContactPoint node from the Site Info store's phone / email
+	 * fields. Guarded by class_exists(); returns null when both are empty
+	 * or invalid so the caller omits contactPoint entirely.
+	 *
+	 * @return array|null ContactPoint array, or null when no valid contact data.
+	 */
+	private static function build_contact_point(): ?array {
+		if ( ! \class_exists( '\SGS\Blocks\Sgs_Site_Info' ) ) {
+			return null;
+		}
+
+		$phone     = \sanitize_text_field( (string) Sgs_Site_Info::get( 'phone', '' ) );
+		$email_raw = (string) Sgs_Site_Info::get( 'email', '' );
+		$email     = '' !== $email_raw ? \sanitize_email( $email_raw ) : '';
+		$has_email = '' !== $email && \is_email( $email );
+
+		if ( '' === $phone && ! $has_email ) {
+			return null;
+		}
+
+		$contact_point = array(
+			'@type'       => 'ContactPoint',
+			'contactType' => 'customer service',
+		);
+		if ( '' !== $phone ) {
+			$contact_point['telephone'] = $phone;
+		}
+		if ( $has_email ) {
+			$contact_point['email'] = $email;
+		}
+
+		return $contact_point;
 	}
 }
