@@ -1,0 +1,160 @@
+/**
+ * SGS Adaptive Navigation — frontend + editor shared styles.
+ *
+ * Classes match render.php exactly. The root `.sgs-adaptive-nav` show/hide
+ * collapse behaviour is owned ENTIRELY by render.php's scoped <style> output
+ * (Spec 31 R-31-9 composite-mirror + no-inline contract) — do NOT set
+ * `display` on the root here, and do NOT add an `@media` visibility rule for
+ * the bar or the header burger toggle.
+ */
+
+/*
+ * Never-overflow constraint (FR-S9-7): the wrapper + nav + list are min-width:0
+ * so the bar is bounded by the header flex row (never expands it). The list is a
+ * Cluster (flex-wrap:wrap) so, WITHOUT JS, items wrap rather than overflowing the
+ * viewport (crawlable links stay in the DOM). WITH JS, view.js collapses the
+ * overflow into the "More" menu for a tidy single row. No overflow:hidden here —
+ * that would clip the absolutely-positioned dropdown panels.
+ */
+.sgs-adaptive-nav {
+	min-width: 0;
+}
+
+.sgs-adaptive-nav__nav {
+	display: block;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.sgs-adaptive-nav__list {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 28px;
+	list-style: none;
+	margin: 0;
+	min-width: 0;
+	padding: 0;
+}
+
+.sgs-adaptive-nav__item {
+	align-items: center;
+	display: flex;
+	flex-shrink: 0;
+	position: relative;
+}
+
+.sgs-adaptive-nav__link {
+	align-items: center;
+	box-sizing: border-box;
+	color: inherit;
+	display: inline-flex;
+	gap: 6px;
+	min-height: 44px;
+	padding: 8px 4px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.sgs-adaptive-nav__link:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.sgs-adaptive-nav__disclosure {
+	align-items: center;
+	background: none;
+	border: none;
+	color: inherit;
+	cursor: pointer;
+	display: inline-flex;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0 4px;
+}
+
+.sgs-adaptive-nav__disclosure:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.sgs-adaptive-nav__disclosure svg {
+	height: 16px;
+	transition: transform 0.2s;
+	width: 16px;
+}
+
+.sgs-adaptive-nav__item--has-panel.is-open .sgs-adaptive-nav__disclosure svg,
+.sgs-adaptive-nav__disclosure[aria-expanded="true"] svg {
+	transform: rotate(180deg);
+}
+
+/* Mega-panel — CSS-hidden by default; revealed on hover/focus/open. This is
+ * the crawlable + progressive-enhancement contract: the markup is always in
+ * the DOM (server-rendered <a href>), only visibility toggles. */
+.sgs-adaptive-nav__panel {
+	background: var(--wp--preset--color--surface, #fff);
+	border: 1px solid var(--wp--preset--color--border-subtle, #e5e5e5);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+	display: none;
+	left: 0;
+	min-width: 220px;
+	padding: 8px;
+	position: absolute;
+	top: 100%;
+	z-index: 100;
+}
+
+.sgs-adaptive-nav__item--has-panel:hover > .sgs-adaptive-nav__panel,
+.sgs-adaptive-nav__item--has-panel:focus-within > .sgs-adaptive-nav__panel,
+.sgs-adaptive-nav__item--has-panel.is-open > .sgs-adaptive-nav__panel {
+	display: block;
+}
+
+/* The More menu reuses the same has-panel/__panel classes; it just opens
+ * flush to the right edge instead of the left. */
+.sgs-adaptive-nav__more-panel {
+	left: auto;
+	right: 0;
+}
+
+.sgs-adaptive-nav__panel-list {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-adaptive-nav__panel-link {
+	border-radius: 6px;
+	box-sizing: border-box;
+	color: inherit;
+	display: block;
+	min-height: 44px;
+	padding: 8px 12px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.sgs-adaptive-nav__panel-link:hover,
+.sgs-adaptive-nav__panel-link:focus-visible {
+	background: var(--wp--preset--color--surface-alt, #f5f5f5);
+}
+
+.sgs-adaptive-nav__panel-link:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-adaptive-nav__disclosure svg {
+		transition: none;
+	}
+}

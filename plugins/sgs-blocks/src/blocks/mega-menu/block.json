@@ -16,7 +16,8 @@
     "textdomain": "sgs-blocks",
     "icon": "menu-alt",
     "parent": [
-        "core/navigation"
+        "core/navigation",
+        "sgs/adaptive-nav"
     ],
     "supports": {
         "align": false,

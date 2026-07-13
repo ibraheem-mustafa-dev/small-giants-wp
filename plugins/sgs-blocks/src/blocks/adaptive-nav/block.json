@@ -1,0 +1,191 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/adaptive-nav",
+	"version": "0.1.0",
+	"title": "SGS Adaptive Navigation",
+	"category": "sgs-layout",
+	"icon": "menu",
+	"description": "One menu source that renders a desktop navigation bar and collapses to the off-canvas drawer at a configurable breakpoint. Submenus become accessible mega-panels; overflow auto-collapses into a More menu. Replaces core/navigation in the header. Lives inside sgs/site-header-row.",
+	"keywords": [
+		"navigation",
+		"nav",
+		"menu",
+		"adaptive",
+		"mega menu"
+	],
+	"textdomain": "sgs-blocks",
+	"parent": [
+		"sgs/site-header-row"
+	],
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": false,
+			"text": true,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"containerKind": "layout"
+		}
+	},
+	"allowedBlocks": [
+		"sgs/mega-menu"
+	],
+	"attributes": {
+		"ref": {
+			"type": "number"
+		},
+		"menuFallback": {
+			"type": "string",
+			"default": "page-list"
+		},
+		"collapseTier": {
+			"type": "string",
+			"default": "mobile",
+			"enum": [ "mobile", "tablet", "desktop", "custom" ]
+		},
+		"collapseCustomPx": {
+			"type": "number",
+			"default": 768
+		},
+		"overflowBehaviour": {
+			"type": "string",
+			"default": "more-menu",
+			"enum": [ "more-menu", "wrap", "scroll" ]
+		},
+		"moreMenuLabel": {
+			"type": "string",
+			"default": "More"
+		},
+		"navigationLabel": {
+			"type": "string",
+			"default": "Primary"
+		},
+		"linkColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"linkHoverColour": {
+			"type": "string",
+			"default": "primary-dark"
+		},
+		"linkFontSize": {
+			"type": "number",
+			"default": 15
+		},
+		"linkFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"linkFontSizeTablet": {
+			"type": "number"
+		},
+		"linkFontSizeMobile": {
+			"type": "number"
+		},
+		"linkFontWeight": {
+			"type": "string",
+			"default": "500"
+		},
+		"linkFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"linkLineHeight": {
+			"type": "number"
+		},
+		"linkLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"layout": {
+			"type": "string",
+			"default": "flex"
+		},
+		"flexWrap": {
+			"type": "string",
+			"default": "wrap"
+		},
+		"justifyContent": {
+			"type": "string",
+			"default": ""
+		},
+		"verticalAlign": {
+			"type": "string",
+			"default": "center"
+		},
+		"gap": {
+			"type": "string",
+			"default": "28px"
+		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"maxWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidth": {
+			"type": "string",
+			"default": "full"
+		},
+		"contentWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"paddingTopTablet": { "type": "string", "default": "" },
+		"paddingRightTablet": { "type": "string", "default": "" },
+		"paddingBottomTablet": { "type": "string", "default": "" },
+		"paddingLeftTablet": { "type": "string", "default": "" },
+		"paddingTopMobile": { "type": "string", "default": "" },
+		"paddingRightMobile": { "type": "string", "default": "" },
+		"paddingBottomMobile": { "type": "string", "default": "" },
+		"paddingLeftMobile": { "type": "string", "default": "" },
+		"marginTopTablet": { "type": "string", "default": "" },
+		"marginRightTablet": { "type": "string", "default": "" },
+		"marginBottomTablet": { "type": "string", "default": "" },
+		"marginLeftTablet": { "type": "string", "default": "" },
+		"marginTopMobile": { "type": "string", "default": "" },
+		"marginRightMobile": { "type": "string", "default": "" },
+		"marginBottomMobile": { "type": "string", "default": "" }
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js"
+}

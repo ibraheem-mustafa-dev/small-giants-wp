@@ -18,26 +18,13 @@
 }
 
 /*
- * Draft-faithful responsive behaviour (mamas-munches mockup `.mm-header`):
- * the primary navigation lives in the off-canvas drawer on mobile and appears
- * inline from 768px up; the burger toggle shows only below 768px. Logo + cart
- * stay visible at every width. This is the DESIGNED overflow behaviour
- * (collapse-to-drawer), not a wrap — a clean single-row header at every size.
- * Client-configurable per-device control is FR-S9-4 (adaptive-nav, P2).
+ * Collapse-to-drawer behaviour (nav bar hidden below the tier, burger shown) is
+ * now owned by sgs/adaptive-nav (FR-S9-4), which emits the scoped breakpoint
+ * rules for BOTH its own bar and the header's sgs/mobile-nav-toggle at the
+ * operator-configured tier. The old hard-coded 768px hack that lived here (and
+ * the toggle's own 782px rule) were removed 2026-07-13 — one configurable
+ * source of truth replaces two fixed ones.
  */
-.sgs-site-header .wp-block-navigation {
-	display: none;
-}
-
-@media ( min-width: 768px ) {
-	.sgs-site-header .wp-block-navigation {
-		display: flex;
-	}
-
-	.sgs-site-header .wp-block-sgs-mobile-nav-toggle {
-		display: none;
-	}
-}
 
 /* Icons cluster (cart + burger) stays a tight, non-wrapping group on the right. */
 .sgs-site-header .sgs-header-icons {

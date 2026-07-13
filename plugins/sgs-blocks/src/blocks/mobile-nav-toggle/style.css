@@ -10,12 +10,14 @@
 	padding: 8px;
 }
 
-/* Show on tablet/mobile only — hidden on desktop */
-@media (max-width: 782px) {
-	.sgs-mobile-nav-toggle {
-		display: inline-flex;
-	}
-}
+/*
+ * Visibility (show below the collapse tier, hide above it) is owned by
+ * sgs/adaptive-nav (FR-S9-4), which emits scoped `.sgs-site-header
+ * .sgs-mobile-nav-toggle` rules at the operator-configured breakpoint. The old
+ * fixed `@media (max-width:782px)` rule was removed 2026-07-13 so the toggle and
+ * the nav bar collapse at ONE configurable breakpoint. Base stays display:none;
+ * adaptive-nav reveals it below the tier.
+ */
 
 /* Editor: always visible so it's editable on any viewport */
 .editor-styles-wrapper .sgs-mobile-nav-toggle {

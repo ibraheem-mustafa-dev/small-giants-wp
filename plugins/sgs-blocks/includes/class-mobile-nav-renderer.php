@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
 
 // Load Lucide icon helper — used in render_header(), CTAs, contact shortcuts, social links.
 require_once __DIR__ . '/lucide-icons.php';
+// Shared menu-source resolver — ONE menu drives both the desktop bar and this drawer.
+require_once __DIR__ . '/class-sgs-nav-menu-source.php';
 
 /**
  * Renders all zones of the sgs/mobile-nav drawer.
@@ -45,61 +47,18 @@ class SGS_Mobile_Nav_Renderer {
 	// ── Menu parsing ─────────────────────────────────────────────────────────
 
 	/**
-	 * Load the header template part, parse blocks, find core/navigation,
-	 * resolve ref to wp_navigation post or inline innerBlocks.
+	 * Resolve the header's primary menu to an array of parsed nav blocks.
 	 *
-	 * Falls back to get_fallback_nav_blocks() when no navigation is found.
+	 * Delegates to the shared SGS_Nav_Menu_Source so the drawer and the desktop
+	 * bar (sgs/adaptive-nav) render from the SAME menu — one source, no
+	 * duplicated content (Spec 17 FR-S9-4). The shared resolver searches the
+	 * header for sgs/adaptive-nav first, then core/navigation (back-compat),
+	 * then falls back to the latest published wp_navigation post.
 	 *
 	 * @return array Array of parsed block arrays (nav inner blocks).
 	 */
 	public function get_nav_blocks(): array {
-		$header_content = '';
-
-		// Attempt to load the active header template part.
-		$header_post = get_posts(
-			array(
-				'post_type'      => 'wp_template_part',
-				'name'           => 'header',
-				'posts_per_page' => 1,
-				'post_status'    => 'publish',
-			)
-		);
-
-		if ( ! empty( $header_post ) ) {
-			$header_content = $header_post[0]->post_content;
-		} else {
-			// Fall back to the file-based template part.
-			$file = get_theme_file_path( 'parts/header.html' );
-			if ( file_exists( $file ) ) {
-				$header_content = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			}
-		}
-
-		if ( ! $header_content ) {
-			return $this->get_fallback_nav_blocks();
-		}
-
-		$parsed = parse_blocks( $header_content );
-		$nav    = $this->find_block_recursive( $parsed, 'core/navigation' );
-
-		if ( ! $nav ) {
-			return $this->get_fallback_nav_blocks();
-		}
-
-		// Resolve a ref to a saved wp_navigation post.
-		if ( ! empty( $nav['attrs']['ref'] ) ) {
-			$ref_post = get_post( absint( $nav['attrs']['ref'] ) );
-			if ( $ref_post && 'wp_navigation' === $ref_post->post_type ) {
-				return parse_blocks( $ref_post->post_content );
-			}
-		}
-
-		// Use inline innerBlocks when available.
-		if ( ! empty( $nav['innerBlocks'] ) ) {
-			return $nav['innerBlocks'];
-		}
-
-		return $this->get_fallback_nav_blocks();
+		return SGS_Nav_Menu_Source::get_menu_blocks();
 	}
 
 	/**

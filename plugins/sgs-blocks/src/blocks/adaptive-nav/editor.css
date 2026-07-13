@@ -1,0 +1,43 @@
+/**
+ * SGS Adaptive Navigation — editor-only styles.
+ *
+ * The bar is server-rendered on the frontend, so the editor shows a
+ * lightweight placeholder (below) instead of the live bar.
+ */
+
+.sgs-adaptive-nav__editor-placeholder {
+	align-items: center;
+	background: var(--wp--preset--color--surface-alt, #f5f5f5);
+	border: 1px dashed var(--wp--preset--color--border-subtle, #ccc);
+	border-radius: 6px;
+	column-gap: 8px;
+	display: flex;
+	flex-wrap: wrap;
+	padding: 10px 14px;
+	row-gap: 2px;
+	width: 100%;
+}
+
+.sgs-adaptive-nav__editor-icon {
+	font-size: 18px;
+	line-height: 1;
+}
+
+.sgs-adaptive-nav__editor-label {
+	font-weight: 600;
+}
+
+.sgs-adaptive-nav__editor-menu {
+	color: var(--wp--preset--color--text-subtle, #555);
+}
+
+.sgs-adaptive-nav__editor-hint {
+	color: var(--wp--preset--color--text-subtle, #767676);
+	flex-basis: 100%;
+	font-size: 12px;
+}
+
+.sgs-adaptive-nav__editor-innerblocks {
+	margin-top: 8px;
+	width: 100%;
+}
