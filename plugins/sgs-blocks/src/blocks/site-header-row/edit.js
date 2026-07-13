@@ -5,7 +5,7 @@ import {
 	InspectorControls,
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
-import { ResponsiveControl, SpacingControl } from '../../components';
+import { ResponsiveOverride, SpacingControl } from '../../components';
 import { ResponsiveSpacingPanel } from '../container/components/ContainerWrapperControls';
 
 const ALLOWED_BLOCKS = [
@@ -54,7 +54,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			display: 'flex',
 			flexWrap: 'wrap',
 			alignItems: 'center',
-			gap: gap || 'clamp(0.5rem, 2vw, 1.5rem)',
+			gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
 			justifyContent: justifyContent || 'flex-start',
 		},
 	} );
@@ -86,23 +86,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
-					<ResponsiveControl label={ __( 'Gap between elements', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'gap',
-								tablet: 'gapTablet',
-								mobile: 'gapMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							return (
-								<SpacingControl
-									freeInput
-									value={ attributes[ attr ] || '' }
-									onChange={ ( val ) => setAttributes( { [ attr ]: val } ) }
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					<ResponsiveOverride
+						label={ __( 'Gap between elements', 'sgs-blocks' ) }
+						value={ gap }
+						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SpacingControl
+								freeInput
+								value={ ownValue }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ setOwnValue }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 				<ResponsiveSpacingPanel
 					attributes={ attributes }

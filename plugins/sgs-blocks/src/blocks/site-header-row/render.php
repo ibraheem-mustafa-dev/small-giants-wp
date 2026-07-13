@@ -149,9 +149,12 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	'layout',
 	array(
-		'tag'           => 'div',
-		'extra_classes' => $classes,
-		'extra_attrs'   => array( 'id' => $uid ),
+		'tag'              => 'div',
+		'extra_classes'    => $classes,
+		'extra_attrs'      => array( 'id' => $uid ),
+		// FR-S9-6: gap is stored as the {desktop,tablet,mobile} object model; the
+		// shared wrapper emits its responsive CSS via sgs_emit_responsive_css().
+		'responsive_model' => 'object',
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

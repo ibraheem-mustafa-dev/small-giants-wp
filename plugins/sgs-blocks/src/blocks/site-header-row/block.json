@@ -83,16 +83,8 @@
 			"default": "center"
 		},
 		"gap": {
-			"type": "string",
-			"default": "16px"
-		},
-		"gapTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"gapMobile": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": { "desktop": "16px" }
 		},
 		"maxWidth": {
 			"type": "string",
