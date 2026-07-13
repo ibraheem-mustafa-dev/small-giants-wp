@@ -356,6 +356,44 @@ def main():
     else:
         print("\nNo --client passed; skipping theme.json snapshot push.")
 
+    # Spec 33 Part 1 companion — Tier-1 business-info auto-fill (D325).
+    #
+    # Alongside the global-styles snapshot push above, extract the HIGH-CONFIDENCE
+    # business-data fields (email/phone/socials/copyright) from the client's draft
+    # and fill-if-empty the live Site Info store via POST /sgs/v1/site-info. Same
+    # --client gate + the same push/dry-run opt-in as the snapshot. NON-FATAL: a
+    # failure never blocks a deploy (business data is nice-to-have; the operator
+    # can always fill it by hand). Fill-if-empty means it never clobbers an
+    # operator's value.
+    if args.client:
+        mockups_dir = REPO / "sites" / args.client / "mockups"
+        html_candidates = sorted(mockups_dir.glob("**/*.html")) if mockups_dir.is_dir() else []
+        draft = next((c for c in html_candidates if "mockup" in c.name.lower()), None)
+        if draft is None and html_candidates:
+            draft = html_candidates[0]
+
+        if draft is None:
+            print(f"\nSpec-33 business-info: no draft HTML under {mockups_dir} — skipped.")
+        else:
+            bi_cli = (Path(__file__).resolve().parent.parent / "sync-business-info.py")
+            bi_cmd = [
+                sys.executable, str(bi_cli),
+                "--draft", str(draft),
+                "--target-domain", args.snapshot_target_domain,
+            ]
+            if args.push_theme_snapshot:
+                bi_cmd.append("--push")  # fill-if-empty (never --overwrite from the pipeline)
+            print(f"\nSpec-33 business-info {'FILL' if args.push_theme_snapshot else 'EXTRACT-ONLY'} for client '{args.client}'...")
+            try:
+                bi_res = subprocess.run(bi_cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
+                for ln in bi_res.stdout.splitlines():
+                    if ln.strip():
+                        print(f"  {ln}")
+                if bi_res.returncode != 0:
+                    print(f"  business-info sync WARN (exit {bi_res.returncode}, non-fatal): {bi_res.stderr[:300]}")
+            except Exception as e:  # noqa: BLE001 -- non-fatal by design
+                print(f"  business-info sync WARN (non-fatal): {e}")
+
     if snapshot_failed and args.push_theme_snapshot:
         # Only treat as a hard failure when the operator explicitly requested
         # a live push. A failed dry-run (--no-push) is still informative.
