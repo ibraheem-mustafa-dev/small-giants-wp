@@ -2,51 +2,56 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-14
-session: D328 — FR-S9-6 closed (box/width/link-font-size → object model) + footer fidelity bug fixed + Spec 17 §S9 coverage audit
+session: D330 — FR-S9-9 (3 header behaviours, no-code block controls) SHIPPED + theme header-mode system RETIRED + FR-S9-10 live-confirmed → §S9 now 10/11
 ---
 
-# Session Handoff — 2026-07-14 (D328)
+# Session Handoff — 2026-07-14 (D330)
 
-## Completed This Session
-1. **Task 1 — migrated live pattern instances flat→object (fixed a real fidelity bug).** The 3 blocks are file-based FSE patterns (`framework-footer-default.php`, `framework-header-default.php`, `parts/header.html`), NOT DB template parts. Their flat stored values (`gap:"48px"`, `gridTemplateColumns:"2fr 1fr 1fr"`, bottom `gap:"8px"`) were being coerced to block.json defaults by WP `prepare_attributes_for_render` — rendering the footer columns as equal thirds (not the draft's `2fr 1fr 1fr`) + the bottom gap as 48px (not 8px). Converted to object shape → both fixed live. Theme 1.5.12→1.5.13.
-2. **Task 2 — box/width/link-font-size → object model on all 3 blocks (qc-council-gated).** padding/margin/maxWidth/contentWidth + adaptive-nav linkFontSize. Wrapper Change 1 (contentWidth token transform + maxWidth sanitiser in the object-emit, `$object_model`-gated). Removed `supports.spacing` + dead flat orphans from 3 block.json; new shared `ResponsiveBoxControls` editor; nav link font-size emitted block-owned. Footer bottom row `style.spacing`→object desktop tier (rater-B R2). Theme 1.5.13→1.5.14.
-3. **`/qc-council` (2 cross-model raters) pre-build** — VALIDATED with 3 fixes baked in: R1 (drop `supports.spacing` else double-emit), R2 (footer bottom row also has `margin.top`), + confirmed the wrapper transforms don't regress the 50+ flag-off blocks.
-4. **Live-verified everything** (sandybrown, full cache clear OPcache+LiteSpeed+CDN, 1440/375): footer bottom padding 24 + margin 32 + inner gap 8 inherit to mobile; columns 2fr 1fr 1fr→1fr; nav gap 28 + link 15; no overflow; 0 console errors. Build gates green; `/sgs-update --stage 1` re-registered 6 attr rows.
-5. **Task 4 — Spec 17 §S9 coverage audit** (`.claude/reports/2026-07-14-spec17-s9-coverage-audit.md`): read-only FR-by-FR audit — 8/11 DONE, 3 open (FR-S9-8/9/10).
-6. **Docs** — decisions.md D328, 3 visual-diff reports, state.md, this handoff.
+## Completed This Session (the §S9 checkpoint)
+1. **FR-S9-10 confirm (commit `ba21fccf`, live).** Added a `sgs/business-info` (phone) to the header top row in `parts/header.html` + `framework-header-default.php` (out-of-box header/footer Site-Info parity). Live-verified on sandybrown: a `phone` set ONCE in `sgs_site_info` renders in BOTH the header (inside `<header>`) AND footer (inside `<footer>`) + the Org schema. Blocks literal-free. No overflow at 375. 2nd-client universality by-construction (no live indus deployment). Theme 1.5.14→1.5.15.
+2. **FR-S9-9 built + live (commit `7a054e11`).** 3 behaviours (sticky / transparent-at-rest→solid-on-scroll / shrink-on-scroll) + a contrast-safe fallback as INDEPENDENT no-code toggles on the `sgs/site-header` block inspector (a "Header behaviour" ToolsPanel, Settings tab). Bridge `Sgs_Header_Behaviours::resolve_active_header_behaviour()` reads the block attrs off the active header part (via `SGS_Nav_Menu_Source::get_header_content()`) at `body_class` time → `sgs-header-behaviour-{flag}` classes. Delivered independent-axes (Kadence model).
+3. **qc-council (2 cross-model raters) pre-build = NO-GO-as-scoped → corrected.** It surfaced a THIRD, fully-built parallel header-behaviour system (theme-side `inc/class-header-behaviour.php` + `header-behaviour.js` w/ its OWN `--sgs-header-height` publisher + `header-modes.css` + `_sgs_header_mode` post-meta + Settings page; silent only because `sgs_header_mode=static`). Corrections applied: scroll-driven shrink (never writes `--sgs-header-height` from CSS — no publisher race), scrim/force-solid as the WCAG modes (text-shadow cosmetic-only), scrim `::before` pointer-events:none + z-index, own `is-header-shrunk` class, literal attr keys for the dead-control guard, inverted FS-2 fallback.
+4. **Task 2b (theme-system retirement) merged into this build.** Deleted `theme/sgs-theme/inc/class-header-behaviour.php` + `assets/js/header-behaviour.js` + `assets/css/header-modes.css` + `assets/js/header-editor-panel.js`; removed the functions.php `require` + conditional enqueue; stripped the mode-specific rules from `core-blocks-critical.css`. Proven dormant first (canary `sgs_header_mode=static`, live header renders `parts/header.html`); `php -l` clean; 0 remaining refs. The plugin body-class layer is now the SOLE header-behaviour system.
+5. **Live-verified everything** (sandybrown, full cache clear incl. Hostinger CDN, plugin 0.1.3): sticky pinned `top:0` + single `--sgs-header-height:121px` + `scroll-padding-top:121px`; transparent absolute `rgba(0,0,0,0)`→`rgb(251,243,220)` on scroll; shrink `is-header-shrunk` + padding reduced; scrim `::before` gradient pointer-events:none inset:0; old theme header JS/CSS gone (0); 0 console errors; no overflow; no inline style. Shipped default `headerSticky:true`. Plugin 0.1.2→0.1.3, theme 1.5.15→1.5.16.
+6. **Docs:** Spec 17 FR-S9-9/S9-10 BUILT+LIVE notes; coverage audit → 10/11; decisions.md D330; state.md; parking.md 3 entries; visual-diff reports; `/sgs-update --stage 1` (4 new attrs); this handoff.
 
 ## Current State
-- **Branch:** `main` at `0fe3a5fe` (audit commit; Tasks 1+2 at `3ea21bdf`), both pushed.
-- **Tests:** 34/34 responsive-engine unit tests pass; `npm run build` green (dead-control 0, control-ux PASS, conformance unchanged).
-- **Build:** passes. **Deployed + live:** sandybrown carries all D328 changes, live-verified.
-- **Uncommitted changes:** pre-existing session-start dirt only (lucide-icons.php build-regen, package-lock.json, reports/phase4-*.txt, root .db files) — NOT this session's.
+- **Branch:** `main` at `7a054e11` (FR-S9-9), FR-S9-10 at `ba21fccf`, both pushed.
+- **Build:** gates green (dead-control 0, control-ux PASS, conformance/F5 pre-existing-only, box-family). `HeaderBehavioursTest.php` rewritten to 13 multi-flag tests (PHPUnit NOT runnable in-env — no vendor/composer — logic hand-traced).
+- **Deployed + live:** sandybrown carries all D330 changes, live-verified. Plugin 0.1.3, theme 1.5.16.
+- **Uncommitted:** pre-existing session-start dirt only (lucide-icons.php build-regen, package-lock.json, reports/phase4-*.txt, root .db files, .claude/reports/inline-styling-audit-*) — NOT this session's. The FR-S9-9 design doc lives at `.claude/scratch/fr-s9-9-design-2026-07-14.md` (gitignored scratch — has the full qc-council verdict + corrected fix-shapes).
 
 ## Known Issues / Blockers
-- None block the next session. Pre-existing (out of FR-S9-6 scope, flagged in the audit): the shared `SGS_Container_Wrapper` has NO `style.border` emission (grep=0), so these blocks' `__experimentalBorder`-SkipSerialization borders (e.g. the footer bottom-bar 1px divider) never render. A universal wrapper-border-emit is a block-quality follow-up.
+- None block the next session.
+- **Task 2b is PARTIAL:** the THEME-side header-mode system (the conflicting one) is retired; the PLUGIN-side Customiser path (`Sgs_Header_Customiser`/`Sgs_Footer_Customiser`/`Sgs_Header_Renderer`, sgs-blocks.php L410-413 — header/footer colours + a now-redundant sticky toggle) was NOT touched → parked `P-CUSTOMISER-HEADER-FOOTER-RETIRE`.
+- **Editor UI is build-verified + attr-round-trip-proven (via the live bridge), not click-tested** in the Site Editor — a light follow-up.
 
-## Next Priorities (in order — BEAN'S DIRECTIVE: finish §S9 → confirm ALL Spec 17 covered → THEN Spec 33 Part 2)
-1. **BUILD the 3 open §S9 FRs** so Spec 17 §S9 is totally covered (the hard gate): **FR-S9-8** per-device content adaptation (per-tier visibility, `showLabel`/`iconOnly` with `mailto:`/`tel:`, move-to-drawer, Indus reference pattern); **FR-S9-9** transparent-at-rest→solid-on-scroll no-code inspector toggle (extend `class-sgs-header-behaviours.php`, do NOT rebuild); **FR-S9-10** wire the existing FR-S4 Site Info store into the header (already in footer) + confirm global-style-token defaults. Each = its own `/strategic-plan` + `/phase-planner` + live-verify.
-2. **Present the FR-S9-1..11 coverage audit for Bean's "totally covered" sign-off** once FR-S9-8/9/10 land.
-3. **THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5 / FR-S9-11 step 3). HARD gate: do NOT start until §S9 is confirmed totally covered.
-4. **Optional block-quality follow-up:** universal `style.border` emission in `SGS_Container_Wrapper`.
+## Next Priorities (BEAN'S DIRECTIVE: finish §S9 → confirm ALL Spec 17 covered → THEN Spec 33 Part 2)
+1. **BUILD FR-S9-8 (per-device content adaptation) — the SINGLE remaining §S9 build.** Its own `/strategic-plan` + `/phase-planner`: per-tier visibility (extend `device-visibility.php`), `showLabel`/`iconOnly` on business-info (contact) + adaptive-nav (nav) with working `mailto:`/`tel:` (the plumbing exists in business-info render.php L67-105), a move-to-drawer drop-zone (new tier-gated InnerBlocks slot in `sgs/mobile-nav`), reproduce the Indus slim-bar pattern (≤1024 logo + Call button; email/social→drawer; footer 3→1 at 768). Verify on Indus AND Mama's (R-31-9).
+2. **Present the FR-S9-1..11 coverage audit for Bean's "totally covered" sign-off** once FR-S9-8 lands (10/11 → 11/11).
+3. **THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER`). HARD gate: do NOT start until §S9 is confirmed totally covered. Fold in the recogniser multi-flag update (`P-RECOGNISER-HEADER-BEHAVIOUR-MULTIFLAG`).
+4. **Consolidation cleanup (own session, optional):** retire the plugin-side Customiser path (`P-CUSTOMISER-HEADER-FOOTER-RETIRE`) + the 3 inert alt-header stubs (`P-ALT-HEADER-PART-STUBS`).
 
 ## Files Modified
-| File path | What changed |
-|-----------|--------------|
-| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | object-emit: contentWidth token transform + maxWidth sanitiser |
-| `plugins/sgs-blocks/src/blocks/{site-header-row,site-footer-row,adaptive-nav}/{block.json,edit.js}` | drop supports.spacing + flat orphans; object box/width attrs; ResponsiveBoxControls |
-| `plugins/sgs-blocks/src/blocks/adaptive-nav/render.php` | link font-size block-owned emit (object) |
-| `plugins/sgs-blocks/src/components/ResponsiveBoxControls.js` (NEW) + `index.js` | shared FR-S9-6 spacing/width panel |
-| `theme/sgs-theme/patterns/framework-{footer,header}-default.php`, `parts/header.html` | instances flat→object; footer bottom row style.spacing→object; version 1.5.14 |
-| `.claude/decisions.md`, `.claude/state.md`, `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md`, `reports/visual-diff/*` | D328 record + audit + 3 reports |
+| File path | What |
+|-----------|------|
+| `plugins/sgs-blocks/src/blocks/site-header/{block.json,edit.js}` | 4 behaviour attrs + "Header behaviour" ToolsPanel |
+| `plugins/sgs-blocks/includes/class-sgs-header-behaviours.php` | bridge resolver + independent-flag body classes |
+| `plugins/sgs-blocks/src/header-behaviours/view.js` | flag-set read + independent `is-header-shrunk` |
+| `plugins/sgs-blocks/assets/css/header-behaviours.css` | independent-flag rules + scroll-driven shrink + contrast-safe |
+| `plugins/sgs-blocks/tests/php/HeaderBehavioursTest.php` | 13 multi-flag tests |
+| `plugins/sgs-blocks/sgs-blocks.php` | SGS_BLOCKS_VERSION 0.1.2→0.1.3 |
+| `theme/sgs-theme/functions.php` + `assets/css/{core-blocks-critical,utilities}.css` | theme header-mode system de-registered + mode CSS stripped |
+| `theme/sgs-theme/{parts/header.html,patterns/framework-header-default.php}` | headerSticky default + FR-S9-10 phone |
+| `theme/sgs-theme/style.css` | 1.5.15→1.5.16 |
+| (deleted) `theme/sgs-theme/inc/class-header-behaviour.php`, `assets/js/header-behaviour.js`, `assets/css/header-modes.css`, `assets/js/header-editor-panel.js` | theme header-mode system |
+| `.claude/{decisions.md,state.md,parking.md,specs/17-*,reports/2026-07-14-spec17-s9-coverage-audit.md}` + `reports/visual-diff/*` | D330 record |
 
 ## Notes for Next Session
-- **File-based FSE, not DB template parts:** header/footer content lives in the pattern PHP + `parts/*.html` (byte-identical duplicates per FR-S1-2). "Re-save" = edit the pattern markup, not a Site-Editor DB override.
-- **Object-typed attrs coerce flat values to defaults:** WP `prepare_attributes_for_render` rejects a flat string against an `object` schema and substitutes the block.json default. Any pattern/emit MUST use the object shape or the authored value is silently lost.
-- **Wrapper reads `style.spacing` unconditionally (L938):** a block on the object model MUST drop `supports.spacing` AND migrate any `style.spacing` in its instances to the object, else double-emit + the WP Dimensions panel stays visible.
-- **contentWidth object needs the token-resolver transform** in the object-emit (else `max-width:normal`); maxWidth needs the length sanitiser. Both are `$object_model`-gated.
-- **uid changes on shape/value change are EXPECTED** (content-driven hash), not ksort churn (STOP-NO-KSORT is about identical content → identical uid).
+- **Header renders from `parts/header.html`** (file-based FSE part), NOT the pattern — editing the pattern alone does nothing live (proven Step A). The rules-engine `filter_template_part` is unreachable (templates emit `{"slug":"header","tagName":"header"}` with no `area` key), so core renders the part.
+- **The bridge reads block attrs off the header part** via `SGS_Nav_Menu_Source::get_header_content()` (DB template-part post named "header" → `parts/header.html` fallback). Setting a behaviour = edit the block attr in `parts/header.html` (+ the pattern for the inserter).
+- **Cache-bust discipline held live:** the scrim didn't render until `SGS_BLOCKS_VERSION` bumped (0.1.2→0.1.3) + the Hostinger CDN cleared (`hosting_clearWebsiteCacheV1`) — a new CSS rule under an unchanged `?ver` serves stale (STOP-CSS-VER-CACHE-BUST + CDN).
+- **`header-behaviours/view.js` is src-only** (no build output; enqueue falls back to `src/`); it must be deployed to the server's `src/header-behaviours/` path.
 
 ## Next Session Prompt
-
-See `.claude/next-session-prompt.md` (canonical) — it carries the full MANDATORY READING GATE, the anti-pattern STOP catalogue, the pre-flight self-attestation ritual, and the per-FR orchestration plan for FR-S9-8/9/10.
+See `.claude/next-session-prompt.md` (canonical) — carries the MANDATORY READING GATE, the anti-pattern STOP catalogue, the pre-flight self-attestation ritual, and the FR-S9-8 orchestration plan.
