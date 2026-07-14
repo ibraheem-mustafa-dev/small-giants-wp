@@ -2,147 +2,51 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-14
-session: D327 — FR-S9-6 responsive-override engine built + wrapper opt-in branch + all 3 row/nav blocks wired + proven live
+session: D328 — FR-S9-6 closed (box/width/link-font-size → object model) + footer fidelity bug fixed + Spec 17 §S9 coverage audit
 ---
 
-# Session Handoff — 2026-07-14
+# Session Handoff — 2026-07-14 (D328)
 
 ## Completed This Session
-1. **Built the FR-S9-6 responsive-override ENGINE** — `includes/class-sgs-breakpoints.php` (shared 1023/767 source, R-31-1) + object-model resolver/emitter `sgs_emit_responsive_css()` in `includes/helpers-responsive.php` (per-side null-inherit cascade, tier-diff emission, `@container`+`@media`, canonicalisation oracle). **34/34 unit tests** (`tests/php/ResponsiveOverrideEngineTest.php` + standalone runner). Commit `4b2e28f7`.
-2. **Ran `/qc-council`** (3 cross-model Sonnet raters) pre-build — caught 3 real flaws: block-private emission = fork-not-mirror (→ wrapper-owned opt-in); `container-type` on root is void (→ two-layer inner split); uniform `is_array` guard renders columns as 0 (→ per-site defaults).
-3. **Added the wrapper opt-in branch** — `SGS_Container_Wrapper` gained `$opts['responsive_model']='object'` (flag-off path byte-identical for 50+ blocks, diff-verified). container-type on outer, flex/gap routed to `.sgs-container__inner`; wrapper-owned object-emit; graceful `$object_grid` gate. Commits `665b5b12` + `837fd63f`.
-4. **Built the SGS-owned editor** — `src/components/ResponsiveOverride.js` (tablist + arrow keys, 44px, inherited icon+aria, keyboard reset) + `src/utils/responsive.js` breakpoint mirror + canonical-order `makeResponsive`. Commit `c3497724`.
-5. **Wired + PROVEN LIVE all 3 row/nav blocks** — `site-header-row` gap→object (live: 16px @1440, 40px @375 with a mobile override — tier-diff proven, reverted); `site-footer-row` gap→object + grid columns→`gridTemplateColumns` object (live: 3 cols→1 col, gap 48→32px); `adaptive-nav` `<ul>` gap→object via the shared emitter on its own list (live: 28px). No overflow, 0 console errors. Commit `837fd63f`.
-6. **Docs** — decisions.md D327, 3 visual-diff reports (STOP-67), plan `go-rippling-cascade.md`, state.md.
+1. **Task 1 — migrated live pattern instances flat→object (fixed a real fidelity bug).** The 3 blocks are file-based FSE patterns (`framework-footer-default.php`, `framework-header-default.php`, `parts/header.html`), NOT DB template parts. Their flat stored values (`gap:"48px"`, `gridTemplateColumns:"2fr 1fr 1fr"`, bottom `gap:"8px"`) were being coerced to block.json defaults by WP `prepare_attributes_for_render` — rendering the footer columns as equal thirds (not the draft's `2fr 1fr 1fr`) + the bottom gap as 48px (not 8px). Converted to object shape → both fixed live. Theme 1.5.12→1.5.13.
+2. **Task 2 — box/width/link-font-size → object model on all 3 blocks (qc-council-gated).** padding/margin/maxWidth/contentWidth + adaptive-nav linkFontSize. Wrapper Change 1 (contentWidth token transform + maxWidth sanitiser in the object-emit, `$object_model`-gated). Removed `supports.spacing` + dead flat orphans from 3 block.json; new shared `ResponsiveBoxControls` editor; nav link font-size emitted block-owned. Footer bottom row `style.spacing`→object desktop tier (rater-B R2). Theme 1.5.13→1.5.14.
+3. **`/qc-council` (2 cross-model raters) pre-build** — VALIDATED with 3 fixes baked in: R1 (drop `supports.spacing` else double-emit), R2 (footer bottom row also has `margin.top`), + confirmed the wrapper transforms don't regress the 50+ flag-off blocks.
+4. **Live-verified everything** (sandybrown, full cache clear OPcache+LiteSpeed+CDN, 1440/375): footer bottom padding 24 + margin 32 + inner gap 8 inherit to mobile; columns 2fr 1fr 1fr→1fr; nav gap 28 + link 15; no overflow; 0 console errors. Build gates green; `/sgs-update --stage 1` re-registered 6 attr rows.
+5. **Task 4 — Spec 17 §S9 coverage audit** (`.claude/reports/2026-07-14-spec17-s9-coverage-audit.md`): read-only FR-by-FR audit — 8/11 DONE, 3 open (FR-S9-8/9/10).
+6. **Docs** — decisions.md D328, 3 visual-diff reports, state.md, this handoff.
 
 ## Current State
-- **Branch:** `main` at `837fd63f` (D327; the D327 doc updates commit as the final handoff step)
-- **Tests:** 34/34 engine unit tests pass; `npm run build` green (dead-control + conformance gates pass)
-- **Build:** passes
-- **Uncommitted changes:** the D327 doc updates (state.md, handoff.md, next-session-prompt.md, decisions.md headline) — committed at handoff close. Plus pre-existing session-start dirt (lucide-icons.php, reports/*.txt, package-lock.json — NOT this session's).
-- **Deployed + live:** sandybrown canary carries all 3 migrated blocks; all live-verified.
+- **Branch:** `main` at `0fe3a5fe` (audit commit; Tasks 1+2 at `3ea21bdf`), both pushed.
+- **Tests:** 34/34 responsive-engine unit tests pass; `npm run build` green (dead-control 0, control-ux PASS, conformance unchanged).
+- **Build:** passes. **Deployed + live:** sandybrown carries all D328 changes, live-verified.
+- **Uncommitted changes:** pre-existing session-start dirt only (lucide-icons.php build-regen, package-lock.json, reports/phase4-*.txt, root .db files) — NOT this session's.
 
 ## Known Issues / Blockers
-- None block the next session. The footer/nav live instances currently render via the graceful LEGACY path (identical output); re-saving them switches to the object path (D270) — optional polish, not a bug.
+- None block the next session. Pre-existing (out of FR-S9-6 scope, flagged in the audit): the shared `SGS_Container_Wrapper` has NO `style.border` emission (grep=0), so these blocks' `__experimentalBorder`-SkipSerialization borders (e.g. the footer bottom-bar 1px divider) never render. A universal wrapper-border-emit is a block-quality follow-up.
 
-## Next Priorities (in order — BEAN'S DIRECTIVE 2026-07-14: finish §S9 → confirm ALL of Spec 17 covered → THEN Spec 33 Part 2)
-1. **Re-save the footer + nav template-part instances** (Site Editor) so they use the object model directly, then live-confirm — closes the FR-S9-6 migration.
-2. **Migrate the box props** (padding/margin) + adaptive-nav `linkFontSize` to the object model — the engine + wrapper already support box props (route to outer); needs a box editor control + removing the orphan flat tier attrs.
-3. **`/sgs-update`** re-register the changed block attrs + a broader **`/qc` + `/a11y-audit`** pass across all 3 blocks.
-4. **CONFIRM every point in Spec 17 §S9 is TOTALLY covered** (Bean's gate) — audit FR-S9-1..11 and BUILD the still-open ones: FR-S9-8 (per-device content adaptation), FR-S9-9 (sticky/transparent-on-scroll toggle), FR-S9-10 (global defaults + Site Info), FR-S9-11 (CPT `sgs_footer` template + DB reseed). Multi-session; each FR built + live-verified; present an FR-by-FR coverage audit for sign-off.
-5. **THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5): `/sgs-clone` extracts a draft's header/footer once per site → emits `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` by BEM role. HARD gate: do NOT start until Task 4 confirms Spec 17 totally covered.
+## Next Priorities (in order — BEAN'S DIRECTIVE: finish §S9 → confirm ALL Spec 17 covered → THEN Spec 33 Part 2)
+1. **BUILD the 3 open §S9 FRs** so Spec 17 §S9 is totally covered (the hard gate): **FR-S9-8** per-device content adaptation (per-tier visibility, `showLabel`/`iconOnly` with `mailto:`/`tel:`, move-to-drawer, Indus reference pattern); **FR-S9-9** transparent-at-rest→solid-on-scroll no-code inspector toggle (extend `class-sgs-header-behaviours.php`, do NOT rebuild); **FR-S9-10** wire the existing FR-S4 Site Info store into the header (already in footer) + confirm global-style-token defaults. Each = its own `/strategic-plan` + `/phase-planner` + live-verify.
+2. **Present the FR-S9-1..11 coverage audit for Bean's "totally covered" sign-off** once FR-S9-8/9/10 land.
+3. **THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5 / FR-S9-11 step 3). HARD gate: do NOT start until §S9 is confirmed totally covered.
+4. **Optional block-quality follow-up:** universal `style.border` emission in `SGS_Container_Wrapper`.
 
 ## Files Modified
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/includes/class-sgs-breakpoints.php` | NEW shared breakpoint source |
-| `plugins/sgs-blocks/includes/helpers-responsive.php` | object-model resolver/emitter + canonicalisation oracle |
-| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | opt-in object-model branch + graceful `$object_grid` gate |
-| `plugins/sgs-blocks/src/components/ResponsiveOverride.js` | NEW SGS device-switcher |
-| `plugins/sgs-blocks/src/components/index.js`, `src/utils/responsive.js` | export + breakpoint mirror/helpers |
-| `plugins/sgs-blocks/src/blocks/{site-header-row,site-footer-row,adaptive-nav}/{block.json,edit.js,render.php}` | gap (+ footer grid) → object model + flag |
-| `plugins/sgs-blocks/tests/php/ResponsiveOverrideEngineTest.php` + `run-responsive-engine-standalone.php` | 34 engine tests |
-| `.claude/decisions.md`, `.claude/state.md`, `reports/visual-diff/*` | D327 record + 3 PASS reports |
+| `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` | object-emit: contentWidth token transform + maxWidth sanitiser |
+| `plugins/sgs-blocks/src/blocks/{site-header-row,site-footer-row,adaptive-nav}/{block.json,edit.js}` | drop supports.spacing + flat orphans; object box/width attrs; ResponsiveBoxControls |
+| `plugins/sgs-blocks/src/blocks/adaptive-nav/render.php` | link font-size block-owned emit (object) |
+| `plugins/sgs-blocks/src/components/ResponsiveBoxControls.js` (NEW) + `index.js` | shared FR-S9-6 spacing/width panel |
+| `theme/sgs-theme/patterns/framework-{footer,header}-default.php`, `parts/header.html` | instances flat→object; footer bottom row style.spacing→object; version 1.5.14 |
+| `.claude/decisions.md`, `.claude/state.md`, `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md`, `reports/visual-diff/*` | D328 record + audit + 3 reports |
 
 ## Notes for Next Session
-- **Wrapper-owned vs block-owned emission:** a responsive prop that is a WRAPPER capability (the row's flex gap) is emitted BY the wrapper via the opt-in flag. A prop on the block's OWN internal element (adaptive-nav's `<ul>` gap) uses the shared `sgs_emit_responsive_css()` directly in the block's render.php — NOT the wrapper flag. Both use the same universal emitter (D294-legit).
-- **container-type mechanics:** an element cannot size-`@container` itself; the wrapper forces the flex/grid + gap onto `.sgs-container__inner` (a descendant of the container-type outer) so nested-narrow adaptation works.
-- **Migration is graceful** — flipping `responsive_model=object` never breaks a flat-stored instance (`$object_grid` gate + `is_array` gap guard + emitter's `normalise_object`). Re-save switches to the object path.
-- **uid stability** is a WRITE-TIME guarantee (`makeResponsive` canonical key order), never a PHP ksort (STOP-NO-KSORT).
+- **File-based FSE, not DB template parts:** header/footer content lives in the pattern PHP + `parts/*.html` (byte-identical duplicates per FR-S1-2). "Re-save" = edit the pattern markup, not a Site-Editor DB override.
+- **Object-typed attrs coerce flat values to defaults:** WP `prepare_attributes_for_render` rejects a flat string against an `object` schema and substitutes the block.json default. Any pattern/emit MUST use the object shape or the authored value is silently lost.
+- **Wrapper reads `style.spacing` unconditionally (L938):** a block on the object model MUST drop `supports.spacing` AND migrate any `style.spacing` in its instances to the object, else double-emit + the WP Dimensions panel stays visible.
+- **contentWidth object needs the token-resolver transform** in the object-emit (else `max-width:normal`); maxWidth needs the length sanitiser. Both are `$object_model`-gated.
+- **uid changes on shape/value change are EXPECTED** (content-driven hash), not ksort churn (STOP-NO-KSORT is about identical content → identical uid).
 
 ## Next Session Prompt
 
-~~~
-You are the SGS WordPress block + frontend developer. The FR-S9-6 responsive-override engine is BUILT + wired to all 3 §S9 row/nav blocks + proven live (D327). This session closes the migration (re-save instances) + extends the object model to the box props. Invoke /autopilot first.
-
-Read .claude/handoff.md + CLAUDE.md + .claude/plans/go-rippling-cascade.md for full context, then work the priorities.
-
-## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. `.claude/handoff.md` (this D327 record) + `.claude/decisions.md` D327.
-2. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` §S9 FR-S9-6 IN FULL + Spec 17 end-to-end (Bean-locked: read the governing spec fully each session).
-3. `.claude/plans/go-rippling-cascade.md` — the engine + wrapper execution spec + council-validated mechanics + DEFERRED list.
-4. `plugins/sgs-blocks/includes/{class-sgs-breakpoints.php,helpers-responsive.php}` + `class-sgs-container-wrapper.php` (the `$object_model`/`$object_grid` branch) + `src/components/ResponsiveOverride.js`.
-
-## ⛔ ANTI-PATTERN STOPs (carried forward — NEVER subtract, D101)
-- **STOP-NO-KSORT (D326/D327)** — the shared-wrapper uid = `md5(wp_json_encode($attributes))`; NEVER `ksort`/reorder the hash input. Object-model key order is a WRITE-TIME guarantee (`makeResponsive` + block.json default order). Verify existing blocks' uids unchanged after any wrapper edit.
-- **STOP-WRAPPER-OWNED-VS-BLOCK-OWNED (D327, NEW)** — a WRAPPER capability (row flex gap/width/padding) is emitted BY the wrapper via `responsive_model=object`; a block's OWN internal element (nav `<ul>`) uses the shared `sgs_emit_responsive_css()` directly in its render.php. Don't route a block-owned element through the wrapper flag (double-emit) or a wrapper capability block-private (fork — qc-council NON-COMPLIANT).
-- **STOP-CONTAINER-TYPE-SELF-QUERY (D327, NEW)** — an element cannot size-`@container` itself. container-type goes on the OUTER; the styled flex/grid + tier rules go on a DESCENDANT (`.sgs-container__inner`). Verify live that the block adapts nested-narrow, not just at viewport.
-- **STOP-GRACEFUL-MIGRATION (D327, NEW)** — flipping `responsive_model=object` must NOT break a flat-stored instance. The `$object_grid` gate + `is_array` gap guard + emitter `normalise_object` handle it; verify a NON-re-saved instance still renders before/after any wrapper change.
-- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache + `wp litespeed-purge all` + Hostinger `hosting_clearWebsiteCacheV1` (CDN) + live computed-value. The whole feature was confirmed live only after this sequence.
-- **STOP-CSS-VER-CACHE-BUST (D310/D316/D322)** — a `style.css`/theme-CSS-only change is stale unless `theme/sgs-theme/style.css` Version bumps; a block CSS change bumps that `block.json` version (render-side scoped `<style>` lands fresh).
-- **STOP-static-vs-live (D304/D305)** — for "does this rule apply / what renders?" use the LIVE DOM (Playwright computed-style), never static PHP/CSS parsing.
-- **STOP-67** — a changed BLOCK needs a pre-commit visual-diff report at `reports/visual-diff/<block>-<date>.md` (`verdict: PASS` + `first_paint_capture_passed: true`). The commit gate enforces it.
-- **STOP-16** — a subagent / "it works" / build-green is a HYPOTHESIS. Re-verify live yourself. Node/npm via PowerShell (nvm shim broken in Git Bash).
-- **STOP-WINDOWS-BASH-STALE** — Git Bash `git add` has a stale view of Write-tool-created files; stage + commit via PowerShell (Windows = ground truth).
-- **STOP-PARALLEL-TRACK-SWEEP (D326)** — commit path-scoped + promptly; verify D-ceiling + branch before every commit.
-- **Composite-mirror (R-31-9 / D294)** — no divergent per-block styling path; no inline `style=""` (Spec 32); no block version bumps as deprecations (D270/D293).
-
-## ⛔ PRE-FLIGHT SELF-ATTESTATION (answer before first Write/Edit)
-1. Have I read Spec 17 §S9 FR-S9-6 IN FULL + the plan this session?
-2. For the prop I'm migrating — is it a WRAPPER capability (→ flag) or a block's OWN element (→ shared emitter direct)?
-3. Will I verify on the LIVE DOM after the full cache-clear sequence (STOP-21), not on build-green?
-4. Have I verified the D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`) + branch = `main` before committing?
-
-## Skills to Invoke
-| Skill | When |
-|-------|------|
-| `/brainstorming` | ALWAYS — box-object editor UX design decisions |
-| `/gap-analysis` | ALWAYS — grade the migration vs FR-S9-6 acceptance |
-| `/lifecycle` | ALWAYS — before any skill/agent change |
-| `/research` | ALWAYS — WP BoxControl responsive patterns if needed |
-| `/strategic-plan` | ALWAYS — order the box-prop migration + re-save |
-| `/qc-council` | validate any further shared-wrapper change before dispatch (blub.db 255) |
-| `/sgs-wp-engine` + `/sgs-update` | SGS block dev + DB re-register |
-| `/qc` · `/visual-qa` · `/a11y-audit` | live breakpoint + device-switcher keyboard verification |
-
-## MCP Servers & Tools
-| Tool | For |
-|------|-----|
-| Playwright MCP (`browser_navigate`/`browser_evaluate`/`browser_resize`) | live per-tier computed-value verification (used all session) |
-| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear (user `u945238940`, domain `sandybrown-nightingale-600381.hostingersite.com`) + `wp litespeed-purge all` + OPcache before any live measure |
-| `/wp-blocks` + `/sgs-db` | schema/DB ground truth before any "missing X" claim |
-
-## Agents to Delegate To
-| Agent | When |
-|-------|------|
-| general-purpose (Sonnet) | box-editor component + per-block box-prop wiring (re-verify live yourself, STOP-16) |
-| `wp-sgs-developer` | heavy shared-wrapper/engine work (if registered) |
-| `feature-dev:code-reviewer` (or /qc-council raters) | review any shared-wrapper change before commit |
-
-## Task 1: Close the migration — re-save footer + nav instances
-**What:** open the header + footer template parts in the Site Editor, re-save the `sgs/site-footer-row` + `sgs/adaptive-nav` instances so they carry the object-model defaults, then live-confirm they render via the object path (not legacy).
-**Why:** the graceful gate means they currently render via legacy (identical output); re-saving completes the FR-S9-6 migration.
-**Orchestration:** inline (main) via Playwright editor login (canary creds `.claude/secrets/sandybrown.env`); re-verify live per tier.
-**Acceptance:** footer/nav instances store `{desktop,...}` object attrs; live per-tier values unchanged (footer 3→1, gap 48→32; nav 28px); uid stable on re-save.
-**/qc gate after:** yes — live per-tier verify.
-
-## Task 2: Migrate the box props (padding/margin) + nav linkFontSize
-**What:** extend the object model to padding/margin on all 3 blocks (the wrapper object-emit already routes box props to the outer, box-aware) + adaptive-nav `linkFontSize` via the shared emitter; replace the orphan flat tier attrs + `ResponsiveSpacingPanel` with a `ResponsiveOverride` + BoxControl.
-**Why:** completes FR-S9-6 "every property overridable per breakpoint" for these blocks.
-**Orchestration:** `/brainstorming` the box-editor UX first; inline or 1 Sonnet subagent per block; re-verify each live.
-**Acceptance:** padding/margin object model live-verified per tier + per-side inheritance; no dead controls; no regression.
-**Depends on:** Task 1. **/qc gate after:** yes — `/qc` + `/visual-qa` + `/a11y-audit`.
-
-## Task 3: DB re-register + full gate pass
-**What:** `/sgs-update` to re-register the changed attrs; `/qc` + `/a11y-audit` across all 3 blocks incl. the editor device-switcher (keyboard tablist traversal + inherited-indicator aria-label + reset-to-inherited).
-**Why:** FR-S9-6 editor-UX acceptance + DB ground-truth.
-**Acceptance:** `/sgs-db` shows updated attrs; a11y clean; device-switcher keyboard-operable.
-**Depends on:** Task 2.
-
-## Dependency graph
-```
-Task 1 (inline, re-save + live verify)
-  ↓
-Task 2 (box props — /brainstorming UX → per-block, verify each live)
-  ↓ /qc + /visual-qa + /a11y-audit
-Task 3 (/sgs-update + full gate pass)
-  ↓
-Commit + push (path-scoped; verify D-ceiling + branch = main)
-```
-
-## Methodology guardrails (do not skip)
-- **Deploy before measure (STOP-21)** — build + deploy + OPcache + LiteSpeed + CDN clear BEFORE any live measure.
-- **Root cause before instance fix** — for a rendering miss, prove the cause on the LIVE DOM / a real render trace first.
-- **Outcome vs completion** — the outcome is all 3 blocks on the FULL object model (incl. box props), live-verified per tier; engine-built ≠ done.
-- **/qc-council any shared-wrapper change BEFORE dispatch.** Never ksort the uid. Verify graceful migration (flat-stored instance still renders).
-~~~
+See `.claude/next-session-prompt.md` (canonical) — it carries the full MANDATORY READING GATE, the anti-pattern STOP catalogue, the pre-flight self-attestation ritual, and the per-FR orchestration plan for FR-S9-8/9/10.
