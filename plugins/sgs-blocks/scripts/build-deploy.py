@@ -94,7 +94,13 @@ TAR_EXCLUDES = [
 # output never shows up in `git status` and needs no entry here.
 DEPLOY_ROOTS = ("theme/sgs-theme/", "plugins/sgs-blocks/")
 DEPLOY_SKIP_PREFIXES = (
-    "plugins/sgs-blocks/src/",        # excluded from the tar (compiled into build/)
+    # NOTE: plugins/sgs-blocks/src/ is deliberately NOT skipped. It is excluded
+    # from the tarball, but `npm run build` COMPILES it into build/ (and
+    # --webpack-copy-php copies each block's render.php across), and build/ does
+    # ship. So an uncommitted src/ file reaches production just as surely as one
+    # in includes/ — skipping it would leave exactly the hole this gate exists to
+    # close. build/ itself is gitignored, so it never appears in `git status`;
+    # src/ is the only place that churn is visible.
     "plugins/sgs-blocks/_retired/",   # excluded from the tar
     "theme/sgs-theme/styles/",        # per-client snapshots, pushed separately
     "plugins/sgs-blocks/scripts/",    # tooling — ships but never executes in WP
