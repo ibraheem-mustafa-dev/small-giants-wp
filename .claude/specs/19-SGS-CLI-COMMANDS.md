@@ -531,24 +531,29 @@ python plugins/sgs-blocks/scripts/build-deploy.py --blocks-only
 # Dry-run (print commands, do nothing)
 python plugins/sgs-blocks/scripts/build-deploy.py --dry-run
 
-# Bypass dirty-git guard
+# Bypass the dirty-deploy guard — the guard that would have stopped the
+# 2026-07-14 outage. Only after READING the paths it lists.
 python plugins/sgs-blocks/scripts/build-deploy.py --allow-dirty
 
 # Production target (requires explicit opt-in)
 python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
 
-# Post-deploy URL verification (HEAD check + optional Playwright probe)
+# Verify a specific page instead of the target homepage (verify is ON by default)
 python plugins/sgs-blocks/scripts/build-deploy.py --verify-url https://sandybrown-nightingale-600381.hostingersite.com/
 ```
 
-**Args:** `--target {sandybrown,palestine-lives}` (default sandybrown), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--verify-url <URL>`.
+**Args:** `--target {sandybrown,palestine-lives}` (default sandybrown), `--skip-build`, `--theme-only`, `--blocks-only`, `--dry-run`, `--allow-dirty`, `--skip-verify`, `--verify-url <URL>`.
 
-**Guards:**
-- Refuses dirty git tree unless `--allow-dirty`.
+**Guards (hardened 2026-07-14 after the outage below):**
+- **Dirty-deploy guard.** Refuses when a file that BOTH ships in the tarball AND executes in WordPress (`.php/.js/.css/.html/.json` under `theme/sgs-theme/` or `plugins/sgs-blocks/`, minus `src/`, `_retired/`, `styles/`, `scripts/`, `tests/`, minus lockfiles + the generated `lucide-icons.php`) is uncommitted — unless `--allow-dirty`. **Deliberately scoped:** it previously checked the WHOLE repo, which is permanently dirty, so every documented command carried `--allow-dirty` and the guard protected nothing.
+- **Post-deploy smoke test.** Runs BY DEFAULT (opt out: `--skip-verify`). Cache-busted GET of the target; **fails the run** on 5xx/4xx or a WordPress fatal in the body. It was previously opt-in AND warn-only ("never aborts"), so a deploy that broke the site still reported `[DONE]`.
+- **One-generation rollback.** The previous copy is rotated to `<dir>.bak` instead of being `rm -rf`'d, so a bad deploy is one `mv` from recovery.
 - Refuses `palestine-lives` target without explicit opt-in (no default-to-production footgun).
 - Refuses if `plugins/sgs-blocks/build/` missing and `--skip-build` set.
 
-**Pipeline (5 steps):** `npm run build` → tar archive → scp → ssh extract + move → local cleanup.
+> **Why (2026-07-14):** an unfinished, uncommitted edit (a missing `use SGS\Blocks\Sgs_Site_Info;` — a RUNTIME class-resolution error that `php -l` passes cleanly) was deployed to **both** live client sites and 500'd them for ~2.5 hours, while the deploy reported success. All three defences above were inert at the time. This is also why `build-deploy.py` is now the deploy path for EVERY target — see `.claude/dev-setup.md`; the raw tar/scp sequence has been removed from the docs.
+
+**Pipeline (5 steps + verify):** `npm run build` → tar archive → scp → ssh extract + rotate-to-`.bak` + move → local cleanup → post-deploy smoke test.
 
 ---
 

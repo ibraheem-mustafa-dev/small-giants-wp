@@ -424,39 +424,71 @@ extensions/
 
 > **LiteSpeed note (updated 2026-07-13, D322):** LiteSpeed Cache **IS active on sandybrown** (v7.8.1 — re-installed at D312, re-confirmed live D322; the old "deleted 2026-05-05" claim is STALE). ALWAYS `wp litespeed-purge all` on sandybrown after a CSS/render deploy, in addition to OPcache reset + the Hostinger CDN clear (`hosting_clearWebsiteCacheV1`). Check `wp plugin list --status=active | grep -i litespeed` on any target before deciding.
 
-### Full deployment (recommended — tar method)
+### Full deployment (ALL targets) — always via `build-deploy.py`
+
+> **⛔ Use the script. Do NOT hand-roll a tar/scp deploy (2026-07-14 incident).**
+> On 2026-07-14 an unfinished, uncommitted edit reached **both live client sites**
+> via a raw deploy and took them down with a PHP fatal for ~2.5 hours — and the
+> deploy reported success. The raw tar/scp sequence that used to live here had
+> no dirty-file gate, no post-deploy check, and `rm -rf`'d the live directory
+> before extracting, so there was nothing to roll back to. It has been REMOVED
+> from this doc on purpose. `build-deploy.py` now carries all three defences:
+> a scoped dirty gate, a fail-closed post-deploy smoke test, and a `.bak`
+> rotation for one-command rollback.
 
 ```bash
-# 1. Build blocks plugin
-cd plugins/sgs-blocks && npm run build
+# Canary (safe default — sandybrown)
+python plugins/sgs-blocks/scripts/build-deploy.py
 
-# 2. Deploy via tar (scp -r creates nested dirs on Hostinger — always use tar)
-cd /path/to/small-giants-wp
-tar -cf sgs-deploy.tar \
-  --exclude='node_modules' \
-  --exclude='.git' \
-  --exclude='plugins/sgs-blocks/src' \
-  --exclude='theme/sgs-theme/styles/*.json' \
-  --exclude='plugins/sgs-blocks/_retired' \
-  theme/sgs-theme plugins/sgs-blocks
+# Real client site (explicit opt-in required)
+python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives
+```
 
-scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
+The script builds, tars (same excludes as before), scps, extracts, rotates the
+previous copy to `<dir>.bak`, cleans up, then **GETs the site and fails the run
+if it is broken**. Deploy to the canary first; only then the client site.
 
-ssh -p 65002 u945238940@141.136.39.73 'WP=domains/palestine-lives.org/public_html/wp-content && rm -rf $WP/themes/sgs-theme $WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme $WP/themes/ && mv plugins/sgs-blocks $WP/plugins/ && rm -rf theme plugins sgs-deploy.tar'
+**The flags exist — know what you're giving up before using them:**
 
-rm sgs-deploy.tar
+| Flag | What you lose |
+|---|---|
+| `--allow-dirty` | The gate that would have stopped the 2026-07-14 outage. Only use when you have READ the listed paths and know each one is safe. |
+| `--skip-verify` | The only check that catches a deploy which breaks the site. |
 
-# 3. Reset PHP OPcache (CLI and web are separate pools)
+**Rollback (if a deploy breaks the site):**
+
+```bash
+ssh hd 'WP=domains/palestine-lives.org/public_html/wp-content && \
+  mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.broken && \
+  mv $WP/plugins/sgs-blocks.bak $WP/plugins/sgs-blocks'
+# then reset OPcache (below) — the .bak is the copy from the PREVIOUS deploy
+```
+
+OPcache reset is handled per the snippet below (CLI and web are separate pools):
+
+```bash
 ssh -p 65002 u945238940@141.136.39.73 "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && \
   curl -s https://palestine-lives.org/op-reset-tmp.php && \
   ssh -p 65002 u945238940@141.136.39.73 "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
-### Single-file patch
+### Single-file patch — ⛔ don't
+
+A bare `scp` of one file is how broken code reaches a live site with **zero**
+gates and **no** rollback copy: no dirty check, no smoke test, no `.bak`. It
+feels safer than a full deploy because it touches less — that is the trap. The
+2026-07-14 fatal was a single unfinished file.
+
+Use `build-deploy.py` (add `--blocks-only` / `--theme-only` to narrow scope). If
+you genuinely must hand-place one file — emergency rollback only — take a backup
+first and verify the site afterwards:
 
 ```bash
+# emergency only; back up, then verify
+ssh hd 'cp $WP/path/to/file $WP/path/to/file.bak'
 scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file \
   u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/path/to/file
+curl -s -o /dev/null -w '%{http_code}\n' "https://palestine-lives.org/?cachebust=$RANDOM"   # expect 200
 ```
 
 ### Per-client theme snapshot deploy
@@ -468,15 +500,27 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --
 
 ### Fast-cycle canary deploy (sandybrown) — D3
 
-`plugins/sgs-blocks/scripts/build-deploy.py` is the fast-cycle deploy script for the sandybrown staging canary. Skips full-ceremony steps (no /qc-council, no full doc walk) — use for iterative pipeline / converter work where the per-commit cadence is dictated by /sgs-clone --debug-trace measurement, not full deploy QA.
+`plugins/sgs-blocks/scripts/build-deploy.py` is also the fast-cycle path for the
+sandybrown staging canary. Skips full-ceremony steps (no /qc-council, no full doc
+walk) — use for iterative pipeline / converter work where the per-commit cadence
+is dictated by /sgs-clone --debug-trace measurement, not full deploy QA.
 
 ```bash
 python plugins/sgs-blocks/scripts/build-deploy.py
 ```
 
-Companion to `/wp-sgs-deploy` (full-ceremony palestine-lives deploy). Pick by target site:
-- sandybrown canary → `build-deploy.py`
-- palestine-lives + production → `/wp-sgs-deploy`
+**Corrected 2026-07-14 — this section previously routed production away from the
+script** ("sandybrown canary → `build-deploy.py`; palestine-lives + production →
+`/wp-sgs-deploy`"), which is how the *real client site* ended up documented for a
+raw, ungated tar deploy. `build-deploy.py` is now the deploy path for **every**
+target — the difference is only the flag:
+
+- sandybrown canary → `build-deploy.py` (default target)
+- palestine-lives / production → `build-deploy.py --target palestine-lives`
+  (explicit opt-in enforced in code), preceded by the `/wp-sgs-deploy` ceremony
+  (QC gates, doc walk) where that ceremony applies. `/wp-sgs-deploy` governs
+  *what must pass before* a production deploy; it does not replace the script
+  that performs it.
 
 ### Inheritance audit — container-wrapping blocks (D152)
 
