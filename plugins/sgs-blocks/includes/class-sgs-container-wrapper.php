@@ -1524,8 +1524,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 				if ( isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
 					$obj_inner_props[] = array(
-						'value' => $attributes['contentWidth'],
-						'css'   => 'max-width',
+						'value'     => $attributes['contentWidth'],
+						'css'       => 'max-width',
+						// contentWidth tiers are TOKENS (normal/wide/full/literal); resolve
+						// each per tier via the SAME resolver the base path uses (L254-270)
+						// so 'normal'→var(--wp--style--global--content-size) etc., never a
+						// raw invalid `max-width:normal`. 'full'/'' resolve to '' → no rule.
+						'transform' => $sgs_resolve_content_width,
 					);
 				}
 				if ( $obj_inner_props && '' !== $grid_sel ) {
@@ -1535,8 +1540,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$obj_outer_props = array();
 				if ( isset( $attributes['maxWidth'] ) && is_array( $attributes['maxWidth'] ) ) {
 					$obj_outer_props[] = array(
-						'value' => $attributes['maxWidth'],
-						'css'   => 'max-width',
+						'value'     => $attributes['maxWidth'],
+						'css'       => 'max-width',
+						// Per-tier literal lengths — sanitise each exactly like the base
+						// path (L276-277) so a tier value can never break its declaration.
+						'transform' => $sgs_css_length,
 					);
 				}
 				if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {

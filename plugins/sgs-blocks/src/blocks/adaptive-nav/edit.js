@@ -21,17 +21,15 @@ import {
 	SelectControl,
 	TextControl,
 	__experimentalNumberControl as NumberControl,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
 	TypographyControls,
 	ResponsiveOverride,
 	SpacingControl,
+	ResponsiveBoxControls,
 } from '../../components';
-import {
-	WidthPanel,
-	ResponsiveSpacingPanel,
-} from '../container/components/ContainerWrapperControls';
 
 const ALLOWED_BLOCKS = [ 'sgs/mega-menu' ];
 
@@ -78,6 +76,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		navigationLabel,
 		linkColour,
 		linkHoverColour,
+		linkFontSize,
 		justifyContent,
 		flexWrap,
 		verticalAlign,
@@ -243,7 +242,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix="link"
 						attributes={ attributes }
 						setAttributes={ setAttributes }
+						showSize={ false }
 					/>
+					<ResponsiveOverride
+						label={ __( 'Link font size', 'sgs-blocks' ) }
+						value={ linkFontSize }
+						onChange={ ( obj ) =>
+							setAttributes( { linkFontSize: obj } )
+						}
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<UnitControl
+								label={ __( 'Link font size', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={
+									inherited && effectiveValue
+										? String( effectiveValue )
+										: ''
+								}
+								units={ [
+									{ value: 'px', label: 'px', default: 15 },
+									{ value: 'rem', label: 'rem', default: 1 },
+									{ value: 'em', label: 'em', default: 1 },
+								] }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				<PanelBody
@@ -291,13 +317,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<WidthPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
 				</PanelBody>
 
-				<ResponsiveSpacingPanel
+				<ResponsiveBoxControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

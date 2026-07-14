@@ -9,8 +9,7 @@ import {
 	SelectControl,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveOverride, SpacingControl } from '../../components';
-import { ResponsiveSpacingPanel } from '../container/components/ContainerWrapperControls';
+import { ResponsiveOverride, SpacingControl, ResponsiveBoxControls } from '../../components';
 
 const ALLOWED_BLOCKS = [
 	'core/group',
@@ -162,7 +161,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-				<ResponsiveSpacingPanel
+				<ResponsiveBoxControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

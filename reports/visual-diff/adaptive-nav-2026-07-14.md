@@ -33,3 +33,18 @@ un-migrated instance's flat gap keeps rendering.
 | Regression (D326 nav behaviour) | intact — WC injection still gone, collapse tier correct ✅ | |
 
 ## Verdict: PASS — nav-list gap on the FR-S9-6 engine via the shared emitter, live-verified, no regression to the D326 nav.
+
+---
+
+# ADDENDUM — D328 Task 2: box/width + link font-size → object model
+
+## What changed (D328)
+- block.json: removed `supports.spacing` (one-system R1); removed flat `padding*/margin*Tablet/Mobile` orphans (nav was missing `marginRightMobile` — gone with the removal); removed `maxWidthTablet/Mobile`+`contentWidthTablet/Mobile`; added object `padding`/`margin`/`maxWidth`/`contentWidth`. `linkFontSize` number → object `{desktop:"15px"}` (length strings via UnitControl); removed `linkFontSizeUnit`+`linkFontSizeTablet/Mobile`.
+- edit.js: `ResponsiveSpacingPanel`+`WidthPanel` → shared `ResponsiveBoxControls`; `TypographyControls showSize={false}` + `ResponsiveOverride`+`UnitControl` for link font-size.
+- render.php: link font-size emitted BLOCK-OWNED via `sgs_emit_responsive_css()` on `.sgs-adaptive-nav__link`, stripped from the typography helper (an object would else hit its legacy-string branch → `font-size:Array`). Same split as the `<ul>` gap (STOP-WRAPPER-OWNED).
+
+## Live verification (sandybrown, full cache clear, D328)
+- 1440 + 375: `<ul>` gap 28px; link font-size 15px (both tiers); no overflow; WC mini-cart/customer-account still gone. 0 console errors.
+- build: control-ux gate PASS (integrated UnitControl); dead-control guard 0.
+
+## Verdict (D328 Task 2): PASS — box/width + link font-size on the object model; block-owned emit correct; no regression.

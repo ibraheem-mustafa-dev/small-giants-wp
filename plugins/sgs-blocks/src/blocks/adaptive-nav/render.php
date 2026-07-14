@@ -123,8 +123,31 @@ if ( '' !== $preset_text_slug ) {
 	$classes[] = 'has-' . $preset_text_slug . '-color';
 }
 
-// 2b. Link typography via the shared helper (base + tiers, scoped to the link).
-$css .= sgs_typography_css_rule( $attributes, 'link', $root_sel . ' .sgs-adaptive-nav__link' );
+// 2b. Link typography via the shared helper — weight / style / line-height ONLY.
+// linkFontSize is now the FR-S9-6 {desktop,tablet,mobile} object model (emitted just
+// below via sgs_emit_responsive_css), so it is stripped from the attrs the helper sees
+// (an object would otherwise fall through the helper's legacy-string branch and emit
+// `font-size:Array`). Block-owned emit — NOT a wrapper capability (STOP-WRAPPER-OWNED).
+$link_sel   = $root_sel . ' .sgs-adaptive-nav__link';
+$typo_attrs = $attributes;
+unset( $typo_attrs['linkFontSize'] );
+$css .= sgs_typography_css_rule( $typo_attrs, 'link', $link_sel );
+
+// 2b-i. Link font-size — object model, block-owned emit (mirrors the <ul> gap pattern
+// below). Each tier is a length STRING ("15px"); a bare number falls back to px.
+if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['linkFontSize'] ?? null ) ) {
+	$css .= sgs_emit_responsive_css(
+		$link_sel,
+		array(
+			array(
+				'value'        => $attributes['linkFontSize'],
+				'css'          => 'font-size',
+				'unit_default' => 'px',
+			),
+		),
+		array( 'container' => false )
+	);
+}
 
 // 2c. Link colour + hover colour (token slugs → preset custom properties).
 $link_colour = isset( $attributes['linkColour'] ) ? sanitize_html_class( $attributes['linkColour'] ) : '';
