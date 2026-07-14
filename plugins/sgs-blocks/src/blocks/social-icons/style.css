@@ -10,6 +10,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	/* WCAG 2.5.8 target size floor — the scoped per-block <style> (render.php)
+	 * sets the authoritative width/height, but min-width/min-height stay here
+	 * as a safety net for any style variant (e.g. the footer variation below)
+	 * that sets an explicit smaller width/height: the glyph can render small,
+	 * the clickable hit area never can. */
+	min-width: 44px;
+	min-height: 44px;
 	color: var(--sgs-social-colour, currentColor);
 	text-decoration: none;
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
@@ -17,6 +24,8 @@
 
 .sgs-social-icons__item svg {
 	display: block;
+	/* Fixed glyph size set by the scoped per-block <style> (render.php); this
+	 * 100% fallback only applies before that scoped rule loads/matches. */
 	width: 100%;
 	height: 100%;
 }

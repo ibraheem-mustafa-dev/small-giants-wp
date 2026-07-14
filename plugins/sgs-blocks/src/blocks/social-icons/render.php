@@ -36,13 +36,54 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
-$icons              = $attributes['icons'] ?? array();
+use SGS\Blocks\Sgs_Site_Info;
+
+$source_raw         = $attributes['source'] ?? 'manual';
+$source             = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
 $icon_size          = (int) ( $attributes['iconSize'] ?? 24 );
 $icon_colour        = $attributes['iconColour'] ?? 'text-muted';
 $hover_colour_token = $attributes['iconColourHover'] ?? 'primary';
 $style_type_raw     = $attributes['iconStyle'] ?? 'plain';
 $gap_raw            = $attributes['gap'] ?? '20';
 $anchor             = $attributes['anchor'] ?? '';
+
+// ---------------------------------------------------------------------------
+// Icon source resolution. 'manual' (default) keeps the stored `icons` repeater
+// byte-identical to prior behaviour. 'site-info' pulls the same 7 networks the
+// sgs/business-info 'socials' case reads from the shared Sgs_Site_Info store
+// (Appearance > SGS Site Info), so header/footer/drawer instances stay in
+// sync with one operator setting instead of duplicated per-block URLs.
+// ---------------------------------------------------------------------------
+if ( 'site-info' === $source ) {
+	// Same network slugs + same escaping (Sgs_Site_Info::get()/get_esc_url())
+	// as the sgs/business-info 'socials' case — the label here is only the
+	// aria-label fallback text; the actual href is re-escaped via esc_url()
+	// in the render loop below exactly as it is for a manual-mode URL.
+	$site_info_networks = array(
+		'facebook'  => 'Facebook',
+		'instagram' => 'Instagram',
+		'twitter'   => 'X (Twitter)',
+		'linkedin'  => 'LinkedIn',
+		'youtube'   => 'YouTube',
+		'tiktok'    => 'TikTok',
+		'whatsapp'  => 'WhatsApp',
+	);
+
+	$icons = array();
+	foreach ( $site_info_networks as $network_slug => $network_label ) {
+		$social_url = (string) Sgs_Site_Info::get( "socials.{$network_slug}", '' );
+		if ( '' === $social_url ) {
+			continue;
+		}
+		$icons[] = array(
+			'platform' => $network_slug,
+			'url'      => $social_url,
+			'label'    => $network_label,
+		);
+	}
+} else {
+	$icons = $attributes['icons'] ?? array();
+}
 
 if ( empty( $icons ) ) {
 	return;
@@ -164,8 +205,14 @@ $root_decls   = array(
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 
 // --- Per-icon-item size (was inline `style="width:...px;height:...px"`). ---
-$item_size    = $icon_size + ( 'plain' === $style_type ? 0 : 16 );
+// WCAG 2.5.8 target size: the clickable box (`.sgs-social-icons__item`) is
+// floored at 44px regardless of the requested icon size, but the SVG glyph
+// itself keeps rendering at the operator-chosen `iconSize` (fixed px, not a
+// 100%-of-parent stretch) so a small glyph gets extra transparent padding
+// instead of being blown up to fill the enlarged hit area.
+$item_size    = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );
 $scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}";
+$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{width:{$icon_size}px;height:{$icon_size}px;}";
 
 // --- Base spacing (padding/margin) + WP colour support — skip-serialised in
 // block.json, emitted scoped via the stable core style engine (contract §B). ---

@@ -9,8 +9,22 @@ import {
 	Flex,
 	FlexItem,
 	FlexBlock,
+	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl } from '../../components';
+
+// Site Info mode pulls from this fixed set of networks (same 7 slugs the
+// sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
+// SGS Site Info) so the editor preview can list what will render without a
+// server round-trip.
+const SITE_INFO_NETWORKS = [
+	'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp',
+];
+
+const SOURCE_OPTIONS = [
+	{ label: __( 'Manual URLs', 'sgs-blocks' ), value: 'manual' },
+	{ label: __( 'From Site Info settings', 'sgs-blocks' ), value: 'site-info' },
+];
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
 // box object — mirrors render.php's box-shorthand builder so the canvas
@@ -37,6 +51,7 @@ const STYLE_OPTIONS = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		source,
 		icons,
 		iconSize,
 		iconColour,
@@ -49,6 +64,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 	} = attributes;
+
+	const isSiteInfoSource = 'site-info' === source;
 
 	// Box-object interface contract §5: base padding/margin preview mirrors the
 	// WP-native style.spacing.* object read by render.php's style engine call.
@@ -90,6 +107,27 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={ __( 'Link source', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Link source', 'sgs-blocks' ) }
+						value={ source }
+						options={ SOURCE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { source: val } ) }
+						help={ isSiteInfoSource
+							? __( 'Links are pulled automatically from Appearance > SGS Site Info. No manual URLs are used.', 'sgs-blocks' )
+							: __( 'Add and manage each link below.', 'sgs-blocks' )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ isSiteInfoSource ? (
+					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
+						<Notice status="info" isDismissible={ false }>
+							{ __( 'Pulling social links from Site Info settings. Any network left blank in Appearance > SGS Site Info is skipped automatically.', 'sgs-blocks' ) }
+						</Notice>
+					</PanelBody>
+				) : (
 				<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
 					{ icons.map( ( icon, index ) => (
 						<Flex key={ index } style={ { marginBottom: '8px' } }>
@@ -125,6 +163,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Add social link', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
+				) }
 
 				<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
 					<SelectControl
@@ -198,7 +237,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ icons.length === 0 ? (
+				{ isSiteInfoSource ? (
+					// Editor-only preview: the real network list is resolved server-side
+					// (Sgs_Site_Info) from what the operator has actually filled in, so
+					// this canvas preview shows every possible network rather than
+					// guessing which ones currently have a URL saved.
+					SITE_INFO_NETWORKS.map( ( platform ) => (
+						<span key={ platform } className="sgs-social-icons__item" style={ { width: iconSize, height: iconSize } }>
+							{ platform }
+						</span>
+					) )
+				) : icons.length === 0 ? (
 					<p style={ { opacity: 0.5 } }>{ __( 'Add social links in the sidebar…', 'sgs-blocks' ) }</p>
 				) : (
 					icons.map( ( icon, i ) => (

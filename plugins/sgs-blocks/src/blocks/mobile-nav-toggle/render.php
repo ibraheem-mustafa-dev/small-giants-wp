@@ -195,6 +195,9 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		'class'         => implode( ' ', $root_classes ),
 		'aria-label'    => esc_attr( $aria_label ),
 		'aria-expanded' => 'false',
+		// aria-controls associates the toggle with the drawer it opens (WCAG 4.1.2).
+		// Same target as popovertarget (default 'sgs-mobile-nav', the drawer's stable id).
+		'aria-controls' => esc_attr( $popover_target ),
 		'popovertarget' => esc_attr( $popover_target ),
 		'type'          => 'button',
 		'style'         => '--sgs-toggle-icon-size:' . absint( $icon_size ) . 'px',

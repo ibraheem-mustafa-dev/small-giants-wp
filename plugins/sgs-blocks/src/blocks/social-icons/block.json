@@ -72,6 +72,11 @@
 				}
 			}
 		},
+		"source": {
+			"type": "string",
+			"enum": [ "manual", "site-info" ],
+			"default": "manual"
+		},
 		"iconSize": {
 			"type": "number",
 			"default": 24

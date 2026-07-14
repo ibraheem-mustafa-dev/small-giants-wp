@@ -52,15 +52,15 @@
 		},
 		"iconColour": {
 			"type": "string",
-			"default": "primary"
+			"default": ""
 		},
 		"textColour": {
 			"type": "string",
-			"default": "text"
+			"default": ""
 		},
 		"labelColour": {
 			"type": "string",
-			"default": "text-muted"
+			"default": ""
 		},
 		"paddingTablet": {
 			"type": "object",

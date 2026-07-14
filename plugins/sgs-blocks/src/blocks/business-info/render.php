@@ -41,10 +41,18 @@ $show_icon    = ! empty( $attributes['showIcon'] );
 // phone/email link keeps its accessible name (WCAG name-required).
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
 $link_phone     = ! empty( $attributes['linkPhone'] );
-$link_email   = ! empty( $attributes['linkEmail'] );
-$icon_colour  = $attributes['iconColour'] ?? 'primary';
-$text_colour  = $attributes['textColour'] ?? 'text';
-$label_colour = $attributes['labelColour'] ?? 'text-muted';
+$link_email     = ! empty( $attributes['linkEmail'] );
+// Colour overrides (WCAG 1.4.3 fix, D-pending): empty by default — an unset
+// colour means "no override", so style.css's var(--sgs-bi-*, currentColor)
+// fallback inherits the surrounding container's text colour (e.g. the light
+// header vs. the dark mobile drawer) instead of always forcing the theme's
+// fixed 'primary'/'text'/'text-muted' preset regardless of context. An
+// explicit non-empty value here (set programmatically or via a future
+// colour control) still wins — see the colour-bridge block below, which only
+// emits the custom property when the resolved value is non-empty.
+$icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
+$text_colour  = (string) ( $attributes['textColour'] ?? '' );
+$label_colour = (string) ( $attributes['labelColour'] ?? '' );
 
 // Placeholder shown when data is missing.
 $placeholder = sprintf(
@@ -244,11 +252,40 @@ switch ( $display_type ) {
 	case 'copyright':
 		$name_raw = (string) Sgs_Site_Info::get( 'copyright', '' );
 		if ( '' !== $name_raw ) {
+			// Dedupe defensive fix: the "Copyright line" admin field's own
+			// placeholder text ("e.g. © 2026 Acme Ltd" —
+			// class-sgs-site-info-admin.php) invites the operator to type the
+			// FULL line, symbol + year included, while this render ALSO
+			// prepends its own "Copyright © {current year}" prefix below —
+			// producing "Copyright © 2026 © 2026 Acme Ltd" when both are
+			// present. Root cause is the stored value, not this render's
+			// logic, so strip a leading "Copyright"/"(c)"/"©" marker (and any
+			// year immediately following it) from the stored value before
+			// prepending our own prefix. This self-heals regardless of what
+			// is stored, without ever eating a legitimate business name that
+			// happens to start with a number (the year-strip only fires when
+			// a copyright word/symbol marker was actually found first).
+			$copyright_clean = $name_raw;
+			if ( preg_match( '/^\s*(?:copyright\b|\(c\)|©|&copy;)/i', $name_raw ) ) {
+				$copyright_clean = (string) preg_replace(
+					'/^\s*(?:copyright\b\s*)?(?:\(c\)|©|&copy;)?\s*(?:\d{4}\s*)?/i',
+					'',
+					$name_raw,
+					1
+				);
+				$copyright_clean = trim( $copyright_clean );
+				if ( '' === $copyright_clean ) {
+					// Stripping consumed the entire stored value (e.g. it was
+					// only "© 2026" with no business name) — fall back to the
+					// untouched raw value so the line never renders blank.
+					$copyright_clean = trim( $name_raw );
+				}
+			}
 			$html = sprintf(
 				'<p class="sgs-business-info sgs-business-copyright">%s &copy; %s %s</p>',
 				esc_html__( 'Copyright', 'sgs-blocks' ),
 				esc_html( gmdate( 'Y' ) ),
-				Sgs_Site_Info::get_esc_html( 'copyright' )
+				esc_html( $copyright_clean )
 			);
 		} else {
 			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-copyright">' . $placeholder . '</p>' : '';
@@ -330,9 +367,32 @@ $root_sel = '.' . $uid;
 $scoped_css = array();
 
 // --- Colour bridge (icon/text/label) — was an inline `style` attr, now a
-// scoped custom-property declaration; style.css's var(--sgs-bi-*, fallback)
-// consumption is unchanged. ---
-$scoped_css[] = "{$root_sel}{--sgs-bi-icon-colour:" . sgs_colour_value( $icon_colour ) . ';--sgs-bi-text-colour:' . sgs_colour_value( $text_colour ) . ';--sgs-bi-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+// scoped custom-property declaration; style.css's var(--sgs-bi-*, currentColor)
+// consumption is unchanged. Each custom property is emitted ONLY when the
+// attribute resolves to a non-empty value (an explicit override) — an unset
+// attribute means "no override", so no declaration is written at all and
+// style.css's currentColor fallback takes over, inheriting the surrounding
+// container's own text colour (fixes icons/text going invisible on a dark
+// mobile-drawer background while a light header stays dark, WCAG 1.4.3).
+// Declaring `--x:;` (empty) would NOT achieve this — an explicitly-empty
+// custom property counts as "set" for var() fallback purposes, so it must be
+// omitted entirely rather than declared empty. ---
+$sgs_bi_colour_decls    = array();
+$sgs_bi_icon_colour_css = sgs_colour_value( $icon_colour );
+if ( '' !== $sgs_bi_icon_colour_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-icon-colour:' . $sgs_bi_icon_colour_css;
+}
+$sgs_bi_text_colour_css = sgs_colour_value( $text_colour );
+if ( '' !== $sgs_bi_text_colour_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-text-colour:' . $sgs_bi_text_colour_css;
+}
+$sgs_bi_label_colour_css = sgs_colour_value( $label_colour );
+if ( '' !== $sgs_bi_label_colour_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-label-colour:' . $sgs_bi_label_colour_css;
+}
+if ( $sgs_bi_colour_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $sgs_bi_colour_decls ) . ';}';
+}
 
 // --- Per-tier label collapse (FR-S9-8 responsive icon-only). Clip the label at
 // any tier whose showLabel* is off; the icon remains, and the clipped label

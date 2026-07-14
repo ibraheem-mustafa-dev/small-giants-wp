@@ -46,6 +46,7 @@ const ALLOWED_BLOCKS = [
 	'sgs/whatsapp-cta',
 	'sgs/icon-list',
 	'sgs/business-info',
+	'sgs/social-icons',
 ];
 
 // ── Select options ──────────────────────────────────────────────────────────
