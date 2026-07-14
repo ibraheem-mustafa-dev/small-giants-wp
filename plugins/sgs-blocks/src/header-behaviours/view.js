@@ -1,17 +1,23 @@
 /**
- * Header Behaviours — frontend view script (F1 + F2).
+ * Header Behaviours — frontend view script (F1 + F2, FR-S9-9).
  *
  * Responsibilities:
  *   1. Publishes `--sgs-header-height` CSS custom property on :root and body
  *      via ResizeObserver so sticky headers don't obscure anchor targets
- *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS).
- *   2. Reads the active behaviour from body class:
+ *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS). UNCHANGED.
+ *   2. Reads the INDEPENDENT flag SET from body class (not a single slug —
+ *      several flags can be present at once):
  *      - body.sgs-header-behaviour-transparent → toggles body.is-header-scrolled
  *        when scrollY > 50.
- *      - body.sgs-header-behaviour-hide-on-scroll-down → toggles
- *        body.is-header-scrolling-down when scrollY > 100 AND direction is down.
- *   3. When no sgs-header-behaviour-* class is on body, the scroll listener is
- *      skipped entirely — zero event overhead on pages without behaviour rules.
+ *      - body.sgs-header-behaviour-shrink → toggles body.is-header-shrunk
+ *        (its OWN state class + threshold, independent of transparent, so the
+ *        two behaviours can be tuned separately).
+ *      - body.sgs-header-behaviour-hide-on-scroll-down (legacy/dormant path,
+ *        kept harmless) → toggles body.is-header-scrolling-down when
+ *        scrollY > 100 AND direction is down.
+ *   3. When none of transparent / shrink / hide-on-scroll-down flags are on
+ *      body, the scroll listener is skipped entirely — zero event overhead on
+ *      pages without active behaviours.
  *
  * State classes are toggled on document.body, not on the header element.
  * CSS selectors in header-behaviours.css descend from body accordingly.
@@ -36,17 +42,22 @@
 	}
 
 	/**
-	 * Read the active behaviour slug from body class.
-	 * Returns the slug string (e.g. 'transparent', 'sticky', 'hide-on-scroll-down')
-	 * or an empty string when no behaviour class is present.
+	 * Read the active behaviour flag SET from body class. Independent flags —
+	 * more than one may be true at once (e.g. sticky AND transparent).
 	 *
-	 * @return {string}
+	 * @return {{transparent: boolean, shrink: boolean, hideOnScrollDown: boolean}}
 	 */
-	function getActiveBehaviour() {
-		const match = document.body.className.match(
-			/sgs-header-behaviour-([\w-]+)/
-		);
-		return match ? match[ 1 ] : '';
+	function getActiveBehaviours() {
+		const classes = document.body.className;
+		return {
+			transparent: / sgs-header-behaviour-transparent(?: |$)/.test(
+				' ' + classes
+			),
+			shrink: / sgs-header-behaviour-shrink(?: |$)/.test( ' ' + classes ),
+			hideOnScrollDown: / sgs-header-behaviour-hide-on-scroll-down(?: |$)/.test(
+				' ' + classes
+			),
+		};
 	}
 
 	/**
@@ -84,16 +95,18 @@
 	}
 
 	/**
-	 * Wire up the scroll listener for F2 behaviour state classes.
-	 * State is toggled on document.body, not on the header element.
+	 * Wire up the scroll listener for F2 behaviour state classes. Transparent
+	 * and shrink each get their OWN state class (is-header-scrolled /
+	 * is-header-shrunk) so the two axes can be tuned independently — a header
+	 * can be transparent-only, shrink-only, or both at once. State is toggled
+	 * on document.body, not on the header element.
 	 *
-	 * @param {string} behaviour Active behaviour slug.
+	 * @param {{transparent: boolean, shrink: boolean, hideOnScrollDown: boolean}} behaviours Active flag set.
 	 */
-	function initScrollBehaviours( behaviour ) {
-		const isTransparent = behaviour === 'transparent';
-		const isHideOnScroll = behaviour === 'hide-on-scroll-down';
+	function initScrollBehaviours( behaviours ) {
+		const { transparent, shrink, hideOnScrollDown } = behaviours;
 
-		if ( ! isTransparent && ! isHideOnScroll ) {
+		if ( ! transparent && ! shrink && ! hideOnScrollDown ) {
 			return;
 		}
 
@@ -104,8 +117,8 @@
 			rafScheduled = false;
 			const scrollY = window.scrollY;
 
-			// Transparent → opaque transition (state on body).
-			if ( isTransparent ) {
+			// Transparent → opaque transition (own state class on body).
+			if ( transparent ) {
 				if ( scrollY > 50 ) {
 					document.body.classList.add( 'is-header-scrolled' );
 				} else {
@@ -113,8 +126,18 @@
 				}
 			}
 
-			// Hide on scroll down — smart reveal (state on body).
-			if ( isHideOnScroll ) {
+			// Shrink — own state class + threshold, independent of transparent.
+			if ( shrink ) {
+				if ( scrollY > 50 ) {
+					document.body.classList.add( 'is-header-shrunk' );
+				} else {
+					document.body.classList.remove( 'is-header-shrunk' );
+				}
+			}
+
+			// Hide on scroll down — smart reveal (state on body). Legacy/dormant
+			// path kept harmless — no current UI sets this flag.
+			if ( hideOnScrollDown ) {
 				if ( scrollY > 100 && scrollY > prevScrollY ) {
 					document.body.classList.add( 'is-header-scrolling-down' );
 				} else if ( scrollY <= prevScrollY ) {
@@ -153,11 +176,8 @@
 		// F1 — always publish header height for scroll-padding-top.
 		initHeightPublisher( header );
 
-		// F2 — scroll behaviour state; only active when a behaviour class exists.
-		const behaviour = getActiveBehaviour();
-		if ( behaviour ) {
-			initScrollBehaviours( behaviour );
-		}
+		// F2 — scroll behaviour state; only active when a relevant flag exists.
+		initScrollBehaviours( getActiveBehaviours() );
 	}
 
 	if (

@@ -1,13 +1,15 @@
 /**
- * Header Behaviours CSS (F1 + F2).
+ * Header Behaviours CSS (F1 + F2, FR-S9-9).
  *
  * F1 — WCAG 2.4.11: ensures anchor-link focus targets land below any sticky
  * header. The JS ResizeObserver publishes --sgs-header-height; this rule
  * consumes it. Defaults to 0px when the property is not yet set (no jump).
  *
- * F2 — Behaviour modifier classes are on <body>, not on the header element.
- * CSS selectors descend from body to `header.wp-block-template-part` so no
- * DOM class injection is needed. State classes (is-header-scrolled,
+ * F2 — Behaviour modifier classes are on <body>, not on the header element,
+ * and are INDEPENDENT — sticky / transparent / shrink / contrast-safe can all
+ * be active at once (a header can be sticky AND transparent). CSS selectors
+ * descend from body to `header.wp-block-template-part` so no DOM class
+ * injection is needed. State classes (is-header-scrolled, is-header-shrunk,
  * is-header-scrolling-down) are also toggled on body by view.js.
  *
  * All z-index values use the WP admin-bar safe range (< 99999) while staying
@@ -25,7 +27,21 @@
 }
 
 /* -------------------------------------------------------------------------
- * F2 — Transparent overlay behaviour
+ * F2 — Sticky behaviour
+ *
+ * The header pins to the top of the viewport. Pairs naturally with the
+ * --sgs-header-height publisher to keep scroll-padding-top accurate. Pure
+ * CSS — no JS state needed.
+ * ---------------------------------------------------------------------- */
+
+body.sgs-header-behaviour-sticky header.wp-block-template-part {
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 100;
+}
+
+/* -------------------------------------------------------------------------
+ * F2 — Transparent-at-rest → solid-on-scroll behaviour
  *
  * The header sits absolutely above the hero / banner content. On scroll it
  * transitions to the theme surface colour.
@@ -45,20 +61,64 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
 }
 
 /* -------------------------------------------------------------------------
- * F2 — Sticky behaviour
+ * F2 — Shrink-on-scroll behaviour
  *
- * The header pins to the top of the viewport. Pairs naturally with the
- * --sgs-header-height publisher to keep scroll-padding-top accurate.
+ * Reduces header padding-block as the visitor scrolls. Its OWN state
+ * (is-header-shrunk) and threshold, independent of the transparent axis, so
+ * shrink can be combined with sticky/transparent or used alone.
+ *
+ * Prefers scroll-driven CSS animation (`animation-timeline: scroll()`) where
+ * supported — no JS-side height writing, avoids racing the ResizeObserver
+ * height publisher. Falls back to a class-driven transition (is-header-shrunk,
+ * toggled by view.js) in browsers without scroll-timeline support.
  * ---------------------------------------------------------------------- */
 
-body.sgs-header-behaviour-sticky header.wp-block-template-part {
-	position: sticky !important;
-	top: 0 !important;
-	z-index: 100;
+@supports ( animation-timeline: scroll() ) {
+	body.sgs-header-behaviour-shrink header.wp-block-template-part {
+		animation-name: sgs-header-shrink;
+		animation-duration: 1ms; /* driven by scroll progress, not wall-clock time */
+		animation-fill-mode: both;
+		animation-timeline: scroll( root block );
+		animation-range: 0 200px;
+	}
+
+	@keyframes sgs-header-shrink {
+		from {
+			padding-block: var( --wp--preset--spacing--30, 1.5rem );
+		}
+		to {
+			padding-block: var( --wp--preset--spacing--10, 0.5rem );
+		}
+	}
+
+	@media ( prefers-reduced-motion: reduce ) {
+		body.sgs-header-behaviour-shrink header.wp-block-template-part {
+			animation: none;
+		}
+	}
+}
+
+@supports not ( animation-timeline: scroll() ) {
+	body.sgs-header-behaviour-shrink header.wp-block-template-part {
+		padding-block: var( --wp--preset--spacing--30, 1.5rem );
+		transition: padding-block 200ms ease;
+	}
+
+	body.sgs-header-behaviour-shrink.is-header-shrunk header.wp-block-template-part {
+		padding-block: var( --wp--preset--spacing--10, 0.5rem );
+	}
+
+	@media ( prefers-reduced-motion: reduce ) {
+		body.sgs-header-behaviour-shrink header.wp-block-template-part {
+			transition: none;
+		}
+	}
 }
 
 /* -------------------------------------------------------------------------
- * F2 — Hide-on-scroll-down (smart reveal)
+ * F2 — Hide-on-scroll-down (smart reveal) — legacy/dormant; no current
+ * inspector control sets sgs-header-behaviour-hide-on-scroll-down. Kept
+ * harmless in case a future control targets it.
  *
  * The header slides off the top when the user scrolls down, slides back in
  * on upward scroll. GPU-composited via transform (no layout thrash).
@@ -79,4 +139,49 @@ body.sgs-header-behaviour-hide-on-scroll-down.is-header-scrolling-down header.wp
 	body.sgs-header-behaviour-hide-on-scroll-down header.wp-block-template-part {
 		transition: none;
 	}
+}
+
+/* -------------------------------------------------------------------------
+ * F2 — Contrast-safe fallback for the transparent-over-hero case.
+ *
+ * scrim  — WCAG-verifiable: a dark gradient behind the header content so
+ *          light text/icons stay legible over any hero image. Header content
+ *          is lifted above the scrim via z-index.
+ * shadow — COSMETIC ONLY, not WCAG-conformant (text-shadow contrast cannot be
+ *          computed reliably against arbitrary imagery) — never claim this
+ *          meets contrast requirements.
+ * force-solid — the header never goes transparent, even at rest; scopes the
+ *          transparent rule off via :not() so the two never fight.
+ * ---------------------------------------------------------------------- */
+
+body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part {
+	position: relative;
+}
+
+body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: linear-gradient( to bottom, rgba( 0, 0, 0, 0.55 ), rgba( 0, 0, 0, 0 ) );
+}
+
+body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* Cosmetic only — see doc-comment above; do not treat as a WCAG fix. */
+body.sgs-header-behaviour-contrast-shadow header.wp-block-template-part a,
+body.sgs-header-behaviour-contrast-shadow header.wp-block-template-part button {
+	text-shadow: 0 1px 3px rgba( 0, 0, 0, 0.6 );
+}
+
+body.sgs-header-behaviour-transparent:not( .sgs-header-behaviour-contrast-force-solid ) header.wp-block-template-part {
+	background: transparent;
+}
+
+body.sgs-header-behaviour-contrast-force-solid header.wp-block-template-part {
+	background: var( --wp--preset--color--surface, #ffffff ) !important;
 }

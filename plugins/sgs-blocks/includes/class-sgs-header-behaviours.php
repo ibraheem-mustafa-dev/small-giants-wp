@@ -1,22 +1,39 @@
 <?php
 /**
- * Header Behaviours — body_class injector and asset enqueuer (F4).
+ * Header Behaviours — body_class injector and asset enqueuer (F4, FR-S9-9).
  *
  * Hooks into `body_class` to append SGS header behaviour classes to <body>.
- * CSS and JS then target `body.sgs-header-behaviour-{slug} header.wp-block-template-part`
+ * CSS and JS then target `body.sgs-header-behaviour-{flag} header.wp-block-template-part`
  * — no DOM rewriting needed at all.
  *
+ * SOURCE (FR-S9-9): the active header's `sgs/site-header` block attrs
+ * (headerSticky / headerTransparent / headerShrink / contrastSafe), resolved
+ * via {@see resolve_active_header_behaviour()}. The behaviour is site-wide:
+ * whatever the header template part carries applies to every page that
+ * renders it. The OLD single-slug rule `behaviour` field read is DROPPED —
+ * it was dormant (Sgs_Header_Rules::add_rule() never stored a `behaviour`
+ * field, so no header behaviour was ever active via that path).
+ *
+ * Independent flags: a header can be sticky AND transparent AND shrink at
+ * the same time — each axis emits its own body class.
+ *
  * Body classes emitted:
- *   - sgs-has-header               always present (stable cloning-pipeline hook).
- *   - sgs-has-header-behaviour     present when any rule's behaviour matches a
- *                                  valid VALID_BEHAVIOURS slug.
- *   - sgs-header-behaviour-{slug}  the specific behaviour modifier.
+ *   - sgs-has-header                        always present (stable cloning-pipeline hook).
+ *   - sgs-has-header-behaviour               present when ANY flag below is active.
+ *   - sgs-header-behaviour-sticky            headerSticky attr is true.
+ *   - sgs-header-behaviour-transparent       headerTransparent attr is true.
+ *   - sgs-header-behaviour-shrink            headerShrink attr is true.
+ *   - sgs-header-behaviour-contrast-{mode}   contrastSafe attr !== 'none' (scrim|shadow|force-solid).
  *
  * State classes toggled by view.js (on body, not on header element):
- *   - is-header-scrolled
- *   - is-header-scrolling-down
+ *   - is-header-scrolled   (transparent flag)
+ *   - is-header-shrunk     (shrink flag, independent threshold)
  *
- * Naming convention: SGS-prefixed BEM per blub.db row 236.
+ * Naming convention: SGS-prefixed BEM per blub.db row 236. The
+ * `sgs-header-behaviour-*` prefix is reserved for THIS plugin layer — it does
+ * NOT reuse the theme-side `sgs-header-sticky` vocabulary
+ * (theme/sgs-theme/inc/class-header-behaviour.php is a separate, currently
+ * dormant-by-default system; see the FR-S9-9 design doc gate finding).
  *
  * @package SGS\Blocks
  * @since   1.0.0
@@ -32,11 +49,30 @@ defined( 'ABSPATH' ) || exit;
 final class Sgs_Header_Behaviours {
 
 	/**
-	 * Valid behaviour slugs. Any other value from the rule is treated as none.
+	 * Valid contrastSafe modes. Any other stored value is treated as 'none'.
 	 *
 	 * @var string[]
 	 */
-	const VALID_BEHAVIOURS = array( 'transparent', 'sticky', 'hide-on-scroll-down' );
+	const VALID_CONTRAST_MODES = array( 'none', 'scrim', 'shadow', 'force-solid' );
+
+	/**
+	 * Per-request cache for resolve_active_header_behaviour(). Null until first
+	 * resolved this request; reset naturally between requests (PHP process
+	 * lifecycle) and explicitly via reset_request_cache() for tests.
+	 *
+	 * @var array{sticky:bool,transparent:bool,shrink:bool,contrast:string}|null
+	 */
+	private static $cached_behaviour = null;
+
+	/**
+	 * Test-only injection. When set, resolve_active_header_behaviour() returns
+	 * this value instead of resolving from the header template part, so unit
+	 * tests can exercise add_body_classes() without a real WP template-part
+	 * post/registry. Cleared via reset_request_cache().
+	 *
+	 * @var array{sticky:bool,transparent:bool,shrink:bool,contrast:string}|null
+	 */
+	private static $test_behaviour_override = null;
 
 	/**
 	 * Wire WordPress hooks. Safe to call from sgs-blocks.php bootstrap.
@@ -47,12 +83,133 @@ final class Sgs_Header_Behaviours {
 	}
 
 	/**
+	 * Test-only: inject a fixed resolved-behaviour array, bypassing template
+	 * parsing entirely. Pass null to clear the override.
+	 *
+	 * @param array{sticky?:bool,transparent?:bool,shrink?:bool,contrast?:string}|null $behaviour Override, or null to clear.
+	 * @return void
+	 */
+	public static function set_test_behaviour( ?array $behaviour ): void {
+		if ( null === $behaviour ) {
+			self::$test_behaviour_override = null;
+			return;
+		}
+		self::$test_behaviour_override = array(
+			'sticky'      => ! empty( $behaviour['sticky'] ),
+			'transparent' => ! empty( $behaviour['transparent'] ),
+			'shrink'      => ! empty( $behaviour['shrink'] ),
+			'contrast'    => isset( $behaviour['contrast'] ) && in_array( $behaviour['contrast'], self::VALID_CONTRAST_MODES, true )
+				? $behaviour['contrast']
+				: 'none',
+		);
+	}
+
+	/**
+	 * Reset the per-request resolver cache + any test override. Exposed for
+	 * testing; in production the static cache naturally resets between
+	 * requests because PHP processes terminate at the end of each request.
+	 *
+	 * @return void
+	 */
+	public static function reset_request_cache(): void {
+		self::$cached_behaviour        = null;
+		self::$test_behaviour_override = null;
+	}
+
+	/**
+	 * Resolve the active header's behaviour flags from the `sgs/site-header`
+	 * block's attributes on the currently active header template part.
+	 *
+	 * Resolution:
+	 *   1. Test override (set_test_behaviour), when present — short-circuits
+	 *      everything below.
+	 *   2. `SGS_Nav_Menu_Source::get_header_content()` — the SAME DB-first /
+	 *      theme-file-fallback resolver the nav drawer already relies on
+	 *      (checks the published `wp_template_part` post named "header" first,
+	 *      then `parts/header.html`). All current templates reference the
+	 *      "header" slug (verified against theme/sgs-theme/templates/*.html),
+	 *      so this is a safe default — any resolution failure degrades to
+	 *      all-false rather than throwing.
+	 *   3. `parse_blocks()` the header content, depth-first search for the
+	 *      first `sgs/site-header` block, and read its attrs using LITERAL
+	 *      string keys (headerSticky / headerTransparent / headerShrink /
+	 *      contrastSafe) so the dead-control structural guard
+	 *      (scripts/check-dead-controls.js) can see these attrs consumed.
+	 *
+	 * Cached per-request (static) — body_class only needs to resolve once.
+	 *
+	 * @return array{sticky:bool,transparent:bool,shrink:bool,contrast:string}
+	 */
+	public static function resolve_active_header_behaviour(): array {
+		if ( null !== self::$test_behaviour_override ) {
+			return self::$test_behaviour_override;
+		}
+
+		if ( null !== self::$cached_behaviour ) {
+			return self::$cached_behaviour;
+		}
+
+		$result = array(
+			'sticky'      => false,
+			'transparent' => false,
+			'shrink'      => false,
+			'contrast'    => 'none',
+		);
+
+		if ( ! class_exists( '\\SGS_Nav_Menu_Source' ) ) {
+			$nav_source_file = defined( 'SGS_BLOCKS_PATH' ) ? SGS_BLOCKS_PATH . 'includes/class-sgs-nav-menu-source.php' : '';
+			if ( '' !== $nav_source_file && file_exists( $nav_source_file ) ) {
+				require_once $nav_source_file;
+			}
+		}
+
+		if ( ! class_exists( '\\SGS_Nav_Menu_Source' ) || ! function_exists( 'parse_blocks' ) ) {
+			self::$cached_behaviour = $result;
+			return $result;
+		}
+
+		$header_content = '';
+		try {
+			$header_content = \SGS_Nav_Menu_Source::get_header_content();
+		} catch ( \Throwable $e ) {
+			$header_content = '';
+		}
+
+		if ( '' === $header_content ) {
+			self::$cached_behaviour = $result;
+			return $result;
+		}
+
+		$parsed       = parse_blocks( $header_content );
+		$header_block = \SGS_Nav_Menu_Source::find_block_recursive( $parsed, 'sgs/site-header' );
+
+		if ( null === $header_block ) {
+			self::$cached_behaviour = $result;
+			return $result;
+		}
+
+		$attrs = isset( $header_block['attrs'] ) && is_array( $header_block['attrs'] ) ? $header_block['attrs'] : array();
+
+		// Literal string keys — required so the dead-control guard resolves
+		// these as consumed (scripts/check-dead-controls.js scans includes/
+		// PHP for literal attribute-name substrings).
+		$result['sticky']      = ! empty( $attrs['headerSticky'] );
+		$result['transparent'] = ! empty( $attrs['headerTransparent'] );
+		$result['shrink']      = ! empty( $attrs['headerShrink'] );
+
+		$contrast_raw       = isset( $attrs['contrastSafe'] ) ? (string) $attrs['contrastSafe'] : 'none';
+		$result['contrast'] = in_array( $contrast_raw, self::VALID_CONTRAST_MODES, true ) ? $contrast_raw : 'none';
+
+		self::$cached_behaviour = $result;
+		return $result;
+	}
+
+	/**
 	 * Append SGS header behaviour classes to the <body> element.
 	 *
-	 * Walk rules via Sgs_Header_Rules::list_rules() + Sgs_Header_Rules::rule_matches()
-	 * to find the FIRST matching rule, read its behaviour, and emit the appropriate
-	 * body classes. When no rule matches or the behaviour is invalid, only the
-	 * always-on sgs-has-header hook class is appended.
+	 * Always emits the stable `sgs-has-header` hook class. Resolves the active
+	 * header's behaviour flags and emits one independent body class per active
+	 * flag, so a header can be sticky AND transparent AND shrink simultaneously.
 	 *
 	 * @param string[] $classes Existing body classes from WordPress.
 	 * @return string[]
@@ -62,26 +219,32 @@ final class Sgs_Header_Behaviours {
 		// reliable surface to target regardless of whether behaviours are active.
 		$classes[] = 'sgs-has-header';
 
-		if ( ! class_exists( '\SGS\Blocks\Sgs_Header_Rules' ) ) {
-			return $classes;
+		$behaviour = self::resolve_active_header_behaviour();
+		$any_flag  = false;
+
+		if ( ! empty( $behaviour['sticky'] ) ) {
+			$classes[] = 'sgs-header-behaviour-sticky';
+			$any_flag  = true;
 		}
 
-		$rules     = Sgs_Header_Rules::list_rules();
-		$behaviour = '';
-
-		foreach ( $rules as $rule ) {
-			if ( Sgs_Header_Rules::rule_matches( $rule ) ) {
-				$behaviour_raw = isset( $rule['behaviour'] ) ? (string) $rule['behaviour'] : '';
-				if ( in_array( $behaviour_raw, self::VALID_BEHAVIOURS, true ) ) {
-					$behaviour = $behaviour_raw;
-				}
-				break;
-			}
+		if ( ! empty( $behaviour['transparent'] ) ) {
+			$classes[] = 'sgs-header-behaviour-transparent';
+			$any_flag  = true;
 		}
 
-		if ( '' !== $behaviour ) {
+		if ( ! empty( $behaviour['shrink'] ) ) {
+			$classes[] = 'sgs-header-behaviour-shrink';
+			$any_flag  = true;
+		}
+
+		$contrast = isset( $behaviour['contrast'] ) ? (string) $behaviour['contrast'] : 'none';
+		if ( 'none' !== $contrast && in_array( $contrast, self::VALID_CONTRAST_MODES, true ) ) {
+			$classes[] = 'sgs-header-behaviour-contrast-' . $contrast;
+			$any_flag  = true;
+		}
+
+		if ( $any_flag ) {
 			$classes[] = 'sgs-has-header-behaviour';
-			$classes[] = 'sgs-header-behaviour-' . $behaviour;
 		}
 
 		return $classes;

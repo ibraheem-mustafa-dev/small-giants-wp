@@ -170,42 +170,6 @@ body .is-root-container > .wp-block {
 	object-fit: contain;
 }
 
-/* ─── STICKY HEADER — LOGO COMPRESSION ON SCROLL (OPTIONAL) ─── */
-
-/*
- * Only active when "Compress logo on scroll" is enabled in
- * Settings > SGS Header. PHP adds .sgs-header-compress-on-scroll to <body>
- * when the option is on. Relies on header-behaviour.js adding
- * .is-scrolled to the header template-part on scroll.
- */
-.sgs-header-compress-on-scroll header.wp-block-template-part.is-scrolled .wp-block-site-logo img {
-	max-height: 55px !important;
-	transition: max-height 0.3s ease;
-}
-
-.sgs-header-compress-on-scroll header.wp-block-template-part:not(.is-scrolled) .wp-block-site-logo img {
-	transition: max-height 0.3s ease;
-}
-
-/* Override inline width from block attributes */
-.sgs-header-sticky .wp-block-site-logo {
-	flex-shrink: 0;
-}
-
-/* Prevent nav from wrapping in header */
-.sgs-header-sticky .wp-block-group[class*="is-layout-flex"] {
-	flex-wrap: nowrap;
-	align-items: center;
-}
-
-.sgs-header-sticky .wp-block-navigation {
-	flex-wrap: nowrap;
-}
-
-.sgs-header-sticky .wp-block-navigation .wp-block-navigation-item {
-	white-space: nowrap;
-}
-
 /* ─── SITE TITLE ─── */
 
 .wp-block-site-title a {
@@ -304,91 +268,17 @@ h1, h2, h3, h4, h5, h6,
 /* ─── HEADER VARIANTS ─── */
 
 /*
- * Header style variants controlled by classes on the <header> template part.
- *
- * - .sgs-header-sticky: Fixed to top on scroll
- * - .sgs-header-transparent: Overlays content with transparent background
- * - .sgs-header-shrink: Shrinks padding on scroll (progressive enhancement)
- *
- * Default: static header with z-index for dropdown menus.
+ * Base header layering. Sticky / transparent / shrink BEHAVIOURS are owned by
+ * the sgs-blocks plugin (FR-S9-9, D330) — driven by the sgs/site-header block
+ * inspector via body.sgs-header-behaviour-* classes + assets/css/header-behaviours.css.
+ * The theme-side header-mode CSS was retired 2026-07-14. This rule keeps the base
+ * z-index (dropdown/mega-menu layering) + a transition the plugin behaviours reuse.
  */
-
 header.wp-block-template-part {
 	z-index: 100;
 	transition: padding var(--wp--custom--transition--medium, 0.3s ease),
 	            background-color var(--wp--custom--transition--medium, 0.3s ease),
 	            box-shadow var(--wp--custom--transition--medium, 0.3s ease);
-}
-
-/* Sticky header */
-header.wp-block-template-part.sgs-header-sticky {
-	position: sticky;
-	top: 0;
-}
-
-/* Transparent/overlay header */
-header.wp-block-template-part.sgs-header-transparent {
-	position: absolute;
-	width: 100%;
-	background: transparent !important;
-}
-
-header.wp-block-template-part.sgs-header-transparent > .wp-block-group {
-	background: transparent !important;
-}
-
-/*
- * Only top-level nav items get the white colour override in transparent mode.
- * Submenu items use their own background (white/surface) so they need dark text.
- * Without this scope, submenu items inherit white-on-white — completely invisible.
- */
-header.wp-block-template-part.sgs-header-transparent .wp-block-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content,
-header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
-	color: var(--wp--preset--color--surface, #fff);
-}
-
-/*
- * When the transparent header is active, compensate the first content section
- * with padding-top equal to the header height so the header doesn't overlay it.
- * class-header-behaviour.php adds sgs-has-transparent-header to <body> for
- * both transparent and transparent-sticky modes.
- *
- * --sgs-header-height defaults to 80px. Override via wp_add_inline_style()
- * if the header height changes.
- */
-body.sgs-has-transparent-header .wp-site-blocks > :first-child {
-	padding-top: var(--sgs-header-height, 80px);
-}
-
-/* Shrinking header — uses CSS scroll-driven animation (Chrome 115+) */
-@supports (animation-timeline: scroll()) {
-	header.wp-block-template-part.sgs-header-shrink {
-		position: sticky;
-		top: 0;
-		animation: sgs-header-shrink linear both;
-		animation-timeline: scroll();
-		animation-range: 0px 200px;
-	}
-
-	@keyframes sgs-header-shrink {
-		from {
-			padding-top: var(--wp--preset--spacing--30, 1rem);
-			padding-bottom: var(--wp--preset--spacing--30, 1rem);
-		}
-		to {
-			padding-top: 0;
-			padding-bottom: 0;
-			box-shadow: var(--wp--preset--shadow--md, 0 4px 12px rgba(0,0,0,0.1));
-		}
-	}
-}
-
-/* Shrink fallback for browsers without scroll-driven animation */
-@supports not (animation-timeline: scroll()) {
-	header.wp-block-template-part.sgs-header-shrink {
-		position: sticky;
-		top: 0;
-	}
 }
 
 /* ─── COLOUR-MIX HOVER TOKENS (#296) ─── */

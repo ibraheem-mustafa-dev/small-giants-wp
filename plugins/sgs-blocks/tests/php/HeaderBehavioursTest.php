@@ -1,20 +1,29 @@
 <?php
 /**
- * Tests for Sgs_Header_Behaviours — body_class injection strategy (F4, Branch I).
+ * Tests for Sgs_Header_Behaviours — body_class injection strategy (F4, FR-S9-9).
  *
  * Self-contained: reuses the WP stub layer declared in SiteInfoTest.php and the
  * additional WP stubs / pattern-registry stubs declared in HeaderRulesTest.php
  * (both loaded first alphabetically, and required explicitly below).
  *
+ * SOURCE CHANGED (FR-S9-9): the behaviour source moved from a rule `behaviour`
+ * field (dormant — Sgs_Header_Rules::add_rule() never stored one) to the
+ * active header's `sgs/site-header` block attrs, resolved via
+ * resolve_active_header_behaviour(). Since exercising that resolver for real
+ * needs a live wp_template_part post + parse_blocks(), these tests instead use
+ * the test-only injection hook Sgs_Header_Behaviours::set_test_behaviour() to
+ * assert add_body_classes()'s CONTRACT: given a resolved flag set, it emits
+ * the correct independent body classes.
+ *
  * Covers:
  *   - add_body_classes always appends sgs-has-header
- *   - add_body_classes appends sgs-has-header-behaviour + sgs-header-behaviour-{slug}
- *     for each valid behaviour (transparent, sticky, hide-on-scroll-down)
- *   - add_body_classes does NOT append behaviour classes when no rule matches
- *   - add_body_classes does NOT append behaviour classes when rule has invalid slug
+ *   - add_body_classes appends sgs-has-header-behaviour + the correct
+ *     independent sgs-header-behaviour-{flag} class(es) for each active flag
+ *   - two or more flags active at once (e.g. sticky + transparent) both land
+ *   - contrast modes emit sgs-header-behaviour-contrast-{mode}
+ *   - no active flags → only sgs-has-header
  *   - add_body_classes preserves existing classes unchanged
  *   - enqueue_assets does not enqueue in admin context
- *   - VALID_BEHAVIOURS constant contains correct slugs
  *
  * Run with: vendor/bin/phpunit --filter "HeaderBehavioursTest"
  *
@@ -63,7 +72,6 @@ require_once __DIR__ . '/../../includes/class-sgs-header-rules.php';
 require_once __DIR__ . '/../../includes/class-sgs-header-behaviours.php';
 
 use SGS\Blocks\Sgs_Header_Behaviours;
-use SGS\Blocks\Sgs_Header_Rules;
 
 // ---------------------------------------------------------------------------
 // Test class.
@@ -88,7 +96,7 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$GLOBALS['sgs_test_enqueued_styles']  = array();
 			$GLOBALS['sgs_test_enqueued_scripts'] = array();
 			Wp_Options_Stub::reset();
-			Sgs_Header_Rules::reset_request_state();
+			Sgs_Header_Behaviours::reset_request_cache();
 		}
 
 		/**
@@ -101,48 +109,7 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$GLOBALS['sgs_test_enqueued_styles']  = array();
 			$GLOBALS['sgs_test_enqueued_scripts'] = array();
 			Wp_Options_Stub::reset();
-			Sgs_Header_Rules::reset_request_state();
-		}
-
-		// ------------------------------------------------------------------
-		// Helper: store a rule with zero conditions so rule_matches() = true.
-		// ------------------------------------------------------------------
-
-		/**
-		 * Store a matching rule with the given behaviour directly in wp_options.
-		 *
-		 * @param string $behaviour Behaviour slug.
-		 * @return void
-		 */
-		private function store_matching_rule( string $behaviour ): void {
-			Wp_Options_Stub::set(
-				'sgs_header_rules',
-				array(
-					array(
-						'id'         => 'test_rule_001',
-						'pattern'    => 'sgs/framework-header-default',
-						'priority'   => 5,
-						'behaviour'  => $behaviour,
-						'conditions' => array(),
-					),
-				)
-			);
-		}
-
-		// ------------------------------------------------------------------
-		// VALID_BEHAVIOURS constant
-		// ------------------------------------------------------------------
-
-		/**
-		 * VALID_BEHAVIOURS constant holds correct slugs.
-		 *
-		 * @return void
-		 */
-		public function test_valid_behaviours_constant(): void {
-			$this->assertSame(
-				array( 'transparent', 'sticky', 'hide-on-scroll-down' ),
-				Sgs_Header_Behaviours::VALID_BEHAVIOURS
-			);
+			Sgs_Header_Behaviours::reset_request_cache();
 		}
 
 		// ------------------------------------------------------------------
@@ -150,7 +117,7 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 		// ------------------------------------------------------------------
 
 		/**
-		 * Asserts sgs-has-header is always appended even with no rules stored.
+		 * Asserts sgs-has-header is always appended even with no flags active.
 		 *
 		 * @return void
 		 */
@@ -174,114 +141,21 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 		}
 
 		// ------------------------------------------------------------------
-		// add_body_classes — no rules stored → only sgs-has-header
+		// add_body_classes — no active flags → only sgs-has-header
 		// ------------------------------------------------------------------
 
 		/**
-		 * No rules stored means no behaviour modifier classes are appended.
+		 * No active behaviour flags means no modifier classes are appended.
 		 *
 		 * @return void
 		 */
-		public function test_no_rules_adds_only_sgs_has_header(): void {
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header', $result );
-			$this->assertNotContains( 'sgs-has-header-behaviour', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — sticky behaviour
-		// ------------------------------------------------------------------
-
-		/**
-		 * Sticky rule injects sgs-has-header-behaviour and sgs-header-behaviour-sticky.
-		 *
-		 * @return void
-		 */
-		public function test_sticky_rule_adds_behaviour_classes(): void {
-			$this->store_matching_rule( 'sticky' );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header', $result );
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — transparent behaviour
-		// ------------------------------------------------------------------
-
-		/**
-		 * Transparent rule injects correct behaviour classes.
-		 *
-		 * @return void
-		 */
-		public function test_transparent_rule_adds_behaviour_classes(): void {
-			$this->store_matching_rule( 'transparent' );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — hide-on-scroll-down behaviour
-		// ------------------------------------------------------------------
-
-		/**
-		 * Hide-on-scroll-down rule injects correct behaviour classes.
-		 *
-		 * @return void
-		 */
-		public function test_hide_on_scroll_down_rule_adds_behaviour_classes(): void {
-			$this->store_matching_rule( 'hide-on-scroll-down' );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-hide-on-scroll-down', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — invalid behaviour slug → no modifier
-		// ------------------------------------------------------------------
-
-		/**
-		 * Invalid behaviour slug — only sgs-has-header added, no modifier classes.
-		 *
-		 * @return void
-		 */
-		public function test_invalid_behaviour_slug_adds_only_sgs_has_header(): void {
-			$this->store_matching_rule( 'shrink' );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header', $result );
-			$this->assertNotContains( 'sgs-has-header-behaviour', $result );
-			$this->assertNotContains( 'sgs-header-behaviour-shrink', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — rule with no behaviour key → no modifier
-		// ------------------------------------------------------------------
-
-		/**
-		 * Rule without behaviour key — only sgs-has-header added.
-		 *
-		 * @return void
-		 */
-		public function test_rule_without_behaviour_key_adds_only_sgs_has_header(): void {
-			Wp_Options_Stub::set(
-				'sgs_header_rules',
+		public function test_no_flags_adds_only_sgs_has_header(): void {
+			Sgs_Header_Behaviours::set_test_behaviour(
 				array(
-					array(
-						'id'         => 'test_rule_002',
-						'pattern'    => 'sgs/framework-header-default',
-						'priority'   => 5,
-						'conditions' => array(),
-					),
+					'sticky'      => false,
+					'transparent' => false,
+					'shrink'      => false,
+					'contrast'    => 'none',
 				)
 			);
 
@@ -289,6 +163,155 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
 			$this->assertContains( 'sgs-has-header', $result );
 			$this->assertNotContains( 'sgs-has-header-behaviour', $result );
+		}
+
+		/**
+		 * With no test override injected, the real resolver runs and finds no
+		 * header template part in the test environment — degrades to
+		 * all-false rather than erroring.
+		 *
+		 * @return void
+		 */
+		public function test_no_override_degrades_to_only_sgs_has_header(): void {
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-has-header', $result );
+			$this->assertNotContains( 'sgs-has-header-behaviour', $result );
+		}
+
+		// ------------------------------------------------------------------
+		// add_body_classes — single independent flags
+		// ------------------------------------------------------------------
+
+		/**
+		 * Sticky flag injects sgs-has-header-behaviour and sgs-header-behaviour-sticky.
+		 *
+		 * @return void
+		 */
+		public function test_sticky_flag_adds_behaviour_classes(): void {
+			Sgs_Header_Behaviours::set_test_behaviour( array( 'sticky' => true ) );
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-has-header', $result );
+			$this->assertContains( 'sgs-has-header-behaviour', $result );
+			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
+			$this->assertNotContains( 'sgs-header-behaviour-transparent', $result );
+			$this->assertNotContains( 'sgs-header-behaviour-shrink', $result );
+		}
+
+		/**
+		 * Transparent flag injects correct behaviour classes.
+		 *
+		 * @return void
+		 */
+		public function test_transparent_flag_adds_behaviour_classes(): void {
+			Sgs_Header_Behaviours::set_test_behaviour( array( 'transparent' => true ) );
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-has-header-behaviour', $result );
+			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
+			$this->assertNotContains( 'sgs-header-behaviour-sticky', $result );
+		}
+
+		/**
+		 * Shrink flag injects correct behaviour classes.
+		 *
+		 * @return void
+		 */
+		public function test_shrink_flag_adds_behaviour_classes(): void {
+			Sgs_Header_Behaviours::set_test_behaviour( array( 'shrink' => true ) );
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-has-header-behaviour', $result );
+			$this->assertContains( 'sgs-header-behaviour-shrink', $result );
+		}
+
+		// ------------------------------------------------------------------
+		// add_body_classes — independent axes combine (the whole point of
+		// FR-S9-9: a header can be sticky AND transparent AND shrink).
+		// ------------------------------------------------------------------
+
+		/**
+		 * Sticky + transparent together both land as independent classes.
+		 *
+		 * @return void
+		 */
+		public function test_sticky_and_transparent_both_land(): void {
+			Sgs_Header_Behaviours::set_test_behaviour(
+				array(
+					'sticky'      => true,
+					'transparent' => true,
+				)
+			);
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
+			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
+			$this->assertContains( 'sgs-has-header-behaviour', $result );
+		}
+
+		/**
+		 * All three toggles + a contrast mode together — every flag lands.
+		 *
+		 * @return void
+		 */
+		public function test_all_flags_and_contrast_land(): void {
+			Sgs_Header_Behaviours::set_test_behaviour(
+				array(
+					'sticky'      => true,
+					'transparent' => true,
+					'shrink'      => true,
+					'contrast'    => 'scrim',
+				)
+			);
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
+			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
+			$this->assertContains( 'sgs-header-behaviour-shrink', $result );
+			$this->assertContains( 'sgs-header-behaviour-contrast-scrim', $result );
+			$this->assertContains( 'sgs-has-header-behaviour', $result );
+		}
+
+		// ------------------------------------------------------------------
+		// add_body_classes — contrast-safe modes
+		// ------------------------------------------------------------------
+
+		/**
+		 * Each valid contrast mode emits its own sgs-header-behaviour-contrast-{mode} class.
+		 *
+		 * @return void
+		 */
+		public function test_contrast_modes_add_correct_class(): void {
+			foreach ( array( 'scrim', 'shadow', 'force-solid' ) as $mode ) {
+				Sgs_Header_Behaviours::reset_request_cache();
+				Sgs_Header_Behaviours::set_test_behaviour( array( 'contrast' => $mode ) );
+
+				$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+				$this->assertContains( 'sgs-header-behaviour-contrast-' . $mode, $result );
+				$this->assertContains( 'sgs-has-header-behaviour', $result );
+			}
+		}
+
+		/**
+		 * Contrast === 'none' emits no contrast class.
+		 *
+		 * @return void
+		 */
+		public function test_contrast_none_adds_no_contrast_class(): void {
+			Sgs_Header_Behaviours::set_test_behaviour( array( 'contrast' => 'none' ) );
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			foreach ( array( 'scrim', 'shadow', 'force-solid' ) as $mode ) {
+				$this->assertNotContains( 'sgs-header-behaviour-contrast-' . $mode, $result );
+			}
 		}
 
 		// ------------------------------------------------------------------

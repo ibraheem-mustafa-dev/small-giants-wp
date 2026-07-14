@@ -22,7 +22,11 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 require_once __DIR__ . '/inc/colour-helpers.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
-require_once __DIR__ . '/inc/class-header-behaviour.php';
+// Header behaviour is owned by the sgs-blocks plugin (FR-S9-9, D330): the
+// sgs/site-header block inspector drives the plugin body-class layer. The old
+// theme-side header-mode system (inc/class-header-behaviour.php + header-modes.css
+// + header-behaviour.js + header-editor-panel.js) was RETIRED 2026-07-14 to remove
+// the duplicate --sgs-header-height publisher + competing position rules.
 
 // Business details settings page (Settings > Business Details).
 require_once __DIR__ . '/inc/class-business-details.php';
@@ -290,24 +294,10 @@ function enqueue_styles(): void {
 		$theme_version
 	);
 
-	// Header behaviour system — only load when a non-static mode is configured.
-	$header_mode = get_option( 'sgs_header_mode', 'static' );
-	if ( 'static' !== $header_mode ) {
-		wp_enqueue_style(
-			'sgs-header-modes',
-			get_theme_file_uri( 'assets/css/header-modes.css' ),
-			array( 'sgs-core-blocks-critical' ),
-			$theme_version
-		);
-
-		wp_enqueue_script(
-			'sgs-header-behaviour',
-			get_theme_file_uri( 'assets/js/header-behaviour.js' ),
-			array(),
-			$theme_version,
-			true // Load in footer — runs after DOM is available.
-		);
-	}
+	// Header behaviour (sticky / transparent-on-scroll / shrink) is owned by the
+	// sgs-blocks plugin's body-class layer, driven by the sgs/site-header block
+	// inspector (FR-S9-9, D330). The theme-side header-modes.css + header-behaviour.js
+	// were retired 2026-07-14; no theme enqueue here.
 
 	// Smooth scroll now handled by CSS: html { scroll-behavior: smooth; }
 	// in core-blocks-critical.css. The JS file (2.7KB) is no longer needed.
@@ -569,13 +559,6 @@ add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
 // a per-site mu-plugin — not via a base-theme require gated on a theme_mod.
 // Archive of the original extras: plugins/sgs-blocks/_retired/style-variation-indus-foods.php.
 
-
-/*
- * Header class propagation is now handled by inc/class-header-behaviour.php.
- * The inject_header_classes() function reads sgs_header_mode settings and
- * injects the appropriate CSS classes dynamically — no need for classes
- * to be present in the template HTML.
- */
 
 /**
  * Replace generic 'Toggle Menu' aria-label on submenu toggle buttons with

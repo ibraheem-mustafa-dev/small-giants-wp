@@ -10,8 +10,9 @@
  *
  * scroll-padding-top prevents the sticky header from covering the focused
  * element when the browser auto-scrolls to it. We use a CSS custom property
- * so that JavaScript (header-behaviour.js) can update it dynamically after
- * measuring the rendered header height. The fallback value (80px) covers most
+ * so that JavaScript (the sgs-blocks plugin's src/header-behaviours/view.js
+ * ResizeObserver) can update it dynamically after measuring the rendered header
+ * height. The fallback value (80px) covers most
  * single-row sticky headers without any JS.
  *
  * html body uses the admin-bar-aware calc when the toolbar is visible.
