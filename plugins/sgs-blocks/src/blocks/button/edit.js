@@ -155,6 +155,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		minHeightMobileUnit,
 		icon,
 		iconPosition,
+		labelCollapse,
 		iconSize,
 		iconGap,
 		iconColour,
@@ -339,6 +340,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
 								__nextHasNoMarginBottom
 							/>
+							{ iconPosition !== 'only' && (
+								<SelectControl
+									label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+									value={ labelCollapse || 'none' }
+									options={ [
+										{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
+										{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
+										{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
+										{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
+									] }
+									onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
+									help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							) }
 							<RangeControl
 								label={ __( 'Icon size (px)', 'sgs-blocks' ) }
 								value={ iconSize || 16 }

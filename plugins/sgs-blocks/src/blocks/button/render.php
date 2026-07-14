@@ -48,6 +48,9 @@ $icon_colour   = isset( $attributes['iconColour'] ) ? $attributes['iconColour'] 
 $icon_col_hov  = isset( $attributes['iconColourHover'] ) ? $attributes['iconColourHover'] : '';
 $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['iconTitle'] ) : '';
 
+// Label collapse (responsive icon-only collapse).
+$label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
+
 // Width.
 $width_type        = isset( $attributes['widthType'] ) ? sanitize_text_field( $attributes['widthType'] ) : 'fit';
 $custom_width      = isset( $attributes['customWidth'] ) && null !== $attributes['customWidth'] ? absint( $attributes['customWidth'] ) : null;
@@ -732,6 +735,22 @@ if ( $icon ) {
 	}
 }
 
+// labelCollapse clips the visible label from the chosen breakpoint down,
+// keeping it in the accessibility tree. Only emit the clip rule when the
+// button actually has an icon — with no icon, collapsing the label would
+// leave an empty button.
+if ( $icon_html && 'none' !== $label_collapse ) {
+	$label_clip      = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
+	$label_clip_rule = ".{$uid}.sgs-button .sgs-button__label{" . $label_clip . '}';
+	if ( 'all' === $label_collapse ) {
+		$scoped_css_parts[] = $label_clip_rule;
+	} elseif ( 'tablet' === $label_collapse ) {
+		$scoped_css_parts[] = '@media(max-width:1023px){' . $label_clip_rule . '}';
+	} elseif ( 'mobile' === $label_collapse ) {
+		$scoped_css_parts[] = '@media(max-width:767px){' . $label_clip_rule . '}';
+	}
+}
+
 // ---------------------------------------------------------------------------
 // 7. Build the button inner content.
 // ---------------------------------------------------------------------------
@@ -739,9 +758,10 @@ if ( $icon ) {
 // XS-9.2 (2026-05-30): label is rich-text. Tightened wp_kses allowlist deliberately
 // EXCLUDES <a> — nested anchors inside <a>/<button> wrappers are invalid HTML
 // and a phishing vector. <span class=...> is allowed for icon/styling spans.
-// The label text is emitted directly inside the <a>/<button> — no wrapping
-// span (clean draft-button parity: `<a class="sgs-button">Text</a>`).
-$label_html = wp_kses(
+// The label is wrapped in a `.sgs-button__label` span (rather than emitted
+// bare) so the labelCollapse feature can visually clip it while keeping the
+// text in the accessibility tree.
+$label_html = '<span class="sgs-button__label">' . wp_kses(
 	$label,
 	array(
 		'br'     => array(),
@@ -752,7 +772,7 @@ $label_html = wp_kses(
 		'span'   => array( 'class' => true ),
 		'code'   => array(),
 	)
-);
+) . '</span>';
 
 if ( $icon_html ) {
 	if ( 'before' === $icon_position ) {

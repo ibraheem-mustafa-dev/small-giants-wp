@@ -320,14 +320,18 @@ $scoped_css[] = "{$root_sel}{--sgs-bi-icon-colour:" . sgs_colour_value( $icon_co
 // stays in the a11y tree so the link keeps its accessible name. Bounds mirror
 // the device-visibility feature (mobile <=767, tablet 768–1023, desktop >=1024
 // — the canonical SGS_Breakpoints values). ---
-$label_clip     = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
-$label_clip_rule = "{$root_sel} .sgs-business-info__label{" . $label_clip . '}';
-if ( 'all' === $label_collapse ) {
-	$scoped_css[] = $label_clip_rule;
-} elseif ( 'tablet' === $label_collapse ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $label_clip_rule . '}';
-} elseif ( 'mobile' === $label_collapse ) {
-	$scoped_css[] = '@media(max-width:767px){' . $label_clip_rule . '}';
+// Only collapse when an icon is actually shown — collapsing the label with no
+// icon would leave the item empty (Bean rule, 2026-07-14).
+if ( $show_icon && 'none' !== $label_collapse ) {
+	$label_clip      = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
+	$label_clip_rule = "{$root_sel} .sgs-business-info__label{" . $label_clip . '}';
+	if ( 'all' === $label_collapse ) {
+		$scoped_css[] = $label_clip_rule;
+	} elseif ( 'tablet' === $label_collapse ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $label_clip_rule . '}';
+	} elseif ( 'mobile' === $label_collapse ) {
+		$scoped_css[] = '@media(max-width:767px){' . $label_clip_rule . '}';
+	}
 }
 
 // --- WP-native color/spacing supports (skip-serialised) — read the base

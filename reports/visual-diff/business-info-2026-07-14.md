@@ -61,6 +61,11 @@ collector, so the hide class vanished. Fixed to skip leading `<style>`/`<script>
 and target the first visible wrapper. Affects every block that emits a leading
 scoped `<style>` — proven live on the header business-info items.
 
+**D332 addendum (Bean rule):** the labelCollapse clip is now also gated on the
+icon being shown (`$show_icon`) — collapsing the label with no icon would leave
+the item empty, so with no icon the clip is a no-op and the label always shows.
+Same rule applied to sgs/button.
+
 first_paint_capture_passed: true — header renders correctly on first paint at
 every tier (see `assets/fr-s9-8-header-1440-clean.png` desktop icon-strip and
 `assets/fr-s9-8-header-375-v2.png` mobile logo+cart+burger top row + centred
