@@ -7,8 +7,12 @@
  * and sgsHideOnDesktop block attributes.
  *
  * Works with ALL block types (core and SGS, static and dynamic).
- * The CSS rules live in assets/css/extensions.css and use media queries
- * with display:none to hide content. Content remains in the DOM for SEO.
+ * The display:none media queries are GENERATED from the canonical
+ * SGS_Breakpoints source (mobile <= 767px, tablet 768–1023px, desktop
+ * >= 1024px) and injected as inline CSS on the extensions stylesheet — so
+ * there is ONE breakpoint source shared with the FR-S9-6 responsive engine
+ * (R-31-1), never a second hardcoded 600/1024 pair. Content remains in the
+ * DOM for SEO (display:none only hides visually).
  *
  * -------------------------------------------------------------------------
  * COEXISTENCE NOTE — WP 7.0 native block visibility (Decision 25, Phase 6)
@@ -53,7 +57,63 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+// The canonical device-tier breakpoint source (mobile <= 767, tablet <= 1023).
+require_once __DIR__ . '/class-sgs-breakpoints.php';
+
 add_filter( 'render_block', __NAMESPACE__ . '\\inject_device_visibility_classes', 10, 2 );
+
+// Inject the generated hide-* media queries onto the extensions stylesheet
+// (priority 20 so the sgs-extensions / sgs-extensions-editor handles are
+// already registered by class-sgs-blocks at priority 10).
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_device_visibility_css', 20 );
+add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_device_visibility_editor_css', 20 );
+
+/**
+ * Build the device-visibility media queries from the canonical breakpoint source.
+ *
+ * Emits exactly three rules whose bounds are DERIVED from SGS_Breakpoints
+ * (the FR-S9-6 / R-31-1 single source), never a hardcoded pair:
+ *   - .sgs-hide-mobile  : max-width MOBILE_MAX (<= 767)
+ *   - .sgs-hide-tablet  : MOBILE_MAX+1 .. TABLET_MAX (768–1023)
+ *   - .sgs-hide-desktop : min-width TABLET_MAX+1 (>= 1024)
+ *
+ * @return string The generated CSS.
+ */
+function device_visibility_css(): string {
+	$mobile_max  = (int) \SGS_Breakpoints::MOBILE_MAX;
+	$tablet_max  = (int) \SGS_Breakpoints::TABLET_MAX;
+	$tablet_min  = $mobile_max + 1;
+	$desktop_min = $tablet_max + 1;
+
+	return sprintf(
+		'@media (max-width:%1$dpx){.sgs-hide-mobile{display:none !important;}}' .
+		'@media (min-width:%2$dpx) and (max-width:%3$dpx){.sgs-hide-tablet{display:none !important;}}' .
+		'@media (min-width:%4$dpx){.sgs-hide-desktop{display:none !important;}}',
+		$mobile_max,
+		$tablet_min,
+		$tablet_max,
+		$desktop_min
+	);
+}
+
+/**
+ * Attach the generated visibility CSS to the frontend extensions stylesheet.
+ */
+function enqueue_device_visibility_css(): void {
+	if ( wp_style_is( 'sgs-extensions', 'enqueued' ) ) {
+		wp_add_inline_style( 'sgs-extensions', device_visibility_css() );
+	}
+}
+
+/**
+ * Attach the generated visibility CSS to the editor extensions stylesheet,
+ * so the editor preview hides at the same breakpoints as the frontend.
+ */
+function enqueue_device_visibility_editor_css(): void {
+	if ( wp_style_is( 'sgs-extensions-editor', 'enqueued' ) ) {
+		wp_add_inline_style( 'sgs-extensions-editor', device_visibility_css() );
+	}
+}
 
 /**
  * Inject device visibility CSS classes into the rendered block HTML.
@@ -99,7 +159,21 @@ function inject_device_visibility_classes( string $block_content, array $block )
 	// Use the WP HTML Tag Processor for safe, standards-compliant manipulation.
 	$processor = new \WP_HTML_Tag_Processor( $block_content );
 
-	if ( $processor->next_tag() ) {
+	// Advance to the first VISIBLE wrapper tag, skipping any leading scoped
+	// <style>/<script> the block emits (the no-inline contract prepends a
+	// scoped <style> to many blocks). Without this, the visibility class lands
+	// on the <style> tag — which the CSS collector then lifts to <head>, so the
+	// class silently vanishes and the wrapper never hides. Universal fix.
+	$found_wrapper = false;
+	while ( $processor->next_tag() ) {
+		$tag = $processor->get_tag();
+		if ( 'STYLE' !== $tag && 'SCRIPT' !== $tag ) {
+			$found_wrapper = true;
+			break;
+		}
+	}
+
+	if ( $found_wrapper ) {
 		$existing_class = $processor->get_attribute( 'class' );
 
 		if ( $existing_class ) {

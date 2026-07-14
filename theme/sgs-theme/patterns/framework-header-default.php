@@ -7,7 +7,7 @@
  * Keywords: header, sgs, framework, default, logo, navigation
  * Viewport Width: 1440
  * Inserter: true
- * Description: Minimal default SGS header — logo + primary nav + cart + mobile-nav drawer, built on the never-overflow sgs/site-header block. Nav collapses into the drawer below 768px (designed collapse, not a wrap).
+ * Description: Default SGS header on the never-overflow sgs/site-header block, following the Indus per-device pattern (FR-S9-8). Desktop: a top utility strip (phone/email/social) + logo + primary nav + cart. At ≤1024 the utility strip is hidden and a prominent "Call" button appears; nav collapses into the drawer, which also carries the email + social links (place-then-toggle, no magic primitive).
  *
  * @package SGS\Theme
  */
@@ -16,7 +16,11 @@
 
 <!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface","headerSticky":true,"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
 <!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"flex-end"} -->
-<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text","iconColour":"primary","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"phone","labelCollapse":"all","iconColour":"primary","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
+
+<!-- wp:sgs/business-info {"displayType":"email","labelCollapse":"all","iconColour":"primary","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
+
+<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"primary","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
@@ -33,8 +37,13 @@
 <!-- /wp:group -->
 <!-- /wp:sgs/site-header-row -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"bottom"} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center"} -->
+<!-- wp:sgs/business-info {"displayType":"phone","className":"sgs-header-call","sgsHideOnDesktop":true} /-->
 <!-- /wp:sgs/site-header-row -->
 <!-- /wp:sgs/site-header -->
 
-<!-- wp:sgs/mobile-nav {"variant":"overlay"} /-->
+<!-- wp:sgs/mobile-nav {"variant":"overlay"} -->
+<!-- wp:sgs/business-info {"displayType":"email","textColour":"text","iconColour":"primary"} /-->
+
+<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"primary"} /-->
+<!-- /wp:sgs/mobile-nav -->

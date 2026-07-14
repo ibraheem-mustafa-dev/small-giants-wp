@@ -44,7 +44,7 @@ export default function DeviceVisibilityPanel( { attributes, setAttributes } ) {
 							{ __( 'Hide on mobile', 'sgs-blocks' ) }
 						</>
 					}
-					help={ __( 'Below 600px', 'sgs-blocks' ) }
+					help={ __( 'Below 768px', 'sgs-blocks' ) }
 					checked={ !! sgsHideOnMobile }
 					onChange={ ( val ) =>
 						setAttributes( { sgsHideOnMobile: val } )
@@ -58,7 +58,7 @@ export default function DeviceVisibilityPanel( { attributes, setAttributes } ) {
 							{ __( 'Hide on tablet', 'sgs-blocks' ) }
 						</>
 					}
-					help={ __( '600px to 1023px', 'sgs-blocks' ) }
+					help={ __( '768px to 1023px', 'sgs-blocks' ) }
 					checked={ !! sgsHideOnTablet }
 					onChange={ ( val ) =>
 						setAttributes( { sgsHideOnTablet: val } )

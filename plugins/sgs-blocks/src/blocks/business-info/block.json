@@ -37,6 +37,11 @@
 			"type": "boolean",
 			"default": true
 		},
+		"labelCollapse": {
+			"type": "string",
+			"default": "none",
+			"enum": [ "none", "mobile", "tablet", "all" ]
+		},
 		"linkPhone": {
 			"type": "boolean",
 			"default": true

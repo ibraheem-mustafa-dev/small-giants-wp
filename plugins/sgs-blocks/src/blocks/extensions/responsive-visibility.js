@@ -148,7 +148,7 @@ const withVisibilityControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</>
 						}
 						help={ __(
-							'Below 600px',
+							'Below 768px',
 							'sgs-blocks'
 						) }
 						checked={ !! attributes.sgsHideOnMobile }
@@ -165,7 +165,7 @@ const withVisibilityControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</>
 						}
 						help={ __(
-							'600px to 1023px',
+							'768px to 1023px',
 							'sgs-blocks'
 						) }
 						checked={ !! attributes.sgsHideOnTablet }

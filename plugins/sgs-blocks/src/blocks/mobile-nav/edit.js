@@ -31,6 +31,10 @@ import NavigationPanel from './NavigationPanel';
 import AnimationPanel from './AnimationPanel';
 
 // ── Allowed inner blocks — no forms or layout blocks that break the drawer ──
+// sgs/business-info is included so contact/social items (FR-S9-8 move-to-drawer)
+// can be PLACED here to render exclusively inside the drawer at the collapsed
+// tier, while the header copy is hidden via per-tier visibility — the spec's
+// place-then-toggle model, no magic "move" primitive.
 const ALLOWED_BLOCKS = [
 	'sgs/text',
 	'sgs/heading',
@@ -41,6 +45,7 @@ const ALLOWED_BLOCKS = [
 	'sgs/notice-banner',
 	'sgs/whatsapp-cta',
 	'sgs/icon-list',
+	'sgs/business-info',
 ];
 
 // ── Select options ──────────────────────────────────────────────────────────

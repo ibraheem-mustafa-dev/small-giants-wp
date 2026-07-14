@@ -37,6 +37,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		displayType,
 		showIcon,
+		labelCollapse,
 		linkPhone,
 		linkEmail,
 		style,
@@ -76,6 +77,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Show icon', 'sgs-blocks' ) }
 							checked={ showIcon }
 							onChange={ ( val ) => setAttributes( { showIcon: val } ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+							help={ __(
+								'Hide the text and show just the icon from the chosen breakpoint down (keeps a working call/email link and an accessible name). Requires the icon to be on.',
+								'sgs-blocks'
+							) }
+							value={ labelCollapse || 'none' }
+							options={ [
+								{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
+								{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
+								{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
+								{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { labelCollapse: val } )
+							}
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>

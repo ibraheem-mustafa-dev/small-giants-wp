@@ -106,17 +106,13 @@
  * for genuine device-specific content patterns.
  */
 
-@media (max-width: 599px) {
-	.sgs-hide-mobile { display: none !important; }
-}
-
-@media (min-width: 600px) and (max-width: 1023px) {
-	.sgs-hide-tablet { display: none !important; }
-}
-
-@media (min-width: 1024px) {
-	.sgs-hide-desktop { display: none !important; }
-}
+/*
+ * The .sgs-hide-mobile / .sgs-hide-tablet / .sgs-hide-desktop media queries
+ * are GENERATED from the canonical SGS_Breakpoints source (mobile <= 767px,
+ * tablet 768–1023px, desktop >= 1024px) and injected as inline CSS by
+ * includes/device-visibility.php — one breakpoint source shared with the
+ * FR-S9-6 responsive engine (R-31-1). Do NOT re-add a hardcoded pair here.
+ */
 
 /* --- Universal Hover Effects --- */
 

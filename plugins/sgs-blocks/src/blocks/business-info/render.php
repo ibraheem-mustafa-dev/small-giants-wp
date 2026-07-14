@@ -33,7 +33,14 @@ use SGS\Blocks\Sgs_Site_Info;
 
 $display_type = $attributes['displayType'] ?? 'phone';
 $show_icon    = ! empty( $attributes['showIcon'] );
-$link_phone   = ! empty( $attributes['linkPhone'] );
+// Responsive label collapse (FR-S9-8): one setting that hides the text label —
+// and collapses the item to just its icon — from a chosen breakpoint down.
+// none = always show; mobile = icon-only <=767; tablet = icon-only <=1023;
+// all = always icon-only. The label markup is identical; only the scoped CSS
+// clip differs, and a clipped label stays in the a11y tree so an icon-only
+// phone/email link keeps its accessible name (WCAG name-required).
+$label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
+$link_phone     = ! empty( $attributes['linkPhone'] );
 $link_email   = ! empty( $attributes['linkEmail'] );
 $icon_colour  = $attributes['iconColour'] ?? 'primary';
 $text_colour  = $attributes['textColour'] ?? 'text';
@@ -59,6 +66,22 @@ $icon_html = function ( string $icon_name ) use ( $show_icon ): string {
 	return sprintf( '<span class="sgs-business-info__icon" aria-hidden="true">%s</span>', $svg );
 };
 
+/**
+ * Helper: the text label span (FR-S9-8).
+ *
+ * The label is always emitted in `.sgs-business-info__label`; per-tier
+ * visibility is driven by scoped CSS below (a clip at any tier where showLabel
+ * is off). Because a clipped label stays in the accessibility tree, an
+ * icon-only phone/email link keeps its accessible name (WCAG name-required)
+ * whether or not it is wrapped in a link — no aria-label needed.
+ *
+ * @param string $escaped_text Already-escaped label text/HTML.
+ * @return string HTML span.
+ */
+$label_html = static function ( string $escaped_text ): string {
+	return '<span class="sgs-business-info__label">' . $escaped_text . '</span>';
+};
+
 $html = '';
 
 switch ( $display_type ) {
@@ -68,7 +91,7 @@ switch ( $display_type ) {
 		$phone_raw = (string) Sgs_Site_Info::get( 'phone', '' );
 		if ( '' !== $phone_raw ) {
 			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone_raw );
-			$inner    = $icon_html( 'phone' ) . '<span>' . Sgs_Site_Info::get_esc_html( 'phone' ) . '</span>';
+			$inner    = $icon_html( 'phone' ) . $label_html( Sgs_Site_Info::get_esc_html( 'phone' ) );
 			if ( $link_phone ) {
 				$html = sprintf(
 					'<a href="%s" class="sgs-business-info__link">%s</a>',
@@ -88,7 +111,7 @@ switch ( $display_type ) {
 	case 'email':
 		$email_raw = (string) Sgs_Site_Info::get( 'email', '' );
 		if ( '' !== $email_raw && is_email( $email_raw ) ) {
-			$inner = $icon_html( 'mail' ) . '<span>' . Sgs_Site_Info::get_esc_html( 'email' ) . '</span>';
+			$inner = $icon_html( 'mail' ) . $label_html( Sgs_Site_Info::get_esc_html( 'email' ) );
 			if ( $link_email ) {
 				$html = sprintf(
 					'<a href="%s" class="sgs-business-info__link">%s</a>',
@@ -113,7 +136,7 @@ switch ( $display_type ) {
 			$html = sprintf(
 				'<address class="sgs-business-info sgs-business-address">%s%s</address>',
 				$icon_html( 'map-pin' ),
-				wp_kses( $address_raw, array( 'br' => array() ) )
+				$label_html( wp_kses( $address_raw, array( 'br' => array() ) ) )
 			);
 		} else {
 			$html = '<address class="sgs-business-info sgs-business-address">' . $placeholder . '</address>';
@@ -291,6 +314,21 @@ $scoped_css = array();
 // scoped custom-property declaration; style.css's var(--sgs-bi-*, fallback)
 // consumption is unchanged. ---
 $scoped_css[] = "{$root_sel}{--sgs-bi-icon-colour:" . sgs_colour_value( $icon_colour ) . ';--sgs-bi-text-colour:' . sgs_colour_value( $text_colour ) . ';--sgs-bi-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+
+// --- Per-tier label collapse (FR-S9-8 responsive icon-only). Clip the label at
+// any tier whose showLabel* is off; the icon remains, and the clipped label
+// stays in the a11y tree so the link keeps its accessible name. Bounds mirror
+// the device-visibility feature (mobile <=767, tablet 768–1023, desktop >=1024
+// — the canonical SGS_Breakpoints values). ---
+$label_clip     = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
+$label_clip_rule = "{$root_sel} .sgs-business-info__label{" . $label_clip . '}';
+if ( 'all' === $label_collapse ) {
+	$scoped_css[] = $label_clip_rule;
+} elseif ( 'tablet' === $label_collapse ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $label_clip_rule . '}';
+} elseif ( 'mobile' === $label_collapse ) {
+	$scoped_css[] = '@media(max-width:767px){' . $label_clip_rule . '}';
+}
 
 // --- WP-native color/spacing supports (skip-serialised) — read the base
 // style.spacing.* / style.color.* objects and emit scoped via the stable
