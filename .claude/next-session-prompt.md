@@ -12,11 +12,11 @@ You are the SGS WordPress block + frontend developer. FR-S9-6 (the per-device re
 Read `.claude/handoff.md` + `CLAUDE.md` + `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md` for full context, then work the priorities.
 
 ## ⛔ BEAN'S DIRECTIVE — the arc (unchanged from 2026-07-14)
-1. **CONFIRM every point in Spec 17 §S9 is TOTALLY covered** — 8/11 FRs are DONE (FR-S9-1..7 + FR-S9-11). BUILD the 3 open ones (FR-S9-8 per-device content adaptation, FR-S9-9 sticky/transparent-on-scroll toggle, FR-S9-10 global-defaults + shared Site Info), each built + live-verified. Spec 17 is NOT "covered" until every §S9 FR is built + live-verified.
+1. **CONFIRM every point in Spec 17 §S9 is TOTALLY covered** — **9/11 FRs DONE** (FR-S9-1..7 + FR-S9-10 by capability + FR-S9-11). BUILD the **2 remaining** (FR-S9-8 per-device content adaptation, FR-S9-9 sticky/transparent-on-scroll toggle) + **CONFIRM FR-S9-10 live** (Bean 2026-07-14: it's done by capability — business-info in both header+footer rows reading the one Site Info store — just needs a cross-client live verify, Task 3). Spec 17 is NOT "covered" until FR-S9-8 + FR-S9-9 are built + live-verified and FR-S9-10 is confirmed.
 2. **ONLY THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5 / FR-S9-11 step 3). Do NOT start Part 2 until Bean signs off "§S9 totally covered".
 
 ## Why this next
-D328 closed FR-S9-6 fully + produced the coverage audit. The audit found FR-S9-8/9/10 are the only open §S9 FRs — each has infrastructure (device-visibility extension, header-behaviours layer, FR-S4 Site Info store) but needs block-specific wiring. These 3 are the hard gate before Spec 33 Part 2.
+D328 closed FR-S9-6 fully + produced the coverage audit. FR-S9-8 (per-device content adaptation) + FR-S9-9 (transparent-on-scroll toggle) are the 2 remaining BUILDS — each has infrastructure (device-visibility extension, header-behaviours layer) but needs block-specific wiring. FR-S9-10 is DONE by capability (Bean 2026-07-14 — business-info in both header+footer rows reads the one Site Info store; blocks are literal-free) → Task 3 is a live confirm only. These are the hard gate before Spec 33 Part 2.
 
 ## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
 1. `.claude/handoff.md` (D328 record) + `.claude/decisions.md` D328 + `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md`.
@@ -80,17 +80,23 @@ D328 closed FR-S9-6 fully + produced the coverage audit. The audit found FR-S9-8
 **Orchestration:** `/brainstorming` the UX first; inline or 1 Sonnet subagent per sub-piece; live-verify each on Mama's AND Indus (R-31-9).
 **Acceptance:** every acceptance bullet in Spec 17 FR-S9-8 live-verified on ≥2 clients. **/qc gate after:** yes.
 
-## Task 2: FR-S9-9 — sticky / transparent-on-scroll no-code toggle
-**What:** EXTEND `class-sgs-header-behaviours.php` (do NOT rebuild) with an `sgs/site-header` inspector toggle exposing the 3 Material scroll behaviours (pinned / enter-always / exit-until-collapsed) + transparent-at-rest→solid-on-scroll; route the state through a CSS custom-property token (Spec 32 no-inline). Regression-test the existing behaviour layer + `--sgs-header-height` ResizeObserver + `scroll-padding-top` anchor fix.
-**Why:** FR-S9-9 acceptance — no-code, beats Elementor's hand-written-CSS requirement.
-**Orchestration:** `/brainstorming` + `/qc-council` the behaviour-layer change before dispatch; live Playwright scroll simulation.
-**Acceptance:** toggle works no-code; existing behaviour-layer tests still green; dark-mode contrast holds through the transition. **/qc gate after:** yes.
+## Task 2: FR-S9-9 — 3 header behaviours as SITE-EDITOR block-inspector controls (D329)
+**What:** expose **sticky**, **transparent-at-rest→solid-on-scroll**, AND **shrink-on-scroll-down** (Bean added shrink) as no-code inspector controls on the `sgs/site-header` block. EXTEND `class-sgs-header-behaviours.php` (do NOT rebuild) — the mechanics ALL EXIST (`VALID_BEHAVIOURS` transparent/sticky/hide-on-scroll-down + `is-header-scrolled`/`is-header-scrolling-down`; `header-modes.css` handles sticky/transparent→solid/shrink/smart-reveal; theme parts `header-{shrink,sticky,transparent}.html`). ADD `shrink` to the recognised behaviour set; route state via a CSS custom-property token (Spec 32 no-inline). The block toggles REPLACE both the template-part-variant selection AND the Customiser "Enable sticky header" (see Task 2b). Regression-test the existing behaviour layer + `--sgs-header-height` ResizeObserver + `scroll-padding-top` anchor fix.
+**Why:** FR-S9-9 acceptance — no-code, in the Site Editor (block theme's native home, D329), covers all 3 behaviours.
+**Orchestration:** `/brainstorming` + `/qc-council` the behaviour-layer change before dispatch; live Playwright scroll simulation for each of the 3 behaviours.
+**Acceptance:** all 3 toggles work no-code from the block inspector; existing behaviour-layer tests still green; dark-mode contrast holds through the transparent→solid transition. **/qc gate after:** yes.
 
-## Task 3: FR-S9-10 — global defaults + shared Site Info
-**What:** wire the EXISTING FR-S4-1/2/3 Site Info store into the header (already in the footer via `sgs/business-info`); confirm the 3 blocks default colours/typography/spacing from `theme.json`/`wp_global_styles`/`theme-snapshot.json` tokens (grep-clean of literals). NO new store, NO new admin page — wiring only.
-**Why:** FR-S9-10 acceptance — one source of truth across header AND footer.
-**Orchestration:** inline or 1 Sonnet subagent; live-verify a Site-Info value set once renders in both header + footer on ≥2 clients (mamas + indus).
-**Acceptance:** every FR-S9-10 acceptance bullet live-verified. **/qc gate after:** yes.
+## Task 2b: Consolidate header/footer editing into the Site Editor — retire the Customiser path (D329)
+**What:** Bean-locked — the block theme's header/footer home is the SITE EDITOR (template parts + our blocks + per-device controls), NOT the Customiser. An earlier-wave Customiser path is still ACTIVE + contradicts this: `Sgs_Header_Customiser` + `Sgs_Footer_Customiser` (both on `customize_register`) + `Sgs_Header_Renderer` (reads Customiser options) hold header colours/max-width/sticky/rules — duplicating the block controls. (1) AUDIT the `Sgs_Header_Renderer` path — confirm it's dormant (the live site renders via `parts/*.html` blocks; verify no double-render/conflict). (2) RETIRE the Customiser header/footer sections once Task 2 provides the block-inspector replacement for the sticky/transparent/shrink toggles. (3) Keep the conditional-rules engine (which header shows where) but surface it consistently (admin page, not Customiser).
+**Why:** one home = the Site Editor; kills the two-places-to-set-header-colours confusion Bean flagged.
+**Orchestration:** `/systematic-debugging` to prove the Customiser path dormant BEFORE removing (STOP-16, prove-the-cause); live-verify the header unchanged after retirement.
+**Depends on:** Task 2 (needs the block-inspector toggle before removing the Customiser sticky toggle). **/qc gate after:** yes.
+
+## Task 3: FR-S9-10 — CONFIRM-ONLY (Bean 2026-07-14: done by capability, NOT a build)
+**What:** FR-S9-10 is already met by capability — `sgs/business-info` is in the allowedBlocks of BOTH `site-header-row` AND `site-footer-row` and reads the one `sgs_site_info` store, and the 3 blocks are literal-free (grep-clean). So this is CONFIRM-only, ~10 min: (a) live cross-client verify — set a Site Info value once → it renders in a header business-info variant AND a footer business-info variant on mamas + indus; (b) OPTIONAL — pre-place a business-info variant in the default header pattern for out-of-box (footer already does).
+**Why:** FR-S9-10 acceptance is capability (set-once-renders-both) + token defaults, both present. Do NOT build a new wiring/store.
+**Orchestration:** inline; live-verify only.
+**Acceptance:** the set-once-renders-both cross-client check passes live. **/qc gate after:** light (live verify).
 
 ## Task 4: present the §S9 coverage audit for Bean's "totally covered" sign-off
 **What:** update `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md` marking FR-S9-8/9/10 DONE + live-verified; present the full FR-S9-1..11 audit to Bean for the "totally covered" sign-off (the HARD gate before Spec 33 Part 2).
@@ -102,10 +108,11 @@ D328 closed FR-S9-6 fully + produced the coverage audit. The audit found FR-S9-8
 
 ## Dependency graph
 ```
-Task 1 (FR-S9-8) ┐
-Task 2 (FR-S9-9) ┤ independent — build in any order, /qc + live-verify each
-Task 3 (FR-S9-10)┘
-  ↓ (all 3 done + live)
+Task 1 (FR-S9-8 build) ─────────────┐
+Task 2 (FR-S9-9 build, 3 behaviours) ┤
+  ↓                                  │
+Task 2b (retire Customiser path) ────┤  Task 3 (FR-S9-10 confirm, ~10min)
+  ↓ (all done + live)                ┘
 Task 4 (coverage audit → BEAN SIGN-OFF GATE)
   ↓ (only after "§S9 totally covered")
 Task 5 (Spec 33 Part 2)
