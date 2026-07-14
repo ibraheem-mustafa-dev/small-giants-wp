@@ -115,7 +115,6 @@ $menu_button_label    = isset( $attributes['menuButtonLabel'] ) && '' !== $attri
 $drawer_label         = isset( $attributes['drawerLabel'] ) && '' !== $attributes['drawerLabel']
 	? $attributes['drawerLabel']
 	: __( 'Navigation menu', 'sgs-blocks' );
-$show_drawer_socials  = ! isset( $attributes['showDrawerSocials'] ) || (bool) $attributes['showDrawerSocials'];
 $drawer_side_raw      = isset( $attributes['drawerSide'] ) ? (string) $attributes['drawerSide'] : 'right';
 $drawer_side          = in_array( $drawer_side_raw, array( 'left', 'right' ), true ) ? $drawer_side_raw : 'right';
 
@@ -156,22 +155,21 @@ $drawer_head_html = sprintf(
 $drawer_menu_html = $bar_renderer->render_drawer_menu( $menu_blocks );
 
 // Content zone — every non-mega-menu InnerBlocks child (STOP-NO-ALLOWLIST).
+// Socials live HERE too: an operator places sgs/social-icons (source="site-info")
+// in this drop-zone rather than the block rendering a private socials copy of its
+// own (D338 — sgs/social-icons already does the job and is styleable/reorderable).
 $drawer_content_html = '' !== $drawer_inner
 	? sprintf( '<div class="sgs-adaptive-nav__drawer-content">%s</div>', $drawer_inner )
 	: '';
 
-// Socials zone — Sgs_Site_Info only (R-31-1, no legacy option reads).
-$drawer_socials_html = $show_drawer_socials ? $bar_renderer->render_drawer_socials() : '';
-
 $dialog_html = sprintf(
-	'<dialog id="%s" class="sgs-adaptive-nav__drawer sgs-adaptive-nav__drawer--%s" aria-label="%s">%s%s%s%s</dialog>',
+	'<dialog id="%s" class="sgs-adaptive-nav__drawer sgs-adaptive-nav__drawer--%s" aria-label="%s">%s%s%s</dialog>',
 	esc_attr( $drawer_id ),
 	esc_attr( $drawer_side ),
 	esc_attr( $drawer_label ),
 	$drawer_head_html,
 	$drawer_menu_html,
-	$drawer_content_html,
-	$drawer_socials_html
+	$drawer_content_html
 );
 
 $inner_html = $nav_bar_html . $toggle_html . $dialog_html;

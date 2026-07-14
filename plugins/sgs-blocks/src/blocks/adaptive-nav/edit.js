@@ -92,7 +92,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		gap,
 		menuButtonLabel,
 		drawerLabel,
-		showDrawerSocials,
 		drawerSide,
 	} = attributes;
 
@@ -220,18 +219,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { drawerSide: val } )
 						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show socials in drawer', 'sgs-blocks' ) }
-						checked={ showDrawerSocials }
-						onChange={ ( val ) =>
-							setAttributes( { showDrawerSocials: val } )
-						}
-						help={ __(
-							'Reads Facebook / Instagram / X / LinkedIn / YouTube / TikTok / WhatsApp from Appearance → SGS Site Info.',
-							'sgs-blocks'
-						) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

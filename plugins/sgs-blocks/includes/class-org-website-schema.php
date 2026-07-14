@@ -445,7 +445,7 @@ final class Org_Website_Schema {
 			return array();
 		}
 
-		$networks = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp' );
+		$networks = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google' );
 		$urls     = array();
 
 		foreach ( $networks as $network ) {

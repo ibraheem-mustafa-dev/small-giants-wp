@@ -52,10 +52,6 @@
 			"type": "string",
 			"default": "Navigation menu"
 		},
-		"showDrawerSocials": {
-			"type": "boolean",
-			"default": true
-		},
 		"drawerSide": {
 			"type": "string",
 			"default": "right",

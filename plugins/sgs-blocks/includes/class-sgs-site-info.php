@@ -47,7 +47,7 @@ final class Sgs_Site_Info {
 	 * opening_hours.mon, opening_hours.tue, opening_hours.wed, opening_hours.thu,
 	 * opening_hours.fri, opening_hours.sat, opening_hours.sun,
 	 * socials.facebook, socials.instagram, socials.twitter, socials.linkedin,
-	 * socials.youtube, socials.tiktok, socials.whatsapp,
+	 * socials.youtube, socials.tiktok, socials.whatsapp, socials.google,
 	 * copyright, tagline, vat_number, registered_office
 	 */
 
@@ -118,7 +118,10 @@ final class Sgs_Site_Info {
 		$url     = 'esc_url_raw';
 		$addr    = array( __CLASS__, 'sanitise_address' );
 		$days    = array( 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' );
-		$socials = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp' );
+		// 'google' = the Google Business Profile / review link. Universal: a review
+		// link is a first-class channel for essentially every local business, and
+		// it belongs in the one store like every other social (D338).
+		$socials = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google' );
 
 		self::$sanitisers = \array_merge(
 			array(

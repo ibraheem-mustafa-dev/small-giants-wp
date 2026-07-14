@@ -28,6 +28,7 @@
 
 <!-- wp:sgs/adaptive-nav {"linkColour":"text","gap":{"desktop":"28px"}} -->
 <!-- wp:sgs/business-info {"displayType":"email"} /-->
+<!-- wp:sgs/social-icons {"source":"site-info","iconColour":"surface","iconSize":20} /-->
 <!-- /wp:sgs/adaptive-nav -->
 
 <!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap"} -->

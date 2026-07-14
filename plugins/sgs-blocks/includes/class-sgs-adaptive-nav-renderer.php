@@ -16,9 +16,11 @@
  * and keyboard).
  *
  * At the mobile tier, drill-down happens inside the off-canvas <dialog>
- * drawer that this SAME renderer also produces (render_drawer_menu() +
- * render_drawer_socials() below) — one resolved menu source feeds both the
- * desktop bar and the drawer accordion, so they never fall out of sync.
+ * drawer that this SAME renderer also produces (render_drawer_menu() below) —
+ * one resolved menu source feeds both the desktop bar and the drawer accordion,
+ * so they never fall out of sync. That includes sgs/mega-menu items, which are
+ * ordinary members of the wp_navigation menu: the bar renders their real panel,
+ * the drawer flattens them to an accordion of the panel's links.
  *
  * @package SGS\Blocks
  */
@@ -116,9 +118,18 @@ class SGS_Adaptive_Nav_Renderer {
 				case 'core/page-list':
 					$html .= $this->render_page_list( $block['attrs']['parentPageID'] ?? 0 );
 					break;
+				case 'sgs/mega-menu':
+				case 'sgs/mega-menu-item':
+					// A mega-menu is a first-class MENU ITEM: operators add it to the
+					// wp_navigation menu as a sibling of core/navigation-link (verified
+					// live on Indus's menu, D338). Its own render.php emits an <li>
+					// root, so it drops straight into this <ul>. Without this case it
+					// hit `default` and vanished from the bar entirely — the menu
+					// declared 7 items and only 5 rendered.
+					$html .= render_block( $block );
+					break;
 				default:
-					// Unknown block (whitespace, sgs/mega-menu is handled as InnerBlocks
-					// in render.php, not here) — skip.
+					// Unknown block (whitespace, etc.) — skip.
 					break;
 			}
 		}
@@ -348,9 +359,12 @@ class SGS_Adaptive_Nav_Renderer {
 				case 'core/page-list':
 					$html .= $this->render_drawer_page_list( $block['attrs']['parentPageID'] ?? 0 );
 					break;
+				case 'sgs/mega-menu':
+				case 'sgs/mega-menu-item':
+					$html .= $this->render_drawer_mega_menu( $block );
+					break;
 				default:
-					// Rich sgs/mega-menu items are routed to the drawer CONTENT zone
-					// (InnerBlocks) by render.php, not the accordion menu — skip.
+					// Unknown block (whitespace, etc.) — skip.
 					break;
 			}
 		}
@@ -396,7 +410,12 @@ class SGS_Adaptive_Nav_Renderer {
 
 		$child_html = '';
 		foreach ( $children as $child ) {
-			if ( 'core/navigation-link' !== ( $child['blockName'] ?? '' ) ) {
+			// A nested submenu contributes its OWN link (one level is flattened),
+			// mirroring the desktop collect_child_links(). Accepting only
+			// navigation-link silently DROPPED a third menu level here while the
+			// desktop bar still showed it — the two walks must agree.
+			$c_name = $child['blockName'] ?? '';
+			if ( 'core/navigation-link' !== $c_name && 'core/navigation-submenu' !== $c_name ) {
 				continue;
 			}
 			$c_label = $child['attrs']['label'] ?? '';
@@ -441,6 +460,132 @@ class SGS_Adaptive_Nav_Renderer {
 			esc_attr( $panel_id ),
 			$child_html
 		);
+	}
+
+	/**
+	 * Render an sgs/mega-menu MENU ITEM as a drawer accordion.
+	 *
+	 * A mega-menu is a first-class item of the wp_navigation menu, sitting beside
+	 * core/navigation-link/-submenu (verified on Indus's live menu, D338). Its
+	 * panel content is not block data — it lives in a template part named by the
+	 * `menuTemplatePart` attr — so the child links are harvested from the
+	 * RENDERED part and fed to the existing submenu accordion as pseudo
+	 * navigation-link blocks (the same trick render_drawer_page_list() uses).
+	 * The desktop bar renders the real panel; the drawer flattens it to links,
+	 * because a multi-column mega panel is unusable at 375px.
+	 *
+	 * @param array $block Parsed sgs/mega-menu block.
+	 * @return string HTML <li> element.
+	 */
+	private function render_drawer_mega_menu( array $block ): string {
+		$attrs = $block['attrs'] ?? array();
+		$label = (string) ( $attrs['label'] ?? '' );
+		$url   = (string) ( $attrs['url'] ?? '' );
+		$slug  = (string) ( $attrs['menuTemplatePart'] ?? $attrs['templatePartSlug'] ?? '' );
+
+		if ( '' === $label ) {
+			return '';
+		}
+
+		$children = array();
+
+		foreach ( $this->extract_links_from_template_part( $slug ) as $link ) {
+			$children[] = array(
+				'blockName' => 'core/navigation-link',
+				'attrs'     => array(
+					'url'   => $link['href'],
+					'label' => $link['text'],
+				),
+			);
+		}
+
+		// No template part (or it yielded nothing): fall back to any authored
+		// navigation-link innerBlocks.
+		if ( empty( $children ) && ! empty( $block['innerBlocks'] ) ) {
+			foreach ( $block['innerBlocks'] as $child ) {
+				if ( 'core/navigation-link' === ( $child['blockName'] ?? '' ) ) {
+					$children[] = $child;
+				}
+			}
+		}
+
+		// "View all X" when the parent carries its own destination — the panel's
+		// overview link has no other route into the drawer.
+		if ( '' !== $url ) {
+			$children[] = array(
+				'blockName' => 'core/navigation-link',
+				'attrs'     => array(
+					'url'   => $url,
+					/* translators: %s: mega menu item label */
+					'label' => sprintf( __( 'View all %s', 'sgs-blocks' ), $label ) . ' →',
+				),
+			);
+		}
+
+		return $this->render_drawer_submenu( $label, $url, $children );
+	}
+
+	/**
+	 * Render a template part by slug and extract its links.
+	 *
+	 * Ported verbatim in behaviour from the retired sgs/mobile-nav renderer, which
+	 * is what produced the captured Indus baseline — a mega panel is arbitrary
+	 * authored blocks (groups/columns/headings/cards), so scraping the rendered
+	 * anchors is more robust than trying to parse an open-ended block tree.
+	 *
+	 * @param string $slug Template part slug (e.g. 'mega-menu-sectors').
+	 * @return array<int, array{href: string, text: string}> Extracted links.
+	 */
+	private function extract_links_from_template_part( string $slug ): array {
+		if ( '' === $slug ) {
+			return array();
+		}
+
+		$rendered = do_blocks( '<!-- wp:template-part {"slug":"' . esc_js( $slug ) . '"} /-->' );
+		if ( ! $rendered ) {
+			return array();
+		}
+
+		$links = array();
+
+		// Suppress libxml errors from messy authored HTML.
+		$prev = libxml_use_internal_errors( true );
+		$dom  = new DOMDocument();
+		$dom->loadHTML( '<html><body>' . $rendered . '</body></html>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $prev );
+
+		foreach ( $dom->getElementsByTagName( 'a' ) as $anchor ) {
+			$href = trim( $anchor->getAttribute( 'href' ) );
+			$text = trim( $anchor->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOMNode::textContent is a PHP DOM API property.
+
+			// An image-only card link: use its alt text as the accessible name.
+			if ( '' === $text ) {
+				$imgs = $anchor->getElementsByTagName( 'img' );
+				if ( $imgs->length > 0 ) {
+					$text = trim( $imgs->item( 0 )->getAttribute( 'alt' ) );
+				}
+			}
+
+			// Still nothing: derive a readable name from the URL's last segment.
+			if ( '' === $text && '' !== $href && '#' !== $href ) {
+				$path  = trim( (string) wp_parse_url( $href, PHP_URL_PATH ), '/' );
+				$parts = explode( '/', $path );
+				$last  = end( $parts );
+				if ( $last ) {
+					$text = ucwords( str_replace( array( '-', '_' ), ' ', $last ) );
+				}
+			}
+
+			if ( '' !== $href && '' !== $text && '#' !== $href ) {
+				$links[] = array(
+					'href' => $href,
+					'text' => $text,
+				);
+			}
+		}
+
+		return $links;
 	}
 
 	/**
@@ -492,57 +637,10 @@ class SGS_Adaptive_Nav_Renderer {
 		return $html;
 	}
 
-	// ── Drawer socials (Site Info only, R-31-1 — no legacy option reads) ────
-
-	/**
-	 * Render the drawer's social-icon row from Sgs_Site_Info ONLY — the
-	 * canonical 7 networks. Mirrors src/blocks/social-icons/render.php's
-	 * read+escape pattern exactly. Empty store → renders nothing (never a
-	 * hardcoded fallback; the legacy sgs_social_* / sgs_phone / sgs_email
-	 * option reads die with sgs/mobile-nav, they are NOT carried forward here).
-	 *
-	 * @return string HTML <ul> element, or empty string when no socials are set.
-	 */
-	public function render_drawer_socials(): string {
-		$networks = array(
-			'facebook'  => __( 'Facebook', 'sgs-blocks' ),
-			'instagram' => __( 'Instagram', 'sgs-blocks' ),
-			'twitter'   => __( 'X (Twitter)', 'sgs-blocks' ),
-			'linkedin'  => __( 'LinkedIn', 'sgs-blocks' ),
-			'youtube'   => __( 'YouTube', 'sgs-blocks' ),
-			'tiktok'    => __( 'TikTok', 'sgs-blocks' ),
-			'whatsapp'  => __( 'WhatsApp', 'sgs-blocks' ),
-		);
-
-		$icon_map = array(
-			'facebook'  => 'facebook',
-			'instagram' => 'instagram',
-			'twitter'   => 'twitter',
-			'linkedin'  => 'linkedin',
-			'youtube'   => 'youtube',
-			'tiktok'    => 'music',
-			'whatsapp'  => 'message-circle',
-		);
-
-		$items = '';
-		foreach ( $networks as $network_slug => $network_label ) {
-			$social_url = (string) Sgs_Site_Info::get( "socials.{$network_slug}", '' );
-			if ( '' === $social_url ) {
-				continue;
-			}
-			$items .= sprintf(
-				'<li class="sgs-adaptive-nav__drawer-social-item"><a href="%s" class="sgs-adaptive-nav__drawer-social-link sgs-adaptive-nav__drawer-social-link--%s" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a></li>',
-				esc_url( $social_url ),
-				sanitize_html_class( $network_slug ),
-				esc_attr( $network_label ),
-				sgs_get_lucide_icon( $icon_map[ $network_slug ] ?? 'link' )
-			);
-		}
-
-		if ( '' === $items ) {
-			return '';
-		}
-
-		return sprintf( '<ul class="sgs-adaptive-nav__drawer-socials">%s</ul>', $items );
-	}
+	// Drawer socials are NOT rendered here. sgs/social-icons already does this
+	// job (source="site-info", D335) and is the block operators can place, style
+	// and reorder — so the drawer's socials are simply that block, placed in the
+	// drawer drop-zone. A private copy here was a duplicate of a working block
+	// and drifted from it immediately (it shipped the 7-network list while the
+	// store grew to 8). Deleted D338.
 }

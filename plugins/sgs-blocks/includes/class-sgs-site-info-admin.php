@@ -248,7 +248,7 @@ final class Sgs_Site_Info_Admin {
 
 		// 2. Dot-notation groups.
 		$groups = array(
-			'socials'       => array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp' ),
+			'socials'       => array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google' ),
 			'opening_hours' => array( 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ),
 		);
 		foreach ( $groups as $group => $sub_keys ) {
@@ -406,6 +406,7 @@ final class Sgs_Site_Info_Admin {
 			'youtube'   => \__( 'YouTube', 'sgs-blocks' ),
 			'tiktok'    => \__( 'TikTok', 'sgs-blocks' ),
 			'whatsapp'  => \__( 'WhatsApp', 'sgs-blocks' ),
+			'google'    => \__( 'Google (Business Profile / reviews)', 'sgs-blocks' ),
 		);
 	}
 

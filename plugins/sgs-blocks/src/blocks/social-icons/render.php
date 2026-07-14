@@ -67,6 +67,7 @@ if ( 'site-info' === $source ) {
 		'youtube'   => 'YouTube',
 		'tiktok'    => 'TikTok',
 		'whatsapp'  => 'WhatsApp',
+		'google'    => 'Google',
 	);
 
 	$icons = array();
@@ -108,6 +109,9 @@ $platform_icons = array(
 	'snapchat'  => 'ghost',
 	'telegram'  => 'send',
 	'discord'   => 'message-square',
+	// Lucide ships no Google brand mark; 'star' reads as the review link this
+	// channel actually points at (and matches the captured Indus baseline).
+	'google'    => 'star',
 );
 
 $platform_labels = array(
@@ -125,6 +129,7 @@ $platform_labels = array(
 	'snapchat'  => 'Snapchat',
 	'telegram'  => 'Telegram',
 	'discord'   => 'Discord',
+	'google'    => 'Google',
 );
 
 // ---------------------------------------------------------------------------

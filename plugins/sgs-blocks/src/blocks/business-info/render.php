@@ -225,6 +225,10 @@ switch ( $display_type ) {
 				'icon'  => 'message-circle',
 				'label' => 'WhatsApp',
 			),
+			'google'    => array(
+				'icon'  => 'star',
+				'label' => 'Google',
+			),
 		);
 
 		$items = '';
