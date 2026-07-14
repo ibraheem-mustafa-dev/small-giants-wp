@@ -372,7 +372,6 @@
 :where(.sgs-adaptive-nav__drawer-link) {
 	align-items: center;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-	color: inherit;
 	display: flex;
 	font-size: 1.125rem;
 	font-weight: 600;
@@ -380,6 +379,22 @@
 	padding: 14px 0;
 	text-decoration: none;
 	transition: color 200ms ease;
+}
+
+/* `color` is NOT in the :where() block above, deliberately. The drawer panel
+ * sets its own text colour and the links must inherit it — but at
+ * 0-specificity `color:inherit` LOSES to the theme's global `a{color:primary}`
+ * (0,0,1), which repainted every drawer link primary-on-primary-dark: 1.31:1,
+ * a WCAG 1.4.3 failure, invisible teal-on-teal (caught live on Indus, D338 —
+ * axe-core flagged all 7 links; the desktop bar was unaffected because it sets
+ * link colour from its own attr).
+ *
+ * A class (0,1,0) beats the theme's bare `a` while still losing to the
+ * #uid-scoped attr helpers (1,1,0), so an operator override still wins —
+ * the cascade intent above is preserved, only the theme's global link colour
+ * is fenced out. */
+.sgs-adaptive-nav__drawer-link {
+	color: inherit;
 }
 
 .sgs-adaptive-nav__drawer-link:hover,
