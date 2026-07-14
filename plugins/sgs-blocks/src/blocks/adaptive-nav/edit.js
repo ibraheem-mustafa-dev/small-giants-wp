@@ -20,6 +20,7 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
+	ToggleControl,
 	__experimentalNumberControl as NumberControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
@@ -31,7 +32,15 @@ import {
 	ResponsiveBoxControls,
 } from '../../components';
 
-const ALLOWED_BLOCKS = [ 'sgs/mega-menu' ];
+// STOP-NO-ALLOWLIST (Task 1 / D336): the InnerBlocks slot accepts ANY block —
+// sgs/mega-menu items join the desktop bar, everything else routes to the
+// drawer's content drop-zone at render time (see render.php). Do NOT
+// reintroduce an `allowedBlocks` restriction here.
+
+const DRAWER_SIDE_OPTIONS = [
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+];
 
 const COLLAPSE_TIER_OPTIONS = [
 	{ label: __( 'Mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
@@ -81,6 +90,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		flexWrap,
 		verticalAlign,
 		gap,
+		menuButtonLabel,
+		drawerLabel,
+		showDrawerSocials,
+		drawerSide,
 	} = attributes;
 
 	const { records: menus, isResolving } = useEntityRecords(
@@ -110,7 +123,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-adaptive-nav__editor-innerblocks' },
 		{
-			allowedBlocks: ALLOWED_BLOCKS,
+			// No allowedBlocks (STOP-NO-ALLOWLIST) — a sgs/mega-menu child
+			// joins the desktop bar; any other block routes to the drawer's
+			// content drop-zone. sgs/mega-menu keeps its own reciprocal
+			// `parent` lock in its block.json.
 			templateLock: false,
 			orientation: 'horizontal',
 		}
@@ -167,6 +183,57 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Drawer', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Menu button label', 'sgs-blocks' ) }
+						value={ menuButtonLabel }
+						onChange={ ( val ) =>
+							setAttributes( { menuButtonLabel: val } )
+						}
+						help={ __(
+							'Screen-reader label for the burger toggle shown below the collapse breakpoint.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Drawer label', 'sgs-blocks' ) }
+						value={ drawerLabel }
+						onChange={ ( val ) =>
+							setAttributes( { drawerLabel: val } )
+						}
+						help={ __(
+							'Screen-reader label for the off-canvas drawer dialog.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Drawer side', 'sgs-blocks' ) }
+						value={ drawerSide }
+						options={ DRAWER_SIDE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { drawerSide: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Show socials in drawer', 'sgs-blocks' ) }
+						checked={ showDrawerSocials }
+						onChange={ ( val ) =>
+							setAttributes( { showDrawerSocials: val } )
+						}
+						help={ __(
+							'Reads Facebook / Instagram / X / LinkedIn / YouTube / TikTok / WhatsApp from Appearance → SGS Site Info.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -346,7 +413,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</span>
 					<span className="sgs-adaptive-nav__editor-hint">
 						{ __(
-							'Rendered from the selected menu on the frontend. Add sgs/mega-menu items below for rich dropdowns.',
+							'Rendered from the selected menu on the frontend. Add an SGS Mega Menu below for a rich desktop dropdown — any other block dropped here becomes content inside the off-canvas drawer instead.',
 							'sgs-blocks'
 						) }
 					</span>

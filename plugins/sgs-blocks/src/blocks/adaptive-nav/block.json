@@ -40,12 +40,26 @@
 			"containerKind": "layout"
 		}
 	},
-	"allowedBlocks": [
-		"sgs/mega-menu"
-	],
 	"attributes": {
 		"ref": {
 			"type": "number"
+		},
+		"menuButtonLabel": {
+			"type": "string",
+			"default": "Menu"
+		},
+		"drawerLabel": {
+			"type": "string",
+			"default": "Navigation menu"
+		},
+		"showDrawerSocials": {
+			"type": "boolean",
+			"default": true
+		},
+		"drawerSide": {
+			"type": "string",
+			"default": "right",
+			"enum": [ "left", "right" ]
 		},
 		"menuFallback": {
 			"type": "string",

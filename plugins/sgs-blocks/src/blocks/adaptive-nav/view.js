@@ -18,6 +18,16 @@
  *    overflowing items (their real `<a href>` intact) into a synthesised
  *    "More" disclosure appended to the list. Recomputed on resize.
  *
+ * 3. Off-canvas drawer (absorbed from sgs/mobile-nav, Task 1 / D336) — native
+ *    `<dialog>` + `showModal()` gives focus-trap/ESC/::backdrop/top-layer/
+ *    background-inert "for free". This module hand-writes only what
+ *    showModal() does NOT provide: backdrop-click-to-close, body scroll lock,
+ *    aria-expanded sync on the toggle, and the drawer's own accordion
+ *    submenus. Do NOT re-parent the dialog, do NOT set `inert` by hand, do
+ *    NOT add a hand-rolled focus trap — showModal() already does all three,
+ *    and a modal `<dialog>` is the only element that escapes ancestor
+ *    inertness by construction.
+ *
  * There may be multiple `.sgs-adaptive-nav` instances on a page — each is
  * initialised independently.
  *
@@ -25,6 +35,7 @@
  */
 
 const RESIZE_DEBOUNCE_MS = 150;
+const SCROLL_LOCK_ATTR = 'data-sgs-anav-scroll-y';
 
 /**
  * Initialise every adaptive-nav instance on the page.
@@ -43,16 +54,139 @@ function setupInstance( root ) {
 	const nav = root.querySelector( '.sgs-adaptive-nav__nav' );
 	const list = root.querySelector( '.sgs-adaptive-nav__list' );
 
-	// Guard: bail for this instance if the list is missing.
-	if ( ! nav || ! list ) {
+	if ( nav && list ) {
+		setupDisclosures( root );
+
+		if ( nav.dataset.overflow === 'more-menu' ) {
+			setupOverflowMenu( root, nav, list );
+		}
+	}
+
+	setupDrawer( root );
+}
+
+/**
+ * Wire up the off-canvas drawer for one adaptive-nav instance: open/close via
+ * native `showModal()`/`close()`, backdrop-click-to-close, scroll lock,
+ * aria-expanded sync, and accordion submenus.
+ *
+ * @param {HTMLElement} root The `.sgs-adaptive-nav` container.
+ */
+function setupDrawer( root ) {
+	const toggle = root.querySelector( '.sgs-adaptive-nav__toggle' );
+	const dialog = root.querySelector( '.sgs-adaptive-nav__drawer' );
+
+	// Guard: bail if the markup is missing OR the browser lacks <dialog>
+	// showModal() support — the toggle then has no JS handler and the drawer
+	// stays permanently closed rather than opening in a broken half-state.
+	if ( ! toggle || ! dialog || typeof dialog.showModal !== 'function' ) {
 		return;
 	}
 
-	setupDisclosures( root );
+	const closeBtn = dialog.querySelector( '.sgs-adaptive-nav__drawer-close' );
 
-	if ( nav.dataset.overflow === 'more-menu' ) {
-		setupOverflowMenu( root, nav, list );
+	const openDrawer = () => {
+		lockScroll();
+		dialog.showModal();
+		toggle.setAttribute( 'aria-expanded', 'true' );
+	};
+
+	const closeDrawer = () => {
+		if ( ! dialog.open ) {
+			return;
+		}
+		// Added BEFORE close() so the CSS transition active at the moment
+		// [open] is removed already carries the faster exit timing
+		// (250ms in / 200ms out — see style.css `.is-closing`).
+		dialog.classList.add( 'is-closing' );
+		dialog.close();
+	};
+
+	toggle.addEventListener( 'click', openDrawer );
+
+	if ( closeBtn ) {
+		closeBtn.addEventListener( 'click', closeDrawer );
 	}
+
+	// Backdrop click-to-close: a click landing on the <dialog> element itself
+	// (not a descendant) is the ::backdrop area — the dialog's own padding
+	// box is entirely filled by the drawer panel content.
+	dialog.addEventListener( 'click', ( e ) => {
+		if ( e.target === dialog ) {
+			closeDrawer();
+		}
+	} );
+
+	// The native `close` event fires for ESC, the close button, AND backdrop
+	// click alike — one place to keep aria-expanded + scroll lock + focus
+	// return in sync regardless of how the dialog closed.
+	dialog.addEventListener( 'close', () => {
+		dialog.classList.remove( 'is-closing' );
+		toggle.setAttribute( 'aria-expanded', 'false' );
+		unlockScroll();
+		toggle.focus();
+	} );
+
+	setupDrawerAccordions( dialog );
+}
+
+/**
+ * Lock body scroll behind the open drawer: fixed-position body + scrollY
+ * save. iOS Safari ignores `overflow:hidden` on body, which is why the fixed-
+ * position technique is used instead of a simple overflow toggle.
+ */
+function lockScroll() {
+	const y = window.scrollY;
+	document.body.setAttribute( SCROLL_LOCK_ATTR, String( y ) );
+	document.body.style.position = 'fixed';
+	document.body.style.top = `-${ y }px`;
+	document.body.style.left = '0';
+	document.body.style.right = '0';
+	document.body.style.width = '100%';
+}
+
+/**
+ * Restore body scroll — removes the fixed positioning and restores the saved
+ * scroll offset in the SAME synchronous task (avoids the one-frame jump a
+ * deferred `scrollTo` would cause).
+ */
+function unlockScroll() {
+	const stored = document.body.getAttribute( SCROLL_LOCK_ATTR );
+	document.body.removeAttribute( SCROLL_LOCK_ATTR );
+	document.body.style.position = '';
+	document.body.style.top = '';
+	document.body.style.left = '';
+	document.body.style.right = '';
+	document.body.style.width = '';
+	if ( stored !== null ) {
+		window.scrollTo( 0, parseInt( stored, 10 ) || 0 );
+	}
+}
+
+/**
+ * Wire up the drawer's accordion submenus: click toggles `aria-expanded` +
+ * the sibling panel's `hidden` attribute. One-open-at-a-time is NOT enforced
+ * here (matches the sgs/mobile-nav baseline being absorbed — an accordion,
+ * not a disclosure-with-exclusivity).
+ *
+ * @param {HTMLElement} dialog The `.sgs-adaptive-nav__drawer` dialog element.
+ */
+function setupDrawerAccordions( dialog ) {
+	const toggles = dialog.querySelectorAll(
+		'.sgs-adaptive-nav__drawer-toggle'
+	);
+	toggles.forEach( ( button ) => {
+		button.addEventListener( 'click', () => {
+			const panelId = button.getAttribute( 'aria-controls' );
+			const panel = panelId ? document.getElementById( panelId ) : null;
+			if ( ! panel ) {
+				return;
+			}
+			const isOpen = button.getAttribute( 'aria-expanded' ) === 'true';
+			button.setAttribute( 'aria-expanded', isOpen ? 'false' : 'true' );
+			panel.hidden = isOpen;
+		} );
+	} );
 }
 
 /**

@@ -4,24 +4,39 @@
  *
  * Renders a desktop navigation bar from ONE menu source (a wp_navigation post,
  * resolved by SGS_Nav_Menu_Source — the SAME source the off-canvas drawer reads,
- * so there is no duplicated/divergent menu content). The bar collapses to the
- * drawer (sgs/mobile-nav) at a configurable breakpoint; this block emits the
- * scoped collapse rules for BOTH the bar (hide below the tier) and the header
- * burger toggle (show below the tier), so it is the single owner of the collapse
- * breakpoint — replacing the old hard-coded 768/782px rules.
+ * so there is no duplicated/divergent menu content). Below a configurable
+ * breakpoint the bar collapses to this block's OWN burger toggle + a native
+ * `<dialog>` off-canvas drawer (absorbed from sgs/mobile-nav, Task 1 / D336) —
+ * this block emits the scoped collapse rules for both the bar (hide below the
+ * tier) and its own toggle (show below the tier), so it is the single owner of
+ * the collapse breakpoint.
  *
- * SEO / GEO / a11y: every link is a real server-rendered <a href> (crawlable +
- * AI-visible; AI crawlers do not run JS). Submenus are CSS-hidden mega-panels
- * using the ARIA APG disclosure pattern. No AJAX lazy-load. Progressive
- * enhancement: view.js only adds the More-overflow menu + click/keyboard
- * disclosure toggles.
+ * InnerBlocks routing (STOP-NO-ALLOWLIST — no `allowedBlocks`, any block is
+ * accepted): $block->inner_blocks is iterated by NAME, never via $content —
+ * a sgs/mega-menu child renders into the desktop bar's <ul>; every other
+ * child renders into the drawer's content drop-zone.
+ *
+ * The drawer uses native `<dialog>` + `showModal()` for focus-trap, ESC,
+ * ::backdrop, top-layer promotion, and background inertness "for free" — no
+ * re-parenting hack, no hand-rolled `inert`, no static `aria-modal`/`role`
+ * (showModal() confers modality). Backdrop-click-to-close and scroll-lock are
+ * hand-written in view.js (showModal() does not provide either).
+ *
+ * KNOWN CONSTRAINT (rater-1 MUST-FIX #3, theme-side — Wave 2): a modal
+ * `<dialog>`'s top-layer promotion escapes an ancestor's overflow/clipping but
+ * NOT an ancestor's `transform`/`filter`/`contain`/`will-change` containing
+ * block — any of those on an adaptive-nav ANCESTOR (e.g. a header
+ * hide-on-scroll transform) would trap the dialog visually. Never let one land
+ * on an ancestor of this block.
  *
  * Outer rendering is delegated ENTIRELY to SGS_Container_Wrapper (composite-mirror,
  * R-31-9 / D294). The only block-private CSS is the scoped colour/border/typography
- * re-emit below + the flex row + collapse rules (no-inline contract, Spec 32).
+ * re-emit below + the flex row + collapse rules + the drawer visuals (no-inline
+ * contract, Spec 32).
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    InnerBlocks HTML (optional sgs/mega-menu items).
+ * @var string   $content    Unused — see InnerBlocks routing above ($block->inner_blocks
+ *                           is read directly to avoid a double-render).
  * @var WP_Block $block      Block object.
  *
  * @package SGS\Blocks
@@ -55,10 +70,20 @@ $menu_blocks   = SGS_Nav_Menu_Source::get_menu_blocks( $ref, 'none' !== $menu_fa
 $bar_renderer  = new SGS_Adaptive_Nav_Renderer( $uid );
 $items_html    = $bar_renderer->render_items( $menu_blocks );
 
-// Optional rich mega-menu items come from InnerBlocks ($content) — each sgs/mega-menu
-// renders as an <li>, so it sits inside the same <ul>. Its links are server-rendered
-// (do_blocks), preserving crawlability.
-$items_html .= (string) $content;
+// ── 1a. Route InnerBlocks by NAME (STOP-NO-ALLOWLIST — no allowedBlocks; the
+// drawer accepts any block). A sgs/mega-menu child joins the desktop bar's
+// <ul>; every other child becomes the drawer's content drop-zone. Reading
+// $block->inner_blocks directly (never $content) avoids a double-render.
+$mega_html    = '';
+$drawer_inner = '';
+foreach ( $block->inner_blocks as $inner ) {
+	if ( 'sgs/mega-menu' === $inner->name ) {
+		$mega_html .= $inner->render();
+	} else {
+		$drawer_inner .= $inner->render();
+	}
+}
+$items_html .= $mega_html;
 
 $nav_label = isset( $attributes['navigationLabel'] ) && '' !== $attributes['navigationLabel']
 	? $attributes['navigationLabel']
@@ -71,13 +96,85 @@ $more_label = isset( $attributes['moreMenuLabel'] ) && '' !== $attributes['moreM
 $overflow = isset( $attributes['overflowBehaviour'] ) ? sanitize_key( $attributes['overflowBehaviour'] ) : 'more-menu';
 
 // The <nav> landmark carries the a11y label + the More-menu config for view.js.
-$inner_html = sprintf(
+$nav_bar_html = sprintf(
 	'<nav class="sgs-adaptive-nav__nav" aria-label="%s" data-overflow="%s" data-more-label="%s"><ul class="sgs-adaptive-nav__list">%s</ul></nav>',
 	esc_attr( $nav_label ),
 	esc_attr( $overflow ),
 	esc_attr( $more_label ),
 	$items_html
 );
+
+// ── 1b. Own burger toggle + native <dialog> off-canvas drawer (absorbed from
+// sgs/mobile-nav, Task 1 / D336). showModal() gives focus-trap/ESC/::backdrop/
+// top-layer/background-inert for free — no static aria-modal/role (MUST-FIX 1
+// covers the aria-label instead), no re-parenting, no hand-rolled inert.
+$drawer_id            = $uid . '-drawer';
+$menu_button_label    = isset( $attributes['menuButtonLabel'] ) && '' !== $attributes['menuButtonLabel']
+	? $attributes['menuButtonLabel']
+	: __( 'Menu', 'sgs-blocks' );
+$drawer_label         = isset( $attributes['drawerLabel'] ) && '' !== $attributes['drawerLabel']
+	? $attributes['drawerLabel']
+	: __( 'Navigation menu', 'sgs-blocks' );
+$show_drawer_socials  = ! isset( $attributes['showDrawerSocials'] ) || (bool) $attributes['showDrawerSocials'];
+$drawer_side_raw      = isset( $attributes['drawerSide'] ) ? (string) $attributes['drawerSide'] : 'right';
+$drawer_side          = in_array( $drawer_side_raw, array( 'left', 'right' ), true ) ? $drawer_side_raw : 'right';
+
+$toggle_html = sprintf(
+	'<button type="button" class="sgs-adaptive-nav__toggle" aria-expanded="false" aria-controls="%s" aria-label="%s">%s</button>',
+	esc_attr( $drawer_id ),
+	esc_attr( $menu_button_label ),
+	sgs_get_lucide_icon( 'menu' )
+);
+
+// Head zone: logo + close button. MUST-FIX 2 — `autofocus` is explicit here
+// because showModal()'s default first-focus target is "the first [autofocus]
+// descendant, else the dialog itself" — NOT "the first focusable element".
+// With no allowedBlocks, a dropped block carrying its own [autofocus] could
+// otherwise silently steal focus on open.
+$drawer_logo = get_custom_logo();
+if ( $drawer_logo ) {
+	$drawer_logo_html = '<div class="sgs-adaptive-nav__drawer-logo">' . wp_kses_post( $drawer_logo ) . '</div>';
+} else {
+	$drawer_logo_html = sprintf(
+		'<a href="%s" class="sgs-adaptive-nav__drawer-logo sgs-adaptive-nav__drawer-logo--text">%s</a>',
+		esc_url( home_url( '/' ) ),
+		esc_html( get_bloginfo( 'name' ) )
+	);
+}
+$drawer_close_html = sprintf(
+	'<button type="button" class="sgs-adaptive-nav__drawer-close" autofocus aria-label="%s">%s</button>',
+	esc_attr__( 'Close menu', 'sgs-blocks' ),
+	sgs_get_lucide_icon( 'x' )
+);
+$drawer_head_html = sprintf(
+	'<div class="sgs-adaptive-nav__drawer-head">%s%s</div>',
+	$drawer_logo_html,
+	$drawer_close_html
+);
+
+// Menu zone — the SAME resolved menu as the desktop bar (one source, R-31-9).
+$drawer_menu_html = $bar_renderer->render_drawer_menu( $menu_blocks );
+
+// Content zone — every non-mega-menu InnerBlocks child (STOP-NO-ALLOWLIST).
+$drawer_content_html = '' !== $drawer_inner
+	? sprintf( '<div class="sgs-adaptive-nav__drawer-content">%s</div>', $drawer_inner )
+	: '';
+
+// Socials zone — Sgs_Site_Info only (R-31-1, no legacy option reads).
+$drawer_socials_html = $show_drawer_socials ? $bar_renderer->render_drawer_socials() : '';
+
+$dialog_html = sprintf(
+	'<dialog id="%s" class="sgs-adaptive-nav__drawer sgs-adaptive-nav__drawer--%s" aria-label="%s">%s%s%s%s</dialog>',
+	esc_attr( $drawer_id ),
+	esc_attr( $drawer_side ),
+	esc_attr( $drawer_label ),
+	$drawer_head_html,
+	$drawer_menu_html,
+	$drawer_content_html,
+	$drawer_socials_html
+);
+
+$inner_html = $nav_bar_html . $toggle_html . $dialog_html;
 
 // ── 2. Scoped CSS assembly. ────────────────────────────────────────────────────
 $css = '';
@@ -212,12 +309,17 @@ switch ( $tier ) {
 		$bp = 768;
 		break;
 }
-$css .= $root_sel . '{display:none;}';
-$css .= '@media(min-width:' . $bp . 'px){' . $root_sel . '{display:flex;}}';
-// The header burger toggle is a sibling in the header icons cluster; adaptive-nav
-// owns the collapse contract, so it drives the toggle's visibility too.
-$css .= '.sgs-site-header .sgs-mobile-nav-toggle{display:inline-flex;}';
-$css .= '@media(min-width:' . $bp . 'px){.sgs-site-header .sgs-mobile-nav-toggle{display:none;}}';
+// The bar hides below the tier, the toggle (now OWNED by this block, not a
+// foreign global selector) shows below the tier. The <dialog> itself is left
+// untouched here — its UA-stylesheet default is display:none until [open] is
+// set by showModal(), and giving the wrapper root a display:none/flex rule
+// (as this used to) would break showModal() at the collapsed tier, because a
+// display:none ANCESTOR suppresses top-layer rendering even for a promoted
+// modal dialog.
+$css .= $root_sel . ' .sgs-adaptive-nav__nav{display:none;}';
+$css .= '@media(min-width:' . $bp . 'px){' . $root_sel . ' .sgs-adaptive-nav__nav{display:block;}}';
+$css .= $root_sel . ' .sgs-adaptive-nav__toggle{display:inline-flex;}';
+$css .= '@media(min-width:' . $bp . 'px){' . $root_sel . ' .sgs-adaptive-nav__toggle{display:none;}}';
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $css built from pre-sanitised values only; wp_strip_all_tags guards a </style> breakout.

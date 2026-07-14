@@ -158,3 +158,400 @@
 		transition: none;
 	}
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Off-canvas drawer (absorbed from sgs/mobile-nav, Task 1 / D336).
+ * `display` on `.sgs-adaptive-nav__nav` / `.sgs-adaptive-nav__toggle` is
+ * owned ENTIRELY by render.php's scoped collapse rules — do NOT add a media
+ * visibility rule for either here. The `<dialog>`'s own open/closed display
+ * is native UA behaviour (`dialog:not([open]){display:none}`) driven by
+ * `showModal()`/`close()` — never toggled via a display:none↔flex class.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.sgs-adaptive-nav__toggle {
+	align-items: center;
+	background: transparent;
+	border: none;
+	border-radius: 8px;
+	color: inherit;
+	cursor: pointer;
+	flex-shrink: 0;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0;
+	transition: background 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__toggle:hover,
+.sgs-adaptive-nav__toggle:focus-visible {
+	background: var(--wp--preset--color--surface-alt, #f5f7f7);
+}
+
+.sgs-adaptive-nav__toggle svg {
+	height: 22px;
+	width: 22px;
+}
+
+/* The drawer panel itself. Anchored full-height to `drawerSide`, sliding in
+ * from that edge; UA styling (fixed size/position/border/background/margin)
+ * is fully overridden below. */
+.sgs-adaptive-nav__drawer {
+	background-color: var(--wp--preset--color--primary-dark);
+	border: none;
+	box-sizing: border-box;
+	color: var(--wp--preset--color--surface, #fff);
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	height: 100dvh;
+	inset: 0;
+	margin: 0;
+	max-height: 100dvh;
+	max-width: 100vw;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+	position: fixed;
+	-webkit-overflow-scrolling: touch;
+	width: min(85%, 400px);
+
+	/* MUST-FIX 5: `overlay` (not just `display`) must be in transition-property
+	 * or the close transition is cut short — the entry timing (250ms decelerate). */
+	transition:
+		transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+		overlay 250ms allow-discrete,
+		display 250ms allow-discrete;
+}
+
+/* Faster exit timing (200ms accelerate), applied by view.js BEFORE close()
+ * so it is the "ending style" the transition uses when [open] is removed. */
+.sgs-adaptive-nav__drawer.is-closing {
+	transition:
+		transform 200ms cubic-bezier(0.4, 0, 1, 1),
+		overlay 200ms allow-discrete,
+		display 200ms allow-discrete;
+}
+
+.sgs-adaptive-nav__drawer--right {
+	left: auto;
+	right: 0;
+	transform: translateX(100%);
+}
+
+.sgs-adaptive-nav__drawer--right[open] {
+	transform: translateX(0);
+}
+
+.sgs-adaptive-nav__drawer--left {
+	left: 0;
+	right: auto;
+	transform: translateX(-100%);
+}
+
+.sgs-adaptive-nav__drawer--left[open] {
+	transform: translateX(0);
+}
+
+@starting-style {
+	.sgs-adaptive-nav__drawer--right[open] {
+		transform: translateX(100%);
+	}
+
+	.sgs-adaptive-nav__drawer--left[open] {
+		transform: translateX(-100%);
+	}
+}
+
+.sgs-adaptive-nav__drawer::backdrop {
+	background: rgba(0, 0, 0, 0.6);
+	opacity: 0;
+	transition:
+		opacity 250ms ease,
+		overlay 250ms allow-discrete,
+		display 250ms allow-discrete;
+}
+
+.sgs-adaptive-nav__drawer.is-closing::backdrop {
+	transition:
+		opacity 200ms ease,
+		overlay 200ms allow-discrete,
+		display 200ms allow-discrete;
+}
+
+.sgs-adaptive-nav__drawer[open]::backdrop {
+	opacity: 1;
+}
+
+@starting-style {
+	.sgs-adaptive-nav__drawer[open]::backdrop {
+		opacity: 0;
+	}
+}
+
+/* ─── Drawer head: logo + close button ──────────────────────────────────── */
+.sgs-adaptive-nav__drawer-head {
+	align-items: center;
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	margin-bottom: var(--wp--preset--spacing--30, 1rem);
+	padding-bottom: var(--wp--preset--spacing--20, 0.5rem);
+}
+
+.sgs-adaptive-nav__drawer-logo {
+	display: block;
+	flex-shrink: 0;
+	max-width: 120px;
+	overflow: hidden;
+}
+
+.sgs-adaptive-nav__drawer-logo .custom-logo-link {
+	display: block;
+}
+
+.sgs-adaptive-nav__drawer-logo .custom-logo,
+.sgs-adaptive-nav__drawer-logo img {
+	display: block;
+	height: auto;
+	max-width: 120px;
+	width: 100%;
+}
+
+.sgs-adaptive-nav__drawer-logo--text {
+	color: inherit;
+	font-size: var(--wp--preset--font-size--large, 1.25rem);
+	font-weight: 700;
+	overflow: hidden;
+	text-decoration: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sgs-adaptive-nav__drawer-close {
+	align-items: center;
+	background: rgba(255, 255, 255, 0.15);
+	border: none;
+	border-radius: 50%;
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	flex-shrink: 0;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	transition: background 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__drawer-close:hover,
+.sgs-adaptive-nav__drawer-close:focus-visible {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.sgs-adaptive-nav__drawer-close svg {
+	height: 20px;
+	width: 20px;
+}
+
+/* ─── Drawer menu (accordion) ───────────────────────────────────────────── */
+.sgs-adaptive-nav__drawer-menu {
+	flex: 1;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* :where() — this is a block-private drawer element, NOT governed by the
+ * desktop bar's linkFontWeight/linkFontSize helper attrs (E11); the 0-specificity
+ * wrapper documents that intent and keeps a future attr-driven override winning
+ * by cascade instead of a specificity fight. */
+:where(.sgs-adaptive-nav__drawer-link) {
+	align-items: center;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	color: inherit;
+	display: flex;
+	font-size: 1.125rem;
+	font-weight: 600;
+	min-height: 44px;
+	padding: 14px 0;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.sgs-adaptive-nav__drawer-link:hover,
+.sgs-adaptive-nav__drawer-link:focus-visible,
+.sgs-adaptive-nav__drawer-link[aria-current="page"] {
+	color: var(--wp--preset--color--accent, currentColor);
+}
+
+.sgs-adaptive-nav__drawer-item-row {
+	align-items: center;
+	display: flex;
+}
+
+.sgs-adaptive-nav__drawer-item-row .sgs-adaptive-nav__drawer-link {
+	flex: 1;
+}
+
+.sgs-adaptive-nav__drawer-toggle {
+	align-items: center;
+	background: none;
+	border: none;
+	border-radius: 8px;
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	flex-shrink: 0;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0;
+	transition: background 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__drawer-toggle:hover,
+.sgs-adaptive-nav__drawer-toggle:focus-visible {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.sgs-adaptive-nav__drawer-chevron {
+	display: flex;
+	transition: transform 250ms ease;
+}
+
+.sgs-adaptive-nav__drawer-chevron svg {
+	height: 20px;
+	width: 20px;
+}
+
+.sgs-adaptive-nav__drawer-toggle[aria-expanded="true"] .sgs-adaptive-nav__drawer-chevron {
+	transform: rotate(180deg);
+}
+
+.sgs-adaptive-nav__drawer-submenu {
+	list-style: none;
+	margin: 0;
+	overflow: hidden;
+	padding: 0 0 0 var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-adaptive-nav__drawer-submenu[hidden] {
+	display: none;
+}
+
+.sgs-adaptive-nav__drawer-subitem {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sgs-adaptive-nav__drawer-sublink {
+	align-items: center;
+	color: rgba(255, 255, 255, 0.92);
+	display: flex;
+	font-size: 1rem;
+	min-height: 44px;
+	padding: 10px 0;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.sgs-adaptive-nav__drawer-sublink:hover,
+.sgs-adaptive-nav__drawer-sublink:focus-visible {
+	color: var(--wp--preset--color--accent, currentColor);
+}
+
+/* ─── Drawer content zone (routed non-mega-menu InnerBlocks) ───────────── */
+.sgs-adaptive-nav__drawer-content {
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+	margin-top: var(--wp--preset--spacing--30, 1rem);
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* ─── Drawer socials ─────────────────────────────────────────────────────
+ * Third-party brand colours — INTENTIONAL, DO NOT TOKENISE (each platform's
+ * brand guidelines mandate them). Mirrors sgs/mobile-nav's coloured variant. */
+.sgs-adaptive-nav__drawer-socials {
+	display: flex;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+	justify-content: center;
+	list-style: none;
+	margin-bottom: 0;
+	margin-top: auto;
+	padding-left: 0;
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+}
+
+.sgs-adaptive-nav__drawer-social-link {
+	align-items: center;
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 50%;
+	color: var(--wp--preset--color--surface, #fff);
+	display: flex;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	text-decoration: none;
+	transition:
+		filter 200ms ease,
+		transform 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__drawer-social-link:hover,
+.sgs-adaptive-nav__drawer-social-link:focus-visible {
+	filter: brightness(1.15);
+	transform: scale(1.1);
+}
+
+.sgs-adaptive-nav__drawer-social-link svg {
+	height: 20px;
+	width: 20px;
+}
+
+.sgs-adaptive-nav__drawer-social-link--linkedin {
+	background: #0077b5;
+}
+
+.sgs-adaptive-nav__drawer-social-link--facebook {
+	background: #1877f2;
+}
+
+.sgs-adaptive-nav__drawer-social-link--instagram {
+	background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.sgs-adaptive-nav__drawer-social-link--twitter {
+	background: #1da1f2;
+}
+
+.sgs-adaptive-nav__drawer-social-link--youtube {
+	background: #ff0000;
+}
+
+.sgs-adaptive-nav__drawer-social-link--tiktok {
+	background: #000;
+}
+
+.sgs-adaptive-nav__drawer-social-link--whatsapp {
+	background: #25d366;
+}
+
+.sgs-adaptive-nav__drawer :focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #fff);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-adaptive-nav__drawer,
+	.sgs-adaptive-nav__drawer.is-closing,
+	.sgs-adaptive-nav__drawer::backdrop,
+	.sgs-adaptive-nav__drawer-chevron {
+		transition-duration: 0.01ms !important;
+	}
+}
