@@ -391,14 +391,12 @@ if ( function_exists( 'wp_get_connector' ) ) {
 	add_action( 'wp_connectors_init', array( Sgs_Ai_Connector::class, 'on_connectors_init' ) );
 }
 
-// SGS Customiser sections — Phase 5b (Decision 21) — Header / Footer / Site Info live preview.
-// class-sgs-customiser-info-control.php extends WP_Customize_Control which is
-// only defined in admin / customise context — load it lazily inside the
-// customize_register hook (priority 1) so it never fatals on the frontend.
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-customiser.php';
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-renderer.php';
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-customiser.php';
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-renderer.php';
+// SGS Site Info Customiser — Phase 5b (Decision 21) — live preview of the shared Site Info store.
+// The Header/Footer Customiser + Renderer classes were RETIRED 2026-07-14 (D330 Task 2b):
+// header/footer editing is the Site Editor (block controls + FR-S9-9 behaviour toggles), not the
+// Customiser (Bean D329 "one home"). class-sgs-customiser-info-control.php extends
+// WP_Customize_Control (admin/customise-only) — loaded lazily inside customize_register (priority 1)
+// so it never fatals on the frontend; Sgs_Site_Info_Customiser still depends on it.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-customiser.php';
 add_action(
 	'customize_register',
@@ -407,10 +405,6 @@ add_action(
 	},
 	1
 );
-Sgs_Header_Customiser::register();
-Sgs_Header_Renderer::register();
-Sgs_Footer_Customiser::register();
-Sgs_Footer_Renderer::register();
 Sgs_Site_Info_Customiser::register();
 
 // Phase 5b Decision 27 — wire View Transitions into Customiser navigation.
