@@ -41,6 +41,11 @@ if ( ! function_exists( 'SGS\Theme\sgs_generate_palette' ) ) {
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-blocks.php';
 require_once SGS_BLOCKS_PATH . 'includes/block-categories.php';
 
+// Content-derived ?ver for this plugin's assets. Block versions are frozen
+// (D293), so a block's CSS URL never changes while its content does — and the
+// CDN caches it for 7 days. Read the header of this file before touching it.
+require_once SGS_BLOCKS_PATH . 'includes/asset-cache-busting.php';
+
 // Form processing classes.
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
