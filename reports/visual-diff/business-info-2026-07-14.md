@@ -27,7 +27,12 @@ responsive `labelCollapse` setting so a single element adapts itself. (2) Header
 row fix — the "Call" button was in the middle row and forced a wrap (logo alone
 on row 1); moved it to the BOTTOM row so **logo + cart + burger sit together on
 the top row** and the Call sits on the bottom row (live: top offsets logo 16 /
-burger 27 / cart 27 same row; Call top 83 below).
+burger 27 / cart 27 same row; Call top 83 below). (3) The "contact button" is a
+`business-info` display style, not a theme hack — added a first-class **"Button"
+block style** (`block.json` styles + block-private `style.css`, theme tokens,
+`is-style-button`), client-selectable from the Styles panel, composes with
+`labelCollapse`. Removed the old `.sgs-header-call` theme-CSS. Live: renders
+identically (primary bg, 44px, `tel:`), `.sgs-header-call` gone, 0 console errors.
 
 This block is the core primitive of the FR-S9-8 Indus slim-bar reference pattern
 authored in `parts/header.html` + `framework-header-default.php`:

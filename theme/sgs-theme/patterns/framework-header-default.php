@@ -38,7 +38,7 @@
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center"} -->
-<!-- wp:sgs/business-info {"displayType":"phone","className":"sgs-header-call","sgsHideOnDesktop":true} /-->
+<!-- wp:sgs/business-info {"displayType":"phone","className":"is-style-button","sgsHideOnDesktop":true} /-->
 <!-- /wp:sgs/site-header-row -->
 <!-- /wp:sgs/site-header -->
 

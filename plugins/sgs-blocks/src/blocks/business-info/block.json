@@ -196,6 +196,10 @@
 	"selectors": {
 		"root": ".wp-block-sgs-business-info"
 	},
+	"styles": [
+		{ "name": "text", "label": "Text", "isDefault": true },
+		{ "name": "button", "label": "Button" }
+	],
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css"

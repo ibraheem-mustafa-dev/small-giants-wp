@@ -251,36 +251,3 @@ body.admin-bar html {
 	outline-offset: 2px;
 	border-radius: 4px;
 }
-
-/* ── FR-S9-8: header "Call" button (Indus slim-bar reference pattern) ──────────
-   A sgs/business-info phone element (reads Site Info → working tel: link, R-31-1
-   clean) rendered as a prominent button at ≤1024 via the .sgs-header-call class.
-   Uses theme tokens only — no hardcoded client values. Shown only at ≤1024 via
-   the sgsHideOnDesktop visibility flag; the desktop utility strip carries the
-   icon-only contact instead. */
-.sgs-header-call .sgs-business-info {
-	margin: 0;
-}
-.sgs-header-call .sgs-business-info__link {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.4em;
-	min-height: 44px;
-	padding: 8px 18px;
-	background: var(--wp--preset--color--primary);
-	border-radius: var(--wp--custom--border-radius--medium, 6px);
-	color: var(--wp--preset--color--surface, #fff);
-	font-weight: 600;
-	line-height: 1.2;
-	text-decoration: none;
-	white-space: nowrap;
-}
-.sgs-header-call .sgs-business-info__link:hover,
-.sgs-header-call .sgs-business-info__link:focus-visible {
-	background: var(--wp--preset--color--primary-dark, var(--wp--preset--color--primary));
-	color: var(--wp--preset--color--surface, #fff);
-}
-.sgs-header-call .sgs-business-info__icon,
-.sgs-header-call .sgs-business-info__icon svg {
-	color: var(--wp--preset--color--surface, #fff);
-}
