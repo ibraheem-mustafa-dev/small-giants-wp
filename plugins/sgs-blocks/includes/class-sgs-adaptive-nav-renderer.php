@@ -15,8 +15,10 @@
  * no-JS fallback) and on click (view.js sets .is-open + aria-expanded, for touch
  * and keyboard).
  *
- * Drill-down at the mobile tier is the drawer's job (sgs/mobile-nav), which
- * resolves the SAME menu — this renderer only produces the desktop bar.
+ * At the mobile tier, drill-down happens inside the off-canvas <dialog>
+ * drawer that this SAME renderer also produces (render_drawer_menu() +
+ * render_drawer_socials() below) — one resolved menu source feeds both the
+ * desktop bar and the drawer accordion, so they never fall out of sync.
  *
  * @package SGS\Blocks
  */

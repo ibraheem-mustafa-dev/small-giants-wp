@@ -207,15 +207,15 @@ This behaviour is handled by `assets/js/sticky-header.js` and applies automatica
 
 ## Mobile navigation
 
-On screens below 1024px wide, the desktop navigation is hidden and replaced with a hamburger menu button. Tapping the button opens a full-screen drawer with the same navigation links.
+Below the block's configurable collapse breakpoint (default 768px), the desktop navigation bar is hidden and replaced with a hamburger toggle. Tapping it opens a native `<dialog>` off-canvas drawer with the same navigation links.
 
 Behaviour:
-- The drawer slides in from the right.
-- Tapping outside the drawer or pressing Escape closes it.
-- Focus is trapped inside the drawer when it is open (keyboard accessibility).
+- The drawer slides in from the configured side (left or right).
+- Tapping the backdrop or pressing Escape closes it.
+- Focus is trapped inside the drawer when it is open (native `<dialog>` `showModal()` — keyboard accessibility).
 - The page behind is locked so it does not scroll while the drawer is open.
 
-This is handled by `assets/js/mobile-nav-drawer.js` and `assets/css/mobile-nav-drawer.css`. No configuration is needed.
+This is entirely owned by the `sgs/adaptive-nav` block (its own toggle + `<dialog>` drawer, absorbed from the retired `sgs/mobile-nav` + `sgs/mobile-nav-toggle` blocks). No separate toggle block or theme asset is needed — configure it via the block's Inspector "Collapse to drawer" and "Drawer" panels.
 
 ---
 

@@ -39,22 +39,6 @@
 			"containerKind": "layout"
 		}
 	},
-	"allowedBlocks": [
-		"sgs/responsive-logo",
-		"core/site-logo",
-		"core/site-title",
-		"sgs/adaptive-nav",
-		"core/group",
-		"core/paragraph",
-		"core/html",
-		"core/social-links",
-		"core/search",
-		"sgs/mobile-nav-toggle",
-		"sgs/button",
-		"sgs/product-search",
-		"sgs/business-info",
-		"sgs/cart"
-	],
 	"attributes": {
 		"rowSlot": {
 			"type": "string",

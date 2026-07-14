@@ -3,12 +3,12 @@
     "module": "ledger.declare_input",
     "module_version": "0.1.0",
     "tinycss2_version": "1.5.1",
-    "generated_at": "2026-07-04T21:36:27.078326+00:00"
+    "generated_at": "2026-07-14T18:57:25.009833+00:00"
   },
-  "fixture_count": 37,
-  "grand_total_rows": 515,
+  "fixture_count": 36,
+  "grand_total_rows": 500,
   "by_kind_totals": {
-    "box-css": 515
+    "box-css": 500
   },
   "fixtures": {
     "mamas-trust-bar-real": {
@@ -157,13 +157,6 @@
         "box-css": 11
       },
       "plain_summary": "sgs-media: 11 total declarations (11 non-shadowed, non-structural); tiers: Base=9, Mobile=2. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
-    },
-    "sgs-mobile-nav": {
-      "row_count": 15,
-      "by_kind": {
-        "box-css": 15
-      },
-      "plain_summary": "sgs-mobile-nav: 15 total declarations (15 non-shadowed, non-structural); tiers: Base=15. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
     },
     "sgs-modal": {
       "row_count": 22,

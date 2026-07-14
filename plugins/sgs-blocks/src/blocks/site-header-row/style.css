@@ -29,8 +29,9 @@
 	flex-shrink: 0;
 }
 
-/* Interactive controls keep a 44px minimum touch target (WCAG 2.5.8). */
-.sgs-site-header-row .wp-block-sgs-mobile-nav-toggle button,
+/* Interactive controls keep a 44px minimum touch target (WCAG 2.5.8).
+   sgs/adaptive-nav's own toggle self-enforces 44px in its own style.css
+   (Task 1 / D336) — only the mini-cart button needs it here. */
 .sgs-site-header-row .wc-block-mini-cart__button {
 	min-width: 44px;
 	min-height: 44px;

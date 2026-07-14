@@ -39,20 +39,6 @@
 			"containerKind": "layout"
 		}
 	},
-	"allowedBlocks": [
-		"core/group",
-		"sgs/responsive-logo",
-		"core/site-logo",
-		"core/site-title",
-		"core/heading",
-		"core/paragraph",
-		"core/list",
-		"core/social-links",
-		"core/html",
-		"sgs/business-info",
-		"sgs/button",
-		"core/buttons"
-	],
 	"attributes": {
 		"rowSlot": {
 			"type": "string",

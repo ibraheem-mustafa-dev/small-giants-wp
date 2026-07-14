@@ -817,8 +817,9 @@ footer .wp-block-list a:hover,
 }
 
 /*
- * Show/hide rules for the WP core nav toggle now live in the sgs/mobile-nav
- * block's style.css (style-index.css). The old mobile-nav-drawer.css is deleted.
+ * Show/hide rules for the mobile nav toggle + off-canvas drawer live entirely
+ * in the sgs/adaptive-nav block's own style.css (style-index.css) — the block
+ * owns its collapse breakpoint (Task 1 / D336). No theme-level rules needed.
  */
 
 /* ── Section gap fix: remove block-gap between full-width sections ────────

@@ -29,9 +29,10 @@ const CONTRAST_SAFE_OPTIONS = [
 const ALLOWED_BLOCKS = [ 'sgs/site-header-row' ];
 
 // Three fixed rows. The middle row is pre-filled to match the current site
-// header (logo + navigation + mobile-nav toggle + cart) so content parity holds
-// on first insert. Top and bottom rows start empty and emit zero output until
-// an operator adds elements (FR-S9-2 empty-row-zero-output).
+// header (logo + navigation + cart) so content parity holds on first insert.
+// The mobile burger + drawer are owned entirely by sgs/adaptive-nav (Task 1 /
+// D336) — no separate toggle block. Top and bottom rows start empty and emit
+// zero output until an operator adds elements (FR-S9-2 empty-row-zero-output).
 const TEMPLATE = [
 	[ 'sgs/site-header-row', { rowSlot: 'top' } ],
 	[
@@ -53,17 +54,27 @@ const TEMPLATE = [
 					gap: { desktop: '28px' },
 				},
 			],
-			// Icons cluster (right): cart (always) + burger (only <768). Grouped so the
-			// row has exactly 3 flex children → logo-left / nav-centre / icons-right.
+			// Icons cluster (right): cart. Grouped so the row has exactly 3 flex
+			// children → logo-left / nav-centre / icons-right. (The burger is no
+			// longer listed here: sgs/adaptive-nav renders its own toggle + drawer
+			// since D336/D337, and sgs/mobile-nav-toggle is deleted — a TEMPLATE
+			// entry for a deleted block would make every FRESH header insert render
+			// an invalid-content placeholder.)
+			//
+			// sgs/container, NOT core/group: the DB (`blocks.replaces`) records
+			// sgs/container as the replacement for core/group|core/columns|core/column,
+			// and a replaced core block must never be used. Flat `layout`/`flexWrap`
+			// strings are sgs/container's own attrs — NOT core/group's nested
+			// `layout:{type,flexWrap}` object, which sgs/container does not read.
 			[
-				'core/group',
+				'sgs/container',
 				{
 					className: 'sgs-header-icons',
-					layout: { type: 'flex', flexWrap: 'nowrap' },
+					layout: 'flex',
+					flexWrap: 'nowrap',
 				},
 				[
 					[ 'sgs/cart', {} ],
-					[ 'sgs/mobile-nav-toggle', {} ],
 				],
 			],
 		],

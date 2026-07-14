@@ -148,7 +148,7 @@ rm sgs-deploy.tar
 | Animation (15 scroll animation types) | Deployed |
 | Responsive Visibility (device show/hide) | Deployed |
 | Hover State Controls (bg/text/border colour) | Deployed (4 blocks: Info Box, Card Grid, CTA Section, Hero) |
-| Off-Canvas Mobile Nav (M17) | Deployed (full-fix 2026-06-01 D143, v3.0.3: full-screen overlay + core/page-list menu expansion + header-only inserter scope; menu now reads the WP default page-list nav, not just manual navigation-link items) |
+| Off-Canvas Mobile Nav (M17) | **RETIRED (Task 1 / D336, 2026-07-14)** — `sgs/mobile-nav` + `sgs/mobile-nav-toggle` deleted; the off-canvas drawer is now owned entirely by `sgs/adaptive-nav` (own burger toggle + native `<dialog>` drawer). |
 
 ### Backend Integrations
 

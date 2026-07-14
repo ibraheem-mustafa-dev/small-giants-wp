@@ -200,9 +200,6 @@ Trustpilot\Trustpilot_Settings::register();
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();
 
-// Mobile nav block patterns (6 presets).
-require_once SGS_BLOCKS_PATH . 'includes/mobile-nav-patterns.php';
-
 // Google Fonts catalogue — registers ~1,900 fonts in the editor's Manage fonts modal.
 // Zero frontend cost: fonts are only enqueued when an operator explicitly installs them.
 require_once SGS_BLOCKS_PATH . 'includes/class-font-collection.php';

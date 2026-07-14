@@ -46,10 +46,6 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/variations/class-sgs-block-variations.php';
 		Sgs_Block_Variations::load();
 
-		// Mobile-nav inserter scope — removes sgs/mobile-nav + sgs/mobile-nav-toggle
-		// from the post/page inserter; leaves them available in the Site Editor.
-		require_once SGS_BLOCKS_PATH . 'includes/mobile-nav-inserter-scope.php';
-
 		// Product Block Bindings source (sgs-product/field) — backs the
 		// sgs/product-card Bound mode with WooCommerce or sgs_product CPT data.
 		require_once SGS_BLOCKS_PATH . 'includes/class-product-bindings.php';
