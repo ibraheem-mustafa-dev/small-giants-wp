@@ -1,11 +1,12 @@
 ---
 doc_type: reference
 spec_id: 29
-spec_version: "1.0"
+spec_version: "1.1"
 project: small-giants-wp
 title: Container-Equivalent Blocks — How the Built-In Container Works Across Composites
 status: current
 created: 2026-06-07
+last_verified: 2026-07-14
 authors: Claude Code / Bean
 cross_refs:
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md §FR-22-21
@@ -34,7 +35,7 @@ Every SGS composite or layout block that has a built-in outer wrapper **mirrors 
 **What "mirror" does NOT mean:**
 - It is NOT a div-by-div copy of the draft DOM. The wrapper is driven entirely by block attributes — the cloning converter reads the draft's CSS and maps it onto these attributes.
 - It is NOT a per-block reimplementation. Adding a new wrapper capability to `sgs/container` and running `/sgs-update` propagates it to all roster blocks automatically via Stage 11.
-- It does NOT fix clone fidelity by itself. The block-side mirror is COMPLETE (D167 2026-06-04). **Composite routing is LIVE (not pending):** the frozen engine already routes `.sgs-hero`→`sgs/hero` / `.sgs-trust-bar`→`sgs/trust-bar` with the variant (qc-council-verified 2026-06-26), and the new engine (D252/D254, `SGS_NEW_ENGINE=1`) recognises + emits those composites and defaults slug-None sections to `sgs/container` + recurse. Remaining fidelity work is per-section CSS/layer, not "does the converter route to composites".
+- It does NOT fix clone fidelity by itself. The block-side mirror is COMPLETE (D167 2026-06-04). **Composite routing is LIVE (not pending):** the modular `converter/` engine (the only converter — the frozen `convert.py`/`converter_v2` tree + `SGS_NEW_ENGINE` flag were DELETED at D276, 2026-07-05) routes `.sgs-hero`→`sgs/hero` / `.sgs-trust-bar`→`sgs/trust-bar` with the variant, and recognises + emits registered composites, defaulting slug-None sections to `sgs/container` + recurse. Remaining fidelity work is per-section CSS/layer, not "does the converter route to composites".
 
 **Auto-propagation:** When `sgs/container` gains a new attr, `/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py --apply`) diffs the KIND-scoped attr set and writes any missing attrs into roster block.json files. Currently report-only pending Bean sign-off; `--apply` writer is wired.
 
@@ -102,19 +103,21 @@ python plugins/sgs-blocks/scripts/sgs-db.py query \
   "SELECT block_slug, container_kind FROM block_composition WHERE container_kind IS NOT NULL ORDER BY container_kind, block_slug"
 ```
 
-Or via `/sgs-db`. Do NOT hardcode the count here — query the DB. The tables below reflect the DB state as at 2026-06-13 (D222). Two blocks carry `container_kind` but are **excluded from mirroring** (`containerMirror: false`) — `sgs/modal` (section) and `sgs/mobile-nav` (content); see §3.
+Or via `/sgs-db`. Do NOT hardcode the count here — query the DB. The tables below reflect the DB state as at 2026-07-14, updated to include the `sgs/site-header` / `sgs/site-footer` / `sgs/site-header-row` / `sgs/site-footer-row` / `sgs/adaptive-nav` roster (BUILT + LIVE, D323-D333). Two blocks carry `container_kind` but are **excluded from mirroring** (`containerMirror: false`) — `sgs/modal` (section) and `sgs/mobile-nav` (content); see §3.
 
 ### KIND: `section`
 
 Full-bleed outer wrappers — background + spacing + width + layout.
 
-> **NOTE (corrected 2026-07-02): composite routing IS live.** The frozen engine routes `.sgs-hero`→`sgs/hero` and `.sgs-trust-bar`→`sgs/trust-bar` with the variant (qc-council-verified 2026-06-26); the new engine (`SGS_NEW_ENGINE=1`, D252/D254) recognises + emits registered composites and defaults slug-None class-sections to `sgs/container` + recurse. Sections that emit `sgs/container` do so because they have NO registered composite (the correct slug-None target), not because routing is unbuilt. Remaining fidelity gaps are per-section CSS/layer (e.g. the min-width cross-device tier drop), not composite recognition.
+> **NOTE (corrected 2026-07-14): composite routing IS live.** The modular `converter/` engine — the ONLY converter as of D276 (2026-07-05); the frozen `convert.py`/`converter_v2` tree and the `SGS_NEW_ENGINE` flag were deleted, no fallback — routes `.sgs-hero`→`sgs/hero` and `.sgs-trust-bar`→`sgs/trust-bar` with the variant, recognises + emits registered composites, and defaults slug-None class-sections to `sgs/container` + recurse. Sections that emit `sgs/container` do so because they have NO registered composite (the correct slug-None target), not because routing is unbuilt. Remaining fidelity gaps are per-section CSS/layer (e.g. the min-width cross-device tier drop), not composite recognition.
 
 | Block | Purpose |
 |---|---|
 | `sgs/hero` | Page hero section — headline, sub-headline, CTAs, background image/video/SVG. Appears at the top of a page. |
 | `sgs/cta-section` | Call-to-action section — headline, supporting text, button group. Full-width coloured or image-backed strip. |
 | `sgs/trust-bar` | Horizontal trust/badge row — curated icon-badge items or certification logos. Appears as a full-width section strip. |
+| `sgs/site-header` | Site header shell — 3 optional named rows (top strip / primary row / message row), typed element palette. BUILT + LIVE (D323-D333, §S9 11/11). |
+| `sgs/site-footer` | Site footer shell — named rows (CTA/newsletter, columns, trademark bar), typed element palette. BUILT + LIVE (D323-D333, §S9 11/11). |
 | `sgs/modal` | *(excluded — `containerMirror: false`)* Lightbox/modal overlay — outer shell is a `<dialog>` element; container mapping does not apply. |
 
 ### KIND: `layout`
@@ -137,6 +140,9 @@ Inner layout wrappers — grid/flex arrangement + width + gap; no background lay
 | `sgs/tabs` | Tabbed content panels — horizontal tab bar + `sgs/tab` children. |
 | `sgs/testimonial-slider` | Carousel of testimonial cards — scroll-snap + Interactivity API. |
 | `sgs/trustpilot-reviews` | Grid/carousel of Trustpilot review cards. |
+| `sgs/site-header-row` | One row of a site header — never-overflow cluster of header elements. Lives inside `sgs/site-header`. BUILT + LIVE (D323-D333, §S9 11/11). |
+| `sgs/site-footer-row` | One row of a site footer — cluster or column grid (up to 6 columns collapsing to 1). Lives inside `sgs/site-footer`. BUILT + LIVE (D323-D333, §S9 11/11). |
+| `sgs/adaptive-nav` | One menu source that renders a nav bar and collapses to the off-canvas drawer at a configurable breakpoint; mega-panel submenus. Lives inside `sgs/site-header-row`. BUILT + LIVE (D323-D333, §S9 11/11). |
 
 ### KIND: `content`
 

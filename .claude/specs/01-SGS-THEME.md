@@ -73,11 +73,11 @@ sgs-theme/
 │   └── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30, D210)
 │
 ├── parts/
-│   ├── header.html                 # Consolidated site header — search-free default. WILL host sgs/site-header (+ sgs/adaptive-nav) once P1/P2 land — design-approved 2026-07-13, build-pending (see §Header/Footer/Nav Block System below; Spec 17 owns the block FRs)
+│   ├── header.html                 # Consolidated site header — search-free default. Already hosts sgs/site-header (+ sgs/adaptive-nav), BUILT + LIVE (D323-D333, §S9 11/11; see §Header/Footer/Nav Block System below; Spec 17 owns the block FRs)
 │   ├── header-shrink.html          # Header variant: shrink-on-scroll
 │   ├── header-sticky.html          # Header variant: always sticky
 │   ├── header-transparent.html     # Header variant: transparent with scroll reveal
-│   ├── footer.html                 # Site footer (columns, copyright, socials). WILL host sgs/site-footer once P3 lands — design-approved 2026-07-13, build-pending
+│   ├── footer.html                 # Site footer (columns, copyright, socials). Already hosts sgs/site-footer, BUILT + LIVE (D323-D333, §S9 11/11)
 │   ├── footer-minimal.html         # Minimal footer (for landing pages)
 │   ├── sidebar.html                # Optional sidebar template part
 │   ├── mega-menu-about.html        # Mega-menu panel: About
@@ -604,7 +604,7 @@ Behaviour:
 2. the live `wp_global_styles` post via REST: `POST /wp-json/wp/v2/global-styles/<id>` (app-password Basic auth).
 Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles cache.
 
-**Known gap:** `push-theme-snapshot.py` writes the disk file ONLY — it does NOT update the `wp_global_styles` post (parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`). Until fixed, snapshot pushes silently fail to change live styles.
+**Known gap (PARTIAL — push-write half shipped D161):** `push-theme-snapshot.py` now also POSTs to the live `wp_global_styles` REST endpoint, so a push updates both the disk file and the live post. What remains open (tracked at parking `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES`, status PARTIAL): the pull round-trip (reading the live post back into the snapshot) and a pre-deploy guard to confirm the push landed. Snapshot pushes no longer silently fail to change live styles.
 
 **Orphan:** `theme/sgs-theme/styles/mamas-munches.css` is NOT enqueued (retired Spec-16 style-variation system) — never put overrides there. Memory: `canary-live-styles-come-from-wp-global-styles-post`.
 

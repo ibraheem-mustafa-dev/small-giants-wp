@@ -619,9 +619,13 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ verified against property_suffixes, so any draft's CSS is covered without  │
 │ a per-property allowlist.                                                 │
 │                                                                             │
-│ MEASURED (2026-07-04, Mama's Munches homepage): content match 77%; CSS     │
-│ match 47% (375px) / 49% (768px) / 54% (1440px). Cite as a dated baseline;  │
-│ re-run for today's number.                                                │
+│ MEASURED (2026-07-04, Mama's Munches homepage, PRE-D315 instrument):       │
+│ content match 77%; CSS match 47% (375px) / 49% (768px) / 54% (1440px).     │
+│ SUPERSEDED — D315 (2026-07-12) rebuilt the parity tool (Spec 20 v1.1.0)    │
+│ with a per-pair rendered-invisibility predicate; its numbers are not       │
+│ comparable to the pre-D315 figures above (e.g. page-8: 88% raw CSS / 79%   │
+│ tag / 100% content). Treat both sets as dated baselines from DIFFERENT     │
+│ instruments; re-run today's number against the current tool, not this row.│
 │                                                                             │
 │ FILES (R):   the mockup HTML (--draft), the live deployed URL (--clone)    │
 │ FILES (W):   pipeline-state/<run_id>/computed-parity.json                 │

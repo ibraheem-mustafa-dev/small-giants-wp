@@ -126,7 +126,7 @@ Key decisions:
 
 ## 6.1 Geometry token families / box-object contract (added 2026-07-09, `no-inline-styling-design-gate` + `box-object-interface-contract`; ROLLOUT ONGOING)
 
-**Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **~52 of 59 styling-support blocks remain** (phased waves — `.claude/next-session-prompt.md`).
+**Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **Roster status is DB/grep-authoritative — many more blocks are migrated than this line's original "~52 of 59" estimate (a 2026-07-14 grep found ~63/80 block folders already declaring `__experimentalSkipSerialization`); re-scan before scoping remaining work** (phased waves — `.claude/next-session-prompt.md`). See parking `P-NOINLINE-ROSTER-RECOUNT`.
 
 Section 6 covers colour/typography preset tokens (`{component}Presets`). This section covers the SIBLING geometry mechanism — spacing/border shape — that the same no-inline drive proved out. It reconciles two things Bean flagged mid-design: (1) the base layer of every block declaring a WP styling `support` inlines by default via `get_block_wrapper_attributes()` — the fix is to **keep the support** and change WHERE it serialises, never to drop it; (2) 8 four-side + 2 four-corner attr families were flat per-side/per-corner attrs, which is neither the standard WP editor shape nor mergeable/re-skinnable cleanly.
 
@@ -178,7 +178,7 @@ Consistent with FR-32-4: a per-instance override on a box-object property is a C
 
 ## 6.2 CSS output consolidation (added 2026-07-12; FR-32-11; `P-STYLE-TAG-CONSOLIDATION`)
 
-**Design status: DESIGN-APPROVED, build-pending** (Bean approved 2026-07-12; `/qc-council`-gated before code). Encodes the collector + file-default output. Full design: `plans/2026-07-12-style-tag-consolidation-design.md`.
+**Design status: BUILT + LANDED 2026-07-12** (Bean approved 2026-07-12; `/qc-council`-gated before code; shipped same day — see §(a)/(b)/(d) below for landed evidence). Encodes the collector + file-default output. Full design: `plans/2026-07-12-style-tag-consolidation-design.md` (archived — see `.claude/plans/archive/`).
 
 **Problem.** §6.1(b)'s scoped `<style>` is emitted per block instance into the page body — live page 8 (2026-07-12): ~100 body `<style>` tags, ~33KB. Compliant (§6.1(b) sanctions the scoped `<style>`) but bloated + non-cacheable. The industry-settled fix (WP core / Kadence / Spectra / GenerateBlocks): register each block's CSS into a central collector; flush once.
 
@@ -233,7 +233,7 @@ WP var derivation: `settings.custom.buttonPresets.primary.hover-background` → 
 
 ## 10. Migration / deprecations
 
-- **Supersedes the D283 preset-as-seed inline-attr styling model** (Spec 11 2026-07-06 update). `src/blocks/button/presets.js` + the "Apply preset" button + render.php's inline colour painting are removed for styling; `inheritStyle` remains only as the variant selector that drives the BEM class. Pre-production (D270 no-deprecations) — existing dev/canary buttons are re-cloned, not migrated.
+- **Supersedes the D283 preset-as-seed inline-attr styling model** (Spec 11 2026-07-06 update). The button's OWN "Apply preset" button + render.php's inline colour painting are removed for styling; `inheritStyle` remains only as the variant selector that drives the BEM class. **`src/blocks/button/presets.js` itself is RETAINED** (not deleted) — it is reused by `sgs/product-card`'s CTA "Apply preset" control; only the button block's own consumption of it for styling was removed. Do not treat this file as dead per spec — check its live import graph before touching it. Pre-production (D270 no-deprecations) — existing dev/canary buttons are re-cloned, not migrated.
 - Spec 11 §3/§4 styling model is now historical; this spec is the operative styling contract. Spec 11 remains the button's attribute-surface / feature reference.
 
 ## 11. Open Questions

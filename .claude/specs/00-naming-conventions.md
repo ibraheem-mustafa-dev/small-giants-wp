@@ -125,6 +125,19 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (block_com
 
 **Routing stays name-free.** The lift matches by the attr's `derived_selector` (a documented per-attr DB mapping, e.g. resting `.sgs-<block>__pill` / selected `.sgs-<block>__pill--active`), never by hardcoding a class-name literal — the `--active`/`:hover` grammar is the STATE signal, exactly as `--content-width` (§3.3) is the width-layer signal.
 
+### 3.5 Hover-state block attributes → `{base}Hover` SUFFIX (D309, 2026-07-11)
+
+**Rule:** A block attribute representing a `:hover` companion to a base attr uses the **`{base}Hover` suffix** — e.g. `backgroundColourHover`, `boxShadowHover`, `scaleHover` — appended to the end of the base attr name. **Never a `hover`-PREFIX** (`hoverBackgroundColour`, `hoverBoxShadow`, `hoverScale` are the anti-pattern).
+
+**Why:** the suffix form lets the converter recognise a hover companion by string-matching the base attr name against a `{attr}Hover` lookup with zero per-block/per-convention branching — a state = modifier-append on the base attr (same grammar family as `--active` in §3.4), not a separately-named property. This was a 17-block prefix→suffix rename (D309) that unlocked the zero-per-convention converter hover-routing.
+
+**Examples:**
+- `backgroundColour` (base) → `backgroundColourHover` (hover companion)
+- `boxShadow` (base) → `boxShadowHover` (hover companion)
+- `scale` (base) → `scaleHover` (hover companion)
+
+**Anti-pattern:** `hoverBackgroundColour`, `hover_background_colour`, `bgColourOnHover` — prefix form, wrong separator, non-standard wording. All three were present pre-D309 and were renamed.
+
 ---
 
 ## 4. PHP function prefixes

@@ -26,11 +26,14 @@ is allowed (it is a value, not a declaration); a real property declaration
   `__experimentalBorder` / `typography` / `shadow`) to `__experimentalSkipSerialization:
   true` so WordPress's `get_block_wrapper_attributes()` stops auto-inlining it.
 - In render.php, read the value from `$attributes['style'][...]` (still populated by WP)
-  and emit it into the block's OWN scoped `#{uid}` `<style>` via the stable core API
-  `wp_style_engine_get_styles($style, ['selector' => "#{$uid}"])['css']` — exactly how WP
-  core outputs `layout` support. Responsive tiers → scoped `@media` rules on the same
-  `#{uid}` selector. Custom SGS attrs (colours-as-vars, box objects, shadows, width) also
-  emit scoped, never inline.
+  and emit it into the block's OWN scoped `<style>` via the stable core API
+  `wp_style_engine_get_styles($style, ['selector' => ".{$uid}.{$block_class}"])['css']` —
+  **CLASS-level specificity (`.{$uid}.{block-class}` = 0,2,0), NEVER `#{$uid}`** (SUPERSEDED
+  2026-07-10 by D303 — an ID-scoped rule can't be overridden by the equal-specificity
+  `sgsCustomCss` residual; see STOP-21). `$uid` MUST also be applied to the element as a
+  CLASS, not just an id/`extra_attrs.id`, or the selector matches nothing (silent render
+  no-op). Responsive tiers → scoped `@media` rules on the same class selector. Custom SGS
+  attrs (colours-as-vars, box objects, shadows, width) also emit scoped, never inline.
 - The wrapper element must end with NO `style="…property:…"`. (A `style="--x:y"` var-only
   is fine.)
 
@@ -133,8 +136,10 @@ is allowed (it is a value, not a declaration); a real property declaration
   pricing-table, product-card.
 
 ## F. REFERENCE IMPLS (copy these — proven LANDED)
-- `sgs/button` (9f281337) — block-private render, ID selector `#sgs-btn-{uid}`, all 6 A-tests
-  LANDED. THE pattern for block-private blocks.
+- `sgs/button` (9f281337; scope normalised to CLASS uid at D303 `83d133aa`) — block-private
+  render, **class selector `.{uid}.sgs-button`** (was ID `#sgs-btn-{uid}` pre-D303 — the ID
+  form is SUPERSEDED, do not copy it), all 6 A-tests LANDED. THE pattern for block-private
+  blocks.
 - `sgs/container` (D292) — shared-wrapper, class selector `.uid`, base + tier objects.
 
 ## G. VERIFY (the LANDED bar — orchestrator runs this)

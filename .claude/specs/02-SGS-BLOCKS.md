@@ -5,7 +5,7 @@ spec_version: "1.5"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-07-13
+last_verified: 2026-07-14
 authors: Bean + Claude
 session_date: 2026-02-01
 status_history:
@@ -15,11 +15,12 @@ status_history:
   - 2026-06-12: blocks-layer + TypographyControls standard + product-search/filter-search/collapsible-text sync
   - 2026-06-13: testimonial attr names corrected to match block.json; converter routing updated (D212 shipped); notice-banner save.js corrected to InnerBlocks.Content; stale WIP warning on testimonial-slider removed; 29-block hardcode replaced with DB query
   - 2026-07-13: header/footer/nav system design-gate APPROVED (Bean sign-off) — `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` added as DESIGN-APPROVED/build-pending specialised container composites; `sgs/mobile-nav` P0 unclickable-drawer bug SHIPPED + live-verified; `no-header-footer-block.py` rule evolved to permit these 3 slugs
+  - 2026-07-14: reconciliation pass — `sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav` are now BUILT + LIVE (D323-D333, §S9 11/11), pending final Bean sign-off; see `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` for current status
 ---
 
 # SGS Blocks — Custom Gutenberg Block Library
 
-> **2026-07-13 update — Header/Footer/Navigation SYSTEM design-gate APPROVED (Bean sign-off, all recommended defaults).** Source of truth: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`. Three NEW specialised container-composite blocks added to the roster as **DESIGN-APPROVED / build-pending**: `sgs/site-header`, `sgs/site-footer` (section-KIND, delegate to `SGS_Container_Wrapper` exactly like `sgs/card-grid`/`sgs/feature-grid` — 3 optional named rows + a typed element palette; live inside the `header`/`footer` template parts), `sgs/adaptive-nav` (layout-KIND — one menu source that collapses nav-bar→burger across 4 tiers incl. custom-px, mega-menu drill-down on mobile, off-canvas escape hatch). **`sgs/mobile-nav`** (the existing off-canvas drawer) is NOT new but its **P0 unclickable-drawer bug is FIXED and live-verified** (2026-07-13): `view.js` was setting `inert` on `.wp-site-blocks`, and the drawer was a DOM descendant of that element — so the drawer froze itself; fix re-parents the drawer to be a direct child of `<body>` before `showPopover()`. The drawer is also being hardened to the GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels). **Header/footer REMAIN WordPress template parts (Spec 17 owns this architecture)** — these 3 blocks are the specialised CONTAINER used *inside* the parts, not a monolithic header/footer block; `no-header-footer-block.py` evolves to allow `src/blocks/{site-header,site-footer,adaptive-nav}/` while still blocking bare `header`/`footer`/`nav` block slugs. Full FR set + the per-breakpoint override model + the never-overflow Cluster+clamp layout + global-defaults/Site-Info access model live in **Spec 17** (`17-HEADER-FOOTER-ARCHITECTURE.md`) — this spec does not duplicate those FRs, see the new "Header / Footer / Navigation System" section below for the block-roster summary + cross-references. Phasing (P0 drawer fix SHIPPED → P1 site-header → P2 adaptive-nav → P3 site-footer → P4 per-device polish → P5 cloning-pipeline Part 2) is tracked in the design-gate doc + `.claude/state.md`/`next-session-prompt.md` (do not cache phase-completion status here — it drifts).
+> **2026-07-13 update — Header/Footer/Navigation SYSTEM design-gate APPROVED (Bean sign-off, all recommended defaults).** Source of truth: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`. Three NEW specialised container-composite blocks added to the roster — **BUILT + LIVE** (D323-D333, §S9 11/11; `status='built'` in the DB, `container_kind` populated; pending final Bean sign-off): `sgs/site-header`, `sgs/site-footer` (section-KIND, delegate to `SGS_Container_Wrapper` exactly like `sgs/card-grid`/`sgs/feature-grid` — 3 optional named rows + a typed element palette; live inside the `header`/`footer` template parts), `sgs/adaptive-nav` (layout-KIND — one menu source that collapses nav-bar→burger across 4 tiers incl. custom-px, mega-menu drill-down on mobile, off-canvas escape hatch). **`sgs/mobile-nav`** (the existing off-canvas drawer) is NOT new but its **P0 unclickable-drawer bug is FIXED and live-verified** (2026-07-13): `view.js` was setting `inert` on `.wp-site-blocks`, and the drawer was a DOM descendant of that element — so the drawer froze itself; fix re-parents the drawer to be a direct child of `<body>` before `showPopover()`. The drawer is also being hardened to the GOV.UK-grade a11y contract (focus trap, ESC-close, backdrop-dismiss, body-scroll-lock, redundant state signalling, configurable SR labels). **Header/footer REMAIN WordPress template parts (Spec 17 owns this architecture)** — these 3 blocks are the specialised CONTAINER used *inside* the parts, not a monolithic header/footer block; `no-header-footer-block.py` evolves to allow `src/blocks/{site-header,site-footer,adaptive-nav}/` while still blocking bare `header`/`footer`/`nav` block slugs. Full FR set + the per-breakpoint override model + the never-overflow Cluster+clamp layout + global-defaults/Site-Info access model live in **Spec 17** (`17-HEADER-FOOTER-ARCHITECTURE.md`) — this spec does not duplicate those FRs, see the new "Header / Footer / Navigation System" section below for the block-roster summary + cross-references. Phasing (P0 drawer fix SHIPPED → P1 site-header → P2 adaptive-nav → P3 site-footer → P4 per-device polish → P5 cloning-pipeline Part 2) is tracked in the design-gate doc + `.claude/state.md`/`next-session-prompt.md` (do not cache phase-completion status here — it drifts).
 >
 > **2026-06-12 update (D213/D214 — Spec 30 P2 shop layer).** Three new SGS blocks shipped: `sgs/product-search` (FR-30-5 combobox search + hardened REST endpoint + `inline`/`icon` display modes + no-JS GET fallback, v1.1.0), `sgs/filter-search` (FR-30-6 type-to-find narrowing for ≥16 attribute terms, Baymard threshold, `woocommerce/product-filter-attribute` ancestor), `sgs/collapsible-text` (D213 — operator SEO copy, accessible CSS line-clamp read-more, always SSR'd, i18n toggle labels). Two pre-existing blocks now documented below: `sgs/buybox` (FR-30-7/D210 — PDP configurator wrapper composing `sgs/option-picker` pickers + cart proxy) and `sgs/content-collection` (FR-24-4/D210 — query-driven product grid with forwarded `showPickers`/`ctaBehaviour`/`showLadder`). **Blocks registered clean via `/sgs-update` (0 new = already registered from their feature commits).** `02-SGS-BLOCKS-REFERENCE.md` unchanged.
 >
@@ -82,9 +83,9 @@ sgs-blocks/
 │   │   ├── filter-search/        # ★ NEW FR-30-6/D214 — Type-to-find filter narrowing (≥16 terms threshold, woocommerce/product-filter-attribute ancestor)
 │   │   ├── collapsible-text/     # ★ NEW D213 — Operator SEO copy; CSS line-clamp read-more; always SSR'd; i18n toggle labels
 │   │   ├── mobile-nav/           # Off-canvas drawer (existing). P0 unclickable-drawer bug FIXED 2026-07-13 (drawer re-parented to <body> so background `inert` no longer freezes it); GOV.UK-grade a11y contract in progress. See specs/17-HEADER-FOOTER-ARCHITECTURE.md.
-│   │   ├── site-header/          # ★ DESIGN-APPROVED / build-pending (2026-07-13) — specialised header container, section-KIND, delegates to SGS_Container_Wrapper. See "Header / Footer / Navigation System" section below + specs/17-HEADER-FOOTER-ARCHITECTURE.md
-│   │   ├── site-footer/          # ★ DESIGN-APPROVED / build-pending (2026-07-13) — specialised footer container, section-KIND, delegates to SGS_Container_Wrapper. Rows + up-to-N columns. See same section
-│   │   ├── adaptive-nav/         # ★ DESIGN-APPROVED / build-pending (2026-07-13) — one-menu-source adaptive nav (bar→burger, 4 tiers incl. custom-px), layout-KIND, mega-menu drill-down. See same section
+│   │   ├── site-header/          # ★ BUILT + LIVE (D323-D333, §S9 11/11) — specialised header container, section-KIND, delegates to SGS_Container_Wrapper. See "Header / Footer / Navigation System" section below + specs/17-HEADER-FOOTER-ARCHITECTURE.md
+│   │   ├── site-footer/          # ★ BUILT + LIVE (D323-D333, §S9 11/11) — specialised footer container, section-KIND, delegates to SGS_Container_Wrapper. Rows + up-to-N columns. See same section
+│   │   ├── adaptive-nav/         # ★ BUILT + LIVE (D323-D333, §S9 11/11) — one-menu-source adaptive nav (bar→burger, 4 tiers incl. custom-px), layout-KIND, mega-menu drill-down. See same section
 │   │
 │   ├── components/               # Shared React components for editor UI
 │   │   ├── TypographyControls.js # ★ MANDATORY — shared per-element typography UI (D209). See Block Customisation Standard.
@@ -1101,7 +1102,7 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 
 ---
 
-## Header / Footer / Navigation System (DESIGN-APPROVED 2026-07-13, build-pending)
+## Header / Footer / Navigation System (BUILT + LIVE — D323-D333, §S9 11/11; pending final Bean sign-off)
 
 **Design-gate sign-off:** `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (Bean, all recommended defaults). **Owning spec for the FULL requirement set (FRs, per-breakpoint override data model, never-overflow Cluster+clamp layout, global-defaults/Site-Info binding, a11y contract, sticky/transparent-scroll behaviour): [`17-HEADER-FOOTER-ARCHITECTURE.md`](17-HEADER-FOOTER-ARCHITECTURE.md).** This section is the block-roster summary only — do not duplicate Spec 17's FRs here.
 
@@ -1113,9 +1114,9 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 
 | Block | Status | KIND | Renders via | Category |
 |---|---|---|---|---|
-| `sgs/site-header` | DESIGN-APPROVED, build-pending (P1) | section | `SGS_Container_Wrapper` | `sgs-layout` |
-| `sgs/site-footer` | DESIGN-APPROVED, build-pending (P3) | section | `SGS_Container_Wrapper` | `sgs-layout` |
-| `sgs/adaptive-nav` | DESIGN-APPROVED, build-pending (P2) | layout | `SGS_Container_Wrapper` + nav logic | `sgs-layout` |
+| `sgs/site-header` | BUILT + LIVE (P1) | section | `SGS_Container_Wrapper` | `sgs-layout` |
+| `sgs/site-footer` | BUILT + LIVE (P3) | section | `SGS_Container_Wrapper` | `sgs-layout` |
+| `sgs/adaptive-nav` | BUILT + LIVE (P2) | layout | `SGS_Container_Wrapper` + nav logic | `sgs-layout` |
 | `sgs/mobile-nav` (existing, reworked) | P0 drawer bug FIX SHIPPED + live-verified 2026-07-13; a11y hardening in progress | — (Popover/dialog, `containerMirror: false` — excluded from the container-mirror roster, same as `sgs/modal`) | own render.php | (unchanged) |
 
 - **`sgs/site-header`** — header shell: 3 optional named rows (top utility strip / middle primary row with logo+nav+CTA / bottom message row), each independently configurable; an empty row emits zero output (no wrapper, no padding-bleed). Typed element palette (logo, adaptive-nav, search, cart, account, button/CTA, contact, social, HTML, widget-area) — not freeform.
@@ -1135,7 +1136,7 @@ These blocks follow the Block Customisation Standard (below) plus:
 
 ### DB reseed + doc plumbing (on build, not yet run — P1 onward)
 
-`/sgs-update` will register `blocks` + `block_supports` + `block_attributes` for the 3 new block.json files automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`. No DB rows exist yet — build-pending, verify every new row once P1 starts.
+`/sgs-update` registers `blocks` + `block_supports` + `block_attributes` for the 3 new block.json files automatically; `block_composition.wraps_block='sgs/container'` + `container_kind` via `sync-container-wrapping-blocks.py`; `composition_role` via `seed-composition-roles.py`. DB rows now exist (built + live) — re-verify via `/sgs-db` if in doubt rather than trusting this note.
 
 ---
 
