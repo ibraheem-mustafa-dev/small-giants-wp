@@ -2,127 +2,133 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 generated: 2026-07-14
-thread: DESIGN-GATE the mobile-nav→adaptive-nav re-architecture + Site-Editor builder UX + one-source business info → THEN Bean's §S9 "totally covered" sign-off → Spec 33 Part 2
+thread: Finish the adaptive-nav drawer migration on Indus (3 known fixes) → merge → §S9 sign-off → Spec 33 Part 2
 ---
 
-# NEXT SESSION — design-gate the nav re-architecture, analyse the builder UX, then close §S9 sign-off
+# NEXT SESSION — finish the Indus drawer migration, then close §S9
 
-You are the SGS WordPress block + frontend developer. **§S9 is functionally 11/11 built + all D333/D334/D335 must-fixes + polish are SHIPPED + live-verified on 2 clients.** Bean has NOT yet given the "§S9 totally covered" sign-off — he set THREE remaining gates (below). Invoke `/autopilot` first.
+You are the SGS WordPress block + frontend developer. **The `<dialog>` drawer migration is BUILT and PROVEN on the sandybrown canary; Indus has 3 known regressions and is ROLLED BACK.** Invoke `/autopilot` first.
 
-Read `.claude/handoff.md` (D335 record) + `CLAUDE.md` + `.claude/decisions.md` D335/D334/D333 before any work.
+Read `.claude/handoff.md` + `CLAUDE.md` + `.claude/decisions.md` D337/D336/D335 + `.claude/plans/2026-07-14-adaptive-nav-drawer-design.md` before any work.
 
-## ⛔ BEAN'S DIRECTIVE — the arc (sign-off is gated behind 1 + 3)
-1. **[CAREFUL MIGRATION — NOT a re-design-gate] Complete `sgs/adaptive-nav` as the unified global nav + remove `sgs/mobile-nav`** (Task 1). **Bean-clarified (D335): this replacement was ALREADY design-gated when adaptive-nav was built (§S9, 2026-07-13) — its whole purpose was to replace BOTH `core/navigation` AND `sgs/mobile-nav` with one responsive block. Do NOT re-design-gate the decision.** Ground truth: adaptive-nav currently DELEGATES the drawer to `sgs/mobile-nav` (render.php:8 "opens the drawer sgs/mobile-nav"). So the work = give adaptive-nav its OWN off-canvas drawer (absorb the FR-S9-5 a11y contract: focus-trap, ESC, body-scroll-lock, the D323 P0 re-parent-to-`<body>` fix, the socials-from-Site-Info + tagline zones, the toggle + aria-controls), then remove mobile-nav + mobile-nav-toggle. **The care needed is a MIGRATION PLAN: map the CURRENT drawer/menu designs on both clients (esp. Indus Foods) and transfer them CLEANLY + exactly — nothing lost — with a full a11y re-verify.**
-2. **[UNIVERSAL PRINCIPLE] "All business info optional, one source (Site Info), never hardcoded into anything"** (Task 2 + threads through everything). Includes: unify the mobile-nav socials' `sgs_social_*` parallel store → `sgs_site_info.socials.*`; audit for any hardcoded business info.
-3. **[GATE] Site-Editor visual-BUILDER UX analysis** (Task 3) — same depth as the frontend QA: the block-editor experience clients use to build/configure the header/footer. Best done alongside the Task-1 design (the re-architecture reshapes the builder).
-4. **THEN present the FR-S9-1..11 audit for Bean's "§S9 totally covered" sign-off** (HARD gate) → **THEN Spec 33 Part 2** (header/footer CLONE pipeline, `P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER`) — Bean wants ASAP; do NOT start until sign-off.
+## ⛔ FACTUAL CORRECTIONS (Bean, 2026-07-14 — do not repeat)
+- **palestine-lives.org is the DEV site. sandybrown is the STAGING canary. NEITHER is a live client site.** Last session repeatedly called them "live client sites" and dramatised a dev outage as a client outage. Read `CLAUDE.md` ("Dev site: palestine-lives.org … Staging/canary: sandybrown…") before characterising any environment.
+- **TEST, don't guess.** The white-drawer cause was asserted as "probably the CDN" without testing. Bean called it. The rule was literally written the same session (`prove-the-cause-before-fix`).
+- **REPLICATE the old menus PERFECTLY.** Task 1's acceptance is "nothing lost, esp. Indus" — 2 lost nav links is a FAIL, not a footnote.
+- **REUSE the working block, don't reimplement it.** `sgs/social-icons` already has `source=manual|site-info` (D335) and pulls all 7 networks dynamically. Last session wrote a duplicate `render_drawer_socials()` in the renderer. Delete it; place the block.
 
-## ⛔ MANDATORY READING GATE (read IN FULL before any Write/Edit)
-1. `.claude/handoff.md` (D335) + `.claude/decisions.md` D335 + D334 + D333.
-2. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` §S9 END TO END (Bean-locked: read the governing spec fully each session) — esp. **FR-S9-4 (adaptive-nav)** + **FR-S9-5 (the mobile-nav drawer a11y contract that must be absorbed)** + Spec 32 (no-inline) + Spec 31 §13 (composite-mirror / uid).
-3. `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md` (11/11, reconciled).
-4. **Canary + 2nd-client logins (gitignored, ALWAYS available):** `.claude/secrets/sandybrown.env` (Mama's) + `.claude/secrets/palestine-lives.env` (Indus — deploy via `python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives`, explicit opt-in).
+## Current state (verified live)
+- **`main`** = clean + deployable: D336 deploy hardening + D337 spec amendments. **`feat/adaptive-nav-dialog-drawer`** = the full migration, gates green, **NOT merged** (correctly — Indus unproven).
+- **sandybrown (canary): NEW drawer LIVE + VERIFIED** — 10/10 controls reachable (baseline 10/10), 5 baseline links, exact baseline pink `rgb(197,106,122)`, `:modal` true, scroll-locked, **backdrop-dismiss working (never was before)**, `aria-modal` absent when closed.
+- **palestine-lives (Indus): ROLLED BACK** to the old `sgs/mobile-nav` drawer via the D336 `.bak` net (~30s). HTTP 200, healthy.
+- `/sgs-update` already ran: 93 orphan attrs + 2 orphan blocks pruned.
+
+## The 3 Indus regressions (measured, vs the captured baseline)
+| | Baseline | After deploy |
+|---|---|---|
+| Controls reachable | 18/18 | 13/13 |
+| Nav links | 7 | **5 — lost "Sectors" + "Brands"** |
+| Socials | 4 | **3 — lost Google** |
+| Drawer background | teal `rgb(7,106,142)` | **white** |
+
+## Tasks
+
+### Task 1 — mega-menu items must render in the drawer MENU (the 2 lost links)
+**What:** "Sectors" + "Brands" are `sgs/mega-menu` items. `class-sgs-adaptive-nav-renderer.php:352` routes them to the drawer CONTENT zone; the menu walk skips them (`:120`). They ARE menu items — render them in `render_drawer_menu()` as accordions (like the other submenus), not shunted to content.
+**Bean's hint:** *"look into how the mega-menus are added to the normal menu and you should be able to figure it out from there."* Read how mega-menu attaches to the `wp_navigation` menu FIRST.
+**Orchestration:** inline (Opus) — a11y-critical + subtle. **/qc gate:** yes.
+**Acceptance:** Indus drawer shows all 7 baseline links (Home, About, Sectors, Brands, Trade, Blog, Contact) with working accordions; **18/18 reachable**.
+
+### Task 2 — delete `render_drawer_socials()`; use `sgs/social-icons`
+**What:** remove the duplicated socials renderer; place `sgs/social-icons` (`source: "site-info"`) in the drawer. It already pulls the 7 networks dynamically (D335) and is proven.
+**Why:** Bean — the block already works; don't reimplement it.
+**Google link:** Google is NOT in Site Info's canonical 7-network schema. **Get Indus's Google review link from their Google Business Profile yourself** (baseline had `https://g.page/r/CYLLa_01-rZvEAE/review`) and restore it — do NOT turn this into a schema debate.
+**Orchestration:** delegated (sonnet) after Task 1. **/qc gate:** part of the live verify.
+**Acceptance:** Indus drawer shows 4 socials incl. Google; zero duplicated socials logic in the renderer.
+
+### Task 3 — the white drawer: TEST the cause, don't guess
+**What:** Indus rendered the drawer white, not teal (`primary-dark`). Mama's rendered pink correctly from the SAME rule — so it is environment/cache/token, not obviously code. **Prove it:** check what `style.css?ver=` Indus actually loads, whether that CSS contains the drawer rule, and whether `--wp--preset--color--primary-dark` resolves on Indus. Candidates: Hostinger CDN not cleared (STOP-CDN-NEW-CSS-RULE — `hosting_clearWebsiteCacheV1` was NOT run on Indus), or a token gap.
+**Orchestration:** inline (Opus). **Acceptance:** drawer bg = `rgb(7,106,142)` live, with the cause NAMED and evidenced.
+
+### Task 4 — re-deploy Indus, re-verify, merge
+Deploy **canary first, then Indus** (`build-deploy.py --target palestine-lives`). Full cache clear incl. **Hostinger CDN**. Re-measure vs baseline: 18/18 reachable, 7 links, 4 socials, teal, `:modal`, scroll-lock, backdrop, axe-core 0, 44px. Then squash-merge the branch to `main` and delete it.
+
+### Task 5 — Task 3 of §S9: Site-Editor builder UX analysis (`/ui-ux-pro-max`)
+Then present the FR-S9-1..11 audit for Bean's **"§S9 totally covered" sign-off** (HARD gate) → **Spec 33 Part 2**.
 
 ## ⛔ ANTI-PATTERN STOPs (carried forward — NEVER subtract, D101)
-- **STOP-DONT-RE-GATE-A-DECIDED-REPLACEMENT + MIGRATE-CLEANLY (D335, NEW, Bean-corrected)** — do NOT re-design-gate a replacement whose design was ALREADY gated (adaptive-nav was built to replace core/navigation + mobile-nav; that decision is settled). BUT a change that re-homes an a11y-critical mechanism (the drawer) still needs a careful MIGRATION PLAN: map the current live designs on ALL clients, transfer them exactly (nothing lost — esp. Indus), and fully a11y-re-verify. Plan the clean execution; don't re-litigate the decision.
-- **STOP-NO-ALLOWLIST-ON-CONTAINER-EQUIVALENTS (D335, NEW, Bean-directed)** — header/footer/rows are container-equivalents; like `sgs/container` they accept ANY block, NOT a curated palette. Do NOT add an `allowedBlocks` restriction to a container-equivalent (the row allow-lists were removed D335; the adaptive-nav drawer must accept any block too).
-- **STOP-ONE-SOURCE-BUSINESS-INFO (D335, NEW)** — all business info (phone/email/address/hours/socials/copyright) comes from ONE optional source (`sgs_site_info`), renders nothing when empty, and is NEVER hardcoded or split across a parallel store. Before adding any business-value read, grep for an existing Site-Info key; before trusting a "settings" store, confirm it IS Site Info (the mobile-nav `sgs_social_*` store was a hidden parallel system).
-- **STOP-MEASUREMENT-VS-EYE (D335, reinforced)** — a `getComputedStyle()` contrast/colour reading can be WRONG (reads an outer element, not the painted child). Pixel-confirm a "contrast fail" with a screenshot BEFORE flagging it (a footer "invisible text" 1.00 was a false alarm; the text was visible gold). Extends the global measurement-vs-eye rule.
-- **STOP-COUNCIL/REGISTER-FIX-SHAPES-ARE-HYPOTHESES (D333)** — an adversarial-council / defect-register / QA finding is a HYPOTHESIS. FACT-CHECK every one against the LIVE code + DOM before acting (R-31-7). D335 example: the QA's "invisible footer text" + the "ugly drawer socials root cause" both needed live re-check (the socials were a redundant PLACED block, not the mobile-nav zone).
-- **STOP-HIDDEN-PARALLEL-SYSTEM (D330)** — before building on a "dormant"/single system, GREP for a SECOND system doing the same job (a default-off system is one admin click from active). D335: the mobile-nav `render_socials_zone()` read `sgs_social_*` while everything else read Site Info — a 2nd social store.
-- **STOP-PREFIX-ONLY-CSS-GATE (D333)** — NEVER emit an operator CSS value after only a PREFIX regex check; use a FULL-value sanitiser (`sgs_css_gradient_value()` / `sgs_css_length` / `sgs_colour_value`).
-- **STOP-EDITOR-ONLY-PLACEHOLDER (D333)** — an operator-guidance placeholder is EDITOR-ONLY; gate on `\SGS\Blocks\sgs_is_frontend_render()` + early `return ''`, never leak to the live frontend.
-- **STOP-INSERT-TEMPLATE-VS-LIVE-PART (D333)** — a block's default `TEMPLATE`/`allowedBlocks` can diverge from the live template PART; fixing the live part does NOT fix a FRESH block insert. Check both.
-- **STOP-NO-KSORT (D326-D328)** — the shared-wrapper uid = `md5(wp_json_encode($attributes))`; NEVER `ksort`/reorder the hash input. (D334 applied the SAME md5 derivation to site-header/site-header-row/site-footer-row — keep it deterministic.)
-- **STOP-WRAPPER-OWNED-VS-BLOCK-OWNED (D327/D328)** — a WRAPPER capability is emitted BY the wrapper via a flag; a block's OWN element uses the shared emitter directly. Don't route a block-owned element through the wrapper flag or a wrapper capability block-private.
-- **STOP-CONTAINER-TYPE-SELF-QUERY (D327)** — an element can't size-`@container` itself; container-type on the OUTER, styled flex/grid + tier rules on a DESCENDANT.
-- **STOP-GRACEFUL-MIGRATION (D327)** — flipping/extending a responsive/object model must NOT break a flat-stored instance (`is_array` guards + emitter normalise).
-- **STOP-OBJECT-COERCION (D328)** — an `object`-typed block attr silently COERCES a flat stored value to the block.json DEFAULT (WP `prepare_attributes_for_render`); any emit MUST use the object shape; verify the live computed value.
-- **STOP-SUPPORTS-SPACING-DOUBLE-EMIT (D328)** — the wrapper reads `style.spacing` UNCONDITIONALLY; a block on the object box model MUST drop `supports.spacing`.
-- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache + `wp litespeed-purge all` + Hostinger CDN clear + live computed-value. The header renders from `parts/header.html` (the FSE part) — edit the PART, not just the pattern (keep header.html + framework-header-default.php byte-identical, §S1).
-- **STOP-CSS-VER-CACHE-BUST (D310/D330)** — a `style.css`/theme-CSS/pattern change is stale unless `theme/sgs-theme/style.css` Version bumps; a plugin CSS change → `SGS_BLOCKS_VERSION`; a block CSS change → that `block.json` version. (D335 bumped theme 1.5.21→1.5.22 for the header.html + pattern change.)
-- **STOP-CDN-NEW-CSS-RULE (D330)** — a BRAND-NEW CSS rule under an UNCHANGED `?ver` renders stale even after LiteSpeed+OPcache clear; bump the version AND clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`).
-- **STOP-CSS-CUSTOM-PROP-RACE (D330)** — NEVER write a JS-published CSS custom property (`--sgs-header-height`) from a CSS rule; drive state via a class toggle.
-- **STOP-static-vs-live (D304/D305)** — for "does this rule apply / what renders?" use the LIVE DOM (Playwright computed-style / a server render_block probe with the CSS collector removed), never static PHP/CSS parsing.
-- **STOP-67** — a changed BLOCK needs a pre-commit visual-diff report at `reports/visual-diff/<block>-<YYYY-MM-DD>.md` (`verdict: PASS` + `first_paint_capture_passed: true`). The commit gate hard-blocks without it (caught D335).
+- **STOP-TEST-DONT-GUESS (NEW, D337, Bean-caught)** — never assert a cause you have not tested. "Probably the CDN" is a guess. Prove it on the live DOM/HTTP or say "unknown".
+- **STOP-REUSE-THE-WORKING-BLOCK (NEW, D337, Bean-caught)** — before writing a renderer for X, grep for an SGS block that already does X. `sgs/social-icons` already pulls Site-Info socials (D335). Duplicating it is the violation.
+- **STOP-READ-THE-ENV-CONFIG (NEW, D337, Bean-caught)** — palestine-lives = DEV, sandybrown = STAGING. Neither is a live client site. Read CLAUDE.md before characterising blast radius.
+- **STOP-REPLICATE-EXACTLY (NEW, D337)** — a migration's acceptance is the CAPTURED BASELINE, measured on rendered output. Losing 2 links/1 social is a FAIL even with green gates.
+- **STOP-CORE-BLOCK-WITH-SGS-REPLACEMENT (NEW, D337, Bean-directed)** — a core block with a direct SGS replacement must NEVER be used. Authoritative map = DB `blocks.replaces` (query it; `sgs/container` replaces `core/group|core/columns|core/column`). NOTE: the theme still has **~1,015** such uses (core/paragraph 356, core/group 204, core/column 170, core/heading 128, core/image 46, core/buttons 40, core/columns 64, core/site-logo 7) outside the header — parked, Bean's call.
+- **STOP-INNERBLOCKS-ARE-NOT-ALWAYS-THE-MENU (NEW, D337)** — `SGS_Nav_Menu_Source` step 3 returns `$nav['innerBlocks']` as the menu; that is ONLY valid for `core/navigation`. It is now gated. Any similar "treat children as data" fallback must be gated on the block name.
+- **STOP-GATES-GREEN-IS-NOT-VERIFIED (NEW, D337)** — build green + 180 tests green + every guard green, and the desktop nav still rendered **0 links**. Only the live DOM vs the captured baseline caught it. Extends STOP-16.
+- **STOP-DEPLOY-CANARY-FIRST (NEW, D337)** — prove on sandybrown before palestine-lives, per the deploy doc rewritten the same session. Last session pushed Indus unproven and had to roll back.
+- **STOP-DONT-RE-GATE-A-DECIDED-REPLACEMENT + MIGRATE-CLEANLY (D335)** — adaptive-nav was built to replace core/navigation + mobile-nav; that is settled. Plan the clean transfer; don't re-litigate.
+- **STOP-NO-ALLOWLIST-ON-CONTAINER-EQUIVALENTS (D335)** — header/footer/rows + the drawer accept ANY block. (D335 was only half-applied — `block.json` still had `allowedBlocks` while `a4167859` only fixed `edit.js`; both rows are now clean. Check BOTH files when applying such a rule.)
+- **STOP-ONE-SOURCE-BUSINESS-INFO (D335)** — all business info from `sgs_site_info` ONLY; empty → renders nothing; never a parallel store or hardcode.
+- **STOP-MEASUREMENT-VS-EYE (D335)** — pixel-confirm a contrast/colour claim before flagging it.
+- **STOP-COUNCIL/REGISTER-FIX-SHAPES-ARE-HYPOTHESES (D333)** — fact-check every council/register finding vs live code/DOM. (D337: a rater's "DB-first template-part will break both sites" was checked and was FALSE here — no `header` part exists on either site.)
+- **STOP-HIDDEN-PARALLEL-SYSTEM (D330)** — grep for a 2nd system doing the same job before building.
+- **STOP-PREFIX-ONLY-CSS-GATE (D333)** — full-value sanitiser, never a prefix regex.
+- **STOP-EDITOR-ONLY-PLACEHOLDER (D333)** — gate operator placeholders on `sgs_is_frontend_render()`.
+- **STOP-INSERT-TEMPLATE-VS-LIVE-PART (D333)** — a block's TEMPLATE/allowedBlocks can diverge from the live part; check both. (D337: a deleted block left in `site-header/edit.js` TEMPLATE breaks every FRESH insert — a day-1 break for the next client build.)
+- **STOP-NO-KSORT (D326-D328)** — wrapper uid = `md5(wp_json_encode($attributes))`; never reorder the hash input. (adaptive-nav's OWN uid is `wp_unique_id` — it was NOT in D334's determinism fix.)
+- **STOP-WRAPPER-OWNED-VS-BLOCK-OWNED (D327/D328)** · **STOP-CONTAINER-TYPE-SELF-QUERY (D327)** · **STOP-GRACEFUL-MIGRATION (D327)** · **STOP-OBJECT-COERCION (D328)** · **STOP-SUPPORTS-SPACING-DOUBLE-EMIT (D328)**
+- **STOP-21** — emit-green ≠ LANDED. LANDED = deploy + OPcache + `wp litespeed-purge all` + Hostinger CDN clear + live computed value.
+- **STOP-CSS-VER-CACHE-BUST (D310/D330)** · **STOP-CDN-NEW-CSS-RULE (D330)** · **STOP-CSS-CUSTOM-PROP-RACE (D330)**
+- **STOP-static-vs-live (D304/D305)** — live DOM, never static parsing.
+- **STOP-67** — a changed BLOCK needs `reports/visual-diff/<block>-<YYYY-MM-DD>.md` (`verdict: PASS`). **Outstanding for adaptive-nav.**
 - **STOP-16** — a subagent / "it works" / build-green is a HYPOTHESIS. Re-verify live yourself. Node/npm via PowerShell (nvm shim broken in Git Bash).
-- **STOP-WINDOWS-BASH-STALE** — Git Bash `git add`/`ls`/`find` has a stale view of Write-tool files; stage + commit + delete via PowerShell.
-- **STOP-PARALLEL-TRACK-SWEEP (D326)** — commit path-scoped (never `git add -A`); verify D-ceiling + branch before every commit. Pre-existing session-start dirt (lucide-icons.php, package-lock, phase4-*.txt, root .db, rr.json) is NOT yours.
-- **Composite-mirror (R-31-9 / D294)** — no divergent per-block styling path; no inline `style=""` (Spec 32); no block version bumps as deprecations (D270/D293).
+- **STOP-WINDOWS-BASH-STALE** — stage/commit/delete via PowerShell.
+- **STOP-PARALLEL-TRACK-SWEEP (D326)** — path-scoped commits; verify D-ceiling + branch first. Pre-existing dirt (lucide-icons.php, package-lock, phase4-*.txt, root .db, rr.json) is NOT yours.
+- **Composite-mirror (R-31-9 / D294)** · no inline `style=""` (Spec 32) · no version bumps / deprecations (D270/D293).
+- **`<dialog>` ANCESTOR TRAP (NEW, D337)** — never let `display:none`, `transform`, `filter`, `contain`, or `will-change:transform` land on an adaptive-nav ANCESTOR: `display:none` suppresses top-layer entirely, and a transformed ancestor traps the dialog's containing block. See the dormant `hide-on-scroll-down` rule in `plugins/sgs-blocks/assets/css/header-behaviours.css`.
 
 ## ⛔ PRE-FLIGHT SELF-ATTESTATION (answer before first Write/Edit)
-1. Have I read Spec 17 §S9 IN FULL (esp. FR-S9-4 + FR-S9-5) + `decisions.md` D335 this session?
-2. For Task 1 (adaptive-nav migration): the replacement is DECIDED (don't re-gate). Have I captured the CURRENT drawer designs on both clients + planned to transfer them EXACTLY (nothing lost, esp. Indus) + mapped the FR-S9-5 a11y contract adaptive-nav must reproduce (focus-trap/ESC/scroll-lock/P0 re-parent/socials-from-Site-Info/toggle)? No allowedBlocks on the new drawer (STOP-NO-ALLOWLIST).
-3. Am I reading any business value from ONE Site-Info source, never a parallel store or hardcode (STOP-ONE-SOURCE-BUSINESS-INFO)?
-4. Before flagging a contrast/colour issue, did I pixel-confirm (STOP-MEASUREMENT-VS-EYE)?
-5. Will I verify on the LIVE DOM after the full cache-clear incl. the CDN (STOP-21 + STOP-CDN-NEW-CSS-RULE), not on build-green?
-6. Have I verified the D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`) + branch = `main` before committing?
+1. Have I read Spec 17 §S9 IN FULL + `decisions.md` D337/D336/D335 + the drawer design doc this session?
+2. Am I about to assert a cause I have NOT tested? (STOP-TEST-DONT-GUESS)
+3. Does an SGS block already do what I'm about to write? Did I grep? (STOP-REUSE-THE-WORKING-BLOCK)
+4. Is every core block I emit free of an SGS replacement per DB `blocks.replaces`? (STOP-CORE-BLOCK-WITH-SGS-REPLACEMENT)
+5. Am I measuring against the CAPTURED BASELINE (Indus 18/18 + 7 links + 4 socials + teal; Mama's 10/10 + 5 links + pink) on the LIVE DOM — not on green gates? (STOP-GATES-GREEN-IS-NOT-VERIFIED)
+6. Canary before dev-site? Full cache clear incl. Hostinger CDN before measuring? (STOP-DEPLOY-CANARY-FIRST + STOP-21)
+7. Have I verified D-ceiling (`grep -oE 'D[0-9]+' .claude/decisions.md | sort -V | tail -1`) + branch before committing?
 
-## Skills to Invoke
+## Skills / Tools / Agents
 | Skill | When |
 |-------|------|
-| `/brainstorming` (design mode) | Task 1 — design HOW adaptive-nav absorbs the drawer + a11y contract BEFORE building (the design-gate) |
-| `/strategic-plan` + `/phase-planner` | scope the re-architecture into design-gate → build → verify phases |
-| `/gap-analysis` | grade the §S9 build + the re-architecture design before the sign-off |
-| `/systematic-debugging` | any a11y/behaviour regression during the drawer absorption |
-| `/dispatching-parallel-agents` + `/subagent-driven-development` | parallel block work after the design is settled (re-verify live yourself, STOP-16) |
-| `/ui-ux-pro-max` | Task 3 — the Site-Editor builder UX + out-of-box defaults |
-| `/a11y-audit` · `/visual-qa` · `/qc` | live breakpoint + keyboard + WCAG verification |
-| `/sgs-wp-engine` + `/sgs-update` | SGS block dev + DB re-register |
-| `/research` / `/library-docs` | WP off-canvas/disclosure a11y patterns (GOV.UK) for the drawer absorption |
+| `/brainstorming` · `/gap-analysis` · `/lifecycle` · `/research` · `/strategic-plan` | mandatory five |
+| `/systematic-debugging` | Tasks 1 + 3 (root-cause the lost links + white drawer) |
+| `/qc-council` | before commit on the a11y-critical drawer (Bean: after every build stage) |
+| `/sgs-wp-engine` + `/sgs-db` + `/wp-blocks` | block/DB ground truth — **query `blocks.replaces` before emitting any core block** |
+| `/ui-ux-pro-max` | Task 5 builder UX |
+| `/visual-qa` · `/a11y-audit` | live verification + the outstanding STOP-67 report |
+| `/subagent-driven-development` · `/dispatching-parallel-agents` · `/delegate` | orchestration |
 
-## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| Playwright MCP | live per-tier + computed-style + keyboard/drawer verification (kill orphaned chrome + rm the Singleton lock if the profile locks) |
-| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear before any live measure (STOP-CDN-NEW-CSS-RULE) |
-| `/wp-blocks` + `/sgs-db` | schema/DB ground truth before any "missing X" claim |
+| Playwright MCP | live drawer verification vs baseline (the ONLY gate that caught the last regression) |
+| Hostinger MCP `hosting_clearWebsiteCacheV1` | CDN clear before any live CSS measure (Task 3) |
+| `/sgs-db` | `blocks.replaces`, attrs, composition |
 
-## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| general-purpose (Sonnet) | per-block wiring after the design-gate is approved (re-verify live yourself, STOP-16) |
-| `/qc-council` raters | validate any sensitive shared-mechanism fix-shape before commit (drawer a11y absorption) |
-
----
-
-## Task 1a (DO FIRST — Bean-directed thorough analysis + research): is unifying the drawer into adaptive-nav a real BENEFIT, or just remaking it? + what is the OPTIMAL drawer?
-**Bean's question (D335, answer THOROUGHLY here before building):** "Would making a replacement for the mobile drawer be beneficial or is it just remaking it? Look into its gaps, weaknesses, and the benefit of having all parts in that 1 block rather than having mobile-nav too — based on full analysis of the blocks + research into what is optimal in all areas of concern, functionality, top website UX, and WP standards."
-**Do:**
-1. **Full block analysis** — read `sgs/adaptive-nav` (block.json/render.php/view.js/`class-sgs-adaptive-nav-renderer.php`) + `sgs/mobile-nav` (block.json/render.php/view.js/`class-mobile-nav-renderer.php`) + `sgs/mobile-nav-toggle` END TO END. Map: what each does, where they OVERLAP (both read `SGS_Nav_Menu_Source`; mobile-nav has 7 drawer zones + the `render_socials_zone` reading `sgs_social_*`), the drawer's GAPS + WEAKNESSES (the `sgs_social_*` parallel store; any a11y/perf/UX weak spots; the current delegation seam), and what the FR-S9-5 contract requires.
-2. **Research (use `/research` / `/research-buddies` + `/library-docs`)** — what is OPTIMAL for a mobile nav drawer across ALL areas: UX (top websites' patterns — drill-down vs accordion already decided as accordion+no-AJAX D334; overlay vs push; gesture/swipe; close affordances), accessibility (GOV.UK / ARIA APG disclosure + dialog patterns, focus management, `inert`, scroll-lock), WordPress standards (Interactivity API, `viewScriptModule`, `popover`/top-layer, progressive enhancement), performance (JS budget, no-JS fallback). Research complaints/weaknesses of common WP mobile-menu implementations to avoid repeating them.
-3. **Decide + recommend** — is one unified block genuinely BETTER (maintainability, one source, no duplication, no delegation seam) or is it just remaking mobile-nav (in which case propose the best structure — e.g. adaptive-nav owns the drawer vs a shared drawer service both could use)? Produce a clear recommendation with the trade-offs for Bean, and the optimal drawer design. **This resolves whether/how Task 1 proceeds.**
-**Orchestration:** analysis + research inline (Opus) + parallel research agents; present the recommendation to Bean. **/qc gate:** n/a (it IS the analysis). **Acceptance:** a written analysis answering Bean's question with evidence + a recommended optimal drawer design.
-
-## Task 1: MIGRATE to adaptive-nav as the unified global nav + remove mobile-nav (decided direction; execute per Task 1a's optimal design)
-**What:** complete `sgs/adaptive-nav` as the single global nav (desktop bar + mobile collapse + its OWN off-canvas drawer, built to Task 1a's optimal design), then remove `sgs/mobile-nav` + `sgs/mobile-nav-toggle`. **Why:** Bean — adaptive-nav was BUILT to replace both `core/navigation` + `sgs/mobile-nav`; one responsive block, no duplication. **This is a MIGRATION, not a re-design-gate** (the direction was gated at §S9 2026-07-13; Task 1a settles the optimal HOW). **Ground truth:** adaptive-nav currently DELEGATES the drawer to `sgs/mobile-nav` (render.php:8) — so it needs its own drawer. **Plan the clean transfer FIRST (not to re-decide, but to not lose anything):** (1) capture the CURRENT drawer/menu design on BOTH clients live (Indus teal drawer + Mama's + the `render_socials_zone` coloured buttons + the nav + email + tagline zones) — screenshots + DOM; (2) give adaptive-nav its own drawer reproducing the FR-S9-5 a11y contract EXACTLY (focus-trap, ESC, backdrop-dismiss, body-scroll-lock, D323 P0 re-parent-to-`<body>`, toggle + `aria-controls`/`aria-expanded`) + the socials zone reading Site Info (Task 2) + NO allowedBlocks restriction (STOP-NO-ALLOWLIST); (3) swap the header.html/pattern from mobile-nav→adaptive-nav's drawer; (4) delete mobile-nav + mobile-nav-toggle + reseed the DB (`/sgs-update`); (5) live-verify on BOTH clients that the migrated drawer looks + behaves IDENTICALLY to before (nothing lost) + the full a11y contract holds. **Orchestration:** capture + plan inline (Opus) → build (subagents) → live-verify yourself (STOP-16). **/qc gate:** yes (a11y-critical shared mechanism). **Acceptance:** adaptive-nav renders the full nav + its own drawer with the FR-S9-5 a11y contract intact on 2 live clients; the CURRENT designs transferred exactly (Indus especially); mobile-nav + mobile-nav-toggle removed with zero regression; spec reconciled.
-
-## Task 2: One-source business info (unify the parallel social store + audit)
-**What:** make the mobile-nav socials' `sgs_social_{linkedin,facebook,instagram,google}` store read from `sgs_site_info.socials.*` instead (fold into Task 1's drawer socials); grep the codebase for any OTHER hardcoded/parallel business-info store. **Why:** Bean — "all business info optional, one source, never hardcoded". **Orchestration:** inline + a grep audit; the socials unification lands inside the Task-1 drawer. **Acceptance:** every business value (phone/email/address/hours/socials/copyright) reads from `sgs_site_info` only; empty → renders nothing; no parallel store or hardcode remains (report the audit result). **/qc gate:** part of Task 1's live verify.
-
-## Task 3: Site-Editor visual-builder UX analysis (same depth as the frontend QA)
-**What:** log into the Site Editor (sandybrown creds) and assess the block-editor experience a non-coder client uses to build/configure the header/footer: inserting + configuring `sgs/site-header`/`site-footer`/`adaptive-nav`/`business-info`/`social-icons`, the inspector controls (are they clear? complete? is every setting exposed?), the empty-state guidance, the Replace picker, and the drawer builder (post Task-1). **Why:** Bean — clients use the block editor exclusively; the builder UX must be good, not just the frontend. **Orchestration:** `/ui-ux-pro-max` + Playwright editor login; produce a findings report + fixes. **Acceptance:** a builder-UX findings report with prioritised fixes; any blocker fixed before sign-off. **/qc gate:** n/a (it IS the analysis).
-
-## After Tasks 1-3 — the HARD gate
-Present the reconciled FR-S9-1..11 audit + the re-architecture + the builder-UX result for Bean's **"§S9 totally covered" sign-off**. Do NOT start **Spec 33 Part 2** (header/footer clone pipeline — Bean wants ASAP) until the sign-off.
+| general-purpose (sonnet) | Task 2 wiring after Task 1 (re-verify live yourself — STOP-16) |
+| `code-reviewer` / `/qc-council` raters | pre-commit on the drawer |
 
 ## Dependency graph
 ```
-Task 1a ANALYSIS + RESEARCH (Opus + /research agents) → recommendation to Bean (answers "benefit vs remaking?" + optimal drawer)
-  ↓  (Bean steer on the recommendation)
-Task 1 MIGRATE per 1a's optimal design (capture current designs → build adaptive-nav's own drawer → swap → delete mobile-nav → verify nothing lost) + Task 2 (one-source socials, folds in)
-  ↓ /qc + live a11y verify (both clients, esp. Indus)
-Task 3 (Site-Editor builder UX — parallel with the Task 1 build)
-  ↓
-Present FR-S9-1..11 audit → BEAN "§S9 totally covered" SIGN-OFF (HARD gate)
-  ↓
-Spec 33 Part 2
+Task 1 mega-menu links (inline, Opus) ──┐
+Task 3 white drawer: TEST (inline)  ────┼──> Task 4 deploy canary→Indus + verify 18/18 → MERGE to main
+Task 2 social-icons + Google (sonnet) ──┘
+                                             ↓
+                              Task 5 builder UX → FR-S9-1..11 audit → BEAN SIGN-OFF → Spec 33 Part 2
 ```
 
-## Methodology guardrails (do not skip)
-- **Design-gate the mobile-nav removal BEFORE building (Rule 7 / STOP-DESIGN-GATE-HIGH-BLAST-RADIUS)** — it re-homes the a11y-critical drawer.
-- **Deploy before measure (STOP-21 + STOP-CDN-NEW-CSS-RULE)** — build + deploy + OPcache + LiteSpeed + Hostinger CDN clear BEFORE any live measure; bump the version for a new CSS rule.
-- **One source for business info (STOP-ONE-SOURCE-BUSINESS-INFO)** — never a parallel store or hardcode.
-- **Pixel-confirm before flagging a contrast issue (STOP-MEASUREMENT-VS-EYE).**
-- **Live-verify yourself (STOP-16)** — a subagent/build-green is a hypothesis; re-check the a11y contract on the live DOM.
-- **Outcome vs completion** — §S9 "sign-off ready" = the re-architecture live + a11y-verified + the builder UX good + the spec reconciled; not "code shipped".
+## Methodology guardrails
+- **Deploy before measure** (STOP-21 + STOP-CDN-NEW-CSS-RULE) — build + deploy + OPcache + LiteSpeed + **Hostinger CDN** BEFORE any live measure.
+- **Canary first, always** — sandybrown, then palestine-lives.
+- **Baseline is the gate** — Indus 18/18 + 7 links + 4 socials + teal; Mama's 10/10 + 5 links + pink. Rendered output, not attribute count, not green gates.
+- **Rollback is cheap now** — `<dir>.bak` exists on both targets (D336). Use it rather than leaving a broken state.
+- **Outcome vs completion** — §S9 sign-off = the migration live + a11y-verified on BOTH targets + builder UX good + spec reconciled. Not "code shipped".
