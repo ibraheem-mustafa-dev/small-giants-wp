@@ -203,7 +203,6 @@
 	border: none;
 	box-sizing: border-box;
 	color: var(--wp--preset--color--surface, #fff);
-	display: flex;
 	flex-direction: column;
 	height: 100vh;
 	height: 100dvh;
@@ -224,6 +223,26 @@
 		transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
 		overlay 250ms allow-discrete,
 		display 250ms allow-discrete;
+}
+
+/* `display` is gated on [open] — NEVER put it on the base rule.
+ *
+ * The UA sheet hides a closed dialog via `dialog:not([open]){display:none}`,
+ * but ANY author `display` beats a UA rule regardless of specificity. A base
+ * `display:flex` therefore renders the CLOSED drawer permanently. It is not
+ * even harmlessly offscreen: the wrapper's own
+ * `.sgs-container > :not(.sgs-container__overlay){position:relative}` (0,2,0)
+ * outranks this rule's `position:fixed` (0,1,0), so the closed panel lands
+ * IN FLOW — covering the page, pushing the logo out of the header row and the
+ * hero ~1000px down, on desktop where there is no burger to close it.
+ *
+ * This shipped latent: the block's CSS was being served as a stale 0-byte file
+ * (D338), so the drawer had NO styling at all and the UA's display:none held.
+ * Clearing the CDN delivered the real CSS and the bug surfaced on both sites at
+ * once. Open state is unaffected by the position clash because showModal()
+ * promotes the dialog to the top layer, which is out of flow by definition. */
+.sgs-adaptive-nav__drawer[open] {
+	display: flex;
 }
 
 /* Faster exit timing (200ms accelerate), applied by view.js BEFORE close()
