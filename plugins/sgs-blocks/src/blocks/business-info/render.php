@@ -52,6 +52,15 @@ $placeholder = sprintf(
 	esc_html__( 'Set in Appearance > SGS Site Info', 'sgs-blocks' )
 );
 
+// The operator-facing "Set in Appearance > SGS Site Info" hint is editor
+// guidance, not frontend content. sgs_is_frontend_render() (registered by
+// class-sgs-css-registry.php, always loaded — see sgs-blocks.php bootstrap)
+// already distinguishes a genuine front-end page render from the block
+// editor's ServerSideRender / block-renderer REST preview (which has no
+// wp_footer and would otherwise wrongly be treated as frontend). Reuse it
+// rather than re-deriving REST_REQUEST/is_admin() locally.
+$sgs_is_editor_render = ! \SGS\Blocks\sgs_is_frontend_render();
+
 /**
  * Helper: wrap an inline SVG icon in a presentational span.
  *
@@ -103,7 +112,7 @@ switch ( $display_type ) {
 			}
 			$html = '<p class="sgs-business-info sgs-business-phone">' . $html . '</p>';
 		} else {
-			$html = '<p class="sgs-business-info sgs-business-phone">' . $placeholder . '</p>';
+			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-phone">' . $placeholder . '</p>' : '';
 		}
 		break;
 
@@ -123,7 +132,7 @@ switch ( $display_type ) {
 			}
 			$html = '<p class="sgs-business-info sgs-business-email">' . $html . '</p>';
 		} else {
-			$html = '<p class="sgs-business-info sgs-business-email">' . $placeholder . '</p>';
+			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-email">' . $placeholder . '</p>' : '';
 		}
 		break;
 
@@ -139,7 +148,7 @@ switch ( $display_type ) {
 				$label_html( wp_kses( $address_raw, array( 'br' => array() ) ) )
 			);
 		} else {
-			$html = '<address class="sgs-business-info sgs-business-address">' . $placeholder . '</address>';
+			$html = $sgs_is_editor_render ? '<address class="sgs-business-info sgs-business-address">' . $placeholder . '</address>' : '';
 		}
 		break;
 
@@ -173,7 +182,7 @@ switch ( $display_type ) {
 		if ( $has_rows ) {
 			$html = sprintf( '<dl class="sgs-business-info sgs-business-hours">%s</dl>', $rows );
 		} else {
-			$html = '<dl class="sgs-business-info sgs-business-hours"><div class="sgs-business-hours__row">' . $placeholder . '</div></dl>';
+			$html = $sgs_is_editor_render ? '<dl class="sgs-business-info sgs-business-hours"><div class="sgs-business-hours__row">' . $placeholder . '</div></dl>' : '';
 		}
 		break;
 
@@ -227,7 +236,7 @@ switch ( $display_type ) {
 		if ( '' !== $items ) {
 			$html = sprintf( '<ul class="sgs-business-info sgs-business-socials">%s</ul>', $items );
 		} else {
-			$html = '<ul class="sgs-business-info sgs-business-socials"><li>' . $placeholder . '</li></ul>';
+			$html = $sgs_is_editor_render ? '<ul class="sgs-business-info sgs-business-socials"><li>' . $placeholder . '</li></ul>' : '';
 		}
 		break;
 
@@ -242,7 +251,7 @@ switch ( $display_type ) {
 				Sgs_Site_Info::get_esc_html( 'copyright' )
 			);
 		} else {
-			$html = '<p class="sgs-business-info sgs-business-copyright">' . $placeholder . '</p>';
+			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-copyright">' . $placeholder . '</p>' : '';
 		}
 		break;
 
@@ -255,7 +264,7 @@ switch ( $display_type ) {
 				nl2br( Sgs_Site_Info::get_esc_html( 'tagline' ) )
 			);
 		} else {
-			$html = '<p class="sgs-business-info sgs-business-description">' . $placeholder . '</p>';
+			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-description">' . $placeholder . '</p>' : '';
 		}
 		break;
 
@@ -275,9 +284,19 @@ switch ( $display_type ) {
 				esc_attr__( 'Business location map', 'sgs-blocks' )
 			);
 		} else {
-			$html = '<div class="sgs-business-info sgs-business-map">' . $placeholder . '</div>';
+			$html = $sgs_is_editor_render ? '<div class="sgs-business-info sgs-business-map">' . $placeholder . '</div>' : '';
 		}
 		break;
+}
+
+// Frontend + no data configured for this field: render ZERO DOM. The
+// operator-facing placeholder hint (gated above) only ever reaches
+// $html on an editor/REST render, so an empty $html here on the real
+// frontend means every field for this displayType is unset — bail out
+// before the wrapper/scoped-<style> output below so an unconfigured
+// block leaves no visible trace on the live site.
+if ( '' === $html && ! $sgs_is_editor_render ) {
+	return '';
 }
 
 // ---------------------------------------------------------------------------

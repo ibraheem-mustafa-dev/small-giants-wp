@@ -186,14 +186,12 @@ foreach ( $colour_map as $attr_key => $css_prop ) {
 	}
 }
 
-// Gradient — pass through as-is (CSS gradient string, not a token slug).
-$drawer_gradient = $attributes['drawerGradient'] ?? '';
-if ( $drawer_gradient ) {
-	// Sanitise: allow only safe CSS gradient syntax.
-	// We only emit this if it starts with a known gradient function.
-	if ( preg_match( '/^(linear|radial|conic)-gradient\s*\(/i', $drawer_gradient ) ) {
-		$css_vars[] = '--sgs-mn-gradient:' . $drawer_gradient;
-	}
+// Gradient — validated via the shared full-value gradient sanitiser (NOT a
+// prefix-only check — see sgs_css_gradient_value() docblock for why a
+// prefix-only check is unsafe: CSS-injection fix, 2026-07-14).
+$drawer_gradient = sgs_css_gradient_value( $attributes['drawerGradient'] ?? '' );
+if ( '' !== $drawer_gradient ) {
+	$css_vars[] = '--sgs-mn-gradient:' . $drawer_gradient;
 }
 
 // Backdrop blur — only emit when the feature is enabled.

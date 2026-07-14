@@ -7,7 +7,8 @@
  *
  *   helpers-tokens.php              — sgs_attr_has_value, sgs_is_css_colour,
  *                                     sgs_colour_value, sgs_shadow_value,
- *                                     sgs_font_size_value, sgs_transition_vars
+ *                                     sgs_css_gradient_value, sgs_font_size_value,
+ *                                     sgs_transition_vars
  *
  *   helpers-colour-wcag.php         — sgs_wcag_relative_luminance,
  *                                     sgs_wcag_text_colour_for_bg,

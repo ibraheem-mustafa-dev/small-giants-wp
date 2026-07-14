@@ -1,31 +1,37 @@
 ---
-report: sgs/mobile-nav drawer drop-zone widened for FR-S9-8 move-to-drawer
+report: sgs/mobile-nav drawerGradient CSS-injection fix (council must-fix #1)
 date: 2026-07-14
-session: D331 (FR-S9-8 — per-device content adaptation)
+session: D332 (§S9 adversarial-council must-fixes)
 target: https://sandybrown-nightingale-600381.hostingersite.com/
 blocks_changed: [sgs/mobile-nav]
 verdict: PASS
 first_paint_capture_passed: true
 ---
 
-# sgs/mobile-nav — drawer drop-zone widened (FR-S9-8 move-to-drawer)
+# sgs/mobile-nav — drawerGradient injection fix
 
-`ALLOWED_BLOCKS` (edit.js) gains `sgs/business-info` so contact/social items can
-be PLACED in the drawer's custom-content zone (zone 6) to render exclusively
-inside the drawer — the spec's place-then-toggle model, no magic "move"
-primitive. No render.php change (zone 6 already echoes its `$content` and the
-drawer is `<body>`-portaled, so a placed element exists nowhere else). The `/sgs-update`
-allowed_blocks scan re-registered the widened list (allowed_blocks_updated=1).
+The adversarial-council abuse red-teamer found (and I confirmed on the live code)
+that `drawerGradient` was emitted after only a PREFIX check
+(`/^(linear|radial|conic)-gradient\(/`), so a value like
+`linear-gradient(red,red);position:fixed;inset:0;…url(https://evil/x)` passed and
+injected arbitrary declarations into the block's inline CSS — an Author-level
+user could plant a full-viewport phishing overlay or a network beacon.
 
-## Live verification (sandybrown, 375px, drawer open)
+**Fix:** a new shared `sgs_css_gradient_value()` (`includes/helpers-tokens.php`)
+validates the WHOLE value (one fully-bounded gradient function, safe char set)
+and rejects any `;`, `{`, `}`, `url(`, `<`, `>`, `@`, or `expression`. mobile-nav
+routes `drawerGradient` through it. Swept the whole plugin — mobile-nav was the
+only prefix-only gate; all other gradient uses go through whitelists /
+`sanitize_html_class` / `sgs_colour_value` (safe).
+
+## Verification (live server probe, sandybrown, plugin 0.1.8)
 
 | Check | Evidence | Verdict |
 |---|---|---|
-| Drawer opens + `<body>`-parented | drawerOpen true, `parentElement === BODY` (P0 fix intact) | PASS |
-| business-info email in drawer | `mailto:Zainab@mamasmunches.com`, inside `.sgs-mobile-nav__custom-content`, visible | PASS |
-| business-info socials in drawer | instagram `https://www.instagram.com/mamasmunches/`, in custom zone, visible | PASS |
-| Absent from collapsed header | 0 top-row contacts visible in the header at 375 (hidden via per-tier visibility) — no duplication | PASS |
-| No console errors | 0 | PASS |
+| Malicious gradient rejected | `render_block` with `drawerGradient` = `linear-gradient(red,red);position:fixed;…url(https://evil/x)` → `--sgs-mn-gradient` NOT emitted, no `position:fixed`/`evil/x` in output | PASS |
+| Legitimate gradient still works | `drawerGradient` = `linear-gradient(#fff, #000)` → `--sgs-mn-gradient` emitted | PASS |
+| Unit proof | `sgs_css_gradient_value('linear-gradient(red,red);position:fixed')` → `''`; `('linear-gradient(#fff,#000)')` → passes | PASS |
+| No regression | header/footer render, 6 nav links, 0 console errors, no overflow | PASS |
 
-first_paint_capture_passed: true — drawer content renders on open (see
-`assets/fr-s9-8-header-375-drawer.png`).
+first_paint_capture_passed: true — no visual change (the drawer's legitimate
+gradient still renders); the fix only rejects malicious values.

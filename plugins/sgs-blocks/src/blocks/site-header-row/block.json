@@ -43,7 +43,7 @@
 		"sgs/responsive-logo",
 		"core/site-logo",
 		"core/site-title",
-		"core/navigation",
+		"sgs/adaptive-nav",
 		"core/group",
 		"core/paragraph",
 		"core/html",
@@ -53,8 +53,7 @@
 		"sgs/button",
 		"sgs/product-search",
 		"sgs/business-info",
-		"sgs/cart",
-		"woocommerce/mini-cart"
+		"sgs/cart"
 	],
 	"attributes": {
 		"rowSlot": {

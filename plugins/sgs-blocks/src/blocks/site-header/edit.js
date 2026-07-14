@@ -19,7 +19,10 @@ import {
 const CONTRAST_SAFE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Scrim overlay', 'sgs-blocks' ), value: 'scrim' },
-	{ label: __( 'Text shadow', 'sgs-blocks' ), value: 'shadow' },
+	{
+		label: __( 'Text shadow (not WCAG-safe)', 'sgs-blocks' ),
+		value: 'shadow',
+	},
 	{ label: __( 'Force solid', 'sgs-blocks' ), value: 'force-solid' },
 ];
 
@@ -39,16 +42,15 @@ const TEMPLATE = [
 			// custom_logo when no per-breakpoint images set). Draft: logo | nav | icons.
 			[ 'sgs/responsive-logo', { width: 180, linkToHome: true } ],
 			// Primary nav (centre on desktop; hidden <768 → lives in the drawer).
+			// sgs/adaptive-nav — matches the live header part (theme/sgs-theme/parts/header.html)
+			// so a fresh insert doesn't re-arm the WooCommerce mini-cart/customer-account
+			// auto-injection that WC hooks onto core/navigation via Block Hooks, and keeps
+			// the mega-menu capability that core/navigation doesn't have.
 			[
-				'core/navigation',
+				'sgs/adaptive-nav',
 				{
-					textColor: 'text',
-					fontSize: 'medium',
-					style: {
-						typography: { fontWeight: '600' },
-						spacing: { blockGap: 'var:preset|spacing|40' },
-					},
-					overlayMenu: 'never',
+					linkColour: 'text',
+					gap: { desktop: '28px' },
 				},
 			],
 			// Icons cluster (right): cart (always) + burger (only <768). Grouped so the
@@ -155,7 +157,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { headerTransparent: value } )
 							}
 							help={ __(
-								'Header starts see-through over a hero image, then becomes solid once the visitor scrolls. Use the contrast-safety option below when the header sits over a hero image.',
+								'Header starts see-through over a hero image, then becomes solid once the visitor scrolls. A contrast-safe scrim is applied automatically over the hero so text stays readable — change it below if you need a different look.',
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom

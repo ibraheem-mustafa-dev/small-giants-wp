@@ -634,6 +634,48 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
 }
 
 /**
+ * Validate a CSS gradient value for safe emission into a scoped rule / custom
+ * property.
+ *
+ * SECURITY: a prefix-only check (e.g. does the string START with
+ * `linear-gradient(`) is NOT sufficient sanitisation — anything after the
+ * opening paren, including a declaration-breakout (`;position:fixed;...`) or
+ * a `url(...)` network fetch, would still pass and be emitted verbatim. This
+ * helper instead requires the ENTIRE value to be one fully-bounded gradient
+ * function built only from a safe character set, then defence-in-depth
+ * rejects any residual breakout/URL/markup token.
+ *
+ * Universal — any block accepting an operator/cloned CSS gradient string
+ * MUST route it through this helper before emission (mirrors
+ * sgs_colour_value() / sgs_shadow_value() shape).
+ *
+ * @param string|null $value Raw gradient attribute value.
+ * @return string The safe gradient string, or an empty string if rejected.
+ */
+function sgs_css_gradient_value( ?string $value ): string {
+	$value = trim( (string) $value );
+
+	if ( '' === $value ) {
+		return '';
+	}
+
+	// Must be exactly one gradient function, fully bounded end-to-end, built
+	// only from a safe character set (letters, digits, whitespace, . , % ( ) # -).
+	if ( ! preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#\-]+\)$/i', $value ) ) {
+		return '';
+	}
+
+	// Defence in depth: reject anything that could break out of a declaration,
+	// fetch a URL, or inject markup — even if it somehow satisfied the character
+	// class above (e.g. via a nested paren sequence).
+	if ( preg_match( '/[;{}]|url\s*\(|<|>|@|expression/i', $value ) ) {
+		return '';
+	}
+
+	return $value;
+}
+
+/**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
  * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",

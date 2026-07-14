@@ -200,6 +200,21 @@ final class Sgs_Header_Behaviours {
 		$contrast_raw       = isset( $attrs['contrastSafe'] ) ? (string) $attrs['contrastSafe'] : 'none';
 		$result['contrast'] = in_array( $contrast_raw, self::VALID_CONTRAST_MODES, true ) ? $contrast_raw : 'none';
 
+		// WCAG 1.4.3 safe default: a transparent header with contrastSafe left
+		// at 'none' has no contrast floor at all — text sits directly over
+		// whatever hero image/colour is behind it, which routinely fails the
+		// 4.5:1 text-contrast minimum. Upgrade silently to the scrim overlay
+		// (the WCAG-verifiable mode — see header-behaviours.css) so a
+		// transparent header is never shipped unreadable out of the box. This
+		// is a RESOLVER-level upgrade, not a block.json default change, so a
+		// non-transparent header is completely unaffected and an operator can
+		// still explicitly select 'None'/'Text shadow'/'Force solid' in the
+		// inspector to override it (that stored value is read as-is above and
+		// this branch only fires when contrastSafe is still 'none').
+		if ( true === $result['transparent'] && 'none' === $result['contrast'] ) {
+			$result['contrast'] = 'scrim';
+		}
+
 		self::$cached_behaviour = $result;
 		return $result;
 	}
