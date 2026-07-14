@@ -44,7 +44,13 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$uid = wp_unique_id( 'sgs-sfr-' );
+// Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
+// md5( wp_json_encode( $attributes ) ) derivation rather than the per-request counter
+// wp_unique_id(): identical row attributes (rowSlot etc.) yield an identical uid on
+// every page, so the CSS collector can dedup this row's scoped <style> across pages
+// (this row's uid was the one proven to shift page-to-page: sfr-6/7 vs sfr-12/13).
+// STOP-NO-KSORT: do not reorder $attributes before hashing.
+$uid = 'sgs-sfr-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 // Row-slot identity class (top / columns / bottom) — set by the parent
 // sgs/site-footer template, not operator-editable. Consumed for CSS targeting.

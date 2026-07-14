@@ -42,7 +42,12 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$uid = wp_unique_id( 'sgs-shr-' );
+// Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
+// md5( wp_json_encode( $attributes ) ) derivation rather than the per-request counter
+// wp_unique_id(): identical row attributes (rowSlot etc.) yield an identical uid on
+// every page, so the CSS collector can dedup this row's scoped <style> across pages.
+// STOP-NO-KSORT: do not reorder $attributes before hashing.
+$uid = 'sgs-shr-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 // Row-slot identity class (top / middle / bottom) — set by the parent
 // sgs/site-header template, not operator-editable. Consumed for CSS targeting.

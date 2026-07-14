@@ -32,7 +32,13 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$uid      = wp_unique_id( 'sgs-sh-' );
+// Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
+// md5( wp_json_encode( $attributes ) ) derivation (class-sgs-container-wrapper.php)
+// rather than the per-request counter wp_unique_id(): identical header attributes
+// yield an identical uid on every page, so the CSS collector can dedup this block's
+// scoped <style> across pages (no cache fragmentation) and FR-S9-6's re-save=same-uid
+// golden holds. STOP-NO-KSORT: do not reorder $attributes before hashing.
+$uid      = 'sgs-sh-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.sgs-site-header';
 $classes  = array( 'sgs-site-header', $uid );
 

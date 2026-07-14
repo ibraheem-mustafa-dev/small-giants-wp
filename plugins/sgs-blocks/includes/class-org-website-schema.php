@@ -114,6 +114,29 @@ final class Org_Website_Schema {
 		}
 		if ( null !== $address ) {
 			$org['address'] = $address;
+
+			// Upgrade Organization → LocalBusiness ONLY when a COMPLETE physical
+			// address is present (a non-empty addressLocality — a bare street line
+			// or a country-only stub is NOT enough). Claiming LocalBusiness without
+			// a real, visitable premises is a Google structured-data policy
+			// violation, so this is gated deliberately. LocalBusiness is a subtype
+			// of Organization, so every field already set (logo / sameAs /
+			// contactPoint) stays valid; it additionally unlocks
+			// openingHoursSpecification — the "open now" / local-pack signal.
+			// Specific subtypes (e.g. FoodEstablishment), geo, and structured
+			// address parts are a tracked follow-up needing new Site Info fields.
+			if ( isset( $address['addressLocality'] ) && '' !== $address['addressLocality'] ) {
+				$org['@type'] = 'LocalBusiness';
+
+				// openingHoursSpecification — only valid on LocalBusiness. Built
+				// from the Site Info opening-hours fields; any day whose free-text
+				// value doesn't parse cleanly to a single HH:MM–HH:MM range is
+				// omitted (never emit guessed or contradictory hours).
+				$hours = self::build_opening_hours();
+				if ( ! empty( $hours ) ) {
+					$org['openingHoursSpecification'] = $hours;
+				}
+			}
 		}
 
 		// sameAs — social profile URLs from the Site Info store.
@@ -328,19 +351,87 @@ final class Org_Website_Schema {
 			return null;
 		}
 
-		// The Site Info store allows <br> tags in 'address'; flatten to a
-		// single plain-text streetAddress line for JSON-LD.
-		$street = \sanitize_text_field(
-			\str_replace( array( '<br>', '<br/>', '<br />' ), ', ', $raw )
-		);
-		if ( '' === $street ) {
+		// The Site Info 'address' field is multi-line (operators enter it as
+		// street / town / postcode / country separated by <br>). Parse those
+		// lines into structured PostalAddress parts so a complete address can
+		// drive the LocalBusiness upgrade; fall back to a single streetAddress
+		// line when the structure can't be confidently identified.
+		return self::parse_multiline_address( $raw );
+	}
+
+	/**
+	 * Parse a <br>/newline-separated address blob into a PostalAddress.
+	 *
+	 * A recognised UK country name (last line) and a UK-format postcode line are
+	 * detected and stripped; the remaining last line becomes the locality — but
+	 * ONLY when a postcode or country was confidently identified AND a street
+	 * line precedes it, so a non-UK or unstructured value never has a line
+	 * guessed as its town. When no locality can be identified the whole value is
+	 * kept as a single streetAddress (node stays Organization). Returns null
+	 * only when the value is empty.
+	 *
+	 * @param string $raw Raw address value (may contain <br>).
+	 * @return array|null PostalAddress array or null.
+	 */
+	private static function parse_multiline_address( string $raw ): ?array {
+		$split = \preg_split( '/\s*(?:<br\s*\/?>|\r\n|\r|\n)\s*/i', $raw );
+		$lines = array();
+		foreach ( (array) $split as $line ) {
+			$clean = \sanitize_text_field( (string) $line );
+			if ( '' !== $clean ) {
+				$lines[] = $clean;
+			}
+		}
+		if ( empty( $lines ) ) {
 			return null;
 		}
 
-		return array(
-			'@type'         => 'PostalAddress',
-			'streetAddress' => $street,
-		);
+		$country  = '';
+		$postcode = '';
+		$locality = '';
+
+		$uk_names = array( 'united kingdom', 'uk', 'u.k.', 'great britain', 'gb', 'england', 'scotland', 'wales', 'northern ireland' );
+
+		// Country: last line, only when it is a recognised UK country name.
+		if ( \count( $lines ) > 1 && \in_array( \strtolower( $lines[ \count( $lines ) - 1 ] ), $uk_names, true ) ) {
+			$country = 'GB';
+			\array_pop( $lines );
+		}
+
+		// Postcode: last remaining line, only when it matches the UK postcode shape.
+		if ( \count( $lines ) > 1 && \preg_match( '/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i', $lines[ \count( $lines ) - 1 ] ) ) {
+			$postcode = \strtoupper( \trim( $lines[ \count( $lines ) - 1 ] ) );
+			\array_pop( $lines );
+		}
+
+		// Locality: the last remaining line, but ONLY when a postcode/country was
+		// confidently identified AND a street line precedes it (never guess a town).
+		if ( \count( $lines ) >= 2 && ( '' !== $postcode || '' !== $country ) ) {
+			$locality = \array_pop( $lines );
+		}
+
+		$street = \implode( ', ', $lines );
+
+		$address = array( '@type' => 'PostalAddress' );
+		if ( '' !== $street ) {
+			$address['streetAddress'] = $street;
+		}
+		if ( '' !== $locality ) {
+			$address['addressLocality'] = $locality;
+		}
+		if ( '' !== $postcode ) {
+			$address['postalCode'] = $postcode;
+		}
+		if ( '' !== $country ) {
+			$address['addressCountry'] = $country;
+		}
+
+		// Guard: nothing but @type survived → treat as no usable address.
+		if ( 1 === \count( $address ) ) {
+			return null;
+		}
+
+		return $address;
 	}
 
 	/**
@@ -405,5 +496,99 @@ final class Org_Website_Schema {
 		}
 
 		return $contact_point;
+	}
+
+	/**
+	 * Build an openingHoursSpecification array from the Site Info opening-hours
+	 * fields (mon..sun, free text). Only emitted on a LocalBusiness node.
+	 *
+	 * Each day's stored value is operator free text with no enforced format, so
+	 * parsing is deliberately conservative: a day is emitted ONLY when its value
+	 * contains EXACTLY two time tokens that resolve to a progressing HH:MM–HH:MM
+	 * range. A day that is empty, "closed", split-hours ("9–12, 2–5"), or an
+	 * ambiguous bare 12-hour shorthand ("9–5" that meant 9am–5pm) is OMITTED —
+	 * the schema has no "closed" property and emitting guessed or contradictory
+	 * hours is worse than omission. Guarded by class_exists().
+	 *
+	 * @return array<int,array<string,string>> OpeningHoursSpecification nodes (may be empty).
+	 */
+	private static function build_opening_hours(): array {
+		if ( ! \class_exists( '\SGS\Blocks\Sgs_Site_Info' ) ) {
+			return array();
+		}
+
+		$day_map = array(
+			'mon' => 'Monday',
+			'tue' => 'Tuesday',
+			'wed' => 'Wednesday',
+			'thu' => 'Thursday',
+			'fri' => 'Friday',
+			'sat' => 'Saturday',
+			'sun' => 'Sunday',
+		);
+
+		$specs = array();
+		foreach ( $day_map as $key => $day_name ) {
+			$raw = \trim( (string) Sgs_Site_Info::get( "opening_hours.{$key}", '' ) );
+			if ( '' === $raw ) {
+				continue;
+			}
+
+			// Extract every "H", "H:MM" or "H.MM" token with optional am/pm. The
+			// hour digit is mandatory, so no empty matches. A valid single-range
+			// day yields exactly two tokens (open, close).
+			if ( ! \preg_match_all( '/(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?/i', $raw, $matches, \PREG_SET_ORDER ) ) {
+				continue;
+			}
+			if ( 2 !== \count( $matches ) ) {
+				continue;
+			}
+
+			$opens  = self::parse_time_token( $matches[0] );
+			$closes = self::parse_time_token( $matches[1] );
+			if ( null === $opens || null === $closes ) {
+				continue;
+			}
+
+			// Reject non-progressing ranges (close at or before open) — this
+			// catches the common "9–5" (no am/pm) that parses to 09:00–05:00.
+			if ( \strcmp( $closes, $opens ) <= 0 ) {
+				continue;
+			}
+
+			$specs[] = array(
+				'@type'     => 'OpeningHoursSpecification',
+				'dayOfWeek' => $day_name,
+				'opens'     => $opens,
+				'closes'    => $closes,
+			);
+		}
+
+		return $specs;
+	}
+
+	/**
+	 * Resolve one regex time-token match to a 24-hour "HH:MM" string, honouring an
+	 * explicit am/pm suffix, or null when the value falls outside 24-hour range.
+	 *
+	 * @param array<int,string> $token preg match: [full, hour, minute?, meridiem?].
+	 * @return string|null "HH:MM" or null when out of range.
+	 */
+	private static function parse_time_token( array $token ): ?string {
+		$hour     = (int) $token[1];
+		$minute   = isset( $token[2] ) && '' !== $token[2] ? (int) $token[2] : 0;
+		$meridiem = isset( $token[3] ) ? \strtolower( $token[3] ) : '';
+
+		if ( 'pm' === $meridiem && $hour < 12 ) {
+			$hour += 12;
+		} elseif ( 'am' === $meridiem && 12 === $hour ) {
+			$hour = 0;
+		}
+
+		if ( $hour < 0 || $hour > 23 || $minute < 0 || $minute > 59 ) {
+			return null;
+		}
+
+		return \sprintf( '%02d:%02d', $hour, $minute );
 	}
 }
