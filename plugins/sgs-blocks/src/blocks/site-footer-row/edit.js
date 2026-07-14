@@ -11,20 +11,8 @@ import {
 } from '@wordpress/components';
 import { ResponsiveOverride, SpacingControl, ResponsiveBoxControls } from '../../components';
 
-const ALLOWED_BLOCKS = [
-	'core/group',
-	'sgs/responsive-logo',
-	'core/site-logo',
-	'core/site-title',
-	'core/heading',
-	'core/paragraph',
-	'core/list',
-	'core/social-links',
-	'core/html',
-	'sgs/business-info',
-	'sgs/button',
-	'core/buttons',
-];
+// No allowedBlocks restriction: site-footer-row is a container-equivalent (like
+// sgs/container in free mode) — it accepts ANY block, not a curated palette.
 
 // Distribution maps to the shared wrapper's justifyContent attr (flex rows only).
 const DISTRIBUTION_OPTIONS = [
@@ -85,7 +73,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		allowedBlocks: ALLOWED_BLOCKS,
 		templateLock: false,
 		orientation: 'horizontal',
 		renderAppender: undefined,

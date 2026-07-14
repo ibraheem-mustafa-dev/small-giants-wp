@@ -7,23 +7,9 @@ import {
 import { PanelBody, SelectControl } from '@wordpress/components';
 import { ResponsiveOverride, SpacingControl, ResponsiveBoxControls } from '../../components';
 
-const ALLOWED_BLOCKS = [
-	'sgs/responsive-logo',
-	'core/site-logo',
-	'core/site-title',
-	'core/navigation',
-	'core/group',
-	'core/paragraph',
-	'core/html',
-	'core/social-links',
-	'core/search',
-	'sgs/mobile-nav-toggle',
-	'sgs/button',
-	'sgs/product-search',
-	'sgs/business-info',
-	'sgs/cart',
-	'woocommerce/mini-cart',
-];
+// No allowedBlocks restriction: site-header-row is a container-equivalent (like
+// sgs/container in free mode) — it accepts ANY block, not a curated palette. The
+// row's job is layout (the never-overflow cluster), not gatekeeping content.
 
 // Distribution maps to the shared wrapper's justifyContent attr (consumed by
 // SGS_Container_Wrapper). Curated to the four clients actually use.
@@ -59,7 +45,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		allowedBlocks: ALLOWED_BLOCKS,
 		templateLock: false,
 		orientation: 'horizontal',
 		renderAppender: undefined,
