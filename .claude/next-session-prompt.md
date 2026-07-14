@@ -11,9 +11,12 @@ You are the SGS WordPress block + frontend developer. **§S9 is now 10/11 DONE +
 
 Read `.claude/handoff.md` + `CLAUDE.md` + `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md` for full context, then work the priorities.
 
-## ⛔ BEAN'S DIRECTIVE — the arc (unchanged)
-1. **CONFIRM every point in Spec 17 §S9 is TOTALLY covered** — **10/11 FRs DONE** (FR-S9-1..7 + FR-S9-9 + FR-S9-10 + FR-S9-11). BUILD the **1 remaining**: **FR-S9-8** (per-device content adaptation). Spec 17 is NOT "covered" until FR-S9-8 is built + live-verified on ≥2 clients.
-2. **ONLY THEN start Spec 33 PART 2** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5 / FR-S9-11 step 3). Do NOT start Part 2 until Bean signs off "§S9 totally covered". Fold in the recogniser multi-flag update (`P-RECOGNISER-HEADER-BEHAVIOUR-MULTIFLAG`) as part of Part 2.
+## ⛔ BEAN'S DIRECTIVE — the arc (updated 2026-07-14)
+1. **BUILD FR-S9-8** (per-device content adaptation) — the SINGLE remaining §S9 build. **10/11 FRs DONE** (FR-S9-1..7 + FR-S9-9 + FR-S9-10 + FR-S9-11). Spec 17 is NOT "covered" until FR-S9-8 is built + live-verified on ≥2 clients.
+2. **THEN a thorough `/adversarial-council` on the WHOLE Spec 17 §S9 implementation at completion** (Bean-directed) — red-team all 11 FRs as built before sign-off (see Task 2).
+3. **THEN Bean's "§S9 totally covered" sign-off** — the HARD gate.
+4. **THEN Spec 33 PART 2 — Bean wants this ASAP** — the header/footer CLONE pipeline (`P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` = Spec 17 P5 / FR-S9-11 step 3). Do NOT start until the sign-off. Fold in the recogniser multi-flag update (`P-RECOGNISER-HEADER-BEHAVIOUR-MULTIFLAG`).
+> **Task 2b is DONE (D330):** both legacy header/footer paths (theme-side header-mode + plugin-side Customiser) are retired; the 3 inert alt-header stubs deleted. The Site Editor is the one home. No consolidation work remains.
 
 ## Why this next
 D330 closed FR-S9-9 + FR-S9-10 (and merged in the Task 2b theme-system retirement the qc-council forced). FR-S9-8 is the last §S9 build — a multi-step build (a NEW move-to-drawer drop-zone + `showLabel`/`iconOnly` on 2 blocks + the Indus slim-bar reproduction) that Bean deliberately deferred to its own focused session.
@@ -58,6 +61,7 @@ D330 closed FR-S9-9 + FR-S9-10 (and merged in the Task 2b theme-system retiremen
 | `/brainstorming` | ALWAYS — design the move-to-drawer drop-zone UX + the per-device adaptation before build |
 | `/strategic-plan` + `/phase-planner` | ALWAYS — FR-S9-8 is multi-step; scope it |
 | `/qc-council` | validate any shared-mechanism change (the new drop-zone) before dispatch (blub.db 255) — it CAUGHT the hidden theme system this session |
+| `/adversarial-council` | Task 2 — the pre-sign-off red-team of the WHOLE §S9 implementation at completion |
 | `/gap-analysis` | grade the FR-S9-8 build vs its 4 acceptance bullets |
 | `/lifecycle` | before any skill/agent change |
 | `/sgs-wp-engine` + `/sgs-update` | SGS block dev + DB re-register |
@@ -82,23 +86,24 @@ D330 closed FR-S9-9 + FR-S9-10 (and merged in the Task 2b theme-system retiremen
 **Orchestration:** `/brainstorming` the drop-zone UX first; `/qc-council` the drop-zone shape before dispatch; inline or 1 Sonnet subagent per sub-piece; live-verify each on Mama's AND Indus (R-31-9). **But: no live indus deployment exists** — either stand one up, or evidence the 2nd client by-construction + on a second live SGS site, and flag the gap to Bean.
 **Acceptance:** every FR-S9-8 acceptance bullet live-verified (per-tier visibility; `iconOnly` email→`mailto:`, phone→`tel:`; drawer element absent from collapsed header, present in open drawer; Indus reproduction). **/qc gate after:** yes.
 
-## Task 2: present the §S9 coverage audit for Bean's "totally covered" sign-off
-**What:** update `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md` marking FR-S9-8 DONE + live-verified (11/11); present the full FR-S9-1..11 audit to Bean for the "totally covered" sign-off (the HARD gate before Spec 33 Part 2). **Depends on:** Task 1.
+## Task 2: `/adversarial-council` on the WHOLE Spec 17 §S9 implementation (at completion, pre-sign-off)
+**What:** once FR-S9-8 lands, run a thorough `/adversarial-council` on the ENTIRE header/footer/nav system as BUILT (all 11 FRs) — the 3 container blocks + `adaptive-nav` + `mobile-nav` drawer, the shared `SGS_Container_Wrapper`, the FR-S9-6 responsive engine, the FR-S9-9 behaviour layer + bridge, the drawer a11y contract, the Site-Info wiring. Feed the panel the end-goal (a best-in-class no-code header/footer system) + the live canary. Find what will break / be exploited / regress / confuse a non-coder client BEFORE Bean's sign-off. Convergence-weighted must-fix register + GO/NO-GO. **Why:** Bean-directed pre-sign-off stress-test — the council caught the hidden theme system this session, so it earns its place at completion too. **Depends on:** Task 1. **/qc gate after:** the council IS the gate.
 
-## Task 3: START Spec 33 PART 2 (ONLY after Task 2 sign-off)
-**What:** the `/sgs-clone` header/footer handler — extract a draft's header/footer ONCE per site → emit `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` by BEM role. Fold in the recogniser multi-flag update (`P-RECOGNISER-HEADER-BEHAVIOUR-MULTIFLAG` — write `sgs/site-header` block attrs, not the retired `sgs_header_rules` option). Design-gate first. **Depends on:** Task 2 sign-off (HARD).
+## Task 3: present the §S9 coverage audit for Bean's "totally covered" sign-off
+**What:** update `.claude/reports/2026-07-14-spec17-s9-coverage-audit.md` marking FR-S9-8 DONE + live-verified (11/11) + fold in the Task-2 council's must-fix outcomes; present the full FR-S9-1..11 audit to Bean for the "totally covered" sign-off (the HARD gate before Spec 33 Part 2). **Depends on:** Task 1 + Task 2.
 
-## Optional cleanup (own session): consolidation residuals
-- `P-CUSTOMISER-HEADER-FOOTER-RETIRE` — retire the plugin-side Customiser path (`Sgs_Header_Customiser`/`Sgs_Footer_Customiser`/`Sgs_Header_Renderer`, sgs-blocks.php L410-413) — the OTHER legacy path from D329 Task 2b, not touched D330 (header/footer colours + a now-redundant sticky toggle duplicating the block controls). Prove `Sgs_Header_Renderer` dormant first.
-- `P-ALT-HEADER-PART-STUBS` — delete the 3 inert alt-header stubs (`header-{sticky,transparent,shrink}.html` + patterns + theme.json registrations); keep `header-minimal`.
+## Task 4: START Spec 33 PART 2 — Bean wants this ASAP (ONLY after Task 3 sign-off)
+**What:** the `/sgs-clone` header/footer handler — extract a draft's header/footer ONCE per site → emit `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav` by BEM role. Fold in the recogniser multi-flag update (`P-RECOGNISER-HEADER-BEHAVIOUR-MULTIFLAG` — write `sgs/site-header` block attrs, not the retired `sgs_header_rules` option). Design-gate first. **Depends on:** Task 3 sign-off (HARD).
 
 ## Dependency graph
 ```
 Task 1 (FR-S9-8 build) ── own /strategic-plan + /phase-planner + live-verify (≥2 clients)
   ↓ (done + live)
-Task 2 (coverage audit → BEAN SIGN-OFF GATE — 11/11)
+Task 2 (/adversarial-council on the WHOLE §S9 as built — pre-sign-off stress-test)
+  ↓ (must-fixes cleared)
+Task 3 (coverage audit → BEAN SIGN-OFF GATE — 11/11)
   ↓ (only after "§S9 totally covered")
-Task 3 (Spec 33 Part 2, incl. recogniser multi-flag update)
+Task 4 (Spec 33 Part 2 — ASAP; incl. recogniser multi-flag update)
   ↓
 Commit + push per milestone (path-scoped; verify D-ceiling + branch = main)
 ```
