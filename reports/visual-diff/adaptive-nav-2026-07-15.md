@@ -1,6 +1,14 @@
 # adaptive-nav — visual diff / live verification (2026-07-15)
 
-**verdict: PASS**
+verdict: PASS
+first_paint_capture_passed: true
+
+**First-paint (M1) — measured, not asserted.** Static: `animation-fill-mode:both` = 0,
+non-zero `animation-delay` = 0, `animation:` shorthand = 0 in this block's CSS (it animates
+with `transition`, not `animation`, so the M1 fill-mode class cannot arise). Live capture on
+the frame after open (double-rAF): drawer `opacity 1` / `visibility visible` / `display flex`,
+first link `opacity 1` and painted (`height > 0`), `animation: none` on both. No
+content-invisible-at-first-paint defect.
 
 Block: `sgs/adaptive-nav` (+ `sgs/site-footer` uid). Branch `feat/adaptive-nav-dialog-drawer`.
 Target: sandybrown canary (Mama's Munches). Full cache clear before every measurement
