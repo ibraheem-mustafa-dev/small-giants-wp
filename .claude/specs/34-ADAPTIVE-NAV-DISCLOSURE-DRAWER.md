@@ -341,6 +341,18 @@ STOP-67 reports (`adaptive-nav`, `nav-menu`) with `verdict: PASS` +
 hook may not save you). **Done when:** every row above has a measured value in the
 report, and Bean has the screenshot pair.
 
+**Tools for each clause (don't hand-roll these):**
+
+| Clause | Tool |
+|---|---|
+| 375/768/1440 sweeps + the STOP-67 report shape (`reports/visual-diff/`, `verdict: PASS`) | `/visual-qa` |
+| open-state axe = 0 | `/a11y-audit` (run it with the drawer OPEN — a closed-drawer pass proves nothing) |
+| `elementFromPoint` sweep · ESC/focus/Tab-wrap · scroll-lock frame sweep | Playwright MCP (or chrome-devtools MCP if Playwright reports "browser already in use") |
+| Deploy to the canary before measuring | `build-deploy.py --target sandybrown` — never a hand-rolled tar/scp (D336) |
+| Any live CSS/geometry measurement | Hostinger MCP `hosting_clearWebsiteCacheV1` **first**, plus `wp litespeed-purge all` (LiteSpeed IS active on sandybrown) — the CDN edge otherwise serves the stale `?ver` and you measure the old file |
+| The scrollbar-pin / bounce clause | **Desktop viewport with a classic scrollbar.** Device emulation cannot reproduce the scrollbar-vanish bounce — measure it on a real desktop width or the check is vacuous |
+| Bean's screenshot pair (R-31-13) | Cropped pair, tint-excludes-header. His eye closes the LOOK; numbers close the mechanics. Neither closes alone |
+
 ## 5. Out of scope (the NOT list)
 
 - Spectra's Header-Type VARIANTS (Flyout / Full-Screen alternatives) — Bean specced ONE

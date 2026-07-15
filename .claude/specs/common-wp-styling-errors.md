@@ -50,11 +50,12 @@
 
 | # | Error | Why it happens | Optimal fix |
 |---|---|---|---|
-| E1 | Theme files don't deploy via the plugin tar method | The standard SGS deploy is `tar -cf sgs-deploy.tar plugins/sgs-blocks` — `theme/` is excluded. theme.json, theme/functions.php, theme/assets/css/*.css don't ship by that path. | Direct `scp -P 65002 -i ~/.ssh/id_ed25519 theme/sgs-theme/<file> u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/themes/sgs-theme/<file>` for each theme file changed. The `/wp-sgs-deploy theme` slash command wraps this. |
+| E1 | Theme CSS change didn't reach the site | Scoping the deploy to the plugin only. **The hand-rolled `tar`/`scp` recipes this row used to prescribe are RETIRED (D336 — they took two client sites down ~2.5h).** | `python plugins/sgs-blocks/scripts/build-deploy.py --target <site> --theme-only` (omit the flag to ship theme + plugin). It ships `theme/`, verifies fail-closed, and rotates a `.bak`. Ceremony/gates: `/wp-sgs-deploy`. Never hand-roll a deploy. |
 | E2 | `wp opcache reset` doesn't clear the opcode cache web requests use | PHP-FPM and PHP-CLI use separate opcache pools. `wp` runs through CLI; the website runs through FPM. CLI reset is a no-op for the web pool. | HTTP-trigger reset: `ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm public_html/op-reset-tmp.php"`. |
 | E3 | Palette change in theme.json doesn't reflect in rendered CSS even after page reload | LiteSpeed's CSS optimiser caches the generated palette inline `<style>` block. Even after `wp litespeed-purge all` (page cache), the optimiser cache survives in `wp-content/litespeed/css/`. | Run BOTH purges: `wp litespeed-purge all` AND `rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css`. Two separate caches, two separate clears. |
-| E4 | Tar deploy excludes too much: `--exclude='src'` strips `vendor/*/src` causing fatal PHP errors | `--exclude='src'` is too broad — matches any directory named `src` anywhere in the path, including Composer vendor packages (myclabs, phpunit) that have `src/` subdirectories. | Scope the exclude to the specific path: `--exclude='plugins/sgs-blocks/src'` — only the JS source dir we don't want to ship. |
-| E5 | `scp -r` to Hostinger creates nested directories (`themes/sgs-theme/sgs-theme/`) | Hostinger's SCP behaviour: when the target directory already exists, `scp -r src/dir target:path/dir` creates `path/dir/dir/`. Local SCP differs from many remote SSH servers. | Use the tar method for plugin deploys. For single-file theme deploys, scp to the file path directly: `scp file remote:path/to/file` (no `-r`). |
+| E4 | Tar excludes too much: `--exclude='src'` strips `vendor/*/src` causing fatal PHP errors | `--exclude='src'` matches any directory named `src` anywhere in the path, including Composer vendor packages with `src/` subdirectories. | Historical — `build-deploy.py` already carries the correctly-scoped excludes. Do not hand-roll a tar to "fix" this. |
+| E5 | `scp -r` to Hostinger creates nested directories (`themes/sgs-theme/sgs-theme/`) | Hostinger's SCP behaviour: when the target directory exists, `scp -r src/dir target:path/dir` creates `path/dir/dir/`. | One of several reasons hand-rolled deploys are retired. Use `build-deploy.py`. |
+| E7 | Measured live CSS and got the OLD file — misdiagnosed the fix as not working | The Hostinger CDN edge-caches the `?ver` asset for ~7 days. OPcache reset + LiteSpeed purge do NOT clear the edge copy. | Hostinger MCP `hosting_clearWebsiteCacheV1` **before every live CSS measurement**, plus `wp litespeed-purge all` on sandybrown (LiteSpeed IS active there, v7.8.1). Then measure. |
 | E6 | `wp eval` blocked by `wp-content-guard.py` PreToolUse hook | Hook prevents direct `post_content` modification via WP-CLI to enforce the project's "use Site Editor or wp.data.dispatch via Playwright" rule. | For block content changes: `wp.data.dispatch('core/block-editor').replaceBlock(clientId, newBlock)` + `wp.data.dispatch('core/editor').savePost()` via Playwright. For PHP eval needs: write to `/tmp/script.php`, scp to server, run `wp eval-file ~/script.php`, delete. |
 
 ## F. Accessibility / UX
@@ -233,9 +234,13 @@ Also: always use `background-image:` not `background:` shorthand for gradient/im
 
 **Captured:** 2026-05-06 (H-9 audit). Fixed in `cta-section/style.css` (gradient preset rules + button gradient) and `post-grid/style.css` (skeleton shimmer).
 
-## S. Pixel-diff investigation methodology
+## S. Clone-fidelity investigation methodology
 
-**Symptom:** Pixel-diff between deployed SGS converter output and a mockup baseline plateaus at ~30-45% even after multiple architectural converter improvements. Tempting conclusion: "the closure gate is unachievable, the comparison is structurally noisy".
+> **⚠️ Instrument updated 2026-07-16.** This section was written around `pixel-diff.py`, which was **PURGED 2026-07-04 (`220cb28a`)** — it scored an EMPTY section as a false WIN (matches the background) and a correctly-reflowed one as a false LOSS. **The current instrument is Spec 20 computed-parity (`scripts/parity/computed-parity.js`, auto-runs as Stage 11.6)**, which compares computed styles on rendered elements matched by TEXT CONTENT at 375/768/1440. Closure = the live per-section visual check + **Bean's eye** (R-31-11 / R-31-13) via `/visual-qa`; an aggregate % is never a closing gate (R-31-4).
+>
+> **The durable lesson below is unchanged and is why this section still exists:** read the evidence that already classifies the problem BEFORE conjecturing about causes.
+
+**Symptom:** The fidelity measure plateaus even after multiple architectural converter improvements. Tempting conclusion: "the closure gate is unachievable, the comparison is structurally noisy".
 
 **Reality:** Two separate effects mixed together:
 
@@ -245,8 +250,9 @@ Also: always use `background-image:` not `background:` shorthand for gradient/im
 ### The methodology rules (binding)
 
 1. **READ pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing.** The orchestrator records what didn't translate. Spot-fixing without that evidence is forbidden.
-2. **Use per-section cropped diff (`--selector .sgs-X`), not full-page.** `scripts/pixel-diff.py --selector .sgs-{section}` or `scripts/screenshot-diff-helper.js --selector`. Each section closes independently at ≤ 1% across 375/768/1440 viewports.
-3. **Track converter quality via bucket counts**, not pixel-diff percentages. Going from 212 extraction_failed → 185 is real converter progress even when the pixel-diff number doesn't move (because the lifted attrs land on theme.json defaults that happen to coincide with the mockup's inline values).
+2. **Measure per-section, not full-page** — and with the current instrument: **Stage 11.6 computed-parity** (Spec 20), plus `/visual-qa` for the cropped-pair visual check Bean signs off. *(The old `pixel-diff.py --selector .sgs-{section}` recipe is purged — don't go looking for it.)* Full-page diffing is what produced the "~30-45% irreducible floor" framing in the first place; the wrapper noise it measured was never the defect.
+3. **Input-side counts are DEBUG, not a fidelity signal.** Bucket/`attribute_gap_candidates` counts falling is real converter progress but says nothing about rendered fidelity (a lifted attr can land on a theme default that coincides with the draft). Conversely they are a CUMULATIVE ledger across runs — never read them as this clone's score. Rendered fidelity = Stage 11.6 + Bean's eye, full stop.
+4. **Exclude the known non-defects when judging fidelity:** header + footer divergences, and the testimonials static-grid→slider (THE accepted exception). Re-flagging them wastes a session and inflates any full-page number by roughly 40%.
 
 ### The 2026-05-15 incident
 
@@ -254,7 +260,7 @@ Spent ~6 hours of one session running 12 passes of full-page pixel diff and conj
 
 **Lessons captured:** `~/.openclaw/workspace/memory/learning/2026-05-15-read-leftover-buckets-*.md` + `~/.openclaw/workspace/memory/learning/2026-05-15-per-section-cropped-pixel-diff-*.md`. blub.db rows 254, 256.
 
-**Files:** `pipeline-state/<run>/leftover-buckets.json` (orchestrator output) — `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` (writer; bare-key lookup bug also fixed 2026-05-15 — was causing 100% false "failed" classification) — `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` (extracted_attributes was always empty, suppressing all signal — fixed 2026-05-15).
+**Files:** `pipeline-state/<run>/leftover-buckets.json` (orchestrator output) — `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` (writer; bare-key lookup bug also fixed 2026-05-15 — was causing 100% false "failed" classification). *(The third file this row used to cite, `orchestrator/converter_v2/__init__.py`, was DELETED with the frozen tree at D276 — the engine is now `plugins/sgs-blocks/scripts/converter/`.)*
 
 ## T. CSS-selector classifier regex traps (2026-05-18 widthMode dispatch)
 

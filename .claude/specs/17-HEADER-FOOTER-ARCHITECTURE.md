@@ -32,7 +32,9 @@ update_triggers:
 
 > **Session B 2026-05-22 updates:**
 >
-> 1. **Customiser sibling surfaces shipped (Phase 5b, commit `60220b13` + paint-fix `0ef032fe`, Decisions 22+23).** Three new Customiser sections register at `Appearance → Customise → SGS Header / SGS Footer / SGS Site Info`. Implementing classes: `Sgs_Header_Customiser` + `Sgs_Footer_Customiser` + `Sgs_Site_Info_Customiser` (pattern replicated from `Sgs_Floating_UI_Customiser` per Spec 18 §8b). Companion renderers `Sgs_Header_Renderer` + `Sgs_Footer_Renderer` emit inline CSS on `wp_head`. **Additive overlay, NOT replacement.** Existing `Sgs_Header_Rules_Admin` + `Sgs_Footer_Rules_Admin` + `Sgs_Site_Info_Admin` pages remain canonical for conditional-rules management (rules-table UI; ~30 fields for site-info); Customiser sections expose the colour/typography/sticky/max-width subset (~10 settings) with live `postMessage` preview. Info-link controls inside each Customiser section deep-link operators to the admin rules pages for the full rules-management UI. Paint targets: `header.wp-block-template-part` / `footer.wp-block-template-part` (WP-canonical wrappers — verified empirically; `.wp-site-header` / `.wp-site-footer` are NOT emitted by SGS theme template parts).
+> 1. **⛔ RETRACTED 2026-07-16 (adversarial-council) — THIS CLAIM IS FICTION. DO NOT BUILD ON IT.** This item claimed `Sgs_Header_Customiser`, `Sgs_Footer_Customiser`, `Sgs_Header_Renderer` and `Sgs_Footer_Renderer` shipped at commit `60220b13`. **None of those four classes exist anywhere in `plugins/` or `theme/`** (verified 2026-07-16 by grep + the `lint-spec-drift.py` PHP-CLASS gate; commit `87dd869d` "retire plugin-side Customiser path" removed them and this paragraph was never swept). Only `Sgs_Site_Info_Customiser` and `Sgs_Floating_UI_Customiser` are real. There is NO header/footer Customiser styling surface. Header/footer behaviour lives on `sgs/site-header` block attrs (FR-S9-9, D330). This was the FIRST prose in the spec, so a fresh agent read it first and believed it. Original text retained below, struck, for audit only:
+>
+> ~~Customiser sibling surfaces shipped (Phase 5b, commit `60220b13` + paint-fix `0ef032fe`, Decisions 22+23).~~ **[The remainder of this item is RETRACTED FICTION — retained struck, for audit only. `Sgs_Header_Customiser` / `Sgs_Footer_Customiser` / `Sgs_Header_Renderer` / `Sgs_Footer_Renderer` DO NOT EXIST.]** ~~Three new Customiser sections register at `Appearance → Customise → SGS Header / SGS Footer / SGS Site Info`. Implementing classes: `Sgs_Header_Customiser` + `Sgs_Footer_Customiser` + `Sgs_Site_Info_Customiser` (pattern replicated from `Sgs_Floating_UI_Customiser` per Spec 18 §8b). Companion renderers `Sgs_Header_Renderer` + `Sgs_Footer_Renderer` emit inline CSS on `wp_head`. **Additive overlay, NOT replacement.** Existing `Sgs_Header_Rules_Admin` + `Sgs_Footer_Rules_Admin` + `Sgs_Site_Info_Admin` pages remain canonical for conditional-rules management (rules-table UI; ~30 fields for site-info); Customiser sections expose the colour/typography/sticky/max-width subset (~10 settings) with live `postMessage` preview. Info-link controls inside each Customiser section deep-link operators to the admin rules pages for the full rules-management UI. Paint targets: `header.wp-block-template-part` / `footer.wp-block-template-part` (WP-canonical wrappers — verified empirically; `.wp-site-header` / `.wp-site-footer` are NOT emitted by SGS theme template parts).
 >
 > 2. **Variation-aware behaviour shift (Phase 5a, commit `43a93df9`, Decision 21).** The WP style-variation overlay system that the spec assumed (Section X §X — variation JSONs in `theme/sgs-theme/styles/`) has been retired. Per-client snapshots now live at `sites/<client>/theme-snapshot.json` and are pushed via `plugins/sgs-blocks/scripts/push-theme-snapshot.py`. Header/footer template parts + CPTs + rules engines are entirely preserved (none of these are variation-system files). Site Info store (`wp_options[sgs_site_info]`) unchanged. Anywhere the spec references "active style variation" as a behaviour trigger, the new model is "active site's theme.json snapshot" — same operator experience, different storage path.
 >
@@ -609,64 +611,18 @@ The table below lists all registered framework header patterns. Each is in `them
 
 ---
 
-## §S8 — Two-Axis Style Variations
+## §S8 — Two-Axis Style Variations (⛔ RETIRED 2026-05-21 — DEAD SPEC, DO NOT BUILD)
 
-**Plain English:** Each style variation is split into two independent axes — a colour preset and a typography preset — stored in `styles/colours/` and `styles/typography/` subdirectories. WordPress 6.5+ auto-discovers these subdirectories without any PHP registration. Operators in the Site Editor Styles panel can mix any colour preset with any typography preset, giving combinatorial design freedom (8 colour presets × 8 typography presets = 64 combinations from 24 files instead of 64 separate variation JSONs). The original top-level variation files remain as bundled "complete" presets — zero change for existing operators.
-
-### FR-S8-1 — Directory split and per-variation refactor
-
-**Behaviour:** Each existing variation `<variant>.json` in `theme/sgs-theme/styles/` is split into:
-- `styles/colours/<variant>.json` — ONLY the colour layer: `settings.color.palette`, colour-derived `styles.elements.*` colour overrides. Title format: `"<Variant> Colours"`.
-- `styles/typography/<variant>.json` — ONLY the typography layer: `settings.typography.fontFamilies`, `settings.typography.fontSizes`, typographic `styles.elements.*` overrides, font-related `styles.blocks.*` entries. Title format: `"<Variant> Typography"`.
-- The original top-level `<variant>.json` becomes a "bundled" variation: retains both layers unchanged, gains `description: "Bundled preset — colour + typography combined. For independent axes use colours/<variant> and typography/<variant>."`.
-- Spacing, layout, custom `settings.spacing.spacingSizes`, and block-level overrides that are not typography-only stay in the bundled top-level file; they are NOT duplicated into the axis files.
-- Font face declarations (`fontFace[]` on each `fontFamily` entry) go into the typography file.
-
-**Acceptance criteria:**
-- `styles/colours/` directory exists with one `.json` per variation
-- `styles/typography/` directory exists with one `.json` per variation
-- Each colour file: `settings.color.palette` present with ≥ 1 entry; `settings.typography.fontFamilies` absent
-- Each typography file: `settings.typography.fontFamilies` present with ≥ 1 entry; `settings.color.palette` absent
-- All colour files: palette slugs are a superset of the bundled file's palette slugs (no slug lost)
-- All typography files: fontFamily slugs match the bundled file's fontFamily slugs
-- Top-level bundled files: `settings.color.palette` + `settings.typography.fontFamilies` both present; `description` contains `"Bundled preset"`
-- All files parse as valid `theme.json` v3 (schema + version: 3)
-- All files ≤ 500 lines
-- Test suite `plugins/sgs-blocks/scripts/tests/test_two_axis_style_variations.py` passes 44/44
-
-**Model:** Sonnet
-**Tests:**
-- Unit: `test_two_axis_style_variations.py` (44 tests) — JSON-key presence, palette slug completeness, fontFamily slug completeness, file size guard, bundled-preset integrity. 44/44 PASSED.
-- Integration: Activate a colour-only variation in WP Site Editor, confirm palette tokens available in block inspector. Activate a typography-only variation, confirm font families switch. Activate bundled preset, confirm both axes active simultaneously.
-- E2E: Playwright — open Site Editor Styles panel on sandybrown canary; confirm colour and typography presets appear as separate selectable groups; confirm mixing colour from one variation with typography from another renders correctly at 375/768/1440.
-- Regression: grep `styles/colours/` and `styles/typography/` for any palette or fontFamily keys that are absent from the corresponding bundled file.
-**Depends on:** None (pure file addition; no PHP changes needed)
-**Universal-benefit:** Yes — every future SGS client immediately benefits from combinatorial variation freedom
-
-### FR-S8-2 — WP discovery wiring and operator UX
-
-**Behaviour:** WordPress 6.5+ auto-discovers `.json` files in `styles/` subdirectories without registration. Confirmed via fullsiteediting.com documentation: *"subfolders work"* — no `theme.json` entry and no PHP hook required. Operators see colour and typography presets as separate groups in the Site Editor Styles panel. Labels come from the `title` field in each JSON file.
-
-**Acceptance criteria:**
-- No `theme.json` modification required for subdirectory discovery on WP 6.5+
-- No PHP class `class-sgs-style-variation-discovery.php` required (discovery is native)
-- Operator opens Appearance → Editor → Styles → Browse styles: colour presets labelled e.g. "Mama's Munches Colours" appear alongside typography presets labelled e.g. "Mama's Munches Typography"
-- Bundled presets continue to appear with their existing labels (no title change)
-- Activating a colour preset does not reset the active typography preset (WP native behaviour — each axis is stored separately in `wp_global_styles`)
-- If the site is on WP < 6.5: bundled top-level files continue to work exactly as before; axis files are simply ignored by WP (safe graceful degradation)
-
-**Model:** Sonnet
-**Tests:**
-- Unit: Confirm `styles/colours/` and `styles/typography/` contain exactly 8 files each matching `EXPECTED_VARIATIONS`.
-- Integration: On WP 6.9 test install, confirm `WP_Theme_JSON_Resolver::get_style_variations()` returns colour + typography + bundled presets (total ≥ 24 variations).
-- E2E: Playwright — open Styles panel; assert variation labels include "Colours" and "Typography" suffix variants; confirm mix-and-match persist across page reload.
-- Regression: Existing sites running bundled presets render identically post-deploy (pixel-diff < 1% at all three breakpoints).
-**Depends on:** FR-S8-1
-**Universal-benefit:** Yes
-
----
+> **RETIRED.** The WP style-variation system this section specified was DELETED (Decision 18/19; see `.claude/plans/2026-05-21-architecture-staging.md` §6.4). Per-client branding now lives at `sites/<client>/theme-snapshot.json`, generated by the **Spec 33** extractor and deployed via `push-theme-snapshot.py`. There are no `styles/colours/` or `styles/typography/` directories.
+>
+> **Retraction moved here 2026-07-16 (adversarial-council, 3/7 personas).** The full FR-S8-1/FR-S8-2 bodies previously sat HERE — complete with Behaviour, Acceptance criteria, "44/44 tests PASSED", and no retirement marker — while the only retraction sat **445 lines below**, after an entire additional spec section. A reader top-down, or one who grepped `§S8` and stopped at the first hit, would have treated ~55 lines of deleted architecture as buildable. A retraction must sit at the point of the claim. The original bodies are recoverable from git history (this file, pre-2026-07-16).
 
 ## §S9 — Header/Footer/Nav Block SYSTEM (added 2026-07-13, design-gate approved)
+
+> **§S9 test tooling (named once here — the FR Test rows below say "Live Playwright" ~12× and need not restate this):**
+> `/visual-qa` for the responsive/reflow sweeps + the STOP-67 `reports/visual-diff/` report shape · `/a11y-audit` for every axe clause (run against the *open* drawer state, not just closed) · Playwright MCP (or chrome-devtools MCP on a "browser already in use" error) for bespoke DOM probes — `elementFromPoint`, focus order, ESC · `build-deploy.py --target sandybrown` to get the code live before measuring (never hand-rolled tar/scp — D336) · Hostinger MCP `hosting_clearWebsiteCacheV1` + `wp litespeed-purge all` **before any live CSS measurement** (LiteSpeed is active on sandybrown; the CDN edge otherwise serves a stale `?ver`) · `/sgs-db` + `/wp-blocks` for block attrs/schema before any "attr X is missing" claim (R-31-8). Closure is R-31-13: measurement **and** Bean's eye.
+>
+> **⚠️ Currency (2026-07-16):** §S9 is **11/11 BUILT + live-verified** on both clients (D323–D335) — the phasing line below is a historical record of how it was sequenced, not open work. **`sgs/mobile-nav` + `sgs/mobile-nav-toggle` were DELETED at D336** — `sgs/adaptive-nav` owns the off-canvas drawer outright, so every "rework the existing `sgs/mobile-nav` drawer" reference below is historical. FR-S9-5's modality criterion is **amended by Spec 34** (the drawer is being rebuilt as a header-visible disclosure panel).
 
 **Plain English:** A best-in-class header/footer/nav system built on top of the template-part architecture above, not replacing it. Three new specialised container blocks (`sgs/site-header`, `sgs/site-footer`, `sgs/adaptive-nav`) live *inside* the existing `parts/header.html` / `parts/footer.html` pattern content, plus a hardened rework of the existing `sgs/mobile-nav` off-canvas drawer. Grounded in a study of five real systems (Bricks, Elementor, Blocksy, Material 3, GOV.UK) + the Indus Foods live reference + a research-council on the responsive model. Source design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (APPROVED, Bean sign-off 2026-07-13, all recommended defaults). Fixes two live bugs: the sub-384px WCAG 1.4.10 header reflow overflow, and the unclickable off-canvas drawer (root cause proven, fix SHIPPED + live-verified 2026-07-13 — see FR-S9-5).
 
@@ -742,7 +698,7 @@ An empty row emits **zero output** — no wrapper, no padding (fixes the empty-s
 - 4 configurable collapse tiers, the custom-px tier reading from the SAME shared breakpoint source as FR-S9-6 (R-31-1 — no per-block hardcode)
 - Mega-menu items expand in place via an accessible ARIA disclosure/accordion (`aria-expanded`, keyboard-operable) at the mobile/drawer tier; ALL links server-rendered as real `<a href>`, NO AJAX lazy-load; desktop mega-menu supports full-width and element-targeted placement (drill-down + back-link deferred to roadmap — Bean-decided D334)
 - Desktop nav items that overflow the available width auto-collapse into a "more" menu with no manual configuration required
-- Opens `sgs/mobile-nav` (FR-S9-5) at the collapsed tier; passes through the a11y contract (focus trap, ESC, `aria-expanded`) end to end
+- Opens its OWN built-in drawer at the collapsed tier (the drawer absorbed from the deleted `sgs/mobile-nav` at D336 — FR-S9-5 holds the a11y contract); passes through that contract (focus trap, ESC, `aria-expanded`) end to end
 
 **Model:** Opus (mega-menu drill-down + overflow-collapse state machine complexity)
 **Tests:** Live Playwright per tier (desktop bar visible above the tier breakpoint, burger visible below); mega-menu open → drill-down → back-link → close full keyboard traversal; desktop overflow test (inject enough nav items to force auto-collapse, verify "more" menu appears and contains the overflowed items); custom-px tier configured to a non-default value and verified live.
@@ -751,7 +707,9 @@ An empty row emits **zero output** — no wrapper, no padding (fixes the empty-s
 
 **BUILT + LIVE (D326, 2026-07-13, commit `fbd93308`):** `sgs/adaptive-nav` (layout KIND, delegates to `SGS_Container_Wrapper`) shipped and is live on BOTH sandybrown (Mama's) and palestine-lives (Indus, verified D334). ONE `wp_navigation` menu source (`SGS_Nav_Menu_Source`) drives both the desktop bar and the `sgs/mobile-nav` drawer; every link server-rendered as a crawlable `<a href>` (no AJAX). Submenus use the ARIA APG **disclosure/accordion** pattern (Bean-decided D334 — see the Behaviour + Acceptance above; drill-down deferred to roadmap). Owns its own collapse tier (replaced the two fixed 768/782px hacks). **The WooCommerce Block-Hooks injection is fixed BY CONSTRUCTION** — replacing `core/navigation` with `sgs/adaptive-nav` removed the anchor WooCommerce hooks `woocommerce/mini-cart` + `customer-account` onto (both register `'anchor' => 'core/navigation'` via `add_filter('hooked_block_types', ..., 9)`, confirmed in WC source). Bean rejected a `hooked_block_types` suppressor filter (considered + validated, then reverted) in favour of this architecture fix; the interim nav-visibility CSS hack is removed. Full detail: `.claude/plans/archive/2026-07-13-header-builder-remaining-work.md`.
 
-### FR-S9-5 — `sgs/mobile-nav` off-canvas drawer rework: P0 unclickable-drawer bug fix (SHIPPED) + GOV.UK-grade a11y contract
+### FR-S9-5 — the off-canvas drawer a11y contract (now owned by `sgs/adaptive-nav`)
+
+> **⛔ RE-HOMED 2026-07-16 (adversarial-council, 3/7 personas independently).** This FR was written against **`sgs/mobile-nav`, which was DELETED at D336** (`src/blocks/mobile-nav/` does not exist; the drawer was absorbed into `sgs/adaptive-nav`, which owns its own burger toggle + drawer). Every requirement below now binds **`sgs/adaptive-nav`'s built-in drawer** — read every `sgs/mobile-nav` in this FR as that. The a11y contract itself is UNCHANGED and carried forward verbatim: it is the most valuable prose in this spec and the stated differentiator (commercial builders under-document this), so it is re-homed, never dropped. The regression baseline stands: the `elementFromPoint` sweep, 18/18 Indus + 10/10 Mama's (measured 2026-07-14). **A stale `build/blocks/mobile-nav/` may still register the deleted block on deployed servers — see the GHOST-BUILD finding in `lint-spec-drift.py`; that is a build-hygiene bug, not evidence the block is live.** Superseded title, for audit: ~~"`sgs/mobile-nav` off-canvas drawer rework: P0 unclickable-drawer bug fix (SHIPPED) + GOV.UK-grade a11y contract"~~.
 
 **Behaviour — the bug (root-caused, live-verified, FIXED 2026-07-13):** `view.js` set `inert` on `.wp-site-blocks` when the drawer opened, but the drawer (`#sgs-mobile-nav`) was itself a **descendant** of `.wp-site-blocks` — so it froze itself. The Popover top-layer painted it open-looking while `inert` (which follows the DOM tree, not paint order) made every link inside unreachable. A/B proven: removing `inert` restored clickability. **Fix shipped:** the drawer is now re-parented to be a **direct child of `<body>`** (a sibling of `.wp-site-blocks`) before `showPopover()` is called, so `inert` on `.wp-site-blocks` no longer reaches it. **Status: SHIPPED + live-verified 2026-07-13** — every link/button inside the open drawer is reachable via `document.elementFromPoint()` returning the link itself, not `BODY`.
 
@@ -803,7 +761,7 @@ An empty row emits **zero output** — no wrapper, no padding (fixes the empty-s
 **Tests:** Unit: uid-canonicalisation function tested against key-order permutations of the same attribute set (all permutations produce the same hash); CSS-emission tier-diff logic tested against fixtures. Integration: golden re-save uid-stability test. E2E: Playwright device-switcher keyboard traversal + inherited-indicator `aria-label` assertion + reset-to-inherited click-and-verify. Regression: existing (non-§S9) blocks' attribute schemas byte-unchanged (grep/diff against pre-§S9 block.json files).
 **Depends on:** None.
 
-> **⛔ CORRECTED 2026-07-15 (D339) — this line previously read "None (foundational; FR-S9-2/3/4 consume this model)". That was false in fact and actively harmful, because it is the line sessions read.** FR-S9-2/3/4 all SHIPPED without this model: measured 2026-07-15, **87 of 95 attrs across the 5 §S9 blocks are FLAT** (site-header 0/26 object, site-footer 0/22, site-header-row 5/10, site-footer-row 6/11, adaptive-nav 6/26). FR-S9-3's own BUILT note at §FR-S9-3 has admitted since D325 that FR-S9-6 is *"NOT this block's dependency-in-fact"*. The spec therefore contradicted itself, and the wrong side was the load-bearing one: a session reading "FR-S9-2/3/4 consume this model" would reasonably retrofit the object shape onto shipped blocks — which is precisely the change D328 makes unsafe (see the Guardrail below). FR-S9-6 is a **shared next build on top of the shipped flat blocks**, not their prerequisite. Do not restore the old wording.
+> **⛔ CORRECTED 2026-07-15 (D339) — this line previously read "None (foundational; FR-S9-2/3/4 consume this model)". That was false in fact and actively harmful, because it is the line sessions read.** FR-S9-2/3/4 all SHIPPED without this model: measured 2026-07-15, **78 of 95 attrs across the 5 §S9 blocks are FLAT; 17 already carry the object tier model** (site-header 0/26 object, site-footer 0/22, site-header-row 5/10, site-footer-row 6/11, adaptive-nav 6/26 — 0+0+5+6+6 = 17 object, 95-17 = 78 flat). **⚠ ARITHMETIC CORRECTED 2026-07-16 (adversarial-council, 4/7 personas independently): this note previously read "87 of 95", contradicting its own cited breakdown. The breakdown was right; the headline was wrong.** **FR-S9-6 is therefore HALF-BUILT, not unbuilt:** the `{desktop,tablet,mobile}` object model + the shared emitter `sgs_emit_responsive_css` (`includes/helpers-responsive.php`) + the shared breakpoint source are LIVE on those 17 attrs across `site-header-row`/`site-footer-row`/`adaptive-nav` — `src/blocks/site-header-row/render.php:160` cites the FR by name. Remaining scope = the 78 flat attrs on `site-header`/`site-footer` + the editor device switcher (genuinely unbuilt). **Extend the 17 tiered attrs IN PLACE; the sibling-attr rule in the Guardrail applies ONLY to attrs not already tiered.** Do not build a third mechanism alongside the two that exist. FR-S9-3's own BUILT note at §FR-S9-3 has admitted since D325 that FR-S9-6 is *"NOT this block's dependency-in-fact"*. The spec therefore contradicted itself, and the wrong side was the load-bearing one: a session reading "FR-S9-2/3/4 consume this model" would reasonably retrofit the object shape onto shipped blocks — which is precisely the change D328 makes unsafe (see the Guardrail below). FR-S9-6 is a **shared next build on top of the shipped flat blocks**, not their prerequisite. Do not restore the old wording.
 
 **Universal-benefit:** Yes — the shared breakpoint source + canonicalisation pattern is reusable by any future responsive-override block
 
@@ -1037,7 +995,9 @@ The SGS admin pages for Header Rules, Footer Rules, and Site Info are being migr
 
 **Why:** The current save→refresh→navigate cycle for Header/Footer Rules is poor UX. Customiser live preview gives operators immediate visual feedback.
 
-**Three new Customiser sections:**
+**⛔ RETRACTED 2026-07-16 (adversarial-council) — TWO OF THE THREE SECTIONS BELOW DO NOT EXIST.** Verified by grep + the `lint-spec-drift.py` PHP-CLASS gate: `Sgs_Header_Customiser` and `Sgs_Footer_Customiser` exist NOWHERE in `plugins/` or `theme/` (removed by commit `87dd869d`, "retire plugin-side Customiser path"). Only `Sgs_Site_Info_Customiser` is real. Header/footer BEHAVIOUR lives on `sgs/site-header` block attrs (FR-S9-9, D330), NOT a Customiser. Do not build against this list; it is retained struck for audit.
+
+~~**Three new Customiser sections:**~~
 - `Sgs_Header_Customiser` → Customiser section "SGS Header" with `postMessage` live preview for colours/typography/spacing
 - `Sgs_Footer_Customiser` → Customiser section "SGS Footer" with `postMessage` live preview
 - `Sgs_Site_Info_Customiser` → Customiser section "SGS Site Info" — for simple fields, `postMessage`; for rules engines (regex-backed conditions), `refresh` transport (live preview impractical)

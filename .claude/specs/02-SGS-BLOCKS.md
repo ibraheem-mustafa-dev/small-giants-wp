@@ -138,19 +138,25 @@ Mockup HTML → SGS block markup pipeline at [`31-UNIVERSAL-CLONING-PIPELINE.md`
 
 ## Block Specifications
 
+> **Build route (name the tool — don't hand-roll):** `/sgs-wp-engine` for SGS block work, or the **`wp-sgs-developer` agent** for a heavy build; `/wp-block-development` for core-WP block-API questions (block.json, supports, bindings); `/wp-interactivity-api` for `view.js` directives.
+> **Before claiming an attribute is missing or reading a roster, query the DB — never the prose below:** `/sgs-db` or `/wp-blocks schema <slug>` (R-31-8). The per-block attribute tables in this spec + `02-SGS-BLOCKS-REFERENCE.md` are **generated** — if one is wrong, fix the generator (`/sgs-update`), never the file.
+> **Every new/edited block is gated by Spec 32** (no inline `style=`; skip-serialisation + scoped CLASS-level `.{uid}.{block-class}` CSS; box-object attrs via BoxControl). The per-block definition-of-done is `.claude/plans/block-migration-DONE-checklist.md` (11 end conditions). **No `deprecated.js`, no version bumps pre-production (D271/D293).**
+> **Verify on the live page, not the emit:** `/visual-qa` + `/a11y-audit`, or Playwright MCP for bespoke probes.
+
 ### Each block follows this pattern:
 
 ```
 block-name/
 ├── block.json          # Block metadata, attributes, supports, scripts, styles
 ├── edit.js             # Editor component (what users see in Gutenberg)
-├── save.js             # Static save (for blocks that don't need server rendering)
-├── render.php          # Server-side render (for dynamic blocks)
+├── save.js             # Static save (dynamic blocks return null; InnerBlocks wrappers return <InnerBlocks.Content />)
+├── render.php          # Server-side render (for dynamic blocks) — emits the block's scoped <style>
 ├── editor.css          # Editor-only styles
 ├── style.css           # Frontend + editor styles
 ├── view.js             # Frontend interactivity (viewScriptModule, optional)
 └── index.js            # Block registration entry point
 ```
+(No `deprecated.js` — deleted plugin-wide, D271.)
 
 ---
 
