@@ -21,9 +21,9 @@
 		<div class="wp-block-column" style="flex-basis:35%">
 			<!-- wp:site-logo {"width":200,"shouldSyncIcon":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:sgs/business-info {"type":"description","textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/business-info {"displayType":"description","textColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:sgs/business-info {"type":"socials","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/business-info {"displayType":"socials","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
 		</div>
 		<!-- /wp:column -->
 
@@ -61,27 +61,27 @@
 			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Contact</h3>
 			<!-- /wp:heading -->
 
-			<!-- wp:sgs/business-info {"type":"phone","textColor":"surface","fontSize":"small"} /-->
-			<!-- wp:sgs/business-info {"type":"email","textColor":"surface","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","fontSize":"small"} /-->
 
 			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}}}} -->
 			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h3>
 			<!-- /wp:heading -->
 
-			<!-- wp:sgs/business-info {"type":"hours","textColor":"surface","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- Column 3: Map, Address, Directions -->
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/business-info {"type":"map"} /-->
+			<!-- wp:sgs/business-info {"displayType":"map"} /-->
 
 			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} -->
 			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--20)">Address</h3>
 			<!-- /wp:heading -->
 
-			<!-- wp:sgs/business-info {"type":"address","textColor":"surface","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","fontSize":"small"} /-->
 
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
 			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"textColor":"text","backgroundColor":"accent","style":{"border":{"radius":"8px"}}} -->
@@ -100,11 +100,9 @@
 
 		<!-- wp:group {"layout":{"type":"flex","justifyContent":"center","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"8px"}}} -->
 		<div class="wp-block-group">
-			<!-- wp:sgs/business-info {"type":"copyright","textColor":"accent","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"accent","fontSize":"small"} /-->
 
-			<!-- wp:paragraph {"textColor":"accent","fontSize":"small"} -->
-			<p class="has-accent-color has-text-color has-small-font-size">| <a href="https://smallgiantsstudio.co.uk/">Website by Small Giants Studio</a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"displayType":"attribution","textColour":"accent","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:group -->
 

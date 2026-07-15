@@ -216,7 +216,7 @@ Two DISTINCT concepts; NEVER conflate them or run a blanket "fix all 599/600 bre
 ### Rosetta Stone discipline (uimax cross-platform translation)
 Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks + vanilla HTML/CSS + Bootstrap + shadcn/Radix + Tailwind + React + AI-builder. Missing SGS equivalent = gap candidate, never silently dropped. `uimax` = DB/data layer; `/ui-ux-pro-max` = intelligence skill that USES the DB. Captured 2026-05-06 blub.db 213.
 
-### Bean-controlled drafts use SGS-BEM (Spec 15 §8.1, blub.db 236)
+### Bean-controlled drafts use SGS-BEM (Spec 00 §3 / §3.1, blub.db 236)
 `.sgs-<block>__<element>--<modifier>`. `/sgs-clone` Stage 0 hard-rejects non-conforming on production runs; `--draft-mode` = soft warning; `--legacy` bypasses. Live scrapes use lingua-franca conversion at write time.
 
 ### Saved-defaults model (canonical — do NOT reintroduce parallel infra)

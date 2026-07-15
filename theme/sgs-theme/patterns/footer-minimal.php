@@ -16,9 +16,9 @@
 	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
 	<div class="wp-block-group alignwide">
 
-		<!-- wp:sgs/business-info {"type":"copyright","textColor":"text-inverse","fontSize":"small"} /-->
+		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
 
-		<!-- wp:sgs/business-info {"type":"socials"} /-->
+		<!-- wp:sgs/business-info {"displayType":"socials"} /-->
 
 	</div>
 	<!-- /wp:group -->

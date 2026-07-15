@@ -56,27 +56,6 @@
 
 			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
 			<ul class="is-style-no-bullets has-small-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/">Home</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/about/">About</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/services/">Services</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/blog/">Blog</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/contact/">Contact</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/privacy-policy/">Privacy Policy</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item {"className":"sgs-link-list__item"} -->
-				<li class="sgs-link-list__item"><a href="/terms/">Terms &amp; Conditions</a></li>
-				<!-- /wp:list-item -->
 			</ul>
 			<!-- /wp:list -->
 
@@ -111,9 +90,7 @@
 
 		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"accent","fontSize":"small"} /-->
 
-		<!-- wp:paragraph {"textColor":"accent","fontSize":"small"} -->
-		<p class="has-accent-color has-text-color has-small-font-size">| <a href="https://smallgiantsstudio.co.uk/">Website by Small Giants Studio</a></p>
-		<!-- /wp:paragraph -->
+		<!-- wp:sgs/business-info {"displayType":"attribution","textColour":"accent","fontSize":"small"} /-->
 
 	<!-- /wp:sgs/site-footer-row -->
 

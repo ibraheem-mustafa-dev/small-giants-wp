@@ -25,7 +25,7 @@
 		<div class="wp-block-column" style="flex-basis:55%">
 			<!-- wp:site-logo {"width":200,"shouldSyncIcon":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:sgs/business-info {"type":"description","textColor":"text-inverse","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 
@@ -36,11 +36,11 @@
 			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Get In Touch</h3>
 			<!-- /wp:heading -->
 
-			<!-- wp:sgs/business-info {"type":"phone","textColor":"text-inverse","fontSize":"small"} /-->
-			<!-- wp:sgs/business-info {"type":"email","textColor":"text-inverse","fontSize":"small"} /-->
-			<!-- wp:sgs/business-info {"type":"address","textColor":"text-inverse","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":"small"} /-->
+			<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:sgs/business-info {"type":"socials","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/business-info {"displayType":"socials","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
 		</div>
 		<!-- /wp:column -->
 
@@ -51,7 +51,7 @@
 	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|border-subtle","width":"1px"}}}} -->
 	<div class="wp-block-group alignwide" style="border-top-color:var(--wp--preset--color--border-subtle);border-top-width:1px;margin-top:var(--wp--preset--spacing--50);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
 
-		<!-- wp:sgs/business-info {"type":"copyright","textColor":"text-inverse","fontSize":"small"} /-->
+		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
 
 	</div>
 	<!-- /wp:group -->
