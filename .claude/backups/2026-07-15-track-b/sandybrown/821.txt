@@ -1,0 +1,89 @@
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/feature-grid {"minItemWidth":260,"gap":24} -->
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/feature-grid -->
+
+<!-- wp:sgs/hero -->
+<!-- wp:sgs/label {"className":"sgs-hero__label"} /-->
+
+<!-- wp:sgs/heading {"content":"Your hero headline","level":"h1","className":"sgs-hero__headline"} /-->
+
+<!-- wp:sgs/text {"text":"Supporting sub-headline text goes here.","className":"sgs-hero__subheadline"} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Primary Action"} /-->
+
+<!-- wp:sgs/button {"label":"Secondary Action","inheritStyle":"secondary"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/hero -->
+
+<!-- wp:sgs/card-grid {"gap":"40"} /-->
+
+<!-- wp:sgs/multi-button {"gap":12} -->
+<!-- wp:sgs/button {"label":"Primary Action"} /-->
+
+<!-- wp:sgs/button {"label":"Secondary Action","inheritStyle":"secondary"} /-->
+<!-- /wp:sgs/multi-button -->
+
+<!-- wp:sgs/gallery /-->
+
+<!-- wp:sgs/post-grid {"gap":"30"} /-->
+
+<!-- wp:sgs/trust-bar /-->

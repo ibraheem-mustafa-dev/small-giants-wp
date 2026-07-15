@@ -1,0 +1,395 @@
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Announcement Bar</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/announcement-bar {"messages":[{"text":"Free delivery on orders over £500 this week only — use code FREEDEL at checkout!","ctaText":"Shop Now","ctaUrl":""}],"sticky":false} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Certification Bar</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/certification-bar {"items":[{"label":"BRC Grade AA","year":"Since 2010"},{"label":"ISO 9001:2015","year":"Since 2014"},{"label":"HACCP Certified","year":"Since 2008"},{"label":"Halal Certified","year":"Since 1995"}],"style":{"color":{"background":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dsurface-alt)"},"border":{"width":"1px","style":"solid","color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"8px"},"spacing":{"padding":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}}},"backgroundColor":"surface-alt"} -->
+<div class="wp-block-sgs-certification-bar sgs-certification-bar sgs-certification-bar--text-only sgs-certification-bar--medium has-border-color has-surface-alt-background-color has-background" style="border-color:var(--wp--preset--color--border-subtle);border-style:solid;border-width:1px;border-radius:8px;background-color:var(--wp--preset--color--surface-alt);padding-top:24px;padding-right:24px;padding-bottom:24px;padding-left:24px"><p class="sgs-certification-bar__title">Our Accreditations</p><div class="sgs-certification-bar__badges"><div class="sgs-certification-bar__badge"><span class="sgs-certification-bar__badge-label">BRC Grade AA</span></div><div class="sgs-certification-bar__badge"><span class="sgs-certification-bar__badge-label">ISO 9001:2015</span></div><div class="sgs-certification-bar__badge"><span class="sgs-certification-bar__badge-label">HACCP Certified</span></div><div class="sgs-certification-bar__badge"><span class="sgs-certification-bar__badge-label">Halal Certified</span></div></div></div>
+<!-- /wp:sgs/certification-bar -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Counter (Animated Number)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/counter {"number":2500} -->
+<div class="wp-block-sgs-counter sgs-counter"><span class="sgs-sr-only">2,500+ Product Lines</span><span class="sgs-counter__number" style="color:var(--wp--preset--color--primary)" data-target="2500" data-duration="2000" data-separator="true" data-suffix="+" aria-hidden="true">2,500+</span><p class="sgs-counter__label" style="color:var(--wp--preset--color--text-muted)" aria-hidden="true">Product Lines</p></div>
+<!-- /wp:sgs/counter -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Decorative Image</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/decorative-image {"imageUrl":"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600\u0026q=80","imageAlt":"Colourful spices and ingredients — decorative"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Gallery (Grid Layout)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/gallery {"aspectRatio":"4/3"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Google Reviews</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/google-reviews {"maxReviews":6,"minRating":4,"cardStyle":"elevated"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Heritage Strip</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/heritage-strip {"headline":"Over 60 Years of Trusted Food Supply","body":"Founded in Birmingham in 1962 by Mohammed Hussain, Indus Foods has grown from a local supplier into one of the UK's leading food wholesalers. Our on-site production facility, established in 1975, and £1.5 million manufacturing investment in 2024 reflect an unwavering commitment to quality and innovation. We are proud members of the Food \u0026amp; Drink Wholesalers Federation and BRC Grade AA accredited — standards we have maintained for over a decade.","backgroundColor":"surface-alt","badge":"Est. 1962","bgPattern":"dots","style":{"color":{"background":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dsurface-alt)"},"spacing":{"padding":{"top":"48px","right":"32px","bottom":"48px","left":"32px"}}}} -->
+<section class="wp-block-sgs-heritage-strip sgs-heritage-strip sgs-heritage-strip--image-text-image sgs-heritage-strip--pattern-dots has-surface-alt-background-color has-background" style="background-color:var(--wp--preset--color--surface-alt);padding-top:48px;padding-right:32px;padding-bottom:48px;padding-left:32px;--sgs-transition-duration:300ms;--sgs-transition-easing:ease-in-out"><div class="sgs-heritage-strip__content"><span class="sgs-heritage-strip__badge">Est. 1962</span><h2 class="sgs-heritage-strip__headline">Over 60 Years of Trusted Food Supply</h2><div class="sgs-heritage-strip__body">Founded in Birmingham in 1962 by Mohammed Hussain, Indus Foods has grown from a local supplier into one of the UK's leading food wholesalers. Our on-site production facility, established in 1975, and £1.5 million manufacturing investment in 2024 reflect an unwavering commitment to quality and innovation. We are proud members of the Food &amp; Drink Wholesalers Federation and BRC Grade AA accredited — standards we have maintained for over a decade.</div></div></section>
+<!-- /wp:sgs/heritage-strip -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Icon Block (Single Icon)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/icon {"iconColour":"accent"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Icon List</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/icon-list {"items":[{"icon":"check","text":"Next-day delivery on orders placed before 2pm"},{"icon":"check","text":"BRC Grade AA certified cold chain"},{"icon":"check","text":"Minimum order £250 — no maximum"},{"icon":"check","text":"Dedicated account manager for every trade customer"},{"icon":"check","text":"Over 2,500 product lines in stock at all times"}]} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Modal (Popup Dialogue)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/modal {"triggerText":"View Trade Account Terms"} -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Trade Account Terms</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Minimum order value is £75 (excluding VAT) for next-working-day delivery. Payment terms are 7 days for new accounts, rising to 30 days subject to a satisfactory credit check. All prices are exclusive of VAT. Delivery is free on orders over £200; a £9.95 flat fee applies below that threshold. Orders placed before 2pm are dispatched the same day.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/modal -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Notice Banner</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/notice-banner {"icon":"truck"} -->
+<div class="wp-block-sgs-notice-banner sgs-notice-banner sgs-notice-banner--info" role="note"><span class="sgs-notice-banner__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle><line x1="12" y1="8" x2="12" y2="8.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></line><line x1="12" y1="12" x2="12" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line></svg></span><p class="sgs-notice-banner__text">Free next-working-day delivery on orders over £75. Orders placed before 2pm ship the same day.</p></div>
+<!-- /wp:sgs/notice-banner -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Post Grid</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/post-grid {"postsPerPage":3,"order":"DESC"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Pricing Table</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/pricing-table {"plans":[{"name":"Starter","price":"£49.99","period":"monthly","features":["Up to 100 orders/month","Email support","Basic reporting","Standard delivery rates"],"ctaText":"Get Started","ctaUrl":"","highlighted":false},{"name":"Trade","price":"£99.99","period":"monthly","features":["Unlimited orders","Priority phone support","Advanced analytics","Preferential delivery rates","Dedicated account manager"],"ctaText":"Apply Now","ctaUrl":"","highlighted":true},{"name":"Enterprise","price":"POA","period":"one-off","features":["Custom volume pricing","24/7 support line","Bespoke reporting","Same-day delivery SLA","API integration available"],"ctaText":"Contact Sales","ctaUrl":"","highlighted":false}],"popularBadgeText":"Most Popular"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Process Steps</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/process-steps {"steps":[{"number":"1","title":"Apply for a Trade Account","description":"Fill in our quick online application form. We'll review your details within one business day."},{"number":"2","title":"Receive Your Login","description":"Once approved, you'll receive your trade account credentials and a welcome call from your account manager."},{"number":"3","title":"Browse 2,500+ Products","description":"Access our full catalogue with trade pricing, bulk discounts, and real-time stock levels."},{"number":"4","title":"Place Your Order","description":"Order online or by phone before 2pm for next-day delivery across mainland UK."}],"style":{"spacing":{"padding":{"top":"32px","right":"24px","bottom":"32px","left":"24px"}}}} -->
+<div class="wp-block-sgs-process-steps sgs-process-steps sgs-process-steps--connector-line sgs-process-steps--number-circle" style="padding-top:32px;padding-right:24px;padding-bottom:32px;padding-left:24px;--sgs-transition-duration:300ms;--sgs-transition-easing:ease-in-out" data-sgs-animation="fade-up" data-sgs-animation-delay="0" data-sgs-animation-duration="medium" data-sgs-animation-easing="ease-out"><div class="sgs-process-steps__step"><span class="sgs-process-steps__number" style="color:var(--wp--preset--color--text-inverse);background-color:var(--wp--preset--color--primary)" aria-hidden="true">1</span><h3 class="sgs-process-steps__title" style="color:var(--wp--preset--color--text)">Apply for a Trade Account</h3><p class="sgs-process-steps__description" style="color:var(--wp--preset--color--text-muted)">Fill in our quick online application form. We'll review your details within one business day.</p></div><div class="sgs-process-steps__step"><span class="sgs-process-steps__number" style="color:var(--wp--preset--color--text-inverse);background-color:var(--wp--preset--color--primary)" aria-hidden="true">2</span><h3 class="sgs-process-steps__title" style="color:var(--wp--preset--color--text)">Receive Your Login</h3><p class="sgs-process-steps__description" style="color:var(--wp--preset--color--text-muted)">Once approved, you'll receive your trade account credentials and a welcome call from your account manager.</p></div><div class="sgs-process-steps__step"><span class="sgs-process-steps__number" style="color:var(--wp--preset--color--text-inverse);background-color:var(--wp--preset--color--primary)" aria-hidden="true">3</span><h3 class="sgs-process-steps__title" style="color:var(--wp--preset--color--text)">Browse 2,500+ Products</h3><p class="sgs-process-steps__description" style="color:var(--wp--preset--color--text-muted)">Access our full catalogue with trade pricing, bulk discounts, and real-time stock levels.</p></div><div class="sgs-process-steps__step"><span class="sgs-process-steps__number" style="color:var(--wp--preset--color--text-inverse);background-color:var(--wp--preset--color--primary)" aria-hidden="true">4</span><h3 class="sgs-process-steps__title" style="color:var(--wp--preset--color--text)">Place Your Order</h3><p class="sgs-process-steps__description" style="color:var(--wp--preset--color--text-muted)">Order online or by phone before 2pm for next-day delivery across mainland UK.</p></div></div>
+<!-- /wp:sgs/process-steps -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">SVG Background Container</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/svg-background {"svgContent":"\u003csvg viewBox=\u00220 0 200 200\u0022 xmlns=\u0022http://www.w3.org/2000/svg\u0022\u003e\u003ccircle cx=\u0022100\u0022 cy=\u0022100\u0022 r=\u002280\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-width=\u00222\u0022 opacity=\u00220.3\u0022/\u003e\u003ccircle cx=\u0022100\u0022 cy=\u0022100\u0022 r=\u002250\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-width=\u00221\u0022 opacity=\u00220.2\u0022/\u003e\u003c/svg\u003e","animationType":"float","opacity":40} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Table of Contents</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/table-of-contents {"headingLevels":[2,3],"title":"On This Page","scrollOffset":80,"listStyle":"disc"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Testimonial (Single Card)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/testimonial {"quote":"We have been ordering from Indus Foods for over eight years. The quality is consistently excellent, delivery is always on time, and whenever there is an issue the team sorts it out the same day. They genuinely feel like an extension of our own business.","name":"Sarah Patel","role":"Owner, Spice Garden Restaurant, Birmingham","avatar":{"url":"https://i.pravatar.cc/120?img=47","alt":"Sarah Patel headshot"},"rating":5,"reviewSource":"Hand-collected","transitionDuration":"300ms","schemaEnabled":true,"className":"sgs-testimonial\u002d\u002dcard"} -->
+<blockquote class="wp-block-sgs-testimonial sgs-testimonial sgs-testimonial--card" style="--sgs-transition-duration:300ms;--sgs-transition-easing:ease-in-out" data-sgs-animation="fade-up" data-sgs-animation-delay="0" data-sgs-animation-duration="medium" data-sgs-animation-easing="default"><div class="sgs-testimonial__stars" style="color:var(--wp--preset--color--accent)" role="img" aria-label="5 out of 5 stars"><span class="sgs-testimonial__star sgs-testimonial__star--filled" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"></polygon></svg></span><span class="sgs-testimonial__star sgs-testimonial__star--filled" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"></polygon></svg></span><span class="sgs-testimonial__star sgs-testimonial__star--filled" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"></polygon></svg></span><span class="sgs-testimonial__star sgs-testimonial__star--filled" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"></polygon></svg></span><span class="sgs-testimonial__star sgs-testimonial__star--filled" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"></polygon></svg></span></div><p class="sgs-testimonial__quote" style="color:var(--wp--preset--color--text)">We have been ordering from Indus Foods for over eight years. The quality is consistently excellent, delivery is always on time, and whenever there is an issue the team sorts it out the same day. They genuinely feel like an extension of our own business.</p><footer class="sgs-testimonial__footer"><div class="sgs-testimonial__avatar"><img src="https://i.pravatar.cc/120?img=47" alt="Sarah Patel headshot" class="sgs-testimonial__avatar-img" loading="lazy" width="48" height="48"/></div><div class="sgs-testimonial__meta"><cite class="sgs-testimonial__name" style="color:var(--wp--preset--color--primary)">Sarah Patel</cite><span class="sgs-testimonial__role" style="color:var(--wp--preset--color--text-muted)">Owner, Spice Garden Restaurant, Birmingham</span></div></footer></blockquote><script type="application/ld+json">{"@context":"https://schema.org","@type":"Review","reviewBody":"We have been ordering from Indus Foods for over eight years. The quality is consistently excellent, delivery is always on time, and whenever there is an issue the team sorts it out the same day. They genuinely feel like an extension of our own business.","author":{"@type":"Person","name":"Sarah Patel"},"reviewRating":{"@type":"Rating","ratingValue":5,"bestRating":5}}</script>
+<!-- /wp:sgs/testimonial -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">WhatsApp CTA (Inline)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/whatsapp-cta {"phoneNumber":"447911123456","message":"Hi, I'd like to enquire about wholesale pricing for my business.","variant":"inline","label":"Chat with us on WhatsApp"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Form — Contact Enquiry (All Field Types)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/form {"formId":"form-7cd6095e","formName":"Block Test - Contact Enquiry","submitLabel":"Send Enquiry","successMessage":"Thank you! We'll be in touch within one business day."} -->
+<!-- wp:sgs/form-field-text {"fieldName":"full_name","label":"Full Name","placeholder":"e.g. Jane Smith","required":true} /-->
+
+<!-- wp:sgs/form-field-email {"fieldName":"email","label":"Email Address","placeholder":"jane@example.com","required":true} /-->
+
+<!-- wp:sgs/form-field-phone {"fieldName":"phone","label":"Phone Number","placeholder":"+44 7700 900000"} /-->
+
+<!-- wp:sgs/form-field-number {"fieldName":"order_value","label":"Estimated Monthly Order Value (£)","placeholder":"e.g. 500"} /-->
+
+<!-- wp:sgs/form-field-select {"fieldName":"business_type","label":"Type of Business","placeholder":"Select your business type","required":true,"options":[{"value":"restaurant","label":"Restaurant"},{"value":"cafe","label":"Café / Coffee Shop"},{"value":"hotel","label":"Hotel"},{"value":"catering","label":"Catering Company"},{"value":"retail","label":"Retailer"},{"value":"other","label":"Other"}]} /-->
+
+<!-- wp:sgs/form-field-radio {"fieldName":"delivery_preference","label":"Preferred Delivery Frequency","required":true,"options":[{"value":"weekly","label":"Weekly"},{"value":"fortnightly","label":"Fortnightly"},{"value":"monthly","label":"Monthly"},{"value":"as-required","label":"As required"}]} /-->
+
+<!-- wp:sgs/form-field-checkbox {"fieldName":"product_categories","label":"Product Categories of Interest","options":[{"value":"ambient","label":"Ambient Grocery"},{"value":"chilled","label":"Chilled \u0026 Dairy"},{"value":"frozen","label":"Frozen"},{"value":"bakery","label":"Bakery"},{"value":"beverages","label":"Beverages"},{"value":"cleaning","label":"Cleaning \u0026 Hygiene"}]} /-->
+
+<!-- wp:sgs/form-field-date {"fieldName":"preferred_start_date","label":"Preferred Account Start Date"} /-->
+
+<!-- wp:sgs/form-field-textarea {"fieldName":"message","label":"Additional Notes","placeholder":"Any specific requirements, dietary considerations, or questions..."} /-->
+
+<!-- wp:sgs/form-field-tiles {"fieldName":"order_method","label":"How Would You Prefer to Order?","required":true,"tiles":[{"label":"Online portal","icon":"monitor"},{"label":"Phone","icon":"phone"},{"label":"Email","icon":"mail"},{"label":"Sales rep visit","icon":"user"}]} /-->
+
+<!-- wp:sgs/form-field-address {"fieldName":"delivery_address","label":"Delivery Address","required":true} /-->
+
+<!-- wp:sgs/form-field-consent {"fieldName":"marketing_consent","label":"I agree to receive updates about new products and promotions"} /-->
+
+<!-- wp:sgs/form-field-hidden {"fieldName":"source_page","defaultValue":"block-test"} /-->
+<!-- /wp:sgs/form -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Form — Multi-Step Trade Account Application</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/form {"formId":"form-652cc379","formName":"Block Test - Trade Account Application","submitLabel":"Submit Application","successMessage":"Application received! We will contact you within 2 business days."} -->
+<!-- wp:sgs/form-step {"label":"Business Details"} -->
+<!-- wp:sgs/form-field-text {"fieldName":"company_name","label":"Company Name","placeholder":"e.g. Midlands Catering Ltd","required":true} /-->
+
+<!-- wp:sgs/form-field-email {"fieldName":"contact_email","label":"Contact Email","placeholder":"accounts@yourcompany.co.uk","required":true} /-->
+
+<!-- wp:sgs/form-field-phone {"fieldName":"contact_phone","label":"Contact Phone","placeholder":"+44 121 000 0000","required":true} /-->
+<!-- /wp:sgs/form-step -->
+
+<!-- wp:sgs/form-step {"label":"Order Requirements"} -->
+<!-- wp:sgs/form-field-select {"fieldName":"monthly_spend","label":"Estimated Monthly Spend","required":true,"options":[{"value":"250-500","label":"£250 – £500"},{"value":"500-1000","label":"£500 – £1,000"},{"value":"1000-5000","label":"£1,000 – £5,000"},{"value":"5000+","label":"Over £5,000"}]} /-->
+
+<!-- wp:sgs/form-field-checkbox {"fieldName":"categories_needed","label":"Categories Required","options":[{"value":"ambient","label":"Ambient Grocery"},{"value":"chilled","label":"Chilled"},{"value":"frozen","label":"Frozen"},{"value":"bakery","label":"Bakery"},{"value":"beverages","label":"Beverages"}]} /-->
+<!-- /wp:sgs/form-step -->
+
+<!-- wp:sgs/form-step {"label":"Review \u0026 Submit"} -->
+<!-- wp:sgs/form-review {"heading":"Please check your details before submitting"} /-->
+
+<!-- wp:sgs/form-field-consent {"fieldName":"terms_consent","label":"I confirm all details are accurate and I agree to the trade account terms and conditions","required":true} /-->
+<!-- /wp:sgs/form-step -->
+<!-- /wp:sgs/form -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Countdown Timer</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/countdown-timer {"targetDate":"2026-12-31T23:59:59"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Star Rating</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/star-rating {"label":"Overall Product Quality","schemaItemName":"Indus Foods Wholesale Service","displayMode":"stars-with-value-and-count"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Team Member</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/team-member {"name":"Mohammed Patel","role":"Head of Sales","bio":"Mohammed has been with Indus Foods for 15 years and leads our national accounts team, helping food businesses across the UK source the best wholesale products."} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Social Icons</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/social-icons {"icons":[{"platform":"twitter","url":"https://twitter.com"},{"platform":"facebook","url":"https://facebook.com"},{"platform":"instagram","url":"https://instagram.com"},{"platform":"linkedin","url":"https://linkedin.com"}]} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Breadcrumbs</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/breadcrumbs /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Back to Top</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/back-to-top /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Accordion</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/accordion {"faqSchema":true,"backgroundColor":"surface-alt"} -->
+<!-- wp:sgs/accordion-item {"title":"What is the minimum order value?"} /-->
+
+<!-- wp:sgs/accordion-item {"title":"What are your delivery lead times?"} /-->
+
+<!-- wp:sgs/accordion-item {"title":"Are your products Halal certified?"} /-->
+<!-- /wp:sgs/accordion -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Tabs</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/tabs {"style":{"color":{"background":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dsurface)"},"border":{"width":"1px","style":"solid","color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dprimary)","radius":"8px"},"spacing":{"padding":{"top":"16px","right":"16px","bottom":"16px","left":"16px"}}}} -->
+<!-- wp:sgs/tab {"label":"About Us"} /-->
+
+<!-- wp:sgs/tab {"label":"Our Range"} /-->
+
+<!-- wp:sgs/tab {"label":"Trade Account"} /-->
+<!-- /wp:sgs/tabs -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Icon Block (sgs/icon-block)</h2>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/icon-block /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Extension Tests</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Animation Extension — fade-up on scroll</h3>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/icon-list {"items":[{"icon":"check","text":"ANIMATION TEST: This list fades up when it scrolls into view"},{"icon":"check","text":"The animation is triggered by IntersectionObserver"},{"icon":"check","text":"Requires prefers-reduced-motion: no-preference"}],"sgsAnimation":"fade-up"} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Device Visibility Extension</h3>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/icon-list {"items":[{"icon":"mobile","text":"MOBILE ONLY — you can see this below 600px width only"}],"icon":"mobile","iconColour":"success","sgsHideOnTablet":true,"sgsHideOnDesktop":true} /-->
+
+<!-- wp:sgs/icon-list {"items":[{"icon":"monitor","text":"DESKTOP ONLY — you can see this at 1024px and above only"}],"icon":"desktop","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Hover Effects Extension</h3>
+<!-- /wp:heading -->
+
+<!-- wp:sgs/icon-list {"items":[{"icon":"star","text":"HOVER TEST: Hover over this block to see scale and shadow effect"},{"icon":"star","text":"Should scale to 1.05 and gain a medium shadow on hover"}],"icon":"star","iconColour":"accent","sgsHoverScalePreset":"1.05"} /-->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->

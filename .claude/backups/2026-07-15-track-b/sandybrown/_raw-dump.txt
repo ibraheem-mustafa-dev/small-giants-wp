@@ -1,0 +1,1828 @@
+=====POST 1359=====
+<!-- wp:sgs/heading {"content": "Wave1 Heading Border", "level": 2, "colourBorder": "#3a2e26", "borderStyle": "solid", "borderWidth": {"top": "1px", "right": "3px", "bottom": "5px", "left": "7px"}, "style": {"border": {"radius": {"topLeft": "18px", "topRight": "0px", "bottomRight": "18px", "bottomLeft": "0px"}}}, "anchor": "wave1heading"} /-->
+<!-- wp:sgs/text {"content": "Wave1 text block with asymmetric border + padding.", "colourBorder": "#3a2e26", "borderStyle": "dashed", "borderWidth": {"top": "2px", "right": "4px", "bottom": "6px", "left": "8px"}, "style": {"border": {"radius": {"topLeft": "12px", "topRight": "4px", "bottomRight": "12px", "bottomLeft": "4px"}}, "spacing": {"padding": {"top": "9px", "right": "18px", "bottom": "27px", "left": "36px"}}}, "anchor": "wave1text"} /-->
+=====POST 1356=====
+<!-- wp:sgs/heading {"content":"Cloned heading greedy wrap","level":"h2","textWrap":"wrap"} /-->
+
+<!-- wp:sgs/heading {"content":"Authored heading default balance","level":"h2"} /-->
+=====POST 1324=====
+<!-- wp:sgs/button {"colourBackground":"text"} /-->
+=====POST 1320=====
+<!-- wp:sgs/button /-->
+=====POST 1199=====
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"repeat(4, 1fr)","gridTemplateColumnsMobile":"repeat(2, 1fr)","gap":"32px","gapMobile":"16px","maxWidth":"1200px","gridItemPadding":"24px 16px","gridItemBorderRadius":"12px","paddingTopMobile":"40px","paddingRightMobile":"16px","paddingBottomMobile":"40px","paddingLeftMobile":"16px","className":"sgs-team-member-grid","style":{"spacing":{"blockGap":"32px","padding":{"top":"64px","right":"24px","bottom":"64px","left":"24px"},"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"}},"color":{"background":"#f5f0eb"}}} -->
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/alice.jpg","imageAlt":"Alice Osei","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Alice Osei","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Head Baker","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/ben.jpg","imageAlt":"Ben Traoré","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Ben Traoré","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Delivery Lead","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/chloe.jpg","imageAlt":"Chloe Patel","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Chloe Patel","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Customer Joy","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/dani.jpg","imageAlt":"Dani Muñoz","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Dani Muñoz","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Flavour Designer","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/container -->
+=====POST 1096=====
+<!-- wp:sgs/notice-banner {"displayMode":"announcement","stickyPosition":"top","dismissible":true,"dismissBehaviour":"permanent","variant":"info"} --><div class="wp-block-sgs-notice-banner"><!-- wp:sgs/text {"text":"No-anchor persistence test."} --><p class="sgs-text">No-anchor persistence test.</p><!-- /wp:sgs/text --></div><!-- /wp:sgs/notice-banner -->
+=====POST 1080=====
+<!-- wp:sgs/notice-banner {"displayMode":"announcement","stickyPosition":"top","dismissible":true,"dismissBehaviour":"session","variant":"accent","anchor":"sgs-anntest"} --><div class="wp-block-sgs-notice-banner"><!-- wp:sgs/text {"text":"Free UK delivery this weekend only."} --><p class="sgs-text">Free UK delivery this weekend only.</p><!-- /wp:sgs/text --></div><!-- /wp:sgs/notice-banner -->
+=====POST 1069=====
+<!-- wp:sgs/product-card {"productName":"Built-in Typed Test","description":"A fully typed built-in card — no InnerBlocks.","priceLarge":"£12.00","priceNote":"12-pack · test","packSizes":["8-pack","12-pack","20-pack"],"ctaText":"Learn more","ctaUrl":"/shop/","cta2Text":"Second action","cta2Url":"/contact/","variantStyle":"featured","featuredTag":"Most popular","headingLevel":3} /-->
+
+<!-- wp:sgs/product-card {"sourceMode":"wc-product","productId":540,"overrideElements":["name"],"productName":"Overridden Live Card Name"} /-->
+
+<!-- wp:sgs/card-grid {"source":"wc-product","productCollection":"best-selling","productLimit":3} /-->
+=====POST 1008=====
+<!-- wp:sgs/product-faq {"heading":"Delivery questions"} -->
+<!-- wp:sgs/product-faq-item {"question":"How long does delivery take?"} -->
+<!-- wp:paragraph --><p>Orders placed before noon ship the same day and arrive within 2 working days across the UK.</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/product-faq-item -->
+<!-- wp:sgs/product-faq-item {"question":"Do the treats contain allergens?"} -->
+<!-- wp:paragraph --><p>Every pack lists its full ingredients. Our bakery handles peanuts, so trace amounts may be present.</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/product-faq-item -->
+<!-- /wp:sgs/product-faq -->
+=====POST 999=====
+<!-- wp:sgs/product-card {"sourceMode":"wc-product","productId":950} /-->
+=====POST 946=====
+<!-- wp:sgs/product-card {"sourceMode":"wc-product","productId":897} /-->
+=====POST 824=====
+<!-- wp:sgs/accordion -->
+<!-- wp:sgs/accordion-item {"title":"Question or heading"} -->
+<!-- wp:paragraph {"placeholder":"Write the answer or content…"} -->
+<p></p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+
+<!-- wp:sgs/accordion-item {"title":"Another question"} -->
+<!-- wp:paragraph {"placeholder":"Write the answer or content…"} -->
+<p></p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+<!-- /wp:sgs/accordion -->
+
+<!-- wp:sgs/button /-->
+
+<!-- wp:sgs/counter /-->
+
+<!-- wp:sgs/mobile-nav /-->
+
+<!-- wp:sgs/mobile-nav-toggle /-->
+
+<!-- wp:sgs/trust-bar /-->
+
+<!-- wp:sgs/pricing-table /-->
+
+<!-- wp:sgs/process-steps /-->
+
+<!-- wp:sgs/timeline /-->
+
+<!-- wp:sgs/announcement-bar /-->
+
+<!-- wp:sgs/form-field-tiles /-->
+=====POST 823=====
+<!-- wp:sgs/accordion -->
+<!-- wp:sgs/accordion-item {"title":"Question or heading"} -->
+<!-- wp:paragraph {"placeholder":"Write the answer or content…"} -->
+<p></p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+
+<!-- wp:sgs/accordion-item {"title":"Another question"} -->
+<!-- wp:paragraph {"placeholder":"Write the answer or content…"} -->
+<p></p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+<!-- /wp:sgs/accordion -->
+
+<!-- wp:sgs/button /-->
+
+<!-- wp:sgs/counter /-->
+
+<!-- wp:sgs/mobile-nav /-->
+
+<!-- wp:sgs/mobile-nav-toggle /-->
+
+<!-- wp:sgs/trust-bar /-->
+
+<!-- wp:sgs/pricing-table /-->
+
+<!-- wp:sgs/process-steps /-->
+
+<!-- wp:sgs/timeline /-->
+
+<!-- wp:sgs/announcement-bar /-->
+
+<!-- wp:sgs/form-field-tiles /-->
+=====POST 821=====
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/feature-grid {"minItemWidth":260,"gap":24} -->
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/feature-grid -->
+
+<!-- wp:sgs/hero -->
+<!-- wp:sgs/label {"className":"sgs-hero__label"} /-->
+
+<!-- wp:sgs/heading {"content":"Your hero headline","level":"h1","className":"sgs-hero__headline"} /-->
+
+<!-- wp:sgs/text {"text":"Supporting sub-headline text goes here.","className":"sgs-hero__subheadline"} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Primary Action"} /-->
+
+<!-- wp:sgs/button {"label":"Secondary Action","inheritStyle":"secondary"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/hero -->
+
+<!-- wp:sgs/card-grid {"gap":"40"} /-->
+
+<!-- wp:sgs/multi-button {"gap":12} -->
+<!-- wp:sgs/button {"label":"Primary Action"} /-->
+
+<!-- wp:sgs/button {"label":"Secondary Action","inheritStyle":"secondary"} /-->
+<!-- /wp:sgs/multi-button -->
+
+<!-- wp:sgs/gallery /-->
+
+<!-- wp:sgs/post-grid {"gap":"30"} /-->
+
+<!-- wp:sgs/trust-bar /-->
+=====POST 820=====
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":3} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+=====POST 819=====
+<!-- wp:sgs/icon /-->
+=====POST 818=====
+<!-- wp:sgs/feature-grid {"gap":24,"gapTablet":18,"gapMobile":12} /-->
+
+<!-- wp:sgs/multi-button {"gap":12,"gapMobile":8} -->
+<!-- wp:sgs/button {"label":"Primary Action"} /-->
+
+<!-- wp:sgs/button {"label":"Secondary Action","inheritStyle":"secondary"} /-->
+<!-- /wp:sgs/multi-button -->
+
+<!-- wp:sgs/post-grid {"gap":"30"} /-->
+
+<!-- wp:sgs/card-grid {"gap":"40"} /-->
+
+<!-- wp:sgs/gallery /-->
+
+<!-- wp:sgs/trust-bar /-->
+=====POST 773=====
+<h2>SINGLE container (contentWidth+grid)</h2>
+<!-- wp:sgs/container {"widthMode":"full","contentWidth":"1100px","layout":"grid","gridTemplateColumns":"repeat(4, 1fr)","style":{"color":{"background":"#F5C2C8"}},"className":"test-single"} -->
+<!-- wp:paragraph --><p>A1</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>A2</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>A3</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>A4</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/container -->
+<h2>NESTED (full outer > capped inner grid)</h2>
+<!-- wp:sgs/container {"widthMode":"full","style":{"color":{"background":"#FBF3DC"}},"className":"test-outer"} -->
+<!-- wp:sgs/container {"contentWidth":"1100px","layout":"grid","gridTemplateColumns":"repeat(4, 1fr)","className":"test-inner"} -->
+<!-- wp:paragraph --><p>B1</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>B2</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>B3</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>B4</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+=====POST 589=====
+<!-- wp:sgs/breadcrumbs /-->
+
+<!-- wp:sgs/product-card {"sourceMode":"wc-product","productId":540} /-->
+=====POST 66=====
+<style>
+    /* ── Design tokens ─────────────────────── */
+    :root {
+      --primary:       #E68A95;
+      --primary-dark:  #C56A7A;
+      --surface-pink:  #F5C2C8;
+      --surface-cream: #FBF3DC;
+      --surface-alt:   #FFF9F0;
+      --accent:        #F5D050;
+      --accent-dark:   #7A6500;
+      --text:          #3A2E26;
+      --text-muted:    #6B5C50;
+      --text-inverse:  #FFFAF5;
+      --cookie-brown:  #8B6F4E;
+      --success:       #2E7D4F;
+      --border:        #E8D5C0;
+    }
+
+    /* ── Reset ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface-cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    h1, h2, h3 { font-family: 'Fraunces', serif; line-height: 1.2; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Utilities ─────────────────────────── */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+
+    .sgs-section-heading__label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* ── Buttons (WCAG: dark text on coral, invert on hover) ─ */
+    .sgs-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      min-height: 48px;
+      text-align: center;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .sgs-button--primary {
+      background: var(--primary);
+      color: var(--text);
+      border-color: var(--primary);
+    }
+    .sgs-button--primary:hover {
+      background: var(--text);
+      color: var(--text-inverse);
+      border-color: var(--text);
+    }
+    .sgs-button--secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--primary);
+    }
+    .sgs-button--secondary:hover {
+      background: var(--text);
+      color: var(--text-inverse);
+      border-color: var(--text);
+    }
+    .sgs-button--ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px;
+    }
+    .sgs-button--ghost:hover { border-color: var(--primary); background: var(--surface-pink); }
+
+    /* ── Skip link (WCAG 2.4.1) ─────────────────────── */
+    .sgs-header__skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--text);
+      color: var(--text-inverse);
+      padding: 12px 20px;
+      z-index: 9999;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 0 0 8px 0;
+    }
+    .sgs-header__skip-link:focus {
+      left: 0;
+    }
+
+    /* ── Reduced motion preference ──────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ── Focus visibility ───────────────────────────── */
+    *:focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+
+    /* ══════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════ */
+    .sgs-header {
+      background: var(--surface-cream);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .sgs-header__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      max-width: 1280px;
+      margin: 0 auto;
+      gap: 16px;
+    }
+    .sgs-header__logo img { height: 44px; width: auto; }
+    .sgs-header__right { display: flex; align-items: center; gap: 12px; }
+
+    .sgs-header__cart {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      justify-content: center;
+    }
+    .sgs-header__cart-badge {
+      background: var(--primary);
+      color: var(--text-inverse);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sgs-header__hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      align-items: center;
+    }
+    .sgs-header__hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+    .sgs-header__nav { display: none; }
+
+    @media (min-width: 768px) {
+      .sgs-header__hamburger { display: none; }
+      .sgs-header__nav {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+        justify-content: center;
+      }
+      .sgs-header__nav a {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 8px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        transition: background 0.18s;
+      }
+      .sgs-header__nav a:hover { background: var(--surface-pink); }
+      .sgs-header__nav-featured {
+        background: var(--primary) !important;
+        color: var(--text) !important;
+        font-weight: 600 !important;
+      }
+      .sgs-header__nav-featured:hover { background: var(--primary) !important; color: var(--text) !important; box-shadow: inset 0 -2px 0 var(--accent); }
+    }
+    @media (min-width: 1024px) {
+      .sgs-header__nav a { font-size: 15px; padding: 10px 16px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    /* Hero — single-grid responsive pattern (migrated 2026-05-17 from dual
+       --mobile/--desktop variants). Preserves all per-viewport differences:
+       art-directed image swap, padding scale, h1 typography flip, CTA
+       direction. Single DOM, media-query reflow — matches SGS hero block. */
+    .sgs-hero {
+      background: var(--surface-pink);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-areas: "media" "content";
+    }
+    .sgs-hero__media { grid-area: media; overflow: hidden; }
+    .sgs-hero__content { grid-area: content; padding: 28px 20px 40px; background: var(--surface-pink); }
+
+    /* Mobile: portrait image only, hide desktop image */
+    .sgs-hero__split-image { width: 100%; object-fit: cover; display: block; }
+    .sgs-hero__split-image--mobile { height: 340px; object-position: center 20%; }
+    .sgs-hero__split-image--desktop { display: none; }
+
+    .sgs-hero__content h1 {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .sgs-hero__sub {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.65;
+    }
+    .sgs-hero__ctas { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Tablet / desktop: 2-col grid, swap to desktop image */
+    @media (min-width: 768px) {
+      .sgs-hero {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "content media";
+        min-height: 520px;
+      }
+      .sgs-hero__media { height: 100%; }
+      .sgs-hero__split-image--mobile { display: none; }
+      .sgs-hero__split-image--desktop {
+        display: block;
+        height: 100%;
+        object-position: center;
+      }
+      .sgs-hero__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 56px 48px;
+      }
+      .sgs-hero__content h1 {
+        font-family: 'Fraunces', serif;
+        font-size: 52px;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        letter-spacing: -1px;
+      }
+      .sgs-hero__sub { font-size: 18px; margin-bottom: 28px; max-width: 420px; }
+      .sgs-hero__ctas { flex-direction: row; gap: 12px; }
+    }
+    @media (min-width: 1280px) {
+      .sgs-hero__content { padding: 72px 64px; }
+      .sgs-hero__content h1 { font-size: 58px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       TRUST BAR (icon-in-white-circle on pink)
+    ══════════════════════════════════════════ */
+    .sgs-trust-bar {
+      background: var(--surface-pink);
+      padding: 22px 20px;
+    }
+    .sgs-trust-bar__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 12px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .sgs-trust-bar__badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sgs-trust-bar__badge[hidden],
+    .sgs-trust-bar__badge[data-pending="true"] { display: none; }
+    .sgs-trust-bar__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(58,46,38,0.06);
+    }
+    .sgs-trust-bar__icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--primary-dark);
+      stroke-width: 1.8;
+      fill: none;
+    }
+    .sgs-trust-bar__text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    @media (min-width: 600px) {
+      .sgs-trust-bar__inner { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .sgs-trust-bar__inner.has-halal { grid-template-columns: repeat(5, 1fr); }
+      .sgs-trust-bar__text { font-size: 14px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       FEATURED PRODUCT
+    ══════════════════════════════════════════ */
+    .sgs-featured-product { padding: 56px 20px; background: var(--surface-cream); }
+    .sgs-featured-product__inner { max-width: 1040px; margin: 0 auto; }
+    .sgs-featured-product h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sgs-featured-product .sgs-section-heading__intro {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .sgs-products { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+    .sgs-product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sgs-product-card__image { width: 100%; height: 220px; object-fit: cover; }
+    .sgs-product-card__body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .sgs-product-card h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sgs-product-card__description { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; flex: 1; line-height: 1.55; }
+
+    .sgs-featured-product__pill-group { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+    .sgs-featured-product__pill {
+      background: var(--surface-cream);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .sgs-featured-product__pill.active {
+      border-color: var(--primary);
+      background: rgba(230,138,149,0.1);
+      color: var(--text);
+    }
+    .sgs-featured-product__pill:hover:not(.active) { border-color: var(--primary-dark); }
+
+    .sgs-featured-product__price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+    .sgs-featured-product__price { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .sgs-featured-product__price-note { font-size: 13px; color: var(--text-muted); }
+
+    .sgs-gift-section__card--trial {
+      border: 2px dashed var(--accent);
+      background: linear-gradient(135deg, rgba(245,208,80,0.08) 0%, rgba(230,138,149,0.06) 100%);
+    }
+    .sgs-gift-section__card-tag--trial {
+      display: inline-flex;
+      align-items: center;
+      background: var(--accent);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .sgs-products { grid-template-columns: 5fr 3fr; }
+      .sgs-featured-product h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       BRAND STORY
+    ══════════════════════════════════════════ */
+    /* Brand-story section — uses the sgs/brand pattern (replaces retired
+       sgs/heritage-strip block, 2026-05-16). The pattern's root sgs/container
+       provides the 2-col grid on desktop / single-column stack on mobile via
+       its own block CSS, so this only carries Mama's-specific visual treatment. */
+    .sgs-brand {
+      background: var(--surface-alt);
+      padding: 64px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .sgs-brand__content { display: flex; flex-direction: column; gap: 16px; }
+    .sgs-brand__image {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      border-radius: 16px;
+      order: -1;
+    }
+    .sgs-brand__headline { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 20px; }
+
+    blockquote { font-style: italic; }
+    blockquote p { font-size: 17px; color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; }
+    blockquote footer {
+      font-style: normal;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-top: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .sgs-brand { grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+      .sgs-brand__image {
+        order: 0;
+        max-height: 440px;
+        height: 440px;
+      }
+      .sgs-brand__headline { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       INGREDIENT EDUCATION
+    ══════════════════════════════════════════ */
+    .sgs-ingredients-section { background: var(--surface-cream); padding: 64px 20px; }
+    .sgs-ingredients-section__inner { max-width: 960px; margin: 0 auto; text-align: center; }
+    .sgs-ingredients-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .sgs-ingredients-section .sgs-section-heading__intro {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin: 0 auto 36px;
+      max-width: 540px;
+    }
+    .sgs-feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .sgs-info-box {
+      background: white;
+      border-radius: 12px;
+      padding: 22px 16px;
+      border: 1px solid var(--border);
+    }
+    .sgs-info-box__icon { font-size: 32px; margin-bottom: 10px; }
+    .sgs-info-box h4 {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sgs-info-box p { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .sgs-ingredients-section__disclaimer {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    @media (min-width: 600px) {
+      .sgs-feature-grid { grid-template-columns: repeat(4, 1fr); }
+      .sgs-ingredients-section h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       GIFT SECTION
+    ══════════════════════════════════════════ */
+    .sgs-gift-section { background: var(--surface-pink); padding: 64px 20px; }
+    .sgs-gift-section__card-inner { max-width: 960px; margin: 0 auto; }
+    .sgs-gift-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .sgs-gift-section .sgs-section-heading__sub { font-size: 16px; color: var(--text); margin-bottom: 32px; }
+    .sgs-gift-section__cards { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+    .sgs-gift-section__card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+    }
+    .sgs-gift-section__card-tag {
+      display: inline-block;
+      background: var(--surface-pink);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sgs-gift-section__card h3 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .sgs-gift-section__card .sgs-gift-section__card-description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+    .sgs-gift-section__card .sgs-gift-section__card-price {
+      font-family: 'Fraunces', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .sgs-announcement-bar--send-to-ward {
+      background: white;
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .sgs-announcement-bar--send-to-ward p { font-size: 14px; color: var(--text); font-weight: 500; }
+    .sgs-announcement-bar--send-to-ward a { font-size: 14px; font-weight: 600; color: var(--primary-dark); white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; padding: 6px 0; }
+    .sgs-announcement-bar--send-to-ward a:hover { text-decoration: underline; }
+
+    @media (min-width: 640px) {
+      .sgs-gift-section__cards { grid-template-columns: 1fr 1fr; }
+      .sgs-gift-section h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       SOCIAL PROOF
+    ══════════════════════════════════════════ */
+    .sgs-social-proof { background: var(--surface-alt); padding: 64px 20px; }
+    .sgs-social-proof__inner { max-width: 960px; margin: 0 auto; }
+    .sgs-social-proof h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .sgs-social-proof .sgs-section-heading__sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .sgs-social-proof__trustpilot-bar {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .sgs-social-proof__trustpilot-logo { font-size: 13px; font-weight: 700; color: #00B67A; }
+    .sgs-social-proof__trustpilot-stars { font-size: 20px; color: #00B67A; }
+    .sgs-social-proof__trustpilot-text { font-size: 13px; color: var(--text-muted); }
+
+    .sgs-testimonial-slider { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .sgs-testimonial {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .sgs-testimonial__stars { color: var(--accent); font-size: 15px; margin-bottom: 8px; }
+    .sgs-testimonial__text { font-size: 14px; color: var(--text-muted); line-height: 1.65; font-style: italic; margin-bottom: 12px; }
+    .sgs-testimonial__author { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    @media (min-width: 640px) {
+      .sgs-testimonial-slider { grid-template-columns: repeat(3, 1fr); }
+      .sgs-social-proof h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    .sgs-footer { background: var(--text); color: var(--text-inverse); padding: 52px 20px 24px; }
+    .sgs-footer__inner { max-width: 1000px; margin: 0 auto; }
+    .sgs-footer__grid { display: grid; grid-template-columns: 1fr; gap: 36px; margin-bottom: 40px; }
+
+    .sgs-footer__logo { height: 36px; width: auto; margin-bottom: 12px; filter: brightness(0) invert(1); }
+    .sgs-footer__tagline { font-size: 14px; color: rgba(255,250,245,0.65); margin-bottom: 8px; line-height: 1.5; }
+    .sgs-footer__meta { font-size: 13px; color: rgba(255,250,245,0.5); margin-bottom: 4px; }
+    .sgs-footer__meta a { color: rgba(255,250,245,0.75); }
+    .sgs-footer__meta a:hover { color: var(--primary); }
+
+    .sgs-footer__social { display: flex; gap: 8px; margin-top: 14px; }
+    .sgs-footer__social a {
+      background: rgba(255,250,245,0.08);
+      color: var(--text-inverse);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.18s;
+    }
+    .sgs-footer__social a:hover { background: rgba(255,250,245,0.15); }
+
+    .sgs-footer__col h5 {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,250,245,0.4);
+      margin-bottom: 14px;
+    }
+    .sgs-footer__col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .sgs-footer__col ul li a { font-size: 14px; color: rgba(255,250,245,0.75); transition: color 0.18s; }
+    .sgs-footer__col ul li a:hover { color: var(--primary); }
+
+    .sgs-footer__bottom {
+      border-top: 1px solid rgba(255,250,245,0.1);
+      padding-top: 20px;
+      font-size: 13px;
+      color: rgba(255,250,245,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    @media (min-width: 768px) {
+      .sgs-footer__grid { grid-template-columns: 2fr 1fr 1fr; }
+      .sgs-footer__bottom { flex-direction: row; justify-content: space-between; }
+    }
+  </style>
+
+<a class="sgs-header__skip-link" href="#main-content">Skip to main content</a>
+ ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ 
+<header class="sgs-header" role="banner">
+<div class="sgs-header__inner">
+<a aria-label="Mama's Munches — Home" class="sgs-header__logo" href="/">
+<img alt="Mama's Munches" height="61" src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" width="183"/>
+</a>
+<nav aria-label="Main navigation" class="sgs-header__nav">
+<a href="/shop/">Shop</a>
+<a href="/about/">Our Story</a>
+<a class="sgs-header__nav-featured" href="/send-to-ward/">Send to Ward ★</a>
+<a href="/gift-ideas/">Gift Ideas</a>
+<a href="/faqs/">FAQs</a>
+</nav>
+<div class="sgs-header__right">
+<a aria-label="Cart — 0 items" class="sgs-header__cart" href="/cart/">
+<svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<path d="M16 10a4 4 0 0 1-8 0"></path>
+</svg>
+<span aria-hidden="true" class="sgs-header__cart-badge">0</span>
+</a>
+<button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open navigation menu" class="sgs-header__hamburger">
+<span></span><span></span><span></span>
+</button>
+</div>
+</div>
+</header>
+<main id="main-content">
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section aria-labelledby="hero-h1" class="sgs-hero">
+<div class="sgs-hero__content">
+<span class="sgs-section-heading__label">Handmade in Birmingham</span>
+<h1 id="hero-h1">Made for the mum<br/>who needs it most</h1>
+<p class="sgs-hero__sub">Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.</p>
+<div class="sgs-hero__ctas">
+<a class="sgs-button sgs-button--primary" href="/shop/">Shop Zookies</a>
+<a class="sgs-button sgs-button--secondary" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+<div class="sgs-hero__media">
+<img alt="Freshly baked Mama's Munches lactation cookies on a warm background" class="sgs-hero__split-image sgs-hero__split-image--mobile" height="1080" loading="eager" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/aesthetic-pic-1.jpeg" width="1080"/>
+<img alt="Close-up of Mama's Munches Zookies — real ingredients, baked fresh" class="sgs-hero__split-image sgs-hero__split-image--desktop" height="1536" loading="eager" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/IMG_20260419_173547_107-1.webp" width="1536"/>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     TRUST BAR
+══════════════════════════════════════════ -->
+<section aria-label="Why choose Mama's Munches" class="sgs-trust-bar">
+<div class="sgs-trust-bar__inner">
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><path d="m3 12 9-9 9 9"></path><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"></path></svg>
+</span>
+<span class="sgs-trust-bar__text">Handmade in Birmingham</span>
+</div>
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>
+</span>
+<span class="sgs-trust-bar__text">Registered Food Business</span>
+</div>
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><rect height="13" width="15" x="1" y="3"></rect><path d="m16 8 5 2v5h-5z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+</span>
+<span class="sgs-trust-bar__text">Free UK Delivery Over £35</span>
+</div>
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg fill="currentColor" stroke="none" style="fill: var(--primary-dark);" viewbox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+</span>
+<span class="sgs-trust-bar__text">Loved by Breastfeeding Mums</span>
+</div>
+<!-- Halal cert placeholder — flip data-pending to "false" + remove hidden when cert lands -->
+<div class="sgs-trust-bar__badge sgs-trust-bar__badge--halal-pending" data-pending="true" hidden="">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</span>
+<span class="sgs-trust-bar__text">Halal Certified</span>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     FEATURED PRODUCT
+══════════════════════════════════════════ -->
+<section aria-labelledby="product-h2" class="sgs-featured-product">
+<div class="sgs-featured-product__inner">
+<span class="sgs-section-heading__label">Our signature</span>
+<h2 id="product-h2">Zookies — Our Signature Giant Cookie</h2>
+<p class="sgs-section-heading__intro">One Zookie is a proper sized treat. Every one baked to order, same week.</p>
+<div class="sgs-products">
+<!-- Main product -->
+<div class="sgs-product-card">
+<img alt="Stack of Mama's Munches Zookies lactation cookies" class="sgs-product-card__image" height="1080" loading="lazy" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-stacked-1.jpeg" width="1920"/>
+<div class="sgs-product-card__body">
+<h3>Mama's Munches Zookies</h3>
+<p class="sgs-product-card__description">Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.</p>
+<div aria-label="Choose pack size" class="sgs-featured-product__pill-group" role="group">
+<button aria-pressed="false" class="sgs-featured-product__pill" type="button">8-pack</button>
+<button aria-pressed="true" class="sgs-featured-product__pill active" type="button">12-pack</button>
+<button aria-pressed="false" class="sgs-featured-product__pill" type="button">20-pack</button>
+<button aria-pressed="false" class="sgs-featured-product__pill" type="button">40-pack</button>
+</div>
+<div class="sgs-featured-product__price-row">
+<span class="sgs-featured-product__price">£10.00</span>
+<span class="sgs-featured-product__price-note">8-pack · Free delivery over £35</span>
+</div>
+<a class="sgs-button sgs-button--primary" href="/product/zookies/">Add to Cart — £10</a>
+</div>
+</div>
+<!-- Trial pack -->
+<div class="sgs-product-card sgs-gift-section__card--trial">
+<img alt="Mama's Munches cookies in a bakery display" class="sgs-product-card__image" height="1784" loading="lazy" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-on-bun-case-1.jpeg" width="2048"/>
+<div class="sgs-product-card__body">
+<div class="sgs-gift-section__card-tag--trial">New? Start here</div>
+<h3>The Trial Pack</h3>
+<p class="sgs-product-card__description">Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.</p>
+<div class="sgs-featured-product__price-row">
+<span class="sgs-featured-product__price">£5.00</span>
+<span class="sgs-featured-product__price-note">3 Classic Zookies · postage included</span>
+</div>
+<a class="sgs-button sgs-button--secondary" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     BRAND STORY
+══════════════════════════════════════════ -->
+<section aria-labelledby="story-h2" class="sgs-brand">
+<div class="sgs-brand__content">
+<h2 class="sgs-brand__headline" id="story-h2">A story that started with a friend</h2>
+<blockquote class="sgs-brand__body">
+<p>She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.</p>
+<p>They helped her. I was so grateful.</p>
+<p>Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.</p>
+<footer>— Zainab, Founder of Mama's Munches</footer>
+</blockquote>
+<a class="sgs-brand__cta sgs-button sgs-button--ghost" href="/about/" style="margin-top:8px;">Read the full story →</a>
+</div>
+<img alt="A mum smiling and holding Mama's Munches cookies" class="sgs-brand__image" height="1080" loading="lazy" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/Halimahs-1.jpeg" width="1920"/>
+</section>
+<!-- ══════════════════════════════════════════
+     INGREDIENT EDUCATION
+══════════════════════════════════════════ -->
+<section aria-labelledby="ingr-h2" class="sgs-ingredients-section">
+<div class="sgs-ingredients-section__inner">
+<span class="sgs-section-heading__label">What's in them?</span>
+<h2 id="ingr-h2">Proper ingredients, properly used</h2>
+<p class="sgs-section-heading__intro">Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.</p>
+<div class="sgs-feature-grid">
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🌾</div>
+<h4>Oats</h4>
+<p>Rich in iron. Used in postpartum foods across cultures for centuries.</p>
+</div>
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🍺</div>
+<h4>Brewer's Yeast</h4>
+<p>B-vitamins and chromium. A traditional galactagogue used worldwide.</p>
+</div>
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🌿</div>
+<h4>Flaxseed</h4>
+<p>Omega-3 fatty acids. Good for mum and baby.</p>
+</div>
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🌱</div>
+<h4>Fenugreek</h4>
+<p>Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first.</p>
+</div>
+</div>
+<p class="sgs-ingredients-section__disclaimer">We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.</p>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     GIFT SECTION
+══════════════════════════════════════════ -->
+<section aria-labelledby="gift-h2" class="sgs-gift-section">
+<div class="sgs-gift-section__card-inner">
+<span class="sgs-section-heading__label">Give the gift of nourishment</span>
+<h2 id="gift-h2">A gift she'll actually use</h2>
+<p class="sgs-section-heading__sub">For baby showers, new arrivals, and the mums who deserve a treat.</p>
+<div class="sgs-gift-section__cards">
+<div class="sgs-gift-section__card">
+<span class="sgs-gift-section__card-tag">Gift idea</span>
+<h3>New Baby Gift Box</h3>
+<p class="sgs-gift-section__card-description">The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.</p>
+<div class="sgs-gift-section__card-price">£15</div>
+<a class="sgs-button sgs-button--primary" href="/product/gift-box/">Shop Gift Box</a>
+</div>
+<div class="sgs-gift-section__card">
+<span class="sgs-gift-section__card-tag">Most thoughtful</span>
+<h3>40-Day Care Bundle</h3>
+<p class="sgs-gift-section__card-description">Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give a new mum.</p>
+<div class="sgs-gift-section__card-price">£42</div>
+<a class="sgs-button sgs-button--primary" href="/product/40-day-bundle/">Shop Bundle</a>
+</div>
+</div>
+<div class="sgs-announcement-bar--send-to-ward">
+<p>🏥 Heading to hospital? Ask us about our Send to Ward delivery.</p>
+<a href="/send-to-ward/">Find out more →</a>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     SOCIAL PROOF
+══════════════════════════════════════════ -->
+<section aria-labelledby="reviews-h2" class="sgs-social-proof">
+<div class="sgs-social-proof__inner">
+<h2 id="reviews-h2">What mums are saying</h2>
+<p class="sgs-section-heading__sub">Real feedback from real mums — nothing fabricated.</p>
+<div aria-label="Trustpilot rating" class="sgs-social-proof__trustpilot-bar">
+<span class="sgs-social-proof__trustpilot-logo">★ Trustpilot</span>
+<span aria-label="5 stars" class="sgs-social-proof__trustpilot-stars">★★★★★</span>
+<span class="sgs-social-proof__trustpilot-text">Leave us a review — help other mums find us</span>
+</div>
+<div class="sgs-testimonial-slider">
+<article class="sgs-testimonial">
+<div aria-label="5 stars" class="sgs-testimonial__stars">★★★★★</div>
+<p class="sgs-testimonial__text">"I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing."</p>
+<p class="sgs-testimonial__author">Reham, London</p>
+</article>
+<article class="sgs-testimonial">
+<div aria-label="5 stars" class="sgs-testimonial__stars">★★★★★</div>
+<p class="sgs-testimonial__text">"Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help."</p>
+<p class="sgs-testimonial__author">Sarah M., Manchester</p>
+</article>
+<article class="sgs-testimonial">
+<div aria-label="5 stars" class="sgs-testimonial__stars">★★★★★</div>
+<p class="sgs-testimonial__text">"Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again."</p>
+<p class="sgs-testimonial__author">Halimah, Birmingham</p>
+</article>
+</div>
+</div>
+</section>
+</main>
+ ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ 
+<footer class="sgs-footer" role="contentinfo">
+<div class="sgs-footer__inner">
+<div class="sgs-footer__grid">
+<div class="sgs-footer__brand">
+<img alt="Mama's Munches" class="sgs-footer__logo" height="51" loading="lazy" src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" width="152"/>
+<p class="sgs-footer__tagline">Real food for real mums.<br/>Handmade in Birmingham with care.</p>
+<p class="sgs-footer__meta">Birmingham, UK</p>
+<p class="sgs-footer__meta"><a href="mailto:Zainab@mamasmunches.com">Zainab@mamasmunches.com</a></p>
+<div class="sgs-footer__social">
+<a aria-label="Follow Mama's Munches on Instagram" href="https://www.instagram.com/mamasmunches/">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15">
+<rect height="20" rx="5" ry="5" width="20" x="2" y="2"></rect>
+<circle cx="12" cy="12" r="4"></circle>
+<circle cx="17.5" cy="6.5" fill="currentColor" r="1" stroke="none"></circle>
+</svg>
+            Instagram
+          </a>
+<a aria-label="Contact via WhatsApp" href="/contact/">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+            WhatsApp
+          </a>
+</div>
+</div>
+<div class="sgs-footer__col">
+<h5>Shop</h5>
+<ul>
+<li><a href="/shop/">All Products</a></li>
+<li><a href="/product/zookies/">Zookies</a></li>
+<li><a href="/product/trial-pack/">Trial Pack (£5)</a></li>
+<li><a href="/gift-ideas/">Gift Ideas</a></li>
+<li><a href="/send-to-ward/">Send to Ward</a></li>
+<li><a href="/about/">Our Story</a></li>
+<li><a href="/faqs/">FAQs</a></li>
+</ul>
+</div>
+<div class="sgs-footer__col">
+<h5>Information</h5>
+<ul>
+<li><a href="/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/shipping/">Shipping Info</a></li>
+<li><a href="/terms/">Terms &amp; Conditions</a></li>
+<li><a href="/allergens/">Allergen Information</a></li>
+<li><a href="/contact/">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="sgs-footer__bottom">
+<span>© 2026 Mama's Munches. Registered Food Business, Birmingham.</span>
+<span>Made with love for breastfeeding mums 🍪</span>
+</div>
+</div>
+</footer>
+
+=====POST 65=====
+<!-- sgs-converter: CHROME SKIPPED (<header> sgs-header) -- belongs in WP template parts, not post content -->
+
+<!-- wp:sgs/hero {"className":"sgs-hero","headline":"Made for the mumwho needs it most","headlineColour":"text","headlineFontSizeDesktop":58,"headlineMarginBottom":14,"headlineFontSizeTablet":52,"ctaPrimaryText":"Shop Zookies","ctaPrimaryUrl":"/shop/","ctaSecondaryText":"Try 3 for £5","ctaSecondaryUrl":"/product/trial-pack/","splitImage":{"id":null,"url":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/IMG_20260419_173547_107-7.webp","alt":"Close-up of Mama's Munches Zookies — real ingredients, baked fresh"},"splitImageMobile":{"id":null,"url":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/aesthetic-pic-7.jpeg","alt":"Freshly baked Mama's Munches lactation cookies on a warm background"},"variant":"split","label":"Handmade in Birmingham","labelColour":"text","labelFontSize":12,"labelFontSizeUnit":"px","labelFontWeight":"600","labelLetterSpacing":1.5,"labelLetterSpacingUnit":"px","labelTextTransform":"uppercase","labelMarginBottom":6,"labelMarginBottomUnit":"px","subHeadline":"Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.","subHeadlineColour":"text","subHeadlineFontSize":16,"subHeadlineLineHeight":1.65,"subHeadlineLineHeightUnit":"em","subHeadlineMarginBottom":24,"subHeadlineFontSizeTablet":18,"style":{"color":{"background":"var:preset|color|surface-pink"}}} /-->
+
+<!-- wp:sgs/trust-bar {"className":"sgs-trust-bar","items":[{"label":"Handmade in Birmingham"},{"label":"Registered Food Business"},{"label":"Free UK Delivery Over £35"},{"label":"Loved by Breastfeeding Mums"}],"style":{"spacing":{"padding":{"top":"22px","right":"20px","bottom":"22px","left":"20px"}},"color":{"background":"var:preset|color|surface-pink"}}} /-->
+
+<!-- wp:sgs/container {"className":"sgs-featured-product"} -->
+<!-- wp:sgs/container {"className":"sgs-featured-product__inner","style":{"spacing":{"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"}},"dimensions":{"maxWidth":"1040px"}}} -->
+<!-- wp:sgs/label {"text":"Our signature","tag":"span","variantStyle":"plain","className":"sgs-section-heading__label"} /-->
+<!-- wp:heading {"anchor":"product-h2","level":2} -->
+<h2 id="product-h2" class="wp-block-heading">Zookies — Our Signature Giant Cookie</h2>
+<!-- /wp:heading -->
+<!-- wp:sgs/text {"text":"One Zookie is a proper sized treat. Every one baked to order, same week.","tag":"p","className":"sgs-section-heading__intro","textColour":"text-muted","fontSize":"16","fontSizeUnit":"px","lineHeight":"1.75","lineHeightUnit":"em","marginBottom":"32","marginUnit":"px"} /-->
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumnsMobile":"1fr","columnsMobile":1,"gap":"16","gridTemplateColumns":"5fr 3fr","columns":2,"gridTemplateColumnsTablet":"5fr 3fr","columnsTablet":2,"className":"sgs-products","style":{"spacing":{"blockGap":"16px"}}} -->
+<!-- wp:sgs/product-card {"className":"sgs-product-card","variantStyle":"standard","ctaText":"Add to Cart — £10","ctaUrl":"/product/zookies/","image":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-stacked-7.jpeg","imageAlt":"Stack of Mama's Munches Zookies lactation cookies","description":"Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.","packSizes":[{"label":"8-pack","selected":false},{"label":"12-pack","selected":true},{"label":"20-pack","selected":false},{"label":"40-pack","selected":false}],"priceLarge":"£10.00","priceNote":"8-pack · Free delivery over £35"} /-->
+<!-- wp:sgs/product-card {"className":"sgs-product-card sgs-gift-section__card\u002d\u002dtrial","variantStyle":"trial","ctaText":"Try 3 for £5","ctaUrl":"/product/trial-pack/","image":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-on-bun-case-7.jpeg","imageAlt":"Mama's Munches cookies in a bakery display","trialTag":"New? Start here","description":"Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.","priceLarge":"£5.00","priceNote":"3 Classic Zookies · postage included"} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumnsMobile":"1fr","columnsMobile":1,"gap":"32","gridTemplateColumns":"1fr 1fr","columns":2,"gridTemplateColumnsTablet":"1fr 1fr","columnsTablet":2,"className":"sgs-brand","style":{"spacing":{"padding":{"top":"64px","right":"20px","bottom":"64px","left":"20px"},"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"},"blockGap":"32px"},"color":{"background":"var:preset|color|surface-alt"},"dimensions":{"maxWidth":"1000px"}}} -->
+<!-- wp:sgs/container {"layout":"stack","gap":"16","className":"sgs-brand__content","style":{"spacing":{"blockGap":"16px"}}} -->
+<!-- wp:sgs/heading {"headline":"A story that started with a friend","headlineLevel":2,"className":"sgs-brand__headline","labelEnabled":false,"subEnabled":false,"headlineId":"story-h2","anchor":"story-h2","headlineColour":"text","headlineFontSize":28,"headlineFontSizeUnit":"px","headlineFontWeight":"600","headlineFontSizeTablet":36,"style":{"spacing":{"margin":{"bottom":"20px"}},"color":{"text":"var:preset|color|text"}}} /-->
+<!-- wp:sgs/container {"className":"sgs-brand__body"} -->
+<!-- wp:paragraph -->
+<p>She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>They helped her. I was so grateful.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>— Zainab, Founder of Mama's Munches</p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/container -->
+<!-- wp:sgs/button {"className":"sgs-brand__cta sgs-button sgs-button\u002d\u002dghost","url":"/about/","label":"Read the full story →","style":{"spacing":{"padding":{"top":"14px","right":"24px","bottom":"14px","left":"24px"},"margin":{"top":"8px"}}}} /-->
+<!-- /wp:sgs/container -->
+<!-- wp:sgs/media {"imageUrl":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/Halimahs-7.jpeg","imageAlt":"A mum smiling and holding Mama's Munches cookies","className":"sgs-brand__image","imageWidth":1920,"imageHeight":1080,"borderRadius":"16","borderRadiusUnit":"px","maxHeight":"380","maxHeightUnit":"px","objectFit":"cover"} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"className":"sgs-ingredients-section"} -->
+<!-- wp:sgs/container {"className":"sgs-ingredients-section__inner","style":{"spacing":{"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"}},"dimensions":{"maxWidth":"960px"}}} -->
+<!-- wp:sgs/label {"text":"What's in them?","tag":"span","variantStyle":"plain","className":"sgs-section-heading__label"} /-->
+<!-- wp:heading {"anchor":"ingr-h2","level":2} -->
+<h2 id="ingr-h2" class="wp-block-heading">Proper ingredients, properly used</h2>
+<!-- /wp:heading -->
+<!-- wp:sgs/text {"text":"Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.","tag":"p","className":"sgs-section-heading__intro","textColour":"text-muted","fontSize":"17","fontSizeUnit":"px","lineHeight":"1.75","lineHeightUnit":"em","marginTop":"0","marginRight":"auto","marginBottom":"16","marginLeft":"auto","marginUnit":"px"} /-->
+<!-- wp:sgs/feature-grid {"className":"sgs-feature-grid","style":{"spacing":{"margin":{"bottom":"24px"}}}} -->
+<!-- wp:sgs/info-box {"mediaEmoji":"🌾","heading":"Oats","description":"Rich in iron. Used in postpartum foods across cultures for centuries.","mediaType":"emoji","className":"sgs-info-box"} /-->
+<!-- wp:sgs/info-box {"mediaEmoji":"🍺","heading":"Brewer's Yeast","description":"B-vitamins and chromium. A traditional galactagogue used worldwide.","mediaType":"emoji","className":"sgs-info-box"} /-->
+<!-- wp:sgs/info-box {"mediaEmoji":"🌿","heading":"Flaxseed","description":"Omega-3 fatty acids. Good for mum and baby.","mediaType":"emoji","className":"sgs-info-box"} /-->
+<!-- wp:sgs/info-box {"mediaEmoji":"🌱","heading":"Fenugreek","description":"Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first.","mediaType":"emoji","className":"sgs-info-box"} /-->
+<!-- /wp:sgs/feature-grid -->
+<!-- wp:sgs/text {"text":"We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.","tag":"p","className":"sgs-ingredients-section__disclaimer","textColour":"text-muted","fontSize":"17","fontSizeUnit":"px","lineHeight":"1.75","lineHeightUnit":"em","fontStyle":"italic","marginTop":"0","marginRight":"auto","marginBottom":"16","marginLeft":"auto","marginUnit":"px","paddingTop":"16","paddingRight":"20","paddingBottom":"16","paddingLeft":"20","paddingUnit":"px","borderRadius":"10","borderRadiusUnit":"px"} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"className":"sgs-gift-section"} -->
+<!-- wp:sgs/container {"className":"sgs-gift-section__card-inner","style":{"spacing":{"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"}},"dimensions":{"maxWidth":"960px"}}} -->
+<!-- wp:sgs/label {"text":"Give the gift of nourishment","tag":"span","variantStyle":"plain","className":"sgs-section-heading__label"} /-->
+<!-- wp:heading {"anchor":"gift-h2","level":2} -->
+<h2 id="gift-h2" class="wp-block-heading">A gift she'll actually use</h2>
+<!-- /wp:heading -->
+<!-- wp:sgs/text {"text":"For baby showers, new arrivals, and the mums who deserve a treat.","tag":"p","className":"sgs-section-heading__sub","textColour":"text-muted","fontSize":"17","fontSizeUnit":"px","lineHeight":"1.75","lineHeightUnit":"em","marginBottom":"16","marginUnit":"px"} /-->
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumnsMobile":"1fr","columnsMobile":1,"gap":"16","gridTemplateColumns":"1fr 1fr","columns":2,"gridTemplateColumnsTablet":"1fr 1fr","columnsTablet":2,"className":"sgs-gift-section__cards","style":{"spacing":{"margin":{"bottom":"20px"},"blockGap":"16px"}}} -->
+<!-- wp:sgs/info-box {"className":"sgs-gift-section__card","heading":"New Baby Gift Box","headingColour":"text","headingFontSize":22,"style":{"spacing":{"padding":{"top":"28px","right":"24px","bottom":"28px","left":"24px"}},"border":{"radius":"16px","width":"1px","style":"solid","color":"var:preset|color|border"},"color":{"background":"#FFFFFF"}}} /-->
+<!-- wp:sgs/info-box {"className":"sgs-gift-section__card","heading":"40-Day Care Bundle","headingColour":"text","headingFontSize":22,"style":{"spacing":{"padding":{"top":"28px","right":"24px","bottom":"28px","left":"24px"}},"border":{"radius":"16px","width":"1px","style":"solid","color":"var:preset|color|border"},"color":{"background":"#FFFFFF"}}} /-->
+<!-- /wp:sgs/container -->
+<!-- wp:sgs/announcement-bar {"className":"sgs-announcement-bar\u002d\u002dsend-to-ward","style":{"color":{"background":"#FFFFFF"}}} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"className":"sgs-social-proof"} -->
+<!-- wp:sgs/container {"className":"sgs-social-proof__inner","style":{"spacing":{"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"}},"dimensions":{"maxWidth":"960px"}}} -->
+<!-- wp:heading {"anchor":"reviews-h2","level":2} -->
+<h2 id="reviews-h2" class="wp-block-heading">What mums are saying</h2>
+<!-- /wp:heading -->
+<!-- wp:sgs/text {"text":"Real feedback from real mums — nothing fabricated.","tag":"p","className":"sgs-section-heading__sub","textColour":"text-muted","fontSize":"17","fontSizeUnit":"px","lineHeight":"1.75","lineHeightUnit":"em","marginBottom":"16","marginUnit":"px"} /-->
+<!-- wp:sgs/container {"layout":"flex","gap":"14","className":"sgs-social-proof__trustpilot-bar","style":{"spacing":{"padding":{"top":"18px","right":"24px","bottom":"18px","left":"24px"},"margin":{"bottom":"28px"},"blockGap":"14px"},"border":{"radius":"10px","width":"1px","style":"solid","color":"var:preset|color|border"},"color":{"background":"#FFFFFF"}}} -->
+<!-- wp:sgs/text {"text":"★ Trustpilot","tag":"span","className":"sgs-social-proof__trustpilot-logo","textColour":"#00B67A","fontSize":"13","fontSizeUnit":"px","fontWeight":"700"} /-->
+<!-- wp:sgs/text {"text":"★★★★★","tag":"span","className":"sgs-social-proof__trustpilot-stars","textColour":"#00B67A","fontSize":"20","fontSizeUnit":"px"} /-->
+<!-- wp:sgs/text {"text":"Leave us a review — help other mums find us","tag":"span","className":"sgs-social-proof__trustpilot-text","textColour":"text-muted","fontSize":"13","fontSizeUnit":"px"} /-->
+<!-- /wp:sgs/container -->
+<!-- wp:sgs/testimonial-slider {"className":"sgs-testimonial-slider","testimonials":[{"quote":"\u0022I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing.\u0022","name":"Reham, London","rating":5},{"quote":"\u0022Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help.\u0022","name":"Sarah M., Manchester","rating":5},{"quote":"\u0022Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again.\u0022","name":"Halimah, Birmingham","rating":5}]} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- sgs-converter: CHROME SKIPPED (<footer> sgs-footer) -- belongs in WP template parts, not post content -->
+=====POST 13=====
+
+=====POST 14=====
+<!-- wp:woocommerce/cart -->
+<div class="wp-block-woocommerce-cart alignwide is-loading"><!-- wp:woocommerce/filled-cart-block -->
+<div class="wp-block-woocommerce-filled-cart-block"><!-- wp:woocommerce/cart-items-block -->
+<div class="wp-block-woocommerce-cart-items-block"><!-- wp:woocommerce/cart-line-items-block -->
+<div class="wp-block-woocommerce-cart-line-items-block"></div>
+<!-- /wp:woocommerce/cart-line-items-block -->
+
+<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"perPage":3,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"title","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false,"relatedBy":{"categories":true,"tags":true}},"tagName":"div","displayLayout":{"type":"flex","columns":3,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"collection":"woocommerce/product-collection/cross-sells","hideControls":["filterable"],"queryContextIncludes":["collection"],"__privatePreviewState":{"isPreview":true,"previewMessage":"Actual products will vary depending on the page being viewed."}} -->
+<div class="wp-block-woocommerce-product-collection"><!-- wp:heading {"textAlign":"left","style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
+<h2 class="wp-block-heading has-text-align-left" style="margin-bottom:1rem">You may be interested in&hellip;</h2>
+
+<!-- /wp:heading -->
+
+<!-- wp:woocommerce/product-template -->
+<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"thumbnail","isDescendentOfQueryLoop":true} -->
+<!-- wp:woocommerce/product-sale-badge {"align":"right"} /-->
+<!-- /wp:woocommerce/product-image -->
+
+<!-- wp:post-title {"textAlign":"center","isLink":true,"style":{"spacing":{"margin":{"bottom":"0.75rem","top":"0"}},"typography":{"lineHeight":"1.4"}},"fontSize":"medium","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
+
+<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true,"textAlign":"center","fontSize":"small"} /-->
+
+<!-- wp:woocommerce/product-button {"textAlign":"center","isDescendentOfQueryLoop":true,"fontSize":"small"} /-->
+<!-- /wp:woocommerce/product-template --></div>
+<!-- /wp:woocommerce/product-collection --></div>
+
+<!-- /wp:woocommerce/cart-items-block -->
+
+<!-- wp:woocommerce/cart-totals-block -->
+<div class="wp-block-woocommerce-cart-totals-block"><!-- wp:woocommerce/cart-order-summary-block -->
+<div class="wp-block-woocommerce-cart-order-summary-block"><!-- wp:woocommerce/cart-order-summary-heading-block -->
+<div class="wp-block-woocommerce-cart-order-summary-heading-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-heading-block -->
+
+<!-- wp:woocommerce/cart-order-summary-coupon-form-block -->
+<div class="wp-block-woocommerce-cart-order-summary-coupon-form-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-coupon-form-block -->
+
+<!-- wp:woocommerce/cart-order-summary-subtotal-block -->
+<div class="wp-block-woocommerce-cart-order-summary-subtotal-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-subtotal-block -->
+
+<!-- wp:woocommerce/cart-order-summary-fee-block -->
+<div class="wp-block-woocommerce-cart-order-summary-fee-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-fee-block -->
+
+<!-- wp:woocommerce/cart-order-summary-discount-block -->
+<div class="wp-block-woocommerce-cart-order-summary-discount-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-discount-block -->
+
+<!-- wp:woocommerce/cart-order-summary-shipping-block -->
+<div class="wp-block-woocommerce-cart-order-summary-shipping-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-shipping-block -->
+
+<!-- wp:woocommerce/cart-order-summary-taxes-block -->
+<div class="wp-block-woocommerce-cart-order-summary-taxes-block"></div>
+<!-- /wp:woocommerce/cart-order-summary-taxes-block --></div>
+<!-- /wp:woocommerce/cart-order-summary-block -->
+
+<!-- wp:woocommerce/cart-express-payment-block -->
+<div class="wp-block-woocommerce-cart-express-payment-block"></div>
+<!-- /wp:woocommerce/cart-express-payment-block -->
+
+<!-- wp:woocommerce/proceed-to-checkout-block -->
+<div class="wp-block-woocommerce-proceed-to-checkout-block"></div>
+<!-- /wp:woocommerce/proceed-to-checkout-block -->
+
+<!-- wp:woocommerce/cart-accepted-payment-methods-block -->
+<div class="wp-block-woocommerce-cart-accepted-payment-methods-block"></div>
+<!-- /wp:woocommerce/cart-accepted-payment-methods-block --></div>
+<!-- /wp:woocommerce/cart-totals-block --></div>
+<!-- /wp:woocommerce/filled-cart-block -->
+
+<!-- wp:woocommerce/empty-cart-block -->
+<div class="wp-block-woocommerce-empty-cart-block"><!-- wp:heading {"textAlign":"center","className":"with-empty-cart-icon wc-block-cart__empty-cart__title"} -->
+<h2 class="wp-block-heading has-text-align-center with-empty-cart-icon wc-block-cart__empty-cart__title">Your cart is currently empty!</h2>
+<!-- /wp:heading -->
+
+<!-- wp:separator {"className":"is-style-dots"} -->
+<hr class="wp-block-separator has-alpha-channel-opacity is-style-dots"/>
+<!-- /wp:separator -->
+
+<!-- wp:heading {"textAlign":"center"} -->
+<h2 class="wp-block-heading has-text-align-center">New in store</h2>
+<!-- /wp:heading -->
+
+<!-- wp:woocommerce/product-new {"columns":4,"rows":1} /--></div>
+<!-- /wp:woocommerce/empty-cart-block --></div>
+<!-- /wp:woocommerce/cart -->
+=====POST 15=====
+<!-- wp:woocommerce/checkout -->
+<div class="wp-block-woocommerce-checkout alignwide wc-block-checkout is-loading"><!-- wp:woocommerce/checkout-fields-block -->
+<div class="wp-block-woocommerce-checkout-fields-block"><!-- wp:woocommerce/checkout-express-payment-block -->
+<div class="wp-block-woocommerce-checkout-express-payment-block"></div>
+<!-- /wp:woocommerce/checkout-express-payment-block -->
+
+<!-- wp:woocommerce/checkout-contact-information-block -->
+<div class="wp-block-woocommerce-checkout-contact-information-block"></div>
+<!-- /wp:woocommerce/checkout-contact-information-block -->
+
+<!-- wp:woocommerce/checkout-shipping-method-block -->
+<div class="wp-block-woocommerce-checkout-shipping-method-block"></div>
+<!-- /wp:woocommerce/checkout-shipping-method-block -->
+
+<!-- wp:woocommerce/checkout-pickup-options-block -->
+<div class="wp-block-woocommerce-checkout-pickup-options-block"></div>
+<!-- /wp:woocommerce/checkout-pickup-options-block -->
+
+<!-- wp:woocommerce/checkout-shipping-address-block -->
+<div class="wp-block-woocommerce-checkout-shipping-address-block"></div>
+<!-- /wp:woocommerce/checkout-shipping-address-block -->
+
+<!-- wp:woocommerce/checkout-billing-address-block -->
+<div class="wp-block-woocommerce-checkout-billing-address-block"></div>
+<!-- /wp:woocommerce/checkout-billing-address-block -->
+
+<!-- wp:woocommerce/checkout-shipping-methods-block -->
+<div class="wp-block-woocommerce-checkout-shipping-methods-block"></div>
+<!-- /wp:woocommerce/checkout-shipping-methods-block -->
+
+<!-- wp:woocommerce/checkout-payment-block -->
+<div class="wp-block-woocommerce-checkout-payment-block"></div>
+<!-- /wp:woocommerce/checkout-payment-block -->
+
+<!-- wp:woocommerce/checkout-additional-information-block -->
+<div class="wp-block-woocommerce-checkout-additional-information-block"></div>
+<!-- /wp:woocommerce/checkout-additional-information-block -->
+
+<!-- wp:woocommerce/checkout-order-note-block -->
+<div class="wp-block-woocommerce-checkout-order-note-block"></div>
+<!-- /wp:woocommerce/checkout-order-note-block -->
+
+<!-- wp:woocommerce/checkout-terms-block -->
+<div class="wp-block-woocommerce-checkout-terms-block"></div>
+<!-- /wp:woocommerce/checkout-terms-block -->
+
+<!-- wp:woocommerce/checkout-actions-block -->
+<div class="wp-block-woocommerce-checkout-actions-block"></div>
+<!-- /wp:woocommerce/checkout-actions-block --></div>
+<!-- /wp:woocommerce/checkout-fields-block -->
+
+<!-- wp:woocommerce/checkout-totals-block -->
+<div class="wp-block-woocommerce-checkout-totals-block"><!-- wp:woocommerce/checkout-order-summary-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-block"><!-- wp:woocommerce/checkout-order-summary-cart-items-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-cart-items-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-cart-items-block -->
+
+<!-- wp:woocommerce/checkout-order-summary-coupon-form-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-coupon-form-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-coupon-form-block -->
+
+<!-- wp:woocommerce/checkout-order-summary-subtotal-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-subtotal-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-subtotal-block -->
+
+<!-- wp:woocommerce/checkout-order-summary-fee-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-fee-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-fee-block -->
+
+<!-- wp:woocommerce/checkout-order-summary-discount-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-discount-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-discount-block -->
+
+<!-- wp:woocommerce/checkout-order-summary-shipping-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-shipping-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-shipping-block -->
+
+<!-- wp:woocommerce/checkout-order-summary-taxes-block -->
+<div class="wp-block-woocommerce-checkout-order-summary-taxes-block"></div>
+<!-- /wp:woocommerce/checkout-order-summary-taxes-block --></div>
+<!-- /wp:woocommerce/checkout-order-summary-block --></div>
+<!-- /wp:woocommerce/checkout-totals-block --></div>
+<!-- /wp:woocommerce/checkout -->
+=====POST 16=====
+<!-- wp:shortcode -->[woocommerce_my_account]<!-- /wp:shortcode -->
+=====POST 17=====
+<!-- wp:paragraph -->
+<p><b>This is a sample page.</b></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Overview</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Our refund and returns policy lasts 30 days. If 30 days have passed since your purchase, we can’t offer you a full refund or exchange.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>To be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Several types of goods are exempt from being returned. Perishable goods such as food, flowers, newspapers or magazines cannot be returned. We also do not accept products that are intimate or sanitary goods, hazardous materials, or flammable liquids or gases.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Additional non-returnable items:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul>
+<li>Gift cards</li>
+<li>Downloadable software products</li>
+<li>Some health and personal care items</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>To complete your return, we require a receipt or proof of purchase.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Please do not send your purchase back to the manufacturer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>There are certain situations where only partial refunds are granted:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul>
+<li>Book with obvious signs of use</li>
+<li>CD, DVD, VHS tape, software, video game, cassette tape, or vinyl record that has been opened.</li>
+<li>Any item not in its original condition, is damaged or missing parts for reasons not due to our error.</li>
+<li>Any item that is returned more than 30 days after delivery</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Refunds</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Once your return is received and inspected, we will send you an email to notify you that we have received your returned item. We will also notify you of the approval or rejection of your refund.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>If you are approved, then your refund will be processed, and a credit will automatically be applied to your credit card or original method of payment, within a certain amount of days.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Late or missing refunds</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>If you haven’t received a refund yet, first check your bank account again.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Then contact your credit card company, it may take some time before your refund is officially posted.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Next contact your bank. There is often some processing time before a refund is posted.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>If you’ve done all of this and you still have not received your refund yet, please contact us at {email address}.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Sale items</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Only regular priced items may be refunded. Sale items cannot be refunded.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Exchanges</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We only replace items if they are defective or damaged. If you need to exchange it for the same item, send us an email at {email address} and send your item to: {physical address}.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Gifts</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>If the item was marked as a gift when purchased and shipped directly to you, you’ll receive a gift credit for the value of your return. Once the returned item is received, a gift certificate will be mailed to you.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>If the item wasn’t marked as a gift when purchased, or the gift giver had the order shipped to themselves to give to you later, we will send a refund to the gift giver and they will find out about your return.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Shipping returns</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>To return your product, you should mail your product to: {physical address}.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>You will be responsible for paying for your own shipping costs for returning your item. Shipping costs are non-refundable. If you receive a refund, the cost of return shipping will be deducted from your refund.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Depending on where you live, the time it may take for your exchanged product to reach you may vary.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>If you are returning more expensive items, you may consider using a trackable shipping service or purchasing shipping insurance. We don’t guarantee that we will receive your returned item.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Need help?</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Contact us at {email} for questions related to refunds and returns.</p>
+<!-- /wp:paragraph -->
+=====POST 8=====
+<!-- wp:sgs/hero {"align":"full","contentPadding":{"bottom":"56px","left":"48px","right":"48px","top":"56px"},"contentPaddingMobile":{"bottom":"40px","left":"20px","right":"20px","top":"28px"},"ctaPrimaryStyle":"primary","ctaSecondaryStyle":"primary","gridTemplateColumns":"1fr 1fr","gridTemplateColumnsMobile":"1fr","layout":"grid","minHeight":"520px","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 1280px){\u0026selector .sgs-hero__content{padding:72px 64px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","splitImage":{"alt":"Close-up of Mama's Munches Zookies — real ingredients, baked fresh","id":0,"url":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/IMG_20260419_173547_107.webp"},"splitImageMobile":{"alt":"Freshly baked Mama's Munches lactation cookies on a warm background","id":0,"url":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/aesthetic-pic.jpeg"},"style":{"color":{"background":"var:preset|color|surface-pink"}},"variant":"split","className":"sgs-hero"} -->
+<!-- wp:sgs/label {"fontSize":12,"fontSizeUnit":"px","fontWeight":"600","letterSpacing":1.5,"letterSpacingUnit":"px","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"text":"Handmade in Birmingham","textTransform":"uppercase"} /--><!-- wp:sgs/heading {"content":"Made for the mum\u003cbr\u003ewho needs it most","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":52,"fontSizeMobile":34,"fontSizeUnit":"px","fontWeight":"700","letterSpacing":-1,"letterSpacingUnit":"px","level":"h1","lineHeight":1.15,"lineHeightUnit":"unitless","marginMobile":{"bottom":"14px"},"sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 1280px){\u0026selector{font-size:58px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"16px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":18,"fontSizeMobile":16,"fontSizeUnit":"px","lineHeight":1.65,"lineHeightUnit":"unitless","marginMobile":{"bottom":"24px"},"maxWidth":420,"maxWidthUnit":"px","style":{"spacing":{"margin":{"bottom":"28px"}}},"text":"Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.","textColour":"text"} /--><!-- wp:sgs/multi-button {"gap":"12px","gapMobile":"10px"} -->
+<!-- wp:sgs/button {"borderStyle":"solid","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"fontFamily":"'Inter', sans-serif","fontSize":15,"fontSizeUnit":"px","fontWeight":"600","inheritStyle":"primary","label":"Shop Zookies","minHeight":48,"minHeightUnit":"px","style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}},"textDecoration":"none","url":"/shop/"} /--><!-- wp:sgs/button {"borderStyle":"solid","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"fontFamily":"'Inter', sans-serif","fontSize":15,"fontSizeUnit":"px","fontWeight":"600","inheritStyle":"secondary","label":"Try 3 for £5","minHeight":48,"minHeightUnit":"px","style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}},"textDecoration":"none","url":"/product/trial-pack/"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/hero -->
+
+<!-- wp:sgs/trust-bar {"align":"full","contentWidth":"1100px","gap":"16px 12px","items":[{"icon":"home","label":"Handmade in Birmingham"},{"icon":"check","label":"Registered Food Business"},{"icon":"truck","label":"Free UK Delivery Over £35"},{"fillStyle":"filled","iconSvg":"\u003csvg fill=\u0022currentColor\u0022 stroke=\u0022none\u0022 style=\u0022fill: var(\u002d\u002dprimary-dark);\u0022 viewbox=\u00220 0 24 24\u0022\u003e\u003cpolygon points=\u002212 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\u0022\u003e\u003c/polygon\u003e\u003c/svg\u003e","label":"Loved by Breastfeeding Mums"}],"labelColour":"text","labelFontSize":14,"labelFontSizeMobile":13,"labelFontSizeTablet":13,"labelFontSizeUnit":"px","labelFontWeight":"500","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 600px) and (max-width: 767px){\u0026selector .sgs-trust-bar__inner{grid-template-columns:repeat(4, 1fr);}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"color":{"background":"var:preset|color|surface-pink"},"spacing":{"padding":{"bottom":"22px","left":"20px","right":"20px","top":"22px"}}},"textColour":"text","className":"sgs-trust-bar"} /-->
+
+<!-- wp:sgs/container {"align":"full","contentWidth":"1040px","style":{"color":{"background":"var:preset|color|surface"},"spacing":{"padding":{"bottom":"56px","left":"20px","right":"20px","top":"56px"}}},"className":"sgs-featured-product"} -->
+<!-- wp:sgs/label {"fontSize":12,"fontSizeUnit":"px","fontWeight":"600","letterSpacing":1.5,"letterSpacingUnit":"px","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"text":"Our signature","textTransform":"uppercase"} /--><!-- wp:sgs/heading {"content":"Zookies — Our Signature Giant Cookie","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":36,"fontSizeMobile":28,"fontSizeUnit":"px","fontWeight":"600","level":"h2","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":16,"fontSizeUnit":"px","style":{"spacing":{"margin":{"bottom":"32px"}}},"text":"One Zookie is a proper sized treat. Every one baked to order, same week.","textColour":"text-muted"} /--><!-- wp:sgs/container {"gap":"16px","gridItemBorderRadius":"16px","gridTemplateColumns":"5fr 3fr","gridTemplateColumnsMobile":"1fr","layout":"grid"} -->
+<!-- wp:sgs/product-card {"ctaStyle":"primary","ctaText":"Add to Cart — £10","ctaUrl":"/product/zookies/","descColour":"text-muted","descFontSize":14,"descFontSizeUnit":"px","descLineHeight":"1.55","description":"Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.","image":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-stacked.jpeg","imageAlt":"Stack of Mama's Munches Zookies lactation cookies","packSizes":[{"label":"8-pack"},{"label":"12-pack"},{"label":"20-pack"},{"label":"40-pack"}],"pickerPillBgColour":"surface","pickerPillBorderColour":"border-subtle","pickerPillBorderRadius":"8px","pickerPillSelectedBgColour":"rgba(230,138,149,0.1)","pickerPillSelectedBorderColour":"primary","pickerPillSelectedBorderRadius":"8px","pickerPillSelectedTextColour":"text","pickerPillTextColour":"text-muted","priceColour":"text","priceFontSize":28,"priceFontSizeUnit":"px","priceFontWeight":"700","priceLarge":"£10.00","priceNote":"8-pack · Free delivery over £35","priceNoteColour":"text-muted","priceNoteFontSize":13,"priceNoteFontSizeUnit":"px","productName":"Mama's Munches Zookies","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"16px","style":"solid","width":"1px"},"color":{"background":"#ffffff"}},"titleColour":"text","titleFontSize":20,"titleFontSizeUnit":"px","titleFontWeight":"500","titleLineHeight":"1.2","variantStyle":"featured"} /--><!-- wp:sgs/product-card {"ctaStyle":"secondary","ctaText":"Try 3 for £5","ctaUrl":"/product/trial-pack/","descColour":"text-muted","descFontSize":14,"descFontSizeUnit":"px","descLineHeight":"1.55","description":"Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.","image":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-on-bun-case.jpeg","imageAlt":"Mama's Munches cookies in a bakery display","priceColour":"text","priceFontSize":28,"priceFontSizeUnit":"px","priceFontWeight":"700","priceLarge":"£5.00","priceNote":"3 Classic Zookies · postage included","priceNoteColour":"text-muted","priceNoteFontSize":13,"priceNoteFontSizeUnit":"px","productName":"The Trial Pack","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002daccent)","radius":"16px","style":"dashed","width":"2px"}},"tagBackgroundColour":"accent","tagTextColour":"text","titleColour":"text","titleFontSize":20,"titleFontSizeUnit":"px","titleFontWeight":"500","titleLineHeight":"1.2","trialTag":"New? Start here","variantStyle":"trial"} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"gap":"60px","gapMobile":"32px","gridTemplateColumns":"1fr 1fr","gridTemplateColumnsMobile":"1fr","layout":"grid","maxWidth":"1000px","style":{"color":{"background":"var:preset|color|surface-alt"},"spacing":{"margin":{"bottom":"0","left":"auto","right":"auto","top":"0"},"padding":{"bottom":"64px","left":"20px","right":"20px","top":"64px"}}},"verticalAlign":"center","className":"sgs-brand"} -->
+<!-- wp:sgs/container {"flexDirection":"column","gap":"16px","layout":"flex"} -->
+<!-- wp:sgs/heading {"content":"A story that started with a friend","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":36,"fontSizeMobile":28,"fontSizeUnit":"px","fontWeight":"600","level":"h2","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"20px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/quote {"attribution":"— Zainab, Founder of Mama's Munches"} -->
+<!-- wp:sgs/text {"text":"She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations."} /--><!-- wp:sgs/text {"text":"They helped her. I was so grateful."} /--><!-- wp:sgs/text {"text":"Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped."} /-->
+<!-- /wp:sgs/quote --><!-- wp:sgs/button {"borderStyle":"solid","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"fontFamily":"'Inter', sans-serif","fontSize":14,"fontSizeUnit":"px","fontWeight":"600","inheritStyle":"outline","label":"Read the full story →","minHeight":44,"minHeightUnit":"px","style":{"border":{"radius":"10px"},"spacing":{"margin":{"top":"8px"},"padding":{"bottom":"10px","left":"18px","right":"18px","top":"10px"}}},"textDecoration":"none","url":"/about/"} /-->
+<!-- /wp:sgs/container --><!-- wp:sgs/media {"height":"440px","imageAlt":"A mum smiling and holding Mama's Munches cookies","imageUrl":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/Halimahs.jpeg","maxHeight":"440px","maxHeightMobile":"380px","maxWidth":"100%","objectFit":"cover","order":0,"orderMobile":-1,"style":{"border":{"radius":"16px"}}} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"align":"full","contentWidth":"960px","style":{"color":{"background":"var:preset|color|surface"},"spacing":{"padding":{"bottom":"64px","left":"20px","right":"20px","top":"64px"}}},"textAlign":"center","className":"sgs-ingredients-section"} -->
+<!-- wp:sgs/label {"fontSize":12,"fontSizeUnit":"px","fontWeight":"600","letterSpacing":1.5,"letterSpacingUnit":"px","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"text":"What's in them?","textTransform":"uppercase"} /--><!-- wp:sgs/heading {"content":"Proper ingredients, properly used","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":36,"fontSizeMobile":28,"fontSizeUnit":"px","fontWeight":"600","level":"h2","lineHeight":1.2,"lineHeightUnit":"unitless","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 600px) and (max-width: 767px){\u0026selector{font-size:36px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"8px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":16,"fontSizeUnit":"px","maxWidth":540,"maxWidthUnit":"px","style":{"spacing":{"margin":{"bottom":"36px","left":"auto","right":"auto","top":"0"}}},"text":"Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.","textColour":"text-muted"} /--><!-- wp:sgs/feature-grid {"columns":4,"gap":"14px","gridTemplateColumns":"repeat(4, 1fr)","gridTemplateColumnsMobile":"1fr 1fr","layout":"grid","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 600px) and (max-width: 767px){\u0026selector{grid-template-columns:repeat(4, 1fr);}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"spacing":{"margin":{"bottom":"24px"}}}} -->
+<!-- wp:sgs/info-box {"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"emojiChar":"🌾","iconSource":"emoji","style":{"spacing":{"margin":{"bottom":"10px"}}}} /--><!-- wp:sgs/heading {"content":"Oats","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":19,"fontSizeUnit":"px","fontWeight":"600","level":"h3","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":13,"fontSizeUnit":"px","lineHeight":1.55,"lineHeightUnit":"unitless","text":"Rich in iron. Used in postpartum foods across cultures for centuries.","textColour":"text-muted"} /-->
+<!-- /wp:sgs/info-box --><!-- wp:sgs/info-box {"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"emojiChar":"🍺","iconSource":"emoji","style":{"spacing":{"margin":{"bottom":"10px"}}}} /--><!-- wp:sgs/heading {"content":"Brewer's Yeast","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":19,"fontSizeUnit":"px","fontWeight":"600","level":"h3","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":13,"fontSizeUnit":"px","lineHeight":1.55,"lineHeightUnit":"unitless","text":"B-vitamins and chromium. A traditional galactagogue used worldwide.","textColour":"text-muted"} /-->
+<!-- /wp:sgs/info-box --><!-- wp:sgs/info-box {"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"emojiChar":"🌿","iconSource":"emoji","style":{"spacing":{"margin":{"bottom":"10px"}}}} /--><!-- wp:sgs/heading {"content":"Flaxseed","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":19,"fontSizeUnit":"px","fontWeight":"600","level":"h3","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":13,"fontSizeUnit":"px","lineHeight":1.55,"lineHeightUnit":"unitless","text":"Omega-3 fatty acids. Good for mum and baby.","textColour":"text-muted"} /-->
+<!-- /wp:sgs/info-box --><!-- wp:sgs/info-box {"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"22px","left":"16px","right":"16px","top":"22px"}}}} -->
+<!-- wp:sgs/icon {"emojiChar":"🌱","iconSource":"emoji","style":{"spacing":{"margin":{"bottom":"10px"}}}} /--><!-- wp:sgs/heading {"content":"Fenugreek","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":19,"fontSizeUnit":"px","fontWeight":"600","level":"h3","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":13,"fontSizeUnit":"px","lineHeight":1.55,"lineHeightUnit":"unitless","text":"Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first.","textColour":"text-muted"} /-->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/feature-grid --><!-- wp:sgs/text {"backgroundColour":"#ffffff","borderColour":"border-subtle","borderStyle":"solid","borderWidth":{"bottom":"1px","left":"1px","right":"1px","top":"1px"},"fontSize":14,"fontSizeUnit":"px","fontStyle":"italic","lineHeight":1.55,"lineHeightUnit":"unitless","maxWidth":620,"maxWidthUnit":"px","style":{"border":{"radius":"10px"},"spacing":{"margin":{"bottom":"0","left":"auto","right":"auto","top":"0"},"padding":{"bottom":"16px","left":"20px","right":"20px","top":"16px"}}},"text":"We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.","textColour":"text-muted"} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"align":"full","contentWidth":"960px","style":{"color":{"background":"var:preset|color|surface-pink"},"spacing":{"padding":{"bottom":"64px","left":"20px","right":"20px","top":"64px"}}},"className":"sgs-gift-section"} -->
+<!-- wp:sgs/label {"fontSize":12,"fontSizeUnit":"px","fontWeight":"600","letterSpacing":1.5,"letterSpacingUnit":"px","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"text":"Give the gift of nourishment","textTransform":"uppercase"} /--><!-- wp:sgs/heading {"content":"A gift she'll actually use","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":36,"fontSizeMobile":28,"fontSizeUnit":"px","fontWeight":"600","level":"h2","lineHeight":1.2,"lineHeightUnit":"unitless","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector{font-size:36px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"8px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":16,"fontSizeUnit":"px","style":{"spacing":{"margin":{"bottom":"32px"}}},"text":"For baby showers, new arrivals, and the mums who deserve a treat.","textColour":"text"} /--><!-- wp:sgs/container {"gap":"16px","gridItemBorderRadius":"16px","gridItemPadding":"28px 24px","gridTemplateColumns":"1fr 1fr","gridTemplateColumnsMobile":"1fr","layout":"grid","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector .sgs-gift-section__cards{grid-template-columns:1fr 1fr;}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"spacing":{"margin":{"bottom":"20px"}}}} -->
+<!-- wp:sgs/info-box {"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"16px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"28px","left":"24px","right":"24px","top":"28px"}}}} -->
+<!-- wp:sgs/label {"borderRadius":6,"fontSize":11,"fontSizeUnit":"px","fontWeight":"700","letterSpacing":0.5,"letterSpacingUnit":"px","padding":{"bottom":"4px","left":"10px","right":"10px","top":"4px"},"style":{"color":{"background":"var:preset|color|surface-pink","text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"12px"}}},"text":"Gift idea","textTransform":"uppercase"} /--><!-- wp:sgs/heading {"content":"New Baby Gift Box","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":22,"fontSizeUnit":"px","fontWeight":"600","level":"h3","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"8px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":14,"fontSizeUnit":"px","lineHeight":1.6,"lineHeightUnit":"unitless","style":{"spacing":{"margin":{"bottom":"20px"}}},"text":"The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.","textColour":"text-muted"} /--><!-- wp:sgs/text {"fontFamily":"\u0022Fraunces\u0022, serif","fontSize":30,"fontSizeUnit":"px","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"16px"}}},"text":"£15","textColour":"text"} /--><!-- wp:sgs/button {"borderStyle":"solid","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"fontFamily":"'Inter', sans-serif","fontSize":15,"fontSizeUnit":"px","fontWeight":"600","inheritStyle":"primary","label":"Shop Gift Box","minHeight":48,"minHeightUnit":"px","style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}},"textDecoration":"none","url":"/product/gift-box/"} /-->
+<!-- /wp:sgs/info-box --><!-- wp:sgs/info-box {"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"16px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"28px","left":"24px","right":"24px","top":"28px"}}}} -->
+<!-- wp:sgs/label {"borderRadius":6,"fontSize":11,"fontSizeUnit":"px","fontWeight":"700","letterSpacing":0.5,"letterSpacingUnit":"px","padding":{"bottom":"4px","left":"10px","right":"10px","top":"4px"},"style":{"color":{"background":"var:preset|color|surface-pink","text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"12px"}}},"text":"Most thoughtful","textTransform":"uppercase"} /--><!-- wp:sgs/heading {"content":"40-Day Care Bundle","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":22,"fontSizeUnit":"px","fontWeight":"600","level":"h3","lineHeight":1.2,"lineHeightUnit":"unitless","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"8px"}}},"textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":14,"fontSizeUnit":"px","lineHeight":1.6,"lineHeightUnit":"unitless","style":{"spacing":{"margin":{"bottom":"20px"}}},"text":"Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give a new mum.","textColour":"text-muted"} /--><!-- wp:sgs/text {"fontFamily":"\u0022Fraunces\u0022, serif","fontSize":30,"fontSizeUnit":"px","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"16px"}}},"text":"£42","textColour":"text"} /--><!-- wp:sgs/button {"borderStyle":"solid","borderWidth":{"bottom":"2px","left":"2px","right":"2px","top":"2px"},"fontFamily":"'Inter', sans-serif","fontSize":15,"fontSizeUnit":"px","fontWeight":"600","inheritStyle":"primary","label":"Shop Bundle","minHeight":48,"minHeightUnit":"px","style":{"border":{"radius":"10px"},"spacing":{"padding":{"bottom":"14px","left":"24px","right":"24px","top":"14px"}}},"textDecoration":"none","url":"/product/40-day-bundle/"} /-->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/container --><!-- wp:sgs/container {"flexWrap":"wrap","gap":"12px","justifyContent":"space-between","layout":"flex","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dprimary)","radius":"10px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"14px","left":"18px","right":"18px","top":"14px"}}},"verticalAlign":"center"} -->
+<!-- wp:sgs/text {"fontSize":14,"fontSizeUnit":"px","fontWeight":"500","text":"🏥 Heading to hospital? Ask us about our Send to Ward delivery.","textColour":"text"} /--><!-- wp:sgs/button {"fontSize":14,"fontSizeUnit":"px","fontWeight":"600","inheritStyle":"custom","label":"Find out more →","minHeight":44,"minHeightUnit":"px","style":{"color":{"text":"var:preset|color|primary-dark"},"spacing":{"padding":{"bottom":"6px","left":"0","right":"0","top":"6px"}}},"textDecoration":"none","textDecorationHover":"underline","url":"/send-to-ward/"} /-->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"align":"full","contentWidth":"960px","style":{"color":{"background":"var:preset|color|surface-alt"},"spacing":{"padding":{"bottom":"64px","left":"20px","right":"20px","top":"64px"}}},"className":"sgs-social-proof"} -->
+<!-- wp:sgs/heading {"content":"What mums are saying","fontFamily":"\u0022Fraunces\u0022, serif","fontSize":36,"fontSizeMobile":28,"fontSizeUnit":"px","fontWeight":"600","level":"h2","lineHeight":1.2,"lineHeightUnit":"unitless","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector{font-size:36px;}}\n/* SGS-CONVERTER-RESIDUAL:end */","style":{"color":{"text":"var:preset|color|text"},"spacing":{"margin":{"bottom":"6px"}}},"textAlign":"center","textWrap":"wrap"} /--><!-- wp:sgs/text {"fontSize":16,"fontSizeUnit":"px","style":{"spacing":{"margin":{"bottom":"32px"}}},"text":"Real feedback from real mums — nothing fabricated.","textAlign":"center","textColour":"text-muted"} /--><!-- wp:sgs/container {"flexWrap":"wrap","gap":"14px","justifyContent":"center","layout":"flex","style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"10px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"margin":{"bottom":"28px"},"padding":{"bottom":"18px","left":"24px","right":"24px","top":"18px"}}},"verticalAlign":"center"} -->
+<!-- wp:sgs/text {"fontSize":13,"fontSizeUnit":"px","fontWeight":"700","text":"★ Trustpilot","textColour":"#00B67A"} /--><!-- wp:sgs/text {"fontSize":20,"fontSizeUnit":"px","text":"★★★★★","textColour":"#00B67A"} /--><!-- wp:sgs/text {"fontSize":13,"fontSizeUnit":"px","text":"Leave us a review — help other mums find us","textColour":"text-muted"} /-->
+<!-- /wp:sgs/container --><!-- wp:sgs/testimonial-slider {"columns":3,"gap":"12px","gridTemplateColumns":"repeat(3, 1fr)","gridTemplateColumnsMobile":"1fr","layout":"grid","sgsCustomCss":"/* SGS-CONVERTER-RESIDUAL:start */\n@media (min-width: 640px) and (max-width: 767px){\u0026selector{grid-template-columns:repeat(3, 1fr);}}\n/* SGS-CONVERTER-RESIDUAL:end */"} -->
+<!-- wp:sgs/testimonial {"nameColour":"text","quote":"\u0022I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing.\u0022","quoteColour":"text-muted","quoteFontSize":"14px","quoteLineHeight":"1.65","ratingStars":5,"reviewerName":"Reham, London","showRating":true,"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"}}},"variant":"classic-card"} /--><!-- wp:sgs/testimonial {"nameColour":"text","quote":"\u0022Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help.\u0022","quoteColour":"text-muted","quoteFontSize":"14px","quoteLineHeight":"1.65","ratingStars":5,"reviewerName":"Sarah M., Manchester","showRating":true,"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"}}},"variant":"classic-card"} /--><!-- wp:sgs/testimonial {"nameColour":"text","quote":"\u0022Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again.\u0022","quoteColour":"text-muted","quoteFontSize":"14px","quoteLineHeight":"1.65","ratingStars":5,"reviewerName":"Halimah, Birmingham","showRating":true,"style":{"border":{"color":"var(\u002d\u002dwp\u002d\u002dpreset\u002d\u002dcolor\u002d\u002dborder-subtle)","radius":"12px","style":"solid","width":"1px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"bottom":"20px","left":"20px","right":"20px","top":"20px"}}},"variant":"classic-card"} /-->
+<!-- /wp:sgs/testimonial-slider -->
+<!-- /wp:sgs/container -->
+=====POST 3=====
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Who we are</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>Our website address is: https://sandybrown-nightingale-600381.hostingersite.com.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Comments</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>When visitors leave comments on the site we collect the data shown in the comments form, and also the visitor&#8217;s IP address and browser user agent string to help spam detection.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>An anonymized string created from your email address (also called a hash) may be provided to the Gravatar service to see if you are using it. The Gravatar service privacy policy is available here: https://automattic.com/privacy/. After approval of your comment, your profile picture is visible to the public in the context of your comment.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Media</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Cookies</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>If you leave a comment on our site you may opt-in to saving your name, email address and website in cookies. These are for your convenience so that you do not have to fill in your details again when you leave another comment. These cookies will last for one year.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>When you log in, we will also set up several cookies to save your login information and your screen display choices. Login cookies last for two days, and screen options cookies last for a year. If you select &quot;Remember Me&quot;, your login will persist for two weeks. If you log out of your account, the login cookies will be removed.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>If you edit or publish an article, an additional cookie will be saved in your browser. This cookie includes no personal data and simply indicates the post ID of the article you just edited. It expires after 1 day.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Embedded content from other websites</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracking your interaction with the embedded content if you have an account and are logged in to that website.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Who we share your data with</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>If you request a password reset, your IP address will be included in the reset email.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How long we retain your data</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph -->
+<p>For users that register on our website (if any), we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">What rights you have over your data</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>If you have an account on this site, or have left comments, you can request to receive an exported file of the personal data we hold about you, including any data you have provided to us. You can also request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security purposes.</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Where your data is sent</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p><strong class="privacy-policy-tutorial">Suggested text: </strong>Visitor comments may be checked through an automated spam detection service.</p>
+<!-- /wp:paragraph -->
+

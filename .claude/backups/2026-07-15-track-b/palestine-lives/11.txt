@@ -1,0 +1,19 @@
+<!-- wp:sgs/accordion {"faqSchema":true} -->
+<!-- wp:sgs/accordion-item {"title":"What is your minimum order value?"} -->
+<!-- wp:paragraph -->
+<p>Our minimum order value is just £75, which is lower than most wholesalers. You can mix and match across any product categories.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+
+<!-- wp:sgs/accordion-item {"title":"Do you deliver nationwide?"} -->
+<!-- wp:paragraph -->
+<p>Yes! We offer next-day delivery across the Midlands and 48-hour delivery nationwide. Free delivery on orders over £250.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+
+<!-- wp:sgs/accordion-item {"title":"Do I need a VAT number to open an account?"} -->
+<!-- wp:paragraph -->
+<p>No. Sole traders and businesses under the VAT threshold are welcome. Simply leave the VAT field blank on the application form.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+<!-- /wp:sgs/accordion -->

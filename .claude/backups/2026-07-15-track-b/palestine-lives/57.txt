@@ -1,0 +1,15 @@
+<!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">Contact Us</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Get in touch with Indus Foods. We're here to help with trade enquiries, product information, and account support.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:sgs/business-info {"type":"phone","linkPhone":true,"showIcon":true} /-->
+
+<!-- wp:sgs/business-info {"type":"email","linkEmail":true,"showIcon":true} /-->
+
+<!-- wp:paragraph -->
+<p>Or visit us at our Birmingham headquarters — we'd love to show you around.</p>
+<!-- /wp:paragraph -->

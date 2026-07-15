@@ -1,0 +1,11 @@
+<!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">About Indus Foods</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Indus Foods is a family-run wholesale food distributor with roots going back to 1962. Based in Birmingham's Balti Triangle, we supply restaurants, takeaways, caterers, retailers, and wholesalers across the UK with quality Asian and world foods.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Content coming soon. We're working on this page.</p>
+<!-- /wp:paragraph -->

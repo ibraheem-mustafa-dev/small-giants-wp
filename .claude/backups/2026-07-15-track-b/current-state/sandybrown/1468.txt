@@ -1,0 +1,6 @@
+<!-- wp:sgs/text {"text":"PROBE-A preset small","fontSize":"small"} /-->
+<!-- wp:sgs/text {"text":"PROBE-B numeric 18","fontSize":18,"fontSizeUnit":"px"} /-->
+<!-- wp:sgs/heading {"content":"PROBE-C heading preset small","level":"h3","fontSize":"small"} /-->
+<!-- wp:paragraph {"fontSize":"small"} -->
+<p class="has-small-font-size">PROBE-D core paragraph preset small (parity reference)</p>
+<!-- /wp:paragraph -->

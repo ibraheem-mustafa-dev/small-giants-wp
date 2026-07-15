@@ -1,0 +1,33 @@
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"repeat(4, 1fr)","gridTemplateColumnsMobile":"repeat(2, 1fr)","gap":"32px","gapMobile":"16px","maxWidth":"1200px","gridItemPadding":"24px 16px","gridItemBorderRadius":"12px","paddingTopMobile":"40px","paddingRightMobile":"16px","paddingBottomMobile":"40px","paddingLeftMobile":"16px","className":"sgs-team-member-grid","style":{"spacing":{"blockGap":"32px","padding":{"top":"64px","right":"24px","bottom":"64px","left":"24px"},"margin":{"top":"0","right":"auto","bottom":"0","left":"auto"}},"color":{"background":"#f5f0eb"}}} -->
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/alice.jpg","imageAlt":"Alice Osei","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Alice Osei","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Head Baker","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/ben.jpg","imageAlt":"Ben Traoré","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Ben Traoré","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Delivery Lead","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/chloe.jpg","imageAlt":"Chloe Patel","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Chloe Patel","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Customer Joy","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"style":{"border":{"radius":"12px"},"color":{"background":"#ffffff"},"spacing":{"padding":{"top":"24px","right":"16px","bottom":"24px","left":"16px"}}}} -->
+<!-- wp:sgs/media {"imageUrl":"/team/dani.jpg","imageAlt":"Dani Muñoz","maxHeight":"72","borderRadius":"50","borderRadiusUnit":"%","style":{"border":{"radius":"50%"}}} /-->
+
+<!-- wp:sgs/heading {"content":"Dani Muñoz","fontSize":16,"textColour":"#2d2d2d","textAlign":"left","style":{"color":{"text":"#2d2d2d"}}} /-->
+
+<!-- wp:sgs/label {"text":"Flavour Designer","textColour":"#666660","fontSize":13,"textAlign":"left","style":{"spacing":{"margin":{"top":"4px"}},"color":{"text":"#666660"}}} /-->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/container -->

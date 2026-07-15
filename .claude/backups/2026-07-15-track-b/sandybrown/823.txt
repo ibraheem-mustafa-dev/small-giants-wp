@@ -1,0 +1,33 @@
+<!-- wp:sgs/accordion -->
+<!-- wp:sgs/accordion-item {"title":"Question or heading"} -->
+<!-- wp:paragraph {"placeholder":"Write the answer or content…"} -->
+<p></p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+
+<!-- wp:sgs/accordion-item {"title":"Another question"} -->
+<!-- wp:paragraph {"placeholder":"Write the answer or content…"} -->
+<p></p>
+<!-- /wp:paragraph -->
+<!-- /wp:sgs/accordion-item -->
+<!-- /wp:sgs/accordion -->
+
+<!-- wp:sgs/button /-->
+
+<!-- wp:sgs/counter /-->
+
+<!-- wp:sgs/mobile-nav /-->
+
+<!-- wp:sgs/mobile-nav-toggle /-->
+
+<!-- wp:sgs/trust-bar /-->
+
+<!-- wp:sgs/pricing-table /-->
+
+<!-- wp:sgs/process-steps /-->
+
+<!-- wp:sgs/timeline /-->
+
+<!-- wp:sgs/announcement-bar /-->
+
+<!-- wp:sgs/form-field-tiles /-->

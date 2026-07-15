@@ -1,0 +1,8 @@
+<!-- wp:sgs/product-faq {"heading":"Delivery questions"} -->
+<!-- wp:sgs/product-faq-item {"question":"How long does delivery take?"} -->
+<!-- wp:paragraph --><p>Orders placed before noon ship the same day and arrive within 2 working days across the UK.</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/product-faq-item -->
+<!-- wp:sgs/product-faq-item {"question":"Do the treats contain allergens?"} -->
+<!-- wp:paragraph --><p>Every pack lists its full ingredients. Our bakery handles peanuts, so trace amounts may be present.</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/product-faq-item -->
+<!-- /wp:sgs/product-faq -->

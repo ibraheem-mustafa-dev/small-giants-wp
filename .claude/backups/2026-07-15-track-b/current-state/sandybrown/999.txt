@@ -1,0 +1,1 @@
+<!-- wp:sgs/product-card {"sourceMode":"wc-product","productId":950} /-->

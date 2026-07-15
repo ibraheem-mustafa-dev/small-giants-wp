@@ -43,10 +43,12 @@ client by adding a single dict entry; no code changes needed elsewhere.
 from __future__ import annotations
 
 import argparse
+import re
 import shlex
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -331,6 +333,72 @@ def step_local_cleanup(dry_run: bool) -> int:
     return 0
 
 
+def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
+                        wp_content: str) -> int:
+    """Pre-deploy content-compat gate (Track B, 2026-07-15 — the gate D182 used
+    and D270/D271 skipped). Scans the TARGET site's stored post_content against
+    the LOCAL block.json schemas (i.e. the code about to be deployed) for:
+      * stranded content — old scalar shapes an InnerBlocks render no longer reads
+        (the empty-Indus-homepage class), and
+      * undeclared attrs — silently discarded at parse, DELETED on next editor save.
+
+    Read-only on the site (`wp post get` — the guard-sanctioned route). Findings
+    already dispositioned in the casualty register live in
+    oldshape-audit-baseline.json; only NEW findings fail the deploy. ON by
+    default; --skip-oldshape-audit opts out (then compatibility is YOUR problem).
+    """
+    if dry_run:
+        log("[oldshape-audit] SKIPPED (--dry-run); would scan target post_content "
+            "against the schemas being deployed")
+        return 0
+    wp_root = wp_content.rsplit("/wp-content", 1)[0]
+    remote = (
+        f"cd {shlex.quote(wp_root)} && ids=$(wp post list --post_type=page,post "
+        "--field=ID) && for id in $ids; do echo \"=====POST $id=====\"; "
+        "wp post get $id --field=post_content; done"
+    )
+    log("[oldshape-audit] fetching stored post_content from target (read-only)")
+    try:
+        out = subprocess.run(ssh_base_cmd(use_alias) + [remote], capture_output=True,
+                             text=True, encoding="utf-8", errors="replace", timeout=180)
+    except (subprocess.SubprocessError, OSError) as e:
+        err(f"[oldshape-audit] SSH fetch failed: {e}")
+        err("fix connectivity first; use --skip-oldshape-audit ONLY if stored-content "
+            "compatibility has been verified another way")
+        return 1
+    if out.returncode != 0:
+        err(f"[oldshape-audit] SSH fetch failed (exit {out.returncode}): "
+            f"{(out.stderr or '').strip()[:300]}")
+        err("fix connectivity first; use --skip-oldshape-audit ONLY if stored-content "
+            "compatibility has been verified another way")
+        return 1
+    parts = re.split(r"=====POST (\d+)=====\n", out.stdout)
+    audit = Path(__file__).resolve().parent / "audit-post-content-blocks.py"
+    baseline = Path(__file__).resolve().parent / "oldshape-audit-baseline.json"
+    with tempfile.TemporaryDirectory() as td:
+        # Subdir named after the target so finding keys match the register/baseline
+        # convention ("palestine-lives/13|sgs/hero|…").
+        site_dir = Path(td) / target_key
+        site_dir.mkdir()
+        count = 0
+        for i in range(1, len(parts), 2):
+            with open(site_dir / f"{parts[i]}.txt", "w", encoding="utf-8", newline="") as fh:
+                fh.write(parts[i + 1])
+            count += 1
+        log(f"[oldshape-audit] scanning {count} post(s) against local block.json schemas")
+        cmd = [sys.executable, str(audit), str(site_dir), "--check"]
+        if baseline.exists():
+            cmd += ["--baseline", str(baseline)]
+        rc = subprocess.call(cmd)
+    if rc != 0:
+        log("[oldshape-audit] FAIL: deploying these schemas would strand or delete "
+            "stored content — migrate it first (scripts/wp-migrate-oldshape-blocks.js)")
+    else:
+        log("[oldshape-audit] PASS: stored content is compatible with the schemas "
+            "being deployed")
+    return rc
+
+
 def step_scoped_selector_audit(page_id: str, dry_run: bool) -> int:
     """Post-deploy structural gate (P-SCOPED-SELECTOR-MATCH, D303): run the LIVE
     scoped-selector audit against the just-deployed canary page. Catches the
@@ -456,6 +524,10 @@ def parse_args() -> argparse.Namespace:
                    help="Post-deploy: page_id to run the live scoped-selector "
                         "match audit against (P-SCOPED-SELECTOR-MATCH gate). "
                         "e.g. 8 (the sandybrown homepage clone).")
+    p.add_argument("--skip-oldshape-audit", action="store_true",
+                   help="Skip the pre-deploy stored-content compatibility gate "
+                        "(NOT recommended — it is the only check that catches a "
+                        "deploy whose schemas strand or delete stored content).")
     return p.parse_args()
 
 
@@ -496,6 +568,20 @@ def main() -> int:
     log(f"[plan] target={target_key} host={host_label} theme={deploy_theme} "
         f"blocks={deploy_blocks} ssh-alias={'yes' if use_alias else 'no'} "
         f"dry-run={'yes' if args.dry_run else 'no'}")
+
+    # Pre-deploy content-compat gate: the target's stored post_content vs the
+    # schemas in THIS tree. Runs before the build — no point compiling code that
+    # would strand stored content (the empty-Indus-homepage class, Track B).
+    if args.skip_oldshape_audit:
+        log("[oldshape-audit] SKIPPED (--skip-oldshape-audit)")
+    else:
+        rc = step_oldshape_audit(args.dry_run, use_alias, target_key,
+                                 target["wp_content"])
+        if rc != 0:
+            print("[ABORTED] reason: oldshape-audit-failed (stored content would "
+                  "silently lose render or attrs under the schemas being deployed)",
+                  flush=True)
+            return 1
 
     # [1/5] Build
     if args.skip_build:

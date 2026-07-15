@@ -1,0 +1,3174 @@
+{
+ "files_scanned": 50,
+ "findings": [
+  {
+   "post": "palestine-lives/13",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 126,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 126,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 126,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 126,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 126,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 130,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 130,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 130,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 130,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 130,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 134,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 134,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 134,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 134,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 134,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 138,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 138,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 138,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 138,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 138,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 144,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 144,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 144,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 144,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 144,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 148,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 148,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 148,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 148,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 148,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 152,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 152,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 152,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 152,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 152,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 156,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 156,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 156,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 156,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"descriptionColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 156,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 172,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"quoteColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 172,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"nameColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 172,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"roleColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/13",
+   "line": 172,
+   "block": "sgs/testimonial-slider",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: testimonials"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"eyebrow\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 2,
+   "block": "sgs/trust-badges",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 19,
+   "block": "sgs/icon-block",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 24,
+   "block": "sgs/icon-block",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 29,
+   "block": "sgs/icon-block",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 34,
+   "block": "sgs/icon-block",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 41,
+   "block": "sgs/feature-grid",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"eyebrow\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 41,
+   "block": "sgs/feature-grid",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headline\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 41,
+   "block": "sgs/feature-grid",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadline\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 41,
+   "block": "sgs/feature-grid",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"cards\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 42,
+   "block": "sgs/notice-banner",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconValue\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 42,
+   "block": "sgs/notice-banner",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"linkText\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 42,
+   "block": "sgs/notice-banner",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"linkUrl\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 42,
+   "block": "sgs/notice-banner",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: text"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 44,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"heading\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 44,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subheading\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 44,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"columns\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/283",
+   "line": 44,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"testimonials\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 5,
+   "block": "sgs/announcement-bar",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 15,
+   "block": "sgs/certification-bar",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 69,
+   "block": "sgs/heritage-strip",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 163,
+   "block": "sgs/svg-background",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 183,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 183,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"role\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 183,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"rating\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 183,
+   "block": "sgs/testimonial",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"reviewSource\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 321,
+   "block": "sgs/back-to-top",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 332,
+   "block": "sgs/accordion-item",
+   "type": "empty-innerblocks",
+   "severity": "INFO",
+   "detail": "self-closing InnerBlocks block \u2014 renders an empty shell"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 334,
+   "block": "sgs/accordion-item",
+   "type": "empty-innerblocks",
+   "severity": "INFO",
+   "detail": "self-closing InnerBlocks block \u2014 renders an empty shell"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 336,
+   "block": "sgs/accordion-item",
+   "type": "empty-innerblocks",
+   "severity": "INFO",
+   "detail": "self-closing InnerBlocks block \u2014 renders an empty shell"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 348,
+   "block": "sgs/tab",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: label"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 350,
+   "block": "sgs/tab",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: label"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 352,
+   "block": "sgs/tab",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: label"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 363,
+   "block": "sgs/icon-block",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/52",
+   "line": 391,
+   "block": "sgs/icon-list",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"sgsHoverScalePreset\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/53",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/53",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl"
+  },
+  {
+   "post": "palestine-lives/57",
+   "line": 9,
+   "block": "sgs/business-info",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"type\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/57",
+   "line": 11,
+   "block": "sgs/business-info",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"type\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 63,
+   "block": "sgs/form",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"action\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 63,
+   "block": "sgs/form",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"method\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 63,
+   "block": "sgs/form",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"multiStep\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 63,
+   "block": "sgs/form",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"progressBar\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 65,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepTitle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 65,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepDescription\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 67,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 69,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 71,
+   "block": "sgs/form-field-email",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 73,
+   "block": "sgs/form-field-phone",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 75,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 83,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepTitle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 83,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepDescription\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 85,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 87,
+   "block": "sgs/form-field-select",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 89,
+   "block": "sgs/form-field-select",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 91,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 93,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 95,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 97,
+   "block": "sgs/form-field-text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 105,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepTitle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 105,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepDescription\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 107,
+   "block": "sgs/form-field-tiles",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 107,
+   "block": "sgs/form-field-tiles",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"multiple\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 109,
+   "block": "sgs/form-field-select",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 111,
+   "block": "sgs/form-field-select",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 113,
+   "block": "sgs/form-field-select",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 115,
+   "block": "sgs/form-field-select",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 123,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepTitle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 123,
+   "block": "sgs/form-step",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"stepDescription\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 127,
+   "block": "sgs/form-field-file",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 127,
+   "block": "sgs/form-field-file",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"accept\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 129,
+   "block": "sgs/form-field-consent",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 129,
+   "block": "sgs/form-field-consent",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"linkText\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 129,
+   "block": "sgs/form-field-consent",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"linkUrl\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 131,
+   "block": "sgs/form-field-consent",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"name\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 131,
+   "block": "sgs/form-field-consent",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"linkText\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/58",
+   "line": 131,
+   "block": "sgs/form-field-consent",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"linkUrl\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 3,
+   "block": "sgs/trust-bar",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"animated\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 3,
+   "block": "sgs/trust-bar",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"valueColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 3,
+   "block": "sgs/trust-bar",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"transitionDuration\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 3,
+   "block": "sgs/trust-bar",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"transitionEasing\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 25,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 25,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 25,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 25,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 31,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 31,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 31,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 31,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 37,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 37,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 37,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 37,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 55,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 55,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 55,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 55,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 61,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 61,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 61,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 61,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 71,
+   "block": "sgs/heritage-strip",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 366,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"quoteColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 366,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"nameColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 366,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"roleColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 366,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"ratingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 366,
+   "block": "sgs/testimonial-slider",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: testimonials"
+  },
+  {
+   "post": "palestine-lives/65",
+   "line": 371,
+   "block": "sgs/cta-section",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, body, buttons"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 63,
+   "block": "sgs/heritage-strip",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 195,
+   "block": "sgs/process-steps",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"connectorLine\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 284,
+   "block": "sgs/brand-strip",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"label\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"quoteColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"nameColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"roleColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"ratingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: testimonials"
+  },
+  {
+   "post": "palestine-lives/66",
+   "line": 298,
+   "block": "sgs/cta-section",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, body, buttons"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 63,
+   "block": "sgs/heritage-strip",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 195,
+   "block": "sgs/process-steps",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"connectorLine\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 251,
+   "block": "sgs/brand-strip",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"label\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 260,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"quoteColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 260,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"nameColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 260,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"roleColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 260,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"ratingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 260,
+   "block": "sgs/testimonial-slider",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: testimonials"
+  },
+  {
+   "post": "palestine-lives/67",
+   "line": 265,
+   "block": "sgs/cta-section",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, body, buttons"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 1,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, subHeadline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 24,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 29,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 34,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 44,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 49,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconBackgroundColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"iconSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"hoverEffect\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 63,
+   "block": "sgs/heritage-strip",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 195,
+   "block": "sgs/process-steps",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"connectorLine\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 284,
+   "block": "sgs/brand-strip",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"label\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"quoteColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"nameColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"roleColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"ratingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 293,
+   "block": "sgs/testimonial-slider",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: testimonials"
+  },
+  {
+   "post": "palestine-lives/68",
+   "line": 298,
+   "block": "sgs/cta-section",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, body, buttons"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 1,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingTopMobile\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 1,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingRightMobile\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 1,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingBottomMobile\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 1,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingLeftMobile\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 3,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadius\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 3,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadiusUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 11,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadius\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 11,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadiusUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 19,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadius\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 19,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadiusUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 27,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadius\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1199",
+   "line": 27,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadiusUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1359",
+   "line": 1,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"colourBorder\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1359",
+   "line": 2,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"content\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/1359",
+   "line": 2,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"colourBorder\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineFontSizeDesktop\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineFontSizeTablet\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelFontSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelFontSizeUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelFontWeight\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelLetterSpacing\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelLetterSpacingUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelTextTransform\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelMarginBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelMarginBottomUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineFontSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineLineHeight\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineLineHeightUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subHeadlineFontSizeTablet\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 3,
+   "block": "sgs/hero",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: headline, ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl, label, subHeadline"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 9,
+   "block": "sgs/label",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 9,
+   "block": "sgs/label",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"variantStyle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 13,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 13,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 13,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headline\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineLevel\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"labelEnabled\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"subEnabled\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineId\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineFontSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineFontSizeUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineFontWeight\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 23,
+   "block": "sgs/heading",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headlineFontSizeTablet\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 40,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadius\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 40,
+   "block": "sgs/media",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadiusUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 45,
+   "block": "sgs/label",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 45,
+   "block": "sgs/label",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"variantStyle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 49,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 49,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginTop\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 49,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginRight\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 49,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 49,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginLeft\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 49,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 51,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 52,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 53,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 54,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading, description"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginTop\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginRight\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginLeft\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingTop\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingRight\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingLeft\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"paddingUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadius\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 56,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"borderRadiusUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 62,
+   "block": "sgs/label",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 62,
+   "block": "sgs/label",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"variantStyle\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 66,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 66,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 66,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 68,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 68,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingFontSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 68,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 69,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingColour\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 69,
+   "block": "sgs/info-box",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"headingFontSize\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 69,
+   "block": "sgs/info-box",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: heading"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 71,
+   "block": "sgs/announcement-bar",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 80,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 80,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginBottom\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 80,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"marginUnit\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 82,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 83,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 84,
+   "block": "sgs/text",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"tag\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/65",
+   "line": 86,
+   "block": "sgs/testimonial-slider",
+   "type": "stranded-content",
+   "severity": "HIGH",
+   "detail": "old-shape (self-closing, no children) but render is InnerBlocks-driven \u2014 stranded: testimonials"
+  },
+  {
+   "post": "sandybrown/773",
+   "line": 2,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"widthMode\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/773",
+   "line": 9,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"widthMode\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/8",
+   "line": 23,
+   "block": "sgs/container",
+   "type": "undeclared-attr",
+   "severity": "HIGH",
+   "detail": "\"textAlign\" not declared in block.json \u2014 WP discards it; the next editor save DELETES it from post_content"
+  },
+  {
+   "post": "sandybrown/818",
+   "line": 1,
+   "block": "sgs/feature-grid",
+   "type": "empty-innerblocks",
+   "severity": "INFO",
+   "detail": "self-closing InnerBlocks block \u2014 renders an empty shell"
+  },
+  {
+   "post": "sandybrown/823",
+   "line": 19,
+   "block": "sgs/mobile-nav",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "sandybrown/823",
+   "line": 21,
+   "block": "sgs/mobile-nav-toggle",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "sandybrown/823",
+   "line": 31,
+   "block": "sgs/announcement-bar",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "sandybrown/824",
+   "line": 19,
+   "block": "sgs/mobile-nav",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "sandybrown/824",
+   "line": 21,
+   "block": "sgs/mobile-nav-toggle",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  },
+  {
+   "post": "sandybrown/824",
+   "line": 31,
+   "block": "sgs/announcement-bar",
+   "type": "unknown-block",
+   "severity": "HIGH",
+   "detail": "no local block.json \u2014 renders a deleted-block placeholder"
+  }
+ ],
+ "high": 392
+}
