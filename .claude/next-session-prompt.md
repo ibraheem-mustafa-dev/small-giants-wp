@@ -87,6 +87,31 @@ Spec: **Spec 02 §"`sgs/business-info` `displayType="attribution"`"** + **Spec 3
 
 Prerequisite draft edits (Bean-approved): add `class="sgs-footer__credit"` to both drafts; **add the missing credit to the Mama's draft** (it has none — its 2nd bottom-bar span is a TAGLINE, so a positional rule would map the tagline to Bean's backlink). Then `/ui-ux-pro-max` must enforce the classifier on all future builds (parked `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`).
 
+## STEP 8b — `sgs/heading` can't inherit; the hardcode gate is blind to block.json defaults (Bean, 2026-07-15)
+
+**Bean's model, which is NOT implemented:** *"the default typography settings for sgs/text should be what is set as the global paragraph defaults and the heading block should have the exact same thing depending on what h tag you set."*
+
+Measured:
+```
+sgs/text     supports.typography: null   fontSize: {"type":"number"}
+sgs/heading  supports.typography: null   fontSize: {"type":"number", "default": 28}
+```
+Neither declares typography supports ⇒ **cannot represent a preset slug** (`"fontSize":"small"` — the theme.json `settings.typography.fontSizes` scale). That is Track C's blocker: converting `core/heading fontSize:"small"` has no target. And `sgs/heading`'s **hardcoded `default: 28`** actively defeats the h-tag inheritance Bean describes — an R-31-1 violation in the block itself.
+
+**The fix (do it properly — this is a shared block on every page of both sites):** drop `default: 28`; add WP-native `supports.typography.fontSize` on the block ROOT. HC2 explicitly PERMITS this — *"HC2 bans a parent PER-ELEMENT typography control, NOT a wrapper inheritable default… what HC2 PERMITS is the WordPress-native `supports.typography` declared on the block ROOT"* — and `sgs/heading` renders the `<h*>` AS its root (D288 single-element pattern), so root == the element. Unset ⇒ inherits theme.json `styles.elements.h1..h6`. **`render.php` must be reworked in the same commit** (it emits px from a number today; WP will emit a preset class/inline style) and live-verified at 375/1440 on both clients — headings are on every page.
+
+**⛔ THE GATE GAP — `check-hardcoded-render-defaults.js` cannot see this.** Its own docstring: *"Parse block.json → collect attribute NAMES"* then *"Scan style.css and render.php"*. It reads block.json for **names only, never for `default` VALUES** — so a hardcoded constant in a block.json default passes a green build, invisibly. **This is how `default: 28` shipped.** Extend the gate to flag a literal `default` on any attr whose property it already governs.
+
+**NOT a blanket fix — 3 blocks, each needs the judgment call** (`framework-block-client-hardcode-is-a-bug-not-a-constant`: a hardcoded LAYOUT/CLIENT value is a bug; the component's OWN constant stays):
+
+| Block | Attr | Default | Call |
+|---|---|---|---|
+| `sgs/heading` | `fontSize` | **28** | **BUG** — must inherit per h-tag |
+| `sgs/label` | `fontSize` | 12 | Likely the component's OWN constant (a chip IS 12px) — probably KEEP |
+| `sgs/product-card` | `ctaFontSize` | 15 | Needs Bean's call |
+
+**Unblocks Track C's 100 preset-slug instances** — do this BEFORE Track C swaps `core/heading`/`core/paragraph`, or those conversions hardcode pixels into framework patterns (a framework regression).
+
 ## STEP 9 — Triage the 9 remaining dead attrs
 `python plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py` (NEW gate, committed). Each needs a judgment call — typo, or a capability the block genuinely lacks?
 - `sgs/info-box` → `iconColour` + `iconBackgroundColour` (`mega-menu-services.html` ×3)
