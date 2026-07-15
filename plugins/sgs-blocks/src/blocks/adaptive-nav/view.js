@@ -137,6 +137,18 @@ function setupDrawer( root ) {
  */
 function lockScroll() {
 	const y = window.scrollY;
+	// Fixing the body collapses the document scroll, so the CLASSIC scrollbar
+	// (~15px, desktop Windows/Linux) vanishes MID-ANIMATION — the viewport
+	// widens by its width and the right-anchored drawer's anchor jumps right
+	// partway through the slide-in. The eye reads it as a bounce: the panel
+	// overshoots into the page by exactly the scrollbar width, then steps back
+	// (Bean's report, D340 — frame capture showed the anchor moving 753→768 at
+	// 768px). Forcing the root's scrollbar track to stay while locked keeps the
+	// geometry constant; overlay-scrollbar platforms (iOS/Android, width 0)
+	// take the no-op branch.
+	if ( window.innerWidth - document.documentElement.clientWidth > 0 ) {
+		document.documentElement.style.overflowY = 'scroll';
+	}
 	document.body.setAttribute( SCROLL_LOCK_ATTR, String( y ) );
 	document.body.style.position = 'fixed';
 	document.body.style.top = `-${ y }px`;
@@ -153,6 +165,7 @@ function lockScroll() {
 function unlockScroll() {
 	const stored = document.body.getAttribute( SCROLL_LOCK_ATTR );
 	document.body.removeAttribute( SCROLL_LOCK_ATTR );
+	document.documentElement.style.overflowY = '';
 	document.body.style.position = '';
 	document.body.style.top = '';
 	document.body.style.left = '';

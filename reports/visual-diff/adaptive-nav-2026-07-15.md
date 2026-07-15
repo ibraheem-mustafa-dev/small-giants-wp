@@ -232,6 +232,38 @@ Live re-verify (sandybrown 375, full cache clear): logo absent, head row transpa
 dialog still named "Navigation menu" via aria-label, full-bleed left 0 / right 375,
 **axe-core 0 violations**. Screenshot: `assets/mamas-drawer-logo-off-375-2026-07-15.png`.
 
+## Addendum 2 (same day, D340) — the "bounce" CAUSE-PROVEN and FIXED
+
+Bean's refined report cracked it: *"does the animation have a bounce effect… goes past the
+end position and bounces back?"* **No bounce exists in the animation** — the transition curve
+`cubic-bezier(0.16,1,0.3,1)` is monotonic (output can never pass the end value). The bounce
+is a LAYOUT jump: `lockScroll()` sets `body{position:fixed}`, the document scrollbar vanishes
+mid-slide, the viewport widens by the scrollbar width (~15px classic desktop), and the
+right-anchored drawer's anchor steps right — the panel overshoots into the page by exactly
+that width, then steps back. Frame capture had already recorded the anchor moving **753→768**
+mid-animation; mobile emulation never showed it because overlay scrollbars have zero width
+(why every earlier repro attempt failed — Bean was on a real desktop browser).
+
+**Fix:** `lockScroll()` now pins the root scrollbar track (`documentElement.style.overflowY =
+'scroll'`, gated on `innerWidth − clientWidth > 0` so overlay-scrollbar platforms no-op);
+`unlockScroll()` restores it.
+
+**Verified live (sandybrown, 768px, scrollbar gap 15px present):** 20-frame rAF sweep — the
+anchor is CONSTANT (right edge 753 every frame), max travel past the final position **0.5px**
+(sub-pixel rounding; was a 15px step). Close: drawer shuts, `overflowY` restored to
+`visible`, body `static`, scroll position intact.
+
+**Comprehensive-fix sweep:** instances found: 2. Fixed: adaptive-nav (this commit,
+live-verified). Documented: `sgs/modal` (`body.sgs-modal-scroll-locked{position:fixed}`,
+`modal/style.css:207` — same class of bug, LATENT: the block is not deployed on any page, so
+a fix cannot be live-verified today; exact fix shape parked as `P-MODAL-SCROLLBAR-GUTTER`).
+
+**Still open from Bean's ORIGINAL report:** the much larger travel on his pre-deploy version
+was this bounce STACKED ON the late-CSS race (drawer position/width depending on the block's
+external stylesheet — mechanism proven by A/B, delivery trigger still unproven). The
+structural fix folds into the approved header-visible drawer redesign, which stops depending
+on top-layer/late-CSS geometry entirely.
+
 ## Not covered by this report
 
 `sgs/cart`, `sgs/heading`, `sgs/business-info` + `product-card` were verified live in the same
