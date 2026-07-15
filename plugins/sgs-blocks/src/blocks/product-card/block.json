@@ -199,7 +199,7 @@
 		},
 		"ctaFontSize": {
 			"type": "number",
-			"default": 15
+			"default": null
 		},
 		"ctaPaddingY": {
 			"type": "number",

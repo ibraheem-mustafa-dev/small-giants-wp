@@ -69,6 +69,63 @@
 	opacity: 0.8;
 }
 
+/* ── Website credit (displayType="attribution") ───────────────────────────
+ * Left-to-right colour sweep on hover, to #e7d768 — the reference behaviour on
+ * Bean's live Astra sites. A gradient wipe under `background-clip: text`, NOT a
+ * plain `color` transition, because only the wipe gives the directional reveal.
+ *
+ * Resting half is `currentColor`, so the credit inherits the footer's own text
+ * colour and its contrast is whatever the surrounding context already passes —
+ * no per-client resolver needed, and no literal to go stale (the unset-means-
+ * inherit contract this block already uses for icon/text/label).
+ *
+ * `--sgs-bi-link-hover` is emitted scoped by render.php ONLY when the operator
+ * overrides it; the #e7d768 here is the fallback, i.e. SGS's own credit colour —
+ * a component constant, not a client value, and it overrides no theme default.
+ */
+.sgs-business-attribution .sgs-business-info__link {
+	background-image: linear-gradient(
+		90deg,
+		var(--sgs-bi-link-hover, #e7d768) 50%,
+		currentColor 50%
+	);
+	background-size: 200% 100%;
+	background-position: 100% 0;
+	background-repeat: no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	transition: background-position 320ms ease;
+}
+
+/* :focus-visible sweeps too — the effect must not be mouse-only (WCAG 2.1.1). */
+.sgs-business-attribution .sgs-business-info__link:hover,
+.sgs-business-attribution .sgs-business-info__link:focus-visible {
+	background-position: 0 0;
+	/* beat the generic __link:hover opacity:0.8 — dimming would mute the sweep */
+	opacity: 1;
+}
+
+/* No background-clip:text support => `color: transparent` would render the credit
+ * INVISIBLE. Fall back to a plain colour swap; never leave the text unreadable. */
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+	.sgs-business-attribution .sgs-business-info__link {
+		background-image: none;
+		color: inherit;
+	}
+
+	.sgs-business-attribution .sgs-business-info__link:hover,
+	.sgs-business-attribution .sgs-business-info__link:focus-visible {
+		color: var(--sgs-bi-link-hover, #e7d768);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-business-attribution .sgs-business-info__link {
+		transition: none;
+	}
+}
+
 /* ── Address ─────────────────────────────────────────────────────────────── */
 
 .sgs-business-address {

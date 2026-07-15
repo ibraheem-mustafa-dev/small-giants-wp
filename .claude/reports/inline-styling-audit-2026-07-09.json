@@ -1,6 +1,6 @@
 {
-	"generatedAt": "2026-07-10T18:01:17.454Z",
-	"totalBlocks": 74,
+	"generatedAt": "2026-07-15T19:44:14.014Z",
+	"totalBlocks": 77,
 	"blocks": [
 		{
 			"block": "sgs/accordion",
@@ -209,6 +209,189 @@
 			"scalarStylingLift": false
 		},
 		{
+			"block": "sgs/adaptive-nav",
+			"dir": "src\\blocks\\adaptive-nav",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"text",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": true,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"ref",
+				"menuButtonLabel",
+				"drawerLabel",
+				"drawerSide",
+				"drawerBg",
+				"drawerHeadBg",
+				"drawerWidth",
+				"showLogo",
+				"logoMaxWidth",
+				"closeButtonSize",
+				"menuFallback",
+				"collapseTier",
+				"collapseCustomPx",
+				"overflowBehaviour",
+				"moreMenuLabel",
+				"navigationLabel",
+				"linkColour",
+				"linkHoverColour"
+			],
+			"tierWithoutBase": [],
+			"attrRouting": {
+				"ref": {
+					"routed": false,
+					"via": null
+				},
+				"menuButtonLabel": {
+					"routed": false,
+					"via": null
+				},
+				"drawerLabel": {
+					"routed": false,
+					"via": null
+				},
+				"drawerSide": {
+					"routed": false,
+					"via": null
+				},
+				"drawerBg": {
+					"routed": false,
+					"via": null
+				},
+				"drawerHeadBg": {
+					"routed": false,
+					"via": null
+				},
+				"drawerWidth": {
+					"routed": false,
+					"via": null
+				},
+				"showLogo": {
+					"routed": false,
+					"via": null
+				},
+				"logoMaxWidth": {
+					"routed": false,
+					"via": null
+				},
+				"closeButtonSize": {
+					"routed": false,
+					"via": null
+				},
+				"menuFallback": {
+					"routed": false,
+					"via": null
+				},
+				"collapseTier": {
+					"routed": false,
+					"via": null
+				},
+				"collapseCustomPx": {
+					"routed": false,
+					"via": null
+				},
+				"overflowBehaviour": {
+					"routed": false,
+					"via": null
+				},
+				"moreMenuLabel": {
+					"routed": false,
+					"via": null
+				},
+				"navigationLabel": {
+					"routed": false,
+					"via": null
+				},
+				"linkColour": {
+					"routed": false,
+					"via": null
+				},
+				"linkHoverColour": {
+					"routed": false,
+					"via": null
+				},
+				"linkFontSize": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkFontWeight": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkFontStyle": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkLineHeight": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkLineHeightUnit": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"layout": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexWrap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"verticalAlign": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"padding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"margin": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				}
+			},
+			"helperCounts": {
+				"sgs_typography_css_rule": 5,
+				"SGS_Container_Wrapper": 9
+			},
+			"dominantHelper": "SGS_Container_Wrapper",
+			"scalarStylingLift": false
+		},
+		{
 			"block": "sgs/audio",
 			"dir": "src\\blocks\\audio",
 			"hasRenderPhp": true,
@@ -356,10 +539,10 @@
 				"fadeWidth",
 				"greyscale",
 				"maxHeight",
-				"hoverBackgroundColour",
-				"hoverTextColour",
-				"hoverBorderColour",
-				"hoverEffect",
+				"backgroundColourHover",
+				"textColourHover",
+				"borderColourHover",
+				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
 				"paddingTablet",
@@ -409,19 +592,19 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
@@ -583,11 +766,13 @@
 			"dropUnrouted": [
 				"displayType",
 				"showIcon",
+				"labelCollapse",
 				"linkPhone",
 				"linkEmail",
 				"iconColour",
 				"textColour",
 				"labelColour",
+				"linkHoverColour",
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
@@ -600,6 +785,10 @@
 					"via": null
 				},
 				"showIcon": {
+					"routed": false,
+					"via": null
+				},
+				"labelCollapse": {
 					"routed": false,
 					"via": null
 				},
@@ -620,6 +809,10 @@
 					"via": null
 				},
 				"labelColour": {
+					"routed": false,
+					"via": null
+				},
+				"linkHoverColour": {
 					"routed": false,
 					"via": null
 				},
@@ -720,11 +913,12 @@
 				"borderRadiusMobile",
 				"boxShadow",
 				"boxShadowHover",
-				"hoverScale",
+				"scaleHover",
 				"transitionDuration",
 				"transitionEasing",
 				"icon",
 				"iconPosition",
+				"labelCollapse",
 				"iconSize",
 				"iconSizeTablet",
 				"iconSizeMobile",
@@ -963,7 +1157,7 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": false,
 					"via": null
 				},
@@ -980,6 +1174,10 @@
 					"via": null
 				},
 				"iconPosition": {
+					"routed": false,
+					"via": null
+				},
+				"labelCollapse": {
 					"routed": false,
 					"via": null
 				},
@@ -1184,12 +1382,12 @@
 				"variant",
 				"_comment_items_media",
 				"items",
-				"hoverEffect",
+				"effectHover",
 				"overlayStyle",
 				"titleColour",
 				"subtitleColour",
-				"hoverImageZoom",
-				"hoverGrayscale",
+				"imageZoomHover",
+				"grayscaleHover",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
@@ -1231,7 +1429,7 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
@@ -1279,15 +1477,15 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -1299,19 +1497,19 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverShadow": {
+				"shadowHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverImageZoom": {
+				"imageZoomHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverGrayscale": {
+				"grayscaleHover": {
 					"routed": false,
 					"via": null
 				},
@@ -1452,6 +1650,7 @@
 				"iconName",
 				"ariaLabel",
 				"showZero",
+				"hideWhenEmpty",
 				"marginTablet",
 				"marginMobile"
 			],
@@ -1486,6 +1685,10 @@
 					"via": null
 				},
 				"showZero": {
+					"routed": false,
+					"via": null
+				},
+				"hideWhenEmpty": {
 					"routed": false,
 					"via": null
 				},
@@ -2413,6 +2616,7 @@
 					"backgroundColor",
 					"backgroundMedia",
 					"backgroundImageOpacity",
+					"backgroundColourHover",
 					"backgroundImageTablet",
 					"backgroundImageMobile",
 					"backgroundSize",
@@ -2582,15 +2786,15 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -4545,10 +4749,10 @@
 			"dropUnrouted": [
 				"mediaItems",
 				"images",
-				"hoverEffect",
+				"effectHover",
 				"enableLightbox",
 				"showCaptions",
-				"hoverImageZoom",
+				"imageZoomHover",
 				"transitionDuration",
 				"transitionEasing",
 				"carouselAutoplay",
@@ -4557,7 +4761,7 @@
 				"carouselShowArrows",
 				"imageSize",
 				"captionReveal",
-				"hoverGrayscale",
+				"grayscaleHover",
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
@@ -4601,7 +4805,7 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
@@ -4621,15 +4825,15 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverOverlayColour": {
+				"overlayColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverImageZoom": {
+				"imageZoomHover": {
 					"routed": false,
 					"via": null
 				},
@@ -4665,7 +4869,7 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverGrayscale": {
+				"grayscaleHover": {
 					"routed": false,
 					"via": null
 				},
@@ -4673,7 +4877,7 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverShadow": {
+				"shadowHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -5053,15 +5257,16 @@
 				"borderColour",
 				"boxShadow",
 				"boxShadowHover",
-				"hoverScale",
-				"hoverColour",
-				"hoverBackground",
+				"scaleHover",
+				"textColourHover",
+				"backgroundColourHover",
 				"customWidth",
 				"customWidthUnit",
 				"textAlign",
 				"inheritStyle",
 				"transitionDuration",
-				"transitionEasing"
+				"transitionEasing",
+				"textWrap"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -5181,15 +5386,15 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverColour": {
+				"textColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBackground": {
+				"backgroundColourHover": {
 					"routed": false,
 					"via": null
 				},
@@ -5214,6 +5419,10 @@
 					"via": null
 				},
 				"transitionEasing": {
+					"routed": false,
+					"via": null
+				},
+				"textWrap": {
 					"routed": false,
 					"via": null
 				}
@@ -5368,6 +5577,7 @@
 					"minHeight",
 					"minHeightTablet",
 					"minHeightMobile",
+					"backgroundColourHover",
 					"backgroundAttachment",
 					"backgroundOverlayColour",
 					"backgroundOverlayOpacity",
@@ -5630,15 +5840,15 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -6179,15 +6389,15 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverIconColour": {
+				"iconColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverShapeColour": {
+				"shapeColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -6391,12 +6601,12 @@
 				"heading",
 				"description",
 				"cardStyle",
-				"hoverEffect",
+				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
 				"blockLink",
 				"blockLinkTarget",
-				"hoverGrayscale",
+				"grayscaleHover",
 				"staggerDelay",
 				"sgsAnimation",
 				"sgsAnimationDuration",
@@ -6454,19 +6664,19 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -6478,11 +6688,11 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverShadow": {
+				"shadowHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -6494,7 +6704,7 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverGrayscale": {
+				"grayscaleHover": {
 					"routed": false,
 					"via": null
 				},
@@ -6590,7 +6800,8 @@
 				"paddingMobile",
 				"marginTablet",
 				"marginMobile",
-				"borderRadius"
+				"borderRadius",
+				"fullWidth"
 			],
 			"tierWithoutBase": [],
 			"attrRouting": {
@@ -6683,6 +6894,10 @@
 					"via": null
 				},
 				"borderRadius": {
+					"routed": false,
+					"via": null
+				},
+				"fullWidth": {
 					"routed": false,
 					"via": null
 				}
@@ -7093,525 +7308,6 @@
 				"render.php (block-private)": 5
 			},
 			"dominantHelper": "render.php (block-private)",
-			"scalarStylingLift": false
-		},
-		{
-			"block": "sgs/mobile-nav",
-			"dir": "src\\blocks\\mobile-nav",
-			"hasRenderPhp": true,
-			"hasStyleCss": true,
-			"inlineViaSupports": {
-				"color": [
-					"background",
-					"text",
-					"__experimentalSkipSerialization"
-				],
-				"spacing": [
-					"padding",
-					"__experimentalSkipSerialization"
-				]
-			},
-			"inlineViaRender": [],
-			"inlineViaWrapper": {
-				"usesWrapper": false,
-				"noOverlayOptOut": false,
-				"nulledAttrs": []
-			},
-			"dropConditionalInert": [],
-			"dropUnrouted": [
-				"variant",
-				"accentColour",
-				"dividerColour",
-				"showCta",
-				"ctaText",
-				"ctaUrl",
-				"showContactShortcuts",
-				"showSocials",
-				"socialStyle",
-				"showSearch",
-				"showAccountTray",
-				"enableSwipe",
-				"desktopHamburger",
-				"staggerDelay",
-				"breakpoint",
-				"drawerWidth",
-				"drawerWidthMobile",
-				"drawerWidthTablet",
-				"drawerMaxWidth",
-				"paddingTablet",
-				"paddingMobile",
-				"drawerPosition",
-				"showLogo",
-				"logoMaxWidth",
-				"logoMaxWidthMobile",
-				"logoMaxWidthTablet",
-				"closeButtonSize",
-				"closeButtonSizeMobile",
-				"closeButtonSizeTablet",
-				"closeButtonStyle",
-				"ctaIcon",
-				"ctaStyle",
-				"showSecondaryCta",
-				"secondaryCtaText",
-				"secondaryCtaUrl",
-				"secondaryCtaIcon",
-				"secondaryCtaStyle",
-				"contactDisplayMode",
-				"showWhatsApp",
-				"showDividers",
-				"submenuIndent",
-				"submenuIndentMobile",
-				"submenuIndentTablet",
-				"socialIconSize",
-				"socialIconSizeMobile",
-				"socialIconSizeTablet",
-				"showTagline",
-				"taglineText",
-				"drawerBg",
-				"drawerText",
-				"drawerGradient",
-				"closeButtonBg",
-				"closeButtonColour",
-				"ctaBg",
-				"ctaTextColour",
-				"ctaBorderColour",
-				"secondaryCtaBg",
-				"secondaryCtaTextColour",
-				"linkColour",
-				"linkHoverColour",
-				"linkActiveColour",
-				"sublinkColour",
-				"sublinkHoverColour",
-				"backdropColour",
-				"focusColour",
-				"animationPreset",
-				"animationDuration",
-				"animationEasing",
-				"exitDuration",
-				"backdropOpacity",
-				"backdropBlur",
-				"backdropBlurAmount"
-			],
-			"tierWithoutBase": [],
-			"attrRouting": {
-				"variant": {
-					"routed": false,
-					"via": null
-				},
-				"accentColour": {
-					"routed": false,
-					"via": null
-				},
-				"dividerColour": {
-					"routed": false,
-					"via": null
-				},
-				"showCta": {
-					"routed": false,
-					"via": null
-				},
-				"ctaText": {
-					"routed": false,
-					"via": null
-				},
-				"ctaUrl": {
-					"routed": false,
-					"via": null
-				},
-				"showContactShortcuts": {
-					"routed": false,
-					"via": null
-				},
-				"showSocials": {
-					"routed": false,
-					"via": null
-				},
-				"socialStyle": {
-					"routed": false,
-					"via": null
-				},
-				"showSearch": {
-					"routed": false,
-					"via": null
-				},
-				"showAccountTray": {
-					"routed": false,
-					"via": null
-				},
-				"enableSwipe": {
-					"routed": false,
-					"via": null
-				},
-				"desktopHamburger": {
-					"routed": false,
-					"via": null
-				},
-				"staggerDelay": {
-					"routed": false,
-					"via": null
-				},
-				"breakpoint": {
-					"routed": false,
-					"via": null
-				},
-				"drawerWidth": {
-					"routed": false,
-					"via": null
-				},
-				"drawerWidthMobile": {
-					"routed": false,
-					"via": null
-				},
-				"drawerWidthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"drawerMaxWidth": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingMobile": {
-					"routed": false,
-					"via": null
-				},
-				"drawerPosition": {
-					"routed": false,
-					"via": null
-				},
-				"showLogo": {
-					"routed": false,
-					"via": null
-				},
-				"logoMaxWidth": {
-					"routed": false,
-					"via": null
-				},
-				"logoMaxWidthMobile": {
-					"routed": false,
-					"via": null
-				},
-				"logoMaxWidthTablet": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonSize": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonSizeMobile": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonStyle": {
-					"routed": false,
-					"via": null
-				},
-				"ctaIcon": {
-					"routed": false,
-					"via": null
-				},
-				"ctaStyle": {
-					"routed": false,
-					"via": null
-				},
-				"showSecondaryCta": {
-					"routed": false,
-					"via": null
-				},
-				"secondaryCtaText": {
-					"routed": false,
-					"via": null
-				},
-				"secondaryCtaUrl": {
-					"routed": false,
-					"via": null
-				},
-				"secondaryCtaIcon": {
-					"routed": false,
-					"via": null
-				},
-				"secondaryCtaStyle": {
-					"routed": false,
-					"via": null
-				},
-				"contactDisplayMode": {
-					"routed": false,
-					"via": null
-				},
-				"showWhatsApp": {
-					"routed": false,
-					"via": null
-				},
-				"linkFontSize": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"linkFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"linkFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"linkFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"linkFontWeight": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"linkFontStyle": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"sublinkFontSize": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"sublinkFontSizeUnit": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"sublinkFontSizeTablet": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"sublinkFontSizeMobile": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"sublinkFontWeight": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"sublinkFontStyle": {
-					"routed": true,
-					"via": "sgs_typography_css_rule"
-				},
-				"showDividers": {
-					"routed": false,
-					"via": null
-				},
-				"submenuIndent": {
-					"routed": false,
-					"via": null
-				},
-				"submenuIndentMobile": {
-					"routed": false,
-					"via": null
-				},
-				"submenuIndentTablet": {
-					"routed": false,
-					"via": null
-				},
-				"socialIconSize": {
-					"routed": false,
-					"via": null
-				},
-				"socialIconSizeMobile": {
-					"routed": false,
-					"via": null
-				},
-				"socialIconSizeTablet": {
-					"routed": false,
-					"via": null
-				},
-				"showTagline": {
-					"routed": false,
-					"via": null
-				},
-				"taglineText": {
-					"routed": false,
-					"via": null
-				},
-				"drawerBg": {
-					"routed": false,
-					"via": null
-				},
-				"drawerText": {
-					"routed": false,
-					"via": null
-				},
-				"drawerGradient": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonBg": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonColour": {
-					"routed": false,
-					"via": null
-				},
-				"ctaBg": {
-					"routed": false,
-					"via": null
-				},
-				"ctaTextColour": {
-					"routed": false,
-					"via": null
-				},
-				"ctaBorderColour": {
-					"routed": false,
-					"via": null
-				},
-				"secondaryCtaBg": {
-					"routed": false,
-					"via": null
-				},
-				"secondaryCtaTextColour": {
-					"routed": false,
-					"via": null
-				},
-				"linkColour": {
-					"routed": false,
-					"via": null
-				},
-				"linkHoverColour": {
-					"routed": false,
-					"via": null
-				},
-				"linkActiveColour": {
-					"routed": false,
-					"via": null
-				},
-				"sublinkColour": {
-					"routed": false,
-					"via": null
-				},
-				"sublinkHoverColour": {
-					"routed": false,
-					"via": null
-				},
-				"backdropColour": {
-					"routed": false,
-					"via": null
-				},
-				"focusColour": {
-					"routed": false,
-					"via": null
-				},
-				"animationPreset": {
-					"routed": false,
-					"via": null
-				},
-				"animationDuration": {
-					"routed": false,
-					"via": null
-				},
-				"animationEasing": {
-					"routed": false,
-					"via": null
-				},
-				"exitDuration": {
-					"routed": false,
-					"via": null
-				},
-				"backdropOpacity": {
-					"routed": false,
-					"via": null
-				},
-				"backdropBlur": {
-					"routed": false,
-					"via": null
-				},
-				"backdropBlurAmount": {
-					"routed": false,
-					"via": null
-				}
-			},
-			"helperCounts": {
-				"sgs_typography_css_rule": 12
-			},
-			"dominantHelper": "sgs_typography_css_rule",
-			"scalarStylingLift": true
-		},
-		{
-			"block": "sgs/mobile-nav-toggle",
-			"dir": "src\\blocks\\mobile-nav-toggle",
-			"hasRenderPhp": true,
-			"hasStyleCss": true,
-			"inlineViaSupports": {
-				"color": [
-					"text",
-					"__experimentalSkipSerialization"
-				],
-				"spacing": [
-					"padding",
-					"margin",
-					"__experimentalSkipSerialization"
-				]
-			},
-			"inlineViaRender": [],
-			"inlineViaWrapper": {
-				"usesWrapper": false,
-				"noOverlayOptOut": false,
-				"nulledAttrs": []
-			},
-			"dropConditionalInert": [],
-			"dropUnrouted": [
-				"iconSize",
-				"ariaLabel",
-				"popoverTarget",
-				"toggleOpenIcon",
-				"toggleCloseIcon",
-				"paddingTablet",
-				"paddingMobile",
-				"marginTablet",
-				"marginMobile"
-			],
-			"tierWithoutBase": [],
-			"attrRouting": {
-				"iconSize": {
-					"routed": false,
-					"via": null
-				},
-				"ariaLabel": {
-					"routed": false,
-					"via": null
-				},
-				"popoverTarget": {
-					"routed": false,
-					"via": null
-				},
-				"toggleOpenIcon": {
-					"routed": false,
-					"via": null
-				},
-				"toggleCloseIcon": {
-					"routed": false,
-					"via": null
-				},
-				"paddingTablet": {
-					"routed": false,
-					"via": null
-				},
-				"paddingMobile": {
-					"routed": false,
-					"via": null
-				},
-				"marginTablet": {
-					"routed": false,
-					"via": null
-				},
-				"marginMobile": {
-					"routed": false,
-					"via": null
-				}
-			},
-			"helperCounts": {},
-			"dominantHelper": "none",
 			"scalarStylingLift": false
 		},
 		{
@@ -8268,12 +7964,12 @@
 				"categoryBadgeBgColour",
 				"readMoreColour",
 				"cardBgColour",
-				"hoverBackgroundColour",
-				"hoverTextColour",
-				"hoverBorderColour",
-				"hoverScale",
-				"hoverShadow",
-				"hoverImageZoom",
+				"backgroundColourHover",
+				"textColourHover",
+				"borderColourHover",
+				"scaleHover",
+				"shadowHover",
+				"imageZoomHover",
 				"transitionDuration",
 				"transitionEasing",
 				"carouselAutoplay",
@@ -8432,27 +8128,27 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverShadow": {
+				"shadowHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverImageZoom": {
+				"imageZoomHover": {
 					"routed": false,
 					"via": null
 				},
@@ -8793,7 +8489,7 @@
 				"numberBackground",
 				"titleColour",
 				"descriptionColour",
-				"hoverEffect",
+				"effectHover",
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
@@ -8835,19 +8531,19 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
@@ -8953,7 +8649,6 @@
 				"priceNote",
 				"ctaText",
 				"ctaUrl",
-				"ctaPreset",
 				"innerPadding",
 				"indexVariationUrl",
 				"framingMode",
@@ -8969,6 +8664,11 @@
 				"showLadder",
 				"pickerLabelFontSize",
 				"pickerLabelColour",
+				"tagPadding",
+				"tagBackgroundColour",
+				"tagTextColour",
+				"tagBorderRadius",
+				"tagFullWidth",
 				"showPickers"
 			],
 			"tierWithoutBase": [],
@@ -9030,10 +8730,6 @@
 					"via": null
 				},
 				"ctaUrl": {
-					"routed": false,
-					"via": null
-				},
-				"ctaPreset": {
 					"routed": false,
 					"via": null
 				},
@@ -9365,6 +9061,26 @@
 					"routed": true,
 					"via": "sgs_typography_css_rule"
 				},
+				"tagPadding": {
+					"routed": false,
+					"via": null
+				},
+				"tagBackgroundColour": {
+					"routed": false,
+					"via": null
+				},
+				"tagTextColour": {
+					"routed": false,
+					"via": null
+				},
+				"tagBorderRadius": {
+					"routed": false,
+					"via": null
+				},
+				"tagFullWidth": {
+					"routed": false,
+					"via": null
+				},
 				"showPickers": {
 					"routed": false,
 					"via": null
@@ -9641,9 +9357,9 @@
 				"borderColour",
 				"boxShadow",
 				"boxShadowHover",
-				"hoverScale",
-				"hoverColour",
-				"hoverBackground",
+				"scaleHover",
+				"textColourHover",
+				"backgroundColourHover",
 				"paddingTablet",
 				"paddingMobile",
 				"marginTablet",
@@ -9758,15 +9474,15 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverColour": {
+				"textColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBackground": {
+				"backgroundColourHover": {
 					"routed": false,
 					"via": null
 				},
@@ -9910,6 +9626,500 @@
 			"scalarStylingLift": false
 		},
 		{
+			"block": "sgs/site-footer",
+			"dir": "src\\blocks\\site-footer",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"background",
+					"text",
+					"gradients",
+					"__experimentalSkipSerialization"
+				],
+				"spacing": [
+					"margin",
+					"padding",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": true,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"paddingTopTablet",
+				"paddingRightTablet",
+				"paddingBottomTablet",
+				"paddingLeftTablet",
+				"paddingTopMobile",
+				"paddingRightMobile",
+				"paddingBottomMobile",
+				"paddingLeftMobile",
+				"marginTopTablet",
+				"marginRightTablet",
+				"marginBottomTablet",
+				"marginLeftTablet",
+				"marginTopMobile",
+				"marginRightMobile",
+				"marginBottomMobile",
+				"marginLeftMobile"
+			],
+			"tierWithoutBase": [
+				"paddingTop",
+				"paddingRight",
+				"paddingBottom",
+				"paddingLeft",
+				"marginTop",
+				"marginRight",
+				"marginBottom",
+				"marginLeft"
+			],
+			"attrRouting": {
+				"maxWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidthTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidthMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidthTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidthMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingTopTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingRightTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingBottomTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingLeftTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTopMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingRightMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingBottomMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingLeftMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTopTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginRightTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginBottomTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginLeftTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginTopMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginRightMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginBottomMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginLeftMobile": {
+					"routed": false,
+					"via": null
+				}
+			},
+			"helperCounts": {
+				"SGS_Container_Wrapper": 6
+			},
+			"dominantHelper": "SGS_Container_Wrapper",
+			"scalarStylingLift": false
+		},
+		{
+			"block": "sgs/site-footer-row",
+			"dir": "src\\blocks\\site-footer-row",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"background",
+					"text",
+					"gradients",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": true,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"rowSlot"
+			],
+			"tierWithoutBase": [],
+			"attrRouting": {
+				"rowSlot": {
+					"routed": false,
+					"via": null
+				},
+				"layout": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gridTemplateColumns": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexWrap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"verticalAlign": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"padding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"margin": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				}
+			},
+			"helperCounts": {
+				"SGS_Container_Wrapper": 10
+			},
+			"dominantHelper": "SGS_Container_Wrapper",
+			"scalarStylingLift": false
+		},
+		{
+			"block": "sgs/site-header",
+			"dir": "src\\blocks\\site-header",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"background",
+					"text",
+					"gradients",
+					"__experimentalSkipSerialization"
+				],
+				"spacing": [
+					"margin",
+					"padding",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": true,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"paddingTopTablet",
+				"paddingRightTablet",
+				"paddingBottomTablet",
+				"paddingLeftTablet",
+				"paddingTopMobile",
+				"paddingRightMobile",
+				"paddingBottomMobile",
+				"paddingLeftMobile",
+				"marginTopTablet",
+				"marginRightTablet",
+				"marginBottomTablet",
+				"marginLeftTablet",
+				"marginTopMobile",
+				"marginRightMobile",
+				"marginBottomMobile",
+				"marginLeftMobile",
+				"headerSticky",
+				"headerTransparent",
+				"headerShrink",
+				"contrastSafe"
+			],
+			"tierWithoutBase": [
+				"paddingTop",
+				"paddingRight",
+				"paddingBottom",
+				"paddingLeft",
+				"marginTop",
+				"marginRight",
+				"marginBottom",
+				"marginLeft"
+			],
+			"attrRouting": {
+				"maxWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidthTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidthMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidthTablet": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidthMobile": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"paddingTopTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingRightTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingBottomTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingLeftTablet": {
+					"routed": false,
+					"via": null
+				},
+				"paddingTopMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingRightMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingBottomMobile": {
+					"routed": false,
+					"via": null
+				},
+				"paddingLeftMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginTopTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginRightTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginBottomTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginLeftTablet": {
+					"routed": false,
+					"via": null
+				},
+				"marginTopMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginRightMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginBottomMobile": {
+					"routed": false,
+					"via": null
+				},
+				"marginLeftMobile": {
+					"routed": false,
+					"via": null
+				},
+				"headerSticky": {
+					"routed": false,
+					"via": null
+				},
+				"headerTransparent": {
+					"routed": false,
+					"via": null
+				},
+				"headerShrink": {
+					"routed": false,
+					"via": null
+				},
+				"contrastSafe": {
+					"routed": false,
+					"via": null
+				}
+			},
+			"helperCounts": {
+				"SGS_Container_Wrapper": 6
+			},
+			"dominantHelper": "SGS_Container_Wrapper",
+			"scalarStylingLift": false
+		},
+		{
+			"block": "sgs/site-header-row",
+			"dir": "src\\blocks\\site-header-row",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"background",
+					"text",
+					"gradients",
+					"__experimentalSkipSerialization"
+				],
+				"__experimentalBorder": [
+					"radius",
+					"width",
+					"color",
+					"style",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": true,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"rowSlot"
+			],
+			"tierWithoutBase": [],
+			"attrRouting": {
+				"rowSlot": {
+					"routed": false,
+					"via": null
+				},
+				"layout": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"flexWrap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"justifyContent": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"verticalAlign": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"gap": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"maxWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"contentWidth": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"padding": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				},
+				"margin": {
+					"routed": true,
+					"via": "SGS_Container_Wrapper"
+				}
+			},
+			"helperCounts": {
+				"SGS_Container_Wrapper": 9
+			},
+			"dominantHelper": "SGS_Container_Wrapper",
+			"scalarStylingLift": false
+		},
+		{
 			"block": "sgs/social-icons",
 			"dir": "src\\blocks\\social-icons",
 			"hasRenderPhp": true,
@@ -9939,9 +10149,10 @@
 			"dropConditionalInert": [],
 			"dropUnrouted": [
 				"icons",
+				"source",
 				"iconSize",
 				"iconColour",
-				"hoverColour",
+				"iconColourHover",
 				"iconStyle",
 				"gap",
 				"paddingTablet",
@@ -9955,6 +10166,10 @@
 					"routed": false,
 					"via": null
 				},
+				"source": {
+					"routed": false,
+					"via": null
+				},
 				"iconSize": {
 					"routed": false,
 					"via": null
@@ -9963,7 +10178,7 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverColour": {
+				"iconColourHover": {
 					"routed": false,
 					"via": null
 				},
@@ -10476,18 +10691,10 @@
 				"cardStyle",
 				"displayMode",
 				"photoShape",
-				"sgsHoverBgColour",
-				"sgsHoverTextColour",
-				"sgsHoverBorderColour",
-				"sgsHoverScale",
-				"sgsHoverShadow",
-				"sgsHoverDuration",
-				"sgsHoverImageZoom",
-				"sgsHoverGrayscale",
 				"sgsBlockLink",
 				"sgsBlockLinkTarget",
-				"hoverImageZoom",
-				"hoverGrayscale",
+				"imageZoomHover",
+				"grayscaleHover",
 				"transitionDuration",
 				"transitionEasing",
 				"blockLink",
@@ -10496,7 +10703,7 @@
 				"sgsAnimation",
 				"sgsAnimationDuration",
 				"sgsAnimationEasing",
-				"hoverOverlay",
+				"overlayHover",
 				"contentWidth",
 				"maxWidth",
 				"paddingTablet",
@@ -10550,38 +10757,6 @@
 					"routed": false,
 					"via": null
 				},
-				"sgsHoverBgColour": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverTextColour": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverBorderColour": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverScale": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverShadow": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverDuration": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverImageZoom": {
-					"routed": false,
-					"via": null
-				},
-				"sgsHoverGrayscale": {
-					"routed": false,
-					"via": null
-				},
 				"sgsBlockLink": {
 					"routed": false,
 					"via": null
@@ -10590,19 +10765,19 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverShadow": {
+				"shadowHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverImageZoom": {
+				"imageZoomHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverGrayscale": {
+				"grayscaleHover": {
 					"routed": false,
 					"via": null
 				},
@@ -10638,7 +10813,7 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverOverlay": {
+				"overlayHover": {
 					"routed": false,
 					"via": null
 				},
@@ -10753,7 +10928,7 @@
 				"ratingColour",
 				"_comment_legacyAvatar",
 				"avatar",
-				"hoverEffect",
+				"effectHover",
 				"transitionDuration",
 				"sgsAnimation",
 				"sgsAnimationDuration",
@@ -10901,19 +11076,19 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
@@ -10925,11 +11100,11 @@
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
-				"hoverShadow": {
+				"shadowHover": {
 					"routed": true,
 					"via": "render.php (block-private)"
 				},
@@ -11058,10 +11233,10 @@
 				"showArrows",
 				"cardStyle",
 				"nameFontSize",
-				"hoverBackgroundColour",
-				"hoverTextColour",
-				"hoverBorderColour",
-				"hoverEffect",
+				"backgroundColourHover",
+				"textColourHover",
+				"borderColourHover",
+				"effectHover",
 				"transitionDuration",
 				"transitionEasing",
 				"templateMode"
@@ -11108,19 +11283,19 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverBackgroundColour": {
+				"backgroundColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverTextColour": {
+				"textColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBorderColour": {
+				"borderColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverEffect": {
+				"effectHover": {
 					"routed": false,
 					"via": null
 				},
@@ -11210,9 +11385,9 @@
 				"borderColour",
 				"boxShadow",
 				"boxShadowHover",
-				"hoverScale",
-				"hoverColour",
-				"hoverBackground",
+				"scaleHover",
+				"textColourHover",
+				"backgroundColourHover",
 				"customWidth",
 				"customWidthUnit",
 				"inheritStyle",
@@ -11369,15 +11544,15 @@
 					"routed": false,
 					"via": null
 				},
-				"hoverScale": {
+				"scaleHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverColour": {
+				"textColourHover": {
 					"routed": false,
 					"via": null
 				},
-				"hoverBackground": {
+				"backgroundColourHover": {
 					"routed": false,
 					"via": null
 				},

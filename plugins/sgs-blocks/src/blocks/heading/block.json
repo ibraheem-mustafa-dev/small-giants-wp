@@ -96,7 +96,7 @@
     },
     "fontSize": {
       "type": "number",
-      "default": 28
+      "default": null
     },
     "fontSizeUnit": {
       "type": "string",
@@ -110,7 +110,7 @@
     },
     "fontWeight": {
       "type": "string",
-      "default": "700"
+      "default": ""
     },
     "lineHeight": {
       "type": "number"

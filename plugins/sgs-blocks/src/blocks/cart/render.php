@@ -7,9 +7,13 @@
  *     (LiteSpeed / Hostinger) serving stale counts to all visitors.
  *   - The view.js module hydrates the real count from the WooCommerce
  *     Store API (`GET /wp-json/wc/store/v1/cart`) within ~200 ms.
- *   - When WooCommerce is not active the trigger renders but stays
- *     hidden (no .sgs-cart--active class); admins see a notice in the
- *     editor instead (handled in edit.js).
+ *   - When WooCommerce is not active the block renders NOTHING at all
+ *     (early return, D338). It previously rendered the trigger and hid it
+ *     via CSS, which put a shopping trolley in the header of every
+ *     non-ecommerce client. This is the UNIVERSAL fix (R-31-9): the cart
+ *     disappears by construction on a site with no shop, an actual shop
+ *     keeps it, and no per-client carve-out or pattern edit is needed.
+ *     Admins still see a notice in the editor (handled in edit.js).
  *
  * WCAG 2.2 AA:
  *   - Trigger is an <a> linking to the /cart URL: native keyboard nav.
@@ -63,6 +67,10 @@ $show_zero         = ! empty( $attributes['showZero'] );
 $hide_when_empty   = ! empty( $attributes['hideWhenEmpty'] );
 
 // ── WooCommerce availability check ────────────────────────────────────────────
+if ( ! class_exists( 'WooCommerce' ) ) {
+	return '';
+}
+
 $wc_active = function_exists( 'WC' ) && ! is_null( WC() );
 
 // Cart URL — WC provides wc_get_cart_url() when active; fall back to /cart.

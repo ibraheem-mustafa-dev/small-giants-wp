@@ -113,7 +113,10 @@ $rendered_tag  = $is_subheading ? $sub_tag : $level;
 // Typography attrs.
 $font_family         = $attributes['fontFamily'] ?? '';
 $font_size_unit      = $attributes['fontSizeUnit'] ?? 'px';
-$font_weight         = $attributes['fontWeight'] ?? '700';
+// No '700' fallback (D338): that duplicated theme.json's styles.elements.heading
+// fontWeight and forced an emit that beat it, so a client could never change heading
+// weight. Empty => the emitter below writes no declaration => the theme wins.
+$font_weight         = $attributes['fontWeight'] ?? '';
 $line_height         = isset( $attributes['lineHeight'] ) ? $attributes['lineHeight'] : null;
 $line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
 $letter_spacing      = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;

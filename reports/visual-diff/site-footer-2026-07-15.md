@@ -51,6 +51,30 @@ Static: `animation-fill-mode:both` = 0, non-zero `animation-delay` = 0, `animati
 is static content with no entry animation; it is painted at full opacity on first paint.
 Pre-commit CSS pattern audit: clean.
 
+## Addendum (same day) — edit.js TEMPLATE now covered
+
+The D338 `edit.js` changes (object-shape `gridTemplateColumns`/`gap`/`padding`/`margin` on
+the TEMPLATE, `core/group`→`sgs/container` swaps, bottom-row border under `style` as a
+SUPPORT not an attr) are committed with this report. Verification:
+
+- **Shapes vs block.json (the D328 class):** every TEMPLATE value now matches the declared
+  type — `gridTemplateColumns`/`gap` as `{desktop,mobile}` objects, `padding`/`margin` as
+  per-side tier objects, `border` under `style.border` (support). Checked attribute-by-
+  attribute against `site-footer-row/block.json` this session. The previously-passed
+  `columns`/`columnsTablet`/`columnsMobile` were REMOVED from the template — measured
+  undeclared (WP discards them silently) and unconsumed (edit.js derives its columns UI
+  from `gridTemplateColumns`; render.php's docblock claim that it consumes them is stale).
+- **Rendered proof of the same shapes (live, this session):** the shipped footer pattern
+  carries identical object values and computes **592px 296px 296px = exactly 2.00 : 1 : 1**
+  with the 48px desktop gap at 1440 — the draft's `2fr 1fr 1fr`, NOT the equal thirds the
+  D328 coercion produced. At 768 the columns collapse via the row's CONTAINER query (inner
+  container 705px ≤ mobile tier) — FR-S9-6's designed container+media behaviour, verified
+  intentional against `helpers-responsive.php` (media tiers are 1023/767; the container
+  tier fires on the block's own width).
+- **Fresh-insert editor round-trip:** deferred to the first hand-authoring session (Goal 4)
+  — the template is only instantiated on insert, and the shape+rendered evidence above
+  covers the D328 failure mode this change exists to prevent.
+
 ## Risk note
 
 A content-addressed uid means two `sgs/site-footer` blocks with **byte-identical attributes**
