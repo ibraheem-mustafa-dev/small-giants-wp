@@ -43,7 +43,7 @@ client by adding a single dict entry; no code changes needed elsewhere.
 from __future__ import annotations
 
 import argparse
-import re
+import json
 import shlex
 import shutil
 import subprocess
@@ -79,6 +79,15 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "sgs-blocks"
 BUILD_DIR = PLUGIN_DIR / "build"
 TARBALL_NAME = "sgs-deploy.tar"
+
+# WP-internal post types whose post_content structurally cannot carry SGS block
+# markup. Everything else on the site — pages, posts, reusable blocks, templates,
+# template parts, and any client CPT — IS scanned by step_oldshape_audit. This is
+# an exclusion list, not a roster: a CPT added tomorrow is covered automatically.
+NON_BLOCK_POST_TYPES = (
+    "attachment", "revision", "nav_menu_item", "custom_css", "customize_changeset",
+    "oembed_cache", "user_request", "wp_global_styles", "wp_font_family", "wp_font_face",
+)
 
 TAR_EXCLUDES = [
     "node_modules",
@@ -352,10 +361,23 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
             "against the schemas being deployed")
         return 0
     wp_root = wp_content.rsplit("/wp-content", 1)[0]
+    # Post types are ENUMERATED from the live site, never hardcoded — a client CPT
+    # (sgs_header/sgs_footer/sgs_product_template) or a reusable block holds block
+    # markup exactly like a page does, and a page,post-only scan was blind to all
+    # of them (QC council 2026-07-15). Only WP-internal types that structurally
+    # cannot carry block markup in post_content are excluded.
+    #
+    # TWO WP bootstraps total (enumerate types, then one bulk JSON fetch). The
+    # obvious per-post `wp post get` loop costs one bootstrap PER POST and timed
+    # out at 180s on the canary — a gate that aborts a healthy deploy on its own
+    # slowness is worse than no gate. JSON also escapes content correctly, where a
+    # text delimiter can be forged by post content containing the delimiter.
+    skip_types = "|".join(NON_BLOCK_POST_TYPES)
     remote = (
-        f"cd {shlex.quote(wp_root)} && ids=$(wp post list --post_type=page,post "
-        "--field=ID) && for id in $ids; do echo \"=====POST $id=====\"; "
-        "wp post get $id --field=post_content; done"
+        f"cd {shlex.quote(wp_root)} && "
+        f"types=$(wp post-type list --field=name | grep -Ev '^({skip_types})$' | paste -sd,) && "
+        "wp post list --post_type=\"$types\" --post_status=any --fields=ID,post_content "
+        "--format=json"
     )
     log("[oldshape-audit] fetching stored post_content from target (read-only)")
     try:
@@ -372,7 +394,13 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
         err("fix connectivity first; use --skip-oldshape-audit ONLY if stored-content "
             "compatibility has been verified another way")
         return 1
-    parts = re.split(r"=====POST (\d+)=====\n", out.stdout)
+    try:
+        posts = json.loads(out.stdout[out.stdout.index("["):])
+    except (ValueError, json.JSONDecodeError) as e:
+        err(f"[oldshape-audit] could not read the post list from the target: {e}")
+        err("this is fail-closed on purpose — an unreadable content list cannot be "
+            "audited, and an unaudited deploy is how content gets stranded silently")
+        return 1
     audit = Path(__file__).resolve().parent / "audit-post-content-blocks.py"
     baseline = Path(__file__).resolve().parent / "oldshape-audit-baseline.json"
     with tempfile.TemporaryDirectory() as td:
@@ -380,11 +408,10 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
         # convention ("palestine-lives/13|sgs/hero|…").
         site_dir = Path(td) / target_key
         site_dir.mkdir()
-        count = 0
-        for i in range(1, len(parts), 2):
-            with open(site_dir / f"{parts[i]}.txt", "w", encoding="utf-8", newline="") as fh:
-                fh.write(parts[i + 1])
-            count += 1
+        for post in posts:
+            with open(site_dir / f"{post['ID']}.txt", "w", encoding="utf-8", newline="") as fh:
+                fh.write(post.get("post_content") or "")
+        count = len(posts)
         log(f"[oldshape-audit] scanning {count} post(s) against local block.json schemas")
         cmd = [sys.executable, str(audit), str(site_dir), "--check"]
         if baseline.exists():

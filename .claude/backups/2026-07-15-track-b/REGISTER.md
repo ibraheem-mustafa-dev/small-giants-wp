@@ -85,6 +85,30 @@ migrate→restore→re-migrate.
   undeclared `eyebrow` (content-ish → needs a label-child disposition).
 - **sandybrown/65** — SKIP stands (frozen conformance baseline artefact).
 
+## Evidence (durable — do not trust the prose, re-run these)
+
+| Claim | Artefact |
+|---|---|
+| Backups match the server | `CHECKSUMS.md5` (104 files). Page 13 = `1a2afbe8c3c291221faeb3a82045a774`, verified byte-identical vs `wp post get 13` BEFORE migration. `md5sum -c CHECKSUMS.md5` re-verifies. |
+| Homepage renders the content | `live-dom-evidence-AFTER.json` + re-runnable proof `scripts/verify-restored-page.js <url>` (8 live-DOM gates, exit 1 on any failure). Clear the CDN first. |
+| Register is machine-checkable | `register.json` (per-finding, per-post) |
+| Bean's eye (R-31-13) | `reports/visual-diff/track-b/*.png` — BEFORE/AFTER/REFERENCE × desktop+mobile. **Session artefacts: `*.png` is gitignored repo-wide, so these are NOT in git history** (repo convention for this folder is markdown). Sent to Bean in-session. |
+
+## QC council (4 independent raters, 2026-07-15) — findings + what changed
+
+Every claim was fact-checked against live code/DOM before acting (D333). Outcome:
+**3 real defects in Track B's own tooling, since fixed + re-proven; 1 false positive;
+1 genuine PRE-EXISTING framework bug found (below).**
+
+| Finding | Verdict | Action |
+|---|---|---|
+| Brace-depth parsers were not string-aware — a literal `{`/`}` inside a copy string silently zeroed a block's attrs, so a REAL casualty scanned as 0 findings/exit 0 and the migrator said "nothing to do" (reproduced) | **REAL, CRITICAL** — the exact silent-failure class these tools exist to kill | FIXED both parsers (string+escape aware) + unreadable attrs now fail LOUD as a HIGH finding / fail-closed error, never a silent skip. Re-proven: fixture now 1 HIGH/exit 1 + 1 planned casualty |
+| `INFO_BOX_TEMPLATE` still seeded undeclared `sgs/icon` attrs — commit `9c29dbe3`'s message claimed BOTH seeds fixed; only `MEDIA_TYPE_DEFAULTS` was (my edit was reverted by a parallel session's branch switch and I committed the reverted file) | **REAL** — a false claim in a commit message | FIXED properly + verified in the committed blob this time |
+| Gate scanned only `page,post` — blind to CPT/reusable/template content (`sgs_header`/`sgs_footer` registered; sandybrown has WooCommerce CPTs) | **REAL** | FIXED: post types now ENUMERATED live (exclusion list of WP-internal types only, so a new client CPT is covered automatically). sandybrown coverage 28 → **241 posts**; both sites still PASS |
+| Gate's per-post fetch would have timed out (180s) on sandybrown → a healthy deploy aborted on the gate's own slowness | **REAL** (found while fixing the above) | FIXED: two WP bootstraps total via bulk JSON. palestine-lives 2s, sandybrown 4s |
+| `render_reads()` was comment-blind + single-quote-only → a commented-out mention could suppress a genuine finding | **REAL, low impact** (0 live instances) | FIXED: comments stripped, both quote styles |
+| "info-box #4 lost its icon (`iconName` absent from stored JSON)" | **FALSE POSITIVE** | The serializer OMITS attrs equal to their default; `iconName` default IS `'star'`, the stored value. Live DOM renders the star icon. The verifier compares default-RESOLVED values, which is why it passed — that is correct by design |
+
 **Live findings folded back into the audit picture:**
 - NEW cause discovered (page 13 brand-strip, proven): deployed block.json
   `logos.items.properties.media: "string"` (stale) makes WP's

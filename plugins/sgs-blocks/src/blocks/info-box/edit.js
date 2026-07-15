@@ -213,7 +213,19 @@ function deriveMediaType( firstBlock ) {
  * Operators customise the child blocks in place in the editor.
  */
 const INFO_BOX_TEMPLATE = [
-	[ 'sgs/icon', { icon: 'star-filled', iconColour: 'primary', iconBackgroundColour: 'accent-light', iconSize: 'medium' } ],
+	// Attr names MUST match sgs/icon block.json (iconName / backgroundColour /
+	// numeric iconSize) — WP silently discards undeclared attrs (D338).
+	[
+		'sgs/icon',
+		{
+			iconName: 'star',
+			iconColour: 'primary',
+			backgroundColour: 'accent-light',
+			backgroundShape: 'circle',
+			iconSize: 32,
+			className: 'sgs-info-box__icon',
+		},
+	],
 	[ 'sgs/heading', { level: 'h3', headingRole: 'heading', content: __( 'Feature heading', 'sgs-blocks' ) } ],
 	[ 'sgs/text', { text: __( 'Describe the feature or benefit here.', 'sgs-blocks' ) } ],
 	[

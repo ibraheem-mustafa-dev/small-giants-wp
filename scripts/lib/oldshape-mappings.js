@@ -21,9 +21,41 @@
 
 'use strict';
 
+/** Index just past the JSON object opening at `start`, or -1 if unbalanced.
+ *
+ * STRING-AWARE. A naive brace-depth counter miscounts any literal '{' or '}'
+ * inside a string VALUE (e.g. copy reading "use the } bracket") and then yields
+ * attrs={} — which made a genuine casualty report as "nothing to migrate", with
+ * the fail-closed check never even reaching it (QC council 2026-07-15,
+ * reproduced). Quotes + backslash escapes tracked so only structural braces count.
+ */
+function balancedJsonEnd(raw, start) {
+	let depth = 0;
+	let inStr = false;
+	let esc = false;
+	for (let i = start; i < raw.length; i++) {
+		const ch = raw[i];
+		if (inStr) {
+			if (esc) esc = false;
+			else if (ch === '\\') esc = true;
+			else if (ch === '"') inStr = false;
+			continue;
+		}
+		if (ch === '"') inStr = true;
+		else if (ch === '{') depth++;
+		else if (ch === '}') {
+			depth--;
+			if (depth === 0) return i + 1;
+		}
+	}
+	return -1;
+}
+
 /** Brace-depth-balanced parse of every `<!-- wp:ns/name {...} -->` comment.
- * Returns flat document-order list: {name, attrs, selfClosing, index}.
- * Unlike wp.blocks.parse this PRESERVES undeclared attrs — that is the point. */
+ * Returns flat document-order list: {name, attrs, selfClosing, index, parseError}.
+ * Unlike wp.blocks.parse this PRESERVES undeclared attrs — that is the point.
+ * parseError is NEVER swallowed: buildPlan turns it into a fail-closed error, so
+ * an unreadable block can never masquerade as a clean one. */
 function parseBlockComments(raw, nsFilter) {
 	const out = [];
 	const re = /<!--\s+?wp:([a-z][\w/-]*)(\s+\{)?/g;
@@ -32,24 +64,24 @@ function parseBlockComments(raw, nsFilter) {
 		const name = m[1].includes('/') ? m[1] : `core/${m[1]}`;
 		if (nsFilter && !name.startsWith(nsFilter)) continue;
 		let attrs = {};
+		let parseError = '';
 		let end = m.index + m[0].length;
 		if (m[2]) {
 			const bs = raw.indexOf('{', m.index);
-			let depth = 0;
-			for (let i = bs; i < raw.length; i++) {
-				if (raw[i] === '{') depth++;
-				else if (raw[i] === '}') {
-					depth--;
-					if (depth === 0) {
-						try { attrs = JSON.parse(raw.slice(bs, i + 1)); } catch (e) { attrs = {}; }
-						end = i + 1;
-						break;
-					}
+			const je = balancedJsonEnd(raw, bs);
+			if (je < 0) {
+				parseError = 'attrs JSON never closes (unbalanced braces)';
+			} else {
+				try {
+					attrs = JSON.parse(raw.slice(bs, je));
+				} catch (e) {
+					parseError = `attrs JSON is unreadable: ${e.message}`;
 				}
+				end = je;
 			}
 		}
 		const selfClosing = raw.slice(end, end + 16).trimStart().startsWith('/-->');
-		out.push({ name, attrs, selfClosing, index: m.index });
+		out.push({ name, attrs, selfClosing, index: m.index, parseError });
 	}
 	return out;
 }
@@ -262,6 +294,12 @@ function buildPlan(raw) {
 	const errors = [];
 	for (const block of sgsBlocks) {
 		kthCounter[block.name] = (kthCounter[block.name] || 0) + 1;
+		// Fail closed: an unreadable block might BE a casualty. Never skip silently.
+		if (block.parseError) {
+			errors.push(`${block.name} #${kthCounter[block.name]}: ${block.parseError} — `
+				+ 'cannot determine whether this block is a casualty; refusing to proceed');
+			continue;
+		}
 		if (!needsMigration(block)) continue;
 		for (const key of FAIL_CLOSED[block.name]) {
 			const v = block.attrs[key];

@@ -98,38 +98,74 @@ def load_schemas():
     return out
 
 
+PHP_COMMENT_RE = re.compile(r'/\*.*?\*/|//[^\n]*|#[^\n]*', re.S)
+
+
 def render_reads(schema, key):
-    """True when render.php reads $attributes['key'] — i.e. the attr still renders."""
-    return re.search(r"\$attributes\[\s*'" + re.escape(key) + r"'\s*\]", schema['render']) is not None
+    """True when render.php reads $attributes['key'] — i.e. the attr still renders.
+
+    Comment-stripped and quote-agnostic: a commented-out mention must NOT count as
+    a read (it would suppress a genuine stranded-content finding), and PHP accepts
+    both $attributes['k'] and $attributes["k"].
+    """
+    code = PHP_COMMENT_RE.sub('', schema['render'])
+    return re.search(r"""\$attributes\[\s*['"]""" + re.escape(key) + r"""['"]\s*\]""", code) is not None
+
+
+def balanced_json_end(markup, start):
+    """Index just past the JSON object opening at `start`, or -1 if unbalanced.
+
+    STRING-AWARE. A naive brace-depth counter miscounts any literal '{' or '}'
+    inside a string VALUE — e.g. copy that reads "use the } bracket" — and then
+    silently yields attrs={}, which made a real casualty invisible to this scanner
+    AND to the migration tool (QC council 2026-07-15, reproduced). Quotes and
+    backslash escapes are tracked so only structural braces are counted.
+    """
+    depth, in_str, esc = 0, False, False
+    for i in range(start, len(markup)):
+        ch = markup[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == '\\':
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0:
+                return i + 1
+    return -1
 
 
 def harvest_blocks(markup):
-    """Yield (slug, attrs, self_closing, line) for every sgs/* block comment.
+    """Yield (slug, attrs, self_closing, line, parse_error) per sgs/* block comment.
 
-    Brace-depth-balanced (attrs contain nested objects, e.g. splitImage {id,url}),
-    unlike the non-greedy regex in check-dead-pattern-attrs.py.
+    parse_error is non-empty when the attrs JSON could not be read. It is NEVER
+    swallowed: an unreadable block is reported as a HIGH finding, because a silent
+    attrs={} makes a genuine casualty indistinguishable from a clean block.
     """
     for m in OPEN_RE.finditer(markup):
-        slug, attrs, end = m.group(1), {}, m.end()
+        slug, attrs, end, parse_error = m.group(1), {}, m.end(), ''
         if m.group(2):
             bs = markup.index('{', m.start())
-            depth = 0
-            for i in range(bs, len(markup)):
-                ch = markup[i]
-                if ch == '{':
-                    depth += 1
-                elif ch == '}':
-                    depth -= 1
-                    if depth == 0:
-                        try:
-                            attrs = json.loads(markup[bs:i + 1])
-                        except ValueError:
-                            attrs = {}
-                        end = i + 1
-                        break
+            je = balanced_json_end(markup, bs)
+            if je < 0:
+                parse_error = 'attrs JSON never closes (unbalanced braces)'
+            else:
+                try:
+                    attrs = json.loads(markup[bs:je])
+                except ValueError as e:
+                    parse_error = f'attrs JSON is unreadable: {e}'
+                end = je
         self_closing = markup[end:end + 16].lstrip().startswith('/-->')
         line = markup[:m.start()].count('\n') + 1
-        yield slug, attrs, self_closing, line
+        yield slug, attrs, self_closing, line, parse_error
 
 
 def is_legit(key, declared):
@@ -157,7 +193,13 @@ def populated_content(attrs, schema):
 
 def scan_text(label, markup, schemas):
     findings = []
-    for slug, attrs, self_closing, line in harvest_blocks(markup):
+    for slug, attrs, self_closing, line, parse_error in harvest_blocks(markup):
+        if parse_error:
+            findings.append({'post': label, 'line': line, 'block': slug,
+                             'type': 'unparseable-attrs', 'severity': 'HIGH',
+                             'detail': f'{parse_error} — this block CANNOT be audited; a '
+                                       'casualty here would be invisible. Fix the stored JSON.'})
+            continue
         schema = schemas.get(slug)
         if schema is None:
             findings.append({'post': label, 'line': line, 'block': slug,
