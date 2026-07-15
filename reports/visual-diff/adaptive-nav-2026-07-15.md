@@ -209,6 +209,29 @@ the drawer's critical positioning, or by not letting `inset:0` hard-left a right
 when the `--right` modifier is absent. Not shipped, because it is the same file and Bean's
 answer may point at a better fix.
 
+## Addendum (same day, D340) — logo OFF by default, research-backed
+
+Bean rejected the shipped strip on sight (content-width box + squeezed 120px logo — a real
+defect: the head sits INSIDE the drawer's padding) and asked whether the drawer needs a logo
+at all. Extended research-check (4 agents; persisted to
+`workspace/memory/research/2026-07-15-drawer-logo-offcanvas.md`, blub POST pending — dashboard
+down): **0 of 6 major builders ship a drawer logo by default** (Spectra/Kadence/Elementor/
+Blocksy/Bricks/Astra, vendor-doc cited); no authority requires one (M3 demoted the drawer
+header; ARIA APG/WCAG — a logo plays no role in dialog labelling; logos are contrast-EXEMPT
+per SC 1.4.3/1.4.11); the evidenced orientation anchor is a visible TEXT title, not a logo.
+
+Shipped: `showLogo` default `true`→`false`; the `drawerHeadBg` strip renders ONLY when the
+logo is opted in; inspector controls for logo width + strip colour nested under the toggle;
+close button pinned `margin-inline-start:auto` (with the logo off it had collapsed to
+top-LEFT — caught on the live screenshot, off-convention for a right-side drawer).
+Auto-derive strip-from-header-row mechanism PARKED (Optimiser design: publish
+`--sgs-header-bg/fg` like `--sgs-header-height`; ~1h; polish not compliance).
+
+Live re-verify (sandybrown 375, full cache clear): logo absent, head row transparent
+(panel colour flows through), close button present 44×44 at top-RIGHT (right 351/375),
+dialog still named "Navigation menu" via aria-label, full-bleed left 0 / right 375,
+**axe-core 0 violations**. Screenshot: `assets/mamas-drawer-logo-off-375-2026-07-15.png`.
+
 ## Not covered by this report
 
 `sgs/cart`, `sgs/heading`, `sgs/business-info` + `product-card` were verified live in the same

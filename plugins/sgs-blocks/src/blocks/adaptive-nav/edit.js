@@ -259,17 +259,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						linked
 					/>
-					<DesignTokenPicker
-						label={ __( 'Logo strip background', 'sgs-blocks' ) }
-						value={ drawerHeadBg }
-						onChange={ ( val ) =>
-							setAttributes( { drawerHeadBg: val } )
-						}
-						linked
-					/>
 					<p className="sgs-adaptive-nav__inspector-note">
 						{ __(
-							'Text and icon colours are chosen automatically for readable contrast against whichever backgrounds you pick, so they never need setting by hand. Set the logo strip to the same colour as the drawer to remove the strip.',
+							'Text and icon colours are chosen automatically for readable contrast against whichever background you pick, so they never need setting by hand.',
 							'sgs-blocks'
 						) }
 					</p>
@@ -280,21 +272,37 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { showLogo: val } )
 						}
 						help={ __(
-							'Uses the site logo from Site Identity.',
+							'Off by default — the open menu keeps just its close button, like most site menus. Turn on to add the site logo from Site Identity.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 					/>
 					{ !! showLogo && (
-						<UnitControl
-							label={ __( 'Logo width', 'sgs-blocks' ) }
-							value={ logoMaxWidth }
-							onChange={ ( val ) =>
-								setAttributes( { logoMaxWidth: val } )
-							}
-							units={ DRAWER_WIDTH_UNITS }
-							__nextHasNoMarginBottom
-						/>
+						<>
+							<UnitControl
+								label={ __( 'Logo width', 'sgs-blocks' ) }
+								value={ logoMaxWidth }
+								onChange={ ( val ) =>
+									setAttributes( { logoMaxWidth: val } )
+								}
+								units={ DRAWER_WIDTH_UNITS }
+								__nextHasNoMarginBottom
+							/>
+							<DesignTokenPicker
+								label={ __( 'Logo strip background', 'sgs-blocks' ) }
+								value={ drawerHeadBg }
+								onChange={ ( val ) =>
+									setAttributes( { drawerHeadBg: val } )
+								}
+								linked
+							/>
+							<p className="sgs-adaptive-nav__inspector-note">
+								{ __(
+									'The strip behind the logo. Pick a colour your logo reads clearly on — its own background in the site header is usually the safe choice. Set it to the same colour as the drawer to remove the strip.',
+									'sgs-blocks'
+								) }
+							</p>
+						</>
 					) }
 					<UnitControl
 						label={ __( 'Close button size', 'sgs-blocks' ) }

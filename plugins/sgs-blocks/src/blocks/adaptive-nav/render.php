@@ -319,7 +319,15 @@ $sgs_anav_surface = static function ( $slug, $selector ) use ( &$css ) {
 	$css .= $selector . '{background-color:' . $hex . ';color:' . sgs_wcag_text_colour_for_bg( $hex ) . ';}';
 };
 $sgs_anav_surface( $attributes['drawerBg'] ?? '', $root_sel . ' .sgs-adaptive-nav__drawer' );
-$sgs_anav_surface( $attributes['drawerHeadBg'] ?? '', $root_sel . ' .sgs-adaptive-nav__drawer-head' );
+
+// The head strip colour exists ONLY for the opt-in logo (research 2026-07-15: 0 of 6
+// builders ship a drawer logo by default; the strip's whole job is making an opted-in
+// logo legible on a brand-coloured panel — Mama's logo ink measured 1.06:1 on its own
+// primary). With the logo off (the default), the head row is just the close button and
+// must inherit the panel colour, not paint a bar.
+if ( ! isset( $attributes['showLogo'] ) || ! empty( $attributes['showLogo'] ) ) {
+	$sgs_anav_surface( $attributes['drawerHeadBg'] ?? '', $root_sel . ' .sgs-adaptive-nav__drawer-head' );
+}
 
 // 2c-iii. Drawer width — ONE flat value, made responsive INTRINSICALLY.
 //

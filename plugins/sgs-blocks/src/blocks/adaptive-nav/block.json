@@ -71,7 +71,7 @@
 		},
 		"showLogo": {
 			"type": "boolean",
-			"default": true
+			"default": false
 		},
 		"logoMaxWidth": {
 			"type": "string",

@@ -386,6 +386,14 @@
 	width: 44px;
 }
 
+/* Close pins to the row END whether or not the logo is present. Without this, hiding
+ * the logo (the default since the 2026-07-15 research call) collapses the flex row and
+ * the close button lands top-LEFT — off-convention for a right-side drawer and observed
+ * live the moment showLogo defaulted off. */
+.sgs-adaptive-nav__drawer-close {
+	margin-inline-start: auto;
+}
+
 /* Hover/focus wash is derived from the CURRENT text colour, not a fixed white.
  * The close button sits on the `drawerHeadBg` strip, whose foreground render.php
  * COMPUTES per client — so a hardcoded rgba(255,255,255,.25) is invisible the moment
