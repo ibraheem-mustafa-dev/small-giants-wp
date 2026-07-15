@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.7 self-test for functionality-bulk-apply.py.
+"""Spec 31 Phase 5b.7 self-test for functionality-bulk-apply.py.
 
 Plan contract: apply a fake new attribute to 3 sgs/info-box instances;
 all 3 updated atomically; force rollback (deliberate error mid-apply);
@@ -138,7 +138,7 @@ def test_pending_job_blocks_emit_deploy() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.7 -- functionality-bulk-apply contract")
+    print("Spec 31 Phase 5b.7 -- functionality-bulk-apply contract")
     test_happy_path_all_three_atomic()
     test_rollback_on_mid_apply_error()
     test_approval_gate_required()

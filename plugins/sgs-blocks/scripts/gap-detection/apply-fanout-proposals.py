@@ -1,5 +1,5 @@
 """
-Spec 15 Phase 3.5 — Apply fanout proposals with tight-vocab rule.
+Spec 31 Phase 3.5 — Apply fanout proposals with tight-vocab rule.
 
 Parses the 5 fanout reports (phase-3.5-fanout-a1..a5.md), applies per-attr
 canonical_slot + role from the proposals, but routes through a collapse

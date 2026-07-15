@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5d.7 + 5d.9 + 5d.10 self-test for wp_integration.py.
+"""Spec 31 Phase 5d.7 + 5d.9 + 5d.10 self-test for wp_integration.py.
 
 Plan contracts:
   5d.7  feed /wp-blocks valid + invalid markup; assert pass/fail outcomes.
@@ -142,7 +142,7 @@ def test_deploy_rejects_invalid_post_id() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5d.7 + 5d.9 + 5d.10 -- wp_integration contract")
+    print("Spec 31 Phase 5d.7 + 5d.9 + 5d.10 -- wp_integration contract")
     test_validate_valid_markup()
     test_validate_invalid_markup()
     test_native_lightbox_routes_to_block_attr()

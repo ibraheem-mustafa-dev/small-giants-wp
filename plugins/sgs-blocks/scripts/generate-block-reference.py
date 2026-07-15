@@ -172,7 +172,7 @@ def category_sort_key(cat):
 
 
 def render_canonical_vocabulary(conn):
-    """Spec 15 §3.3 — append canonical vocabulary appendix to the reference doc.
+    """Spec 31 — append canonical vocabulary appendix to the reference doc.
 
     Three sections: slot synonyms (content identity), property suffixes
     (CSS role), modifier suffixes (breakpoint / state / scope). Each table
@@ -183,7 +183,7 @@ def render_canonical_vocabulary(conn):
     lines.append("## Canonical Vocabulary")
     lines.append("")
     lines.append(
-        "Source of truth for SGS attribute decomposition (Spec 15 §3.3). "
+        "Source of truth for SGS attribute decomposition (Spec 31). "
         "Regenerated from `slots`, `property_suffixes`, and `modifier_suffixes` "
         "in `sgs-framework.db`. Used by `/sgs-update` Stage 4 (canonical assignment) "
         "and Stage 9 (drift validator). Note: `slot_synonyms` + `legacy_role_lookup` "

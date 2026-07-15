@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5f.1 self-test for critical-fix-verification.py.
+"""Spec 31 Phase 5f.1 self-test for critical-fix-verification.py.
 
 Plan contract: run harness against current main; all 4 should pass.
 Deliberately violate check 1 (mutate root theme.json); rerun; assert
@@ -134,7 +134,7 @@ def test_pipeline_state_clean_passes_when_no_orphans() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5f.1 -- critical-fix-verification harness contract")
+    print("Spec 31 Phase 5f.1 -- critical-fix-verification harness contract")
     test_each_check_callable()
     test_harness_aggregates()
     test_theme_mutation_detected_via_hash()

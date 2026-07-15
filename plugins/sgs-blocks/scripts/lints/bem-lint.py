@@ -1,5 +1,5 @@
 """
-BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 15 §7).
+BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31).
 
 Checks every class token in a Bean-controlled HTML draft against the canonical
 SGS-BEM naming convention:
@@ -13,12 +13,12 @@ The lint operates on TOKEN strings extracted from class="..." attributes (i.e.
 whitespace-split tokens WITHOUT a leading dot).  Internally the dot is prepended
 before matching so the canonical regex is used verbatim.
 
-Three modes (Spec 15 §9):
+Three modes (Spec 31):
   strict  — violations halt the pipeline; exit_code=1 if any violations.
   draft   — violations logged as warnings; pipeline continues; exit_code=0.
   legacy  — short-circuit; no violations reported; exit_code=0.
 
-Exempt classes (Spec 15 §8.1 / lingua-franca-conversion rule):
+Exempt classes (Spec 00 §3.1 / lingua-franca-conversion rule):
   1. WordPress-core patterns  — wp-*, has-*, is-*, block-editor-*, alignwide,
      alignfull, aligncenter, alignleft, alignright, screen-reader-text
   2. Tailwind-like utility tokens — single lower-kebab token ≤ 30 chars that
@@ -78,7 +78,7 @@ class LintResult:
 # Regex + exemption helpers
 # ---------------------------------------------------------------------------
 
-# Dot-prefixed canonical regex (exactly as stated in Spec 15 §3.1).
+# Dot-prefixed canonical regex (exactly as stated in Spec 00 §3.1).
 _SGS_BEM_RE = re.compile(
     r"^\.sgs-[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)?(--[a-z][a-z0-9-]*)?$"
 )  # noqa: W605 — raw regex; the leading \. is the dot-prefix, not a Python escape

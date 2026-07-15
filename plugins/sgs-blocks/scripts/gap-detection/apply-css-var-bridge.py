@@ -1,5 +1,5 @@
 """
-Spec 15 Phase 3.5 follow-up — apply css-var-bridge role to mobile-nav attrs.
+Spec 31 Phase 3.5 follow-up — apply css-var-bridge role to mobile-nav attrs.
 
 Per B2's render.php mining: sgs/mobile-nav routes ~30 attrs through CSS
 custom properties (--sgs-mn-*) rather than directly to CSS properties.
@@ -97,7 +97,7 @@ def main() -> int:
     # Backup
     backup = {
         "applied_on": date.today().isoformat(),
-        "spec": "Spec 15 Phase 3.5 follow-up — css-var-bridge application",
+        "spec": "Spec 31 Phase 3.5 follow-up — css-var-bridge application",
         "source_render_php": "plugins/sgs-blocks/src/blocks/mobile-nav/render.php (lines 102-210)",
         "rows": [
             {"id": r["id"], "attr_name": r["attr_name"], "original_role": r["role"]}

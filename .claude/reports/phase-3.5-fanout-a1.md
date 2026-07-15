@@ -1,6 +1,6 @@
 # Phase 3.5 Fanout — Batch A1 proposals
 
-Subagent: Sonnet A1. Read-only. Vocabulary anchored to `slot_synonyms` table (55 canonical slots) and Spec 15 §3.3.
+Subagent: Sonnet A1. Read-only. Vocabulary anchored to `slot_synonyms` table (55 canonical slots) and Spec 31.
 
 Modifier convention: device-suffixed attrs (`Mobile`/`Tablet`/`Desktop`) peel to the same canonical_slot as the base (modifier `responsive-override`). Property suffixes (`Size`/`Colour`/`Bg`/`Style`/`Width`) peel to the stem slot (e.g. `closeButtonSize` → `button`).
 

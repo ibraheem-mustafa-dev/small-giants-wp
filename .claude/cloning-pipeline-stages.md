@@ -120,7 +120,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ WHAT IT DOES: scans inline style="" declarations in the draft. Default      │
 │ (additive) mode turns any non-token raw value into a NewTokenCandidate in   │
 │ a TokenWritePlan rather than flagging it as an error. Legacy                │
-│ --no-new-tokens mode reverts to strict-or-warn violations (Spec 15 §9).     │
+│ --no-new-tokens mode reverts to strict-or-warn violations (Spec 31).     │
 │                                                                             │
 │ FILES (R):   the mockup HTML; the client's theme-snapshot.json (as the      │
 │              variation_paths list, so candidates are checked against       │

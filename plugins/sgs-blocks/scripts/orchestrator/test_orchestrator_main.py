@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5e.8 self-test for orchestrator_main.py.
+"""Spec 31 Phase 5e.8 self-test for orchestrator_main.py.
 
 Plan contract: read main(); confirm 7-step call sequence; run end-to-end
 smoke test (mocked stages) to verify wiring.
@@ -210,7 +210,7 @@ def test_step_sequence_documented_in_main() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5e.8 -- orchestrator_main contract")
+    print("Spec 31 Phase 5e.8 -- orchestrator_main contract")
     test_happy_path_auto_proceed()
     test_mid_merge_failure_rolls_back()
     test_high_diff_halts_at_autonomy()

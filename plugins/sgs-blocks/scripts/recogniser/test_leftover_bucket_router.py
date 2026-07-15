@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5a.1 self-test for leftover-bucket-router.py.
+"""Spec 31 Phase 5a.1 self-test for leftover-bucket-router.py.
 
 Feeds the router 4 synthetic mockup chunks (one per FR8 gap_level):
   attribute     -- declared slot, no extracted value
@@ -179,7 +179,7 @@ def main() -> int:
         ("attribute",     chunk_attribute(),          "attribute",     "extraction_failed"),
         ("functionality", chunk_functionality(),      "functionality", "animation_unclassified"),
     ]
-    print("Spec 15 Phase 5a.1 — leftover-bucket-router gap_level routing")
+    print("Spec 31 Phase 5a.1 — leftover-bucket-router gap_level routing")
     for label, chunk, level, bucket in cases:
         result = mod.route(
             boundary=chunk.get("boundary"),

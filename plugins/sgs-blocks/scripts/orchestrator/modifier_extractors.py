@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""modifier_extractors.py -- Spec 15 Phase 5d.5 + 5d.6 + 5d.8.
+"""modifier_extractors.py -- Spec 31 Phase 5d.5 + 5d.6 + 5d.8.
 
 Three independent classifier functions, all triggered after slot
 extraction (Stage 4) and before WP-block emission (Stage 7):
@@ -9,7 +9,7 @@ extraction (Stage 4) and before WP-block emission (Stage 7):
         preset binding (Spec 11 button architecture).
 
   5d.6  dynamic_link(href)                -> {verb, args, raw, parsed}
-        Parses Spec 15 FR25 dynamic-link modifiers like
+        Parses Spec 31 FR25 dynamic-link modifiers like
         `:latest-post(category=blog,limit=3)` into a structured
         query_descriptor.
 
@@ -89,7 +89,7 @@ def button_role(visual_attrs: dict[str, Any]) -> dict[str, Any]:
 # ---------- 5d.6 dynamic-link modifier parser (FR25) --------------------------
 
 # Pattern: `:verb-name(arg1=value1,arg2=value2,...)`
-# Verbs ship with /sgs-clone and grow over time. Spec 15 FR25 examples:
+# Verbs ship with /sgs-clone and grow over time. Spec 31 FR25 examples:
 #   :latest-post(category=blog,limit=3)
 #   :archive-link(post-type=event)
 #   :site-url
@@ -99,7 +99,7 @@ _DYNAMIC_LINK_RE = re.compile(
 
 
 def dynamic_link(href: str) -> dict[str, Any]:
-    """Parse a Spec 15 FR25 dynamic-link modifier.
+    """Parse a Spec 31 FR25 dynamic-link modifier.
 
     Returns:
         {

@@ -56,15 +56,15 @@ Reviewer: gemini-3-flash-preview
 | File | Doc says | Docstring says | Match? |
 |---|---|---|---|
 | sgs-clone-orchestrator.py | Phase 7 rewire (2026-05-11) | sgs-clone orchestrator (Phase 7 rewire). | YES |
-| orchestrator_main.py | Spec 15 Phase 5e.8 | Spec 15 Phase 5e.8 top-level entry point. | YES |
-| register_patterns.py | Spec 15 Phase 6 Step 0 | Spec 15 Phase 6 Step 0 +REGISTER tail. | YES |
-| preflight_chain.py | Spec 15 Phase 5e.1 + 5e.2 | Spec 15 Phase 5e.1 + 5e.2. | YES |
-| staged_merge.py | Spec 15 Phase 5e.3 | Spec 15 Phase 5e.3 staged-merge orchestrator. | YES |
-| bem-lint.py | Stage 0.1 of /sgs-clone (Spec 15 §7) | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 15 §7). | YES |
-| token-lint.py | Stage 0.5 of /sgs-clone (Spec 15 §7, FR38) | Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 15 §7, FR38). | YES |
-| validate.py | Spec 15 §6 Stage 9 | Spec 15 §6 Stage 9 — Drift Validator | YES |
-| detect.py | Spec 15 §6 Stage 10 | Spec 15 §6 Stage 10 — Gap Detection | YES |
-| assign-canonical.py | Spec 15 §3.3, §5.1, §5.2 | Algorithm (per Spec 15 §3.3, §5.1, §5.2) | YES |
+| orchestrator_main.py | Spec 31 Phase 5e.8 | Spec 31 Phase 5e.8 top-level entry point. | YES |
+| register_patterns.py | Spec 31 Phase 6 Step 0 | Spec 31 Phase 6 Step 0 +REGISTER tail. | YES |
+| preflight_chain.py | Spec 31 Phase 5e.1 + 5e.2 | Spec 31 Phase 5e.1 + 5e.2. | YES |
+| staged_merge.py | Spec 31 Phase 5e.3 | Spec 31 Phase 5e.3 staged-merge orchestrator. | YES |
+| bem-lint.py | Stage 0.1 of /sgs-clone (Spec 31) | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31). | YES |
+| token-lint.py | Stage 0.5 of /sgs-clone (Spec 31, FR38) | Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 31, FR38). | YES |
+| validate.py | Spec 19 Stage 9 | Spec 19 Stage 9 — Drift Validator | YES |
+| detect.py | Spec 19 Stage 10 | Spec 19 Stage 10 — Gap Detection | YES |
+| assign-canonical.py | Spec 31, §5.1, §5.2 | Algorithm (per Spec 31, §5.1, §5.2) | YES |
 | pattern-register.py | 2026-05-06 | Pattern registration orchestrator ... 2026-05-06. | YES |
 | sgs-update-uimax-sync.py | Stage 3 + Stage 4 | sgs-update Stage 3 + Stage 4 — uimax sync extension. | YES |
 | copy-built-styles.js | 2026-05-11 fix | Verified 2026-05-11 on sandybrown | YES |
@@ -84,8 +84,8 @@ Reviewer: gemini-3-flash-preview
 |---|---|---|---|
 | bem-lint.py | Stage 0.1: checks every class token in a Bean-controlled HTML draft against the SGS-BEM naming convention | Checks every class token in a Bean-controlled HTML draft against the canonical SGS-BEM naming convention | YES |
 | token-lint.py | Stage 0.5: additive token-discovery lint (not a failure gate); registers non-token CSS values as new tokens | Architectural pivot (2026-05-12): additive token-discovery mode. ... produces a TokenWritePlan | YES |
-| validate.py | Spec 15 §6 Stage 9: validates that every canonical value in block_attributes decomposes into known vocabulary | Validates that every canonical value stored on block_attributes decomposes into known vocabulary | YES |
-| detect.py | Spec 15 §6 Stage 10: identifies block_attributes rows with canonical_slot IS NULL ... stages them as gap candidates | Identifies attributes whose canonical_slot is NULL ... and stages them as gap candidates | YES |
+| validate.py | Spec 19 Stage 9: validates that every canonical value in block_attributes decomposes into known vocabulary | Validates that every canonical value stored on block_attributes decomposes into known vocabulary | YES |
+| detect.py | Spec 19 Stage 10: identifies block_attributes rows with canonical_slot IS NULL ... stages them as gap candidates | Identifies attributes whose canonical_slot is NULL ... and stages them as gap candidates | YES |
 | assign-canonical.py | Backfills canonical_slot, role, and derived_selector for every block_attributes row using vocabulary tables | Backfills canonical_slot, role, and derived_selector for every row in block_attributes | YES |
 | pattern-register.py | Pattern registration orchestrator (Step 6 of old pipeline): fingerprint, SQL dedup, classify ... INSERT into sgs-framework.db | Takes an HTML file + classification metadata and registers a new SGS WordPress pattern | YES |
 | uimax_write.py | Single chokepoint validate-then-write helper for all uimax table writes | Single chokepoint for any Python code ... that writes rows into uimax. | YES |

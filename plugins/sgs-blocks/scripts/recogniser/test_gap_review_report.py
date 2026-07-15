@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5a.5 self-test for gap-review-report.py.
+"""Spec 31 Phase 5a.5 self-test for gap-review-report.py.
 
 Generates the markdown report from a synthetic router payload (covering
 all 4 gap levels + 3 severity bands) and asserts:
@@ -113,7 +113,7 @@ def test_writes_to_pipeline_state_dir() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5a.5 -- gap-review-report markdown contract")
+    print("Spec 31 Phase 5a.5 -- gap-review-report markdown contract")
     test_render_columns_present()
     test_severity_sort_order()
     test_summary_counts()

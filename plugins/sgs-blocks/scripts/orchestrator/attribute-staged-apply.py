@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""attribute-staged-apply.py -- Spec 15 Phase 5b.6 attribute staged-application.
+"""attribute-staged-apply.py -- Spec 31 Phase 5b.6 attribute staged-application.
 
 When extraction populates a block's attrs, this module writes them to
 a STAGING file first (NOT live post_content). Operator approval gate

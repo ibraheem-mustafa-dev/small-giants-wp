@@ -72,7 +72,7 @@ REPO = Path(__file__).resolve().parents[4]
 SGS_BLOCKS_SRC = REPO / "plugins" / "sgs-blocks" / "src" / "blocks"
 SGS_PATTERNS_DIR = REPO / "theme" / "sgs-theme" / "patterns"
 
-# Spec 15 §7 Stage 2 Hard Gate: block-type match confidence ≥ 0.7 required
+# Spec 31 Stage 2 Hard Gate: block-type match confidence ≥ 0.7 required
 # to pass Stage 2 (confidence-matrix scoring) and proceed to Stage 3+.
 # Boundaries with top candidate confidence < 0.7 are routed to the autonomy
 # chain (bucket-c-classifier + atomic-block-scaffold) instead.

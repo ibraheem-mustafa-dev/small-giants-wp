@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""critical-fix-verification.py -- Spec 15 Phase 5f.1 acceptance harness.
+"""critical-fix-verification.py -- Spec 31 Phase 5f.1 acceptance harness.
 
-The 4-check harness per Spec 15 FR18 P1 KJC2. Runs ALL checks even when
+The 4-check harness per Spec 31 FR18 P1 KJC2. Runs ALL checks even when
 one fails; surfaces the full picture so the operator sees the whole
 state.
 
@@ -13,7 +13,7 @@ Four boundary checks:
   1. no_root_theme_mutation
      Root `theme/sgs-theme/theme.json` content hash matches the
      committed state (no live mutation has slipped through outside
-     Spec 15 §4.7 client-variation channels).
+     Spec 31 client-variation channels).
 
   2. no_canonical_block_mutation_outside_fr21
      Files under `plugins/sgs-blocks/src/blocks/` are clean against

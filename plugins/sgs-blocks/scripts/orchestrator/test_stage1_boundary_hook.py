@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5c.4 self-test for stage1_boundary_hook.
+"""Spec 31 Phase 5c.4 self-test for stage1_boundary_hook.
 
 Plan contract:
   - Run /sgs-clone against a Bootstrap-style mockup -> lingua_franca
@@ -119,7 +119,7 @@ def test_injected_classifier_takes_precedence() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5c.4 -- stage1_boundary_hook contract")
+    print("Spec 31 Phase 5c.4 -- stage1_boundary_hook contract")
     test_canonical_sgs_bem_skipped()
     test_bootstrap_boundary_converts()
     test_unknown_classes_become_gap_candidates()

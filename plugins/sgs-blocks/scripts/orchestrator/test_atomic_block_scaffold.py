@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.8 self-test for atomic-block-scaffold.py.
+"""Spec 31 Phase 5b.8 self-test for atomic-block-scaffold.py.
 
 Plan contract:
   - scaffold a test block from a synthetic gap;
@@ -180,7 +180,7 @@ def test_all_role_edit_js_have_inspector_controls() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.8 -- atomic-block-scaffold contract")
+    print("Spec 31 Phase 5b.8 -- atomic-block-scaffold contract")
     test_scaffold_writes_six_files()
     test_role_drives_attributes()
     test_slug_validation()

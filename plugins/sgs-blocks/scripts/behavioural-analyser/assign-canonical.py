@@ -4,7 +4,7 @@ assign-canonical.py
 Backfills `canonical_slot`, `role`, and `derived_selector` for every row in
 `block_attributes` in sgs-framework.db.
 
-Algorithm (per Spec 15 §3.3, §5.1, §5.2):
+Algorithm (per Spec 31, §5.1, §5.2):
 
 1. Load vocabulary tables from the DB at startup (slots, property_suffixes,
    modifier_suffixes). [Post-D99: slot_synonyms table retired; slots table
@@ -237,7 +237,7 @@ def decompose_attr_name(
     modifier_map: dict[str, str],
 ) -> tuple[str, Optional[str], Optional[dict], list[tuple[str, str]]]:
     """
-    Full decomposition per Spec 15 §3.3:
+    Full decomposition per Spec 31:
         1. Peel modifiers from right (unit, breakpoint, state, variant, side, corner)
         2. Peel ONE property suffix (longest match)
         3. Remainder is the slot stem

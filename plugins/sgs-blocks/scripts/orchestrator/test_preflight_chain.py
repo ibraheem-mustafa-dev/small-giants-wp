@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5e.1 + 5e.2 self-test for preflight_chain.py.
+"""Spec 31 Phase 5e.1 + 5e.2 self-test for preflight_chain.py.
 
 Plan contract:
   5e.1 force each pre-flight condition to fail individually; assert
@@ -161,7 +161,7 @@ def test_precommit_gate_fail_closed_on_failing_lint() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5e.1 + 5e.2 -- preflight_chain contract")
+    print("Spec 31 Phase 5e.1 + 5e.2 -- preflight_chain contract")
     test_preflight_all_green()
     test_preflight_missing_timer_fails()
     test_preflight_missing_db_fails()

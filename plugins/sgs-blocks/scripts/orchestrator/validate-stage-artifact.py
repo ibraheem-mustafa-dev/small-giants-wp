@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""validate-stage-artifact.py -- Spec 15 Phase 5b.2 per-stage validator.
+"""validate-stage-artifact.py -- Spec 31 Phase 5b.2 per-stage validator.
 
 Validates a /sgs-clone stage artefact against its declared schema in
 `plugins/sgs-blocks/scripts/orchestrator/schemas/stage-<N>.json`.

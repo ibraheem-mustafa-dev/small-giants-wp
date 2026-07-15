@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""functionality-bulk-apply.py -- Spec 15 Phase 5b.7 bulk-application.
+"""functionality-bulk-apply.py -- Spec 31 Phase 5b.7 bulk-application.
 
 When a new attribute or behaviour needs to land on MANY existing
 instances of a block (e.g. enable `hoverScale=true` on all 14 sgs/card-grid

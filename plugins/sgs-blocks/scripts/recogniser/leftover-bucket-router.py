@@ -21,7 +21,7 @@ Inputs (file paths or piped JSON):
 Output JSON shape (compatible with orchestrator stage_9_report):
   {
     "leftover_buckets": {
-      # Each item carries gap_level + severity per Spec 15 FR8.
+      # Each item carries gap_level + severity per Spec 31 FR8.
       "unrecognised_class":            [{"selector": "...", "class": "...", "section_id": "...", "gap_level": "convention", "severity": "low"}],
       "unrecognised_section":          [{"section_id": "...", "confidence": 0.4, "gap_level": "structural", "severity": "high"}],
       "extraction_failed":             [{"section_id": "...", "slot": "...", "reason": "...", "gap_level": "attribute", "severity": "medium"}],
@@ -45,7 +45,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 # Confidence below this counts as an unrecognised section.
-# Spec 15 §7 Stage 2 hard gate: block-type match confidence ≥ 0.7 required.
+# Spec 31 Stage 2 hard gate: block-type match confidence ≥ 0.7 required.
 # Boundaries with top-candidate confidence < 0.7 are routed to the autonomy chain
 # (bucket-c-classifier + atomic-block-scaffold) instead of passing through to
 # Stage 3+ pipeline. This is a named constant to enable single-point changes.
@@ -64,7 +64,7 @@ EMPTY_BUCKETS_TEMPLATE: dict[str, list] = {
     "cv2_handled_no_top_level_match": [],  # Stage 2 no-match, cv2 emitted typed sgs/* blocks
 }
 
-# Spec 15 Phase 5a.1 — bucket → gap_level mapping.
+# Spec 31 Phase 5a.1 — bucket → gap_level mapping.
 #
 # Each bucket routes to ONE of four FR8 gap levels. The level determines
 # which uimax table the gap-detection writer downstream emits to:

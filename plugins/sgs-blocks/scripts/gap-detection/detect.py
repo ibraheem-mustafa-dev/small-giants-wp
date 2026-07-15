@@ -1,5 +1,5 @@
 """
-Spec 15 §6 Stage 10 — Gap Detection
+Spec 19 Stage 10 — Gap Detection
 ====================================
 Identifies attributes whose canonical_slot is NULL (un-decomposable by the
 current vocabulary) and stages them as gap candidates so they surface for
@@ -63,7 +63,7 @@ def load_vocab(conn: sqlite3.Connection) -> tuple[set[str], set[str]]:
 
 
 def decompose_stem(attr_name: str, modifier_set: set[str], property_set: set[str]) -> str:
-    """Decompose *attr_name* into its slot stem per Spec 15 §3.3.
+    """Decompose *attr_name* into its slot stem per Spec 31.
 
     Peels the longest known modifier_suffix, then the longest known
     property_suffix, then strips any remaining single trailing CamelCase
@@ -73,7 +73,7 @@ def decompose_stem(attr_name: str, modifier_set: set[str], property_set: set[str
     mods = modifier_set
     props = property_set
     remaining = attr_name
-    # Per Spec 15 §3.3 + assign-canonical.py:
+    # Per Spec 31 + assign-canonical.py:
     # Step 1 — repeatedly peel modifier suffixes from the right
     # Step 2 — peel ONE property suffix (longest match)
     # Step 3 — remainder is the slot stem
@@ -101,7 +101,7 @@ def table_exists(conn: sqlite3.Connection, name: str) -> bool:
 def detect_unresolved_attrs(conn: sqlite3.Connection) -> int:
     """Stage candidates for attributes with NULL canonical_slot.
 
-    Stem is decomposed via the vocab tables (Spec 15 §3.3) — the operator
+    Stem is decomposed via the vocab tables (Spec 31) — the operator
     review queue then groups by stem, surfacing repeated unresolved roots.
     """
     cur = conn.execute(

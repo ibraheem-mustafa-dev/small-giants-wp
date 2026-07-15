@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5a.3 self-test for functionality-gap-detector.py.
+"""Spec 31 Phase 5a.3 self-test for functionality-gap-detector.py.
 
 Synthesises a click-toggle widget, runs the detector in dry-run mode
 (no DB writes), and asserts the FR8 functionality gap row has the
@@ -118,7 +118,7 @@ def main() -> int:
     result = mod.detect_batch(elements, run_id="test-5a.3", write=False)
     assert result["mode"] == "dry-run", "DB writes must be GATED behind --write; test must run dry"
     assert result["rows_written"] == 0, "test must not write any rows"
-    print(f"Spec 15 Phase 5a.3 -- functionality-gap-detector ({result['candidate_count']} candidates surfaced)")
+    print(f"Spec 31 Phase 5a.3 -- functionality-gap-detector ({result['candidate_count']} candidates surfaced)")
     check_click_toggle(result)
     check_modal_on_hero(result)
     check_benign(result)

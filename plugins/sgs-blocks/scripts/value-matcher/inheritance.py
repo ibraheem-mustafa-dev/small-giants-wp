@@ -5,7 +5,7 @@ For a given (block_slug, slot, property_path, value) tuple, determines whether
 the supplied value matches the global default resolved from theme.json, or
 whether it represents a per-block override.
 
-WP precedence order (FR35, Spec 15 §10):
+WP precedence order (FR35, Spec 31):
   styles.blocks.<block> > styles.elements.<html_tag> > styles (root)
 
 If no default exists at any level, the value is always an OVERRIDE.

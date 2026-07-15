@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5d.5 + 5d.6 + 5d.8 self-test for modifier_extractors.py.
+"""Spec 31 Phase 5d.5 + 5d.6 + 5d.8 self-test for modifier_extractors.py.
 
 Plan contracts:
   5d.5  3 button DOM elements with different visual treatments -> correct
@@ -171,7 +171,7 @@ def test_variation_no_variations_declared() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5d.5 + 5d.6 + 5d.8 -- modifier_extractors contract")
+    print("Spec 31 Phase 5d.5 + 5d.6 + 5d.8 -- modifier_extractors contract")
     # 5d.5
     test_button_role_primary()
     test_button_role_secondary()

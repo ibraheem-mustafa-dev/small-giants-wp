@@ -1,5 +1,5 @@
 """
-Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 15 §7, FR38).
+Token-discovery lint — Stage 0.5 of /sgs-clone (Spec 31, FR38).
 
 Architectural pivot (2026-05-12): additive token-discovery mode.
 Previously, the lint flagged non-token CSS values as violations.  The new
@@ -16,7 +16,7 @@ Confidence tiers (from value-matcher §5.4):
   confidence == 1.0 → already a registered token; do nothing.
   confidence  < 1.0 → new token candidate; record for write-plan.
 
-Three modes (Spec 15 §9):
+Three modes (Spec 31):
   strict  — discovery pass; passed=True; new candidates are gathered.
   draft   — identical to strict (mode affects downstream outputs, not discovery).
   legacy  — short-circuit; no candidates; passed=True; exit=0.

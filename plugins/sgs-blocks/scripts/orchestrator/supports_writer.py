@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""supports_writer.py -- Spec 15 Phase 5d.4 supports-first attribute writer.
+"""supports_writer.py -- Spec 31 Phase 5d.4 supports-first attribute writer.
 
 Before writing a per-block override, check whether the resolved value
 matches the block's `supports` native default. If it matches, OMIT the
@@ -9,7 +9,7 @@ the override.
 Parallels Phase 1's default-inheritance check (plugins/sgs-blocks/scripts/
 value-matcher/inheritance.py) but at WRITE time instead of EXTRACT time.
 
-Cascade order (per Spec 15 Â§4):
+Cascade order (per Spec 31 Â§4):
   theme.json defaults  ->  style variation overrides  ->  block.json
   defaults  ->  per-instance overrides
 

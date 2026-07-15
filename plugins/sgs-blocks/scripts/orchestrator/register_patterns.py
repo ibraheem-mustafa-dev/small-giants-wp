@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""register_patterns.py -- Spec 15 Phase 6 Step 0 +REGISTER tail.
+"""register_patterns.py -- Spec 31 Phase 6 Step 0 +REGISTER tail.
 
 After a successful clone run, walk the stage-9 artefact and register every
 novel pattern surfaced:
@@ -151,7 +151,7 @@ def _section_class_to_slug(section_class: str) -> str:
 
     Prefix-strip is case-insensitive so SGS-Header / sgs-Header / sgs-header
     all resolve to 'header'. Output is always lowercase + hyphen-only per
-    Spec 15 §8.1 slug regex (lowercase plus hyphen).
+    Spec 00 §3.1 slug regex (lowercase plus hyphen).
     """
     s = section_class.strip()
     if s.lower().startswith("sgs-"):

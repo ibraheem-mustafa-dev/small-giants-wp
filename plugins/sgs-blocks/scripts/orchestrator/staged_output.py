@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""staged_output.py -- Spec 15 Phase 5b.1 staged-output dir convention.
+"""staged_output.py -- Spec 31 Phase 5b.1 staged-output dir convention.
 
-Per Spec 15 §6 + Phase 5 plan: every `/sgs-clone` stage writes its
+Per Spec 19 + Phase 5 plan: every `/sgs-clone` stage writes its
 artefact to `pipeline-state/sgs-clone/<run_id>/stage-N-<name>.json`
 so the next stage reads its input from disk (durable between stages).
 
-Stages (mirrors Spec 15 §6):
+Stages (mirrors Spec 19):
   1  boundary       (boundary detection)
   2  match          (block matching)
   3  slot_list      (slot extraction scaffolding)

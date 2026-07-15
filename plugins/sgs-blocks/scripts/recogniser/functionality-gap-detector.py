@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""functionality-gap-detector.py -- Spec 15 Phase 5a.3 (FR8 functionality leg).
+"""functionality-gap-detector.py -- Spec 31 Phase 5a.3 (FR8 functionality leg).
 
 Detects when a draft DOM element expects BEHAVIOUR (data-action,
 data-toggle, click-handlers, modal opens, tab triggers, aria-expanded,

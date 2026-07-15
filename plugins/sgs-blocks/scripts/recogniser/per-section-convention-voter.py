@@ -124,7 +124,7 @@ except ImportError:
     sys.exit("beautifulsoup4 required: pip install beautifulsoup4")
 
 
-# Spec 12 section 8 / Spec 15 §1.1 lookup — legacy/non-conforming kebab roles -> SGS slug.
+# Spec 12 section 8 / Spec 31 lookup — legacy/non-conforming kebab roles -> SGS slug.
 # Bean-controlled drafts produced after 2026-05-10 should NOT need this lookup
 # (they use the SGS-prefixed BEM convention). Used for live-scrape fallback +
 # pre-rule mockups via the --legacy flag.

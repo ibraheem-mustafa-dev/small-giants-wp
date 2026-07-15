@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """test_confidence_threshold.py -- Verify Stage 2 confidence threshold enforcement.
 
-Tests the hard gate documented in Spec 15 §7: block-type match confidence ≥ 0.7
+Tests the hard gate documented in Spec 31: block-type match confidence ≥ 0.7
 is required to pass Stage 2 and proceed to Stage 3+. Boundaries with lower
 confidence are routed to the autonomy chain instead.
 

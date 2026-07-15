@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.2 self-test for validate-stage-artifact.py.
+"""Spec 31 Phase 5b.2 self-test for validate-stage-artifact.py.
 
 Plan contract: feed a malformed stage-3 artefact (missing `slots` array)
 -> reject. Feed a valid one -> accept. Plus coverage of every schema
@@ -96,7 +96,7 @@ def test_not_json_rejected() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.2 -- validate-stage-artifact contract")
+    print("Spec 31 Phase 5b.2 -- validate-stage-artifact contract")
     test_stage_3_valid_vs_malformed()
     test_stage_1_boundary()
     test_stage_9_coverage_gap_levels()

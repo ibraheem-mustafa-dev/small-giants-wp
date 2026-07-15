@@ -201,7 +201,7 @@ def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
     client's style variation.
 
     When ``no_new_tokens=True``, falls back to the legacy LintResult shim with
-    strict-or-warn verdict semantics (per Spec 15 §9 modes).
+    strict-or-warn verdict semantics (per Spec 31 modes).
     """
     if mode == "legacy":
         print("[stage-0.5] token lint: legacy bypass")
@@ -595,7 +595,7 @@ def confidence_matrix():
     return _confidence_matrix_mod
 
 
-# Lazy-import the token_resolver module on first call (Spec 15 Phase 5d.2 - wired by Phase 6 v2 Step 4a).
+# Lazy-import the token_resolver module on first call (Spec 31 Phase 5d.2 - wired by Phase 6 v2 Step 4a).
 _token_resolver_mod = None
 
 
@@ -606,7 +606,7 @@ def token_resolver():
     return _token_resolver_mod
 
 
-# Lazy-import variation_router + token-lint slug generator (Spec 15 Phase 6 v2 Step 4b).
+# Lazy-import variation_router + token-lint slug generator (Spec 31 Phase 6 v2 Step 4b).
 # token-lint is loaded for its canonical _generate_slug() helper -- module reuse
 # avoids duplicating slug rules already covered by the additive token-discovery
 # tests in token-lint's suite. variation_router owns the single write path
@@ -705,7 +705,7 @@ def _reflect_new_token_in_theme_json(theme_json: dict, role: str, slug: str, raw
     bucket.append({"slug": slug, value_key: raw_value.strip()})
 
 
-# Lazy-import supports_writer (Spec 15 Phase 6 v2 Step 4c). supports_writer
+# Lazy-import supports_writer (Spec 31 Phase 6 v2 Step 4c). supports_writer
 # itself transitively loads value-matcher/inheritance.py when present, so the
 # Phase 5 inheritance check is reachable through this single dispatch.
 _supports_writer_mod = None
@@ -718,7 +718,7 @@ def supports_writer():
     return _supports_writer_mod
 
 
-# Lazy-import modifier_extractors (Spec 15 Phase 6 v2 Step 4d).
+# Lazy-import modifier_extractors (Spec 31 Phase 6 v2 Step 4d).
 _modifier_extractors_mod = None
 
 
@@ -729,7 +729,7 @@ def modifier_extractors():
     return _modifier_extractors_mod
 
 
-# Lazy-import stage1_boundary_hook (Spec 15 Phase 6 v2 Step 4e). The module
+# Lazy-import stage1_boundary_hook (Spec 31 Phase 6 v2 Step 4e). The module
 # transitively loads orchestrator/lingua_franca.py at import time so wiring
 # this single helper flips lingua_franca's reachability column too.
 _stage1_boundary_hook_mod = None
@@ -742,7 +742,7 @@ def stage1_boundary_hook():
     return _stage1_boundary_hook_mod
 
 
-# Lazy-import attribute-gap-writer (Spec 15 Phase 6 v2 Step 4f).
+# Lazy-import attribute-gap-writer (Spec 31 Phase 6 v2 Step 4f).
 _attribute_gap_writer_mod = None
 
 
@@ -753,7 +753,7 @@ def attribute_gap_writer():
     return _attribute_gap_writer_mod
 
 
-# Lazy-import functionality-gap-detector (Spec 15 Phase 6 v2 Step 4g).
+# Lazy-import functionality-gap-detector (Spec 31 Phase 6 v2 Step 4g).
 _functionality_gap_detector_mod = None
 
 
@@ -766,7 +766,7 @@ def functionality_gap_detector():
     return _functionality_gap_detector_mod
 
 
-# Lazy-import gap-review-report (Spec 15 Phase 6 v2 Step 4h).
+# Lazy-import gap-review-report (Spec 31 Phase 6 v2 Step 4h).
 _gap_review_report_mod = None
 
 
@@ -778,7 +778,7 @@ def gap_review_report():
 
 
 # Lazy-import attribute-staged-apply + functionality-bulk-apply + media-sideload
-# (Spec 15 Phase 6 v2 Step 4i). All three are operator-gated workflows: they
+# (Spec 31 Phase 6 v2 Step 4i). All three are operator-gated workflows: they
 # stage / emit deploy commands; they NEVER auto-mutate live WordPress. The
 # orchestrator wires them so that (a) the modules are reachable from the
 # /sgs-clone runtime namespace and (b) media-sideload's dry-run harvester
@@ -815,7 +815,7 @@ def media_sideload():
     return _media_sideload_mod
 
 
-# Lazy-import wp_integration (Spec 15 Phase 6 v2 Step 4j).
+# Lazy-import wp_integration (Spec 31 Phase 6 v2 Step 4j).
 _wp_integration_mod = None
 
 
@@ -828,7 +828,7 @@ def wp_integration():
     return _wp_integration_mod
 
 
-# Lazy-import critical-fix-verification (Spec 15 Phase 6 v2 Step 4k).
+# Lazy-import critical-fix-verification (Spec 31 Phase 6 v2 Step 4k).
 _critical_fix_verification_mod = None
 
 

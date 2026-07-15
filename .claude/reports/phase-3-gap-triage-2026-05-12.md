@@ -1,4 +1,4 @@
-# Spec 15 Phase 3 §3.8 — Gap Triage Report
+# Spec 31 Phase 3 §3.8 — Gap Triage Report
 
 **Date:** 2026-05-12
 

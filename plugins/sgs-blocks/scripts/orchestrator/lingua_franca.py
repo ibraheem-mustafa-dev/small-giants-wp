@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""lingua_franca.py -- Spec 15 Phase 5c (FR9) convention-to-SGS-BEM converter.
+"""lingua_franca.py -- Spec 31 Phase 5c (FR9) convention-to-SGS-BEM converter.
 
 When `/sgs-clone` ingests external sources (AI-builder output, scraped
 competitor sites), this module converts the source's class-naming
-convention to SGS-BEM at scrape time, per Spec 15 Â§8.1:
+convention to SGS-BEM at scrape time, per Spec 31 Â§8.1:
 
   - SGS-BEM is written as the PRIMARY class identity.
   - The source's original class names are preserved alongside as an
@@ -292,7 +292,7 @@ def convert_class_signature(
       - primary_sgs_bem:  the highest-confidence SGS-BEM class (the most
         specific / first-matching rule wins).
       - equivalent_implementations:  dict[source_class -> sgs_bem_class]
-        per Spec 15 Â§8.1.
+        per Spec 31 Â§8.1.
       - per_class:  the full ConversionResult list (for debugging).
       - gap_candidate_classes: source classes that fell through.
     """

@@ -1,5 +1,5 @@
 """
-Spec 15 Phase 3.5 — Apply Tier 1 + Tier 2 vocabulary additions.
+Spec 31 Phase 3.5 — Apply Tier 1 + Tier 2 vocabulary additions.
 
 Tier 1 (property_suffixes, no §11 impact):
     BlockGap, ContentSize, WideSize, FontStyle, Gradient, LinkColor,
