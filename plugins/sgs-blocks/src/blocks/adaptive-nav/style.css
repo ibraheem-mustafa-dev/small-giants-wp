@@ -160,12 +160,11 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Off-canvas drawer (absorbed from sgs/mobile-nav, Task 1 / D336).
- * `display` on `.sgs-adaptive-nav__nav` / `.sgs-adaptive-nav__toggle` is
- * owned ENTIRELY by render.php's scoped collapse rules — do NOT add a media
- * visibility rule for either here. The `<dialog>`'s own open/closed display
- * is native UA behaviour (`dialog:not([open]){display:none}`) driven by
- * `showModal()`/`close()` — never toggled via a display:none↔flex class.
+ * Disclosure drawer (Spec 34). `display` on `.sgs-adaptive-nav__nav` /
+ * `.sgs-adaptive-nav__toggle` is owned ENTIRELY by render.php's scoped collapse
+ * rules — do NOT add a media visibility rule for either here. The `<dialog>`'s
+ * open/closed display is UA behaviour (`dialog:not([open]){display:none}`)
+ * driven by `.show()`/`.close()` (non-modal — view.js owns the freeze + scrim).
  * ───────────────────────────────────────────────────────────────────────── */
 
 .sgs-adaptive-nav__toggle {
@@ -195,226 +194,134 @@
 	width: 22px;
 }
 
-/* The drawer panel itself. Anchored full-height to `drawerSide`, sliding in
- * from that edge; UA styling (fixed size/position/border/background/margin)
- * is fully overridden below. */
+/* Burger ↔ X swap, keyed on the toggle's OWN aria-expanded (view.js flips it).
+ * Pinned to `display` (not opacity) so the hidden glyph leaves the a11y tree. */
+.sgs-adaptive-nav__toggle-icon {
+	align-items: center;
+	display: inline-flex;
+	justify-content: center;
+}
+
+.sgs-adaptive-nav__toggle-icon--close {
+	display: none;
+}
+
+.sgs-adaptive-nav__toggle[aria-expanded="true"] .sgs-adaptive-nav__toggle-icon--menu {
+	display: none;
+}
+
+.sgs-adaptive-nav__toggle[aria-expanded="true"] .sgs-adaptive-nav__toggle-icon--close {
+	display: inline-flex;
+}
+
+/* The drawer panel. Explicit, header-relative geometry (never UA-derived):
+ * full width, fixed below the header, above page content but below #wpadminbar
+ * (99999). Slides DOWN from under the header on [open]. */
 .sgs-adaptive-nav__drawer {
 	/* LAST-RESORT fallback only — NOT the shipped appearance.
 	 *
-	 * The panel/text colours come from the `drawerBg` attr and the width from
-	 * `drawerWidth`, emitted by render.php as a (0,3,0) scoped rule that overrides
-	 * everything here. These three lines exist so the drawer is never transparent,
-	 * unreadable or zero-width if the palette lookup fails or an operator clears the
-	 * attr outright.
+	 * The panel/text colours come from the `drawerBg` attr, emitted by render.php
+	 * as a (0,2,0) scoped rule that overrides these two lines. They exist so the
+	 * drawer is never transparent or unreadable if the palette lookup fails or an
+	 * operator clears the attr outright.
 	 *
-	 * They are a literal PAIR (near-black on white, ~18:1) rather than a token pair,
+	 * A literal PAIR (near-black on white, ~18:1) rather than a token pair,
 	 * deliberately: the previous `background: var(--primary-dark)` + `color:
 	 * var(--surface)` assumed a token NAME implies a luminance. It does not —
 	 * `primary-dark` is a PINK on mamas-munches, so that pairing shipped cream-on-pink
 	 * at 3.32:1 (WCAG fail). A fallback whose contrast depends on a palette nobody has
-	 * generated yet is not a fallback. This pair cannot be wrong.
-	 *
-	 * (This also resolves the "missing var() fallback" flagged on the old
-	 * background-color line — the line it applied to no longer exists.) */
+	 * generated yet is not a fallback. This pair cannot be wrong. */
 	background-color: #1a1a1a;
 	color: #fff;
 
 	border: none;
+	bottom: 0;
 	box-sizing: border-box;
 	flex-direction: column;
-	height: 100vh;
-	height: 100dvh;
-	inset: 0;
+	left: 0;
 	margin: 0;
-	max-height: 100dvh;
-	max-width: 100vw;
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 	position: fixed;
+	right: 0;
+	/* `width:auto` + `height:auto` are LOAD-BEARING, not defaults: the UA sheet gives
+	 * every <dialog> `width: fit-content; height: fit-content`, which over-constrains
+	 * the box and beats left/right/top/bottom insets. Measured live 2026-07-15 (Spec
+	 * 34 Gate B): the drawer rendered 285px wide (content width) instead of full-bleed,
+	 * and 426px tall (content height) instead of reaching bottom:0. Removing the old
+	 * explicit width/height left nothing to beat the UA rule — `auto` restores inset
+	 * sizing. Do not delete these as "redundant"; they are the override. */
+	width: auto;
+	height: auto;
+	/* min(…, 50dvh) zoom floor — a wrapped multi-row header can never shrink the
+	 * drawer content region below half the viewport (WCAG 1.4.10/1.4.4). */
+	top: min(var(--sgs-header-height, 0px), 50dvh);
+	/* Entry is a clip-path WIPE, not a translateY slide (Gate-A integration fix,
+	 * WS-A conflict #2): with top anchored to the header and z-index above it, a
+	 * translateY(-100%) start would place the sliding panel OVER the header for
+	 * the whole 250ms — transiently hiding the very row this design keeps live.
+	 * Clipping means the drawer's box never moves; it reveals downward from under
+	 * the header edge and cannot paint over it at any frame. */
+	clip-path: inset(0 0 100% 0);
+	z-index: 99991;
 	-webkit-overflow-scrolling: touch;
 
-	/* MUST-FIX 5: `overlay` (not just `display`) must be in transition-property
-	 * or the close transition is cut short — the entry timing (250ms decelerate). */
 	transition:
-		transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
-		overlay 250ms allow-discrete,
+		clip-path 250ms cubic-bezier(0.16, 1, 0.3, 1),
 		display 250ms allow-discrete;
 }
 
-/* `display` is gated on [open] — NEVER put it on the base rule.
- *
- * The UA sheet hides a closed dialog via `dialog:not([open]){display:none}`,
- * but ANY author `display` beats a UA rule regardless of specificity. A base
- * `display:flex` therefore renders the CLOSED drawer permanently. It is not
- * even harmlessly offscreen: the wrapper's own
+/* `display` is gated on [open] — NEVER put it on the base rule. The UA sheet
+ * hides a closed dialog via `dialog:not([open]){display:none}`, but ANY author
+ * `display` beats a UA rule regardless of specificity, so a base `display:flex`
+ * would render the CLOSED drawer permanently — and the wrapper's own
  * `.sgs-container > :not(.sgs-container__overlay){position:relative}` (0,2,0)
- * outranks this rule's `position:fixed` (0,1,0), so the closed panel lands
- * IN FLOW — covering the page, pushing the logo out of the header row and the
- * hero ~1000px down, on desktop where there is no burger to close it.
- *
- * This shipped latent: the block's CSS was being served as a stale 0-byte file
- * (D338), so the drawer had NO styling at all and the UA's display:none held.
- * Clearing the CDN delivered the real CSS and the bug surfaced on both sites at
- * once. Open state is unaffected by the position clash because showModal()
- * promotes the dialog to the top layer, which is out of flow by definition. */
+ * would outrank this rule's `position:fixed` (0,1,0), landing it IN FLOW. Both
+ * are moot once open: view.js re-parents the drawer to <body> (FR-34-1), which
+ * removes every such ancestor rule by construction. */
 .sgs-adaptive-nav__drawer[open] {
 	display: flex;
+	clip-path: inset(0);
 }
 
 /* Faster exit timing (200ms accelerate), applied by view.js BEFORE close()
  * so it is the "ending style" the transition uses when [open] is removed. */
 .sgs-adaptive-nav__drawer.is-closing {
 	transition:
-		transform 200ms cubic-bezier(0.4, 0, 1, 1),
-		overlay 200ms allow-discrete,
+		clip-path 200ms cubic-bezier(0.4, 0, 1, 1),
 		display 200ms allow-discrete;
 }
 
-.sgs-adaptive-nav__drawer--right {
-	left: auto;
-	right: 0;
-	transform: translateX(100%);
-}
-
-.sgs-adaptive-nav__drawer--right[open] {
-	transform: translateX(0);
-}
-
-.sgs-adaptive-nav__drawer--left {
-	left: 0;
-	right: auto;
-	transform: translateX(-100%);
-}
-
-.sgs-adaptive-nav__drawer--left[open] {
-	transform: translateX(0);
-}
-
+/* Entry wipe-DOWN: the drawer's box is already in place; the bottom inset
+ * collapses 100% → 0 so content reveals downward from the header edge.
+ * @starting-style provides the from-state so the transition runs on first
+ * paint of [open]. */
 @starting-style {
-	.sgs-adaptive-nav__drawer--right[open] {
-		transform: translateX(100%);
-	}
-
-	.sgs-adaptive-nav__drawer--left[open] {
-		transform: translateX(-100%);
+	.sgs-adaptive-nav__drawer[open] {
+		clip-path: inset(0 0 100% 0);
 	}
 }
 
-.sgs-adaptive-nav__drawer::backdrop {
+/* Scrim — a REAL element (::backdrop only exists in the top layer we left with
+ * .show()). Fixed BELOW the header (never over it), it eats pointer input over
+ * the frozen page and closes on click (view.js). `visibility` keeps it inert
+ * while closed so it never intercepts clicks; view.js toggles `.is-open`. */
+.sgs-adaptive-nav__scrim {
 	background: rgba(0, 0, 0, 0.6);
+	inset: min(var(--sgs-header-height, 0px), 50dvh) 0 0 0;
 	opacity: 0;
+	position: fixed;
+	visibility: hidden;
+	z-index: 99990;
 	transition:
 		opacity 250ms ease,
-		overlay 250ms allow-discrete,
-		display 250ms allow-discrete;
+		visibility 250ms;
 }
 
-.sgs-adaptive-nav__drawer.is-closing::backdrop {
-	transition:
-		opacity 200ms ease,
-		overlay 200ms allow-discrete,
-		display 200ms allow-discrete;
-}
-
-.sgs-adaptive-nav__drawer[open]::backdrop {
+.sgs-adaptive-nav__scrim.is-open {
 	opacity: 1;
-}
-
-@starting-style {
-	.sgs-adaptive-nav__drawer[open]::backdrop {
-		opacity: 0;
-	}
-}
-
-/* ─── Drawer head: logo + close button ──────────────────────────────────── */
-.sgs-adaptive-nav__drawer-head {
-	align-items: center;
-	display: flex;
-	gap: 12px;
-	justify-content: space-between;
-	margin-bottom: var(--wp--preset--spacing--30, 1rem);
-	padding-bottom: var(--wp--preset--spacing--20, 0.5rem);
-}
-
-/* Logo size is the `logoMaxWidth` attr, delivered as a custom-property VALUE by
- * render.php (Spec 32: property VALUES may be set per instance, declarations may not).
- * The literal here is only the var() fallback for a cleared attr. */
-.sgs-adaptive-nav__drawer-logo {
-	display: block;
-	flex-shrink: 0;
-	max-width: var(--sgs-anav-logo-max-width, 120px);
-	overflow: hidden;
-}
-
-.sgs-adaptive-nav__drawer-logo .custom-logo-link {
-	display: block;
-}
-
-.sgs-adaptive-nav__drawer-logo .custom-logo,
-.sgs-adaptive-nav__drawer-logo img {
-	display: block;
-	height: auto;
-	max-width: var(--sgs-anav-logo-max-width, 120px);
-	width: 100%;
-}
-
-.sgs-adaptive-nav__drawer-logo--text {
-	color: inherit;
-	font-size: var(--wp--preset--font-size--large, 1.25rem);
-	font-weight: 700;
-	overflow: hidden;
-	text-decoration: none;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.sgs-adaptive-nav__drawer-close {
-	align-items: center;
-	background: rgba(255, 255, 255, 0.15);
-	border: none;
-	border-radius: 50%;
-	color: inherit;
-	cursor: pointer;
-	display: flex;
-	flex-shrink: 0;
-	height: 44px;
-	justify-content: center;
-	min-height: 44px;
-	min-width: 44px;
-	transition: background 200ms ease;
-	width: 44px;
-}
-
-/* Close pins to the row END whether or not the logo is present. Without this, hiding
- * the logo (the default since the 2026-07-15 research call) collapses the flex row and
- * the close button lands top-LEFT — off-convention for a right-side drawer and observed
- * live the moment showLogo defaulted off. */
-.sgs-adaptive-nav__drawer-close {
-	margin-inline-start: auto;
-}
-
-/* Hover/focus wash is derived from the CURRENT text colour, not a fixed white.
- * The close button sits on the `drawerHeadBg` strip, whose foreground render.php
- * COMPUTES per client — so a hardcoded rgba(255,255,255,.25) is invisible the moment
- * that strip is light (it is cream on mamas-munches by default). currentColor tracks
- * whatever was computed, so the affordance survives any palette. */
-.sgs-adaptive-nav__drawer-close:hover,
-.sgs-adaptive-nav__drawer-close:focus-visible {
-	background: color-mix(in srgb, currentColor 22%, transparent);
-}
-
-@supports not (color: color-mix(in srgb, currentColor 22%, transparent)) {
-	.sgs-adaptive-nav__drawer-close:hover,
-	.sgs-adaptive-nav__drawer-close:focus-visible {
-		background: rgba(128, 128, 128, 0.25);
-	}
-}
-
-/* Close-icon size is the `closeButtonSize` attr; literal is the cleared-attr fallback. */
-.sgs-adaptive-nav__drawer-close svg {
-	height: var(--sgs-anav-close-size, 20px);
-	width: var(--sgs-anav-close-size, 20px);
+	visibility: visible;
 }
 
 /* ─── Drawer menu (accordion) ───────────────────────────────────────────── */
@@ -622,10 +529,11 @@
 	outline-offset: 2px;
 }
 
+/* prefers-reduced-motion: no transform slide, no fade. */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-adaptive-nav__drawer,
 	.sgs-adaptive-nav__drawer.is-closing,
-	.sgs-adaptive-nav__drawer::backdrop,
+	.sgs-adaptive-nav__scrim,
 	.sgs-adaptive-nav__drawer-chevron {
 		transition-duration: 0.01ms !important;
 	}

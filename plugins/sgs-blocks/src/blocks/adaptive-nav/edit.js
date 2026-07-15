@@ -20,7 +20,6 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
-	ToggleControl,
 	__experimentalNumberControl as NumberControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
@@ -36,22 +35,6 @@ import {
 // sgs/mega-menu items join the desktop bar, everything else routes to the
 // drawer's content drop-zone at render time (see render.php). Do NOT
 // reintroduce an `allowedBlocks` restriction here.
-
-const DRAWER_SIDE_OPTIONS = [
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-];
-
-// Drawer width units. `%`/`vw` are offered because an operator may want a proportional
-// panel; px is the default and the common case. render.php wraps whatever is set in
-// min(100%, ...), so any of these degrades to a full-screen drawer on a narrow phone
-// without the operator configuring a second, mobile-specific value.
-const DRAWER_WIDTH_UNITS = [
-	{ value: 'px', label: 'px', default: 400 },
-	{ value: '%', label: '%', default: 100 },
-	{ value: 'vw', label: 'vw', default: 100 },
-	{ value: 'rem', label: 'rem', default: 25 },
-];
 
 const COLLAPSE_TIER_OPTIONS = [
 	{ label: __( 'Mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
@@ -103,13 +86,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		gap,
 		menuButtonLabel,
 		drawerLabel,
-		drawerSide,
 		drawerBg,
-		drawerHeadBg,
-		drawerWidth,
-		showLogo,
-		logoMaxWidth,
-		closeButtonSize,
 	} = attributes;
 
 	const { records: menus, isResolving } = useEntityRecords(
@@ -143,6 +120,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			// joins the desktop bar; any other block routes to the drawer's
 			// content drop-zone. sgs/mega-menu keeps its own reciprocal
 			// `parent` lock in its block.json.
+			//
+			// FR-34-3 default drawer children (Bean's 3-child model): empty
+			// row container → the menu element → empty row container, all
+			// reorderable/deletable. The template ONLY seeds a block with zero
+			// stored children — existing content (e.g. the shipped header
+			// pattern's business-info/socials) is never touched; Dispatch-E
+			// inserts the nav-menu child into those files explicitly.
+			// sgs/nav-menu's ref defaults to null ⇒ it inherits THIS block's
+			// menu via context "sgs/navRef" (one source by default, FR-S9-4).
+			template: [
+				[ 'sgs/container', {} ],
+				[ 'sgs/nav-menu', {} ],
+				[ 'sgs/container', {} ],
+			],
 			templateLock: false,
 			orientation: 'horizontal',
 		}
@@ -224,29 +215,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { drawerLabel: val } )
 						}
 						help={ __(
-							'Screen-reader label for the off-canvas drawer dialog.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Drawer side', 'sgs-blocks' ) }
-						value={ drawerSide }
-						options={ DRAWER_SIDE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { drawerSide: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<UnitControl
-						label={ __( 'Drawer width', 'sgs-blocks' ) }
-						value={ drawerWidth }
-						onChange={ ( val ) =>
-							setAttributes( { drawerWidth: val } )
-						}
-						units={ DRAWER_WIDTH_UNITS }
-						help={ __(
-							'Width of the open drawer. It automatically fills the whole screen on any device narrower than this, so there is no need to set a mobile value.',
+							'Screen-reader label for the disclosure drawer dialog.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
@@ -265,58 +234,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
-					<ToggleControl
-						label={ __( 'Show logo in drawer', 'sgs-blocks' ) }
-						checked={ !! showLogo }
-						onChange={ ( val ) =>
-							setAttributes( { showLogo: val } )
-						}
-						help={ __(
-							'Off by default — the open menu keeps just its close button, like most site menus. Turn on to add the site logo from Site Identity.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					{ !! showLogo && (
-						<>
-							<UnitControl
-								label={ __( 'Logo width', 'sgs-blocks' ) }
-								value={ logoMaxWidth }
-								onChange={ ( val ) =>
-									setAttributes( { logoMaxWidth: val } )
-								}
-								units={ DRAWER_WIDTH_UNITS }
-								__nextHasNoMarginBottom
-							/>
-							<DesignTokenPicker
-								label={ __( 'Logo strip background', 'sgs-blocks' ) }
-								value={ drawerHeadBg }
-								onChange={ ( val ) =>
-									setAttributes( { drawerHeadBg: val } )
-								}
-								linked
-							/>
-							<p className="sgs-adaptive-nav__inspector-note">
-								{ __(
-									'The strip behind the logo. Pick a colour your logo reads clearly on — its own background in the site header is usually the safe choice. Set it to the same colour as the drawer to remove the strip.',
-									'sgs-blocks'
-								) }
-							</p>
-						</>
-					) }
-					<UnitControl
-						label={ __( 'Close button size', 'sgs-blocks' ) }
-						value={ closeButtonSize }
-						onChange={ ( val ) =>
-							setAttributes( { closeButtonSize: val } )
-						}
-						units={ DRAWER_WIDTH_UNITS }
-						help={ __(
-							'Size of the X icon. The button itself keeps a 44px tap target whatever you choose.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
 				</PanelBody>
 
 				<PanelBody

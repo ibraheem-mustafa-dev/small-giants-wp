@@ -230,7 +230,25 @@ Step 6 — Builder reflection + patterns + DB (FR-34-6)
     Fail:        sgs-update errors → do NOT hand-edit the DB; fix input and re-run
     Integration: FR-S4-5 linter + pattern-slug shim registration green
 
-QA Gate C — FR-34-7 full live gate + Bean screenshots + commits
+Step 7 — POST-BUILD (Bean, 2026-07-15 mid-build): adversarial-council + Site-Editor round-trip proof
+  Model:       inline (me) + adversarial-council personas (cross-model)
+  Action:      After Gate C passes: (1) run /adversarial-council on the SHIPPED result —
+               personas must include a tech-illiterate-client UX rater (is the builder
+               interface "super easy and user friendly"? — Bean's words; inspector
+               labels, control grouping, discoverability, zero code-touching) and a
+               round-trip-integrity red-teamer. (2) PROVE the Site-Editor round-trip for
+               BOTH header AND footer: make a visible edit in the Site Editor → verify
+               the FRONT END reflects it. This must identify WHICH source actually loads
+               (theme part file vs DB-customised template part copy — the first Site-
+               Editor edit creates one and silently shadows the file — vs the
+               sgs_header/sgs_footer CPT rules engine) and prove the operator's edit
+               wins on the live page. The known parts/header.html-inlines-vs-
+               footer-references drift means the two parts may behave DIFFERENTLY —
+               test both, never extrapolate from one.
+  Outcome:     Council verdict + a measured header AND footer edit→frontend round trip;
+               UX must-fixes triaged with Bean.
+  Deps:        QA Gate C
+  Marker:      QA
   Model:   inline (me)
   Exec:    SEQUENTIAL
   Deps:    steps 5–6

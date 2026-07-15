@@ -27,6 +27,7 @@
 <!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
 
 <!-- wp:sgs/adaptive-nav {"linkColour":"text","gap":{"desktop":"28px"}} -->
+<!-- wp:sgs/nav-menu /-->
 <!-- wp:sgs/business-info {"displayType":"email"} /-->
 <!-- wp:sgs/social-icons {"source":"site-info","iconColour":"surface","iconSize":20} /-->
 <!-- /wp:sgs/adaptive-nav -->
