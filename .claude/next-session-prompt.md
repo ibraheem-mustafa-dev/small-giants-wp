@@ -10,11 +10,19 @@ generated: 2026-07-15 (evening rewrite — the morning edition's Steps 0/1/2/8/8
 Invoke `/autopilot` first. Read `.claude/handoff.md` + `CLAUDE.md` + **Spec 17 §S9 IN
 FULL** + `.claude/decisions.md` D340/D339/D338 + the NEW rebuild spec (see ⛔ LIVE NOW).
 
-**Parallel tracks — do NOT touch their files:** Track B = Indus page CONTENT
-(`.claude/next-session-prompts/TRACK-B-*.md`, branch `feat/track-b-content-restore`).
-Track C = core→SGS migration in patterns (`TRACK-C-*.md`, branch
-`feat/core-block-migration`). Both write decisions to `.claude/scratch/track-{b,c}-
-decisions-pending.md` — MERGE those into decisions.md/parking.md at this track's handoff.
+**Parallel tracks — do NOT touch their files:** Track B = Indus page CONTENT — **DONE
+2026-07-16**, branch `feat/track-b-content-restore` (`ca0894ef`/`9c29dbe3`/`ca1ed3ea`,
+pushed, unmerged; consumed prompt archived → `.claude/scratch/TRACK-B-*.md`). Track C =
+core→SGS migration in patterns (`TRACK-C-*.md`, branch `feat/core-block-migration`). Both
+write decisions to `.claude/scratch/track-{b,c}-decisions-pending.md` — MERGE those into
+decisions.md/parking.md at this track's handoff (Track B = TB-1…TB-9).
+
+**⛔ A SHARED CHECKOUT SHARES `git HEAD`.** Track A/C branch switches silently REVERTED two
+of Track B's working-tree edits, and one got committed in its reverted state under a message
+claiming it was fixed. Take your own `git worktree` (Track C has one), and verify
+`git show <sha>:<path>` — never the working tree — before believing a file is committed.
+`.claude/next-session-prompts/TRACK-B-*.md` shows deleted in the shared checkout: that is
+Track B's Bean-directed move to `.claude/scratch/`; don't sweep it into your commit.
 
 ## ⛔ LIVE NOW — the drawer/header/site-editor-builder rebuild is being built IN-SESSION (2026-07-15 evening, Bean-approved)
 
@@ -230,3 +238,12 @@ viewport with classic scrollbars for geometry/animation checks (emulation hides 
 scrollbar class of bug). Hostinger MCP `hosting_clearWebsiteCacheV1` before EVERY live
 measure. `build-deploy.py` (canary default; `--target palestine-lives` explicit) — **it
 clears NO caches; do it manually.** LiteSpeed is on sandybrown only, NOT Indus.
+**NEW (Track B, 2026-07-16):** `build-deploy.py` now runs `step_oldshape_audit` BEFORE the
+build on EVERY deploy — it scans the target's stored `post_content` against the schemas you
+are about to ship and ABORTS if they would strand or silently delete stored content (the gate
+D182 used and D270/D271 skipped). Both sites PASS today (2s/4s), so it should be invisible to
+you. If it fires, it means your schema change would eat live content: migrate the content
+first (`scripts/wp-migrate-oldshape-blocks.js`, dry-run by default), or — only if the finding
+is genuinely accepted debt — baseline it WITH a register reference in
+`oldshape-audit-baseline.json`. `--skip-oldshape-audit` exists; using it makes stored-content
+compatibility your problem.

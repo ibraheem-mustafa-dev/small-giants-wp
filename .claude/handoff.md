@@ -71,9 +71,108 @@ session: D338 — mega-menu links restored; 45 silently-discarded attrs found (3
 6. **Goal 1 (Indus)** — after all tracks; baseline = **lightsalmon**, restorable from git (`e3cd1a04^:header-indus-foods.php`, `0587f638:parts/header.html`).
 7. Goal 3 = de-hardcode the base blocks (Bean's definition). 8. Attribution build. 9. 9 dead attrs. 10. Spec-15 sweep.
 
+---
+
+# TRACK B (parallel session, 2026-07-15 → 16) — Indus homepage content RESTORED + the missing deploy gate
+
+*Ran in parallel with Track A (adaptive-nav) and Track C (core-block sweep). Branch
+`feat/track-b-content-restore` — commits `ca0894ef`, `9c29dbe3`, `ca1ed3ea`, pushed.
+Consumed prompt archived → `.claude/scratch/TRACK-B-indus-homepage-content-restore.md`.
+Draft D-entries (TB-1…TB-9) → `.claude/scratch/track-b-decisions-pending.md` — **merge
+these into `decisions.md` at the end-of-day reconcile** (Track B never touched
+`decisions.md`/`parking.md`, per the coordination rule).*
+
+## Completed
+
+1. **Page 13 restored + live-proven.** The stored blocks were pre-InnerBlocks scalar shape;
+   the migrated renderers read children only ⇒ empty shells. Migrated via the editor route
+   ONLY (`createBlock`+`replaceBlock`+one `savePost`), values sourced from the RAW REST
+   markup (the editor discards the undeclared legacy colour attrs at parse, so `wp.data` never
+   sees them). Live after CDN clear: hero text 142, `<h1>` present, both CTAs, banner img,
+   **8/8 brand imgs loaded, 4 distinct testimonials, 8 info-boxes with icons**; editor reopens
+   **107 blocks, 0 invalid, 0 recovery prompts**. Re-runnable proof: `node
+   scripts/verify-restored-page.js https://palestine-lives.org/` (8 gates) + committed
+   `live-dom-evidence-AFTER.json`. **Bean's eye = the final close (R-31-13) — PENDING.**
+2. **Rehearsed the rollback before touching the only copy.** Duplicated page 13 to a throwaway
+   REST draft (byte-identical), migrated it, RESTORED it from backup, re-migrated via
+   `--from-backup`, then trashed it. The `.txt` backup alone was NOT a restore path (writing it
+   back is exactly what the guard forbids) — `--restore` through the editor is.
+3. **Register + verified backups, both sites.** 50 posts scanned → 4 cause groups
+   (`.claude/backups/2026-07-15-track-b/REGISTER.md` + `register.json`). `CHECKSUMS.md5` for all
+   104 backups; page 13 = `1a2afbe8c3c291221faeb3a82045a774`, verified against the server BEFORE
+   migrating.
+4. **The gate D270/D271 skipped — built + wired + proven.** `step_oldshape_audit` in
+   `build-deploy.py`: **ON by default, BEFORE the build**, fetches the target's stored
+   `post_content` read-only and scans it against the LOCAL schemas being deployed; aborts on NEW
+   findings; fails closed on SSH failure; `--skip-oldshape-audit` opt-out. Documented debt in
+   `oldshape-audit-baseline.json` (188 keys, every one register-referenced). Proven: exit 1
+   without the baseline, exit 0 with; **the pre-migration page 13 still trips 47 NEW HIGH — i.e.
+   this gate WOULD have caught the original casualty.** Both sites PASS today (2s / 4s).
+5. **New bug class found + fixed (proven live).** `brand-strip` block.json declared
+   `logos.items.properties.media: "string"` (stale) ⇒ WP's `prepare_attributes_for_render`
+   validates RECURSIVELY, the object-shaped `media` failed, and WP **silently reset the WHOLE
+   `logos` array to `[]` at render** — editor fine, frontend empty, no error. **D328's sibling,
+   one level deeper (items sub-schema).** Schema fixed; stored logos use the legacy image-shape
+   the render lifts, so it works on the deployed build too.
+6. **`info-box` "+" inserter landmine fixed** — both `sgs/icon` seeds emitted undeclared attrs
+   (`icon`/`iconBackgroundColour`/string `iconSize`): the D338 class, live, in the inserter.
+7. **QC council (4 raters) re-measured everything and found 3 REAL defects in Track B's own
+   tooling — all fixed + re-proven** (`ca1ed3ea`, full table in REGISTER.md §QC council):
+   - **[CRITICAL] both brace parsers were string-blind** — a literal `{`/`}` inside copy
+     miscounted depth ⇒ attrs silently `{}` ⇒ a REAL casualty scanned **0 findings / exit 0** and
+     the migrator said "nothing to migrate". *The exact silent-failure class the toolchain exists
+     to close, living inside it.* Fixed (quote+escape aware); unreadable attrs now fail LOUD.
+   - **[HIGH] the gate was blind to CPT/reusable/template content** (`page,post` only). Post types
+     are now enumerated live (exclusion list of WP-internal types only) — sandybrown **28 → 241
+     posts**.
+   - **[HIGH] the gate would have timed out (180s) and aborted a HEALTHY deploy** on its own
+     slowness (one WP bootstrap per post). Now 2 bootstraps via bulk JSON.
+   - One CRITICAL rater claim ("info-box #4 lost its icon") was a **FALSE POSITIVE**, correctly
+     not acted on: the serializer omits attrs equal to their default and `iconName`'s default IS
+     the stored value.
+
+## Known issues / blockers (Track B)
+
+- **⚠ NEW, PRE-EXISTING, NOT FIXED — every core button's authored text colour is dead site-wide.**
+  Bean's main CTA renders **navy-on-navy, 1:1, invisible**; the 4 service buttons render ~1.9:1.
+  Cause PROVEN on the live DOM (rules enumerated, not inferred): the theme ships
+  `.has-text-color{color:var(--wp--preset--color--text)!important}`, which beats non-important
+  inline colour; **both** existing defences are inert — the `:where()` CSS reset
+  (`core-blocks.css:682`) is specificity (0,0,0) vs an `!important`, and the PHP filter
+  (`functions.php:635`, hooked :664) needs `class="…"` adjacent to `style="…"` while real markup
+  is `class="…" href="…" style="…"`. **Not content loss** (the DB still holds `#D8CA50`) and **not
+  the migration** (migrated hero CTAs are `sgs/button` and render correctly). Needs a deploy to fix
+  ⇒ deferred; fix shape + rationale in scratch **TB-9**. Universal (R-31-9) — affects any client
+  using core buttons with custom text colour.
+- **P1 pages deferred with named blockers** (REGISTER.md §Session outcome): **58** — preflight
+  correctly ABORTS on 1 invalid `core/button` (needs an eyes-on recovery decision); **65–68** —
+  need a `sgs/cta-section` mapping + per-page undeclared-attr disposition BEFORE any editor save
+  deletes them (`--from-backup` recovers values even after a premature save). **sandybrown/65 =
+  SKIP** (frozen conformance artefact).
+- **h1 renders 28px vs the reference's 50px** — this session's own D338 heading fix (in tree, not
+  yet deployed to palestine-lives). NOT content loss; corrects on the next proper deploy.
+- Rehearsal draft **288 trashed** (recoverable from WP trash).
+- **`reports/visual-diff/track-b/*.png` are NOT in git** (`*.png` is gitignored repo-wide; this
+  folder's convention is markdown). They exist on disk + were sent to Bean. The *numbers* are
+  durable (`live-dom-evidence-AFTER.json`).
+
 ## Notes for next session
 
-- **The handoff/register you are handed is a HYPOTHESIS.** This session: 3 of the previous handoff's Task-1 claims were wrong, a council claim was FALSE, "180 tests pass" was FALSE. Fact-check before building.
+- **The handoff/register you are handed is a HYPOTHESIS.** This session: 3 of the previous
+  handoff's Task-1 claims were wrong, a council claim was FALSE, "180 tests pass" was FALSE.
+  Fact-check before building. **Track B re-proved this from the other side:** of 4 QC raters, 3
+  found real bugs and 1 CRITICAL finding was a false positive — acting on it unchecked would have
+  "fixed" a non-bug.
+- **⛔ A SHARED CHECKOUT SHARES `git HEAD` — "disjoint files" is NOT enough.** Track A/C branch
+  switches **silently reverted two of Track B's working-tree edits**, and one got **committed in
+  its reverted state under a message claiming it was fixed** (`9c29dbe3`). The same trap tried
+  again 20 minutes later and was caught only by diffing the staged blob. **Verify
+  `git show <sha>:<path>`, never the working tree**, and take your own `git worktree` (Track C
+  now has one). Track B committed only via throwaway worktrees; the shared checkout's branch was
+  never switched by Track B.
+- **`.claude/next-session-prompts/TRACK-B-*.md` shows as deleted in the shared checkout** — that
+  is Track B's move to `.claude/scratch/` (Bean-directed). Don't sweep it into another track's
+  commit; it lands with Track B's merge.
 - **The live DOM is the only gate that has ever caught these.** Build + tests + every guard were green while the desktop nav rendered 0 links and a closed `<dialog>` covered both sites.
 - **Bean's instinct beat mine every time they conflicted** (mega-menus, the Astra baseline, Goal-3 scope, the attribution model, Spec 15, the framework/per-site split). Test his hypothesis rather than assuming it's wrong — even the one that was wrong (nesting) led straight to the real cause.
 - **Node/npm via PowerShell** — nvm shim broken in Git Bash (`node: line 1: This: command not found`).
