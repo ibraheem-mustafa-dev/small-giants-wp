@@ -42,6 +42,17 @@ const DRAWER_SIDE_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
 ];
 
+// Drawer width units. `%`/`vw` are offered because an operator may want a proportional
+// panel; px is the default and the common case. render.php wraps whatever is set in
+// min(100%, ...), so any of these degrades to a full-screen drawer on a narrow phone
+// without the operator configuring a second, mobile-specific value.
+const DRAWER_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: 400 },
+	{ value: '%', label: '%', default: 100 },
+	{ value: 'vw', label: 'vw', default: 100 },
+	{ value: 'rem', label: 'rem', default: 25 },
+];
+
 const COLLAPSE_TIER_OPTIONS = [
 	{ label: __( 'Mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
 	{ label: __( 'Tablet (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
@@ -93,6 +104,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		menuButtonLabel,
 		drawerLabel,
 		drawerSide,
+		drawerBg,
+		drawerHeadBg,
+		drawerWidth,
+		showLogo,
+		logoMaxWidth,
+		closeButtonSize,
 	} = attributes;
 
 	const { records: menus, isResolving } = useEntityRecords(
@@ -219,6 +236,77 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { drawerSide: val } )
 						}
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Drawer width', 'sgs-blocks' ) }
+						value={ drawerWidth }
+						onChange={ ( val ) =>
+							setAttributes( { drawerWidth: val } )
+						}
+						units={ DRAWER_WIDTH_UNITS }
+						help={ __(
+							'Width of the open drawer. It automatically fills the whole screen on any device narrower than this, so there is no need to set a mobile value.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Drawer background', 'sgs-blocks' ) }
+						value={ drawerBg }
+						onChange={ ( val ) =>
+							setAttributes( { drawerBg: val } )
+						}
+						linked
+					/>
+					<DesignTokenPicker
+						label={ __( 'Logo strip background', 'sgs-blocks' ) }
+						value={ drawerHeadBg }
+						onChange={ ( val ) =>
+							setAttributes( { drawerHeadBg: val } )
+						}
+						linked
+					/>
+					<p className="sgs-adaptive-nav__inspector-note">
+						{ __(
+							'Text and icon colours are chosen automatically for readable contrast against whichever backgrounds you pick, so they never need setting by hand. Set the logo strip to the same colour as the drawer to remove the strip.',
+							'sgs-blocks'
+						) }
+					</p>
+					<ToggleControl
+						label={ __( 'Show logo in drawer', 'sgs-blocks' ) }
+						checked={ !! showLogo }
+						onChange={ ( val ) =>
+							setAttributes( { showLogo: val } )
+						}
+						help={ __(
+							'Uses the site logo from Site Identity.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					{ !! showLogo && (
+						<UnitControl
+							label={ __( 'Logo width', 'sgs-blocks' ) }
+							value={ logoMaxWidth }
+							onChange={ ( val ) =>
+								setAttributes( { logoMaxWidth: val } )
+							}
+							units={ DRAWER_WIDTH_UNITS }
+							__nextHasNoMarginBottom
+						/>
+					) }
+					<UnitControl
+						label={ __( 'Close button size', 'sgs-blocks' ) }
+						value={ closeButtonSize }
+						onChange={ ( val ) =>
+							setAttributes( { closeButtonSize: val } )
+						}
+						units={ DRAWER_WIDTH_UNITS }
+						help={ __(
+							'Size of the X icon. The button itself keeps a 44px tap target whatever you choose.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

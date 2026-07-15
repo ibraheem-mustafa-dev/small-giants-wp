@@ -58,7 +58,21 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$uid      = wp_unique_id( 'sgs-anav-' );
+// Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
+// md5( wp_json_encode( $attributes ) ) derivation rather than the per-request counter
+// wp_unique_id(): identical nav attributes yield an identical uid on every page, so the
+// CSS collector can dedup this block's scoped <style> across pages instead of emitting a
+// near-identical copy per request.
+//
+// The `anchor` is mixed into the hash (the sgs/accordion pattern) — NOT decoration. This
+// block's uid also drives ARIA plumbing (`{uid}-drawer`, `{uid}-panel-N`, `{uid}-more-panel`
+// in aria-controls), so unlike the sibling rows a pure attribute hash would give two
+// identically-configured navs on one page the SAME DOM ids — silently breaking the second
+// drawer. `anchor` is the operator's per-instance escape hatch for that collision; the
+// realistic page has one nav, so the hash is deterministic in practice and disambiguable
+// when it isn't. (Do NOT "simplify" this to a bare $attributes hash — see the ARIA ids below.)
+// STOP-NO-KSORT: do not reorder $attributes before hashing.
+$uid      = 'sgs-anav-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.sgs-adaptive-nav';
 $classes  = array( 'sgs-adaptive-nav', $uid );
 
@@ -130,8 +144,16 @@ $toggle_html = sprintf(
 // descendant, else the dialog itself" — NOT "the first focusable element".
 // With no allowedBlocks, a dropped block carrying its own [autofocus] could
 // otherwise silently steal focus on open.
-$drawer_logo = get_custom_logo();
-if ( $drawer_logo ) {
+// `showLogo` (default true) — an operator running a wordmark-free drawer, or one whose
+// logo already sits in the header row above, can drop it. Suppressing it leaves the close
+// button alone in the head strip, which is why the close button carries its own accessible
+// name rather than relying on the logo for context.
+$show_drawer_logo = ! isset( $attributes['showLogo'] ) || ! empty( $attributes['showLogo'] );
+
+$drawer_logo = $show_drawer_logo ? get_custom_logo() : '';
+if ( ! $show_drawer_logo ) {
+	$drawer_logo_html = '';
+} elseif ( $drawer_logo ) {
 	$drawer_logo_html = '<div class="sgs-adaptive-nav__drawer-logo">' . wp_kses_post( $drawer_logo ) . '</div>';
 } else {
 	$drawer_logo_html = sprintf(
@@ -252,6 +274,109 @@ if ( '' !== $link_colour ) {
 }
 if ( '' !== $link_hover ) {
 	$css .= $root_sel . ' .sgs-adaptive-nav__link:hover,' . $root_sel . ' .sgs-adaptive-nav__link:focus-visible{color:var(--wp--preset--color--' . $link_hover . ');}';
+}
+
+// 2c-ii. Drawer chrome — operator ATTRS, resolved against the client's real palette.
+//
+// Two separate surfaces, because they have different jobs (Bean, 2026-07-15):
+// the drawer panel is `drawerBg` (default `primary`); the logo strip is
+// `drawerHeadBg` (default `surface`).
+//
+// WHY the head strip is its own colour: the Mama's logo is a transparent PNG whose
+// dominant ink is rgb(216,120,120) — itself a PINK. Measured against the drawer's pink
+// it scores 1.06:1, i.e. the logo is the same colour as its background and vanishes.
+// On the cream `surface` it reads at 2.39:1. So the strip is not decoration, it is what
+// makes the logo visible at all. A client whose logo suits the panel colour just sets
+// `drawerHeadBg` to the same slug as `drawerBg` and the strip disappears by construction.
+//
+// WHY these are attrs and not CSS literals: style.css hardcoded `var(--primary-dark)` +
+// `var(--surface)`, which assumes a token NAME implies a luminance. It does not —
+// `primary-dark` is a PINK on mamas-munches (#c56a7a), so the drawer shipped cream-on-pink
+// at 3.32:1 (WCAG fail). Swapping one hardcoded token for another just re-rolls that dice
+// on the next client, because the Spec-33 extractor REGENERATES these palettes per client.
+// FR-S9-10 is explicit: elements DEFAULT from theme tokens, with per-instance overrides.
+// A default that nothing else can legitimately set, and that the operator can override,
+// is a default — not a hardcode (Bean's distinction, 2026-07-15).
+//
+// The FOREGROUND is never authored — it is COMPUTED from whichever bg the client ends up
+// with (sgs_wcag_text_colour_for_bg), so contrast holds on a palette nobody has made yet.
+// Verified across all 8 committed client palettes with the `primary` default: 8/8 pass
+// (indus-foods #0A7EA8 -> white 4.60:1 tightest; mamas-munches #e68a95 -> black 8.43:1).
+// Same shared helpers product-card + option-picker use — not a second system.
+//
+// Specificity: $root_sel is 2 classes + `.sgs-adaptive-nav__drawer` = (0,3,0), beating
+// style.css's single-class rule (0,1,0) regardless of load order. Drawer links inherit
+// (they are `color:inherit` by design).
+$sgs_anav_surface = static function ( $slug, $selector ) use ( &$css ) {
+	$slug = sanitize_html_class( (string) $slug );
+	if ( '' === $slug ) {
+		return;
+	}
+	$hex = sgs_resolve_palette_hex( $slug, '' );
+	if ( '' === $hex ) {
+		return;
+	}
+	$css .= $selector . '{background-color:' . $hex . ';color:' . sgs_wcag_text_colour_for_bg( $hex ) . ';}';
+};
+$sgs_anav_surface( $attributes['drawerBg'] ?? '', $root_sel . ' .sgs-adaptive-nav__drawer' );
+$sgs_anav_surface( $attributes['drawerHeadBg'] ?? '', $root_sel . ' .sgs-adaptive-nav__drawer-head' );
+
+// 2c-iii. Drawer width — ONE flat value, made responsive INTRINSICALLY.
+//
+// `drawerWidth` is the panel width the operator wants (default `400px`); the render wraps
+// it in `min(100%, ...)` so the panel is simply the whole screen whenever the viewport is
+// narrower than that. No breakpoints, no tier object, no @media — which is FR-S9-7's
+// explicit instruction ("never overflow ... intrinsically rather than via a targeted
+// patch") and why FR-S9-6 calls the intrinsic layout "the default so most clients never
+// need to touch it". A tier object here would be ceremony: the value differs by viewport,
+// not by device semantics, and min() already expresses that in one value.
+//
+// This is also the bug Bean reported. style.css hardcoded `min(85%, 400px)` — the 85% (not
+// the 400px) is what left a strip of dimmed page down one side of a phone: at 375 the panel
+// was 318.75px, a 56px gap. `min(100%, 400px)` is full-bleed at 375 and a 400px panel above.
+// An operator wanting a full-bleed drawer at every size just sets `100%`; min(100%,100%)
+// still resolves correctly, as does any px/%/vw/rem value.
+//
+// Flat, not object, by design — and locked that way: per the §S9 Guardrail added this
+// session, a future tiered variant is a NEW sibling attr, never a reshape of this one
+// (D328: a flat value stored where block.json later says `object` is silently coerced to
+// the default at render, and D293 leaves no deprecation path to migrate it).
+$drawer_width = trim( (string) ( $attributes['drawerWidth'] ?? '' ) );
+// Length-or-CSS-function charset: digits, units, %, and the min()/max()/clamp()/calc()
+// punctuation. Deliberately NOT $sgs_css_length (it strips parens and commas, mangling
+// `min(100%, 400px)` into `min100400px`). Quotes, semicolons and braces cannot survive, so
+// the value cannot escape the declaration it is interpolated into.
+// `*` and `/` are deliberately EXCLUDED: no drawer width needs calc() multiply/divide, and
+// including them puts the literal two-character sequences that open and close a C-style
+// comment inside this file. The dead-controls gate strips comments from render.php with a
+// naive matcher before scanning it, so a stray opener here silently swallows the rest of
+// the file and every attr below this line reads as unrendered (it flagged collapseTier +
+// collapseCustomPx, 50 lines down, as dead). Keep this class free of those pairs.
+$drawer_width = preg_replace( '/[^A-Za-z0-9.,%()+\s-]/', '', $drawer_width );
+if ( '' !== $drawer_width ) {
+	$css .= $root_sel . ' .sgs-adaptive-nav__drawer{width:min(100%,' . $drawer_width . ');}';
+}
+
+// 2c-iv. Drawer logo + close-icon size — delivered as custom-property VALUES on the
+// drawer, which style.css consumes via var(). Spec 32 permits setting a property VALUE
+// per instance; what it forbids is an inline property DECLARATION. These were literals
+// (`max-width:120px`, `20px`) that the F3 gate correctly flagged the moment `drawerWidth`
+// gave it an attr to attribute them to — they are `logoMaxWidth` and `closeButtonSize`
+// from the §S9 drawer-chrome roster, not incidental values.
+$anav_len = static function ( $value ) {
+	return preg_replace( '/[^A-Za-z0-9.,%()+\s-]/', '', trim( (string) $value ) );
+};
+$drawer_vars = array();
+$logo_max    = $anav_len( $attributes['logoMaxWidth'] ?? '' );
+$close_size  = $anav_len( $attributes['closeButtonSize'] ?? '' );
+if ( '' !== $logo_max ) {
+	$drawer_vars[] = '--sgs-anav-logo-max-width:' . $logo_max;
+}
+if ( '' !== $close_size ) {
+	$drawer_vars[] = '--sgs-anav-close-size:' . $close_size;
+}
+if ( $drawer_vars ) {
+	$css .= $root_sel . ' .sgs-adaptive-nav__drawer{' . implode( ';', $drawer_vars ) . ';}';
 }
 
 // 2d. Flex row (justify / wrap / vertical-align) on the nav list. The GAP between

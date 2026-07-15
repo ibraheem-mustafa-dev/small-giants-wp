@@ -199,10 +199,28 @@
  * from that edge; UA styling (fixed size/position/border/background/margin)
  * is fully overridden below. */
 .sgs-adaptive-nav__drawer {
-	background-color: var(--wp--preset--color--primary-dark);
+	/* LAST-RESORT fallback only — NOT the shipped appearance.
+	 *
+	 * The panel/text colours come from the `drawerBg` attr and the width from
+	 * `drawerWidth`, emitted by render.php as a (0,3,0) scoped rule that overrides
+	 * everything here. These three lines exist so the drawer is never transparent,
+	 * unreadable or zero-width if the palette lookup fails or an operator clears the
+	 * attr outright.
+	 *
+	 * They are a literal PAIR (near-black on white, ~18:1) rather than a token pair,
+	 * deliberately: the previous `background: var(--primary-dark)` + `color:
+	 * var(--surface)` assumed a token NAME implies a luminance. It does not —
+	 * `primary-dark` is a PINK on mamas-munches, so that pairing shipped cream-on-pink
+	 * at 3.32:1 (WCAG fail). A fallback whose contrast depends on a palette nobody has
+	 * generated yet is not a fallback. This pair cannot be wrong.
+	 *
+	 * (This also resolves the "missing var() fallback" flagged on the old
+	 * background-color line — the line it applied to no longer exists.) */
+	background-color: #1a1a1a;
+	color: #fff;
+
 	border: none;
 	box-sizing: border-box;
-	color: var(--wp--preset--color--surface, #fff);
 	flex-direction: column;
 	height: 100vh;
 	height: 100dvh;
@@ -215,7 +233,6 @@
 	padding: var(--wp--preset--spacing--40, 1.5rem);
 	position: fixed;
 	-webkit-overflow-scrolling: touch;
-	width: min(85%, 400px);
 
 	/* MUST-FIX 5: `overlay` (not just `display`) must be in transition-property
 	 * or the close transition is cut short — the entry timing (250ms decelerate). */
@@ -320,10 +337,13 @@
 	padding-bottom: var(--wp--preset--spacing--20, 0.5rem);
 }
 
+/* Logo size is the `logoMaxWidth` attr, delivered as a custom-property VALUE by
+ * render.php (Spec 32: property VALUES may be set per instance, declarations may not).
+ * The literal here is only the var() fallback for a cleared attr. */
 .sgs-adaptive-nav__drawer-logo {
 	display: block;
 	flex-shrink: 0;
-	max-width: 120px;
+	max-width: var(--sgs-anav-logo-max-width, 120px);
 	overflow: hidden;
 }
 
@@ -335,7 +355,7 @@
 .sgs-adaptive-nav__drawer-logo img {
 	display: block;
 	height: auto;
-	max-width: 120px;
+	max-width: var(--sgs-anav-logo-max-width, 120px);
 	width: 100%;
 }
 
@@ -366,14 +386,27 @@
 	width: 44px;
 }
 
+/* Hover/focus wash is derived from the CURRENT text colour, not a fixed white.
+ * The close button sits on the `drawerHeadBg` strip, whose foreground render.php
+ * COMPUTES per client — so a hardcoded rgba(255,255,255,.25) is invisible the moment
+ * that strip is light (it is cream on mamas-munches by default). currentColor tracks
+ * whatever was computed, so the affordance survives any palette. */
 .sgs-adaptive-nav__drawer-close:hover,
 .sgs-adaptive-nav__drawer-close:focus-visible {
-	background: rgba(255, 255, 255, 0.25);
+	background: color-mix(in srgb, currentColor 22%, transparent);
 }
 
+@supports not (color: color-mix(in srgb, currentColor 22%, transparent)) {
+	.sgs-adaptive-nav__drawer-close:hover,
+	.sgs-adaptive-nav__drawer-close:focus-visible {
+		background: rgba(128, 128, 128, 0.25);
+	}
+}
+
+/* Close-icon size is the `closeButtonSize` attr; literal is the cleared-attr fallback. */
 .sgs-adaptive-nav__drawer-close svg {
-	height: 20px;
-	width: 20px;
+	height: var(--sgs-anav-close-size, 20px);
+	width: var(--sgs-anav-close-size, 20px);
 }
 
 /* ─── Drawer menu (accordion) ───────────────────────────────────────────── */

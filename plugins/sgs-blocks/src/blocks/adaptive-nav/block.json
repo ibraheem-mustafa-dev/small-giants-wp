@@ -57,6 +57,30 @@
 			"default": "right",
 			"enum": [ "left", "right" ]
 		},
+		"drawerBg": {
+			"type": "string",
+			"default": "primary"
+		},
+		"drawerHeadBg": {
+			"type": "string",
+			"default": "surface"
+		},
+		"drawerWidth": {
+			"type": "string",
+			"default": "400px"
+		},
+		"showLogo": {
+			"type": "boolean",
+			"default": true
+		},
+		"logoMaxWidth": {
+			"type": "string",
+			"default": "120px"
+		},
+		"closeButtonSize": {
+			"type": "string",
+			"default": "20px"
+		},
 		"menuFallback": {
 			"type": "string",
 			"default": "page-list"

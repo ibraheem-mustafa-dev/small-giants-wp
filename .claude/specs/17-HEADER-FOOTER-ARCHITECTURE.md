@@ -801,7 +801,10 @@ An empty row emits **zero output** — no wrapper, no padding (fixes the empty-s
 
 **Model:** Opus (data-model + hashing/canonicalisation design, cross-block shared infrastructure)
 **Tests:** Unit: uid-canonicalisation function tested against key-order permutations of the same attribute set (all permutations produce the same hash); CSS-emission tier-diff logic tested against fixtures. Integration: golden re-save uid-stability test. E2E: Playwright device-switcher keyboard traversal + inherited-indicator `aria-label` assertion + reset-to-inherited click-and-verify. Regression: existing (non-§S9) blocks' attribute schemas byte-unchanged (grep/diff against pre-§S9 block.json files).
-**Depends on:** None (foundational; FR-S9-2/3/4 consume this model)
+**Depends on:** None.
+
+> **⛔ CORRECTED 2026-07-15 (D339) — this line previously read "None (foundational; FR-S9-2/3/4 consume this model)". That was false in fact and actively harmful, because it is the line sessions read.** FR-S9-2/3/4 all SHIPPED without this model: measured 2026-07-15, **87 of 95 attrs across the 5 §S9 blocks are FLAT** (site-header 0/26 object, site-footer 0/22, site-header-row 5/10, site-footer-row 6/11, adaptive-nav 6/26). FR-S9-3's own BUILT note at §FR-S9-3 has admitted since D325 that FR-S9-6 is *"NOT this block's dependency-in-fact"*. The spec therefore contradicted itself, and the wrong side was the load-bearing one: a session reading "FR-S9-2/3/4 consume this model" would reasonably retrofit the object shape onto shipped blocks — which is precisely the change D328 makes unsafe (see the Guardrail below). FR-S9-6 is a **shared next build on top of the shipped flat blocks**, not their prerequisite. Do not restore the old wording.
+
 **Universal-benefit:** Yes — the shared breakpoint source + canonicalisation pattern is reusable by any future responsive-override block
 
 ### FR-S9-7 — Never-overflow layout (Cluster + `clamp()`)
@@ -907,6 +910,23 @@ An empty row emits **zero output** — no wrapper, no padding (fixes the empty-s
 P1 (`sgs/site-header` + `sgs/site-header-row`) SHIPPED and live-verified; the sub-400px WCAG 2.2 SC 1.4.10 header overflow emergency is FIXED. During the v2 rebuild (swapping to SGS-native `sgs/cart` + `sgs/responsive-logo`), a stray WooCommerce mini-cart + customer-account kept appearing in the header alongside the intended elements. Root cause was PROVEN (not inferred) in WC source: WooCommerce's Block Hooks API auto-injects `woocommerce/mini-cart` and `woocommerce/customer-account` after ANY `core/navigation` block (`MiniCart.php` + `CustomerAccount.php` both register `'anchor' => 'core/navigation'` via `add_filter('hooked_block_types', ..., 9)`). A `hooked_block_types` suppressor filter was considered and validated as a working fix, then **REVERTED per Bean** — the correct fix is architectural: P2 (`sgs/adaptive-nav`, FR-S9-4) replaces `core/navigation` in the header, so WooCommerce has nothing left to anchor to and the injection stops by construction rather than being filtered out after the fact. Full detail: `.claude/plans/2026-07-13-header-builder-remaining-work.md`.
 
 ### §S9 Guardrails (mirrors the design-gate's own §14, restated here for spec-local enforcement)
+
+**⛔ ATTRIBUTE SHAPE IS FROZEN (added 2026-07-15, D339 — Bean-approved).**
+
+> **No flat→object attribute shape change on the 5 §S9 blocks** (`sgs/site-header`, `sgs/site-header-row`, `sgs/site-footer`, `sgs/site-footer-row`, `sgs/adaptive-nav`). **A new tiered capability is a NEW SIBLING ATTR, never a reshape of an existing one.**
+
+**Why this is a hard rule and not a preference.** WordPress **silently coerces** a stored value whose shape disagrees with block.json: a flat `"48px"` stored where block.json declares `type: object` is discarded and replaced by the block.json **default** at render (`WP_Block::process_block_bindings`/`prepare_attributes_for_render`) — no error, no console warning, no failing test, no failing build (D328; proven live — the footer's `gridTemplateColumns:'2fr 1fr 1fr'` rendered as the default `repeat(3, 1fr)`, i.e. equal thirds). **D293/D270 ban deprecations pre-production**, so there is no `deprecated.js` migration path to rewrite stored values. Therefore a reshape does not "upgrade" existing content — it **silently resets every value an operator or the pipeline ever configured**, to a default that looks plausible.
+
+**The ordering consequence — this is why the rule exists NOW.** Goals 1 and 4 (replicating the Indus + Mama's header/footer) are *hand-configuration* of these blocks. Any reshape landing **after** that work silently discards it. So the shape must be final **before** configuration begins, not after.
+
+**What this permits (not a freeze on capability):**
+- ADDING a new attr in any shape — object included. A new attr has no stored values to coerce, so it is safe by construction. (`sgs/adaptive-nav` `drawerBg`/`drawerHeadBg`/`drawerWidth`, D339, shipped flat under this rule.)
+- Building FR-S9-6's tier model as **sibling** attrs alongside the flat ones, leaving the flat attr as the base/desktop tier.
+- Anything on a NEW block, which starts with a clean shape.
+
+**What it forbids:** editing an existing §S9 attr's `type` from `string`/`number` to `object` (or vice-versa), on any of the 5 blocks, for any reason, without an explicit Bean-approved migration plan that does not rely on deprecations.
+
+**Corollary — prefer intrinsic over tiered.** Where one value can express the responsive intent (`min(100%, 400px)`, `clamp()`), ship the flat value: it needs no tier object, no `@media`, and no device switcher, and it is what FR-S9-7 mandates and FR-S9-6 itself calls "the default so most clients never need to touch it". Reach for tiers only when the value genuinely differs by device *semantics*, not merely by width.
 
 Composite-mirror — no divergent per-block CSS path (Spec 31 §13.6). No hardcoded client values anywhere in the three new blocks — Site Info + tokens only (FR-S9-10, R-31-1). No block version bumps or deprecations pre-production (D293/D270 — re-clone, not deprecate). Universal, no carve-outs (R-31-9) — every fix/capability applies to all qualifying rows/elements, not a per-client exception. STOP-21/CSS-VER/CDN/LiteSpeed cache-bust sequence run before every live measurement (this spec's own §12-equivalent QC gate lives in the design-gate doc, §12). Path-scoped commits on `main` per this spec's existing git-workflow convention; verify D-ceiling before starting; no co-author lines in commits.
 

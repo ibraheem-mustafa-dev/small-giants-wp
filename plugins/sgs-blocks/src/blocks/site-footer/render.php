@@ -33,7 +33,15 @@ $sgs_css_keyword = static function ( $value ) {
 	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
 };
 
-$uid      = wp_unique_id( 'sgs-sf-' );
+// Deterministic, content-addressed uid — mirrors SGS_Container_Wrapper's own
+// md5( wp_json_encode( $attributes ) ) derivation rather than the per-request counter
+// wp_unique_id(): identical footer attributes yield an identical uid on every page, so the
+// CSS collector can dedup this block's scoped <style> across pages instead of emitting a
+// near-identical copy per request. This block's uid feeds CSS scoping + the <style> id +
+// the wrapper's DOM id only — no aria-controls plumbing depends on it (checked), and a
+// page carries one footer, so the deterministic hash carries no id-collision risk here.
+// STOP-NO-KSORT: do not reorder $attributes before hashing.
+$uid      = 'sgs-sf-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.sgs-site-footer';
 $classes  = array( 'sgs-site-footer', $uid );
 
