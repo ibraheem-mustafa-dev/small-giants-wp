@@ -30,9 +30,7 @@
 		<!-- /wp:column -->
 		<!-- wp:column {"width":"50%"} -->
 		<div class="wp-block-column" style="flex-basis:50%">
-			<!-- wp:image {"sizeSlug":"large","style":{"border":{"radius":"12px"}}} -->
-			<figure class="wp-block-image size-large" style="border-radius:12px"><img src="https://placehold.co/600x400/0F7E80/FFFFFF?text=Strategy" alt="Strategy and planning"/></figure>
-			<!-- /wp:image -->
+			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/600x400/0F7E80/FFFFFF?text=Strategy","imageAlt":"Strategy and planning","style":{"border":{"radius":"12px"}}} /-->
 		</div>
 		<!-- /wp:column -->
 	</div>
@@ -42,9 +40,7 @@
 	<div class="wp-block-columns alignwide">
 		<!-- wp:column {"width":"50%"} -->
 		<div class="wp-block-column" style="flex-basis:50%">
-			<!-- wp:image {"sizeSlug":"large","style":{"border":{"radius":"12px"}}} -->
-			<figure class="wp-block-image size-large" style="border-radius:12px"><img src="https://placehold.co/600x400/F87A1F/FFFFFF?text=Execution" alt="Execution and delivery"/></figure>
-			<!-- /wp:image -->
+			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/600x400/F87A1F/FFFFFF?text=Execution","imageAlt":"Execution and delivery","style":{"border":{"radius":"12px"}}} /-->
 		</div>
 		<!-- /wp:column -->
 		<!-- wp:column {"verticalAlignment":"center","width":"50%"} -->

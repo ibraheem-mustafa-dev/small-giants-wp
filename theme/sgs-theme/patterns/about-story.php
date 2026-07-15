@@ -17,9 +17,7 @@
 
 		<!-- wp:column {"width":"45%"} -->
 		<div class="wp-block-column" style="flex-basis:45%">
-			<!-- wp:image {"sizeSlug":"large","style":{"border":{"radius":"16px"}}} -->
-			<figure class="wp-block-image size-large" style="border-radius:16px"><img src="https://placehold.co/500x600/0F7E80/FFFFFF?text=About+Image" alt="About us"/></figure>
-			<!-- /wp:image -->
+			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/500x600/0F7E80/FFFFFF?text=About+Image","imageAlt":"About us","style":{"border":{"radius":"16px"}}} /-->
 		</div>
 		<!-- /wp:column -->
 

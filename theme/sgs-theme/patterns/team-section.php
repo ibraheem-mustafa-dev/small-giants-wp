@@ -27,9 +27,7 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
-				<!-- wp:image {"sizeSlug":"thumbnail","align":"center","width":{"all":"120px"},"height":{"all":"120px"},"style":{"border":{"radius":"100%"}}} -->
-				<figure class="wp-block-image aligncenter size-thumbnail" style="border-radius:100%"><img src="https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ" alt="Alex Johnson" style="border-radius:100%;width:120px;height:120px"/></figure>
-				<!-- /wp:image -->
+				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ","imageAlt":"Alex Johnson","alignment":"center","maxWidth":"120px","height":"120px","style":{"border":{"radius":"100%"}}} /-->
 				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
 				<h3 class="wp-block-heading has-text-align-center has-large-font-size" style="margin-top:var(--wp--preset--spacing--20)">Alex Johnson</h3>
 				<!-- /wp:heading -->
@@ -48,9 +46,7 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
-				<!-- wp:image {"sizeSlug":"thumbnail","align":"center","width":{"all":"120px"},"height":{"all":"120px"},"style":{"border":{"radius":"100%"}}} -->
-				<figure class="wp-block-image aligncenter size-thumbnail" style="border-radius:100%"><img src="https://placehold.co/120x120/F87A1F/FFFFFF?text=SP" alt="Sarah Patel" style="border-radius:100%;width:120px;height:120px"/></figure>
-				<!-- /wp:image -->
+				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/F87A1F/FFFFFF?text=SP","imageAlt":"Sarah Patel","alignment":"center","maxWidth":"120px","height":"120px","style":{"border":{"radius":"100%"}}} /-->
 				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
 				<h3 class="wp-block-heading has-text-align-center has-large-font-size" style="margin-top:var(--wp--preset--spacing--20)">Sarah Patel</h3>
 				<!-- /wp:heading -->
@@ -69,9 +65,7 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
-				<!-- wp:image {"sizeSlug":"thumbnail","align":"center","width":{"all":"120px"},"height":{"all":"120px"},"style":{"border":{"radius":"100%"}}} -->
-				<figure class="wp-block-image aligncenter size-thumbnail" style="border-radius:100%"><img src="https://placehold.co/120x120/2E7D4F/FFFFFF?text=ML" alt="Marcus Lee" style="border-radius:100%;width:120px;height:120px"/></figure>
-				<!-- /wp:image -->
+				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/2E7D4F/FFFFFF?text=ML","imageAlt":"Marcus Lee","alignment":"center","maxWidth":"120px","height":"120px","style":{"border":{"radius":"100%"}}} /-->
 				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
 				<h3 class="wp-block-heading has-text-align-center has-large-font-size" style="margin-top:var(--wp--preset--spacing--20)">Marcus Lee</h3>
 				<!-- /wp:heading -->
