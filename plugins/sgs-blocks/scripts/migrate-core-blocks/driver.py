@@ -38,6 +38,7 @@ THEME = REPO / 'theme' / 'sgs-theme'
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 SCRATCH = REPO / '.claude' / 'scratch'
 DEFAULT_DB = pathlib.Path.home() / '.claude' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db'
+REPLACEMENTS_JSON = (REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'data' / 'block-replacements.json')
 
 # Track A hands-off list (Track C prompt, 2026-07-15) — must match build_register.py.
 HANDS_OFF = [
@@ -65,17 +66,45 @@ def zone_of(rel):
 
 
 def load_replaces_map(db_path):
-    conn = sqlite3.connect(db_path)
-    rows = conn.execute(
-        "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces != ''"
-    ).fetchall()
-    conn.close()
+    """Load the core->SGS pairing map from its SINGLE SOURCE OF TRUTH.
+
+    `scripts/data/block-replacements.json` is the canonical, version-controlled
+    record (D270) — its own header says so, and `blocks.replaces` in
+    sgs-framework.db is a DERIVED COPY populated from it by /sgs-update.
+
+    We read the JSON and CROSS-CHECK the DB copy, warning loudly on drift
+    rather than trusting a cache. This is not a hardcoded dict (R-31-1): it is
+    the authoritative data file. Proven necessary 2026-07-15 — a concurrent
+    /sgs-update left blocks.replaces with 0 of its 22 rows, which would have
+    silently halted (or worse, narrowed) a migration sweep.
+    """
+    data = json.loads(REPLACEMENTS_JSON.read_text(encoding='utf-8'))
     out = {}
-    for slug, replaces in rows:
-        for core in [c.strip() for c in replaces.split(',') if c.strip()]:
+    for slug, replaces in data.items():
+        if slug.startswith('__'):
+            continue  # __comment__ et al
+        cores = replaces if isinstance(replaces, list) else str(replaces).split(',')
+        for core in [str(c).strip() for c in cores if str(c).strip()]:
             out[core] = slug
     if not out:
-        raise SystemExit(f'blocks.replaces empty in {db_path} — wrong DB?')
+        raise SystemExit(f'no pairings in {REPLACEMENTS_JSON} — refusing to run blind.')
+
+    try:
+        conn = sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
+        rows = conn.execute(
+            "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces != ''"
+        ).fetchall()
+        conn.close()
+        db_map = {}
+        for slug, replaces in rows:
+            for core in [c.strip() for c in replaces.split(',') if c.strip()]:
+                db_map[core] = slug
+        if db_map != out:
+            print(f'[warn] blocks.replaces (derived cache) disagrees with '
+                  f'{REPLACEMENTS_JSON.name}: {len(db_map)} vs {len(out)} pairings. '
+                  f'Using the JSON source of truth. Re-run /sgs-update to reconcile the DB.')
+    except sqlite3.Error as e:
+        print(f'[warn] could not cross-check blocks.replaces ({e}) — using the JSON source of truth.')
     return out
 
 
