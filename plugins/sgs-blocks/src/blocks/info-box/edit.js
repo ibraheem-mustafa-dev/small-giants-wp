@@ -172,7 +172,9 @@ const MEDIA_TYPE_OPTIONS = [
  * type are set here; the child block's own defaults cover the rest.
  */
 const MEDIA_TYPE_DEFAULTS = {
-	icon:  { blockName: 'sgs/icon',  attrs: { iconSource: 'lucide', icon: 'star-filled', iconColour: 'primary', iconBackgroundColour: 'accent-light', iconSize: 'medium' } },
+	// Attr names MUST match sgs/icon block.json (iconName / backgroundColour /
+	// numeric iconSize) — WP silently discards undeclared attrs (D338).
+	icon:  { blockName: 'sgs/icon',  attrs: { iconSource: 'lucide', iconName: 'star', iconColour: 'primary', backgroundColour: 'accent-light', backgroundShape: 'circle', iconSize: 32 } },
 	emoji: { blockName: 'sgs/icon',  attrs: { iconSource: 'emoji', emojiChar: '⭐' } },
 	image: { blockName: 'sgs/media', attrs: { mediaType: 'image' } },
 	video: { blockName: 'sgs/media', attrs: { mediaType: 'video' } },
