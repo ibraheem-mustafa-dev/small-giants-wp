@@ -27,7 +27,10 @@
  *   prefix 'title'  → titleFontSize / …    prefix 'pill' → pillFontSize / …
  *
  * Attribute shape (UNCHANGED — consumers + PHP helper work with zero changes):
- *   {prefix}FontSize        number   (e.g. 18)        — desktop
+ *   {prefix}FontSize        number   (e.g. 18)        — desktop; blocks that
+ *                           opt in via fontSizePresets may ALSO store a theme
+ *                           preset slug STRING (e.g. 'small') here — the PHP
+ *                           side resolves it to var(--wp--preset--font-size--…)
  *   {prefix}FontSizeUnit    string   (px|em|rem)       — shared across breakpoints
  *   {prefix}FontSizeTablet  number
  *   {prefix}FontSizeMobile  number
@@ -43,6 +46,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { SelectControl, __experimentalUnitControl as UnitControl } from '@wordpress/components';
+import { useSettings } from '@wordpress/block-editor';
 import ResponsiveControl from './ResponsiveControl';
 
 export const SGS_FONT_WEIGHT_OPTIONS = [
@@ -168,6 +172,12 @@ function composeUnitValue( num, unit ) {
 	if ( num === undefined || num === null || num === '' ) {
 		return '';
 	}
+	// A string value is a theme preset slug (or a legacy raw-CSS size) — not
+	// representable in the numeric UnitControl. Show blank rather than a
+	// garbled concatenation like 'smallpx'.
+	if ( typeof num === 'string' ) {
+		return '';
+	}
 	return `${ num }${ unit || '' }`;
 }
 
@@ -219,6 +229,10 @@ function parseUnitValue( raw, currentUnit ) {
  * @param {boolean}  [props.showStyle=true]
  * @param {boolean}  [props.showLineHeight=true]
  * @param {boolean}  [props.showResponsive=true] Show device-icon switcher for size.
+ * @param {boolean}  [props.fontSizePresets=false] Offer the theme.json preset
+ *   scale as a dropdown. OPT-IN: only pass true when the block's
+ *   {prefix}FontSize attr is typed ["number","string"] — on a number-only
+ *   attr WP discards the stored slug at render (silent-discard class, D338).
  * @return {JSX.Element} Controls fragment.
  */
 export default function TypographyControls( {
@@ -230,12 +244,40 @@ export default function TypographyControls( {
 	showStyle = true,
 	showLineHeight = true,
 	showResponsive = true,
+	fontSizePresets = false,
 	showDecoration = false,
 	showTransform = false,
 	showLetterSpacing = false,
 	showHover = false,
 } ) {
 	const k = typographyAttrKeys( prefix );
+
+	// Theme preset font-size scale (guard against null before settings load —
+	// same pattern as SpacingControl.js). Hook must run unconditionally.
+	const [ themeFontSizes ] = useSettings( 'typography.fontSizes' );
+	const fontSizePresetOptions = [
+		{ label: __( '— none —', 'sgs-blocks' ), value: '' },
+		...( themeFontSizes ?? [] ).map( ( size ) => ( {
+			label: `${ size.name || size.slug } (${ size.size })`,
+			value: size.slug,
+		} ) ),
+	];
+
+	/**
+	 * onChange for the preset-size dropdown. A preset is global (no device
+	 * tiers), so selecting one stores the slug string on the base attr and
+	 * clears the tablet/mobile numeric tiers; '— none —' clears back to unset.
+	 * Typing a numeric size afterwards overwrites the slug (mutual exclusion).
+	 *
+	 * @param {string} slug Preset slug or '' to clear.
+	 */
+	function onFontSizePresetChange( slug ) {
+		setAttributes( {
+			[ k.fontSize ]: slug || undefined,
+			[ k.fontSizeTablet ]: undefined,
+			[ k.fontSizeMobile ]: undefined,
+		} );
+	}
 
 	const currentLetterSpacingUnit = attributes[ k.letterSpacingUnit ] || 'px';
 
@@ -294,6 +336,20 @@ export default function TypographyControls( {
 
 	return (
 		<>
+			{ showSize && fontSizePresets && (
+				<SelectControl
+					label={ __( 'Preset size', 'sgs-blocks' ) }
+					value={
+						typeof attributes[ k.fontSize ] === 'string'
+							? attributes[ k.fontSize ]
+							: ''
+					}
+					options={ fontSizePresetOptions }
+					onChange={ onFontSizePresetChange }
+					__nextHasNoMarginBottom
+				/>
+			) }
+
 			{ showSize && showResponsive && (
 				<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
 					{ ( breakpoint ) => (

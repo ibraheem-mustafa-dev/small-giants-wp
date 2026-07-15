@@ -31,7 +31,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, fontSizeVar } from '../../utils';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -159,7 +159,12 @@ function buildEditorStyle( attributes ) {
 			: colourVar( textColour );
 	}
 	if ( fontSize ) {
-		previewStyle.fontSize = `${ fontSize }${ fontSizeUnit }`;
+		// A string fontSize is a theme preset slug — resolve to the preset
+		// custom property (mirrors sgs_font_size_value() server-side).
+		previewStyle.fontSize =
+			typeof fontSize === 'string'
+				? fontSizeVar( fontSize )
+				: `${ fontSize }${ fontSizeUnit }`;
 	}
 	if ( fontWeight ) {
 		previewStyle.fontWeight = fontWeight;
@@ -324,6 +329,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						prefix=""
 						showSize={ true }
+						fontSizePresets={ true }
 						showWeight={ true }
 						showStyle={ true }
 						showLineHeight={ true }

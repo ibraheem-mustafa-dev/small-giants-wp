@@ -95,7 +95,7 @@
       "default": ""
     },
     "fontSize": {
-      "type": "number",
+      "type": [ "number", "string" ],
       "default": null
     },
     "fontSizeUnit": {

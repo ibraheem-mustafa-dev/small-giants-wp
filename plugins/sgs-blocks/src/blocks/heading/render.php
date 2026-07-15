@@ -417,6 +417,17 @@ $scoped_css[] = sgs_responsive_css_rule(
 	$root_sel
 );
 
+// A STRING fontSize is a theme preset slug (core-block parity: `"fontSize":"small"`).
+// The numeric emitter above skips non-numerics, so resolve it via
+// sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same selector.
+// Mirrors the canonical legacy-string branch in helpers-typography.php.
+if ( isset( $attributes['fontSize'] ) && '' !== $attributes['fontSize'] && ! is_numeric( $attributes['fontSize'] ) ) {
+	$preset_font_size = sgs_font_size_value( (string) $attributes['fontSize'] );
+	if ( '' !== $preset_font_size ) {
+		$scoped_css[] = "{$root_sel}{font-size:{$preset_font_size};}";
+	}
+}
+
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';

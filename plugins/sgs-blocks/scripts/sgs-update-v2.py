@@ -149,6 +149,24 @@ def _file_hash(path: Path) -> str:
     return h.hexdigest()
 
 
+def _canonical_attr_type(raw) -> str:
+    """Collapse a block.json JSON-schema type UNION (list) to one DB string.
+
+    block.json may declare e.g. ["number","string"] (sgs/heading + sgs/text
+    fontSize accept a numeric size OR a theme preset slug). The
+    block_attributes.attr_type column is a single string and the converter's
+    attr_is_number() matches attr_type IN ('number','integer') — so prefer the
+    numeric member when present (preserves the numeric font-size lift), else
+    take the first entry. Binding the raw list crashes sqlite3.
+    """
+    if isinstance(raw, list) and raw:
+        for numeric in ("number", "integer"):
+            if numeric in raw:
+                return numeric
+        return str(raw[0])
+    return raw
+
+
 def _parent_for_block(block_dir_name: str) -> str | None:
     """Return parent slug for a block dir name, or None."""
     for parent, children in PARENT_CHILD.items():
@@ -344,7 +362,7 @@ def _index_sgs_block_files(
                     "WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'",
                     (slug, attr_name),
                 ).fetchone()
-                attr_type = attr_def.get("type", "string")
+                attr_type = _canonical_attr_type(attr_def.get("type", "string"))
                 default = attr_def.get("default")
                 enum_vals = attr_def.get("enum")
                 is_responsive = (
@@ -579,7 +597,7 @@ def _index_sgs_block_files(
         for attr_name, attr_def in attrs.items():
             if not isinstance(attr_def, dict):
                 continue
-            attr_type = attr_def.get("type", "string")
+            attr_type = _canonical_attr_type(attr_def.get("type", "string"))
             default = attr_def.get("default")
             enum_vals = attr_def.get("enum")
             is_responsive = (
