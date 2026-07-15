@@ -77,12 +77,20 @@ They are currently CSS literals in `adaptive-nav/style.css` — **that file is t
 ## STEP 7 — Goal 3: de-hardcode the base blocks (Bean's definition, corrected)
 **NOT "empty containers derived from exemplars".** Bean: *"Goal 3 is about de-hardcoding all of that content you had inserted into the base blocks/files when trying to set up the Indus and Mamas header and footer row blocks."* Target: `site-header/edit.js` + `site-footer/edit.js` TEMPLATEs + the row blocks.
 
-**Headings rule (Bean, 2026-07-15):** headings must NOT be in the shared header/footer default — only in opt-in variations/patterns. *"Some even want no footer and leave it just with the copyright/website credit strip."* `parts/footer.html` references `framework-footer-default`, so that IS the shared default ⇒ strip its `Quick Links`/`Contact`/`Opening Hours` headings; the rich versions already exist as opt-in patterns (`footer-compact`, `footer-informational`, `footer-minimal`).
+**Headings rule (Bean, 2026-07-15):** blocks in general must NOT be in the shared header/footer default — only in opt-in variations/patterns. *"Some even want no footer and leave it just with the copyright/website credit strip."* `parts/footer.html` references `framework-footer-default`, so that IS the shared default ⇒ strip its `Quick Links`/`Contact`/`Opening Hours` headings; the rich versions already exist as opt-in patterns (`footer-compact`, `footer-informational`, `footer-minimal`).
 *(NB: those headings were RESTORED on 2026-07-15 because emptying them created 3 WCAG "heading must have content" violations. Bean's rule supersedes: REMOVE the heading blocks entirely, don't empty them.)*
 
 **Does NOT overlap Track C** (Bean checked, correct): Track C = lossless core→SGS migration in patterns; Goal 3 = de-hardcoding base blocks.
 
-## STEP 8 — Attribution element (spec WRITTEN, build it)
+> ## ✅ STEPS 8, 8b, 8c, 9, 10 WERE COMPLETED IN THE D338 SESSION (2026-07-15)
+>
+> They are kept below as the RECORD of what was done + what remains, because Tracks B and C depend on them. **Do not re-do them.** What actually remains from this block:
+> - **6 `sgs/info-box` dead attrs** (Step 9) — verdict **B (genuine missing capability)**, needs a pattern restructure to child `sgs/icon` blocks. NOT a rename.
+> - **An inspector colour control for `business-info`** (Step 8) — pre-existing gap across ALL FOUR colour attrs (`iconColour`/`textColour`/`labelColour`/`linkHoverColour`); render.php:50 already says "set programmatically or via a future colour control". The pipeline sets these (Bean), so it is logged, not urgent.
+> - **The draft edits** (Step 8): add `class="sgs-footer__credit"` to both drafts + **add the missing credit to the Mama's draft**, then `/ui-ux-pro-max` enforcement (`P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`).
+> - **Everything is UNVERIFIED and STOP-67-held** — Step 0 still gates it all.
+
+## STEP 8 — Attribution element (spec WRITTEN, build it) — ✅ BUILT D338
 Spec: **Spec 02 §"`sgs/business-info` `displayType="attribution"`"** + **Spec 33 §"Website-credit recognition"**. Already shipped: the enum value, the variation, the render case, `SGS_ATTRIBUTION_URL`/`TEXT` constants, and both patterns switched to it. **Still to build:** the typography-only attr surface, the WCAG-resolved default colour, and the left→right `#e7d768` hover sweep.
 
 Prerequisite draft edits (Bean-approved): add `class="sgs-footer__credit"` to both drafts; **add the missing credit to the Mama's draft** (it has none — its 2nd bottom-bar span is a TAGLINE, so a positional rule would map the tagline to Bean's backlink). Then `/ui-ux-pro-max` must enforce the classifier on all future builds (parked `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`).
@@ -111,6 +119,31 @@ Neither declares typography supports ⇒ **cannot represent a preset slug** (`"f
 | `sgs/product-card` | `ctaFontSize` | 15 | Needs Bean's call |
 
 **Unblocks Track C's 100 preset-slug instances** — do this BEFORE Track C swaps `core/heading`/`core/paragraph`, or those conversions hardcode pixels into framework patterns (a framework regression).
+
+## STEP 8c — ⛔ HIGH BLAST RADIUS: the heading fix changes EVERY heading on BOTH sites
+
+**Shipped in the working tree (D338, uncommitted, STOP-67-held):** `heading/block.json` `fontSize` `28`→`null` + `heading/style.css` `font-size: 28px` (+36px @768) REMOVED, so the `<h1>`–`<h6>` inherits theme.json's per-tag scale (Bean's model: "the heading block should have the exact same thing depending on what h tag you set").
+
+**/qc-council Stage-5 baseline — MEASURED, this is the verify target:**
+
+| h-tag | BEFORE (hardcoded, all tags identical) | AFTER (theme.json inherit) |
+|---|---|---|
+| h1 | 36px @768 | **50px** (hero) ↑ |
+| h2 | 36px | 36px (xx-large) — unchanged |
+| h3 | 36px | **24px** (x-large) ↓ |
+| h4 | 36px | **20px** (large) ↓ |
+| h5 | 36px | **18px** (medium) ↓ |
+| h6 | 36px | **14px** (small) ↓ |
+
+**Verdict: `validated-hypothesis` — a REAL fix, not a no-op** (baseline genuinely differs from predicted post-fix). But h3–h6 shrink substantially on **every page of both live sites**. This is correct hierarchy replacing a flat 36px — and it is a visible change Bean has NOT seen. **R-31-13: his eye is co-authoritative. Screenshot both sites at 375 + 1440 BEFORE committing.** If a specific draft genuinely wants a bigger h3, that is a per-instance attr value or a theme.json change — never a return to the block-level hardcode.
+
+**Stage-1.5 correction to D338's own commit message:** it claims theme.json's `h2` selector is specificity `(0,0,1)`. WP actually emits element styles as `:root :where(h2)` = **`(0,1,0)`**. The conclusion is unaffected (the block rule at `0,2,0` beat it either way, so removing it lets theme.json apply) but the stated evidence was wrong — verify the emitted selector on the live DOM before repeating the claim.
+
+**Bean-decided, do NOT "fix" these back:**
+- `heading` `font-weight:700` / `line-height:1.2` — **REMOVED from the block; theme.json owns them.** *(An earlier version of this doc said they "STAY as helpful defaults" — that was me paraphrasing Bean into agreeing with what I'd already done. He said the opposite: "it makes sense for it to be consistent across tags, not just as a default here. The real solution is to set those across h tags in the per tag styles.")* **theme.json ALREADY does exactly that** — `styles.elements.heading.typography` = `{fontFamily: heading, fontWeight: "700", lineHeight: "1.2"}` across all h1–h6, with `elements.h5`/`h6` as per-tag overrides (h6 adds uppercase + letterSpacing). The block rule was a DUPLICATE silently beating it: `(0,2,0)` vs `:root :where(h1..h6)` at `(0,1,0)`. Values were identical (700/1.2) ⇒ deleting it is **zero visual change** but makes theme.json authoritative, so a client's theme-snapshot can actually change heading weight per-tag.
+- **THE TEST (Bean-locked, use it everywhere):** not *"is it a literal?"* but **"does it override a theme-wide default, or hinder the pipeline?"** A block literal that DUPLICATES a theme.json `styles.elements` default is a silent override that disables the theme — **check theme.json BEFORE adding a typography literal to a block.**
+- `sgs/label` `fontSize:12` **STAYS.** It renders a `<span>` and is an eyebrow/kicker, NOT an h-tag equivalent — an `<h5>` above an `<h2>` would fragment the heading outline (skipped level + false hierarchy for screen readers). The block's own contract already says "Atomic eyebrow / kicker / badge text block". **Origin (Bean):** the 12/600/1.5px values come from Mama's draft `.sgs-section-heading__label` — but that draft has OTHER label variants (gift-section cards, trial product card) the default does NOT cover. So the PIPELINE must set label typography per instance rather than lean on the default. Overridable ⇒ acceptable.
+- `product-card` `ctaFontSize` `15`→`null` — matches `sgs/button`'s `null` (Bean: "should just be the same default as the sgs/button default").
 
 ## STEP 9 — Triage the 9 remaining dead attrs
 `python plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py` (NEW gate, committed). Each needs a judgment call — typo, or a capability the block genuinely lacks?
