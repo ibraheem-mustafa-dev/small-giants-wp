@@ -65,6 +65,35 @@ SKIP_NAMES = {
     '2026-07-15-header-footer-hardcoding-register.md',
 }
 
+# A filename allow-list was NOT ENOUGH and it shipped a live corruption: this script
+# rewrote `.claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md`'s sentence
+#   'NOT "Spec 15" — Spec 15 is abrogated'   ->   'NOT "Spec 31" — Spec 31 is abrogated'
+# and that reached a commit. Spec 31 is the LIVE canonical cloning spec, so the doc then
+# told the next session the live spec was dead. The filename list only covered the meta
+# docs; ANY doc may discuss the abrogation.
+#
+# The real predicate is SUBJECT-vs-CITATION, not which file it lives in. A line that
+# TALKS ABOUT Spec 15 being dead must never be rewritten — rewriting it inverts its
+# meaning. Skip the LINE, not the file, so genuine citations elsewhere in the same file
+# are still fixed.
+SUBJECT_MARKERS = (
+    'abrogat',        # "Spec 15 is abrogated" / "abrogation"
+    'does not exist',
+    'deleted',
+    'retired',
+    'superseded',
+    'NOT "Spec 15"',
+    'no longer',
+)
+
+
+def is_subject_line(line: str) -> bool:
+    """True when the line DISCUSSES Spec 15's abrogation rather than citing it."""
+    if 'pec 15' not in line:
+        return False
+    low = line.lower()
+    return any(m.lower() in low for m in SUBJECT_MARKERS)
+
 SEC = '§'  # section sign, kept out of the literals below so this file is self-safe
 
 RULES = [
@@ -108,10 +137,20 @@ def main() -> int:
             continue
         if 'pec 15' not in src:
             continue
-        out, n = src, 0
-        for pat, rep in RULES:
-            out, k = pat.subn(rep, out)
-            n += k
+        # Rewrite line-by-line so a SUBJECT line (one that says Spec 15 is abrogated) is
+        # left alone while genuine citations in the same file are still fixed. Rewriting
+        # a subject line INVERTS its meaning — that is how this script published
+        # "Spec 31 is abrogated" about the LIVE cloning spec.
+        out_lines, n = [], 0
+        for line in src.splitlines(keepends=True):
+            if is_subject_line(line):
+                out_lines.append(line)
+                continue
+            for pat, rep in RULES:
+                line, k = pat.subn(rep, line)
+                n += k
+            out_lines.append(line)
+        out = ''.join(out_lines)
         if n:
             total += n
             touched += 1

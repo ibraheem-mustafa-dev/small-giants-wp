@@ -349,7 +349,7 @@ So there is nothing to match on, and the two drafts disagree on what the second 
 
 Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft-inherited gap is fixed by editing the draft and re-cloning — **never** a converter carve-out. Two prerequisite draft edits, both Bean-approved 2026-07-15:
 
-1. **Add the classifier** `class="sgs-footer__credit"` to the credit element in every Bean-controlled draft. SGS-BEM per **Spec 00 §3 / §3.1** (NOT "Spec 31" — Spec 31 is abrogated and `specs/15-*` does not exist).
+1. **Add the classifier** `class="sgs-footer__credit"` to the credit element in every Bean-controlled draft. SGS-BEM per **Spec 00 §3 / §3.1** (NOT "Spec 15" — Spec 15 is abrogated and `specs/15-*` does not exist; **Spec 31 is LIVE** — it is the canonical cloning-pipeline spec and Spec 15's successor).
 2. **Add the missing credit to the Mama's draft** — it has none. Its existing tagline span stays as a tagline and must map to `business-info displayType="description"`, not to attribution.
 
 ### Recognition — two independent recognisers (belt and braces, Bean-directed)
