@@ -59,18 +59,16 @@ KNOWN_EQUIV = {
 
 
 def load_replaces_map(db_path):
-    conn = sqlite3.connect(db_path)
-    rows = conn.execute(
-        "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces != ''"
-    ).fetchall()
-    conn.close()
-    core_to_sgs = {}
-    for slug, replaces in rows:
-        for core in [c.strip() for c in replaces.split(',') if c.strip()]:
-            core_to_sgs[core] = slug
-    if not core_to_sgs:
-        raise SystemExit(f'blocks.replaces returned nothing from {db_path} — wrong DB?')
-    return core_to_sgs
+    """Same source-of-truth contract as driver.load_replaces_map — see there.
+
+    `scripts/data/block-replacements.json` is canonical (D270); blocks.replaces
+    is a derived cache populated from it by /sgs-update. Read the JSON, warn on
+    cache drift. (A concurrent /sgs-update emptied the cache mid-session on
+    2026-07-15; a register built off it would have silently reported zero work.)
+    """
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    from driver import load_replaces_map as canonical  # noqa: PLC0415 — one contract, one impl
+    return canonical(db_path)
 
 
 def load_target_schemas():
