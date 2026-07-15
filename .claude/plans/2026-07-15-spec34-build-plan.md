@@ -289,6 +289,58 @@ QA Gate C — FR-34-7 full live gate + Bean screenshots + commits
 
 ---
 
+## ⛔ QC-COUNCIL AMENDMENTS (2026-07-15, 3 raters, all GO-WITH-MUST-FIX — these OVERRIDE any conflicting line in the prompts below; full report `.claude/reports/2026-07-15-spec34-qc-council.md`)
+
+**Dispatch-A deltas (all now specced in the amended FR-34-1/34-2 — the agent reads them,
+this is the checklist):**
+1. **RE-PARENT drawer + scrim to `<body>` at first open** (view.js, idempotent) — without
+   top-layer, the container wrapper's `(0,2,0) position:relative` child rule beats the
+   drawer's `(0,1,0) fixed`, and any transformed ancestor breaks `fixed` entirely.
+   Regression probe: computed `position === 'fixed'` while open.
+2. Scrim = REAL element with its OWN click listener — the existing
+   `e.target === dialog` (`::backdrop`) idiom silently dies with `.show()`. Do not reuse it.
+3. NO hand-rolled focus trap — containment is EMERGENT from the selective freeze (the
+   live region is the whole header row incl. cart/logo). Keep: focus-first-focusable on
+   open (skip non-interactive), explicit `toggle.focus()` on EVERY close path (Safari),
+   ESC bound at `document` level guarded on this instance.
+4. Freeze walk: direct children of `<body>` (and one level into `.wp-site-blocks`),
+   skipping {toggle chain, drawer, scrim, `#wpadminbar`}. Track + restore the exact set.
+5. Both toggle icons carry `aria-hidden="true" focusable="false"` (lucide helper emits
+   neither); swap via `display:none` on `[aria-expanded]` — pinned, not opacity.
+6. Geometry top offset = `min(var(--sgs-header-height, 0px), 50dvh)` (zoom floor);
+   z-index scrim 99990 / drawer 99991 (below `#wpadminbar`).
+7. `aria-modal` is NEVER set. The `<dialog>` stays, opened with `.show()`.
+
+**Dispatch-B deltas:** the accordion walk lives in
+`includes/class-sgs-adaptive-nav-renderer.php` (L328–640), NOT render.php — read that
+file; the extraction is a deliberate COPY re-rooted to `sgs-nav-menu__*` (the renderer
+hardcodes drawer class names — reuse-by-call emits wrong classes); uid =
+md5(attributes)+anchor (aria-controls collision — two default instances on one page is a
+REQUIRED test); `SGS_Nav_Menu_Source` reused by call.
+
+**Step 3 (integrator, me) additions:** DELETE the now-dead
+`render_drawer_*` methods from `class-sgs-adaptive-nav-renderer.php` (single caller
+removed) and `setupDrawerAccordions()` from adaptive-nav's view.js (nav-menu owns the
+accordion JS — duplicates = double-toggle).
+
+**Dispatch-E deltas:** ⛔ INSERT `<!-- wp:sgs/nav-menu /-->` as FIRST child of
+`sgs/adaptive-nav` in BOTH `parts/header.html` and `framework-header-default.php` —
+they already carry children so the template will NOT seed the menu; without this the
+flagship drawer ships with zero nav links. Add the FR-S4-5 byte-identity linter to the
+self-test. Also fix while in Spec 17: FR-S9-4's stale "Opens `sgs/mobile-nav`"
+acceptance line (block deleted D336) → "opens the FR-34-1 disclosure drawer".
+
+**Gate B additions:** probe an EMPTY `sgs/container` in the drawer renders zero output
+(claim was unverified — measure, don't assume); assert the accordion MENU LINKS render
+(not just business-info/socials).
+
+**Gate C additions:** accordion links present at all widths; two-default-nav-menu
+collision test; short-viewport probe (e.g. 768×400) — drawer content region keeps
+≥50dvh; logged-in probe — `#wpadminbar` stays interactive while open.
+
+**Verified pre-dispatch (A#4 closed):** zero stored instances of the 6 removed attrs in
+post_content on BOTH live sites (`wp db query`, publish+draft).
+
 ## Dispatch prompts (paste-and-run; the orchestrator injects nothing else)
 
 ### §Dispatch-A (Step 1, Opus) — disclosure presentation + toggle

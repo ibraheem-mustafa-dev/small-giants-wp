@@ -78,34 +78,79 @@ reached by AT while open"* becomes:
 > drawer contents. `showModal()` is therefore no longer the conferring mechanism;
 > modality-minus-header is provided explicitly (FR-34-1).
 
-Everything else in FR-S9-5 (focus containment, ESC, scrim-click-to-close, scroll lock,
-44px targets, translatable labels, no static `aria-modal`, elementFromPoint regression
-sweep) carries forward unchanged.
+Everything else in FR-S9-5 (ESC, scrim-click-to-close, scroll lock, 44px targets,
+translatable labels, no `aria-modal`, elementFromPoint regression sweep) carries forward
+unchanged. **Focus containment carries forward in PRINCIPLE but its boundary is
+REDEFINED by FR-34-1** (qc-council): the contained set is {live header row + drawer},
+containment is emergent from the selective freeze rather than a hand-rolled trap, and
+FR-S9-5's literal "Tab from the last focusable cycles to the first" bullet is amended in
+Spec 17 with a pointer here. FR-S9-5 also states the same background-frozen requirement
+in TWO bullets — both now carry the header-exception pointer (a session reading either
+literally must land on this spec).
 
 ## 4. Functional requirements
 
 ### FR-34-1 — Disclosure presentation: explicit geometry, selective freeze
 
-**Behaviour.** The drawer stops using `showModal()`/top-layer. It renders as a
-non-modal panel (`dialog.show()` or plain element — implementer's call, criteria below are
-mechanism-free) with:
+**Behaviour.** The drawer stops using `showModal()`/top-layer. It stays a `<dialog>`
+element opened with `.show()` (KJC-1; role `dialog` WITHOUT `aria-modal` — a non-modal
+dialog is the honest AT announcement for "panel that does not freeze the header";
+`aria-modal` is NEVER set, statically or dynamically), with:
 
-- **Geometry (explicit, never UA-derived):** `position: fixed; top:
-  var(--sgs-header-height, 0); left: 0; right: 0; bottom: 0` — full width, viewport minus
-  header. The existing `--sgs-header-height` ResizeObserver publisher (FR-S9-9, shipped)
-  is the single height source; a `0` fallback means a missing publisher degrades to
-  full-screen, never to a mis-sized panel. These live in the block's `style.css` base rule
-  (they are structural, not per-instance — Spec 32 compliant).
-- **Scrim:** an element/`::before` fixed at `inset: var(--sgs-header-height, 0) 0 0 0`,
-  `rgba(0,0,0,.6)`, `pointer-events: auto` (click = close), never covering the header.
-- **Selective freeze:** on open, `inert` + `aria-hidden="true"` are applied to every child
-  of `.wp-site-blocks`/`<body>` that is NOT an ancestor of the nav toggle and NOT the
-  drawer/scrim. The header ancestor chain stays live. On close, fully restored. (The D323
-  self-inert lesson binds: never inert an ancestor of the drawer itself.)
-- **Focus:** contained across {header toggle + drawer} while open — Tab from the last
-  drawer focusable wraps to the toggle; Shift+Tab from the toggle wraps back. ESC closes
-  and returns focus to the toggle. Focus lands on the first focusable inside the drawer on
-  open.
+- **Re-parent at open (qc-council MUST-FIX, triangulated ×3):** on first open, view.js
+  moves the drawer AND the scrim to be direct children of `<body>` (they stay there for
+  the page's lifetime; idempotent). This is the proven D323 pattern, now load-bearing for
+  CSS too: without top-layer promotion, (a) the container wrapper's own
+  `.sgs-container > *:not(.sgs-container__overlay) { position: relative }` rule at
+  (0,2,0) would beat the drawer's (0,1,0) `position: fixed` — the exact clash the block's
+  current style.css comment documents as masked by `showModal()` — and (b) ANY
+  transformed/filtered/`contain`ed ancestor (e.g. a scroll-animation class on a header
+  row) would silently convert `fixed` into ancestor-relative positioning. Re-parenting to
+  `<body>` removes every such ancestor by construction. Regression test: computed
+  `position` of the OPEN drawer === `fixed` at all three widths.
+- **Geometry (explicit, never UA-derived):** `position: fixed;
+  top: min(var(--sgs-header-height, 0px), 50dvh); left: 0; right: 0; bottom: 0` — full
+  width, viewport minus header. The existing `--sgs-header-height` ResizeObserver
+  publisher (FR-S9-9, shipped; verified to publish for EVERY header, not only sticky) is
+  the single height source; the `0px` fallback degrades to full-screen, never mis-sized;
+  the `min(…, 50dvh)` cap guarantees the drawer keeps at least half the viewport when a
+  wrapped multi-row header balloons at high zoom (WCAG 1.4.10/1.4.4 — the drawer content
+  region can never collapse to zero). These live in the block's `style.css` base rule
+  (structural, not per-instance — Spec 32 compliant) and hold at (0,1,0) BECAUSE of the
+  re-parent above.
+- **Scrim:** a REAL element rendered by render.php as the dialog's sibling (and
+  re-parented with it) — NOT `::backdrop`, which ceases to exist without `showModal()`,
+  and NOT the current `e.target === dialog` click-detection idiom, which silently stops
+  working with `.show()` (qc-council MUST-FIX). Fixed at
+  `inset: min(var(--sgs-header-height, 0px), 50dvh) 0 0 0`, `rgba(0,0,0,.6)`, its own
+  click listener = close. Never covers the header.
+- **Stacking (explicit, not DOM-order-incidental):** scrim `z-index: 99990`, drawer
+  `z-index: 99991` — above all page content, deliberately BELOW `#wpadminbar` (99999).
+- **Selective freeze:** on open, `inert` + `aria-hidden="true"` are applied to each
+  direct child of `<body>` EXCEPT: (1) the child containing the nav toggle (the header
+  chain — found via `child.contains(toggle)`), (2) the drawer, (3) the scrim, and
+  (4) `#wpadminbar` (explicitly EXCLUDED — freezing the admin toolbar for logged-in
+  editors serves nobody; it sits above the header and outside the page's content flow).
+  When `.wp-site-blocks` exists, the same walk is applied one level deeper inside it (its
+  children: header part stays live, main/footer freeze). The touched set is tracked and
+  restored exactly on close. The D323 self-inert lesson binds: never inert an ancestor of
+  the drawer — satisfied by construction post-re-parent. `inert`+`aria-hidden` paired is
+  deliberate belt-and-braces (older-Safari inert gaps). Browser floor: inert is native in
+  Chrome 102+/Safari 16.4+/Firefox 112+; below that, `aria-hidden` still applies and the
+  scrim still intercepts pointer input across the frozen area — accepted degradation.
+  Known consequence, accepted: `aria-live` regions inside frozen content (e.g. cart
+  toasts) do not announce while the drawer is open.
+- **Focus:** containment is EMERGENT from the freeze, not a hand-rolled trap (qc-council
+  MUST-FIX — the live region is the whole header row, incl. cart/logo, so a hardcoded
+  toggle-wrap would fight natural Tab order): with everything else inert, the browser's
+  own Tab order already cycles through {live header elements + drawer contents} only. No
+  wrap-target code. On open, focus moves to the first FOCUSABLE element inside the drawer
+  (query `a[href], button, [tabindex]:not([tabindex="-1"])…` — skip non-interactive
+  first children); if none exists, focus the drawer itself via `tabindex="-1"`. ESC —
+  bound at `document` level, guarded on this instance being open (focus may legitimately
+  sit on a live header element) — closes and EXPLICITLY calls `toggle.focus()` (Safari
+  does not focus buttons on click; never rely on native click-focus). Scrim-click and
+  toggle-re-click close paths do the same explicit focus return.
 - **Scroll lock:** existing `lockScroll()`/`unlockScroll()` INCLUDING the D340 scrollbar
   pin, unchanged.
 - **Animation:** slide-down from under the header (`transform: translateY(-100%)` →
@@ -114,6 +159,11 @@ mechanism-free) with:
   Bean's eye at QC (flagged, not silently decided).
 - **No-JS:** the toggle is a no-op link/summary fallback exactly as today (progressive
   enhancement clause of FR-S9-5 unchanged).
+- **Semantics note for implementers:** this drawer is a deliberate dialog/disclosure
+  HYBRID — `aria-expanded` disclosure semantics on the toggle + a non-modal dialog panel
+  + freeze-based containment. It is NOT the mega-panel's pure-disclosure pattern (no
+  freeze, no ESC-mandate) documented at the top of view.js — do not "simplify" one into
+  the other in either direction.
 
 **Model:** Opus (a11y-critical shared mechanism; the freeze/focus logic is the risk).
 **Test strategy.** (1) Unit-ish: none — this is DOM behaviour. (2) Live Playwright 375 +
@@ -130,8 +180,13 @@ force-disabled then restored (the late-CSS A/B — proves the class is dead).
 ### FR-34-2 — Burger ↔ X toggle; drawer head row removed
 
 **Behaviour.** The header burger toggles `aria-expanded` and swaps its icon burger↔X in
-place (both icons server-rendered, CSS-toggled on `[aria-expanded]` — no JS icon
-injection). It remains the ONLY close affordance chrome; the drawer's internal head row
+place — both icons server-rendered inside the button, each carrying
+`aria-hidden="true" focusable="false"` explicitly (`sgs_get_lucide_icon()` emits bare
+SVG with neither — qc-council grep-verified; match the `buildChevron()` idiom), swapped
+via `display: none` keyed on `[aria-expanded]` (pinned to `display`, NOT opacity — a
+faded icon would stay in the accessibility tree). The accessible name stays
+`menuButtonLabel` ("Menu") in BOTH states — APG-correct for an icon-only disclosure
+toggle; state is conveyed by `aria-expanded` alone. It remains the ONLY close affordance chrome; the drawer's internal head row
 (logo + close button) is **REMOVED entirely**, along with its now-purposeless attrs:
 `showLogo`, `drawerHeadBg`, `logoMaxWidth`, `closeButtonSize`, `drawerSide`,
 `drawerWidth` (geometry is now fixed full-width-under-header; shipped D339/D340, zero
@@ -172,10 +227,23 @@ after deploy. (4) The no-inline audit stays 0/77.
 ### FR-34-4 — `sgs/nav-menu`: the menu as a first-class styleable block
 
 **Behaviour.** New block `sgs/nav-menu` (5-file pattern, auto-registered from
-`build/blocks`). Renders the accordion menu the drawer renders today — markup extracted
-from `adaptive-nav/render.php`'s drawer-menu walk (`SGS_Nav_Menu_Source` reuse, all links
-server-rendered `<a href>`, ARIA disclosure accordions, `aria-current="page"`, 44px rows,
-mega-menu items rendered as accordion panels exactly as today).
+`build/blocks`). Renders the accordion menu the drawer renders today — the walk lives in
+**`includes/class-sgs-adaptive-nav-renderer.php`** (`render_drawer_menu` →
+`render_drawer_items`/`_link`/`_submenu`/`_mega_menu`/`_page_list`, L328–L640), NOT in
+render.php, which only calls it (qc-council file-pointer fix). The extraction is a
+**deliberate COPY re-rooted to `sgs-nav-menu__*` BEM classes** — the renderer's private
+methods hardcode `sgs-adaptive-nav__drawer-*` class names, so reuse-by-call would emit
+the wrong classes; and after FR-34-3 stops calling them, those drawer methods become
+dead code and are DELETED in the same integration step (single owner, no duplicate
+accordion listeners — `setupDrawerAccordions()` leaves adaptive-nav's view.js when
+nav-menu's own view.js takes over). `SGS_Nav_Menu_Source` (menu RESOLUTION) is reused
+by call — it is a stable shared static library. All links server-rendered `<a href>`,
+ARIA disclosure accordions, `aria-current="page"`, 44px rows, mega-menu items rendered
+as accordion panels exactly as today. **Uid discipline (qc-council):** the block's uid
+uses the same md5(attributes)+anchor derivation as adaptive-nav — its uid feeds
+per-panel `aria-controls` ids, and two default-attribute instances on one page (drawer +
+footer column, the spec's own example) would otherwise collide; test with two default
+instances on one page.
 
 - **Menu source:** attr `ref` (number, default null). `null` = inherit the parent
   `sgs/adaptive-nav`'s resolved menu via **block context** (`sgs/adaptive-nav` declares
@@ -233,8 +301,14 @@ tier (measure at 1440 + 375); each of the three alignment values computes on the
 
 **Behaviour.** The Site-Editor building experience stays coherent with the new model:
 
-- `framework-header-default.php` + `parts/header.html` (byte-identical duplicates, §S1)
-  updated together if the toggle/nav markup contract changes; FR-S4-5 linter stays green.
+- **⛔ INSERT `<!-- wp:sgs/nav-menu /-->` as the FIRST child of `sgs/adaptive-nav` in
+  BOTH `parts/header.html` (L13–16) and `framework-header-default.php` (qc-council
+  MUST-FIX, fact-checked):** both files already carry drawer children (business-info +
+  social-icons), and WP's InnerBlocks `template` only seeds EMPTY blocks — without this
+  edit the flagship header (and the Mama's canary, same part) ships a drawer with
+  contact links but **zero navigation**, invisible to every test that only checks the
+  existing children. The two files stay byte-identical apart from their headers (§S1);
+  FR-S4-5 linter stays green and runs in this step's own self-test.
 - `sgs/site-header`'s template + the `sgs_header` CPT template (FR-S9-11) still open with
   a working nav; the drawer's InnerBlocks zone is editable from within the Site Editor
   (template part → adaptive-nav → drawer children visible and editable in the canvas or
@@ -287,6 +361,17 @@ report, and Bean has the screenshot pair.
    Bean has not explicitly chosen a direction for the new geometry. His eye at FR-34-7
    decides; a direction change is a 2-line CSS tweak.
 2. **Drawer scrim opacity** stays 0.6 — same as today.
+3. **Forward note (qc-council):** `drawerGap`/`drawerPadding` ship with a bespoke
+   `{desktop,tablet,mobile}` object shape ahead of FR-S9-6's canonical shared model.
+   Permitted (new attrs), but when FR-S9-6 ships, these two attrs will have live stored
+   values and CANNOT be reshaped (Spec 17 freeze) — FR-S9-6's model must therefore be
+   shape-compatible with this emitter's existing contract (`helpers-responsive.php`), or
+   these attrs stay on the legacy emitter permanently. Recorded so FR-S9-6's designer
+   inherits the constraint knowingly.
+
+**Removed-attr safety (measured, not asserted — qc-council A#4):** `wp db query` on BOTH
+live sites (sandybrown + palestine-lives), all publish/draft post_content, for the six
+removed attr names: **zero rows**. KJC-5's "zero stored instances" is verified.
 
 ## 7. Constraints that bind every FR
 
