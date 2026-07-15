@@ -12,13 +12,18 @@ Invoke `/autopilot` before anything else.
 
 ## ⛔ THE ONE RULE THAT MATTERS
 
-**Bean BUILT these pages BY HAND in the block editor. They were never cloned.**
-There is no draft to re-clone from and no pipeline that can regenerate them. **The
-database is the ONLY copy of this content.** If you destroy it, it is gone.
+**The database is the ONLY copy of this content. If you destroy it, it is gone.**
 
-A previous session was ~1 message away from telling Bean to "just re-clone the
-homepage" — which would have permanently wiped work he built by hand. Do not
-repeat that. **Re-cloning is NOT the fix here. Ever.**
+This homepage was **designed by Bean in Spectra on an older site** and migrated in — it
+was never produced by the cloning pipeline, and no draft in `sites/indus-foods/mockups/`
+can regenerate it. (`Indus Foods Ltd Homepage.html` is only a SCRAPE of that old Astra
+site, not a source draft.) A previous session was ~1 message away from telling Bean to
+"just re-clone the homepage", which would have permanently wiped it. **Re-cloning is NOT
+the fix here.**
+
+**Reference for what it should look like:** the original is preserved and live at
+**https://lightsalmon-tarsier-683012.hostingersite.com/** — the hand-built Astra/Spectra
+Indus Foods site. Use it as the visual baseline for the restore.
 
 ## Problem → Effect → Solution
 
@@ -80,6 +85,28 @@ prove it renders identically to Bean's intent.
    --field=post_content > backup.txt` is read-only and safe.
 5. **Indus (palestine-lives.org) is the DEV site; sandybrown is the STAGING canary.**
    Neither is a live client site. Prove on sandybrown first where possible.
+
+## ⛔ SCOPE BOUNDARY — header/footer is NOT yours
+
+Track A owns `parts/header.html`, `parts/footer.html`, the `sgs/site-header|site-footer|
+site-header-row|site-footer-row|adaptive-nav` blocks and all header/footer patterns. **Do
+not touch those files.** Your scope is the page BODY of page ID 13 (hero, brand-strip,
+testimonial-slider, 8 info-boxes).
+
+## ⛔ A SILENT-DISCARD BUG CLASS — check the stored content for it (D338)
+
+**WordPress DISCARDS any block attribute the block.json does not declare — silently.** No
+error, no warning, no failing test, no failing build. Found **45 times** in the theme
+patterns on 2026-07-15: `sgs/business-info` passed `"type"` (real attr: `displayType`,
+default `"phone"`) and American `"textColor"` (real attr: British `"textColour"`) — so
+those blocks rendered a phone number, or rendered with no colour at all.
+
+**Page 13's stored blocks came from a Spectra-era migration, so they are prime candidates
+for the same class.** An attr in `post_content` that the block.json doesn't declare is
+dead on arrival and invisible to every gate. The new scanner
+`plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py` does exactly this check for theme
+patterns — **adapt it to scan `post_content`** (read-only) rather than hand-checking. This
+may be a second, independent cause of "content missing" beyond the InnerBlocks migration.
 
 ## Scope — this is NOT just the homepage
 

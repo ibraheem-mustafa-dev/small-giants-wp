@@ -330,6 +330,46 @@ integration run is pending a real `/sgs-clone` run.**
 | FR-33-12 | orchestrator fail-closed gate | stale snapshot → fail; fresh → proceed | vs `(client,hash)` key | — |
 | FR-33-13 | header/footer namespace reserved; token map = service | — | vs Spec 26/17 | colour-var entries re-pointed |
 
+## Website-credit recognition (Part 2 — header/footer pipeline). D338, 2026-07-15
+
+**Plain English:** when the pipeline clones a draft's footer, the "Website by Small Giants Studio" line must become the `sgs/business-info` `displayType="attribution"` element (Spec 02) — not a generic text block. This section is the recognition contract. It is the FIRST slot-mapping rule written for Part 2; extend the same shape for the remaining header/footer slots.
+
+### Ground truth — measured 2026-07-15, NOT assumed
+
+Neither draft is currently recognisable. Verified in the draft files, not inferred:
+
+| Draft | Bottom-bar markup | Credit present? |
+|---|---|---|
+| Indus (`Indus-Foods-Food-Service-V3-With-Images.html:1005-1008`) | `<div class="footer-bottom"><p>© …</p><p>Website by Small Giants Studio</p></div>` | Yes — but a **bare `<p>`: no class, and NOT EVEN A LINK** |
+| Mama's (`mockups/homepage/index.html`) | `<div class="sgs-footer__bottom"><span>© …</span><span>Made with love for breastfeeding mums 🍪</span></div>` | **NO — the 2nd slot is a TAGLINE** |
+
+So there is nothing to match on, and the two drafts disagree on what the second slot even means. **A positional rule ("2nd child of the bottom bar = attribution") is therefore FORBIDDEN** — it would map Mama's tagline onto the agency backlink.
+
+### The fix is at the DRAFT source, not in the converter (Bean-locked)
+
+Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft-inherited gap is fixed by editing the draft and re-cloning — **never** a converter carve-out. Two prerequisite draft edits, both Bean-approved 2026-07-15:
+
+1. **Add the classifier** `class="sgs-footer__credit"` to the credit element in every Bean-controlled draft. SGS-BEM per **Spec 00 §3 / §3.1** (NOT "Spec 15" — Spec 15 is abrogated and `specs/15-*` does not exist).
+2. **Add the missing credit to the Mama's draft** — it has none. Its existing tagline span stays as a tagline and must map to `business-info displayType="description"`, not to attribution.
+
+### Recognition — two independent recognisers (belt and braces, Bean-directed)
+
+| # | Recogniser | Rule | Why both |
+|---|---|---|---|
+| **R1 — classifier (primary)** | `.sgs-footer__credit` → emit `<!-- wp:sgs/business-info {"displayType":"attribution"} /-->` | Deterministic, BEM-first (R-31-2), zero heuristics. The canonical path for Bean-controlled drafts. |
+| **R2 — content match (fallback)** | Element text contains **`by Small Giants Studio`** (case-insensitive) → reroute from a text/paragraph block to the attribution element | Catches legacy/scraped drafts and any draft that predates R1. Without it every pre-2026-07-15 draft silently clones the credit as a plain paragraph — losing the element, its hover, and its typography contract. |
+
+**R2 must not match on the URL** — both live Astra sites point the link at Bean's LinkedIn (stale, predates the website), so a URL match would miss them and an href-rewrite would silently preserve the wrong target. Match the TEXT; the block supplies the correct URL from `SGS_ATTRIBUTION_URL`.
+
+**Content is DISCARDED on match, deliberately.** The attribution element takes no content/URL attrs (Spec 02) — its text and href are framework constants. The draft's credit text and href are recognition signals ONLY. Log the discarded original per R-31-4 (report, never silently skip) so a draft carrying a *different* agency's credit surfaces as a gap candidate rather than being silently rebranded.
+
+### Acceptance
+
+- Both drafts carry `.sgs-footer__credit`; Mama's has a credit at all; Mama's tagline maps to `description`, NOT attribution (the exact false-positive a positional rule would produce).
+- A draft with the classifier but no matching text → R1 fires. A legacy draft with the text but no classifier → R2 fires. Neither double-emits.
+- The emitted block renders `.sgs-business-attribution` with the framework URL — never the draft's stale LinkedIn href.
+- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a legacy path rather than the norm (parked: `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`).
+
 ## Open questions — RESOLVED (baked into the FRs above; recorded here for the audit trail)
 1. **Full snapshot vs Spec-26 delta → FULL now** (matches the deploy path; delta is a clean downstream transform diffing the full output against baseline, not an extractor re-plumb). FR-33-4/7.
 2. **Token-less / Spectra fallback vs skip → advisory Pass B + baseline-on-empty** (never a silent guess; Pass B output is provisional/gated). FR-33-5.

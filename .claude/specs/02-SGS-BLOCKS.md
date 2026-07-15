@@ -1106,6 +1106,45 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 
 **Design-gate sign-off:** `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (Bean, all recommended defaults). **Owning spec for the FULL requirement set (FRs, per-breakpoint override data model, never-overflow Cluster+clamp layout, global-defaults/Site-Info binding, a11y contract, sticky/transparent-scroll behaviour): [`17-HEADER-FOOTER-ARCHITECTURE.md`](17-HEADER-FOOTER-ARCHITECTURE.md).** This section is the block-roster summary only — do not duplicate Spec 17's FRs here.
 
+### `sgs/business-info` `displayType="attribution"` — the Website Credit element (D338, 2026-07-15)
+
+**Plain English:** the "Website by Small Giants Studio" link in the footer's bottom strip, as a proper element an operator can move around that row — but cannot retarget, reword or delete.
+
+**The rule it demonstrates.** This is the ONE `displayType` that does **not** read `Sgs_Site_Info`, deliberately. Every other type renders **client** data; this renders the **framework's own constant**. That is the binding distinction (memory `framework-block-client-hardcode-is-a-bug-not-a-constant`): *a hardcoded CLIENT value in a framework file is a bug; the component's OWN constant stays.* Routing the agency backlink through Site Info would be wrong twice — it would put agency data in a client-owned store, and it would let a client blank the backlink.
+
+**Constants** (`sgs-blocks.php`, `defined() ||` guarded so a white-label/reseller build overrides them before plugin load without patching a block):
+- `SGS_ATTRIBUTION_URL` = `https://smallgiantsstudio.co.uk/`
+- `SGS_ATTRIBUTION_TEXT` = `Website by Small Giants Studio`
+
+> Both live Astra sites (`lightsalmon-tarsier-683012.hostingersite.com`, `muslimsinconstruction.uk`) point this link at Bean's **LinkedIn** — that predates the website and is stale. The website is correct; do not copy the LinkedIn URL from those baselines.
+
+**Markup + classifier (BINDING — the pipeline matches on this):**
+```html
+<p class="sgs-business-info sgs-business-attribution">
+  <a href="{SGS_ATTRIBUTION_URL}" class="sgs-business-info__link" rel="noopener">{SGS_ATTRIBUTION_TEXT}</a>
+</p>
+```
+`.sgs-business-attribution` is the recognised classifier. It must stay in lockstep with the draft-side classifier `.sgs-footer__credit` (Spec 33 §Website-credit recognition) — change one, change both.
+
+**Attribute surface — TYPOGRAPHY ONLY (deliberately narrow, Bean-locked).** No content attr, no URL attr, no layout attrs. An operator may restyle it; they may not re-point it:
+- `textColour` (default: **resolved**, see below) · `linkHoverColour` (default `#e7d768`)
+- font family / size / weight / style / line-height via the shared `TypographyControls` component + `sgs_typography_css_rule()` — **never** hand-rolled controls (R-22-13). Default = inherit, so it matches the site's base paragraph font/size out of the box.
+
+**Default colour is COMPUTED, not assumed.** `textColour` unset ⇒ resolve the surrounding background to hex via `sgs_resolve_palette_hex()` and pick the readable foreground via `sgs_wcag_text_colour_for_bg()` (`includes/helpers-colour-wcag.php` — the same helpers `sgs/product-card` and `sgs/option-picker` already use; do NOT build a second resolver). Never assume a token NAME implies luminance — `primary-dark` is a **pink** on mamas-munches (STOP-TOKEN-NAME-IS-NOT-A-LUMINANCE, D338). Where the background cannot be resolved, fall back to `currentColor` (inherit), never to a literal.
+
+**Hover — left-to-right colour sweep to `#e7d768`** (Bean's reference behaviour on both live Astra sites). Implement as a `background-clip:text` gradient wipe, NOT a plain `color` transition:
+```css
+.sgs-business-attribution__link-inner { background-image: linear-gradient(90deg, #e7d768 50%, currentColor 50%);
+  background-size: 200% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  transition: background-position 320ms ease; }
+:hover { background-position: 0 0; }
+@media (prefers-reduced-motion: reduce) { transition: none; }
+```
+Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#e7d768` must meet it against the footer background at hover — verify per client palette, not once (STOP-VERIFY-EVERY-CLIENT).
+
+**Defaults are intentionally thin.** The cloning pipeline sets the real styling per client (Spec 33) — these defaults only need to be sane and accessible out of the box, not final.
+
 ### Rule evolution — specialised container blocks are permitted inside template parts
 
 `no-header-footer-block.py` + the `header-footer-are-template-parts-not-blocks` memory forbid a monolithic header/footer block that subsumes the FSE/CPT/rules system. Header and footer **remain WordPress template parts** (Spec 17: parts + patterns + `sgs_header`/`sgs_footer` CPT + rules engine + Site Info bindings). The rule evolves (Bean-directed, conscious, not a regex dodge) to permit a **specialised container block used INSIDE the template part** — equivalent in kind to `sgs/card-grid`/`sgs/feature-grid`. `no-header-footer-block.py` now allows `src/blocks/{site-header,site-footer,adaptive-nav}/` specifically, while continuing to block any bare `header`/`footer`/`nav` block slug.

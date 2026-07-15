@@ -10,6 +10,45 @@ owner: separate session (do NOT run inside the adaptive-nav track)
 
 Invoke `/autopilot` before anything else.
 
+## ⛔ READ FIRST — scope (Bean, 2026-07-15) + a rebase you must do
+
+**Bean's definition of this track:** *"audit all of the patterns in the theme and figure
+out a way to LOSSLESSLY migrate the contents and styles from each core block to its SGS
+replacement."* Lossless = contents AND styles preserved. Not a tag swap.
+
+**You do NOT overlap Goal 3** (Bean checked this, and he is right). Goal 3 (Track A) is
+de-hardcoding client content out of the base BLOCKS (`site-header/edit.js`,
+`site-footer/edit.js` TEMPLATEs). You are core→SGS migration in PATTERNS. Different files,
+different concern.
+
+**⛔ REBASE ONTO `feat/adaptive-nav-dialog-drawer` BEFORE YOU START.** Track A just
+modified 6 theme pattern files and you WILL conflict: `framework-footer-default.php`,
+`footer-indus-foods.php`, `footer-compact.php`, `footer-informational.php`,
+`footer-minimal.php`, `header-full.php`.
+
+**⛔ HANDS OFF the header/footer files entirely** — `parts/header.html`,
+`parts/footer.html`, `framework-header-default.php`, `framework-footer-default.php`,
+`header-search-*.php`, `footer-*.php`. Track A owns them.
+
+## ⛔ THE SILENT-DISCARD CLASS — your highest-value lead (D338)
+
+**WordPress DISCARDS any block attribute the block.json does not declare — silently.** No
+error, no gate, no build failure. Confirmed **45 times** in these very patterns on
+2026-07-15; 36 already fixed by Track A (19× `"type"`→`"displayType"`, 17× American
+`"textColor"`→British `"textColour"` on `sgs/business-info`). **Do not redo those.**
+
+**⛔ NEVER blanket-rename `textColor`→`textColour`.** American `textColor` is CORRECT on
+core blocks (`core/heading`, `core/paragraph`…). Any rename MUST be scoped inside
+`wp:sgs/*` block comments only. A blind sed corrupts every core block in the theme.
+
+**Run the gate — it is committed:** `python plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py`
+9 findings remain open (Track A left them for triage — each needs a typo-vs-missing-capability
+call): `sgs/info-box` `iconColour`+`iconBackgroundColour` (mega-menu-services ×3),
+`sgs/whatsapp-cta` `buttonText`, `sgs/label` `content`+`labelStyle`. **This bug class is
+directly your problem:** a core→SGS swap that carries an attr the SGS block doesn't declare
+is a SILENT loss — the migration will look green and lose the value. Run the gate after
+every group.
+
 ## The rule (Bean-directed, D337)
 
 **STOP-CORE-BLOCK-WITH-SGS-REPLACEMENT — a core block that has a direct SGS
