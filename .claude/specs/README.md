@@ -51,6 +51,8 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 
 | 33 | [33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md](33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md) | **Draft global-styles / token extractor** — the OPENING step of the cloning pipeline (runs before Stage 0): measures the draft's rendered computed styles → `sites/<client>/theme-snapshot.json`, which the converter's token-snap depends on (FR-33-12 fails closed if stale). Part 1 COMPLETE (13/13 FRs); **Part 2 = draft header/footer → `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, NOT started.** | complete (Part 1) |
 
+| 34 | [34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md](34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md) | **Adaptive-nav disclosure drawer rebuild** (Bean-approved 2026-07-15) — header top row stays live while the menu is open (burger↔X in place), drawer fills viewport minus header, tint excludes the header (GOV.UK disclosure + Spectra "Dropdown" model; replaces `showModal()`), drawer content = InnerBlocks [container → `sgs/nav-menu` → container], NEW styleable `sgs/nav-menu` block with WP-menu picker (context-inherits the nav's source), Spectra-style per-device drawer settings. AMENDS Spec 17 FR-S9-5's modality criterion (frozen-except-header-row). | active |
+
 ## Architecture programme (2026-05-21+) — archived
 
 The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-architecture-staging.md`) **SHIPPED 2026-05-22** — all phases complete. Active work is now the cloning pipeline programme; see **Spec 31** (Spec 22 was absorbed into it at §13 and archived, D253) + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md` (archived).
