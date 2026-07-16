@@ -19,10 +19,10 @@
 
 	<!-- wp:sgs/text {"text":"Browse by category","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
-	<!-- wp:columns {"className":"sgs-mega-panel--cards","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|30","left":"var:preset|spacing|30"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"1fr 1fr 1fr 1fr","gridTemplateColumnsMobile":"1fr","className":"sgs-mega-panel--cards","gap":"var:preset|spacing|30"} -->
 	<div class="wp-block-columns sgs-mega-panel--cards">
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-card sgs-mega-card--gradient","style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":"flex","justifyContent":"space-between","flexDirection":"column"} -->
 			<div class="wp-block-group sgs-mega-card sgs-mega-card--gradient has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -32,9 +32,9 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-card sgs-mega-card--gradient","style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":"flex","justifyContent":"space-between","flexDirection":"column"} -->
 			<div class="wp-block-group sgs-mega-card sgs-mega-card--gradient has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -44,9 +44,9 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-card sgs-mega-card--gradient","style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":"flex","justifyContent":"space-between","flexDirection":"column"} -->
 			<div class="wp-block-group sgs-mega-card sgs-mega-card--gradient has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -56,9 +56,9 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-card sgs-mega-card--gradient","style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":"flex","justifyContent":"space-between","flexDirection":"column"} -->
 			<div class="wp-block-group sgs-mega-card sgs-mega-card--gradient has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
@@ -68,10 +68,10 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

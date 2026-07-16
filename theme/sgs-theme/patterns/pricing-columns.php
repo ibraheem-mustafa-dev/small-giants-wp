@@ -14,10 +14,10 @@
 
 	<!-- wp:sgs/heading {"content":"Simple, Transparent Pricing","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|40"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"1fr 1fr 1fr","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|40"} -->
 	<div class="wp-block-columns alignwide">
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface"} -->
 			<div class="wp-block-group has-surface-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
@@ -44,9 +44,9 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px","width":"2px","color":"var:preset|color|primary"}},"backgroundColor":"surface"} -->
 			<div class="wp-block-group has-surface-background-color has-background" style="border-color:var(--wp--preset--color--primary);border-width:2px;border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
@@ -76,9 +76,9 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface"} -->
 			<div class="wp-block-group has-surface-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
@@ -107,10 +107,10 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

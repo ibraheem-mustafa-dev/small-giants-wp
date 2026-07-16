@@ -18,28 +18,28 @@
 
 	<!-- wp:sgs/text {"text":"We combine strategic thinking with creative execution to help businesses grow. Our data-driven approach ensures measurable results every time.","textAlign":"center","textColour":"text-muted"} /-->
 
-	<!-- wp:columns {"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|50"},"blockGap":{"left":"var:preset|spacing|40"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"1fr 1fr 1fr","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|40","style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->
 	<div class="wp-block-columns alignwide" style="margin-top:var(--wp--preset--spacing--50)">
-		<!-- wp:column {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"default"}} -->
+		<!-- wp:sgs/container {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"default"}} -->
 		<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
 			<!-- wp:sgs/heading {"content":"500+","textAlign":"center","level":"h3","textColour":"primary","fontSize":"hero"} /-->
 			<!-- wp:sgs/text {"text":"Projects Completed","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 		</div>
-		<!-- /wp:column -->
-		<!-- wp:column {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
+		<!-- /wp:sgs/container -->
+		<!-- wp:sgs/container {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
 		<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
 			<!-- wp:sgs/heading {"content":"98%","textAlign":"center","level":"h3","textColour":"primary","fontSize":"hero"} /-->
 			<!-- wp:sgs/text {"text":"Client Satisfaction","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 		</div>
-		<!-- /wp:column -->
-		<!-- wp:column {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
+		<!-- /wp:sgs/container -->
+		<!-- wp:sgs/container {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
 		<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
 			<!-- wp:sgs/heading {"content":"15+","textAlign":"center","level":"h3","textColour":"primary","fontSize":"hero"} /-->
 			<!-- wp:sgs/text {"text":"Years of Experience","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

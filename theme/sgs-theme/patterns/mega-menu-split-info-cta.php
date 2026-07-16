@@ -17,10 +17,10 @@
 <!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"primary-dark","textColor":"surface","contentWidth":"1200px"} -->
 <div class="wp-block-group has-surface-color has-primary-dark-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
-	<!-- wp:columns {"className":"sgs-mega-panel--split-reverse","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|60"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"40% 60%","gridTemplateColumnsMobile":"1fr","className":"sgs-mega-panel--split-reverse","gap":"var:preset|spacing|60"} -->
 	<div class="wp-block-columns sgs-mega-panel--split-reverse">
 
-		<!-- wp:column {"width":"40%"} -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column" style="flex-basis:40%">
 
 			<!-- wp:sgs/text {"text":"Contact details","fontSize":"1rem","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"surface"} /-->
@@ -48,9 +48,9 @@
 			<!-- wp:sgs/text {"text":"<strong>Mon – Fri:</strong> 9 am – 5 pm<br><strong>Sat – Sun:</strong> Closed","fontSize":"0.875rem","lineHeight":2,"lineHeightUnit":"","textColour":"text-inverse"} /-->
 
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column {"width":"60%"} -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column" style="flex-basis:60%">
 
 			<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-card sgs-mega-card--surface","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"12px"}},"backgroundColor":"surface","textColor":"text","contentWidth":"normal"} -->
@@ -68,10 +68,10 @@
 			<!-- /wp:sgs/container -->
 
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

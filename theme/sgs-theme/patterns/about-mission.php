@@ -18,32 +18,32 @@
 
 	<!-- wp:sgs/text {"text":"We believe every business deserves access to world-class digital solutions that drive growth and create meaningful connections.","textAlign":"center","textColour":"text-muted","fontSize":"medium"} /-->
 
-	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|60"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"1fr 1fr 1fr","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|40","style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}}} -->
 	<div class="wp-block-columns alignwide" style="margin-top:var(--wp--preset--spacing--60)">
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/heading {"content":"🎯 Quality First","textAlign":"center","level":"h3","fontSize":"large"} /-->
 			<!-- wp:sgs/text {"text":"We never compromise on quality. Every detail matters, from design to delivery.","textAlign":"center","textColour":"text-muted"} /-->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/heading {"content":"💡 Innovation","textAlign":"center","level":"h3","fontSize":"large"} /-->
 			<!-- wp:sgs/text {"text":"We stay ahead of the curve, adopting the latest technologies and best practices.","textAlign":"center","textColour":"text-muted"} /-->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column">
 			<!-- wp:sgs/heading {"content":"🤝 Partnership","textAlign":"center","level":"h3","fontSize":"large"} /-->
 			<!-- wp:sgs/text {"text":"Your success is our success. We work alongside you every step of the way.","textAlign":"center","textColour":"text-muted"} /-->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

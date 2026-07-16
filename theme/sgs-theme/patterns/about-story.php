@@ -12,16 +12,16 @@
 <!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","contentWidth":"normal"} -->
 <div class="wp-block-group alignfull has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
-	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|60"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"45% 55%","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|60"} -->
 	<div class="wp-block-columns alignwide">
 
-		<!-- wp:column {"width":"45%"} -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column" style="flex-basis:45%">
 			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/500x600/0F7E80/FFFFFF?text=About+Image","imageAlt":"About us","style":{"border":{"radius":"16px"}}} /-->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column {"verticalAlignment":"center","width":"55%"} -->
+		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:55%">
 			<!-- wp:sgs/text {"text":"About Us","textColour":"primary","fontSize":"small","textTransform":"uppercase","letterSpacing":0.1,"letterSpacingUnit":"em","fontWeight":"700"} /-->
 			<!-- wp:sgs/heading {"content":"Our Story Begins With a Simple Belief","fontSize":"xx-large"} /-->
@@ -31,10 +31,10 @@
 				<!-- wp:sgs/button {"label":"Learn More About Us","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 			<!-- /wp:sgs/multi-button -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

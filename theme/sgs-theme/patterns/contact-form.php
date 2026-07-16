@@ -15,10 +15,10 @@
 
 	<!-- wp:sgs/heading {"content":"Get in Touch","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
-	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|60"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"60% 40%","gridTemplateColumnsMobile":"1fr","align":"wide","gap":"var:preset|spacing|60"} -->
 	<div class="wp-block-columns alignwide">
 
-		<!-- wp:column {"width":"60%"} -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column" style="flex-basis:60%">
 			<!-- wp:sgs/text {"text":"Fill in the form below and we’ll get back to you within 24 hours.","textColour":"text-muted","fontSize":"medium"} /-->
 			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
@@ -27,9 +27,9 @@
 			</div>
 			<!-- /wp:sgs/container -->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column {"verticalAlignment":"center","width":"40%"} -->
+		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:40%">
 			<!-- wp:sgs/heading {"content":"Contact Details","level":"h3","fontSize":"large"} /-->
 			<!-- wp:sgs/text {"text":"placeholder — replaced at render","textColour":"text-muted","metadata":{"bindings":{"text":{"source":"sgs/site-info","args":{"key":"email"}}}}} /-->
@@ -38,10 +38,10 @@
 			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} /-->
 			<!-- wp:sgs/text {"text":"placeholder — replaced at render","textColour":"text-muted","metadata":{"bindings":{"text":{"source":"sgs/site-info","args":{"key":"opening_hours.mon"}}}}} /-->
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
 <!-- /wp:sgs/container -->

@@ -52,6 +52,11 @@ HANDS_OFF = [
 # native supports (border/spacing/color) — the module is responsible for only
 # emitting style groups the target's `supports` actually declares.
 NATIVE_OK = {'className', 'anchor', 'lock', 'metadata', 'style'}
+# Universal SGS extension attrs injected onto EVERY block server-side
+# (includes/extension-attributes.generated.php) — real, just not per-block
+# declarations. Same allowlist the check-dead-pattern-attrs.py gate uses.
+EXT_EXACT = {'sgsCustomCss'}
+EXT_PREFIXES = ('sgsHideOn', 'sgsAnim')
 
 # The three accounting verbs a module may use for a source attr.
 ACCOUNTING_VERBS = {'mapped', 'dropped', 'gap'}
@@ -155,7 +160,9 @@ def gate_result(node, result, declared, rel):
     """The anti-silent-discard gate. Loud failure, never a quiet drop."""
     problems = []
     for key in result.attrs:
-        if key not in declared and key not in NATIVE_OK:
+        legit = (key in declared or key in NATIVE_OK or key in EXT_EXACT
+                 or key.startswith(EXT_PREFIXES))
+        if not legit:
             problems.append(
                 f'emitted attr "{key}" is NOT declared by {result.target} — WP would '
                 f'silently discard it (D338 class)')
