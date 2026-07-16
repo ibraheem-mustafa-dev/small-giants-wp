@@ -847,6 +847,36 @@ function getDivergentProps( enumValues, elementPropertyValues ) {
 	return divergent;
 }
 
+/**
+ * E13 — properties theme.json GOVERNS for every one of `enumValues`, i.e. the
+ * theme has an opinion on this property for every element the block renders.
+ * Superset of getDivergentProps: a property theme.json sets to the SAME value
+ * on every element is governed but NOT divergent.
+ *
+ * WHY THIS EXISTS (D343): E12 only fires on a DIVERGENT property (theme.json's
+ * per-h-tag font-size scale), because its question is "does this default
+ * FLATTEN a scale?". That misses the other half of the same bug class: a block
+ * default that OVERRIDES a theme value which happens to be UNIFORM across the
+ * elements. Proven live 2026-07-16 — sgs/heading's `textColour: "text"` emitted
+ * a (0,2,0) scoped rule that beat theme.json's
+ * `styles.elements.heading.color.text` (0,0,1), so every client's heading
+ * colour was silently disabled. `color` is identical on h1-h6, so it was never
+ * "divergent" and E12 stayed silent through the whole D338 sweep.
+ *
+ * @param {string[]}            enumValues           Element keys the block renders.
+ * @param {Map<string,Map>}     elementPropertyValues cssProperty -> elementKey -> value.
+ * @return {Set<string>} CSS properties theme.json sets for EVERY element key.
+ */
+function getThemeGovernedProps( enumValues, elementPropertyValues ) {
+	const governed = new Set();
+	for ( const [ prop, byElement ] of elementPropertyValues ) {
+		if ( enumValues.every( ( key ) => byElement.has( key ) ) ) {
+			governed.add( prop );
+		}
+	}
+	return governed;
+}
+
 let _themeJsonCache; // undefined = not yet loaded.
 function loadThemeJson() {
 	if ( undefined !== _themeJsonCache ) {
@@ -991,7 +1021,16 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 		}
 
 		const divergentProps = getDivergentProps( enumValues, elementPropertyValues );
-		if ( divergentProps.size === 0 ) {
+
+		// E13 — THEME-ELEMENT OVERRIDE GATE. Properties theme.json governs for
+		// every rendered element but which are UNIFORM across them, so E12's
+		// divergence test can never see them (D343 — see getThemeGovernedProps).
+		const uniformGovernedProps = new Set(
+			[ ...getThemeGovernedProps( enumValues, elementPropertyValues ) ]
+				.filter( ( p ) => ! divergentProps.has( p ) )
+		);
+
+		if ( divergentProps.size === 0 && uniformGovernedProps.size === 0 ) {
 			continue;
 		}
 
@@ -1004,15 +1043,17 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 				continue;
 			}
 			let matchedProps = [ ...props ].filter( ( p ) => divergentProps.has( p ) );
-			if ( matchedProps.length === 0 ) {
+			let matchedGoverned = [ ...props ].filter( ( p ) => uniformGovernedProps.has( p ) );
+			if ( matchedProps.length === 0 && matchedGoverned.length === 0 ) {
 				continue;
 			}
 			// E9 extension: Block Selectors API already applies the user's
 			// typography value at the declared child selector.
 			if ( hasSelectorsTypography ) {
-				matchedProps = matchedProps.filter( ( p ) => ! WP_NATIVE_TYPOGRAPHY_PROPS.has( p ) );
+				matchedProps    = matchedProps.filter( ( p ) => ! WP_NATIVE_TYPOGRAPHY_PROPS.has( p ) );
+				matchedGoverned = matchedGoverned.filter( ( p ) => ! WP_NATIVE_TYPOGRAPHY_PROPS.has( p ) );
 			}
-			if ( matchedProps.length === 0 ) {
+			if ( matchedProps.length === 0 && matchedGoverned.length === 0 ) {
 				continue;
 			}
 
@@ -1031,6 +1072,21 @@ function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
 					value:    literalStr,
 					attr:     `${ attrName } (default flattens ${ enumAttrName }'s theme-differentiated ` +
 						`${ property } across ${ enumValues.join( '/' ) })`,
+				} );
+			}
+
+			// E13 — same bug class, uniform-value half (D343).
+			for ( const property of matchedGoverned ) {
+				if ( ! isFlaggableLiteral( literalStr, property ) ) {
+					continue;
+				}
+				findings.push( {
+					line:     findAttrDefaultLine( blockJsonRaw, attrName ),
+					property,
+					value:    literalStr,
+					attr:     `${ attrName } (default OVERRIDES theme.json's ${ property } for ` +
+						`${ enumValues.join( '/' ) } — the block's scoped rule outranks the ` +
+						`theme's element rule, so theme.json is silently disabled; default to null/"" to inherit)`,
 				} );
 			}
 		}

@@ -95,7 +95,7 @@
       "default": ""
     },
     "fontSize": {
-      "type": "number",
+      "type": [ "number", "string" ],
       "default": null
     },
     "fontSizeUnit": {
@@ -132,7 +132,7 @@
     },
     "textColour": {
       "type": "string",
-      "default": "text"
+      "default": ""
     },
     "fontStyle": {
       "type": "string",

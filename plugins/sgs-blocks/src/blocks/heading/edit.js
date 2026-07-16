@@ -17,7 +17,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, fontSizeVar } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -114,6 +114,25 @@ function parseUnit( raw, currentUnit ) {
 
 // ─── Inline style builder ─────────────────────────────────────────────────────
 
+/**
+ * Editor-canvas font-size: numeric attr + unit, or a theme preset slug string
+ * resolved to var(--wp--preset--font-size--{slug}) — mirrors the server's
+ * sgs_font_size_value() so the canvas matches the front end.
+ *
+ * @param {number|string|null} fontSize     Numeric size or preset slug.
+ * @param {string}             fontSizeUnit Unit for numeric values.
+ * @return {string|undefined} CSS font-size value or undefined when unset.
+ */
+function buildPreviewFontSize( fontSize, fontSizeUnit ) {
+	if ( ! fontSize ) {
+		return undefined;
+	}
+	if ( typeof fontSize === 'string' ) {
+		return fontSizeVar( fontSize );
+	}
+	return `${ fontSize }${ fontSizeUnit }`;
+}
+
 function buildTextStyle( attributes ) {
 	const {
 		textColour,
@@ -132,7 +151,9 @@ function buildTextStyle( attributes ) {
 
 	const style = {
 		color: colourVar( textColour ) || undefined,
-		fontSize: fontSize ? `${ fontSize }${ fontSizeUnit }` : undefined,
+		// A string fontSize is a theme preset slug — resolve to the preset
+		// custom property (mirrors sgs_font_size_value() server-side).
+		fontSize: buildPreviewFontSize( fontSize, fontSizeUnit ),
 		fontWeight: fontWeight || undefined,
 		lineHeight: lineHeight ? `${ lineHeight }${ lineHeightUnit }` : undefined,
 		letterSpacing: ( letterSpacing !== null && letterSpacing !== undefined )
@@ -313,6 +334,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						prefix=""
 						showSize={ true }
+						fontSizePresets={ true }
 						showWeight={ true }
 						showStyle={ true }
 						showLineHeight={ true }

@@ -122,7 +122,10 @@ $line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
 $letter_spacing      = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;
 $letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'em';
 $text_transform      = isset( $attributes['textTransform'] ) ? $attributes['textTransform'] : '';
-$text_colour         = $attributes['textColour'] ?? 'text';
+// '' = inherit (D343). NEVER default this to a colour: the scoped rule it emits
+// is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
+// default here silently disables the client's heading colour on every heading.
+$text_colour         = $attributes['textColour'] ?? '';
 $font_style          = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
 $text_decoration     = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
 
@@ -416,6 +419,17 @@ $scoped_css[] = sgs_responsive_css_rule(
 	),
 	$root_sel
 );
+
+// A STRING fontSize is a theme preset slug (core-block parity: `"fontSize":"small"`).
+// The numeric emitter above skips non-numerics, so resolve it via
+// sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same selector.
+// Mirrors the canonical legacy-string branch in helpers-typography.php.
+if ( isset( $attributes['fontSize'] ) && '' !== $attributes['fontSize'] && ! is_numeric( $attributes['fontSize'] ) ) {
+	$preset_font_size = sgs_font_size_value( (string) $attributes['fontSize'] );
+	if ( '' !== $preset_font_size ) {
+		$scoped_css[] = "{$root_sel}{font-size:{$preset_font_size};}";
+	}
+}
 
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {

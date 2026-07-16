@@ -1,6 +1,6 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","anchor":"main","layout":{"type":"constrained"}} -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":"normal"} -->
 <main class="wp-block-group" id="main">
 	<!-- wp:query-title {"type":"archive","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}}} /-->
 
@@ -19,13 +19,11 @@
 		<!-- /wp:query-pagination -->
 
 		<!-- wp:query-no-results -->
-			<!-- wp:paragraph -->
-			<p>No posts found.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"No posts found."} /-->
 		<!-- /wp:query-no-results -->
 	</div>
 	<!-- /wp:query -->
 </main>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -26,9 +26,14 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // Reading $attributes below for the color/border/typography supports is READ-ONLY —
 // the array handed to SGS_Container_Wrapper::render() further down is untouched.
 
-// User-facing HTML-tag chooser removed (D-scope, 2026-07-05) — the converter
-// never emitted this attr; the wrapper always renders 'section' for sgs/container.
-$html_tag = 'section';
+// Semantic HTML tag (D344, 2026-07-16) — restored with a concrete purpose:
+// ARIA landmarks (<main>/<nav>/<aside>/<header>/<footer>) + sectioning
+// (<article>/<section>) for screen-reader landmark navigation (WCAG 2.2 1.3.1)
+// and machine/SEO document structure. The wrapper already validated + rendered
+// a 'tag' opt (class-sgs-container-wrapper.php) — this un-hardcodes the value so
+// the block/converter can drive it. Default 'section' preserves prior output;
+// the wrapper allowlist is the final guard against an out-of-range value.
+$html_tag = isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section';
 
 // ---------------------------------------------------------------------------
 // No-inline residual (Spec 32) — WP-native color/__experimentalBorder/typography

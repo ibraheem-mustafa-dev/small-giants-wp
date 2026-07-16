@@ -1,25 +1,75 @@
 {
   "__comment__": "Canonical core->SGS block-replacement record (D270, 2026-07-04). SINGLE SOURCE OF TRUTH for which WordPress core blocks each SGS block replaces. Moved here out of the individual block.json 'replaces' fields so the mapping lives in one version-controlled place (the DB copy in blocks.replaces is derived from this by /sgs-update). Keyed sgs_slug -> [core_slugs]. Reference/equivalence record only: atomic-tag cloning routes bare tags straight to SGS via db_lookup._HTML_TAG_TO_BLOCK_SEED, so this is not consulted for tag routing. Keys starting with __ are ignored by the loader. Edit HERE, then run /sgs-update.",
-  "sgs/accordion": ["core/accordion"],
-  "sgs/accordion-item": ["core/accordion-item"],
-  "sgs/audio": ["core/audio"],
-  "sgs/breadcrumbs": ["core/breadcrumbs"],
-  "sgs/button": ["core/button"],
-  "sgs/collapsible-text": ["core/details"],
-  "sgs/container": ["core/group", "core/columns", "core/column"],
-  "sgs/form": ["core/form", "core/form-submit-button"],
-  "sgs/gallery": ["core/gallery"],
-  "sgs/heading": ["core/heading"],
-  "sgs/hero": ["core/cover", "core/media-text"],
-  "sgs/icon": ["core/icon"],
-  "sgs/media": ["core/image", "core/video"],
-  "sgs/multi-button": ["core/buttons"],
-  "sgs/post-grid": ["core/query", "core/post-template", "core/latest-posts"],
-  "sgs/quote": ["core/quote", "core/pullquote"],
-  "sgs/responsive-logo": ["core/site-logo"],
-  "sgs/social-icons": ["core/social-links", "core/social-link"],
-  "sgs/tab": ["core/tab"],
-  "sgs/table-of-contents": ["core/table-of-contents"],
-  "sgs/tabs": ["core/tabs"],
-  "sgs/text": ["core/paragraph"]
+  "sgs/accordion": [
+    "core/accordion"
+  ],
+  "sgs/accordion-item": [
+    "core/accordion-item",
+    "core/details"
+  ],
+  "sgs/audio": [
+    "core/audio"
+  ],
+  "sgs/breadcrumbs": [
+    "core/breadcrumbs"
+  ],
+  "sgs/button": [
+    "core/button"
+  ],
+  "sgs/collapsible-text": [],
+  "sgs/container": [
+    "core/group",
+    "core/columns",
+    "core/column"
+  ],
+  "sgs/form": [
+    "core/form",
+    "core/form-submit-button"
+  ],
+  "sgs/gallery": [
+    "core/gallery"
+  ],
+  "sgs/heading": [
+    "core/heading"
+  ],
+  "sgs/hero": [
+    "core/cover",
+    "core/media-text"
+  ],
+  "sgs/icon": [
+    "core/icon"
+  ],
+  "sgs/media": [
+    "core/image",
+    "core/video"
+  ],
+  "sgs/multi-button": [
+    "core/buttons"
+  ],
+  "sgs/post-grid": [
+    "core/latest-posts"
+  ],
+  "sgs/quote": [
+    "core/quote",
+    "core/pullquote"
+  ],
+  "sgs/responsive-logo": [
+    "core/site-logo"
+  ],
+  "sgs/social-icons": [
+    "core/social-links",
+    "core/social-link"
+  ],
+  "sgs/tab": [
+    "core/tab"
+  ],
+  "sgs/table-of-contents": [
+    "core/table-of-contents"
+  ],
+  "sgs/tabs": [
+    "core/tabs"
+  ],
+  "sgs/text": [
+    "core/paragraph"
+  ]
 }

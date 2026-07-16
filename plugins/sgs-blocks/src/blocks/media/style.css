@@ -21,6 +21,22 @@
 	height: auto;
 }
 
+/* Naked/root mode (linkless image — the img IS the block root, id + class on
+   the same element; see the :where() note below). Core-img parity defaults:
+   intrinsic width, never overflow. width:100% is deliberately NOT applied —
+   that is the figure/grid-track behaviour above, and before this rule existed
+   the root form matched NEITHER selector above (so no naked-mode instance can
+   depend on fill-width; live-proven: a 500px-intrinsic image at width:100%
+   ballooned to the 1392px content column, and without any rule the theme's
+   constrained-layout max-width 1200px let it overflow a 375px viewport).
+   Same (0,2,0) specificity as the per-instance scoped attr rules, which win
+   by source order (D303: class-match + source-order, never an ID). */
+.wp-block-sgs-media.sgs-media__img {
+	min-width: 0;
+	max-width: 100%;
+	height: auto;
+}
+
 /* object-fit default (D7) — supplied as an OVERRIDABLE :where() fallback (0
    specificity) instead of being force-emitted inline by render.php. An unset
    objectFit therefore no longer crop-forces, and any override (a non-default

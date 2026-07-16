@@ -14,26 +14,20 @@
 
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"accent-light","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"accent-light","contentWidth":"1200px"} -->
 <div class="wp-block-group has-accent-light-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
-	<!-- wp:columns {"className":"sgs-mega-panel--split","style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"60% 40%","gridTemplateColumnsMobile":"1fr","className":"sgs-mega-panel--split","gap":"var:preset|spacing|60"} -->
 	<div class="wp-block-columns sgs-mega-panel--split">
 
-		<!-- wp:column {"width":"60%"} -->
+		<!-- wp:sgs/container -->
 		<div class="wp-block-column" style="flex-basis:60%">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em","fontWeight":"600"}},"textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--20);text-transform:uppercase;letter-spacing:0.08em;font-weight:600">Section label</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Section label","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"1.25rem","fontWeight":"700"}},"textColor":"primary-dark"} -->
-			<p class="has-primary-dark-color has-text-color" style="font-size:1.25rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--30)">Section heading</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Section heading","fontSize":"1.25rem","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"primary-dark"} /-->
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"0.9rem"}},"textColor":"text-muted"} -->
-			<p class="has-text-muted-color has-text-color" style="font-size:0.9rem;margin-bottom:var(--wp--preset--spacing--30)">A short description of what this section is about. Two or three sentences that give visitors enough context to know whether they're in the right place.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"A short description of what this section is about. Two or three sentences that give visitors enough context to know whether they're in the right place.","fontSize":"0.9rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"text-muted"} /-->
 
 			<!-- wp:list {"className":"sgs-mega-link-list","style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}}} -->
 			<ul class="wp-block-list sgs-mega-link-list" style="padding-left:0;line-height:2.2">
@@ -49,23 +43,17 @@
 			</ul>
 			<!-- /wp:list -->
 
-			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
-				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"}}} -->
-				<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" href="#" style="border-radius:8px">Learn more &rarr;</a></div>
-				<!-- /wp:button -->
-			</div>
-			<!-- /wp:buttons -->
+			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+				<!-- wp:sgs/button {"label":"Learn more &rarr;","url":"#","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
+			<!-- /wp:sgs/multi-button -->
 
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:column {"width":"40%","style":{"border":{"left":{"color":"var:preset|color|border-subtle","width":"1px"}},"spacing":{"padding":{"left":"var:preset|spacing|50"}}}} -->
+		<!-- wp:sgs/container {"style":{"border":{"left":{"color":"var:preset|color|border-subtle","width":"1px"}},"spacing":{"padding":{"left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-column" style="flex-basis:40%;border-left-color:var(--wp--preset--color--border-subtle);border-left-width:1px;padding-left:var(--wp--preset--spacing--50)">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em","fontWeight":"600"}},"textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30);text-transform:uppercase;letter-spacing:0.08em;font-weight:600">Quick links</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Quick links","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
 			<!-- wp:list {"className":"sgs-mega-link-list","style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.4"}}} -->
 			<ul class="wp-block-list sgs-mega-link-list" style="padding-left:0;line-height:2.4">
@@ -88,10 +76,10 @@
 			<!-- /wp:list -->
 
 		</div>
-		<!-- /wp:column -->
+		<!-- /wp:sgs/container -->
 
 	</div>
-	<!-- /wp:columns -->
+	<!-- /wp:sgs/container -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->

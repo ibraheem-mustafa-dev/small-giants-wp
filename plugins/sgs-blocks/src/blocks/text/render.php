@@ -351,6 +351,17 @@ $css_base_and_tiers = sgs_responsive_css_rule(
 	$scope
 );
 
+// A STRING fontSize is a theme preset slug (core-block parity: `"fontSize":"small"`).
+// The numeric emitter above skips non-numerics, so resolve it via
+// sgs_font_size_value() → var(--wp--preset--font-size--{slug}) on the same scope.
+// Mirrors the canonical legacy-string branch in helpers-typography.php.
+if ( isset( $attributes['fontSize'] ) && '' !== $attributes['fontSize'] && ! is_numeric( $attributes['fontSize'] ) ) {
+	$preset_font_size = sgs_font_size_value( (string) $attributes['fontSize'] );
+	if ( '' !== $preset_font_size ) {
+		$css_base_and_tiers .= $scope . '{font-size:' . $preset_font_size . ';}';
+	}
+}
+
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).
 $css_base_decls = $base_decls ? $scope . '{' . implode( ';', $base_decls ) . ';}' : '';

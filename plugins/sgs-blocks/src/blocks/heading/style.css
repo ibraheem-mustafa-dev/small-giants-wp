@@ -11,11 +11,12 @@
 	margin-bottom: 8px;
 }
 
-/* Default colour fallback — the scoped `.uid` colour rule (always emitted, since
-   textColour defaults to `text`) overrides this; kept as the no-style baseline. */
-.wp-block-sgs-heading:not([class*="has-text-color"]) {
-	color: var(--wp--preset--color--text);
-}
+/* NO default colour here, deliberately (D343 — same reasoning as the D338
+   font-size fix below). A `color` fallback at (0,1,0)/(0,2,0) BEAT the theme's
+   own `h1..h6 { color: … }` rule (0,0,1), so every heading rendered this block
+   default and the client's heading colour never applied — proven live: the
+   canary theme sets headings to --primary (pink) and every sgs/heading painted
+   --text (brown). theme.json owns heading colour; an unset textColour inherits. */
 
 /* ----- Heading role defaults -----
  *
