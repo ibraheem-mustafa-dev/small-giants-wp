@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""variation_router.py -- Spec 15 Phase 5d.3 per-client variation routing.
+"""variation_router.py -- Spec 31 Phase 5d.3 per-client variation routing.
 
-Per Spec 15 Â§4.7: token discoveries land in the CLIENT's style variation
+Per Spec 31 Â§4.7: token discoveries land in the CLIENT's style variation
 JSON, NEVER in root theme.json. Style variations override per client;
 slugs stay constant across the framework.
 

@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5d.4 self-test for supports_writer.py.
+"""Spec 31 Phase 5d.4 self-test for supports_writer.py.
 
 Plan contract:
   - Value matching the global default for sgs/hero textColor -> NO override emitted
@@ -133,7 +133,7 @@ def test_invalid_type_detection() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5d.4 -- supports_writer contract")
+    print("Spec 31 Phase 5d.4 -- supports_writer contract")
     test_matching_default_omits_override()
     test_differing_value_emits_override()
     test_unmapped_attr_always_emits()

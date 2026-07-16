@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5a.2 self-test for bucket-c-classifier.py.
+"""Spec 31 Phase 5a.2 self-test for bucket-c-classifier.py.
 
 Exercises three canonical mismatch types per the 5a.2 plan:
   (1) colour  -- element bearing colour-only CSS -> winning_role=color
@@ -87,7 +87,7 @@ def check_empty(label: str, result: dict) -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5a.2 -- bucket-c-classifier role voting")
+    print("Spec 31 Phase 5a.2 -- bucket-c-classifier role voting")
     elements = [case_colour(), case_spacing(), case_text(), case_empty_styles()]
     results = mod.classify_batch(elements)
     check("colour",  results[0], expected_role="color",      min_confidence=0.7)

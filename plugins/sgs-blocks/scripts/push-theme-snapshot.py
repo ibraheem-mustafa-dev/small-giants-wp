@@ -187,18 +187,41 @@ def fetch_server_theme_json(target: str, port: int, server_path: str) -> dict | 
         return None
 
 
-def fetch_global_styles(target_domain: str) -> dict | None:
-    """GET /wp-json/wp/v2/global-styles/themes/sgs-theme. None on failure."""
+# Hostinger's WAF returns 403 to the DEFAULT `Python-urllib/x.y` User-Agent, before the
+# request ever reaches WordPress. PROVEN 2026-07-16 on palestine-lives: identical URL +
+# identical app-password credentials → curl default UA 200, `-A "Python-urllib/3.13"` 403,
+# `-A "Mozilla/5.0"` 200. Every urllib call in this file MUST therefore send an explicit
+# UA, or the whole REST layer (read AND write) silently fails closed on every Hostinger
+# site — which is all of them.
+_REST_UA = "sgs-push-theme-snapshot/1.0 (+https://smallgiants.studio)"
+
+
+def fetch_global_styles(target_domain: str, auth_header: str | None = None) -> dict | None:
+    """GET /wp-json/wp/v2/global-styles/themes/sgs-theme. None on failure.
+
+    AUTHENTICATES (2026-07-16). This route requires `edit_theme_options`, so an
+    anonymous GET always 403s — which made `global_styles` None on EVERY run, which
+    made the FR-33-11 backup unable to capture the wp_global_styles layer, which made
+    the backup-or-abort gate abort EVERY push. The per-client theming deploy path was
+    therefore dead on any real site: the writer (`post_global_styles`) sent Basic auth
+    but this reader never did. Proven on palestine-lives — anonymous GET 403, the same
+    GET with the app-password header returns the payload.
+    """
     url = f"https://{target_domain}/wp-json/wp/v2/global-styles/themes/sgs-theme"
+    req = urllib.request.Request(url, headers={"User-Agent": _REST_UA})
+    if auth_header:
+        req.add_header("Authorization", auth_header)
     try:
-        with urllib.request.urlopen(url, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        if exc.code == 401:
+        if exc.code in (401, 403):
             print(
-                "[push-theme-snapshot] wp_global_styles REST returned 401 — "
-                "operator overrides via Site Editor not checked (auth required). "
-                "File-level diff still applies.",
+                f"[push-theme-snapshot] wp_global_styles REST returned {exc.code} — "
+                "the Site-Editor layer could not be read"
+                + ("" if auth_header else " (NO credentials were supplied for this read)")
+                + ". This layer OVERRIDES theme.json, so a push cannot be verified or "
+                "rolled back without it.",
                 file=sys.stderr,
             )
         else:
@@ -223,6 +246,35 @@ def collect_keys(obj, prefix: str = "") -> set[str]:
         for item in obj:
             keys.update(collect_keys(item, path))
     return keys
+
+
+def collect_leaves(obj, prefix: str = "") -> dict[str, object]:
+    """Flatten dict/list into dotted-path -> LEAF VALUE pairs (mirrors collect_keys' traversal
+    shape, but captures the terminal scalar value at each path instead of just the path itself).
+
+    Used by drift_warning for value-level drift detection (FR-33-11) — collect_keys alone can
+    only say a key exists on both sides, not whether the two sides AGREE on its value.
+    """
+    leaves: dict[str, object] = {}
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            path = f"{prefix}.{k}" if prefix else k
+            leaves.update(collect_leaves(v, path))
+    elif isinstance(obj, list):
+        path = f"{prefix}[]"
+        for item in obj:
+            leaves.update(collect_leaves(item, path))
+    else:
+        leaves[prefix] = obj
+    return leaves
+
+
+def _truncate_for_log(value: object, limit: int = 80) -> str:
+    """Render a value for a log line, truncating long strings so the console stays readable."""
+    text = repr(value)
+    if len(text) > limit:
+        text = text[: limit - 3] + "..."
+    return text
 
 
 def diff_summary(local: dict, server: dict | None, global_styles: dict | None) -> str:
@@ -372,6 +424,7 @@ def post_global_styles(
             "Authorization": auth_header,
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "User-Agent": _REST_UA,
         },
     )
     print(f"[push-theme-snapshot] POST /wp/v2/global-styles/{post_id} → {url}")
@@ -480,19 +533,61 @@ def strip_advisory(snapshot: dict) -> tuple[dict, int]:
     return out, removed
 
 
-def drift_warning(local: dict, global_styles: dict | None) -> None:
-    """WARN if the live wp_global_styles carries operator keys absent from the snapshot (Site-Editor
-    hand-edits that this push would clobber). Not fatal — surfaced for a go/no-go decision."""
+def drift_warning(local: dict, global_styles: dict | None) -> int:
+    """WARN if the live wp_global_styles layer was hand-edited in the Site Editor since the last
+    deploy, so an operator's tweak is never silently clobbered by this push (FR-33-11).
+
+    A KEY-SET diff alone misses the most common real hand-edit: changing the VALUE of a key
+    that exists on BOTH sides (e.g. an operator nudging `styles.color.background` from cream to
+    pink). That produces an empty `live - ours` key-set diff and would sail through with no
+    warning at all. So this reports TWO distinct classes:
+      - ORPHANED — keys in the live layer absent from our snapshot (the original check; a
+        push would leave these operator-only keys with nothing to merge against).
+      - CLOBBERED — keys present on BOTH sides where the live value differs from the value we
+        are about to push. THIS is the case a pure key-set diff missed.
+
+    Not fatal — surfaced for a go/no-go decision, per FR-33-11. Returns the CLOBBERED count so a
+    caller can act on it in future (this task only warns; it does not change the push flow).
+    """
     if not global_styles:
-        return
-    live = collect_keys({"styles": global_styles.get("styles") or {},
-                         "settings": global_styles.get("settings") or {}})
-    ours = collect_keys({"styles": local.get("styles") or {}, "settings": local.get("settings") or {}})
-    survivors = sorted(live - ours)
-    if survivors:
-        print(f"[push-theme-snapshot] ⚠ DRIFT WARNING: {len(survivors)} operator override key(s) in "
-              f"the live layer are NOT in this snapshot — pushing will leave them orphaned. "
-              f"First: {survivors[:5]}", file=sys.stderr)
+        print(
+            "[push-theme-snapshot] ⚠ DRIFT WARNING: could not fetch the live wp_global_styles "
+            "layer, so drift could NOT be assessed. Proceeding blind — any Site Editor hand-edit "
+            "made since the last deploy may be silently overwritten by this push.",
+            file=sys.stderr,
+        )
+        return 0
+
+    live_scope = {"styles": global_styles.get("styles") or {}, "settings": global_styles.get("settings") or {}}
+    ours_scope = {"styles": local.get("styles") or {}, "settings": local.get("settings") or {}}
+
+    live_keys = collect_keys(live_scope)
+    ours_keys = collect_keys(ours_scope)
+    orphaned = sorted(live_keys - ours_keys)
+    if orphaned:
+        print(f"[push-theme-snapshot] ⚠ DRIFT WARNING (ORPHANED): {len(orphaned)} operator override "
+              f"key(s) in the live layer are NOT in this snapshot — pushing will leave them orphaned. "
+              f"First: {orphaned[:5]}", file=sys.stderr)
+
+    live_leaves = collect_leaves(live_scope)
+    ours_leaves = collect_leaves(ours_scope)
+    clobbered = sorted(k for k in (set(live_leaves) & set(ours_leaves)) if live_leaves[k] != ours_leaves[k])
+    if clobbered:
+        print(
+            f"[push-theme-snapshot] ⚠ DRIFT WARNING (CLOBBERED): {len(clobbered)} key(s) were changed "
+            "live (in the Site Editor) since the last deploy — this push will OVERWRITE them:",
+            file=sys.stderr,
+        )
+        for k in clobbered[:10]:
+            print(
+                f"    ~ {k}: live={_truncate_for_log(live_leaves[k])} "
+                f"-> incoming={_truncate_for_log(ours_leaves[k])}",
+                file=sys.stderr,
+            )
+        if len(clobbered) > 10:
+            print(f"    ... and {len(clobbered) - 10} more", file=sys.stderr)
+
+    return len(clobbered)
 
 
 def do_rollback(args) -> int:
@@ -549,6 +644,12 @@ def main() -> int:
     )
     parser.add_argument("--no-backup", action="store_true",
                         help="Skip the pre-overwrite live-payload backup (FR-33-11 — not advised)")
+    parser.add_argument("--force-no-backup", action="store_true",
+                        help="Proceed even though no reliable rollback backup could be made (e.g. the "
+                             "live payload could not be fetched, or the live wp_global_styles layer is "
+                             "unavailable). This disables the FR-33-11 rollback safety net — only pass "
+                             "it if you are certain there is nothing to protect (a genuinely fresh "
+                             "target) or you accept the risk of an unrecoverable push.")
     parser.add_argument("--include-advisory", action="store_true",
                         help="Deploy DERIVED (advisory) Pass-B tokens too (FR-33-5). By default any "
                              "palette entry marked advisory:true is stripped from the pushed payload "
@@ -574,7 +675,15 @@ def main() -> int:
         args.no_push = True
 
     server = fetch_server_theme_json(args.target, args.port, server_path)
-    global_styles = fetch_global_styles(args.target_domain)
+    # Resolve credentials BEFORE reading the Site-Editor layer: that route needs
+    # `edit_theme_options`, so an anonymous read 403s and every downstream consumer
+    # (the diff, the drift warning, and the FR-33-11 rollback backup) silently
+    # degrades to "unknown" — which aborted every push. Best-effort here: a missing
+    # credential is not fatal at this point, the authoritative check is below.
+    _read_creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
+    global_styles = fetch_global_styles(
+        args.target_domain, _basic_auth_header(*_read_creds) if _read_creds else None
+    )
 
     print(diff_summary(local, server, global_styles))
     print()
@@ -616,9 +725,47 @@ def main() -> int:
                   f"from the push — pass --include-advisory to deploy them.")
 
     # FR-33-11: back up the CURRENT live payload BEFORE overwriting (rollback source of truth).
+    # The backup is load-bearing: if it could not be made (fetch failure, or the live
+    # wp_global_styles layer is unavailable so a rollback couldn't restore it), ABORT rather
+    # than push unattended with no way back. --no-backup (an existing deliberate operator
+    # opt-out) still skips this section entirely, unchanged.
     if not args.no_backup:
         stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        persist_backup(args.client, args.target_domain, server, global_styles, stamp)
+        backup_path = persist_backup(args.client, args.target_domain, server, global_styles, stamp)
+        # `persist_backup` returns None for TWO different reasons — do NOT conflate them:
+        #   (a) FRESH TARGET: server_theme is None AND global_styles is None -> there is
+        #       nothing live to clobber, so there is nothing to protect. Proceeding is SAFE
+        #       and is the normal first-deploy path for a NEW CLIENT. Aborting here would
+        #       break onboarding, because the pipeline (orchestrator/upload_and_patch.py)
+        #       does not pass --force-no-backup.
+        #   (b) BACKUP FAILED: something WAS live but we could not capture it -> a rollback
+        #       is impossible, so abort.
+        is_fresh_target = server is None and global_styles is None
+        if is_fresh_target:
+            print(
+                "[push-theme-snapshot] Fresh target — nothing live to back up (no existing "
+                "theme.json and no existing wp_global_styles). Proceeding; there is nothing "
+                "to overwrite.",
+                file=sys.stderr,
+            )
+        elif backup_path is None or global_styles is None:
+            if args.force_no_backup:
+                print(
+                    "[push-theme-snapshot] WARNING: proceeding with --force-no-backup — there is no "
+                    "rollback safety net for this push. If anything goes wrong there is no automatic "
+                    "way back.",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    "[push-theme-snapshot] ABORTED: a reliable backup of the live site could not be "
+                    "made (the live payload could not be fetched, or the live wp_global_styles layer "
+                    "is unavailable), so this push could not be safely rolled back if something goes "
+                    "wrong. Nothing has been changed. If you are certain this is a fresh target with "
+                    "nothing to protect, re-run with --force-no-backup.",
+                    file=sys.stderr,
+                )
+                return 1
 
     try:
         # Step 1: SCP theme.json to disk + cache flush (existing behaviour).

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""attribute-gap-writer.py -- Spec 15 Phase 5a.4 attribute-gap writes.
+"""attribute-gap-writer.py -- Spec 31 Phase 5a.4 attribute-gap writes.
 
 Single FR8-compliant entry point that inserts rows into
 uimax.attribute_gap_candidates with the mandatory provenance + run_id
 stamp on every row. Sibling of functionality-gap-detector.py (5a.3).
 
-Schema (uimax.attribute_gap_candidates as of Spec 15 Phase 2):
+Schema (uimax.attribute_gap_candidates as of Spec 31 Phase 2):
     block_slug TEXT
     selector TEXT
     css_property TEXT

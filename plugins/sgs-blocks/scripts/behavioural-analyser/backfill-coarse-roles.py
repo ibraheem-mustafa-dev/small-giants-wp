@@ -1,5 +1,5 @@
 """
-Spec 15 Phase 3.5 — Refine Phase 1 coarse roles to role-templates taxonomy.
+Spec 31 Phase 3.5 — Refine Phase 1 coarse roles to role-templates taxonomy.
 
 Phase 1 left some rows tagged with coarse roles ('color', 'typography',
 'visual', 'behaviour', 'content') that do not dispatch to any

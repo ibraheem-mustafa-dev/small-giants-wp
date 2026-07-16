@@ -17,19 +17,43 @@
 	color: var(--wp--preset--color--text);
 }
 
-/* ----- Heading role defaults ----- */
-.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) {
-	font-size: 28px;
-	font-weight: 700;
-	line-height: 1.2;
-}
-
-/* Tablet — scale heading up */
-@media (min-width: 768px) {
-	.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) {
-		font-size: 36px;
-	}
-}
+/* ----- Heading role defaults -----
+ *
+ * NO font-size here, deliberately (D338). This block renders the <h1>-<h6> AS its
+ * root, so an unset size must fall through to theme.json's per-tag scale
+ * (styles.elements.h1..h6 = hero / xx-large / x-large / large / medium / small) —
+ * i.e. an <h3> is h3-sized because it IS an h3, per client, per theme.
+ *
+ * It previously hardcoded `font-size: 28px` (+ 36px @768) here AND `default: 28` in
+ * block.json. Both had to go: this rule is (0,2,0) and theme.json's `h2` selector is
+ * (0,0,1), so the block CSS silently beat the theme on EVERY heading of EVERY client
+ * — an h1 and an h6 rendered identically. It also made the block unable to represent
+ * a preset slug, which is what blocked core/heading -> sgs/heading conversion.
+ *
+ * `null` default + no CSS = inherit. That is the pattern sgs/button already proves
+ * (fontSize default null, same responsive-emitter spec). An operator's explicit value
+ * still wins via the uid-scoped rule the emitter writes.
+ *
+ * font-weight/line-height are gone too, for the same reason and by the same evidence
+ * (Bean 2026-07-15: "it makes sense for it to be consistent across tags, not just as a
+ * default here — the real solution is to set those across h tags in the per tag styles
+ * unless it doesn't fit some"). theme.json ALREADY does exactly that:
+ *
+ *   styles.elements.heading = { typography: { fontFamily: heading, fontWeight: "700",
+ *                                             lineHeight: "1.2" } }   // all of h1-h6
+ *   styles.elements.h5 / .h6 = per-tag overrides (h6 adds uppercase + letterSpacing)
+ *
+ * So this rule was a DUPLICATE that silently beat the theme — (0,2,0) vs theme.json's
+ * `:root :where(h1..h6)` at (0,1,0). The values were identical (700 / 1.2), so deleting
+ * it is a zero-visual-change refactor that makes theme.json AUTHORITATIVE: a client
+ * whose draft wants a different heading weight now changes theme.json (or their
+ * theme-snapshot) and it actually takes effect, per-tag, instead of being overridden
+ * here for every client at once.
+ *
+ * The rule to apply next time: a block-level literal that DUPLICATES a theme.json
+ * element default is not a "helpful default" — it is a silent override that disables
+ * the theme. Check theme.json BEFORE adding a typography literal to a block.
+ */
 
 /* ----- Subheading role defaults ----- */
 .wp-block-sgs-heading--subheading {

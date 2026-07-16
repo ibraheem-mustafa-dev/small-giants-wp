@@ -28,17 +28,21 @@ const TEMPLATE = [
 			columns: 3,
 			columnsTablet: 3,
 			columnsMobile: 1,
-			gridTemplateColumns: '2fr 1fr 1fr',
-			// Explicit mobile 1-col: an explicit base gridTemplateColumns suppresses
-			// the sgs-cols-mobile-1 shorthand (D228 gate), so the mobile collapse
-			// must be an explicit responsive template rule.
-			gridTemplateColumnsMobile: '1fr',
-			gap: '48px',
+			// OBJECT shape is mandatory — this is D328, still live until now.
+			// site-footer-row declares gridTemplateColumns + gap as `type: object`
+			// ({desktop, mobile}). A flat string here is silently COERCED to the
+			// block.json default at render (WP prepare_attributes_for_render), so
+			// '2fr 1fr 1fr' became the default `repeat(3, 1fr)` — EQUAL THIRDS
+			// instead of the draft's 2fr 1fr 1fr — with no error and no test failure.
+			// `gridTemplateColumnsMobile` was not a declared attr at all and was
+			// discarded outright; the mobile collapse belongs in the `mobile` tier.
+			gridTemplateColumns: { desktop: '2fr 1fr 1fr', mobile: '1fr' },
+			gap: { desktop: '48px', mobile: '32px' },
 		},
 		[
 			// Column 1 — brand: logo + tagline + socials from Business Details.
 			[
-				'core/group',
+				'sgs/container',
 				{ className: 'sgs-site-footer__brand', layout: { type: 'constrained' } },
 				[
 					[ 'sgs/responsive-logo', { width: 160, linkToHome: true } ],
@@ -48,45 +52,52 @@ const TEMPLATE = [
 			],
 			// Column 2 — Shop links.
 			[
-				'core/group',
+				'sgs/container',
 				{ className: 'sgs-site-footer__links', layout: { type: 'constrained' } },
 				[
-					[ 'core/heading', { level: 2, content: __( 'Shop', 'sgs-blocks' ) } ],
-					[
-						'core/list',
-						{},
+					[ 'sgs/heading', { level: 2 } ],
 						[
-							[ 'core/list-item', { content: __( 'About Us', 'sgs-blocks' ) } ],
-							[ 'core/list-item', { content: __( 'Contact', 'sgs-blocks' ) } ],
-							[ 'core/list-item', { content: __( 'FAQs', 'sgs-blocks' ) } ],
-							[ 'core/list-item', { content: __( 'Gift Ideas', 'sgs-blocks' ) } ],
+							'sgs/text',
+							{},
 						],
-					],
 				],
 			],
 			// Column 3 — Legal links.
 			[
-				'core/group',
+				'sgs/container',
 				{ className: 'sgs-site-footer__links', layout: { type: 'constrained' } },
 				[
-					[ 'core/heading', { level: 2, content: __( 'Legal', 'sgs-blocks' ) } ],
-					[
-						'core/list',
-						{},
+					[ 'sgs/heading', { level: 2 } ],
 						[
-							[ 'core/list-item', { content: __( 'Privacy Policy', 'sgs-blocks' ) } ],
-							[ 'core/list-item', { content: __( 'Shipping', 'sgs-blocks' ) } ],
-							[ 'core/list-item', { content: __( 'Terms & Conditions', 'sgs-blocks' ) } ],
-							[ 'core/list-item', { content: __( 'Allergen Info', 'sgs-blocks' ) } ],
+							'sgs/text',
+							{},
 						],
-					],
 				],
 			],
 		],
 	],
 	[
 		'sgs/site-footer-row',
-		{ rowSlot: 'bottom', layout: 'flex', justifyContent: 'center' },
+		// Shapes here are NOT free-form — they mirror framework-footer-default.php's
+		// bottom row exactly, because site-footer-row declares gap/padding/margin as
+		// OBJECT attrs. A flat value (gap:'8px') or a missing tier (padding:{top})
+		// is silently COERCED to the block.json default at render — no error, no test
+		// failure, just the wrong spacing (D328). `border` is a SUPPORT, not an attr,
+		// so it must live under `style`, or WP discards it as an unknown attribute.
+		{
+			rowSlot: 'bottom',
+			layout: 'flex',
+			justifyContent: 'center',
+			gap: { desktop: '8px' },
+			padding: {
+				desktop: {
+					top: 'var(--wp--preset--spacing--40)',
+					bottom: 'var(--wp--preset--spacing--40)',
+				},
+			},
+			margin: { desktop: { top: 'var(--wp--preset--spacing--50)' } },
+			style: { border: { top: { color: 'var:preset|color|accent', width: '1px' } } },
+		},
 		[
 			[ 'sgs/business-info', { displayType: 'copyright' } ],
 		],

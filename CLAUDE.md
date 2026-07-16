@@ -121,10 +121,15 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 | Work | Route to |
 |---|---|
 | Heavy WP build (pages, templates, blocks, plugins, migrations, fidelity) | `wp-sgs-developer` agent |
+| SGS block / theme / client-site build or fix (the framework skill) | `/sgs-wp-engine` (+ `/wp-block-development` for core-WP block-API questions) |
+| **Deploy theme/plugin** | **`build-deploy.py --target sandybrown\|palestine-lives` (the ONE path) — ceremony + gates via `/wp-sgs-deploy`. NEVER hand-roll tar/scp (D336: 2 client sites, ~2.5h down).** |
+| Per-client tokens / brand colours | `sites/<client>/theme-snapshot.json` (Spec 33) → `push-theme-snapshot.py` |
+| Visual / a11y verification of a built page | `/visual-qa` (9-layer SGS pipeline) + `/a11y-audit`; Playwright MCP for bespoke probes |
+| Clone fidelity — is it faithful? | Spec 20 computed-parity (Stage 11.6, auto) **+ Bean's eye (R-31-13)**. Never close on a number alone |
 | Skill / agent / pipeline / router lifecycle | `/lifecycle` |
 | Cloning pipeline work | `/sgs-clone` + register the result via `/sgs-update` |
 | Doc edits | `docscore-on-doc-edit` PostToolUse hook auto-runs |
-| Model picking per task | `/delegate` (Haiku mechanical / Sonnet architectural / Cerebras+Gemini Flash validation) |
+| Model picking per task | `/delegate` (Haiku mechanical / Sonnet architectural / cross-TIER cold-Claude validation — all-Claude fleet since 2026-07-15) |
 | Multi-rater code-review before commit on converter/pipeline/SGS-block | `/qc-council` (per blub.db 255) |
 | Per-file checks inline | `/qc-inline` |
 | Parallel work across disjoint files | `/dispatching-parallel-agents` |
@@ -162,17 +167,23 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 cd plugins/sgs-blocks && npm run build
 # Build uses @wordpress/scripts with --experimental-modules + --webpack-copy-php (PHP render.php copied to build/)
 
-# Deploy via tar (scp -r creates nested dirs on Hostinger)
-tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' \
-    --exclude='theme/sgs-theme/styles/*.json' --exclude='plugins/sgs-blocks/_retired' \
-    theme/sgs-theme plugins/sgs-blocks
-# Then SCP, extract, OPcache reset (HTTP, CLI reset is a separate pool). Full sequence in dev-setup.md.
+# Deploy — THE ONE PATH (D336-hardened). Defaults to the sandybrown canary.
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
+python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives   # production — explicit opt-in
+# Scope: --blocks-only | --theme-only. It runs the build itself unless --skip-build.
+# It carries the dirty-tree gate + default-ON fail-closed verify + .bak rollback rotation, and
+# resets OPcache via HTTP (the CLI pool is separate). Full sequence in dev-setup.md.
+#
+# ⛔ NEVER hand-roll tar / scp -r / ssh 'rm -rf … && mv …'. The old recipe deleted the LIVE
+#    directory before extracting: on 2026-07-14 (D336) it took two client sites down for ~2.5h.
+#    Do not reach for --allow-dirty (an uncommitted edit was D336's trigger) or --skip-verify
+#    (that flag removes the check that catches a broken deploy).
 
-# Per-client theme snapshot (post Phase 5a — no per-client .json in theme/sgs-theme/styles/)
+# Per-client theme snapshot (per-client tokens live at sites/<client>/theme-snapshot.json, Spec 33)
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- **Dev site:** palestine-lives.org (WP 6.9.1). **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
+- **Dev site:** palestine-lives.org. **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com. Both on **WP 7.0.1** (verified 2026-07-16 via Hostinger MCP `hosting_showWordPressCoreVersionV1`; WP 7.1 lands 19 Aug 2026 — re-check rather than trusting this line). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
 - **Canary credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/sandybrown.env` holds the test-site logins — `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification. (Cloning dev-site app passwords: `A:/.openclaw/.secrets/wp-app-passwords.env`.)
 - **No Node.js on server** — build locally, deploy compiled `build/`.
@@ -216,11 +227,11 @@ Two DISTINCT concepts; NEVER conflate them or run a blanket "fix all 599/600 bre
 ### Rosetta Stone discipline (uimax cross-platform translation)
 Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks + vanilla HTML/CSS + Bootstrap + shadcn/Radix + Tailwind + React + AI-builder. Missing SGS equivalent = gap candidate, never silently dropped. `uimax` = DB/data layer; `/ui-ux-pro-max` = intelligence skill that USES the DB. Captured 2026-05-06 blub.db 213.
 
-### Bean-controlled drafts use SGS-BEM (Spec 15 §8.1, blub.db 236)
+### Bean-controlled drafts use SGS-BEM (Spec 00 §3 / §3.1, blub.db 236)
 `.sgs-<block>__<element>--<modifier>`. `/sgs-clone` Stage 0 hard-rejects non-conforming on production runs; `--draft-mode` = soft warning; `--legacy` bypasses. Live scrapes use lingua-franca conversion at write time.
 
 ### Saved-defaults model (canonical — do NOT reintroduce parallel infra)
-Four WordPress-native channels: (1) visual styling defaults → Site Editor Styles panel (`wp_global_styles` over `theme.json`); (2) structural starting state → block patterns at `plugins/sgs-blocks/includes/block-patterns.php`; (3) per-operator session memory → `useLastUsedAttributes` sessionStorage hook; (4) per-instance customisation → block inspector. NO `withSaveAsDefault` HOC, NO `<BlockDefaultsPanel>`, NO `wp_options`-backed defaults store.
+Four WordPress-native channels: (1) visual styling defaults → Site Editor Styles panel (`wp_global_styles` over `theme.json`); (2) structural starting state → block patterns at `theme/sgs-theme/patterns/*.php` (one PHP file per pattern — verified 2026-07-15; the old `plugins/sgs-blocks/includes/block-patterns.php` path in this doc was stale and that file does not exist); (3) per-operator session memory → `useLastUsedAttributes` sessionStorage hook; (4) per-instance customisation → block inspector. NO `withSaveAsDefault` HOC, NO `<BlockDefaultsPanel>`, NO `wp_options`-backed defaults store.
 
 ### Block customisation standard (MANDATORY)
 Every block: (1) native `supports` for wrapper-level controls; (2) custom attrs + controls for each inner text element; (3) custom attrs + controls for CTAs; (4) CSS fallback colours use `:not([style*="color"])` so custom values win; (5) Block Selectors API in `block.json` targets native typography to primary text element.
@@ -238,10 +249,11 @@ PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir(
 `theme/sgs-theme/styles/` is empty. Per-client colour/typography lives at `sites/<client>/theme-snapshot.json` and deploys via `push-theme-snapshot.py`. Client-specific CSS goes into the snapshot's `styles.css` OR `sites/<client>/theme-overrides.css`. Never into framework's `style.css`.
 
 ### sgs/trust-bar — renamed from trust-badges (D123, 2026-05-31); dual-mode FR-24-10 SHIPPED 2026-06-01; bound-purge SHIPPED D182 2026-06-06
-D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cases → `sgs/counter`; badge use-cases → universal-nesting). Then `sgs/trust-badges` was renamed → `sgs/trust-bar` (D123) — this is the CURRENT active block. As of 2026-06-01 (FR-24-10, commit d6358f32) it introduced dual-mode, but the cloning `sourceMode='bound'` emit was a cheat that has since been **PURGED (D182, 2026-06-06, commit `92bcf997`, 6-persona adversarial-council gated)**. The converter now emits `sourceMode='typed'` with native item attrs resolved by the icon-identity resolver (`converter_v2/icon_resolver.py`, 2026-06-07) — badges clone to correct icon slugs (home/check/truck/star). **Current canonical modes:**
-- `sourceMode='typed'` — curated icon/badge repeater, 3 variants. THE mode for cloned + authored trust-bars.
-- `sourceMode='wc-product'` / `sourceMode='sgs-cpt'` — live WC configurator only. Legitimate non-typed modes.
-- `sourceMode='bound'` — **RETIRED from cloning (D182).** Do NOT add new `sourceMode='bound'` emits. render.php no longer routes new clones through this path.
+D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cases → `sgs/counter`; badge use-cases → universal-nesting). Then `sgs/trust-badges` was renamed → `sgs/trust-bar` (D123) — this is the CURRENT active block. As of 2026-06-01 (FR-24-10, commit d6358f32) it introduced dual-mode, but the cloning `sourceMode='bound'` emit was a cheat that has since been **PURGED (D182, 2026-06-06, commit `92bcf997`, 6-persona adversarial-council gated)**. The converter now emits `sourceMode='typed'` with native item attrs resolved by the icon-identity resolver (`converter_v2/icon_resolver.py`, 2026-06-07) — badges clone to correct icon slugs (home/check/truck/star). **Current reality (verified live 2026-07-16 — `trust-bar/render.php:6,11` + `block.json`): `sgs/trust-bar` has NO `sourceMode` attribute at all.** It was REMOVED at v0.5.1 ("Rule 3 de-plumb") once bound mode was purged and typed became the only mode — the attribute was redundant plumbing. The block is **typed-only**: a curated `items[]` repeater across all 3 variants.
+
+- **Do NOT emit `sourceMode` on `sgs/trust-bar` in any form** — including `'typed'`. WP silently DISCARDS an attribute the block.json doesn't declare (D338), so it would be a dead attr that looks fine and does nothing.
+- `sourceMode='bound'` — RETIRED from cloning (D182) and now gone entirely from this block; `cheat-gate/check_bound_emit.py` enforces it.
+- The `wc-product` / `sgs-cpt` live-configurator modes belong to **`sgs/product-card`** (Spec 27), not trust-bar. Check the target block's own `block.json` before assuming it has a `sourceMode`.
 
 ## Non-negotiables
 

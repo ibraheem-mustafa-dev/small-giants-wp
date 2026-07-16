@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5d.2 self-test for token_resolver.py.
+"""Spec 31 Phase 5d.2 self-test for token_resolver.py.
 
 Plan contract: resolve 5 attrs (3 should snap to known tokens, 2 should
 flag as gap candidates); assert correct CSS var emitted.
@@ -135,7 +135,7 @@ def test_batch() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5d.2 -- token_resolver contract")
+    print("Spec 31 Phase 5d.2 -- token_resolver contract")
     test_colour_snaps_to_token()
     test_spacing_snaps_to_token()
     test_font_size_snaps()

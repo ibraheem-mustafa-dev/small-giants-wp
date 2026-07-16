@@ -21,6 +21,16 @@
  *         c) are NOT covered by an exemption (see EXEMPTIONS below).
  *    4. Report the violation: file, line, property, literal value, the attr
  *       that should own it.
+ *    5. F3b (added 2026-07-15): ALSO parse each attribute's block.json
+ *       `default` VALUE itself (not just its name) and flag a literal default
+ *       that flattens a theme.json per-element scale — see the F3B section
+ *       below the CSS scanner for the full mechanism + the E12 exemption gate
+ *       that keeps this from over-firing on ordinary component defaults.
+ *       (Blind spot proven live 2026-07-15: sgs/heading shipped
+ *       `fontSize: {"default": 28}`, silently overriding theme.json's
+ *       differentiated per-h-tag scale on every heading of every client — the
+ *       original scan above never looked at `default`, only at attribute
+ *       NAMES, so it passed clean.)
  *
  * EXEMPTIONS (a declaration is NOT a violation when)
  * ---------------------------------------------------
@@ -34,6 +44,10 @@
  *    <?php, or a PHP interpolation marker) — only LITERAL string constants qualify.
  *  - The CSS selector is scoped to a :where() or a reset / animation /
  *    keyframes context (handled by the context-aware scanner).
+ *
+ *  E12  Theme-element divergence gate (F3b, block.json `default` VALUE scan):
+ *        a literal default is only flagged when it flattens a theme.json
+ *        per-element scale (see the F3B section below the CSS scanner).
  *
  *  ADDED (E1–E10, converged from 5-agent audit of 268 baseline findings):
  *  - E1  Selector-context awareness: sub-element selectors (__foo) only flagged
@@ -681,6 +695,351 @@ function getHtmlAttrConsumedAttrs( renderPhpSrc, blockAttrs ) {
 }
 
 // ---------------------------------------------------------------------------
+// F3B — BLOCK.JSON DEFAULT-VALUE DIVERGENCE CHECK
+//
+// The scanners above only look at style.css / render.php LITERAL CSS
+// declarations. They never look at a block.json attribute's own `default`
+// VALUE — so a hardcoded constant sitting in `"default"` passed clean (proven
+// live 2026-07-15: sgs/heading shipped `fontSize: {"default": 28}`, silently
+// overriding theme.json's differentiated per-h-tag scale — h1 and h6 both
+// rendered at 28px on every client).
+//
+// THE TEST (Bean-decided 2026-07-15) is NOT "is this a literal?" — almost
+// every attribute has one. It is: "does this literal FLATTEN a theme-wide
+// default that theme.json intentionally VARIES?" The only construct in
+// theme.json that assigns genuinely DIFFERENT per-value styling for the SAME
+// CSS property is `styles.elements.<tag>`, keyed per semantic HTML element
+// (theme.json gives h1..h6 six different font-sizes). A block exhibits the
+// same failure shape ONLY when it declares an enum attribute whose VALUES are
+// themselves `styles.elements` keys (e.g. sgs/heading's `level`: h1-h6) — the
+// block itself dynamically renders as one of several elements theme.json
+// treats differently. A block with no such tag-switching enum (sgs/label's
+// <span>, sgs/button's <a>) renders ONE fixed element: theme.json assigns it
+// no per-instance-varying default to collapse, so a flat literal default
+// there is an ordinary component constant (sgs/label's fontSize:12 kicker
+// size), not an F3 violation. This is the mechanical, non-hardcoded
+// equivalent of "does it render an h-tag" — derived entirely from theme.json
+// + block.json structure, no per-block exception list (E12 below).
+// ---------------------------------------------------------------------------
+
+const THEME_JSON_PATH = path.join( ROOT, '..', '..', 'theme', 'sgs-theme', 'theme.json' );
+
+/** Maps a theme.json `styles.*.typography.*` key to its CSS property. */
+const THEME_TYPOGRAPHY_KEY_TO_CSS_PROP = {
+	fontSize:       'font-size',
+	fontWeight:     'font-weight',
+	lineHeight:     'line-height',
+	letterSpacing:  'letter-spacing',
+	textTransform:  'text-transform',
+	textDecoration: 'text-decoration',
+	fontStyle:      'font-style',
+};
+
+/**
+ * Extract the CSS properties + values a single theme.json style node (e.g.
+ * `styles.elements.h1`) declares at its OWN level — typography / color /
+ * border / spacing.padding only. Deliberately does NOT descend into `:hover`
+ * / `:focus` pseudo-state sub-objects (those are interactive-state overrides,
+ * not the resting-state default this check compares block.json defaults
+ * against — mirrors E3's interactive-state exemption in the literal scanner).
+ *
+ * @param {object}          node     A theme.json style node.
+ * @param {Map<string,string>} propsMap Output map: CSS property → value.
+ */
+function collectStyleNodeProps( node, propsMap ) {
+	if ( ! node || 'object' !== typeof node ) {
+		return;
+	}
+	if ( node.typography && 'object' === typeof node.typography ) {
+		for ( const [ key, val ] of Object.entries( node.typography ) ) {
+			const prop = THEME_TYPOGRAPHY_KEY_TO_CSS_PROP[ key ];
+			if ( prop && ( 'string' === typeof val || 'number' === typeof val ) ) {
+				propsMap.set( prop, String( val ) );
+			}
+		}
+	}
+	if ( node.color && 'object' === typeof node.color ) {
+		if ( 'string' === typeof node.color.text ) {
+			propsMap.set( 'color', node.color.text );
+		}
+		if ( 'string' === typeof node.color.background ) {
+			propsMap.set( 'background-color', node.color.background );
+		}
+	}
+	if ( node.border && 'object' === typeof node.border ) {
+		if ( 'string' === typeof node.border.radius ) {
+			propsMap.set( 'border-radius', node.border.radius );
+		}
+		if ( 'string' === typeof node.border.color ) {
+			propsMap.set( 'border-color', node.border.color );
+		}
+		if ( 'string' === typeof node.border.width ) {
+			propsMap.set( 'border-width', node.border.width );
+		}
+	}
+	if ( node.spacing && node.spacing.padding && 'object' === typeof node.spacing.padding ) {
+		for ( const side of [ 'top', 'right', 'bottom', 'left' ] ) {
+			const val = node.spacing.padding[ side ];
+			if ( 'string' === typeof val ) {
+				propsMap.set( `padding-${ side }`, val );
+			}
+		}
+	}
+}
+
+/**
+ * Build Map<cssProperty, Map<elementKey, effectiveValue>> from
+ * `theme.json styles.elements`. Applies WP's own cascade fallback:
+ * `styles.elements.heading` is the h1-h6 BASELINE (WP applies it to every
+ * heading tag before the more-specific h{n} override), so a property that
+ * `heading` declares but no individual h{n} overrides resolves to the SAME
+ * effective value on every level — that is NOT divergence (e.g. fontWeight:
+ * 700 on `heading` + explicit 700 on h5/h6 is uniform, not six different
+ * values). Only a genuine per-level DIFFERENCE (theme.json's font-size scale)
+ * counts.
+ */
+function buildElementPropertyValues( themeJson ) {
+	const raw      = new Map(); // cssProperty -> Map<elementKey, value>
+	const elements = ( themeJson && themeJson.styles && themeJson.styles.elements ) || {};
+
+	for ( const [ elementKey, styleNode ] of Object.entries( elements ) ) {
+		const props = new Map();
+		collectStyleNodeProps( styleNode, props );
+		for ( const [ prop, val ] of props ) {
+			if ( ! raw.has( prop ) ) {
+				raw.set( prop, new Map() );
+			}
+			raw.get( prop ).set( elementKey, val );
+		}
+	}
+
+	const H_TAGS = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ];
+	for ( const byElement of raw.values() ) {
+		if ( byElement.has( 'heading' ) ) {
+			const headingVal = byElement.get( 'heading' );
+			for ( const h of H_TAGS ) {
+				if ( ! byElement.has( h ) ) {
+					byElement.set( h, headingVal );
+				}
+			}
+		}
+	}
+	return raw;
+}
+
+/**
+ * Given the specific element keys a block's enum attribute switches between
+ * (e.g. ["h1".."h6"]), return the set of CSS properties whose EFFECTIVE
+ * theme.json value genuinely differs across those keys (absence counts as a
+ * distinct state from any declared value).
+ */
+function getDivergentProps( enumValues, elementPropertyValues ) {
+	const divergent = new Set();
+	for ( const [ prop, byElement ] of elementPropertyValues ) {
+		const seen = new Set();
+		for ( const key of enumValues ) {
+			seen.add( byElement.has( key ) ? byElement.get( key ) : ' __ABSENT__' );
+		}
+		if ( seen.size > 1 ) {
+			divergent.add( prop );
+		}
+	}
+	return divergent;
+}
+
+let _themeJsonCache; // undefined = not yet loaded.
+function loadThemeJson() {
+	if ( undefined !== _themeJsonCache ) {
+		return _themeJsonCache;
+	}
+	try {
+		const raw = readIfExists( THEME_JSON_PATH );
+		_themeJsonCache = raw ? JSON.parse( raw ) : null;
+	} catch ( e ) {
+		process.stderr.write(
+			`[check-hardcoded-render-defaults] WARNING: could not parse theme.json (${ e.message }) — ` +
+			'block.json default-value divergence check (F3b) skipped.\n'
+		);
+		_themeJsonCache = null;
+	}
+	return _themeJsonCache;
+}
+
+let _elementPropertyValuesCache;
+function getElementPropertyValues() {
+	if ( undefined === _elementPropertyValuesCache ) {
+		_elementPropertyValuesCache = buildElementPropertyValues( loadThemeJson() );
+	}
+	return _elementPropertyValuesCache;
+}
+
+let _allElementKeysCache;
+function getAllElementKeys() {
+	if ( undefined === _allElementKeysCache ) {
+		const themeJson = loadThemeJson();
+		const elements  = ( themeJson && themeJson.styles && themeJson.styles.elements ) || {};
+		_allElementKeysCache = new Set( Object.keys( elements ) );
+	}
+	return _allElementKeysCache;
+}
+
+/**
+ * Format a block.json attribute's `default` as a CSS-literal string suitable
+ * for `isLiteralConstant()`, or return null when the default is the correct
+ * "inherit / no override" pattern (null, undefined, or "").
+ *
+ * Numbers get their unit from the sibling `{attrName}Unit` attribute's own
+ * default (the convention every SGS typography/box attr follows), so the
+ * formatted value matches what render.php actually emits — e.g. heading's
+ * `fontSize` + `fontSizeUnit: "px"` → "28px".
+ */
+function formatDefaultForLiteralCheck( attrName, attrDef, allAttrs ) {
+	if ( ! attrDef || ! ( 'default' in attrDef ) ) {
+		return null;
+	}
+	const value = attrDef.default;
+	if ( null === value || undefined === value ) {
+		return null;
+	}
+	if ( 'string' === typeof value ) {
+		return '' === value ? null : value;
+	}
+	if ( 'number' === typeof value ) {
+		const unitAttr = allAttrs[ `${ attrName }Unit` ];
+		const unit     = unitAttr && 'string' === typeof unitAttr.default ? unitAttr.default : '';
+		return `${ value }${ unit }`;
+	}
+	return null; // booleans / objects / arrays — not a scalar CSS literal.
+}
+
+/**
+ * Best-effort line lookup for an attribute's `"default"` key, for a readable
+ * finding (baseline dedup keys on block+file+property+value, not line).
+ */
+function findAttrDefaultLine( blockJsonRaw, attrName ) {
+	const lines = blockJsonRaw.split( '\n' );
+	const keyRe = new RegExp( `"${ attrName.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) }"\\s*:\\s*\\{` );
+	let attrLine = -1;
+	for ( let i = 0; i < lines.length; i++ ) {
+		if ( keyRe.test( lines[ i ] ) ) {
+			attrLine = i;
+			break;
+		}
+	}
+	if ( -1 === attrLine ) {
+		return 1;
+	}
+	for ( let i = attrLine; i < lines.length; i++ ) {
+		if ( /"default"\s*:/.test( lines[ i ] ) ) {
+			return i + 1;
+		}
+		if ( i > attrLine && /^\s*\},?\s*$/.test( lines[ i ] ) ) {
+			break; // this attribute's object closed with no `default` key
+		}
+	}
+	return attrLine + 1;
+}
+
+/** Shared literal test (isLiteralConstant + E7 touch-target exemption). */
+function isFlaggableLiteral( value, property ) {
+	if ( ! isLiteralConstant( value, property ) ) {
+		return false;
+	}
+	if ( TOUCH_TARGET_SIZES.has( value ) && TOUCH_TARGET_PROPS.has( property ) ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Scan one block's block.json for a literal `default` that flattens a
+ * theme.json per-element scale (F3b). Returns findings in the same shape the
+ * CSS/PHP scanners return: { line, property, value, attr }.
+ *
+ * @param {object}  meta                   Parsed block.json.
+ * @param {string}  blockJsonRaw           Raw block.json source (line lookup).
+ * @param {boolean} hasSelectorsTypography E9 signal — block declares
+ *                                         `selectors.typography`, so WP's own
+ *                                         pipeline applies the user's
+ *                                         typography value at that selector;
+ *                                         a typography default there is an
+ *                                         ordinary starting value, not a
+ *                                         silent override (mirrors the
+ *                                         existing E9 exemption).
+ */
+function checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) {
+	const findings   = [];
+	const attributes = meta.attributes || {};
+
+	const allElementKeys        = getAllElementKeys();
+	const elementPropertyValues = getElementPropertyValues();
+	if ( allElementKeys.size === 0 || elementPropertyValues.size === 0 ) {
+		return findings; // theme.json missing/unparseable — nothing to cross-check
+	}
+
+	for ( const [ enumAttrName, enumAttrDef ] of Object.entries( attributes ) ) {
+		if ( ! enumAttrDef || ! Array.isArray( enumAttrDef.enum ) ) {
+			continue;
+		}
+		const enumValues = enumAttrDef.enum.filter( ( v ) => 'string' === typeof v && '' !== v );
+
+		// E12 — THEME-ELEMENT DIVERGENCE GATE (see the F3B header comment for
+		// the full rationale): only fires when this attr's enum values are
+		// THEMSELVES theme.json `styles.elements` keys.
+		if ( enumValues.length < 2 || ! enumValues.every( ( v ) => allElementKeys.has( v ) ) ) {
+			continue;
+		}
+
+		const divergentProps = getDivergentProps( enumValues, elementPropertyValues );
+		if ( divergentProps.size === 0 ) {
+			continue;
+		}
+
+		for ( const [ attrName, attrDef ] of Object.entries( attributes ) ) {
+			if ( attrName === enumAttrName || ! attrDef || ! ( 'default' in attrDef ) ) {
+				continue;
+			}
+			const props = attrToCssProps( attrName );
+			if ( props.size === 0 ) {
+				continue;
+			}
+			let matchedProps = [ ...props ].filter( ( p ) => divergentProps.has( p ) );
+			if ( matchedProps.length === 0 ) {
+				continue;
+			}
+			// E9 extension: Block Selectors API already applies the user's
+			// typography value at the declared child selector.
+			if ( hasSelectorsTypography ) {
+				matchedProps = matchedProps.filter( ( p ) => ! WP_NATIVE_TYPOGRAPHY_PROPS.has( p ) );
+			}
+			if ( matchedProps.length === 0 ) {
+				continue;
+			}
+
+			const literalStr = formatDefaultForLiteralCheck( attrName, attrDef, attributes );
+			if ( null === literalStr ) {
+				continue; // null / "" default — the correct "inherit" pattern
+			}
+
+			for ( const property of matchedProps ) {
+				if ( ! isFlaggableLiteral( literalStr, property ) ) {
+					continue;
+				}
+				findings.push( {
+					line:     findAttrDefaultLine( blockJsonRaw, attrName ),
+					property,
+					value:    literalStr,
+					attr:     `${ attrName } (default flattens ${ enumAttrName }'s theme-differentiated ` +
+						`${ property } across ${ enumValues.join( '/' ) })`,
+				} );
+			}
+		}
+	}
+
+	return findings;
+}
+
+// ---------------------------------------------------------------------------
 // CSS SCANNER
 //
 // Scans a CSS (or PHP containing heredoc/echo CSS) source file for
@@ -1067,9 +1426,11 @@ function checkBlock( blockDir ) {
 		return [];
 	}
 
+	const blockJsonRaw = fs.readFileSync( blockJsonPath, 'utf8' );
+
 	let meta;
 	try {
-		meta = JSON.parse( fs.readFileSync( blockJsonPath, 'utf8' ) );
+		meta = JSON.parse( blockJsonRaw );
 	} catch ( e ) {
 		// Invalid block.json — skip without crashing the gate.
 		process.stderr.write(
@@ -1122,6 +1483,19 @@ function checkBlock( blockDir ) {
 	}
 
 	const violations  = [];
+
+	// ── F3b: block.json literal `default` that flattens a theme.json
+	// per-element (tag-switching) scale — see checkBlockJsonDefaults(). ──────
+	for ( const f of checkBlockJsonDefaults( meta, blockJsonRaw, hasSelectorsTypography ) ) {
+		violations.push( {
+			block:    blockName,
+			file:     path.relative( ROOT, blockJsonPath ),
+			line:     f.line,
+			property: f.property,
+			value:    f.value,
+			attr:     f.attr,
+		} );
+	}
 
 	// Load render.php for E8/E10 analysis.
 	const renderPhpPath = path.join( blockDir, 'render.php' );

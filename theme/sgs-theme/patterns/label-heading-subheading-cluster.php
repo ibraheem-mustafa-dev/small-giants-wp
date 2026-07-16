@@ -13,7 +13,7 @@
 <!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","orientation":"vertical","justifyContent":"center"}} -->
 <div class="wp-block-group">
 
-	<!-- wp:sgs/label {"content":"Our speciality","labelStyle":"plain","textColour":"primary"} /-->
+	<!-- wp:sgs/label {"text":"Our speciality","textColour":"primary"} /-->
 
 	<!-- wp:sgs/heading {"headingRole":"heading","content":"A section heading that converts","level":"h2","fontSize":36} /-->
 

@@ -21,11 +21,11 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 **Status:** BUILT + actively shipping. The cloning pipeline (originally researched 2026-04-30) is the dominant current programme.
 
-**What it does:** Converts any SGS-BEM HTML mockup into a deployable WordPress page of SGS blocks via a 12-stage pipeline (Stage 0 validation → Stage 4 Playwright responsive capture → Stage 8 converter → Stage 11 pixel-diff). Reduces a full-page build from days to minutes.
+**What it does:** Converts any SGS-BEM HTML mockup into a deployable WordPress page of SGS blocks via `/sgs-clone`. Reduces a full-page build from days to minutes. **Stage map is single-sourced to [`.claude/cloning-pipeline-flow.md`](../cloning-pipeline-flow.md) — do NOT cache a stage count or list here** (the "12-stage … Stage 11 pixel-diff" line that used to sit here was exactly that drift: pixel-diff was PURGED 2026-07-04).
 
-**Canonical spec:** [`Spec 22 — Universal Block-Equivalent Extraction`](.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md) — single-path universal walker; R-22-1 through R-22-14 binding rules.
+**Canonical spec:** [`Spec 31 — Universal Cloning Pipeline`](31-UNIVERSAL-CLONING-PIPELINE.md) — single-path universal walker; binding rules **R-31-1 … R-31-15** (§13.1). It absorbed Spec 22 at §13 (D253); **Specs 13/15/21/22 are DEAD — never cite them.**
 
-**Active plan:** the cloning CSS-transfer rebuild — blueprint [`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`](31-UNIVERSAL-CLONING-PIPELINE.md) §12; live build plan [`.claude/plans/2026-06-09-clone-fix-build-plan.md`](../plans/2026-06-09-clone-fix-build-plan.md) + sign-off ledger. Foundation (Phase F) COMPLETE; convert.py FROZEN (D-MODULAR D229); next = stage-by-stage modular rebuild. (The old 5-workstream container-wrapper programme is superseded + archived.)
+**Active plan:** none pinned here — the converter-completion programme was EXECUTED IN FULL (D276, 2026-07-05) and archived; the frozen `convert.py`/`converter_v2` tree was DELETED at the same time, leaving the modular `converter/` engine as the only converter. **Live front is single-sourced to `.claude/state.md` + `.claude/next-session-prompt.md`.**
 
 **Current focus:** Converter method-2 lift (CSS → block attrs) and responsive fidelity (9 root-cause fixes per `.claude/reports/2026-06-05-clone-fix-spec-9-roots.md`).
 

@@ -1,4 +1,4 @@
-"""Spec 15 Phase 6 Step 0 -- register_patterns.py contract tests.
+"""Spec 31 Phase 6 Step 0 -- register_patterns.py contract tests.
 
 Tests 1-7: register_run() happy path, idempotency, skips, canonical-DB isolation.
 Test 8:    visual_qa_capture.stub_capture() return-shape contract.
@@ -755,7 +755,7 @@ def test_14():
 
 
 if __name__ == "__main__":
-    print("Spec 15 Phase 6 Step 0 + v2 Step 5 -- register_patterns contract tests")
+    print("Spec 31 Phase 6 Step 0 + v2 Step 5 -- register_patterns contract tests")
     import tempfile
     for name, fn in [
         ("test_register_run_writes_php_pattern_file", test_register_run_writes_php_pattern_file),

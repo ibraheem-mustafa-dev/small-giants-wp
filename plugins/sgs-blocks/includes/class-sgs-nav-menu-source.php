@@ -83,8 +83,17 @@ class SGS_Nav_Menu_Source {
 					}
 				}
 
-				// Inline innerBlocks (e.g. a core/navigation with hand-added links).
-				if ( ! empty( $nav['innerBlocks'] ) ) {
+				// Inline innerBlocks are the menu ONLY for core/navigation, whose
+				// children ARE the menu (core/navigation-link blocks).
+				//
+				// They are NEVER the menu for sgs/adaptive-nav: its innerBlocks are
+				// sgs/mega-menu panels and drawer content (D337 routes any non-mega
+				// child into the drawer). Treating them as the menu returns non-nav
+				// blocks AND short-circuits the wp_navigation lookup at step 4 —
+				// emptying BOTH the desktop bar and the drawer. Proven live on the
+				// sandybrown canary 2026-07-14: moving the drawer's business-info
+				// email inside adaptive-nav took the bar from 5 links to 0.
+				if ( 'core/navigation' === $nav_block_name && ! empty( $nav['innerBlocks'] ) ) {
 					return $nav['innerBlocks'];
 				}
 			}

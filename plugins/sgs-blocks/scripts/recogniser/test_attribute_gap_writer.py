@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5a.4 self-test for attribute-gap-writer.py.
+"""Spec 31 Phase 5a.4 self-test for attribute-gap-writer.py.
 
 Asserts the FR8 provenance + run_id contract: every staged row carries
 `provenance='sgs-clone:<run_id>'` (or 'sgs-clone' when run_id missing)
@@ -129,7 +129,7 @@ def test_insert_against_ephemeral_db() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5a.4 -- attribute-gap-writer FR8 provenance contract")
+    print("Spec 31 Phase 5a.4 -- attribute-gap-writer FR8 provenance contract")
     test_provenance_stamping()
     test_provenance_bare_when_run_id_missing()
     test_insert_against_ephemeral_db()

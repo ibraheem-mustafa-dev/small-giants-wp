@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.6 self-test for attribute-staged-apply.py.
+"""Spec 31 Phase 5b.6 self-test for attribute-staged-apply.py.
 
 Plan contract: stage 1 attr change to sgs/counter; assert staging file
 written; assert canonical post_content unchanged until approval.
@@ -143,7 +143,7 @@ def test_reject_path() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.6 -- attribute-staged-apply contract")
+    print("Spec 31 Phase 5b.6 -- attribute-staged-apply contract")
     test_stage_change_writes_file()
     test_no_canonical_mutation()
     test_approval_gate_required_for_deploy()

@@ -18,6 +18,20 @@
  *    overflowing items (their real `<a href>` intact) into a synthesised
  *    "More" disclosure appended to the list. Recomputed on resize.
  *
+ * 3. Disclosure drawer (Spec 34 FR-34-1/2) — a NON-modal `<dialog>` opened with
+ *    `.show()`. The header row stays live and interactive while open (the toggle
+ *    IS the close control); everything else is frozen by a SELECTIVE
+ *    `inert`+`aria-hidden` walk, so focus containment is EMERGENT — no
+ *    hand-rolled trap. On first open the drawer AND scrim re-parent to <body>
+ *    (idempotent) so their `position:fixed`/colour rules cannot be beaten by a
+ *    container ancestor or broken by a transformed one. This module owns: the
+ *    freeze/restore, the real scrim element's close-on-click, document-level ESC
+ *    (non-modal `.show()` does NOT auto-close on ESC), body scroll lock,
+ *    aria-expanded sync, explicit focus return, and the accordion submenus.
+ *
+ *    A dialog/disclosure HYBRID — NOT the mega-panel's pure-disclosure pattern
+ *    above (no freeze, no ESC-mandate). Do not "simplify" one into the other.
+ *
  * There may be multiple `.sgs-adaptive-nav` instances on a page — each is
  * initialised independently.
  *
@@ -25,6 +39,12 @@
  */
 
 const RESIZE_DEBOUNCE_MS = 150;
+const SCROLL_LOCK_ATTR = 'data-sgs-anav-scroll-y';
+
+// First-focus target on open — skips non-interactive first children (e.g. an
+// empty drawer container) to land on the first real link/control.
+const FOCUSABLE_SELECTOR =
+	'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
  * Initialise every adaptive-nav instance on the page.
@@ -43,15 +63,263 @@ function setupInstance( root ) {
 	const nav = root.querySelector( '.sgs-adaptive-nav__nav' );
 	const list = root.querySelector( '.sgs-adaptive-nav__list' );
 
-	// Guard: bail for this instance if the list is missing.
-	if ( ! nav || ! list ) {
+	if ( nav && list ) {
+		setupDisclosures( root );
+
+		if ( nav.dataset.overflow === 'more-menu' ) {
+			setupOverflowMenu( root, nav, list );
+		}
+	}
+
+	setupDrawer( root );
+}
+
+/**
+ * Wire up the disclosure drawer for one adaptive-nav instance: non-modal
+ * open/close, re-parent-to-body, selective background freeze, scrim + ESC
+ * close, scroll lock, aria-expanded sync, and accordion submenus.
+ *
+ * @param {HTMLElement} root The `.sgs-adaptive-nav` container.
+ */
+function setupDrawer( root ) {
+	const toggle = root.querySelector( '.sgs-adaptive-nav__toggle' );
+	const dialog = root.querySelector( '.sgs-adaptive-nav__drawer' );
+	const scrim = root.querySelector( '.sgs-adaptive-nav__scrim' );
+
+	// Bail if the markup is missing OR the browser lacks non-modal <dialog>
+	// support — the toggle then has no JS handler and the drawer stays closed
+	// rather than opening in a broken half-state (the server-rendered bar and
+	// its crawlable links are unaffected).
+	if ( ! toggle || ! dialog || typeof dialog.show !== 'function' ) {
 		return;
 	}
 
-	setupDisclosures( root );
+	// The set frozen on the last open, with each element's prior inert/
+	// aria-hidden state, so close restores EXACTLY what this instance touched.
+	let frozen = [];
+	let reparented = false;
 
-	if ( nav.dataset.overflow === 'more-menu' ) {
-		setupOverflowMenu( root, nav, list );
+	// Re-parent the drawer + scrim to <body> on first open (idempotent, D323).
+	// Load-bearing: without it the container wrapper's
+	// `.sgs-container > :not(.sgs-container__overlay){position:relative}` (0,2,0)
+	// beats the drawer's (0,1,0) `position:fixed`, and a transformed/filtered
+	// ancestor would convert `fixed` into ancestor-relative positioning. Moving
+	// out to <body> removes every such ancestor by construction.
+	const reparentToBody = () => {
+		if ( reparented ) {
+			return;
+		}
+		if ( scrim ) {
+			document.body.appendChild( scrim );
+		}
+		document.body.appendChild( dialog );
+		reparented = true;
+	};
+
+	const openDrawer = () => {
+		if ( dialog.open ) {
+			return;
+		}
+		reparentToBody();
+		lockScroll();
+		dialog.show();
+		if ( scrim ) {
+			scrim.classList.add( 'is-open' );
+		}
+		frozen = freezeBackground( toggle, dialog, scrim );
+		toggle.setAttribute( 'aria-expanded', 'true' );
+		focusFirstInDrawer( dialog );
+	};
+
+	const closeDrawer = () => {
+		if ( ! dialog.open ) {
+			return;
+		}
+		// Added BEFORE close() so the CSS transition active at the moment
+		// [open] is removed already carries the faster exit timing
+		// (250ms in / 200ms out — see style.css `.is-closing`).
+		dialog.classList.add( 'is-closing' );
+		if ( scrim ) {
+			scrim.classList.remove( 'is-open' );
+		}
+		dialog.close();
+	};
+
+	// The toggle is BOTH open and close (burger ↔ X). It lives in the live
+	// header row, so it stays clickable while the drawer is open.
+	toggle.addEventListener( 'click', () => {
+		if ( dialog.open ) {
+			closeDrawer();
+		} else {
+			openDrawer();
+		}
+	} );
+
+	// Real scrim element with its OWN click listener — the `e.target === dialog`
+	// (`::backdrop`) idiom silently stops working with `.show()`.
+	if ( scrim ) {
+		scrim.addEventListener( 'click', closeDrawer );
+	}
+
+	// ESC bound at `document` level, guarded on THIS instance being open: focus
+	// may legitimately sit on a live header element (not the drawer), and a
+	// non-modal `.show()` dialog does NOT auto-close on ESC.
+	document.addEventListener( 'keydown', ( e ) => {
+		if ( 'Escape' === e.key && dialog.open ) {
+			closeDrawer();
+		}
+	} );
+
+	// The native `close` event fires for `close()` however it was triggered —
+	// one place to restore aria-expanded + scroll lock + the freeze + focus.
+	// Focus return is EXPLICIT (Safari does not focus buttons on click, so never
+	// rely on native click-focus).
+	dialog.addEventListener( 'close', () => {
+		dialog.classList.remove( 'is-closing' );
+		if ( scrim ) {
+			scrim.classList.remove( 'is-open' );
+		}
+		toggle.setAttribute( 'aria-expanded', 'false' );
+		unlockScroll();
+		unfreezeBackground( frozen );
+		frozen = [];
+		toggle.focus();
+	} );
+
+	// Accordion submenus are OWNED by the sgs/nav-menu child block's own view.js
+	// (FR-34-4) — no drawer-level accordion wiring here, or the two modules would
+	// double-toggle every submenu (expanded-then-collapsed announcements).
+}
+
+/**
+ * Freeze all background content EXCEPT the live header row carrying the toggle.
+ * Iterates the direct children of <body> (and one level into `.wp-site-blocks`
+ * when present), skipping the toggle's ancestor chain, the drawer, the scrim,
+ * and `#wpadminbar`. Focus containment is EMERGENT from this: with everything
+ * else inert, the browser's own Tab order cycles {live header + drawer} only,
+ * so no hand-rolled trap is needed (FR-34-1). The drawer is never an ancestor of
+ * a frozen node — it is re-parented to <body> first.
+ *
+ * @param {HTMLElement}        toggle The nav toggle; its ancestor chain stays live.
+ * @param {HTMLElement}        dialog The drawer dialog (skipped).
+ * @param {HTMLElement|null}   scrim  The scrim element (skipped).
+ * @return {Array<Object>} Touched elements + their prior inert/aria-hidden state.
+ */
+function freezeBackground( toggle, dialog, scrim ) {
+	const frozen = [];
+	const adminBar = document.getElementById( 'wpadminbar' );
+
+	const skip = ( el ) =>
+		el === dialog ||
+		el === scrim ||
+		el === adminBar ||
+		el.contains( toggle );
+
+	const freezeChildrenOf = ( parent ) => {
+		Array.from( parent.children ).forEach( ( el ) => {
+			if ( skip( el ) ) {
+				return;
+			}
+			frozen.push( {
+				el,
+				hadInert: el.hasAttribute( 'inert' ),
+				hadAriaHidden: el.hasAttribute( 'aria-hidden' ),
+			} );
+			el.setAttribute( 'inert', '' );
+			el.setAttribute( 'aria-hidden', 'true' );
+		} );
+	};
+
+	freezeChildrenOf( document.body );
+
+	// The header lives INSIDE `.wp-site-blocks`, so that wrapper is skipped at
+	// the body level (it contains the toggle); descend one level to freeze the
+	// header's siblings (main/footer) while the header row itself stays live.
+	const siteBlocks = document.querySelector( '.wp-site-blocks' );
+	if ( siteBlocks ) {
+		freezeChildrenOf( siteBlocks );
+	}
+
+	return frozen;
+}
+
+/**
+ * Restore EXACTLY the set frozen on open — removing inert/aria-hidden only from
+ * elements this instance added them to (leaving any pre-existing ones intact).
+ *
+ * @param {Array<Object>} frozen The tracked freeze set from freezeBackground().
+ */
+function unfreezeBackground( frozen ) {
+	frozen.forEach( ( { el, hadInert, hadAriaHidden } ) => {
+		if ( ! hadInert ) {
+			el.removeAttribute( 'inert' );
+		}
+		if ( ! hadAriaHidden ) {
+			el.removeAttribute( 'aria-hidden' );
+		}
+	} );
+}
+
+/**
+ * Move focus to the first FOCUSABLE element inside the drawer on open; if none
+ * exists (all children non-interactive), focus the drawer itself via a
+ * temporary `tabindex="-1"`.
+ *
+ * @param {HTMLElement} dialog The drawer dialog element.
+ */
+function focusFirstInDrawer( dialog ) {
+	const focusable = dialog.querySelector( FOCUSABLE_SELECTOR );
+	if ( focusable ) {
+		focusable.focus();
+		return;
+	}
+	dialog.setAttribute( 'tabindex', '-1' );
+	dialog.focus();
+}
+
+/**
+ * Lock body scroll behind the open drawer: fixed-position body + scrollY
+ * save. iOS Safari ignores `overflow:hidden` on body, which is why the fixed-
+ * position technique is used instead of a simple overflow toggle.
+ */
+function lockScroll() {
+	const y = window.scrollY;
+	// Fixing the body collapses the document scroll, so the CLASSIC scrollbar
+	// (~15px, desktop Windows/Linux) vanishes MID-ANIMATION — the viewport
+	// widens by its width and the right-anchored drawer's anchor jumps right
+	// partway through the slide-in. The eye reads it as a bounce: the panel
+	// overshoots into the page by exactly the scrollbar width, then steps back
+	// (Bean's report, D340 — frame capture showed the anchor moving 753→768 at
+	// 768px). Forcing the root's scrollbar track to stay while locked keeps the
+	// geometry constant; overlay-scrollbar platforms (iOS/Android, width 0)
+	// take the no-op branch.
+	if ( window.innerWidth - document.documentElement.clientWidth > 0 ) {
+		document.documentElement.style.overflowY = 'scroll';
+	}
+	document.body.setAttribute( SCROLL_LOCK_ATTR, String( y ) );
+	document.body.style.position = 'fixed';
+	document.body.style.top = `-${ y }px`;
+	document.body.style.left = '0';
+	document.body.style.right = '0';
+	document.body.style.width = '100%';
+}
+
+/**
+ * Restore body scroll — removes the fixed positioning and restores the saved
+ * scroll offset in the SAME synchronous task (avoids the one-frame jump a
+ * deferred `scrollTo` would cause).
+ */
+function unlockScroll() {
+	const stored = document.body.getAttribute( SCROLL_LOCK_ATTR );
+	document.body.removeAttribute( SCROLL_LOCK_ATTR );
+	document.documentElement.style.overflowY = '';
+	document.body.style.position = '';
+	document.body.style.top = '';
+	document.body.style.left = '';
+	document.body.style.right = '';
+	document.body.style.width = '';
+	if ( stored !== null ) {
+		window.scrollTo( 0, parseInt( stored, 10 ) || 0 );
 	}
 }
 

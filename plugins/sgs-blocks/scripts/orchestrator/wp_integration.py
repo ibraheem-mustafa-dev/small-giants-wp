@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""wp_integration.py -- Spec 15 Phase 5d.7 + 5d.9 + 5d.10.
+"""wp_integration.py -- Spec 31 Phase 5d.7 + 5d.9 + 5d.10.
 
 Three WP-side wiring entry points used by /sgs-clone Stage 7 + Stage 8:
 

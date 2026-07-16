@@ -15,8 +15,12 @@
  * no-JS fallback) and on click (view.js sets .is-open + aria-expanded, for touch
  * and keyboard).
  *
- * Drill-down at the mobile tier is the drawer's job (sgs/mobile-nav), which
- * resolves the SAME menu — this renderer only produces the desktop bar.
+ * At the mobile tier, drill-down happens inside the off-canvas <dialog>
+ * drawer that this SAME renderer also produces (now owned by the sgs/nav-menu block (Spec 34 FR-34-4)) —
+ * one resolved menu source feeds both the desktop bar and the drawer accordion,
+ * so they never fall out of sync. That includes sgs/mega-menu items, which are
+ * ordinary members of the wp_navigation menu: the bar renders their real panel,
+ * the drawer flattens them to an accordion of the panel's links.
  *
  * @package SGS\Blocks
  */
@@ -25,17 +29,28 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/lucide-icons.php';
 
+// This file is intentionally in the GLOBAL namespace (no `namespace` statement
+// above) — Sgs_Site_Info lives in SGS\Blocks, so it MUST be imported via `use`
+// or every call below resolves to the (non-existent) global \Sgs_Site_Info and
+// fatals. A missing `use` here took both live client sites down 2026-07-14
+// (D336) — do not remove this import.
+use SGS\Blocks\Sgs_Site_Info;
+
 /**
- * Renders the sgs/adaptive-nav desktop bar from resolved menu blocks.
+ * Renders the sgs/adaptive-nav desktop bar + off-canvas drawer from resolved
+ * menu blocks. The drawer absorbs the FR-S9-5 a11y contract that previously
+ * lived in sgs/mobile-nav (Task 1 build, D336 design).
  */
 class SGS_Adaptive_Nav_Renderer {
 
 	/**
-	 * Per-render counter guaranteeing unique panel ids for aria-controls.
+	 * Per-render counter guaranteeing unique panel ids for aria-controls
+	 * (desktop bar mega-panels).
 	 *
 	 * @var int
 	 */
 	private int $panel_index = 0;
+
 
 	/**
 	 * Unique-ish prefix so multiple navs on one page don't collide on panel ids.
@@ -94,9 +109,18 @@ class SGS_Adaptive_Nav_Renderer {
 				case 'core/page-list':
 					$html .= $this->render_page_list( $block['attrs']['parentPageID'] ?? 0 );
 					break;
+				case 'sgs/mega-menu':
+				case 'sgs/mega-menu-item':
+					// A mega-menu is a first-class MENU ITEM: operators add it to the
+					// wp_navigation menu as a sibling of core/navigation-link (verified
+					// live on Indus's menu, D338). Its own render.php emits an <li>
+					// root, so it drops straight into this <ul>. Without this case it
+					// hit `default` and vanished from the bar entirely — the menu
+					// declared 7 items and only 5 rendered.
+					$html .= render_block( $block );
+					break;
 				default:
-					// Unknown block (whitespace, sgs/mega-menu is handled as InnerBlocks
-					// in render.php, not here) — skip.
+					// Unknown block (whitespace, etc.) — skip.
 					break;
 			}
 		}
@@ -282,4 +306,17 @@ class SGS_Adaptive_Nav_Renderer {
 		}
 		return rtrim( $url, '/' ) === rtrim( get_pagenum_link(), '/' );
 	}
+
+	// ── Drawer menu: REMOVED (Spec 34 FR-34-4, 2026-07-15). The accordion the
+	// drawer shows is now the sgs/nav-menu CHILD BLOCK's own renderer (a re-rooted
+	// copy of what lived here) — this class renders the DESKTOP BAR only. The
+	// render_drawer_* cluster had exactly one caller (adaptive-nav render.php),
+	// which now feeds the drawer via InnerBlocks.
+
+	// Drawer socials are NOT rendered here. sgs/social-icons already does this
+	// job (source="site-info", D335) and is the block operators can place, style
+	// and reorder — so the drawer's socials are simply that block, placed in the
+	// drawer drop-zone. A private copy here was a duplicate of a working block
+	// and drifted from it immediately (it shipped the 7-network list while the
+	// store grew to 8). Deleted D338.
 }

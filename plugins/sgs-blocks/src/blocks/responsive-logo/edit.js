@@ -108,6 +108,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		desktopLogoId,
 		tabletLogoId,
 		mobileLogoId,
+		logoSwitchMode,
+		logoSwitchCustomPx,
 		svgAnimationSource,
 		animationStyle,
 		width,
@@ -203,6 +205,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Mobile logo (mark/icon)', 'sgs-blocks' ) }
 						placeholder={ __( 'Same as desktop when not set.', 'sgs-blocks' ) }
 					/>
+					<SelectControl
+						label={ __( 'Switch to compact logo', 'sgs-blocks' ) }
+						value={ logoSwitchMode || 'mobile' }
+						options={ [
+							{ label: __( 'On mobile (≤767px)', 'sgs-blocks' ), value: 'mobile' },
+							{ label: __( 'On tablet & below (≤1023px)', 'sgs-blocks' ), value: 'tablet' },
+							{ label: __( 'Custom breakpoint', 'sgs-blocks' ), value: 'custom' },
+						] }
+						onChange={ ( val ) => setAttributes( { logoSwitchMode: val } ) }
+						help={ __( 'When the compact (tablet/mobile) logo replaces the desktop logo: on mobile, on tablet and below, or at a breakpoint you choose. Only applies once a tablet or mobile logo is set.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+
+					{ 'custom' === logoSwitchMode && (
+						<RangeControl
+							label={ __( 'Custom breakpoint (px)', 'sgs-blocks' ) }
+							help={ __( 'Below this width the compact logo shows.', 'sgs-blocks' ) }
+							value={ logoSwitchCustomPx ?? 1024 }
+							onChange={ ( val ) => setAttributes( { logoSwitchCustomPx: val } ) }
+							min={ 320 }
+							max={ 2000 }
+							step={ 1 }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 
 				{ /* ── Panel 2: SVG animation ── */ }

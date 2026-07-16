@@ -17,7 +17,7 @@ against the Phase-1-frozen vocabularies in sgs-framework.db:
 
 And against uimax.naming_conventions for the SGS-BEM regex.
 
-The architecture matches Spec 15 §3 (Convention Layer) + §4 (Mapping Layer).
+The architecture matches Spec 31 (Convention Layer) + §4 (Mapping Layer).
 
 Moved here from ``orchestrator/converter_v2/db_lookup.py`` in EXECUTION Step 9
 (Phase 3, 2026-07-04) — this IS the canonical implementation now; the old path

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""token_resolver.py -- Spec 15 Phase 5d.2 token resolver.
+"""token_resolver.py -- Spec 31 Phase 5d.2 token resolver.
 
 Wraps Phase 1's value-matcher (plugins/sgs-blocks/scripts/value-matcher/
 match.py) into a single attr-aware entry point. Given an extracted
@@ -8,7 +8,7 @@ match.py) into a single attr-aware entry point. Given an extracted
   1. Picks the right snap function by inferring the attr's role
      (colour / spacing / font-size / shadow / font-family).
   2. Calls the matcher against the theme.json registry (base + optional
-     client variation overlay per Spec 15 Â§4.7).
+     client variation overlay per Spec 31 Â§4.7).
   3. Returns either:
        - `var(--wp--preset--<type>--<slug>)` when confidence >= threshold
        - the raw value + `is_gap_candidate=true` when no snap fits

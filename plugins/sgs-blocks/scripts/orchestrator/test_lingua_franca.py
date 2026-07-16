@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5c.2 + 5c.3 self-test for lingua_franca.py.
+"""Spec 31 Phase 5c.2 + 5c.3 self-test for lingua_franca.py.
 
 Plan contract:
   - 5 conversion rules authored + tested (BEM-bare, Tailwind, Bootstrap,
@@ -115,7 +115,7 @@ def test_unknown_token_routes_to_layout_signature() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5c.2 + 5c.3 -- lingua_franca contract")
+    print("Spec 31 Phase 5c.2 + 5c.3 -- lingua_franca contract")
     test_sgs_bem_canonical_passthrough()
     test_bem_bare_block_element_modifier()
     test_tailwind_utility()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""stage1_boundary_hook.py -- Spec 15 Phase 5c.4 Stage 1 BOUNDARY hook.
+"""stage1_boundary_hook.py -- Spec 31 Phase 5c.4 Stage 1 BOUNDARY hook.
 
 Runs at the end of `/sgs-clone` Stage 1 (boundary detection). For each
 boundary surfaced by the boundary-voter, this hook:
@@ -16,7 +16,7 @@ boundary surfaced by the boundary-voter, this hook:
         - equivalent_implementations: {source -> sgs-bem}
         - gap_candidate_classes:    classes that fell through
         - lingua_franca_skipped:    True when the boundary was already
-                                    SGS-BEM canonical (Spec 15 Bean-draft
+                                    SGS-BEM canonical (Spec 31 Bean-draft
                                     fast path)
 
 FR9 contract: NEVER rewrite Bean-controlled SGS-BEM drafts. The fast

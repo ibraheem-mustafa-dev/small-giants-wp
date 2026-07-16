@@ -18,6 +18,9 @@
 	"parent": [
 		"sgs/site-header-row"
 	],
+	"providesContext": {
+		"sgs/navRef": "ref"
+	},
 	"supports": {
 		"anchor": true,
 		"customClassName": true,
@@ -40,12 +43,21 @@
 			"containerKind": "layout"
 		}
 	},
-	"allowedBlocks": [
-		"sgs/mega-menu"
-	],
 	"attributes": {
 		"ref": {
 			"type": "number"
+		},
+		"menuButtonLabel": {
+			"type": "string",
+			"default": "Menu"
+		},
+		"drawerLabel": {
+			"type": "string",
+			"default": "Navigation menu"
+		},
+		"drawerBg": {
+			"type": "string",
+			"default": "primary"
 		},
 		"menuFallback": {
 			"type": "string",
@@ -53,7 +65,7 @@
 		},
 		"collapseTier": {
 			"type": "string",
-			"default": "mobile",
+			"default": "tablet",
 			"enum": [ "mobile", "tablet", "desktop", "custom" ]
 		},
 		"collapseCustomPx": {

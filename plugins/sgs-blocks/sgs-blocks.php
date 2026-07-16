@@ -28,6 +28,23 @@ define( 'SGS_BLOCKS_VERSION', '0.1.8' );
 define( 'SGS_BLOCKS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SGS_BLOCKS_URL', plugin_dir_url( __FILE__ ) );
 
+/*
+ * Agency attribution — the FRAMEWORK's own constant, deliberately NOT client data.
+ *
+ * This is the one identity string that is legitimately hardcoded: it belongs to the
+ * agency that ships the framework, not to the client site rendering it. It is NOT in
+ * Sgs_Site_Info precisely because that store is client-owned and client-editable —
+ * routing the backlink through it would let a client blank it, and would put agency
+ * data in a client record. (The rule: a hardcoded CLIENT value in a framework file is
+ * a bug; the component's OWN constant stays.)
+ *
+ * Rendered by sgs/business-info displayType="attribution" as a placeable, movable
+ * element. define()d here — not in the block — so a white-label/reseller build can
+ * override both before plugin load without patching a block.
+ */
+defined( 'SGS_ATTRIBUTION_URL' ) || define( 'SGS_ATTRIBUTION_URL', 'https://smallgiantsstudio.co.uk/' );
+defined( 'SGS_ATTRIBUTION_TEXT' ) || define( 'SGS_ATTRIBUTION_TEXT', 'Website by Small Giants Studio' );
+
 // Composer autoloader (fallback — theme provides these when SGS theme is active).
 if ( file_exists( SGS_BLOCKS_PATH . 'vendor/autoload.php' ) ) {
 	require_once SGS_BLOCKS_PATH . 'vendor/autoload.php';
@@ -40,6 +57,11 @@ if ( ! function_exists( 'SGS\Theme\sgs_generate_palette' ) ) {
 
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-blocks.php';
 require_once SGS_BLOCKS_PATH . 'includes/block-categories.php';
+
+// Content-derived ?ver for this plugin's assets. Block versions are frozen
+// (D293), so a block's CSS URL never changes while its content does — and the
+// CDN caches it for 7 days. Read the header of this file before touching it.
+require_once SGS_BLOCKS_PATH . 'includes/asset-cache-busting.php';
 
 // Form processing classes.
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
@@ -199,9 +221,6 @@ Trustpilot\Trustpilot_Settings::register();
 // Stripe payment settings and PaymentIntent AJAX handler.
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();
-
-// Mobile nav block patterns (6 presets).
-require_once SGS_BLOCKS_PATH . 'includes/mobile-nav-patterns.php';
 
 // Google Fonts catalogue — registers ~1,900 fonts in the editor's Manage fonts modal.
 // Zero frontend cost: fonts are only enqueued when an operator explicitly installs them.

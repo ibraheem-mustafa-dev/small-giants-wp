@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""staged_merge.py -- Spec 15 Phase 5e.3 staged-merge orchestrator.
+"""staged_merge.py -- Spec 31 Phase 5e.3 staged-merge orchestrator.
 
 The keystone of Phase 5e + the FR21 no-canonical-mutation discipline.
 

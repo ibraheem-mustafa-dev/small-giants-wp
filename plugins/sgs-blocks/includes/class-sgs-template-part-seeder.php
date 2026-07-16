@@ -30,10 +30,18 @@ final class Sgs_Template_Part_Seeder {
 	const POST_TYPE              = 'wp_template_part';
 
 	/**
-	 * Wire the hook. Idempotent.
+	 * Intentional no-op. Retained (not deleted) so the existing
+	 * `Sgs_Template_Part_Seeder::register()` call site in sgs-blocks.php keeps
+	 * working without a second edit; this method now registers nothing.
+	 *
+	 * FR-S2-1: the variation-activation auto-trigger is REMOVED (Decision 18
+	 * deleted the style-variation system, so there is no firing event).
+	 * Seeding is now explicit only: activation hook, `wp sgs seed-template-parts`,
+	 * or the admin Reset button. Do NOT re-add — an ordinary Site Editor "Save"
+	 * would silently overwrite operator-edited header/footer content.
 	 */
 	public static function register(): void {
-		\add_action( 'save_post_wp_global_styles', array( self::class, 'maybe_seed' ), 20, 3 );
+		// Deliberately empty — see doc comment above.
 	}
 
 	/**

@@ -2,7 +2,7 @@
 """
 Token value-matcher for the SGS Deterministic Draft-to-SGS Converter pipeline.
 
-Implements §5.4 of Spec 15: snap arbitrary CSS values to the nearest theme.json
+Implements §5.4 of Spec 31: snap arbitrary CSS values to the nearest theme.json
 token using perceptual distance metrics, returning (token_slug, confidence).
 
 Confidence tiers:

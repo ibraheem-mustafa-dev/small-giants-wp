@@ -13,12 +13,12 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl } from '../../components';
 
-// Site Info mode pulls from this fixed set of networks (same 7 slugs the
+// Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
 // SGS Site Info) so the editor preview can list what will render without a
 // server round-trip.
 const SITE_INFO_NETWORKS = [
-	'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp',
+	'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google',
 ];
 
 const SOURCE_OPTIONS = [
@@ -39,7 +39,7 @@ function boxShorthand( box ) {
 const PLATFORMS = [
 	'facebook', 'twitter', 'linkedin', 'instagram', 'youtube',
 	'tiktok', 'github', 'whatsapp', 'email', 'website',
-	'pinterest', 'snapchat', 'telegram', 'discord',
+	'pinterest', 'snapchat', 'telegram', 'discord', 'google',
 ];
 
 const STYLE_OPTIONS = [

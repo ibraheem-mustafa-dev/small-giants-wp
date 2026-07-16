@@ -1,0 +1,79 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/nav-menu",
+	"version": "0.1.0",
+	"title": "SGS Menu",
+	"category": "sgs-content",
+	"icon": "menu",
+	"description": "A styleable, server-rendered navigation menu. Renders the accordion menu the adaptive-nav drawer produces, but as a first-class block you can style and place anywhere — inside the drawer (inherits the navigation block's menu by default) or standalone (a footer column, e.g.). Pick which WordPress menu it renders, or let it inherit. Every link is a real crawlable <a href>.",
+	"keywords": [
+		"navigation",
+		"nav",
+		"menu",
+		"links",
+		"accordion"
+	],
+	"textdomain": "sgs-blocks",
+	"usesContext": [ "sgs/navRef" ],
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": false,
+			"text": true,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"ref": {
+			"type": "number"
+		},
+		"menuFallback": {
+			"type": "string",
+			"default": "page-list"
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"linkFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"linkFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"linkLineHeight": {
+			"type": "number"
+		},
+		"linkLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"showDividers": {
+			"type": "boolean",
+			"default": true
+		},
+		"dividerColour": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js"
+}

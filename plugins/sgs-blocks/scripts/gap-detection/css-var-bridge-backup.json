@@ -1,6 +1,6 @@
 {
   "applied_on": "2026-05-12",
-  "spec": "Spec 15 Phase 3.5 follow-up \u2014 css-var-bridge application",
+  "spec": "Spec 31 Phase 3.5 follow-up \u2014 css-var-bridge application",
   "source_render_php": "plugins/sgs-blocks/src/blocks/mobile-nav/render.php (lines 102-210)",
   "rows": [
     {

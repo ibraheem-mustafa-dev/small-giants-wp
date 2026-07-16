@@ -2,12 +2,12 @@
   "generated_by": {
     "module": "ledger.declare_input.declare_content",
     "module_version": "0.1.0",
-    "generated_at": "2026-07-04T21:36:27.078913+00:00"
+    "generated_at": "2026-07-14T18:57:25.010278+00:00"
   },
-  "fixture_count": 37,
-  "grand_total_rows": 112,
+  "fixture_count": 36,
+  "grand_total_rows": 109,
   "by_kind_totals": {
-    "content-text": 101,
+    "content-text": 98,
     "content-media": 11
   },
   "fixtures": {
@@ -137,12 +137,6 @@
       "row_count": 1,
       "by_kind": {
         "content-media": 1
-      }
-    },
-    "sgs-mobile-nav": {
-      "row_count": 3,
-      "by_kind": {
-        "content-text": 3
       }
     },
     "sgs-modal": {

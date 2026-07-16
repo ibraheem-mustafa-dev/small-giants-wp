@@ -5,7 +5,7 @@
 **Scope:** Authoritative mapping of `attr_name` → CSS property / HTML attribute / no-css as expressed by the actual render code for the top blocks in `attribute_gap_candidates` (proposed_action = `new-canonical-slot-needed`).
 **Method:** Grep + targeted reads of `plugins/sgs-blocks/src/blocks/<slug>/render.php` and `save.js`. For each gap attr I traced `$attributes['<name>']` to the inline-style / scoped-CSS / CSS-variable / HTML-attribute / class-probe context it lands in.
 
-**Role taxonomy (Spec 15 §3.3):** `colour-text`, `colour-bg`, `colour-border`, `colour-gradient`, `number-css-px`, `number-css-percent`, `spacing-token`, `shadow-preset`, `font-family-preset`, `font-size-preset`, `border-radius-token`, `transition-preset`, `image-object`, `link-href`, `text-content`, `richtext-content`, `enum-class-probe`, `boolean-visibility`, `select-from-enum`, `query-descriptor`.
+**Role taxonomy (Spec 31):** `colour-text`, `colour-bg`, `colour-border`, `colour-gradient`, `number-css-px`, `number-css-percent`, `spacing-token`, `shadow-preset`, `font-family-preset`, `font-size-preset`, `border-radius-token`, `transition-preset`, `image-object`, `link-href`, `text-content`, `richtext-content`, `enum-class-probe`, `boolean-visibility`, `select-from-enum`, `query-descriptor`.
 
 > A `no-css` value means the attr controls JS behaviour, schema output, query selection, or HTML semantics rather than a CSS property. These attrs do not need a canonical CSS slot; they need a behaviour-flag / data-attr / query-descriptor mapping.
 

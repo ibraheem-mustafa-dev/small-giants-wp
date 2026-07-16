@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""mutex.py -- Spec 15 Phase 5b.4 build mutex (FR19).
+"""mutex.py -- Spec 31 Phase 5b.4 build mutex (FR19).
 
 Prevents parallel `/sgs-update` + `/sgs-clone` runs from corrupting
 sgs-framework.db. File-based lock at `.claude/scratch/spec-15-mutex.lock`

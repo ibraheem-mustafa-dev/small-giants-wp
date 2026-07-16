@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5d.3 self-test for variation_router.py.
+"""Spec 31 Phase 5d.3 self-test for variation_router.py.
 
 Plan contract: simulate a --primary change for indus-foods; assert write
 lands in theme/sgs-theme/styles/indus-foods.json and root theme.json
@@ -137,7 +137,7 @@ def test_rejects_unknown_role() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5d.3 -- variation_router contract")
+    print("Spec 31 Phase 5d.3 -- variation_router contract")
     test_insert_into_existing_variation()
     test_upsert_idempotent()
     test_update_changes_existing_value()

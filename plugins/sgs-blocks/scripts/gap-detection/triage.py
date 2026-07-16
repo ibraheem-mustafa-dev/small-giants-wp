@@ -1,5 +1,5 @@
 """
-Spec 15 Phase 3 step 3.8 — Gap-candidate triage.
+Spec 31 Phase 3 step 3.8 — Gap-candidate triage.
 
 Runs once. Classifies the rows in `attribute_gap_candidates` into buckets:
 
@@ -37,7 +37,7 @@ REPO_ROOT = Path(__file__).resolve().parents[4]
 REPORT_PATH = REPO_ROOT / '.claude' / 'reports' / f'phase-3-gap-triage-{date.today().isoformat()}.md'
 
 
-# Vocabulary additions per Spec 15 §3.3 buckets
+# Vocabulary additions per Spec 31 buckets
 NEW_PROPERTY_SUFFIXES: list[tuple[str, str, str | None]] = [
     # (suffix, role, css_property)
     # (a) animation / motion
@@ -75,7 +75,7 @@ def add_property_suffixes(conn: sqlite3.Connection) -> int:
         cur = conn.execute(
             'INSERT OR IGNORE INTO property_suffixes (suffix, role, css_property, is_token_matched, token_source, notes) '
             'VALUES (?, ?, ?, 0, NULL, ?)',
-            (suffix, role, css_prop, f'Added by Spec 15 P3 §3.8 gap remediation')
+            (suffix, role, css_prop, f'Added by Spec 31 P3 §3.8 gap remediation')
         )
         if cur.rowcount > 0:
             inserted += 1
@@ -108,7 +108,7 @@ def stat_block(conn: sqlite3.Connection) -> dict:
 def write_report(before: dict, after: dict, inserted_suffixes: int, instance_flagged: int) -> None:
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        f'# Spec 15 Phase 3 §3.8 — Gap Triage Report',
+        f'# Spec 31 Phase 3 §3.8 — Gap Triage Report',
         f'',
         f'**Date:** {date.today().isoformat()}',
         f'',

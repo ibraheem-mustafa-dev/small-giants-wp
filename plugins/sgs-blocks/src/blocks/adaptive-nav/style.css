@@ -158,3 +158,383 @@
 		transition: none;
 	}
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Disclosure drawer (Spec 34). `display` on `.sgs-adaptive-nav__nav` /
+ * `.sgs-adaptive-nav__toggle` is owned ENTIRELY by render.php's scoped collapse
+ * rules — do NOT add a media visibility rule for either here. The `<dialog>`'s
+ * open/closed display is UA behaviour (`dialog:not([open]){display:none}`)
+ * driven by `.show()`/`.close()` (non-modal — view.js owns the freeze + scrim).
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.sgs-adaptive-nav__toggle {
+	align-items: center;
+	background: transparent;
+	border: none;
+	border-radius: 8px;
+	color: inherit;
+	cursor: pointer;
+	flex-shrink: 0;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0;
+	transition: background 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__toggle:hover,
+.sgs-adaptive-nav__toggle:focus-visible {
+	background: var(--wp--preset--color--surface-alt, #f5f7f7);
+}
+
+.sgs-adaptive-nav__toggle svg {
+	height: 22px;
+	width: 22px;
+}
+
+/* Burger ↔ X swap, keyed on the toggle's OWN aria-expanded (view.js flips it).
+ * Pinned to `display` (not opacity) so the hidden glyph leaves the a11y tree. */
+.sgs-adaptive-nav__toggle-icon {
+	align-items: center;
+	display: inline-flex;
+	justify-content: center;
+}
+
+.sgs-adaptive-nav__toggle-icon--close {
+	display: none;
+}
+
+.sgs-adaptive-nav__toggle[aria-expanded="true"] .sgs-adaptive-nav__toggle-icon--menu {
+	display: none;
+}
+
+.sgs-adaptive-nav__toggle[aria-expanded="true"] .sgs-adaptive-nav__toggle-icon--close {
+	display: inline-flex;
+}
+
+/* The drawer panel. Explicit, header-relative geometry (never UA-derived):
+ * full width, fixed below the header, above page content but below #wpadminbar
+ * (99999). Slides DOWN from under the header on [open]. */
+.sgs-adaptive-nav__drawer {
+	/* LAST-RESORT fallback only — NOT the shipped appearance.
+	 *
+	 * The panel/text colours come from the `drawerBg` attr, emitted by render.php
+	 * as a (0,2,0) scoped rule that overrides these two lines. They exist so the
+	 * drawer is never transparent or unreadable if the palette lookup fails or an
+	 * operator clears the attr outright.
+	 *
+	 * A literal PAIR (near-black on white, ~18:1) rather than a token pair,
+	 * deliberately: the previous `background: var(--primary-dark)` + `color:
+	 * var(--surface)` assumed a token NAME implies a luminance. It does not —
+	 * `primary-dark` is a PINK on mamas-munches, so that pairing shipped cream-on-pink
+	 * at 3.32:1 (WCAG fail). A fallback whose contrast depends on a palette nobody has
+	 * generated yet is not a fallback. This pair cannot be wrong. */
+	background-color: #1a1a1a;
+	color: #fff;
+
+	border: none;
+	bottom: 0;
+	box-sizing: border-box;
+	flex-direction: column;
+	left: 0;
+	margin: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+	position: fixed;
+	right: 0;
+	/* `width:auto` + `height:auto` are LOAD-BEARING, not defaults: the UA sheet gives
+	 * every <dialog> `width: fit-content; height: fit-content`, which over-constrains
+	 * the box and beats left/right/top/bottom insets. Measured live 2026-07-15 (Spec
+	 * 34 Gate B): the drawer rendered 285px wide (content width) instead of full-bleed,
+	 * and 426px tall (content height) instead of reaching bottom:0. Removing the old
+	 * explicit width/height left nothing to beat the UA rule — `auto` restores inset
+	 * sizing. Do not delete these as "redundant"; they are the override. */
+	width: auto;
+	height: auto;
+	/* min(…, 50dvh) zoom floor — a wrapped multi-row header can never shrink the
+	 * drawer content region below half the viewport (WCAG 1.4.10/1.4.4). */
+	top: min(var(--sgs-header-height, 0px), 50dvh);
+	/* Entry is a clip-path WIPE, not a translateY slide (Gate-A integration fix,
+	 * WS-A conflict #2): with top anchored to the header and z-index above it, a
+	 * translateY(-100%) start would place the sliding panel OVER the header for
+	 * the whole 250ms — transiently hiding the very row this design keeps live.
+	 * Clipping means the drawer's box never moves; it reveals downward from under
+	 * the header edge and cannot paint over it at any frame. */
+	clip-path: inset(0 0 100% 0);
+	z-index: 99991;
+	-webkit-overflow-scrolling: touch;
+
+	transition:
+		clip-path 250ms cubic-bezier(0.16, 1, 0.3, 1),
+		display 250ms allow-discrete;
+}
+
+/* `display` is gated on [open] — NEVER put it on the base rule. The UA sheet
+ * hides a closed dialog via `dialog:not([open]){display:none}`, but ANY author
+ * `display` beats a UA rule regardless of specificity, so a base `display:flex`
+ * would render the CLOSED drawer permanently — and the wrapper's own
+ * `.sgs-container > :not(.sgs-container__overlay){position:relative}` (0,2,0)
+ * would outrank this rule's `position:fixed` (0,1,0), landing it IN FLOW. Both
+ * are moot once open: view.js re-parents the drawer to <body> (FR-34-1), which
+ * removes every such ancestor rule by construction. */
+.sgs-adaptive-nav__drawer[open] {
+	display: flex;
+	clip-path: inset(0);
+}
+
+/* Faster exit timing (200ms accelerate), applied by view.js BEFORE close()
+ * so it is the "ending style" the transition uses when [open] is removed. */
+.sgs-adaptive-nav__drawer.is-closing {
+	transition:
+		clip-path 200ms cubic-bezier(0.4, 0, 1, 1),
+		display 200ms allow-discrete;
+}
+
+/* Entry wipe-DOWN: the drawer's box is already in place; the bottom inset
+ * collapses 100% → 0 so content reveals downward from the header edge.
+ * @starting-style provides the from-state so the transition runs on first
+ * paint of [open]. */
+@starting-style {
+	.sgs-adaptive-nav__drawer[open] {
+		clip-path: inset(0 0 100% 0);
+	}
+}
+
+/* Scrim — a REAL element (::backdrop only exists in the top layer we left with
+ * .show()). Fixed BELOW the header (never over it), it eats pointer input over
+ * the frozen page and closes on click (view.js). `visibility` keeps it inert
+ * while closed so it never intercepts clicks; view.js toggles `.is-open`. */
+.sgs-adaptive-nav__scrim {
+	background: rgba(0, 0, 0, 0.6);
+	inset: min(var(--sgs-header-height, 0px), 50dvh) 0 0 0;
+	opacity: 0;
+	position: fixed;
+	visibility: hidden;
+	z-index: 99990;
+	transition:
+		opacity 250ms ease,
+		visibility 250ms;
+}
+
+.sgs-adaptive-nav__scrim.is-open {
+	opacity: 1;
+	visibility: visible;
+}
+
+/* ─── Drawer menu (accordion) ───────────────────────────────────────────── */
+.sgs-adaptive-nav__drawer-menu {
+	flex: 1;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* :where() — this is a block-private drawer element, NOT governed by the
+ * desktop bar's linkFontWeight/linkFontSize helper attrs (E11); the 0-specificity
+ * wrapper documents that intent and keeps a future attr-driven override winning
+ * by cascade instead of a specificity fight. */
+:where(.sgs-adaptive-nav__drawer-link) {
+	align-items: center;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	display: flex;
+	font-size: 1.125rem;
+	font-weight: 600;
+	min-height: 44px;
+	padding: 14px 0;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+/* `color` is NOT in the :where() block above, deliberately. The drawer panel
+ * sets its own text colour and the links must inherit it — but at
+ * 0-specificity `color:inherit` LOSES to the theme's global `a{color:primary}`
+ * (0,0,1), which repainted every drawer link primary-on-primary-dark: 1.31:1,
+ * a WCAG 1.4.3 failure, invisible teal-on-teal (caught live on Indus, D338 —
+ * axe-core flagged all 7 links; the desktop bar was unaffected because it sets
+ * link colour from its own attr).
+ *
+ * A class (0,1,0) beats the theme's bare `a` while still losing to the
+ * #uid-scoped attr helpers (1,1,0), so an operator override still wins —
+ * the cascade intent above is preserved, only the theme's global link colour
+ * is fenced out. */
+.sgs-adaptive-nav__drawer-link {
+	color: inherit;
+}
+
+.sgs-adaptive-nav__drawer-link:hover,
+.sgs-adaptive-nav__drawer-link:focus-visible,
+.sgs-adaptive-nav__drawer-link[aria-current="page"] {
+	color: var(--wp--preset--color--accent, currentColor);
+}
+
+.sgs-adaptive-nav__drawer-item-row {
+	align-items: center;
+	display: flex;
+}
+
+.sgs-adaptive-nav__drawer-item-row .sgs-adaptive-nav__drawer-link {
+	flex: 1;
+}
+
+.sgs-adaptive-nav__drawer-toggle {
+	align-items: center;
+	background: none;
+	border: none;
+	border-radius: 8px;
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	flex-shrink: 0;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0;
+	transition: background 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__drawer-toggle:hover,
+.sgs-adaptive-nav__drawer-toggle:focus-visible {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.sgs-adaptive-nav__drawer-chevron {
+	display: flex;
+	transition: transform 250ms ease;
+}
+
+.sgs-adaptive-nav__drawer-chevron svg {
+	height: 20px;
+	width: 20px;
+}
+
+.sgs-adaptive-nav__drawer-toggle[aria-expanded="true"] .sgs-adaptive-nav__drawer-chevron {
+	transform: rotate(180deg);
+}
+
+.sgs-adaptive-nav__drawer-submenu {
+	list-style: none;
+	margin: 0;
+	overflow: hidden;
+	padding: 0 0 0 var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-adaptive-nav__drawer-submenu[hidden] {
+	display: none;
+}
+
+.sgs-adaptive-nav__drawer-subitem {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sgs-adaptive-nav__drawer-sublink {
+	align-items: center;
+	color: rgba(255, 255, 255, 0.92);
+	display: flex;
+	font-size: 1rem;
+	min-height: 44px;
+	padding: 10px 0;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.sgs-adaptive-nav__drawer-sublink:hover,
+.sgs-adaptive-nav__drawer-sublink:focus-visible {
+	color: var(--wp--preset--color--accent, currentColor);
+}
+
+/* ─── Drawer content zone (routed non-mega-menu InnerBlocks) ───────────── */
+.sgs-adaptive-nav__drawer-content {
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+	margin-top: var(--wp--preset--spacing--30, 1rem);
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* ─── Drawer socials ─────────────────────────────────────────────────────
+ * Third-party brand colours — INTENTIONAL, DO NOT TOKENISE (each platform's
+ * brand guidelines mandate them). Mirrors sgs/mobile-nav's coloured variant. */
+.sgs-adaptive-nav__drawer-socials {
+	display: flex;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+	justify-content: center;
+	list-style: none;
+	margin-bottom: 0;
+	margin-top: auto;
+	padding-left: 0;
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+}
+
+.sgs-adaptive-nav__drawer-social-link {
+	align-items: center;
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 50%;
+	color: var(--wp--preset--color--surface, #fff);
+	display: flex;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	text-decoration: none;
+	transition:
+		filter 200ms ease,
+		transform 200ms ease;
+	width: 44px;
+}
+
+.sgs-adaptive-nav__drawer-social-link:hover,
+.sgs-adaptive-nav__drawer-social-link:focus-visible {
+	filter: brightness(1.15);
+	transform: scale(1.1);
+}
+
+.sgs-adaptive-nav__drawer-social-link svg {
+	height: 20px;
+	width: 20px;
+}
+
+.sgs-adaptive-nav__drawer-social-link--linkedin {
+	background: #0077b5;
+}
+
+.sgs-adaptive-nav__drawer-social-link--facebook {
+	background: #1877f2;
+}
+
+.sgs-adaptive-nav__drawer-social-link--instagram {
+	background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.sgs-adaptive-nav__drawer-social-link--twitter {
+	background: #1da1f2;
+}
+
+.sgs-adaptive-nav__drawer-social-link--youtube {
+	background: #ff0000;
+}
+
+.sgs-adaptive-nav__drawer-social-link--tiktok {
+	background: #000;
+}
+
+.sgs-adaptive-nav__drawer-social-link--whatsapp {
+	background: #25d366;
+}
+
+.sgs-adaptive-nav__drawer :focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #fff);
+	outline-offset: 2px;
+}
+
+/* prefers-reduced-motion: no transform slide, no fade. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-adaptive-nav__drawer,
+	.sgs-adaptive-nav__drawer.is-closing,
+	.sgs-adaptive-nav__scrim,
+	.sgs-adaptive-nav__drawer-chevron {
+		transition-duration: 0.01ms !important;
+	}
+}

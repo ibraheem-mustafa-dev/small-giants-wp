@@ -1,5 +1,5 @@
 """
-Spec 15 §6 Stage 9 — Drift Validator
+Spec 19 Stage 9 — Drift Validator
 ====================================
 Validates that every canonical value stored on `block_attributes` decomposes
 into known vocabulary (slots.slot_name [scope='element'], property_suffixes.role,
@@ -115,7 +115,7 @@ def detect_unknown_modifier(
     modifier_suffix_set: set[str],
     alias_map: dict[str, set[str]],
 ) -> str | None:
-    """Spec 15 §6 Stage 9 modifier check.
+    """Spec 19 Stage 9 modifier check.
 
     Only fires when canonical_slot is set (strongest signal that the attr was
     successfully decomposed by Stage 4). For un-canonicalised attrs, gap
@@ -204,7 +204,7 @@ def validate(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Spec 15 §6 Stage 9 drift validator")
+    parser = argparse.ArgumentParser(description="Spec 19 Stage 9 drift validator")
     parser.add_argument("--strict", action="store_true", help="Exit 1 if any violations found")
     args = parser.parse_args()
 

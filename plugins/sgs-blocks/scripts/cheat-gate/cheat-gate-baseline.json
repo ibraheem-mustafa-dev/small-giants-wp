@@ -1,9 +1,10 @@
 {
-  "hash": "79a8ac1a67845a788b92ec19c81446a12824e61bb6691bad919835dd6ad23bda",
+  "hash": "59f160105d8762dcb53cf6d9b0dde9f47bf67ed20846d2575b270362ed26f3a8",
   "keys": [
     "convsrc:classname:converter\\services\\section_passes.py:className",
     "hdict:stage_attribute_promotion.py:_CSS_PROP_PHP",
     "imp:build\\blocks\\accordion\\style.css:transition-duration",
+    "imp:build\\blocks\\adaptive-nav\\style.css:transition-duration",
     "imp:build\\blocks\\collapsible-text\\style.css:transition-duration",
     "imp:build\\blocks\\container\\style.css:grid-template-columns",
     "imp:build\\blocks\\divider\\style.css:transition-duration",
@@ -17,9 +18,11 @@
     "imp:build\\blocks\\mobile-nav\\style.css:border-radius",
     "imp:build\\blocks\\mobile-nav\\style.css:color",
     "imp:build\\blocks\\mobile-nav\\style.css:display",
+    "imp:build\\blocks\\nav-menu\\style.css:transition-duration",
     "imp:build\\blocks\\product-faq\\style.css:transition-duration",
     "imp:build\\blocks\\responsive-logo\\style.css:transition-duration",
     "imp:src\\blocks\\accordion\\style.css:transition-duration",
+    "imp:src\\blocks\\adaptive-nav\\style.css:transition-duration",
     "imp:src\\blocks\\collapsible-text\\style.css:transition-duration",
     "imp:src\\blocks\\container\\style.css:grid-template-columns",
     "imp:src\\blocks\\divider\\style.css:transition-duration",
@@ -34,6 +37,7 @@
     "imp:src\\blocks\\mobile-nav\\style.css:border-radius",
     "imp:src\\blocks\\mobile-nav\\style.css:color",
     "imp:src\\blocks\\mobile-nav\\style.css:display",
+    "imp:src\\blocks\\nav-menu\\style.css:transition-duration",
     "imp:src\\blocks\\product-faq\\style.css:transition-duration"
   ]
 }

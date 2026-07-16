@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""atomic-block-scaffold.py -- Spec 15 Phase 5b.8 atomic-block scaffold.
+"""atomic-block-scaffold.py -- Spec 31 Phase 5b.8 atomic-block scaffold.
 
 When the bucket-C classifier (5a.2) surfaces a new-block candidate, this
 module emits the four minimal Gutenberg files (block.json + render.php
@@ -490,7 +490,7 @@ def promote(
     if db_path is not None and db_path.exists():
         conn = sqlite3.connect(str(db_path), timeout=5.0)
         try:
-            # block_attributes is the canonical table per Spec 15 Phase 1.
+            # block_attributes is the canonical table per Spec 31 Phase 1.
             for row in manifest.get("pending_db_rows", []):
                 conn.execute(
                     """INSERT OR IGNORE INTO block_attributes

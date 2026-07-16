@@ -30,7 +30,8 @@
 				"socials",
 				"copyright",
 				"description",
-				"map"
+				"map",
+				"attribution"
 			]
 		},
 		"showIcon": {
@@ -62,6 +63,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"linkHoverColour": {
+			"type": "string",
+			"default": ""
+		},
 		"paddingTablet": {
 			"type": "object",
 			"default": {}
@@ -80,6 +85,16 @@
 		}
 	},
 	"variations": [
+		{
+			"name": "attribution",
+			"title": "Website Credit",
+			"description": "The agency attribution link. Framework-owned, not client data — the text and URL are constants, so a client cannot blank the backlink. Place it anywhere in the footer bottom row.",
+			"icon": "admin-links",
+			"keywords": [ "attribution", "credit", "built by", "website by", "agency", "backlink" ],
+			"attributes": { "displayType": "attribution" },
+			"isActive": [ "displayType" ],
+			"scope": [ "inserter", "transform" ]
+		},
 		{
 			"name": "phone",
 			"title": "Business Phone",

@@ -19,12 +19,12 @@
 
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
 		<div class="wp-block-group" style="gap:var(--wp--preset--spacing--40)">
-			<!-- wp:sgs/business-info {"type":"phone","textColor":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
-			<!-- wp:sgs/business-info {"type":"email","textColor":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
+			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
+			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:sgs/business-info {"type":"socials"} /-->
+		<!-- wp:sgs/business-info {"displayType":"socials"} /-->
 
 	</div>
 	<!-- /wp:group -->

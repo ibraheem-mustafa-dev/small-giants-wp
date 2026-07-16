@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""orchestrator_main.py -- Spec 15 Phase 5e.8 top-level entry point.
+"""orchestrator_main.py -- Spec 31 Phase 5e.8 top-level entry point.
 
 Composes the full Phase 5 chain in execution order:
 

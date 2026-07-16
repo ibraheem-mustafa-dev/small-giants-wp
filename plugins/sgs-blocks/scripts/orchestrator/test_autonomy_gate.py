@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7 self-test for autonomy_gate.py.
+"""Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7 self-test for autonomy_gate.py.
 
 Plan contracts:
   5e.4  Run on Mama's mockup post-deploy; assert N screenshots + diff JSON
@@ -550,7 +550,7 @@ def test_no_capture_factory_forces_full_page() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7 -- autonomy_gate contract")
+    print("Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7 -- autonomy_gate contract")
     test_visual_qa_iterates_viewports()
     test_visual_qa_surfaces_high_diff_regions()
     test_autonomy_scenario_clean_low_diff_auto_proceed()

@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.4 self-test for mutex.py.
+"""Spec 31 Phase 5b.4 self-test for mutex.py.
 
 Plan contract: start two concurrent /sgs-clone runs; second must block
 + report mutex holder. Also covers stale-lock takeover, status report,
@@ -106,7 +106,7 @@ def test_status_cli_does_not_acquire() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.4 -- mutex FR19 contract")
+    print("Spec 31 Phase 5b.4 -- mutex FR19 contract")
     test_concurrent_second_acquirer_blocks()
     test_status_states()
     test_stale_lock_takeover()

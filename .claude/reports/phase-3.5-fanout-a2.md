@@ -2,7 +2,7 @@
 
 Generated 2026-05-12 by cold Sonnet subagent (branch A2 of 5-way fanout).
 Source DB: `~/.claude/skills/sgs-wp-engine/sgs-framework.db` — table `attribute_gap_candidates` where `proposed_action='new-canonical-slot-needed'`.
-Slot vocab: 55 canonical slots from `slot_synonyms`. Role taxonomy: 20 roles from Spec 15 §3.3.
+Slot vocab: 55 canonical slots from `slot_synonyms`. Role taxonomy: 20 roles from Spec 31.
 
 Slots referenced as **EXISTING** are already in `slot_synonyms`. Slots marked **NEW** are proposed additions.
 
@@ -158,5 +158,5 @@ Slots referenced as **EXISTING** are already in `slot_synonyms`. Slots marked **
 ### Notes
 - Post-grid `search`, `inherit`, `taxQuery`, `namespace`, `author`, `exclude` are declared in block.json (per the gap table) but are partially/unused in current render.php. They follow core Query Loop convention and remain valid `query-descriptor` candidates regardless of current wiring.
 - Where an attr is a unit selector paired with a numeric attr (e.g. `fontSizeUnit`, `customWidthUnit`, `letterSpacingUnit`), the slot follows the numeric parent and the role is `select-from-enum`.
-- Hover-related attrs always classify to slot `hover` (state-modifier-acting-as-slot per Spec 15) rather than the underlying element slot, to keep hover-token harvesting deterministic downstream.
+- Hover-related attrs always classify to slot `hover` (state-modifier-acting-as-slot per Spec 31) rather than the underlying element slot, to keep hover-token harvesting deterministic downstream.
 - `info-box.elementOrder` chosen as `layout` rather than `items` because the array values are slot keys not item objects — it's a layout-order descriptor, not a repeating item list.

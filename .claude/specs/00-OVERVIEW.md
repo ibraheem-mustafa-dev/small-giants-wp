@@ -132,13 +132,15 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 
 ## Deployment Model
 
-- **Source code:** Git repository (GitHub, one repo per component or monorepo — TBD)
-- **Deployment:** SFTP to Hostinger via Claude Code
+- **Source code:** Git repository (GitHub monorepo)
+- **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown|palestine-lives`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336). *(Corrected 2026-07-16: this section said "SFTP to Hostinger" ×2.)*
+- **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 33), never a framework deploy.
 - **Local testing:** WordPress Playground or Local by Flywheel
-- **Dev site:** palestine-lives.org (WP 6.9.1) — primary integration target
-- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0) — Mama's Munches canary (page 144)
+- **Dev site:** palestine-lives.org — primary integration target
+- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary (page 144)
+- **WP version:** both sites on **7.0.1** (verified 2026-07-16 via Hostinger MCP; WP 7.1 lands 19 Aug 2026 — re-check, don't trust this line)
 - **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks
-- **Updates:** Claude deploys updates to all client sites via SFTP. Theme/plugin updates are code changes, not WordPress auto-updates.
+- **Updates:** theme/plugin updates are code changes deployed via `build-deploy.py`, not WordPress auto-updates.
 
 ---
 

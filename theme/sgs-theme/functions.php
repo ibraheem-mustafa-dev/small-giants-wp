@@ -282,9 +282,10 @@ function enqueue_styles(): void {
 		)
 	);
 
-	// M17: mobile navigation is now the sgs/mobile-nav block.
-	// CSS and JS are loaded automatically via block.json (style-index.css + view.js).
-	// Old files: assets/css/mobile-nav-drawer.css, assets/js/mobile-nav-drawer.js — deleted.
+	// Mobile navigation (burger + off-canvas drawer) is owned entirely by the
+	// sgs/adaptive-nav block (Task 1 / D336 — absorbed sgs/mobile-nav +
+	// sgs/mobile-nav-toggle, both retired). CSS and JS load automatically via
+	// block.json (style-index.css + view.js) — no theme-level enqueue.
 
 	// Mega menu panel styles — shared class system, hover effects, transitions.
 	wp_enqueue_style(

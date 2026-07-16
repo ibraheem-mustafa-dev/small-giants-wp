@@ -768,8 +768,7 @@ body.sgs-scroll-locked {
 /*
  * The sgs/trust-bar lives inside parts/sgs-pdp-content (template part, read-only).
  * A scoped CSS band via the `.wp-block-sgs-trust-bar` wrapper class isolates PDP
- * trust-bar styling without touching the mobile nav trust zone
- * (`.sgs-mobile-nav__trust-zone`) or the hero trust-bar on the homepage.
+ * trust-bar styling without touching the hero trust-bar on the homepage.
  * UNVERIFIED: .wp-block-sgs-trust-bar — confirmed from block registration; not
  * present in truncated static curl. Selector is the standard WP block wrapper
  * (`wp-block-` + block namespace slug `sgs-trust-bar`).

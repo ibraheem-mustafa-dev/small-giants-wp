@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.1 self-test for staged_output.py.
+"""Spec 31 Phase 5b.1 self-test for staged_output.py.
 
 Asserts:
   - Run dir layout: pipeline-state/sgs-clone/<run_id>/
@@ -100,7 +100,7 @@ def test_list_artefacts_sorted() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.1 -- staged-output dir + filename convention")
+    print("Spec 31 Phase 5b.1 -- staged-output dir + filename convention")
     test_run_dir_layout()
     test_stage_filename_convention()
     test_write_read_roundtrip()

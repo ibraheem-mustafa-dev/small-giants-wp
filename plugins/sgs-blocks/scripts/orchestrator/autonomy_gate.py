@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""autonomy_gate.py -- Spec 15 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7.
+"""autonomy_gate.py -- Spec 31 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7.
 
 Four tightly-coupled pieces of the post-merge autonomy chain:
 
@@ -361,7 +361,7 @@ def autonomy_decision(
     config_path: Path = Path("tools/recogniser-v2/visual_qa_config.json"),
     coverage: dict | None = None,
 ) -> dict:
-    """Decision logic per Spec 15 §7 stage 8 + Hard Rule 8.
+    """Decision logic per Spec 31 stage 8 + Hard Rule 8.
 
     Hard Rule 8 -- unresolved slots gate:
       When ``coverage`` (the stage-9 ``coverage_by_boundary`` dict) is

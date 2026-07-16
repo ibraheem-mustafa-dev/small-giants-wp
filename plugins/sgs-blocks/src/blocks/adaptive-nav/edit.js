@@ -31,7 +31,10 @@ import {
 	ResponsiveBoxControls,
 } from '../../components';
 
-const ALLOWED_BLOCKS = [ 'sgs/mega-menu' ];
+// STOP-NO-ALLOWLIST (Task 1 / D336): the InnerBlocks slot accepts ANY block —
+// sgs/mega-menu items join the desktop bar, everything else routes to the
+// drawer's content drop-zone at render time (see render.php). Do NOT
+// reintroduce an `allowedBlocks` restriction here.
 
 const COLLAPSE_TIER_OPTIONS = [
 	{ label: __( 'Mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
@@ -81,6 +84,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		flexWrap,
 		verticalAlign,
 		gap,
+		menuButtonLabel,
+		drawerLabel,
+		drawerBg,
 	} = attributes;
 
 	const { records: menus, isResolving } = useEntityRecords(
@@ -110,7 +116,24 @@ export default function Edit( { attributes, setAttributes } ) {
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-adaptive-nav__editor-innerblocks' },
 		{
-			allowedBlocks: ALLOWED_BLOCKS,
+			// No allowedBlocks (STOP-NO-ALLOWLIST) — a sgs/mega-menu child
+			// joins the desktop bar; any other block routes to the drawer's
+			// content drop-zone. sgs/mega-menu keeps its own reciprocal
+			// `parent` lock in its block.json.
+			//
+			// FR-34-3 default drawer children (Bean's 3-child model): empty
+			// row container → the menu element → empty row container, all
+			// reorderable/deletable. The template ONLY seeds a block with zero
+			// stored children — existing content (e.g. the shipped header
+			// pattern's business-info/socials) is never touched; Dispatch-E
+			// inserts the nav-menu child into those files explicitly.
+			// sgs/nav-menu's ref defaults to null ⇒ it inherits THIS block's
+			// menu via context "sgs/navRef" (one source by default, FR-S9-4).
+			template: [
+				[ 'sgs/container', {} ],
+				[ 'sgs/nav-menu', {} ],
+				[ 'sgs/container', {} ],
+			],
 			templateLock: false,
 			orientation: 'horizontal',
 		}
@@ -167,6 +190,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Drawer', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Menu button label', 'sgs-blocks' ) }
+						value={ menuButtonLabel }
+						onChange={ ( val ) =>
+							setAttributes( { menuButtonLabel: val } )
+						}
+						help={ __(
+							'Screen-reader label for the burger toggle shown below the collapse breakpoint.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Drawer label', 'sgs-blocks' ) }
+						value={ drawerLabel }
+						onChange={ ( val ) =>
+							setAttributes( { drawerLabel: val } )
+						}
+						help={ __(
+							'Screen-reader label for the disclosure drawer dialog.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Drawer background', 'sgs-blocks' ) }
+						value={ drawerBg }
+						onChange={ ( val ) =>
+							setAttributes( { drawerBg: val } )
+						}
+						linked
+					/>
+					<p className="sgs-adaptive-nav__inspector-note">
+						{ __(
+							'Text and icon colours are chosen automatically for readable contrast against whichever background you pick, so they never need setting by hand.',
+							'sgs-blocks'
+						) }
+					</p>
 				</PanelBody>
 
 				<PanelBody
@@ -346,7 +413,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</span>
 					<span className="sgs-adaptive-nav__editor-hint">
 						{ __(
-							'Rendered from the selected menu on the frontend. Add sgs/mega-menu items below for rich dropdowns.',
+							'Rendered from the selected menu on the frontend. Add an SGS Mega Menu below for a rich desktop dropdown — any other block dropped here becomes content inside the off-canvas drawer instead.',
 							'sgs-blocks'
 						) }
 					</span>

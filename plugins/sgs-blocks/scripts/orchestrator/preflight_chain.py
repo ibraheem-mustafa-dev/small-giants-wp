@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""preflight_chain.py -- Spec 15 Phase 5e.1 + 5e.2.
+"""preflight_chain.py -- Spec 31 Phase 5e.1 + 5e.2.
 
 Two complementary chains the orchestrator runs around the /sgs-clone
 pipeline:

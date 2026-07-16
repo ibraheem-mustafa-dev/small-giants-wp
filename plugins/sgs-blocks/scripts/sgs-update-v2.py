@@ -1340,8 +1340,11 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/hero", "headline"): {"derived_selector": ".sgs-hero__headline, h1, h2"},  # migrated from fingerprints.json (db-current)
     ("sgs/hero", "subHeadline"): {"derived_selector": ".sgs-hero__sub-headline, p"},  # migrated from fingerprints.json (db-current)
     ("sgs/icon", "ariaLabel"): {"derived_selector": ".sgs-icon, [aria-label]"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "emojiChar"): {"derived_selector": ".sgs-icon__emoji"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "iconName"): {"derived_selector": ".sgs-icon__glyph, [data-icon-name]"},  # migrated from fingerprints.json (db-current)
+    # NOTE (2026-07-16): emojiChar/iconName previously appeared TWICE in this dict —
+    # here with a derived_selector, and again below with an icon-source role. Python
+    # dict literals are last-wins, so these two derived_selectors were SILENTLY
+    # DISCARDED at parse time (leg-1 lift_scalar_content needs them). Merged into the
+    # single entries below; a duplicate-key AST gate now fails the build on a repeat.
     ("sgs/icon", "iconSource"): {"derived_selector": ".sgs-icon__glyph, [data-icon-source]"},  # migrated from fingerprints.json (db-current)
     ("sgs/icon", "linkTarget"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
     ("sgs/icon", "linkUrl"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
@@ -1357,7 +1360,41 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/tab", "label"): {"derived_selector": ".sgs-tab__label"},  # migrated from fingerprints.json (db-current)
     ("sgs/table-of-contents", "title"): {"derived_selector": ".sgs-table-of-contents__title"},  # migrated from fingerprints.json (db-current)
     ("sgs/testimonial", "nameColour"): {"derived_selector": ".sgs-testimonial__heading, .sgs-testimonial__author"},  # migrated from fingerprints.json (db-current)
-    ("sgs/testimonial", "quote"): {"derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote"},  # migrated from fingerprints.json (db-current)
+    # 2026-07-16 (qc-council, 2 raters + measured baseline): `role` ADDED alongside the
+    # existing selector. Both attrs below were the single root cause of 7 red converter
+    # tests. The two attrs fail at DIFFERENT gates in scalar_content.py, so they need
+    # DIFFERENT corrections — a role row alone fixes neither:
+    #   quote        — HAS a selector, so it clears :159, but role=NULL fails the
+    #                  :164 gate `role in ("text-content","content") and attr_type=="string"`
+    #                  -> needs ROLE.
+    #   reviewerName — has NEITHER, and :159 (`if not selector: continue`) skips it
+    #                  BEFORE :164 is ever reached -> needs SELECTOR **and** role.
+    # Selector shape mirrors quote's: the render-side class (`__name`, render.php) plus the
+    # draft-side synonym (`__author`, used by the drafts + the fixtures) — the documented
+    # comma-separated multi-selector drift pattern, first-non-None wins.
+    # WHY AN OVERRIDE AND NOT A SEEDER FIX: block.json DOES declare `"role": "content"` on
+    # both, and the seeder ignores it — but reading that declaration first was measured and
+    # REJECTED by the council: all 94 declared roles are the identical bulk marker
+    # `"content"` (the GENERIC CATCH-ALL that assign-canonical.py:1283-1286 deliberately
+    # UPGRADES AWAY FROM into link-href/image-object/image-alt). Declaration-first would
+    # DOWNGRADE 9 attrs — `sgs/button.url` would take the button's label text as its href.
+    # `ATTR_CLASSIFICATION_OVERRIDES` is the FR-31-2.1a-sanctioned channel for exactly this
+    # ("fix it via ATTR_CLASSIFICATION_OVERRIDES ... or by reading the block code") and is
+    # named the R-31-1 channel at decisions.md:329. Safe by measurement:
+    # detect_role_from_block_json proposes (None,None,None) for both, so the upgrade pass
+    # cannot steal them back, and this dict is the final writer regardless.
+    # RESIDUAL (tracked, NOT closed by this fix): the `_ATTR_NAME_RULES` name-regex tier
+    # remains a live FR-31-2.1a violation. Closing it needs the 9 wrong block.json
+    # declarations corrected at source THEN declaration-first + deleting the regex tier —
+    # its own design gate.
+    ("sgs/testimonial", "quote"): {
+        "role": "content",
+        "derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote",
+    },
+    ("sgs/testimonial", "reviewerName"): {
+        "role": "content",
+        "derived_selector": ".sgs-testimonial__name, .sgs-testimonial__author",
+    },  # migrated from fingerprints.json (db-current)
     ("sgs/testimonial", "quoteColour"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
     ("sgs/testimonial", "quoteFontSize"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
     ("sgs/testimonial", "quoteLineHeight"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
@@ -1372,8 +1409,8 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # 'identity' attr the arm reads as the discriminator. Reseed-durable: assign-canonical
     # re-derives block_attributes.role each reseed, so these MUST live here (the roles
     # themselves are registered by migrations/2026-07-03-register-icon-source-roles.py).
-    ("sgs/icon", "iconName"): {"role": "icon-lucide"},
-    ("sgs/icon", "emojiChar"): {"role": "icon-emoji"},
+    ("sgs/icon", "iconName"): {"role": "icon-lucide", "derived_selector": ".sgs-icon__glyph, [data-icon-name]"},
+    ("sgs/icon", "emojiChar"): {"role": "icon-emoji", "derived_selector": ".sgs-icon__emoji"},
     ("sgs/icon", "dashiconName"): {"role": "icon-dashicon"},
     ("sgs/icon", "wpIconName"): {"role": "icon-wp-icon"},
     # CG-8 (2026-07-05): the image-extractor builds a full {url,id,alt} dict, but
@@ -4717,10 +4754,23 @@ def main() -> None:
     print("=== Summary ===")
     print(f"{'=' * 50}")
     for stage_num, result in results.items():
-        status = result.get("error", "ok")
+        # 2026-07-16 (qc-council): READ the stage's OWN reported status first.
+        # This loop previously did `status = result.get("error", "ok")` and NEVER looked at
+        # result["status"] — so any stage returning {"status": "warn"} (or "retired",
+        # "refreshed", "synced") printed a flat **"ok"** unless it happened to carry an
+        # "error" key. Measured live: Stage 11 returned {"status": "warn", "returncode": 1}
+        # and the summary said "Stage 11: ok"; Stage 3 returned {"status": "retired"} and
+        # also said "ok". A summary that reports ok for a stage that warned is the same
+        # silent-degradation class that let a half-seeded DB rot unnoticed for a day —
+        # and this summary is the ONLY thing a non-coder operator reads.
+        # Blast radius measured before landing: 4 of 11 stages change output
+        # (2 refreshed / 3 retired / 8 synced / 11 warn); all 4 become MORE honest and
+        # none is falsely reclassified as broken. Stages with no "status" key are
+        # unaffected — the original error/stub/dry-run/ok derivation still applies.
+        status = result.get("status") or result.get("error", "ok")
         if result.get("stub"):
             status = "STUB"
-        elif result.get("dry_run"):
+        elif result.get("dry_run") and not result.get("status"):
             status = "dry-run"
         elif result.get("error"):
             status = f"ERROR: {result['error'][:80]}"

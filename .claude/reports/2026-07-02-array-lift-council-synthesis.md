@@ -35,4 +35,4 @@ The *diagnosis* under the design is correct and verified (the client-copy defaul
 
 ## The one decision for Bean (the recurring crux)
 
-The Mama's draft trust-bar uses `.sgs-trust-bar__text` / `__icon`; the block renders `.sgs-trust-bar__label` / `__circle`. Reconcile by: (A) **conform the draft** to the block's canonical BEM (SGS-BEM-correct per Spec 15 §8.1; no aliases, no drift; edits the mockup); (B) **seed the schema to the draft's classes** (pragmatic; block self-describes the real clone input; but diverges from the block's render BEM); (C) **alias-tolerate** the synonyms (drift-prone; not reseed-surviving today).
+The Mama's draft trust-bar uses `.sgs-trust-bar__text` / `__icon`; the block renders `.sgs-trust-bar__label` / `__circle`. Reconcile by: (A) **conform the draft** to the block's canonical BEM (SGS-BEM-correct per Spec 00 §3.1; no aliases, no drift; edits the mockup); (B) **seed the schema to the draft's classes** (pragmatic; block self-describes the real clone input; but diverges from the block's render BEM); (C) **alias-tolerate** the synonyms (drift-prone; not reseed-surviving today).

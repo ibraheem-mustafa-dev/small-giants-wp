@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5b.5 self-test for media-sideload.py.
+"""Spec 31 Phase 5b.5 self-test for media-sideload.py.
 
 Plan contract: sideload a known PNG from Mama's mockup; assert attachment
 id + URL returned + writable to the block.json attr. We can't actually
@@ -147,7 +147,7 @@ def test_local_file_not_found_recorded_as_error() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5b.5 -- media-sideload contract")
+    print("Spec 31 Phase 5b.5 -- media-sideload contract")
     test_collect_image_slots_walks_tree()
     test_dry_run_no_network()
     test_env_creds_parsing()

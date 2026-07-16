@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""media-sideload.py -- Spec 15 Phase 5b.5 media sideloader.
+"""media-sideload.py -- Spec 31 Phase 5b.5 media sideloader.
 
 Reads `image-object` slots from extracted draft data + uploads each
 referenced file to WordPress via REST `POST /wp/v2/media`. Returns the

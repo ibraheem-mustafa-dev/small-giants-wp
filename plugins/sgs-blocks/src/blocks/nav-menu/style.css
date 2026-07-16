@@ -1,0 +1,170 @@
+/**
+ * SGS Menu (sgs/nav-menu) — frontend + editor shared styles.
+ *
+ * Classes match render.php exactly. Structural rules only: the accordion layout,
+ * 44px touch rows, focus outlines, chevron rotation. Link COLOUR, HOVER and
+ * TYPOGRAPHY are attr-driven, emitted by render.php's #uid-scoped <style> (Spec
+ * 32 no-inline) — this file deliberately hardcodes NONE of them, so an unset
+ * control lets the value INHERIT the surrounding context (drawer, footer, …).
+ *
+ * These are a re-rooted COPY of adaptive-nav's drawer-menu structural rules
+ * (`sgs-adaptive-nav__drawer-*`), stripped of the drawer's dark-background
+ * colour assumptions so the block is context-agnostic.
+ */
+
+/* Block root — the <ul> IS the menu (single semantic element, no wrapper div). */
+.sgs-nav-menu {
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-nav-menu__item {
+	display: block;
+}
+
+/*
+ * Base link colour is `inherit` on a CLASS (0,1,0) so it beats the theme's bare
+ * `a { color: … }` (0,0,1) — without this a themed global link colour repaints
+ * the menu (the D338 drawer regression). render.php's #uid-scoped rule (higher
+ * specificity) applies an operator-chosen linkColour when set; font size +
+ * weight are likewise attr-driven, never hardcoded here.
+ */
+.sgs-nav-menu__link {
+	align-items: center;
+	box-sizing: border-box;
+	color: inherit;
+	display: flex;
+	min-height: 44px;
+	padding: 14px 0;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.sgs-nav-menu__link--no-href {
+	cursor: default;
+}
+
+/* Colour-independent affordance (works on any background); render.php adds the
+ * operator's linkHoverColour on top when set.
+ *
+ * `color: inherit` here is LOAD-BEARING, not a duplicate of the resting rule.
+ * theme.json sets a GLOBAL `styles.elements.link[':hover'|':focus']` colour
+ * (`primary-dark`), which WP emits as `a:hover` — specificity (0,1,1), BEATING this
+ * block's resting `.sgs-nav-menu__link` (0,1,0). So without re-asserting inherit on
+ * the state selectors (0,2,0), hovering/focusing a drawer link repainted it
+ * primary-dark: measured 1.48:1 on the mamas-munches pink drawer — a WCAG failure
+ * landing on the FOCUSED link, i.e. exactly what a keyboard user sees first.
+ * (Same class as D339: a token name — "primary-dark" — assumed to imply a luminance.)
+ * The underline is the affordance; the colour must stay the drawer's computed,
+ * contrast-checked foreground on every client. An operator's explicit
+ * linkHoverColour still wins — render.php emits it at higher specificity. */
+.sgs-nav-menu__link:hover,
+.sgs-nav-menu__link:focus-visible,
+.sgs-nav-menu__link[aria-current="page"] {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.sgs-nav-menu__item-row {
+	align-items: center;
+	display: flex;
+}
+
+.sgs-nav-menu__item-row .sgs-nav-menu__link {
+	flex: 1;
+}
+
+.sgs-nav-menu__toggle {
+	align-items: center;
+	background: none;
+	border: none;
+	border-radius: 8px;
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	flex-shrink: 0;
+	height: 44px;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0;
+	transition: background 200ms ease;
+	width: 44px;
+}
+
+.sgs-nav-menu__toggle:hover,
+.sgs-nav-menu__toggle:focus-visible {
+	background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+@supports not (background: color-mix(in srgb, currentColor 8%, transparent)) {
+	.sgs-nav-menu__toggle:hover,
+	.sgs-nav-menu__toggle:focus-visible {
+		background: rgba(128, 128, 128, 0.12);
+	}
+}
+
+.sgs-nav-menu__chevron {
+	display: flex;
+	transition: transform 250ms ease;
+}
+
+.sgs-nav-menu__chevron svg {
+	height: 20px;
+	width: 20px;
+}
+
+.sgs-nav-menu__toggle[aria-expanded="true"] .sgs-nav-menu__chevron {
+	transform: rotate(180deg);
+}
+
+.sgs-nav-menu__submenu {
+	list-style: none;
+	margin: 0;
+	overflow: hidden;
+	padding: 0 0 0 var(--wp--preset--spacing--40, 1.5rem);
+}
+
+.sgs-nav-menu__submenu[hidden] {
+	display: none;
+}
+
+.sgs-nav-menu__subitem {
+	display: block;
+}
+
+.sgs-nav-menu__sublink {
+	align-items: center;
+	box-sizing: border-box;
+	color: inherit;
+	display: flex;
+	min-height: 44px;
+	padding: 10px 0;
+	text-decoration: none;
+	transition: color 200ms ease;
+}
+
+.sgs-nav-menu__sublink:hover,
+.sgs-nav-menu__sublink:focus-visible,
+.sgs-nav-menu__sublink[aria-current="page"] {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.sgs-nav-menu :focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-menu__chevron,
+	.sgs-nav-menu__link,
+	.sgs-nav-menu__sublink,
+	.sgs-nav-menu__toggle {
+		transition-duration: 0.01ms !important;
+	}
+}

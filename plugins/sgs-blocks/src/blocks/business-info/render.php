@@ -53,6 +53,8 @@ $link_email     = ! empty( $attributes['linkEmail'] );
 $icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
 $text_colour  = (string) ( $attributes['textColour'] ?? '' );
 $label_colour = (string) ( $attributes['labelColour'] ?? '' );
+// Link hover — unset means "no override", so style.css's #e7d768 default applies.
+$link_hover_colour = (string) ( $attributes['linkHoverColour'] ?? '' );
 
 // Placeholder shown when data is missing.
 $placeholder = sprintf(
@@ -225,6 +227,10 @@ switch ( $display_type ) {
 				'icon'  => 'message-circle',
 				'label' => 'WhatsApp',
 			),
+			'google'    => array(
+				'icon'  => 'star',
+				'label' => 'Google',
+			),
 		);
 
 		$items = '';
@@ -290,6 +296,28 @@ switch ( $display_type ) {
 		} else {
 			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-copyright">' . $placeholder . '</p>' : '';
 		}
+		break;
+
+	// ── Attribution / Website credit ──────────────────────────────────────────
+	// The ONLY displayType that does NOT read Sgs_Site_Info, and deliberately so.
+	// Every other type renders CLIENT data; this renders the FRAMEWORK's own
+	// constant. That distinction is the rule: a hardcoded CLIENT value in a
+	// framework file is a bug, the component's OWN constant stays. Routing this
+	// through Site Info would make the agency's backlink client-editable (and
+	// blankable), and would put agency data in a client store.
+	//
+	// It is a first-class placeable element (see the block.json variation) rather
+	// than a raw paragraph baked into a pattern, so an operator can move it
+	// anywhere in the footer's bottom row — the Astra `ast-footer-html` model —
+	// without being able to retarget or delete the credit itself.
+	//
+	// Never renders a placeholder: it has no empty state, it is always present.
+	case 'attribution':
+		$html = sprintf(
+			'<p class="sgs-business-info sgs-business-attribution"><a href="%s" class="sgs-business-info__link" rel="noopener">%s</a></p>',
+			esc_url( SGS_ATTRIBUTION_URL ),
+			esc_html( SGS_ATTRIBUTION_TEXT )
+		);
 		break;
 
 	// ── Description / Tagline ─────────────────────────────────────────────────
@@ -389,6 +417,12 @@ if ( '' !== $sgs_bi_text_colour_css ) {
 $sgs_bi_label_colour_css = sgs_colour_value( $label_colour );
 if ( '' !== $sgs_bi_label_colour_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-label-colour:' . $sgs_bi_label_colour_css;
+}
+// Link hover — same omit-when-unset contract as the three above. Unset falls back
+// to style.css's `var(--sgs-bi-link-hover, #e7d768)`, the SGS credit sweep colour.
+$sgs_bi_link_hover_css = sgs_colour_value( $link_hover_colour );
+if ( '' !== $sgs_bi_link_hover_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover:' . $sgs_bi_link_hover_css;
 }
 if ( $sgs_bi_colour_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $sgs_bi_colour_decls ) . ';}';

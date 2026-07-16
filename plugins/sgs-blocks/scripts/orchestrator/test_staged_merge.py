@@ -1,4 +1,4 @@
-"""Spec 15 Phase 5e.3 self-test for staged_merge.py.
+"""Spec 31 Phase 5e.3 self-test for staged_merge.py.
 
 Plan contract: simulate a 9-stage run; halt mid-stage 5 with synthetic
 error; assert orchestrator rolls back stages 1-4 cleanly + log records
@@ -163,7 +163,7 @@ def test_handlers_run_in_stage_order() -> None:
 
 
 def main() -> int:
-    print("Spec 15 Phase 5e.3 -- staged_merge contract")
+    print("Spec 31 Phase 5e.3 -- staged_merge contract")
     test_happy_path_9_stages()
     test_mid_run_failure_rollback()
     test_missing_artefact_aborts()

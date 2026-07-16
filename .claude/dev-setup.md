@@ -535,23 +535,20 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 
 ### PowerShell equivalents (dev machine)
 
+⛔ **The raw `scp -r` recipes that used to live here are RETIRED** — they contradicted the Deployment section's own warning box above, bypassed every gate, and left the tree and the server silently divergent. `build-deploy.py` is cross-platform; there is no PowerShell-specific deploy path.
+
 ```powershell
-cd plugins/sgs-blocks ; npm run build
+# The deploy IS the script — it builds, gates on a dirty tree, verifies fail-closed, rotates a .bak,
+# and resets OPcache itself. Run from the project root.
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only   # or --theme-only
+python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives            # production, explicit
 
-# Plugin only
-scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
-
-# Theme only
-scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
-
-# Clear caches (only if LiteSpeed plugin is active on target site)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# OPcache reset
-ssh hd "echo '<?php opcache_reset(); echo ""ok"";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
-curl -s https://palestine-lives.org/op-reset-tmp.php
-ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
+# Build alone (rarely needed separately — the script builds unless you pass --skip-build)
+cd plugins/sgs-blocks ; npm run build ; cd ..\..
 ```
+
+**Node/npm must run via PowerShell on this machine** (the nvm shim is broken in Git Bash).
 
 **Run all commands from project root:** `C:\Users\Bean\Projects\small-giants-wp`
 
@@ -615,7 +612,7 @@ git commit -m "feat: add my-block block"
 git push
 ```
 
-No CI/CD pipeline — deployment is manual via `scp` / tar as described above.
+No CI/CD pipeline — deployment is `python plugins/sgs-blocks/scripts/build-deploy.py` (see §Deployment above). It is the only sanctioned path for every target.
 
 ### SGS DB queries (quick reference)
 
@@ -651,14 +648,14 @@ python plugins/sgs-blocks/scripts/assign-canonical.py
 
 | Gotcha | Detail |
 |--------|--------|
-| **SCP `-r` creates nested directories** | `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. Always use tar method or SCP to the parent directory. |
+| **SCP `-r` creates nested directories** | `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. This is one of several reasons hand-rolled deploys are retired — use `build-deploy.py`. |
 | **Hostinger caches CSS aggressively** | Bump version in `style.css` after CSS changes to bust cache. Theme version is the query string for all enqueued styles. |
 | **`--webpack-copy-php` flag** | Build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this. |
 | **`--experimental-modules` flag** | Required in build/start scripts for `viewScriptModule` in block.json. |
-| **Deprecations required** | Changing a static block's `save.js` output requires a deprecation to avoid "unexpected content" errors on existing posts. |
+| **Deprecations NOT used (D270/D271/D293)** | ~~Changing a static block's `save.js` requires a deprecation~~ — **retired policy.** `deprecated.js` is deleted plugin-wide and version bumps are forbidden pre-production. On a schema change, rebuild / re-clone the content, or use the Site Editor's "Attempt Block Recovery". Do NOT author a deprecation. |
 | **SSH remote variable expansion** | Use single quotes for outer string when running `ssh hd '...'` so `$WP` expands on server. Double quotes expand locally. |
-| **Tar deploy: delete before move** | `mv plugins/sgs-blocks $WP/plugins/` fails with "Directory not empty" if target exists. Always `rm -rf $WP/plugins/sgs-blocks` first. |
-| **Tar `--exclude='src'` breaks vendor** | Too broad — strips `vendor/*/src/` subdirectories. Always use `--exclude='plugins/sgs-blocks/src'`. |
+| **~~Tar deploy: delete before move~~** | **RETIRED — this "fix" IS the D336 outage.** `rm -rf $WP/plugins/sgs-blocks` before the extract succeeds leaves the site with no plugin if anything fails in between; on 2026-07-14 it took two client sites down ~2.5h. `build-deploy.py` handles ordering safely. Never hand-roll this. |
+| **Tar `--exclude='src'` breaks vendor** | Too broad — strips `vendor/*/src/` subdirectories. `build-deploy.py` already carries the correct excludes; this is background, not a recipe to copy. |
 | **WP-CLI inline PHP escaping** | `wp eval '...'` breaks on shell special chars. Reliable fallback: write to `/tmp/script.php` with `cat << 'PHPEOF'`, scp to server, `wp eval-file ~/script.php`, then `rm`. |
 | **`parse_blocks()` is shallow** | Only returns top-level blocks. Finding nested blocks requires a recursive function walking `$b['innerBlocks']`. |
 | **Hostinger error logs** | Live at `~/.logs/error_log_<domain>`, not `wp-content/debug.log` (often stale). |

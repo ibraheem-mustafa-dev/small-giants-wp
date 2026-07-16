@@ -7,7 +7,7 @@ split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, syst
 
 > Last updated: 2026-07-13. Recent: Header + Footer + Navigation SYSTEM design-gate APPROVED (Bean sign-off 2026-07-13) — see "Header/Footer/Navigation system architecture" section below + `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` + Spec 17. New specialised container blocks `sgs/site-header` / `sgs/site-footer` / `sgs/adaptive-nav` PERMITTED inside the existing template-part architecture (rule evolution of `no-header-footer-block.py`); P0 (off-canvas drawer `inert`-freeze bug fix) SHIPPED + live-verified; P1-P5 (the new blocks `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`) are BUILT + LIVE (D323-D333, §S9 11/11) — pending final Bean sign-off. See `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` for current §S9 status (not edited by this reconciliation pass). Prior: D222 (2026-06-13) name-free align/grid LAYER-ROUTER SHIPPED — hardcoded `verticalAlign`/`alignItems` attr-name fork removed from `convert.py`; align resolves via `db.attr_for_layer_property(slug,"OUTER","align-items")` backed by a second `property_suffixes` row `align-items→AlignItems` added via dated migration `migrations/2026-06-13-property-suffixes-align-items.py` (the canonical way — NOT a module-load write side-effect). `iconCircleBackground` is the ONLY remaining named literal (trust-bar-specific, council-ruled legitimate). ALSO D222: notice-banner content-lift (IN-F) — nodes resolving to `has_inner_blocks` composites with direct rich-text + zero children now lift text into one `sgs/text` child, DB-gated, no per-slug branch. team-member D221 regression fixed — re-pinned `has_inner_blocks=0` via `HAS_INNER_BLOCKS_OVERRIDES` + `scalarContentLift` capability + `ATTR_CLASSIFICATION_OVERRIDES` (name/role→text-content, photo→image-object) in `sgs-update-v2.py`; reproducible via full `/sgs-update` reseed. **NEW OPEN DEBT (D222): ~13 per-block `if slug=="sgs/X"` literal carve-outs remain in `convert.py`** — de-literalisation programme scoped at `.claude/plans/archive/2026-06-13-converter-de-literalisation-audit.md`; universal DB-driven scalar-lift (`_lift_scalar_attrs_by_selector` via `block_attributes.derived_selector`) is the replacement mechanism. Prior: D209 — 70 SGS blocks (`/sgs-update` after announcement-bar RETIRED + merged); D206 testimonial rebuilt as 7-variant typed-attr block; D204 `sgs/product-card` built-in-element. Prior: 2026-06-07 last annotated. Prior: 2026-06-03 WS-1 A1+A2 SHIPPED D159 — `sgs/container` gained `contentWidth` attr; converter transfers section max-width → `widthMode`/`contentWidth` (D159; `widthMode`/`customWidth` subsequently RETIRED D230/D231 2026-06-18 → 3-layer `align`/`maxWidth`/`contentWidth`). Architecture programme CLOSED (2026-05-22, 31 decisions). **Cloning-pipeline canonical spec is Spec 31 (`31-UNIVERSAL-CLONING-PIPELINE.md`)** — Spec 22 was absorbed into Spec 31 §13 + archived (D253); every "Spec 22 / R-22-N / FR-22-N" citation in the Decisions section below is HISTORICAL and maps 1:1 to Spec 31 §13 / R-31-N / FR-31-N. **NOTE (post-D229): `convert.py` is FROZEN (D-MODULAR); the "~13 per-block carve-outs in convert.py" debt above lives in a file being REPLACED by the modular `converter/` engine, NOT active go-forward debt.** Live status (D-ceiling — illustrative example only, e.g. was D258 at time of writing; do not treat as current) is single-sourced to `state.md` + `decisions.md` head. See `.claude/handoff.md`.
 >
-> **2026-05-29 D99 DATA LAYER UPDATE (references corrected 2026-06-03):** `slot_synonyms` table retired D99 and replaced by `slots` table (composite PK on `slot_name + scope`; 92 element-scope + 4 section-scope rows post-D111). `slot_synonyms.role_classification` retired into `roles` table (21 rows — 20 base + `scalar-media` added D128). Component diagram, DB table list, and integration-surface references now use `slots` / `roles`. Walker functions like `_slot_synonyms()` retain their names but query the `slots` table internally. See Spec 22 §4 data layer for current table inventory.
+> **2026-05-29 D99 DATA LAYER UPDATE (references corrected 2026-06-03):** `slot_synonyms` table retired D99 and replaced by `slots` table (composite PK on `slot_name + scope`; 92 element-scope + 4 section-scope rows post-D111). `slot_synonyms.role_classification` retired into `roles` table (21 rows — 20 base + `scalar-media` added D128). Component diagram, DB table list, and integration-surface references now use `slots` / `roles`. Walker functions like `_slot_synonyms()` retain their names but query the `slots` table internally. See **Spec 31 §13 / §4** for the current table inventory (Spec 22 was absorbed there at D253 and is DEAD — never cite it as a live pointer).
 
 # SGS WordPress Framework — System Architecture
 
@@ -101,15 +101,23 @@ The SGS framework has four primary components: the block theme (`sgs-theme`), th
 │  └─────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────┘
 
-  /sgs-clone (cloning pipeline)
-  ├── Stage 0: SGS-BEM HTML draft (mockup → structured HTML)
-  ├── Stage 1: css_router.py (4-destination: D0 theme/D1 block-attr/D2 variation/D3 scaffold)
-  ├── Stage 2: convert.py walker (Spec 22 universal walker — BEM → block slugs via slots table)
-  ├── Stage 3: token_resolver.py (exact-match CSS values → design token refs)
-  ├── Stage 4: Playwright captures (375/768/1440px screenshots + Stage 11 pixel-diff)
-  ├── Stage 9b: Scaffold quality scoring (5-file quality report)
-  ├── Stage 10: REST deploy (sgs/v1/active-variation + page PATCH)
-  └── Stage 11: pixel-diff.py (per-section cropped diff, acceptance ≤5% Phase 1 / ≤1% Phase 1.5)
+  /sgs-clone (cloning pipeline)   ← stage map is single-sourced to .claude/cloning-pipeline-flow.md;
+                                     do NOT cache stage numbers here (they drift — this block did)
+  ├── Spec 33 extractor: draft computed styles → sites/<client>/theme-snapshot.json (runs FIRST,
+  │                      before any block conversion; FR-33-12 fail-closed freshness gate)
+  ├── Stage 0: SGS-BEM HTML draft (mockup → structured HTML; BEM is the only recognition signal)
+  ├── converter/ engine: single recursive walker (FR-31-3, exactly 3 permitted exceptions) —
+  │                      BEM → block slugs via the `slots` table; DB-first, no hardcoded dicts
+  ├── CSS routing (§3.A): 4 destinations — D0 theme.json / D1 block attr / D2 scoped variation CSS /
+  │                       D3 attribute_gap_candidates (no destination = logged, NEVER silently dropped)
+  ├── Stage 10: REST deploy (page PATCH)
+  └── Stage 11.6: computed-parity.js (Spec 20 — content-matched computed styles at 375/768/1440).
+                  THE fidelity signal, paired with Bean's eye (R-31-13). Diagnostic, not a gate (R-31-4).
+
+  ⚠️ PURGED — do not look for these: `convert.py` + `converter_v2/` (DELETED D276, 2026-07-05 — the
+     modular `plugins/sgs-blocks/scripts/converter/` engine is the ONLY converter; no flag, no fallback)
+     and `Stage 11 pixel-diff.py` (PURGED 2026-07-04, `220cb28a` — false-WIN on an empty section,
+     false-LOSS on a correctly-reflowed one).
 
   sites/<client>/
   └── theme-snapshot.json (per-client colours/typography deployed via push-theme-snapshot.py)
@@ -169,9 +177,9 @@ Canonical spec: `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` (template-part 
 - `wp-blocks.py` is the unified data CLI: `dump`, `block <slug>`, `capabilities`, `synonyms` — used by pipeline scripts and `/sgs-db` slash command.
 
 ### cloning pipeline → WordPress REST API
-- Stage 10 deploy: `PATCH /wp/v2/pages/{id}` sets post content; `POST sgs/v1/active-variation` activates the client style variation site-wide via `theme_mod`. Read-back confirmation verifies the activation.
-- Stage 4 Playwright: captures screenshots at 375/768/1440px against the live sandybrown staging site.
-- Stage 11 pixel-diff: `pixel-diff.py --selector .sgs-{section}` produces per-section cropped diffs against mockup screenshots.
+- Stage 10 deploy: `PATCH /wp/v2/pages/{id}` sets post content. (The old `POST sgs/v1/active-variation` + `theme_mod` style-variation activation is RETIRED — per-client tokens deploy via `push-theme-snapshot.py` → theme.json + `wp_global_styles`, Spec 33.)
+- Playwright: captures at 375/768/1440px against the live sandybrown staging site.
+- **Stage 11.6 computed-parity** (`scripts/parity/computed-parity.js`): compares computed styles on rendered elements, matched by TEXT CONTENT, at 375/768/1440 — Spec 20, THE fidelity signal, paired with Bean's eye. *(The former `Stage 11 pixel-diff.py --selector .sgs-{section}` was PURGED 2026-07-04, `220cb28a` — it scored an empty section as a false WIN and a correctly-reflowed one as a false LOSS.)*
 
 ### sgs-blocks → N8N notification service
 - All form submission and booking notifications route to N8N webhook (`http://72.62.212.169/webhook/…`) rather than `wp_mail()`. Configured via `sgs_n8n_webhook_url` option.
@@ -218,11 +226,11 @@ Canonical spec: `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` (template-part 
 
 16. **Cascade-fold (per-property default + override, NOT binary uniformity gate; locked 2026-05-25 per blub.db row 287)** — For N sibling wrappers sharing a BEM-element class, the walker compares CSS values per-property across siblings: most-common value hoists to parent's "per-direct-child default" attr; divergent values stay as override attrs on the specific child that contradicts. Wrapper blocks always exist (preserve className for CSS targeting); their attrs carry only the divergence; parent carries the defaults. Content uniformity is irrelevant — each grid item / column carries unique content; folding happens at the styling layer only. The canonical precedent is `sgs/multi-button` (14 parent attrs set group defaults; inner `sgs/button` children render via `$content` and override per-instance).
 
-17. **Hero is NOT a clean architectural reference** — Hero's prior pixel-diff wins were achieved via hardcoded cheats now removed. The Spec 22 universal walker (commit `da3de993`) has no per-slug guards. Current per-section pixel-diff is the live measurement at `stage-11-pixel-diff.json`; do not use pre-walker figures as a baseline. See Spec 22 §1 + §7.
+17. **Hero is NOT a clean architectural reference** — Hero's prior pixel-diff wins were achieved via hardcoded cheats now removed. The universal walker (commit `da3de993`) has no per-slug guards. Do not use pre-walker figures as a baseline. See Spec 31 §1 + §7b. *(Annotated 2026-07-16: this entry named `stage-11-pixel-diff.json` as "the live measurement" — that tool + artefact were PURGED 2026-07-04. Current instrument = Stage 11.6 computed-parity, Spec 20.)*
 
 18. **Phases never ship as single commits (binding rule D73, blub.db row 288)** — Within any phase, every major task commits separately with: (a) `/qc-council` or `/qc-inline` pre-commit gate; (b) living-docs updates for the matched doc-type per trigger table; (c) `/sgs-clone --debug-trace` + Stage 11 measurement comparing pre/post values; (d) commit message citing predicted vs actual delta from the experiment frame. Per-task skill bindings: `/subagent-driven-development` for implementation (one implementer + 2 reviewers); `/delegate` for model routing; `/verify-loop` for 2-attestation. Anti-pattern of record: 2026-05-24 second-pass session (5 changes shipped as one wave, regressed pixel-diff 70.5% → 73.9%, regression unattributable).
 
-19. **Per-section acceptance gate, NOT mean (Spec 22 FR-31-7, locked 2026-05-26)** — Phase 1 closure = per-section **≤5%** × 3 viewports for all 7 body sections (21 cells; each must hit ≤5% independently). Phase 1.5 stretch goal = per-section ≤1% × 3 viewports (bridges residual ~4pp via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing). Bean visual sign-off on cropped-pair artefacts is co-authoritative with script measurement (R-31-13). Mean averaging hides hidden failures and is retained as reporting metric only.
+19. **Per-section, NOT mean (locked 2026-05-26; instrument superseded 2026-07-04)** — the durable half: judge **per section × 3 viewports**, because mean averaging hides individual failures; and **Bean's visual sign-off on cropped pairs is co-authoritative with script measurement (R-31-13)**. *(Annotated 2026-07-16: the "≤5% / ≤1% pixel-diff" thresholds and `pixel-diff.py` are PURGED — R-31-4 forbids an aggregate score as a closing gate. Current instrument = Stage 11.6 computed-parity per Spec 20; closure = live per-section visual check + Bean's eye.)*
 
 20. **Spec 22 universal block-equivalent extraction (locked 2026-05-26)** — Single universal walker path (FR-31-3); BEM is the only recognition signal (FR-31-1); block-equivalent attrs become child blocks via `equivalent_block_for()` (FR-31-2); render.php for hybrid blocks migrates to `echo $content` (FR-31-6); `wp-blocks.py` is the unified data CLI over sgs-framework.db + selected uimax tables (FR-31-8); cold replacement Phase 1 in 5 commits per R-31-5. Phase 1 acceptance ≤5%, Phase 1.5 stretch ≤1%. Council-validated 2026-05-26 via 4-rater /gap-analysis (Architectural Purist, Spec Checker, Pragmatic Engineer, Risk Auditor). Canonical reference: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`.
 
@@ -269,12 +277,12 @@ The 2026-05-25 session ran a 4-rater `/qc-council` against the consolidated clon
   - D74 — Phase 1 scope = full universal-extraction backbone (one consolidated plan, NOT a series of small phases)
   - D75 — qc-council verdict CONDITIONAL APPROVE pending F1 spike
 
-**Empirical baseline state (pre-walker-rewrite, awaiting Phase 1.5 measurement against new walker):**
+**Empirical baseline state — ⚠️ THIS WHOLE BLOCK IS HISTORICAL (superseded 2026-07-04/05; annotated 2026-07-16).** Both the instrument and the code it describes are gone. Do NOT quote these figures as a baseline, and do not go looking for these files.
 
-- **Pre-walker baseline (Wave B re-capture 2026-05-27 with new pixel-diff.py):** `mean_mismatch_percent: 63.61%` at `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` (27 captures attempted, 27 OK, 0 errors). Earlier "58.91%" claim was unverifiable drift, corrected 2026-05-27 post-handoff audit.
-- **Earlier baseline (2026-05-26 partially stale):** mean 63.0% at `pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json`. Retained for historical reference per D88.
-- **Walker:** Spec 22 universal walker at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (1873 LoC). EXACTLY 3 routing branches per R-31-3 (AST self-test self-runs in `__main__`). 145+/145+ tests PASS.
-- **Phase 1.5 measurement pending:** deploy walker to sandybrown → run Stage 11 → compare per-cell pre/post pixel-diff → halt/proceed per R-31-13 (Bean visual sign-off co-authoritative).
+- ~~Pre-walker baseline (2026-05-27): `mean_mismatch_percent: 63.61%` at `…/stage-11-pixel-diff.json`~~ — **the artefact and the Stage 11 pixel-diff tool that produced it were PURGED 2026-07-04 (`220cb28a`).** R-31-4 also forbids an aggregate score as a closing gate.
+- ~~Earlier baseline (2026-05-26): mean 63.0%~~ — same purge.
+- ~~Walker at `orchestrator/converter_v2/convert.py` (1873 LoC)~~ — **that tree was DELETED at D276 (2026-07-05).** The walker now lives in the modular `plugins/sgs-blocks/scripts/converter/` engine (the ONLY converter; no flag, no fallback). The 3-permitted-exceptions rule (R-31-3) still holds.
+- **Current baseline:** re-run **Stage 11.6 computed-parity** on a fresh clone (Spec 20) — it is per-run, and any cached number here would drift. Closure = the live per-section visual check + Bean's eye (R-31-11 / R-31-13).
 
 ---
 

@@ -158,7 +158,7 @@ section.sgs-social-proof → sgs/container (slug-None) · ⚙ G7 + ✅ · backgr
 
 # DRAFT 2 — PRODUCT PAGE (`mockups/product/index.html`) · NON-sgs naming · @768, @1024
 
-> Stage 0 hard-rejects this draft (Spec 15 §8.1); aliases resolve ~40% of bare names; the rest = ➕ DB aliases or a lingua-franca pre-pass. The full per-line mapping + the complete ➕ DB alias list (≈42 aliases), the block-attr gaps, the design tokens (surface-alt/cream/success/primary-dark), and the one missing `property_suffixes` row (Overflow) are captured in the agent output appended below.
+> Stage 0 hard-rejects this draft (Spec 00 §3.1); aliases resolve ~40% of bare names; the rest = ➕ DB aliases or a lingua-franca pre-pass. The full per-line mapping + the complete ➕ DB alias list (≈42 aliases), the block-attr gaps, the design tokens (surface-alt/cream/success/primary-dark), and the one missing `property_suffixes` row (Overflow) are captured in the agent output appended below.
 
 ## §1 product-page + product-gallery
 ```

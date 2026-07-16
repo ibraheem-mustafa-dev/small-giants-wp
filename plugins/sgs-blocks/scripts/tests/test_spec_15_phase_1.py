@@ -1,7 +1,7 @@
 """
 test_spec_15_phase_1.py
 =======================
-Pytest suite covering the four Phase 1 modules for the Spec 15 deterministic
+Pytest suite covering the four Phase 1 modules for the Spec 31 deterministic
 draft-to-SGS converter pipeline:
 
   1. extract_signatures  — behavioural-analyser/extract-signatures.py

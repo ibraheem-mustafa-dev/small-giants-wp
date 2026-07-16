@@ -40,7 +40,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree (includes Phase 1 DB seed) | shipped |
 | 20 | [20-CLONE-FIDELITY-MEASUREMENT.md](20-CLONE-FIDELITY-MEASUREMENT.md) | Clone fidelity measurement (computed-parity tool + Stage 11.6 + rule 4a) — the canonical rendered-fidelity signal (D259). Replaced the old Spec 20 (log surfacing) + Spec 21 (artefact inventory), archived to `../memory/specs-archive/`. | shipped |
 | 21 | _(retired — archived to `../memory/specs-archive/21-PIPELINE-STATE-ARTEFACTS.md`; superseded by Spec 20 — input-side artefacts are debug-only, not the fidelity signal)_ | — | archived |
-| 22 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL) | active |
+| 22 | _(absorbed into Spec 31 §13 + archived, D253 — see row 31)_ | — | archived |
 | 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (build deferred) | draft |
 | 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER — SGS product + WooCommerce layer (CPT, collection, cart, dual-mode card, option-picker, configurator) | active |
 | 28 | [28-SGS-SMART-BULK-PRICING.md](28-SGS-SMART-BULK-PRICING.md) | Smart bulk pricing / comparative value-ladder | active |
@@ -49,9 +49,13 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 31 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | **THE cloning CSS-transfer rebuild blueprint** — DB-driven name-free routing engine; read §0 + §12 first. Foundation (Phase F) COMPLETE; stage-by-stage modular rebuild next. | active |
 | 32 | [32-COMPONENT-STYLING-TOKEN-CONTRACT.md](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) | **Framework-wide styling contract** — semantic BEM classes consume per-client design tokens (settings.custom.{component}Presets → WP CSS vars); NO inline property declarations, overrides via CSS custom-property values only. Restores + generalises Spec 11 D24; supersedes the D283 inline-attr styling model. Button = reference impl. | active |
 
+| 33 | [33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md](33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md) | **Draft global-styles / token extractor** — the OPENING step of the cloning pipeline (runs before Stage 0): measures the draft's rendered computed styles → `sites/<client>/theme-snapshot.json`, which the converter's token-snap depends on (FR-33-12 fails closed if stale). Part 1 COMPLETE (13/13 FRs); **Part 2 = draft header/footer → `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, NOT started.** | complete (Part 1) |
+
+| 34 | [34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md](34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md) | **Adaptive-nav disclosure drawer rebuild** (Bean-approved 2026-07-15) — header top row stays live while the menu is open (burger↔X in place), drawer fills viewport minus header, tint excludes the header (GOV.UK disclosure + Spectra "Dropdown" model; replaces `showModal()`), drawer content = InnerBlocks [container → `sgs/nav-menu` → container], NEW styleable `sgs/nav-menu` block with WP-menu picker (context-inherits the nav's source), Spectra-style per-device drawer settings. AMENDS Spec 17 FR-S9-5's modality criterion (frozen-except-header-row). | active |
+
 ## Architecture programme (2026-05-21+) — archived
 
-The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-architecture-staging.md`) **SHIPPED 2026-05-22** — all phases complete. Active work is now the cloning pipeline programme; see Spec 22 + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md` (archived).
+The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-architecture-staging.md`) **SHIPPED 2026-05-22** — all phases complete. Active work is now the cloning pipeline programme; see **Spec 31** (Spec 22 was absorbed into it at §13 and archived, D253) + `.claude/plans/archive/2026-06-02-container-wrapper-standardisation.md` (archived).
 
 ## Working specs / research artefacts (not numbered)
 

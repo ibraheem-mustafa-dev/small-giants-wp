@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""gap-review-report.py -- Spec 15 Phase 5a.5 operator-review surface.
+"""gap-review-report.py -- Spec 31 Phase 5a.5 operator-review surface.
 
 Generates a markdown report at
     pipeline-state/sgs-clone/<run_id>/gap-review.md

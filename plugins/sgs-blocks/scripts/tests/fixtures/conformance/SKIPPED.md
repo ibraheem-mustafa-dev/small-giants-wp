@@ -24,7 +24,6 @@ does not resolve to a section-kind block in the DB (`block_composition.container
 | sgs-gallery.html | sgs/container | sgs/gallery |
 | sgs-google-reviews.html | sgs/container | sgs/google-reviews |
 | sgs-info-box.html | sgs/container | sgs/info-box |
-| sgs-mobile-nav.html | sgs/container | sgs/mobile-nav |
 | sgs-multi-button.html | sgs/container | sgs/multi-button |
 | sgs-notice-banner.html | sgs/container | sgs/notice-banner |
 | sgs-option-picker.html | sgs/container | sgs/option-picker |

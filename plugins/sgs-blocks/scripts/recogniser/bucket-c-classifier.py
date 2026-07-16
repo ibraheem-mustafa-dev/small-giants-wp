@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""bucket-c-classifier.py -- Spec 15 Phase 5a.2 (FR10).
+"""bucket-c-classifier.py -- Spec 31 Phase 5a.2 (FR10).
 
 Classifies a DOM element that the orchestrator could NOT route through
 Layers 1-2 (slot / attribute matching) by voting it into the most

@@ -1122,7 +1122,21 @@ def main() -> int:
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",
             "sgs/tab", "sgs/accordion-item", "sgs/form-step", "sgs/notice-banner",
-            "sgs/option-picker", "sgs/mobile-nav",
+            "sgs/option-picker",
+            # sgs/mobile-nav REMOVED 2026-07-16 (qc-council, 2 raters): the block was
+            # DELETED by `7c60b8ff` ("wire the theme to adaptive-nav drawer + delete
+            # mobile-nav", Wave 2) and its off-canvas drawer absorbed into
+            # `sgs/adaptive-nav`. The validator was therefore CORRECT to fail (exit 1,
+            # "MISSING (expected but not detected)") every run since — it was reporting a
+            # genuinely stale expectation, not a detection bug. Nothing was written to
+            # disk either way (the block.json writer is gated on all_match).
+            # ⚠ BRANCH-COUPLED — do NOT cherry-pick this line to `main` alone.
+            # `mobile-nav` STILL EXISTS on `main` (verified: git ls-tree main), so on main
+            # this entry is still CORRECT. Removing it there before the deletion lands
+            # would break the validator in the OPPOSITE direction ("EXTRA (detected but
+            # not expected)"). This removal must merge together with `7c60b8ff`.
+            # (NB: plugins/sgs-blocks/CLAUDE.md miscites the deletion as "D336" — D336 is
+            # the site-takedown incident; the deletion is D337/Wave 2.)
             # product-faq + product-faq-item added 2026-06-10 (new since D160 — F2/D197).
             "sgs/product-faq", "sgs/product-faq-item",
             # product-card REMOVED 2026-06-10: the D204 built-in-element rebuild made it

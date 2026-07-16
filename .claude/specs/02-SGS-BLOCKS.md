@@ -138,19 +138,25 @@ Mockup HTML → SGS block markup pipeline at [`31-UNIVERSAL-CLONING-PIPELINE.md`
 
 ## Block Specifications
 
+> **Build route (name the tool — don't hand-roll):** `/sgs-wp-engine` for SGS block work, or the **`wp-sgs-developer` agent** for a heavy build; `/wp-block-development` for core-WP block-API questions (block.json, supports, bindings); `/wp-interactivity-api` for `view.js` directives.
+> **Before claiming an attribute is missing or reading a roster, query the DB — never the prose below:** `/sgs-db` or `/wp-blocks schema <slug>` (R-31-8). The per-block attribute tables in this spec + `02-SGS-BLOCKS-REFERENCE.md` are **generated** — if one is wrong, fix the generator (`/sgs-update`), never the file.
+> **Every new/edited block is gated by Spec 32** (no inline `style=`; skip-serialisation + scoped CLASS-level `.{uid}.{block-class}` CSS; box-object attrs via BoxControl). The per-block definition-of-done is `.claude/plans/block-migration-DONE-checklist.md` (11 end conditions). **No `deprecated.js`, no version bumps pre-production (D271/D293).**
+> **Verify on the live page, not the emit:** `/visual-qa` + `/a11y-audit`, or Playwright MCP for bespoke probes.
+
 ### Each block follows this pattern:
 
 ```
 block-name/
 ├── block.json          # Block metadata, attributes, supports, scripts, styles
 ├── edit.js             # Editor component (what users see in Gutenberg)
-├── save.js             # Static save (for blocks that don't need server rendering)
-├── render.php          # Server-side render (for dynamic blocks)
+├── save.js             # Static save (dynamic blocks return null; InnerBlocks wrappers return <InnerBlocks.Content />)
+├── render.php          # Server-side render (for dynamic blocks) — emits the block's scoped <style>
 ├── editor.css          # Editor-only styles
 ├── style.css           # Frontend + editor styles
 ├── view.js             # Frontend interactivity (viewScriptModule, optional)
 └── index.js            # Block registration entry point
 ```
+(No `deprecated.js` — deleted plugin-wide, D271.)
 
 ---
 
@@ -1105,6 +1111,45 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 ## Header / Footer / Navigation System (BUILT + LIVE — D323-D333, §S9 11/11; pending final Bean sign-off)
 
 **Design-gate sign-off:** `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (Bean, all recommended defaults). **Owning spec for the FULL requirement set (FRs, per-breakpoint override data model, never-overflow Cluster+clamp layout, global-defaults/Site-Info binding, a11y contract, sticky/transparent-scroll behaviour): [`17-HEADER-FOOTER-ARCHITECTURE.md`](17-HEADER-FOOTER-ARCHITECTURE.md).** This section is the block-roster summary only — do not duplicate Spec 17's FRs here.
+
+### `sgs/business-info` `displayType="attribution"` — the Website Credit element (D338, 2026-07-15)
+
+**Plain English:** the "Website by Small Giants Studio" link in the footer's bottom strip, as a proper element an operator can move around that row — but cannot retarget, reword or delete.
+
+**The rule it demonstrates.** This is the ONE `displayType` that does **not** read `Sgs_Site_Info`, deliberately. Every other type renders **client** data; this renders the **framework's own constant**. That is the binding distinction (memory `framework-block-client-hardcode-is-a-bug-not-a-constant`): *a hardcoded CLIENT value in a framework file is a bug; the component's OWN constant stays.* Routing the agency backlink through Site Info would be wrong twice — it would put agency data in a client-owned store, and it would let a client blank the backlink.
+
+**Constants** (`sgs-blocks.php`, `defined() ||` guarded so a white-label/reseller build overrides them before plugin load without patching a block):
+- `SGS_ATTRIBUTION_URL` = `https://smallgiantsstudio.co.uk/`
+- `SGS_ATTRIBUTION_TEXT` = `Website by Small Giants Studio`
+
+> Both live Astra sites (`lightsalmon-tarsier-683012.hostingersite.com`, `muslimsinconstruction.uk`) point this link at Bean's **LinkedIn** — that predates the website and is stale. The website is correct; do not copy the LinkedIn URL from those baselines.
+
+**Markup + classifier (BINDING — the pipeline matches on this):**
+```html
+<p class="sgs-business-info sgs-business-attribution">
+  <a href="{SGS_ATTRIBUTION_URL}" class="sgs-business-info__link" rel="noopener">{SGS_ATTRIBUTION_TEXT}</a>
+</p>
+```
+`.sgs-business-attribution` is the recognised classifier. It must stay in lockstep with the draft-side classifier `.sgs-footer__credit` (Spec 33 §Website-credit recognition) — change one, change both.
+
+**Attribute surface — TYPOGRAPHY ONLY (deliberately narrow, Bean-locked).** No content attr, no URL attr, no layout attrs. An operator may restyle it; they may not re-point it:
+- `textColour` (default: **resolved**, see below) · `linkHoverColour` (default `#e7d768`)
+- font family / size / weight / style / line-height via the shared `TypographyControls` component + `sgs_typography_css_rule()` — **never** hand-rolled controls (R-22-13). Default = inherit, so it matches the site's base paragraph font/size out of the box.
+
+**Default colour is COMPUTED, not assumed.** `textColour` unset ⇒ resolve the surrounding background to hex via `sgs_resolve_palette_hex()` and pick the readable foreground via `sgs_wcag_text_colour_for_bg()` (`includes/helpers-colour-wcag.php` — the same helpers `sgs/product-card` and `sgs/option-picker` already use; do NOT build a second resolver). Never assume a token NAME implies luminance — `primary-dark` is a **pink** on mamas-munches (STOP-TOKEN-NAME-IS-NOT-A-LUMINANCE, D338). Where the background cannot be resolved, fall back to `currentColor` (inherit), never to a literal.
+
+**Hover — left-to-right colour sweep to `#e7d768`** (Bean's reference behaviour on both live Astra sites). Implement as a `background-clip:text` gradient wipe, NOT a plain `color` transition:
+```css
+.sgs-business-attribution__link-inner { background-image: linear-gradient(90deg, #e7d768 50%, currentColor 50%);
+  background-size: 200% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  transition: background-position 320ms ease; }
+:hover { background-position: 0 0; }
+@media (prefers-reduced-motion: reduce) { transition: none; }
+```
+Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#e7d768` must meet it against the footer background at hover — verify per client palette, not once (STOP-VERIFY-EVERY-CLIENT).
+
+**Defaults are intentionally thin.** The cloning pipeline sets the real styling per client (Spec 33) — these defaults only need to be sane and accessible out of the box, not final.
 
 ### Rule evolution — specialised container blocks are permitted inside template parts
 

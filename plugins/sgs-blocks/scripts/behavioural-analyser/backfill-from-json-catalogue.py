@@ -1,5 +1,5 @@
 """
-Spec 15 Phase 3 step 3.1 helper — one-shot backfill of role / derived_selector
+Spec 31 Phase 3 step 3.1 helper — one-shot backfill of role / derived_selector
 from the legacy layer-3-internal-elements.json catalogue into sgs-framework.db
 `block_attributes`. Fills NULL rows only; never overwrites Phase 1 canonical
 assignments.
@@ -11,7 +11,7 @@ Phase 1 scoped canonical assignment to content-identity slots
 (padding / width / height / image-position / Ken Burns / etc.) were left
 with NULL role + NULL derived_selector. The legacy JSON catalogue holds
 that wider coverage already. This script ports it across so sgs-db
-becomes the single source of truth (Spec 15 §6 Stage 4 intent).
+becomes the single source of truth (Spec 19 Stage 4 intent).
 
 Idempotent — re-running finds 0 NULL rows to fill (all are populated).
 

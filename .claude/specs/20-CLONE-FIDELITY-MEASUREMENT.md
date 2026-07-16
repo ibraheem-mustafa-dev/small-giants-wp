@@ -248,6 +248,10 @@ header alongside the FR-20-6 limits.
 
 ## Test strategy (holistic, per the pipeline)
 
+> **Tools for the columns below.** The *number* comes from `scripts/parity/computed-parity.js` (Stage 11.6 — it runs automatically on deploy; opt-out `--no-computed-parity`). The **"vs Bean's eye" cross-check is the other half of R-31-13 and runs through `/visual-qa`** (cropped-pair capture + the STOP-67 `reports/visual-diff/` report), not by eyeballing a screenshot ad hoc. Bespoke live probes → Playwright MCP; clear the CDN first (Hostinger MCP `hosting_clearWebsiteCacheV1`) or you measure a stale `?ver`. Behavioural rows on a small artefact → `/qc-inline`.
+>
+> **Do NOT hand-roll a fresh comparison** (CLAUDE.md rule 4a) — this tool exists precisely because source-declaration diffing is blind to inherited values and class-keyed matching misclassifies. And do not trust the input-side drop-logs (`attribute_gap_candidates`, `leftover-buckets.json`) as a rendered-fidelity signal; they are a cumulative debug ledger.
+
 | FR | Static / structural | Behavioural (real run) | Cross-check | Regression guard |
 |----|---------------------|------------------------|-------------|------------------|
 | FR-20-1 | grep the tool for `getComputedStyle` + content-key; no class-keyed match | run on a known inherited-base-font case → the diff appears | vs Bean's eye on the same element | a fixture pair with a base-font delta |

@@ -1,55 +1,214 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-generated: 2026-07-14
-session: D334-D335 — cleared the 5 deferred §S9 must-fixes + business schema + repo-wide doc reconcile, then pre-sign-off QA + a11y/social polish; Bean set 3 new gates before sign-off
+generated: 2026-07-16
+session: Track C core-block migration COMPLETE (safe zone 395→0) + D341/D342 Spec 34 disclosure drawer
 ---
 
-# Session Handoff — 2026-07-14 (D334 → D335)
+# Session Handoff — 2026-07-16 (Track C — core→SGS migration COMPLETE)
 
-## Completed This Session
-1. **Task 1 — uid determinism (D334, `776a4c35`).** site-header/site-header-row/site-footer-row derived their scoped-`<style>` uid from `wp_unique_id()` (per-request counter). Proven live: the footer uid SHIFTED across pages (sfr-6/7 vs 12/13). Fixed → `md5(wp_json_encode($attributes))` matching the wrapper (STOP-NO-KSORT). qc-council-gated. Live: identical uid across 6 pages, scoped CSS lands, 0 visual change at 375/1440.
-2. **Task 3 — 2nd-client universality (D334).** Deployed theme+blocks to palestine-lives.org (Indus); §S9 header/footer/adaptive-nav render with Indus's own Site Info, 0 header/footer overflow at 375/1440. R-31-9 now demonstrated, not by-construction.
-3. **Task 4 — wrapper golden test (D334).** `tests/php/ContainerWrapperTest.php` + a standalone runner pin `SGS_Container_Wrapper` for all 3 KINDs + the uid-stability invariant — 36/36 pass.
-4. **Task 6 — business schema, Bean-added (D334).** Central Org emitter upgrades `Organization`→`LocalBusiness` on a complete address (gated on `addressLocality`), emits `OpeningHoursSpecification` (defensive am/pm-aware parser, omits split/closed days), and parses the multi-line Site-Info address into structured `PostalAddress`. LIVE: Mama's stays Organization (no address); **Indus is a valid LocalBusiness with its real Birmingham address + hours** (split-Friday safely omitted). `SiteNavigationElement` confirmed inert.
-5. **Task 5 — mega-menu reconcile (D334).** Bean chose accordion + no-AJAX; FR-S9-4 reconciled.
-6. **Task 2 — repo-wide `/doc-audit` reconcile (D334, `01a038f3`).** §S9 spec + architecture.md/01-SGS-THEME/02/29/31/32/00 corrected (build-pending→built; phantom `box_side` column removed; `{base}Hover` documented; the `#uid`→`.uid` D303 correction); 7 shipped plans archived.
-7. **Pre-sign-off QA, both clients (D335).** Live DOM+CSS + a11y/WCAG. Structure solid (0 overflow, no inline styles, landmarks). Real MINOR findings: Indus drawer socials/email dark-on-teal (1.4.3), header icons 16×16 (2.5.8), toggle no `aria-controls` (4.1.2), duplicate "© 2026". A footer "invisible text" was a FALSE alarm (measurement-vs-eye — pixel-confirmed visible gold).
-8. **a11y/social polish SHIPPED (D335, `ddb9b2fe`, 3 parallel Sonnet branches, live-verified).** `sgs/social-icons` `source=manual|site-info` (Site Info socials, "2 ways") + 44px floor; `sgs/business-info` 44px + invisible-on-dark fix (`var(--x,currentColor)` fallback) + duplicate-© dedup; `sgs/mobile-nav-toggle` aria-controls; framework drawer — removed the redundant placed socials block (drawer now one clean styled social set + visible email). Theme 1.5.21→1.5.22.
-9. **Hidden parallel system found (D335).** mobile-nav `render_socials_zone()` reads `sgs_social_*` options, not Site Info — a 2nd social store (violates Bean's one-source principle).
+*Ran in the `../small-giants-wp-trackc` worktree, branch `feat/core-block-migration`. Separate from the D341/D342 session below (Track A).*
 
-## Current State
-- **Branch:** `main` at `ddb9b2fe`. D-ceiling **D335**. Plugin+theme **1.5.22**.
-- **Tests:** wrapper golden 36/36; build gates green (dead-control 0-net-new, F3 0-net-new, box-family clean, visual-diff all blocks PASS, cheat-gate 0 NEW). PHPUnit not runnable in-env.
-- **Build:** passes. Deployed + live-verified on sandybrown + palestine-lives (full cache-clear incl. Hostinger CDN).
-- **Uncommitted:** the D335 handoff docs (committing in this handoff); pre-existing session-start dirt (lucide-icons.php, package-lock, phase4-*.txt, root .db, rr.json — NOT this session's).
+## Track C DONE — every core block with a real SGS replacement is now an SGS block
 
-## Known Issues / Blockers
-- **§S9 sign-off NOT given** — Bean set 3 gates: (1) remove `sgs/mobile-nav` → adaptive-nav global (design-gate first), (2) one-source business info, (3) Site-Editor builder UX analysis.
-- Task 1 (mobile-nav removal) is HIGH-BLAST-RADIUS (absorbs the FR-S9-5 drawer a11y contract) — must be design-gated + Bean-approved before building. None of the 3 gates block the next session from starting.
+Safe-zone replaceable core blocks: **395 → 0** across the session. All live-verified on the sandybrown canary.
 
-## Next Priorities (in order)
-1. **DESIGN-GATE the mobile-nav→adaptive-nav re-architecture** (how adaptive-nav absorbs the drawer + FR-S9-5 a11y contract + the socials zone), get Bean's approval, then build + live-verify the a11y contract on 2 clients.
-2. **One-source business info** — unify the mobile-nav `sgs_social_*` store → Site Info (folds into #1) + grep-audit for any other hardcoded/parallel business store.
-3. **Site-Editor visual-builder UX analysis** (same depth as the frontend QA) — the block-editor experience clients use to build the header/footer.
-4. **Present the FR-S9-1..11 audit for Bean's "§S9 totally covered" sign-off** → THEN Spec 33 Part 2.
+1. **Preset font-size gap CLOSED** (`9b3b5f2c`) — qc-council-gated; `sgs/heading`+`sgs/text` `fontSize` widened to `["number","string"]` so theme preset slugs render. Live 16/24px→14px.
+2. **Migrated (all pairings, live-proven):** `core/image`→media (7), `core/heading`→heading (51), `core/paragraph`→text (121+4 bound), `core/button`→button (15)+`core/buttons`→multi-button (13), `core/latest-posts`→post-grid, `core/site-logo`→responsive-logo (3), `core/cover`→hero (1), `core/details`→**accordion** (5, retargeted from collapsible-text), `core/group`→container (96), `core/columns`+`core/column`→container (78).
+3. **Buttons use the PRESET system** (`81131811`) — primary buttons → `inheritStyle:"primary"` (Mama's designed preset), not custom colours. Bean-corrected.
+4. **New capabilities:** SGS **block bindings** (`8fe67eed`) so bound email/phone survive migration; **`tagName`** on `sgs/container` (D344, `5681ba21`) — a11y/SEO landmarks (`div/section/article/aside/main/nav/header/footer/figure`) + editor dropdown.
+5. **`core/query` mapping DROPPED as not-real** (`dbfcc3b2`) — post-grid has no main-query inherit mode, so it can't replace the 3 archive/search/index `inherit:true` loops; removed `core/query`+`core/post-template` from `sgs/post-grid.replaces`. The 6 stay core (no real replacement, not a STOP violation).
+6. **qc-council caught 2 of my errors** on the container pairing: a fix-shape that was already a no-op, and a "regression" that was a probe measuring the `__inner` not the outer — the migration was correct all along (STOP-19 rollback + prove-the-cause).
+7. **`/sgs-update` reconciled the DB** — `tagName`, `fontSize` unions, details→accordion + post-grid maps; regenerated `02-SGS-BLOCKS-REFERENCE.md` (200 blocks / 2741 attrs).
 
-## Files Modified
-| File path | What |
-|-----------|------|
-| `plugins/sgs-blocks/src/blocks/{site-header,site-header-row,site-footer-row}/render.php` | uid → md5(attributes) (D334) |
-| `plugins/sgs-blocks/includes/class-org-website-schema.php` | LocalBusiness upgrade + OpeningHoursSpecification + multi-line PostalAddress parse (D334) |
-| `plugins/sgs-blocks/tests/php/{ContainerWrapperTest.php,run-container-wrapper-standalone.php}` | wrapper golden test (D334) |
-| `plugins/sgs-blocks/src/blocks/{social-icons,business-info}/*` + `mobile-nav-toggle/render.php` + `mobile-nav/edit.js` | a11y/social polish (D335) |
-| `theme/sgs-theme/parts/header.html` + `patterns/framework-header-default.php` + `style.css` | drawer socials de-dup + theme 1.5.22 (D335) |
-| `.claude/specs/17-*` + `architecture.md` + `01/02/29/31/32/00` + 7 plans→archive + `decisions.md` D334/D335 + `reports/2026-07-14-*` + `reports/visual-diff/*` | doc reconcile + records (D334/D335) |
+**Migration infra** (`plugins/sgs-blocks/scripts/migrate-core-blocks/`): span-preserving parser + `driver.py` (DB-first pairing map, leaf-first re-parse, structural anti-silent-discard gate) + one module per pairing. Decisions log: `.claude/scratch/track-c-decisions-pending.md` (TC-1..TC-34).
 
-## Notes for Next Session
-- **The mobile-nav removal is design-gate territory (Rule 7)** — adaptive-nav must absorb the whole FR-S9-5 a11y drawer contract (focus-trap/ESC/scroll-lock/D323 P0 re-parent/socials/toggle). Do NOT rush it; design + Bean-approve first.
-- **Bean's one-source principle is now binding** — all business info from Site Info, optional, never hardcoded/parallel. The `sgs_social_*` store is the first violation to fix.
-- **The mobile-nav block already renders its OWN styled socials** (`render_socials_zone`, the nice coloured buttons) — the placed socials block in the drawer template was redundant (removed D335). Whatever absorbs the drawer must keep a single styled social set sourced from Site Info.
-- **measurement-vs-eye**: pixel-confirm any contrast/colour "fail" before flagging (a false invisible-text alarm this session).
-- Cache-bust held: theme change needs the `style.css` Version bump + Hostinger CDN clear before measuring.
+**Left for follow-up:** 187 Track-A hands-off instances (header/footer/mega-menu) — migrate after Track A's rebuild lands. `feat/core-block-migration` is unmerged in the worktree.
 
-## Next Session Prompt
-See `.claude/next-session-prompt.md` (canonical) — carries the MANDATORY READING GATE, the anti-pattern STOP catalogue (incl. 3 new D335 STOPs: DESIGN-GATE-HIGH-BLAST-RADIUS, ONE-SOURCE-BUSINESS-INFO, MEASUREMENT-VS-EYE), the pre-flight self-attestation, and the 3-task orchestration plan (design-gate the nav re-architecture → one-source → builder UX → sign-off).
+---
+
+# Session Handoff — 2026-07-16 (D341/D342)
+
+*(Previous session archived → `.claude/memory/handoff-2026-07-15-D338.md`)*
+
+## Branch / state
+
+`feat/adaptive-nav-dialog-drawer`. All work COMMITTED. **Not pushed** (mid-flight).
+Canary sandybrown carries the build; **palestine-lives untouched** (on `main`, Bean's rollback).
+
+⛔ **SHARED-CHECKOUT HAZARD (bit us twice).** Track C ran `git checkout -b` in the MAIN
+checkout and detached this branch mid-build. Recovered via cherry-pick; Track C now has its own
+worktree (`../small-giants-wp-trackc`). Both track prompts were rewritten to mandate
+`git worktree add`, never `checkout`. **Verify `git branch --show-current` before any commit.**
+
+## DONE this session
+
+**Bean's point 1 — scoped handoff: COMPLETE.** D338's unverified tree verified live + committed
+(`fc1be02a`) with 5 per-block reports (cart / heading / business-info / product-card /
+site-footer). All 3 track prompts rewritten: clean-start, no dirty-tree dependency, completed
+steps removed, worktree-mandated, per-track scratch decision files. Tracks B+C launchable
+(Track B has since RUN and is done — see its prompt header).
+
+**Bean's point 2 — Spec 34: spec + plan + council + BUILD. Gate B ALL PASS.**
+- `.claude/specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` (docscore 96% A) ·
+  `.claude/plans/2026-07-15-spec34-build-plan.md` (4 pre-written dispatch prompts) ·
+  `.claude/reports/2026-07-15-spec34-qc-council.md`.
+- **The qc-council earned its cost** (3 cross-model raters, all GO-WITH-MUST-FIX). Its #1
+  (triangulated ×3): dropping `showModal()` reopens the container-wrapper specificity war →
+  the drawer would have re-broken exactly as Bean originally reported. Fix = re-parent to
+  `<body>`. Its #2: the header pattern ALREADY had drawer children, and WP's InnerBlocks
+  `template` only seeds EMPTY blocks → **the flagship header would have shipped with ZERO nav
+  links.** 10 must-fixes folded in pre-dispatch.
+- **Built by 2 parallel Opus workstreams + inline integration.** Live on canary at 375:
+  header row stays visible AND interactive (toggle hit-tested reachable), burger↔X in place,
+  drawer top 143 == header bottom 143, full-bleed, reaches viewport bottom, scrim never covers
+  the header, background `inert`, non-modal (`aria-modal` never set), `position: fixed`,
+  44×44, no overflow, **axe 0 on the open drawer**, 6 links via the NEW `sgs/nav-menu` block
+  inheriting through block context. Reports:
+  `reports/visual-diff/{adaptive-nav,nav-menu}-2026-07-16.md`.
+
+## ⛔ BEAN'S CORRECTIONS (2026-07-16 — apply; do not re-litigate)
+
+1. **`P-CALL-BUTTON-CONTRAST` is a NON-ISSUE — delete the parking entry.** Bean: *"totally
+   irrelevant unless that is hardcoded. We'll be cloning the draft's menu which doesn't feature
+   that button anyway."* Do not "fix" the Call button.
+2. **`primary-dark` is NOT a mis-named token.** Bean: *"Primary dark is darker than the normal
+   primary which pink but a lighter shade. There is no issue there at all."* My framing ("a
+   token named dark that isn't") was WRONG — it imported D339's drawer-BACKGROUND case (where
+   `primary-dark` was the panel colour) into a different situation.
+   **Consequence to review:** I shipped `color: inherit` on `nav-menu`'s `:hover`/
+   `:focus-visible` (`src/blocks/nav-menu/style.css` ~L52) to stop theme.json's global
+   `a:hover` repainting drawer links `primary-dark`. Bean says there is no issue → **that rule
+   may be unnecessary and may have removed an intended darker-pink hover.** Ask Bean: is a
+   darker-pink hover on the lighter-pink drawer his intent? If yes, revert that one rule (the
+   underline affordance stays regardless). Do NOT keep it just because it measures higher.
+3. **"Fix the other 2 bugs next session too."** All three bugs I reported were already fixed +
+   committed THIS session. **Confirm with Bean in ONE line which two he means** before acting —
+   most likely reading: the 2 real ones (header-height publisher, UA dialog defaults) stand as
+   fixed and #3 is the non-issue per correction 2. Do not assume.
+
+## The big find (fixed — wider than this drawer)
+
+**`--sgs-header-height` has NEVER been a live measurement on any deployed site.** The FR-S9-9
+publisher (`src/header-behaviours/view.js`) was never compiled: `webpack.config.js` listed only
+`extensions/index` + `plugins/product-variation-sets/index` as non-block entries, and wp-scripts
+auto-discovers `src/blocks/*` only. So `build/header-behaviours/view.js` never existed, the
+deploy tar excludes `src/`, and `enqueue_assets()` found neither path → silent `return`. The var
+fell back to `utilities.css`'s static **80px** while the real header measured **143px**.
+**Also breaks `scroll-padding-top` (WCAG 2.4.11 anchor offset) on every deployed site.** Fixed
+by adding the entry to BOTH branches of the entry function (proven by resolving `cfg.entry()`;
+my first inference about which branch was live was wrong).
+**This falsified a qc-council "CLEAN" finding** — the rater verified the CODE publishes, not
+that the script LOADS. Lesson: verify the live trigger, not the source.
+
+## NEXT (in order)
+
+1. **Bean gate:** confirm correction #3 (one line) · delete `P-CALL-BUTTON-CONTRAST` · review
+   the `nav-menu` hover rule per correction 2.
+2. **Step 5 — FR-34-5 drawer settings** (Sonnet): `toggleOpenColour`, `drawerAlign`,
+   `drawerGap` {tiers}, `drawerPadding` {tiers}; reuse `ResponsiveControl`. Prompt §Dispatch-D
+   is pre-written in the plan.
+3. **Step 6 — FR-34-6 builder reflection** (Sonnet): §Dispatch-E pre-written. **Reconcile, do
+   not redo** — the nav-menu child insertion into `parts/header.html` +
+   `framework-header-default.php`, the theme bump (1.5.25→1.5.26) and `/sgs-update` (nav-menu
+   `blocks` + `block_composition` rows, + a `roles.position` row) ALREADY LANDED this session.
+4. **Gate C — FR-34-7:** 768 + 1440 sweeps · ESC + focus-return + Tab-wrap · elementFromPoint
+   sweep vs the 10/10 baseline · frame sweep (anchor constant) · late-CSS A/B · two-default
+   `sgs/nav-menu` uid-collision · short-viewport 50dvh floor · logged-in `#wpadminbar` probe ·
+   **Bean's screenshot sign-off (R-31-13)**.
+5. **Step 7 (Bean-ordered — do FRESH, it is the point of the exercise):**
+   `/adversarial-council` on the shipped result **with a tech-illiterate-client UX rater** on
+   the Site-Editor builder (Bean's bar: "super easy and user friendly"), AND **prove the
+   Site-Editor→frontend round trip for BOTH header AND footer** — identify WHICH source
+   actually loads: the theme part file, the DB template-part copy the first Site-Editor edit
+   silently creates and which shadows the file thereafter, or the `sgs_header`/`sgs_footer` CPT
+   rules engine. Header and footer are wired DIFFERENTLY (`parts/header.html` inlines its
+   pattern; `parts/footer.html` references it) — test both, never extrapolate from one.
+
+Then the standing queue (see `next-session-prompt.md`): SPLIT framework/per-site header/footer
+→ Goal 4 (Mama's draft) → Goal 1 (Indus) → Goal 3 (de-hardcode base blocks).
+
+## Notes for next session
+
+- **A subagent's "verified clean" is a hypothesis** (STOP-16) — the council's CLEAN list held a
+  falsified item. Re-verify anything load-bearing on the LIVE page.
+- **Your own probe is a hypothesis too.** This session I: matched a CSS rule instead of an
+  element; grabbed a disclosure button instead of the toggle; flagged a logo image for text
+  contrast; called a Grep rendering artifact a CSS syntax error; inferred the wrong webpack
+  branch; and asserted "full width" against `innerWidth` when a fixed element sizes to
+  `clientWidth`. Every one was caught by re-measuring. Measure, then check the measurement.
+- **Read a SETTLED value** — a 200ms `transition: color` produced two false readings.
+- Gates all green at commit: dead-controls · F3 · control-UX · F5 · F6 · inline-styling (0/78)
+  · cheat-gate · oracle 180. Canary deploys used `--skip-oldshape-audit` (Track B's new gate,
+  not yet baselined for this branch).
+- `MEMORY.md` is at its size cap — compact before adding entries.
+
+---
+
+## 2026-07-16 — PARALLEL THREAD (uimax brain → adversarial-council → fixes), same branch
+
+*A second workstream ran on `feat/adaptive-nav-dialog-drawer` alongside the Spec 34 work above.
+Its commits: `6b9e4831`, `bacc0375`, `8779c3f8`, `8a8b3d94`, `01f88b57` (+ spec-17 edits that
+landed via the Spec 34 session's `8a561e42`). All pushed to PR #23.*
+
+**1. `/ui-ux-pro-max` now authors SGS-BEM drafts (the design brain).** Added a DB-generated
+vocabulary (`sgs-draft-vocabulary.md`, regenerated by `/sgs-update`), an authoring contract
+(`sgs-draft-authoring.md`), a queryable `sgs-wordpress` stack, and `draft-vocab-lint.py`. Fixed
+its dead HARD RULE (dead specs 13/15, wrong regex). *(Skill files live in `~/.agents/` — not in
+git, no commit.)*
+
+**2. Found + fixed a total outage in the brain's search.** Every `/ui-ux-pro-max` domain query
+had returned ZERO results for its whole life — a column-name casing mismatch (`CSV_CONFIG` +
+`_STACK_COLS` used Title-Case; the CSVs are snake_case). **4,994 curated rows were unreachable.**
+Fixed at the seam (normalise both sides) so re-casing can't recur.
+
+**3. 7-persona adversarial-council on Spec 17 + Spec 33 Part 1** (judged vs uimax-as-the-brain).
+Convergent findings, all now actioned: the D339 "87 of 95" note was arithmetically wrong (4/7
+personas — it's 78); §S8 dead-spec presented as live for 445 lines; FR-S9-5 specced the deleted
+`sgs/mobile-nav`; the opening-paragraph Customiser classes are fiction. All corrected via a
+fail-loud anchored script (`migrations/2026-07-16-fix-spec-drift.py`).
+
+**4. Ghost blocks killed — the Cynic's worst finding, confirmed live.** `build/blocks/{header,
+footer,mobile-nav,mobile-nav-toggle}` still REGISTERED `sgs/header`/`sgs/footer` on every deploy
+(gitignored → invisible to git; absent from DB → invisible to `/sgs-db`; tar-deploy never
+deletes). Deleted locally AND on palestine-lives.org (backed up, OPcache reset). `clean:build`
+now runs first in prebuild + a plant-tested ghost gate in postbuild → impossible by construction.
+
+**5. New gate `lints/lint-spec-drift.py`** — checks every `src/blocks/<x>/`, `Sgs_<Class>`,
+`sgs/<slug>` a spec names against the filesystem + DB. Drove 15 gating spec-drift findings → 0.
+BLOCK-SLUG is advisory (the `sgs/` namespace covers blocks + patterns + binding sources).
+
+**6. qc-council (Stages 0-8) on 3 problem sets → all closed, empirically gated:**
+   - **7 red converter tests → 0 (449 passed).** Root cause: a PARTIAL DB reseed left
+     `role='tag-identity'`, `role='icon-%'`, and `emit_shape` unseeded. A FULL `/sgs-update`
+     repaired it; testimonial `quote`/`reviewerName` needed targeted overrides (two different
+     gates: one needs a role, one needs a selector). The council FALSIFIED the "universal seeder
+     fix" — it would have made `sgs/button.url` take the button's label text as its href.
+   - **Stage 11 exit-1-but-reported-ok → fixed.** Stale roster entry (`sgs/mobile-nav`) +
+     a summary printer that never read `result['status']` (reported "ok" for warned/retired
+     stages — the same silent-degradation class that hid the partial reseed).
+   - **15 spec-drift findings → 0.** 13 the spec's fault, 2 the gate's; zero code changes.
+
+**7. 3 client-facing safety fixes — QC'd 21/21, SHIP:** brand clobber (`push-theme-snapshot.py`
+now value-level diff — was key-set, so a client's colour edit got silently overwritten); the
+"retired" seeder hook was still armed (an ordinary Site Editor Save could wipe a header/footer);
+empty Site Info hints rendered to PUBLIC customers (now operator-context-only). Committed
+`8779c3f8`; docs reconciled `8a8b3d94`.
+
+**8. FR-31-2.1a closure DECISION (Bean-delegated) — do NOT flip the reader in one shot.** The
+seeder derives `role` from an attr-NAME regex (an FR-31-2.1a violation) but produces correct
+roles today. A naive flip regresses 9 load-bearing attrs. **Key ground-truth catch:** block.json
+`"role":"content"` is WP 7.0's `contentOnly` pattern-editability marker, NOT the converter
+vocabulary — it must stay `content` or client pattern-editing breaks; the converter role needs a
+separate SGS-owned channel. Sequenced closure + tracking audit
+(`audit-declared-vs-seeded-roles.py`) recorded: Spec 31 FR-31-2.1a note + parking
+`P-FR-31-2.1A-CLOSURE`. Committed `01f88b57`.
+
+**Convergent lesson with the Spec 34 thread above:** both workstreams independently learned *"your
+own probe is a hypothesis"* — this thread produced 4 phantom measurements (0 sections, zero-h1,
+`quote:['\\']`, a false clause-(e) violation), each caught by re-measuring. Captured as memory
+`check-what-the-declaration-says-before-citing-the-rule` + `retract-the-content-not-just-the-label`
++ `docs-are-the-system-gate-them-like-code`.
+
+**Still open (logged, not Bean-blocking):** FR-31-2.1a flip (own design gate); Spec 18 D-number
+staleness; a few doc-staleness items in archived plans (deliberately not touched).

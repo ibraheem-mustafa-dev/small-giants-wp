@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS legacy_role_lookup (
 
 # Canonical entries — migrated verbatim from LEGACY_ROLE_LOOKUP in
 # per-section-convention-voter.py (17 entries, 2026-05-21).
-# Spec 12 §8 + Spec 15 §1.1 (cross-platform output + external source ingestion).
+# Spec 12 §8 + Spec 31 (cross-platform output + external source ingestion).
 ENTRIES: list[tuple[str, str, str]] = [
     ("hero",                   "sgs/hero",                 "Universal hero section"),
     # 2026-05-25 D72: old stat-counter trust-bar block retired. Its section class
