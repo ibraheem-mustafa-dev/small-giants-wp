@@ -23,9 +23,7 @@
 		<!-- wp:column -->
 		<div class="wp-block-column">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em","fontWeight":"600"}},"textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30);text-transform:uppercase;letter-spacing:0.08em;font-weight:600">Column A heading</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Column A heading","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
 			<!-- wp:list {"className":"sgs-mega-link-list","style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.4"}}} -->
 			<ul class="wp-block-list sgs-mega-link-list" style="padding-left:0;line-height:2.4">
@@ -50,9 +48,7 @@
 		<!-- wp:column {"style":{"border":{"left":{"color":"var:preset|color|border-subtle","width":"1px"}},"spacing":{"padding":{"left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-column" style="border-left-color:var(--wp--preset--color--border-subtle);border-left-width:1px;padding-left:var(--wp--preset--spacing--50)">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em","fontWeight":"600"}},"textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30);text-transform:uppercase;letter-spacing:0.08em;font-weight:600">Column B heading</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Column B heading","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
 			<!-- wp:list {"className":"sgs-mega-link-list","style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.4"}}} -->
 			<ul class="wp-block-list sgs-mega-link-list" style="padding-left:0;line-height:2.4">

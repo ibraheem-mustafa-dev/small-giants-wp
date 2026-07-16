@@ -17,12 +17,8 @@
 
 		<!-- wp:column {"verticalAlignment":"center","width":"65%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:65%">
-			<!-- wp:heading {"textColor":"surface","fontSize":"x-large"} -->
-			<h2 class="wp-block-heading has-surface-color has-text-color has-x-large-font-size">Ready to Transform Your Business?</h2>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"textColor":"text-inverse"} -->
-			<p class="has-text-inverse-color has-text-color">Get a free consultation and discover how we can help you grow.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/heading {"content":"Ready to Transform Your Business?","textColour":"surface","fontSize":"x-large"} /-->
+			<!-- wp:sgs/text {"text":"Get a free consultation and discover how we can help you grow.","textColour":"text-inverse"} /-->
 		</div>
 		<!-- /wp:column -->
 

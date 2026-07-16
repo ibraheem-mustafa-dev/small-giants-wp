@@ -12,13 +12,9 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"accent-light","layout":{"type":"constrained","contentSize":"700px"}} -->
 <div class="wp-block-group alignfull has-accent-light-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
-	<!-- wp:heading {"textAlign":"center","fontSize":"xx-large"} -->
-	<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size">Start Your Journey Today</h2>
-	<!-- /wp:heading -->
+	<!-- wp:sgs/heading {"content":"Start Your Journey Today","textAlign":"center","fontSize":"xx-large"} /-->
 
-	<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"medium"} -->
-	<p class="has-text-align-center has-text-muted-color has-text-color has-medium-font-size">Join hundreds of satisfied clients who have transformed their businesses with our help.</p>
-	<!-- /wp:paragraph -->
+	<!-- wp:sgs/text {"text":"Join hundreds of satisfied clients who have transformed their businesses with our help.","textAlign":"center","textColour":"text-muted","fontSize":"medium"} /-->
 
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">

@@ -23,18 +23,10 @@
 
 		<!-- wp:column {"verticalAlignment":"center","width":"55%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:55%">
-			<!-- wp:paragraph {"textColor":"primary","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em","fontWeight":"700"}}} -->
-			<p class="has-primary-color has-text-color has-small-font-size" style="font-weight:700;letter-spacing:0.1em;text-transform:uppercase">About Us</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:heading {"fontSize":"xx-large"} -->
-			<h2 class="wp-block-heading has-xx-large-font-size">Our Story Begins With a Simple Belief</h2>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"textColor":"text-muted","fontSize":"medium"} -->
-			<p class="has-text-muted-color has-text-color has-medium-font-size">We started with a passion for excellence and a commitment to delivering outstanding results. Over the years, we have grown into a trusted partner for businesses seeking to make a lasting impact.</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"textColor":"text-muted","fontSize":"medium"} -->
-			<p class="has-text-muted-color has-text-color has-medium-font-size">Our team brings together diverse expertise and a shared dedication to quality, innovation, and client success.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"About Us","textColour":"primary","fontSize":"small","textTransform":"uppercase","letterSpacing":0.1,"letterSpacingUnit":"em","fontWeight":"700"} /-->
+			<!-- wp:sgs/heading {"content":"Our Story Begins With a Simple Belief","fontSize":"xx-large"} /-->
+			<!-- wp:sgs/text {"text":"We started with a passion for excellence and a commitment to delivering outstanding results. Over the years, we have grown into a trusted partner for businesses seeking to make a lasting impact.","textColour":"text-muted","fontSize":"medium"} /-->
+			<!-- wp:sgs/text {"text":"Our team brings together diverse expertise and a shared dedication to quality, innovation, and client success.","textColour":"text-muted","fontSize":"medium"} /-->
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
 			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
 				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"}}} -->

@@ -14,12 +14,8 @@
 
 	<!-- wp:group {"layout":{"type":"constrained","contentSize":"700px"}} -->
 	<div class="wp-block-group">
-		<!-- wp:heading {"textAlign":"center","level":1,"textColor":"surface","fontSize":"hero"} -->
-		<h1 class="wp-block-heading has-text-align-center has-surface-color has-text-color has-hero-font-size">Watch Your Business Grow</h1>
-		<!-- /wp:heading -->
-		<!-- wp:paragraph {"align":"center","textColor":"text-inverse","fontSize":"large"} -->
-		<p class="has-text-align-center has-text-inverse-color has-text-color has-large-font-size">Replace the cover block's background with a video URL to create a stunning video hero section.</p>
-		<!-- /wp:paragraph -->
+		<!-- wp:sgs/heading {"content":"Watch Your Business Grow","textAlign":"center","level":"h1","textColour":"surface","fontSize":"hero"} /-->
+		<!-- wp:sgs/text {"text":"Replace the cover block's background with a video URL to create a stunning video hero section.","textAlign":"center","textColour":"text-inverse","fontSize":"large"} /-->
 		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 		<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
 			<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"8px"}}} -->

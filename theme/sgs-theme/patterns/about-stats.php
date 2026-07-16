@@ -12,48 +12,30 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained","contentSize":"800px"}} -->
 <div class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--70);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--70);padding-left:var(--wp--preset--spacing--40)">
 
-	<!-- wp:paragraph {"align":"center","textColor":"primary","fontSize":"small","style":{"typography":{"fontWeight":"700","textTransform":"uppercase","letterSpacing":"0.1em"}}} -->
-	<p class="has-text-align-center has-primary-color has-text-color has-small-font-size" style="font-weight:700;text-transform:uppercase;letter-spacing:0.1em">Who We Are</p>
-	<!-- /wp:paragraph -->
+	<!-- wp:sgs/text {"text":"Who We Are","textAlign":"center","textColour":"primary","fontSize":"small","fontWeight":"700","textTransform":"uppercase","letterSpacing":0.1,"letterSpacingUnit":"em"} /-->
 
-	<!-- wp:heading {"textAlign":"center","fontSize":"xx-large"} -->
-	<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size">Trusted by Hundreds of Businesses Across the UK</h2>
-	<!-- /wp:heading -->
+	<!-- wp:sgs/heading {"content":"Trusted by Hundreds of Businesses Across the UK","textAlign":"center","fontSize":"xx-large"} /-->
 
-	<!-- wp:paragraph {"align":"center","textColor":"text-muted"} -->
-	<p class="has-text-align-center has-text-muted-color has-text-color">We combine strategic thinking with creative execution to help businesses grow. Our data-driven approach ensures measurable results every time.</p>
-	<!-- /wp:paragraph -->
+	<!-- wp:sgs/text {"text":"We combine strategic thinking with creative execution to help businesses grow. Our data-driven approach ensures measurable results every time.","textAlign":"center","textColour":"text-muted"} /-->
 
 	<!-- wp:columns {"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|50"},"blockGap":{"left":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-columns alignwide" style="margin-top:var(--wp--preset--spacing--50)">
 		<!-- wp:column {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"default"}} -->
 		<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
-			<!-- wp:heading {"textAlign":"center","level":3,"textColor":"primary","fontSize":"hero"} -->
-			<h3 class="wp-block-heading has-text-align-center has-primary-color has-text-color has-hero-font-size">500+</h3>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Projects Completed</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/heading {"content":"500+","textAlign":"center","level":"h3","textColour":"primary","fontSize":"hero"} /-->
+			<!-- wp:sgs/text {"text":"Projects Completed","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 		<!-- wp:column {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
 		<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
-			<!-- wp:heading {"textAlign":"center","level":3,"textColor":"primary","fontSize":"hero"} -->
-			<h3 class="wp-block-heading has-text-align-center has-primary-color has-text-color has-hero-font-size">98%</h3>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Client Satisfaction</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/heading {"content":"98%","textAlign":"center","level":"h3","textColour":"primary","fontSize":"hero"} /-->
+			<!-- wp:sgs/text {"text":"Client Satisfaction","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 		<!-- wp:column {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
 		<div class="wp-block-column" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
-			<!-- wp:heading {"textAlign":"center","level":3,"textColor":"primary","fontSize":"hero"} -->
-			<h3 class="wp-block-heading has-text-align-center has-primary-color has-text-color has-hero-font-size">15+</h3>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Years of Experience</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/heading {"content":"15+","textAlign":"center","level":"h3","textColour":"primary","fontSize":"hero"} /-->
+			<!-- wp:sgs/text {"text":"Years of Experience","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 	</div>

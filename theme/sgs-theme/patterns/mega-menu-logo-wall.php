@@ -23,58 +23,44 @@
 		<!-- wp:column {"width":"66%"} -->
 		<div class="wp-block-column" style="flex-basis:66%">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em","fontWeight":"600"}},"textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--40);text-transform:uppercase;letter-spacing:0.08em;font-weight:600">Our brands &amp; partners</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Our brands &amp; partners","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
 			<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
 			<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex">
 
 				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","fontWeight":"700"}},"textColor":"text-muted"} -->
-					<p class="has-text-muted-color has-text-color" style="font-size:0.75rem;font-weight:700">Brand A</p>
-					<!-- /wp:paragraph -->
+					<!-- wp:sgs/text {"text":"Brand A","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
 				<!-- /wp:group -->
 
 				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","fontWeight":"700"}},"textColor":"text-muted"} -->
-					<p class="has-text-muted-color has-text-color" style="font-size:0.75rem;font-weight:700">Brand B</p>
-					<!-- /wp:paragraph -->
+					<!-- wp:sgs/text {"text":"Brand B","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
 				<!-- /wp:group -->
 
 				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","fontWeight":"700"}},"textColor":"text-muted"} -->
-					<p class="has-text-muted-color has-text-color" style="font-size:0.75rem;font-weight:700">Brand C</p>
-					<!-- /wp:paragraph -->
+					<!-- wp:sgs/text {"text":"Brand C","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
 				<!-- /wp:group -->
 
 				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","fontWeight":"700"}},"textColor":"text-muted"} -->
-					<p class="has-text-muted-color has-text-color" style="font-size:0.75rem;font-weight:700">Brand D</p>
-					<!-- /wp:paragraph -->
+					<!-- wp:sgs/text {"text":"Brand D","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
 				<!-- /wp:group -->
 
 				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","fontWeight":"700"}},"textColor":"text-muted"} -->
-					<p class="has-text-muted-color has-text-color" style="font-size:0.75rem;font-weight:700">Brand E</p>
-					<!-- /wp:paragraph -->
+					<!-- wp:sgs/text {"text":"Brand E","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
 				<!-- /wp:group -->
 
 				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
-					<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.75rem","fontWeight":"700"}},"textColor":"text-muted"} -->
-					<p class="has-text-muted-color has-text-color" style="font-size:0.75rem;font-weight:700">Brand F</p>
-					<!-- /wp:paragraph -->
+					<!-- wp:sgs/text {"text":"Brand F","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
 				<!-- /wp:group -->
 
@@ -87,13 +73,9 @@
 		<!-- wp:column {"width":"34%","style":{"border":{"left":{"color":"var:preset|color|border-subtle","width":"1px","style":"solid"}},"spacing":{"padding":{"left":"var:preset|spacing|50"}}}} -->
 		<div class="wp-block-column" style="flex-basis:34%;border-left-color:var(--wp--preset--color--border-subtle);border-left-style:solid;border-left-width:1px;padding-left:var(--wp--preset--spacing--50)">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em","fontWeight":"600"}},"textColor":"text-muted","fontSize":"small"} -->
-			<p class="has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30);text-transform:uppercase;letter-spacing:0.08em;font-weight:600">About our range</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"About our range","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
-			<!-- wp:paragraph {"textColor":"text-muted","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}},"typography":{"fontSize":"0.875rem"}}} -->
-			<p class="has-text-muted-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--40);font-size:0.875rem">A short description of the brands or partners shown here — who they are and why they matter to your customers.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"A short description of the brands or partners shown here — who they are and why they matter to your customers.","textColour":"text-muted","fontSize":"0.875rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
 
 			<!-- wp:buttons -->
 			<div class="wp-block-buttons">

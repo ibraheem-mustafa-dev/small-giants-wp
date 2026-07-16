@@ -12,20 +12,14 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","layout":{"type":"constrained","wideSize":"1200px"}} -->
 <div class="wp-block-group alignfull has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
-	<!-- wp:heading {"textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} -->
-	<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--60)">How We Help You Succeed</h2>
-	<!-- /wp:heading -->
+	<!-- wp:sgs/heading {"content":"How We Help You Succeed","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
 	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|60"},"margin":{"bottom":"var:preset|spacing|60"}}}} -->
 	<div class="wp-block-columns alignwide" style="margin-bottom:var(--wp--preset--spacing--60)">
 		<!-- wp:column {"verticalAlignment":"center","width":"50%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:50%">
-			<!-- wp:heading {"level":3,"fontSize":"x-large"} -->
-			<h3 class="wp-block-heading has-x-large-font-size">Strategy & Planning</h3>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"textColor":"text-muted","fontSize":"medium"} -->
-			<p class="has-text-muted-color has-text-color has-medium-font-size">We begin every project with a thorough understanding of your goals, audience, and market. Our strategic approach ensures every decision is purposeful.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/heading {"content":"Strategy & Planning","level":"h3","fontSize":"x-large"} /-->
+			<!-- wp:sgs/text {"text":"We begin every project with a thorough understanding of your goals, audience, and market. Our strategic approach ensures every decision is purposeful.","textColour":"text-muted","fontSize":"medium"} /-->
 		</div>
 		<!-- /wp:column -->
 		<!-- wp:column {"width":"50%"} -->
@@ -45,12 +39,8 @@
 		<!-- /wp:column -->
 		<!-- wp:column {"verticalAlignment":"center","width":"50%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:50%">
-			<!-- wp:heading {"level":3,"fontSize":"x-large"} -->
-			<h3 class="wp-block-heading has-x-large-font-size">Execution & Delivery</h3>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph {"textColor":"text-muted","fontSize":"medium"} -->
-			<p class="has-text-muted-color has-text-color has-medium-font-size">Our expert team brings your vision to life with precision and care. We deliver on time, every time, without compromising on quality.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/heading {"content":"Execution & Delivery","level":"h3","fontSize":"x-large"} /-->
+			<!-- wp:sgs/text {"text":"Our expert team brings your vision to life with precision and care. We deliver on time, every time, without compromising on quality.","textColour":"text-muted","fontSize":"medium"} /-->
 		</div>
 		<!-- /wp:column -->
 	</div>

@@ -12,9 +12,7 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained","wideSize":"1200px"}} -->
 <div class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
-	<!-- wp:heading {"textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} -->
-	<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--60)">Simple, Transparent Pricing</h2>
-	<!-- /wp:heading -->
+	<!-- wp:sgs/heading {"content":"Simple, Transparent Pricing","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
 	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-columns alignwide">
@@ -23,15 +21,9 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface"} -->
 			<div class="wp-block-group has-surface-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
-				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large"} -->
-				<h3 class="wp-block-heading has-text-align-center has-large-font-size">Starter</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"align":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} -->
-				<p class="has-text-align-center has-xx-large-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:var(--wp--preset--spacing--20)"><strong>£997</strong></p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Perfect for small businesses just getting started.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/heading {"content":"Starter","textAlign":"center","level":"h3","fontSize":"large"} /-->
+				<!-- wp:sgs/text {"text":"<strong>£997</strong>","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} /-->
+				<!-- wp:sgs/text {"text":"Perfect for small businesses just getting started.","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 				<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}}} -->
 				<hr class="wp-block-separator has-alpha-channel-opacity" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
 				<!-- /wp:separator -->
@@ -62,18 +54,10 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px","width":"2px","color":"var:preset|color|primary"}},"backgroundColor":"surface"} -->
 			<div class="wp-block-group has-surface-background-color has-background" style="border-color:var(--wp--preset--color--primary);border-width:2px;border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
-				<!-- wp:paragraph {"align":"center","textColor":"primary","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em","fontWeight":"700"}}} -->
-				<p class="has-text-align-center has-primary-color has-text-color has-small-font-size" style="font-weight:700;letter-spacing:0.1em;text-transform:uppercase">Most Popular</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large"} -->
-				<h3 class="wp-block-heading has-text-align-center has-large-font-size">Professional</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"align":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} -->
-				<p class="has-text-align-center has-xx-large-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:var(--wp--preset--spacing--20)"><strong>£2,497</strong></p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">For growing businesses that need more power and flexibility.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/text {"text":"Most Popular","textAlign":"center","textColour":"primary","fontSize":"small","textTransform":"uppercase","letterSpacing":0.1,"letterSpacingUnit":"em","fontWeight":"700"} /-->
+				<!-- wp:sgs/heading {"content":"Professional","textAlign":"center","level":"h3","fontSize":"large"} /-->
+				<!-- wp:sgs/text {"text":"<strong>£2,497</strong>","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} /-->
+				<!-- wp:sgs/text {"text":"For growing businesses that need more power and flexibility.","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 				<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}}} -->
 				<hr class="wp-block-separator has-alpha-channel-opacity" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
 				<!-- /wp:separator -->
@@ -106,15 +90,9 @@
 		<div class="wp-block-column">
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface"} -->
 			<div class="wp-block-group has-surface-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
-				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large"} -->
-				<h3 class="wp-block-heading has-text-align-center has-large-font-size">Enterprise</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"align":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} -->
-				<p class="has-text-align-center has-xx-large-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:var(--wp--preset--spacing--20)"><strong>Custom</strong></p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Tailored solutions for large organisations and complex requirements.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/heading {"content":"Enterprise","textAlign":"center","level":"h3","fontSize":"large"} /-->
+				<!-- wp:sgs/text {"text":"<strong>Custom</strong>","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} /-->
+				<!-- wp:sgs/text {"text":"Tailored solutions for large organisations and complex requirements.","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 				<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}}} -->
 				<hr class="wp-block-separator has-alpha-channel-opacity" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
 				<!-- /wp:separator -->

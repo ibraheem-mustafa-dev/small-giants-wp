@@ -23,9 +23,7 @@
 		<!-- wp:column {"width":"40%"} -->
 		<div class="wp-block-column" style="flex-basis:40%">
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"1rem","fontWeight":"700"}},"textColor":"surface"} -->
-			<p class="has-surface-color has-text-color" style="font-size:1rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--30)">Contact details</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Contact details","fontSize":"1rem","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColour":"surface"} /-->
 
 			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2","fontSize":"0.9rem"}},"textColor":"surface"} -->
 			<ul class="wp-block-list has-surface-color has-text-color" style="padding-left:0;font-size:0.9rem;line-height:2.2">
@@ -45,13 +43,9 @@
 			<hr class="wp-block-separator has-text-color has-border-subtle-color has-alpha-channel-opacity has-border-subtle-background-color has-background is-style-wide" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
 			<!-- /wp:separator -->
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"1rem","fontWeight":"700"}},"textColor":"surface"} -->
-			<p class="has-surface-color has-text-color" style="font-size:1rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Opening hours</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"Opening hours","fontSize":"1rem","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}},"textColour":"surface"} /-->
 
-			<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.875rem","lineHeight":"2"}},"textColor":"text-inverse"} -->
-			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem;line-height:2"><strong>Mon – Fri:</strong> 9 am – 5 pm<br><strong>Sat – Sun:</strong> Closed</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"<strong>Mon – Fri:</strong> 9 am – 5 pm<br><strong>Sat – Sun:</strong> Closed","fontSize":"0.875rem","lineHeight":2,"lineHeightUnit":"","textColour":"text-inverse"} /-->
 
 		</div>
 		<!-- /wp:column -->
@@ -62,13 +56,9 @@
 			<!-- wp:group {"className":"sgs-mega-card sgs-mega-card--surface","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"12px"}},"backgroundColor":"surface","textColor":"text","layout":{"type":"constrained"}} -->
 			<div class="wp-block-group sgs-mega-card sgs-mega-card--surface has-text-color has-surface-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
-				<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"1.1rem","fontWeight":"700"}},"textColor":"primary-dark"} -->
-				<p class="has-primary-dark-color has-text-color" style="font-size:1.1rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Ready to get started?</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/text {"text":"Ready to get started?","fontSize":"1.1rem","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}},"textColour":"primary-dark"} /-->
 
-				<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}},"typography":{"fontSize":"0.875rem"}},"textColor":"text-muted"} -->
-				<p class="has-text-muted-color has-text-color" style="font-size:0.875rem;margin-bottom:var(--wp--preset--spacing--40)">A short, reassuring sentence about what happens after the visitor clicks the button below.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/text {"text":"A short, reassuring sentence about what happens after the visitor clicks the button below.","fontSize":"0.875rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"textColour":"text-muted"} /-->
 
 				<!-- wp:buttons -->
 				<div class="wp-block-buttons">

@@ -12,13 +12,9 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","layout":{"type":"constrained","wideSize":"1200px"}} -->
 <div class="wp-block-group alignfull has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
-	<!-- wp:heading {"textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-	<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size" style="margin-bottom:var(--wp--preset--spacing--20)">Meet Our Team</h2>
-	<!-- /wp:heading -->
+	<!-- wp:sgs/heading {"content":"Meet Our Team","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
-	<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"medium","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} -->
-	<p class="has-text-align-center has-text-muted-color has-text-color has-medium-font-size" style="margin-bottom:var(--wp--preset--spacing--60)">The talented people behind our success.</p>
-	<!-- /wp:paragraph -->
+	<!-- wp:sgs/text {"text":"The talented people behind our success.","textAlign":"center","textColour":"text-muted","fontSize":"medium","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
 	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-columns alignwide">
@@ -28,15 +24,9 @@
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
 				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ","imageAlt":"Alex Johnson","alignment":"center","maxWidth":"120px","height":"120px","style":{"border":{"radius":"100%"}}} /-->
-				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
-				<h3 class="wp-block-heading has-text-align-center has-large-font-size" style="margin-top:var(--wp--preset--spacing--20)">Alex Johnson</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"align":"center","textColor":"primary","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.05em","fontWeight":"600"},"spacing":{"margin":{"top":"0"}}}} -->
-				<p class="has-text-align-center has-primary-color has-text-color has-small-font-size" style="margin-top:0;font-weight:600;letter-spacing:0.05em;text-transform:uppercase">Creative Director</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Over 15 years of experience crafting digital experiences for leading brands.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/heading {"content":"Alex Johnson","textAlign":"center","level":"h3","fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} /-->
+				<!-- wp:sgs/text {"text":"Creative Director","textAlign":"center","textColour":"primary","fontSize":"small","textTransform":"uppercase","letterSpacing":0.05,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"top":"0"}}}} /-->
+				<!-- wp:sgs/text {"text":"Over 15 years of experience crafting digital experiences for leading brands.","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 			</div>
 			<!-- /wp:group -->
 		</div>
@@ -47,15 +37,9 @@
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
 				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/F87A1F/FFFFFF?text=SP","imageAlt":"Sarah Patel","alignment":"center","maxWidth":"120px","height":"120px","style":{"border":{"radius":"100%"}}} /-->
-				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
-				<h3 class="wp-block-heading has-text-align-center has-large-font-size" style="margin-top:var(--wp--preset--spacing--20)">Sarah Patel</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"align":"center","textColor":"primary","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.05em","fontWeight":"600"},"spacing":{"margin":{"top":"0"}}}} -->
-				<p class="has-text-align-center has-primary-color has-text-color has-small-font-size" style="margin-top:0;font-weight:600;letter-spacing:0.05em;text-transform:uppercase">Lead Developer</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Full-stack developer passionate about performance and accessibility.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/heading {"content":"Sarah Patel","textAlign":"center","level":"h3","fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} /-->
+				<!-- wp:sgs/text {"text":"Lead Developer","textAlign":"center","textColour":"primary","fontSize":"small","textTransform":"uppercase","letterSpacing":0.05,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"top":"0"}}}} /-->
+				<!-- wp:sgs/text {"text":"Full-stack developer passionate about performance and accessibility.","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 			</div>
 			<!-- /wp:group -->
 		</div>
@@ -66,15 +50,9 @@
 			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
 				<!-- wp:sgs/media {"imageUrl":"https://placehold.co/120x120/2E7D4F/FFFFFF?text=ML","imageAlt":"Marcus Lee","alignment":"center","maxWidth":"120px","height":"120px","style":{"border":{"radius":"100%"}}} /-->
-				<!-- wp:heading {"textAlign":"center","level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
-				<h3 class="wp-block-heading has-text-align-center has-large-font-size" style="margin-top:var(--wp--preset--spacing--20)">Marcus Lee</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"align":"center","textColor":"primary","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.05em","fontWeight":"600"},"spacing":{"margin":{"top":"0"}}}} -->
-				<p class="has-text-align-center has-primary-color has-text-color has-small-font-size" style="margin-top:0;font-weight:600;letter-spacing:0.05em;text-transform:uppercase">Strategy Lead</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"align":"center","textColor":"text-muted","fontSize":"small"} -->
-				<p class="has-text-align-center has-text-muted-color has-text-color has-small-font-size">Turning business goals into actionable digital strategies since 2012.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:sgs/heading {"content":"Marcus Lee","textAlign":"center","level":"h3","fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} /-->
+				<!-- wp:sgs/text {"text":"Strategy Lead","textAlign":"center","textColour":"primary","fontSize":"small","textTransform":"uppercase","letterSpacing":0.05,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"top":"0"}}}} /-->
+				<!-- wp:sgs/text {"text":"Turning business goals into actionable digital strategies since 2012.","textAlign":"center","textColour":"text-muted","fontSize":"small"} /-->
 			</div>
 			<!-- /wp:group -->
 		</div>
