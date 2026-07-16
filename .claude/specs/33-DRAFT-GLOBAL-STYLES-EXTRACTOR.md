@@ -243,6 +243,12 @@ payload to a timestamped file + document a one-command `--rollback`. Before over
 live payload against the LAST-DEPLOYED snapshot and WARN if the live layer was hand-edited in the Site
 Editor since (else silent clobber of an operator tweak). Each client push is `--dry-run` diff → human
 go/no-go → `--yes` (SAFE_TARGETS enforced).
+**STATUS (2026-07-16, adversarial-council + QC): the "silent clobber" failure named above was REAL until
+this fix — `drift_warning()` diffed KEY SETS, so a client changing a VALUE on a key that already existed
+(the commonest edit — nudging a brand colour) produced an empty diff and NO warning, then got
+overwritten. Now a VALUE-LEVEL diff reports both ORPHANED keys and CLOBBERED keys (live-vs-incoming
+value); a failed live fetch is LOUD not silent; a failed backup ABORTS the push (`--force-no-backup`
+overrides; a genuinely fresh target still proceeds). 21/21 QC scenarios pass.**
 **Done when:** Mama's regenerates + passes the FR-33-3 reclone + Bean's eye BEFORE any other client;
 a `--rollback` restores the prior live payload; a hand-edited live layer triggers a warning pre-push.
 

@@ -152,7 +152,7 @@ rm sgs-deploy.tar
 | Animation (15 scroll animation types) | Deployed |
 | Responsive Visibility (device show/hide) | Deployed |
 | Hover State Controls (bg/text/border colour) | Deployed (4 blocks: Info Box, Card Grid, CTA Section, Hero) |
-| Off-Canvas Mobile Nav (M17) | **RETIRED (Task 1 / D336, 2026-07-14)** — `sgs/mobile-nav` + `sgs/mobile-nav-toggle` deleted; the off-canvas drawer is now owned entirely by `sgs/adaptive-nav` (own burger toggle + native `<dialog>` drawer). |
+| Off-Canvas Mobile Nav (M17) | **RETIRED (D337 / Wave 2, commit `7c60b8ff`, 2026-07-14)** — `sgs/mobile-nav` + `sgs/mobile-nav-toggle` deleted; the off-canvas drawer is now owned entirely by `sgs/adaptive-nav` (own burger toggle + native `<dialog>` drawer). *(Corrected 2026-07-16: previously miscited "Task 1 / D336" — D336 is the site-takedown incident, not this deletion. Still present on `main`; deletion lands on branch merge.)* |
 
 ### Backend Integrations
 
