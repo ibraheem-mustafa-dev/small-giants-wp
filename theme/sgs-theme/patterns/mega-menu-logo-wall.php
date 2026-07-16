@@ -14,7 +14,7 @@
 
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"surface","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"surface","contentWidth":"1200px"} -->
 <div class="wp-block-group has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
 	<!-- wp:columns {"className":"sgs-mega-panel--logo-wall","style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
@@ -25,47 +25,47 @@
 
 			<!-- wp:sgs/text {"text":"Our brands &amp; partners","textTransform":"uppercase","letterSpacing":0.08,"letterSpacingUnit":"em","fontWeight":"600","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"textColour":"text-muted","fontSize":"small"} /-->
 
-			<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"flex","flexWrap":"wrap","verticalAlignment":"center"}} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":"flex","flexWrap":"wrap"} -->
 			<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex">
 
-				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-logo-tile","minHeight":"60px","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"}},"layout":"flex","justifyContent":"center"} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
 					<!-- wp:sgs/text {"text":"Brand A","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
-				<!-- /wp:group -->
+				<!-- /wp:sgs/container -->
 
-				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-logo-tile","minHeight":"60px","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"}},"layout":"flex","justifyContent":"center"} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
 					<!-- wp:sgs/text {"text":"Brand B","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
-				<!-- /wp:group -->
+				<!-- /wp:sgs/container -->
 
-				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-logo-tile","minHeight":"60px","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"}},"layout":"flex","justifyContent":"center"} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
 					<!-- wp:sgs/text {"text":"Brand C","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
-				<!-- /wp:group -->
+				<!-- /wp:sgs/container -->
 
-				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-logo-tile","minHeight":"60px","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"}},"layout":"flex","justifyContent":"center"} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
 					<!-- wp:sgs/text {"text":"Brand D","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
-				<!-- /wp:group -->
+				<!-- /wp:sgs/container -->
 
-				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-logo-tile","minHeight":"60px","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"}},"layout":"flex","justifyContent":"center"} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
 					<!-- wp:sgs/text {"text":"Brand E","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
-				<!-- /wp:group -->
+				<!-- /wp:sgs/container -->
 
-				<!-- wp:group {"className":"sgs-mega-logo-tile","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"},"dimensions":{"minHeight":"60px"}},"layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
+				<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-logo-tile","minHeight":"60px","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"12px","right":"12px"}},"border":{"radius":"8px"}},"layout":"flex","justifyContent":"center"} -->
 				<div class="wp-block-group sgs-mega-logo-tile" style="border-radius:8px;min-height:60px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px">
 					<!-- wp:sgs/text {"text":"Brand F","fontSize":"0.75rem","fontWeight":"700","textColour":"text-muted"} /-->
 				</div>
-				<!-- /wp:group -->
+				<!-- /wp:sgs/container -->
 
 			</div>
-			<!-- /wp:group -->
+			<!-- /wp:sgs/container -->
 
 		</div>
 		<!-- /wp:column -->
@@ -88,4 +88,4 @@
 	<!-- /wp:columns -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->

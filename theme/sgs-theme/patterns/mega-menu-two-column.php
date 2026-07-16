@@ -14,7 +14,7 @@
 
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"surface","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"surface","contentWidth":"1200px"} -->
 <div class="wp-block-group has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
 	<!-- wp:columns {"className":"sgs-mega-panel--columns","style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
@@ -74,4 +74,4 @@
 	<!-- /wp:columns -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->

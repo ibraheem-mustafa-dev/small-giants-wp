@@ -14,7 +14,7 @@
 
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"surface","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"surface","contentWidth":"1200px"} -->
 <div class="wp-block-group has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
 	<!-- wp:columns {"className":"sgs-mega-panel--promo","style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
@@ -75,7 +75,7 @@
 		<!-- wp:column {"width":"33.33%"} -->
 		<div class="wp-block-column" style="flex-basis:33.33%">
 
-			<!-- wp:group {"className":"sgs-mega-featured","style":{"border":{"radius":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"space-between"}} -->
+			<!-- wp:sgs/container {"tagName":"div","className":"sgs-mega-featured","style":{"border":{"radius":"16px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":"flex","justifyContent":"space-between","flexDirection":"column"} -->
 			<div class="wp-block-group sgs-mega-featured has-background" style="border-radius:16px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
 
 				<!-- wp:sgs/text {"text":"Featured","textTransform":"uppercase","letterSpacing":0.06,"letterSpacingUnit":"em","fontWeight":"600","fontSize":"0.75rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
@@ -87,7 +87,7 @@
 				<!-- wp:sgs/text {"text":"<a href=\"#\" style=\"text-decoration:none\">See more &rarr;</a>","fontSize":"0.875rem","fontWeight":"600"} /-->
 
 			</div>
-			<!-- /wp:group -->
+			<!-- /wp:sgs/container -->
 
 		</div>
 		<!-- /wp:column -->
@@ -96,4 +96,4 @@
 	<!-- /wp:columns -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->

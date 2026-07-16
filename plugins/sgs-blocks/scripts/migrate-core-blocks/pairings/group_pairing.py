@@ -102,6 +102,18 @@ def transform(node, text):
                 if group in PASSTHROUGH_STYLE_GROUPS:
                     style_out[group] = gv
                     detail.append(f'style.{group} 1:1 (native skip-serialised support)')
+                elif group == 'dimensions':
+                    # dimensions.minHeight → the container's OWN minHeight attr;
+                    # dimensions.maxWidth → the container's maxWidth (the OUTER cap
+                    # — Bean's rule: maxWidth governs the outer, NOT contentWidth).
+                    for dk, dv in (gv or {}).items():
+                        if dk == 'minHeight':
+                            out['minHeight'] = dv
+                        elif dk == 'maxWidth':
+                            out['maxWidth'] = dv
+                        else:
+                            raise GapError(f'style.dimensions.{dk} has no sgs/container mapping')
+                    detail.append('style.dimensions → minHeight/maxWidth attrs')
                 else:
                     raise GapError(f'style.{group} has no sgs/container mapping — extend before swapping')
             if style_out:

@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","layout":{"type":"constrained","wideSize":"1200px"}} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","contentWidth":"normal"} -->
 <div class="wp-block-group alignfull has-primary-dark-background-color has-background" style="padding-top:var(--wp--preset--spacing--70);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--70);padding-left:var(--wp--preset--spacing--40)">
 
 	<!-- wp:sgs/heading {"content":"Why Choose Us","textAlign":"center","textColour":"surface","fontSize":"xx-large"} /-->
@@ -48,4 +48,4 @@
 	<!-- /wp:columns -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->

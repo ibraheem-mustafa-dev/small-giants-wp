@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"accent-light","layout":{"type":"constrained","contentSize":"700px"}} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"accent-light","contentWidth":"700px"} -->
 <div class="wp-block-group alignfull has-accent-light-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
 	<!-- wp:sgs/heading {"content":"Start Your Journey Today","textAlign":"center","fontSize":"xx-large"} /-->
@@ -22,4 +22,4 @@
 	<!-- /wp:sgs/multi-button -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->

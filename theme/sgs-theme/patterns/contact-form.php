@@ -10,7 +10,7 @@
 
 ?>
 
-<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","layout":{"type":"constrained","wideSize":"1200px"}} -->
+<!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","contentWidth":"normal"} -->
 <div class="wp-block-group alignfull has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
 	<!-- wp:sgs/heading {"content":"Get in Touch","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
@@ -21,11 +21,11 @@
 		<!-- wp:column {"width":"60%"} -->
 		<div class="wp-block-column" style="flex-basis:60%">
 			<!-- wp:sgs/text {"text":"Fill in the form below and we’ll get back to you within 24 hours.","textColour":"text-muted","fontSize":"medium"} /-->
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
+			<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"12px"}},"backgroundColor":"surface-alt"} -->
 			<div class="wp-block-group has-surface-alt-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
 				<!-- wp:sgs/text {"text":"[Insert your contact form block or shortcode here]","textColour":"text-muted"} /-->
 			</div>
-			<!-- /wp:group -->
+			<!-- /wp:sgs/container -->
 		</div>
 		<!-- /wp:column -->
 
@@ -44,4 +44,4 @@
 	<!-- /wp:columns -->
 
 </div>
-<!-- /wp:group -->
+<!-- /wp:sgs/container -->
