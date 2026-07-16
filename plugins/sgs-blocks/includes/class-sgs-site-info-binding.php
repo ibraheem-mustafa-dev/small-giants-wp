@@ -86,7 +86,11 @@ final class Sgs_Site_Info_Binding {
 		$key = isset( $args['key'] ) ? (string) $args['key'] : '';
 
 		if ( '' === $key ) {
-			return self::hint_for_key( $key );
+			// The hint is OPERATOR guidance, not content. It must never reach a
+			// public visitor — an unfilled field previously rendered
+			// "📞 Set your phone number in SGS Site Info →" with a wp-admin
+			// deep-link on live client sites. Public frontend renders empty.
+			return self::is_operator_context() ? self::hint_for_key( $key ) : '';
 		}
 
 		// Delegate to Sgs_Site_Info (Wave 1B). Returns raw value; we escape here.
@@ -94,9 +98,10 @@ final class Sgs_Site_Info_Binding {
 			? Sgs_Site_Info::get( $key )
 			: null;
 
-		// Empty / missing — render a friendly hint.
+		// Empty / missing — render a friendly hint to an operator/editor only;
+		// a public visitor gets an empty string, never the admin-deep-link hint.
 		if ( null === $raw || '' === (string) $raw ) {
-			return self::hint_for_key( $key );
+			return self::is_operator_context() ? self::hint_for_key( $key ) : '';
 		}
 
 		$raw = (string) $raw;
@@ -111,7 +116,37 @@ final class Sgs_Site_Info_Binding {
 		return \esc_html( $raw );
 	}
 
-
+	/**
+	 * True only when the CURRENT REQUEST is an operator/editor context that
+	 * may see the admin-deep-link hint — never a public frontend visitor.
+	 *
+	 * `is_admin()` alone is NOT reliable here: the block editor renders bound
+	 * blocks via the REST block-renderer route (`wp/v2/block-renderer/...`),
+	 * where `is_admin()` is FALSE. Mirrors the frontend/editor predicate
+	 * already established in class-sgs-css-registry.php (inverted), plus a
+	 * capability gate matching the exact capability that gates the Site Info
+	 * admin page itself (Sgs_Site_Info_Admin::CAP = 'edit_theme_options') —
+	 * belt-and-braces so a hint can never surface to a user who couldn't act
+	 * on it anyway. WP 6.9–7.0 floor: `wp_is_serving_rest_request()` is
+	 * native (WP 6.5+) but still function_exists-guarded for safety.
+	 *
+	 * @return bool
+	 */
+	private static function is_operator_context(): bool {
+		if ( ! \current_user_can( 'edit_theme_options' ) ) {
+			return false;
+		}
+		if ( \is_admin() ) {
+			return true;
+		}
+		if ( \function_exists( 'wp_is_serving_rest_request' ) && \wp_is_serving_rest_request() ) {
+			return true;
+		}
+		if ( \defined( 'REST_REQUEST' ) && \REST_REQUEST ) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Returns an HTML anchor hint for a given key.
