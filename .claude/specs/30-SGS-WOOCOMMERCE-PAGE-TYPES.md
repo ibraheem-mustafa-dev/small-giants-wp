@@ -20,7 +20,7 @@ related:
   - specs/28-SGS-SMART-BULK-PRICING.md
   - specs/31-UNIVERSAL-CLONING-PIPELINE.md
   - reports/wave2/WOOCOMMERCE-PAGE-TYPE-BRIEF-2026-06-11.md
-  - specs/WOOCOMMERCE-PAGE-TYPE-SOLUTION-2026-06-11.md
+  - specs/archive/WOOCOMMERCE-PAGE-TYPE-SOLUTION-2026-06-11.md
   - plugins/sgs-blocks/src/blocks/option-picker/
   - plugins/sgs-blocks/src/blocks/product-card/
   - plugins/sgs-blocks/includes/class-cart-proxy.php
