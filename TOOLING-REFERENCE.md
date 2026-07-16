@@ -593,7 +593,7 @@ From `C:\Users\Bean\.claude\settings.json`. These run without Claude triggering 
 | `C:\Users\Bean\.claude\plans\sgs-pipeline-architecture.md` | SGS pipeline architecture — 8 work units, current in-progress |
 | `C:\Users\Bean\.claude\plans\imperative-squishing-fairy.md` | Master OpenClaw rehab + upgrades plan |
 | `C:\Users\Bean\.claude\plans\prancy-yawning-cookie.md` | OC skill salvage + merge-into-shared plan |
-| `C:\Users\Bean\Projects\small-giants-wp\NEXT-SESSION-PROMPT.md` | Next-session handoff for SGS work |
+| `C:\Users\Bean\Projects\small-giants-wp\.claude\next-session-prompt.md` | Next-session handoff for SGS work |
 | `C:\Users\Bean\Projects\small-giants-wp\CONVERSATION-HANDOFF.md` | Last-session summary for SGS work |
 
 ### Secrets
