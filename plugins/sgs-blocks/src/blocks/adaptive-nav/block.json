@@ -65,7 +65,7 @@
 		},
 		"collapseTier": {
 			"type": "string",
-			"default": "mobile",
+			"default": "tablet",
 			"enum": [ "mobile", "tablet", "desktop", "custom" ]
 		},
 		"collapseCustomPx": {

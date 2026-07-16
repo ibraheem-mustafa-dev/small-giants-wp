@@ -320,20 +320,31 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 
 // 2e. Collapse tier — the single source of truth for the bar/burger breakpoint.
 // Below the breakpoint: bar hidden, header toggle shown. At/above: bar shown, toggle hidden.
-$tier = isset( $attributes['collapseTier'] ) ? sanitize_key( $attributes['collapseTier'] ) : 'mobile';
+// Device-tier values come from the shared SGS_Breakpoints source (R-31-1 / FR-S9-4) —
+// NEVER a second hardcoded 768/1024 pair. `min-width:$bp` shows the bar, so $bp is the
+// tier's max-width + 1 (e.g. tablet collapse = burger up to TABLET_MAX 1023, bar at 1024).
+// Default 'tablet' so the burger covers the 768-1023 tablet band (the Indus slim-bar
+// reference, FR-S9-8) — a 'mobile' default left that band on the desktop bar (Bean's report).
+$tier      = isset( $attributes['collapseTier'] ) ? sanitize_key( $attributes['collapseTier'] ) : 'tablet';
+$has_bp    = class_exists( 'SGS_Breakpoints' );
+$tablet_bp = $has_bp ? SGS_Breakpoints::TABLET_MAX + 1 : 1024;
+$mobile_bp = $has_bp ? SGS_Breakpoints::MOBILE_MAX + 1 : 768;
 switch ( $tier ) {
-	case 'tablet':
-		$bp = 1024;
+	case 'mobile':
+		$bp = $mobile_bp;
 		break;
 	case 'desktop':
+		// Collapse below the desktop CONTENT width (theme.json contentSize) so the bar
+		// shows only on wide screens. Not a device tier — SGS_Breakpoints owns mobile/
+		// tablet; this is the layout content boundary for the rare late-collapse nav.
 		$bp = 1280;
 		break;
 	case 'custom':
-		$bp = max( 320, min( 2000, absint( $attributes['collapseCustomPx'] ?? 768 ) ) );
+		$bp = max( 320, min( 2000, absint( $attributes['collapseCustomPx'] ?? $mobile_bp ) ) );
 		break;
-	case 'mobile':
+	case 'tablet':
 	default:
-		$bp = 768;
+		$bp = $tablet_bp;
 		break;
 }
 // The bar hides below the tier, the toggle (now OWNED by this block, not a
