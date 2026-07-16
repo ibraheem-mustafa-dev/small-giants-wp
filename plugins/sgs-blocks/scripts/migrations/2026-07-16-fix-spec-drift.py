@@ -34,6 +34,54 @@ Findings repaired (convergence count = how many of 7 personas independently flag
 
 Run:  python 2026-07-16-fix-spec-drift.py [--dry-run]
 Then: python ../lints/lint-spec-drift.py --spec 17-HEADER
+
+---
+
+SECOND BATCH (same day, same council run — 6 further VALIDATED proposals, qc-council
+empirical-gated). FIX-1..6 above touch Spec 17 only; FIX-7..13 below touch Spec 17 AND
+its sister Spec 18 (the Customiser-pattern reference spec, never swept when Spec 17 was
+retracted). The gate P4 companion to this batch (competitor-citation false-positive in
+`_NEGATIVE_CONTEXT`) is applied DIRECTLY to `lint-spec-drift.py`, not here — it's a tool
+fix, not a spec fix.
+
+  FIX-7/8 (Spec 18, P1) — a casing typo: the real classes are `Sgs_Floating_UI_Renderer`
+        / `Sgs_Floating_UI_Customiser` (capital UI, verified against
+        `class-sgs-floating-ui-renderer.php:23` / `class-sgs-floating-ui-customiser.php:27`)
+        but L69/L141 write `Sgs_Floating_Ui_Renderer` / `Sgs_Floating_Ui_Customiser`
+        (lower-case ui). The spec's own "## 6. Files" table already uses correct casing,
+        proving it's a typo, not a second real class.
+
+  FIX-9 (Spec 17, P2) — the §Customiser Migration section already carries a RETRACTED
+        note (added by an earlier council pass) and its heading is struck, but the two
+        bullets underneath (`Sgs_Header_Customiser`, `Sgs_Footer_Customiser`) were left
+        LIVE — the retraction didn't propagate down to bullet level. Strike those two
+        bullets to match. The THIRD bullet (`Sgs_Site_Info_Customiser`) is untouched —
+        that class is real and must stay live.
+
+  FIX-10/11 (Spec 18, P3) — Spec 18 makes the IDENTICAL fictional claim Spec 17 just
+        retracted ("shipped `Sgs_Header_Customiser` + `Sgs_Footer_Customiser` +
+        `Sgs_Site_Info_Customiser`" at L26, repeated in the L188 table) but was never
+        swept — it's a sister spec, not the one the original council pass was scoped
+        to. Sweep it the same way: retraction note + struck dead names, `Site_Info`
+        and `Floating_UI_Customiser` (both real) stay live.
+
+  FIX-12 (Spec 17, P5) — L635 is one compound sentence mixing a TRUE claim (the hook's
+        regex correctly matches only literal `header`/`footer`/`nav`, so those three
+        stay FORBIDDEN) with a FALSE one (it calls `src/blocks/mobile-nav/` "unaffected"
+        — that directory was DELETED at D336, 2026-07-14, the day before this line was
+        apparently last touched). Split into two source lines (the lint reads raw
+        lines, not wrapped paragraphs): the true half keeps its citations negative-
+        context-safe via the word FORBIDDEN; the mobile-nav half is corrected and
+        marked DELETED, not silenced.
+
+  FIX-13 (Spec 17, P6) — the sibling acceptance-criterion bullet at L639 lists
+        `src/blocks/mobile-nav/` among directories the hook "allows" — nothing to
+        fixture-test, that directory doesn't exist. Remove it from the list; the
+        equivalent live fixture already targets `src/blocks/adaptive-nav/`, which is
+        already in the same bullet.
+
+Run:  python 2026-07-16-fix-spec-drift.py [--dry-run]
+Then: python ../lints/lint-spec-drift.py --check
 """
 
 from __future__ import annotations
@@ -45,7 +93,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-SPEC = Path(__file__).resolve().parents[4] / ".claude" / "specs" / "17-HEADER-FOOTER-ARCHITECTURE.md"
+SPECS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "specs"
+SPEC = SPECS_DIR / "17-HEADER-FOOTER-ARCHITECTURE.md"
+SPEC_18 = SPECS_DIR / "18-SGS-FLOATING-UI.md"
 
 # ---------------------------------------------------------------- FIX-1
 OLD_87 = '**87 of 95 attrs across the 5 §S9 blocks are FLAT** (site-header 0/26 object, site-footer 0/22, site-header-row 5/10, site-footer-row 6/11, adaptive-nav 6/26)'
@@ -160,9 +210,159 @@ NEW_CUST_MIGR = (
 )
 
 
+# ---------------------------------------------------------------- FIX-7/8 (Spec 18, P1)
+OLD_18_UI_RENDERER = "`Sgs_Floating_Ui_Renderer` attaches to `wp_footer` (priority 20). When both elements are"
+NEW_18_UI_RENDERER = "`Sgs_Floating_UI_Renderer` attaches to `wp_footer` (priority 20). When both elements are"
+
+OLD_18_UI_CUSTOMISER = "a full reload. The registered `Sgs_Floating_Ui_Customiser` settings call"
+NEW_18_UI_CUSTOMISER = "a full reload. The registered `Sgs_Floating_UI_Customiser` settings call"
+
+# ---------------------------------------------------------------- FIX-9 (Spec 17, P2)
+OLD_17_CUST_BULLETS = (
+    '- `Sgs_Header_Customiser` → Customiser section "SGS Header" with `postMessage` '
+    'live preview for colours/typography/spacing\n'
+    '- `Sgs_Footer_Customiser` → Customiser section "SGS Footer" with `postMessage` '
+    'live preview\n'
+    '- `Sgs_Site_Info_Customiser` → Customiser section "SGS Site Info" — for simple '
+    'fields, `postMessage`; for rules engines (regex-backed conditions), `refresh` '
+    'transport (live preview impractical)'
+)
+NEW_17_CUST_BULLETS = (
+    '- ~~`Sgs_Header_Customiser` → Customiser section "SGS Header" with `postMessage` '
+    'live preview for colours/typography/spacing`~~\n'
+    '- ~~`Sgs_Footer_Customiser` → Customiser section "SGS Footer" with `postMessage` '
+    'live preview`~~\n'
+    '- `Sgs_Site_Info_Customiser` → Customiser section "SGS Site Info" — for simple '
+    'fields, `postMessage`; for rules engines (regex-backed conditions), `refresh` '
+    'transport (live preview impractical)'
+)
+
+# ---------------------------------------------------------------- FIX-10 (Spec 18, P3 — L26)
+OLD_18_L26 = (
+    '> **Session B 2026-05-22 update — Customiser pattern from §8b replicated by 3 '
+    'sibling sections.** Phase 5b (commit `60220b13` + paint-fix `0ef032fe`) shipped '
+    '`Sgs_Header_Customiser` + `Sgs_Footer_Customiser` + `Sgs_Site_Info_Customiser` as '
+    'direct structural clones of `Sgs_Floating_UI_Customiser`. The pattern documented '
+    'in §8b is now the canonical SGS Customiser shape (confirmed by 3 successful '
+    'replications). Notable empirical learning: paint targets must be '
+    '`header.wp-block-template-part` / `footer.wp-block-template-part` (NOT '
+    '`.wp-site-header` / `.wp-site-footer` — those classes are not emitted by SGS '
+    'theme template parts); CSS custom properties belong on `:root` so they\'re '
+    'cascade-available regardless of which wrapper exists. View Transitions wiring '
+    '(Decision 27 in the staging doc) shipped in the same commit — uses '
+    '`function_exists(\'wp_enqueue_view_transitions_admin_css\')` check + inline '
+    '`@view-transition{navigation:auto;}` fallback. Post WP 7.0 upgrade (also Session '
+    'B), the native function exists; fallback is dead code on sandybrown but kept for '
+    'any client site still on WP 6.x.'
+)
+NEW_18_L26 = (
+    '> **⛔ RETRACTED 2026-07-16 (adversarial-council) — sister-spec sweep of Spec '
+    '17\'s identical retraction.** `Sgs_Header_Customiser` and `Sgs_Footer_Customiser` '
+    'NEVER SHIPPED — `grep -rl "class Sgs_Header_Customiser"` over `plugins/` + '
+    '`theme/` returns nothing; Spec 17 §Customiser Migration already retracted the '
+    'identical claim (commit `87dd869d`, "retire plugin-side Customiser path") and '
+    'this sister spec was never swept. Only `Sgs_Site_Info_Customiser` and '
+    '`Sgs_Floating_UI_Customiser` are real — verified 2026-07-16 by grep + the '
+    '`lint-spec-drift.py` PHP-CLASS gate. The struck names below are retained for '
+    'audit only; the rest of the note (paint targets, View Transitions wiring) is '
+    'unaffected and stands.\n'
+    '>\n'
+    '> **Session B 2026-05-22 update — Customiser pattern from §8b replicated by 3 '
+    'sibling sections.** Phase 5b (commit `60220b13` + paint-fix `0ef032fe`) shipped '
+    '~~`Sgs_Header_Customiser` + `Sgs_Footer_Customiser`~~ (RETRACTED — never existed) '
+    '+ `Sgs_Site_Info_Customiser` as direct structural clones of '
+    '`Sgs_Floating_UI_Customiser`. The pattern documented in §8b is now the canonical '
+    'SGS Customiser shape (confirmed by 3 successful replications). Notable empirical '
+    'learning: paint targets must be `header.wp-block-template-part` / '
+    '`footer.wp-block-template-part` (NOT `.wp-site-header` / `.wp-site-footer` — '
+    'those classes are not emitted by SGS theme template parts); CSS custom '
+    'properties belong on `:root` so they\'re cascade-available regardless of which '
+    'wrapper exists. View Transitions wiring (Decision 27 in the staging doc) shipped '
+    'in the same commit — uses '
+    '`function_exists(\'wp_enqueue_view_transitions_admin_css\')` check + inline '
+    '`@view-transition{navigation:auto;}` fallback. Post WP 7.0 upgrade (also Session '
+    'B), the native function exists; fallback is dead code on sandybrown but kept for '
+    'any client site still on WP 6.x.'
+)
+
+# ---------------------------------------------------------------- FIX-11 (Spec 18, P3 — L188)
+OLD_18_L188 = (
+    '| Spec 17 §Customiser migration | `Sgs_Header_Customiser`, `Sgs_Footer_Customiser`, '
+    '`Sgs_Site_Info_Customiser` | `postMessage` transport, `wp_options` backing, '
+    'capability gate, sanitiser pattern |'
+)
+NEW_18_L188 = (
+    '| Spec 17 §Customiser migration | ~~`Sgs_Header_Customiser`, '
+    '`Sgs_Footer_Customiser`~~ (RETRACTED 2026-07-16 — never existed) + '
+    '`Sgs_Site_Info_Customiser` | `postMessage` transport, `wp_options` backing, '
+    'capability gate, sanitiser pattern |'
+)
+
+# ---------------------------------------------------------------- FIX-12 (Spec 17, P5 — L635)
+OLD_17_L635 = (
+    "**Verified against live code 2026-07-13:** `no-header-footer-block.py`'s regex is "
+    "`plugins[\\\\/]sgs-blocks[\\\\/]src[\\\\/]blocks[\\\\/](header|footer|nav)([\\\\/]|$)` — it "
+    "matches only the EXACT path segments `header`, `footer`, `nav` immediately after "
+    "`blocks/`. Directory names `site-header`, `site-footer`, and `adaptive-nav` do "
+    "**not** match this pattern (the regex requires the literal string "
+    "`header`/`footer`/`nav` to begin right after `blocks/`, not merely be a substring "
+    "of the segment) — so the hook already permits "
+    "`src/blocks/{site-header,site-footer,adaptive-nav}/` without modification, and "
+    "continues to correctly block a literal `src/blocks/header/`, `src/blocks/footer/`, "
+    "or `src/blocks/nav/`. This is a **no-op-by-construction** finding, not a change to "
+    "make — flagged here so a future session doesn't spend effort \"updating\" a hook "
+    "that already does the right thing. The existing `src/blocks/mobile-nav/` "
+    "directory (used by FR-S9-5) is unaffected for the same reason."
+)
+NEW_17_L635 = (
+    "**Verified against live code 2026-07-13:** `no-header-footer-block.py`'s regex is "
+    "`plugins[\\\\/]sgs-blocks[\\\\/]src[\\\\/]blocks[\\\\/](header|footer|nav)([\\\\/]|$)` — it "
+    "matches only the EXACT path segments `header`, `footer`, `nav` immediately after "
+    "`blocks/`. Directory names `site-header`, `site-footer`, and `adaptive-nav` do "
+    "**not** match this pattern (the regex requires the literal string "
+    "`header`/`footer`/`nav` to begin right after `blocks/`, not merely be a substring "
+    "of the segment) — so the hook already permits "
+    "`src/blocks/{site-header,site-footer,adaptive-nav}/` without modification, and "
+    "continues to correctly treat a literal `src/blocks/header/`, `src/blocks/footer/`, "
+    "or `src/blocks/nav/` as FORBIDDEN. This is a **no-op-by-construction** finding, "
+    "not a change to make — flagged here so a future session doesn't spend effort "
+    "\"updating\" a hook that already does the right thing.\n"
+    "**`src/blocks/mobile-nav/` was DELETED at D336/Task 1 (2026-07-14)** — the drawer "
+    "this FR referenced is now owned by `sgs/adaptive-nav`; the citation above (and "
+    "the acceptance criteria below) predate the deletion and are historical, not a "
+    "directory that exists today."
+)
+
+# ---------------------------------------------------------------- FIX-13 (Spec 17, P6 — L639)
+OLD_17_L639 = (
+    "- `no-header-footer-block.py` allows `Write`/`Edit` on `src/blocks/site-header/`, "
+    "`src/blocks/site-footer/`, `src/blocks/adaptive-nav/`, `src/blocks/mobile-nav/` "
+    "(already true; add a fixture test asserting it stays true)"
+)
+NEW_17_L639 = (
+    "- `no-header-footer-block.py` allows `Write`/`Edit` on `src/blocks/site-header/`, "
+    "`src/blocks/site-footer/`, `src/blocks/adaptive-nav/` (already true; add a "
+    "fixture test asserting it stays true). `src/blocks/mobile-nav/` was DELETED at "
+    "D336/Task 1 (2026-07-14) — removed from this list; the equivalent fixture "
+    "already targets `src/blocks/adaptive-nav/`, which owns the drawer FR-S9-5 "
+    "describes."
+)
+
+
 def apply_fix(text: str, name: str, old: str, new: str, applied: list, skipped: list) -> str:
-    """Replace `old` with `new`, asserting the anchor exists (or is already applied)."""
-    if new.split("\n")[0][:60] in text and old not in text:
+    """Replace `old` with `new`, asserting the anchor exists (or is already applied).
+
+    Idempotency is decided by whether the FULL `new` text is already present — not by
+    "old absent" (a struck ~~old~~ fix's `old` is a literal SUBSTRING of its own
+    already-applied output, so "old not in text" is always False post-apply and would
+    double-strike on a second run — caught 2026-07-16 on FIX-6), and not by a 60-char
+    prefix marker either (a fix that only changes its TAIL — e.g. FIX-9/12/13, which
+    keep the opening sentence verbatim and add/alter a trailing clause — shares that
+    prefix with the un-applied `old` text too, so a prefix-only marker false-skips
+    before the fix ever runs. Caught 2026-07-16 on FIX-12/13 the same session.). Full-
+    string containment is unambiguous for both failure modes.
+    """
+    if new in text:
         skipped.append(f"{name} (already applied)")
         return text
     if old not in text:
@@ -191,19 +391,7 @@ def replace_s8_body(text: str, applied: list, skipped: list) -> str:
     return "".join(lines[:start]) + S8_TOMBSTONE + "\n" + "".join(lines[end:])
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--dry-run", action="store_true")
-    args = ap.parse_args()
-
-    if not SPEC.exists():
-        print(f"ERROR: spec not found at {SPEC}", file=sys.stderr)
-        return 2
-    original = SPEC.read_text(encoding="utf-8")
-    text = original
-    applied: list = []
-    skipped: list = []
-
+def process_spec_17(text: str, applied: list, skipped: list) -> str:
     text = apply_fix(text, "FIX-1 87->78 + FR-S9-6 half-built", OLD_87, NEW_78, applied, skipped)
     text = apply_fix(text, "FIX-2 Customiser fiction retracted", OLD_CUST, NEW_CUST, applied, skipped)
     text = apply_fix(text, "FIX-3a FR-S9-5 re-homed to adaptive-nav", OLD_S95_TITLE, NEW_S95_TITLE, applied, skipped)
@@ -213,26 +401,77 @@ def main() -> int:
     text = apply_fix(text, "FIX-6 retract the §Customiser-Migration section list",
                      OLD_CUST_MIGR, NEW_CUST_MIGR, applied, skipped)
     text = replace_s8_body(text, applied, skipped)
+    text = apply_fix(text, "FIX-9 strike the two dead Customiser bullets (Site Info bullet untouched)",
+                     OLD_17_CUST_BULLETS, NEW_17_CUST_BULLETS, applied, skipped)
+    text = apply_fix(text, "FIX-12 split L635: header/footer/nav FORBIDDEN vs mobile-nav DELETED",
+                     OLD_17_L635, NEW_17_L635, applied, skipped)
+    text = apply_fix(text, "FIX-13 drop mobile-nav from the L639 acceptance-criteria allow-list",
+                     OLD_17_L639, NEW_17_L639, applied, skipped)
+    return text
 
-    print("APPLIED:")
-    for a in applied:
-        print(f"  + {a}")
-    if skipped:
-        print("SKIPPED (idempotent):")
-        for s in skipped:
-            print(f"  = {s}")
 
-    before, after = len(original.splitlines()), len(text.splitlines())
-    print(f"\nlines: {before} -> {after} ({after - before:+d})")
-    print(f"remaining 'mobile-nav' mentions: {len(re.findall('mobile-nav', text))} "
-          f"(was {len(re.findall('mobile-nav', original))}) — residual mentions are "
-          f"historical/BUILT-notes + the re-homing note itself, which are correct to keep")
+def process_spec_18(text: str, applied: list, skipped: list) -> str:
+    text = apply_fix(text, "FIX-7 Sgs_Floating_Ui_Renderer -> Sgs_Floating_UI_Renderer (L69 casing)",
+                     OLD_18_UI_RENDERER, NEW_18_UI_RENDERER, applied, skipped)
+    text = apply_fix(text, "FIX-8 Sgs_Floating_Ui_Customiser -> Sgs_Floating_UI_Customiser (L141 casing)",
+                     OLD_18_UI_CUSTOMISER, NEW_18_UI_CUSTOMISER, applied, skipped)
+    text = apply_fix(text, "FIX-10 sister-spec sweep: retract + strike dead names (L26)",
+                     OLD_18_L26, NEW_18_L26, applied, skipped)
+    text = apply_fix(text, "FIX-11 sister-spec sweep: strike dead names in the pattern table (L188)",
+                     OLD_18_L188, NEW_18_L188, applied, skipped)
+    return text
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--dry-run", action="store_true")
+    args = ap.parse_args()
+
+    for spec_path, processor in ((SPEC, process_spec_17), (SPEC_18, process_spec_18)):
+        if not spec_path.exists():
+            print(f"ERROR: spec not found at {spec_path}", file=sys.stderr)
+            return 2
+
+    total_applied: list = []
+    total_skipped: list = []
+    writes: list = []
+
+    for spec_path, processor in ((SPEC, process_spec_17), (SPEC_18, process_spec_18)):
+        original = spec_path.read_text(encoding="utf-8")
+        applied: list = []
+        skipped: list = []
+        text = processor(original, applied, skipped)
+
+        print(f"=== {spec_path.name} ===")
+        print("APPLIED:")
+        for a in applied:
+            print(f"  + {a}")
+        if skipped:
+            print("SKIPPED (idempotent):")
+            for s in skipped:
+                print(f"  = {s}")
+
+        before, after = len(original.splitlines()), len(text.splitlines())
+        print(f"lines: {before} -> {after} ({after - before:+d})")
+        if spec_path is SPEC:
+            print(f"remaining 'mobile-nav' mentions: {len(re.findall('mobile-nav', text))} "
+                  f"(was {len(re.findall('mobile-nav', original))}) — residual mentions are "
+                  f"historical/BUILT-notes + the re-homing note itself, which are correct to keep")
+        print()
+
+        total_applied.extend(applied)
+        total_skipped.extend(skipped)
+        if text != original:
+            writes.append((spec_path, text))
+
+    print(f"TOTAL: {len(total_applied)} applied, {len(total_skipped)} skipped (idempotent)")
 
     if args.dry_run:
         print("\n[dry-run] nothing written")
         return 0
-    SPEC.write_text(text, encoding="utf-8")
-    print(f"\nWROTE {SPEC}")
+    for spec_path, text in writes:
+        spec_path.write_text(text, encoding="utf-8")
+        print(f"WROTE {spec_path}")
     return 0
 
 

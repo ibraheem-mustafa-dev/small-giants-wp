@@ -68,11 +68,23 @@ _RE_BLOCK_SLUG = re.compile(r"`(sgs/[a-z][a-z0-9-]*)`")
 
 # Claims a spec may legitimately make about things that should NOT exist — a spec is
 # allowed to say "src/blocks/header/ is FORBIDDEN". Lines matching these are skipped.
+#
+# The final alternative (`\`owner/repo\` → \`src/...\`) whitelists a COMPETITOR-repo
+# citation style (Spec 11 §research: `` `brainstormforce/wp-spectra` → `src/blocks/
+# buttons-child/attributes.js` ``) — a legitimate primary-source citation of ANOTHER
+# project's repo, not a claim about this repo. Deliberately narrow: it requires the
+# arrow's RIGHT side to be a `src/` or `packages/` path (Gutenberg's own layout),
+# which is what distinguishes it from this repo's internal `sgs-theme/x` → `sgs/y`
+# slug-mapping tables (Spec 17:514-515 etc — those must stay gating, not be swallowed).
+# Verified empirically 2026-07-16: this alternative matches ONLY the 4 Spec 11 lines
+# across the whole `specs/` tree (checked via a standalone script over every .md file);
+# it does not touch any of the 59 BLOCK-SLUG advisory findings.
 _NEGATIVE_CONTEXT = re.compile(
     r"forbidden|must not|never|blocked|block(?:s|ed)?\s+`?write`?|deleted|retired|"
     r"removed|do(?:es)?\s+not\s+exist|don't exist|doesn't exist|absent|superseded|"
     r"anti-pattern|exit 2|no longer|no such|retracted|fiction|do not build|"
-    r"~~",  # a struck (audit-only) line is asserting the thing is dead, not live
+    r"~~|"  # a struck (audit-only) line is asserting the thing is dead, not live
+    r"`[\w.-]+/[\w.-]+`\s*→\s*`(?:src/|packages/)",
     re.IGNORECASE,
 )
 
