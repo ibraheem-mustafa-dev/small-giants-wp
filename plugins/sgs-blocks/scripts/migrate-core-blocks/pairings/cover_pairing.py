@@ -402,27 +402,24 @@ def transform(node, text):
             out[key] = attrs_in[key]
             accounting[key] = ('mapped', f'{key} passthrough')
 
+    # ── align ──────────────────────────────────────────────────────────
+    # `align` is NOT in sgs/hero's static block.json `attributes` — WP INJECTS it
+    # at registration from `supports.align`, exactly as it injects backgroundColor
+    # from supports.color. The driver's gate now derives those support-injected
+    # attrs (load_target_schema), so emitting it is correct and gate-clean.
+    # Dropping it instead would collapse a full-bleed hero to constrained width —
+    # a real visual regression, never a safe drop.
+    if 'align' in attrs_in:
+        value = attrs_in['align']
+        if value not in ('wide', 'full'):
+            raise GapError(f'align:{value!r} outside sgs/hero supports.align ["wide","full"]')
+        out['align'] = value
+        accounting['align'] = ('mapped', 'align (WP-injected from supports.align)')
+
     # ── generic catch-all for anything not verified above ──────────────
-    unhandled = [k for k in attrs_in if k not in accounting and k != 'align']
+    unhandled = [k for k in attrs_in if k not in accounting]
     if unhandled:
         raise GapError(f'source attr(s) {unhandled} not handled by this module — extend the mapping')
-
-    # ── align — deferred to LAST so every other attr + the whole content
-    # column is proven to reshape correctly before this refusal is reported.
-    if 'align' in attrs_in:
-        raise GapError(
-            f'align:{attrs_in["align"]!r} cannot be safely carried — sgs/hero declares '
-            f'supports.align:["wide","full"] but does NOT list "align" in its static '
-            f'block.json attributes object (verified: no "align" key across the full '
-            f'attributes block), and driver.py\'s anti-silent-discard gate (NATIVE_OK = '
-            f'className/anchor/lock/metadata/style) has no "align" entry — emitting it '
-            f'would SystemExit-crash the whole driver run as an undeclared attr. Dropping '
-            f'align:{attrs_in["align"]!r} silently instead would collapse a full-bleed/wide '
-            f'hero section to constrained width — a real visual regression, not a safe drop. '
-            f'This is a tooling/schema gap (driver.py NATIVE_OK, or adding "align" to hero\'s '
-            f'block.json), not a semantic mapping problem — everything else in this instance '
-            f'(content column reshape, overlay colour/opacity, minHeight, style.spacing) '
-            f'mapped cleanly. Fix is a design decision, out of this pairing module\'s scope.')
 
     replacement = (serialize_comment('sgs/hero', out, void=False) + '\n'
                    + content_markup + '\n' + serialize_closer('sgs/hero'))
