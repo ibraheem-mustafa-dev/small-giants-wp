@@ -598,7 +598,7 @@
         }
       }
     },
-    "css": ":root { --sgs-product-card-btn-text: #3A2E26; --sgs-op-sel-text: #3A2E26; --sgs-product-card-btn-hover-bg: #8B3A47; }"
+    "css": ":root { --sgs-product-card-btn-text: #3A2E26; --sgs-op-sel-text: #3A2E26; --sgs-product-card-btn-hover-bg: #8B3A47; } .sgs-adaptive-nav__drawer .sgs-nav-menu__link{color:var(--wp--preset--color--text);}"
   },
   "templateParts": [
     {
