@@ -47,8 +47,6 @@
     "core/buttons"
   ],
   "sgs/post-grid": [
-    "core/query",
-    "core/post-template",
     "core/latest-posts"
   ],
   "sgs/quote": [
