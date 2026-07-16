@@ -139,37 +139,85 @@ def gate_result(node, result, declared, rel):
             + '\n  - '.join(problems))
 
 
+def _node_signature(node, text):
+    """Content-derived identity, stable across re-parses (offsets are not).
+
+    Used only to remember which nodes a module has already REFUSED, so the
+    leaf-first loop doesn't retry them forever. Two byte-identical instances
+    share a signature — harmless, since an identical node refuses identically.
+    """
+    span = node.inner_html_span()
+    inner = text[span[0]:span[1]] if span else ''
+    return (node.name, node.attrs_raw or '', inner)
+
+
 def transform_file(path, rel, core_type, module, declared, write):
-    text = path.read_text(encoding='utf-8')
-    roots = parse_blocks(text, rel)
-    nodes = [n for n in walk(roots) if n.name == core_type]
-    if not nodes:
+    original = path.read_text(encoding='utf-8')
+    if not [n for n in walk(parse_blocks(original, rel)) if n.name == core_type]:
         return None
+
+    # LEAF-FIRST + RE-PARSE PER SWAP (qc-council Rater A, 2026-07-16).
+    #
+    # The old single-parse back-to-front loop could not survive SAME-TYPE
+    # NESTING (53 core/group nodes in the safe zone sit inside another
+    # core/group), for two INDEPENDENT reasons:
+    #   1. offsets: splicing an inner span changes the file length, so the
+    #      outer node's `end` — captured in the original parse — then cuts at
+    #      the wrong byte.
+    #   2. worse, and invisible: `transform()` was handed the ORIGINAL text, so
+    #      an outer node built its replacement from the STILL-CORE inner
+    #      markup, silently discarding the inner swap. No sort order fixes
+    #      this; only re-reading the current text after each swap does.
+    # So: re-parse every iteration, convert one LEAF (a node with no
+    # still-pending same-type descendant), and hand `transform()` the CURRENT
+    # text. Terminates in <= N iterations: each swap turns one core_type node
+    # into a different block, so the pending count strictly decreases.
+    current = original
     log = []
-    new_text = text
-    # Replace back-to-front so earlier spans keep their offsets. Same-type
-    # nesting would need innermost-first + re-parse; assert it away for now —
-    # the pairings shipped so far (image/button/details) cannot self-nest.
-    for a in nodes:
-        for b in nodes:
-            if a is not b and a.start <= b.start and b.end <= a.end:
-                raise SystemExit(
-                    f'{rel}: nested same-type {core_type} instances — this driver '
-                    f'version must not run this pairing; extend with re-parse-per-swap first.')
-    for node in sorted(nodes, key=lambda n: n.start, reverse=True):
+    refused_sigs = set()
+
+    while True:
+        nodes = [n for n in walk(parse_blocks(current, rel)) if n.name == core_type]
+        pending = [n for n in nodes if _node_signature(n, current) not in refused_sigs]
+        if not pending:
+            break
+        # A refused descendant must NOT block its ancestor — the ancestor can
+        # still convert and carry the refused child through verbatim.
+        leaves = [n for n in pending
+                  if not any(m is not n and n.start <= m.start and m.end <= n.end
+                             for m in pending)]
+        if not leaves:
+            raise SystemExit(f'{rel}: {len(pending)} pending {core_type} nodes but no leaf — '
+                             f'containment cycle? refusing to loop.')
+        node = leaves[0]
+        line = current[: node.start].count('\n') + 1
         try:
-            result = module.transform(node, text)
+            result = module.transform(node, current)
         except GapError as e:
-            log.append({'line': text[: node.start].count('\n') + 1,
-                        'action': 'REFUSED', 'reason': str(e)})
+            refused_sigs.add(_node_signature(node, current))
+            log.append({'line': line, 'action': 'REFUSED', 'reason': str(e)})
             continue
         gate_result(node, result, declared, rel)
-        new_text = new_text[: node.start] + result.replacement + new_text[node.end:]
-        log.append({'line': text[: node.start].count('\n') + 1,
-                    'action': 'swapped', 'target': result.target,
+        current = current[: node.start] + result.replacement + current[node.end:]
+        log.append({'line': line, 'action': 'swapped', 'target': result.target,
                     'accounting': {k: f'{v[0]}: {v[1]}' for k, v in result.accounting.items()},
                     'notes': result.notes})
-    if new_text == text:
+
+    # TERMINATING INVARIANT (Rater A's Q5): the round-trip parse below proves
+    # only that the file still PARSES — not that a conversion wasn't silently
+    # reverted or duplicated (a stale-text bug can leave well-formed core
+    # markup behind and sail through every existing gate). So assert directly:
+    # every remaining core_type node must be one we deliberately refused.
+    leftover = [n for n in walk(parse_blocks(current, rel)) if n.name == core_type]
+    unaccounted = [n for n in leftover if _node_signature(n, current) not in refused_sigs]
+    if unaccounted:
+        raise SystemExit(
+            f'{rel}: {len(unaccounted)} {core_type} node(s) survived conversion without being '
+            f'refused (first at line {current[: unaccounted[0].start].count(chr(10)) + 1}) — '
+            f'a swap was silently lost. Refusing to write.')
+
+    new_text = current
+    if new_text == original:
         return {'rel': rel, 'changed': False, 'log': log}
 
     if write:
@@ -178,7 +226,7 @@ def transform_file(path, rel, core_type, module, declared, write):
             raise SystemExit(f'{rel}: NUL byte after write — investigate before continuing.')
         parse_blocks(path.read_text(encoding='utf-8'), rel)  # round-trip guard
     diff = ''.join(difflib.unified_diff(
-        text.splitlines(keepends=True), new_text.splitlines(keepends=True),
+        original.splitlines(keepends=True), new_text.splitlines(keepends=True),
         fromfile=f'a/{rel}', tofile=f'b/{rel}'))
     return {'rel': rel, 'changed': True, 'log': log, 'diff': diff}
 

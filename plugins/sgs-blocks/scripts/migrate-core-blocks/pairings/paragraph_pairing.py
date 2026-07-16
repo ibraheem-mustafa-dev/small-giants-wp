@@ -26,19 +26,32 @@ from pairings.typography_common import inner_markup, map_typography  # noqa: E40
 PASSTHROUGH_STYLE_GROUPS = ('spacing', 'border')
 
 
+def _remap_bindings(metadata):
+    """Rebind core/paragraph's `content` binding onto sgs/text's `text` attr.
+
+    WP resolves bindings per-ATTRIBUTE-NAME, so a binding left under `content`
+    would target an attr sgs/text does not have and render nothing. The two
+    blocks name the same thing differently — the textColor/textColour class of
+    bug, one layer up.
+
+    Only possible since `includes/class-sgs-block-bindings-support.php` (this
+    session) registers sgs/text => ['text'] on WP 6.9's
+    `block_bindings_supported_attributes_{$block_type}` filter — without it WP
+    ignores bindings on any non-core block and the value renders INERT.
+    """
+    out = dict(metadata)
+    bindings = dict(out.get('bindings') or {})
+    if 'content' in bindings:
+        bindings['text'] = bindings.pop('content')
+    out['bindings'] = bindings
+    return out, sorted(bindings.keys())
+
+
 def transform(node, text):
     attrs_in = node.attrs or {}
     out = {}
     accounting = {}
     notes = []
-
-    if 'metadata' in attrs_in and (attrs_in['metadata'] or {}).get('bindings'):
-        raise GapError(
-            'metadata.bindings present — WP block bindings only resolve for the core-block '
-            'allowlist in get_block_bindings_supported_attributes() (verified on live WP 7.0.1); '
-            'sgs/text is not registered via the block_bindings_supported_attributes filter, so '
-            'the bound sgs/site-info value would render INERT. Capability gap — do not migrate '
-            'silently.')
 
     content = inner_markup(node, text)
     if content is None:
@@ -95,8 +108,17 @@ def transform(node, text):
             out[key] = value
             accounting[key] = ('mapped', f'{key} passthrough')
         elif key == 'metadata':
-            out['metadata'] = value
-            accounting[key] = ('mapped', 'metadata passthrough (no bindings — name/pattern data only)')
+            if (value or {}).get('bindings'):
+                remapped, keys = _remap_bindings(value)
+                out['metadata'] = remapped
+                accounting[key] = (
+                    'mapped',
+                    f'metadata.bindings rebound content->text for sgs/text (now {keys}); '
+                    'resolves via the sgs block-bindings filter registered this session')
+                notes.append('binding remapped content->text — verify the live value renders')
+            else:
+                out['metadata'] = value
+                accounting[key] = ('mapped', 'metadata passthrough (no bindings)')
         else:
             raise GapError(f'source attr "{key}" not handled by this module — extend the mapping')
 

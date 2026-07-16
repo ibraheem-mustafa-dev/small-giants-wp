@@ -32,19 +32,11 @@
 		<!-- wp:column {"verticalAlignment":"center","width":"40%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:40%">
 			<!-- wp:sgs/heading {"content":"Contact Details","level":"h3","fontSize":"large"} /-->
-			<!-- wp:paragraph {"textColor":"text-muted","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"email"}}}}} -->
-			<p class="has-text-muted-color has-text-color">placeholder — replaced at render</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"textColor":"text-muted","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"phone"}}}}} -->
-			<p class="has-text-muted-color has-text-color">placeholder — replaced at render</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"textColor":"text-muted","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"address"}}}}} -->
-			<p class="has-text-muted-color has-text-color">placeholder — replaced at render</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"placeholder — replaced at render","textColour":"text-muted","metadata":{"bindings":{"text":{"source":"sgs/site-info","args":{"key":"email"}}}}} /-->
+			<!-- wp:sgs/text {"text":"placeholder — replaced at render","textColour":"text-muted","metadata":{"bindings":{"text":{"source":"sgs/site-info","args":{"key":"phone"}}}}} /-->
+			<!-- wp:sgs/text {"text":"placeholder — replaced at render","textColour":"text-muted","metadata":{"bindings":{"text":{"source":"sgs/site-info","args":{"key":"address"}}}}} /-->
 			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} /-->
-			<!-- wp:paragraph {"textColor":"text-muted","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"opening_hours.mon"}}}}} -->
-			<p class="has-text-muted-color has-text-color">placeholder — replaced at render</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/text {"text":"placeholder — replaced at render","textColour":"text-muted","metadata":{"bindings":{"text":{"source":"sgs/site-info","args":{"key":"opening_hours.mon"}}}}} /-->
 		</div>
 		<!-- /wp:column -->
 

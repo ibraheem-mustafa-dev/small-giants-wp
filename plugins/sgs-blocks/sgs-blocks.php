@@ -264,6 +264,16 @@ Sgs_Site_Info_Rest::register();
 // nothing did) — the sgs/site-footer pattern is the first consumer that surfaced it.
 Sgs_Site_Info_Binding::register();
 
+// Block bindings support — widens WP core's hardcoded metadata.bindings
+// allowlist (wp-includes/block-bindings.php get_block_bindings_supported_attributes(),
+// verified live WP 7.0.1) to include sgs/text, sgs/heading, sgs/button via the
+// WP 6.9+ block_bindings_supported_attributes_{block_type} filter. Without this,
+// contact-form.php / contact-minimal.php patterns cannot migrate their
+// sgs/site-info-bound core/paragraph + core/button instances to native SGS
+// blocks — the binding would silently render inert.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-block-bindings-support.php';
+Sgs_Block_Bindings_Support::register();
+
 // SGS existing-site safety guard (FR-S7-3) — gates seeding on plugin upgrade.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-migrations.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-safety-guard.php';
