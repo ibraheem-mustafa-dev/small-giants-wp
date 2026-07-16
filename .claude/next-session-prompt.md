@@ -1,14 +1,16 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: TRACK A — header/footer/nav. Steps 0/1/2 + drawer chrome DONE (committed). LIVE NOW: in-session drawer/header rebuild (Bean-approved). Then: SPLIT framework/per-site → Goal 4 → Goal 1 → Goal 3
-generated: 2026-07-15 (evening rewrite — the morning edition's Steps 0/1/2/8/8b/8c/10 are COMPLETE and their text is removed; this file will be updated AGAIN when the in-session rebuild lands)
+thread: TRACK A — header/footer/nav. Spec 34 drawer BUILT + live (Gate B all-pass). NEXT: Bean gate → finish Spec 34 (Step 5 settings / Step 6 reflection / Gate C) → Step 7 (council + round-trip) → SPLIT framework/per-site → Goal 4 → Goal 1 → Goal 3
+generated: 2026-07-16 (D342 rewrite — the rebuild LANDED; its brief + every step it completed are removed. Steps 0/1/2/8/8b/8c/10 completed earlier and are likewise gone.)
 ---
 
 # NEXT SESSION — Track A (header/footer/nav)
 
-Invoke `/autopilot` first. Read `.claude/handoff.md` + `CLAUDE.md` + **Spec 17 §S9 IN
-FULL** + `.claude/decisions.md` D340/D339/D338 + the NEW rebuild spec (see ⛔ LIVE NOW).
+Invoke `/autopilot` first. Read **`.claude/handoff.md` FIRST** (it carries Bean's 3 corrections
++ the step order), then `CLAUDE.md` + **Spec 17 §S9 IN FULL** + **Spec 34 IN FULL**
+(`.claude/specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` — the drawer contract) +
+`.claude/decisions.md` D342/D341/D340/D339/D338.
 
 **Parallel tracks — do NOT touch their files:** Track B = Indus page CONTENT — **DONE
 2026-07-16**, branch `feat/track-b-content-restore` (`ca0894ef`/`9c29dbe3`/`ca1ed3ea`,
@@ -48,35 +50,21 @@ Site-Editor→frontend round trip for BOTH header AND footer** (which source act
 theme file vs the DB template-part copy the first edit silently creates vs the CPT rules
 engine — header and footer are wired differently; test both).
 
-<details>
-<summary>Historical: the pre-build brief (kept for context — superseded by the handoff)</summary>
+## ✅ DONE — do not redo (all committed on `feat/adaptive-nav-dialog-drawer`, all live-verified, reports in `reports/visual-diff/*-2026-07-1[56].md`)
 
-## ⛔ LIVE NOW — the drawer/header/site-editor-builder rebuild is being built IN-SESSION (2026-07-15 evening, Bean-approved)
+**2026-07-16 (D341/D342) — Spec 34 drawer:** the rebuild (non-modal `.show()` + re-parent to
+`<body>` + selective inert + real scrim + burger↔X + clip-path wipe) · the NEW `sgs/nav-menu`
+block (accordion extracted, WP-menu picker, context inheritance, md5+anchor uid, `supports.color`)
+· drawer = InnerBlocks [container, nav-menu, container] · nav-menu child inserted into
+`parts/header.html` + `framework-header-default.php` · theme 1.5.25→**1.5.26** · `/sgs-update`
+run (nav-menu `blocks` + `block_composition` rows + a `roles.position` row; F6 green) ·
+`render_drawer_*` cluster + `setupDrawerAccordions()` DELETED · **`--sgs-header-height`
+publisher added to webpack** (it had never compiled) · UA `dialog` width/height override ·
+6 obsolete drawer attrs removed (zero stored instances, measured on both live sites).
+**Gate B ALL PASS.** The late-CSS mystery is **closed by construction** (explicit geometry);
+the scrollbar bounce stays fixed (`ab5c7ca7`).
 
-Bean approved the design and ordered same-session execution: **header top row stays visible
-when the drawer opens; burger↔X toggles in place; drawer fills viewport minus header; the
-tint excludes the header; drawer content = InnerBlocks [empty container → menu element →
-empty container], reorderable; NEW styleable menu block with WP-menu picker (inherits the
-nav's source via block context); per-device switcher on drawer settings; all mirrored into
-the header/footer builder tools.** Spec + phase plan + qc-council gating it are in
-`.claude/specs/` + `.claude/plans/` (written that session). FR-S9-5's "background frozen"
-criterion is AMENDED by Bean's design: frozen *except the header row carrying the toggle*
-— `showModal()` is replaced by non-modal presentation + manual scrim/inert/focus/ESC.
-
-If you are reading this file, that session has ENDED — check its handoff first; whatever it
-shipped changes the list below. Its known carry-forwards regardless of outcome:
-
-- **The late-CSS mystery:** drawer geometry depended on external CSS arriving (mechanism
-  PROVEN by A/B: CSS disabled → right edge lands mid-screen; restored → correct). LiteSpeed
-  REFUTED (all optm-css_* = 0). The rebuild fixes it BY CONSTRUCTION (explicit geometry);
-  if the rebuild did not land, this is still open.
-- **The scrollbar bounce is FIXED + verified** (`ab5c7ca7`) — see STOP-SCROLLBAR-LOCK.
-- **`sgs/modal` has the same latent scroll-lock bug** — parked `P-MODAL-SCROLLBAR-GUTTER`
-  (fix shape written; needs its first deploy to verify).
-
-</details>
-
-## ✅ DONE — do not redo (all committed on `feat/adaptive-nav-dialog-drawer`, all live-verified, reports in `reports/visual-diff/*-2026-07-15.md`)
+**2026-07-15 (D338–D340):**
 
 Step 0 (verify+commit the D338 tree) · Step 1 (uid: adaptive-nav md5+anchor — NOT the
 sibling copy, its uid drives aria-controls; site-footer plain md5; the var()-fallback item
@@ -111,20 +99,41 @@ move/delete `footer-indus-foods.php` (dissolves the CID problem by construction)
 the per-site channel (JSON snapshot vs REST); gitignore per-site files. **Do this BEFORE
 Goals 4/1 so they write to the per-site channel.**
 
-## STEP 2 — remaining §S9 work (check the rebuild's handoff first — it may have absorbed some)
+## STEP 2 — FINISH Spec 34, then the §S9 remainder
 
-- **Drawer chrome not yet built:** `drawerMaxWidth`, `closeButtonStyle`, `showDividers`,
-  `dividerColour`, `accentColour`, `variant` (overlay/bottom-sheet) — the rebuild's new
-  settings surface may supersede several; reconcile against what shipped.
+**Finish Spec 34 first (it is 3 steps from done — dispatch prompts pre-written in
+`.claude/plans/2026-07-15-spec34-build-plan.md`):**
+- **Step 5 / FR-34-5 — drawer settings** (Sonnet, §Dispatch-D): `toggleOpenColour`,
+  `drawerAlign`, `drawerGap` {tiers}, `drawerPadding` {tiers}; reuse `ResponsiveControl`.
+- **Step 6 / FR-34-6 — builder reflection** (Sonnet, §Dispatch-E): **RECONCILE, don't redo** —
+  the nav-menu insertion, theme bump and `/sgs-update` already landed. What REMAINS: the
+  Spec-17 FR-S9-4/5 pointer lines + FR-S4-5 linter + the CPT-template editable check.
+- **Gate C / FR-34-7** — the closing gate: 768 + 1440 · ESC + focus-return + Tab-wrap ·
+  elementFromPoint sweep vs the 10/10 baseline · frame sweep (anchor constant) · late-CSS A/B ·
+  two-default `sgs/nav-menu` uid collision · short-viewport 50dvh floor · logged-in
+  `#wpadminbar` · **Bean's screenshot sign-off (R-31-13)**.
+
+**Then the §S9 remainder:**
+- **Drawer chrome deferred by Spec 34 §5 (out of scope, not forgotten):** `drawerMaxWidth`,
+  `closeButtonStyle`, `accentColour`, `variant` (overlay/bottom-sheet). `showDividers` +
+  `dividerColour` are **BUILT on `sgs/nav-menu`** (that is where they belong) — do not
+  rebuild them on adaptive-nav.
 - **FR-S9-6** (the `{desktop,tablet,mobile}` model on the FINAL shape) — reuse
   `helpers-responsive.php:437-497`. Wiring, not invention. Shape freeze (Spec 17 Guardrail)
-  binds: new sibling attrs, never reshapes.
-- `render.php:294-309`'s hardcoded 768/1024/**1280** collapse tiers → route through
-  `SGS_Breakpoints` (TABLET_MAX=1023, MOBILE_MAX=767) — unless the rebuild already did.
+  binds: new sibling attrs, never reshapes. ⚠ Spec 34 §6 note: `drawerGap`/`drawerPadding`
+  ship a bespoke tier object AHEAD of this model — FR-S9-6 must be shape-compatible with
+  `helpers-responsive.php` or those attrs are stuck (they will have live stored values).
+- **The collapse-tier hardcode** — adaptive-nav's `switch ($tier)` still hardcodes
+  768/1024/**1280** and never references `SGS_Breakpoints` (TABLET_MAX=**1023**,
+  MOBILE_MAX=**767**): off-by-one + a phantom 1280. **NOT touched by the rebuild** — still
+  open, and it is why the burger misses the 1023 tablet breakpoint (Bean's report).
 - **6 `sgs/info-box` dead attrs** (verdict B): restructure `mega-menu-services.html` to
   child `sgs/icon` blocks. NOT a rename.
 - **PARKED, build-on-trigger:** `P-MODAL-SCROLLBAR-GUTTER` (modal's first deploy);
-  `P-UIMAX-DRAWER-LOGO-AUTODERIVE` (~1h, if a client flags the opt-in logo).
+  `P-UIMAX-DRAWER-LOGO-AUTODERIVE` (near-moot under the new design — the header logo stays
+  visible; do not build without a client actually asking).
+- **CLOSED, do not re-find:** `P-CALL-BUTTON-CONTRAST` (Bean 2026-07-16: non-issue — not
+  hardcoded, and the cloned draft's menu has no such button).
 
 ## STEP 3 — Goal 4: match the Mama's draft (Bean moved it BEFORE Goal 1)
 
