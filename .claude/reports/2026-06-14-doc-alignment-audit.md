@@ -39,7 +39,7 @@ status: AUDIT COMPLETE. Findings register for next-session doc-alignment pass (d
 ## Spec 29 / WRAPPER-CSS-ROUTING / Spec 21 — agent B
 
 - **Spec 29 §1 "Method-2 pending" caveat is easy to miss vs §4's detailed hero/cta-section entries** → add an explicit `> NOTE: converter does NOT yet route to these composite blocks on a live clone; emits sgs/container + draft CSS` callout next to hero+cta-section. (Directly relevant: Bean's "2 class-section blocks not resolving spacing".) [med]
-- **WRAPPER-CSS-ROUTING-DESIGN-GATE registry path wrong**: registers itself as `reports/wave2/...` but lives at `specs/WRAPPER-CSS-ROUTING-DESIGN-GATE.md` → fix docs-registry.yaml entry. [med]
+- **WRAPPER-CSS-ROUTING-DESIGN-GATE registry path wrong**: registered as `reports/wave2/...` but lived at the doc's real specs path → fix docs-registry.yaml entry. [med] **[RESOLVED 2026-07-17 P2-D2: doc archived to `specs/archive/WRAPPER-CSS-ROUTING-DESIGN-GATE.md`; registry entry corrected to that path.]**
 - WRAPPER-CSS "Verification (once edits land)" checklist (L163-168) never ticked — confirm the impact-map edits actually landed (esp. the Spec 21 Stage-3/4 canonical_slot-is-content-fork-only note, NOT applied → finding 21-8). [med]
 - **Spec 21 artefact claims likely STALE/WRONG (could mislead next-session diagnosis):**
   - `stage-7.json` — `css_router.py` has no `write_artefact(stage_n=7)`; artefact may not exist. [high]
