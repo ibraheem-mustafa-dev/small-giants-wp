@@ -47,27 +47,16 @@
 	cursor: default;
 }
 
-/* Colour-independent affordance (works on any background); render.php adds the
- * operator's linkHoverColour on top when set.
- *
- * `color: inherit` here is LOAD-BEARING, not a duplicate of the resting rule.
- * theme.json sets a GLOBAL `styles.elements.link[':hover'|':focus']` colour
- * (`primary-dark`), which WP emits as `a:hover` — specificity (0,1,1), BEATING this
- * block's resting `.sgs-nav-menu__link` (0,1,0). So without re-asserting inherit on
- * the state selectors (0,2,0), hovering/focusing a drawer link repainted it
- * primary-dark: measured 1.48:1 on the mamas-munches pink drawer — a WCAG failure
- * landing on the FOCUSED link, i.e. exactly what a keyboard user sees first.
- * (Same class as D339: a token name — "primary-dark" — assumed to imply a luminance.)
- * The underline is the affordance; the colour must stay the drawer's computed,
- * contrast-checked foreground on every client. An operator's explicit
- * linkHoverColour still wins — render.php emits it at higher specificity. */
-.sgs-nav-menu__link:hover,
-.sgs-nav-menu__link:focus-visible,
-.sgs-nav-menu__link[aria-current="page"] {
-	color: inherit;
-	text-decoration: underline;
-	text-underline-offset: 3px;
-}
+/*
+ * Hover / focus-visible / current-page (aria-current="page") state is
+ * ENTIRELY render.php-driven (Spec 32 no-inline + hoverStyle/hoverBgColour):
+ * a WCAG-computed background pill (default) or an underline (operator
+ * opt-out), scoped to #uid at higher specificity than this file's base rule.
+ * Nothing is hardcoded here so an unset hoverBgColour still degrades safely —
+ * render.php falls back to an underline + `color: inherit` state when the
+ * slug does not resolve, guaranteeing SOME visible state indicator (WCAG
+ * 2.4.7) even before a scoped rule lands.
+ */
 
 .sgs-nav-menu__item-row {
 	align-items: center;
@@ -148,12 +137,8 @@
 	transition: color 200ms ease;
 }
 
-.sgs-nav-menu__sublink:hover,
-.sgs-nav-menu__sublink:focus-visible,
-.sgs-nav-menu__sublink[aria-current="page"] {
-	text-decoration: underline;
-	text-underline-offset: 3px;
-}
+/* Sublink hover/focus/current-page state — same render.php-driven rule as
+ * .sgs-nav-menu__link above (see the comment near the top of this file). */
 
 .sgs-nav-menu :focus-visible {
 	outline: 2px solid currentColor;

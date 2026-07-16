@@ -32,6 +32,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkFontSize,
 		showDividers,
 		dividerColour,
+		hoverStyle,
+		hoverBgColour,
 	} = attributes;
 
 	const { records: menus, isResolving } = useEntityRecords(
@@ -106,6 +108,42 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					</p>
+					<SelectControl
+						label={ __( 'Hover effect', 'sgs-blocks' ) }
+						value={ hoverStyle }
+						options={ [
+							{
+								label: __(
+									'Background highlight (recommended)',
+									'sgs-blocks'
+								),
+								value: 'background',
+							},
+							{
+								label: __( 'Underline', 'sgs-blocks' ),
+								value: 'underline',
+							},
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { hoverStyle: val } )
+						}
+						help={ __(
+							"Background highlight paints the item's own background so it stays readable on any menu colour; underline keeps the text on the menu background.",
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Hover / current-page background',
+							'sgs-blocks'
+						) }
+						value={ hoverBgColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverBgColour: val } )
+						}
+						linked
+					/>
 				</PanelBody>
 
 				<PanelBody

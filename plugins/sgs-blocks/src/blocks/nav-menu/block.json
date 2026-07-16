@@ -70,6 +70,15 @@
 		"dividerColour": {
 			"type": "string",
 			"default": ""
+		},
+		"hoverStyle": {
+			"type": "string",
+			"default": "background",
+			"enum": [ "background", "underline" ]
+		},
+		"hoverBgColour": {
+			"type": "string",
+			"default": "accent"
 		}
 	},
 	"render": "file:./render.php",

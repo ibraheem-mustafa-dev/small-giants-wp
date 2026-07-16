@@ -36,6 +36,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 
@@ -64,6 +65,15 @@ if ( ! class_exists( 'SGS_Nav_Menu_Renderer' ) ) {
 		 * @var string
 		 */
 		private string $id_prefix;
+
+		/**
+		 * Lazily computed, request-normalised current page path (scheme/host/query/
+		 * trailing-slash agnostic) — cached per render so repeated aria-current
+		 * checks across many links do not re-parse $_SERVER['REQUEST_URI'].
+		 *
+		 * @var string|null
+		 */
+		private ?string $current_path_cache = null;
 
 		/**
 		 * Constructor.
@@ -369,7 +379,13 @@ if ( ! class_exists( 'SGS_Nav_Menu_Renderer' ) ) {
 		}
 
 		/**
-		 * Compare a URL against the current page URL (scheme/trailing-slash agnostic).
+		 * Compare a URL against the current page URL — scheme, host, trailing-slash
+		 * and query-string agnostic (only the PATH is compared).
+		 *
+		 * The previous approach compared against get_pagenum_link(), a pagination
+		 * helper (blog page 2, 3…), NOT the current request URL — this left
+		 * aria-current="page" unset on every ordinary page, including the live
+		 * homepage. Compare against $_SERVER['REQUEST_URI'] instead.
 		 *
 		 * @param string $url The URL to test.
 		 * @return bool True when the URL matches the current page.
@@ -378,7 +394,37 @@ if ( ! class_exists( 'SGS_Nav_Menu_Renderer' ) ) {
 			if ( '' === $url || '#' === $url ) {
 				return false;
 			}
-			return rtrim( $url, '/' ) === rtrim( get_pagenum_link(), '/' );
+			return $this->normalise_path( $url ) === $this->current_path();
+		}
+
+		/**
+		 * The current request's path, normalised for comparison. Cached per render.
+		 *
+		 * @return string Normalised path (never trailing-slashed; '' for the site root).
+		 */
+		private function current_path(): string {
+			if ( null === $this->current_path_cache ) {
+				$request_uri              = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only path comparison, no state change.
+				$this->current_path_cache = $this->normalise_path( home_url( $request_uri ) );
+			}
+			return $this->current_path_cache;
+		}
+
+		/**
+		 * Normalise a URL (absolute or relative) to a bare, trailing-slash-free,
+		 * query-string-free path for scheme/host/trailing-slash/query agnostic
+		 * comparison.
+		 *
+		 * @param string $url URL or path to normalise.
+		 * @return string Normalised path.
+		 */
+		private function normalise_path( string $url ): string {
+			if ( '' !== $url && ! preg_match( '#^https?://#i', $url ) ) {
+				$url = home_url( $url );
+			}
+			$parts = wp_parse_url( $url );
+			$path  = is_array( $parts ) && isset( $parts['path'] ) ? $parts['path'] : '';
+			return rtrim( $path, '/' );
 		}
 	}
 }
@@ -465,33 +511,74 @@ if ( function_exists( 'wp_style_engine_get_styles' ) && isset( $attributes['styl
 // The has-*-color preset class WP strips under skip-serialisation. Collected here and
 // appended to $wrapper_args['class'] below (this block has no $classes array — its root
 // IS the <ul>, per the single-semantic-element rule).
-$sgs_nm_text_slug   = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$sgs_nm_text_slug    = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $sgs_nm_preset_class = '' !== $sgs_nm_text_slug
 	? ' has-text-color has-' . $sgs_nm_text_slug . '-color'
 	: '';
 
-// 3c. Link colour + hover colour (token slugs → preset custom properties).
-// Applied to both top-level links and sub-links so the menu reads as one colour.
-// Base colour is `inherit` (style.css) — an unset slug lets the drawer's computed
+// 3c. Link colour (resting) — token slug → preset custom property. Applied to
+// both top-level links and sub-links so the menu reads as one colour. Base
+// colour is `inherit` (style.css) — an unset slug lets the drawer's computed
 // foreground (or the footer's text colour) flow through unchanged.
 $link_colour = isset( $attributes['linkColour'] ) ? sanitize_html_class( $attributes['linkColour'] ) : '';
-$link_hover  = isset( $attributes['linkHoverColour'] ) ? sanitize_html_class( $attributes['linkHoverColour'] ) : '';
 if ( '' !== $link_colour ) {
 	$css .= $link_sel . ',' . $sublink_sel . '{color:var(--wp--preset--color--' . $link_colour . ');}';
 }
-if ( '' !== $link_hover ) {
-	$hover_targets = implode(
-		',',
-		array(
-			$link_sel . ':hover',
-			$link_sel . ':focus-visible',
-			$link_sel . '[aria-current="page"]',
-			$sublink_sel . ':hover',
-			$sublink_sel . ':focus-visible',
-			$sublink_sel . '[aria-current="page"]',
-		)
-	);
-	$css          .= $hover_targets . '{color:var(--wp--preset--color--' . $link_hover . ');}';
+
+// 3c-ii. Hover + current-page state — WCAG-safe background pill (default) or
+// underline (operator opt-out via hoverStyle). Same treatment for :hover,
+// :focus-visible AND [aria-current="page"] so "you are here" reads identically
+// to "you are about to go here" (Bean-approved persistent-selected pattern).
+$hover_state_targets = array(
+	$link_sel . ':hover',
+	$link_sel . ':focus-visible',
+	$link_sel . '[aria-current="page"]',
+	$sublink_sel . ':hover',
+	$sublink_sel . ':focus-visible',
+	$sublink_sel . '[aria-current="page"]',
+);
+$hover_state_sel     = implode( ',', $hover_state_targets );
+$toggle_state_sel    = implode(
+	',',
+	array(
+		$uid_sel . ' .sgs-nav-menu__toggle:hover',
+		$uid_sel . ' .sgs-nav-menu__toggle:focus-visible',
+	)
+);
+
+$hover_style = isset( $attributes['hoverStyle'] ) && 'underline' === $attributes['hoverStyle'] ? 'underline' : 'background';
+$bg_emitted  = false;
+
+if ( 'background' === $hover_style ) {
+	$hover_bg_slug = isset( $attributes['hoverBgColour'] ) ? sanitize_html_class( $attributes['hoverBgColour'] ) : 'accent';
+	$hover_bg_hex  = '' !== $hover_bg_slug ? sgs_resolve_palette_hex( $hover_bg_slug, '' ) : '';
+
+	if ( '' !== $hover_bg_hex ) {
+		// WCAG-computed text colour for the resolved background — never an
+		// operator-guessed hex, so the pairing is always ≥ 4.5:1 (R-31-13
+		// class of guarantee, extended to hover/current-page state).
+		$hover_fg_hex = sgs_wcag_text_colour_for_bg( $hover_bg_hex );
+		$state_rule   = 'background-color:' . esc_attr( $hover_bg_hex ) . ';color:' . esc_attr( $hover_fg_hex ) . ';';
+
+		$css .= $hover_state_sel . '{' . $state_rule . 'border-radius:8px;padding-inline:12px;text-decoration:none;transition:background-color .15s ease,color .15s ease;}';
+		// The chevron is a sibling of the trigger link (inside the toggle
+		// button), not its descendant, so it needs its OWN hover/focus rule to
+		// pick up the matching WCAG-safe colour via `currentColor`.
+		$css       .= $toggle_state_sel . '{' . $state_rule . 'transition:background-color .15s ease,color .15s ease;}';
+		$bg_emitted = true;
+	}
+}
+
+// Underline mode, OR background mode with an unresolvable hoverBgColour slug
+// (never leave hover/current-page with zero visible affordance — WCAG 1.4.1 /
+// 2.4.7 requires SOME state indicator). An explicit linkHoverColour override
+// still applies here (legacy per-instance colour pick); it is intentionally
+// NOT honoured in background mode, where the emitted foreground is
+// WCAG-computed against the resolved background and must not be overridden.
+if ( ! $bg_emitted ) {
+	$link_hover = isset( $attributes['linkHoverColour'] ) ? sanitize_html_class( $attributes['linkHoverColour'] ) : '';
+	$hover_fg   = '' !== $link_hover ? 'var(--wp--preset--color--' . $link_hover . ')' : 'inherit';
+	$css       .= $hover_state_sel . '{color:' . $hover_fg . ';background-color:transparent;text-decoration:underline;text-underline-offset:3px;}';
 }
 
 // 3d. Dividers between rows — gated on showDividers. Colour from dividerColour
