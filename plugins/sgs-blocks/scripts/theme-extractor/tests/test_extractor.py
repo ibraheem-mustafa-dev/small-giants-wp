@@ -65,8 +65,23 @@ def test_d303_heading_line_height_is_1_2_not_hero_1_15():
 
 
 def test_chrome_heading_excluded():
+    """A chrome-only heading must never DRIVE the global scale — but must not DELETE the baseline.
+
+    Mama's renders h5 only in the footer (chrome) at 11px. The requirement is that the 11px chrome
+    measurement never becomes the global h5. It is NOT that h5 is removed: the extractor's baseline
+    is the framework theme.json, and `push-theme-snapshot.py` replaces the live theme.json WHOLESALE,
+    so deleting the level strips h5 from every page of the live site (verified against the live
+    palestine-lives theme.json, which carries h5 medium/700). An unmeasured content h5 is a BLIND
+    SPOT, not a measurement of absence — the same principle that governs buttonPresets padding.
+
+    This assertion previously read `"h5" not in elements`, which encoded the deletion rather than the
+    requirement; it is tightened here to check the actual surviving value.
+    """
     snap = _snapshot()
-    assert "h5" not in snap["styles"]["elements"]   # h5 only rendered in the footer (chrome)
+    h5 = snap["styles"]["elements"]["h5"]["typography"]
+    assert h5["fontSize"] == "var:preset|font-size|medium"   # framework baseline, untouched
+    assert h5["fontSize"] != "11px"                          # the footer/chrome value never lands
+    assert h5["fontWeight"] == "700"                         # non-derived baseline key survives
 
 
 def test_rem_resolves_against_real_root_not_16():

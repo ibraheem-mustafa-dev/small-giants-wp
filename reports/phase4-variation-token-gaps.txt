@@ -1,8 +1,8 @@
-# Stage 4 Style Variation Sync — 2026-07-06 21:32:21 UTC
+# Stage 4 Style Variation Sync — 2026-07-16 19:47:09 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 3 | Inserted: 0 | Skipped: 107 | Conflicts: 106
+Snapshots found: 8 | Missing: 3 | Inserted: 26 | Skipped: 133 | Conflicts: 122
 
 ## Per-client results
 
@@ -41,39 +41,55 @@ Inserted: 0 | Skipped: 5 | Conflicts: 14
 
 ### indus-foods
 
-Inserted: 0 | Skipped: 6 | Conflicts: 12
+Inserted: 26 | Skipped: 19 | Conflicts: 20
 
-- CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
+- CONFLICT: color-primary (framework='#0D1B2A', client='#0a7ea8') → inserted as indus-foods-color-primary
+- CONFLICT: color-surface (framework='#FFFFFF', client='#ffffff') → inserted as indus-foods-color-surface
+- CONFLICT: color-text (framework='#1a1a1a', client='#2c3e50') → inserted as indus-foods-color-text
 - CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
 - CONFLICT: color-accent (framework='#C9A84C', client='#D8CA50') → inserted as indus-foods-color-accent
 - CONFLICT: color-accent-light (framework='#F0E4C3', client='#E7D768') → inserted as indus-foods-color-accent-light
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#2EADE2') → inserted as indus-foods-color-border-subtle
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as indus-foods-color-success
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F8F7F4') → inserted as indus-foods-color-surface-alt
-- CONFLICT: color-text (framework='#1a1a1a', client='#2C3E50') → inserted as indus-foods-color-text
 - CONFLICT: color-text-muted (framework='#6B6B6B', client='#5A6070') → inserted as indus-foods-color-text-muted
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#2C3E50') → inserted as indus-foods-color-footer-bg
-- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, system-ui, sans-serif') → inserted as indus-foods-font-family-heading
-- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client="'Source Sans 3', system-ui, sans-serif") → inserted as indus-foods-font-family-body
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='"Source Sans Pro", sans-serif') → inserted as indus-foods-font-family-body
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-heading
+- CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-display
+- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as indus-foods-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as indus-foods-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as indus-foods-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as indus-foods-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as indus-foods-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as indus-foods-spacing-80
 
 ### mamas-munches
 
-Inserted: 0 | Skipped: 7 | Conflicts: 14
+Inserted: 0 | Skipped: 20 | Conflicts: 22
 
-- CONFLICT: color-text (framework='#1a1a1a', client='#3A2E26') → inserted as mamas-munches-color-text
-- CONFLICT: color-primary (framework='#0D1B2A', client='#E68A95') → inserted as mamas-munches-color-primary
-- CONFLICT: color-primary-dark (framework='#060D14', client='#C56A7A') → inserted as mamas-munches-color-primary-dark
-- CONFLICT: color-surface (framework='#FFFFFF', client='#FBF3DC') → inserted as mamas-munches-color-surface
-- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#FFF9F0') → inserted as mamas-munches-color-surface-alt
-- CONFLICT: color-accent (framework='#C9A84C', client='#F5D050') → inserted as mamas-munches-color-accent
+- CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border-subtle
+- CONFLICT: color-cookie-brown (framework='#8B6F4E', client='#8b6f4e') → inserted as mamas-munches-color-cookie-brown
+- CONFLICT: color-primary (framework='#0D1B2A', client='#e68a95') → inserted as mamas-munches-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#c56a7a') → inserted as mamas-munches-color-primary-dark
+- CONFLICT: color-surface (framework='#FFFFFF', client='#fbf3dc') → inserted as mamas-munches-color-surface
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#fff9f0') → inserted as mamas-munches-color-surface-alt
+- CONFLICT: color-surface-pink (framework='#F5C2C8', client='#f5c2c8') → inserted as mamas-munches-color-surface-pink
+- CONFLICT: color-text (framework='#1a1a1a', client='#3a2e26') → inserted as mamas-munches-color-text
+- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-text-inverse
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#6b5c50') → inserted as mamas-munches-color-text-muted
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#7A6500') → inserted as mamas-munches-color-accent-text
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#6B5C50') → inserted as mamas-munches-color-text-muted
-- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#FFFAF5') → inserted as mamas-munches-color-text-inverse
-- CONFLICT: color-border-subtle (framework='#C9A84C', client='#E8D5C0') → inserted as mamas-munches-color-border-subtle
-- CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as mamas-munches-color-success
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#3A2E26') → inserted as mamas-munches-color-footer-bg
-- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client="Fraunces, 'DM Serif Display', Georgia, serif") → inserted as mamas-munches-font-family-heading
-- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as mamas-munches-font-family-body
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, sans-serif') → inserted as mamas-munches-font-family-body
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-heading
+- CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-display
+- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as mamas-munches-spacing-30
+- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as mamas-munches-spacing-40
+- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as mamas-munches-spacing-50
+- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as mamas-munches-spacing-60
+- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as mamas-munches-spacing-70
+- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as mamas-munches-spacing-80
 
 ### sgs-construction
 

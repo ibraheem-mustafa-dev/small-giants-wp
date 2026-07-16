@@ -196,18 +196,22 @@ def fetch_server_theme_json(target: str, port: int, server_path: str) -> dict | 
 _REST_UA = "sgs-push-theme-snapshot/1.0 (+https://smallgiants.studio)"
 
 
-def fetch_global_styles(target_domain: str, auth_header: str | None = None) -> dict | None:
-    """GET /wp-json/wp/v2/global-styles/themes/sgs-theme. None on failure.
+def fetch_global_styles(target_domain: str, post_id: int, auth_header: str | None = None) -> dict | None:
+    """GET /wp-json/wp/v2/global-styles/{post_id} — the USER-LAYER post. None on failure.
 
-    AUTHENTICATES (2026-07-16). This route requires `edit_theme_options`, so an
-    anonymous GET always 403s — which made `global_styles` None on EVERY run, which
-    made the FR-33-11 backup unable to capture the wp_global_styles layer, which made
-    the backup-or-abort gate abort EVERY push. The per-client theming deploy path was
-    therefore dead on any real site: the writer (`post_global_styles`) sent Basic auth
-    but this reader never did. Proven on palestine-lives — anonymous GET 403, the same
-    GET with the app-password header returns the payload.
+    Targets the SAME post the WRITE (`post_global_styles`) modifies (2026-07-16). It
+    previously read `/global-styles/themes/{stylesheet}`, which is the theme's RESOLVED
+    styles (a different, read-only layer) — so the backup captured a layer the write
+    never touched (rollback could not undo the write) and the drift check compared the
+    wrong thing. Both now key on the user-layer post id. Proven on palestine-lives: post
+    7 (`isGlobalStylesUserThemeJSON:true`) is the layer holding the live `Source Sans 3`
+    override that paints over theme.json.
+
+    AUTHENTICATES: the route needs `edit_theme_options`, so an anonymous GET 403s — which
+    used to make `global_styles` None on every run and abort the backup-or-push gate. The
+    writer sent Basic auth; this reader now does too.
     """
-    url = f"https://{target_domain}/wp-json/wp/v2/global-styles/themes/sgs-theme"
+    url = f"https://{target_domain}/wp-json/wp/v2/global-styles/{post_id}"
     req = urllib.request.Request(url, headers={"User-Agent": _REST_UA})
     if auth_header:
         req.add_header("Authorization", auth_header)
@@ -675,15 +679,20 @@ def main() -> int:
         args.no_push = True
 
     server = fetch_server_theme_json(args.target, args.port, server_path)
-    # Resolve credentials BEFORE reading the Site-Editor layer: that route needs
-    # `edit_theme_options`, so an anonymous read 403s and every downstream consumer
-    # (the diff, the drift warning, and the FR-33-11 rollback backup) silently
-    # degrades to "unknown" — which aborted every push. Best-effort here: a missing
-    # credential is not fatal at this point, the authoritative check is below.
+    # Discover the user-layer post ID up front and read THAT layer — the same post the
+    # write targets — so diff / drift / rollback-backup all reflect exactly what the push
+    # will overwrite. Credentials are resolved before the read because the route needs
+    # `edit_theme_options` (anonymous 403s); a missing credential here is not fatal (the
+    # authoritative check is below), it just leaves `global_styles` None, which the
+    # backup-or-abort gate then handles.
+    gs_post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
     _read_creds = resolve_app_credentials(args.target_domain, args.app_user, args.app_password)
-    global_styles = fetch_global_styles(
-        args.target_domain, _basic_auth_header(*_read_creds) if _read_creds else None
-    )
+    global_styles = None
+    if gs_post_id is not None:
+        global_styles = fetch_global_styles(
+            args.target_domain, gs_post_id,
+            _basic_auth_header(*_read_creds) if _read_creds else None,
+        )
 
     print(diff_summary(local, server, global_styles))
     print()
@@ -774,7 +783,10 @@ def main() -> int:
 
         # Step 2 (FR-26-D2): write snapshot styles+settings to the live
         # wp_global_styles database post so the user layer matches the disk snapshot.
-        post_id = discover_global_styles_post_id(args.target, args.port, wp_root)
+        # Reuse the id discovered up front (same layer read for diff/backup); only
+        # re-discover if the early lookup failed but SSH is working now.
+        post_id = gs_post_id if gs_post_id is not None else discover_global_styles_post_id(
+            args.target, args.port, wp_root)
         if post_id is None:
             print(
                 "[push-theme-snapshot] ERROR: could not determine wp_global_styles post ID — "
