@@ -7,6 +7,17 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-07-16 — P-CALL-BUTTON-CONTRAST — CLOSED/DROPPED (Bean: non-issue)
+
+> **P-CALL-BUTTON-CONTRAST — CLOSED/DROPPED 2026-07-16, do not reopen.** Bean: *"button
+> contrast is a non-issue. It's totally irrelevant unless that is hardcoded. We'll be cloning
+> the draft's menu which doesn't feature that button anyway."* The axe reading (cream `#fbf3dc`
+> on pink `#e68a95` = 2.24:1) was real but the element is not part of the cloned draft's menu
+> and the value is not hardcoded, so it is not a defect to chase. The entry had briefly
+> re-surfaced under a NEW D342 heading after being marked closed (a struck-through label with a
+> live re-entry below it reads as live, not retracted — caught + fully removed this session).
+> **Status: CLOSED.** · **Bucket:** Framework / blocks.
+
 ## 2026-07-12 — P-STYLE-TAG-CONSOLIDATION — RESOLVED + LANDED (`9dfcaa6e` + `72c0387a` + `c30dd5e2`)
 
 > **P-STYLE-TAG-CONSOLIDATION** (NEW 2026-07-12, Bean-flagged during Fix 9). The ~100 per-block scoped `<style>` tags / ~33KB in the page body (page 8) are consolidated. **Shipped architecture (Spec 32 §6.2 / FR-32-11):** a single `render_block` **chokepoint** lifts every `sgs/*` block's `<style>` into a per-request buffer (dedup by content hash, D303 residual order preserved); ONE **output buffer** (`template_redirect`) injects the consolidated CSS into the `<head>` on every front-end render (self-consistent under full-page caching — no pointer, no cold/warm, no cache-freeze). **Two operator-selectable modes** (SGS → CSS Output settings page, `sgs_css_output_mode` option, default `file`): `file` = cached content-hashed external `<link>` (immutable `Cache-Control`, atomic write, epoch-invalidated on save_post/template/global-styles/deploy + `litespeed_purge_all` + GC; an optimisation plugin can defer it) — settings page lists LiteSpeed/Autoptimize/WP Rocket/Perfmatters with the exact setting; `head` = inline `<style>` in head (the draft's own model), fully self-contained. **Key build finding:** the initially-designed generate-then-serve external-file model was **reproduced FAILING live under the LiteSpeed page cache** (froze the cold inline response) → replaced by the unified output buffer. **LANDED (sandybrown page 8, both modes, incl. under LiteSpeed):** 1 head style/link, 0 body `<style>`, correct cascade + computed values at 375/768/1440, D303 intact, editor parity preserved (block-renderer REST keeps inline), 0 console errors. Editor-parity predicate live-verified: `! is_admin() && ! wp_is_serving_rest_request()`. Design + research trail: `.claude/plans/2026-07-12-style-tag-consolidation-design.md` (+ `/qc-council` GO-WITH-FIXES). **Note:** LiteSpeed Cache plugin was installed on the sandybrown canary to test file mode (page cache now active; CSS-async/CCSS optimisation is optional, needs QUIC.cloud, per the settings-page guidance). **Status: CLOSED.** · **Bucket:** Framework / blocks.

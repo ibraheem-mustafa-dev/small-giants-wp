@@ -1,27 +1,31 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: TRACK A — header/footer/nav. Spec 34 drawer BUILT + live (Gate B all-pass). NEXT: Bean gate → finish Spec 34 (Step 5 settings / Step 6 reflection / Gate C) → Step 7 (council + round-trip) → SPLIT framework/per-site → Goal 4 → Goal 1 → Goal 3
-generated: 2026-07-16 (D342 rewrite — the rebuild LANDED; its brief + every step it completed are removed. Steps 0/1/2/8/8b/8c/10 completed earlier and are likewise gone.)
+thread: MAIN is now consolidated (`a693e0e8`, Phase 2 nav/logo fixes live on both sites). NEXT: Phase 1 (drawer polish) → Phase 3 (finish Spec 34) → Goal 1 (Indus, incl. new 9px overflow)
+generated: 2026-07-16 (D341/D342 rewrite — Phase 2 shipped + 3-branch merge to `main` landed + deployed live to both sites. Prior Track A/B/C branch-parallel framing is now HISTORICAL — see handoff.md for what changed.)
 ---
 
-# NEXT SESSION — Track A (header/footer/nav)
+# NEXT SESSION — post-consolidation (main = `a693e0e8`)
 
-Invoke `/autopilot` first. Read **`.claude/handoff.md` FIRST** (it carries Bean's 3 corrections
-+ the step order), then `CLAUDE.md` + **Spec 17 §S9 IN FULL** + **Spec 34 IN FULL**
+Invoke `/autopilot` first. Read **`.claude/handoff.md` FIRST** (carries this session's ship
++ merge + live-verify summary, plus the prior 3 Bean corrections below it), then `CLAUDE.md`
++ **Spec 17 §S9 IN FULL** + **Spec 34 IN FULL**
 (`.claude/specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` — the drawer contract) +
 `.claude/decisions.md` D342/D341/D340/D339/D338.
 
-**Parallel tracks — do NOT touch their files:** Track B = Indus page CONTENT — **DONE
-2026-07-16**, branch `feat/track-b-content-restore` (`ca0894ef`/`9c29dbe3`/`ca1ed3ea`,
-pushed, unmerged; consumed prompt archived → `.claude/scratch/TRACK-B-*.md`). Track C =
-core→SGS migration in patterns — **DONE 2026-07-16**, branch `feat/core-block-migration`
-(worktree `../small-giants-wp-trackc`, unmerged; safe-zone core blocks 395→0; adds
-`sgs/container.tagName` D344 + SGS block-bindings; consumed prompt archived →
-`.claude/scratch/TRACK-C-*-DONE-2026-07-16.md`). Both wrote decisions to
-`.claude/scratch/track-{b,c}-decisions-pending.md` — MERGE those into decisions.md/parking.md
-at this track's handoff (Track B = TB-1…TB-9; Track C = TC-1…TC-34).
-**Track C left the 187 header/footer/mega-menu instances for AFTER this Track-A rebuild lands.**
+**Everything is now on `main` (`a693e0e8`, theme 1.5.38) and LIVE on both sandybrown +
+palestine-lives/Indus** — the separate Track A/B/C worktrees below are HISTORICAL context for
+how the work got here, not a live parallel-track warning any more. **Track B**
+(`feat/track-b-content-restore`, Indus page content) is the one branch still OUT — it did NOT
+merge this session (paused, uncommitted working-tree edits in the shared checkout); do not
+touch its files without checking its own branch state first. **Track C**
+(`feat/core-block-migration`, core→SGS migration) DID merge this session — its worktree
+(`../small-giants-wp-trackc`) is now stale/mergeable-history-only.
+
+**Track B/C scratch decision logs** (`.claude/scratch/track-{b,c}-decisions-pending.md`,
+TB-1..9 / TC-1..34) were **NOT FOUND** in this worktree or in git history when the docs were
+updated this session — if you locate them (another branch/worktree), fold them into
+`decisions.md`/`parking.md` immediately; this is an open reconciliation item, not closed.
 
 **⛔ A SHARED CHECKOUT SHARES `git HEAD`.** Track A/C branch switches silently REVERTED two
 of Track B's working-tree edits, and one got committed in its reverted state under a message
@@ -30,7 +34,14 @@ claiming it was fixed. Take your own `git worktree` (Track C has one), and verif
 `.claude/next-session-prompts/TRACK-B-*.md` shows deleted in the shared checkout: that is
 Track B's Bean-directed move to `.claude/scratch/`; don't sweep it into your commit.
 
-## ✅ THE REBUILD LANDED — read `.claude/handoff.md` FIRST (2026-07-16, D341/D342)
+## ✅ PHASE 2 SHIPPED + MERGED TO MAIN — read `.claude/handoff.md` FIRST (2026-07-16, D341/D342)
+
+**`main` is now `a693e0e8`, theme 1.5.38, LIVE on both sandybrown + palestine-lives/Indus.**
+Phase 2 (the `sgs/responsive-logo` `custom` mode + the `sgs/adaptive-nav` tablet-tier collapse
+fix) shipped, passed a qc-council ship gate, and was consolidated with `feat/core-block-
+migration` (Track C) + origin's docs-reconciliation commit into `main` via an isolated
+worktree, then deployed to both sites. Full detail: `.claude/handoff.md` (top section) +
+`.claude/decisions.md` D341/D342.
 
 **Spec 34 is BUILT and live on the canary; Gate B ALL PASS.** Header row stays visible +
 interactive while the drawer is open, burger↔X in place, drawer below the header, tint
@@ -41,18 +52,28 @@ prompts): `.claude/plans/2026-07-15-spec34-build-plan.md` · council:
 `.claude/reports/2026-07-15-spec34-qc-council.md` · reports:
 `reports/visual-diff/{adaptive-nav,nav-menu}-2026-07-16.md`.
 
-**⛔ START HERE:** `.claude/handoff.md` — it carries **3 Bean corrections** (the Call-button
-contrast is a NON-ISSUE, delete `P-CALL-BUTTON-CONTRAST`; `primary-dark` is NOT mis-named and
-the `nav-menu` hover rule may need reverting; confirm which "2 bugs" he means), the next-step
-order (Step 5 settings → Step 6 reflection → Gate C → Step 7), and the one big find:
-**`--sgs-header-height` was never compiled and has never been a real measurement on any
-deployed site** (fixed; it also silently broke `scroll-padding-top` / WCAG 2.4.11 framework-wide).
+**Bean corrections applied + resolved:** the Call-button contrast was a NON-ISSUE, the
+`P-CALL-BUTTON-CONTRAST` parking entry is now fully DELETED (archived to `memory/parking-
+archive.md`, not just struck through); `primary-dark` is NOT mis-named (confirmed, no action
+needed). **New correction, this session's live-verify:** resting drawer link text is `#000`
+where Bean prefers the `text` token charcoal `#3a2e26` — see PHASE 1 below.
 
-**Bean-ordered and NOT yet done — do it FRESH:** `/adversarial-council` on the shipped result
-with a tech-illiterate-client UX rater on the Site-Editor builder, AND **prove the
-Site-Editor→frontend round trip for BOTH header AND footer** (which source actually loads:
-theme file vs the DB template-part copy the first edit silently creates vs the CPT rules
-engine — header and footer are wired differently; test both).
+## ⭐ PHASE 1 — small drawer polish (do first, it is quick)
+
+**Resting link text colour:** `sgs/nav-menu` drawer links currently render `#000` at rest.
+Bean's stated preference is the `text` token (charcoal `#3a2e26`). **Keep** the
+focus-mirrors-base behaviour (`color: inherit` on `:hover`/`:focus-visible`) and the underline
+affordance — both are already live-correct per this session's colour measurement (D341/D342).
+Change ONLY the resting colour; verify across all 8 client palettes (STOP-VERIFY-EVERY-CLIENT)
+before shipping.
+
+## PHASE 3 — finish Spec 34 (unchanged from before the merge), then the §S9 remainder
+
+**Bean-ordered and NOT yet done — do it FRESH, after Steps 5/6/Gate C below:**
+`/adversarial-council` on the shipped result with a tech-illiterate-client UX rater on the
+Site-Editor builder, AND **prove the Site-Editor→frontend round trip for BOTH header AND
+footer** (which source actually loads: theme file vs the DB template-part copy the first edit
+silently creates vs the CPT rules engine — header and footer are wired differently; test both).
 
 ## ✅ DONE — do not redo (all committed on `feat/adaptive-nav-dialog-drawer`, all live-verified, reports in `reports/visual-diff/*-2026-07-1[56].md`)
 
@@ -103,7 +124,7 @@ move/delete `footer-indus-foods.php` (dissolves the CID problem by construction)
 the per-site channel (JSON snapshot vs REST); gitignore per-site files. **Do this BEFORE
 Goals 4/1 so they write to the per-site channel.**
 
-## STEP 2 — FINISH Spec 34, then the §S9 remainder
+## PHASE 3 (continued) — FINISH Spec 34, then the §S9 remainder
 
 **Finish Spec 34 first (it is 3 steps from done — dispatch prompts pre-written in
 `.claude/plans/2026-07-15-spec34-build-plan.md`):**
@@ -127,17 +148,21 @@ Goals 4/1 so they write to the per-site channel.**
   binds: new sibling attrs, never reshapes. ⚠ Spec 34 §6 note: `drawerGap`/`drawerPadding`
   ship a bespoke tier object AHEAD of this model — FR-S9-6 must be shape-compatible with
   `helpers-responsive.php` or those attrs are stuck (they will have live stored values).
-- **The collapse-tier hardcode** — adaptive-nav's `switch ($tier)` still hardcodes
-  768/1024/**1280** and never references `SGS_Breakpoints` (TABLET_MAX=**1023**,
-  MOBILE_MAX=**767**): off-by-one + a phantom 1280. **NOT touched by the rebuild** — still
-  open, and it is why the burger misses the 1023 tablet breakpoint (Bean's report).
+- **The collapse-tier hardcode — FIXED this session (D342, commit `65bd9cdd`).** adaptive-nav
+  now reads `SGS_Breakpoints` (TABLET_MAX=1023/MOBILE_MAX=767) instead of the old hardcoded
+  768/1024/1280; default `collapseTier` is now `tablet`. Live-verified on both sites: burger
+  ≤1023, bar ≥1024. **Do not re-open this as if still broken.**
 - **6 `sgs/info-box` dead attrs** (verdict B): restructure `mega-menu-services.html` to
   child `sgs/icon` blocks. NOT a rename.
 - **PARKED, build-on-trigger:** `P-MODAL-SCROLLBAR-GUTTER` (modal's first deploy);
   `P-UIMAX-DRAWER-LOGO-AUTODERIVE` (near-moot under the new design — the header logo stays
   visible; do not build without a client actually asking).
-- **CLOSED, do not re-find:** `P-CALL-BUTTON-CONTRAST` (Bean 2026-07-16: non-issue — not
-  hardcoded, and the cloned draft's menu has no such button).
+- **CLOSED (archived, do not re-find):** `P-CALL-BUTTON-CONTRAST` — moved to
+  `memory/parking-archive.md` this session (Bean 2026-07-16: non-issue — not hardcoded, and
+  the cloned draft's menu has no such button).
+- **NEW this session:** `P-INDUS-BRANDSTRIP-OVERFLOW-9PX` (Indus, width-independent, source =
+  `sgs-brand-strip` marquee — see Goal 1 below) and `P-PHASE2-VISUAL-DIFF-REPORTS-DEFERRED`
+  (the Phase-2 fixes shipped live-verified but without their `reports/visual-diff/*.md` files).
 
 ## STEP 3 — Goal 4: match the Mama's draft (Bean moved it BEFORE Goal 1)
 
@@ -147,7 +172,7 @@ exist**, and maps the hamburger to `sgs/mobile-nav-toggle` which was **deleted (
 re-point at `sgs/adaptive-nav` before any pipeline consumes it. Bean's heading-specific eye
 pass (R-31-13, pending from the heading fix) lands here.
 
-## STEP 4 — Goal 1: replicate the Indus header/footer (AFTER all tracks complete — Bean)
+## STEP 4 — Goal 1: replicate the Indus header/footer (main = `a693e0e8`, everything merged + live)
 
 **BASELINE = the preserved hand-built Astra/Spectra site:
 https://lightsalmon-tarsier-683012.hostingersite.com/** — NOT `mockups/*.html` (that V3
@@ -158,15 +183,23 @@ drawer pattern; the live site wins — Bean).
 - `git show e3cd1a04^:theme/sgs-theme/patterns/header-indus-foods.php` (75 lines)
 - `git show 0587f638:theme/sgs-theme/parts/header.html` (60 lines, pre-§S9)
 
-**Bean's measured defects (all must be fixed; some may be closed by the rebuild — verify):**
-- burger doesn't appear at the tablet breakpoint (1023) — the hardcoded-tier bug above
-- `sgs/responsive-logo` doesn't switch to the square/stacked logo at the mobile tier
+**Bean's measured defects (some CLOSED by this session's merge+deploy — verify live before
+re-fixing anything below):**
+- ~~burger doesn't appear at the tablet breakpoint (1023)~~ — **FIXED + live-verified
+  D342, both sites.**
+- `sgs/responsive-logo` doesn't switch to the square/stacked logo at the mobile tier — the
+  `custom` mode (D341) shipped; confirm it covers this specific complaint on Indus, since the
+  logo-switch mechanism changed shape (mobile/tablet/custom, no more `auto`).
 - buttons, rows, background colours not preserved
-- the shopping trolley on Indus — **the cart guard is COMMITTED but NOT yet deployed to
-  Indus** (Indus runs `main` per Bean's rollback); deploying this branch there closes it —
-  that deploy is the no-WC verification the cart report defers
+- ~~the shopping trolley on Indus~~ — **CONFIRMED LIVE this session:** Indus has no
+  WooCommerce (`bodyHasWoo:false`) and the cart is correctly absent. Closed.
 - sticky + shrinking-sticky header; "everything shrinks, never goes out of bounds"
 - Mega-menu: contents need not match; only "show on mobile AND desktop, don't look a mess"
+- **NEW this session:** pre-existing 9px horizontal overflow on Indus at BOTH 1000px and
+  1440px (width-independent — not the Phase-2 change; header itself is within bounds at
+  1425<1440). Source: the decorative `sgs-brand-strip` marquee (already `overflow:hidden` on
+  its own rule, so the leak is elsewhere — a child's negative margin or an untransformed
+  marquee-clone width is the likely next lead). Parked: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
 
 **Capture the baseline AS A FILE FIRST** (`reports/visual-diff/header-footer-baseline-
 indus.json`) — it has NEVER existed as a file; prose baselines are how a session lost 2

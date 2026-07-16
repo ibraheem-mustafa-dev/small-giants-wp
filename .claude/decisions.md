@@ -6,7 +6,28 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-15 (LATEST) — D339+D340: drawer chrome as attrs (Bean rejected black-on-dark-pink); §S9 shape FROZEN; logo OFF by default (research-confirmed)
+## 2026-07-16 (LATEST) — D341+D342: Phase 2 nav/logo fixes (auto→custom logo-switch, adaptive-nav tablet-tier burger) + qc-council GO + 3-branch consolidation to `main` (`a693e0e8`) + dual-site deploy live
+
+**D341 — `sgs/responsive-logo`: removed the unshippable `auto` logo-switch mode (commit `bd7fd5b0`).** A `/brainstorming` persona panel + `/research-buddies` pass both found the space-aware `auto` mode needed either a JS `ResizeObserver`-with-hysteresis or a flex-grow-container-query trick — AND it clashed with the existing `sgs/adaptive-nav` "More" overflow menu (both wanted to own the flex leftover slot). Bean scrapped `auto` for a simple operator-chosen breakpoint: new `custom` mode + `logoSwitchCustomPx` (number, default 1024, RangeControl 320-2000); `logoSwitchMode` enum is now `["mobile","tablet","custom"]`. Also fixed the image-switch tier (was 600/1024, now **767/1023** to match the canonical `SGS_Breakpoints`). qc-inline PASSed the custom mode (95/100).
+
+**D342 — `sgs/adaptive-nav`: collapse-tier now reads `SGS_Breakpoints` + default `collapseTier` `mobile`→`tablet` (commit `65bd9cdd`, R-31-1/FR-S9-4).** The burger's collapse switch was hardcoded 768/1024/1280 (the 1280 was phantom) instead of referencing `SGS_Breakpoints` (TABLET_MAX=1023/MOBILE_MAX=767) — this is why the burger never appeared in the 768-1023 tablet band. Fixed + **live-verified on both sites**: burger ≤1023, bar ≥1024, exact boundary correct.
+
+**qc-council ship gate (2 cross-perspective raters): GO.** a11y/live-break clean; the only merge-safety finding was a 1-line `style.css` `Version` conflict; deploy-from-worktree recommended to avoid the shared checkout's mid-edit `build-deploy.py`.
+
+**Consolidation to `main` — 3-branch merge in an isolated worktree, pushed `a693e0e8`.** Merged `feat/adaptive-nav-dialog-drawer` (44 commits: Spec 34 disclosure drawer + the uimax-brain→council→fixes thread + D338 remnants + the D341/D342 Phase-2 fixes above) + `feat/core-block-migration` (Track C, core→SGS migration, ~395 core blocks across the safe zone) + origin's docs-reconciliation commit `3cdb4b2f`. 2 trivial conflicts resolved: theme `style.css` `Version`→1.5.38; `parking.md` kept the branch's (ours) version. `Track B` (`feat/track-b-content-restore`) stayed OUT/paused — its uncommitted working-tree edits + pre-existing dirt in the shared checkout were left untouched.
+
+**Deployed + live-verified, both sites (canary sandybrown then production palestine-lives/Indus, D336-hardened `build-deploy.py`, fail-closed verify + `.bak` rollback, both PASS):**
+- Bug 3 (burger-at-tablet) works on both sites.
+- The rebuilt `sgs/nav-menu` drawer is now LIVE — the old self-rendered `__drawer-menu` is gone (the pre-deploy canary had been serving stale/DB-shadowed code).
+- **The cart guard is CONFIRMED LIVE on Indus:** Indus has no WooCommerce (`bodyHasWoo:false`) and the cart is correctly absent.
+- Drawer colours measured live: bg = `primary` `#e68a95` (not dark), focus mirrors base (black, `color:inherit` holds, no `primary-dark`), divider = subtle black-18% tint (not pink), underline + accent-yellow focus outline present — Bean's earlier "dark pink/pink divider/primary-dark focus" complaint was the OLD (pre-rebuild) drawer. Only refinement outstanding: resting link text is `#000` vs Bean's stated preferred `text` token charcoal `#3a2e26`.
+- Pre-existing 9px horizontal overflow on Indus at BOTH 1000px and 1440px (width-independent, so NOT the Phase-2 change; header itself is within bounds at 1425<1440); source = the decorative `sgs-brand-strip` marquee (already `overflow:hidden` — needs a deeper look). Parked: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
+
+**Deferred:** the `custom` logo-switch mode + adaptive-nav tablet-tier fix shipped without their per-block visual-diff reports (STOP-67) — live-verification substituted this session; reports still owed.
+
+---
+
+## 2026-07-15 — D339+D340: drawer chrome as attrs (Bean rejected black-on-dark-pink); §S9 shape FROZEN; logo OFF by default (research-confirmed)
 
 **D339a — drawer chrome = attrs with token defaults, foreground always COMPUTED (commits `4e049ba9`/`bbf5ac35`).** Bean rejected the D338 drawer on sight (R-31-13) and every point measured out: `primary` `#e68a95` + black = 8.43:1 beats `primary-dark`'s 5.72; white text FAILS on both pinks (3.67/2.49 — the one option ruled out, with numbers); the logo's own ink is a pink scoring **1.06:1 on the panel** (sampled the real .webp) — the strip is what makes it visible; the mobile gap was `min(85%,400px)`'s **85%** (56px at 375). Shipped `drawerBg`/`drawerHeadBg`/`drawerWidth`/`showLogo`/`logoMaxWidth`/`closeButtonSize`; fg via `sgs_wcag_text_colour_for_bg` — verified on ALL 8 palettes (8/8 pass; Indus tightest 4.60). Close hover `color-mix(currentColor 22%)` (was invisible-on-light white). **Bean's hardcode test locked:** a hardcode OVERRIDES a legitimate channel (inline/`!important`/beats theme.json/beats a UA default like `align-items` a draft deliberately leaves unset); an overridable default fighting no channel is a DEFAULT. Memory `hardcode-is-override-not-literal`.
 

@@ -2,7 +2,96 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-16
-session: Track C core-block migration COMPLETE (safe zone 395→0) + D341/D342 Spec 34 disclosure drawer
+session: Phase 2 nav/logo fixes (D341/D342) + qc-council GO + 3-branch consolidation to main (a693e0e8) + dual-site deploy, both LIVE-VERIFIED
+---
+
+# Session Handoff — 2026-07-16 (Phase 2 ship + project-wide consolidation to `main`)
+
+## Branch / state
+
+`main` is now **`a693e0e8`**, pushed. Theme `1.5.38`. Everything below is LIVE on both
+sandybrown (canary) and palestine-lives/Indus (production).
+
+## DONE this session
+
+**Phase 2 — two nav/logo bugs fixed + committed on `feat/adaptive-nav-dialog-drawer`:**
+
+1. **`bd7fd5b0` — `sgs/responsive-logo`: removed the unshippable `auto` logo-switch mode.**
+   A `/brainstorming` persona panel + `/research-buddies` pass both found the space-aware
+   `auto` mode needed either a JS `ResizeObserver`-with-hysteresis or a flex-grow-container-
+   query trick, AND it clashed with `sgs/adaptive-nav`'s existing "More" overflow menu (both
+   wanted the flex leftover slot). Bean scrapped `auto` for an operator-chosen breakpoint:
+   new `custom` mode + `logoSwitchCustomPx` (number, default 1024, RangeControl 320-2000);
+   `logoSwitchMode` enum now `["mobile","tablet","custom"]`. Also fixed the image-switch tier
+   (was 600/1024 → now 767/1023, matching `SGS_Breakpoints`). qc-inline PASSed (95/100).
+2. **`65bd9cdd` — `sgs/adaptive-nav`: collapse tier now reads `SGS_Breakpoints`**
+   (TABLET_MAX=1023/MOBILE_MAX=767) instead of hardcoded 768/1024/1280 (the 1280 was
+   phantom); default `collapseTier` `mobile`→`tablet` (R-31-1/FR-S9-4). Fixes the burger not
+   appearing in the 768-1023 tablet band. **Live-verified on both sites**: burger ≤1023,
+   bar ≥1024, exact boundary correct.
+
+**qc-council ship gate: GO.** 2 cross-perspective raters — a11y/live-break clean; only
+finding was a 1-line `style.css` `Version` conflict on merge; recommended deploying from a
+worktree to avoid the shared checkout's mid-edit `build-deploy.py`.
+
+**Phase 2.5 — project-wide consolidation (DONE), via an isolated worktree:**
+
+Merged 3 sources into `main`, pushed **`a693e0e8`**:
+- `feat/adaptive-nav-dialog-drawer` (44 commits: Spec 34 disclosure drawer + the uimax-brain
+  →council→fixes thread + D338 remnants + the Phase-2 fixes above)
+- `feat/core-block-migration` (Track C, core→SGS migration, ~395 core blocks across the
+  framework's safe zone)
+- origin's docs-reconciliation commit `3cdb4b2f`
+
+2 trivial conflicts resolved: theme `style.css` `Version`→1.5.38; `parking.md` kept the
+branch's (ours) version. **Track B** (`feat/track-b-content-restore`, Indus page content)
+stayed OUT/paused — its uncommitted working-tree edits + pre-existing dirt in the shared
+checkout were left untouched.
+
+Deployed canary (sandybrown) then production (palestine-lives/Indus) via the D336-hardened
+`build-deploy.py` (fail-closed verify + `.bak` rollback) — **both PASS.**
+
+## LIVE-VERIFIED after deploy (both sites unless noted)
+
+- Bug 3 (burger-at-tablet): works on both sites.
+- The rebuilt `sgs/nav-menu` drawer is now LIVE — the old self-rendered `__drawer-menu` is
+  gone (the pre-deploy canary had been serving stale/DB-shadowed code).
+- **Cart guard CONFIRMED LIVE on Indus:** Indus has no WooCommerce (`bodyHasWoo:false`) and
+  the cart is correctly absent (this closes the verification the D337 cart report deferred).
+- Drawer colours measured live: bg = `primary` `#e68a95` (not dark), focus mirrors base
+  (black, `color:inherit` holds — no `primary-dark`), divider = subtle black-18% tint (not
+  pink), underline + accent-yellow focus outline present. **Bean's earlier "dark pink/pink
+  divider/primary-dark focus" complaint was the OLD (pre-rebuild) drawer** — now replaced.
+  **Only refinement outstanding:** resting link text is `#000` vs Bean's stated preferred
+  `text` token charcoal `#3a2e26`.
+- **Pre-existing 9px horizontal overflow on Indus** at BOTH 1000px and 1440px
+  (width-independent, so NOT the Phase-2 change; header is within bounds at 1425<1440).
+  Source: the decorative `sgs-brand-strip` marquee (already `overflow:hidden` — root cause
+  not yet found). Parked: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
+
+## Deferred
+
+The `custom` logo-switch mode + adaptive-nav tablet-tier fix shipped without their per-block
+`reports/visual-diff/*.md` reports (STOP-67) — live-verification substituted this session.
+Parked: `P-PHASE2-VISUAL-DIFF-REPORTS-DEFERRED`.
+
+**Track B and Track C's scratch decision logs** (`.claude/scratch/track-{b,c}-decisions-
+pending.md`, referenced by the prior session's next-session-prompt as holding TB-1..9 /
+TC-1..34) were **not found in this worktree or in git history** at doc-update time — if they
+exist on another branch/worktree, fold them into `decisions.md`/`parking.md` at the next
+session; until then this is recorded as an open reconciliation item, not invented content.
+
+## NEXT
+
+1. **Phase 1 — small drawer polish:** resting link text → `text` token (charcoal `#3a2e26`);
+   keep focus-mirrors-base + underline (already live-correct, do not touch).
+2. **Phase 3 — finish Spec 34:** Step 5 drawer settings (FR-34-5), Step 6 reflection
+   (FR-34-6, reconcile not redo), Gate C (FR-34-7), then Step 7 — a FRESH
+   `/adversarial-council` + prove the Site-Editor→frontend round trip for BOTH header AND
+   footer (they are wired differently — test both, never extrapolate from one).
+3. **Goal 1 — Indus:** header/footer replication work, including the new 9px overflow.
+4. Merge the Track B/C scratch decision logs into `decisions.md`/`parking.md` once located.
+
 ---
 
 # Session Handoff — 2026-07-16 (Track C — core→SGS migration COMPLETE)
