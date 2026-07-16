@@ -75,7 +75,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 
 | Goal | Exit criteria | Source |
 |------|--------------|--------|
-| ~~**Phase 1 pixel-diff closure (G1-G5 + F5)**~~ **(SUPERSEDED)** | ~~1440 average pixel-diff ≤ 5%, 768 ≤ 8%, 375 ≤ 10%~~ Superseded by Spec 22 FR-22-7: **per-section ≤5% × 3 viewports** (not mean, not per-breakpoint averages). See Goal B above. | `.claude/next-session-prompt.md` (4-wave plan); evidence at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` |
+| ~~**Phase 1 pixel-diff closure (G1-G5 + F5)**~~ **(SUPERSEDED)** | ~~1440 average pixel-diff ≤ 5%, 768 ≤ 8%, 375 ≤ 10%~~ Superseded by Spec 22 FR-22-7: **per-section ≤5% × 3 viewports** (not mean, not per-breakpoint averages). See Goal B above. | `.claude/next-session-prompt.md` (4-wave plan); evidence at `.claude/memory/reports-archive/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` |
 
 ## Active goals (added 2026-05-21 — architecture session)
 
