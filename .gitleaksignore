@@ -2,4 +2,4 @@
 # dev cookie for the local Blub dashboard at http://localhost:5050.
 # Not a real secret. Used throughout the system as a stable dev constant.
 .claude/memory/consolidated-2026-04-29/claude-HANDOFF-2026-04-15.md:generic-api-key:238
-.claude/plans/master-plan.md:generic-api-key:245
+.claude/plans/archive/master-plan/master-plan.md:generic-api-key:295
