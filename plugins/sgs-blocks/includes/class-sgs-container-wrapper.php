@@ -370,7 +370,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// HTML tag. No block declares a user-facing 'htmlTag' attr any more
 			// (removed 2026-07-05) — callers pass 'tag' in $opts explicitly.
 			$html_tag     = $opt_tag ? $opt_tag : 'section';
-			$allowed_tags = array( 'section', 'div', 'article', 'aside', 'main', 'details', 'fieldset' );
+			// Full landmark + sectioning + grouping range (D344, 2026-07-16): the
+			// ARIA-landmark tags (main/nav/aside/header/footer) + sectioning
+			// (article/section) + grouping (div/figure), plus the pre-existing
+			// details/fieldset. This is what a generic container needs to carry a
+			// semantic tag in every page context (WCAG 2.2 landmark navigation + SEO).
+			$allowed_tags = array(
+				'section',
+				'div',
+				'article',
+				'aside',
+				'main',
+				'nav',
+				'header',
+				'footer',
+				'figure',
+				'details',
+				'fieldset',
+			);
 			if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 				$html_tag = 'section';
 			}
