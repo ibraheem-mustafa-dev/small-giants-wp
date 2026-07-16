@@ -5,6 +5,22 @@ thread: MAIN is now consolidated (`a693e0e8`, Phase 2 nav/logo fixes live on bot
 generated: 2026-07-16 (D341/D342 rewrite — Phase 2 shipped + 3-branch merge to `main` landed + deployed live to both sites. Prior Track A/B/C branch-parallel framing is now HISTORICAL — see handoff.md for what changed.)
 ---
 
+## ⭐ READ FIRST — header/footer/nav BUILDER REALIGNMENT (2026-07-16, separate from everything below)
+
+A dedicated brief exists at
+`.claude/plans/2026-07-16-header-footer-nav-builder-REALIGN-brief.md` — read it in full
+BEFORE any header/footer/nav/builder/mode/bar-drawer/pattern work. It reconciles Bean's
+builder vision against the specs + git + live code (two investigation agents this
+session), records the Bean-approved realigned end-goals (A: dedicated Site-Editor
+builder panel, B: extend the independent sticky/transparent/shrink toggles with partial
+transparency + partial sticking + separate sticky-config, C: capability-parity — not
+identity — unification of bar/drawer/breakpoints, D: retire legacy core-block header
+patterns), and specifies a MANDATORY deep-research phase (core/navigation parity audit +
+competitor builder feature matrices + reviews/complaints/CRO feedback) that must run
+BEFORE any spec/design-gate/build work starts. It does NOT replace or subtract anything
+below — Phase 1 (drawer polish), Step 1 (framework-vs-per-site split), and Goals 1/3/4
+are unchanged and still apply; the brief only governs the builder-realignment scope.
+
 # NEXT SESSION — post-consolidation (main = `a693e0e8`)
 
 Invoke `/autopilot` first. Read **`.claude/handoff.md` FIRST** (carries this session's ship
