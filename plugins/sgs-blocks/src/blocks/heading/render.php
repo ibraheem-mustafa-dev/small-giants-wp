@@ -122,7 +122,10 @@ $line_height_unit    = $attributes['lineHeightUnit'] ?? 'em';
 $letter_spacing      = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;
 $letter_spacing_unit = $attributes['letterSpacingUnit'] ?? 'em';
 $text_transform      = isset( $attributes['textTransform'] ) ? $attributes['textTransform'] : '';
-$text_colour         = $attributes['textColour'] ?? 'text';
+// '' = inherit (D343). NEVER default this to a colour: the scoped rule it emits
+// is (0,2,0) and beats the theme's own `h1..h6 { color: … }` (0,0,1), so a
+// default here silently disables the client's heading colour on every heading.
+$text_colour         = $attributes['textColour'] ?? '';
 $font_style          = isset( $attributes['fontStyle'] ) ? sanitize_text_field( $attributes['fontStyle'] ) : '';
 $text_decoration     = isset( $attributes['textDecoration'] ) ? sanitize_text_field( $attributes['textDecoration'] ) : '';
 

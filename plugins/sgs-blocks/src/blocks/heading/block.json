@@ -132,7 +132,7 @@
     },
     "textColour": {
       "type": "string",
-      "default": "text"
+      "default": ""
     },
     "fontStyle": {
       "type": "string",
