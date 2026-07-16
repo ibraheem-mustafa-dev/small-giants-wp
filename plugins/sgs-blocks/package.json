@@ -4,7 +4,7 @@
   "private": true,
   "description": "Custom Gutenberg block library for Small Giants Studio",
   "scripts": {
-    "prebuild": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check && python scripts/ledger/declare_input.py --check && node scripts/audit-inline-styling.js --check && python scripts/check-box-family-guard.py --check && python -m pytest scripts/oracle/tests/ -q",
+    "prebuild": "npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check && python scripts/ledger/declare_input.py --check && node scripts/audit-inline-styling.js --check && python scripts/check-box-family-guard.py --check && python -m pytest scripts/oracle/tests/ -q",
     "prestart": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check",
     "check:dead-controls": "node scripts/check-dead-controls.js --check",
     "check:hardcoded-defaults": "node scripts/check-hardcoded-render-defaults.js --check",
@@ -18,14 +18,15 @@
     "check:excluded": "python scripts/excluded-gate/run.py --report",
     "check:coverage": "python scripts/ledger/coverage_check.py --report",
     "build": "wp-scripts build --experimental-modules --webpack-copy-php",
-    "postbuild": "node scripts/copy-built-styles.js",
+    "postbuild": "node scripts/copy-built-styles.js && python scripts/lints/lint-spec-drift.py --ghost-only --check",
     "start": "wp-scripts start --experimental-modules --webpack-copy-php",
     "lint:js": "wp-scripts lint-js src/",
     "lint:css": "wp-scripts lint-style src/",
     "format": "wp-scripts format src/",
     "ledger-check": "python -m pytest scripts/ledger/tests/ -q && python scripts/ledger/declare_input.py --check",
     "check:scoped-selector": "node scripts/audit-scoped-selector-live.js --page 8",
-    "check:scoped-selector-plant": "node scripts/audit-scoped-selector-live.js --plant"
+    "check:scoped-selector-plant": "node scripts/audit-scoped-selector-live.js --plant",
+    "clean:build": "node -e \"require('fs').rmSync('build',{recursive:true,force:true})\""
   },
   "devDependencies": {
     "@wordpress/icons": "^11.6.0",

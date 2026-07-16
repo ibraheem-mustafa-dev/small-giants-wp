@@ -1340,8 +1340,11 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     ("sgs/hero", "headline"): {"derived_selector": ".sgs-hero__headline, h1, h2"},  # migrated from fingerprints.json (db-current)
     ("sgs/hero", "subHeadline"): {"derived_selector": ".sgs-hero__sub-headline, p"},  # migrated from fingerprints.json (db-current)
     ("sgs/icon", "ariaLabel"): {"derived_selector": ".sgs-icon, [aria-label]"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "emojiChar"): {"derived_selector": ".sgs-icon__emoji"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "iconName"): {"derived_selector": ".sgs-icon__glyph, [data-icon-name]"},  # migrated from fingerprints.json (db-current)
+    # NOTE (2026-07-16): emojiChar/iconName previously appeared TWICE in this dict —
+    # here with a derived_selector, and again below with an icon-source role. Python
+    # dict literals are last-wins, so these two derived_selectors were SILENTLY
+    # DISCARDED at parse time (leg-1 lift_scalar_content needs them). Merged into the
+    # single entries below; a duplicate-key AST gate now fails the build on a repeat.
     ("sgs/icon", "iconSource"): {"derived_selector": ".sgs-icon__glyph, [data-icon-source]"},  # migrated from fingerprints.json (db-current)
     ("sgs/icon", "linkTarget"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
     ("sgs/icon", "linkUrl"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
@@ -1372,8 +1375,8 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
     # 'identity' attr the arm reads as the discriminator. Reseed-durable: assign-canonical
     # re-derives block_attributes.role each reseed, so these MUST live here (the roles
     # themselves are registered by migrations/2026-07-03-register-icon-source-roles.py).
-    ("sgs/icon", "iconName"): {"role": "icon-lucide"},
-    ("sgs/icon", "emojiChar"): {"role": "icon-emoji"},
+    ("sgs/icon", "iconName"): {"role": "icon-lucide", "derived_selector": ".sgs-icon__glyph, [data-icon-name]"},
+    ("sgs/icon", "emojiChar"): {"role": "icon-emoji", "derived_selector": ".sgs-icon__emoji"},
     ("sgs/icon", "dashiconName"): {"role": "icon-dashicon"},
     ("sgs/icon", "wpIconName"): {"role": "icon-wp-icon"},
     # CG-8 (2026-07-05): the image-extractor builds a full {url,id,alt} dict, but
