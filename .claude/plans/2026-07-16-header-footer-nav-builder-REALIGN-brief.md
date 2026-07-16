@@ -174,3 +174,51 @@ version."* This gates Section 5 — do not skip to spec-writing.
   they are not superseded.
 - This brief does not itself contain a build plan — Section 4 (research) must run and
   produce the gap matrix before Section 5 (spec/design-gate/phased build) can start.
+
+## Additional owner direction (2026-07-16, round 2)
+
+**Build sequencing — decide this explicitly in planning:** what comes first — the
+header/footer FORMAT/architecture (the capability + data model: what header/footer/nav CAN
+do, per-surface and per-breakpoint) or the visual BUILDER (the UI that configures it)?
+Assistant's lean to validate: architecture/data-model FIRST because the builder is a UI
+over it and can't be meaningfully built until the model is defined — but they inform each
+other, so design together with architecture leading. The planning session must state the
+decision + rationale.
+
+**Be critical of our OWN current features, not just competitors — hunt superior
+alternatives.** Explicitly re-examine current SGS approaches for better designs, e.g.:
+(a) the cart icon's spawn / hide-when-empty / WooCommerce-gated blocking behaviour;
+(b) the whole nav-block setup (adaptive-nav + nav-menu split). For each, ask: is it better
+to REPLICATE the core block and extend it to meet our needs, or to UNIFY certain aspects
+and choose SEPARATION along a different axis than we do now? Produce a critical
+"keep / improve / replace" verdict per current feature.
+
+**Block-based competitor analysis + build-vs-adopt decision.** Answer concretely:
+(1) What does our top competition do for header/footer/nav builders?
+(2) What is the top competitor that does it BLOCK-BASED (FSE/Site-Editor-native, not
+    Customiser)?
+(3) Is there ANY competitor with a Site Editor + block-based header/footer builder? If
+    YES: how hard would it be to SKIP much of the foundational building and ADOPT their
+    approach, changing it to our requirements (evaluate feasibility + licensing + fit)?
+(4) If NO block-based competitor builder exists: does that matter — is it a differentiator
+    opportunity or a warning sign? State the build-vs-adopt recommendation with reasoning.
+
+**Architecture decision + reflect it in the builder.** How do we DECIDE our
+header/footer architecture (the format, the row/slot model, the capability set, per-
+breakpoint content model), and how does the visual builder faithfully REFLECT and expose
+that architecture? The output must connect the architecture and the builder as one
+coherent thing.
+
+**North-star (the acceptance bar):** all of the above must connect + harmonise the many
+parts into ONE system that is simple in its essence and even simpler to use. Simplicity of
+the end operator experience is the primary success criterion, however complex the
+underlying model.
+
+**Recommended planning setup (assistant's recommendation to Bean):** run the planning
+session on **Opus at high→max reasoning effort** (architectural design + novel synthesis +
+critical evaluation + adversarial validation — top of the reasoning-demand spectrum;
+Sonnet would under-serve it). Delegate the RESEARCH to Sonnet researchers (fast, thorough
+tool access for competitor-feature + reviews/complaints hunting) synthesised by Opus — use
+`/research-council` or `/deep-research` for competitor + CRO research, `/gap-analysis` to
+grade current features critically, and an `/adversarial-council` on the final design
+before any build (Rule 7).
