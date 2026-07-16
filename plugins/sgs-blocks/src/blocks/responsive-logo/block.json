@@ -58,6 +58,16 @@
 		"mobileLogoId": {
 			"type": "number"
 		},
+		"logoSwitchMode": {
+			"type": "string",
+			"default": "mobile",
+			"enum": [ "mobile", "tablet", "custom" ],
+			"_comment": "When the compact/alternate logo replaces the desktop logo. mobile = at the mobile tier (<=767px viewport); tablet = at the tablet tier (<=1023px viewport); custom = at the operator's own breakpoint (<= logoSwitchCustomPx, viewport). Only takes effect once an alternate (mobile or tablet) logo is set."
+		},
+		"logoSwitchCustomPx": {
+			"type": "number",
+			"default": 1024
+		},
 		"svgAnimationSource": {
 			"type": "number",
 			"_comment": "Media library ID of a .svg file. NEVER accept inline SVG paste — XSS risk. Force upload via media library only."

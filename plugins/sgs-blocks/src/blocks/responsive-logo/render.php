@@ -243,8 +243,8 @@ if ( $has_svg_animation && $svg_html ) {
 	// Hidden static images for tablet and mobile (displayed by CSS media queries).
 	printf(
 		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
-		'<source media="(max-width: 600px)" srcset="%1$s">' .
-		'<source media="(max-width: 1024px)" srcset="%2$s">' .
+		'<source media="(max-width: 767px)" srcset="%1$s">' .
+		'<source media="(max-width: 1023px)" srcset="%2$s">' .
 		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager">' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
@@ -254,19 +254,58 @@ if ( $has_svg_animation && $svg_html ) {
 		absint( $width )
 	);
 } else {
-	// Standard mode: <picture> element with per-breakpoint srcset.
-	printf(
-		'<picture class="sgs-responsive-logo__picture">' .
-		'<source media="(max-width: 600px)" srcset="%1$s">' .
-		'<source media="(max-width: 1024px)" srcset="%2$s">' .
-		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async">' .
-		'</picture>',
-		esc_url( $effective_mobile_url ),
-		esc_url( $effective_tablet_url ),
-		esc_url( $desktop_url ),
-		esc_attr( $alt ),
-		absint( $width )
-	);
+	// Standard mode: the compact/alternate logo replaces the desktop logo per
+	// logoSwitchMode. mobile/tablet swap at fixed viewport tiers; custom swaps
+	// at the operator's own chosen viewport width (logoSwitchCustomPx). All
+	// three use <picture><source media>. No switch happens until an alternate
+	// logo is set.
+	$switch_mode = isset( $attributes['logoSwitchMode'] ) ? sanitize_key( $attributes['logoSwitchMode'] ) : 'mobile';
+	$compact_url = '' !== $mobile_url ? $mobile_url : $tablet_url; // square/stacked alt, else the tablet slot.
+	$has_alt     = '' !== $compact_url;
+
+	if ( 'custom' === $switch_mode && $has_alt ) {
+		// The compact logo covers the operator's own breakpoint band
+		// (<= logoSwitchCustomPx viewport), clamped to a sane pixel range.
+		$custom_px = max( 320, min( 2000, absint( $attributes['logoSwitchCustomPx'] ?? 1024 ) ) );
+		printf(
+			'<picture class="sgs-responsive-logo__picture">' .
+			'<source media="(max-width: %5$dpx)" srcset="%1$s">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async">' .
+			'</picture>',
+			esc_url( $compact_url ),
+			esc_url( $desktop_url ),
+			esc_attr( $alt ),
+			absint( $width ),
+			absint( $custom_px )
+		);
+	} elseif ( 'tablet' === $switch_mode && $has_alt ) {
+		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
+		printf(
+			'<picture class="sgs-responsive-logo__picture">' .
+			'<source media="(max-width: 1023px)" srcset="%1$s">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async">' .
+			'</picture>',
+			esc_url( $compact_url ),
+			esc_url( $desktop_url ),
+			esc_attr( $alt ),
+			absint( $width )
+		);
+	} else {
+		// mobile (default): compact at <=767px; a distinct tablet logo (if set) fills
+		// the 768-1023 band. Empty slots fall back to desktop (no switch = one logo).
+		printf(
+			'<picture class="sgs-responsive-logo__picture">' .
+			'<source media="(max-width: 767px)" srcset="%1$s">' .
+			'<source media="(max-width: 1023px)" srcset="%2$s">' .
+			'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async">' .
+			'</picture>',
+			esc_url( $effective_mobile_url ),
+			esc_url( $effective_tablet_url ),
+			esc_url( $desktop_url ),
+			esc_attr( $alt ),
+			absint( $width )
+		);
+	}
 }
 
 if ( $link_to_home ) {
