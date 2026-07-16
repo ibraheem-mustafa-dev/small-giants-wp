@@ -77,13 +77,9 @@
 
 			<!-- wp:sgs/text {"text":"A short description of the brands or partners shown here — who they are and why they matter to your customers.","textColour":"text-muted","fontSize":"0.875rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
 
-			<!-- wp:buttons -->
-			<div class="wp-block-buttons">
-				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"6px"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}}} -->
-				<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" href="#" style="border-radius:6px;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">View all brands</a></div>
-				<!-- /wp:button -->
-			</div>
-			<!-- /wp:buttons -->
+			<!-- wp:sgs/multi-button -->
+				<!-- wp:sgs/button {"label":"View all brands","url":"#","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"6px"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}}} /-->
+			<!-- /wp:sgs/multi-button -->
 
 		</div>
 		<!-- /wp:column -->

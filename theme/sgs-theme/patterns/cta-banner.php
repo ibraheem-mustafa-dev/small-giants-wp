@@ -24,13 +24,9 @@
 
 		<!-- wp:column {"verticalAlignment":"center","width":"35%"} -->
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:35%">
-			<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"right"}} -->
-			<div class="wp-block-buttons">
-				<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"8px"}}} -->
-				<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-accent-background-color has-background wp-element-button" style="border-radius:8px">Get Started Today</a></div>
-				<!-- /wp:button -->
-			</div>
-			<!-- /wp:buttons -->
+			<!-- wp:sgs/multi-button {"justifyContent":"flex-end"} -->
+				<!-- wp:sgs/button {"label":"Get Started Today","colourBackground":"accent","inheritStyle":"custom","colourText":"text","style":{"border":{"radius":"8px"}}} /-->
+			<!-- /wp:sgs/multi-button -->
 		</div>
 		<!-- /wp:column -->
 

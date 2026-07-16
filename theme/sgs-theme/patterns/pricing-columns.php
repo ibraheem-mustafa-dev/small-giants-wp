@@ -38,13 +38,9 @@
 				<li>Basic SEO setup</li>
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
-					<!-- wp:button {"className":"is-style-outline","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-outline"><a class="wp-block-button__link wp-element-button" style="border-radius:8px">Choose Starter</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
+				<!-- wp:sgs/multi-button {"justifyContent":"center","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+					<!-- wp:sgs/button {"label":"Choose Starter","inheritStyle":"outline","widthType":"custom","customWidth":100,"customWidthUnit":"%","style":{"border":{"radius":"8px"}}} /-->
+				<!-- /wp:sgs/multi-button -->
 			</div>
 			<!-- /wp:group -->
 		</div>
@@ -74,13 +70,9 @@
 				<li>Priority support</li>
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
-					<!-- wp:button {"backgroundColor":"primary","textColor":"surface","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px">Choose Professional</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
+				<!-- wp:sgs/multi-button {"justifyContent":"center","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+					<!-- wp:sgs/button {"label":"Choose Professional","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","widthType":"custom","customWidth":100,"customWidthUnit":"%","style":{"border":{"radius":"8px"}}} /-->
+				<!-- /wp:sgs/multi-button -->
 			</div>
 			<!-- /wp:group -->
 		</div>
@@ -109,13 +101,9 @@
 				<li>Dedicated account manager</li>
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-				<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
-					<!-- wp:button {"className":"is-style-outline","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-outline"><a class="wp-block-button__link wp-element-button" style="border-radius:8px">Contact Us</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
+				<!-- wp:sgs/multi-button {"justifyContent":"center","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+					<!-- wp:sgs/button {"label":"Contact Us","inheritStyle":"outline","widthType":"custom","customWidth":100,"customWidthUnit":"%","style":{"border":{"radius":"8px"}}} /-->
+				<!-- /wp:sgs/multi-button -->
 			</div>
 			<!-- /wp:group -->
 		</div>

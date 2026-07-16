@@ -25,13 +25,9 @@
 			<!-- wp:sgs/heading {"content":"We've Been Building Exceptional Experiences Since 2010","fontSize":"xx-large"} /-->
 			<!-- wp:sgs/text {"text":"Our team of dedicated professionals brings together decades of experience to deliver outstanding results for every client. We believe in quality, transparency, and building lasting relationships.","textColour":"text-muted"} /-->
 			<!-- wp:sgs/text {"text":"From small businesses to enterprise organisations, we tailor our approach to meet your unique needs and goals.","textColour":"text-muted"} /-->
-			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
-			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
-				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"}}} -->
-				<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px">Our Story</a></div>
-				<!-- /wp:button -->
-			</div>
-			<!-- /wp:buttons -->
+			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+				<!-- wp:sgs/button {"label":"Our Story","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"8px"}}} /-->
+			<!-- /wp:sgs/multi-button -->
 		</div>
 		<!-- /wp:column -->
 	</div>

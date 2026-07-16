@@ -43,13 +43,9 @@
 			</ul>
 			<!-- /wp:list -->
 
-			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
-				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"}}} -->
-				<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" href="#" style="border-radius:8px">Learn more &rarr;</a></div>
-				<!-- /wp:button -->
-			</div>
-			<!-- /wp:buttons -->
+			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+				<!-- wp:sgs/button {"label":"Learn more &rarr;","url":"#","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"8px"}}} /-->
+			<!-- /wp:sgs/multi-button -->
 
 		</div>
 		<!-- /wp:column -->

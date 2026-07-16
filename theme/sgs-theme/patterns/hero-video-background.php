@@ -16,13 +16,9 @@
 	<div class="wp-block-group">
 		<!-- wp:sgs/heading {"content":"Watch Your Business Grow","textAlign":"center","level":"h1","textColour":"surface","fontSize":"hero"} /-->
 		<!-- wp:sgs/text {"text":"Replace the cover block's background with a video URL to create a stunning video hero section.","textAlign":"center","textColour":"text-inverse","fontSize":"large"} /-->
-		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-		<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
-			<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"8px"}}} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-accent-background-color has-background wp-element-button" style="border-radius:8px">Watch Demo</a></div>
-			<!-- /wp:button -->
-		</div>
-		<!-- /wp:buttons -->
+		<!-- wp:sgs/multi-button {"justifyContent":"center","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<!-- wp:sgs/button {"label":"Watch Demo","colourBackground":"accent","inheritStyle":"custom","colourText":"text","style":{"border":{"radius":"8px"}}} /-->
+		<!-- /wp:sgs/multi-button -->
 	</div>
 	<!-- /wp:group -->
 

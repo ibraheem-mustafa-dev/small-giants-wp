@@ -60,13 +60,9 @@
 
 				<!-- wp:sgs/text {"text":"A short, reassuring sentence about what happens after the visitor clicks the button below.","fontSize":"0.875rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"textColour":"text-muted"} /-->
 
-				<!-- wp:buttons -->
-				<div class="wp-block-buttons">
-					<!-- wp:button {"backgroundColor":"accent","textColor":"text","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-text-color has-accent-background-color has-text-color has-background wp-element-button" href="#" style="border-radius:8px">Get in touch &rarr;</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
+				<!-- wp:sgs/multi-button -->
+					<!-- wp:sgs/button {"label":"Get in touch &rarr;","url":"#","colourBackground":"accent","inheritStyle":"custom","colourText":"text","widthType":"custom","customWidth":100,"customWidthUnit":"%","style":{"border":{"radius":"8px"}}} /-->
+				<!-- /wp:sgs/multi-button -->
 
 			</div>
 			<!-- /wp:group -->

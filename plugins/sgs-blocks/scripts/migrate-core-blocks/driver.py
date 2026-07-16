@@ -109,9 +109,46 @@ def load_replaces_map(db_path):
 
 
 def load_target_schema(target):
+    """Declared attrs + the ones WP INJECTS from the block's `supports`.
+
+    block.json's static `attributes` object is NOT the whole schema: WP core's
+    `wp_register_{colour,typography,…}_support()` add attrs to a block type at
+    registration when the matching support is declared — which is why e.g.
+    sgs/multi-button's render.php legitimately reads `$attributes['backgroundColor']`
+    while block.json never lists it. Reading only the static object made the gate
+    reject a correct emit and abort the whole run (found by the buttons pairing).
+    Derived from supports rather than blanket-allowed, so emitting a colour attr
+    at a block WITHOUT colour support is still caught as the silent-discard bug
+    it would be.
+    """
     bj = BLOCKS_DIR / target.split('/', 1)[1] / 'block.json'
     d = json.loads(bj.read_text(encoding='utf-8'))
-    return set(d.get('attributes', {}).keys())
+    declared = set(d.get('attributes', {}).keys())
+
+    supports = d.get('supports', {}) or {}
+    colour = supports.get('color', supports.get('__experimentalColor'))
+    typography = supports.get('typography', {}) or {}
+    border = supports.get('__experimentalBorder', supports.get('border'))
+
+    if isinstance(colour, dict):
+        if colour.get('background'):
+            declared.add('backgroundColor')
+        if colour.get('text'):
+            declared.add('textColor')
+        if colour.get('gradients'):
+            declared.add('gradient')
+        if colour.get('link'):
+            declared.add('linkColor')
+    if typography.get('fontSize'):
+        declared.add('fontSize')
+    if typography.get('__experimentalFontFamily') or typography.get('fontFamily'):
+        declared.add('fontFamily')
+    if supports.get('align'):
+        declared.add('align')
+    # `style` is the shared bag for every skip-serialised support group.
+    if colour or typography or border or supports.get('spacing') or supports.get('shadow'):
+        declared.add('style')
+    return declared
 
 
 def gate_result(node, result, declared, rel):
