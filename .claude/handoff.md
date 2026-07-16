@@ -2,7 +2,29 @@
 doc_type: handoff
 project: small-giants-wp
 generated: 2026-07-16
-session: D341/D342 — Spec 34 disclosure drawer BUILT + live (Gate B all-pass); scoped handoff for Tracks B+C; qc-council pre-build gate
+session: Track C core-block migration COMPLETE (safe zone 395→0) + D341/D342 Spec 34 disclosure drawer
+---
+
+# Session Handoff — 2026-07-16 (Track C — core→SGS migration COMPLETE)
+
+*Ran in the `../small-giants-wp-trackc` worktree, branch `feat/core-block-migration`. Separate from the D341/D342 session below (Track A).*
+
+## Track C DONE — every core block with a real SGS replacement is now an SGS block
+
+Safe-zone replaceable core blocks: **395 → 0** across the session. All live-verified on the sandybrown canary.
+
+1. **Preset font-size gap CLOSED** (`9b3b5f2c`) — qc-council-gated; `sgs/heading`+`sgs/text` `fontSize` widened to `["number","string"]` so theme preset slugs render. Live 16/24px→14px.
+2. **Migrated (all pairings, live-proven):** `core/image`→media (7), `core/heading`→heading (51), `core/paragraph`→text (121+4 bound), `core/button`→button (15)+`core/buttons`→multi-button (13), `core/latest-posts`→post-grid, `core/site-logo`→responsive-logo (3), `core/cover`→hero (1), `core/details`→**accordion** (5, retargeted from collapsible-text), `core/group`→container (96), `core/columns`+`core/column`→container (78).
+3. **Buttons use the PRESET system** (`81131811`) — primary buttons → `inheritStyle:"primary"` (Mama's designed preset), not custom colours. Bean-corrected.
+4. **New capabilities:** SGS **block bindings** (`8fe67eed`) so bound email/phone survive migration; **`tagName`** on `sgs/container` (D344, `5681ba21`) — a11y/SEO landmarks (`div/section/article/aside/main/nav/header/footer/figure`) + editor dropdown.
+5. **`core/query` mapping DROPPED as not-real** (`dbfcc3b2`) — post-grid has no main-query inherit mode, so it can't replace the 3 archive/search/index `inherit:true` loops; removed `core/query`+`core/post-template` from `sgs/post-grid.replaces`. The 6 stay core (no real replacement, not a STOP violation).
+6. **qc-council caught 2 of my errors** on the container pairing: a fix-shape that was already a no-op, and a "regression" that was a probe measuring the `__inner` not the outer — the migration was correct all along (STOP-19 rollback + prove-the-cause).
+7. **`/sgs-update` reconciled the DB** — `tagName`, `fontSize` unions, details→accordion + post-grid maps; regenerated `02-SGS-BLOCKS-REFERENCE.md` (200 blocks / 2741 attrs).
+
+**Migration infra** (`plugins/sgs-blocks/scripts/migrate-core-blocks/`): span-preserving parser + `driver.py` (DB-first pairing map, leaf-first re-parse, structural anti-silent-discard gate) + one module per pairing. Decisions log: `.claude/scratch/track-c-decisions-pending.md` (TC-1..TC-34).
+
+**Left for follow-up:** 187 Track-A hands-off instances (header/footer/mega-menu) — migrate after Track A's rebuild lands. `feat/core-block-migration` is unmerged in the worktree.
+
 ---
 
 # Session Handoff — 2026-07-16 (D341/D342)

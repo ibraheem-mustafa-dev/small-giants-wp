@@ -15,9 +15,13 @@ Invoke `/autopilot` first. Read **`.claude/handoff.md` FIRST** (it carries Bean'
 **Parallel tracks — do NOT touch their files:** Track B = Indus page CONTENT — **DONE
 2026-07-16**, branch `feat/track-b-content-restore` (`ca0894ef`/`9c29dbe3`/`ca1ed3ea`,
 pushed, unmerged; consumed prompt archived → `.claude/scratch/TRACK-B-*.md`). Track C =
-core→SGS migration in patterns (`TRACK-C-*.md`, branch `feat/core-block-migration`). Both
-write decisions to `.claude/scratch/track-{b,c}-decisions-pending.md` — MERGE those into
-decisions.md/parking.md at this track's handoff (Track B = TB-1…TB-9).
+core→SGS migration in patterns — **DONE 2026-07-16**, branch `feat/core-block-migration`
+(worktree `../small-giants-wp-trackc`, unmerged; safe-zone core blocks 395→0; adds
+`sgs/container.tagName` D344 + SGS block-bindings; consumed prompt archived →
+`.claude/scratch/TRACK-C-*-DONE-2026-07-16.md`). Both wrote decisions to
+`.claude/scratch/track-{b,c}-decisions-pending.md` — MERGE those into decisions.md/parking.md
+at this track's handoff (Track B = TB-1…TB-9; Track C = TC-1…TC-34).
+**Track C left the 187 header/footer/mega-menu instances for AFTER this Track-A rebuild lands.**
 
 **⛔ A SHARED CHECKOUT SHARES `git HEAD`.** Track A/C branch switches silently REVERTED two
 of Track B's working-tree edits, and one got committed in its reverted state under a message
