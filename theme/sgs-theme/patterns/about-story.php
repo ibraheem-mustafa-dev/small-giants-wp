@@ -28,7 +28,7 @@
 			<!-- wp:sgs/text {"text":"We started with a passion for excellence and a commitment to delivering outstanding results. Over the years, we have grown into a trusted partner for businesses seeking to make a lasting impact.","textColour":"text-muted","fontSize":"medium"} /-->
 			<!-- wp:sgs/text {"text":"Our team brings together diverse expertise and a shared dedication to quality, innovation, and client success.","textColour":"text-muted","fontSize":"medium"} /-->
 			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
-				<!-- wp:sgs/button {"label":"Learn More About Us","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"8px"}}} /-->
+				<!-- wp:sgs/button {"label":"Learn More About Us","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 			<!-- /wp:sgs/multi-button -->
 		</div>
 		<!-- /wp:column -->

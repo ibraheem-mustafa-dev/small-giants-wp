@@ -26,7 +26,7 @@
 			<!-- wp:sgs/text {"text":"Our team of dedicated professionals brings together decades of experience to deliver outstanding results for every client. We believe in quality, transparency, and building lasting relationships.","textColour":"text-muted"} /-->
 			<!-- wp:sgs/text {"text":"From small businesses to enterprise organisations, we tailor our approach to meet your unique needs and goals.","textColour":"text-muted"} /-->
 			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
-				<!-- wp:sgs/button {"label":"Our Story","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"8px"}}} /-->
+				<!-- wp:sgs/button {"label":"Our Story","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 			<!-- /wp:sgs/multi-button -->
 		</div>
 		<!-- /wp:column -->

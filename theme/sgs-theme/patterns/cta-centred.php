@@ -17,7 +17,7 @@
 	<!-- wp:sgs/text {"text":"Join hundreds of satisfied clients who have transformed their businesses with our help.","textAlign":"center","textColour":"text-muted","fontSize":"medium"} /-->
 
 	<!-- wp:sgs/multi-button {"justifyContent":"center","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-		<!-- wp:sgs/button {"label":"Book a Consultation","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"8px"}}} /-->
+		<!-- wp:sgs/button {"label":"Book a Consultation","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 		<!-- wp:sgs/button {"label":"View Our Work","inheritStyle":"outline","style":{"border":{"radius":"8px"}}} /-->
 	<!-- /wp:sgs/multi-button -->
 

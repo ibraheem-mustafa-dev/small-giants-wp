@@ -30,12 +30,72 @@ the CLAUDE.md-documented D338 class of mistake. Any other `is-style-*` value
 has no sgs/button equivalent and is refused.
 """
 
+import functools
+import json
 import re
 import sys
 import pathlib
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from block_parser import serialize_comment  # noqa: E402
+
+_THEME_JSON = pathlib.Path(__file__).resolve().parents[5] / 'theme' / 'sgs-theme' / 'theme.json'
+
+
+@functools.lru_cache(maxsize=1)
+def _button_preset_backgrounds():
+    """Map a resolved background hex -> preset name, from theme.json.
+
+    Theme-driven (R-31-1), not hardcoded: reads settings.color.palette to
+    resolve slugs/`var(--wp--preset--color--X)` to hex, then keys each
+    settings.custom.buttonPresets entry by its resolved background. Only
+    solid-background presets are matchable (a transparent-background preset
+    like secondary/outline can't be inferred from a coloured core button).
+    """
+    try:
+        data = json.loads(_THEME_JSON.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    palette = {c['slug']: str(c['color']).lower()
+               for c in data.get('settings', {}).get('color', {}).get('palette', [])}
+
+    def resolve(v):
+        if not v:
+            return None
+        v = str(v).strip().lower()
+        m = re.match(r'var\(\s*--wp--preset--color--([a-z0-9-]+)', v)
+        if m:
+            v = m.group(1)
+        return palette.get(v, v)
+
+    out = {}
+    presets = data.get('settings', {}).get('custom', {}).get('buttonPresets', {})
+    for name, spec in presets.items():
+        bg = resolve(spec.get('background'))
+        if bg and bg != 'transparent':
+            out.setdefault(bg, name)
+    return out
+
+
+def _match_button_preset(bg_slug, text_slug):
+    """Return the preset name whose background matches this core button, or None.
+
+    Matched on BACKGROUND only — it is the distinguishing feature of a solid
+    preset, and the preset then supplies its own (near-identical) text colour.
+    A background with no solid-preset match returns None -> the caller keeps the
+    exact custom colours.
+    """
+    if bg_slug is None:
+        return None
+    palette_map = _button_preset_backgrounds()
+    if not palette_map:
+        return None
+    # Resolve the core slug the same way (slug -> hex; else the raw value).
+    data = json.loads(_THEME_JSON.read_text(encoding='utf-8'))
+    palette = {c['slug']: str(c['color']).lower()
+               for c in data.get('settings', {}).get('color', {}).get('palette', [])}
+    resolved = palette.get(str(bg_slug).lower(), str(bg_slug).lower())
+    return palette_map.get(resolved)
 from contract import GapError, TransformResult  # noqa: E402
 from pairings.typography_common import split_length  # noqa: E402
 
@@ -164,23 +224,16 @@ def transform(node, text):
     # ---- JSON-attrs accounting loop (this IS what the gate checks) ----
     accounting = {}
 
+    # Colours are decided AFTER the loop: a core button whose background matches
+    # an SGS button PRESET (theme.json settings.custom.buttonPresets) should use
+    # that preset — Bean's design system — not a bypassing `custom` emit. Only a
+    # background with no matching preset stays custom. Collect, then resolve.
+    core_bg = attrs_in.get('backgroundColor')
+    core_text = attrs_in.get('textColor')
+
     for key, value in attrs_in.items():
-        if key == 'backgroundColor':
-            # sgs_colour_value() (helpers-tokens.php:557, verified 2026-07-16) accepts a
-            # preset SLUG directly and wraps it var(--wp--preset--color--{slug}) -- the
-            # same var the core preset produces. inheritStyle -> "custom" so the
-            # .sgs-button--{preset} BEM modifier (which sets ITS OWN --sgs-btn-bg from a
-            # DIFFERENT token family, --wp--custom--button-presets--*) does not also
-            # apply and fight the explicit colour.
-            out['colourBackground'] = value
-            out['inheritStyle'] = 'custom'
-            accounting[key] = ('mapped', 'colourBackground (preset slug via sgs_colour_value); '
-                                          'forces inheritStyle:"custom"')
-        elif key == 'textColor':
-            out['colourText'] = value
-            out['inheritStyle'] = 'custom'
-            accounting[key] = ('mapped', 'colourText (preset slug via sgs_colour_value); '
-                                          'forces inheritStyle:"custom"')
+        if key in ('backgroundColor', 'textColor'):
+            continue  # resolved after the loop
         elif key == 'gradient':
             raise GapError('gradient background has no sgs/button equivalent -- '
                             'supports.color declares background+text only, no gradients')
@@ -278,6 +331,37 @@ def transform(node, text):
                                 'JSON-attrs mirror, if present, is never authoritative)')
         else:
             raise GapError(f'source attr "{key}" not handled by this module -- extend the mapping')
+
+    # ---- colour resolution: prefer a matching SGS button PRESET over custom ----
+    # A core button whose BACKGROUND matches an sgs/button preset IS that preset
+    # button (Bean's design system) — emit the preset so it gets the preset's
+    # padding / min-height / designed hover, instead of a `custom` emit that
+    # bypasses all of that. Only a background with no matching preset stays custom.
+    if 'inheritStyle' not in out and (core_bg is not None or core_text is not None):
+        preset = _match_button_preset(core_bg, core_text)
+        if preset:
+            out['inheritStyle'] = preset
+            detail = f'backgroundColor:{core_bg!r} matches the "{preset}" preset ' \
+                     f'(theme.json settings.custom.buttonPresets) -> inheritStyle:"{preset}", ' \
+                     f'so the button uses the preset\'s padding/min-height/hover'
+            if core_bg is not None:
+                accounting['backgroundColor'] = ('mapped', detail)
+            if core_text is not None:
+                accounting['textColor'] = (
+                    'dropped',
+                    f'the "{preset}" preset supplies the text colour; core textColor:'
+                    f'{core_text!r} resolves near-identically (verify live)')
+        else:
+            out['inheritStyle'] = 'custom'
+            if core_bg is not None:
+                out['colourBackground'] = core_bg
+                accounting['backgroundColor'] = (
+                    'mapped', 'colourBackground (no matching preset -> inheritStyle:"custom", '
+                              'preserves the exact colour via sgs_colour_value)')
+            if core_text is not None:
+                out['colourText'] = core_text
+                accounting['textColor'] = (
+                    'mapped', 'colourText (custom; no matching preset)')
 
     replacement = serialize_comment('sgs/button', out, void=True)
     return TransformResult(replacement, out, 'sgs/button', accounting, notes)

@@ -71,7 +71,7 @@
 				<!-- /wp:list-item --></ul>
 				<!-- /wp:list -->
 				<!-- wp:sgs/multi-button {"justifyContent":"center","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-					<!-- wp:sgs/button {"label":"Choose Professional","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","widthType":"custom","customWidth":100,"customWidthUnit":"%","style":{"border":{"radius":"8px"}}} /-->
+					<!-- wp:sgs/button {"label":"Choose Professional","inheritStyle":"primary","widthType":"custom","customWidth":100,"customWidthUnit":"%","style":{"border":{"radius":"8px"}}} /-->
 				<!-- /wp:sgs/multi-button -->
 			</div>
 			<!-- /wp:group -->

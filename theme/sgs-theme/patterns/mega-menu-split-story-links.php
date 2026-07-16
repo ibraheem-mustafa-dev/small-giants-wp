@@ -44,7 +44,7 @@
 			<!-- /wp:list -->
 
 			<!-- wp:sgs/multi-button {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-				<!-- wp:sgs/button {"label":"Learn more &rarr;","url":"#","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"8px"}}} /-->
+				<!-- wp:sgs/button {"label":"Learn more &rarr;","url":"#","inheritStyle":"primary","style":{"border":{"radius":"8px"}}} /-->
 			<!-- /wp:sgs/multi-button -->
 
 		</div>

@@ -78,7 +78,7 @@
 			<!-- wp:sgs/text {"text":"A short description of the brands or partners shown here — who they are and why they matter to your customers.","textColour":"text-muted","fontSize":"0.875rem","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
 
 			<!-- wp:sgs/multi-button -->
-				<!-- wp:sgs/button {"label":"View all brands","url":"#","colourBackground":"primary","inheritStyle":"custom","colourText":"surface","style":{"border":{"radius":"6px"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}}} /-->
+				<!-- wp:sgs/button {"label":"View all brands","url":"#","inheritStyle":"primary","style":{"border":{"radius":"6px"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}}} /-->
 			<!-- /wp:sgs/multi-button -->
 
 		</div>
