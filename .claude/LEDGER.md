@@ -84,10 +84,17 @@ operator `custom` breakpoint; `sgs/adaptive-nav` collapse tier now reads `SGS_Br
 live-verified both sites. Detail: `decisions.md` D341/D342 + `memory/session-2026-07-16.md`
 (swept from the old handoff/state).
 
-1. **Phase 1 — drawer link-colour polish (quick, do first).** `sgs/nav-menu` resting link
-   text renders `#000`; Bean prefers the `text` token charcoal `#3a2e26`. Keep the
-   focus-mirrors-base + underline (already live-correct). Change ONLY resting colour; verify
-   across all 8 client palettes (STOP-VERIFY-EVERY-CLIENT).
+1. **Phase 1 — drawer polish — DONE (2026-07-17, on `main`).** (a) Resting link colour now
+   prefers the client `text` token when it clears WCAG 4.5:1 (mamas `#3a2e26` adopts 5.28:1;
+   helping-doctors/indus keep the safe fallback — 2.90/2.39:1 fail, by design) via the new
+   shared `sgs_wcag_preferred_text_colour_for_bg` helper (commit `6fc11618`, live-verified).
+   (b) The drawer's auto-focused first link no longer shows the theme `:focus` underline on
+   open — `.sgs-nav-menu__link:focus:not(:focus-visible){text-decoration:none}` (commit
+   `73544914`→`09399f6d`; keyboard `:focus-visible` underline preserved, WCAG 2.4.7). ⚠
+   Deployed live to canary + build/specificity-verified, but the final post-deploy Playwright
+   eyeball (open=no underline / Tab=underline) was DEFERRED at Bean's wrap-up — honest report
+   `reports/visual-diff/nav-menu-2026-07-17.md` (verdict not fabricated). Finish that eyeball
+   next session, or Bean confirms on the canary.
 2. **Phase 3 — finish Spec 34** (`specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md`, plan
    `plans/2026-07-15-spec34-build-plan.md`): Step 5 drawer settings (FR-34-5), Step 6
    builder reflection (FR-34-6 — RECONCILE, don't redo), Gate C (FR-34-7), then a FRESH
