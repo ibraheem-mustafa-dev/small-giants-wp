@@ -177,7 +177,7 @@ section.sgs-hero {
 }
 
 .sgs-hero--standard .sgs-hero__content {
-	max-width: var(--wp--style--global--wide-size, 1200px);
+	max-width: var(--wp--style--global--wide-size);
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;

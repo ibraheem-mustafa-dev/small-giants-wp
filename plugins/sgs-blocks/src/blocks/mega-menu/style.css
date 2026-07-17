@@ -224,7 +224,7 @@
 .sgs-mega-menu--panel-content .sgs-mega-menu__panel {
 	left:      var(--sgs-mm-overflow-left, 50%);
 	right:     var(--sgs-mm-overflow-right, auto);
-	max-width: var(--wp--style--global--content-size, 1200px);
+	max-width: var(--wp--style--global--content-size);
 	--sgs-mm-tx:      -50%;
 	--sgs-mm-open-tx: -50%;
 }
