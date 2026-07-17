@@ -11,7 +11,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveBorderRadiusControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ResponsiveBorderRadiusControl, TypographyControls } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -20,6 +20,18 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
+];
+
+const IMAGE_EFFECT_OPTIONS = [
+	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Greyscale', 'sgs-blocks' ), value: 'grayscale' },
+	{ label: __( 'Sepia', 'sgs-blocks' ), value: 'sepia' },
+];
+
+const TILE_SHADOW_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
+	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
 ];
 
 const SPEED_OPTIONS = [
@@ -85,12 +97,34 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 			/>
 
 			<TextControl
+				label={ __( 'Name / label (optional)', 'sgs-blocks' ) }
+				help={ __(
+					'Shown as a caption under the logo when "Show logo names" is on.',
+					'sgs-blocks'
+				) }
+				value={ logo.name || '' }
+				onChange={ ( val ) => update( 'name', val ) }
+				__nextHasNoMarginBottom
+			/>
+
+			<TextControl
 				label={ __( 'Link URL (optional)', 'sgs-blocks' ) }
 				value={ logo.linkUrl || '' }
 				onChange={ ( val ) => update( 'linkUrl', val ) }
 				type="url"
 				__nextHasNoMarginBottom
 			/>
+
+			{ logo.linkUrl && (
+				<ToggleControl
+					label={ __( 'Open link in new tab', 'sgs-blocks' ) }
+					checked={ logo.linkTarget === '_blank' }
+					onChange={ ( val ) =>
+						update( 'linkTarget', val ? '_blank' : '_self' )
+					}
+					__nextHasNoMarginBottom
+				/>
+			) }
 
 			<Button
 				variant="secondary"
@@ -177,8 +211,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		scrollDirection,
 		fadeEdges,
 		fadeWidth,
-		greyscale,
+		imageEffect,
 		maxHeight,
+		showNames,
+		pauseOnHover,
+		nameColour,
+		logoGap,
+		tileBorderWidth,
+		tileBorderColour,
+		tileShadow,
 		backgroundColourHover,
 		textColourHover,
 		borderColourHover,
@@ -209,17 +250,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( {
 			logos: [
 				...logos,
-				{ media: null, alt: '', linkUrl: '' },
+				{ media: null, alt: '', name: '', linkUrl: '', linkTarget: '_self' },
 			],
 		} );
 	};
 
 	const className = [
 		'sgs-brand-strip',
-		greyscale ? 'sgs-brand-strip--greyscale' : '',
+		'none' !== imageEffect ? `sgs-brand-strip--effect-${ imageEffect }` : '',
 		scrolling ? 'sgs-brand-strip--scrolling' : '',
 		scrollDirection === 'right' ? 'sgs-brand-strip--reverse' : '',
 		fadeEdges ? 'sgs-brand-strip--fade' : '',
+		'none' !== tileShadow ? `sgs-brand-strip--tile-shadow-${ tileShadow }` : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -237,6 +279,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			'--sgs-fade-width': fadeEdges ? `${ fadeWidth }px` : undefined,
+			'--sgs-logo-gap': logoGap > 0 ? `${ logoGap }px` : undefined,
+			'--sgs-tile-border-width': tileBorderWidth > 0 ? `${ tileBorderWidth }px` : undefined,
+			'--sgs-tile-border-colour': tileBorderColour ? colourVar( tileBorderColour ) : undefined,
 		},
 	} );
 
@@ -259,16 +304,61 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 120 }
 						__nextHasNoMarginBottom
 					/>
-					<ToggleControl
-						label={ __( 'Greyscale', 'sgs-blocks' ) }
+					<SelectControl
+						label={ __( 'Logo image effect', 'sgs-blocks' ) }
 						help={ __(
-							'Display logos in greyscale, colour on hover.',
+							'Apply greyscale or sepia to logos, full colour on hover.',
 							'sgs-blocks'
 						) }
-						checked={ greyscale }
+						value={ imageEffect }
+						options={ IMAGE_EFFECT_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { greyscale: val } )
+							setAttributes( { imageEffect: val } )
 						}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Show logo names', 'sgs-blocks' ) }
+						help={ __(
+							'Display each logo’s name as a caption underneath its tile.',
+							'sgs-blocks'
+						) }
+						checked={ showNames }
+						onChange={ ( val ) =>
+							setAttributes( { showNames: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ showNames && (
+						<>
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix="name"
+								showStyle={ false }
+								showLineHeight={ false }
+							/>
+							<DesignTokenPicker
+								label={ __( 'Logo name colour', 'sgs-blocks' ) }
+								value={ nameColour }
+								onChange={ ( val ) =>
+									setAttributes( { nameColour: val } )
+								}
+							/>
+						</>
+					) }
+					<RangeControl
+						label={ __( 'Gap between logos (px)', 'sgs-blocks' ) }
+						help={ __(
+							'0 uses the theme default spacing.',
+							'sgs-blocks'
+						) }
+						value={ logoGap }
+						onChange={ ( val ) =>
+							setAttributes( { logoGap: val } )
+						}
+						min={ 0 }
+						max={ 200 }
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
@@ -299,6 +389,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ DIRECTION_OPTIONS }
 								onChange={ ( val ) =>
 									setAttributes( { scrollDirection: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Pause on hover', 'sgs-blocks' ) }
+								help={ __(
+									'Stop the marquee while a visitor’s pointer is over it — required for WCAG 2.2.2 (Pause, Stop, Hide) on auto-moving content.',
+									'sgs-blocks'
+								) }
+								checked={ pauseOnHover }
+								onChange={ ( val ) =>
+									setAttributes( { pauseOnHover: val } )
 								}
 								__nextHasNoMarginBottom
 							/>
@@ -417,6 +519,42 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
+					title={ __( 'Tile border & shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<RangeControl
+						label={ __( 'Tile border width (px)', 'sgs-blocks' ) }
+						help={ __(
+							'Static border shown on every tile at rest — separate from the hover border colour below.',
+							'sgs-blocks'
+						) }
+						value={ tileBorderWidth }
+						onChange={ ( val ) =>
+							setAttributes( { tileBorderWidth: val } )
+						}
+						min={ 0 }
+						max={ 10 }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Tile border colour', 'sgs-blocks' ) }
+						value={ tileBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( { tileBorderColour: val } )
+						}
+					/>
+					<SelectControl
+						label={ __( 'Tile shadow', 'sgs-blocks' ) }
+						value={ tileShadow }
+						options={ TILE_SHADOW_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { tileShadow: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
 					title={ __( 'Hover States', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
@@ -495,19 +633,55 @@ export default function Edit( { attributes, setAttributes } ) {
 								if ( ! mediaUrl ) {
 									return null;
 								}
+								const hasCaption = showNames && logo.name;
+								const nameId = hasCaption
+									? `sgs-brand-strip-name-preview-${ i }`
+									: undefined;
+								const tileImg = (
+									<img
+										src={ mediaUrl }
+										alt={ hasCaption ? '' : ( logo.alt || '' ) }
+										className="sgs-brand-strip__logo"
+										style={ {
+											maxHeight: `${ maxHeight }px`,
+										} }
+									/>
+								);
+								if ( ! hasCaption ) {
+									return (
+										<div
+											key={ i }
+											className="sgs-brand-strip__item"
+										>
+											{ tileImg }
+										</div>
+									);
+								}
 								return (
 									<div
 										key={ i }
-										className="sgs-brand-strip__item"
+										className="sgs-brand-strip__tile"
 									>
-										<img
-											src={ mediaUrl }
-											alt={ logo.alt || '' }
-											className="sgs-brand-strip__logo"
+										<div className="sgs-brand-strip__item">
+											{ tileImg }
+										</div>
+										<span
+											id={ nameId }
+											className="sgs-brand-strip__name"
 											style={ {
-												maxHeight: `${ maxHeight }px`,
+												// Editor-canvas preview convenience (base tier only,
+												// mirrors container/quote precedent) — the actual
+												// frontend output is the scoped <style> render.php
+												// emits via sgs_typography_css_rule(), never inline.
+												fontSize: attributes.nameFontSize
+													? `${ attributes.nameFontSize }${ attributes.nameFontSizeUnit || 'px' }`
+													: undefined,
+												fontWeight: attributes.nameFontWeight || undefined,
+												color: nameColour ? colourVar( nameColour ) : undefined,
 											} }
-										/>
+										>
+											{ logo.name }
+										</span>
 									</div>
 								);
 							} ) }

@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "SGS Brand Strip",
 	"category": "sgs-content",
-	"description": "Horizontal logo strip with infinite marquee scroll, fade edges, direction control, and greyscale effect.",
+	"description": "Horizontal logo strip with infinite marquee scroll, fade edges, direction control, and greyscale/sepia image effects.",
 	"keywords": [
 		"brand",
 		"logo",
@@ -61,7 +61,7 @@
 		}
 	},
 	"attributes": {
-		"_comment_logos_media": "Migrated 2026-05-05 â€” each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos.",
+		"_comment_logos_media": "Migrated 2026-05-05 â€” each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
 		"logos": {
 			"type": "array",
 			"default": [],
@@ -70,6 +70,18 @@
 				"properties": {
 					"media": {
 						"type": "object"
+					},
+					"alt": {
+						"type": "string"
+					},
+					"linkUrl": {
+						"type": "string"
+					},
+					"linkTarget": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
 					}
 				}
 			}
@@ -94,13 +106,58 @@
 			"type": "number",
 			"default": 60
 		},
-		"greyscale": {
-			"type": "boolean",
-			"default": false
+		"imageEffect": {
+			"type": "string",
+			"default": "none"
 		},
 		"maxHeight": {
 			"type": "number",
 			"default": 80
+		},
+		"showNames": {
+			"type": "boolean",
+			"default": false
+		},
+		"pauseOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"nameFontSize": {
+			"type": "number"
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"nameFontSizeTablet": {
+			"type": "number"
+		},
+		"nameFontSizeMobile": {
+			"type": "number"
+		},
+		"nameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"logoGap": {
+			"type": "number",
+			"default": 0
+		},
+		"tileBorderWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileShadow": {
+			"type": "string",
+			"default": "none"
 		},
 		"backgroundColourHover": {
 			"type": "string",
@@ -159,7 +216,7 @@
 	"example": {
 		"attributes": {
 			"scrolling": true,
-			"greyscale": false,
+			"imageEffect": "none",
 			"maxHeight": 80
 		}
 	}

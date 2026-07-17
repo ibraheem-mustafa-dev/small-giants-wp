@@ -26,7 +26,7 @@
 .sgs-brand-strip__track {
 	display: flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--50);
+	gap: var(--sgs-logo-gap, var(--wp--preset--spacing--50));
 }
 
 /* Static (non-scrolling) mode: wrap and centre.
@@ -54,7 +54,7 @@
 .sgs-brand-strip__set {
 	display: flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--50);
+	gap: var(--sgs-logo-gap, var(--wp--preset--spacing--50));
 	flex-shrink: 0;
 }
 
@@ -162,20 +162,72 @@
 	display: block;
 }
 
-/* ===== Greyscale ===== */
-.sgs-brand-strip--greyscale .sgs-brand-strip__logo,
-.sgs-brand-strip--greyscale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
-	filter: grayscale(100%);
+/* ===== Logo image effect (greyscale / sepia) =====
+ * Generalised from the original boolean `greyscale` attribute (2026-07-17)
+ * to a 3-way `imageEffect` attribute (none/grayscale/sepia) so a client can
+ * pick either treatment. Both effects keep the same hover-to-full-colour
+ * transition the original greyscale effect had. */
+.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
+.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item .sgs-media--sgs-brand-strip,
+.sgs-brand-strip--effect-sepia .sgs-brand-strip__logo,
+.sgs-brand-strip--effect-sepia .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
 	opacity: 0.6;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: filter, opacity;
 }
 
-.sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
-.sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip {
-	filter: grayscale(0%);
+.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
+.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
+	filter: grayscale(100%);
+}
+
+.sgs-brand-strip--effect-sepia .sgs-brand-strip__logo,
+.sgs-brand-strip--effect-sepia .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
+	filter: sepia(100%);
+}
+
+.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
+.sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip,
+.sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
+.sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip {
+	filter: none;
 	opacity: 1;
+}
+
+/* ===== Static tile shadow (distinct from the hover-glow shadow above) =====
+ * Applied at rest, unaffected by hover state. Two fixed tiers mirror the
+ * SGS shadow scale used elsewhere in the framework. */
+.sgs-brand-strip--tile-shadow-small .sgs-brand-strip__item {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.sgs-brand-strip--tile-shadow-medium .sgs-brand-strip__item {
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Name caption (showNames) =====
+ * `.sgs-brand-strip__tile` wraps the tile + caption as a column so the
+ * fixed-size `.sgs-brand-strip__item` box above is untouched — the caption
+ * lives outside it, never forcing the tile itself to grow. */
+.sgs-brand-strip__tile {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+.sgs-brand-strip__name {
+	/* Base fallback only — the client-facing `nameFontSize` control (Typography
+	   Controls, F3 contract §E2) overrides this via render.php's scoped
+	   `.{uid} .sgs-brand-strip__name{font-size:…}` rule, which wins by
+	   selector specificity (0,3,0 vs this rule's 0,1,0). */
+	font-size: var(--sgs-name-font-size, 0.8125rem);
+	line-height: 1.3;
+	text-align: center;
+	color: var(--wp--preset--color--text, currentColor);
+	max-width: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
 }
 
 /* ===== Infinite scrolling animation ===== */
@@ -203,8 +255,17 @@
 
 /* Pause on hover — toggled by view.js as a CLASS (no-inline migration
    contract §A: an inline `.style.animationPlayState` write is a real CSS
-   property declaration, not a `--var` value, so it is forbidden inline). */
-.sgs-brand-strip__track--paused {
+   property declaration, not a `--var` value, so it is forbidden inline).
+   Selector MUST match/beat the `--ready` rule's specificity (0,2,0) above:
+   that rule sets the `animation` SHORTHAND, which resets every unspecified
+   sub-property (including animation-play-state) to its initial value
+   ("running") whenever it wins the cascade. A single-class `--paused`
+   selector (0,1,0) always loses to the two-class `--ready` shorthand rule
+   regardless of source order, so pause-on-hover silently never applied
+   (found live 2026-07-17 while verifying the pauseOnHover control — the
+   class toggled correctly but animation-play-state stayed "running"). The
+   compound selector below (0,3,0) guarantees this rule wins. */
+.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready.sgs-brand-strip__track--paused {
 	animation-play-state: paused;
 }
 
@@ -374,7 +435,8 @@
 		animation: none;
 	}
 
-	.sgs-brand-strip--greyscale .sgs-brand-strip__logo {
+	.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
+	.sgs-brand-strip--effect-sepia .sgs-brand-strip__logo {
 		transition: none;
 	}
 }

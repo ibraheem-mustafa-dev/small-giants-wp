@@ -91,16 +91,22 @@ strips.forEach( ( strip ) => {
 		track.classList.add( 'sgs-brand-strip__track--ready' );
 	}
 
-	// Pause on hover — toggles a CLASS, not an inline style property (no-inline
-	// migration contract §A: `.style.animationPlayState` would write a real
-	// inline CSS property declaration; `.sgs-brand-strip__track--paused` is a
-	// scoped class rule in style.css instead).
-	strip.addEventListener( 'mouseenter', () => {
-		track.classList.add( 'sgs-brand-strip__track--paused' );
-	} );
-	strip.addEventListener( 'mouseleave', () => {
-		track.classList.remove( 'sgs-brand-strip__track--paused' );
-	} );
+	// Pause on hover (WCAG 2.2.2 pause affordance for auto-moving content) —
+	// gated by the editor's "Pause on hover" toggle (pauseOnHover attr, default
+	// true; the block root carries `.sgs-brand-strip--no-pause` when the
+	// operator has switched it off — see render.php). Toggles a CLASS, not an
+	// inline style property (no-inline migration contract §A:
+	// `.style.animationPlayState` would write a real inline CSS property
+	// declaration; `.sgs-brand-strip__track--paused` is a scoped class rule in
+	// style.css instead).
+	if ( ! strip.classList.contains( 'sgs-brand-strip--no-pause' ) ) {
+		strip.addEventListener( 'mouseenter', () => {
+			track.classList.add( 'sgs-brand-strip__track--paused' );
+		} );
+		strip.addEventListener( 'mouseleave', () => {
+			track.classList.remove( 'sgs-brand-strip__track--paused' );
+		} );
+	}
 
 	init();
 } );

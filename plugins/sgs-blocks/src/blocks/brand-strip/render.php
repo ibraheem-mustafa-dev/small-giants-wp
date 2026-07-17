@@ -63,8 +63,15 @@ $scroll_speed        = $attributes['scrollSpeed'] ?? 'medium';
 $scroll_direction    = $attributes['scrollDirection'] ?? 'left';
 $fade_edges          = $attributes['fadeEdges'] ?? false;
 $fade_width          = $attributes['fadeWidth'] ?? 60;
-$greyscale           = $attributes['greyscale'] ?? true;
+$image_effect        = $attributes['imageEffect'] ?? 'none';
 $max_height          = $attributes['maxHeight'] ?? 80;
+$show_names          = ! empty( $attributes['showNames'] );
+$pause_on_hover      = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
+$name_colour         = $attributes['nameColour'] ?? '';
+$logo_gap            = isset( $attributes['logoGap'] ) ? absint( $attributes['logoGap'] ) : 0;
+$tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
+$tile_border_colour  = $attributes['tileBorderColour'] ?? '';
+$tile_shadow         = $attributes['tileShadow'] ?? 'none';
 $hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
@@ -73,7 +80,7 @@ $transition_duration = $attributes['transitionDuration'] ?? '300';
 $transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
 
 // Map scroll speed to CSS animation duration.
-$speed_map = array(
+$speed_map       = array(
 	'slow'   => '60s',
 	'medium' => '30s',
 	'fast'   => '15s',
@@ -81,9 +88,13 @@ $speed_map = array(
 $animation_speed = $speed_map[ $scroll_speed ] ?? '25s';
 
 // Sanitise values.
-$allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
-$safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
-$safe_direction    = in_array( $scroll_direction, array( 'left', 'right' ), true ) ? $scroll_direction : 'left';
+$allowed_effects     = array( 'none', 'lift', 'scale', 'glow' );
+$safe_hover_effect   = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
+$safe_direction      = in_array( $scroll_direction, array( 'left', 'right' ), true ) ? $scroll_direction : 'left';
+$allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
+$safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
+$allowed_shadows     = array( 'none', 'small', 'medium' );
+$safe_tile_shadow    = in_array( $tile_shadow, $allowed_shadows, true ) ? $tile_shadow : 'none';
 
 // ---------------------------------------------------------------------------
 // 3. WP-native style groups (skip-serialised in block.json → NOT auto-inlined
@@ -131,8 +142,8 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 $has_background = ( '' !== $native_bg || '' !== $preset_bg_slug );
 
 $classes = array( 'sgs-brand-strip' );
-if ( $greyscale ) {
-	$classes[] = 'sgs-brand-strip--greyscale';
+if ( 'none' !== $safe_image_effect ) {
+	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
 }
 if ( $scrolling ) {
 	$classes[] = 'sgs-brand-strip--scrolling';
@@ -145,6 +156,12 @@ if ( $fade_edges ) {
 }
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-brand-strip--hover-' . esc_attr( $safe_hover_effect );
+}
+if ( 'none' !== $safe_tile_shadow ) {
+	$classes[] = 'sgs-brand-strip--tile-shadow-' . esc_attr( $safe_tile_shadow );
+}
+if ( ! $pause_on_hover ) {
+	$classes[] = 'sgs-brand-strip--no-pause';
 }
 if ( $has_background ) {
 	$classes[] = 'has-background';
@@ -176,6 +193,9 @@ if ( $hover_text_colour ) {
 }
 if ( $hover_border_colour ) {
 	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
+if ( $logo_gap > 0 ) {
+	$css_vars[] = '--sgs-logo-gap:' . $logo_gap . 'px';
 }
 
 // ---------------------------------------------------------------------------
@@ -222,6 +242,40 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		if ( ! empty( $base_scoped_styles['css'] ) ) {
 			$scoped_css[] = $base_scoped_styles['css'];
 		}
+	}
+}
+
+// --- Static tile border (distinct from the hover border colour system —
+// `--sgs-hover-border` above only applies `:hover`; this is the resting-
+// state border). Width sanitised via absint on extraction; colour resolved
+// through the shared sgs_colour_value() helper (handles hex/token/rgba
+// normalisation and matches the pattern used for the hover colours). ---
+if ( $tile_border_width > 0 || '' !== $tile_border_colour ) {
+	$tile_border_decls = array();
+	if ( $tile_border_width > 0 ) {
+		$tile_border_decls[] = 'border-width:' . $tile_border_width . 'px';
+		$tile_border_decls[] = 'border-style:solid';
+	}
+	if ( '' !== $tile_border_colour ) {
+		$tile_border_decls[] = 'border-color:' . sgs_colour_value( $tile_border_colour );
+	}
+	if ( $tile_border_decls ) {
+		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{" . implode( ';', $tile_border_decls ) . ';}';
+	}
+}
+
+// --- Logo-name caption typography (shared TypographyControls contract,
+// prefix 'name') -- replaces the pre-existing fixed 0.8125rem style.css
+// default with a client-facing, per-tier control (base/tablet/mobile size,
+// weight). Emitted only when the caption is shown (an element that never
+// renders should not carry emitted CSS). ---
+if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
+	$name_typography_css = sgs_typography_css_rule( $attributes, 'name', "{$root_sel} .sgs-brand-strip__name" );
+	if ( '' !== $name_typography_css ) {
+		$scoped_css[] = $name_typography_css;
+	}
+	if ( '' !== $name_colour ) {
+		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{color:" . sgs_colour_value( $name_colour ) . ';}';
 	}
 }
 
@@ -312,6 +366,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
  */
 $logos_html = '';
 if ( ! empty( $logos ) ) {
+	$logo_index = 0;
 	foreach ( $logos as $logo ) {
 		$media = isset( $logo['media'] ) && is_array( $logo['media'] ) ? $logo['media'] : null;
 
@@ -333,8 +388,16 @@ if ( ! empty( $logos ) ) {
 			continue;
 		}
 
-		// Operator alt text overrides media alt when set.
-		if ( ! empty( $logo['alt'] ) ) {
+		$logo_name   = isset( $logo['name'] ) ? sanitize_text_field( (string) $logo['name'] ) : '';
+		$has_caption = $show_names && '' !== $logo_name;
+
+		if ( $has_caption ) {
+			// Caption is on-screen and carries the accessible name — the
+			// image becomes decorative so screen readers announce the name
+			// once, not twice.
+			$media['alt'] = '';
+		} elseif ( ! empty( $logo['alt'] ) ) {
+			// Operator alt text overrides media alt when set.
 			$media['alt'] = $logo['alt'];
 		}
 
@@ -343,9 +406,31 @@ if ( ! empty( $logos ) ) {
 			continue;
 		}
 
-		$logos_html .= '<div class="sgs-brand-strip__item">';
-		$logos_html .= $logo_html;
-		$logos_html .= '</div>';
+		$name_id = $has_caption ? $uid . '-name-' . $logo_index : '';
+
+		$link_url = isset( $logo['linkUrl'] ) ? esc_url_raw( (string) $logo['linkUrl'] ) : '';
+		if ( '' !== $link_url ) {
+			$link_new_tab = isset( $logo['linkTarget'] ) && '_blank' === $logo['linkTarget'];
+			$link_attrs   = ' href="' . esc_url( $link_url ) . '"';
+			$link_attrs  .= $link_new_tab ? ' target="_blank" rel="noopener noreferrer"' : ' rel="noopener"';
+			if ( '' !== $name_id ) {
+				$link_attrs .= ' aria-labelledby="' . esc_attr( $name_id ) . '"';
+			}
+			$logo_html = '<a' . $link_attrs . '>' . $logo_html . '</a>';
+		}
+
+		if ( $has_caption ) {
+			$logos_html .= '<div class="sgs-brand-strip__tile">';
+			$logos_html .= '<div class="sgs-brand-strip__item">' . $logo_html . '</div>';
+			$logos_html .= '<span id="' . esc_attr( $name_id ) . '" class="sgs-brand-strip__name">' . esc_html( $logo_name ) . '</span>';
+			$logos_html .= '</div>';
+		} else {
+			$logos_html .= '<div class="sgs-brand-strip__item">';
+			$logos_html .= $logo_html;
+			$logos_html .= '</div>';
+		}
+
+		++$logo_index;
 	}
 }
 
