@@ -3,13 +3,17 @@
 .sgs-brand-strip {
 	position: relative;
 	/*
-	 * Reserve vertical space equal to the tile height (logo height + tile
-	 * padding, since the item is now a fixed-size white tile — see the
-	 * __item rule below) plus the block's vertical padding. Prevents CLS
-	 * when logo images load. Matches the __item / __logo calc below exactly
-	 * (scale × maxHeight + padding × 2 + block padding × 2).
+	 * Reserve vertical space equal to the tile height alone (logo height +
+	 * tile padding, since the item is now a fixed-size white tile — see the
+	 * __item rule below). Prevents CLS when logo images load. Matches the
+	 * __item / __logo calc below exactly (scale × maxHeight + padding × 2).
+	 * The trailing "+ block padding × 2" term was REMOVED (2026-07-17) — it
+	 * reserved ~48px of dead vertical space on top of the tile height,
+	 * making the band taller than the reference (which reserves exactly the
+	 * tile height, no extra allowance). Tiles are fixed-height, so dropping
+	 * this term introduces no layout-shift risk.
 	 */
-	min-height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--wp--preset--spacing--50, 2rem) * 2);
+	min-height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
 }
 
 /* `overflow: hidden` is ONLY needed to hide the extra cloned sets sliding
@@ -158,7 +162,7 @@
 	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1));
 	width: auto;
 	max-width: 100%;
-	object-fit: contain;
+	object-fit: var(--sgs-logo-fit, contain);
 	display: block;
 }
 
@@ -410,8 +414,9 @@
  * proportionately at tablet/mobile, matching the reference brand strip's
  * own scaling behaviour (measured on the Indus Foods reference: tile/logo
  * ~175/155px desktop -> ~143/124px tablet -> ~107/87px mobile — a roughly
- * constant ~10px white inset at every breakpoint, which is why the tile
- * padding itself stays a flat 10px rather than tiering). Declared on the
+ * constant white inset at every breakpoint, which is why the tile padding
+ * itself [`--sgs-tile-padding`, operator control via `tilePadding`] stays a
+ * flat value across breakpoints rather than tiering). Declared on the
  * block ROOT (not __item) so it cascades to both the tile and the logo
  * img, and so the block's own min-height CLS-reservation calc above can
  * read the same value. Static mode already wraps + centres (see

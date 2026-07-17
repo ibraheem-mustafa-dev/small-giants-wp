@@ -1,0 +1,68 @@
+/**
+ * sgs/separator — frontend styles.
+ *
+ * Structural defaults only. All visual styling (line colour/style/thickness,
+ * width, alignment, spacing, gradient, content typography) comes from the
+ * scoped `<style>` emitted by render.php — this file supplies layout that
+ * cannot be expressed via attributes (browser hr reset, flex row shape,
+ * reduced-motion safety).
+ */
+
+/* Reset the browser's default <hr> chrome so the border-bottom line (set
+   scoped by render.php) is the only visible mark. */
+hr.wp-block-sgs-separator {
+	box-sizing: content-box;
+	height: 0;
+	border: none;
+	clear: both;
+}
+
+/* Content-in-middle shape — flex row of two flanking lines either side of
+   the centred content slot. */
+.sgs-separator--with-content {
+	display: flex;
+	align-items: center;
+	gap: var( --sgs-separator-content-gap, 16px );
+	box-sizing: content-box;
+}
+
+.sgs-separator__line {
+	flex: 1 1 auto;
+	height: 0;
+	min-width: 24px;
+	border: none;
+}
+
+.sgs-separator__content {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	/* Overridable default (F3 sanctioned pattern) — the text mode's
+	   `contentLineHeight` control, emitted scoped by render.php via
+	   sgs_typography_css_rule at higher specificity, wins when set;
+	   otherwise this compact default keeps an icon/short label centred. */
+	line-height: var( --sgs-separator-content-line-height, 1 );
+}
+
+.sgs-separator__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var( --sgs-separator-icon-size, 24px );
+	height: var( --sgs-separator-icon-size, 24px );
+}
+
+.sgs-separator__icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+/* Honour reduced-motion preference (hover/transition effects come from the
+   universal hover-effects extension, applied globally). */
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-separator,
+	.wp-block-sgs-separator * {
+		transition: none;
+		animation: none;
+	}
+}

@@ -69,6 +69,10 @@ $show_names          = ! empty( $attributes['showNames'] );
 $pause_on_hover      = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
 $name_colour         = $attributes['nameColour'] ?? '';
 $logo_gap            = isset( $attributes['logoGap'] ) ? absint( $attributes['logoGap'] ) : 0;
+$tile_padding        = isset( $attributes['tilePadding'] ) ? absint( $attributes['tilePadding'] ) : 10;
+$tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
+$logo_fit_raw        = $attributes['logoFit'] ?? 'contain';
+$logo_fit            = in_array( $logo_fit_raw, array( 'contain', 'cover' ), true ) ? $logo_fit_raw : 'contain';
 $tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
 $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
 $tile_shadow         = $attributes['tileShadow'] ?? 'none';
@@ -180,6 +184,9 @@ $css_vars = array_merge(
 	array(
 		'--sgs-scroll-speed:' . esc_attr( $animation_speed ),
 		'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
+		'--sgs-tile-padding:' . $tile_padding . 'px',
+		'--sgs-tile-radius:' . $tile_radius . 'px',
+		'--sgs-logo-fit:' . $logo_fit,
 	)
 );
 if ( $fade_edges ) {

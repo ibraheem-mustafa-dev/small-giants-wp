@@ -1,0 +1,15 @@
+/**
+ * sgs/separator — block editor styles.
+ *
+ * Keeps the editor canvas presentation consistent with the frontend
+ * structural shapes (plain <hr> vs the content-in-middle flex row).
+ */
+
+.wp-block-sgs-separator {
+	/* Prevent a collapsed, unclickable canvas element. */
+	min-height: 2px;
+}
+
+.wp-block-sgs-separator.sgs-separator--with-content {
+	min-height: 24px;
+}

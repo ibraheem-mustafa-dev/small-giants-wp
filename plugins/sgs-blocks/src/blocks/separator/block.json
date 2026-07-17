@@ -1,0 +1,227 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/separator",
+	"version": "0.1.0",
+	"title": "SGS Separator",
+	"category": "sgs-content",
+	"description": "A styleable horizontal divider — line style, responsive width/thickness, colour or gradient, alignment, and an optional centred icon or text label. Replaces core/separator framework-wide.",
+	"keywords": [
+		"separator",
+		"divider",
+		"rule",
+		"hr",
+		"line"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "minus",
+	"render": "file:./render.php",
+	"supports": {
+		"sgs": {
+			"boxFamilies": {
+				"padding": [
+					"paddingTablet",
+					"paddingMobile"
+				],
+				"margin": [
+					"marginTablet",
+					"marginMobile"
+				]
+			}
+		},
+		"className": true,
+		"html": false,
+		"color": false,
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {
+		"lineStyle": {
+			"type": "string",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"none"
+			],
+			"default": "solid"
+		},
+		"width": {
+			"type": "number",
+			"default": 100
+		},
+		"widthUnit": {
+			"type": "string",
+			"enum": [
+				"px",
+				"%"
+			],
+			"default": "%"
+		},
+		"widthTablet": {
+			"type": "number"
+		},
+		"widthMobile": {
+			"type": "number"
+		},
+		"thickness": {
+			"type": "number",
+			"default": 1
+		},
+		"thicknessUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"thicknessTablet": {
+			"type": "number"
+		},
+		"thicknessMobile": {
+			"type": "number"
+		},
+		"colour": {
+			"type": "string",
+			"default": ""
+		},
+		"alignment": {
+			"type": "string",
+			"enum": [
+				"left",
+				"center",
+				"right"
+			],
+			"default": "center"
+		},
+		"paddingTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"paddingMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"marginTablet": {
+			"type": "object",
+			"default": {}
+		},
+		"marginMobile": {
+			"type": "object",
+			"default": {}
+		},
+		"gradientEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"gradientColourStart": {
+			"type": "string",
+			"default": ""
+		},
+		"gradientColourEnd": {
+			"type": "string",
+			"default": ""
+		},
+		"gradientAngle": {
+			"type": "number",
+			"default": 90
+		},
+		"contentMode": {
+			"type": "string",
+			"enum": [
+				"none",
+				"icon",
+				"text"
+			],
+			"default": "none"
+		},
+		"contentIconSource": {
+			"type": "string",
+			"enum": [
+				"lucide",
+				"wp-icon",
+				"dashicon",
+				"emoji"
+			],
+			"default": "lucide"
+		},
+		"contentIconName": {
+			"type": "string",
+			"default": "star"
+		},
+		"contentIconEmoji": {
+			"type": "string",
+			"default": ""
+		},
+		"contentIconDashicon": {
+			"type": "string",
+			"default": ""
+		},
+		"contentIconWpIcon": {
+			"type": "string",
+			"default": ""
+		},
+		"contentIconSize": {
+			"type": "number",
+			"default": 24
+		},
+		"contentIconColour": {
+			"type": "string",
+			"default": ""
+		},
+		"contentText": {
+			"type": "string",
+			"default": ""
+		},
+		"contentTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"contentFontSize": {
+			"type": "number"
+		},
+		"contentFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"contentFontSizeTablet": {
+			"type": "number"
+		},
+		"contentFontSizeMobile": {
+			"type": "number"
+		},
+		"contentFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"contentFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"contentLineHeight": {
+			"type": "number"
+		},
+		"contentLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"example": {
+		"attributes": {
+			"width": 60,
+			"widthUnit": "%",
+			"thickness": 2,
+			"lineStyle": "solid",
+			"alignment": "center"
+		}
+	}
+}

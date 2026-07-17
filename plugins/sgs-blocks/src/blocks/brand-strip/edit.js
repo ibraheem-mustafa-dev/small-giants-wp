@@ -217,6 +217,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		pauseOnHover,
 		nameColour,
 		logoGap,
+		tilePadding,
+		tileRadius,
+		logoFit,
 		tileBorderWidth,
 		tileBorderColour,
 		tileShadow,
@@ -280,6 +283,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-transition-easing': transitionEasing || undefined,
 			'--sgs-fade-width': fadeEdges ? `${ fadeWidth }px` : undefined,
 			'--sgs-logo-gap': logoGap > 0 ? `${ logoGap }px` : undefined,
+			'--sgs-tile-padding': `${ tilePadding }px`,
+			'--sgs-tile-radius': `${ tileRadius }px`,
+			'--sgs-logo-fit': logoFit || 'contain',
 			'--sgs-tile-border-width': tileBorderWidth > 0 ? `${ tileBorderWidth }px` : undefined,
 			'--sgs-tile-border-colour': tileBorderColour ? colourVar( tileBorderColour ) : undefined,
 		},
@@ -359,6 +365,46 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						min={ 0 }
 						max={ 200 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Tile padding (px)', 'sgs-blocks' ) }
+						help={ __(
+							'Space between the logo and the tile edge. Set to 0 so the logo fills the tile edge-to-edge.',
+							'sgs-blocks'
+						) }
+						value={ tilePadding }
+						onChange={ ( val ) =>
+							setAttributes( { tilePadding: val } )
+						}
+						min={ 0 }
+						max={ 60 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Tile corner radius (px)', 'sgs-blocks' ) }
+						value={ tileRadius }
+						onChange={ ( val ) =>
+							setAttributes( { tileRadius: val } )
+						}
+						min={ 0 }
+						max={ 100 }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Logo fit', 'sgs-blocks' ) }
+						help={ __(
+							'Cover crops each logo to fill the tile square (matches a cropped-square reference); Contain shows the whole logo, letterboxed.',
+							'sgs-blocks'
+						) }
+						value={ logoFit }
+						options={ [
+							{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
+							{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { logoFit: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl

@@ -147,6 +147,19 @@
 			"type": "number",
 			"default": 0
 		},
+		"tilePadding": {
+			"type": "number",
+			"default": 10
+		},
+		"tileRadius": {
+			"type": "number",
+			"default": 16
+		},
+		"logoFit": {
+			"type": "string",
+			"enum": [ "contain", "cover" ],
+			"default": "contain"
+		},
 		"tileBorderWidth": {
 			"type": "number",
 			"default": 0
