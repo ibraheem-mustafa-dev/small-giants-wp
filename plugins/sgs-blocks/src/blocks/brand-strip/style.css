@@ -395,23 +395,23 @@
  * at once has never matched the block's own visual grammar, and doesn't
  * match the reference brand strip either (measured live: its per-tile
  * `:hover` scopes exactly this way — see the __item rule above for the
- * citation). The `[style*="--sgs-hover-*"]` attribute-presence gate stays
+ * citation). The `[style*="--sgs-tile-hover-*"]` attribute-presence gate stays
  * on the ROOT (that's where render.php/edit.js declare the custom
  * property), the `:hover` TRIGGER moves to the item, and the vars
  * themselves inherit down from root to item with no extra wiring needed. */
 
 .sgs-brand-strip__item:hover {
-	background-color: var(--sgs-hover-bg, var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff)));
+	background-color: var(--sgs-tile-hover-bg, var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff)));
 }
 
-/* Hover overrides — the `--sgs-hover-*` values are now emitted as a scoped
+/* Hover overrides — the `--sgs-tile-hover-*` values are now emitted as a scoped
  * `.uid{…}` rule (zero-inline), NOT an inline style attribute, so these rules
- * must NOT gate on `[style*="--sgs-hover-…"]` (that selector no longer matches
+ * must NOT gate on `[style*="--sgs-tile-hover-…"]` (that selector no longer matches
  * after the no-inline conversion and silently killed the gold hover). Gate via
  * a `var(--x, <inert-fallback>)` instead: unset → inert, set → applies. */
 .sgs-brand-strip__item:hover {
-	color: var(--sgs-hover-text, inherit);
-	border-color: var(--sgs-hover-border, transparent);
+	color: var(--sgs-tile-hover-text, inherit);
+	border-color: var(--sgs-tile-hover-border, transparent);
 }
 
 /* Hover effect variants — all scoped to `.sgs-brand-strip__item:hover`.

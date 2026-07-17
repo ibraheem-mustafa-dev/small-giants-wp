@@ -147,10 +147,19 @@ addFilter(
 
 		const defaults = resolveBlockDefaults( settings.name );
 
-		return {
-			...settings,
-			attributes: {
-				...settings.attributes,
+		// `supports.sgs.ownHover` — the block owns its own per-element hover
+		// system (e.g. sgs/brand-strip's per-tile hover). Do NOT register the
+		// universal HOVER attributes on it: they would duplicate the block's own
+		// hover controls AND collide on the same rendered CSS. Block Link + Click
+		// Effects attributes stay (they're not per-element hover and aren't
+		// duplicated). Universal condition, not a per-block carve-out — any block
+		// declaring it owns its hover opts out identically. (Council-gated
+		// 2026-07-18; the withHoverControls filter below hides the matching panel.)
+		const ownHover = settings.supports?.sgs?.ownHover === true;
+
+		const hoverAttributes = ownHover
+			? {}
+			: {
 				// Colour overrides on hover.
 				sgsHoverBgColour:     { type: 'string',  default: '' },
 				sgsHoverTextColour:   { type: 'string',  default: '' },
@@ -177,6 +186,13 @@ addFilter(
 				sgsHoverTilt3D:       { type: 'boolean', default: false },
 				// Focus ring for keyboard navigation — enabled on opt-in blocks.
 				sgsFocusRing:         { type: 'boolean', default: defaults.focusRing },
+			};
+
+		return {
+			...settings,
+			attributes: {
+				...settings.attributes,
+				...hoverAttributes,
 				// Block link — wraps the whole block in an <a> tag.
 				sgsBlockLink:         { type: 'string',  default: '' },
 				sgsBlockLinkTarget:   { type: 'boolean', default: false },
@@ -200,6 +216,14 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		if ( type?.supports?.className === false ) {
 			return <BlockEdit { ...props } />;
 		}
+
+		// `supports.sgs.ownHover` blocks own their per-element hover system, so
+		// the universal "Hover Effects" panel is hidden on them (its attributes
+		// aren't registered either — see the attributes filter above). Block Link
+		// + Click Effects still show. Prevents the "two hover categories"
+		// duplicate the client reported on sgs/brand-strip (council-gated
+		// 2026-07-18).
+		const ownHover = type?.supports?.sgs?.ownHover === true;
 
 		const {
 			sgsHoverBgColour,
@@ -226,6 +250,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				<InspectorControls>
+					{ ! ownHover && (
 					<PanelBody
 						title={ __( 'Hover Effects', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -327,6 +352,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							onChange={ ( val ) => setAttributes( { sgsFocusRing: val } ) }
 						/>
 					</PanelBody>
+					) }
 					<PanelBody
 						title={ __( 'Block Link', 'sgs-blocks' ) }
 						initialOpen={ false }

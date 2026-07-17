@@ -78,6 +78,7 @@ $tile_shape_raw      = $attributes['tileShape'] ?? 'square';
 $tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';
 $logo_fit_raw        = $attributes['logoFit'] ?? 'contain';
 $logo_fit            = in_array( $logo_fit_raw, array( 'contain', 'cover' ), true ) ? $logo_fit_raw : 'contain';
+$tile_bg_colour      = $attributes['tileBackgroundColour'] ?? '';
 $tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
 $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
 $tile_shadow         = $attributes['tileShadow'] ?? 'none';
@@ -210,13 +211,18 @@ if ( $fade_edges ) {
 	$css_vars[] = '--sgs-fade-width:' . absint( $fade_width ) . 'px';
 }
 if ( $hover_bg_colour ) {
-	$css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg_colour );
+	$css_vars[] = '--sgs-tile-hover-bg:' . sgs_colour_value( $hover_bg_colour );
 }
 if ( $hover_text_colour ) {
-	$css_vars[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+	$css_vars[] = '--sgs-tile-hover-text:' . sgs_colour_value( $hover_text_colour );
 }
 if ( $hover_border_colour ) {
-	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+	$css_vars[] = '--sgs-tile-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
+// Resting tile background (client tileBackgroundColour control) feeds the
+// --sgs-tile-bg hook already consumed by style.css .sgs-brand-strip__item.
+if ( $tile_bg_colour ) {
+	$css_vars[] = '--sgs-tile-bg:' . sgs_colour_value( $tile_bg_colour );
 }
 // Emit ALWAYS (not only when > 0) so an explicit 0 is honoured — otherwise a 0
 // value falls through to the CSS `var(--sgs-logo-gap, spacing|50)` default and
@@ -286,7 +292,7 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 }
 
 // --- Static tile border (distinct from the hover border colour system —
-// `--sgs-hover-border` above only applies `:hover`; this is the resting-
+// `--sgs-tile-hover-border` above only applies `:hover`; this is the resting-
 // state border). Width sanitised via absint on extraction; colour resolved
 // through the shared sgs_colour_value() helper (handles hex/token/rgba
 // normalisation and matches the pattern used for the hover colours). ---

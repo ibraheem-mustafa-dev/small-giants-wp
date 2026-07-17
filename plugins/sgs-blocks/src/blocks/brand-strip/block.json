@@ -21,6 +21,7 @@
 		"sgs": {
 			"imageControls": true,
 			"arrayContentLift": true,
+			"ownHover": true,
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -180,6 +181,10 @@
 		"tileBorderWidth": {
 			"type": "number",
 			"default": 0
+		},
+		"tileBackgroundColour": {
+			"type": "string",
+			"default": ""
 		},
 		"tileBorderColour": {
 			"type": "string",
