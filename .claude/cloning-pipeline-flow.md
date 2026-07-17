@@ -168,5 +168,5 @@ Every row cites the function that actually runs it, in `plugins/sgs-blocks/scrip
 - **Per-stage detail:** `.claude/cloning-pipeline-stages.md` — full script inventory, DB tables, and gate detail per stage
 - **Canonical pipeline spec:** `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`
 - **Clone-fidelity measurement (canonical):** `.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md` (computed-parity + Stage 11.6 + CLAUDE.md rule 4a)
-- **State / current front / D-ceiling:** `.claude/state.md` + `.claude/next-session-prompt.md` (do not cache these here — they drift)
+- **State / current front / D-ceiling:** `.claude/LEDGER.md` (the one living status; do not cache these here — they drift)
 - **Decisions log:** `.claude/decisions.md`

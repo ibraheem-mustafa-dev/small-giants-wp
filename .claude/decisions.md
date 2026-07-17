@@ -4,9 +4,21 @@
 
 Append-only. Most-recent first.
 
+<!-- TAGGING CONVENTION (P4, 2026-07-17). Tag each entry heading `[INCIDENT]` or `[ROUTINE]`:
+     - [INCIDENT] = a load-bearing root-cause / correction / near-miss record whose full text
+       must survive verbatim (outage post-mortems, Bean-locked rule shifts, silent-failure
+       root causes, architecture reversals). NEVER truncate an INCIDENT to a stub — gutting a
+       root-cause record is the failure this tag guards against.
+     - [ROUTINE] = ordinary feature ship / build / merge / doc-reconcile. Compressible; an
+       oversized ROUTINE entry may be externalised as a 1-line stub + link into
+       memory/decisions-archive.md (link, don't delete).
+     /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
+     set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
+
+
 ---
 
-## 2026-07-16 (LATEST) — D341+D342: Phase 2 nav/logo fixes (auto→custom logo-switch, adaptive-nav tablet-tier burger) + qc-council GO + 3-branch consolidation to `main` (`a693e0e8`) + dual-site deploy live
+## 2026-07-16 (LATEST) — [ROUTINE] D341+D342: Phase 2 nav/logo fixes (auto→custom logo-switch, adaptive-nav tablet-tier burger) + qc-council GO + 3-branch consolidation to `main` (`a693e0e8`) + dual-site deploy live
 
 **D341 — `sgs/responsive-logo`: removed the unshippable `auto` logo-switch mode (commit `bd7fd5b0`).** A `/brainstorming` persona panel + `/research-buddies` pass both found the space-aware `auto` mode needed either a JS `ResizeObserver`-with-hysteresis or a flex-grow-container-query trick — AND it clashed with the existing `sgs/adaptive-nav` "More" overflow menu (both wanted to own the flex leftover slot). Bean scrapped `auto` for a simple operator-chosen breakpoint: new `custom` mode + `logoSwitchCustomPx` (number, default 1024, RangeControl 320-2000); `logoSwitchMode` enum is now `["mobile","tablet","custom"]`. Also fixed the image-switch tier (was 600/1024, now **767/1023** to match the canonical `SGS_Breakpoints`). qc-inline PASSed the custom mode (95/100).
 
@@ -27,7 +39,7 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-15 — D339+D340: drawer chrome as attrs (Bean rejected black-on-dark-pink); §S9 shape FROZEN; logo OFF by default (research-confirmed)
+## 2026-07-15 — [INCIDENT] D339+D340: drawer chrome as attrs (Bean rejected black-on-dark-pink); §S9 shape FROZEN; logo OFF by default (research-confirmed)
 
 **D339a — drawer chrome = attrs with token defaults, foreground always COMPUTED (commits `4e049ba9`/`bbf5ac35`).** Bean rejected the D338 drawer on sight (R-31-13) and every point measured out: `primary` `#e68a95` + black = 8.43:1 beats `primary-dark`'s 5.72; white text FAILS on both pinks (3.67/2.49 — the one option ruled out, with numbers); the logo's own ink is a pink scoring **1.06:1 on the panel** (sampled the real .webp) — the strip is what makes it visible; the mobile gap was `min(85%,400px)`'s **85%** (56px at 375). Shipped `drawerBg`/`drawerHeadBg`/`drawerWidth`/`showLogo`/`logoMaxWidth`/`closeButtonSize`; fg via `sgs_wcag_text_colour_for_bg` — verified on ALL 8 palettes (8/8 pass; Indus tightest 4.60). Close hover `color-mix(currentColor 22%)` (was invisible-on-light white). **Bean's hardcode test locked:** a hardcode OVERRIDES a legitimate channel (inline/`!important`/beats theme.json/beats a UA default like `align-items` a draft deliberately leaves unset); an overridable default fighting no channel is a DEFAULT. Memory `hardcode-is-override-not-literal`.
 
@@ -41,7 +53,7 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-15 — D338: mega-menu items restored to bar+drawer; 45 silently-discarded attrs found (36 fixed); attribution element; capability roster decided; framework-vs-per-site split identified
+## 2026-07-15 — [INCIDENT] D338: mega-menu items restored to bar+drawer; 45 silently-discarded attrs found (36 fixed); attribution element; capability roster decided; framework-vs-per-site split identified
 
 **D338a — `sgs/mega-menu` is a first-class MENU ITEM, not an InnerBlock-only decoration.** Proven on Indus's live `wp_navigation` post 100: mega-menus sit at TOP LEVEL beside `core/navigation-link`. Both renderer walks lacked a `case 'sgs/mega-menu'` ⇒ `default: break` ⇒ Sectors + Brands vanished from the drawer AND (pre-existing) from the desktop bar, which rendered 5 of the menu's 7 items. The retired `class-mobile-nav-renderer.php` HAD the case; the rebuild never ported it. **Not a nesting-depth limit** (Bean's hypothesis, tested — both are depth 1). Fixed both walks + the drawer's silent drop of nested `core/navigation-submenu`. Live: Indus 7 links / 4 accordions / 18-18 reachable. Commit `32373d11`.
 
@@ -61,7 +73,7 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-14 — D337: FR-S9-5 amended to test OUTCOME not MECHANISM (Bean-delegated); Task 1a answered; adaptive-nav `<dialog>` drawer built (Wave 1, branch)
+## 2026-07-14 — [ROUTINE] D337: FR-S9-5 amended to test OUTCOME not MECHANISM (Bean-delegated); Task 1a answered; adaptive-nav `<dialog>` drawer built (Wave 1, branch)
 
 **D337 — Two FR-S9-5 acceptance criteria mandated the D323 *workaround* rather than the *goal*, so the better `<dialog>` design would have read as FAILING its own governing spec and a future session would have "fixed" it back. Bean delegated the call ("go with your expert recommendation"). Both amended to be intent-based; original wording preserved struck-through for audit.**
 
@@ -75,7 +87,7 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-14 — D336: BOTH client sites taken down (~2.5h) by an uncommitted edit deployed from the working tree; deploy safety net was 3-for-3 inert; hardened + the documented bypass closed
+## 2026-07-14 — [INCIDENT] D336: BOTH client sites taken down (~2.5h) by an uncommitted edit deployed from the working tree; deploy safety net was 3-for-3 inert; hardened + the documented bypass closed
 
 **D336 — An unfinished, uncommitted edit reached BOTH live client sites and 500'd them for ~2.5 hours while the deploy reported success. Cause PROVEN (not inferred): restoring the single file returned both sites to HTTP 200. Root cause of the SAFETY failure: all three existing defences were inert. Fixed + the bypass paths closed.**
 

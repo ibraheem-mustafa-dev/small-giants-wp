@@ -56,6 +56,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/ledger-rotate.py",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

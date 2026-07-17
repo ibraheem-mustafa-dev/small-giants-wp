@@ -296,7 +296,7 @@ def _self_test() -> int:
         failures.append(f"T1 FAIL: expected 2 converter paths, got {t1}")
 
     # T2: a non-converter staged change is NOT flagged (no false positive).
-    t2 = _filter_converter(["theme/sgs-theme/style.css", ".claude/state.md"])
+    t2 = _filter_converter(["theme/sgs-theme/style.css", ".claude/LEDGER.md"])
     if t2 == []:
         print("T2 PASS: non-converter staged files correctly ignored")
     else:

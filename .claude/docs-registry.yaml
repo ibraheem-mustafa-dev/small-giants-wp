@@ -21,9 +21,10 @@ canonical_docs:
   - {path: .claude/goals.md,           scope: forever, doc_type: goals}
 
   # --- Living docs (auto-regen / append-only) ---
-  - {path: .claude/state.md,               scope: forever_auto_regen,               doc_type: state}
-  - {path: .claude/handoff.md,             scope: forever_auto_regen,               doc_type: handoff, thread: cloning-pipeline}
-  - {path: .claude/next-session-prompt.md, scope: forever_auto_regen,               doc_type: next-session-prompt, thread: cloning-pipeline}
+  # P4 (2026-07-17): state.md + handoff.md + next-session-prompt.md COLLAPSED into ONE LEDGER.md
+  # (they drifted + overwrote each other). Structural defences split to STOP-CATALOGUE.md (uncapped).
+  - {path: .claude/LEDGER.md,              scope: forever_auto_regen,               doc_type: state, note: "THE single living status; replace-not-append; ledger-rotate.py Stop hook snapshots to memory/session-YYYY-MM-DD.md"}
+  - {path: .claude/STOP-CATALOGUE.md,      scope: forever_append_only,              doc_type: reference, note: "UNCAPPED STOP catalogue + pre-flight ritual (D101 — never drop a defence; carry-forward count-check every /handoff)"}
   - {path: .claude/decisions.md,           scope: forever_append_only,              doc_type: decisions}
   - {path: .claude/mistakes.md,            scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/learning + memory/feedback_*.md are SoT; this is a keyword-stub index"}
   - {path: .claude/parking.md,             scope: forever_append_only_with_status,  doc_type: parking}
@@ -107,9 +108,9 @@ pipeline_run_artefacts:
 # (the D-ceiling). (0b) follow cold_start_reading_order — ONE active workstream (the
 # cloning CSS-transfer rebuild); the theme/Spec-30 thread is COMPLETE (D220).
 cold_start_reading_order:
-  - 1. .claude/state.md (CLONING block + GROUND-TRUTH-FIRST block)
-  - 2. .claude/handoff.md (latest session)
-  - 3. .claude/next-session-prompt.md (operative opener — MANDATORY READING gate + STOP catalogue + pre-flight ritual)
+  - 1. .claude/LEDGER.md (the one living status — plain-English top + live status + product queue + pointers)
+  - 2. .claude/STOP-CATALOGUE.md (STOP catalogue + pre-flight self-attestation ritual — the structural defences)
+  - 3. .claude/memory/session-YYYY-MM-DD.md + memory/state-archive.md (prior sessions' full narrative, if needed)
   - 4. .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md — THE BUILD BLUEPRINT, READ IN FULL (§2 core mechanism FIRST, then §3, §12 build-state, §13 binding rules).
   - 5. .claude/plans/2026-07-04-new-engine-to-parity-delete-converter-v2.md (LIVE build plan)
   - 6. .claude/cloning-pipeline-flow.md + .claude/cloning-pipeline-stages.md (as-is pipeline the rebuild maps from)
@@ -118,9 +119,8 @@ cold_start_reading_order:
   - 9. pipeline-state/<latest-run>/leftover-buckets.json + extract.json + trace.jsonl (MANDATORY before any converter-quality conjecture)
 
 # Doc length caps (overflow ARCHIVES to memory/<doc>-archive.md, does not delete):
-#   state.md / MEMORY.md   <= 24576 bytes
-#   next-session-prompt.md <= 200 lines (STOP catalogue carries forward)
-#   handoff.md             <= 100 lines per session-section; older sections rotate to memory/
+#   LEDGER.md / MEMORY.md  <= 24576 bytes (ledger-rotate.py Stop hook warns + snapshots past the cap)
+#   STOP-CATALOGUE.md      UNCAPPED by design (D101 — never drop a defence to fit a byte cap)
 #   CLAUDE.md (root)       target <= 120 lines
 #   decisions.md / parking.md / mistakes.md — archive-on-resolve to memory/<doc>-archive.md
 

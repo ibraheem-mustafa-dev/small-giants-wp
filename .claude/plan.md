@@ -9,7 +9,7 @@ status: closed — see archive
 
 The 2026-05-21 architecture programme closed 2026-05-22. Full content archived at [`plans/archive/2026-05-21-architecture-programme.md`](plans/archive/2026-05-21-architecture-programme.md).
 
-**Active cloning plan:** ⚠️ **there isn't one here — do not trust this file for the live front.** The 2026-06-09 clone-fix build plan + sign-off ledger were archived (now at [`plans/archive/2026-06-09-clone-fix-build-plan.md`](plans/archive/2026-06-09-clone-fix-build-plan.md) + [`plans/archive/2026-06-09-clone-fix-sign-off-ledger.md`](plans/archive/2026-06-09-clone-fix-sign-off-ledger.md)); the converter-completion programme that followed them was EXECUTED IN FULL at D276 and archived too. **Live status is single-sourced to `state.md` + `next-session-prompt.md`** (corrected 2026-07-16 — this line pointed at two live paths that no longer resolve).
+**Active cloning plan:** ⚠️ **there isn't one here — do not trust this file for the live front.** The 2026-06-09 clone-fix build plan + sign-off ledger were archived (now at [`plans/archive/2026-06-09-clone-fix-build-plan.md`](plans/archive/2026-06-09-clone-fix-build-plan.md) + [`plans/archive/2026-06-09-clone-fix-sign-off-ledger.md`](plans/archive/2026-06-09-clone-fix-sign-off-ledger.md)); the converter-completion programme that followed them was EXECUTED IN FULL at D276 and archived too. **Live status is single-sourced to `.claude/LEDGER.md`** (P4 2026-07-17 — state.md + handoff.md + next-session-prompt.md collapsed into one LEDGER).
 
 **Container/wrapper standardisation programme (2026-06-02, archived):** [`plans/archive/2026-06-02-container-wrapper-standardisation.md`](plans/archive/2026-06-02-container-wrapper-standardisation.md) — 5-workstream container/wrapper standardisation programme (D152). WS-1a (A1 contentWidth) + WS-1b (A2 outer max-width transfer + C1 band-aid removal) SHIPPED commit `2f86d9e6` (D159, 2026-06-03). WS-1c (A3/A4/A5/A6) + WS-2–5 pending. Canonical procedure: Spec 22 §FR-22-21.
 
@@ -19,7 +19,7 @@ The 2026-05-21 architecture programme closed 2026-05-22. Full content archived a
 
 **Canonical spec:** [`specs/31-UNIVERSAL-CLONING-PIPELINE.md`](specs/31-UNIVERSAL-CLONING-PIPELINE.md) — **Spec 31** (it absorbed Spec 22 at §13 per D253; Spec 16 retired 2026-05-26). Specs 13/15/21/22 are DEAD — never cite them. Header/footer cloner = Spec 33 Part 2 (not started).
 
-For the doc-op programme (Phases 1-13, shipped 2026-05-24), see `decisions.md` D57-D60 + `handoff.md`.
+For the doc-op programme (Phases 1-13, shipped 2026-05-24), see `decisions.md` D57-D60 + `memory/` session archives.
 
 ## Progress 2026-06-03 — D159/D160 WS-1a+WS-1b SHIPPED
 
