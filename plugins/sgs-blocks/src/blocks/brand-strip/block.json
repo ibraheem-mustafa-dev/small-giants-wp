@@ -167,6 +167,11 @@
 			"type": "number",
 			"default": 16
 		},
+		"tileShape": {
+			"type": "string",
+			"enum": [ "square", "circle", "none" ],
+			"default": "square"
+		},
 		"logoFit": {
 			"type": "string",
 			"enum": [ "contain", "cover" ],

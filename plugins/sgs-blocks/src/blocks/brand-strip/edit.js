@@ -222,6 +222,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		logoGap,
 		tilePadding,
 		tileRadius,
+		tileShape,
 		logoFit,
 		tileBorderWidth,
 		tileBorderColour,
@@ -426,6 +427,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						min={ 0 }
 						max={ 60 }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Tile shape', 'sgs-blocks' ) }
+						help={ __(
+							'Square keeps the rounded card (use corner radius below); Circle makes each tile round; None removes the card so only the logo shows.',
+							'sgs-blocks'
+						) }
+						value={ tileShape || 'square' }
+						options={ [
+							{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
+							{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
+							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+						] }
+						onChange={ ( val ) => setAttributes( { tileShape: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl

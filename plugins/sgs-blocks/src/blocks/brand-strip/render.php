@@ -74,6 +74,8 @@ $name_colour         = $attributes['nameColour'] ?? '';
 $logo_gap            = isset( $attributes['logoGap'] ) ? absint( $attributes['logoGap'] ) : 0;
 $tile_padding        = isset( $attributes['tilePadding'] ) ? absint( $attributes['tilePadding'] ) : 10;
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
+$tile_shape_raw      = $attributes['tileShape'] ?? 'square';
+$tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';
 $logo_fit_raw        = $attributes['logoFit'] ?? 'contain';
 $logo_fit            = in_array( $logo_fit_raw, array( 'contain', 'cover' ), true ) ? $logo_fit_raw : 'contain';
 $tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
@@ -149,6 +151,7 @@ $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null 
 $has_background = ( '' !== $native_bg || '' !== $preset_bg_slug );
 
 $classes = array( 'sgs-brand-strip' );
+$classes[] = 'sgs-brand-strip--tile-' . esc_attr( $tile_shape );
 if ( 'none' !== $safe_image_effect ) {
 	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
 }
@@ -232,6 +235,19 @@ $uid      = 'sgs-brandstrip-' . substr( md5( wp_json_encode( $attributes ) ), 0,
 $root_sel = '.' . $uid . '.wp-block-sgs-brand-strip';
 
 $scoped_css = array();
+
+// Per-instance CSS custom-property VALUES → a scoped `.uid{…}` rule in the
+// block's own <style> (consolidated to the stylesheet by the SGS CSS registry),
+// NOT an inline `style="--var:…"` attribute on the root. Matches the
+// fully-migrated blocks (quote, D294 — "everything lives in the scoped <style>")
+// and Spec 32's intent that nothing renders inline except the sgsCustomCss
+// residual. Declared first so the values are present for the base style.css
+// rules that consume them via var(). Values are already sanitised at source
+// (absint / esc_attr / sgs_colour_value); the scoped channel (wp_strip_all_tags)
+// is NOT subject to safecss_filter_attr, so functional colours survive here.
+if ( ! empty( $css_vars ) ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $css_vars ) . '}';
+}
 
 // --- Base spacing (padding/margin) + native border (width/style/colour/
 // radius) + native background colour — all skip-serialised WP supports,
@@ -368,16 +384,16 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 7. Build the root element's classes + attributes. NO 'style' key beyond the
-// var-only custom-property set — the root carries ZERO inline CSS PROPERTY
-// declarations (contract §A); every declaration lives in the scoped <style>
-// above.
+// 7. Build the root element's classes + attributes. NO 'style' key at all — the
+// per-instance custom-property VALUES are emitted as a scoped `.uid{…}` rule in
+// the block's <style> above (consolidated to the stylesheet), and every native
+// support (color/spacing/border) skip-serialises (block.json), so the root
+// carries ZERO inline style attribute (Spec 32 intent: nothing inline).
 // ---------------------------------------------------------------------------
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', array_merge( $classes, array( $uid ) ) ),
-		'style' => implode( ';', $css_vars ) . ';',
 	)
 );
 

@@ -124,12 +124,16 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	/* Tile size = strip-width / columns (fluid), capped at --sgs-tile-cap.
-	 * `100cqw` resolves against the strip's query container (declared on the
-	 * root). Defined here on the item — a descendant of the container — so the
-	 * container unit resolves unambiguously. The logo below derives its height
-	 * from this same value. */
-	--sgs-tile-size: min(calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8)), var(--sgs-tile-cap));
+	/* Tile is SQUARE — width = height = strip-width / columns, so exactly
+	 * `--sgs-columns` tiles fill the strip and GROW with it (the tile must never
+	 * be capped or more than N columns would fit — the 2026-07-17 ultra-wide bug
+	 * where a size cap let ~10 tiles show at 1920 instead of 8). `100cqw`
+	 * resolves against the strip's query container (declared on the root). The
+	 * tile stays square (Bean: shape control none/square/circle); it is the LOGO
+	 * that caps at --sgs-logo-max-height (see the logo rule below), so on a wide
+	 * screen the logo stops growing and simply auto-centres in the larger square
+	 * tile rather than up-scaling into pixelation. */
+	--sgs-tile-size: calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8));
 	width: var(--sgs-tile-size);
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
@@ -180,11 +184,31 @@
  * together with the strip width and hit the maxHeight cap in lock-step. */
 .sgs-brand-strip__logo,
 .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
-	height: calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2);
+	/* Logo fills the square tile's interior UP TO --sgs-logo-max-height, then
+	 * caps — so on wide screens the tile keeps growing (N columns preserved) but
+	 * the logo stops and auto-centres with margin (Bean: "an auto-margin that
+	 * holds it… it won't extend further since height and width are locked").
+	 * The cap is what prevents a low-res logo up-scaling into pixelation. */
+	height: min(calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2), var(--sgs-logo-max-height, 180px));
 	width: auto;
 	max-width: 100%;
 	object-fit: var(--sgs-logo-fit, contain);
 	display: block;
+}
+
+/* ===== Tile shape (none / square / circle) — Bean control ===== */
+/* Square (default) uses --sgs-tile-radius (rounded square). Circle forces a
+ * full round; the tile is already square (width = height) so 50% is a circle.
+ * None strips the card entirely — no background, border or radius — leaving
+ * just the logo on the band. */
+.sgs-brand-strip--tile-circle .sgs-brand-strip__item {
+	border-radius: 50%;
+}
+
+.sgs-brand-strip--tile-none .sgs-brand-strip__item {
+	background-color: transparent;
+	border-color: transparent;
+	border-radius: 0;
 }
 
 /* ===== Logo image effect (greyscale / sepia) =====
