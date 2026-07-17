@@ -1,0 +1,178 @@
+{
+  "theme/sgs-theme/assets/css/core-blocks.css:.sgs-icon-list--icon-large .sgs-icon-list__icon:font-size:32px": {
+    "file": "theme/sgs-theme/assets/css/core-blocks.css",
+    "line": 478,
+    "property": "font-size",
+    "reason": "icon-glyph size for the icon-list block's 'large' variant (controls an SVG/icon-font glyph, not running text) -- no theme.json typography token applies to icon sizing; component's own constant, overrides no theme default",
+    "selector": ".sgs-icon-list--icon-large .sgs-icon-list__icon",
+    "value": "32px"
+  },
+  "theme/sgs-theme/assets/css/core-blocks.css:.sgs-link-list__heading:letter-spacing:0.05em": {
+    "file": "theme/sgs-theme/assets/css/core-blocks.css",
+    "line": 586,
+    "property": "letter-spacing",
+    "reason": "uppercase eyebrow/label tracking (footer link-list heading; deliberate typographic constant, not arbitrary -- appears twice in this file at ~lines 221 and 586, both collapse to this one baseline key)",
+    "selector": ".sgs-link-list__heading",
+    "value": "0.05em"
+  },
+  "theme/sgs-theme/assets/css/core-blocks.css:.sgs-top-bar-mobile-cta .sgs-business-info-wrap:background-color:rgba(255, 255, 255, 0.15)": {
+    "file": "theme/sgs-theme/assets/css/core-blocks.css",
+    "line": 996,
+    "property": "background-color",
+    "reason": "translucent white overlay giving the mobile top-bar phone pill a frosted-glass look on the (variable, per-client) header background colour -- the transparency is the point; a solid token colour would defeat the effect",
+    "selector": ".sgs-top-bar-mobile-cta .sgs-business-info-wrap",
+    "value": "rgba(255, 255, 255, 0.15)"
+  },
+  "theme/sgs-theme/assets/css/core-blocks.css:.sgs-top-bar-mobile-cta .wp-block-button__link:hover, .sgs-top-bar-mobile-cta .wp-block-button__link:focus, .sgs-top-bar-mobile-cta .sgs-business-info-wrap:hover:background-color:rgba(255, 255, 255, 0.25)": {
+    "file": "theme/sgs-theme/assets/css/core-blocks.css",
+    "line": 1030,
+    "property": "background-color",
+    "reason": "hover/focus variant of the frosted top-bar pill overlay above -- same translucent-white-on-variable-background rationale, slightly higher opacity for the interactive state",
+    "selector": ".sgs-top-bar-mobile-cta .wp-block-button__link:hover, .sgs-top-bar-mobile-cta .wp-block-button__link:focus, .sgs-top-bar-mobile-cta .sgs-business-info-wrap:hover",
+    "value": "rgba(255, 255, 255, 0.25)"
+  },
+  "theme/sgs-theme/assets/css/mega-menu-panels.css:.sgs-mega-item__desc:font-size:0.8rem": {
+    "file": "theme/sgs-theme/assets/css/mega-menu-panels.css",
+    "line": 274,
+    "property": "font-size",
+    "reason": "mega-menu item description -- a small secondary-copy line inside a nav dropdown panel, not a content heading/body element governed by theme.json's typography scale",
+    "selector": ".sgs-mega-item__desc",
+    "value": "0.8rem"
+  },
+  "theme/sgs-theme/assets/css/mega-menu-panels.css:.sgs-mega-title, .sgs-mega-panel .sgs-mega-title, .sgs-mega-menu__panel .sgs-mega-title:letter-spacing:0.06em": {
+    "file": "theme/sgs-theme/assets/css/mega-menu-panels.css",
+    "line": 140,
+    "property": "letter-spacing",
+    "reason": "uppercase mega-menu label tracking",
+    "selector": ".sgs-mega-title, .sgs-mega-panel .sgs-mega-title, .sgs-mega-menu__panel .sgs-mega-title",
+    "value": "0.06em"
+  },
+  "theme/sgs-theme/assets/css/utilities.css:.skip-link:not(.screen-reader-text):focus, .skip-link:not(.screen-reader-text):focus-visible:font-size:1rem": {
+    "file": "theme/sgs-theme/assets/css/utilities.css",
+    "line": 100,
+    "property": "font-size",
+    "reason": "skip-link accessibility utility -- a fixed, readable size for a keyboard-only focus-revealed element, independent of any content element's typography scale",
+    "selector": ".skip-link:not(.screen-reader-text):focus, .skip-link:not(.screen-reader-text):focus-visible",
+    "value": "1rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.onsale:color:#ffffff": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 731,
+    "property": "color",
+    "reason": "fixed white text for contrast against the .onsale badge's primary-dark background -- file's own comment verifies 4.6:1 WCAG AA; a structural on-colour text value, not a brand colour token",
+    "selector": ".onsale",
+    "value": "#ffffff"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.onsale:font-size:0.75rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 733,
+    "property": "font-size",
+    "reason": "small sale-badge chip text -- component-scoped WooCommerce UI chrome (a pill overlay on a product image), not a heading/body typography-scale value",
+    "selector": ".onsale",
+    "value": "0.75rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.onsale:letter-spacing:0.03em": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 735,
+    "property": "letter-spacing",
+    "reason": "uppercase WooCommerce label tracking (.onsale badge)",
+    "selector": ".onsale",
+    "value": "0.03em"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item label, .sgs-shop-filters .wc-block-product-filter-checkbox-list__item label, .sgs-shop-filters .wc-block-components-checkbox__label, .sgs-shop-filters .wc-block-product-filter-checkbox-list__label:font-size:0.875rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1205,
+    "property": "font-size",
+    "reason": "filter checkbox-list label text size -- component-scoped WC filter-widget chrome",
+    "selector": ".sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item label, .sgs-shop-filters .wc-block-product-filter-checkbox-list__item label, .sgs-shop-filters .wc-block-components-checkbox__label, .sgs-shop-filters .wc-block-product-filter-checkbox-list__label",
+    "value": "0.875rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item-count, .sgs-shop-filters .wc-block-product-filter-checkbox-list__count:font-size:0.75rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1253,
+    "property": "font-size",
+    "reason": "filter checkbox item-count badge text size -- component-scoped WC filter-widget chrome",
+    "selector": ".sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item-count, .sgs-shop-filters .wc-block-product-filter-checkbox-list__count",
+    "value": "0.75rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-components-product-filter-chips__item button, .sgs-shop-filters .wc-block-product-filter-chips__item button, .sgs-shop-filters .wc-block-components-product-filter-chips__button:font-size:0.8125rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1147,
+    "property": "font-size",
+    "reason": "filter-chip button text size -- component-scoped WC filter-widget chrome",
+    "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__item button, .sgs-shop-filters .wc-block-product-filter-chips__item button, .sgs-shop-filters .wc-block-components-product-filter-chips__button",
+    "value": "0.8125rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed=\"true\"], .sgs-shop-filters .wc-block-product-filter-chips__item button[aria-pressed=\"true\"], .sgs-shop-filters .wc-block-components-product-filter-chips__button[aria-pressed=\"true\"], .sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active, .sgs-shop-filters .wc-block-product-filter-chips__item button.is-active:color:#ffffff": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1170,
+    "property": "color",
+    "reason": "fixed white text for the selected/active filter chip on a primary-teal fill -- file's own comment verifies 4.8:1 WCAG AA; a structural on-colour text value paired with a token background, not a brand colour token itself",
+    "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed=\"true\"], .sgs-shop-filters .wc-block-product-filter-chips__item button[aria-pressed=\"true\"], .sgs-shop-filters .wc-block-components-product-filter-chips__button[aria-pressed=\"true\"], .sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active, .sgs-shop-filters .wc-block-product-filter-chips__item button.is-active",
+    "value": "#ffffff"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-product-filter-price-slider__amount, .sgs-shop-filters .wc-block-price-filter__amount:font-size:0.8125rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1104,
+    "property": "font-size",
+    "reason": "price-filter min/max input text size -- component-scoped WC filter-widget chrome",
+    "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__amount, .sgs-shop-filters .wc-block-price-filter__amount",
+    "value": "0.8125rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-product-filters__apply-button, .sgs-shop-filters .wp-block-button__link[class*=\"apply\"], .sgs-shop-filters .wc-block-product-filter-clear-button:color:#ffffff": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1267,
+    "property": "color",
+    "reason": "fixed white text on the apply/clear filter button's primary-teal fill -- structural on-colour text value paired with a token background, not a brand colour token itself",
+    "selector": ".sgs-shop-filters .wc-block-product-filters__apply-button, .sgs-shop-filters .wp-block-button__link[class*=\"apply\"], .sgs-shop-filters .wc-block-product-filter-clear-button",
+    "value": "#ffffff"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters .wc-block-product-filters__apply-button, .sgs-shop-filters .wp-block-button__link[class*=\"apply\"], .sgs-shop-filters .wc-block-product-filter-clear-button:font-size:0.9375rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1270,
+    "property": "font-size",
+    "reason": "apply/clear filter button text size -- component-scoped WC filter-widget chrome",
+    "selector": ".sgs-shop-filters .wc-block-product-filters__apply-button, .sgs-shop-filters .wp-block-button__link[class*=\"apply\"], .sgs-shop-filters .wc-block-product-filter-clear-button",
+    "value": "0.9375rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters h3.wp-block-heading, .sgs-shop-filters .wc-block-product-filter__title, .sgs-shop-filters .wp-block-woocommerce-product-filter-price > h3, .sgs-shop-filters .wp-block-woocommerce-product-filter-attribute > h3, .sgs-shop-filters .wp-block-woocommerce-product-filter-status > h3, .sgs-shop-filters .wp-block-woocommerce-product-filter-rating > h3:font-size:0.875rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 1015,
+    "property": "font-size",
+    "reason": "individual filter-GROUP heading inside the shop-filters sidebar widget -- although selector matches h3, this is a small in-widget sub-label (WC's own filter block heading), not a content h1-h6 governed by theme.json's per-tag heading scale",
+    "selector": ".sgs-shop-filters h3.wp-block-heading, .sgs-shop-filters .wc-block-product-filter__title, .sgs-shop-filters .wp-block-woocommerce-product-filter-price > h3, .sgs-shop-filters .wp-block-woocommerce-product-filter-attribute > h3, .sgs-shop-filters .wp-block-woocommerce-product-filter-status > h3, .sgs-shop-filters .wp-block-woocommerce-product-filter-rating > h3",
+    "value": "0.875rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.sgs-shop-filters__heading:font-size:1rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 471,
+    "property": "font-size",
+    "reason": "shop-filters sidebar widget heading -- a small UI-panel label, not an h1-h6 element governed by theme.json's heading scale",
+    "selector": ".sgs-shop-filters__heading",
+    "value": "1rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.wc-block-components-drawer:font-size:1rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 79,
+    "property": "font-size",
+    "reason": "WooCommerce mini-cart drawer base font size -- component-scoped widget chrome (WC's own drawer shell), not a heading/body element",
+    "selector": ".wc-block-components-drawer",
+    "value": "1rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:.wc-block-components-filter-reset-button, .wp-block-woocommerce-product-filter-removable-chips li, .wc-block-product-filter-active__item:font-size:0.8125rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 660,
+    "property": "font-size",
+    "reason": "active-filter chip text size -- component-scoped WC filter-widget chrome",
+    "selector": ".wc-block-components-filter-reset-button, .wp-block-woocommerce-product-filter-removable-chips li, .wc-block-product-filter-active__item",
+    "value": "0.8125rem"
+  },
+  "theme/sgs-theme/assets/css/woocommerce.css:body.is-enhanced .sgs-shop-filters__toggle:font-size:0.9375rem": {
+    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+    "line": 549,
+    "property": "font-size",
+    "reason": "mobile filter-toggle button text size -- component-scoped button chrome; the block comment above it (lines 507-527) documents this button deliberately reuses primary-button COLOUR tokens while owning its own layout/size",
+    "selector": "body.is-enhanced .sgs-shop-filters__toggle",
+    "value": "0.9375rem"
+  }
+}
