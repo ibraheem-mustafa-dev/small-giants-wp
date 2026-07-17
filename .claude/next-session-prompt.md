@@ -28,7 +28,7 @@ Bean's decision: finish Our Brands (done) → extract a fix-footprint (done) →
 **First action (≤10 min):** amend Spec 32 (4 clauses) + record a new D-number, then build the live-render detector.
 
 ## Open / deferred
-- **Our Brands final eye sign-off** — Bean to hard-refresh palestine-lives.org at full desktop width and confirm 100%. Heading↔separator gap (Spectra's built-in) ACCEPTED, out of scope.
+- **Our Brands — SIGNED OFF 100% by Bean 2026-07-17.** Full-width slider that caps at 8 columns + centres; square framed tiles (10px border transparent→gold hover, `background-clip:padding-box`); 20px gaps; logos 200px capped; brand-strip zero-inline. Later commits after the handoff was first written: `9cd02f41`, `4926f859`, `ef51b575`, `a760b46f`, `16c47033`. Heading↔separator gap (Spectra's built-in) ACCEPTED, out of scope.
 - Whole-page regression sweep (other sections) — NOT started; hero + brand-strip already fixed.
 - `/sgs-update` to reconcile `blocks.replaces` DB vs `block-replacements.json`.
 - Services 768 overflow (uneven hardcoded px grid columns) — diagnosed, deferred.
