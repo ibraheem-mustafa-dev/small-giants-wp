@@ -340,6 +340,27 @@ section.sgs-hero {
 	display: block;
 }
 
+/* ── Split-image hover zoom (restored from prior session; measured off the
+ * source draft) ── The split media zooms slightly on hover. The split section
+ * + its media column are set overflow:visible so the zoomed image spills past
+ * its box rather than being clipped (the outer .sgs-hero{overflow:hidden} is
+ * for the STANDARD variant's full-bleed/ken-burns layers, which the split
+ * variant does not use). Gated on reduced-motion. */
+.sgs-hero--split,
+.sgs-hero--split .sgs-hero__media {
+	overflow: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-hero__split-image {
+		transition: transform 0.35s ease-in-out;
+	}
+
+	.sgs-hero--split .sgs-hero__media:hover .sgs-hero__split-image {
+		transform: scale(1.05);
+	}
+}
+
 /* ── Split image bleed modifier ──
  * When splitImageBleed is true the media column fills flush to the container
  * edge — no padding, no border-radius on the image. The block-level padding

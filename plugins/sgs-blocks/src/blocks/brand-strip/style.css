@@ -2,18 +2,28 @@
 
 .sgs-brand-strip {
 	position: relative;
-	/*
-	 * Reserve vertical space equal to the tile height alone (logo height +
-	 * tile padding, since the item is now a fixed-size white tile — see the
-	 * __item rule below). Prevents CLS when logo images load. Matches the
-	 * __item / __logo calc below exactly (scale × maxHeight + padding × 2).
-	 * The trailing "+ block padding × 2" term was REMOVED (2026-07-17) — it
-	 * reserved ~48px of dead vertical space on top of the tile height,
-	 * making the band taller than the reference (which reserves exactly the
-	 * tile height, no extra allowance). Tiles are fixed-height, so dropping
-	 * this term introduces no layout-shift risk.
-	 */
-	min-height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
+
+	/* Query container so `100cqw` (used in the tile sizing below) resolves to
+	 * THIS strip's own width — not the marquee track's, which is far wider. */
+	container-type: inline-size;
+
+	/* Columns-per-device (operator control). Desktop value by default; the
+	 * tablet/mobile media queries at the foot of this file switch
+	 * --sgs-columns to the tablet/mobile value. This replaces the old
+	 * --sgs-logo-scale multiplier: the reference gallery hard-sets a COLUMN
+	 * COUNT and lets tile SIZE grow with the viewport, rather than keeping a
+	 * fixed tile size and changing the COUNT. */
+	--sgs-columns: var(--sgs-columns-desktop, 8);
+
+	/* Cap = the maxHeight-derived tile size. Tiles grow with the strip width
+	 * (fluid, below) but never exceed this, so logos never scale to pixelated
+	 * "stupid sizes" on ultra-wide screens — beyond the cap the extra width
+	 * falls into the inter-tile gap instead. */
+	--sgs-tile-cap: calc(var(--sgs-logo-max-height, 180px) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
+
+	/* Reserve the cap height to prevent CLS before images load (cap ≈ the
+	 * actual tile size at the common desktop width, so negligible over-reserve). */
+	min-height: var(--sgs-tile-cap);
 }
 
 /* `overflow: hidden` is ONLY needed to hide the extra cloned sets sliding
@@ -24,6 +34,11 @@
  * isn't cropped by a fixed-height clipping box. */
 .sgs-brand-strip--scrolling {
 	overflow: hidden;
+	/* The marquee is tap-to-pause/resume on touch (see view.js), so it needs
+	 * to read as tappable — no double-tap-zoom delay, no lingering tap-
+	 * highlight flash over the logos. */
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
 }
 
 /* ===== Track — flex container for sets ===== */
@@ -109,8 +124,14 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
-	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
+	/* Tile size = strip-width / columns (fluid), capped at --sgs-tile-cap.
+	 * `100cqw` resolves against the strip's query container (declared on the
+	 * root). Defined here on the item — a descendant of the container — so the
+	 * container unit resolves unambiguously. The logo below derives its height
+	 * from this same value. */
+	--sgs-tile-size: min(calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8)), var(--sgs-tile-cap));
+	width: var(--sgs-tile-size);
+	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
 	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff));
 	border-radius: var(--sgs-tile-radius, 16px);
@@ -154,12 +175,12 @@
  * `max-height` only clamps oversized sources; a naturally-short logo would
  * stay short. An explicit `height` + `object-fit: contain` forces every
  * logo to the identical rendered height, letter-boxing width as needed.
- * The `* var(--sgs-logo-scale, 1)` factor is the same universal responsive
- * multiplier used on the tile above, so the logo and its tile always
- * shrink together in lock-step at tablet/mobile. */
+ * Height is derived from --sgs-tile-size (the fluid, column-driven, capped
+ * tile size) minus the tile padding + border, so the logo and its tile grow
+ * together with the strip width and hit the maxHeight cap in lock-step. */
 .sgs-brand-strip__logo,
 .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
-	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1));
+	height: calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2);
 	width: auto;
 	max-width: 100%;
 	object-fit: var(--sgs-logo-fit, contain);
@@ -231,7 +252,7 @@
 	line-height: 1.3;
 	text-align: center;
 	color: var(--wp--preset--color--text, currentColor);
-	max-width: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
+	max-width: var(--sgs-tile-size);
 }
 
 /* ===== Infinite scrolling animation ===== */
@@ -408,29 +429,22 @@
 	padding: var(--wp--preset--spacing--40);
 }
 
-/* ===== Responsive tile sizing =====
- * A UNIVERSAL responsive multiplier on the logo height — not a per-tier
- * maxHeight attribute — so any client's chosen maxHeight scales down
- * proportionately at tablet/mobile, matching the reference brand strip's
- * own scaling behaviour (measured on the Indus Foods reference: tile/logo
- * ~175/155px desktop -> ~143/124px tablet -> ~107/87px mobile — a roughly
- * constant white inset at every breakpoint, which is why the tile padding
- * itself [`--sgs-tile-padding`, operator control via `tilePadding`] stays a
- * flat value across breakpoints rather than tiering). Declared on the
- * block ROOT (not __item) so it cascades to both the tile and the logo
- * img, and so the block's own min-height CLS-reservation calc above can
- * read the same value. Static mode already wraps + centres (see
- * .sgs-brand-strip__track rule above), so tiles reflow onto multiple rows
- * rather than overflowing at narrow widths. */
+/* ===== Responsive tile sizing (columns-per-device) =====
+ * Fewer columns at tablet/mobile → each tile takes a larger share of the
+ * (narrower) strip, so logos stay legible on small screens. This replaces the
+ * old fixed --sgs-logo-scale multiplier: the reference gallery sets a COLUMN
+ * COUNT per device and lets the tile SIZE follow from strip-width ÷ columns.
+ * The tile-size calc (see __item) reads --sgs-columns, so switching it here is
+ * all that's needed. Breakpoints follow the framework standard (1023 / 767). */
 @media (max-width: 1023px) {
 	.sgs-brand-strip {
-		--sgs-logo-scale: 0.8;
+		--sgs-columns: var(--sgs-columns-tablet, 4);
 	}
 }
 
 @media (max-width: 767px) {
 	.sgs-brand-strip {
-		--sgs-logo-scale: 0.565;
+		--sgs-columns: var(--sgs-columns-mobile, 2);
 	}
 }
 

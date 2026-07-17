@@ -654,6 +654,16 @@ $classes = array(
 	'sgs-hero',
 	'sgs-hero--' . esc_attr( $variant ),
 	'sgs-hero--align-' . esc_attr( $alignment ),
+	// 'alignfull' added UNCONDITIONALLY (not gated on the block's `align`
+	// attribute): the hero's full-bleed is a design invariant of this block,
+	// not an operator alignment choice. Without it, WP core's !important
+	// global-styles rule `.is-layout-constrained > :where(:not(.alignfull))
+	// { margin:auto !important }` matches the hero (its selector EXCLUDES
+	// .alignfull) and beats our non-important negative-margin full-bleed —
+	// producing the asymmetric outer margin regression. Adding alignfull
+	// removes the hero from that selector's match set. (Restored from prior
+	// session; PROVE live before commit.)
+	'alignfull',
 	$uid,
 );
 

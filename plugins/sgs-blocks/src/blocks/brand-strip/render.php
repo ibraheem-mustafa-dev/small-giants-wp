@@ -64,7 +64,10 @@ $scroll_direction    = $attributes['scrollDirection'] ?? 'left';
 $fade_edges          = $attributes['fadeEdges'] ?? false;
 $fade_width          = $attributes['fadeWidth'] ?? 60;
 $image_effect        = $attributes['imageEffect'] ?? 'none';
-$max_height          = $attributes['maxHeight'] ?? 80;
+$max_height          = $attributes['maxHeight'] ?? 180;
+$columns_desktop     = isset( $attributes['columnsDesktop'] ) ? max( 1, absint( $attributes['columnsDesktop'] ) ) : 8;
+$columns_tablet      = isset( $attributes['columnsTablet'] ) ? max( 1, absint( $attributes['columnsTablet'] ) ) : 4;
+$columns_mobile      = isset( $attributes['columnsMobile'] ) ? max( 1, absint( $attributes['columnsMobile'] ) ) : 2;
 $show_names          = ! empty( $attributes['showNames'] );
 $pause_on_hover      = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
 $name_colour         = $attributes['nameColour'] ?? '';
@@ -184,6 +187,12 @@ $css_vars = array_merge(
 	array(
 		'--sgs-scroll-speed:' . esc_attr( $animation_speed ),
 		'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
+		// Columns-per-device: tile width = strip-width / columns (container-query
+		// driven in style.css), capped at the maxHeight-derived size so tiles grow
+		// with the strip up to a sensible limit then stop (no giant pixelated logos).
+		'--sgs-columns-desktop:' . $columns_desktop,
+		'--sgs-columns-tablet:' . $columns_tablet,
+		'--sgs-columns-mobile:' . $columns_mobile,
 		'--sgs-tile-padding:' . $tile_padding . 'px',
 		'--sgs-tile-radius:' . $tile_radius . 'px',
 		// NB: named "thickness" NOT "border-width" — an inline value containing the

@@ -100,11 +100,36 @@ strips.forEach( ( strip ) => {
 	// declaration; `.sgs-brand-strip__track--paused` is a scoped class rule in
 	// style.css instead).
 	if ( ! strip.classList.contains( 'sgs-brand-strip--no-pause' ) ) {
+		// Two independent flags — hover (mouse/pen) and tap-toggle (touch) —
+		// combine into the one pause class so neither input method cancels
+		// the other's pause. Touch devices have no hover state, so a tap
+		// TOGGLES pause (tap to pause, tap again to resume): the same
+		// deliberate control mouse users get from hover, satisfying WCAG
+		// 2.2.2 without an arbitrary auto-resume timer.
+		let isHovered = false;
+		let isTouchPaused = false;
+		const updatePauseState = () => {
+			track.classList.toggle(
+				'sgs-brand-strip__track--paused',
+				isHovered || isTouchPaused
+			);
+		};
 		strip.addEventListener( 'mouseenter', () => {
-			track.classList.add( 'sgs-brand-strip__track--paused' );
+			isHovered = true;
+			updatePauseState();
 		} );
 		strip.addEventListener( 'mouseleave', () => {
-			track.classList.remove( 'sgs-brand-strip__track--paused' );
+			isHovered = false;
+			updatePauseState();
+		} );
+		// `pointerdown` + pointerType guard avoids reacting to the synthetic
+		// mouse events some browsers fire after a real touch.
+		strip.addEventListener( 'pointerdown', ( event ) => {
+			if ( event.pointerType !== 'touch' ) {
+				return;
+			}
+			isTouchPaused = ! isTouchPaused;
+			updatePauseState();
 		} );
 	}
 

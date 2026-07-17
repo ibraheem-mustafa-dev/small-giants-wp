@@ -112,7 +112,19 @@
 		},
 		"maxHeight": {
 			"type": "number",
-			"default": 80
+			"default": 180
+		},
+		"columnsDesktop": {
+			"type": "number",
+			"default": 8
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 4
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 2
 		},
 		"showNames": {
 			"type": "boolean",

@@ -213,6 +213,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		fadeWidth,
 		imageEffect,
 		maxHeight,
+		columnsDesktop,
+		columnsTablet,
+		columnsMobile,
 		showNames,
 		pauseOnHover,
 		nameColour,
@@ -296,6 +299,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const trackStyle = {
 		'--sgs-logo-max-height': `${ maxHeight }px`,
+		'--sgs-columns-desktop': columnsDesktop ?? 8,
+		'--sgs-columns-tablet': columnsTablet ?? 4,
+		'--sgs-columns-mobile': columnsMobile ?? 2,
 		'--sgs-scroll-speed': scrolling ? SPEED_MAP[ scrollSpeed ] : undefined,
 	};
 
@@ -304,13 +310,51 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<PanelBody title={ __( 'Settings', 'sgs-blocks' ) }>
 					<RangeControl
-						label={ __( 'Logo max height (px)', 'sgs-blocks' ) }
+						label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
+						help={ __(
+							'Tiles size to fit the columns below and grow with the screen; this caps how big a logo gets so it never pixelates on wide screens.',
+							'sgs-blocks'
+						) }
 						value={ maxHeight }
 						onChange={ ( val ) =>
 							setAttributes( { maxHeight: val } )
 						}
 						min={ 24 }
-						max={ 120 }
+						max={ 260 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Columns — desktop', 'sgs-blocks' ) }
+						help={ __(
+							'How many logos fill the width on desktop. Tiles resize to fit exactly this many.',
+							'sgs-blocks'
+						) }
+						value={ columnsDesktop ?? 8 }
+						onChange={ ( val ) =>
+							setAttributes( { columnsDesktop: val } )
+						}
+						min={ 1 }
+						max={ 12 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Columns — tablet', 'sgs-blocks' ) }
+						value={ columnsTablet ?? 4 }
+						onChange={ ( val ) =>
+							setAttributes( { columnsTablet: val } )
+						}
+						min={ 1 }
+						max={ 10 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Columns — mobile', 'sgs-blocks' ) }
+						value={ columnsMobile ?? 2 }
+						onChange={ ( val ) =>
+							setAttributes( { columnsMobile: val } )
+						}
+						min={ 1 }
+						max={ 6 }
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
