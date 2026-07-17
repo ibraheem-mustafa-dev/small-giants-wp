@@ -30,10 +30,11 @@ docs (state / handoff / next-session-prompt) that kept contradicting each other.
 is time you have to spend catching mistakes. Collapsing to one ledger + adding the guard-rails
 is directly buying down that tax.
 
-**Your single next action.** Nothing is blocked. When you next sit down, the top of the
-"Product queue" below is the drawer link-colour polish (a 5-minute fix), then the Indus
-header/footer match. The setup-simplification track's next phase is **P3glob** (a separate
-session — it needs your global mini-sign-off).
+**Your single next action.** Nothing is blocked. Two independent fronts to pick from: the
+**product** front — the drawer link-colour polish (a 5-minute fix) at the top of the "Product
+queue" below, then the Indus header/footer match; or the **setup** front — **P3glob** (the
+rest of the global hook edits, a separate session needing your global mini-sign-off). P4 (this
+doc's collapse + the ledger-rotate hook) is done and live on main.
 
 ---
 
@@ -61,8 +62,8 @@ Plan: `plans/2026-07-16-setup-simplification-and-protocol.md` (signed off; execu
 |---|---|---|
 | P0/P1/P2 | in-flight commit · culls · archive-with-redirect | ✅ done (live on main) |
 | P3proj | project enforcement — f5 gained a machine-evidence converter-guard (folded the retired qc-on-converter-edit stub); NEW `spec-drift-commit-gate.py` wired; qc-on-converter-edit.py removed | ✅ done (live on main) |
-| **P4** | **collapse the 3 status docs → this LEDGER + STOP-CATALOGUE.md + the ledger-rotate Stop hook + the F1 global filename patch** | **⬅ THIS SESSION** |
-| P3glob | rest of the GLOBAL hook edits (§3.1 sgs-selfreport evidence-scan, §3.2 baseline-update token gate, §3.3 handoff-enforce extension) — own session, needs global mini-sign-off | pending |
+| P4 | collapsed the 3 status docs → this LEDGER + STOP-CATALOGUE.md + `ledger-rotate.py` Stop hook (wired, self-test + fired) + F1 global filename patch (additive, mini-sign-off approved, `~/.claude` commit `44f3b95`) | ✅ done (commits `a55d0fc1`+`410c7552`) |
+| **P3glob** | **⬅ NEXT — rest of the GLOBAL hook edits (§3.1 sgs-selfreport evidence-scan, §3.2 baseline-update token gate, §3.3 handoff-enforce extension). Own session, needs a global mini-sign-off.** | pending |
 | P5 | agent refresh + skills refresh + WCAG 2.1 AA baseline | pending (own session(s)) |
 | P6 | remaining global simplifications (tooling-map-drift, `__pycache__`, global CLAUDE.md ≤80, rule path-scoping) | pending (own sign-off) |
 
