@@ -17,6 +17,7 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
+import { isExtensionHidden } from './hide-extensions';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -93,6 +94,12 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// Skip blocks that do not support className.
 		const blockType = getBlockType( name );
 		if ( blockType?.supports?.className === false ) {
+			return <BlockEdit { ...props } />;
+		}
+
+		// Per-block opt-out (supports.sgs.hideExtensions): a logo wall etc.
+		// has no use for parallax.
+		if ( isExtensionHidden( name, 'parallax' ) ) {
 			return <BlockEdit { ...props } />;
 		}
 

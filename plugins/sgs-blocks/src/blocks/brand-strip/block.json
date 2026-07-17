@@ -21,7 +21,7 @@
 		"sgs": {
 			"imageControls": true,
 			"arrayContentLift": true,
-			"ownHover": true,
+			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

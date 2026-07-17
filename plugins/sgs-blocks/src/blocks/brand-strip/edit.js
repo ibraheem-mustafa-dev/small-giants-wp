@@ -394,7 +394,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Animation', 'sgs-blocks' ) }
+					title={ __( 'Marquee', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<ToggleControl

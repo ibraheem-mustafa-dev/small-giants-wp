@@ -7,6 +7,13 @@
  * Default model: ALL blocks start with EMPTY/FALSE defaults (no hover lift).
  * A small opt-in list of card-like blocks gets subtle lift defaults.
  *
+ * Per-block opt-out: a block may declare `supports.sgs.hideExtensions` (e.g.
+ * `["hover","blockLink","clickEffects"]`) to suppress any of the three panels
+ * this extension renders — and, for the hover panel, its attributes too (so
+ * they can't be set and can't collide with a block that owns its own hover,
+ * like sgs/brand-strip's per-tile hover). Universal + declarative — see
+ * ./hide-extensions.js.
+ *
  * Class injection is handled server-side by includes/hover-effects.php via
  * the render_block filter. A getSaveContent.extraProps filter here would
  * bake classes into save() output, causing block validation failures
@@ -27,6 +34,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { isExtensionHidden } from './hide-extensions';
 
 // Lazy-import DesignTokenPicker if available, fallback to nothing.
 let DesignTokenPicker;
@@ -134,6 +142,8 @@ const EASING_OPTIONS = [
  *
  * Per-block defaults are resolved from resolveBlockDefaults() so that
  * the opt-in list gets subtle-lift defaults and everything else starts off.
+ * A block that hides an extension (supports.sgs.hideExtensions) does NOT get
+ * that extension's attributes registered.
  */
 addFilter(
 	'blocks.registerBlockType',
@@ -147,17 +157,13 @@ addFilter(
 
 		const defaults = resolveBlockDefaults( settings.name );
 
-		// `supports.sgs.ownHover` — the block owns its own per-element hover
-		// system (e.g. sgs/brand-strip's per-tile hover). Do NOT register the
-		// universal HOVER attributes on it: they would duplicate the block's own
-		// hover controls AND collide on the same rendered CSS. Block Link + Click
-		// Effects attributes stay (they're not per-element hover and aren't
-		// duplicated). Universal condition, not a per-block carve-out — any block
-		// declaring it owns its hover opts out identically. (Council-gated
-		// 2026-07-18; the withHoverControls filter below hides the matching panel.)
-		const ownHover = settings.supports?.sgs?.ownHover === true;
-
-		const hoverAttributes = ownHover
+		// Declarative per-block opt-out (see ./hide-extensions.js). A block that
+		// owns its own hover (e.g. sgs/brand-strip's per-tile hover) hides
+		// 'hover' so the universal hover attrs are NOT registered — they would
+		// duplicate the block's controls AND collide on the same rendered CSS.
+		// 'blockLink' / 'clickEffects' suppress those panels' attrs on blocks
+		// where they make no sense (a logo wall, etc.).
+		const hoverAttributes = isExtensionHidden( settings, 'hover' )
 			? {}
 			: {
 				// Colour overrides on hover.
@@ -188,18 +194,30 @@ addFilter(
 				sgsFocusRing:         { type: 'boolean', default: defaults.focusRing },
 			};
 
+		const linkAttributes = isExtensionHidden( settings, 'blockLink' )
+			? {}
+			: {
+				// Block link — wraps the whole block in an <a> tag.
+				sgsBlockLink:         { type: 'string',  default: '' },
+				sgsBlockLinkTarget:   { type: 'boolean', default: false },
+			};
+
+		const clickAttributes = isExtensionHidden( settings, 'clickEffects' )
+			? {}
+			: {
+				// Click ripple — radial scale animation from click coordinates.
+				sgsClickEffect:       { type: 'string',  default: 'none' },
+				sgsClickRippleColour: { type: 'string',  default: '' },
+				sgsClickRippleDuration: { type: 'number', default: 600 },
+			};
+
 		return {
 			...settings,
 			attributes: {
 				...settings.attributes,
 				...hoverAttributes,
-				// Block link — wraps the whole block in an <a> tag.
-				sgsBlockLink:         { type: 'string',  default: '' },
-				sgsBlockLinkTarget:   { type: 'boolean', default: false },
-				// Click ripple — radial scale animation from click coordinates.
-				sgsClickEffect:       { type: 'string',  default: 'none' },
-				sgsClickRippleColour: { type: 'string',  default: '' },
-				sgsClickRippleDuration: { type: 'number', default: 600 },
+				...linkAttributes,
+				...clickAttributes,
 			},
 		};
 	}
@@ -217,13 +235,15 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			return <BlockEdit { ...props } />;
 		}
 
-		// `supports.sgs.ownHover` blocks own their per-element hover system, so
-		// the universal "Hover Effects" panel is hidden on them (its attributes
-		// aren't registered either — see the attributes filter above). Block Link
-		// + Click Effects still show. Prevents the "two hover categories"
-		// duplicate the client reported on sgs/brand-strip (council-gated
-		// 2026-07-18).
-		const ownHover = type?.supports?.sgs?.ownHover === true;
+		// Declarative per-block opt-out (see ./hide-extensions.js). Each panel is
+		// suppressed independently when its slug is listed in
+		// supports.sgs.hideExtensions — e.g. a logo wall hides
+		// ['hover','blockLink','clickEffects'] so none of these clutter its
+		// sidebar. Prevents the "duplicate hover" + irrelevant-panel clutter the
+		// client reported on sgs/brand-strip (2026-07-18).
+		const hideHover = isExtensionHidden( name, 'hover' );
+		const hideBlockLink = isExtensionHidden( name, 'blockLink' );
+		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
 		const {
 			sgsHoverBgColour,
@@ -250,7 +270,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			<>
 				<BlockEdit { ...props } />
 				<InspectorControls>
-					{ ! ownHover && (
+					{ ! hideHover && (
 					<PanelBody
 						title={ __( 'Hover Effects', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -353,6 +373,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						/>
 					</PanelBody>
 					) }
+					{ ! hideBlockLink && (
 					<PanelBody
 						title={ __( 'Block Link', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -374,6 +395,8 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							/>
 						) }
 					</PanelBody>
+					) }
+					{ ! hideClick && (
 					<PanelBody
 						title={ __( 'Click Effects', 'sgs-blocks' ) }
 						initialOpen={ false }
@@ -411,6 +434,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</>
 						) }
 					</PanelBody>
+					) }
 				</InspectorControls>
 			</>
 		);
