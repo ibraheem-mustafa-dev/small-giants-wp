@@ -243,9 +243,13 @@ body .is-root-container > .wp-block {
 
 /* ─── HEADINGS ─── */
 
-.wp-block-heading {
-	letter-spacing: -0.01em;
-}
+/*
+ * No framework-wide heading letter-spacing. A former `-0.01em` default tightened
+ * EVERY client's headings and made clones drift from their reference sites
+ * (caught on Indus + Mama's, 2026-07-17 via extract-css-diff.js) — reference
+ * sites render headings at `normal`. Per-design tightening transfers from the
+ * draft; it is not a framework default.
+ */
 
 h1, h2, h3, h4, h5, h6,
 .wp-block-heading {
