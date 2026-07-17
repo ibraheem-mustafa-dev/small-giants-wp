@@ -1,7 +1,7 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: Indus clone fidelity — section-by-section. HERO fully DONE (typography + overflow fixed this session). NEXT = BRAND STRIP.
+thread: Indus clone fidelity. HERO fully DONE. NEXT (in order) = (1) fix 4 container-block hardcodes [qc-council], (2) default-typography parity original↔snapshot, (3) brand logo section diff+fix.
 generated: 2026-07-17 (hero typography closed + branch consolidation: adaptive-nav + indus-clone-fidelity dropped, Track B merged, Track C confirmed already-in-main)
 ---
 
@@ -14,6 +14,16 @@ Make the Indus clone page body render pixel-faithful to the original, section by
 - Clone (what you edit): https://palestine-lives.org/  (WordPress page 13 = the front page)
 - Original (target): https://lightsalmon-tarsier-683012.hostingersite.com/
 - Branch: **`main`** (the indus-clone-fidelity branch was consolidated into main + deleted 2026-07-17). Client snapshot changes commit to main now (main's curated `sites/indus-foods/theme-snapshot.json` is CANONICAL — Bean-locked).
+
+## ⭐ START HERE — session opening tasks, IN THIS ORDER (before the brand section)
+
+**1. Fix the 4 container-block hardcodes** from the 2026-07-17 /qc-council audit — full detail (file:line, fix, priority) in the **"Also still open → Container-block hardcode audit"** section below. Order: #1 hero standard-variant `1200px` [High], #2 mega-menu `1200px` [Medium], #3 mega-menu `100vw` [verify-overflow-live-first], #4 modal `100vw` [Low/optional]. Obey the locked method: universal fix in the shared block, NEVER a per-site patch; content max-widths tie to `--wp--style--global--content-size/wide-size`, never a hardcoded px fallback; `100vw` is the scrollbar-overflow trap. Each shared-block visual change needs a `reports/visual-diff/<block>-<date>.md` (PASS + first_paint) before it commits.
+
+**2. Default typography parity — original Indus site ↔ theme snapshot.** Make the Indus theme-snapshot's DEFAULT/global typography match the original site's. Measure the ORIGINAL (`lightsalmon-tarsier-683012.hostingersite.com`) computed defaults — body font-family + base font-size + line-height, and the h1–h6 scale (font-size / weight / line-height / letter-spacing / text-transform) — on plain default text (NOT per-instance overrides). Compare to `sites/indus-foods/theme-snapshot.json` (`settings.typography.fontFamilies` + `fontSizes`, `styles.typography`, `styles.elements.h1..h6`). Fix any drift IN THE SNAPSHOT (this is exactly Spec 33's global-styles parity). Use the canvas font-probe from METHOD step 3 to prove the real rendered font, not the declared one. Push snapshot, clear CDN, verify computed defaults match on live at 375/768/1440.
+
+**3. Brand logo section — full diff investigation + fix** (was "brand strip"; see NEXT SECTIONS #1 below for the specifics + stash).
+
+Do 1 → 2 → 3 in order. 1 and 2 are framework/global-defaults hygiene that everything else inherits; do them before per-section body work.
 
 ## ✅ Already DONE + live-verified (do NOT redo)
 - **HERO — FULLY DONE at 3 bps.** Layout, split image inset, stacked buttons, mobile content-first, content-band cap, per-client tokens. TYPOGRAPHY closed 2026-07-17: heading (Montserrat 700 50px) + both buttons (Source Sans 3 500 18px 1px capitalize) already matched; the ONLY gap was the **subheadline weight** (was regular 400, now bold 700 to match the original's `<strong>`). Also fixed a 24px hero overflow (breakout fallback 24px→0px). Commit `3bb409be`. Verified: overflow 0 + subheadline bold at 375 + 1440.
@@ -35,7 +45,7 @@ Make the Indus clone page body render pixel-faithful to the original, section by
 6. Do NOT use computed-parity.js / any diff script as the gate — it over-reports + misses meaning-equivalence.
 
 ## NEXT SECTIONS (page order)
-1. **BRAND STRIP ("Our Brands") — START HERE.** Original = 8 clean WHITE rounded logo tiles in one row. Clone = ~14 tiny, blue-TINTED, washed-out tiles, cramped. Prior WIP is STASHED (`git stash list` → stash@{0} "brand-strip WIP"); `git stash show -p stash@{0}` and decide keep/adapt/drop (verify on live DOM — don't trust it). Likely the `sgs/brand-strip` block (`plugins/sgs-blocks/src/blocks/brand-strip/`) tile count/size/tint/background. Match the original's tile size, count (8), white background, spacing. NOTE: Track B already shipped a `brand-strip/block.json` items sub-schema fix (now on main) — check it before editing.
+1. **BRAND STRIP ("Our Brands") — opening task #3 (after the 4 hardcodes + typography parity above).** Original = 8 clean WHITE rounded logo tiles in one row. Clone = ~14 tiny, blue-TINTED, washed-out tiles, cramped. Prior WIP is STASHED (`git stash list` → stash@{0} "brand-strip WIP"); `git stash show -p stash@{0}` and decide keep/adapt/drop (verify on live DOM — don't trust it). Likely the `sgs/brand-strip` block (`plugins/sgs-blocks/src/blocks/brand-strip/`) tile count/size/tint/background. Match the original's tile size, count (8), white background, spacing. NOTE: Track B already shipped a `brand-strip/block.json` items sub-schema fix (now on main) — check it before editing.
 2. **SERVICES ("Our UK Wide Food Services")** — 4 coloured cards (yellow/teal/blue/green) with circular food images, heading, text, button. Desktop close; MOBILE badly broken (cards balloon to huge empty coloured blocks, food image dumped at the bottom). Also per-card food-image assignment differs from original. Fix mobile card layout + image assignment.
 3. **WHY-CHOOSE** — original: large FILLED blue icons, CENTRED over centred headings; clone: small LINE icons, left-aligned. Match icon style + centring.
 4. **TESTIMONIALS** — original: centred YELLOW card, avatar, name/company blue, no stars; clone: white card + gold stars + big pastry image on the right. Rebuild to match.
