@@ -257,7 +257,7 @@ D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cas
 
 ## Non-negotiables
 
-- WCAG 2.2 AA accessible, mobile-first responsive (44px minimum touch targets, 4.5:1 contrast)
+- WCAG 2.1 AA baseline (keep 2.2's cheap wins — visible focus; 44px touch targets already beat 2.2's 24px), mobile-first responsive (4.5:1 contrast). Revisit to 2.2 AA per public-sector/EU client.
 - No jQuery — vanilla JS only frontend; `viewScriptModule` (ES modules) for interactive blocks
 - All REST endpoints: nonces, capability checks, sanitisation, prepared statements (`$wpdb->prepare()`)
 - Performance budget: <100KB CSS, <50KB JS per page; green Core Web Vitals
