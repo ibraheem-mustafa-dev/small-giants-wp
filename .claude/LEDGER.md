@@ -32,9 +32,10 @@ is directly buying down that tax.
 
 **Your single next action.** Nothing is blocked. Two independent fronts to pick from: the
 **product** front — the drawer link-colour polish (a 5-minute fix) at the top of the "Product
-queue" below, then the Indus header/footer match; or the **setup** front — **P3glob** (the
-rest of the global hook edits, a separate session needing your global mini-sign-off). P4 (this
-doc's collapse + the ledger-rotate hook) is done and live on main.
+queue" below, then the Indus header/footer match; or the **setup** front — **P5** (agent +
+skills refresh + WCAG 2.1 AA baseline, its own session(s)). P3glob (the global enforcement
+hooks — the AI now has to PROVE it verified SGS work before it can close a session, not just
+claim it) is done + live; P4 (the LEDGER collapse) before it.
 
 ---
 
@@ -63,8 +64,8 @@ Plan: `plans/2026-07-16-setup-simplification-and-protocol.md` (signed off; execu
 | P0/P1/P2 | in-flight commit · culls · archive-with-redirect | ✅ done (live on main) |
 | P3proj | project enforcement — f5 gained a machine-evidence converter-guard (folded the retired qc-on-converter-edit stub); NEW `spec-drift-commit-gate.py` wired; qc-on-converter-edit.py removed | ✅ done (live on main) |
 | P4 | collapsed the 3 status docs → this LEDGER + STOP-CATALOGUE.md + `ledger-rotate.py` Stop hook (wired, self-test + fired) + F1 global filename patch (additive, mini-sign-off approved, `~/.claude` commit `44f3b95`) | ✅ done (commits `a55d0fc1`+`410c7552`) |
-| **P3glob** | **⬅ NEXT — rest of the GLOBAL hook edits (§3.1 sgs-selfreport evidence-scan, §3.2 baseline-update token gate, §3.3 handoff-enforce extension). Own session, needs a global mini-sign-off.** | pending |
-| P5 | agent refresh + skills refresh + WCAG 2.1 AA baseline | pending (own session(s)) |
+| P3glob | GLOBAL hook edits (mini-sign-off approved 2026-07-17): §3.1 sgs-selfreport now reads machine evidence (real verify tool-result, not typed `state=verified`) — once-per-session warn + HARD block at `/handoff` close if SGS edited & verified nowhere all session (council-added teeth); §3.2 NEW `baseline-update-gate.py` (PreToolUse/Bash, wired) denies `--update-baseline` on the 8 gates w/o `[baseline-ok:reason]` + off-switch + cwd-match + f5 drift-check + bypass log; §3.3 handoff-enforce Part B uncommitted-work warn (.claude-scoped, once/session). All 3 adversarial-council-hardened, self-tested (16/12/10), live-fired. `~/.claude` commit + settings.json wiring done. | ✅ done |
+| **P5** | **⬅ NEXT — agent refresh + skills refresh + WCAG 2.1 AA baseline** | pending (own session(s)) |
 | P6 | remaining global simplifications (tooling-map-drift, `__pycache__`, global CLAUDE.md ≤80, rule path-scoping) | pending (own sign-off) |
 
 **The go-forward protocol (plan §5) — captured as a lesson:** (1) one ledger, Stop-rotated;

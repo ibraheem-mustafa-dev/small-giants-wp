@@ -59,7 +59,7 @@ Relax "2.2 AA everywhere" → 2.1 AA baseline + keep 2.2's cheap wins (visible f
 ## 5. Go-forward protocol (each rule tagged ENFORCED(event) / TO-BUILD(event) / MANUAL)
 1. One ledger, Stop-rotated — **TO-BUILD (Stop)**.
 2. Structural gates over prose — **MANUAL (governing principle)**.
-3. Done = machine evidence — **ENFORCED (Stop), logic-upgrade pending §3.1**.
+3. Done = machine evidence — **WARN at edit-turn + ENFORCED at /handoff close (Stop). §3.1 SHIPPED P3glob 2026-07-17** — sgs-selfreport-gate.py reads a real verification tool-result (not a typed `state=verified` string); a non-blocking once-per-session warn on an unverified SGS edit turn, plus a HARD block at `/handoff` close if SGS framework code was edited and verified nowhere all session (council-added teeth; edit→deploy→verify cadence preserved; override = HANDOFF_GATE_OFF).
 4. Minimal always-on context — **the ≤80-line cap applies ONLY to the GLOBAL always-on CLAUDE.md** (per-component project CLAUDE.mds are on-demand + legitimately longer — keep lean, no hard cap). ENFORCE the global cap via a line-count check on CLAUDE.md edits, else mark MANUAL/aspirational — do NOT leave it as decaying prose the repo already violates.
 5. Clean folders — **TO-BUILD (PreToolUse(Bash) commit size/binary gate + Stop scratch-sweep)**.
 6. Docs gated like code — **TO-BUILD (PostToolUse(Write/Edit) doc-drift check — the pattern `drift-check-dispatcher` already proves)**.
