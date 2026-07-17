@@ -92,6 +92,14 @@ points here. Neither ever silently drops a STOP.
   container before calling a tier boundary an off-by-one.
 - **STOP-SILENT-ATTR-DISCARD (D338)** — WP discards undeclared attrs silently. Gate:
   `check-dead-pattern-attrs.py`. Never blanket-rename `textColor` (correct on core blocks).
+- **STOP-WP-STYLE-SUBSTRING-COLLISION (D343)** — a CSS custom-property NAME emitted inline
+  must NOT contain the substrings `border-width` / `border-color` / `border-top-color` etc.
+  WP core ships `html :where([style*="border-width"]){border-style:solid}` (and siblings) —
+  an attribute-SUBSTRING selector that matches ANY element whose `style` contains that text,
+  including your `--sgs-tile-border-width` var, and paints a phantom `3px currentColor`
+  border. British `--*-colour` dodges the `border-color` rule; `width` is spelled the same,
+  so name width vars `--*-thickness`. Found it via a stylesheet-disable bisect (or use
+  `extract-css-diff.js --why`). (D343 brand-strip 3px black frame.)
 - **STOP-VERIFY-EVERY-CLIENT (D338)** — a colour/contrast fix verified on ONE client is NOT
   verified. All 8 `sites/*/theme-snapshot.json` palettes. (D339 drawer: 8/8 measured.)
 - **STOP-TOKEN-NAME-IS-NOT-A-LUMINANCE (D338)** — `primary-dark` is a PINK on

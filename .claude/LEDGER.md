@@ -42,8 +42,8 @@ claim it) is done + live; P4 (the LEDGER collapse) before it.
 
 ## Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`. **HEAD:** `d3967a2c` (merge of `feat/adaptive-nav-dialog-drawer` +
-  `feat/core-block-migration` + P1/P2/P3proj). **D-ceiling:** **D342**.
+- **Branch:** `main`. **HEAD:** past `3fb44a8f` (Indus Our-Brands session 2026-07-17 — 6 commits
+  `287c7c1f`→`3fb44a8f`, all pushed; co-active P5 track also on main, HEAD moves). **D-ceiling:** **D343**.
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the active header/footer/nav front, also `specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` + `specs/17` §S9.
 - **Sites:** dev = palestine-lives.org (Indus). staging/canary = sandybrown-nightingale-600381.hostingersite.com. Both WP 7.0.1.
@@ -77,6 +77,27 @@ Plan: `plans/2026-07-16-setup-simplification-and-protocol.md` (signed off; execu
 ---
 
 ## Product queue (the website-builder work — reconcile before acting, some is already live)
+
+**Indus "Our Brands" clone fidelity — DONE 2026-07-17 (D343, live-verified).** Band matched to
+the reference at hero-grade via computed-CSS extraction (underline 27%×2px, logos fill 155²
+tiles, gap 0 + 10px band-teal→gold-hover border, band 272 centred, letter-spacing normal,
+overflow 0). Shipped: **NEW `sgs/separator` block** (replaces `core/separator`; in the replaces
+table + DB), brand-strip tile controls + the WP `border-width` var-name-collision fix
+(STOP-WP-STYLE-SUBSTRING-COLLISION), framework letter-spacing fix (theme-deployed), **NEW
+`extract-css-diff.js`** (the STANDARD extract-and-diff tool + `--why` CDP provenance), **NEW
+theme-CSS hardcode lint**. Detail: decisions D343.
+
+**Indus next-session tasks (Bean-directed 2026-07-17, ties to Track C + the replaces table):**
+- **A — core→SGS migration of page 13.** The clone still contains `core/*` blocks that should be
+  `sgs/*` (the "Our Brands" band is a `core/group`; there's `core/heading`, `core/columns`, etc.).
+  Convert the Our Brands band `core/group` → `sgs/container` (it already has `verticalAlign` /
+  `justifyContent` / stack controls — use `verticalAlign:center`, drop the padding fudge), then
+  audit page 13 for all remaining replaceable core blocks and migrate via the migration tool +
+  `block-replacements.json`. This is the "I thought all core blocks were already SGS" item.
+- **B — wire `lint-theme-css-hardcodes.py` into prebuild** (currently runnable but not gated).
+- **C — deferred:** Services-section 768 overflow (hardcoded `139/250/123/187=771px` columns →
+  responsive `fr`); Services button-border decision; Task-2 detection-method brainstorm (the
+  extractor is the core of it — decide if it becomes a standard pre-close gate).
 
 **Last shipped (D341/D342, 2026-07-16, on `main` `a693e0e8`→merged into d3967a2c):** Phase 2
 nav/logo fixes — `sgs/responsive-logo` dropped the unshippable `auto` logo-switch for an
