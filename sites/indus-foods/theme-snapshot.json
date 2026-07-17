@@ -1,209 +1,351 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/theme.json",
-	"version": 3,
-	"title": "Indus Foods",
-	"description": "Bundled preset — colour + typography combined. For independent axes use colours/indus-foods and typography/indus-foods.",
-	"settings": {
-		"color": {
-			"palette": [
-				{
-					"slug": "primary",
-					"color": "#0A7EA8",
-					"name": "Primary (Dark Blue)"
-				},
-				{
-					"slug": "primary-dark",
-					"color": "#075E80",
-					"name": "Primary Dark"
-				},
-				{
-					"slug": "accent",
-					"color": "#D8CA50",
-					"name": "Accent (Dark Gold)"
-				},
-				{
-					"slug": "accent-text",
-					"color": "#7A6B00",
-					"name": "Accent Text (Dark Gold — WCAG AA on white)"
-				},
-				{
-					"slug": "accent-light",
-					"color": "#E7D768",
-					"name": "Accent Light (Light Gold)"
-				},
-				{
-					"slug": "border-subtle",
-					"color": "#2EADE2",
-					"name": "Light Blue"
-				},
-				{
-					"slug": "success",
-					"color": "#2E7D4F",
-					"name": "Success"
-				},
-				{
-					"slug": "error",
-					"color": "#DC2626",
-					"name": "Error"
-				},
-				{
-					"slug": "whatsapp",
-					"color": "#25D366",
-					"name": "WhatsApp"
-				},
-				{
-					"slug": "surface",
-					"color": "#FFFFFF",
-					"name": "Surface"
-				},
-				{
-					"slug": "surface-alt",
-					"color": "#F8F7F4",
-					"name": "Surface Alt"
-				},
-				{
-					"slug": "text",
-					"color": "#2C3E50",
-					"name": "Text"
-				},
-				{
-					"slug": "text-muted",
-					"color": "#5A6070",
-					"name": "Text Muted"
-				},
-				{
-					"slug": "text-inverse",
-					"color": "#FFFFFF",
-					"name": "Text Inverse"
-				},
-				{
-					"slug": "border-light",
-					"color": "#E5E7EB",
-					"name": "Border Light"
-				},
-				{
-					"slug": "footer-bg",
-					"color": "#2C3E50",
-					"name": "Footer Background"
-				}
-			]
-		},
-		"typography": {
-			"fontFamilies": [
-				{
-					"fontFamily": "Montserrat, system-ui, sans-serif",
-					"slug": "heading",
-					"name": "Heading",
-					"fontFace": [
-						{
-							"fontFamily": "Montserrat",
-							"fontWeight": "100 900",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/montserrat-variable-latin.woff2"
-							]
-						}
-					]
-				},
-				{
-					"fontFamily": "'Source Sans 3', system-ui, sans-serif",
-					"slug": "body",
-					"name": "Body",
-					"fontFace": [
-						{
-							"fontFamily": "Source Sans 3",
-							"fontWeight": "200 900",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/source-sans-3-variable-latin.woff2"
-							]
-						}
-					]
-				}
-			]
-		},
-		"custom": {
-			"sgs": {
-				"headerPattern": "sgs/framework-header-default",
-				"footerPattern": "sgs/framework-footer-default"
-			}
-		}
-	},
-	"styles": {
-		"typography": {
-			"fontFamily": "var:preset|font-family|body"
-		},
-		"elements": {
-			"heading": {
-				"typography": {
-					"fontFamily": "var:preset|font-family|heading",
-					"fontWeight": "700"
-				},
-				"color": {
-					"text": "var:preset|color|primary"
-				}
-			},
-			"link": {
-				"color": {
-					"text": "var:preset|color|primary"
-				},
-				":hover": {
-					"color": {
-						"text": "var:preset|color|primary-dark"
-					}
-				}
-			},
-			"button": {
-				"color": {
-					"background": "var:preset|color|primary",
-					"text": "var:preset|color|surface"
-				},
-				"typography": {
-					"fontWeight": "600",
-					"fontSize": "var:preset|font-size|medium",
-					"textDecoration": "none"
-				},
-				"border": {
-					"radius": "10px"
-				},
-				"spacing": {
-					"padding": {
-						"top": "16px",
-						"bottom": "16px",
-						"left": "36px",
-						"right": "36px"
-					}
-				},
-				":hover": {
-					"color": {
-						"background": "var:preset|color|primary-dark",
-						"text": "var:preset|color|surface"
-					}
-				},
-				":focus": {
-					"outline": {
-						"color": "var:preset|color|primary",
-						"width": "2px",
-						"offset": "2px",
-						"style": "solid"
-					}
-				}
-			}
-		},
-		"blocks": {
-			"core/site-title": {
-				"typography": {
-					"fontFamily": "var:preset|font-family|heading"
-				}
-			},
-			"core/navigation": {
-				"typography": {
-					"fontSize": "var:preset|font-size|medium",
-					"fontWeight": "600"
-				}
-			}
-		}
-	}
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "Indus Foods",
+  "description": "Bundled preset — colour + typography combined. For independent axes use colours/indus-foods and typography/indus-foods.",
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "slug": "primary",
+          "color": "#0A7EA8",
+          "name": "Primary (Dark Blue)"
+        },
+        {
+          "slug": "primary-dark",
+          "color": "#075E80",
+          "name": "Primary Dark"
+        },
+        {
+          "slug": "accent",
+          "color": "#D8CA50",
+          "name": "Accent (Dark Gold)"
+        },
+        {
+          "slug": "accent-text",
+          "color": "#7A6B00",
+          "name": "Accent Text (Dark Gold — WCAG AA on white)"
+        },
+        {
+          "slug": "accent-light",
+          "color": "#E7D768",
+          "name": "Accent Light (Light Gold)"
+        },
+        {
+          "slug": "border-subtle",
+          "color": "#2EADE2",
+          "name": "Light Blue"
+        },
+        {
+          "slug": "success",
+          "color": "#2E7D4F",
+          "name": "Success"
+        },
+        {
+          "slug": "error",
+          "color": "#DC2626",
+          "name": "Error"
+        },
+        {
+          "slug": "whatsapp",
+          "color": "#25D366",
+          "name": "WhatsApp"
+        },
+        {
+          "slug": "surface",
+          "color": "#FFFFFF",
+          "name": "Surface"
+        },
+        {
+          "slug": "surface-alt",
+          "color": "#F8F7F4",
+          "name": "Surface Alt"
+        },
+        {
+          "slug": "text",
+          "color": "#2C3E50",
+          "name": "Text"
+        },
+        {
+          "slug": "text-muted",
+          "color": "#5A6070",
+          "name": "Text Muted"
+        },
+        {
+          "slug": "text-inverse",
+          "color": "#FFFFFF",
+          "name": "Text Inverse"
+        },
+        {
+          "slug": "border-light",
+          "color": "#E5E7EB",
+          "name": "Border Light"
+        },
+        {
+          "slug": "footer-bg",
+          "color": "#2C3E50",
+          "name": "Footer Background"
+        }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "Montserrat, system-ui, sans-serif",
+          "slug": "heading",
+          "name": "Heading",
+          "fontFace": [
+            {
+              "fontFamily": "Montserrat",
+              "fontWeight": "100 900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/montserrat-variable-latin.woff2"
+              ]
+            }
+          ]
+        },
+        {
+          "fontFamily": "'Source Sans 3', system-ui, sans-serif",
+          "slug": "body",
+          "name": "Body",
+          "fontFace": [
+            {
+              "fontFamily": "Source Sans 3",
+              "fontWeight": "200 900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/source-sans-3-variable-latin.woff2"
+              ]
+            }
+          ]
+        }
+      ],
+      "fontSizes": [
+        {
+          "slug": "x-small",
+          "size": "12px",
+          "name": "XSmall",
+          "fluid": false
+        },
+        {
+          "slug": "small",
+          "size": "14px",
+          "name": "Small",
+          "fluid": {
+            "min": "13px",
+            "max": "14px"
+          }
+        },
+        {
+          "slug": "medium",
+          "size": "18px",
+          "name": "Medium",
+          "fluid": false
+        },
+        {
+          "slug": "large",
+          "size": "20px",
+          "name": "Large",
+          "fluid": {
+            "min": "17px",
+            "max": "20px"
+          }
+        },
+        {
+          "slug": "x-large",
+          "size": "24px",
+          "name": "XL",
+          "fluid": {
+            "min": "20px",
+            "max": "24px"
+          }
+        },
+        {
+          "slug": "xx-large",
+          "size": "36px",
+          "name": "XXL",
+          "fluid": {
+            "min": "26px",
+            "max": "36px"
+          }
+        },
+        {
+          "slug": "hero",
+          "size": "clamp(2.5rem, calc(2.5rem + (100vw - 1024px) * 0.02404), 3.125rem)",
+          "name": "Hero",
+          "fluid": false
+        }
+      ]
+    },
+    "custom": {
+      "sgs": {
+        "headerPattern": "sgs/framework-header-default",
+        "footerPattern": "sgs/framework-footer-default"
+      },
+      "buttonPresets": {
+        "primary": {
+          "background": "#000000",
+          "text": "#d8ca50",
+          "border": "#d8ca50",
+          "border-width": "3px",
+          "border-radius": "10px",
+          "padding": "18px 42px 18px 42px",
+          "font-size": "18px",
+          "font-weight": "500",
+          "min-height": "48px",
+          "hover-background": "#d8ca50",
+          "hover-text": "#000000",
+          "hover-border": "#000000"
+        },
+        "secondary": {
+          "background": "#0a7ea8",
+          "text": "#ffffff",
+          "border": "#ffffff",
+          "border-width": "3px",
+          "border-radius": "10px",
+          "padding": "18px 42px 18px 42px",
+          "font-size": "18px",
+          "font-weight": "500",
+          "min-height": "48px",
+          "hover-background": "#ffffff",
+          "hover-text": "#0a7ea8",
+          "hover-border": "#0a7ea8"
+        },
+        "outline": {
+          "background": "#0a7ea8",
+          "text": "#ffffff",
+          "border": "transparent",
+          "border-width": "3px",
+          "border-radius": "10px",
+          "padding": "18px 42px 18px 42px",
+          "font-size": "18px",
+          "font-weight": "500",
+          "min-height": "48px",
+          "hover-background": "transparent",
+          "hover-text": "var(--wp--preset--color--text)",
+          "hover-border": "#0a7ea8"
+        }
+      },
+      "borderRadius": {
+        "small": "4px",
+        "medium": "8px",
+        "large": "16px",
+        "pill": "9999px"
+      },
+      "transition": {
+        "fast": "0.15s ease",
+        "medium": "0.3s ease",
+        "slow": "0.5s ease"
+      },
+      "duration": {
+        "instant": "60ms",
+        "fast": "150ms",
+        "medium": "300ms",
+        "slow": "500ms",
+        "extra-slow": "800ms"
+      },
+      "easing": {
+        "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "ease-out": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "ease-in": "cubic-bezier(0.4, 0, 1, 1)",
+        "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "linear": "linear"
+      },
+      "focus-ring": {
+        "width": "3px",
+        "offset": "2px",
+        "color-primary": "rgba(31, 122, 122, 0.4)",
+        "color-accent": "rgba(245, 158, 11, 0.4)"
+      },
+      "fontLinks": [
+        "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/astra-local-fonts/montserrat/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXo.woff2",
+        "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/astra-local-fonts/source-sans-pro/6xK3dSBYKcSV-LCoeQqfX1RYOo3qOK7l.woff2"
+      ],
+      "header": {},
+      "footer": {}
+    },
+    "layout": {
+      "contentSize": "1140px",
+      "wideSize": "1400px"
+    }
+  },
+  "styles": {
+    "typography": {
+      "fontFamily": "var:preset|font-family|body"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontFamily": "var:preset|font-family|heading",
+          "fontWeight": "700"
+        },
+        "color": {
+          "text": "var:preset|color|primary"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "var:preset|color|primary"
+        },
+        ":hover": {
+          "color": {
+            "text": "var:preset|color|primary-dark"
+          }
+        }
+      },
+      "button": {
+        "color": {
+          "background": "var:preset|color|primary",
+          "text": "var:preset|color|surface"
+        },
+        "typography": {
+          "fontWeight": "600",
+          "fontSize": "var:preset|font-size|medium",
+          "textDecoration": "none"
+        },
+        "border": {
+          "radius": "10px"
+        },
+        "spacing": {
+          "padding": {
+            "top": "16px",
+            "bottom": "16px",
+            "left": "36px",
+            "right": "36px"
+          }
+        },
+        ":hover": {
+          "color": {
+            "background": "var:preset|color|primary-dark",
+            "text": "var:preset|color|surface"
+          }
+        },
+        ":focus": {
+          "outline": {
+            "color": "var:preset|color|primary",
+            "width": "2px",
+            "offset": "2px",
+            "style": "solid"
+          }
+        }
+      }
+    },
+    "blocks": {
+      "core/site-title": {
+        "typography": {
+          "fontFamily": "var:preset|font-family|heading"
+        }
+      },
+      "core/navigation": {
+        "typography": {
+          "fontSize": "var:preset|font-size|medium",
+          "fontWeight": "600"
+        }
+      }
+    },
+    "css": "/* sgs-button variant structure (per-site) */.sgs-button.sgs-button--primary,.sgs-button.sgs-button--secondary{border-width:3px;border-radius:10px;padding:18px 42px;font-size:18px;font-weight:500;letter-spacing:1px;text-transform:capitalize;box-shadow:rgba(0,0,0,0.15) 3px 8px 12px 0px;}.sgs-button.sgs-button--primary:hover,.sgs-button.sgs-button--secondary:hover,.sgs-button.sgs-button--primary:focus-visible,.sgs-button.sgs-button--secondary:focus-visible{box-shadow:rgba(0,0,0,0.15) 5px 20px 30px 9px;}/* sgs-hero subheadline (per-site) — reverted framework block generic 2026-07-17 */.sgs-hero .sgs-hero__subheadline{font-size:1.6875rem;font-weight:400;line-height:1.067;}/* sgs-button responsive mobile step-down (per-site) */@media (max-width:1023px){.sgs-button.sgs-button--primary,.sgs-button.sgs-button--secondary{padding:15px 20px;}}"
+  }
 }

@@ -345,6 +345,28 @@ $responsive_css = '';
 // deferred to the scoped .uid rule (was previously pushed inline via $styles).
 if ( $is_split ) {
 	$responsive_css .= '.' . $uid . '{display:grid}';
+
+	// ── Content-band cap (grid-aware) ──
+	// The universal wrapper caps content via an injected `.sgs-container__inner`
+	// div, which is SUPPRESSED for split (wrap_inner=false) because it would
+	// collapse the two grid columns. So the `contentWidth` control had nothing
+	// to act on for split heroes. Fix: apply the band directly to the section
+	// grid as centred inline padding — the full-bleed background still paints
+	// edge-to-edge behind the padding, while the two columns stay confined to a
+	// centred band. Mirrors the wrapper's own token→length resolver
+	// (normal→content-size, wide→wide-size, full/empty→no cap, else literal).
+	$cw_raw = (string) ( $attributes['contentWidth'] ?? '' );
+	$band   = '';
+	if ( 'normal' === $cw_raw ) {
+		$band = 'var(--wp--style--global--content-size,1200px)';
+	} elseif ( 'wide' === $cw_raw ) {
+		$band = 'var(--wp--style--global--wide-size,1400px)';
+	} elseif ( '' !== $cw_raw && 'full' !== $cw_raw ) {
+		$band = $sgs_css_length( $cw_raw );
+	}
+	if ( '' !== $band ) {
+		$responsive_css .= '.' . $uid . '{padding-inline:max(var(--wp--style--root--padding-right,24px),calc((100% - ' . $band . ') / 2))}';
+	}
 }
 
 // F3 drain (§E2, D228 pattern): the outer section's cross-axis `align-items`
