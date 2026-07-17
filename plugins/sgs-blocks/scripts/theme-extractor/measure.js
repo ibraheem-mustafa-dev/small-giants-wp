@@ -66,7 +66,25 @@ const CAPTURE_SRC = function () {
     }
     return parts.join('>');
   };
-  const inChrome = (el) => !!el.closest('header, footer, nav, [class*="header"], [class*="footer"], [class*="nav"]');
+  // FR-33-3 chrome exclusion: a genuine site-level <header>/<footer>/<nav> landmark carries chrome
+  // typography (top nav links, footer copyright) that must NOT drive the client's content type
+  // scale. But a landmark NESTED inside the main content flow (Astra/UAGB wrap a post/section
+  // title+description pair in <header> for semantic correctness — an entry-header, a card header)
+  // is CONTENT, not site chrome, and must NOT be excluded.
+  //
+  // Substring class matching (the old `[class*="header"]` etc.) was REMOVED: it matches any class
+  // token containing the substring anywhere in the DOM, including unrelated builder/feature-flag
+  // marker classes that land on <body> itself (e.g. Astra's "ast-hfb-header" Header-Footer-Builder
+  // flag) — which made `body.closest('[class*="header"]')` match TRUE, and since body is an ancestor
+  // of every element on the page, the entire DOM (every paragraph, heading, and section, down to
+  // `html>body` itself) was misclassified as chrome. Proven on the Indus original: 100% of captured
+  // facts carried `inChrome: true`. Tag-based landmark detection + the main/article/section nesting
+  // exception is universal and draft-agnostic — it does not depend on any theme/builder class name.
+  const inChrome = (el) => {
+    const landmark = el.closest('header, footer, nav');
+    if (!landmark) return false;
+    return !landmark.closest('main, article, section');
+  };
   const rect = (el) => { const r = el.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height) }; };
   const visible = (el) => {
     const cs = getComputedStyle(el);
@@ -106,21 +124,60 @@ const CAPTURE_SRC = function () {
     links.push({ path: nodePath(el), color: getComputedStyle(el).color, textDecorationLine: getComputedStyle(el).textDecorationLine });
   });
 
-  // Button presets: rest + :hover computed per distinct class signature. Hovering is done in Node
-  // (page.hover) — here we only record the class list + rest computed; hover is merged in Node.
+  // Button presets: rest + :hover computed per distinct variant. Hovering is done in Node
+  // (page.hover) — here we only record the classes + rest computed; hover is merged in Node.
+  //
+  // FR-33-4: a preset MUST measure the element that actually PAINTS the button — the <a>/<button>
+  // (or input[type=submit]/[role=button]) — NEVER an ancestor wrapper. The old selector
+  // `a, button, .btn, [class*="button"]` matched builder WRAPPER DIVS (UAGB emits
+  // `div.wp-block-uagb-buttons-child.wp-block-button` around the real `<a.wp-block-button__link>`),
+  // and the `[class*="button"]` substring test let them through. The wrapper is transparent and
+  // border-less, so the derived preset was junk (border-width 0px / radius 0px / transparent bg)
+  // while the real <a> painted #fff / #0a7ea8 / 3px / 30px radius. Same wrapper-vs-real-element trap
+  // that produces false positives in computed-parity runs.
+  //
+  // The VARIANT class, however, legitimately lives on a wrapper in builder markup (UAGB puts
+  // `.outline` on the child wrapper) while SGS drafts put it on the element itself
+  // (`.sgs-button--ghost`). So: MEASURE the painting element, but record the nearest ancestors'
+  // classes as variant CONTEXT for the Python slot matcher (own classes take precedence there).
+  const paintsButton = (el) => {
+    const tag = el.tagName;
+    if (tag === 'BUTTON') return true;
+    if (tag === 'A') return true;
+    if (tag === 'INPUT') return ['submit', 'button', 'reset']
+      .indexOf((el.getAttribute('type') || '').toLowerCase()) !== -1;
+    return (el.getAttribute('role') || '').toLowerCase() === 'button';
+  };
   const buttons = [];
   const seenBtn = new Set();
-  document.querySelectorAll('a, button, .btn, [class*="button"]').forEach((el) => {
-    if (!visible(el)) return;
+  let btnIdx = 0;
+  document.querySelectorAll('a, button, input, [role="button"]').forEach((el) => {
+    if (!visible(el) || !paintsButton(el)) return;
     const cls = (el.getAttribute('class') || '').trim();
-    if (!cls) return;
-    // Only treat as a button preset if it looks like one (class or role/tag).
-    const looksButton = /btn|button/i.test(cls) || el.tagName === 'BUTTON';
+    const own = cls ? cls.split(/\s+/) : [];
+    const looksButton = /btn|button/i.test(cls) || el.tagName === 'BUTTON'
+      || el.tagName === 'INPUT' || (el.getAttribute('role') || '').toLowerCase() === 'button';
     if (!looksButton) return;
-    const key = cls.split(/\s+/).sort().join(' ');
+    // Nearest-ancestor classes (capped) = variant context only; never measured.
+    const anc = [];
+    let p = el.parentElement, depth = 0;
+    while (p && depth < 4) {
+      const pc = (p.getAttribute('class') || '').trim();
+      if (pc) anc.push.apply(anc, pc.split(/\s+/));
+      p = p.parentElement; depth++;
+    }
+    if (own.length === 0 && anc.length === 0) return;
+    // Dedupe on own + ancestor context, so two <a>s sharing a class but sitting under different
+    // variant wrappers (the UAGB case) are captured separately rather than collapsing to the first.
+    const key = own.slice().sort().join(' ') + '||' + anc.slice().sort().join(' ');
     if (seenBtn.has(key)) return;
     seenBtn.add(key);
-    buttons.push({ classKey: key, classes: cls.split(/\s+/), path: nodePath(el), rest: pick(el, BOX) });
+    // Index the node so Node-side hover reads the SAME element (a compound class selector is
+    // ambiguous across instances and silently resolved to the wrong node).
+    el.setAttribute('data-sgs-btn-idx', String(btnIdx));
+    buttons.push({ classKey: key, classes: own, ancestorClasses: anc, idx: btnIdx,
+      path: nodePath(el), rest: pick(el, BOX) });
+    btnIdx++;
   });
 
   // Section-level background candidates: block-level elements that CONTAIN the content flow.
@@ -160,12 +217,11 @@ const CAPTURE_SRC = function () {
   return { root, body, paragraphs, headings, links, buttons, sections, previewShellMarkers };
 };
 
-// The set of button-variant class keys we must additionally read in the :hover state.
-const HOVER_READ_SRC = function (classKey) {
-  const el = Array.from(document.querySelectorAll('a, button, .btn, [class*="button"]')).find((n) => {
-    const cls = (n.getAttribute('class') || '').trim();
-    return cls && cls.split(/\s+/).sort().join(' ') === classKey;
-  });
+// Read one captured button's :hover computed. Targeted by the index stamped during capture, so it
+// reads back the EXACT node that was measured at rest (matching by class list is ambiguous when
+// several instances share a class and silently resolves to the wrong one).
+const HOVER_READ_SRC = function (idx) {
+  const el = document.querySelector('[data-sgs-btn-idx="' + idx + '"]');
   if (!el) return null;
   const cs = getComputedStyle(el);
   const props = ['backgroundColor', 'color', 'borderTopColor', 'borderTopWidth', 'transform', 'boxShadow'];
@@ -190,17 +246,13 @@ async function main() {
 
     const facts = await page.evaluate('(' + CAPTURE_SRC.toString() + ')()');
 
-    // Second pass: read each button variant's :hover computed by actually hovering it.
+    // Second pass: read each button's :hover computed by actually hovering the SAME node measured
+    // at rest (addressed by its capture index, not an ambiguous class selector).
     for (const btn of facts.buttons) {
       try {
-        // Hover the first element carrying this variant's full class list (compound selector),
-        // falling back to the first class token if the compound selector doesn't resolve.
-        const compound = btn.classes.map((c) => '.' + c.replace(/([^a-zA-Z0-9_-])/g, '\\$1')).join('');
-        await page.hover(compound, { timeout: 1500 }).catch(async () => {
-          await page.hover('.' + btn.classes[0], { timeout: 1500 }).catch(() => {});
-        });
+        await page.hover('[data-sgs-btn-idx="' + btn.idx + '"]', { timeout: 1500 }).catch(() => {});
         await page.waitForTimeout(120);
-        const hover = await page.evaluate('(' + HOVER_READ_SRC.toString() + ')(' + JSON.stringify(btn.classKey) + ')');
+        const hover = await page.evaluate('(' + HOVER_READ_SRC.toString() + ')(' + JSON.stringify(btn.idx) + ')');
         btn.hover = hover;
         // move the mouse away so the next hover starts clean
         await page.mouse.move(0, 0);

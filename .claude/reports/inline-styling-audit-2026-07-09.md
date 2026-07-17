@@ -10,7 +10,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 |---|---|---|---|---|---|---|---|
 | sgs/accordion | color+spacing+__experimentalBorder+typography | 0 | yes | 19 | 10 | — | SGS_Container_Wrapper |
 | sgs/accordion-item | color+__experimentalBorder | 0 | yes | 0 | 2 | — | SGS_Container_Wrapper |
-| sgs/adaptive-nav | color+__experimentalBorder | 0 | yes | 0 | 18 | — | SGS_Container_Wrapper |
+| sgs/adaptive-nav | color+__experimentalBorder | 0 | yes | 0 | 12 | — | SGS_Container_Wrapper |
 | sgs/audio | spacing | 0 | no | 0 | 16 | — | none |
 | sgs/brand-strip | color+spacing+__experimentalBorder | 0 | no | 0 | 21 | borderRadius | none |
 | sgs/breadcrumbs | color+spacing+typography | 0 | no | 0 | 10 | — | none |
@@ -57,6 +57,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 | sgs/mega-menu | color | 0 | no | 0 | 12 | — | render.php (block-private) |
 | sgs/modal | color | 0 | no | 0 | 9 | — | none |
 | sgs/multi-button | color+__experimentalBorder | 0 | yes | 0 | 10 | — | SGS_Container_Wrapper |
+| sgs/nav-menu | color | 0 | no | 0 | 6 | — | sgs_typography_css_rule |
 | sgs/notice-banner | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 19 | — | none |
 | sgs/option-picker | color+spacing+__experimentalBorder | 0 | no | 0 | 34 | borderRadius | sgs_typography_css_rule |
 | sgs/post-grid | color+spacing+__experimentalBorder+typography | 0 | yes | 0 | 48 | — | SGS_Container_Wrapper |
@@ -67,7 +68,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 | sgs/product-faq-item | color+__experimentalBorder | 0 | no | 0 | 2 | — | none |
 | sgs/product-search | spacing | 0 | no | 0 | 8 | — | none |
 | sgs/quote | color+spacing+__experimentalBorder+typography | 0 | no | 0 | 36 | — | sgs_responsive_css_rule |
-| sgs/responsive-logo | spacing | 0 | no | 0 | 12 | — | none |
+| sgs/responsive-logo | spacing | 0 | no | 0 | 14 | — | none |
 | sgs/site-footer | color+spacing+__experimentalBorder | 0 | yes | 0 | 16 | paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft | SGS_Container_Wrapper |
 | sgs/site-footer-row | color+__experimentalBorder | 0 | yes | 0 | 1 | — | SGS_Container_Wrapper |
 | sgs/site-header | color+spacing+__experimentalBorder | 0 | yes | 0 | 20 | paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft | SGS_Container_Wrapper |
@@ -172,7 +173,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- ref, menuButtonLabel, drawerLabel, drawerSide, drawerBg, drawerHeadBg, drawerWidth, showLogo, logoMaxWidth, closeButtonSize, menuFallback, collapseTier, collapseCustomPx, overflowBehaviour, moreMenuLabel, navigationLabel, linkColour, linkHoverColour
+- ref, menuButtonLabel, drawerLabel, drawerBg, menuFallback, collapseTier, collapseCustomPx, overflowBehaviour, moreMenuLabel, navigationLabel, linkColour, linkHoverColour
 
 **tier-without-base:** (none)
 
@@ -1503,6 +1504,33 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 ---
 
+### sgs/nav-menu
+
+- `block.json`: src\blocks\nav-menu/block.json
+- render.php: yes | style.css: yes
+- scalarStylingLift declared: no
+
+**1. INLINE-via-supports**
+- `color`: text, __experimentalSkipSerialization
+
+**2. INLINE-via-render (violations — real CSS property in a style="..." site)**
+- (none — clean)
+
+**3. INLINE-via-wrapper**
+- calls SGS_Container_Wrapper::render(): no
+
+**4. DROP-conditional-inert (grid/flex family, layout attr not defaulting to grid/flex)**
+- (none)
+
+**5. DROP-unrouted (declared, never reaches a CSS sink)**
+- ref, menuFallback, linkColour, linkHoverColour, showDividers, dividerColour
+
+**tier-without-base:** (none)
+
+**dominant shared-helper:** sgs_typography_css_rule ({"sgs_typography_css_rule":5})
+
+---
+
 ### sgs/notice-banner
 
 - `block.json`: src\blocks\notice-banner/block.json
@@ -1822,7 +1850,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - (none)
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- desktopLogoId, tabletLogoId, mobileLogoId, svgAnimationSource, animationStyle, width, linkToHome, alt, paddingTablet, paddingMobile, marginTablet, marginMobile
+- desktopLogoId, tabletLogoId, mobileLogoId, logoSwitchMode, logoSwitchCustomPx, svgAnimationSource, animationStyle, width, linkToHome, alt, paddingTablet, paddingMobile, marginTablet, marginMobile
 
 **tier-without-base:** (none)
 
@@ -2344,12 +2372,12 @@ Read-only detection instrument classifying how every SGS block emits its styling
 
 ## Framework totals
 
-- Total blocks scanned: 77
+- Total blocks scanned: 78
 - Blocks with INLINE-via-render sites: 0 (0 total sites)
 - Blocks routing through SGS_Container_Wrapper: 27
 - Blocks with DROP-conditional-inert grid/flex attrs: 14 (281 total attrs)
-- Blocks with DROP-unrouted attrs: 76 (1399 total attrs)
+- Blocks with DROP-unrouted attrs: 77 (1401 total attrs)
 - Blocks with tier-without-base defect: 12
   - sgs/brand-strip (borderRadius); sgs/button (borderRadius); sgs/countdown-timer (borderRadius); sgs/counter (borderRadius); sgs/icon-list (borderRadius); sgs/media (borderRadius); sgs/option-picker (borderRadius); sgs/site-footer (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/site-header (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/table-of-contents (borderRadius); sgs/timeline (borderRadius); sgs/whatsapp-cta (borderRadius)
-- Inline-styling surface routed via shared helpers: 465 sites (83.9%)
-- Inline-styling surface that is block-private: 89 sites (16.1%)
+- Inline-styling surface routed via shared helpers: 470 sites (84.1%)
+- Inline-styling surface that is block-private: 89 sites (15.9%)

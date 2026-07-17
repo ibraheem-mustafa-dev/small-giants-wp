@@ -1,6 +1,6 @@
 {
-	"generatedAt": "2026-07-15T19:44:14.014Z",
-	"totalBlocks": 77,
+	"generatedAt": "2026-07-16T21:47:56.815Z",
+	"totalBlocks": 78,
 	"blocks": [
 		{
 			"block": "sgs/accordion",
@@ -237,13 +237,7 @@
 				"ref",
 				"menuButtonLabel",
 				"drawerLabel",
-				"drawerSide",
 				"drawerBg",
-				"drawerHeadBg",
-				"drawerWidth",
-				"showLogo",
-				"logoMaxWidth",
-				"closeButtonSize",
 				"menuFallback",
 				"collapseTier",
 				"collapseCustomPx",
@@ -267,31 +261,7 @@
 					"routed": false,
 					"via": null
 				},
-				"drawerSide": {
-					"routed": false,
-					"via": null
-				},
 				"drawerBg": {
-					"routed": false,
-					"via": null
-				},
-				"drawerHeadBg": {
-					"routed": false,
-					"via": null
-				},
-				"drawerWidth": {
-					"routed": false,
-					"via": null
-				},
-				"showLogo": {
-					"routed": false,
-					"via": null
-				},
-				"logoMaxWidth": {
-					"routed": false,
-					"via": null
-				},
-				"closeButtonSize": {
 					"routed": false,
 					"via": null
 				},
@@ -7496,6 +7466,85 @@
 			"scalarStylingLift": false
 		},
 		{
+			"block": "sgs/nav-menu",
+			"dir": "src\\blocks\\nav-menu",
+			"hasRenderPhp": true,
+			"hasStyleCss": true,
+			"inlineViaSupports": {
+				"color": [
+					"text",
+					"__experimentalSkipSerialization"
+				]
+			},
+			"inlineViaRender": [],
+			"inlineViaWrapper": {
+				"usesWrapper": false,
+				"noOverlayOptOut": false,
+				"nulledAttrs": []
+			},
+			"dropConditionalInert": [],
+			"dropUnrouted": [
+				"ref",
+				"menuFallback",
+				"linkColour",
+				"linkHoverColour",
+				"showDividers",
+				"dividerColour"
+			],
+			"tierWithoutBase": [],
+			"attrRouting": {
+				"ref": {
+					"routed": false,
+					"via": null
+				},
+				"menuFallback": {
+					"routed": false,
+					"via": null
+				},
+				"linkColour": {
+					"routed": false,
+					"via": null
+				},
+				"linkHoverColour": {
+					"routed": false,
+					"via": null
+				},
+				"linkFontSize": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkFontWeight": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkFontStyle": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkLineHeight": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"linkLineHeightUnit": {
+					"routed": true,
+					"via": "sgs_typography_css_rule"
+				},
+				"showDividers": {
+					"routed": false,
+					"via": null
+				},
+				"dividerColour": {
+					"routed": false,
+					"via": null
+				}
+			},
+			"helperCounts": {
+				"sgs_typography_css_rule": 5
+			},
+			"dominantHelper": "sgs_typography_css_rule",
+			"scalarStylingLift": false
+		},
+		{
 			"block": "sgs/notice-banner",
 			"dir": "src\\blocks\\notice-banner",
 			"hasRenderPhp": true,
@@ -9560,6 +9609,8 @@
 				"desktopLogoId",
 				"tabletLogoId",
 				"mobileLogoId",
+				"logoSwitchMode",
+				"logoSwitchCustomPx",
 				"svgAnimationSource",
 				"animationStyle",
 				"width",
@@ -9581,6 +9632,14 @@
 					"via": null
 				},
 				"mobileLogoId": {
+					"routed": false,
+					"via": null
+				},
+				"logoSwitchMode": {
+					"routed": false,
+					"via": null
+				},
+				"logoSwitchCustomPx": {
 					"routed": false,
 					"via": null
 				},

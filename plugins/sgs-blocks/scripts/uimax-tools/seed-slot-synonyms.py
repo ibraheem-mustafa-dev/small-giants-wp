@@ -685,7 +685,7 @@ def seed_db(db_path: Path, dry_run: bool) -> dict:
                 "GUARD FAILED (D194): the 'content' element-slot has gained a "
                 f"standalone_block ({_content_sb[0]!r}). Re-audit every "
                 "canonical_slot='content' + content-bearing-role row before proceeding "
-                "(see decisions.md D194 + reports/wave2/WRAPPER-CSS-ROUTING-DESIGN-GATE.md)."
+                "(see decisions.md D194 + .claude/specs/archive/WRAPPER-CSS-ROUTING-DESIGN-GATE.md)."
             )
 
     finally:

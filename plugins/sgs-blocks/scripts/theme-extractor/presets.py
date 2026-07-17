@@ -43,6 +43,24 @@ def _slot_for(classes: list) -> str | None:
     return None
 
 
+def _slot_for_button(b: dict) -> str | None:
+    """Resolve a button's variant slot from its OWN classes first, then its ancestor context.
+
+    The element that PAINTS the button is not always the element that NAMES the variant. SGS drafts
+    put both on the same node (``a.sgs-button.sgs-button--ghost``); builder markup splits them (UAGB
+    renders ``div.wp-block-uagb-buttons-child.outline > a.wp-block-button__link`` — variant on the
+    wrapper, paint on the ``<a>``). measure.js now always MEASURES the painting element and carries
+    the nearest ancestors' classes as context, so the slot can still be resolved.
+
+    Own classes take precedence: nearest-name-wins keeps SGS drafts byte-identical (their variant is
+    always on the element) and stops a distant wrapper hijacking a correctly self-labelled button.
+    """
+    slot = _slot_for(b.get("classes", []) or [])
+    if slot:
+        return slot
+    return _slot_for(b.get("ancestorClasses", []) or [])
+
+
 # (rest-key, css-key) pairs whose value is passed through verbatim when present.
 _REST_PASSTHROUGH = [("borderTopWidth", "border-width"), ("borderTopLeftRadius", "border-radius"),
                      ("fontSize", "font-size"), ("fontWeight", "font-weight")]
@@ -59,8 +77,21 @@ def _rest_entry(rest: dict) -> dict:
     for rest_key, css_key in _REST_PASSTHROUGH:
         if rest.get(rest_key):
             entry[css_key] = rest[rest_key]
-    if rest.get("minHeight") and rest["minHeight"] != "auto":
+    # min-height: BOTH "auto" and "0px" are the CSS initial (unset) value — an element with no
+    # authored min-height computes to one of them. Emitting "0px" asserts a floor of zero that the
+    # draft never declared, and would override the framework's 48px WCAG touch-target floor with
+    # nothing. Unset is a blind spot → leave the baseline standing. Mama's buttons declare a real
+    # 48px/44px and still emit normally.
+    if rest.get("minHeight") and rest["minHeight"] not in ("auto", "0px"):
         entry["min-height"] = rest["minHeight"]
+    # Padding is measured on the painting element, so emit it rather than leaving the framework's
+    # generic 12px/24px standing over a button whose real padding we know (4-value shorthand matches
+    # the baseline's format). Only when a side is actually non-zero — an all-zero box is the
+    # signature of a wrapper/unpadded node, and emitting "0px 0px 0px 0px" would assert a padding
+    # reset the draft never expressed.
+    sides = [rest.get(k) for k in ("paddingTop", "paddingRight", "paddingBottom", "paddingLeft")]
+    if all(s for s in sides) and any(s != "0px" for s in sides):
+        entry["padding"] = " ".join(sides)
     return entry
 
 
@@ -81,7 +112,7 @@ def build_button_presets(facts: dict, trace: list) -> dict:
     """Build ``settings.custom.buttonPresets`` from computed rest + hover button facts."""
     presets: dict = {}
     for b in facts.get("buttons", []):
-        slot = _slot_for(b.get("classes", []))
+        slot = _slot_for_button(b)
         if not slot or slot in presets:
             continue
         rest, hover = b.get("rest", {}) or {}, b.get("hover", {}) or {}
@@ -89,7 +120,11 @@ def build_button_presets(facts: dict, trace: list) -> dict:
         _hover_diff(entry, rest, hover)
         presets[slot] = entry
         trace.append({"kind": "preset", "slot": f"buttonPresets.{slot}", "_source": "declared",
-                      "reason": f"computed rest+hover diff on {' '.join(b.get('classes', []))}",
+                      "reason": f"computed rest+hover diff on the PAINTING element "
+                                f"<{b.get('path', '?').split('>')[-1]} class="
+                                f"'{' '.join(b.get('classes', []))}'>",
+                      "variant_from": "own classes" if _slot_for(b.get("classes", []) or [])
+                                      else "ancestor wrapper context",
                       "keys": ",".join(entry.keys())})
     return presets
 

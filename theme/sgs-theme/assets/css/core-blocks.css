@@ -440,6 +440,31 @@ footer .wp-block-list a:hover,
 	}
 }
 
+/*
+ * MOBILE + TABLET GRID FOR INFO-BOX FEATURE GRIDS - H22 follow-up.
+ * The "Why Choose" style feature-grid pattern (icon + heading + text
+ * repeated in columns, e.g. Indus Foods "Why Choose Indus Foods?") is
+ * authored with `sgs/info-box` blocks. Its 2-col grid target spans the
+ * full mobile+tablet range (0–768px, the project's standard tablet
+ * boundary — `~/.claude/rules/visual-standards.md`), unlike `.sgs-icon-list`
+ * above which only grids below 599px — kept as its own media query rather
+ * than widening the icon-list rule's range, since icon-list is used
+ * framework-wide and its existing 599px cap is a separate, unrelated
+ * decision this fix must not disturb.
+ */
+@media (max-width: 768px) {
+	.wp-block-columns:has(.wp-block-column .sgs-info-box) {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		gap: 15px !important;
+	}
+
+	.wp-block-columns:has(.wp-block-column .sgs-info-box) .wp-block-column {
+		width: 100% !important;
+		margin-left: 0 !important;
+	}
+}
+
 /* ─── ICON LIST SIZE — M3 ─── */
 
 /*
@@ -658,6 +683,21 @@ footer .wp-block-list a:hover,
 	            box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/*
+ * EQUAL-HEIGHT CARDS — framework-wide.
+ * .wp-block-columns is a flex row with align-items:normal (= stretch), so
+ * WP already stretches each .wp-block-column to match the tallest sibling
+ * (verified live: colHeight is identical across a row). The card itself
+ * (.wp-block-group.has-background) is display:block with an auto height,
+ * so it does NOT fill that stretched column — a card with less text/image
+ * content renders visibly shorter than its siblings. height:100% makes the
+ * card fill the column its parent already stretched, matching any card-grid
+ * pattern (service cards, feature grids, pricing columns) universally.
+ */
+.wp-block-column > .wp-block-group.has-background {
+	height: 100%;
+}
+
 .wp-block-column > .wp-block-group.has-background:hover {
 	transform: translateY(-4px);
 	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
@@ -666,6 +706,24 @@ footer .wp-block-list a:hover,
 /* Inner image zoom on card hover */
 .wp-block-column > .wp-block-group.has-background .wp-block-image {
 	overflow: hidden;
+}
+
+/*
+ * CONSISTENT CARD IMAGE SIZE — framework-wide default.
+ * Card images render at their natural intrinsic aspect ratio (object-fit
+ * defaults to fill/none constraints beyond width:100%), so a taller-sourced
+ * photo renders a visibly taller image than a wider-sourced one in the same
+ * card grid. A fixed aspect-ratio + object-fit:cover normalises every card
+ * image to the same box regardless of the source photo's proportions. 3/2
+ * is a sensible default for card/product photography (matches the Indus
+ * Foods service-card source images, measured ~237:158-179px on the live
+ * client site); a client whose source imagery needs a different ratio can
+ * override the custom property in that client's theme-overrides.css.
+ */
+.wp-block-column > .wp-block-group.has-background .wp-block-image img {
+	aspect-ratio: var(--sgs-card-image-ratio, 3 / 2);
+	object-fit: cover;
+	height: auto;
 }
 
 .wp-block-column > .wp-block-group.has-background:hover .wp-block-image img {

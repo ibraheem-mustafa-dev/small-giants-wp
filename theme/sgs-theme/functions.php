@@ -637,12 +637,40 @@ function fix_has_text_color_override( string $block_content ): string {
 		return $block_content;
 	}
 
-	// Match elements with has-text-color class and inline color style.
+	// Match the FULL opening tag, then locate class="" and style="" wherever
+	// they sit within it. The previous version required style="" to sit
+	// immediately after class="" — real markup (e.g. a button link) puts
+	// href between them: <a class="... has-text-color" href="/x/" style="...">.
+	// That attribute-order dependency meant the fix never fired on link
+	// buttons, which is what let WP's !important .has-text-color rule render
+	// invisible dark-on-dark CTAs. Matching the whole tag makes this
+	// attribute-order-agnostic — class and style can appear in any order,
+	// with any other attributes between them.
 	return preg_replace_callback(
-		'/class="([^"]*has-text-color[^"]*)"(\s+style="[^"]*color:[^"]*")/i',
+		'/<([a-z0-9]+)((?:\s+[a-zA-Z0-9_:-]+(?:="[^"]*")?)*)\s*(\/?)>/i',
 		function ( $matches ) {
-			$classes = $matches[1];
-			$style   = $matches[2];
+			$tag_name   = $matches[1];
+			$attributes = $matches[2];
+			$self_close = $matches[3];
+
+			// Cheap short-circuit before running the more expensive attribute regexes.
+			if ( false === stripos( $attributes, 'has-text-color' ) || false === stripos( $attributes, 'style=' ) ) {
+				return $matches[0];
+			}
+
+			if ( ! preg_match( '/\bclass="([^"]*)"/i', $attributes, $class_match ) ) {
+				return $matches[0];
+			}
+			if ( ! preg_match( '/\bstyle="([^"]*)"/i', $attributes, $style_match ) ) {
+				return $matches[0];
+			}
+
+			$classes = $class_match[1];
+			$style   = $style_match[1];
+
+			if ( ! preg_match( '/\bhas-text-color\b/', $classes ) || ! preg_match( '/color\s*:/i', $style ) ) {
+				return $matches[0];
+			}
 
 			// If element also has a preset colour class (not border/bg), leave it alone.
 			// Preset colour classes: has-surface-color, has-accent-color, etc.
@@ -652,11 +680,14 @@ function fix_has_text_color_override( string $block_content ): string {
 				return $matches[0];
 			}
 
-			// Remove has-text-color so the inline style wins.
-			$classes = preg_replace( '/\bhas-text-color\b/', '', $classes );
-			$classes = preg_replace( '/\s{2,}/', ' ', trim( $classes ) );
+			// Remove has-text-color so the inline style wins, leaving every
+			// other attribute (href, style, data-*, etc.) exactly where it was.
+			$new_classes = preg_replace( '/\bhas-text-color\b/', '', $classes );
+			$new_classes = preg_replace( '/\s{2,}/', ' ', trim( $new_classes ) );
 
-			return 'class="' . $classes . '"' . $style;
+			$new_attributes = preg_replace( '/\bclass="[^"]*"/i', 'class="' . $new_classes . '"', $attributes, 1 );
+
+			return '<' . $tag_name . $new_attributes . ( $self_close ? ' /' : '' ) . '>';
 		},
 		$block_content
 	);

@@ -23,11 +23,28 @@ _SEL_STATUS_SUCCESS = re.compile(r"(success|\.green|\.valid|instock)", re.I)
 _SEL_STATUS_ERROR = re.compile(r"(error|\.red|\.danger|\.invalid|outofstock)", re.I)
 _SEL_BASE = re.compile(r"^(:root|html|body|\*)$", re.I)
 
+# A 404 PAGE-TYPE selector is not an error STATE. The status regexes match the bare substring
+# "error", which also occurs in every theme's not-found-page container (WP core's body class is
+# `.error404`; Astra emits `.error-404`). That container's background is just the site's ordinary
+# brand colour, so classifying it as the `error` role hands the semantic error slug (validation /
+# form-invalid red) a brand colour — proven on Indus: `.ast-separate-container .error-404` scored
+# role=error conf=0.95 and redefined `error` from #DC2626 (red) to #d8ca50 (brand gold), which would
+# have silently rendered every form-validation state gold.
+#
+# Same failure mode as the `[class*="header"]` matching Astra's `ast-hfb-header` body flag: an
+# unanchored substring match on a name that means something else. Universal + draft-agnostic — 404
+# is the HTTP status / standard WP body class, not an Indus-specific string.
+_SEL_PAGE_404 = re.compile(r"error[-_]?404", re.I)
+
 
 def selector_role(selector: str) -> str:
     s = selector.strip().lower()
     if _SEL_BASE.match(s):
         return "base"
+    if _SEL_PAGE_404.search(s):
+        # A page-type container, not a status state — fall through to ordinary content/element
+        # classification rather than claiming a status role.
+        return "content"
     if _SEL_STATUS_SUCCESS.search(s):
         return "success"
     if _SEL_STATUS_ERROR.search(s):

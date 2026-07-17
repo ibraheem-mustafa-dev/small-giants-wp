@@ -119,28 +119,91 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         "text": _var_or_hex(txt_hex, slug_by_hex, "color"),
     }
 
-    # HEADING base + per-level element styles (regenerated from computed — no fabricated 1.15)
+    # HEADING base (regenerated from computed — no fabricated 1.15). MERGE onto the framework
+    # baseline's existing elements.heading dict — never overwrite wholesale. The baseline (deepcopy'd
+    # at the top of this function) already carries properties this extractor does not measure
+    # (heading.color.text, heading.typography.fontWeight); replacing the dict instead of merging into
+    # it silently drops them from every heading on the live site — the same destructive-overwrite
+    # class as the D319 palette lesson, just one level down the tree.
     hbase = typo_mod.heading_base(facts, trace)
     elements = styles.setdefault("elements", {})
-    elements["heading"] = {"typography": {"lineHeight": hbase["lineHeight"],
-                                          "fontFamily": "var:preset|font-family|heading"}}
+    heading_typ = elements.setdefault("heading", {}).setdefault("typography", {})
+    heading_typ["lineHeight"] = hbase["lineHeight"]
+    heading_typ["fontFamily"] = "var:preset|font-family|heading"
     if "letterSpacing" in hbase:
-        elements["heading"]["typography"]["letterSpacing"] = hbase["letterSpacing"]
+        heading_typ["letterSpacing"] = hbase["letterSpacing"]
+    # Per-level h1..h6 overrides. A tag with NO non-chrome measurement is a BLIND SPOT, not a
+    # measurement of absence — the framework baseline for that tag SURVIVES UNTOUCHED. This is the
+    # same principle as the buttonPresets merge below: the extractor may only overwrite what it has
+    # actually measured. Deleting the baseline instead would STRIP that heading level from the live
+    # site, because push-theme-snapshot replaces theme.json wholesale — proven against the live
+    # palestine-lives theme.json, which carries h5 (medium/700) + h6 (small/700/uppercase/0.08em)
+    # that the Indus draft never renders and therefore cannot speak for.
+    #
+    # Chrome exclusion still holds, and is the POINT: Mama's renders h5 ONLY in its footer at 11px,
+    # and that chrome value must never drive the global h5 scale. Skipping the override achieves that
+    # WITHOUT deleting the baseline — the two are independent, and conflating them was the bug.
+    #
+    # For a MEASURED tag, merge rather than replace: fontSize/fontFamily/lineHeight are derived (they
+    # win), while properties the extractor never derives (h6's fontWeight/letterSpacing/textTransform)
+    # are blind spots that must survive.
+    hsizes = typo_mod.heading_sizes(facts, trace)
+    skipped = []
     for tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
         h = facts.get("headings", {}).get(tag)
         if not h or h.get("inChrome"):
-            elements.pop(tag, None)
+            skipped.append(tag)
             continue
-        elements[tag] = {"typography": {"fontFamily": "var:preset|font-family|heading",
-                                        "lineHeight": hbase["lineHeight"]}}
+        tag_typ = elements.setdefault(tag, {}).setdefault("typography", {})
+        tag_typ["fontFamily"] = "var:preset|font-family|heading"
+        tag_typ["lineHeight"] = hbase["lineHeight"]
+        if tag in hsizes:
+            tag_typ["fontSize"] = hsizes[tag]
+    if skipped:
+        trace.append({"kind": "base", "what": "styles.elements.h1..h6",
+                      "reason": "no non-chrome measurement for these levels — framework baseline "
+                                "PRESERVED untouched (blind spot, not measured-absent; deleting it "
+                                "would strip the level from the live site)",
+                      "baseline_preserved": ",".join(skipped)})
 
     # FONT FAMILIES + font loading
     _overlay_font_families(snap, facts, presets_mod.font_links(html), trace)
 
-    # BUTTON PRESETS (FR-33-4 open bag)
+    # BUTTON PRESETS (FR-33-4 open bag) — MERGED onto the framework baseline, never replaced.
+    #
+    # Two distinct non-destructive requirements, both proven necessary on Indus:
+    #   (a) SLOT level — the draft defines only the slots it happens to use (Indus derives `outline`
+    #       alone). A wholesale replace DELETED the baseline's `primary` + `secondary` presets; since
+    #       push-theme-snapshot REPLACES the live theme.json, that strips them from the site — and
+    #       Indus's buttons use exactly those.
+    #   (b) KEY level — even for a slot the draft DOES define, `_rest_entry` only ever derives
+    #       background/text/border/border-width/border-radius/font-size/font-weight/min-height
+    #       (presets.py). `padding` is NOT in that vocabulary at all, so a slot-level replace drops
+    #       the baseline padding from a slot the extractor never measured padding for. A key the
+    #       extractor cannot derive is a blind spot, not a measurement of absence — the baseline must
+    #       survive it.
+    #
+    # A derived key always WINS over the baseline key (it is the measured client value, the FR-33-1
+    # iron law). This is ordinary theme.json layering (baseline → client override), and it is the
+    # same destructive-replace class as the D319 palette lesson + the elements.heading fix above.
     bp = presets_mod.build_button_presets(facts, trace)
     if bp:
-        settings.setdefault("custom", {})["buttonPresets"] = bp
+        presets = settings.setdefault("custom", {}).setdefault("buttonPresets", {})
+        for slot, derived in bp.items():
+            base_slot = presets.setdefault(slot, {})
+            kept = [k for k in base_slot if k not in derived]
+            base_slot.update(derived)
+            trace.append({"kind": "merge", "what": f"buttonPresets.{slot}",
+                          "reason": "derived keys overlaid onto the framework baseline preset; "
+                                    "baseline keys the extractor cannot derive are preserved",
+                          "overridden": ",".join(sorted(derived)) or "(none)",
+                          "preserved_from_baseline": ",".join(sorted(kept)) or "(none)"})
+        untouched = [s for s in presets if s not in bp]
+        if untouched:
+            trace.append({"kind": "merge", "what": "buttonPresets",
+                          "reason": "baseline preset slots the draft does not define are preserved "
+                                    "whole (a wholesale replace would delete them from the live site)",
+                          "preserved_slots": ",".join(sorted(untouched))})
 
     # LAYOUT contentSize (scan beyond :root)
     cs = presets_mod.content_size(base_rules, trace)
@@ -199,6 +262,42 @@ def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     for key in ("sgs", "maxWidth"):
         if key in ex_custom:
             snap.setdefault("settings", {}).setdefault("custom", {})[key] = ex_custom[key]
+
+    # styles.elements — preserve the client's hand-authored element keys the extractor never derives
+    # (e.g. `button.typography.textDecoration`, which exists only in the client snapshot and was
+    # dropped on every re-run). Fill-only: an existing leaf is carried across ONLY where the generated
+    # snapshot has no value, so a generated (measured) value always wins.
+    #
+    # No h-tag exception is needed here: build_snapshot no longer deletes a heading level it cannot
+    # measure (it leaves the framework baseline standing), so there is no "popped" state for a prior
+    # snapshot to resurrect. Fill-only is safe for every element uniformly.
+    ex_elements = ex_styles.get("elements", {}) or {}
+    gen_elements = snap.setdefault("styles", {}).setdefault("elements", {})
+
+    def _fill_only(dst: dict, src: dict) -> int:
+        """Recursively add keys from ``src`` that ``dst`` lacks. Never overwrites. Returns count."""
+        n = 0
+        for k, v in src.items():
+            if isinstance(v, dict):
+                if not isinstance(dst.get(k), dict):
+                    if k in dst:
+                        continue        # a non-dict generated value stands
+                    dst[k] = {}
+                n += _fill_only(dst[k], v)
+            elif k not in dst:
+                dst[k] = v
+                n += 1
+        return n
+
+    el_filled = 0
+    for name, val in ex_elements.items():
+        if isinstance(val, dict):
+            el_filled += _fill_only(gen_elements.setdefault(name, {}), val)
+    trace.append({"kind": "merge", "what": "styles.elements",
+                  "reason": "fill-only carry of client element keys the extractor does not derive "
+                            "(generated/measured values always win)",
+                  "keys_preserved": el_filled})
+
     trace.append({"kind": "merge", "reason": f"additive merge onto existing snapshot: {added} extra "
                   f"palette slug(s) preserved + component css/blocks/patterns carried forward"})
     return snap

@@ -140,7 +140,40 @@ Deploy → OPcache + `wp litespeed-purge all` + Hostinger CDN clear + version bu
 6. **P5 — pipeline Part 2** (draft header/footer → the new blocks).
 Each phase: DB reseed + doc updates + the §12 QC gate.
 
-## 14. Guardrails
+## 13a. Execution routing — model + effort per task (efficiency WITHOUT fidelity loss)
+
+**Governing principle (this is the anti-corner-cutting rule, not just a cost table):**
+1. **A cheap tier (Haiku/Sonnet) is permitted ONLY downstream of a locked, Opus-authored spec** — i.e. when the task is (a) fully specified upstream, (b) verifiable by diff or an automated gate, (c) carries ZERO interpretation of Bean's intent. If any of the three fails → Opus. A cheap model must never be in a position to *decide* a requirement is smaller.
+2. **Effort floor by task type — `medium` is BANNED for anything that carries a requirement.** Medium is the tier where requirements were historically dropped. `max` = shared mechanisms + a11y correctness + intent-bearing architecture; `high` = build inside an already-locked design; `low` = pure committed-script execution only.
+3. **Documentation is the HIGHEST fidelity-risk task, not a mechanical one.** The named loss point is docs + session-start plans, where the build silently diverges from what Bean asked. Doc/spec writing is Opus-high minimum, never delegated cheap, and is gated by the requirements-traceability ledger below.
+
+| Phase / Task | Model | Effort | Why this tier — what breaks if cheaper |
+|---|---|---|---|
+| P0 drawer fix + a11y contract (SHIPPED; residual focus-trap/inert hardening) | Opus | **max** | `inert`/focus-management is the exact bug class that shipped broken; a wrong tier re-freezes the drawer. |
+| P1 `sgs/site-header` — design (rows, typed palette, Cluster, per-bp override, never-overflow) | Opus | **max** | Carries the WCAG-overflow fix + shared wrapper; fully intent-bearing. |
+| P1 5-file block scaffold (`block.json`/`edit`/`save`/`index`) — AFTER schema locked | Sonnet | high | Boilerplate only once Opus locks `block.json`; diff-verifiable. Not `medium` — it still touches attrs. |
+| P2 `sgs/adaptive-nav` (one-tree collapse, 4 tiers, mega-menu drill-down, drawer integration) | Opus | **max** | The exact component that was "poorly built" last time — highest correctness + judgment. No compromise. |
+| P3 `sgs/site-footer` (rows + columns) | Opus | high | Mirrors P1's locked patterns; still intent-bearing. |
+| P4 per-device adaptation + transparent-on-scroll no-code toggle | Opus | high | Material scroll behaviours + per-tier judgment. |
+| P5 pipeline Part 2 (walker maps draft header/footer by BEM role) | Opus | **max** | Walker/converter = high blast radius; binding rules R-31-1/2/8. |
+| §11 DB reseed EXECUTION (`/sgs-update`, `sync-container-wrapping-blocks.py`, seed scripts) | Haiku | low | Running committed, deterministic scripts. |
+| §11 DB reseed row VERIFICATION ("verify every new row") | Opus | high | Verification is judgment; the plan mandates it as a gate. |
+| §11 pattern/`parts` byte-duplicate + CPT `template` seed | Sonnet | high | Mechanical once content decided; byte-diff verifiable. |
+| **§11 + §14 DOC/SPEC UPDATES (Spec 17 FRs, Spec 32, CLAUDE.md, decisions, memory, rule evolution)** | **Opus** | **high** | ⚠ **THE NAMED LOSS POINT.** Docs are the system for a non-coder owner (memory `docs-are-the-system-gate-them-like-code`). Never delegated cheap; traceability-gated below. |
+| §12 QC tool RUNS (Playwright 320→1440 reflow loop, axe-core capture) | Haiku | low | Mechanical evidence capture. |
+| §12 QC INTERPRETATION + `/gap-analysis` + pre-build `/adversarial-council` | Opus | high→max | Judgment on whether it actually meets your intent, not just passes a script. |
+
+**Requirements-traceability gate (the structural defence — Rule 10, not a promise to "try harder"):**
+Before ANY phase closes, maintain a ledger row per end-goal requirement you stated (this plan **+** the originating chat): `requirement → where it's specced (file+FR) → phase that builds it → LIVE evidence it works`. **No phase closes with an unmapped or evidence-less requirement, and no "done" message is sent for a requirement whose live evidence is missing.** This is the structural block on "it barely works but the message says it's done" — a requirement with no live-DOM evidence row cannot be reported complete.
+
+**Spec-to-code conformance gate (the OTHER leak — a correct spec that gets half-built):**
+The documented history is: whole spec sections not built, others partially built, requirements skipped *inside* a section — invisible for months because the aggregate signal ("it builds / looks right / X% parity") stayed green (R-31-4). Operationalised defence, per FR being built:
+1. **Decompose each FR into atomic acceptance clauses BEFORE coding** — each clause a single checkable live behaviour, not prose (e.g. the §6 drawer contract → `focus-trap-active` / `ESC-closes` / `backdrop-dismiss` / `scroll-locked` / `background-inert-but-drawer-NOT-inert` / `aria-expanded-toggles` / `aria-current-set` / `SR-labels-configurable` / `44px-targets` / `focus-lands-first-interactive`). A half-built section shows RED rows; it cannot hide behind "the drawer opens".
+2. **The conformance verifier is FRESH-CONTEXT and never sees the implementer's account** — a separate reviewer gets ONLY the clause list + the live page and checks each clause against live-DOM behaviour. The implementer does not mark its own homework; a self-report is not evidence (`/subagent-driven-development` spec-reviewer + `/verify-loop` 2-attestation).
+3. **Closing gate = every clause GREEN with its own live evidence — NEVER an aggregate.** No phase closes on "builds clean / looks right / parity %".
+4. **Tiering:** clause decomposition + the independent conformance review are ALWAYS Opus high/max, fresh context — never a cheap tier. The implementer may be tiered per the §13a table; the mechanism that catches skipped requirements may not.
+
+
 Composite-mirror (no divergent path). No hardcoded client values (Site Info + tokens). No block version bumps / deprecations pre-production (D293 — re-clone, not deprecate). Universal, no carve-outs (R-31-9). STOP-21 / CSS-VER / CDN / LiteSpeed on every live check. Path-scoped commits, branch `main`, verify D-ceiling, no co-author.
 
 ## 15. OPEN DECISIONS for Bean (sign-off resolves)

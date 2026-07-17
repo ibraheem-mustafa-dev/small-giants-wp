@@ -681,4 +681,4 @@ python plugins/sgs-blocks/scripts/assign-canonical.py
 - Full pipeline changes: `.claude/cloning-pipeline-flow.md` 2026-05-20 section
 - Spec compliance + known gaps: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §2-§3
 - Architectural decisions: `.claude/decisions.md` D1-D6
-- Honest-path council finding: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`
+- Honest-path council finding: `.claude/memory/reports-archive/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`

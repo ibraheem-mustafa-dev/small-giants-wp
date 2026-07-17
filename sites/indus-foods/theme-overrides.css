@@ -1,0 +1,44 @@
+/**
+ * Indus Foods — client-specific theme overrides.
+ *
+ * Documented home for per-client CSS that should NOT live in the framework's
+ * theme/sgs-theme/assets/css/core-blocks.css (see architecture.md +
+ * dev-setup.md "Client-specific overrides"). Never edit style.css for
+ * client-only rules.
+ */
+
+/*
+ * SERVICE-CARD IMAGE HOVER — "escape the box" zoom (Indus Foods only).
+ *
+ * The framework default (core-blocks.css) clips the card image hover-zoom
+ * inside its figure (overflow:hidden) so the zoomed image never spills over
+ * neighbouring content — a safe default for clients we haven't design-approved
+ * an escaping zoom for.
+ *
+ * Indus Foods' original site (the UAGB/Spectra build being cloned — verified
+ * live at https://lightsalmon-tarsier-683012.hostingersite.com/) uses
+ * overflow:visible on the image figure, so the ~1.05 hover-scale escapes the
+ * card boundary rather than being clipped. Bean confirmed this "non-modular"
+ * escape is the wanted look for this client. Scoping the override here (not
+ * in core-blocks.css) keeps every other client on the framework's safer
+ * contained-zoom default — this is a design-feel choice, not a universal bug.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-column > .wp-block-group.has-background .wp-block-image {
+		overflow: visible;
+	}
+}
+
+/*
+ * Belt-and-braces: if the visitor has reduced motion set, neutralise the
+ * hover-zoom transform entirely rather than leaving a residual escaped-but-
+ * static state. The framework's base hover-zoom transform (core-blocks.css)
+ * is not itself motion-gated; this override at least ensures the escape
+ * behaviour we're adding for Indus doesn't newly introduce motion for
+ * reduced-motion users.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-column > .wp-block-group.has-background:hover .wp-block-image img {
+		transform: none;
+	}
+}

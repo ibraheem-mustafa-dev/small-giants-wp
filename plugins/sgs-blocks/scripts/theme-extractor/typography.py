@@ -111,6 +111,37 @@ def heading_base(facts: dict, trace: list) -> dict:
     return out
 
 
+def heading_sizes(facts: dict, trace: list) -> dict:
+    """Return each non-chrome heading tag's COMPUTED ``fontSize`` in px (FR-33-3).
+
+    Emitted as a literal computed value on the SINGLE tag (mirrors how ``heading_base`` emits a
+    literal ``lineHeight``) rather than by re-pointing the shared ``var:preset|font-size|*`` slug the
+    framework baseline's ``styles.elements.h1..h6`` reference — those slugs (``hero``/``xx-large``/
+    ``x-large``/``large``/``medium``/``small``) are SHARED with other elements (e.g. ``medium`` also
+    drives ``styles.elements.button``), so rewriting a slug's size to match one heading level would
+    silently change unrelated components. A literal per-tag override avoids that collision while still
+    satisfying the iron law: the value shipped is the COMPUTED value on the really-rendered node.
+    """
+    root_px = _px(facts.get("root", {}).get("fontSize", "16px"), 16.0) or 16.0
+    out = {}
+    for tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
+        h = facts.get("headings", {}).get(tag)
+        if not h or h.get("inChrome"):
+            continue
+        fs_px = _px(h.get("fontSize", ""), root_px)
+        if fs_px:
+            # Keep sub-pixel precision (e.g. 28.8px) — rounding to int would drift from the measured
+            # value; strip a trailing ".0" so whole-px sizes stay clean (e.g. "50px" not "50.0px").
+            out[tag] = f"{round(fs_px, 2):g}px"
+    if out:
+        trace.append({"kind": "base", "what": "styles.elements.h1..h6.typography.fontSize",
+                      "_source": "declared",
+                      "reason": "literal computed fontSize per non-chrome heading tag (overrides the "
+                                "shared preset var for that tag only, no unrelated element touched)",
+                      "sizes": out})
+    return out
+
+
 def heading_family(facts: dict) -> str:
     """Heading family ← first present computed h1/h2/h3 (FR-33-3)."""
     for tag in ("h1", "h2", "h3"):
