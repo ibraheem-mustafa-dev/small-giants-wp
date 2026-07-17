@@ -84,6 +84,35 @@ GRAFT (community has REAL bug-fixes/mechanism ours lacks — do these FIRST next
   no-exemption rules, (2) "Micro-Test Wording" with mandatory no-guidance control + variance-as-metric,
   (3) letter-vs-spirit + close-every-loophole bulletproofing. Keep OUR discovery-gate + dual quality gates.
 
+## Reasoning-skill-judge — BUILT + validated (2026-07-17, second Bean challenge)
+Bean asked: is there a TRUSTED, REASONING-based way to grade skills (give subagents criteria to
+reason with, not a scanner)? And flagged that gap-analysis (his current grader) only finds holes →
+bloat ratchet; and asked if the AGENT scan is any good.
+- **Research (Anthropic + obra + evals authorities):** experts judge skills by EVALS, not structure.
+  Anthropic: "Create evaluations BEFORE writing extensive documentation"; skill-creator =
+  executor→grader→blind A/B comparator (skill vs no-skill), test-set scored. obra: "NO SKILL WITHOUT
+  A FAILING TEST FIRST." Hamel: error-analysis on real traces. Structural items = token-economy
+  hygiene, NOT quality proxies.
+- **BUILT: `~/.agents/skills/shared-references/reasoning-skill-judge.md`** (⚠UNVERSIONED, new additive
+  file) — an 8-criterion reasoning rubric a SUBAGENT applies by reading: cold-agent-executability,
+  minimal-sufficiency (thinning lever), failure-mode-coverage, degrees-of-freedom-match,
+  trigger/routing, unambiguous-terminology, testability-grounding + bias self-check. Output includes a
+  **CUT LIST** (anti-bloat — the structural opposite of gap-analysis). AGENT variant A1-A6. Bias guards
+  (reason-before-number, distinct judge model, verbosity/position/self-preference banned). 3-tier model:
+  FLOOR (skillscore, cheap absence) / JUDGE (this, primary) / GOLD (evals, for skills that matter).
+- **Validated (the inversion proves it):** structural scanner ranked community 69% << ours 100%/90%;
+  reasoning judge FLATTENED it — community 3.43, our brainstorming 3.6, our systematic-debugging 3.1
+  (community BEATS our sys-debug). Judge caught REAL defects the scanner scored 90-100% blind to:
+  our brainstorming = save-path contradiction + dangling visual-companion.md + stale internal-debate ref
+  + 565KB orphaned research/; our systematic-debugging = 3 nonexistent referenced files + broken
+  "your human partner's Signals" template heading + unsourced "95% vs 40%" stats. All 3 = "revise"
+  (none ≥4 — the judge is appropriately demanding). These found defects = free fixes for the lean-out.
+- **Agent structural scanners demoted to FLOOR** (skillscore): agent_body_length, agent_scope_creep
+  ("and"-clause count), agent_methodology_dupe → FLOOR; agent_model_valid/tools_present/tool_bloat/
+  phantom_skills stay scored. Agents now 100% on the floor scanner; the reasoning judge (A1-A6) is the
+  agent quality signal. gap-analysis: keep for genuine gap-DISCOVERY but ALWAYS paired with the judge's
+  CUT LIST (never a bloat-only grade); no longer the skill-grade-for-a-score.
+
 ## Next session (P5 §4b continuation)
 1. Validated bug-fix grafts FIRST: finishing-a-development-branch, using-git-worktrees,
    subagent-driven-development (each = global mini-sign-off, additive/gated, ~/.claude is a git repo so
