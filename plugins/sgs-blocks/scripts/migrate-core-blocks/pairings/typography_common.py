@@ -43,11 +43,19 @@ def split_length(value):
     return (num, m.group(2).lower())
 
 
-def map_typography(typo, out, accounting_detail):
+def map_typography(typo, out, accounting_detail, text_align_enum=('left', 'center', 'right', 'justify')):
     """Map a core `style.typography` group onto typed SGS attrs.
 
     Returns a list of unmapped keys — the caller MUST refuse the instance if
     it is non-empty (never a silent drop). `out` is mutated in place.
+
+    `text_align_enum` is the TARGET block's textAlign enum (heading adds
+    start/end on top of the shared left/center/right/justify; text does not)
+    — core stores heading/paragraph alignment as `style.typography.textAlign`
+    (verified live on page 13, 2026-07-17: every heading/paragraph carrying
+    alignment used this shape, never the block's own top-level `textAlign`/
+    `align` attr), so it must be decomposed here alongside the rest of the
+    typography group, not left as an unmapped key.
     """
     unmapped = []
     for key, value in (typo or {}).items():
@@ -90,6 +98,20 @@ def map_typography(typo, out, accounting_detail):
             # style.typography.fontSize BEATS a top-level preset slug.
             out['fontSize'] = value
             accounting_detail.append('style.typography.fontSize overrides any preset slug (core precedence)')
+        elif key == 'textAlign':
+            if value not in text_align_enum:
+                unmapped.append(f'textAlign:{value!r} outside the target block\'s textAlign enum {text_align_enum}')
+                continue
+            if out.get('textAlign', value) != value:
+                # A top-level textAlign/align attr already mapped a DIFFERENT
+                # value onto this same target attr — genuine ambiguity, never
+                # silently let one win.
+                unmapped.append(
+                    f'textAlign:{value!r} conflicts with an already-mapped textAlign '
+                    f'{out["textAlign"]!r} (top-level attr vs style.typography — ambiguous)')
+                continue
+            out['textAlign'] = value
+            accounting_detail.append(f'style.typography.textAlign -> textAlign ({value!r})')
         else:
             unmapped.append(key)
     return unmapped

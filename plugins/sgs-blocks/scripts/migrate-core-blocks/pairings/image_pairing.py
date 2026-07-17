@@ -6,7 +6,13 @@ the inner `<figure>` HTML; presentation as preset classes + a `style` object),
 sgs/media is DYNAMIC (`save: null` — everything must land in typed attrs in
 the JSON delimiter, rendered by render.php).
 
-Mapping (ground truth: media/block.json + render.php read 2026-07-15):
+Mapping (ground truth: media/block.json + render.php read 2026-07-15, `id` added
+2026-07-17):
+  id                        → imageId (integer; media library attachment ID —
+                             render.php prefers imageId over imageUrl when
+                             resolving the final <img src>, but both point at
+                             the same attachment for a migrated instance, so
+                             the rendered output is unchanged)
   <img src>                → imageUrl (string)
   <img alt>                → imageAlt (string)
   <figcaption>…            → caption (string)
@@ -69,6 +75,18 @@ def transform(node, text):
     out = {'imageUrl': src}
     accounting = {}
     notes = []
+
+    if 'id' in attrs_in:
+        idv = attrs_in['id']
+        if isinstance(idv, bool) or not isinstance(idv, int):
+            raise GapError(f'id {idv!r} is not an int -- refusing to guess')
+        out['imageId'] = idv
+        accounting['id'] = (
+            'mapped',
+            'imageId (media library attachment ID; sgs/media render.php: imageId wins over '
+            'imageUrl when resolving the final <img src>, and both point at the SAME '
+            'attachment here, so the rendered output is unchanged — verified via media/'
+            'render.php lines 424/430)')
 
     alt = img_attrs.get('alt', '').strip()
     if alt:

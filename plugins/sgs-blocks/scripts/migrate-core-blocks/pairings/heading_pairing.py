@@ -76,7 +76,9 @@ def transform(node, text):
                     style_out[group] = group_value
                     detail.append(f'style.{group} 1:1 (skip-serialised native support)')
                 elif group == 'typography':
-                    unmapped = map_typography(group_value, out, detail)
+                    unmapped = map_typography(
+                        group_value, out, detail,
+                        text_align_enum=('left', 'center', 'right', 'justify', 'start', 'end'))
                     if unmapped:
                         raise GapError(f'style.typography keys {unmapped} have no sgs/heading mapping')
                     detail.append('style.typography -> typed attrs')

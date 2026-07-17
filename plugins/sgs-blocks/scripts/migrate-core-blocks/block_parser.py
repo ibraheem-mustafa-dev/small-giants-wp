@@ -117,6 +117,31 @@ def walk(nodes):
         yield from walk(n.children)
 
 
+def inner_blocks_markup(node, text):
+    """Span of ONLY the child blocks' markup, excluding whatever raw text sat
+    between the opener and the first child / after the last child.
+
+    WHY this exists: every sgs block is dynamic. A wrapper sgs block (e.g.
+    sgs/container, sgs/multi-button) has a `save` that returns nothing but
+    `<InnerBlocks.Content/>` -- no wrapper div of its own -- and a leaf sgs
+    block's `save` is null. So the markup carried between a migrated sgs
+    block's delimiters must be ONLY its child blocks, never the source core
+    block's own save-wrapper `<div class="wp-block-...">...</div>` (core's
+    static save() DOES render that div, and `node.inner_html_span()` -- the
+    raw text between the opener and closer comments -- includes it verbatim).
+    Carrying that div through fails block validation once the migrated block
+    renders on a real WP page (sgs/container's InnerBlocks.Content produces
+    no such div, so the stray div reads as "unexpected content").
+
+    Returns '' if the node has no children (nothing to carry -- callers that
+    need to preserve non-block content, e.g. bare text, must do so
+    separately; this helper never returns raw non-block text).
+    """
+    if not node.children:
+        return ''
+    return text[node.children[0].start:node.children[-1].end]
+
+
 def serialize_comment(name, attrs, void=False):
     """Build a `<!-- wp:... -->` opener (or void delimiter) the way WP does.
 

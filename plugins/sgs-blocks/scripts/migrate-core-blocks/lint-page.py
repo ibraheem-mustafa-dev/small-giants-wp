@@ -24,6 +24,7 @@ Modes:
   --check          lint only: list banned core blocks, exit 1 if any found.
   (default)        dry-run: report + unified diff of the migration.
   --fix OUT        write the migrated markup to OUT (still no WP write).
+  --json OUT       ALSO write a machine-readable summary to OUT (any mode).
 
 Input:
   --input FILE     read markup from FILE ('-' = stdin).
@@ -35,9 +36,44 @@ Usage:
   python lint-page.py --input page-13.html
   # emit the fixed markup for the editor-apply step:
   python lint-page.py --input page-13.html --fix page-13-migrated.html
+
+Agent-judge-the-diff flow (Bean's workflow, 2026-07-17):
+  1. lint     — run this script (default mode, or --fix OUT for the applied
+                markup) with --json OUT to capture a durable, re-runnable-free
+                summary of what happened.
+  2. judge    — an agent reads OUT (never re-parses the raw diff/markup) and
+                returns a verdict: safe (0 refused, 0 residual_banned) / needs-
+                tweak (some refused with honest drop reasons, but the register
+                looks acceptable) / unsafe (residual_banned > 0 for a type with
+                no pairing, or a refused reason smells like a real content
+                loss). The JSON's `refused[].reason` and `skipped_pairings`
+                are exactly what the agent needs to make that call without
+                re-running anything.
+  3. apply    — ONLY after a "safe" (or Bean-approved "needs-tweak") verdict:
+                apply the `--fix` output through the blessed editor path
+                (`wp.blocks.parse` -> `replaceBlocks` -> `savePost`). This
+                script never writes to WordPress itself. Full worked sequence,
+                the mandatory backup-first rule, one-section-at-a-time
+                guidance, and a known dynamic-block save-shape gotcha (a
+                converted `sgs/container` must NOT carry over its old
+                `core/group` wrapper `<div>` — see `APPLY.md`) are documented
+                in `APPLY.md` in this directory. Proven end-to-end 2026-07-17
+                on the Indus Foods homepage (page 13) final CTA section.
+
+The `--json` shape (see `build_json_report()` below):
+  {
+    "rel": str,
+    "banned_total": int,           # banned core-block instances found before migration
+    "swapped": int,                # instances successfully converted
+    "refused": [{"pairing": str, "line": int, "reason": str}, ...],
+    "skipped_pairings": [str, ...],# core types present with no pairing module built yet
+    "residual_banned": int,        # banned instances still present after migration
+    "diff": str                    # unified diff (empty string if no migration ran / no change)
+  }
 """
 
 import argparse
+import json as jsonlib
 import difflib
 import importlib
 import pathlib
@@ -104,16 +140,48 @@ def migrate_markup(text, rel, replaces):
     return current, log, skipped
 
 
+def build_json_report(rel, banned_total, swapped=0, refused=None, skipped_pairings=None,
+                       residual_banned=0, diff=''):
+    """The agent-judge-the-diff interface (module docstring step 2).
+
+    Every field an agent needs to return a safe/unsafe/needs-tweak verdict
+    WITHOUT re-running the linter or re-parsing markup/diffs itself.
+    """
+    return {
+        'rel': rel,
+        'banned_total': banned_total,
+        'swapped': swapped,
+        'refused': refused or [],
+        'skipped_pairings': skipped_pairings or [],
+        'residual_banned': residual_banned,
+        'diff': diff,
+    }
+
+
+def write_json(path, report):
+    pathlib.Path(path).write_text(jsonlib.dumps(report, indent=2), encoding='utf-8')
+    print(f'\n[json] summary -> {path}')
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--input', required=True, help="markup file, or '-' for stdin")
     ap.add_argument('--check', action='store_true', help='lint only; exit 1 if banned blocks found')
     ap.add_argument('--fix', metavar='OUT', help='write migrated markup to OUT (no WP write)')
+    ap.add_argument('--json', metavar='OUT', help='also write a machine-readable summary to OUT')
     ap.add_argument('--rel', default='page', help='label used in diffs/errors (e.g. page-13)')
     ap.add_argument('--db', default=str(driver.DEFAULT_DB))
     args = ap.parse_args()
 
-    text = sys.stdin.read() if args.input == '-' else pathlib.Path(args.input).read_text(encoding='utf-8')
+    if args.input == '-':
+        text = sys.stdin.read()
+    else:
+        src = pathlib.Path(args.input)
+        if not src.is_file():
+            raise SystemExit(f'[error] --input file not found: {args.input}')
+        text = src.read_text(encoding='utf-8')
+    if not text.strip():
+        raise SystemExit('[error] empty input — nothing to lint.')
     replaces = driver.load_replaces_map(pathlib.Path(args.db))
 
     try:
@@ -123,6 +191,8 @@ def main():
 
     if not banned:
         print(f'[clean] {args.rel}: no banned core blocks.')
+        if args.json:
+            write_json(args.json, build_json_report(args.rel, banned_total=0))
         return 0
 
     # Report (always).
@@ -134,6 +204,12 @@ def main():
 
     if args.check:
         print(f'[check] FAIL — {len(banned)} banned instance(s). Run without --check to migrate.')
+        if args.json:
+            # --check never runs the migration, so swapped/refused/skipped are
+            # unknown here — residual_banned == banned_total is the honest
+            # statement ("all of these are still core"), not a guess.
+            write_json(args.json, build_json_report(args.rel, banned_total=len(banned),
+                                                      residual_banned=len(banned)))
         return 1
 
     # Migrate.
@@ -166,6 +242,17 @@ def main():
               f'Apply via the editor (wp.blocks.parse -> replaceBlocks -> savePost) after an agent judges the diff.')
     else:
         print('\n' + (diff or '(no textual change)'))
+
+    if args.json:
+        write_json(args.json, build_json_report(
+            args.rel,
+            banned_total=len(banned),
+            swapped=len(swapped),
+            refused=[{'pairing': e['pairing'], 'line': e['line'], 'reason': e.get('reason')}
+                     for e in refused],
+            skipped_pairings=skipped,
+            residual_banned=len(residual),
+            diff=diff))
     return 0
 
 

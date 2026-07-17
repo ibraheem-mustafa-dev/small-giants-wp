@@ -14,7 +14,7 @@ import sys
 import pathlib
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-from block_parser import serialize_comment, serialize_closer  # noqa: E402
+from block_parser import serialize_comment, serialize_closer, inner_blocks_markup  # noqa: E402
 from contract import GapError, TransformResult  # noqa: E402
 
 PASSTHROUGH_STYLE_GROUPS = ('spacing', 'border', 'color', 'typography')
@@ -24,8 +24,11 @@ ALIGN_SELF = {'top': 'start', 'center': 'center', 'bottom': 'end', 'stretch': 's
 
 def transform(node, text):
     attrs_in = node.attrs or {}
-    span = node.inner_html_span()
-    inner = text[span[0]:span[1]] if span is not None else ''
+    # sgs/container's save is <InnerBlocks.Content/> only -- no wrapper div of
+    # its own -- so carry ONLY the child blocks, never core/column's own
+    # save-wrapper <div class="wp-block-column">. See
+    # block_parser.inner_blocks_markup().
+    inner = inner_blocks_markup(node, text)
 
     out = {}
     accounting = {}
