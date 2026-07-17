@@ -14,9 +14,51 @@ difference between "mostly no-inline" and "actually no-inline".
 **Plan label:** [PLAN: sonnet] (settled design — the pattern is proven on brand-strip;
 this is implementation-at-scale, not architecture)
 **Docscore:** not run inline (context-preserved for /qc-council + /handoff) — run at execution.
-**Aggregate cost estimate:** ~1 Sonnet detector + ~52 Haiku block-edits (mechanical) +
-~10 Sonnet residue = roughly £3–6 in agent tokens; ~1 focused session to build the
-harness, then bulk runs in waves.
+**Aggregate cost estimate:** revised below — the "Haiku mechanical bulk" premise was
+FALSIFIED by /qc-council, so the cost model changed.
+
+---
+
+## ⚠ QC-COUNCIL VERDICT (2026-07-17) — plan REVISED before execution
+
+3 independent raters validated this plan pre-dispatch. **The diagnosis is TRUSTED
+(blocks emit inline `--var`, it should be consolidated). The fix-shape — "uniform
+Haiku mechanical bulk" — was FALSIFIED.** Three binding corrections:
+
+**C1 — the "mechanical CASE-1 uniform edit" is FALSE (Rater A).** Only brand-strip
+uses the `$css_vars`→drop-`style` shape. Of 7 sampled blocks, **6 need judgment**:
+button/info-box/icon/testimonial **keep** a `style="--var"` attribute (FR-32-4 permits
+it today); hero/container/multi-button build the root via `SGS_Container_Wrapper` with
+**no `style` key to rewrite**. A blind "drop the style key" edit **deletes live
+hover/transition vars and breaks blocks.** The roster splits by **KIND** (single-element/
+content block-private vs section/layout wrapper, D294) and **5+ var-emit shapes**
+(`$css_vars`/`$inline_styles`/`$styles`/`$sgs_wrapper_styles`/`$css`). → **Step 3
+rewritten: NO uniform Haiku bulk. Bucket by emit-shape; one template per shape;
+`SGS_Container_Wrapper` is ONE shared-mechanism change (design-gate), not per-block.**
+
+**C2 — the spec amendment is bigger than FR-32-4 (Rater B).** Forbidding inline
+`--var` also requires editing **§5** ("tiny inline `--var:value`"), the **§6 flow
+diagram** (canonical inline example), and **tightening §8 FR-32-1** (counts props only —
+would silently permit inline vars). Reassuring: §6.1(e) + Spec 31 FR-31-22.3 ALREADY
+mandate scoped, so FR-32-4 is the stale outlier and **no converter path breaks.** →
+**Step 1 expanded to 4 clauses.** Cache: SOUND (collected file already per-uid
+content-hashed; adding `.uid{--var}` adds no fragmentation) — verify override values
+are all in the uid-hashed attribute set.
+
+**C3 — detection is static-necessary but NOT sufficient (Rater C).** (a) skip-
+serialization must be evaluated **per-enabled-feature** (disabled=safe, boolean-`true`=
+STOP, per-feature skip required) — the single-boolean "skip==true else STOP" phrasing
+mis-fires. (b) **30 render.php files emit `style=""` INDEPENDENTLY of block.json**
+(mega-menu:208, form:234, testimonial-slider:254 emit inline `--sgs-*`). block.json is
+necessary-but-not-sufficient. → **Step 2 must ADD a live-render scan (curl canary
+pages, grep inline `style` per `sgs/*` element) as the AUTHORITATIVE signal — the
+"~52 un-migrated" count is unproven and must be MEASURED live, not assumed.**
+
+**Net:** the plan's SHAPE is right (detect → bucket → convert → gate) but its Step 2/3
+were too optimistic. Revised Steps 1–3 supersede the versions below; Steps 4–6 stand.
+Saved ~52 broken-block agent-runs by catching this pre-dispatch.
+
+---
 
 **Phase success criteria (done when):**
 - [ ] Spec 32 FR-32-4 amended to FORBID inline `--var` (currently permits it — E in footprint)

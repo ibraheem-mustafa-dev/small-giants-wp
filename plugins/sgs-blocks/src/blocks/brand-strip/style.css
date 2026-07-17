@@ -133,7 +133,11 @@
 	 * that caps at --sgs-logo-max-height (see the logo rule below), so on a wide
 	 * screen the logo stops growing and simply auto-centres in the larger square
 	 * tile rather than up-scaling into pixelation. */
-	--sgs-tile-size: calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8));
+	/* Square + CAPPED: tile = strip/columns, but never larger than --sgs-tile-cap
+	 * (maxHeight-derived) so tiles stop growing on wide screens instead of
+	 * ballooning. Once capped, the extra strip width falls into the inter-tile
+	 * gap (--sgs-logo-gap). */
+	--sgs-tile-size: min(calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8)), var(--sgs-tile-cap));
 	width: var(--sgs-tile-size);
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
