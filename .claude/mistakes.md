@@ -4,6 +4,10 @@
 <!-- ACTIVE — recent 30 mistakes as keyword stubs. Full body in blub.db `learnings` table or feedback_*.md files. Archive: memory/mistakes-archive.md. Search: grep -r KEYWORD memory/ + curl localhost:5050/api/learning?search=KEYWORD -->
 
 ## Active stubs (most recent 30)
+### [2026-07-17] Setup go-forward protocol — one LEDGER, structural gates over prose, done=machine-evidence, verify contents not filenames
+- **Pattern key:** `setup-simplification-go-forward-protocol`
+- **blub.db row:** `397`
+- **Feedback file:** [feedback_setup_simplification_go_forward_protocol.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_setup_simplification_go_forward_protocol.md)
 ### [2026-06-30] LANDED verification = direct page-source comparison, not the JS parity scripts
 - **Pattern key:** `landed-verification-direct-page-source-compare-not-js-parity-scripts`
 - **blub.db row:** `374`
