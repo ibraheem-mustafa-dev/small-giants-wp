@@ -22,9 +22,9 @@ docs (state / handoff / next-session-prompt) that kept contradicting each other.
    merged to the `main` line. A few small polish items and the Indus header/footer match are
    still queued (below).
 2. **A tidy-up of how the project is run** — a signed-off plan
-   (`plans/2026-07-16-setup-simplification-and-protocol.md`) is culling cruft and adding
-   automatic guard-rails so the AI needs less babysitting. We are on **P4** of that plan
-   (this doc IS P4's deliverable). One phase per session by rule.
+   (now `plans/archive/2026-07-16-setup-simplification-and-protocol.md`) culled cruft and added
+   automatic guard-rails so the AI needs less babysitting. **This plan is now FULLY COMPLETE
+   (P0–P6) and archived** — the only remaining work is the product front (below).
 
 **Why it matters.** You are QC-only on the framework; every drifting doc or missing guard-rail
 is time you have to spend catching mistakes. Collapsing to one ledger + adding the guard-rails
@@ -60,7 +60,7 @@ session) and P4 (the LEDGER collapse) are done + live.
 
 ## Setup-simplification track (the meta plan — one phase per session)
 
-Plan: `plans/2026-07-16-setup-simplification-and-protocol.md` (signed off; execute, don't re-plan).
+Plan: `plans/archive/2026-07-16-setup-simplification-and-protocol.md` — **fully executed (P0–P6) and ARCHIVED 2026-07-17.** Historical reference only; the go-forward protocol (plan §5) lives on as a captured lesson below.
 
 | Phase | What | Status |
 |---|---|---|
