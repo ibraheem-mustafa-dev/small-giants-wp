@@ -56,7 +56,17 @@ Make the Indus clone page body render pixel-faithful to the original, section by
 - MCP: Playwright (screenshots + getComputedStyle + canvas font-probe at 375/768/1440), Hostinger (`hosting_clearWebsiteCacheV1`), GitHub.
 
 ## Also still open (not section work)
-- **Framework follow-up (from the hero fix):** the shared `sgs/hero` block's full-bleed breakout still falls back to `24px` when `--wp--style--root--padding-left` is unset — I patched it per-site for Indus (`24px→0px`), but the UNIVERSAL fix belongs in the shared block (change the fallback to `0px`) so every client is correct. Needs build + visual-diff + deploy.
+
+### Container-block hardcode audit — /qc-council 2026-07-17 (4 findings to fix)
+Diagnostic council swept all 36 container-equivalent blocks (`block_composition.container_kind`) for hero-class anti-patterns. Hero itself is DONE (universal full-bleed via WP `alignfull` + content-band normal/wide tied to theme.json — committed `21484a13`, live-verified 0 overflow + band 1140). 33/36 blocks clean. Remaining 4:
+
+1. **[High] `plugins/sgs-blocks/src/blocks/hero/style.css:180`** — `.sgs-hero--standard .sgs-hero__content { max-width: var(--wp--style--global--wide-size, 1200px) }`. The STANDARD hero variant still has the `1200px` hardcode (the fix landed only covered the SPLIT variant's band in render.php). Also mismatched — reads `wide-size` but falls back to a content-size value. Fix = `var(--wp--style--global--wide-size)` (drop the px fallback), same pattern as the render.php fix. Coordinate — hero files were being co-edited.
+2. **[Medium] `plugins/sgs-blocks/src/blocks/mega-menu/style.css:227`** — `max-width: var(--wp--style--global--content-size, 1200px)`. Same 1200px hardcode replicated in the mega-menu container. Fix with the same pattern when nav/header work is next in scope.
+3. **[Verify-first] `mega-menu` `style.css:215-216,780-781` + `render.php:284`** — full-width mega-menu panel uses `width:100vw; max-width:100vw` (position:fixed). Same scrollbar-counting class as the hero's old 100vw bug — could overshoot ~15px OR be acceptable for a fixed overlay. PROVE it overflows on a live full-width mega-menu page BEFORE changing (don't fix an overlay that isn't actually overflowing).
+4. **[Low] `plugins/sgs-blocks/src/blocks/modal/style.css:109-119`** — `max-width: calc(100vw - 2rem)` counts the scrollbar, but it's a centred overlay with a max-width cap so it rarely overflows. Optional polish → `100dvw` or a clientWidth-based value.
+
+*Method note (locked this session): NEVER a per-site patch for a framework hardcode — the universal fix goes in the shared block/theme.json. `100vw` is the scrollbar-overflow trap; use WP `alignfull` (root-padding negation) not `100vw` for full-bleed. Content max-widths tie to `--wp--style--global--content-size/wide-size` (theme.json), never a hardcoded px fallback.*
+
 - **Framework fix B:** soften the WCAG/contrast gate from hard-block → WARN (editor + inline); only hard-block when two colours are extremely similar (genuinely invisible text). Cloned work must not be blocked for matching the original's contrast.
 - **Header/footer revert:** a prior session full-deployed the theme, shipping Track A's header/footer onto Indus (still live). Decide whether to revert `parts/header.html` + `site-header`/`footer` to main.
 
