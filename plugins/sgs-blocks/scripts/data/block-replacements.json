@@ -19,6 +19,8 @@
   "sgs/collapsible-text": [],
   "sgs/container": [
     "core/group",
+    "core/row",
+    "core/stack",
     "core/columns",
     "core/column"
   ],

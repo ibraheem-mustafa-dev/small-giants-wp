@@ -195,10 +195,18 @@ def _node_signature(node, text):
     return (node.name, node.attrs_raw or '', inner)
 
 
-def transform_file(path, rel, core_type, module, declared, write):
-    original = path.read_text(encoding='utf-8')
-    if not [n for n in walk(parse_blocks(original, rel)) if n.name == core_type]:
-        return None
+def transform_text(current, rel, core_type, module, declared):
+    """Run the leaf-first transform loop for ONE pairing over block-markup TEXT.
+
+    Pure text-in / (new_text, log)-out — no file I/O. This is the reusable
+    engine core, shared by `transform_file` (theme patterns/parts/templates) and
+    the page-content front-end (`lint-page.py`, which lints a live page's
+    post_content). Raises SystemExit on the anti-silent-discard gate or the
+    terminating invariant, exactly as the file path does.
+    """
+    original = current
+    log = []
+    refused_sigs = set()
 
     # LEAF-FIRST + RE-PARSE PER SWAP (qc-council Rater A, 2026-07-16).
     #
@@ -216,10 +224,6 @@ def transform_file(path, rel, core_type, module, declared, write):
     # still-pending same-type descendant), and hand `transform()` the CURRENT
     # text. Terminates in <= N iterations: each swap turns one core_type node
     # into a different block, so the pending count strictly decreases.
-    current = original
-    log = []
-    refused_sigs = set()
-
     while True:
         nodes = [n for n in walk(parse_blocks(current, rel)) if n.name == core_type]
         pending = [n for n in nodes if _node_signature(n, current) not in refused_sigs]
@@ -260,10 +264,17 @@ def transform_file(path, rel, core_type, module, declared, write):
             f'refused (first at line {current[: unaccounted[0].start].count(chr(10)) + 1}) — '
             f'a swap was silently lost. Refusing to write.')
 
-    new_text = current
+    return current, log
+
+
+def transform_file(path, rel, core_type, module, declared, write):
+    """File front-end for the shared `transform_text` engine (patterns/parts/templates)."""
+    original = path.read_text(encoding='utf-8')
+    if not [n for n in walk(parse_blocks(original, rel)) if n.name == core_type]:
+        return None
+    new_text, log = transform_text(original, rel, core_type, module, declared)
     if new_text == original:
         return {'rel': rel, 'changed': False, 'log': log}
-
     if write:
         path.write_text(new_text, encoding='utf-8')
         if b'\x00' in path.read_bytes():
