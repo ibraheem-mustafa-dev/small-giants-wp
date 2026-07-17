@@ -1,13 +1,25 @@
 /* ===== SGS Brand Strip — Frontend + Editor ===== */
 
 .sgs-brand-strip {
-	overflow: hidden;
 	position: relative;
 	/*
-	 * Reserve vertical space equal to the default max logo height plus
-	 * the block's vertical padding. Prevents CLS when logo images load.
+	 * Reserve vertical space equal to the tile height (logo height + tile
+	 * padding, since the item is now a fixed-size white tile — see the
+	 * __item rule below) plus the block's vertical padding. Prevents CLS
+	 * when logo images load. Matches the __item / __logo calc below exactly
+	 * (scale × maxHeight + padding × 2 + block padding × 2).
 	 */
-	min-height: calc(var(--sgs-logo-max-height, 80px) + var(--wp--preset--spacing--50, 2rem) * 2);
+	min-height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--wp--preset--spacing--50, 2rem) * 2);
+}
+
+/* `overflow: hidden` is ONLY needed to hide the extra cloned sets sliding
+ * off-screen during the infinite-scroll marquee (view.js appends clones
+ * for that mode alone). Scoping it to scrolling mode fixes a real clipping
+ * defect in static mode: a wide static row (see the full-bleed breakout
+ * below) needs `overflow: visible` so a row that wraps onto a second line
+ * isn't cropped by a fixed-height clipping box. */
+.sgs-brand-strip--scrolling {
+	overflow: hidden;
 }
 
 /* ===== Track — flex container for sets ===== */
@@ -17,10 +29,25 @@
 	gap: var(--wp--preset--spacing--50);
 }
 
-/* Static (non-scrolling) mode: wrap and centre */
+/* Static (non-scrolling) mode: wrap and centre.
+ *
+ * WIDTH comes from the block's own `align` (wide/full) — NOT a CSS breakout.
+ * The reference brand strip packs all 8 tiles into a near-full-width row
+ * (~1385px of a 1440px viewport, ~20px side margins). The block's default
+ * content width (theme.json contentSize, 1200px) is too narrow for 8 uniform
+ * ~170px tiles, so the block instance sets `align: full` and WP hands it the
+ * layout's full width WITHOUT any viewport hack. A previous `calc(50% - 50vw)`
+ * negative-margin breakout was REMOVED: `50vw` includes the scrollbar width,
+ * so it pushed the track ~8px past clientWidth (real horizontal overflow,
+ * confirmed live 1433 vs 1425 at 1440 — the scrollbar-inclusion trap). The
+ * inset padding below reproduces the reference's ~20px side margins within
+ * the aligned width. Scrolling mode keeps its own marquee mechanism. */
 .sgs-brand-strip:not(.sgs-brand-strip--scrolling) .sgs-brand-strip__track {
 	flex-wrap: wrap;
 	justify-content: center;
+	padding-left: var(--sgs-static-row-inset, 20px);
+	padding-right: var(--sgs-static-row-inset, 20px);
+	box-sizing: border-box;
 }
 
 /* ===== Set — one complete group of logos ===== */
@@ -31,33 +58,113 @@
 	flex-shrink: 0;
 }
 
+/* Static mode: allow the set's own children (the items) to wrap onto a
+ * second row rather than being clipped, and use a tighter gap so 8
+ * uniform tiles can share one row on wide viewports (matches the
+ * reference's own tight, near-zero-gap packing — see the measurement note
+ * in the visual-diff report). Scoped to static mode only so the scrolling
+ * marquee's spacing (`--wp--preset--spacing--50`) is unaffected, per the
+ * coordinator's explicit instruction.
+ *
+ * `width: 100%` + `flex-shrink: 1` (overriding the base rule's
+ * `flex-shrink: 0`, which the scrolling marquee needs so cloned sets keep
+ * their full intrinsic width) is the load-bearing part of this fix — a
+ * `flex-wrap: wrap` container with NO width constraint of its own just
+ * grows to fit all children (never triggering the wrap), so at narrower
+ * viewports the row silently kept 8 tiles on one line and overflowed the
+ * track instead of wrapping (confirmed live: at 768px the set measured
+ * 1163px wide inside a 728px track with zero wrap). Constraining the set
+ * to the track's own width is what makes `flex-wrap` actually engage once
+ * the tiles collectively exceed it. */
+.sgs-brand-strip:not(.sgs-brand-strip--scrolling) .sgs-brand-strip__set {
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--sgs-static-row-gap, 8px);
+	flex-shrink: 1;
+	width: 100%;
+}
+
 /* When few logos, ensure the set fills at least half the viewport
  * so the marquee has no visible gaps on wide screens. */
 .sgs-brand-strip--scrolling .sgs-brand-strip__set {
 	min-width: 50vw;
 }
 
-/* ===== Item ===== */
+/* ===== Item — uniform white tile =====
+ * Every tile is a FIXED-size box regardless of the logo's source aspect
+ * ratio, so the row reads as a uniform grid (matches the reference brand
+ * strip: equal-size rounded white cards on a coloured band, ~10px inset
+ * between the logo content and the tile edge at every breakpoint). Tile
+ * size is derived from --sgs-logo-max-height (the maxHeight attribute
+ * stays the single per-instance control clients tune) × --sgs-logo-scale
+ * (a UNIVERSAL responsive multiplier, 1 at desktop, reduced at tablet/
+ * mobile below — see the media queries at the foot of this file) plus a
+ * constant tile padding. */
 .sgs-brand-strip__item {
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
+	width: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
+	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
+	padding: var(--sgs-tile-padding, 10px);
+	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff));
+	border-radius: var(--sgs-tile-radius, 16px);
+	box-sizing: border-box;
+	/*
+	 * PER-TILE HOVER (border + contained image zoom) — mirrors the
+	 * reference carousel's own tile hover exactly (measured live:
+	 * `.spectra-image-gallery__media:hover { border-color: var(--ast-
+	 * global-color-1) }` + `...media-thumbnail { transform: scale3d(1.1,
+	 * 1.1, 1.1) }` on a tile with `overflow: hidden`). `overflow: hidden`
+	 * here is what CONTAINS the zoomed logo image inside the tile bounds —
+	 * without it the scaled image would visually escape the rounded card.
+	 * `border` starts transparent so the hover colour transition is smooth
+	 * (no layout shift, since a transparent border still reserves space).
+	 */
+	overflow: hidden;
+	border: 2px solid transparent;
+	transition-property: border-color;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
 .sgs-brand-strip__item a {
 	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
 }
 
-/* ===== Logo image ===== */
-.sgs-brand-strip__logo {
-	max-height: var(--sgs-logo-max-height, 80px);
+/* ===== Logo image =====
+ * Editor (edit.js) puts `.sgs-brand-strip__logo` directly on the <img>.
+ * Frontend (render.php) delegates to sgs_render_media(), which emits the
+ * context class `.sgs-media--sgs-brand-strip` instead — target both so the
+ * height cap (and greyscale below) apply identically in editor + frontend.
+ * Without the frontend selector the cap misses the <img> and large-source
+ * logos render at natural size (the ~500px Indus logo bug, 2026-07-17).
+ *
+ * `height` (not `max-height`) is deliberate — Bean's requirement is every
+ * logo renders at the EXACT SAME height regardless of source aspect ratio.
+ * `max-height` only clamps oversized sources; a naturally-short logo would
+ * stay short. An explicit `height` + `object-fit: contain` forces every
+ * logo to the identical rendered height, letter-boxing width as needed.
+ * The `* var(--sgs-logo-scale, 1)` factor is the same universal responsive
+ * multiplier used on the tile above, so the logo and its tile always
+ * shrink together in lock-step at tablet/mobile. */
+.sgs-brand-strip__logo,
+.sgs-brand-strip__item .sgs-media--sgs-brand-strip {
+	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1));
 	width: auto;
+	max-width: 100%;
 	object-fit: contain;
 	display: block;
 }
 
 /* ===== Greyscale ===== */
-.sgs-brand-strip--greyscale .sgs-brand-strip__logo {
+.sgs-brand-strip--greyscale .sgs-brand-strip__logo,
+.sgs-brand-strip--greyscale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
 	filter: grayscale(100%);
 	opacity: 0.6;
 	transition-duration: var(--sgs-transition-duration, 300ms);
@@ -65,7 +172,8 @@
 	transition-property: filter, opacity;
 }
 
-.sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo {
+.sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
+.sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip {
 	filter: grayscale(0%);
 	opacity: 1;
 }
@@ -151,49 +259,72 @@
 	background: linear-gradient(to left, var(--wp--custom--color--background, currentColor), transparent);
 }
 
-/* ===== Hover States ===== */
+/* ===== Hover States =====
+ * PER-TILE, not per-block. Every rule below triggers on
+ * `.sgs-brand-strip__item:hover` (an individual tile), not on
+ * `.sgs-brand-strip:hover` (the whole strip) — this is a universal
+ * correction for a multi-item grid block: for `sgs/brand-strip` (a
+ * collection of independent logo tiles), a hover affecting the ENTIRE row
+ * at once has never matched the block's own visual grammar, and doesn't
+ * match the reference brand strip either (measured live: its per-tile
+ * `:hover` scopes exactly this way — see the __item rule above for the
+ * citation). The `[style*="--sgs-hover-*"]` attribute-presence gate stays
+ * on the ROOT (that's where render.php/edit.js declare the custom
+ * property), the `:hover` TRIGGER moves to the item, and the vars
+ * themselves inherit down from root to item with no extra wiring needed. */
 
-.sgs-brand-strip[style*="--sgs-hover-bg"]:hover {
+.sgs-brand-strip[style*="--sgs-hover-bg"] .sgs-brand-strip__item:hover {
 	background-color: var(--sgs-hover-bg);
 }
 
-.sgs-brand-strip[style*="--sgs-hover-text"]:hover {
+.sgs-brand-strip[style*="--sgs-hover-text"] .sgs-brand-strip__item:hover {
 	color: var(--sgs-hover-text);
 }
 
-.sgs-brand-strip[style*="--sgs-hover-border"]:hover {
+.sgs-brand-strip[style*="--sgs-hover-border"] .sgs-brand-strip__item:hover {
 	border-color: var(--sgs-hover-border);
 }
 
-/* Hover effect variants */
-.sgs-brand-strip--hover-lift {
-	transition-property: transform, box-shadow;
+/* Hover effect variants — all scoped to `.sgs-brand-strip__item:hover`.
+ * `scale` deliberately zooms the LOGO IMAGE (a child of the tile), not the
+ * tile box itself — a self-scaling tile isn't clipped by its own
+ * `overflow: hidden` (that only clips the tile's CONTENTS, not the tile's
+ * own transformed render), so it would visually escape the card and
+ * overlap neighbours. Scaling the image instead is contained by the
+ * tile's `overflow: hidden`, exactly matching Bean's "zoom, contained in
+ * the tile" requirement and the reference's own mechanism (scale3d(1.1)
+ * on the thumbnail, clipped by the media container). 1.1 matches the
+ * reference's measured scale factor exactly. */
+.sgs-brand-strip--hover-lift .sgs-brand-strip__item {
+	transition-property: transform, box-shadow, border-color;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-.sgs-brand-strip--hover-lift:hover {
+.sgs-brand-strip--hover-lift .sgs-brand-strip__item:hover {
 	transform: translateY(-4px);
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.sgs-brand-strip--hover-scale {
+.sgs-brand-strip--hover-scale .sgs-brand-strip__logo,
+.sgs-brand-strip--hover-scale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
 	transition-property: transform;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-.sgs-brand-strip--hover-scale:hover {
-	transform: scale(1.02);
+.sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
+.sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip {
+	transform: scale(1.1);
 }
 
-.sgs-brand-strip--hover-glow {
-	transition-property: box-shadow;
+.sgs-brand-strip--hover-glow .sgs-brand-strip__item {
+	transition-property: box-shadow, border-color;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-.sgs-brand-strip--hover-glow:hover {
+.sgs-brand-strip--hover-glow .sgs-brand-strip__item:hover {
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
@@ -210,6 +341,31 @@
 	color: var(--wp--preset--color--text-muted, #555);
 	font-style: italic;
 	padding: var(--wp--preset--spacing--40);
+}
+
+/* ===== Responsive tile sizing =====
+ * A UNIVERSAL responsive multiplier on the logo height — not a per-tier
+ * maxHeight attribute — so any client's chosen maxHeight scales down
+ * proportionately at tablet/mobile, matching the reference brand strip's
+ * own scaling behaviour (measured on the Indus Foods reference: tile/logo
+ * ~175/155px desktop -> ~143/124px tablet -> ~107/87px mobile — a roughly
+ * constant ~10px white inset at every breakpoint, which is why the tile
+ * padding itself stays a flat 10px rather than tiering). Declared on the
+ * block ROOT (not __item) so it cascades to both the tile and the logo
+ * img, and so the block's own min-height CLS-reservation calc above can
+ * read the same value. Static mode already wraps + centres (see
+ * .sgs-brand-strip__track rule above), so tiles reflow onto multiple rows
+ * rather than overflowing at narrow widths. */
+@media (max-width: 1023px) {
+	.sgs-brand-strip {
+		--sgs-logo-scale: 0.8;
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-brand-strip {
+		--sgs-logo-scale: 0.565;
+	}
 }
 
 /* ===== Reduced motion ===== */
