@@ -48,6 +48,11 @@
             "type": "command",
             "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/f5-commit-gate.py",
             "timeout": 120
+          },
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/spec-drift-commit-gate.py",
+            "timeout": 60
           }
         ]
       }
