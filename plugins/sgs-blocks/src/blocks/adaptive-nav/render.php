@@ -260,11 +260,24 @@ if ( '' !== $link_hover ) {
 
 // 2c-ii. Drawer panel colour — an operator ATTR (`drawerBg`, default `primary`),
 // resolved against the client's real palette. The FOREGROUND is never authored —
-// it is COMPUTED from the chosen bg (sgs_wcag_text_colour_for_bg), so contrast
-// holds on a palette nobody has made yet (8/8 committed client palettes pass with
-// the `primary` default; indus-foods #0A7EA8 -> white 4.60:1 tightest). Same shared
-// helpers product-card + option-picker use — not a second system. Drawer links
-// inherit (they are `color:inherit` by design).
+// it PREFERS the client's own `text` palette token (sgs_wcag_preferred_text_
+// colour_for_bg) when that token clears 4.5:1 against the resolved background,
+// else it degrades to the binary #000/#fff auto-contrast (sgs_wcag_text_colour_
+// for_bg) — so contrast still holds on a palette nobody has made yet, or one
+// whose `text` token happens to clash with `primary`. Same shared helpers
+// product-card + option-picker use — not a second system. Drawer links inherit
+// (they are `color:inherit` by design), so every drawer link (incl. sgs/nav-menu
+// used as drawer content, FR-34-3) picks up this one colour at base AND at
+// focus/underline-fallback (no separate mirror to keep in sync).
+//
+// 8-palette verification (2026-07-17): only 3/8 committed client snapshots
+// declare a `text` slug at all (the other 5 use `text-primary`, out of scope
+// here — resolves to '' and this function no-ops to the existing binary
+// fallback, unchanged). Of those 3: mamas-munches text #3a2e26 vs primary
+// #e68a95 = 5.28:1 PASS (adopts the token); helping-doctors #1a1a1a vs #2d6e5e
+// = 2.90:1 FAIL (keeps binary #fff); indus-foods #2C3E50 vs #0A7EA8 = 2.39:1
+// FAIL (keeps binary #fff). The preference is structurally gated per-render —
+// it can never regress a client below AA, on any current or future palette.
 //
 // Keyed on `.{uid}.sgs-adaptive-nav__drawer` — a COMPOUND selector on the dialog's
 // own classes, NOT a descendant of the block root: view.js re-parents the drawer to
@@ -279,7 +292,9 @@ $sgs_anav_surface = static function ( $slug, $selector ) use ( &$css ) {
 	if ( '' === $hex ) {
 		return;
 	}
-	$css .= $selector . '{background-color:' . $hex . ';color:' . sgs_wcag_text_colour_for_bg( $hex ) . ';}';
+	$preferred_text_hex = sgs_resolve_palette_hex( 'text', '' );
+	$fg_hex             = sgs_wcag_preferred_text_colour_for_bg( $hex, $preferred_text_hex );
+	$css               .= $selector . '{background-color:' . $hex . ';color:' . $fg_hex . ';}';
 };
 $sgs_anav_surface( $attributes['drawerBg'] ?? '', '.' . $uid . '.sgs-adaptive-nav__drawer' );
 

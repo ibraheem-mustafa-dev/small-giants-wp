@@ -109,6 +109,42 @@ function sgs_wcag_text_colour_for_bg( string $hex ): string {
 }
 
 /**
+ * Return a PREFERRED foreground colour when it meets WCAG AA (>= 4.5:1)
+ * against the given background; otherwise degrade to the binary `#000`/`#fff`
+ * auto-contrast fallback (sgs_wcag_text_colour_for_bg()).
+ *
+ * Lets a client's own token (e.g. the `text` palette slug) win over the
+ * generic black/white pairing WHEN it is legible on the resolved background —
+ * without ever risking a contrast failure: an unresolvable or failing
+ * preferred colour silently falls back to the guaranteed-safe binary choice.
+ * No per-client branching — the same rule runs for every palette.
+ *
+ * @param string $bg_hex        Background colour, hex.
+ * @param string $preferred_hex Preferred foreground colour, hex (e.g. the
+ *                               resolved `text` token). Empty string skips the
+ *                               preference and returns the binary fallback.
+ * @return string Hex colour — $preferred_hex when it passes AA, else '#000'/'#fff'.
+ */
+function sgs_wcag_preferred_text_colour_for_bg( string $bg_hex, string $preferred_hex ): string {
+	if ( '' === $preferred_hex ) {
+		return sgs_wcag_text_colour_for_bg( $bg_hex );
+	}
+
+	$l_bg = sgs_wcag_relative_luminance( $bg_hex );
+	$l_fg = sgs_wcag_relative_luminance( $preferred_hex );
+
+	if ( $l_bg < 0 || $l_fg < 0 ) {
+		return sgs_wcag_text_colour_for_bg( $bg_hex );
+	}
+
+	$lighter = max( $l_bg, $l_fg );
+	$darker  = min( $l_bg, $l_fg );
+	$ratio   = ( $lighter + 0.05 ) / ( $darker + 0.05 );
+
+	return $ratio >= 4.5 ? $preferred_hex : sgs_wcag_text_colour_for_bg( $bg_hex );
+}
+
+/**
  * Resolve a theme.json palette colour to its hex value by slug, reading the
  * MERGED global settings (default → theme → user/wp_global_styles), so the live
  * per-client colour wins (the canary serves its primary from the wp_global_styles
