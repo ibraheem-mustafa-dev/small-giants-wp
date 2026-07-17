@@ -48,6 +48,23 @@
 }
 
 /*
+ * PROGRAMMATIC / mouse focus must NOT show the theme's link ":focus" styling.
+ * theme.json elements.link ":focus" (theme.json:436) sets text-decoration:underline
+ * + color:primary-dark and — because theme.json v3 has no ":focus-visible" key —
+ * fires on ANY focus, including the drawer auto-focusing its first link on open,
+ * which reads as "selected" before any user action. ":focus:not(:focus-visible)"
+ * = focused-but-not-by-keyboard (a programmatic .focus() does not match
+ * :focus-visible in Chromium). REAL keyboard focus (:focus-visible) still gets the
+ * theme underline — WCAG 2.4.7 focus visibility preserved. Specificity (0,3,0)
+ * beats the theme rule's (0,1,0).
+ */
+.sgs-nav-menu__link:focus:not(:focus-visible),
+.sgs-nav-menu__sublink:focus:not(:focus-visible) {
+	color: inherit;
+	text-decoration: none;
+}
+
+/*
  * Hover / focus-visible / current-page (aria-current="page") state is
  * ENTIRELY render.php-driven (Spec 32 no-inline + hoverStyle/hoverBgColour):
  * a WCAG-computed background pill (default) or an underline (operator
