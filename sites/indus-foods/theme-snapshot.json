@@ -274,7 +274,9 @@
   },
   "styles": {
     "typography": {
-      "fontFamily": "var:preset|font-family|body"
+      "fontFamily": "var:preset|font-family|body",
+      "fontSize": "18px",
+      "lineHeight": "1.6"
     },
     "elements": {
       "heading": {
@@ -284,6 +286,42 @@
         },
         "color": {
           "text": "var:preset|color|primary"
+        }
+      },
+      "h1": {
+        "typography": {
+          "fontSize": "var:preset|font-size|hero",
+          "lineHeight": "1.15"
+        }
+      },
+      "h2": {
+        "typography": {
+          "fontSize": "clamp(35px, calc(35px + 5 * (100vw - 768px) / 672), 40px)",
+          "lineHeight": "1"
+        }
+      },
+      "h3": {
+        "typography": {
+          "fontSize": "28.8px",
+          "lineHeight": "0.9"
+        }
+      },
+      "h4": {
+        "typography": {
+          "fontSize": "clamp(21px, calc(21px + 4 * (100vw - 768px) / 672), 25px)",
+          "lineHeight": "1.2"
+        }
+      },
+      "h5": {
+        "typography": {
+          "fontSize": "20px",
+          "lineHeight": "1.2"
+        }
+      },
+      "h6": {
+        "typography": {
+          "fontSize": "16px",
+          "lineHeight": "1.25"
         }
       },
       "link": {
