@@ -104,6 +104,15 @@ NOT part of the mechanical inline-var sweep — flag per page, don't bulk-conver
 - **E — `--var` in `style=` is spec-PERMITTED today (FR-32-4).** So this is a
   spec-TIGHTENING, not a bug-fix. FR-32-4 must be amended to forbid inline `--var`
   before/with the rollout, or the gate has no teeth.
+- **F — `[style*="--var"]` selectors SILENTLY BREAK (found live on brand-strip
+  2026-07-17).** Any CSS rule that gates on an inline-attribute-presence selector —
+  e.g. `.sgs-brand-strip[style*="--sgs-hover-border"] …:hover { border-color:
+  var(--sgs-hover-border) }` — STOPS MATCHING the moment the `--var` moves from the
+  inline `style=` attribute into a scoped `.uid{…}` rule. This killed the gold
+  hover border with no error. **Detector MUST grep each block's style.css for
+  `[style*="--` and every converter MUST rewrite those rules** to gate via a
+  `var(--x, <inert-fallback>)` instead (unset → inert, set → applies). This is a
+  per-block CSS edit that the "mechanical render.php-only" bulk would MISS.
 
 ## Scale plan (feeds /phase-planner)
 
