@@ -282,11 +282,14 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			'--sgs-fade-width': fadeEdges ? `${ fadeWidth }px` : undefined,
-			'--sgs-logo-gap': logoGap > 0 ? `${ logoGap }px` : undefined,
+			'--sgs-logo-gap': `${ logoGap }px`,
 			'--sgs-tile-padding': `${ tilePadding }px`,
 			'--sgs-tile-radius': `${ tileRadius }px`,
 			'--sgs-logo-fit': logoFit || 'contain',
-			'--sgs-tile-border-width': tileBorderWidth > 0 ? `${ tileBorderWidth }px` : undefined,
+			// NB: "-thickness" NOT "-border-width" — the substring "border-width"
+			// trips WP core's [style*="border-width"]{border-style:solid} in the
+			// editor too, painting a phantom black border (D343 collision).
+			'--sgs-tile-border-thickness': tileBorderWidth > 0 ? `${ tileBorderWidth }px` : undefined,
 			'--sgs-tile-border-colour': tileBorderColour ? colourVar( tileBorderColour ) : undefined,
 		},
 	} );

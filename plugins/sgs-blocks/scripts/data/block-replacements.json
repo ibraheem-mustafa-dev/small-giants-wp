@@ -58,9 +58,6 @@
   "sgs/responsive-logo": [
     "core/site-logo"
   ],
-  "sgs/separator": [
-    "core/separator"
-  ],
   "sgs/social-icons": [
     "core/social-links",
     "core/social-link"
