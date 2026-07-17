@@ -13,7 +13,7 @@
 	 * tile height, no extra allowance). Tiles are fixed-height, so dropping
 	 * this term introduces no layout-shift risk.
 	 */
-	min-height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
+	min-height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
 }
 
 /* `overflow: hidden` is ONLY needed to hide the extra cloned sets sliding
@@ -109,8 +109,8 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
-	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2);
+	width: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
+	height: calc(var(--sgs-logo-max-height, 80px) * var(--sgs-logo-scale, 1) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
 	padding: var(--sgs-tile-padding, 10px);
 	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff));
 	border-radius: var(--sgs-tile-radius, 16px);

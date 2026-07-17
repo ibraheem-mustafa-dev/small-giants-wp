@@ -186,6 +186,11 @@ $css_vars = array_merge(
 		'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
 		'--sgs-tile-padding:' . $tile_padding . 'px',
 		'--sgs-tile-radius:' . $tile_radius . 'px',
+		// NB: named "thickness" NOT "border-width" — an inline value containing the
+		// substring "border-width" is matched by WP core's border-support selector
+		// `html :where([style*="border-width"]){border-style:solid}`, which then
+		// paints a phantom 3px currentColor border on this root (D-2026-07-17).
+		'--sgs-tile-border-thickness:' . $tile_border_width . 'px',
 		'--sgs-logo-fit:' . $logo_fit,
 	)
 );
@@ -201,9 +206,12 @@ if ( $hover_text_colour ) {
 if ( $hover_border_colour ) {
 	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
-if ( $logo_gap > 0 ) {
-	$css_vars[] = '--sgs-logo-gap:' . $logo_gap . 'px';
-}
+// Emit ALWAYS (not only when > 0) so an explicit 0 is honoured — otherwise a 0
+// value falls through to the CSS `var(--sgs-logo-gap, spacing|50)` default and
+// the gap can never be closed (a reference strip with adjacent, border-separated
+// tiles needs gap:0). block.json default stays 0 = tiles adjacent; raise logoGap
+// to add space.
+$css_vars[] = '--sgs-logo-gap:' . $logo_gap . 'px';
 
 // ---------------------------------------------------------------------------
 // 6. Scoped CSS assembly. uid is a CLASS (this block declares `anchor: true`,
