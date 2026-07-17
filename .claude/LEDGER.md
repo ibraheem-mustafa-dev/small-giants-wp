@@ -157,6 +157,11 @@ worktree/history — if located on another branch, fold into decisions.md/parkin
 
 ---
 
+## Active tracks (parallel — SHARED WORKTREE, commit path-scoped only)
+
+- **Track 1 — Indus / product / inline-zero rollout** (the front in `next-session-prompt.md`; co-active). Product queue below.
+- **Track 2 — Header/Footer/Nav FULL REBUILD** (NEW 2026-07-17). Roadmap: `plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md` (6 phases, each guarded by the 6 anti-failure gates derived from the 6-week failure pattern). Baton: **`next-session-prompt-header-footer-rebuild.md`** — starts at **P1 (Research → Architecture, merged)**. Gate 0 = validate the plan first. Do NOT build in P1.
+
 ## Standing programmes (parallel / deferred — not the active front)
 
 - **No-inline styling roster (~52 blocks, phased waves).** Hard architecture SETTLED
