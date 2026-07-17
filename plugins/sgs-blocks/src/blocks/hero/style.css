@@ -14,20 +14,25 @@
 	transition-property: background-color, color, border-color;
 }
 
-/* ── Full-bleed (viewport-aware) ──
- * Hero breaks out of any constrained parent (`.has-global-padding`, custom
- * page templates with arbitrary side padding, etc.) and fills the visible
- * viewport edge-to-edge. Replaces the legacy negative-margin pattern which
- * silently failed when parent padding ≠ 24px.
+/* ── Full-bleed (root-padding-aware — matches WP core .alignfull) ──
+ * Hero breaks out of a constrained parent to the visible edge using the
+ * SAME primitive WordPress uses for alignfull: negate the root side-padding.
  *
- * `var(--viewport-width, 100vw)` — `100vw` is the safe default for Mac and
- * mobile (no persistent scrollbar). On Windows desktop, `viewport-width.js`
- * overrides with `document.documentElement.clientWidth` to exclude the
- * scrollbar and prevent 15px horizontal overflow. */
+ * Why this and not 100vw: `--wp--style--root--padding-left/right` is derived
+ * from the layout's actual padding (clientWidth-based), so negating it reaches
+ * the visible edge WITHOUT the scrollbar-width overflow that `100vw` causes.
+ *   • Root padding set (e.g. 24px)  → margin -24px → hero spans to the padded
+ *     edge = clientWidth. Scrollbar-safe.
+ *   • Root padding absent/0 (front-page, custom template) → the var is empty →
+ *     `calc(empty * -1)` collapses to 0 → hero simply fills the parent, which
+ *     is already clientWidth. No overshoot.
+ * No hardcoded px fallback (the old `,24px` fallback overshot by 24px whenever
+ * a page had no root padding) and no JS dependency (the referenced
+ * viewport-width.js never existed, so the old `100vw` fallback always fired). */
 section.sgs-hero {
-	width: var(--viewport-width, 100vw);
-	margin-left: calc((100% - var(--viewport-width, 100vw)) / 2);
-	margin-right: calc((100% - var(--viewport-width, 100vw)) / 2);
+	width: auto;
+	margin-left: calc(var(--wp--style--root--padding-left, 0px) * -1);
+	margin-right: calc(var(--wp--style--root--padding-right, 0px) * -1);
 	max-width: none;
 }
 

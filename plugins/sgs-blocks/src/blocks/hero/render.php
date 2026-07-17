@@ -358,9 +358,12 @@ if ( $is_split ) {
 	$cw_raw = (string) ( $attributes['contentWidth'] ?? '' );
 	$band   = '';
 	if ( 'normal' === $cw_raw ) {
-		$band = 'var(--wp--style--global--content-size,1200px)';
+		// Tie to the theme.json global (framework default 1200px; per-site
+		// override in the snapshot, e.g. Indus 1140px) — no hardcoded px
+		// fallback, which would mask the theme value if the var ever resolved.
+		$band = 'var(--wp--style--global--content-size)';
 	} elseif ( 'wide' === $cw_raw ) {
-		$band = 'var(--wp--style--global--wide-size,1400px)';
+		$band = 'var(--wp--style--global--wide-size)';
 	} elseif ( '' !== $cw_raw && 'full' !== $cw_raw ) {
 		$band = $sgs_css_length( $cw_raw );
 	}
