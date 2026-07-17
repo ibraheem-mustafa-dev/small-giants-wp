@@ -150,6 +150,11 @@
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
 	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface, #fff));
+	/* Clip the white fill to the PADDING box so the border sits AROUND the card,
+	 * not painted over it: the 10px border shows the band behind it (transparent
+	 * at rest) and turns gold on hover, framing the white tile rather than
+	 * cutting into it (Bean 2026-07-17). */
+	background-clip: padding-box;
 	border-radius: var(--sgs-tile-radius, 16px);
 	box-sizing: border-box;
 	/*
