@@ -1,0 +1,9 @@
+<!-- wp:image {"sizeSlug":"large","style":{"border":{"radius":"16px"}}} -->
+<figure class="wp-block-image size-large" style="border-radius:16px"><img src="https://placehold.co/500x600/0A5B5D/FFFFFF?text=About+Image" alt="About us"/></figure>
+<!-- /wp:image -->
+<!-- wp:image {"sizeSlug":"large","style":{"border":{"radius":"12px"}}} -->
+<figure class="wp-block-image size-large" style="border-radius:12px"><img src="https://placehold.co/600x400/0F7E80/FFFFFF?text=Strategy" alt="Strategy and planning"/></figure>
+<!-- /wp:image -->
+<!-- wp:image {"sizeSlug":"thumbnail","align":"center","width":{"all":"120px"},"height":{"all":"120px"},"style":{"border":{"radius":"100%"}}} -->
+<figure class="wp-block-image aligncenter size-thumbnail" style="border-radius:100%"><img src="https://placehold.co/120x120/0F7E80/FFFFFF?text=AJ" alt="Alex Johnson" style="border-radius:100%;width:120px;height:120px"/></figure>
+<!-- /wp:image -->

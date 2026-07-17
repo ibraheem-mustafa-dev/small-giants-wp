@@ -1,0 +1,57 @@
+{
+ "heroTextLength": 142,
+ "h1Count": 1,
+ "h1Text": "Leading Indian Food & Drinks Wholesaler",
+ "heroImageSrc": "https://palestine-lives.org/wp-content/uploads/indus-foods/2025/11/Indus-Foods-Banner-1024x683.jpg",
+ "heroCtas": [
+  {
+   "label": "Apply For A Trade Account",
+   "href": "/apply-for-trade-account/"
+  },
+  {
+   "label": "Request Our Catalogue",
+   "href": "/catalogue/"
+  }
+ ],
+ "brandImgCount": 8,
+ "brandImgLoaded": 8,
+ "brandImgAlts": [
+  "Sanam",
+  "Lemon Tree",
+  "Green Leaf",
+  "Shan Foods"
+ ],
+ "slideCount": 10,
+ "distinctReviewers": [
+  "Fatima Khan",
+  "David Chen",
+  "Raj Patel",
+  "Indus Foods"
+ ],
+ "infoBoxCount": 8,
+ "infoBoxHeadings": [
+  "60+ Years Experience",
+  "Full Certifications",
+  "Reliable Delivery",
+  "Premium Quality",
+  "Family Values",
+  "5,000+ Products",
+  "Dedicated Support",
+  "White Labelling"
+ ],
+ "infoBoxIcons": 8,
+ "url": "https://palestine-lives.org/",
+ "consoleErrors": [
+  "Failed to load resource: the server responded with a status of 404 ()"
+ ],
+ "gates": {
+  ".sgs-hero has text": true,
+  "at least one <h1>": true,
+  "brand-strip images present": true,
+  "brand-strip images all loaded": true,
+  "hero has both CTAs": true,
+  "hero split image present": true,
+  "testimonials present": true,
+  "info-boxes have headings": true
+ }
+}

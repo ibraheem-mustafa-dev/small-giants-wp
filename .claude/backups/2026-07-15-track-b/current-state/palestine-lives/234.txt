@@ -1,0 +1,11 @@
+<!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">Our Brands</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Indus Foods supplies a wide range of trusted brands alongside our own exclusive lines. Discover the products that keep kitchens running across the UK.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Content coming soon. We're working on this page.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,1 @@
+<!-- wp:sgs/notice-banner {"displayMode":"announcement","stickyPosition":"top","dismissible":true,"dismissBehaviour":"permanent","variant":"info"} --><div class="wp-block-sgs-notice-banner"><!-- wp:sgs/text {"text":"No-anchor persistence test."} --><p class="sgs-text">No-anchor persistence test.</p><!-- /wp:sgs/text --></div><!-- /wp:sgs/notice-banner -->

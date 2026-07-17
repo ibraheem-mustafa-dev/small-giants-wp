@@ -1,0 +1,41 @@
+<!-- wp:sgs/table-of-contents /-->
+
+<!-- wp:heading {"level":2} -->
+<h2 class="wp-block-heading">Introduction to Our Services</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>This section introduces our comprehensive service offerings.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Service Overview</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Details about our main services.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} -->
+<h2 class="wp-block-heading">Our Approach</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>How we deliver exceptional results.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Methodology</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Our proven process.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} -->
+<h2 class="wp-block-heading">Contact Information</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Get in touch with our team.</p>
+<!-- /wp:paragraph -->

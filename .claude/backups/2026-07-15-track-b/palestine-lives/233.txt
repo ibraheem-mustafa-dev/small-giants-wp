@@ -1,0 +1,11 @@
+<!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">Sectors We Serve</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Indus Foods supplies quality Asian and world foods across multiple sectors. Explore our specialist offerings for food service, manufacturing, retail, and wholesale.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Content coming soon. We're working on this page.</p>
+<!-- /wp:paragraph -->

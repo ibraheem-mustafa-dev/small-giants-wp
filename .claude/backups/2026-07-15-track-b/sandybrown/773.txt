@@ -1,0 +1,16 @@
+<h2>SINGLE container (contentWidth+grid)</h2>
+<!-- wp:sgs/container {"widthMode":"full","contentWidth":"1100px","layout":"grid","gridTemplateColumns":"repeat(4, 1fr)","style":{"color":{"background":"#F5C2C8"}},"className":"test-single"} -->
+<!-- wp:paragraph --><p>A1</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>A2</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>A3</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>A4</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/container -->
+<h2>NESTED (full outer > capped inner grid)</h2>
+<!-- wp:sgs/container {"widthMode":"full","style":{"color":{"background":"#FBF3DC"}},"className":"test-outer"} -->
+<!-- wp:sgs/container {"contentWidth":"1100px","layout":"grid","gridTemplateColumns":"repeat(4, 1fr)","className":"test-inner"} -->
+<!-- wp:paragraph --><p>B1</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>B2</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>B3</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>B4</p><!-- /wp:paragraph -->
+<!-- /wp:sgs/container -->
+<!-- /wp:sgs/container -->

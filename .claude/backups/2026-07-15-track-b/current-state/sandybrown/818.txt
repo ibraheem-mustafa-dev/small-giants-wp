@@ -1,0 +1,15 @@
+<!-- wp:sgs/feature-grid {"gap":24,"gapTablet":18,"gapMobile":12} /-->
+
+<!-- wp:sgs/multi-button {"gap":12,"gapMobile":8} -->
+<!-- wp:sgs/button {"label":"Primary Action"} /-->
+
+<!-- wp:sgs/button {"label":"Secondary Action","inheritStyle":"secondary"} /-->
+<!-- /wp:sgs/multi-button -->
+
+<!-- wp:sgs/post-grid {"gap":"30"} /-->
+
+<!-- wp:sgs/card-grid {"gap":"40"} /-->
+
+<!-- wp:sgs/gallery /-->
+
+<!-- wp:sgs/trust-bar /-->

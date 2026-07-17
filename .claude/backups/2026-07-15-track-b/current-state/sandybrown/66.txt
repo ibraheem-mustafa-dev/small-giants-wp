@@ -1,0 +1,1009 @@
+<style>
+    /* ── Design tokens ─────────────────────── */
+    :root {
+      --primary:       #E68A95;
+      --primary-dark:  #C56A7A;
+      --surface-pink:  #F5C2C8;
+      --surface-cream: #FBF3DC;
+      --surface-alt:   #FFF9F0;
+      --accent:        #F5D050;
+      --accent-dark:   #7A6500;
+      --text:          #3A2E26;
+      --text-muted:    #6B5C50;
+      --text-inverse:  #FFFAF5;
+      --cookie-brown:  #8B6F4E;
+      --success:       #2E7D4F;
+      --border:        #E8D5C0;
+    }
+
+    /* ── Reset ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface-cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    h1, h2, h3 { font-family: 'Fraunces', serif; line-height: 1.2; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Utilities ─────────────────────────── */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+
+    .sgs-section-heading__label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* ── Buttons (WCAG: dark text on coral, invert on hover) ─ */
+    .sgs-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      min-height: 48px;
+      text-align: center;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .sgs-button--primary {
+      background: var(--primary);
+      color: var(--text);
+      border-color: var(--primary);
+    }
+    .sgs-button--primary:hover {
+      background: var(--text);
+      color: var(--text-inverse);
+      border-color: var(--text);
+    }
+    .sgs-button--secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--primary);
+    }
+    .sgs-button--secondary:hover {
+      background: var(--text);
+      color: var(--text-inverse);
+      border-color: var(--text);
+    }
+    .sgs-button--ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px;
+    }
+    .sgs-button--ghost:hover { border-color: var(--primary); background: var(--surface-pink); }
+
+    /* ── Skip link (WCAG 2.4.1) ─────────────────────── */
+    .sgs-header__skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--text);
+      color: var(--text-inverse);
+      padding: 12px 20px;
+      z-index: 9999;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 0 0 8px 0;
+    }
+    .sgs-header__skip-link:focus {
+      left: 0;
+    }
+
+    /* ── Reduced motion preference ──────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ── Focus visibility ───────────────────────────── */
+    *:focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+
+    /* ══════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════ */
+    .sgs-header {
+      background: var(--surface-cream);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .sgs-header__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      max-width: 1280px;
+      margin: 0 auto;
+      gap: 16px;
+    }
+    .sgs-header__logo img { height: 44px; width: auto; }
+    .sgs-header__right { display: flex; align-items: center; gap: 12px; }
+
+    .sgs-header__cart {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      justify-content: center;
+    }
+    .sgs-header__cart-badge {
+      background: var(--primary);
+      color: var(--text-inverse);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sgs-header__hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      align-items: center;
+    }
+    .sgs-header__hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+    .sgs-header__nav { display: none; }
+
+    @media (min-width: 768px) {
+      .sgs-header__hamburger { display: none; }
+      .sgs-header__nav {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+        justify-content: center;
+      }
+      .sgs-header__nav a {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 8px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        transition: background 0.18s;
+      }
+      .sgs-header__nav a:hover { background: var(--surface-pink); }
+      .sgs-header__nav-featured {
+        background: var(--primary) !important;
+        color: var(--text) !important;
+        font-weight: 600 !important;
+      }
+      .sgs-header__nav-featured:hover { background: var(--primary) !important; color: var(--text) !important; box-shadow: inset 0 -2px 0 var(--accent); }
+    }
+    @media (min-width: 1024px) {
+      .sgs-header__nav a { font-size: 15px; padding: 10px 16px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    /* Hero — single-grid responsive pattern (migrated 2026-05-17 from dual
+       --mobile/--desktop variants). Preserves all per-viewport differences:
+       art-directed image swap, padding scale, h1 typography flip, CTA
+       direction. Single DOM, media-query reflow — matches SGS hero block. */
+    .sgs-hero {
+      background: var(--surface-pink);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-areas: "media" "content";
+    }
+    .sgs-hero__media { grid-area: media; overflow: hidden; }
+    .sgs-hero__content { grid-area: content; padding: 28px 20px 40px; background: var(--surface-pink); }
+
+    /* Mobile: portrait image only, hide desktop image */
+    .sgs-hero__split-image { width: 100%; object-fit: cover; display: block; }
+    .sgs-hero__split-image--mobile { height: 340px; object-position: center 20%; }
+    .sgs-hero__split-image--desktop { display: none; }
+
+    .sgs-hero__content h1 {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .sgs-hero__sub {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.65;
+    }
+    .sgs-hero__ctas { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Tablet / desktop: 2-col grid, swap to desktop image */
+    @media (min-width: 768px) {
+      .sgs-hero {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "content media";
+        min-height: 520px;
+      }
+      .sgs-hero__media { height: 100%; }
+      .sgs-hero__split-image--mobile { display: none; }
+      .sgs-hero__split-image--desktop {
+        display: block;
+        height: 100%;
+        object-position: center;
+      }
+      .sgs-hero__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 56px 48px;
+      }
+      .sgs-hero__content h1 {
+        font-family: 'Fraunces', serif;
+        font-size: 52px;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        letter-spacing: -1px;
+      }
+      .sgs-hero__sub { font-size: 18px; margin-bottom: 28px; max-width: 420px; }
+      .sgs-hero__ctas { flex-direction: row; gap: 12px; }
+    }
+    @media (min-width: 1280px) {
+      .sgs-hero__content { padding: 72px 64px; }
+      .sgs-hero__content h1 { font-size: 58px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       TRUST BAR (icon-in-white-circle on pink)
+    ══════════════════════════════════════════ */
+    .sgs-trust-bar {
+      background: var(--surface-pink);
+      padding: 22px 20px;
+    }
+    .sgs-trust-bar__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 12px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .sgs-trust-bar__badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sgs-trust-bar__badge[hidden],
+    .sgs-trust-bar__badge[data-pending="true"] { display: none; }
+    .sgs-trust-bar__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(58,46,38,0.06);
+    }
+    .sgs-trust-bar__icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--primary-dark);
+      stroke-width: 1.8;
+      fill: none;
+    }
+    .sgs-trust-bar__text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    @media (min-width: 600px) {
+      .sgs-trust-bar__inner { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .sgs-trust-bar__inner.has-halal { grid-template-columns: repeat(5, 1fr); }
+      .sgs-trust-bar__text { font-size: 14px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       FEATURED PRODUCT
+    ══════════════════════════════════════════ */
+    .sgs-featured-product { padding: 56px 20px; background: var(--surface-cream); }
+    .sgs-featured-product__inner { max-width: 1040px; margin: 0 auto; }
+    .sgs-featured-product h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sgs-featured-product .sgs-section-heading__intro {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .sgs-products { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+    .sgs-product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sgs-product-card__image { width: 100%; height: 220px; object-fit: cover; }
+    .sgs-product-card__body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .sgs-product-card h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sgs-product-card__description { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; flex: 1; line-height: 1.55; }
+
+    .sgs-featured-product__pill-group { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+    .sgs-featured-product__pill {
+      background: var(--surface-cream);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .sgs-featured-product__pill.active {
+      border-color: var(--primary);
+      background: rgba(230,138,149,0.1);
+      color: var(--text);
+    }
+    .sgs-featured-product__pill:hover:not(.active) { border-color: var(--primary-dark); }
+
+    .sgs-featured-product__price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+    .sgs-featured-product__price { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .sgs-featured-product__price-note { font-size: 13px; color: var(--text-muted); }
+
+    .sgs-gift-section__card--trial {
+      border: 2px dashed var(--accent);
+      background: linear-gradient(135deg, rgba(245,208,80,0.08) 0%, rgba(230,138,149,0.06) 100%);
+    }
+    .sgs-gift-section__card-tag--trial {
+      display: inline-flex;
+      align-items: center;
+      background: var(--accent);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .sgs-products { grid-template-columns: 5fr 3fr; }
+      .sgs-featured-product h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       BRAND STORY
+    ══════════════════════════════════════════ */
+    /* Brand-story section — uses the sgs/brand pattern (replaces retired
+       sgs/heritage-strip block, 2026-05-16). The pattern's root sgs/container
+       provides the 2-col grid on desktop / single-column stack on mobile via
+       its own block CSS, so this only carries Mama's-specific visual treatment. */
+    .sgs-brand {
+      background: var(--surface-alt);
+      padding: 64px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .sgs-brand__content { display: flex; flex-direction: column; gap: 16px; }
+    .sgs-brand__image {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      border-radius: 16px;
+      order: -1;
+    }
+    .sgs-brand__headline { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 20px; }
+
+    blockquote { font-style: italic; }
+    blockquote p { font-size: 17px; color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; }
+    blockquote footer {
+      font-style: normal;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-top: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .sgs-brand { grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+      .sgs-brand__image {
+        order: 0;
+        max-height: 440px;
+        height: 440px;
+      }
+      .sgs-brand__headline { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       INGREDIENT EDUCATION
+    ══════════════════════════════════════════ */
+    .sgs-ingredients-section { background: var(--surface-cream); padding: 64px 20px; }
+    .sgs-ingredients-section__inner { max-width: 960px; margin: 0 auto; text-align: center; }
+    .sgs-ingredients-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .sgs-ingredients-section .sgs-section-heading__intro {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin: 0 auto 36px;
+      max-width: 540px;
+    }
+    .sgs-feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .sgs-info-box {
+      background: white;
+      border-radius: 12px;
+      padding: 22px 16px;
+      border: 1px solid var(--border);
+    }
+    .sgs-info-box__icon { font-size: 32px; margin-bottom: 10px; }
+    .sgs-info-box h4 {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .sgs-info-box p { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .sgs-ingredients-section__disclaimer {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    @media (min-width: 600px) {
+      .sgs-feature-grid { grid-template-columns: repeat(4, 1fr); }
+      .sgs-ingredients-section h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       GIFT SECTION
+    ══════════════════════════════════════════ */
+    .sgs-gift-section { background: var(--surface-pink); padding: 64px 20px; }
+    .sgs-gift-section__card-inner { max-width: 960px; margin: 0 auto; }
+    .sgs-gift-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .sgs-gift-section .sgs-section-heading__sub { font-size: 16px; color: var(--text); margin-bottom: 32px; }
+    .sgs-gift-section__cards { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+    .sgs-gift-section__card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+    }
+    .sgs-gift-section__card-tag {
+      display: inline-block;
+      background: var(--surface-pink);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sgs-gift-section__card h3 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .sgs-gift-section__card .sgs-gift-section__card-description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+    .sgs-gift-section__card .sgs-gift-section__card-price {
+      font-family: 'Fraunces', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .sgs-announcement-bar--send-to-ward {
+      background: white;
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .sgs-announcement-bar--send-to-ward p { font-size: 14px; color: var(--text); font-weight: 500; }
+    .sgs-announcement-bar--send-to-ward a { font-size: 14px; font-weight: 600; color: var(--primary-dark); white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; padding: 6px 0; }
+    .sgs-announcement-bar--send-to-ward a:hover { text-decoration: underline; }
+
+    @media (min-width: 640px) {
+      .sgs-gift-section__cards { grid-template-columns: 1fr 1fr; }
+      .sgs-gift-section h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       SOCIAL PROOF
+    ══════════════════════════════════════════ */
+    .sgs-social-proof { background: var(--surface-alt); padding: 64px 20px; }
+    .sgs-social-proof__inner { max-width: 960px; margin: 0 auto; }
+    .sgs-social-proof h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .sgs-social-proof .sgs-section-heading__sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .sgs-social-proof__trustpilot-bar {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .sgs-social-proof__trustpilot-logo { font-size: 13px; font-weight: 700; color: #00B67A; }
+    .sgs-social-proof__trustpilot-stars { font-size: 20px; color: #00B67A; }
+    .sgs-social-proof__trustpilot-text { font-size: 13px; color: var(--text-muted); }
+
+    .sgs-testimonial-slider { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .sgs-testimonial {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .sgs-testimonial__stars { color: var(--accent); font-size: 15px; margin-bottom: 8px; }
+    .sgs-testimonial__text { font-size: 14px; color: var(--text-muted); line-height: 1.65; font-style: italic; margin-bottom: 12px; }
+    .sgs-testimonial__author { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    @media (min-width: 640px) {
+      .sgs-testimonial-slider { grid-template-columns: repeat(3, 1fr); }
+      .sgs-social-proof h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    .sgs-footer { background: var(--text); color: var(--text-inverse); padding: 52px 20px 24px; }
+    .sgs-footer__inner { max-width: 1000px; margin: 0 auto; }
+    .sgs-footer__grid { display: grid; grid-template-columns: 1fr; gap: 36px; margin-bottom: 40px; }
+
+    .sgs-footer__logo { height: 36px; width: auto; margin-bottom: 12px; filter: brightness(0) invert(1); }
+    .sgs-footer__tagline { font-size: 14px; color: rgba(255,250,245,0.65); margin-bottom: 8px; line-height: 1.5; }
+    .sgs-footer__meta { font-size: 13px; color: rgba(255,250,245,0.5); margin-bottom: 4px; }
+    .sgs-footer__meta a { color: rgba(255,250,245,0.75); }
+    .sgs-footer__meta a:hover { color: var(--primary); }
+
+    .sgs-footer__social { display: flex; gap: 8px; margin-top: 14px; }
+    .sgs-footer__social a {
+      background: rgba(255,250,245,0.08);
+      color: var(--text-inverse);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.18s;
+    }
+    .sgs-footer__social a:hover { background: rgba(255,250,245,0.15); }
+
+    .sgs-footer__col h5 {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,250,245,0.4);
+      margin-bottom: 14px;
+    }
+    .sgs-footer__col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .sgs-footer__col ul li a { font-size: 14px; color: rgba(255,250,245,0.75); transition: color 0.18s; }
+    .sgs-footer__col ul li a:hover { color: var(--primary); }
+
+    .sgs-footer__bottom {
+      border-top: 1px solid rgba(255,250,245,0.1);
+      padding-top: 20px;
+      font-size: 13px;
+      color: rgba(255,250,245,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    @media (min-width: 768px) {
+      .sgs-footer__grid { grid-template-columns: 2fr 1fr 1fr; }
+      .sgs-footer__bottom { flex-direction: row; justify-content: space-between; }
+    }
+  </style>
+
+<a class="sgs-header__skip-link" href="#main-content">Skip to main content</a>
+ ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ 
+<header class="sgs-header" role="banner">
+<div class="sgs-header__inner">
+<a aria-label="Mama's Munches — Home" class="sgs-header__logo" href="/">
+<img alt="Mama's Munches" height="61" src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" width="183"/>
+</a>
+<nav aria-label="Main navigation" class="sgs-header__nav">
+<a href="/shop/">Shop</a>
+<a href="/about/">Our Story</a>
+<a class="sgs-header__nav-featured" href="/send-to-ward/">Send to Ward ★</a>
+<a href="/gift-ideas/">Gift Ideas</a>
+<a href="/faqs/">FAQs</a>
+</nav>
+<div class="sgs-header__right">
+<a aria-label="Cart — 0 items" class="sgs-header__cart" href="/cart/">
+<svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<path d="M16 10a4 4 0 0 1-8 0"></path>
+</svg>
+<span aria-hidden="true" class="sgs-header__cart-badge">0</span>
+</a>
+<button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open navigation menu" class="sgs-header__hamburger">
+<span></span><span></span><span></span>
+</button>
+</div>
+</div>
+</header>
+<main id="main-content">
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section aria-labelledby="hero-h1" class="sgs-hero">
+<div class="sgs-hero__content">
+<span class="sgs-section-heading__label">Handmade in Birmingham</span>
+<h1 id="hero-h1">Made for the mum<br/>who needs it most</h1>
+<p class="sgs-hero__sub">Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.</p>
+<div class="sgs-hero__ctas">
+<a class="sgs-button sgs-button--primary" href="/shop/">Shop Zookies</a>
+<a class="sgs-button sgs-button--secondary" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+<div class="sgs-hero__media">
+<img alt="Freshly baked Mama's Munches lactation cookies on a warm background" class="sgs-hero__split-image sgs-hero__split-image--mobile" height="1080" loading="eager" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/aesthetic-pic-1.jpeg" width="1080"/>
+<img alt="Close-up of Mama's Munches Zookies — real ingredients, baked fresh" class="sgs-hero__split-image sgs-hero__split-image--desktop" height="1536" loading="eager" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/IMG_20260419_173547_107-1.webp" width="1536"/>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     TRUST BAR
+══════════════════════════════════════════ -->
+<section aria-label="Why choose Mama's Munches" class="sgs-trust-bar">
+<div class="sgs-trust-bar__inner">
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><path d="m3 12 9-9 9 9"></path><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"></path></svg>
+</span>
+<span class="sgs-trust-bar__text">Handmade in Birmingham</span>
+</div>
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>
+</span>
+<span class="sgs-trust-bar__text">Registered Food Business</span>
+</div>
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><rect height="13" width="15" x="1" y="3"></rect><path d="m16 8 5 2v5h-5z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+</span>
+<span class="sgs-trust-bar__text">Free UK Delivery Over £35</span>
+</div>
+<div class="sgs-trust-bar__badge">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg fill="currentColor" stroke="none" style="fill: var(--primary-dark);" viewbox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+</span>
+<span class="sgs-trust-bar__text">Loved by Breastfeeding Mums</span>
+</div>
+<!-- Halal cert placeholder — flip data-pending to "false" + remove hidden when cert lands -->
+<div class="sgs-trust-bar__badge sgs-trust-bar__badge--halal-pending" data-pending="true" hidden="">
+<span aria-hidden="true" class="sgs-trust-bar__icon">
+<svg viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</span>
+<span class="sgs-trust-bar__text">Halal Certified</span>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     FEATURED PRODUCT
+══════════════════════════════════════════ -->
+<section aria-labelledby="product-h2" class="sgs-featured-product">
+<div class="sgs-featured-product__inner">
+<span class="sgs-section-heading__label">Our signature</span>
+<h2 id="product-h2">Zookies — Our Signature Giant Cookie</h2>
+<p class="sgs-section-heading__intro">One Zookie is a proper sized treat. Every one baked to order, same week.</p>
+<div class="sgs-products">
+<!-- Main product -->
+<div class="sgs-product-card">
+<img alt="Stack of Mama's Munches Zookies lactation cookies" class="sgs-product-card__image" height="1080" loading="lazy" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-stacked-1.jpeg" width="1920"/>
+<div class="sgs-product-card__body">
+<h3>Mama's Munches Zookies</h3>
+<p class="sgs-product-card__description">Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.</p>
+<div aria-label="Choose pack size" class="sgs-featured-product__pill-group" role="group">
+<button aria-pressed="false" class="sgs-featured-product__pill" type="button">8-pack</button>
+<button aria-pressed="true" class="sgs-featured-product__pill active" type="button">12-pack</button>
+<button aria-pressed="false" class="sgs-featured-product__pill" type="button">20-pack</button>
+<button aria-pressed="false" class="sgs-featured-product__pill" type="button">40-pack</button>
+</div>
+<div class="sgs-featured-product__price-row">
+<span class="sgs-featured-product__price">£10.00</span>
+<span class="sgs-featured-product__price-note">8-pack · Free delivery over £35</span>
+</div>
+<a class="sgs-button sgs-button--primary" href="/product/zookies/">Add to Cart — £10</a>
+</div>
+</div>
+<!-- Trial pack -->
+<div class="sgs-product-card sgs-gift-section__card--trial">
+<img alt="Mama's Munches cookies in a bakery display" class="sgs-product-card__image" height="1784" loading="lazy" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-on-bun-case-1.jpeg" width="2048"/>
+<div class="sgs-product-card__body">
+<div class="sgs-gift-section__card-tag--trial">New? Start here</div>
+<h3>The Trial Pack</h3>
+<p class="sgs-product-card__description">Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.</p>
+<div class="sgs-featured-product__price-row">
+<span class="sgs-featured-product__price">£5.00</span>
+<span class="sgs-featured-product__price-note">3 Classic Zookies · postage included</span>
+</div>
+<a class="sgs-button sgs-button--secondary" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     BRAND STORY
+══════════════════════════════════════════ -->
+<section aria-labelledby="story-h2" class="sgs-brand">
+<div class="sgs-brand__content">
+<h2 class="sgs-brand__headline" id="story-h2">A story that started with a friend</h2>
+<blockquote class="sgs-brand__body">
+<p>She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.</p>
+<p>They helped her. I was so grateful.</p>
+<p>Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.</p>
+<footer>— Zainab, Founder of Mama's Munches</footer>
+</blockquote>
+<a class="sgs-brand__cta sgs-button sgs-button--ghost" href="/about/" style="margin-top:8px;">Read the full story →</a>
+</div>
+<img alt="A mum smiling and holding Mama's Munches cookies" class="sgs-brand__image" height="1080" loading="lazy" src="https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/Halimahs-1.jpeg" width="1920"/>
+</section>
+<!-- ══════════════════════════════════════════
+     INGREDIENT EDUCATION
+══════════════════════════════════════════ -->
+<section aria-labelledby="ingr-h2" class="sgs-ingredients-section">
+<div class="sgs-ingredients-section__inner">
+<span class="sgs-section-heading__label">What's in them?</span>
+<h2 id="ingr-h2">Proper ingredients, properly used</h2>
+<p class="sgs-section-heading__intro">Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.</p>
+<div class="sgs-feature-grid">
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🌾</div>
+<h4>Oats</h4>
+<p>Rich in iron. Used in postpartum foods across cultures for centuries.</p>
+</div>
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🍺</div>
+<h4>Brewer's Yeast</h4>
+<p>B-vitamins and chromium. A traditional galactagogue used worldwide.</p>
+</div>
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🌿</div>
+<h4>Flaxseed</h4>
+<p>Omega-3 fatty acids. Good for mum and baby.</p>
+</div>
+<div class="sgs-info-box">
+<div aria-hidden="true" class="sgs-info-box__icon">🌱</div>
+<h4>Fenugreek</h4>
+<p>Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first.</p>
+</div>
+</div>
+<p class="sgs-ingredients-section__disclaimer">We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.</p>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     GIFT SECTION
+══════════════════════════════════════════ -->
+<section aria-labelledby="gift-h2" class="sgs-gift-section">
+<div class="sgs-gift-section__card-inner">
+<span class="sgs-section-heading__label">Give the gift of nourishment</span>
+<h2 id="gift-h2">A gift she'll actually use</h2>
+<p class="sgs-section-heading__sub">For baby showers, new arrivals, and the mums who deserve a treat.</p>
+<div class="sgs-gift-section__cards">
+<div class="sgs-gift-section__card">
+<span class="sgs-gift-section__card-tag">Gift idea</span>
+<h3>New Baby Gift Box</h3>
+<p class="sgs-gift-section__card-description">The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.</p>
+<div class="sgs-gift-section__card-price">£15</div>
+<a class="sgs-button sgs-button--primary" href="/product/gift-box/">Shop Gift Box</a>
+</div>
+<div class="sgs-gift-section__card">
+<span class="sgs-gift-section__card-tag">Most thoughtful</span>
+<h3>40-Day Care Bundle</h3>
+<p class="sgs-gift-section__card-description">Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give a new mum.</p>
+<div class="sgs-gift-section__card-price">£42</div>
+<a class="sgs-button sgs-button--primary" href="/product/40-day-bundle/">Shop Bundle</a>
+</div>
+</div>
+<div class="sgs-announcement-bar--send-to-ward">
+<p>🏥 Heading to hospital? Ask us about our Send to Ward delivery.</p>
+<a href="/send-to-ward/">Find out more →</a>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     SOCIAL PROOF
+══════════════════════════════════════════ -->
+<section aria-labelledby="reviews-h2" class="sgs-social-proof">
+<div class="sgs-social-proof__inner">
+<h2 id="reviews-h2">What mums are saying</h2>
+<p class="sgs-section-heading__sub">Real feedback from real mums — nothing fabricated.</p>
+<div aria-label="Trustpilot rating" class="sgs-social-proof__trustpilot-bar">
+<span class="sgs-social-proof__trustpilot-logo">★ Trustpilot</span>
+<span aria-label="5 stars" class="sgs-social-proof__trustpilot-stars">★★★★★</span>
+<span class="sgs-social-proof__trustpilot-text">Leave us a review — help other mums find us</span>
+</div>
+<div class="sgs-testimonial-slider">
+<article class="sgs-testimonial">
+<div aria-label="5 stars" class="sgs-testimonial__stars">★★★★★</div>
+<p class="sgs-testimonial__text">"I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing."</p>
+<p class="sgs-testimonial__author">Reham, London</p>
+</article>
+<article class="sgs-testimonial">
+<div aria-label="5 stars" class="sgs-testimonial__stars">★★★★★</div>
+<p class="sgs-testimonial__text">"Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help."</p>
+<p class="sgs-testimonial__author">Sarah M., Manchester</p>
+</article>
+<article class="sgs-testimonial">
+<div aria-label="5 stars" class="sgs-testimonial__stars">★★★★★</div>
+<p class="sgs-testimonial__text">"Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again."</p>
+<p class="sgs-testimonial__author">Halimah, Birmingham</p>
+</article>
+</div>
+</div>
+</section>
+</main>
+ ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ 
+<footer class="sgs-footer" role="contentinfo">
+<div class="sgs-footer__inner">
+<div class="sgs-footer__grid">
+<div class="sgs-footer__brand">
+<img alt="Mama's Munches" class="sgs-footer__logo" height="51" loading="lazy" src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" width="152"/>
+<p class="sgs-footer__tagline">Real food for real mums.<br/>Handmade in Birmingham with care.</p>
+<p class="sgs-footer__meta">Birmingham, UK</p>
+<p class="sgs-footer__meta"><a href="mailto:Zainab@mamasmunches.com">Zainab@mamasmunches.com</a></p>
+<div class="sgs-footer__social">
+<a aria-label="Follow Mama's Munches on Instagram" href="https://www.instagram.com/mamasmunches/">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15">
+<rect height="20" rx="5" ry="5" width="20" x="2" y="2"></rect>
+<circle cx="12" cy="12" r="4"></circle>
+<circle cx="17.5" cy="6.5" fill="currentColor" r="1" stroke="none"></circle>
+</svg>
+            Instagram
+          </a>
+<a aria-label="Contact via WhatsApp" href="/contact/">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+            WhatsApp
+          </a>
+</div>
+</div>
+<div class="sgs-footer__col">
+<h5>Shop</h5>
+<ul>
+<li><a href="/shop/">All Products</a></li>
+<li><a href="/product/zookies/">Zookies</a></li>
+<li><a href="/product/trial-pack/">Trial Pack (£5)</a></li>
+<li><a href="/gift-ideas/">Gift Ideas</a></li>
+<li><a href="/send-to-ward/">Send to Ward</a></li>
+<li><a href="/about/">Our Story</a></li>
+<li><a href="/faqs/">FAQs</a></li>
+</ul>
+</div>
+<div class="sgs-footer__col">
+<h5>Information</h5>
+<ul>
+<li><a href="/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/shipping/">Shipping Info</a></li>
+<li><a href="/terms/">Terms &amp; Conditions</a></li>
+<li><a href="/allergens/">Allergen Information</a></li>
+<li><a href="/contact/">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="sgs-footer__bottom">
+<span>© 2026 Mama's Munches. Registered Food Business, Birmingham.</span>
+<span>Made with love for breastfeeding mums 🍪</span>
+</div>
+</div>
+</footer>
+

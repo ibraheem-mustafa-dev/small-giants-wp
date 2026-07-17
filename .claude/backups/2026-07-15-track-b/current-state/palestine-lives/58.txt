@@ -1,0 +1,226 @@
+<!-- wp:sgs/hero {"variant":"standard","headline":"Open your trade account in minutes.","subHeadline":"No membership fees. No complicated paperwork. Just fill in the form below and our team will have you set up within 1-2 business days. Whether you're a one-person takeaway or a hotel chain — we'll tailor your account to your business.","alignment":"left","minHeight":"400px","headlineColour":"surface","subHeadlineColour":"text-inverse","badges":[{"number":"~3","suffix":" min","label":"To complete","position":"bottom-left","style":"default"},{"number":"£0","suffix":"","label":"No membership fees","position":"bottom-left","style":"default"},{"number":"£75","suffix":"","label":"Minimum order","position":"bottom-left","style":"default"},{"number":"5,000","suffix":"+","label":"Businesses joined","position":"bottom-left","style":"default"}],"align":"full","backgroundColor":"primary"} /-->
+
+<!-- wp:group {"align":"full","backgroundColor":"accent","layout":{"type":"constrained","wideSize":"1200px"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-group alignfull has-accent-background-color has-background" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+
+<!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|30"}}}} -->
+<div class="wp-block-columns">
+<!-- wp:column {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px"}}}} -->
+<div class="wp-block-column" style="padding-top:8px;padding-bottom:8px">
+<!-- wp:heading {"textAlign":"center","level":4,"textColor":"primary","style":{"typography":{"fontSize":"0.82rem"}}} -->
+<h4 class="wp-block-heading has-text-align-center has-primary-color has-text-color" style="font-size:0.82rem">Trade Pricing</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-muted","style":{"typography":{"fontSize":"0.75rem"}}} -->
+<p class="has-text-align-center has-text-muted-color has-text-color" style="font-size:0.75rem">15-30% below retail from day one</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+<!-- wp:column {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px"}}}} -->
+<div class="wp-block-column" style="padding-top:8px;padding-bottom:8px">
+<!-- wp:heading {"textAlign":"center","level":4,"textColor":"primary","style":{"typography":{"fontSize":"0.82rem"}}} -->
+<h4 class="wp-block-heading has-text-align-center has-primary-color has-text-color" style="font-size:0.82rem">Account Manager</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-muted","style":{"typography":{"fontSize":"0.75rem"}}} -->
+<p class="has-text-align-center has-text-muted-color has-text-color" style="font-size:0.75rem">A named person who knows your business</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+<!-- wp:column {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px"}}}} -->
+<div class="wp-block-column" style="padding-top:8px;padding-bottom:8px">
+<!-- wp:heading {"textAlign":"center","level":4,"textColor":"primary","style":{"typography":{"fontSize":"0.82rem"}}} -->
+<h4 class="wp-block-heading has-text-align-center has-primary-color has-text-color" style="font-size:0.82rem">Reliable Delivery</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-muted","style":{"typography":{"fontSize":"0.75rem"}}} -->
+<p class="has-text-align-center has-text-muted-color has-text-color" style="font-size:0.75rem">Next-day Midlands, 48hr nationwide</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+<!-- wp:column {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px"}}}} -->
+<div class="wp-block-column" style="padding-top:8px;padding-bottom:8px">
+<!-- wp:heading {"textAlign":"center","level":4,"textColor":"primary","style":{"typography":{"fontSize":"0.82rem"}}} -->
+<h4 class="wp-block-heading has-text-align-center has-primary-color has-text-color" style="font-size:0.82rem">Full Catalogue</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-muted","style":{"typography":{"fontSize":"0.75rem"}}} -->
+<p class="has-text-align-center has-text-muted-color has-text-color" style="font-size:0.75rem">3,000+ products, one supplier</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","layout":{"type":"constrained","wideSize":"1200px"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--70);padding-left:var(--wp--preset--spacing--40)">
+
+<!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|50"}}}} -->
+<div class="wp-block-columns">
+
+<!-- wp:column {"width":"65%"} -->
+<div class="wp-block-column" style="flex-basis:65%">
+
+<!-- wp:sgs/form {"formId":"trade-application","action":"/wp-json/sgs/v1/form","method":"POST","successMessage":"Thank you! Your application has been submitted. We aim to review applications within 1-2 business days. You'll receive a confirmation email shortly.","submitLabel":"Submit Your Application","submitStyle":"success","multiStep":true,"progressBar":true} -->
+
+<!-- wp:sgs/form-step {"stepTitle":"About You","stepDescription":"Tell us who you are and where to deliver. This takes about a minute."} -->
+
+<!-- wp:sgs/form-field-text {"label":"Your Name","name":"your_name","placeholder":"e.g. Priya Sharma","required":true} /-->
+
+<!-- wp:sgs/form-field-text {"label":"Your Role","name":"your_role","placeholder":"e.g. Owner, Head Chef, Buyer","required":true} /-->
+
+<!-- wp:sgs/form-field-email {"label":"Email Address","name":"email","placeholder":"e.g. priya@bombaykitchen.co.uk","required":true} /-->
+
+<!-- wp:sgs/form-field-phone {"label":"Phone Number","name":"phone","placeholder":"e.g. 07700 900 123","required":true} /-->
+
+<!-- wp:sgs/form-field-text {"label":"Delivery Postcode","name":"delivery_postcode","placeholder":"e.g. LE1 5PQ — we'll use this to estimate delivery times","required":true,"width":"full"} /-->
+
+<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.82rem"},"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
+<p style="font-size:0.82rem;margin-top:var(--wp--preset--spacing--20)">Prefer not to type? <a href="https://wa.me/447xxxxxxxxx" rel="noopener noreferrer">Message us on WhatsApp</a> and we'll complete this together.</p>
+<!-- /wp:paragraph -->
+
+<!-- /wp:sgs/form-step -->
+
+<!-- wp:sgs/form-step {"stepTitle":"Business Details","stepDescription":"This helps us set up the right pricing and account type. Sole traders welcome — just fill in what applies to you."} -->
+
+<!-- wp:sgs/form-field-text {"label":"Business / Trading Name","name":"business_name","placeholder":"e.g. Bombay Kitchen Ltd","required":true} /-->
+
+<!-- wp:sgs/form-field-select {"label":"Business Type","name":"business_type","placeholder":"Select your business type","required":true,"options":[{"label":"Restaurant","value":"restaurant"},{"label":"Takeaway / Fast Food","value":"takeaway"},{"label":"Retail Shop / Convenience Store","value":"retail"},{"label":"Manufacturer","value":"manufacturer"},{"label":"Caterer / Event Caterer","value":"caterer"},{"label":"Hotel / HORECA","value":"hotel"},{"label":"Other Wholesaler","value":"wholesaler"},{"label":"Cash \u0026 Carry","value":"cash-carry"},{"label":"Other","value":"other"}]} /-->
+
+<!-- wp:sgs/form-field-select {"label":"How long have you been trading?","name":"trading_length","placeholder":"Select","required":true,"options":[{"label":"Just starting up","value":"startup"},{"label":"Less than 1 year","value":"under-1"},{"label":"1-3 years","value":"1-3"},{"label":"3-5 years","value":"3-5"},{"label":"5-10 years","value":"5-10"},{"label":"10+ years","value":"10-plus"}]} /-->
+
+<!-- wp:sgs/form-field-text {"label":"VAT Registration Number","name":"vat_number","placeholder":"e.g. GB 123 4567 89","required":false,"helpText":"No VAT number? No problem — sole traders and businesses under the £90k threshold can leave this blank."} /-->
+
+<!-- wp:sgs/form-field-text {"label":"Company Registration Number","name":"crn","placeholder":"e.g. 12345678","required":false,"helpText":"Sole traders and partnerships don't have one — skip this if it doesn't apply.","width":"full"} /-->
+
+<!-- wp:sgs/form-field-text {"label":"Delivery Address","name":"delivery_address","placeholder":"Start typing your address...","required":true,"width":"full"} /-->
+
+<!-- wp:sgs/form-field-text {"label":"Delivery Access Notes","name":"delivery_notes","placeholder":"e.g. Rear entrance, loading bay available, ring bell on arrival","required":false,"width":"full"} /-->
+
+<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.82rem"},"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
+<p style="font-size:0.82rem;margin-top:var(--wp--preset--spacing--20)">Not sure about something? <a href="https://wa.me/447xxxxxxxxx" rel="noopener noreferrer">Message us on WhatsApp</a> — we'll help you through it.</p>
+<!-- /wp:paragraph -->
+
+<!-- /wp:sgs/form-step -->
+
+<!-- wp:sgs/form-step {"stepTitle":"Preferences","stepDescription":"Help us tailor your account. Don't worry — you can change all of this later."} -->
+
+<!-- wp:sgs/form-field-tiles {"label":"Which product categories interest you?","name":"product_categories","multiple":true,"tiles":[{"icon":"🌶️","label":"Spices","value":"spices"},{"icon":"🍚","label":"Rice \u0026 Grains","value":"rice"},{"icon":"🫘","label":"Lentils \u0026 Pulses","value":"lentils"},{"icon":"🫒","label":"Oils \u0026 Ghee","value":"oils"},{"icon":"🧊","label":"Frozen Foods","value":"frozen"},{"icon":"🥫","label":"Tinned / Canned","value":"tinned"},{"icon":"🥜","label":"Nuts \u0026 Dried Fruit","value":"nuts"},{"icon":"🧴","label":"Cleaning","value":"cleaning"}]} /-->
+
+<!-- wp:sgs/form-field-select {"label":"Estimated Monthly Spend","name":"monthly_spend","placeholder":"Roughly how much per month?","required":false,"options":[{"label":"Under £500","value":"under-500"},{"label":"£500 - £1,000","value":"500-1000"},{"label":"£1,000 - £2,500","value":"1000-2500"},{"label":"£2,500 - £5,000","value":"2500-5000"},{"label":"£5,000 - £10,000","value":"5000-10000"},{"label":"£10,000+","value":"10000-plus"},{"label":"Not sure yet","value":"unsure"}]} /-->
+
+<!-- wp:sgs/form-field-select {"label":"Preferred Delivery Days","name":"delivery_days","placeholder":"When suits you best?","required":false,"options":[{"label":"Monday - Wednesday","value":"mon-wed"},{"label":"Thursday - Friday","value":"thu-fri"},{"label":"Any weekday","value":"any"},{"label":"Specific day (tell us later)","value":"specific"}]} /-->
+
+<!-- wp:sgs/form-field-select {"label":"Payment Terms Requested","name":"payment_terms","placeholder":"Select","required":false,"helpText":"First orders are proforma. Credit terms available after your first few orders — no pressure.","options":[{"label":"Proforma (pay before delivery) — fastest approval","value":"proforma"},{"label":"7-day terms","value":"7-day"},{"label":"14-day terms","value":"14-day"},{"label":"30-day terms (subject to credit check)","value":"30-day"}]} /-->
+
+<!-- wp:sgs/form-field-select {"label":"How Did You Hear About Us?","name":"referral_source","placeholder":"Select","required":false,"options":[{"label":"Recommendation from another business","value":"recommendation"},{"label":"Google search","value":"google"},{"label":"Social media","value":"social"},{"label":"Industry event / trade show","value":"event"},{"label":"Already know Indus Foods / Zaf Cash \u0026 Carry","value":"existing"},{"label":"Other","value":"other"}]} /-->
+
+<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.82rem"},"spacing":{"margin":{"top":"var:preset|spacing|20"}}}} -->
+<p style="font-size:0.82rem;margin-top:var(--wp--preset--spacing--20)">Nearly done! Questions about pricing or delivery? <a href="https://wa.me/447xxxxxxxxx" rel="noopener noreferrer">Ask on WhatsApp</a> — we reply within minutes during business hours.</p>
+<!-- /wp:paragraph -->
+
+<!-- /wp:sgs/form-step -->
+
+<!-- wp:sgs/form-step {"stepTitle":"Review \u0026 Submit","stepDescription":"Check everything looks right. You can edit any section before submitting."} -->
+
+<!-- wp:sgs/form-review /-->
+
+<!-- wp:sgs/form-field-file {"label":"Food Hygiene Certificate or FHRS Rating","name":"hygiene_cert","required":false,"helpText":"Optional — you can send this later. PDF, JPG, PNG, or screenshot. Max 10MB.","accept":".pdf,.jpg,.jpeg,.png","maxSize":10} /-->
+
+<!-- wp:sgs/form-field-consent {"label":"I agree to the Terms \u0026 Conditions including payment terms and returns policy.","name":"terms_consent","required":true,"linkText":"Terms \u0026 Conditions","linkUrl":"/terms-and-conditions/"} /-->
+
+<!-- wp:sgs/form-field-consent {"label":"I consent to Indus Foods contacting me about my account, orders, and relevant promotions.","name":"gdpr_consent","required":true,"linkText":"Privacy Policy","linkUrl":"/privacy-policy/"} /-->
+
+<!-- wp:paragraph {"align":"center","style":{"spacing":{"padding":{"top":"16px","bottom":"16px","left":"16px","right":"16px"}},"typography":{"fontSize":"0.82rem"},"color":{"background":"#F8F7F4"},"border":{"radius":"10px"}},"textColor":"text-muted"} -->
+<p class="has-text-align-center has-text-muted-color has-text-color has-background" style="border-radius:10px;background-color:#F8F7F4;margin-top:var(--wp--preset--spacing--30);padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px;font-size:0.82rem">We aim to review applications within <strong>1-2 business days</strong>. You'll receive a confirmation email immediately. First orders are proforma (pay before delivery). Credit terms become available once your account is established.</p>
+<!-- /wp:paragraph -->
+
+<!-- /wp:sgs/form-step -->
+
+<!-- /wp:sgs/form -->
+
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"35%"} -->
+<div class="wp-block-column" style="flex-basis:35%">
+
+<!-- wp:group {"style":{"border":{"radius":"16px"},"spacing":{"padding":{"top":"28px","right":"28px","bottom":"28px","left":"28px"}},"color":{"gradient":"linear-gradient(135deg, rgb(15,38,64) 0%, rgb(26,58,92) 100%)"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-background" style="border-radius:16px;background:linear-gradient(135deg, rgb(15,38,64) 0%, rgb(26,58,92) 100%);padding-top:28px;padding-right:28px;padding-bottom:28px;padding-left:28px">
+<!-- wp:heading {"textAlign":"center","level":3,"textColor":"accent","style":{"typography":{"fontSize":"2.8rem"}},"fontFamily":"heading"} -->
+<h3 class="wp-block-heading has-text-align-center has-accent-color has-text-color has-heading-font-family" style="font-size:2.8rem">5,000+</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-inverse","style":{"typography":{"fontSize":"0.85rem"},"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
+<p class="has-text-align-center has-text-inverse-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--30);font-size:0.85rem">businesses trust Indus Foods</p>
+<!-- /wp:paragraph -->
+<!-- wp:separator {"backgroundColor":"border-subtle","className":"is-style-wide"} -->
+<hr class="wp-block-separator has-text-color has-border-subtle-color has-alpha-channel-opacity has-border-subtle-background-color has-background is-style-wide"/>
+<!-- /wp:separator -->
+<!-- wp:columns -->
+<div class="wp-block-columns">
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"textAlign":"center","level":4,"textColor":"surface","style":{"typography":{"fontSize":"1.3rem"}},"fontFamily":"heading"} -->
+<h4 class="wp-block-heading has-text-align-center has-surface-color has-text-color has-heading-font-family" style="font-size:1.3rem">60+</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-inverse","style":{"typography":{"fontSize":"0.7rem"}}} -->
+<p class="has-text-align-center has-text-inverse-color has-text-color" style="font-size:0.7rem">Years in Business</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"textAlign":"center","level":4,"textColor":"surface","style":{"typography":{"fontSize":"1.3rem"}},"fontFamily":"heading"} -->
+<h4 class="wp-block-heading has-text-align-center has-surface-color has-text-color has-heading-font-family" style="font-size:1.3rem">3,000+</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center","textColor":"text-inverse","style":{"typography":{"fontSize":"0.7rem"}}} -->
+<p class="has-text-align-center has-text-inverse-color has-text-color" style="font-size:0.7rem">Products Available</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"style":{"border":{"radius":"16px","color":"#E8E6E1","width":"1px"},"spacing":{"padding":{"top":"28px","right":"28px","bottom":"28px","left":"28px"},"margin":{"top":"var:preset|spacing|30"}},"color":{"background":"#ffffff"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-border-color has-background" style="border-color:#E8E6E1;border-width:1px;border-radius:16px;background-color:#ffffff;margin-top:var(--wp--preset--spacing--30);padding-top:28px;padding-right:28px;padding-bottom:28px;padding-left:28px">
+<!-- wp:heading {"level":3,"textColor":"primary","style":{"typography":{"fontSize":"1.15rem"}},"fontFamily":"heading"} -->
+<h3 class="wp-block-heading has-primary-color has-text-color has-heading-font-family" style="font-size:1.15rem">What you'll get</h3>
+<!-- /wp:heading -->
+<!-- wp:list {"textColor":"text","style":{"typography":{"fontSize":"0.85rem"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
+<ul class="has-text-color wp-block-list" style="font-size:0.85rem;margin-top:0;margin-bottom:0"><li>Trade pricing (15-30% below retail)</li><li>Dedicated account manager</li><li>Access to 3,000+ products</li><li>Minimum order just £75</li><li>Free delivery over £250</li><li>Credit facilities (after first orders)</li><li>Exclusive promotions &amp; new product alerts</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph {"align":"center","style":{"spacing":{"padding":{"top":"16px"},"margin":{"top":"16px"}},"border":{"top":{"color":"#E8E6E1","width":"1px"}},"typography":{"fontSize":"0.78rem","fontWeight":"700"}},"textColor":"success"} -->
+<p class="has-text-align-center has-success-color has-text-color" style="border-top-color:#E8E6E1;border-top-width:1px;margin-top:16px;padding-top:16px;font-size:0.78rem;font-weight:700">No membership fees. Sole traders welcome.</p>
+<!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"style":{"border":{"radius":"14px","color":"#25D366","width":"2px"},"spacing":{"padding":{"top":"20px","right":"20px","bottom":"20px","left":"20px"}},"color":{"background":"#F0FDF4"}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-border-color has-background" style="border-color:#25D366;border-width:2px;border-radius:14px;background-color:#F0FDF4;padding-top:20px;padding-right:20px;padding-bottom:20px;padding-left:20px">
+<!-- wp:heading {"level":4,"style":{"typography":{"fontSize":"1rem"}},"textColor":"primary"} -->
+<h4 class="wp-block-heading has-primary-color has-text-color" style="font-size:1rem">Prefer to talk first?</h4>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.85rem"}},"textColor":"text-muted"} -->
+<p class="has-text-muted-color has-text-color" style="font-size:0.85rem">Not ready to apply? Message us on WhatsApp and we'll answer any questions. We can even complete the application together over chat.</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons -->
+<div class="wp-block-buttons">
+<!-- wp:button {"style":{"color":{"background":"#25D366","text":"#ffffff"},"border":{"radius":"8px"}}} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background wp-element-button" href="https://wa.me/447xxxxxxxxx" style="border-radius:8px;color:#0d3d1e;background-color:#25D366">Message on WhatsApp</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+</div>
+<!-- /wp:column -->
+
+</div>
+<!-- /wp:columns -->
+
+</div>
+<!-- /wp:group -->
+

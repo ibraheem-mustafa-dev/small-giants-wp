@@ -1,0 +1,3 @@
+<!-- wp:sgs/heading {"content":"Cloned heading greedy wrap","level":"h2","textWrap":"wrap"} /-->
+
+<!-- wp:sgs/heading {"content":"Authored heading default balance","level":"h2"} /-->

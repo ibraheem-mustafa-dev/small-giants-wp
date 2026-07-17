@@ -1,0 +1,5 @@
+<!-- wp:sgs/product-card {"productName":"Built-in Typed Test","description":"A fully typed built-in card — no InnerBlocks.","priceLarge":"£12.00","priceNote":"12-pack · test","packSizes":["8-pack","12-pack","20-pack"],"ctaText":"Learn more","ctaUrl":"/shop/","cta2Text":"Second action","cta2Url":"/contact/","variantStyle":"featured","featuredTag":"Most popular","headingLevel":3} /-->
+
+<!-- wp:sgs/product-card {"sourceMode":"wc-product","productId":540,"overrideElements":["name"],"productName":"Overridden Live Card Name"} /-->
+
+<!-- wp:sgs/card-grid {"source":"wc-product","productCollection":"best-selling","productLimit":3} /-->

@@ -1,0 +1,11 @@
+<!-- wp:sgs/info-box -->
+<!-- wp:sgs/icon {"iconSize":"medium"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":3} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
