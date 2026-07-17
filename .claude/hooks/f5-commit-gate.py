@@ -52,6 +52,83 @@ _GATES = [
     ("converter raw-sqlite accessor-layer ban (FR-31-8, D278)", "converter/gates/check_raw_sqlite.py"),
 ]
 
+# ---------------------------------------------------------------------------
+# Converter-awareness fold (subsumes the retired qc-on-converter-edit.py stub,
+# P3proj 2026-07-17). That stub only WARNED — and it decided whether to warn by
+# looking for a `[qc:...]` marker the operator TYPED into the commit message
+# (narration, not evidence → failed Enforcement-Contract rule 4). This fold
+# replaces it: on a commit that STAGES a change to the cloning-pipeline
+# converter/orchestrator surface (read from `git diff --cached` — machine
+# evidence), the converter-specific guard scripts MUST be present so they
+# actually run. A missing converter guard on a converter-touching commit is
+# fail-CLOSED (deny), never a silent per-gate skip.
+# ---------------------------------------------------------------------------
+
+# Staged paths containing any of these segments = "this commit touches converter
+# code" (forward-slash, repo-relative). Mirrors the old stub's watch set minus
+# the two paths that no longer exist (converter_v2/convert.py deleted D276;
+# sgs-update.py never created) — sgs-clone-orchestrator.py + the modular engine.
+_WATCHED_CONVERTER_SEGMENTS = (
+    "plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py",
+    "plugins/sgs-blocks/scripts/converter/",
+)
+
+# The subset of _GATES that specifically guard converter output. On a
+# converter-touching commit, EVERY one of these must be present + run.
+_CONVERTER_REQUIRED_GATES = frozenset({
+    "cheat-gate/run.py",
+    "converter/gates/no_slug_literal.py",
+    "converter/gates/import_ban.py",
+    "converter/gates/check_raw_sqlite.py",
+})
+
+
+def _filter_converter(staged: list[str]) -> list[str]:
+    """Pure predicate: which of `staged` touch the converter surface. Extracted
+    so the self-test can exercise it without a live git repo."""
+    return [
+        p.replace("\\", "/")
+        for p in staged
+        if any(seg in p.replace("\\", "/") for seg in _WATCHED_CONVERTER_SEGMENTS)
+    ]
+
+
+def _staged_converter_paths() -> list[str]:
+    """Staged files touching the converter/orchestrator surface, read from
+    `git diff --cached --name-only` (machine evidence). Fail-open (empty list)
+    on any git error: the base gates still run; we only skip the EXTRA
+    converter-guard-present requirement rather than wedge a commit on git."""
+    try:
+        proc = subprocess.run(
+            ["git", "diff", "--cached", "--name-only"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            cwd=str(_REPO),
+        )
+    except Exception:
+        return []
+    if proc.returncode != 0:
+        return []
+    staged = [ln.strip() for ln in (proc.stdout or "").splitlines() if ln.strip()]
+    return _filter_converter(staged)
+
+
+def _converter_guard_deny_reason(touched: list[str], missing: list[str]) -> str:
+    """Legible deny message for a converter-touching commit whose guards are
+    missing (Enforcement-Contract rule 5 — name the fix)."""
+    return (
+        "Spec-31 F5 commit gate (converter-guard, folds the retired "
+        "qc-on-converter-edit stub): this commit STAGES a change to "
+        "cloning-pipeline converter/orchestrator code -\n"
+        + "\n".join(f"  • {p}" for p in touched)
+        + "\n\n...but these converter guard scripts are MISSING, so nothing "
+        "checked that change:\n"
+        + "\n".join(f"  • plugins/sgs-blocks/scripts/{r}" for r in missing)
+        + "\n\nRestore the guard script(s), or add `[gates-ok:<reason>]` to the "
+        "commit message to bypass this deliberately."
+    )
+
 
 def _deny(reason: str) -> int:
     out = {
@@ -89,21 +166,27 @@ def _is_gated_commit(cmd: str) -> bool:
     return True
 
 
-def _run_gates() -> tuple[list[str], int]:
+def _run_gates() -> tuple[list[str], int, list[str]]:
     """Run each present gate's --check.
 
-    Returns (failures, present_count) where present_count is how many gate scripts
-    actually existed and were attempted. present_count lets main() distinguish a
-    TOTAL harness failure (every present gate crashed — suspicious, fail-closed) from
-    an individual gate hiccup (fail-open with a visible warning).
+    Returns (failures, present_count, missing) where present_count is how many gate
+    scripts actually existed and were attempted, and missing is the rel-paths of gate
+    scripts that did NOT exist. present_count lets main() distinguish a TOTAL harness
+    failure (every present gate crashed — suspicious, fail-closed) from an individual
+    gate hiccup (fail-open with a visible warning); missing lets main() fail-closed
+    when a CONVERTER-required guard is absent on a converter-touching commit.
     """
     failures: list[str] = []
     present_count = 0
+    missing: list[str] = []
     for label, rel in _GATES:
         script = _SCRIPTS / rel
         if not script.exists():
             # Gate not present (e.g. a fresh checkout missing a module) → skip,
-            # don't wedge the commit on a missing optional gate.
+            # don't wedge the commit on a missing optional gate. (A converter-
+            # REQUIRED gate missing on a converter-touching commit is handled
+            # separately in main() and fails closed.)
+            missing.append(rel)
             continue
         present_count += 1
         try:
@@ -123,7 +206,7 @@ def _run_gates() -> tuple[list[str], int]:
             tail = (proc.stdout or "").strip().splitlines()
             snippet = tail[-1] if tail else "(see `python plugins/sgs-blocks/scripts/" + rel + " --report`)"
             failures.append(f"  • {label}: NEW violation — {snippet}")
-    return failures, present_count
+    return failures, present_count, missing
 
 
 def main() -> int:
@@ -141,9 +224,19 @@ def main() -> int:
     if not _is_gated_commit(cmd):
         return 0
 
-    failures, present_count = _run_gates()
+    failures, present_count, missing = _run_gates()
     real_blocks = [f for f in failures if "could not run" not in f]
     could_not_run = [f for f in failures if "could not run" in f]
+
+    # 0. Converter-guard (folds the retired qc-on-converter-edit stub): if this
+    #    commit stages a change to converter/orchestrator code but a converter-
+    #    REQUIRED guard is missing, fail CLOSED — the change would ship unchecked.
+    #    Read from `git diff --cached` (machine evidence), NOT a typed marker.
+    touched = _staged_converter_paths()
+    if touched:
+        missing_converter = [r for r in missing if r in _CONVERTER_REQUIRED_GATES]
+        if missing_converter:
+            return _deny(_converter_guard_deny_reason(touched, missing_converter))
 
     # 1. A gate reported an actual NEW violation (returncode != 0) → DENY.
     if real_blocks:
@@ -185,7 +278,68 @@ def main() -> int:
     return 0  # all present gates green (or only partial fail-open skips) → allow
 
 
-if __name__ == "__main__":
+def _self_test() -> int:
+    """Enforcement-Contract self-test for the converter-guard fold.
+    Exits 0 on all pass, 1 with reasons on failure. Prints the real legible deny
+    message so 'fails legibly (names the fix)' is observable."""
+    failures: list[str] = []
+
+    # T1: a staged orchestrator/converter change is detected as converter-touching.
+    t1 = _filter_converter([
+        "plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py",
+        "plugins/sgs-blocks/scripts/converter/gates/import_ban.py",
+        "README.md",
+    ])
+    if len(t1) == 2:
+        print("T1 PASS: converter-touching staged files detected (orchestrator + engine)")
+    else:
+        failures.append(f"T1 FAIL: expected 2 converter paths, got {t1}")
+
+    # T2: a non-converter staged change is NOT flagged (no false positive).
+    t2 = _filter_converter(["theme/sgs-theme/style.css", ".claude/state.md"])
+    if t2 == []:
+        print("T2 PASS: non-converter staged files correctly ignored")
+    else:
+        failures.append(f"T2 FAIL: expected no converter paths, got {t2}")
+
+    # T3: commit recognition — gated for a plain commit, skipped for --amend / bypass.
+    if (_is_gated_commit("git commit -m 'x'")
+            and not _is_gated_commit("git commit --amend")
+            and not _is_gated_commit("git commit -m '[gates-ok:deliberate]'")):
+        print("T3 PASS: git-commit recognised; --amend + [gates-ok:] bypass honoured")
+    else:
+        failures.append("T3 FAIL: _is_gated_commit recognition wrong")
+
+    # T4: integrity — every converter-required gate is a real _GATES entry (guards
+    #     against a typo silently disabling the requirement → detectable-when-broken).
+    gate_rels = {rel for _, rel in _GATES}
+    orphan = _CONVERTER_REQUIRED_GATES - gate_rels
+    if not orphan:
+        print("T4 PASS: all converter-required guards are live _GATES entries")
+    else:
+        failures.append(f"T4 FAIL: converter-required gate(s) not in _GATES: {orphan}")
+
+    # T5: the deny path builds a legible, fix-naming message. Show it.
+    reason = _converter_guard_deny_reason(
+        ["plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py"],
+        ["cheat-gate/run.py"],
+    )
+    if "Restore the guard script" in reason and "sgs-clone-orchestrator.py" in reason:
+        print("T5 PASS: converter-guard deny message is legible + names the fix. It reads:\n")
+        print("    " + reason.replace("\n", "\n    "))
+    else:
+        failures.append("T5 FAIL: deny message missing fix guidance")
+
+    if failures:
+        print("\n".join(failures), file=sys.stderr)
+        return 1
+    print("\nAll converter-guard self-tests passed.")
+    return 0
+
+
+if __name__ == "__main__" and "--self-test" in sys.argv:
+    sys.exit(_self_test())
+elif __name__ == "__main__":
     try:
         sys.exit(main())
     except Exception:
