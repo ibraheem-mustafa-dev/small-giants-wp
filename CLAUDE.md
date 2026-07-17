@@ -141,6 +141,7 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 | Live-page DOM verification | Playwright MCP |
 | Schema check BEFORE "missing X" claim | `python ~/.claude/hooks/wp-blocks.py dump` |
 | DB query | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` |
+| A page/pattern built with banned CORE blocks (ban-clear) | `plugins/sgs-blocks/scripts/migrate-core-blocks/` — `lint-page.py` for a PAGE's post_content (lint → `--json` judge → editor-apply per `APPLY.md`), `driver.py` for theme FILES. Detector is DB-first (`block-replacements.json`). Prebuild gate `check-no-core-blocks.py` fails the build on core blocks in theme files. See its `README.md`. |
 | Session close | `/handoff` |
 
 ## Session workflow
