@@ -1,0 +1,2433 @@
+[
+  {
+    "block": "container",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 5
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "mechanical"
+  },
+  {
+    "block": "multi-button",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 2
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "mechanical"
+  },
+  {
+    "block": "accordion-item",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "audio",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "spacing": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "button",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "inline_styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 8,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "judgment"
+  },
+  {
+    "block": "buybox",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "spacing": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "card-grid",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": [
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "cart",
+    "static": {
+      "render_php": true,
+      "passes_style_key": true,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "spacing": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "collapsible-text",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "form-field-tiles",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "hero",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "styles"
+      ],
+      "presence_selectors": [
+        "--sgs-cta-pri-hover-bg",
+        "--sgs-cta-pri-hover-bg",
+        "--sgs-cta-pri-hover-bg",
+        "--sgs-cta-pri-hover-bg",
+        "--sgs-cta-sec-hover-bg",
+        "--sgs-cta-sec-hover-bg",
+        "--sgs-cta-sec-hover-bg",
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 1,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "judgment"
+  },
+  {
+    "block": "icon",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 8,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "judgment"
+  },
+  {
+    "block": "info-box",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "sgs_wrapper_styles"
+      ],
+      "presence_selectors": [
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 12,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "judgment"
+  },
+  {
+    "block": "modal",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color"
+      ],
+      "skip_serialization": {
+        "color": false
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "product-card",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "inline_styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "testimonial",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "styles"
+      ],
+      "presence_selectors": [
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 4,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "judgment"
+  },
+  {
+    "block": "testimonial-slider",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css_vars"
+      ],
+      "presence_selectors": [
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 1,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "judgment"
+  },
+  {
+    "block": "adaptive-nav",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 1
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "skip-header-footer"
+  },
+  {
+    "block": "responsive-logo",
+    "static": {
+      "render_php": true,
+      "passes_style_key": true,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "spacing"
+      ],
+      "skip_serialization": {
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 1,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "1",
+    "class": "skip-header-footer"
+  },
+  {
+    "block": "site-footer",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 1
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "skip-header-footer"
+  },
+  {
+    "block": "site-footer-row",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 2
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "skip-header-footer"
+  },
+  {
+    "block": "site-header",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 1
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "skip-header-footer"
+  },
+  {
+    "block": "site-header-row",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 3
+    },
+    "live_seen": true,
+    "case": "2",
+    "class": "skip-header-footer"
+  },
+  {
+    "block": "accordion",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "brand-strip",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css_vars"
+      ],
+      "presence_selectors": [
+        "--sgs-tile-hover-*",
+        "--sgs-tile-hover-\u2026"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "breadcrumbs",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "business-info",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "content-collection",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "countdown-timer",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "counter",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "cta-section",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "wrapper_styles"
+      ],
+      "presence_selectors": [
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "decorative-image",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "extensions",
+    "static": {
+      "render_php": false,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": "block.json missing"
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "feature-grid",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "filter-search",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "spacing"
+      ],
+      "skip_serialization": {
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-address",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-checkbox",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-consent",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-date",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-email",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-file",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-hidden",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-number",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-phone",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-radio",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-select",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-text",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-field-textarea",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-review",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": false,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "form-step",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "gallery",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "inline_styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "google-reviews",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "heading",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "icon-list",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "label",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "media",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "mega-menu",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "wrapper_styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color"
+      ],
+      "skip_serialization": {
+        "color": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "nav-menu",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color"
+      ],
+      "skip_serialization": {
+        "color": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "notice-banner",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "option-picker",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "post-grid",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": [
+        "--sgs-hover-scale",
+        "--sgs-hover-shadow",
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-text",
+        "--sgs-hover-text",
+        "--sgs-hover-text",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "pricing-table",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "process-steps",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": [
+        "--sgs-hover-bg",
+        "--sgs-hover-text",
+        "--sgs-hover-border"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "product-faq",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "product-faq-item",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "product-search",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "spacing"
+      ],
+      "skip_serialization": {
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "quote",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "separator",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "spacing": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "social-icons",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "star-rating",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "tab",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "table-of-contents",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "tabs",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css_vars"
+      ],
+      "presence_selectors": [
+        "--sgs-indicator-left",
+        "--sgs-indicator-left",
+        "--sgs-indicator-top",
+        "--sgs-indicator-top"
+      ]
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "team-member",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "sgs_wrapper_styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "text",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": false,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": false,
+      "parse_error": null
+    },
+    "live": {
+      "style_var": 0,
+      "style_empty": 0
+    },
+    "live_seen": true,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "timeline",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder",
+        "typography",
+        "shadow"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true,
+        "typography": true,
+        "shadow": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "trust-bar",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "styles"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "trustpilot-reviews",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "whatsapp-cta",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color",
+        "spacing",
+        "__experimentalBorder"
+      ],
+      "skip_serialization": {
+        "color": true,
+        "spacing": true,
+        "__experimentalBorder": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  }
+]

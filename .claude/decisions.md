@@ -18,7 +18,31 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-17 (LATEST) — [INCIDENT] D343: Indus "Our Brands" to hero-grade + new sgs/separator block + brand-strip fixes + the WP border-width var-name collision + extract-css-diff tool + theme-CSS hardcode lint + framework letter-spacing fix
+## 2026-07-18 (LATEST) — [ROUTINE] D345: Spec 32 FR-32-4 amended — inline `--var` FORBIDDEN (opens framework-wide inline-zero rollout)
+
+Inline-zero rollout track, Step 1 (of `plans/2026-07-17-phase-inline-zero-rollout.md`, /qc-council-revised). Amended Spec 32 (→ v1.3, 4 clauses): **FR-32-4 now FORBIDS emitting a per-instance override as an inline `style="--sgs-…:…"`** — it MUST be a scoped `.{uid}.{block}{--var:…}` rule registered into the collector (FR-32-11). Also tightened FR-32-1 done-when + §8 acceptance row (count ANY `style` content, not just property declarations — the loophole that silently permitted inline `--var`) and the §5 / §6 flow diagram.
+
+**Why now:** FR-32-4's "setting a var value inline is permitted" was the STALE OUTLIER — it contradicted its own spec's newer §6.1(e) ("every override flows through the object attr + scoped `<style>`, never a bespoke inline escape hatch", 2026-07-09) AND Spec 31 FR-31-22.3 ("NEVER inline `style=…`", Phase-0-proven live). Fact-checked both against ground truth before editing — **the converter already follows the scoped path, so no converter/walker/pipeline path breaks** (council C2, verified). Closes footprint GOTCHA E (permissive outlier gave the rollout gate no teeth) + GOTCHA F (an inline `--var` silently breaks `[style*="--var"]` presence-selectors — the live gold-hover-border break on brand-strip 2026-07-17).
+
+**Proof case:** `sgs/brand-strip` (commit 4926f859) + `sgs/quote` already zero-inline. Next steps (same plan): live-render-driven detector → bucket by emit-shape → mechanical bulk (Haiku) + residue (Sonnet) → structural prebuild gate. Docs: Spec 32 §status_history v1.3; footprint `plans/2026-07-17-no-inline-fix-footprint.md`.
+
+---
+
+## 2026-07-18 — [ROUTINE] D344: Track 2 P1 — header/footer/nav architecture decision (BUILD, full clean rebuild)
+
+Track 2 (header/footer/nav full rebuild) Phase 1 = Research → Architecture. Full record: `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`; council record: `.claude/reports/2026-07-18-P1-adversarial-council-gate1.md`; roadmap `.claude/plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md`.
+
+**Verdict: BUILD (not adopt), full clean rebuild, lean-rich.** Fork disqualified on ARCHITECTURE not cost — a forked competitor block's private schema can't be a cloning-converter emit target (Bean's 3rd requirement, §0a.3). Method: Gate 0 (plan validated — gap-analysis B + cold reviewer B) → 3-round research council (5 gather + 4 adversarial personas + 4 rebuttal) → Gate 1 6-persona adversarial council (GO-conditional) → Bean steers → /qc-inline.
+
+**Locked model:** cascade-from-desktop default + capped Advanced override (progressive disclosure); RICH capability set (mega-menu + all header modes IN, as clone targets); on/off capabilities = tiered TRI-STATE (`inherit/on/off`) from day one — dissolves D328/D291 by construction (no flat→object retrofit). Design principles DP1–DP6.
+
+**Bean-locked:** DP2a — a11y feedback INFORMATIONAL-only (never a gate/auto-enforce/agent-wired; framework WCAG 2.1 AA default-render baseline stands — memory `a11y-validation-feedback-informational-not-gate`). DP6 (QC-added) — converter-emittability is a first-class design constraint on P2–P4 + proven in the early vertical slice, NOT a P6 bolt-on.
+
+**Spec truth-up:** Spec 17 §S9 + Spec 34 verified TRUTHFUL against live code (the "specs are lying" premise revised — they're well-grounded). Only edit: FR-34-5 marked NOT-BUILT (only `drawerBg` shipped). The "core-WCAG-supersede" edit-item was a phantom (not in the spec). Committed `6996f5da` (+ DP6/LEDGER this session). Baton → P2 (builder design-gate).
+
+---
+
+## 2026-07-17 — [INCIDENT] D343: Indus "Our Brands" to hero-grade + new sgs/separator block + brand-strip fixes + the WP border-width var-name collision + extract-css-diff tool + theme-CSS hardcode lint + framework letter-spacing fix
 
 Full-day Indus clone-fidelity session on the "Our Brands" band (page 13, palestine-lives). Method locked: **extract the reference's computed CSS and transfer it, not eyeball screenshots** (Bean's directive — screenshot-eyeballing repeatedly missed real diffs).
 
