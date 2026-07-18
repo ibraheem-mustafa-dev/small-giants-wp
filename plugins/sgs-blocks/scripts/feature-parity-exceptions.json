@@ -1,0 +1,20 @@
+{
+  "_schema": {
+    "purpose": "Spec 35 feature-parity exceptions. Covers BOTH (a) audit over-reports (a core capability that has a genuine SGS equivalent under a different name / is not meaningful for SGS) AND (b) legitimately-deferred core capabilities mapped to a Wave. A gap is CLOSED or recorded here with a reason+wave — NEVER silently baselined.",
+    "shape": "{ \"sgs/block\": { \"coreCapabilityName\": { \"reason\": \"...\", \"wave\": \"Wave-N | over-report | native\" } } }",
+    "framework_universal_note": "`_framework_universal` suppresses core capabilities that SGS provides FRAMEWORK-WIDE by architecture (not a per-block functional gap). These are (1) styling supports expressed via SGS's no-inline scoped contract + universal extensions, and (2) WP inline-colour / serialisation attrs SGS deliberately rejects (Spec 32 no-inline). This is POLICY-AS-DATA (reviewable here), not a hardcoded dict in the audit logic (R-31-1)."
+  },
+  "_framework_universal": {
+    "capabilities": [
+      "border", "spacing", "typography", "dimensions", "color", "align", "alignWide",
+      "anchor", "layout", "shadow", "position", "background", "className", "customClassName",
+      "backgroundColor", "textColor", "customBackgroundColor", "customTextColor",
+      "customGradient", "gradient", "customFontSize", "fontSize", "customColor",
+      "customMainColor", "mainColor", "customIconColor", "customIconBackgroundColor",
+      "iconColorValue", "iconBackgroundColorValue",
+      "interactivity", "reusable", "blob", "lock", "metadata",
+      "id", "src", "placeholder", "splitting", "tagName"
+    ],
+    "reason": "Provided framework-wide by SGS architecture: styling via the no-inline scoped contract + universal extensions (Spec 32); WP inline-colour/serialisation attrs deliberately rejected (no-inline); plus pure editor/WP plumbing attrs (id/src/blob/placeholder/splitting/tagName/lock/metadata) that are never client-facing functional controls. Not a per-block functional parity gap. Reviewed 2026-07-19."
+  }
+}
