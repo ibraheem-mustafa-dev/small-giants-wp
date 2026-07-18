@@ -442,6 +442,21 @@ section.sgs-hero {
 	border-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
 }
 
+/* D345 Facet-B polish (restores the box-shadow/filter resets the old
+ * `[style*=…]`-gated block provided): when the operator sets a CUSTOM CTA hover
+ * colour, suppress the variant's resting decoration so it doesn't layer under the
+ * chosen colour. box-shadow/filter can't be substituted via `var()`, so these are
+ * gated on the render-emitted `sgs-hero--cta-*-hover-set` class (added by render.php
+ * only when the corresponding custom hover colour is set). Specificity 0,3,0 beats
+ * the variant base 0,2,0 — no !important needed. */
+.sgs-hero--cta-pri-hover-set .sgs-hero__cta--accent:hover {
+	box-shadow: none;
+}
+
+.sgs-hero--cta-sec-hover-set .sgs-hero__cta--custom:hover {
+	filter: none;
+}
+
 /* Badges — container */
 .sgs-hero__badges {
 	position: absolute;

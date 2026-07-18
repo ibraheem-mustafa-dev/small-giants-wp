@@ -34,9 +34,11 @@
  * `paddingTablet`/`paddingMobile`/`marginTablet`/`marginMobile` SGS custom
  * object attrs, rendered scoped `@media` (contract §B2: 1023/767).
  *
- * The `--sgs-collapsible-text-collapsed-lines` custom-property VALUE on the
- * body element is a `--var` value, not a property declaration — permitted
- * under contract §A.
+ * The `--sgs-collapsible-text-collapsed-lines` custom-property VALUE is
+ * emitted into the scoped `<style>` tag as a class-level rule
+ * (`.{uid}.sgs-collapsible-text .sgs-collapsible-text__body{--...}`), NOT as
+ * an inline `style="--var:…"` on the body element — per FR-32-4 as amended
+ * 2026-07-18 (D345): inline `--var` declarations are FORBIDDEN too.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (unused — text is a scalar attr).
@@ -44,6 +46,8 @@
  *
  * @since 2026-06-11  P-D213 initial build.
  * @since 2026-07-10  No-inline migration (scoped colour/spacing + tiers).
+ * @since 2026-07-18  Collapsed-lines custom property moved from inline
+ *                    `style="--var"` to scoped class-level rule (D345).
  *
  * @package SGS\Blocks
  */
@@ -201,6 +205,14 @@ if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
 }
 
+// --sgs-collapsible-text-collapsed-lines VALUE — scoped rule (contract §A
+// amended D345: inline `--var` is FORBIDDEN too), not an inline `style=`.
+// Class-level selector per FR-31-22.3 (never #uid). Pushed here (before the
+// <style> tag is assembled below) regardless of $collapsible so the custom
+// property is always available to the body element.
+$collapsed_lines_attr = esc_attr( (string) $collapsed_lines );
+$scoped_css[]         = $root_sel . ' .sgs-collapsible-text__body{--sgs-collapsible-text-collapsed-lines:' . $collapsed_lines_attr . '}';
+
 // ---------------------------------------------------------------------------
 // 4. Wrapper classes — BEM root + collapsible modifier + the CSS-scope class.
 // is-style-* / align* classes are merged in automatically by
@@ -253,10 +265,11 @@ if ( $collapsible ) {
 	 * Collapse mechanism (FR-30-3(e)) — button + line-clamp body + view.js.
 	 *
 	 * DOM shape:
-	 *   <div class="sgs-collapsible-text sgs-collapsible-text--collapsible" id="{uid}" ...>
-	 *     <div class="sgs-collapsible-text__body" id="{uid}-body"
-	 *          style="--sgs-collapsible-text-collapsed-lines:N">
+	 *   <div class="sgs-collapsible-text sgs-collapsible-text--collapsible {uid}" id="{uid}" ...>
+	 *     <div class="sgs-collapsible-text__body" id="{uid}-body">
 	 *       {full text — always in HTML, never hidden from crawlers}
+	 *       (--sgs-collapsible-text-collapsed-lines:N set via a scoped
+	 *       class-level <style> rule above, never an inline style="…")
 	 *     </div>
 	 *     <button type="button" class="sgs-collapsible-text__toggle"
 	 *             aria-expanded="false" aria-controls="{uid}-body" hidden>
@@ -271,13 +284,12 @@ if ( $collapsible ) {
 	 * overflow:hidden + line-clamp (visual clipping; the text stays in the
 	 * accessibility tree and is indexed by crawlers) in every state.
 	 */
-	$collapsed_lines_attr = esc_attr( (string) $collapsed_lines );
-	$body_id              = esc_attr( $uid . '-body' );
+	$body_id = esc_attr( $uid . '-body' );
 
 	$output .= '<div ' . $wrapper_attrs . '>';
 
 	// Text body — always present + unclamped by default (no-JS shows full text).
-	$output .= '<div class="sgs-collapsible-text__body" id="' . $body_id . '" style="--sgs-collapsible-text-collapsed-lines:' . $collapsed_lines_attr . '">';
+	$output .= '<div class="sgs-collapsible-text__body" id="' . $body_id . '">';
 	$output .= $safe_text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised by wp_kses_post() above.
 	$output .= '</div>';
 

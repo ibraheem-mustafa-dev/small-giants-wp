@@ -676,6 +676,17 @@ if ( $bg_ken_burns ) {
 if ( $split_image_bleed ) {
 	$classes[] = 'sgs-hero--split-bleed';
 }
+// D345 Facet-B polish: when the operator sets a CUSTOM CTA hover colour, the
+// variant's resting decoration (accent's inset ring / custom's brightness filter)
+// must still be suppressed so it doesn't layer under the chosen colour. box-shadow
+// /filter can't be var()-conditional, so the suppression is gated on these
+// render-emitted classes (restores the pre-Facet-B `[style*=…]`-gated behaviour).
+if ( $cta_primary_hover_bg ) {
+	$classes[] = 'sgs-hero--cta-pri-hover-set';
+}
+if ( $cta_secondary_hover_bg ) {
+	$classes[] = 'sgs-hero--cta-sec-hover-set';
+}
 
 // ── WP-native color / border / typography supports — no-inline contract (§A). ──
 // block.json declares color/typography/spacing/__experimentalBorder ALL with

@@ -50,7 +50,7 @@ $loop         = ! empty( $attributes['audioLoop'] );
 $autoplay     = ! empty( $attributes['audioAutoplay'] );
 $preload_raw  = isset( $attributes['audioPreload'] ) ? (string) $attributes['audioPreload'] : 'metadata';
 $preload      = in_array( $preload_raw, array( 'none', 'metadata', 'auto' ), true ) ? $preload_raw : 'metadata';
-$audio_title        = isset( $attributes['title'] ) ? trim( (string) $attributes['title'] ) : '';
+$audio_title  = isset( $attributes['title'] ) ? trim( (string) $attributes['title'] ) : '';
 
 // Resolve internal source from the WP media library.
 $resolved_url  = $audio_url;
@@ -213,24 +213,25 @@ if ( $mobile_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
 }
 
-// Wrapper: SGS-BEM root + uid + style modifier + data hooks + brand CSS vars
-// for view.js/CSS. The `--sgs-audio-*` custom-property-only style is ALLOWED
-// (var-only, not a raw property declaration) and stays exactly as before —
-// only padding/margin move to the scoped <style> tag (contract §A).
+// --- Brand accent/spectrum custom properties (FR-32-4 as amended D345:
+// inline `--var` is FORBIDDEN, not just real property declarations) — moved
+// from the wrapper's `style` attribute into the SAME scoped <style> rule as
+// the padding/margin above. view.js/CSS read these via getComputedStyle(),
+// which resolves the cascade identically whether the var comes from an
+// inline attribute or a stylesheet rule, so no runtime behaviour changes. ---
+$scoped_css[] = "{$root_sel}{--sgs-audio-accent:" . esc_attr( $accent_val ) . ';--sgs-audio-spectrum:' . esc_attr( $spectrum_val ) . ';}';
+
+// Wrapper: SGS-BEM root + uid + style modifier + data hooks. Zero inline
+// `style` — everything (spacing + brand vars) lives in the scoped <style>
+// tag above (contract §A / FR-32-4).
 $wrapper_classes = array(
 	'sgs-audio',
 	'sgs-audio--' . sanitize_html_class( $player_style ),
 	$uid,
 );
-$wrapper_style = sprintf(
-	'--sgs-audio-accent:%s;--sgs-audio-spectrum:%s',
-	esc_attr( $accent_val ),
-	esc_attr( $spectrum_val )
-);
-$wrapper_attrs = get_block_wrapper_attributes(
+$wrapper_attrs   = get_block_wrapper_attributes(
 	array(
 		'class'             => implode( ' ', $wrapper_classes ),
-		'style'            => $wrapper_style,
 		'data-player-style' => $player_style,
 		'data-loop'         => $loop ? '1' : '0',
 		'data-autoplay'     => $autoplay ? '1' : '0',
