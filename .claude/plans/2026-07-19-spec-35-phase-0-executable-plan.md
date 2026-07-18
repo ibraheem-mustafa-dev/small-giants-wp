@@ -20,10 +20,11 @@ Sonnet/Haiku fan-out for the script/component builds.
 **Aggregate cost estimate:** ~1.5 focused days wall-time with subagent fan-out (parent Opus stays free;
 Sonnet builds the audits/components/scanner; Haiku handles residue). Critical path C0→C→D ≈ half a day.
 
-**Phase success criteria (done when):**
-- [ ] DONE-checklist created (✅ done — `2f7d8d85`) + roster enumerated from the DB (A0).
-- [ ] 3 audits BUILT + producing baseline reports keyed to the roster (2 static WARN-only, 1 live-DOM on-demand).
-- [ ] 3 Wave-1 shared components landed: `DesignTokenPicker` alpha+clearable, `SgsLinkControl`, `ShadowControl`.
+**Phase success criteria (done when):**  *(progress 2026-07-19)*
+- [x] DONE-checklist created (`2f7d8d85`) + roster enumerated from the DB — 79 blocks (`5ab1e750`).
+- [~] 3 audits BUILT: parity DONE (`6f079bf7`, 140-gap baseline); conformance + shrink-to-fit dispatched to Sonnet.
+- [x] 3 Wave-1 shared components landed: `DesignTokenPicker` alpha+clearable, `SgsLinkControl`, `ShadowControl` (`87a0e4de`).
+- [x] Step 0b: brand-strip QC'd EXEMPLAR-READY + exemplar note (`96774801`); its CSS reduced-motion fix held for the visual-diff gate.
 - [ ] Consistency-scanner engine + registry dims 1–2 + codemod built (seeded by the pilot).
 - [ ] `min-width:0` wrapper backstop built — AFTER Gate C0 sign-off.
 - [ ] `sgs/media` pilot passes all three threaded constraints LIVE (parity 0-unexplained-gaps; shrink-to-fit
@@ -459,9 +460,12 @@ GATE 0 — FIRST SLICE (Bean sign-off)   [phase deliverable]
   lightbox (image), video poster/preload/loop/mute + `<track>`/captions, SVG sanitise-on-upload. Everything else
   (CSS filters, backdrop-filter, mix-blend, clip-path, parallax) is premium (P) → Wave-mapped. Step 10 DECIDES the
   full set; it may only ADD to this floor, never drop below it.
-- **PED-7 — Feature-parity core-capability source is PINNED (KJC-2 resolved).** Source = the installed
-  `@wordpress/block-library` block.json set at the sandbox/dev WP core version (WP 7.0.1, verified 2026-07-16).
-  Re-pin when WP 7.1 lands (19 Aug 2026). Step 3 confirms this at start; no hardcoded capability dict (R-31-1).
+- **PED-7 — Feature-parity core-capability source (KJC-2) — CORRECTED 2026-07-19.** The assumed source
+  (`@wordpress/block-library` in node_modules) is NOT installed — 0 core block.json present. The REAL source is
+  the DB's `native_wp` block rows (`block_supports` + `block_attributes` where source='native_wp') — already
+  ingested at WP 7.0.1, 119 blocks with supports / 104 with attrs. This is MORE DB-first (R-31-1) than a node_module.
+  `audit-feature-parity.py` reads from there. Re-ingest via /sgs-update when WP 7.1 lands (19 Aug 2026). Noise is
+  suppressed by `_framework_universal` in the exceptions file (styling/plumbing SGS provides architecturally).
 - **PED-8 — Audits are necessary, not sufficient, at Gate 0.** All three audits green is REQUIRED but does not
   alone close Gate 0 — Bean's eye on the live pilot is co-authoritative (R-31-13). Audits catch the mechanical
   gaps; Bean catches what they can't encode. Both must pass. (Also: shrink-to-fit is proven intrinsic at 360px with
