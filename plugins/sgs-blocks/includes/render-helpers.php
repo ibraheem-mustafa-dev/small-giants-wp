@@ -43,6 +43,11 @@
  *                                     built-in, non-sgs/button CTA element,
  *                                     reading a PREFIXED attribute set)
  *
+ *   helpers-link.php                — sgs_link_attributes (turns the shared
+ *                                     SgsLinkControl component's
+ *                                     {url,opensInNewTab,rel} object attr
+ *                                     into a safe href/target/rel string)
+ *
  *   helpers-responsive.php          — sgs_responsive_css_rule,
  *                                     sgs_responsive_box_shorthand_rule
  *                                     (Pattern A general responsive emitter —
@@ -69,3 +74,4 @@ require_once __DIR__ . '/helpers-container.php';
 require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';
 require_once __DIR__ . '/helpers-box.php';
+require_once __DIR__ . '/helpers-link.php';

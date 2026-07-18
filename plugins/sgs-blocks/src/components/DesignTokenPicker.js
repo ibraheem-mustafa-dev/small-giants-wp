@@ -13,6 +13,16 @@
  *    Spectra's "global default" behaviour and keeps the button consistent with
  *    the cloning converter (which also writes slugs). `render.php`'s
  *    sgs_colour_value() resolves both a slug and a raw hex.
+ *
+ * Alpha (Spec 35 Part I action item): `enableAlpha` (default true — "almost
+ * always" per the standard) lets the operator pick a translucent colour.
+ * ColorPalette's custom picker returns hex8 (#RRGGBBAA) or a functional
+ * `rgba()` string depending on the copy format in use — either way,
+ * `sgs_colour_value()` in `includes/helpers-tokens.php` already normalises
+ * functional notation to hex8 before it reaches a `style`/scoped-CSS
+ * declaration (WordPress's `safecss_filter_attr()` silently strips raw
+ * `rgba()`/`hsla()` values — D302 / `safecss-strips-inline-functional-colours`
+ * — hex survives), so no extra JS-side conversion is needed here.
  */
 import { useSettings } from '@wordpress/block-editor';
 import { ColorPalette, BaseControl } from '@wordpress/components';
@@ -44,6 +54,7 @@ export default function DesignTokenPicker( {
 	onChange,
 	clearable = true,
 	linked = false,
+	enableAlpha = true,
 } ) {
 	const [ colours ] = useSettings( 'color.palette' );
 
@@ -52,8 +63,13 @@ export default function DesignTokenPicker( {
 	const displayValue = linked ? resolveColorToken( value, colours ) : value;
 
 	const handleChange = ( picked ) => {
+		// ColorPalette calls onChange(undefined) when the operator clicks its
+		// built-in "Clear" affordance. Alpha-0 (a fully transparent colour the
+		// operator deliberately picked) is NOT the same as "unset" — normalise
+		// only the genuine clear gesture to '' so the attribute is actually
+		// removed rather than left holding a stale value.
 		if ( ! linked ) {
-			onChange( picked );
+			onChange( picked ?? '' );
 			return;
 		}
 		if ( ! picked ) {
@@ -61,7 +77,7 @@ export default function DesignTokenPicker( {
 			return;
 		}
 		// Store the SLUG when the picked colour matches a palette entry (stays
-		// linked to the theme), otherwise store the raw custom hex.
+		// linked to the theme), otherwise store the raw custom hex/hex8.
 		const match = ( colours || [] ).find( ( c ) => c.color === picked );
 		onChange( match ? match.slug : picked );
 	};
@@ -74,6 +90,7 @@ export default function DesignTokenPicker( {
 				onChange={ handleChange }
 				clearable={ clearable }
 				disableCustomColors={ false }
+				enableAlpha={ enableAlpha }
 			/>
 		</BaseControl>
 	);
