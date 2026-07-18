@@ -382,32 +382,79 @@ section.sgs-hero {
 	aspect-ratio: auto;
 }
 
-/* ── Per-CTA hover overrides ──
+/* ── Per-CTA hover overrides (GOTCHA F rewrite) ──
  * When ctaPrimaryHoverBackground / ctaPrimaryHoverColour are set by the editor
- * they are written as CSS custom properties on the block wrapper. These rules
- * consume those properties to override the default hover state. The
- * [style*="--sgs-cta-pri-hover-bg"] guard means the rule only activates when
- * the attribute has actually been set — zero cost on blocks that don't use it.
- * !important is required because the base .sgs-hero__cta--accent:hover rule has
- * higher specificity than the conditional override; without !important the
- * user-set hover values would lose the cascade. */
-.sgs-hero[style*="--sgs-cta-pri-hover-bg"] .sgs-hero__cta-primary:hover,
-.sgs-hero[style*="--sgs-cta-pri-hover-bg"] .sgs-hero__cta--accent:hover,
-.sgs-hero[style*="--sgs-cta-pri-hover-bg"] .sgs-hero__cta--primary:hover {
-	background-color: var(--sgs-cta-pri-hover-bg) !important;
+ * they are written as CSS custom properties on the block wrapper. As of the
+ * Facet B SGS_Container_Wrapper change these per-instance vars are emitted as
+ * a SCOPED `.{uid}{--sgs-cta-pri-hover-bg:…}` rule, NOT an inline `style="--…"`
+ * attribute — so the old `[style*="--sgs-cta-pri-hover-bg"]` presence gate no
+ * longer matches and silently killed this hover override (GOTCHA F). Fix:
+ * drop the presence gate and instead gate PER PROPERTY via `var(x, <inert
+ * fallback>)` — unset → the property resolves to the button's own normal
+ * resting-hover value (no visible change), set → the operator's colour wins.
+ * Each button variant (accent/primary/outline/custom) has a DIFFERENT resting
+ * hover appearance, so the combined selector list is split one rule per
+ * variant — a single shared fallback can't be correct for all of them at once.
+ * !important is kept to guarantee the override wins regardless of any future
+ * source-order change (defensive; not required by specificity once the
+ * `.sgs-hero[style*=…]` qualifier is gone). NOTE: `box-shadow`/`filter` resets
+ * from the old gated block are intentionally NOT reproduced here — a colour
+ * custom property can't be substituted into a shadow/filter value, so CSS has
+ * no way to conditionally toggle those non-colour properties off this var's
+ * presence without a dedicated boolean var from render.php (out of scope for
+ * this rewrite). Effect: the accent variant's inset ring and the custom
+ * variant's brightness/lift now layer on top of an operator-set hover colour
+ * instead of being suppressed — a minor disclosed cosmetic change, not a
+ * broken hover. */
+.sgs-hero__cta-primary:hover {
+	background-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
 	color: var(--sgs-cta-pri-hover-colour, inherit) !important;
-	border-color: var(--sgs-cta-pri-hover-bg) !important;
-	box-shadow: none !important;
+	border-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
 }
 
-.sgs-hero[style*="--sgs-cta-sec-hover-bg"] .sgs-hero__cta-secondary:hover,
-.sgs-hero[style*="--sgs-cta-sec-hover-bg"] .sgs-hero__cta--outline:hover,
-.sgs-hero[style*="--sgs-cta-sec-hover-bg"] .sgs-hero__cta--custom:hover {
-	background-color: var(--sgs-cta-sec-hover-bg) !important;
+.sgs-hero__cta--accent:hover {
+	background-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
+	color: var(--sgs-cta-pri-hover-colour, var(--wp--preset--color--accent)) !important;
+	border-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
+}
+
+.sgs-hero__cta--primary:hover {
+	background-color: var(--sgs-cta-pri-hover-bg, var(--wp--preset--color--primary-dark)) !important;
+	color: var(--sgs-cta-pri-hover-colour, inherit) !important;
+	border-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
+}
+
+.sgs-hero__cta-secondary:hover {
+	background-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
 	color: var(--sgs-cta-sec-hover-colour, inherit) !important;
-	border-color: var(--sgs-cta-sec-hover-bg) !important;
-	box-shadow: none !important;
-	filter: none !important;
+	border-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
+}
+
+.sgs-hero__cta--outline:hover {
+	background-color: var(--sgs-cta-sec-hover-bg, var(--wp--preset--color--primary)) !important;
+	color: var(--sgs-cta-sec-hover-colour, var(--wp--preset--color--surface)) !important;
+	border-color: var(--sgs-cta-sec-hover-bg, var(--wp--preset--color--primary)) !important;
+}
+
+.sgs-hero__cta--custom:hover {
+	background-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
+	color: var(--sgs-cta-sec-hover-colour, inherit) !important;
+	border-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
+}
+
+/* D345 Facet-B polish (restores the box-shadow/filter resets the old
+ * `[style*=…]`-gated block provided): when the operator sets a CUSTOM CTA hover
+ * colour, suppress the variant's resting decoration so it doesn't layer under the
+ * chosen colour. box-shadow/filter can't be substituted via `var()`, so these are
+ * gated on the render-emitted `sgs-hero--cta-*-hover-set` class (added by render.php
+ * only when the corresponding custom hover colour is set). Specificity 0,3,0 beats
+ * the variant base 0,2,0 — no !important needed. */
+.sgs-hero--cta-pri-hover-set .sgs-hero__cta--accent:hover {
+	box-shadow: none;
+}
+
+.sgs-hero--cta-sec-hover-set .sgs-hero__cta--custom:hover {
+	filter: none;
 }
 
 /* Badges — container */
@@ -482,18 +529,23 @@ section.sgs-hero {
 	margin-top: var(--wp--preset--spacing--10);
 }
 
-/* ===== Custom Hover States (editor-configurable) ===== */
-
-.sgs-hero[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
-}
-
-.sgs-hero[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
-}
-
-.sgs-hero[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
+/* ===== Custom Hover States (editor-configurable) — GOTCHA F rewrite =====
+ * Same fix as the per-CTA overrides above: the `--sgs-hover-bg` /
+ * `--sgs-hover-text` / `--sgs-hover-border` vars now emit as a scoped
+ * `.{uid}{…}` rule (Facet B), not an inline `style="--…"` attribute, so the
+ * old `[style*="--sgs-hover-…"]` presence gate stopped matching. The hero
+ * root has no explicit resting `background-color`, `color`, or `border` of
+ * its own (background comes from `background-image`/`.has-background`;
+ * colour + border are left to inherit/initial), so the inert fallback per
+ * property is: `transparent` (leaves the gradient/background-image visible
+ * underneath, matches the brand-strip precedent), `inherit` (colour keeps
+ * cascading normally), and `transparent` (border-style is never set, so the
+ * colour is inert either way). Merged into one rule since all three now
+ * share the identical `.sgs-hero:hover` selector. */
+.sgs-hero:hover {
+	background-color: var(--sgs-hover-bg, transparent);
+	color: var(--sgs-hover-text, inherit);
+	border-color: var(--sgs-hover-border, transparent);
 }
 
 /* ===== Responsive ===== */

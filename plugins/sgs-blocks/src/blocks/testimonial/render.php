@@ -21,21 +21,26 @@
  * typed scalar attrs.
  *
  * BLOCK-PRIVATE, NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration
- * contract §A/§B/§B3, 2026-07-09): sgs/testimonial is a CONTENT-kind composite
- * that only ever used the shared wrapper's box+width machinery (WS-4
- * container-mirror = width/spacing only — no grid/section/background/overlay),
- * so SGS_Container_Wrapper is dropped — the same block-private pattern proven
- * on sgs/quote. The block's OWN root `<div>` is built via
- * get_block_wrapper_attributes(); the rendered subtree carries ZERO inline CSS
- * property declarations. Every declaration (native color/typography/spacing/
- * border/shadow supports, the outer width, AND every per-element typography
- * override that previously rode an inline `style="…"` attribute on the quote/
- * summary/name/role/org/rating nodes) is emitted into the block's OWN scoped
- * `.{uid}` <style> tag. WP styling supports all declare
- * `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
- * never auto-inlines them. Hover state stays CSS custom-property VALUES only
- * (`style="--sgs-x:y"` on the root — a value, not a declaration, so contract-
- * compliant).
+ * contract §A/§B/§B3, 2026-07-09; ZERO-INLINE tightened 2026-07-18 per Spec 32
+ * FR-32-4 as amended / D345 — inline `--var` VALUES are now FORBIDDEN too):
+ * sgs/testimonial is a CONTENT-kind composite that only ever used the shared
+ * wrapper's box+width machinery (WS-4 container-mirror = width/spacing only —
+ * no grid/section/background/overlay), so SGS_Container_Wrapper is dropped —
+ * the same block-private pattern proven on sgs/quote. The block's OWN root
+ * `<div>` is built via get_block_wrapper_attributes(); the rendered root
+ * carries NO `style="…"` attribute at all. Every declaration (native color/
+ * typography/spacing/border/shadow supports, the outer width, every
+ * per-element typography override that previously rode an inline `style="…"`
+ * attribute on the quote/summary/name/role/org/rating nodes, AND the hover/
+ * transition/scale/shadow/stagger custom-property VALUES that previously rode
+ * an inline `style="--sgs-x:y"` on the root) is emitted into the block's OWN
+ * scoped `.{uid}` <style> tag. Hover COLOUR shifts render as a scoped
+ * `.{uid}.wp-block-sgs-testimonial:hover{…}` rule with real background-color/
+ * color/border-color declarations — NOT a `[style*="--sgs-hover-*"]:hover`
+ * presence-selector reading an inline var (that pattern is now removed from
+ * style.css; matches sgs/info-box, D345 GOTCHA F). WP styling supports all
+ * declare `__experimentalSkipSerialization` in block.json so
+ * get_block_wrapper_attributes() never auto-inlines them.
  *
  * BOX-GROUP (contract §B): base padding/margin route to WP-native
  * style.spacing.* (skip-serialised, emitted scoped via the style engine);
@@ -50,6 +55,13 @@
  *                    attrs; color/typography/spacing/border/shadow supports →
  *                    __experimentalSkipSerialization + scoped style engine
  *                    output.
+ * @since 2026-07-18  D345 zero-inline tightening: the wrapper's remaining
+ *                    inline `style="--sgs-x:y"` attribute is gone. Hover
+ *                    colours → scoped `:hover{…}` declarations; transition/
+ *                    scale/shadow/stagger custom-property VALUES → scoped
+ *                    base rule on the same root selector. Matching style.css
+ *                    `[style*="--sgs-hover-*"]:hover` presence-selectors
+ *                    removed (GOTCHA F, same shape as sgs/info-box).
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    Unused (typed rebuild — no InnerBlocks).
@@ -416,36 +428,52 @@ if ( '' !== $preset_bg_slug ) {
 	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 
-// ── Wrapper inline styles — CSS custom-property VALUES ONLY (contract §A: a
-// `--var:value` VALUE is allowed; it is never a real property declaration). ─
-$styles = array();
+// ── Wrapper hover colours + transition/scale/shadow/stagger — SCOPED, never
+// inline (Spec 32 FR-32-4 as amended 2026-07-18 / D345; matches sgs/info-box).
+// Hover COLOURS emit as a scoped `.{uid}.wp-block-sgs-testimonial:hover{…}`
+// rule with real declarations (specificity 0,3,0 beats every variant base
+// rule 0,2,0, so applies unconditionally when the operator set a hover
+// colour — no resting-value fallback needed). Everything else (transition
+// timing, hover scale/shadow, stagger delay) stays `--sgs-x:value` custom
+// properties, but as a SCOPED base rule on $root_sel — not an inline `style`
+// attribute on the root.
+$hover_decls = array();
 if ( $hover_background_colour ) {
-	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
+	$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background_colour );
 }
 if ( $hover_text_colour ) {
-	$styles[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+	$hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
 }
 if ( $hover_border_colour ) {
-	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
 }
+
+$wrapper_vars = array();
 if ( '' !== $transition_duration && null !== $transition_duration ) {
 	$dur = (string) $transition_duration;
 	if ( ! preg_match( '/(ms|s)$/', $dur ) ) {
 		$dur .= 'ms';
 	}
-	$styles[] = '--sgs-transition-duration:' . esc_attr( $dur );
+	$wrapper_vars[] = '--sgs-transition-duration:' . esc_attr( $dur );
 }
 if ( $transition_easing ) {
-	$styles[] = '--sgs-transition-easing:' . esc_attr( $transition_easing );
+	$wrapper_vars[] = '--sgs-transition-easing:' . esc_attr( $transition_easing );
 }
 if ( $hover_scale ) {
-	$styles[] = '--sgs-hover-scale:' . esc_attr( (string) $hover_scale );
+	$wrapper_vars[] = '--sgs-hover-scale:' . esc_attr( (string) $hover_scale );
 }
 if ( $hover_shadow ) {
-	$styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $hover_shadow ) ) ) . ')';
+	$wrapper_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $hover_shadow ) ) ) . ')';
 }
 if ( $stagger_delay ) {
-	$styles[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
+	$wrapper_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
+}
+
+if ( $wrapper_vars ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $wrapper_vars ) . '}';
+}
+if ( $hover_decls ) {
+	$scoped_css[] = $root_sel . ':hover{' . implode( ';', $hover_decls ) . '}';
 }
 
 // ── Rating node (fully gated) ───────────────────────────────────────────────
@@ -660,10 +688,9 @@ if ( '' === trim( $inner_html ) ) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Build the root element's attributes. Contract §A: NO 'style' key carries
-// a real property declaration — only the var-only hover/transition custom
-// properties (`$styles`, all `--sgs-*`). Everything else lives in the scoped
-// <style> block above.
+// 3. Build the root element's attributes. D345: the rendered root carries NO
+// 'style' key at all — hover colours + transition/scale/shadow/stagger vars
+// all moved into the scoped <style> block above (§1/§2).
 // ---------------------------------------------------------------------------
 
 $root_attr_args = array(
@@ -671,9 +698,6 @@ $root_attr_args = array(
 );
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
-}
-if ( $styles ) {
-	$root_attr_args['style'] = implode( ';', $styles );
 }
 $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 

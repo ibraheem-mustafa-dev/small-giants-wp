@@ -121,6 +121,12 @@ $sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
 
 $scoped_css = array();
 
+// --- Logo width custom property — was previously the block's sole inline
+// `style="--logo-width:Npx"` declaration on the wrapper (D345: inline `--var`
+// is now forbidden, no exception for custom-property values). Moved into the
+// same scoped uid-class rule as every other declaration on this block. ---
+$scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
+
 // --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
 // scoped via the stable core style engine. ---
 if ( function_exists( 'wp_style_engine_get_styles' ) ) {
@@ -185,14 +191,12 @@ if ( $mobile_decls ) {
 }
 
 // ── Wrapper attributes via get_block_wrapper_attributes() ────────────────────
-// KEEPS the pre-existing var-only `--logo-width` inline style (allowed —
-// custom-property value, not a property declaration) and adds the scoped uid
-// class alongside it.
+// No `style` key (D345: inline `--var` custom properties are forbidden, no
+// exception). `--logo-width` now lives in the scoped uid-class rule above.
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class'          => 'sgs-responsive-logo' . $animation_modifier . ' ' . $uid,
-		'style'          => '--logo-width:' . absint( $width ) . 'px',
 		'data-animation' => 'none' !== $animation_style ? esc_attr( $animation_style ) : false,
 	)
 );

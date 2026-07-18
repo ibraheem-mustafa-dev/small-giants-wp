@@ -106,19 +106,16 @@
  * forbidden parent/child duplicate.
  */
 
-/* ===== Custom Hover States (editor-configurable) ===== */
-
-.sgs-info-box[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
-}
-
-.sgs-info-box[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
-}
-
-.sgs-info-box[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
-}
+/* ===== Custom Hover States (editor-configurable) =====
+ * The hover colours are emitted per-instance by render.php as a scoped
+ * `.{uid}.sgs-info-box:hover { background-color / color / border-color }` rule
+ * (Spec 32 FR-32-4 as amended 2026-07-18 / D345) — NOT via inline `--sgs-hover-*`
+ * VALUES gated by an `[style*="--sgs-hover-…"]` presence-selector. That gate
+ * silently STOPPED matching the instant the var moved off the inline `style`
+ * attribute into the scoped rule (footprint GOTCHA F), killing the hover colour
+ * with no error. The per-instance `:hover` rule (specificity 0,3,0) beats the
+ * variant base (0,2,0) and applies only when a hover colour is set, so it is
+ * variant-safe with no resting-value fallback. */
 
 /* ===== Hover Effects ===== */
 

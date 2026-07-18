@@ -21,7 +21,11 @@
  *
  * Pill resting/selected colour + border-radius are attribute-driven CSS custom
  * PROPERTY VALUES (`--sgs-op-*`) consumed by style.css's `.sgs-option-picker`
- * class rules — never inline property declarations (Spec 32 FR-32-4). This is
+ * class rules — never inline property declarations. Per Spec 32 FR-32-4 as
+ * amended 2026-07-18 (D345), inline `--var` declarations are FORBIDDEN too —
+ * every `--sgs-op-*` value (root resting/selected/radius vars + the per-pill
+ * swatch bg/text vars) is emitted into the block's OWN scoped `.{uid}`
+ * `<style>` tag, never as an inline `style="--var:…"` attribute. This is
  * also what makes the pill states CLONEABLE: the universal styling-lift
  * (Spec 31 §3.B B2) matches each attr's `derived_selector` against the draft's
  * DOM by BEM class — resting on `.sgs-option-picker__pill`, selected on the
@@ -256,10 +260,12 @@ $pill_padding_tablet_obj = is_array( $attributes['pillPaddingTablet'] ?? null ) 
 $pill_padding_mobile_obj = is_array( $attributes['pillPaddingMobile'] ?? null ) ? $attributes['pillPaddingMobile'] : array();
 
 // ---------------------------------------------------------------------------
-// 6. Scoped CSS custom-PROPERTY VALUES (never property declarations) for
-// pill resting/selected colour + radius, root border colour. These are the
-// ONLY per-instance override channel (Spec 32 FR-32-4) — set on the root
-// element as `--var:value`, consumed by style.css's class rules.
+// 6. Scoped CSS custom-PROPERTY VALUES (never property declarations, never
+// inline) for pill resting/selected colour + radius, root border colour.
+// Per Spec 32 FR-32-4 as amended 2026-07-18 (D345), these are emitted into
+// the scoped `{$root_sel}{--var:value;…}` rule below (§7) — NOT as an
+// inline `style="--var:value"` attribute — consumed by style.css's class
+// rules via var(--sgs-op-*, …).
 // ---------------------------------------------------------------------------
 
 $var_decls = array();
@@ -309,6 +315,12 @@ if ( $border_colour ) {
 // ---------------------------------------------------------------------------
 
 $scoped_css = array();
+
+// --- Root custom-property VALUES (§6) — the ONLY per-instance override
+// channel (Spec 32 FR-32-4), scoped here rather than emitted inline. ---
+if ( $var_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $var_decls ) . ';}';
+}
 
 // --- Root box declarations (border-style/width, width, max-width) ---
 $root_decls = array();
@@ -574,7 +586,6 @@ foreach ( $valid_items as $item ) {
 	$swatch            = isset( $swatch_map[ $item['key'] ] ) ? $swatch_map[ $item['key'] ] : null;
 	$swatch_image_html = '';
 	$swatch_chip_html  = '';
-	$pill_extra_var    = '';
 	$pill_extra_class  = '';
 
 	if ( null !== $swatch ) {
@@ -597,21 +608,23 @@ foreach ( $valid_items as $item ) {
 			}
 		} elseif ( '' !== $color ) {
 			// Colour chip — the swatch background is a decorative DATA VALUE (the
-			// colour term's own swatch, not a styling property of the block). It
-			// is carried as a CSS custom-property VALUE (`--sgs-op-swatch-bg`) and
-			// painted by style.css, so NOTHING renders as an inline property
-			// declaration (no-inline contract, Spec 32) — mirroring the sibling
-			// `--sgs-op-swatch-text` var below.
+			// colour term's own swatch, not a styling property of the block),
+			// carried as CSS custom-property VALUES (`--sgs-op-swatch-bg` /
+			// `--sgs-op-swatch-text`) painted by style.css. Per Spec 32 FR-32-4
+			// as amended 2026-07-18 (D345), these are NEVER inline — each pill's
+			// $input_id is a unique per-instance HTML id (already used for the
+			// <label for>), so it doubles as a safe, unique scoped-CSS anchor for
+			// this one pill's swatch vars (no cross-pill collision, no clash
+			// with $root_sel's class-level scoping — a per-item ID selector is a
+			// distinct, legitimate use, unlike FR-31-22.3's block-ROOT rule).
 			$contrast_colour = sgs_wcag_text_colour_for_bg( $color );
+			$sel_this_pill   = '#' . $input_id . ' + .sgs-option-picker__pill';
 
-			$swatch_chip_html = sprintf(
-				'<span class="sgs-option-picker__swatch sgs-option-picker__swatch--colour" style="--sgs-op-swatch-bg:%s;" aria-hidden="true"></span>',
-				esc_attr( $color )
-			);
+			$scoped_css[] = $sel_this_pill . ' .sgs-option-picker__swatch--colour{--sgs-op-swatch-bg:' . esc_attr( $color ) . ';}';
+			$scoped_css[] = $sel_this_pill . '{--sgs-op-swatch-text:' . esc_attr( $contrast_colour ) . ';}';
+
+			$swatch_chip_html = '<span class="sgs-option-picker__swatch sgs-option-picker__swatch--colour" aria-hidden="true"></span>';
 			$pill_extra_class = ' sgs-option-picker__pill--has-colour';
-			// --sgs-op-swatch-text is a CSS custom-property VALUE (not a property
-			// declaration) — allowed inline per Spec 32 FR-32-4.
-			$pill_extra_var = ' style="--sgs-op-swatch-text:' . esc_attr( $contrast_colour ) . ';"';
 		}
 	}
 
@@ -620,7 +633,7 @@ foreach ( $valid_items as $item ) {
 	$pills_html .= sprintf(
 		'<label class="sgs-option-picker__option" for="%s">' .
 		'<input type="radio" id="%s" name="%s" value="%s"%s>' .
-		'<span class="sgs-option-picker__pill%s"%s>%s</span>' .
+		'<span class="sgs-option-picker__pill%s">%s</span>' .
 		'</label>',
 		esc_attr( $input_id ),
 		esc_attr( $input_id ),
@@ -628,7 +641,6 @@ foreach ( $valid_items as $item ) {
 		esc_attr( $item['key'] ),
 		$checked_str,        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- 'checked' or empty.
 		esc_attr( $pill_extra_class ),
-		$pill_extra_var,     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr(); var VALUE only.
 		$pill_inner          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_* calls above.
 	);
 }
@@ -684,13 +696,12 @@ $anchor = $attributes['anchor'] ?? '';
 $root_attr_args = array(
 	'class' => implode( ' ', $root_classes ),
 );
-if ( $var_decls ) {
-	// The ONLY inline `style` output permitted — CSS custom-property VALUES,
-	// never property declarations (Spec 32 FR-32-4). Functional-colour values
-	// are normalised to hex by sgs_colour_value() so they survive WordPress's
-	// safecss_filter_attr() (which strips inline rgb()/rgba()/hsl()).
-	$root_attr_args['style'] = implode( ';', $var_decls ) . ';';
-}
+// No inline `style` output (Spec 32 FR-32-4 as amended D345) — the
+// --sgs-op-* custom-property VALUES are emitted into the scoped `{$root_sel}`
+// rule at §7 instead (functional-colour values are normalised to hex by
+// sgs_colour_value() so they survive WordPress's safecss_filter_attr(),
+// which strips rgb()/rgba()/hsl() — the same normalisation now protects the
+// scoped `<style>` channel, which is unfiltered but kept consistent).
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
 }

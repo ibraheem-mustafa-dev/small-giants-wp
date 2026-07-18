@@ -11,6 +11,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
+import { isExtensionHidden } from './hide-extensions';
 import { __ } from '@wordpress/i18n';
 import SpacingControl from '../../components/SpacingControl';
 
@@ -71,6 +72,12 @@ const withSpacingControls = createHigherOrderComponent( ( BlockEdit ) => {
 
 		// Only apply to SGS blocks without native spacing support.
 		if ( ! name.startsWith( 'sgs/' ) ) {
+			return <BlockEdit { ...props } />;
+		}
+
+		// Per-block opt-out (supports.sgs.hideExtensions): redundant where a
+		// block ships its own spacing panel + native Dimensions.
+		if ( isExtensionHidden( name, 'spacing' ) ) {
 			return <BlockEdit { ...props } />;
 		}
 

@@ -41,14 +41,17 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
-// NO-INLINE (per-block migration contract, 2026-07-10): margin is a WP-native
+// NO-INLINE (per-block migration contract, 2026-07-10; ZERO-INLINE amended
+// 2026-07-18 D345 — Spec 32 FR-32-4): margin is a WP-native
 // style.spacing.margin object (skip-serialised in block.json → NOT auto-
 // inlined by get_block_wrapper_attributes()). Emitted scoped via the core
 // style engine below, mirroring sgs/label. marginTablet/marginMobile are SGS
 // custom object attrs, hand-built shorthand, scoped @media (contract §B2:
-// tablet max-width:1023px, mobile max-width:767px). The pre-existing
-// `--sgs-cart-*` custom-property inline style is a VALUE, not a property
-// declaration — allowed by the contract and left untouched.
+// tablet max-width:1023px, mobile max-width:767px). The `--sgs-cart-*`
+// custom-property VALUES (icon size/colour, badge colours) are emitted into
+// a scoped `.{uid}.wp-block-sgs-cart{…}` rule alongside the margin rules
+// (mirrors sgs/info-box's hover-colour treatment) — the root carries ZERO
+// inline `style="…"` attribute at all.
 // ---------------------------------------------------------------------------
 
 $sgs_css_length = static function ( $value ) {
@@ -80,9 +83,12 @@ $cart_url = $wc_active ? wc_get_cart_url() : home_url( '/cart' );
 // The view.js module replaces this via the Store API within ~200 ms.
 $ssr_count = 0;
 
-// ── Inline CSS custom properties (VALUES only — allowed by the no-inline
-// contract; the root carries zero inline CSS property DECLARATIONS) ─────────
-$styles = array(
+// ── CSS custom-property VALUES (icon size/colour, badge colours) — moved to
+// a scoped `.{uid}.wp-block-sgs-cart{…}` rule below (Spec 32 FR-32-4 as
+// amended 2026-07-18 / D345: inline `--var` is now FORBIDDEN, mirrors
+// sgs/info-box's hover-colour treatment). Nothing lands in the root's
+// `style="…"` attribute. ────────────────────────────────────────────────────
+$sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
 	'--sgs-cart-badge-colour:' . sgs_colour_value( $badge_colour ),
@@ -139,6 +145,13 @@ if ( null !== $margin_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{margin:{$margin_mob_val};}}";
 }
 
+// ── Cart custom-property VALUES (icon size/colour, badge colours) — scoped
+// rule on the SAME uid selector, NOT inline (Spec 32 FR-32-4 as amended
+// 2026-07-18 / D345). ────────────────────────────────────────────────────────
+if ( $sgs_cart_vars ) {
+	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
+}
+
 // ── Wrapper classes ───────────────────────────────────────────────────────────
 $wrapper_classes = array( 'sgs-cart', $uid );
 if ( ! $wc_active ) {
@@ -154,7 +167,6 @@ if ( $hide_when_empty && 0 === $ssr_count ) {
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class'                => implode( ' ', $wrapper_classes ),
-		'style'                => implode( ';', $styles ) . ';',
 		'data-show-zero'       => $show_zero ? 'true' : 'false',
 		'data-hide-when-empty' => $hide_when_empty ? '1' : '0',
 		'data-display-mode'    => esc_attr( $display_mode ),

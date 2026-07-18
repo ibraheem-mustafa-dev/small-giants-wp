@@ -381,18 +381,12 @@
 	}
 }
 
-/* ===== Hover colour shifts ===== */
-.sgs-testimonial[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
-}
-
-.sgs-testimonial[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
-}
-
-.sgs-testimonial[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
-}
+/* ===== Hover colour shifts =====
+   Removed 2026-07-18 (D345, Spec 32 FR-32-4 as amended): these were
+   `[style*="--sgs-hover-*"]:hover` presence-selectors reading an inline CSS
+   custom property. Inline `--var` is now forbidden — render.php emits the
+   equivalent scoped `.{uid}.wp-block-sgs-testimonial:hover` rule (background /
+   text / border colours as real declarations) directly (matches sgs/info-box). */
 
 /* ===== Hover effects ===== */
 @media (prefers-reduced-motion: no-preference) {

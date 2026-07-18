@@ -18,7 +18,33 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-18 (LATEST) — [ROUTINE] D344: Track 2 P1 — header/footer/nav architecture decision (BUILD, full clean rebuild)
+## 2026-07-18 (LATEST) — [ROUTINE] D346: Framework-wide inline-zero rollout COMPLETE (Facet A+B shared-wrapper design-gate + all block conversions)
+
+Executed the D345 rollout end-to-end. **Both live sites now render EVERY `sgs/*` block with ZERO inline `style` attributes** (verified live: palestine-lives Indus + sandybrown Mama's — page-wide `style="--"`=0, empty `style=""`=0; started at ~53 inline on the Indus homepage). Method: a live-render-driven detector (`plugins/sgs-blocks/scripts/no-inline/detect.py`) collapsed the plan's unproven "~52 blocks" to the real ~9, then two mechanisms cleared them.
+
+**Two-facet shared-`SGS_Container_Wrapper` change (Bean-approved Rule-7 design-gate) — the high-leverage move:**
+- **Facet A:** the wrapper's `get_block_wrapper_attributes()` (both call sites — the pre-uid pass + the operative `$uid`/shape rebuild) now emits the `'style'` key ONLY when `$styles` is non-empty. Fixed the empty `style=""` on every content-KIND composite + all header/footer roots, centrally, with NO per-block edits (dissolved the header/footer co-session collision).
+- **Facet B:** `$styles` (extra_styles + ken-burns/svg/grid-item `--var` VALUES) now emit as a scoped `.$uid{…}` rule in the block's `<style>` (real props were already scoped, D292-296); `$needs_uid` gained a `!empty($styles)` clause so a scoping anchor always exists; the `'style'` key is fully dropped. Every affected composite's `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x, <resting>)` inert fallbacks (GOTCHA F — hero/cta-section/card-grid/post-grid/process-steps/testimonial-slider). `tabs`'s `--sgs-indicator-*` is JS-set (view.js), NOT wrapper output, so excluded.
+
+**Block-private conversions (info-box recipe — parallel `wp-sgs-developer` agents):** info-box, icon, testimonial, button, quote/brand-strip (pre-session), + header/nav (responsive-logo, mega-menu) + off-page (cart, option-picker, audio, collapsible-text). product-card confirmed clean on Mama's; tabs/gallery/buybox/form-field-tiles/accordion-item/modal already clean (wrapper-covered or no inline). Each: per-instance `--var` → scoped `.{uid}.{block-root-class}{…}` rule (class-level, FR-31-22.3, never `#uid`), `'style'` key dropped, skip-serialization per-feature.
+
+**GOTCHA F (footprint E→F, load-bearing):** an inline `--var` moving scoped silently breaks any `[style*="--var"]` presence-selector (killed brand-strip's gold hover + would have killed 6 composites' hovers). Every converter rewrote those selectors. **hero polish:** the accent-ring/custom-filter suppression that the presence-gate provided (can't be `var()`-conditional) was restored via render-emitted `sgs-hero--cta-{pri,sec}-hover-set` classes.
+
+**No block version bumps / no deprecated.js (D270).** ~14 commits, all live-verified + Bean's eye per wave. Commits: D345 spec+detector, then info-box (f35f150e), icon+testimonial (ac6c7c95), button+Facet A (62e68ace), Facet B (fb59238e), header/nav+off-page+hero-polish (3dec90e0). Docs: Spec 32 §6.1/FR-32-4 + Spec 31 FR-31-22 rollout-status updated to COMPLETE. Deferred (Bean): Step 6 structural anti-regression prebuild gate = new session. Reports: `reports/visual-diff/*-2026-07-18.md`.
+
+---
+
+## 2026-07-18 — [ROUTINE] D345: Spec 32 FR-32-4 amended — inline `--var` FORBIDDEN (opens framework-wide inline-zero rollout)
+
+Inline-zero rollout track, Step 1 (of `plans/2026-07-17-phase-inline-zero-rollout.md`, /qc-council-revised). Amended Spec 32 (→ v1.3, 4 clauses): **FR-32-4 now FORBIDS emitting a per-instance override as an inline `style="--sgs-…:…"`** — it MUST be a scoped `.{uid}.{block}{--var:…}` rule registered into the collector (FR-32-11). Also tightened FR-32-1 done-when + §8 acceptance row (count ANY `style` content, not just property declarations — the loophole that silently permitted inline `--var`) and the §5 / §6 flow diagram.
+
+**Why now:** FR-32-4's "setting a var value inline is permitted" was the STALE OUTLIER — it contradicted its own spec's newer §6.1(e) ("every override flows through the object attr + scoped `<style>`, never a bespoke inline escape hatch", 2026-07-09) AND Spec 31 FR-31-22.3 ("NEVER inline `style=…`", Phase-0-proven live). Fact-checked both against ground truth before editing — **the converter already follows the scoped path, so no converter/walker/pipeline path breaks** (council C2, verified). Closes footprint GOTCHA E (permissive outlier gave the rollout gate no teeth) + GOTCHA F (an inline `--var` silently breaks `[style*="--var"]` presence-selectors — the live gold-hover-border break on brand-strip 2026-07-17).
+
+**Proof case:** `sgs/brand-strip` (commit 4926f859) + `sgs/quote` already zero-inline. Next steps (same plan): live-render-driven detector → bucket by emit-shape → mechanical bulk (Haiku) + residue (Sonnet) → structural prebuild gate. Docs: Spec 32 §status_history v1.3; footprint `plans/2026-07-17-no-inline-fix-footprint.md`.
+
+---
+
+## 2026-07-18 — [ROUTINE] D344: Track 2 P1 — header/footer/nav architecture decision (BUILD, full clean rebuild)
 
 Track 2 (header/footer/nav full rebuild) Phase 1 = Research → Architecture. Full record: `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`; council record: `.claude/reports/2026-07-18-P1-adversarial-council-gate1.md`; roadmap `.claude/plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md`.
 

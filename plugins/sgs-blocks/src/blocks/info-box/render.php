@@ -156,14 +156,23 @@ $preset_fontsize_slug = isset( $attributes['fontSize'] ) ? sanitize_html_class( 
 $sgs_wrapper_styles = array();
 $sgs_wrapper_styles = array_merge( $sgs_wrapper_styles, sgs_transition_vars( $attributes ) );
 
+// Hover colours emit as a scoped `.{uid}.sgs-info-box:hover{…}` rule (assembled
+// in §9 below), NOT as inline `--sgs-hover-*` VALUES. An inline `--var` (a) leaves
+// a `style` attribute on the root and (b) breaks the former
+// `[style*="--sgs-hover-*"]` presence-selector gate the moment the value moves
+// scoped (Spec 32 FR-32-4 as amended 2026-07-18 / D345; footprint GOTCHA F). A
+// per-instance `:hover` rule (specificity 0,3,0) beats the variant base (0,2,0)
+// and applies ONLY when the operator set a hover colour — variant-safe, so no
+// resting-value fallback is needed for the per-variant background.
+$sgs_hover_decls = array();
 if ( $sgs_hover_bg ) {
-	$sgs_wrapper_styles[] = '--sgs-hover-bg:' . sgs_colour_value( $sgs_hover_bg );
+	$sgs_hover_decls[] = 'background-color:' . sgs_colour_value( $sgs_hover_bg );
 }
 if ( $sgs_hover_text ) {
-	$sgs_wrapper_styles[] = '--sgs-hover-text:' . sgs_colour_value( $sgs_hover_text );
+	$sgs_hover_decls[] = 'color:' . sgs_colour_value( $sgs_hover_text );
 }
 if ( $sgs_hover_border ) {
-	$sgs_wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $sgs_hover_border );
+	$sgs_hover_decls[] = 'border-color:' . sgs_colour_value( $sgs_hover_border );
 }
 
 $sgs_allowed_scales  = array( '1.02', '1.05', '1.1' );
@@ -342,12 +351,22 @@ if ( $mobile_box_decls ) {
 // real CSS property — only `--var:value` custom-property VALUES (contract §A).
 // ---------------------------------------------------------------------------
 
+// Per-instance custom-property VALUES (transition timing, hover scale/shadow)
+// → a scoped `.{uid}.sgs-info-box{…}` rule in the block's <style> (consolidated
+// by the SGS CSS registry), NOT an inline `style="--var:…"` attribute. Spec 32
+// FR-32-4 (as amended D345): nothing renders inline. Values pre-sanitised at
+// source (sgs_colour_value / esc_attr / allowlists); the scoped channel is
+// wp_strip_all_tags-guarded, not safecss-filtered.
+if ( $sgs_wrapper_styles ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $sgs_wrapper_styles ) . '}';
+}
+if ( $sgs_hover_decls ) {
+	$scoped_css[] = $root_sel . ':hover{' . implode( ';', $sgs_hover_decls ) . '}';
+}
+
 $root_attr_args = array(
 	'class' => implode( ' ', $sgs_classes ),
 );
-if ( $sgs_wrapper_styles ) {
-	$root_attr_args['style'] = implode( ';', $sgs_wrapper_styles );
-}
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
 }
