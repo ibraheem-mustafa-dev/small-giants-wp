@@ -811,6 +811,17 @@ $merged_class  = trim( $btn_class_str . $full_modifier );
 // rules (step 4), never inline (Box-object interface contract (b)).
 $merged_style  = trim( $btn_style_str );
 
+// D345 (Spec 32 FR-32-4 as amended 2026-07-18): the per-instance custom-property
+// VALUES ($inline_styles — --sgs-btn-color/bg/border + hover variants + icon-gap)
+// emit as a scoped `.{uid}.sgs-button{…}` rule in the block's <style> (consolidated
+// by the CSS registry), NOT inline on the element. Inline `--var` is forbidden — it
+// leaves a `style` attribute on the root AND breaks any `[style*="--var"]` gate.
+// style.css's `:hover` rules consume these vars via var() on the SAME element
+// regardless of where the custom properties are declared, so behaviour is identical.
+if ( '' !== $merged_style ) {
+	$scoped_css_parts[] = ".{$uid}.sgs-button{" . $merged_style . "}";
+}
+
 $wrapper_attr = get_block_wrapper_attributes(
 	array(
 		'id'          => $uid,
@@ -818,7 +829,6 @@ $wrapper_attr = get_block_wrapper_attributes(
 		// (`.{$uid}.sgs-button` = 0,2,0, never `#uid`) match this element and can be
 		// overridden by the appended sgsCustomCss residual by source order.
 		'class'       => trim( $merged_class . ' ' . $uid ),
-		'style'       => $merged_style,
 		'data-preset' => $safe_inherit_style,
 	)
 );

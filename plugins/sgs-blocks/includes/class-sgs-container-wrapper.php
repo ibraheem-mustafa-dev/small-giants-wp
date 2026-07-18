@@ -830,14 +830,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// First call to get_block_wrapper_attributes() — before shapes/uid.
 			// This mirrors the original render.php ~line 398 first-pass call.
 			// ----------------------------------------------------------------
+			$sgs_wrapper_base = array( 'class' => implode( ' ', $classes ) );
+			// D345 (Spec 32 FR-32-4, Facet A): only emit the `style` key when $styles is
+			// non-empty. An empty array previously produced `implode(';',[]).';'` = `;`,
+			// which WP renders as an empty `style=""` on every content-KIND composite (and
+			// header/footer) root. The non-empty `--var` path is unchanged here (Facet B).
+			if ( ! empty( $styles ) ) {
+				$sgs_wrapper_base['style'] = implode( ';', $styles ) . ';';
+			}
 			$wrapper_attributes = get_block_wrapper_attributes(
-				array_merge(
-					array(
-						'class' => implode( ' ', $classes ),
-						'style' => implode( ';', $styles ) . ';',
-					),
-					$opt_extra_attrs
-				)
+				array_merge( $sgs_wrapper_base, $opt_extra_attrs )
 			);
 
 			// ----------------------------------------------------------------
@@ -1395,14 +1397,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Mirrors container/render.php conditional rebuild at ~line 581.
 			// ----------------------------------------------------------------
 			if ( $shape_top || $shape_bottom || $uid ) {
+				$sgs_wrapper_base = array( 'class' => implode( ' ', $classes ) );
+				// D345 (Spec 32 FR-32-4, Facet A): only emit the `style` key when $styles is
+				// non-empty (see the first-call site above). This is the OPERATIVE root call
+				// for any composite with a $uid/shape (it rebuilds + overwrites the first).
+				if ( ! empty( $styles ) ) {
+					$sgs_wrapper_base['style'] = implode( ';', $styles ) . ';';
+				}
 				$wrapper_attributes = get_block_wrapper_attributes(
-					array_merge(
-						array(
-							'class' => implode( ' ', $classes ),
-							'style' => implode( ';', $styles ) . ';',
-						),
-						$opt_extra_attrs
-					)
+					array_merge( $sgs_wrapper_base, $opt_extra_attrs )
 				);
 			}
 
