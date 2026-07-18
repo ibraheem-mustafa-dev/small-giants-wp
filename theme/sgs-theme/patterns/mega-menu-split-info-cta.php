@@ -39,9 +39,7 @@
 			</ul>
 			<!-- /wp:list -->
 
-			<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"backgroundColor":"border-subtle","className":"is-style-wide"} -->
-			<hr class="wp-block-separator has-text-color has-border-subtle-color has-alpha-channel-opacity has-border-subtle-background-color has-background is-style-wide" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
-			<!-- /wp:separator -->
+			<!-- wp:sgs/separator {"width":100,"widthUnit":"%","style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"colour":"var(--wp--preset--color--border-subtle)"} /-->
 
 			<!-- wp:sgs/text {"text":"Opening hours","fontSize":"1rem","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}},"textColour":"surface"} /-->
 

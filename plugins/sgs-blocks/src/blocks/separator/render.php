@@ -73,6 +73,9 @@ $thickness_unit = '' !== $thickness_unit ? $thickness_unit : 'px';
 
 $colour = $attributes['colour'] ?? '';
 
+$opacity_raw = $attributes['opacity'] ?? 100;
+$opacity     = is_numeric( $opacity_raw ) ? max( 0, min( 100, (float) $opacity_raw ) ) : 100;
+
 $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'center';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'center';
@@ -209,6 +212,10 @@ switch ( $alignment ) {
 		break;
 }
 $scoped_css[] = "{$root_sel}{" . implode( ';', $alignment_decls ) . ';}';
+
+if ( 100.0 !== $opacity ) {
+	$scoped_css[] = "{$root_sel}{opacity:" . rtrim( rtrim( number_format( $opacity / 100, 4, '.', '' ), '0' ), '.' ) . ';}';
+}
 
 // --- Base spacing (padding/margin) — skip-serialised WP support, emitted
 // scoped via the stable core style engine (matches sgs/quote / sgs/heading). ---

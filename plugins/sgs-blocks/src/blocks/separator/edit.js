@@ -154,6 +154,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		thicknessTablet,
 		thicknessMobile,
 		colour,
+		opacity,
 		alignment,
 		paddingTablet,
 		paddingMobile,
@@ -212,6 +213,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const rootPreviewStyle = {
 		width: composeUnit( width, widthUnit ) || undefined,
 		...alignmentMargin( alignment ),
+		opacity:
+			'number' === typeof opacity && 100 !== opacity
+				? opacity / 100
+				: undefined,
 	};
 
 	const paddingPreview = boxShorthand( style?.spacing?.padding, [
@@ -318,6 +323,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { colour: val ?? '' } )
 						}
+					/>
+
+					<RangeControl
+						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+						value={ opacity }
+						onChange={ ( val ) =>
+							setAttributes( { opacity: val } )
+						}
+						min={ 0 }
+						max={ 100 }
+						step={ 1 }
+						__nextHasNoMarginBottom
 					/>
 
 					<ToggleControl

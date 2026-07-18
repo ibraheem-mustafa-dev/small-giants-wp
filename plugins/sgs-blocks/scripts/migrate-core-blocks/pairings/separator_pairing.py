@@ -131,12 +131,22 @@ def transform(node, text):
             out['widthUnit'] = '%'
             accounting[key] = ('mapped', f'align:{value} -> width:100% (full-bleed divider)')
         elif key == 'opacity':
-            if value in (None, 'alpha-channel'):
-                accounting[key] = ('dropped', "core default opacity ('alpha-channel') — no visual "
-                                              "change, sgs/separator always renders fully opaque")
+            # sgs/separator now has a typed `opacity` (0-100 %, default 100).
+            # core 'alpha-channel' (with the has-alpha-channel-opacity class)
+            # is core's FULL-opacity mode -> sgs opacity:100 (no visual change).
+            # core 'css' WITHOUT that class is core's legacy has-css-opacity
+            # default of 0.4 -> sgs opacity:40.
+            has_alpha_class = bool(remaining_class and 'has-alpha-channel-opacity' in remaining_class)
+            if value in (None, 'alpha-channel') or has_alpha_class:
+                out['opacity'] = 100
+                accounting[key] = ('mapped', "opacity 'alpha-channel' (or has-alpha-channel-opacity "
+                                             "class) = core's full-opacity mode -> opacity:100")
+            elif value == 'css':
+                out['opacity'] = 40
+                accounting[key] = ('mapped', "opacity 'css' without has-alpha-channel-opacity = core's "
+                                             "legacy has-css-opacity default (0.4) -> opacity:40")
             else:
-                raise GapError(f'opacity {value!r} has no sgs/separator mapping (would fix the line '
-                               f'at 40% opacity via has-css-opacity — no equivalent typed attr)')
+                raise GapError(f'opacity {value!r} has no sgs/separator mapping — extend before swapping')
         elif key == 'backgroundColor':
             out['colour'] = f'var(--wp--preset--color--{value})'
             accounting[key] = ('mapped', 'colour (named preset -> CSS custom property)')
