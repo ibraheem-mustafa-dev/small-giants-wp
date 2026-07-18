@@ -3,7 +3,7 @@ doc_type: strategic-plan
 project: small-giants-wp
 title: Header / Footer / Nav — full architecture + builder rebuild (strategic roadmap)
 date: 2026-07-17
-status: DRAFT — awaiting Bean sign-off + plan-validation gate (Gate 0)
+status: VALIDATED — Gate 0 PASSED 2026-07-17 (gap-analysis B ≈3.9 + cold reviewer B 3.67; both GO). 3 fixes applied: P1 model-lock now conditional on build-verdict; R5 (prod-regression/rollback) + R6 (shared-worktree) added. Awaiting Bean sign-off to launch P1 research.
 supersedes_framing_in: .claude/plans/2026-07-16-header-footer-nav-builder-REALIGN-brief.md (this is the build plan the REALIGN brief said to write next)
 grounded_in:
   - .claude/plans/2026-07-16-header-footer-nav-builder-REALIGN-brief.md (goals A/B/C/D + mandatory research gate)
@@ -75,7 +75,7 @@ Critical path: **P1 → P2 → P3 → P4**. P5 depends on P3. P6 is mostly indep
 
 | Phase | What it delivers | Depends on | Gates that must pass | Effort (optimistic → ADHD-tax) |
 |---|---|---|---|---|
-| **P1 — Research → Architecture** (MERGED per owner steer) | (a) deep research: competitor builder matrices (Spectra/Kadence/Astra/Blocksy/Elementor/Bricks/GenerateBlocks), `core/navigation` parity audit, reviews/CRO complaints, **build-vs-adopt verdict** (is there a block-based FSE builder worth adopting?); (b) synthesise → **lock the capability-parity data model** (bar + drawer + 3 breakpoints, same capabilities / independent values); (c) **truth-up Spec 17 §S9 + Spec 34 to live reality** (kill every false line). | — | G1, G3, G6 (adversarial-council on the model) | 1 session (research delegated to parallel Sonnet; Opus synthesises) |
+| **P1 — Research → Architecture** (MERGED per owner steer) | (a) deep research: competitor builder matrices (Spectra/Kadence/Astra/Blocksy/Elementor/Bricks/GenerateBlocks), `core/navigation` parity audit, reviews/CRO complaints, **build-vs-adopt verdict** (is there a block-based FSE builder worth adopting?); **(a) is a HARD SUB-GATE answered FIRST** — deliverable (b) is CONDITIONAL on a "build" outcome. If the verdict is "adopt", do NOT lock a bespoke model this session — instead scope the adaptation and re-plan P2+ (per R1); (b) *[only on a "build" verdict]* synthesise → **lock the capability-parity data model** (bar + drawer + 3 breakpoints, same capabilities / independent values); (c) **truth-up Spec 17 §S9 + Spec 34 to live reality** (kill every false line) — runs regardless of the verdict. | — | G1, G3, G6 (adversarial-council on the model) | 1 session (research delegated to parallel Sonnet; Opus synthesises) |
 | **P2 — Builder design-gate** | The never-written builder-UX design-gate doc (the exact gap that let "no builder" ship silently). A dedicated Site-Editor panel design, reflecting the P1 model. `/adversarial-council` before a line of code. | P1 | G6, G1 | 1 session |
 | **P3 — Capability-parity model build** | Implement the P1 model: same attribute SET on bar + drawer + each breakpoint, independent values. Extend FR-S9-6's 17 tiered attrs to the 78 flat ones + the editor device switcher. Subsumes Spec 34 FR-34-5 drawer settings (don't build twice). | P1 (P2 informs) | G2, G4, G5, phases-never-one-commit (R-31-5) | 2–3 sessions |
 | **P4 — Builder panel build** | Goal A: the actual Site-Editor builder UI (PluginSidebar / custom panel) over the P3 model. Prominent, discoverable, operator-simple. | P3 (needs the model) | G2, G5, G6 | 2–3 sessions |
@@ -84,10 +84,11 @@ Critical path: **P1 → P2 → P3 → P4**. P5 depends on P3. P6 is mostly indep
 
 ## 5. Milestone gates (go / no-go between phases)
 
-- **Gate 0 (before P1 starts): validate THIS plan.** Run `/gap-analysis` on the plan + a cold reviewer;
-  Bean sign-off. Readiness now: dependencies mapped ✓, risks listed ✓, estimates first-attempt (3× tax
-  flagged), first action <5 min ✓ → **proceed with caution** (estimates uncalibrated — this is a
-  first-attempt roadmap for a subsystem with no clean past actuals).
+- **Gate 0 (before P1 starts): validate THIS plan. — PASSED 2026-07-17.** `/gap-analysis` graded B (≈3.9);
+  independent cold reviewer graded B (3.67); both returned GO. One blocking flaw found + fixed (P1
+  model-lock made conditional on the build-vs-adopt verdict); 2 missing risks added (R5 prod-regression,
+  R6 shared-worktree). Readiness: dependencies mapped ✓, risks listed ✓ (now incl. R5/R6), estimates
+  first-attempt (3× tax flagged, uncalibrated), first action <5 min ✓. **Remaining: Bean sign-off to launch P1 research.**
 - **Gate 1 (after P1): architecture sign-off.** The data model + build-vs-adopt verdict + truthed-up
   specs pass `/adversarial-council`; Bean signs off the model. FAIL → do not design the builder.
 - **Gate 2 (after P2): builder design sign-off.** Design-gate doc adversarial-council-passed. FAIL → do not build.
@@ -107,6 +108,14 @@ Critical path: **P1 → P2 → P3 → P4**. P5 depends on P3. P6 is mostly indep
   pass is a P1 deliverable, not an afterthought.
 - **R4 — session sprawl / scope creep** (this is a 6-phase, ~10-session subsystem). Mitigation: one phase
   per session after P1; the LEDGER carries the baton; park aggressively.
+- **R5 — production regression from retrofitting the model onto LIVE blocks.** The 5 shipped blocks are
+  live on BOTH sites (sandybrown + palestine-lives); a P3 model migration can break real headers/footers.
+  HIGH impact. Mitigation: P3 must ship a rollback/revert path + canary-first (sandybrown before
+  palestine-lives) + live-verify on both before close; never one commit (R-31-5). Added at Gate 0.
+- **R6 — shared-worktree collision with Track 1** (Indus / inline-zero, co-active on the same worktree).
+  A cross-track edit or `git add -A` corrupts the other track's work. Mitigation: `git status` +
+  `.git/MERGE_HEAD` check before touching any tracked file; commit path-scoped only; re-check branch in
+  the SAME command as the commit (STOP-RECHECK-BRANCH). Added at Gate 0.
 
 ## 7. First action (≤5 min, zero deps)
 Run Gate 0 — `/gap-analysis` on this plan file, then a cold reviewer. Nothing gets built until the plan

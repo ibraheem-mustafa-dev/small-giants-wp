@@ -275,6 +275,14 @@ picker works with no adaptive-nav ancestor. (5) Gates: dead-controls/F3/control-
 
 ### FR-34-5 — Drawer settings surface (the Spectra list, per-device)
 
+> **Status: NOT-BUILT (research-verified 2026-07-18, Track-2 P1 spec-truth audit).** Only `drawerBg`
+> (Background) exists in the live block; the other four controls (`toggleOpenColour`, `drawerAlign`,
+> `drawerGap`, `drawerPadding`) are specced-but-unbuilt. This is the ONE genuine gap the P1 audit found
+> across Spec 17 §S9 + Spec 34 — every other checkable FR verified accurate against live code. FR-34-5
+> folds into the Track-2 header/footer full-clean-rebuild
+> (`.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`); it may be redesigned there
+> rather than built as specced below.
+
 **Behaviour.** On `sgs/adaptive-nav`, a "Drawer" inspector panel with:
 
 | Setting | Attr | Shape | Default | Notes |
