@@ -18,7 +18,21 @@ Append-only. Most-recent first.
 
 ---
 
-## 2026-07-17 (LATEST) — [INCIDENT] D343: Indus "Our Brands" to hero-grade + new sgs/separator block + brand-strip fixes + the WP border-width var-name collision + extract-css-diff tool + theme-CSS hardcode lint + framework letter-spacing fix
+## 2026-07-18 (LATEST) — [ROUTINE] D344: Track 2 P1 — header/footer/nav architecture decision (BUILD, full clean rebuild)
+
+Track 2 (header/footer/nav full rebuild) Phase 1 = Research → Architecture. Full record: `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`; council record: `.claude/reports/2026-07-18-P1-adversarial-council-gate1.md`; roadmap `.claude/plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md`.
+
+**Verdict: BUILD (not adopt), full clean rebuild, lean-rich.** Fork disqualified on ARCHITECTURE not cost — a forked competitor block's private schema can't be a cloning-converter emit target (Bean's 3rd requirement, §0a.3). Method: Gate 0 (plan validated — gap-analysis B + cold reviewer B) → 3-round research council (5 gather + 4 adversarial personas + 4 rebuttal) → Gate 1 6-persona adversarial council (GO-conditional) → Bean steers → /qc-inline.
+
+**Locked model:** cascade-from-desktop default + capped Advanced override (progressive disclosure); RICH capability set (mega-menu + all header modes IN, as clone targets); on/off capabilities = tiered TRI-STATE (`inherit/on/off`) from day one — dissolves D328/D291 by construction (no flat→object retrofit). Design principles DP1–DP6.
+
+**Bean-locked:** DP2a — a11y feedback INFORMATIONAL-only (never a gate/auto-enforce/agent-wired; framework WCAG 2.1 AA default-render baseline stands — memory `a11y-validation-feedback-informational-not-gate`). DP6 (QC-added) — converter-emittability is a first-class design constraint on P2–P4 + proven in the early vertical slice, NOT a P6 bolt-on.
+
+**Spec truth-up:** Spec 17 §S9 + Spec 34 verified TRUTHFUL against live code (the "specs are lying" premise revised — they're well-grounded). Only edit: FR-34-5 marked NOT-BUILT (only `drawerBg` shipped). The "core-WCAG-supersede" edit-item was a phantom (not in the spec). Committed `6996f5da` (+ DP6/LEDGER this session). Baton → P2 (builder design-gate).
+
+---
+
+## 2026-07-17 — [INCIDENT] D343: Indus "Our Brands" to hero-grade + new sgs/separator block + brand-strip fixes + the WP border-width var-name collision + extract-css-diff tool + theme-CSS hardcode lint + framework letter-spacing fix
 
 Full-day Indus clone-fidelity session on the "Our Brands" band (page 13, palestine-lives). Method locked: **extract the reference's computed CSS and transfer it, not eyeball screenshots** (Bean's directive — screenshot-eyeballing repeatedly missed real diffs).
 
