@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import ServerSideRender from '@wordpress/server-side-render';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -281,35 +282,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( {
-		className,
-		style: {
-			// WP-native background/spacing/border preview — skip-serialised in
-			// block.json, so WordPress no longer auto-previews these; hand-built
-			// to mirror render.php's scoped output (contract §A/§E).
-			...buildWrapperStyle( attributes ),
-			// Per-tile colours — namespaced `--sgs-tile-*` so they never collide
-			// with the universal hover system's `--sgs-hover-*` (this block owns
-			// its own per-tile hover via supports.sgs.ownHover; council-decoupled
-			// 2026-07-18).
-			'--sgs-tile-bg': tileBackgroundColour ? colourVar( tileBackgroundColour ) : undefined,
-			'--sgs-tile-hover-bg': backgroundColourHover ? colourVar( backgroundColourHover ) : undefined,
-			'--sgs-tile-hover-text': textColourHover ? colourVar( textColourHover ) : undefined,
-			'--sgs-tile-hover-border': borderColourHover ? colourVar( borderColourHover ) : undefined,
-			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
-			'--sgs-transition-easing': transitionEasing || undefined,
-			'--sgs-fade-width': fadeEdges ? `${ fadeWidth }px` : undefined,
-			'--sgs-logo-gap': `${ logoGap }px`,
-			'--sgs-tile-padding': `${ tilePadding }px`,
-			'--sgs-tile-radius': `${ tileRadius }px`,
-			'--sgs-logo-fit': logoFit || 'contain',
-			// NB: "-thickness" NOT "-border-width" — the substring "border-width"
-			// trips WP core's [style*="border-width"]{border-style:solid} in the
-			// editor too, painting a phantom black border (D343 collision).
-			'--sgs-tile-border-thickness': tileBorderWidth > 0 ? `${ tileBorderWidth }px` : undefined,
-			'--sgs-tile-border-colour': tileBorderColour ? colourVar( tileBorderColour ) : undefined,
-		},
-	} );
+	const blockProps = useBlockProps();
 
 	const trackStyle = {
 		'--sgs-logo-max-height': `${ maxHeight }px`,
@@ -757,83 +730,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ logos.length === 0 ? (
-					<p className="sgs-brand-strip__empty">
-						{ __(
-							'Add logos in the sidebar panel.',
-							'sgs-blocks'
-						) }
-					</p>
-				) : (
-					<div
-						className="sgs-brand-strip__track"
-						style={ trackStyle }
-					>
-						<div className="sgs-brand-strip__set">
-							{ logos.map( ( logo, i ) => {
-								const mediaUrl =
-									logo.media?.url ||
-									logo.image?.url ||
-									'';
-								if ( ! mediaUrl ) {
-									return null;
-								}
-								const hasCaption = showNames && logo.name;
-								const nameId = hasCaption
-									? `sgs-brand-strip-name-preview-${ i }`
-									: undefined;
-								const tileImg = (
-									<img
-										src={ mediaUrl }
-										alt={ hasCaption ? '' : ( logo.alt || '' ) }
-										className="sgs-brand-strip__logo"
-										style={ {
-											maxHeight: `${ maxHeight }px`,
-										} }
-									/>
-								);
-								if ( ! hasCaption ) {
-									return (
-										<div
-											key={ i }
-											className="sgs-brand-strip__item"
-										>
-											{ tileImg }
-										</div>
-									);
-								}
-								return (
-									<div
-										key={ i }
-										className="sgs-brand-strip__tile"
-									>
-										<div className="sgs-brand-strip__item">
-											{ tileImg }
-										</div>
-										<span
-											id={ nameId }
-											className="sgs-brand-strip__name"
-											style={ {
-												// Editor-canvas preview convenience (base tier only,
-												// mirrors container/quote precedent) — the actual
-												// frontend output is the scoped <style> render.php
-												// emits via sgs_typography_css_rule(), never inline.
-												fontSize: attributes.nameFontSize
-													? `${ attributes.nameFontSize }${ attributes.nameFontSizeUnit || 'px' }`
-													: undefined,
-												fontWeight: attributes.nameFontWeight || undefined,
-												color: nameColour ? colourVar( nameColour ) : undefined,
-											} }
-										>
-											{ logo.name }
-										</span>
-									</div>
-								);
-							} ) }
-						</div>
-					</div>
-				) }
-			</div>
-		</>
+					{ logos.length === 0 ? (
+						<p className="sgs-brand-strip__empty">
+							{ __( 'Add logos in the sidebar panel.', 'sgs-blocks' ) }
+						</p>
+					) : (
+						<ServerSideRender
+							block="sgs/brand-strip"
+							attributes={ attributes }
+						/>
+					) }
+				</div>
+			</>
 	);
 }
