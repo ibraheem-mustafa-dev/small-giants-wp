@@ -21,29 +21,37 @@
  *   .sgs-icon__dashicon (dashicon span)
  *   .sgs-icon__emoji    (emoji span)
  *
- * NO-INLINE (per-block no-inline migration contract, 2026-07-10): the rendered
- * subtree carries ZERO inline CSS PROPERTY DECLARATIONS. `--custom-property:value`
- * VALUES remain on the root element's `style` attribute — they are the
- * established CSS-custom-property-driven mechanism this block already used
- * (--sgs-icon-size / --sgs-icon-hover-* / --sgs-icon-outline-colour), and the
- * contract explicitly permits custom-property values inline (only literal
- * declarations like `color:`/`background-color:` are banned). The two literal
- * declarations this block emitted (icon `color` and shape `background-color`)
- * move into the block's own scoped `.{uid}` <style> tag, alongside the
- * skip-serialised WP `color`/`spacing` supports (base padding/margin/colour —
- * emitted via wp_style_engine_get_styles, matching sgs/heading + sgs/button)
- * and the new paddingTablet/paddingMobile/marginTablet/marginMobile tiers
- * (scoped @media 1023/767).
+ * NO-INLINE (per-block no-inline migration contract, 2026-07-10; ZERO-INLINE
+ * amendment Spec 32 FR-32-4 / D345, 2026-07-18): the rendered subtree carries
+ * ZERO inline `style="…"` of any kind — not even `--custom-property:value`
+ * VALUES. Every custom property this block uses (--sgs-icon-size /
+ * --sgs-icon-hover-* / --sgs-icon-outline-colour / --sgs-icon-shape-padding)
+ * plus the two literal declarations (icon `color`, shape `background-color`)
+ * all move into the block's own scoped `.{uid}.wp-block-sgs-icon` <style> tag,
+ * alongside the skip-serialised WP `color`/`spacing` supports (base padding/
+ * margin/colour — emitted via wp_style_engine_get_styles, matching
+ * sgs/heading + sgs/button) and the paddingTablet/paddingMobile/
+ * marginTablet/marginMobile tiers (scoped @media 1023/767). The block's root
+ * `<div>` carries a `class` attribute only — no `style` key is ever passed to
+ * `get_block_wrapper_attributes()`.
  *
  * `backgroundPadding` is a SINGLE uniform value, not a 4-side box family
- * (Spec 32 §6.1c) — it stays a scalar attribute, but per the migration
- * contract's explicit instruction it is emitted into the scoped <style> as
- * `--sgs-icon-shape-padding` rather than inline (see step 4 below).
+ * (Spec 32 §6.1c) — it stays a scalar attribute, emitted into the scoped
+ * <style> as `--sgs-icon-shape-padding` (see step 4 below).
  *
  * @since 2026-06-02  v0.2.0 - shape backgrounds + hover controls.
  * @since 2026-07-10  v0.3.0 - no-inline migration: color/background-color +
  *                             backgroundPadding scoped; WP color/spacing
  *                             skip-serialised + box-object tiers added.
+ * @since 2026-07-18  v0.3.0 - zero-inline amendment (D345): the remaining
+ *                             inline `--var` custom-property VALUES
+ *                             (--sgs-icon-size / --sgs-icon-hover-colour /
+ *                             --sgs-icon-hover-shape-colour /
+ *                             --sgs-icon-hover-scale / --sgs-icon-outline-
+ *                             colour) moved from the wrapper's inline `style`
+ *                             attribute into the scoped `.{uid}` rule; the
+ *                             `'style'` key is no longer passed to
+ *                             get_block_wrapper_attributes().
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
@@ -177,31 +185,32 @@ if ( 'left' !== $icon_align ) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Inline style — CUSTOM-PROPERTY VALUES ONLY (contract-permitted). Literal
-// declarations (color / background-color) do NOT go here — they are built as
-// scoped rules in step 4 below.
+// 3. Custom-property VALUES + literal declarations — ALL routed to the scoped
+// `.{uid}` <style> tag (D345 zero-inline amendment: no `--var` survives on the
+// wrapper's `style` attribute any more). Assembled here, emitted in step 4.
 // ---------------------------------------------------------------------------
 
 $is_outline = 'outline' === $bg_shape;
-$styles     = array();
+$var_decls  = array();
 
 if ( $icon_size ) {
-	$styles[] = '--sgs-icon-size:' . $icon_size . 'px';
+	$var_decls[] = '--sgs-icon-size:' . $icon_size . 'px';
 }
 // Outline shape: border ring colour lives in a custom property (no solid fill).
 if ( $bg_colour && $is_outline ) {
-	$styles[] = '--sgs-icon-outline-colour:' . sgs_colour_value( $bg_colour );
+	$var_decls[] = '--sgs-icon-outline-colour:' . sgs_colour_value( $bg_colour );
 }
-$styles[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_icon_colour );
+$var_decls[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_icon_colour );
 if ( '' !== $hover_shape_colour ) {
-	$styles[] = '--sgs-icon-hover-shape-colour:' . sgs_colour_value( $hover_shape_colour );
+	$var_decls[] = '--sgs-icon-hover-shape-colour:' . sgs_colour_value( $hover_shape_colour );
 }
-$styles[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
+$var_decls[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
 
 // ---------------------------------------------------------------------------
 // 4. Scoped CSS assembly — literal declarations (icon colour, shape
-// background-color, backgroundPadding custom property, WP colour/spacing
-// supports, responsive tiers) all land here instead of inline.
+// background-color, backgroundPadding custom property, the custom-property
+// VALUES from step 3, WP colour/spacing supports, responsive tiers) all land
+// here instead of inline.
 // ---------------------------------------------------------------------------
 
 $uid      = 'sgs-icn-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
@@ -209,7 +218,7 @@ $root_sel = '.' . $uid . '.wp-block-sgs-icon';
 
 $scoped_css = array();
 
-$root_decls = array();
+$root_decls = $var_decls;
 if ( $icon_colour ) {
 	$root_decls[] = 'color:' . sgs_colour_value( $icon_colour );
 }
@@ -218,9 +227,7 @@ if ( $bg_colour && 'none' !== $bg_shape && ! $is_outline ) {
 	$root_decls[] = 'background-color:' . sgs_colour_value( $bg_colour );
 }
 // backgroundPadding — single uniform value (Spec 32 §6.1c: not a box family),
-// still routed to the scoped <style> as a custom-property declaration per the
-// migration contract's explicit instruction, rather than the wrapper's inline
-// style attribute.
+// routed to the scoped <style> as a custom-property declaration.
 if ( 'none' !== $bg_shape && '' !== $bg_padding ) {
 	$sgs_bg_padding_css = sgs_container_gap_value( $bg_padding );
 	if ( '' !== $sgs_bg_padding_css ) {
@@ -334,9 +341,6 @@ if ( '' !== $preset_bg_slug ) {
 $extra_wrapper_attrs = array(
 	'class' => implode( ' ', $classes ),
 );
-if ( $styles ) {
-	$extra_wrapper_attrs['style'] = implode( ';', $styles ) . ';';
-}
 
 // Informative icon (no link, but aria-label provided): wrapper becomes the img landmark.
 if ( '' === $link_url && '' !== $aria_label ) {
