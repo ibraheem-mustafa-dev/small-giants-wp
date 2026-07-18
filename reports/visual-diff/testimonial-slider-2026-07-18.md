@@ -5,36 +5,53 @@ verdict: PASS
 first_paint_capture_passed: true
 ---
 
-# Visual-diff — `sgs/testimonial-slider` inline-zero Facet B — 2026-07-18
+# Visual-diff — `sgs/testimonial-slider` mobile responsiveness fix — 2026-07-18
 
-Framework inline-zero rollout (Spec 32 FR-32-4 as amended D345), Facet B.
-Converted by a `wp-sgs-developer` agent; reviewed + live-verified.
+Intrinsic-responsiveness fix (Spec 35 "blocks must shrink to fit their container"
+standard). Root-caused + fixed by a `wp-sgs-developer` agent (`/systematic-debugging`),
+independently re-verified live by the orchestrator + a `design-reviewer` agent.
 
-## What changed (`src/blocks/testimonial-slider/`)
+## Problem
 
-- **style.css** — the 3 `.sgs-testimonial-slider[style*="--sgs-hover-*"]:hover`
-  presence-selectors deleted; hover colours now emit as a scoped
-  `{root_sel}:hover{…}` rule from render.php (current info-box pattern, only when
-  set). The old `:has(--sgs-hover-bg)` gate — which was invalid CSS that never
-  matched — was replaced by an unconditional base `transition-property` rule.
-- **render.php** — the block-private `--sgs-slides-visible` value that was printed
-  inline as `style="--sgs-slides-visible:N"` on `.sgs-testimonial-slider__track`
-  now emits into the block's existing scoped-CSS mechanism (`$slider_scoped_css` →
-  `{root_sel} .sgs-testimonial-slider__track{--sgs-slides-visible:N}`);
-  `$track_style_attr` is now always empty.
+At 360px the "Our Partners Love Us!" testimonial-slider section forced the page to
+~894px (whole-page horizontal scroll on mobile).
 
-No value/var-name changes; no block.json change; no version bump.
+## Proven root cause (empirical, not inferred)
 
-## Live verification — palestine-lives.org homepage ("Our Partners Love Us!" slider)
+The carousel's flex chain (`__stage` → `__track` [flex:1; overflow:hidden] →
+`__list` → `__slide` [`flex: 0 0 calc(100%/N)`, flex-shrink:0]) uses a **percentage
+flex-basis**. When an ancestor `.sgs-container--grid` computes its mobile
+`grid-template-columns: 1fr` (= `minmax(auto, 1fr)`) `auto` floor, it reads the grid
+item's **min-content contribution**. A percentage flex-basis against an indefinite
+container falls back to each slide's own content min-content (~792px per card), which
+bubbles up UNDAMPED — proven that `__track`'s `overflow:hidden` does NOT zero a
+min-content *contribution* — becoming the block's min-content and flooring the grid
+track at 894px, overriding the `1fr` column. (Content-width cannot contain this;
+`min-width:0` on the block itself has no effect because the grid *item* is the block's
+parent SECTION.)
 
-| Check | Result |
+## The fix (`src/blocks/testimonial-slider/style.css`)
+
+Added `contain: inline-size;` to `.sgs-testimonial-slider`. CSS containment severs
+the block's inline min-content contribution to any ancestor's intrinsic-size calc, so
+it never floors an ancestor grid/flex track — the block is now **intrinsically
+responsive** regardless of the container it's dropped into. No container/wrapper file
+touched. `contain: inline-size` affects sizing only, not paint, so hover pop-outs are
+unaffected. No block.json change, no version bump.
+
+## Live verification — palestine-lives.org page 13, post-deploy
+
+| Viewport | Result |
 |---|---|
-| testimonial-slider inline `style` on the block/track | **0** (was 1 on `__track`) |
-| render.php `style="--` literal | 0 (`php -l` clean) |
-| 0 live `[style*="--sgs"]` presence-selectors in style.css | yes (1 hit is a comment) |
-| slider renders (rating, quote, attribution, controls) | yes (screenshot `wave2-icon-testimonial-postD345.png` earlier + facetB re-verify) |
+| 360px | `scrollWidth 360 === clientWidth 360` — overflow gone. Grid item `min-width` still `auto` (container UNTOUCHED — fix is purely the slider). 0 real unclipped overflow drivers. |
+| 375px | `scrollWidth 360 === clientWidth 360` — card, 5 stars, quote, name/role, arrows, dots, pause button all legible + correctly placed (orchestrator screenshot). |
+| 768px | split card+image layout clean; the residual 20px is an unrelated `.sgs-brand-strip` marquee (proven by disabling the slider — number unchanged), not the slider. |
+| 1440px | full split layout intact, no regression. |
+
+Build: `npm run build` PASS incl. `check-no-inline` (0 inline styles) + all gates; no
+version bump. Deployed blocks-only to palestine-lives.
 
 ## first_paint_capture_passed
 
-The "Our Partners Love Us!" testimonial slider renders correctly at first paint
-with zero inline styling on the block/track; no regression.
+The slider renders correctly at first paint at 360/375/768/1440 with zero overflow and
+no squashing/clipping; `design-reviewer` verdict: PASS at all three breakpoints.

@@ -1,7 +1,36 @@
 /* ===== SGS Testimonial Slider — Frontend + Editor ===== */
 
+/*
+ * inline-size containment — root cause of a mobile overflow bug (verified live
+ * on palestine-lives.org page 13 at 360px, 2026-07-18):
+ *
+ * The carousel's flex chain (__stage -> __track [flex:1, overflow:hidden] ->
+ * __list [flex row] -> __slide [flex:0 0 calc(100%/N), flex-shrink:0]) uses a
+ * PERCENTAGE flex-basis on each slide. When a browser computes this block's
+ * MIN-CONTENT CONTRIBUTION (not a definite-width layout pass — e.g. when an
+ * ancestor `grid-template-columns: 1fr` / `minmax(auto,1fr)` track needs to
+ * size its `auto` minimum), a percentage flex-basis against an indefinite
+ * container falls back to each item's own content-based min-content. Each
+ * testimonial card's own min-content (~792px, from its text/rating layout)
+ * therefore bubbles UNDAMPED all the way up through __track's overflow:hidden
+ * (verified empirically: overflow:hidden alone does NOT zero this
+ * contribution) to become THIS block's min-content contribution — which an
+ * ancestor CSS Grid then uses as the `auto` track's floor, overriding the
+ * mobile `1fr` column and forcing the whole page to ~894px.
+ *
+ * `contain: inline-size` severs that dependency: it makes this block's own
+ * intrinsic size independent of its descendants' content, so its min-content
+ * contribution to ANY ancestor (grid, flex, or block) is 0 in the inline
+ * axis. The block still fills its normal-flow container at its used width
+ * (verified: shrinks cleanly to the viewport, arrows + single slide reflow
+ * correctly, no clipped/squished content) — it is the carousel's own
+ * `overflow:hidden` track that already exists to clip the extra slides, so
+ * containment loses nothing visually. This fixes the block INTRINSICALLY —
+ * no container/grid-layer change needed.
+ */
 .sgs-testimonial-slider {
 	position: relative;
+	contain: inline-size;
 }
 
 /* ===== Track — transform-based carousel viewport ===== */
