@@ -4,7 +4,7 @@
   "private": true,
   "description": "Custom Gutenberg block library for Small Giants Studio",
   "scripts": {
-    "prebuild": "npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check && python scripts/ledger/declare_input.py --check && node scripts/audit-inline-styling.js --check && python scripts/check-box-family-guard.py --check && python scripts/check-no-core-blocks.py && python -m pytest scripts/oracle/tests/ -q",
+    "prebuild": "npm run clean:build && node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check && python scripts/ledger/declare_input.py --check && node scripts/audit-inline-styling.js --check && python scripts/check-box-family-guard.py --check && python scripts/check-no-core-blocks.py && python scripts/no-inline/check-no-inline.py --live-default && python -m pytest scripts/oracle/tests/ -q",
     "prestart": "node scripts/generate-icons.js && node scripts/generate-extension-attributes.js && node scripts/check-dead-controls.js --check && node scripts/check-hardcoded-render-defaults.js --check && node scripts/check-control-ux.js --check && node scripts/check-product-search-guards.js && python scripts/db-consistency/run.py --check && python scripts/cheat-gate/run.py --check && python scripts/excluded-gate/run.py --check && python scripts/ledger/coverage_check.py --check && python scripts/check-atomic-slug-literals.py --check",
     "check:dead-controls": "node scripts/check-dead-controls.js --check",
     "check:hardcoded-defaults": "node scripts/check-hardcoded-render-defaults.js --check",
@@ -13,6 +13,7 @@
     "check:db-consistency": "python scripts/db-consistency/run.py --report",
     "check:atomic-slug-literals": "python scripts/check-atomic-slug-literals.py --check",
     "check:inline-styling": "node scripts/audit-inline-styling.js --check",
+    "check:no-inline": "python scripts/no-inline/check-no-inline.py --live-default",
     "check:box-family": "python scripts/check-box-family-guard.py --check",
     "check:cheats": "python scripts/cheat-gate/run.py --report",
     "check:excluded": "python scripts/excluded-gate/run.py --report",
