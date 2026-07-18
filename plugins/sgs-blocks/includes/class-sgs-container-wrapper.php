@@ -830,16 +830,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// First call to get_block_wrapper_attributes() — before shapes/uid.
 			// This mirrors the original render.php ~line 398 first-pass call.
 			// ----------------------------------------------------------------
-			$sgs_wrapper_base = array( 'class' => implode( ' ', $classes ) );
-			// D345 (Spec 32 FR-32-4, Facet A): only emit the `style` key when $styles is
-			// non-empty. An empty array previously produced `implode(';',[]).';'` = `;`,
-			// which WP renders as an empty `style=""` on every content-KIND composite (and
-			// header/footer) root. The non-empty `--var` path is unchanged here (Facet B).
-			if ( ! empty( $styles ) ) {
-				$sgs_wrapper_base['style'] = implode( ';', $styles ) . ';';
-			}
+			// D345 Facet B: NO inline `style` on the root — the per-instance `--var`
+			// VALUES ($styles) emit as a scoped `.$uid{…}` rule in the block's <style>
+			// (the Facet-B block after $uid). Only the class + caller's extra attrs go on
+			// the element; an empty $styles no longer produces a stray `style=""`.
 			$wrapper_attributes = get_block_wrapper_attributes(
-				array_merge( $sgs_wrapper_base, $opt_extra_attrs )
+				array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
 			);
 
 			// ----------------------------------------------------------------
@@ -1019,13 +1015,29 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $object_model
 				|| '' !== $overlay_decls
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
-				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
+				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) )
+				// D345 Facet B: any remaining custom-property VALUES ($styles — the
+				// composite's extra_styles + ken-burns/svg/grid-item vars) also need a
+				// scoped .$uid home, because they are no longer emitted inline (Spec 32
+				// FR-32-4 as amended). Without a uid there is nowhere to scope them.
+				|| ! empty( $styles );
 
 			$uid = '';
 			if ( $needs_uid ) {
 				$anchor    = ( $block instanceof \WP_Block ) ? ( $block->parsed_block['attrs']['anchor'] ?? '' ) : '';
 				$uid       = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . $anchor ), 0, 8 );
 				$classes[] = $uid;
+			}
+
+			// D345 Facet B: the remaining per-instance custom-property VALUES ($styles —
+			// extra_styles passed by the composite + ken-burns/svg/grid-item vars) emit as
+			// a scoped `.$uid{…}` rule in the block's <style>, NEVER inline. Inline `--var`
+			// is forbidden (Spec 32 FR-32-4 as amended) AND breaks any `[style*="--var"]`
+			// presence-selector. The vars are consumed by the block's own style.css rules
+			// via var() on the same element regardless of where they are declared; $uid is
+			// guaranteed set here whenever $styles is non-empty (see $needs_uid above).
+			if ( ! empty( $styles ) && $uid ) {
+				$responsive_css .= '.' . $uid . '{' . implode( ';', $styles ) . ';}';
 			}
 
 			// Grid/flex scoped-CSS selector — the __inner content band when
@@ -1397,15 +1409,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Mirrors container/render.php conditional rebuild at ~line 581.
 			// ----------------------------------------------------------------
 			if ( $shape_top || $shape_bottom || $uid ) {
-				$sgs_wrapper_base = array( 'class' => implode( ' ', $classes ) );
-				// D345 (Spec 32 FR-32-4, Facet A): only emit the `style` key when $styles is
-				// non-empty (see the first-call site above). This is the OPERATIVE root call
-				// for any composite with a $uid/shape (it rebuilds + overwrites the first).
-				if ( ! empty( $styles ) ) {
-					$sgs_wrapper_base['style'] = implode( ';', $styles ) . ';';
-				}
+				// D345 Facet B: NO inline `style` — the per-instance `--var` VALUES ($styles)
+				// emit as a scoped `.$uid{…}` rule in the block's <style> (Facet-B block after
+				// $uid). This is the OPERATIVE root call for any composite with a $uid/shape.
 				$wrapper_attributes = get_block_wrapper_attributes(
-					array_merge( $sgs_wrapper_base, $opt_extra_attrs )
+					array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
 				);
 			}
 

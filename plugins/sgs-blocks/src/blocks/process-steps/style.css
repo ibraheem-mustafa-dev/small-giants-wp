@@ -139,16 +139,16 @@
 
 /* ===== Hover States ===== */
 
-.sgs-process-steps[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
+.sgs-process-steps:hover {
+	background-color: var(--sgs-hover-bg, transparent);
 }
 
-.sgs-process-steps[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
+.sgs-process-steps:hover {
+	color: var(--sgs-hover-text, inherit);
 }
 
-.sgs-process-steps[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
+.sgs-process-steps:hover {
+	border-color: var(--sgs-hover-border, transparent);
 }
 
 /* Hover effect variants — duration/easing driven by CSS vars set on wrapper */

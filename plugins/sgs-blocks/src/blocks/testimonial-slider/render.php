@@ -225,14 +225,27 @@ if ( '' !== $slider_preset_bg_slug ) {
 // SGS_Container_Wrapper merges these with any container-level style declarations
 // (gap, align/maxWidth/contentWidth, etc.) before calling get_block_wrapper_attributes().
 $css_vars = sgs_transition_vars( $attributes );
+
+// Hover colours emit as a scoped `.{uid}.sgs-testimonial-slider:hover{…}` rule
+// (assembled below, appended to $slider_scoped_css), NOT as inline
+// `--sgs-hover-*` VALUES. An inline `--var` (a) leaves a `style` attribute on
+// the root and (b) breaks the former `[style*="--sgs-hover-*"]`
+// presence-selector gate the moment the value moves scoped (Spec 32 FR-32-4 as
+// amended 2026-07-18 / D345; footprint GOTCHA F). A per-instance `:hover` rule
+// beats the base rule and applies only when the operator set a hover colour —
+// variant-safe, so no resting-value fallback is needed (mirrors sgs/info-box).
+$slider_hover_decls = array();
 if ( $hover_bg_colour ) {
-	$css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg_colour );
+	$slider_hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg_colour );
 }
 if ( $hover_text_colour ) {
-	$css_vars[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+	$slider_hover_decls[] = 'color:' . sgs_colour_value( $hover_text_colour );
 }
 if ( $hover_border_colour ) {
-	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
+}
+if ( $slider_hover_decls ) {
+	$slider_scoped_css .= $root_sel . ':hover{' . implode( ';', $slider_hover_decls ) . '}';
 }
 
 // ── Own extra attrs — carousel data-* + ARIA region attrs ─────────────────
@@ -251,7 +264,12 @@ $slider_extra_attrs = array(
 );
 
 // ── Track style ────────────────────────────────────────────────────────────
-$track_style_attr = ' style="--sgs-slides-visible:' . absint( $slides_visible ) . '"';
+// Scoped rule (not an inline `style=` attr) — this block's own `<style>`
+// mechanism ($slider_scoped_css / $root_sel, built above) already exists, so
+// the track's --sgs-slides-visible value rides that channel instead of a
+// literal `style=` attribute on the __track element.
+$slider_scoped_css .= $root_sel . ' .sgs-testimonial-slider__track{--sgs-slides-visible:' . absint( $slides_visible ) . '}';
+$track_style_attr   = '';
 
 // ── Unique prefix for slide/dot IDs ────────────────────────────────────────
 $slider_prefix = wp_unique_id( 'sgs-slider-' );

@@ -139,16 +139,16 @@
 
 /* ===== Custom Hover States (editor-configurable) ===== */
 
-.sgs-card-grid[style*="--sgs-hover-bg"] .sgs-card-grid__item:hover {
-	background-color: var(--sgs-hover-bg);
+.sgs-card-grid__item:hover {
+	background-color: var(--sgs-hover-bg, transparent);
 }
 
-.sgs-card-grid[style*="--sgs-hover-text"] .sgs-card-grid__item:hover {
-	color: var(--sgs-hover-text);
+.sgs-card-grid__item:hover {
+	color: var(--sgs-hover-text, inherit);
 }
 
-.sgs-card-grid[style*="--sgs-hover-border"] .sgs-card-grid__item:hover {
-	border-color: var(--sgs-hover-border);
+.sgs-card-grid__item:hover {
+	border-color: var(--sgs-hover-border, transparent);
 }
 
 /* ===== Hover Effects ===== */

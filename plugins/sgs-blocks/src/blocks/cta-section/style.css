@@ -288,18 +288,25 @@
 	outline-offset: 3px;
 }
 
-/* ===== Custom Hover States (editor-configurable) ===== */
+/* ===== Custom Hover States (editor-configurable) =====
+ * The `--sgs-hover-*` VALUES are now emitted by SGS_Container_Wrapper as a
+ * scoped `.uid{…}` rule (zero-inline, GOTCHA F), NOT an inline style
+ * attribute, so these rules must NOT gate on `[style*="--sgs-hover-…"]`
+ * (that selector no longer matches after the no-inline conversion and
+ * silently killed the hover colours). Gate via `var(--x, <inert-fallback>)`
+ * instead — unset → falls through to the resting value (no visible change on
+ * hover), set → applies (mirrors sgs/brand-strip's per-tile hover fix). */
 
-.sgs-cta-section[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
+.sgs-cta-section:hover {
+	background-color: var(--sgs-hover-bg, var(--wp--preset--color--primary-dark));
 }
 
-.sgs-cta-section[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
+.sgs-cta-section:hover {
+	color: var(--sgs-hover-text, inherit);
 }
 
-.sgs-cta-section[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
+.sgs-cta-section:hover {
+	border-color: var(--sgs-hover-border, transparent);
 }
 
 /* ===== Responsive ===== */

@@ -379,51 +379,89 @@
  * Default lift: card/flat styles get a subtle translateY(-4px) lift plus
  * shadow elevation on hover. This fires unconditionally — no attribute needed.
  * GPU-composited via transform; no paint cost.
+ *
+ * Attribute-driven scale/shadow (--sgs-hover-scale / --sgs-hover-shadow) are
+ * COMPOSED into this same declaration for card/flat so a configured scale
+ * still lifts and a configured shadow still overrides the default elevation,
+ * instead of a separate same-specificity rule clobbering the lift outright.
+ * Card styles WITHOUT a default lift (overlay, minimal) get their own
+ * standalone rule below; both rules share (0,2,0) specificity and this one
+ * is declared LAST, so it wins by source order on the elements it targets.
  */
+.sgs-post-grid__card:hover {
+	transform: scale( var( --sgs-hover-scale, 1 ) );
+	box-shadow: var( --sgs-hover-shadow, none );
+}
+
 .sgs-post-grid__card--card:hover,
 .sgs-post-grid__card--flat:hover {
-	transform: translateY( -4px );
-	box-shadow: 0 10px 24px rgba( 0, 0, 0, 0.10 );
-}
-
-/*
- * Attribute-driven scale transform (--sgs-hover-scale defaults to 1 = no-op).
- * Only fires when the attribute is explicitly set to something other than 1.
- */
-.sgs-post-grid__card:has( ~ ) {
-	/* placeholder — actual scale applied below */
-}
-
-.sgs-post-grid__card[style*="--sgs-hover-scale"]:hover {
-	transform: scale( var( --sgs-hover-scale ) );
-}
-
-/* Attribute-driven shadow elevation */
-.sgs-post-grid__card[style*="--sgs-hover-shadow"]:hover {
-	box-shadow: var( --sgs-hover-shadow );
+	transform: translateY( -4px ) scale( var( --sgs-hover-scale, 1 ) );
+	box-shadow: var( --sgs-hover-shadow, 0 10px 24px rgba( 0, 0, 0, 0.10 ) );
 }
 
 /*
  * Attribute-driven hover colour shifts. The --sgs-hover-bg/text/border custom
- * properties are set as inline styles on the .sgs-post-grid wrapper by
- * render.php and inherit down to the card. Each rule is gated on the wrapper
- * actually carrying that property so cards without the attribute are unaffected.
- * Mirrors the info-box `--sgs-hover-*` pattern.
+ * property VALUES are now emitted by the shared wrapper as a scoped `.{uid}{…}`
+ * rule (GOTCHA F, D345 Facet B) rather than inline on `.sgs-post-grid`, so the
+ * old `[style*="--sgs-hover-…"]` presence-gate no longer matches. Fixed per
+ * the info-box / brand-strip pattern: drop the gate, gate on the VAR itself
+ * via `var(--x, <resting-value>)` so an unset var is a true no-op.
+ *
+ * Background falls back to the card's own resting background — transparent
+ * for the minimal card style, which never uses --sgs-card-bg.
  */
-.sgs-post-grid[style*="--sgs-hover-bg"] .sgs-post-grid__card:hover {
-	background-color: var( --sgs-hover-bg );
+.sgs-post-grid__card:not( .sgs-post-grid__card--minimal ):hover {
+	background-color: var( --sgs-hover-bg, var( --sgs-card-bg ) );
 }
 
-.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover,
-.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__title a,
-.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__excerpt,
-.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__meta,
-.sgs-post-grid[style*="--sgs-hover-text"] .sgs-post-grid__card:hover .sgs-post-grid__readmore {
-	color: var( --sgs-hover-text );
+.sgs-post-grid__card--minimal:hover {
+	background-color: var( --sgs-hover-bg, transparent );
 }
 
-.sgs-post-grid[style*="--sgs-hover-border"] .sgs-post-grid__card:hover {
-	border-color: var( --sgs-hover-border );
+/*
+ * Text colour falls back to each element's OWN resting colour var, not a
+ * blanket `inherit` — title/excerpt/meta/readmore each carry their own
+ * configured colour and `inherit` would silently discard it whenever
+ * --sgs-hover-text isn't set. The card root itself has no explicit colour
+ * of its own, so `inherit` is the correct resting value there.
+ */
+.sgs-post-grid__card:hover {
+	color: inherit;
+}
+
+.sgs-post-grid__card:hover .sgs-post-grid__title a {
+	color: var( --sgs-hover-text, var( --sgs-pg-title-colour, var( --wp--preset--color--text, #1e1e1e ) ) );
+}
+
+.sgs-post-grid__card:hover .sgs-post-grid__excerpt {
+	color: var( --sgs-hover-text, var( --sgs-pg-excerpt-colour, var( --wp--preset--color--text-muted, #555 ) ) );
+}
+
+.sgs-post-grid__card:hover .sgs-post-grid__meta {
+	color: var( --sgs-hover-text, var( --sgs-pg-meta-colour, var( --wp--preset--color--text-muted, #555 ) ) );
+}
+
+.sgs-post-grid__card:hover .sgs-post-grid__readmore {
+	color: var( --sgs-hover-text, var( --sgs-pg-readmore-colour, var( --wp--preset--color--primary, #1a3a5c ) ) );
+}
+
+/*
+ * Border colour falls back to each card style's own resting border colour.
+ * card/overlay have no visible border (border-width 0) so `transparent` is a
+ * true no-op there; flat and minimal DO carry a real border and must restore
+ * it — not go invisible — when --sgs-hover-border isn't configured.
+ */
+.sgs-post-grid__card--card:hover,
+.sgs-post-grid__card--overlay:hover {
+	border-color: var( --sgs-hover-border, transparent );
+}
+
+.sgs-post-grid__card--flat:hover {
+	border-color: var( --sgs-hover-border, var( --wp--preset--color--border-subtle, #e0e0e0 ) );
+}
+
+.sgs-post-grid__card--minimal:hover {
+	border-top-color: var( --sgs-hover-border, var( --wp--preset--color--primary, currentColor ) );
 }
 
 /* Image zoom — enabled by data-hover-image-zoom="true" on wrapper */

@@ -324,27 +324,21 @@
 	}
 }
 
-/* ===== Hover States ===== */
+/* ===== Hover States =====
+ * The hover colours are emitted per-instance by render.php as a scoped
+ * `.{uid}.sgs-testimonial-slider:hover { background-color / color / border-color }`
+ * rule (Spec 32 FR-32-4 as amended 2026-07-18 / D345) — NOT via inline
+ * `--sgs-hover-*` VALUES gated by an `[style*="--sgs-hover-…"]` presence-selector.
+ * That gate silently STOPPED matching the instant the var moved off the inline
+ * `style` attribute into the wrapper's scoped rule (footprint GOTCHA F), killing
+ * the hover colour with no error. The per-instance `:hover` rule (specificity
+ * 0,3,0) beats the variant base and applies only when a hover colour is set, so
+ * it is variant-safe with no resting-value fallback (mirrors sgs/info-box). */
 
-/* Apply hover colours only when the CSS variables are set */
-.sgs-testimonial-slider:has(--sgs-hover-bg),
-.sgs-testimonial-slider:has(--sgs-hover-text),
-.sgs-testimonial-slider:has(--sgs-hover-border) {
+.sgs-testimonial-slider {
 	transition-property: background-color, color, border-color, box-shadow, transform;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-}
-
-.sgs-testimonial-slider[style*="--sgs-hover-bg"]:hover {
-	background-color: var(--sgs-hover-bg);
-}
-
-.sgs-testimonial-slider[style*="--sgs-hover-text"]:hover {
-	color: var(--sgs-hover-text);
-}
-
-.sgs-testimonial-slider[style*="--sgs-hover-border"]:hover {
-	border-color: var(--sgs-hover-border);
 }
 
 /* Hover effect variants */
