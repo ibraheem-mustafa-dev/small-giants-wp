@@ -1,0 +1,1195 @@
+{
+  "_meta": {
+    "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
+    "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
+    "count": 79,
+    "generator": "scripts/consistency/build-roster.py"
+  },
+  "blocks": [
+    {
+      "slug": "sgs/accordion",
+      "title": "SGS Accordion",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": "core/accordion",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "title": "SGS Accordion Item",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": "core/accordion-item,core/details",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/adaptive-nav",
+      "title": "SGS Adaptive Navigation",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/audio",
+      "title": "SGS Audio",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/audio",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "title": "SGS Brand Strip",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "title": "SGS Breadcrumbs",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/breadcrumbs",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "title": "Business Info",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "title": "SGS Button",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/button",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "title": "Buybox",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "title": "SGS Card Grid",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "title": "SGS Cart",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "title": "Collapsible Text",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "title": "SGS Container",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": "core/group,core/row,core/stack,core/columns,core/column",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/content-collection",
+      "title": "Content Collection",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "title": "SGS Countdown Timer",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "title": "SGS Counter",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "title": "SGS CTA Section",
+      "category": "sgs-content",
+      "tier": "class-section",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "title": "SGS Decorative Image",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/feature-grid",
+      "title": "SGS Feature Grid",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "title": "Filter Search",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "title": "SGS Form",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": "core/form,core/form-submit-button",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-address",
+      "title": "SGS Address Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "title": "SGS Checkbox Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-consent",
+      "title": "SGS Consent Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-date",
+      "title": "SGS Date Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-email",
+      "title": "SGS Email Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-file",
+      "title": "SGS File Upload Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-hidden",
+      "title": "SGS Hidden Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "title": "SGS Number Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-phone",
+      "title": "SGS Phone Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-radio",
+      "title": "SGS Radio Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-select",
+      "title": "SGS Select Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "title": "SGS Text Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "title": "SGS Textarea Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "title": "SGS Tiles Field",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "title": "SGS Form Review",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "title": "SGS Form Step",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "title": "SGS Image Gallery",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/gallery",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "title": "SGS Google Reviews",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "title": "Heading",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/heading",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "title": "SGS Hero",
+      "category": "sgs-layout",
+      "tier": "class-section",
+      "replaces": "core/cover,core/media-text",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "title": "SGS Icon",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/icon",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "title": "SGS Icon List",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "title": "SGS Info Box",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "title": "Label",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "title": "SGS Media",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/image,core/video",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/mega-menu",
+      "title": "SGS Mega Menu",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "title": "SGS Modal",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "title": "SGS Button Group",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/buttons",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "title": "SGS Menu",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "title": "SGS Notice Banner",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "title": "SGS Option Picker",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "title": "SGS Post Grid",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/latest-posts",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "title": "SGS Pricing Table",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "title": "SGS Process Steps",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "title": "Product Card",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "title": "SGS Product FAQ",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "title": "SGS Product FAQ Item",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "title": "Product Search",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "title": "Quote",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/quote,core/pullquote",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "title": "SGS Responsive Logo",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/site-logo",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": false,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "title": "SGS Separator",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/separator",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "title": "SGS Site Footer",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/site-footer-row",
+      "title": "SGS Footer Row",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "title": "SGS Site Header",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "title": "SGS Header Row",
+      "category": "sgs-layout",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "title": "SGS Social Icons",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/social-links,core/social-link",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "title": "SGS Star Rating",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "title": "SGS Tab",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": "core/tab",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "title": "SGS Table of Contents",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/table-of-contents",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "title": "SGS Tabs",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": "core/tabs",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "title": "SGS Team Member",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "title": "SGS Testimonial",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "title": "SGS Testimonial Slider",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "title": "Text",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/paragraph",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "title": "SGS Timeline",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "title": "SGS Trust Bar",
+      "category": "sgs-content",
+      "tier": "class-section",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "title": "SGS Trustpilot Reviews",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": true,
+        "animation": true
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "title": "SGS WhatsApp CTA",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    }
+  ]
+}
