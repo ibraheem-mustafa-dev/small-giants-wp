@@ -13,6 +13,7 @@ import {
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
+	ResponsiveControl,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	TypographyControls,
@@ -343,40 +344,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Layout', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<RangeControl
-						label={ __( 'Columns — desktop', 'sgs-blocks' ) }
-						help={ __(
-							'How many logos fill the width on desktop. Tiles resize to fit exactly this many.',
-							'sgs-blocks'
-						) }
-						value={ columnsDesktop ?? 8 }
-						onChange={ ( val ) =>
-							setAttributes( { columnsDesktop: val } )
-						}
-						min={ 1 }
-						max={ 12 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Columns — tablet', 'sgs-blocks' ) }
-						value={ columnsTablet ?? 4 }
-						onChange={ ( val ) =>
-							setAttributes( { columnsTablet: val } )
-						}
-						min={ 1 }
-						max={ 10 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Columns — mobile', 'sgs-blocks' ) }
-						value={ columnsMobile ?? 2 }
-						onChange={ ( val ) =>
-							setAttributes( { columnsMobile: val } )
-						}
-						min={ 1 }
-						max={ 6 }
-						__nextHasNoMarginBottom
-					/>
+					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
+						{ ( bp ) => {
+							const cols = {
+								desktop: { attr: 'columnsDesktop', value: columnsDesktop ?? 8, max: 12 },
+								tablet: { attr: 'columnsTablet', value: columnsTablet ?? 4, max: 10 },
+								mobile: { attr: 'columnsMobile', value: columnsMobile ?? 2, max: 6 },
+							}[ bp ];
+							return (
+								<RangeControl
+									label={ __( 'Columns', 'sgs-blocks' ) }
+									hideLabelFromVision
+									help={ __( 'How many logos fill the width on this device. Tiles resize to fit exactly this many.', 'sgs-blocks' ) }
+									value={ cols.value }
+									onChange={ ( val ) => setAttributes( { [ cols.attr ]: val } ) }
+									min={ 1 }
+									max={ cols.max }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<RangeControl
 						label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
 						help={ __(
