@@ -1,0 +1,7 @@
+{
+  "_meta": {
+    "purpose": "Accepted findings for scripts/audit-block-file-consistency.py — WARN-ONLY tool, this baseline exists for future net-new-only comparison, not to gate a build.",
+    "format": "accepted: [ { type, block, attr, file, reason } ] — same shape as a finding object printed by --json."
+  },
+  "accepted": []
+}
