@@ -23,7 +23,10 @@
 	],
 	"supports": {
 		"sgs": {
-			"imageControls": false
+			"imageControls": false,
+			"hideExtensions": [
+				"animation"
+			]
 		},
 		"html": false,
 		"anchor": false,

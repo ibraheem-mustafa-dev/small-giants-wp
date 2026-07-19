@@ -49,30 +49,16 @@ const CORE_ANIMATION_BLOCKS = [
 ];
 
 /**
- * Inner/child blocks that should NOT show the animation panel.
- * These are never scroll targets — only their parents are.
+ * Which blocks the animation extension applies to at all. Per-block opt-outs
+ * (inner/child blocks that are never independent scroll targets — tabs,
+ * accordion items, form steps, and the leaf form-field inputs) are NO LONGER a
+ * hardcoded denylist here (removed 2026-07-19, D-pending): each such block
+ * declares `supports.sgs.hideExtensions: ["animation"]` in its own block.json
+ * and is filtered out by the isExtensionHidden() check in the two consumers
+ * below — the same declarative mechanism every other universal extension uses
+ * (R-31-1: no hardcoded per-block dicts in extension code).
  */
-const ANIMATION_DENYLIST = [
-	'sgs/tab',
-	'sgs/accordion-item',
-	'sgs/form-step',
-	'sgs/form-review',
-	'sgs/form-field-text',
-	'sgs/form-field-email',
-	'sgs/form-field-phone',
-	'sgs/form-field-textarea',
-	'sgs/form-field-checkbox',
-	'sgs/form-field-radio',
-	'sgs/form-field-select',
-	'sgs/form-field-tiles',
-	'sgs/form-field-file',
-	'sgs/form-field-consent',
-];
-
 function shouldHaveAnimation( name ) {
-	if ( ANIMATION_DENYLIST.includes( name ) ) {
-		return false;
-	}
 	return name.startsWith( 'sgs/' ) || CORE_ANIMATION_BLOCKS.includes( name );
 }
 
