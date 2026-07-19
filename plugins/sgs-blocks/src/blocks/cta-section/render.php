@@ -11,7 +11,14 @@
  *   ribbon, layout, gradientPreset, backgroundImage, backgroundMedia,
  *   backgroundImageOpacity, stats, background/text/border colourHover,
  *   transitionDuration, transitionEasing,
- *   textAlignMobile/Tablet/Desktop (responsive CSS targeting children).
+ *   textAlign (native typography support — targets the headline child).
+ *
+ * Spec 35 Task 5 (2026-07-19): removed 12 genuinely-dead attrs (headlineColour,
+ * bodyColour, buttonColour, buttonBackground, buttonStyle, buttonSize,
+ * buttonBorderColour, buttonBorderWidth, buttonBorderRadius, textAlignMobile,
+ * textAlignTablet, textAlignDesktop) — zero repo-wide references outside their
+ * own block.json declaration; button styling lives on the child multi-button
+ * block, and textAlign is handled by the single native `textAlign` support.
  *
  * BOX-GROUP (contract §B, 2026-07-09): paddingTablet/paddingMobile,
  * marginTablet/marginMobile, contentBandPadding/Tablet/Mobile are box OBJECTS
