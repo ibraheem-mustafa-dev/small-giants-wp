@@ -41,17 +41,14 @@ $min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attrib
 
 // Gap is now a full CSS value string (e.g. "24px") or a bare WP spacing slug
 // (e.g. "40"). sgs_container_gap_value() handles both formats.
-// Back-compat: pre-consolidation posts may store a bare number (e.g. 24) with
-// a separate gapUnit attr (e.g. "px"). deprecated.js v3 migrates those on the
-// next editor open. On the server side we handle the legacy format defensively:
-// if gap is numeric-only (no unit letters), assume gapUnit was "px".
-$gap_raw        = isset( $attributes['gap'] ) ? (string) $attributes['gap'] : '24px';
-$gap_unit_legacy = isset( $attributes['gapUnit'] ) ? (string) $attributes['gapUnit'] : 'px';
+// Back-compat: pre-consolidation posts may store a bare number (e.g. 24) for gap.
+// Normalise it to a px value. The retired gapUnit attr is no longer declared, so WP
+// strips it before render (the old unit was always "px") — reading it would be a
+// dead legacy-attr fallback (R-31-14).
+$gap_raw = isset( $attributes['gap'] ) ? (string) $attributes['gap'] : '24px';
 if ( '' !== $gap_raw && preg_match( '/^\d+$/', $gap_raw ) ) {
-	// Bare digit-only number — reconstruct the full CSS value using the legacy unit
-	// (defaulting to "px"). The previous guard excluded the px case, which was wrong:
-	// the old render used $gap.$unit where unit defaulted to "px", so "24" → "24px".
-	$gap_raw = $gap_raw . $gap_unit_legacy;
+	// Bare digit-only number — append "px" (e.g. "24" → "24px").
+	$gap_raw = $gap_raw . 'px';
 }
 $gap_css = sgs_container_gap_value( $gap_raw );
 if ( '' === $gap_css ) {

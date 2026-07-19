@@ -110,10 +110,6 @@
 			"type": "string",
 			"default": "text-muted"
 		},
-		"separatorColour": {
-			"type": "string",
-			"default": "border-subtle"
-		},
 		"cardStyle": {
 			"type": "string",
 			"default": "elevated"

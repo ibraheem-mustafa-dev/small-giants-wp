@@ -249,12 +249,6 @@
 			"type": "string",
 			"default": "accent"
 		},
-		"ctaPrimaryColour": {
-			"type": "string"
-		},
-		"ctaPrimaryBackground": {
-			"type": "string"
-		},
 		"ctaSecondaryText": {
 			"type": "string",
 			"role": "content"
@@ -266,12 +260,6 @@
 		"ctaSecondaryStyle": {
 			"type": "string",
 			"default": "outline"
-		},
-		"ctaSecondaryColour": {
-			"type": "string"
-		},
-		"ctaSecondaryBackground": {
-			"type": "string"
 		},
 		"backgroundColourHover": {
 			"type": "string",

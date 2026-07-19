@@ -150,10 +150,6 @@
 			"type": "boolean",
 			"default": false
 		},
-		"staggerDelay": {
-			"type": "number",
-			"default": 80
-		},
 		"sgsAnimation": {
 			"type": "string",
 			"default": "fade-up"

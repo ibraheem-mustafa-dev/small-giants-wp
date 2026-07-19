@@ -91,13 +91,6 @@
 			"type": "string",
 			"default": "info"
 		},
-		"textColour": {
-			"type": "string",
-			"default": "text"
-		},
-		"textFontSize": {
-			"type": "string"
-		},
 		"contentWidth": {
 			"type": "string",
 			"default": ""

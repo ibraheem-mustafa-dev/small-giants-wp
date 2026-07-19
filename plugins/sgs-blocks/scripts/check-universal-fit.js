@@ -2,46 +2,61 @@
  * check-universal-fit.js
  *
  * WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension
- * (src/blocks/extensions/*.js) to the blocks it is injected into, then flags
- * "opt-out candidates": a block that carries a universal extension where the
- * extension does nothing block-specific for it. This is the "universals
- * bolted onto everything regardless" problem (pricing-table and counter are
- * the known-bad cases that motivated this script — see the design brief).
+ * (src/blocks/extensions/*.js) to the blocks it is injected into.
  *
  * DIFFERENT FROM check-dead-controls.js: that script flags a CONTROL whose
  * attribute nothing renders (a truly dead attr). This script does NOT care
  * whether the attribute is rendered — universal extensions are legitimately
  * consumed by a SHARED system (includes/*.php render_block filters, or the
  * frontend IntersectionObserver for animation), never the block's own
- * render.php/save.js/view.js. What this script checks instead is FIT: does
- * the block have ANY of its own bespoke integration with the extension's
- * attribute(s) (proof someone deliberately wired/considered it for THIS
- * block), or is it silently inheriting the panel purely because the gating
- * rule is broad (e.g. "every block with className support")?
+ * render.php/save.js/view.js.
+ *
+ * HEADLINE = two genuinely-actionable signals, not a raw block x extension
+ * cross-product count:
+ *
+ *   1. UNIVERSAL LOAD RANKING — per block, how many universal panels its
+ *      own gating rule injects (irrespective of opt-out/consumption). This
+ *      is a real editor-sidebar-bloat signal: an operator opening
+ *      decorative-image or pricing-table sees a wall of irrelevant panels.
+ *
+ *   2. INAPPROPRIATE-FIT FLAGS — a *semantic* poor-fit heuristic, not "the
+ *      block's own render.php doesn't reference the attr" (that condition
+ *      is true for nearly every block x globally-rendered-universal pair BY
+ *      DESIGN — the shared PHP filter/frontend observer consumes it, not
+ *      the block itself, so it over-counts and isn't actionable on its
+ *      own). The real signal: a FORM-FIELD or purely-structural/utility
+ *      block (no styling surface, per roster.json `surfaces.styling`)
+ *      carrying `hover` / `blockLink` / `clickEffects` / `parallax` /
+ *      `animation` — a form input does not need a hover-scale or a
+ *      parallax offset. "Kind" is derived from roster.json
+ *      (`category` + `surfaces.styling`), not a hardcoded block-slug list —
+ *      see `isInappropriateFitKind()`.
+ *
+ *   3. NO-OPT-OUT ARCHITECTURAL FINDING — four of the nine extensions
+ *      (animation, conditional-visibility, custom-css, responsive-
+ *      visibility) have NO `hideExtensions` opt-out slug in source at all.
+ *      This is the most actionable single finding (a structural gap, not a
+ *      per-block judgement call) and is surfaced prominently, not buried.
+ *
+ * The full raw block x extension matrix (the old "opt-out candidate" flag —
+ * kept for supporting detail + baseline compatibility) is still computed and
+ * available under `--json`, but it is NOT the headline count: it over-counts
+ * by design (see above) and produced 656 "candidates" that were mostly noise.
  *
  * GATING IS DERIVED FROM THE REAL EXTENSION SOURCE, not guessed or
  * hardcoded per block (blub.db 260, DB-first/no-hardcoded-dicts spirit —
  * here "the DB" is the extension source itself, read once and mirrored
  * faithfully below with a comment pointing at the source lines it mirrors).
  *
- * TWO FLAG CONDITIONS (both must hold):
- *   (a) the block's own render.php + save.js + view.js + style.css never
- *       reference any of the extension's injected attribute names — i.e.
- *       nothing in the block's OWN source shows bespoke awareness of the
- *       extension (comments stripped so a stale doc-comment doesn't count).
- *   (b) the block has NOT already opted out via
- *       supports.sgs.hideExtensions (where the extension has an opt-out
- *       slug at all — four of the nine extensions have NO opt-out
- *       mechanism in the source at all; that gap is itself reported).
- *
  * BASELINE: scripts/universal-fit-baseline.json lists already-reviewed
- * findings that are accepted (deliberately kept) so re-runs report only
- * NET-NEW candidates prominently. Starts as `{}` — zero accepted.
+ * findings (from the raw matrix) that are accepted (deliberately kept) so
+ * re-runs report only NET-NEW candidates in the supporting detail. Starts
+ * as `{}` — zero accepted.
  *
  * Usage:
- *   node scripts/check-universal-fit.js            # full per-extension report
- *   node scripts/check-universal-fit.js --check     # concise summary (still exit 0)
- *   node scripts/check-universal-fit.js --json      # machine-readable findings
+ *   node scripts/check-universal-fit.js            # full report (load ranking + inappropriate-fit + no-opt-out + supporting detail)
+ *   node scripts/check-universal-fit.js --check     # concise headline summary (still exit 0)
+ *   node scripts/check-universal-fit.js --json      # machine-readable findings, including the raw matrix
  *
  * WARN-ONLY (Spec 35 a11y-validation-informational-not-gate policy, extended
  * here to editor-extension fit): this script ALWAYS exits 0. It is NOT wired
@@ -135,8 +150,15 @@ const ANIMATION_DENYLIST = [
 /**
  * Read a block's block.json + derive the gating facts every extension's
  * appliesTo() needs. One read per block, shared across all extensions.
+ *
+ * @param {string} slug        Block slug, e.g. "sgs/form-field-text".
+ * @param {Object} rosterEntry The matching roster.json entry (category,
+ *                             surfaces, tier) — DB-derived (source =
+ *                             sgs-framework.db blocks, per roster.json
+ *                             `_meta`), used for the block-"kind" heuristic
+ *                             below rather than a hardcoded slug list.
  */
-function readBlock( slug ) {
+function readBlock( slug, rosterEntry ) {
 	const dirName = slug.replace( /^sgs\//, '' );
 	const dir = path.join( BLOCKS_DIR, dirName );
 	const blockJsonPath = path.join( dir, 'block.json' );
@@ -171,8 +193,41 @@ function readBlock( slug ) {
 			? sgsSupports.hideExtensions
 			: [],
 		ownCorpus: readBlockOwnCorpus( dir ),
+		// roster.json fields — DB-derived "kind" signal, see isInappropriateFitKind().
+		category: rosterEntry ? rosterEntry.category : null,
+		tier: rosterEntry ? rosterEntry.tier : null,
+		surfaces: rosterEntry ? rosterEntry.surfaces || {} : {},
 	};
 }
+
+/**
+ * Block "kind" heuristic for the inappropriate-fit signal, derived from
+ * roster.json rather than a hardcoded block-slug list: a block in the
+ * `sgs-forms` category whose own `surfaces.styling` is `false` is a leaf
+ * form-input control or a purely-structural/utility block (verified against
+ * the live roster 2026-07-19 — this combination selects exactly the 13
+ * `sgs/form-field-*` leaf controls plus `sgs/form-review`; it deliberately
+ * excludes `sgs/form` and `sgs/form-step`, which DO carry a styling surface
+ * — they are containers an operator legitimately wants to hover/animate —
+ * and `sgs/form-field-tiles`, which has its own visual tile styling surface
+ * and is a legitimate hover/click target). A form input does not need a
+ * hover-scale, a block-link wrap, a click-ripple, a parallax offset, or a
+ * scroll-triggered animation.
+ */
+function isInappropriateFitKind( block ) {
+	return block.category === 'sgs-forms' && block.surfaces.styling === false;
+}
+
+// Extension ids for which "carried on a form-field/utility block" is treated
+// as a genuine semantic poor-fit, not merely unproven bespoke wiring — these
+// are all visual/motion affordances a plain form input has no use for.
+const INAPPROPRIATE_FIT_EXTENSION_IDS = new Set( [
+	'animation',
+	'hover',
+	'blockLink',
+	'clickEffects',
+	'parallax',
+] );
 
 /**
  * The nine universal extension FILES loaded by extensions/index.js
@@ -276,6 +331,11 @@ const EXTENSIONS = [
 		],
 		hideSlug: null, // opt-IN allowlist (supports.sgs.imageControls) — no opt-out needed.
 		appliesTo: ( b ) => b.imageControlsEnabled,
+		// Marks this extension exempt from the "no-opt-out gap" finding below:
+		// it is opt-IN (a block must declare supports.sgs.imageControls to see
+		// the panel at all), so there is nothing "bolted onto everything
+		// regardless" for it to opt back out of.
+		optIn: true,
 	},
 	{
 		id: 'blockDefaults',
@@ -361,14 +421,14 @@ function main() {
 		process.exit( 0 ); // WARN-ONLY: never fail the build even on missing input.
 	}
 	const roster = JSON.parse( fs.readFileSync( ROSTER_FILE, 'utf8' ) );
-	const slugs = ( roster.blocks || [] ).map( ( b ) => b.slug );
+	const rosterEntries = roster.blocks || [];
 
 	const unresolvedBlocks = [];
 	const blocks = [];
-	for ( const slug of slugs ) {
-		const block = readBlock( slug );
+	for ( const entry of rosterEntries ) {
+		const block = readBlock( entry.slug, entry );
 		if ( ! block ) {
-			unresolvedBlocks.push( { slug, reason: 'block.json not found for roster entry' } );
+			unresolvedBlocks.push( { slug: entry.slug, reason: 'block.json not found for roster entry' } );
 			continue;
 		}
 		blocks.push( block );
@@ -376,9 +436,103 @@ function main() {
 
 	const baseline = loadBaseline();
 
-	// Per-extension results.
+	// -------------------------------------------------------------------
+	// Signal 1: universal LOAD RANKING — per block, how many universal
+	// PANELS its own gating rule actually shows (appliesTo() true, not
+	// opted out via hideExtensions, and genuinely a configurable panel —
+	// block-defaults' "Save as Default" button is excluded: it injects no
+	// schema attribute at all, see its `unresolved` note, so it is not a
+	// panel in the same sense as the other ten). This is independent of
+	// whether the block has bespoke evidence of consuming the extension —
+	// an operator sees the panel either way, so this is the real
+	// sidebar-bloat metric.
+	// -------------------------------------------------------------------
+	const loadRanking = blocks
+		.map( ( block ) => {
+			const loaded = EXTENSIONS.filter( ( extension ) => {
+				if ( extension.unresolved ) {
+					return false;
+				}
+				if ( ! extension.appliesTo( block ) ) {
+					return false;
+				}
+				if ( extension.hideSlug && block.hideExtensions.includes( extension.hideSlug ) ) {
+					return false;
+				}
+				return true;
+			} ).map( ( extension ) => extension.id );
+			return { block: block.name, count: loaded.length, extensions: loaded };
+		} )
+		.sort( ( a, b ) => b.count - a.count );
+
+	// -------------------------------------------------------------------
+	// Signal 2: INAPPROPRIATE-FIT — a form-field/utility block (roster
+	// category=sgs-forms, surfaces.styling=false, see isInappropriateFitKind)
+	// carrying a visual/motion universal (hover / blockLink / clickEffects /
+	// parallax / animation) that its own gating rule did not already exclude
+	// and that has not already been opted out. Independent of bespoke-
+	// consumption evidence — the poor fit is semantic, not evidentiary.
+	// -------------------------------------------------------------------
+	const inappropriateFit = [];
+	for ( const extension of EXTENSIONS ) {
+		if ( ! INAPPROPRIATE_FIT_EXTENSION_IDS.has( extension.id ) ) {
+			continue;
+		}
+		for ( const block of blocks ) {
+			if ( ! isInappropriateFitKind( block ) ) {
+				continue;
+			}
+			if ( ! extension.appliesTo( block ) ) {
+				continue; // extension's own gating rule already excludes this block (e.g. ANIMATION_DENYLIST).
+			}
+			if ( extension.hideSlug && block.hideExtensions.includes( extension.hideSlug ) ) {
+				continue; // already opted out — not a live gap.
+			}
+			inappropriateFit.push( {
+				extension: extension.id,
+				panel: extension.panel,
+				block: block.name,
+				hasOptOut: Boolean( extension.hideSlug ),
+				reason:
+					`${ block.name } is a form-field/utility block (roster category=sgs-forms, ` +
+					`surfaces.styling=false) but its universal gating rule still injects the ` +
+					`"${ extension.panel }" panel (${ extension.file }) — a plain form control has ` +
+					`no use for ${ extension.panel.toLowerCase() }. ` +
+					( extension.hideSlug
+						? `Opt-out: supports.sgs.hideExtensions:["${ extension.hideSlug }"].`
+						: '(no opt-out mechanism exists in this extension — would need one added).' ),
+			} );
+		}
+	}
+	const inappropriateFitByBlock = new Map();
+	for ( const f of inappropriateFit ) {
+		const list = inappropriateFitByBlock.get( f.block ) || [];
+		list.push( f.extension );
+		inappropriateFitByBlock.set( f.block, list );
+	}
+	const inappropriateFitBlocks = [ ...inappropriateFitByBlock.entries() ]
+		.map( ( [ block, ids ] ) => ( { block, count: ids.length, extensions: ids } ) )
+		.sort( ( a, b ) => b.count - a.count );
+
+	// -------------------------------------------------------------------
+	// Signal 3: NO-OPT-OUT architectural gap — extensions with no
+	// hideExtensions slug in source at all, excluding opt-IN extensions
+	// (nothing to opt back out of) and the unresolved block-defaults
+	// button (injects no attribute, not a visual/motion panel).
+	// -------------------------------------------------------------------
+	const noOptOutExtensions = EXTENSIONS.filter(
+		( extension ) => extension.hideSlug === null && ! extension.optIn && ! extension.unresolved
+	).map( ( extension ) => ( { id: extension.id, file: extension.file, panel: extension.panel } ) );
+
+	// -------------------------------------------------------------------
+	// Supporting detail: the raw block x extension matrix (the original
+	// "opt-out candidate" flag — kept for --json + baseline compatibility,
+	// but no longer the headline: it is TRUE for nearly every block x
+	// globally-rendered-universal pair by design, since the shared PHP
+	// filter/frontend observer consumes the attribute, not the block's own
+	// render.php/save.js/view.js — see the file-header comment).
+	// -------------------------------------------------------------------
 	const extensionReports = [];
-	// Per-block rollup: slug -> flagged extension ids.
 	const blockFlags = new Map();
 	const unresolvedExtensions = [];
 
@@ -437,8 +591,11 @@ function main() {
 		} );
 	}
 
-	// Top offenders — blocks carrying the most flagged (net-new) universals.
-	const topOffenders = [ ...blockFlags.entries() ]
+	// Matrix top offenders — blocks carrying the most raw-matrix-flagged
+	// (net-new) universals. Renamed from the old headline `topOffenders` —
+	// still computed for supporting detail, superseded as a headline by
+	// `loadRanking` (Signal 1) above.
+	const matrixTopOffenders = [ ...blockFlags.entries() ]
 		.map( ( [ block, ids ] ) => ( { block, count: ids.length, extensions: ids } ) )
 		.sort( ( a, b ) => b.count - a.count );
 
@@ -448,10 +605,21 @@ function main() {
 	const report = {
 		blockCount: blocks.length,
 		extensionCount: EXTENSIONS.length,
-		totalFlagged,
-		totalBaselined,
-		extensions: extensionReports,
-		topOffenders,
+		// Headline signals.
+		loadRanking,
+		inappropriateFit: {
+			count: inappropriateFit.length,
+			findings: inappropriateFit,
+			byBlock: inappropriateFitBlocks,
+		},
+		noOptOutExtensions,
+		// Supporting detail — the raw matrix (old headline, now demoted).
+		matrix: {
+			totalFlagged,
+			totalBaselined,
+			extensions: extensionReports,
+			topOffenders: matrixTopOffenders,
+		},
 		unresolvedExtensions,
 		unresolvedBlocks,
 	};
@@ -463,36 +631,63 @@ function main() {
 
 	if ( isCheck ) {
 		process.stdout.write(
-			`[check-universal-fit] ${ blocks.length } blocks x ${ EXTENSIONS.length } extension-panels checked.\n` +
-				`  ${ totalFlagged } NET-NEW opt-out candidate(s), ${ totalBaselined } already baselined.\n` +
-				`  Top offenders: ${
-					topOffenders.slice( 0, 10 ).map( ( o ) => `${ o.block } (${ o.count })` ).join( ', ' ) || 'none'
-				}\n` +
-				`  ${ unresolvedExtensions.length } extension(s) with unresolved/dynamic gating (see full report).\n` +
-				'  Run without --check for the full per-extension breakdown.\n'
+			`[check-universal-fit] ${ blocks.length } blocks x ${ EXTENSIONS.length } extension-panels checked.\n\n` +
+				'UNIVERSAL LOAD RANKING (top 5 — most panels injected into one block):\n' +
+				loadRanking
+					.slice( 0, 5 )
+					.map( ( o ) => `  ${ o.block } — ${ o.count } panel(s)` )
+					.join( '\n' ) +
+				'\n\n' +
+				`INAPPROPRIATE-FIT FLAGS: ${ inappropriateFit.length } (form-field/utility block carrying ` +
+				'hover/blockLink/clickEffects/parallax/animation with no opt-out applied)\n' +
+				( inappropriateFitBlocks.length
+					? inappropriateFitBlocks
+							.map( ( o ) => `  ${ o.block } — ${ o.extensions.join( ', ' ) }` )
+							.join( '\n' ) + '\n'
+					: '  none\n' ) +
+				'\n' +
+				`NO-OPT-OUT GAP: ${ noOptOutExtensions.length } of ${ EXTENSIONS.length } extensions have ` +
+				'NO hideExtensions opt-out mechanism in source at all:\n' +
+				noOptOutExtensions.map( ( e ) => `  ${ e.id } (${ e.file })` ).join( '\n' ) +
+				'\n\n' +
+				`(Supporting detail: ${ totalFlagged } raw block x extension matrix flags, ` +
+				`${ totalBaselined } baselined — see --json / full report for the matrix, no longer the headline.)\n` +
+				'  Run without --check for the full breakdown.\n'
 		);
 		process.exit( 0 );
 	}
 
-	// Full human-readable report.
+	// Full human-readable report — headline signals first.
 	process.stdout.write(
 		`[check-universal-fit] ${ blocks.length } blocks in roster, ${ EXTENSIONS.length } universal extension-panels.\n\n`
 	);
-	for ( const r of extensionReports ) {
-		process.stdout.write(
-			`--- ${ r.panel } (${ r.file }, id=${ r.id }) ---\n` +
-				`  Attributes: ${ r.attrs.length ? r.attrs.join( ', ' ) : '(none — see unresolved section)' }\n` +
-				`  Opt-out slug: ${ r.hideSlug || '(NONE — no opt-out mechanism exists in source)' }\n` +
-				`  Applies to: ${ r.appliesToCount } block(s) | opted-out: ${ r.optedOutCount } | ` +
-				`bespoke-consumption: ${ r.bespokeCount } | flagged: ${ r.flaggedCount }` +
-				( r.flaggedBaselinedCount ? ` (+${ r.flaggedBaselinedCount } baselined)` : '' ) +
-				'\n'
-		);
-		for ( const f of r.flagged ) {
-			process.stdout.write( `    - ${ f.block }\n` );
-		}
-		process.stdout.write( '\n' );
+
+	process.stdout.write( '=== 1. UNIVERSAL LOAD RANKING (panels injected per block, opt-outs excluded) ===\n' );
+	for ( const o of loadRanking.slice( 0, 20 ) ) {
+		process.stdout.write( `  ${ o.block } — ${ o.count }: ${ o.extensions.join( ', ' ) }\n` );
 	}
+	process.stdout.write( '\n' );
+
+	process.stdout.write(
+		`=== 2. INAPPROPRIATE-FIT FLAGS (${ inappropriateFit.length }) — form-field/utility block ` +
+			'carrying a visual/motion universal ===\n'
+	);
+	if ( inappropriateFit.length ) {
+		for ( const f of inappropriateFit ) {
+			process.stdout.write( `  - ${ f.reason }\n` );
+		}
+	} else {
+		process.stdout.write( '  none\n' );
+	}
+	process.stdout.write( '\n' );
+
+	process.stdout.write(
+		`=== 3. NO-OPT-OUT ARCHITECTURAL GAP (${ noOptOutExtensions.length } of ${ EXTENSIONS.length }) ===\n`
+	);
+	for ( const e of noOptOutExtensions ) {
+		process.stdout.write( `  - ${ e.id } (${ e.panel }, ${ e.file }) — no supports.sgs.hideExtensions slug exists for it.\n` );
+	}
+	process.stdout.write( '\n' );
 
 	if ( unresolvedExtensions.length ) {
 		process.stdout.write( '--- Unresolved (dynamic gating, not statically checkable) ---\n' );
@@ -510,17 +705,27 @@ function main() {
 		process.stdout.write( '\n' );
 	}
 
-	process.stdout.write( '--- Top offenders (most flagged universals on one block) ---\n' );
-	for ( const o of topOffenders.slice( 0, 20 ) ) {
-		process.stdout.write( `  ${ o.block } — ${ o.count }: ${ o.extensions.join( ', ' ) }\n` );
-	}
-
 	process.stdout.write(
-		`\n[check-universal-fit] TOTAL: ${ totalFlagged } net-new opt-out candidate(s) across ` +
-			`${ blockFlags.size } block(s), ${ totalBaselined } already baselined.\n` +
-			'This is INFORMATIONAL ONLY (WARN-only, always exits 0). To accept a finding, add it to ' +
-			'scripts/universal-fit-baseline.json with a reason. To fix one, either wire the extension ' +
-			"into the block's own render, or add supports.sgs.hideExtensions on the block.\n"
+		'=== Supporting detail: raw block x extension matrix (superseded as headline — see file header) ===\n'
+	);
+	for ( const r of extensionReports ) {
+		process.stdout.write(
+			`--- ${ r.panel } (${ r.file }, id=${ r.id }) ---\n` +
+				`  Attributes: ${ r.attrs.length ? r.attrs.join( ', ' ) : '(none — see unresolved section)' }\n` +
+				`  Opt-out slug: ${ r.hideSlug || '(NONE — no opt-out mechanism exists in source)' }\n` +
+				`  Applies to: ${ r.appliesToCount } block(s) | opted-out: ${ r.optedOutCount } | ` +
+				`bespoke-consumption: ${ r.bespokeCount } | flagged: ${ r.flaggedCount }` +
+				( r.flaggedBaselinedCount ? ` (+${ r.flaggedBaselinedCount } baselined)` : '' ) +
+				'\n'
+		);
+	}
+	process.stdout.write(
+		`\n[check-universal-fit] Matrix total: ${ totalFlagged } net-new raw-matrix flag(s) across ` +
+			`${ blockFlags.size } block(s), ${ totalBaselined } already baselined. This count is NOT the ` +
+			'headline (see file header) — it over-counts by design.\n' +
+			'This is INFORMATIONAL ONLY (WARN-only, always exits 0). To accept a matrix finding, add it to ' +
+			'scripts/universal-fit-baseline.json with a reason. To fix an inappropriate-fit flag, add ' +
+			"supports.sgs.hideExtensions on the block (where an opt-out slug exists).\n"
 	);
 
 	process.exit( 0 ); // WARN-ONLY — never fail a build.
