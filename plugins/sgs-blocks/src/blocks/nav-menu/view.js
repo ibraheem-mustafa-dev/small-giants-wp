@@ -1,51 +1,67 @@
 /**
- * SGS Menu (sgs/nav-menu) — frontend interactivity.
+ * SGS Nav Menu (sgs/nav-menu) — frontend interactivity.
  *
- * Progressive enhancement only: every link is already a server-rendered
- * <a href> in the DOM (crawlable with zero JS). This module adds ONE feature:
- * the accordion disclosure toggles. A click on a `.sgs-nav-menu__toggle` button
- * flips its `aria-expanded` and its controlled submenu's `hidden` attribute.
+ * Two responsibilities:
+ *  1. Register the shared `store('sgs/nav')` (importing it is what registers
+ *     it — see the module doc-block in shared/nav-interactivity/store.js).
+ *     This is what makes the burger's `data-wp-on--click="actions.toggleDrawer"`
+ *     work.
+ *  2. Compute `aria-current="page"` CLIENT-SIDE at mount, comparing
+ *     `location.pathname` against each link's `data-sgs-nav-path` (set by
+ *     render.php). This canNOT be done server-side: the stack sits behind
+ *     LiteSpeed page cache, so a server-baked aria-current would serve a
+ *     stale page's answer to every cached visitor (FR-36-10/-11).
  *
- * Adapted from adaptive-nav's `setupDrawerAccordions`, but SELF-CONTAINED — it
- * shares no state with adaptive-nav's view.js. One-open-at-a-time is NOT
- * enforced (an accordion, not an exclusive disclosure), matching the drawer
- * baseline being extracted.
- *
- * There may be multiple `.sgs-nav-menu` instances on a page (e.g. a drawer menu
- * and a footer column) — each is initialised independently.
+ * Every link is already a real, crawlable server-rendered <a href> — this is
+ * progressive enhancement only; with zero JS the bar still works, it just
+ * has no "you are here" indicator and the burger has no handler.
  *
  * @package SGS\Blocks
  */
 
+import '../../shared/nav-interactivity/store';
+
 /**
- * Wire the accordion toggles for one nav-menu instance.
+ * Normalise a path the same way render.php's items do: no trailing slash,
+ * '' for the root, so a comparison against `location.pathname` is exact.
  *
- * @param {HTMLElement} root The `.sgs-nav-menu` root (`<ul>`).
+ * @param {string} pathname A URL pathname.
+ * @return {string} Normalised path.
  */
-function setupNavMenu( root ) {
-	const toggles = root.querySelectorAll( '.sgs-nav-menu__toggle' );
-	toggles.forEach( ( button ) => {
-		button.addEventListener( 'click', () => {
-			const panelId = button.getAttribute( 'aria-controls' );
-			const panel = panelId ? document.getElementById( panelId ) : null;
-			if ( ! panel ) {
-				return;
-			}
-			const isOpen = button.getAttribute( 'aria-expanded' ) === 'true';
-			button.setAttribute( 'aria-expanded', isOpen ? 'false' : 'true' );
-			panel.hidden = isOpen;
-		} );
-	} );
+function normalisePath( pathname ) {
+	return pathname.endsWith( '/' ) && pathname !== '/'
+		? pathname.replace( /\/$/, '' )
+		: pathname;
 }
 
 /**
- * Initialise every nav-menu instance on the page.
+ * Mark the current-page link (if any) inside one `.sgs-nav-menu` bar.
+ *
+ * @param {HTMLElement} root The `.wp-block-sgs-nav-menu` root.
+ */
+function markCurrentPage( root ) {
+	const current = normalisePath( window.location.pathname );
+	root.querySelectorAll( '.sgs-nav-menu__link[data-sgs-nav-path]' ).forEach(
+		( link ) => {
+			const path = normalisePath( link.dataset.sgsNavPath || '' );
+			if ( path !== '' && path === current ) {
+				link.setAttribute( 'aria-current', 'page' );
+			} else {
+				link.removeAttribute( 'aria-current' );
+			}
+		}
+	);
+}
+
+/**
+ * Initialise every sgs/nav-menu instance on the page.
  */
 function init() {
-	document.querySelectorAll( '.sgs-nav-menu' ).forEach( setupNavMenu );
+	document
+		.querySelectorAll( '.wp-block-sgs-nav-menu' )
+		.forEach( markCurrentPage );
 }
 
-// Initialise on DOM ready or immediately if already loaded.
 if ( document.readyState === 'loading' ) {
 	document.addEventListener( 'DOMContentLoaded', init );
 } else {

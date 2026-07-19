@@ -1,16 +1,21 @@
 /**
- * Nav Drawer — frontend interactivity.
+ * SGS Nav Drawer — frontend interactivity.
  *
- * Phase-1 scaffold — placeholder for full interactivity implementation.
- * Phase-2 will implement:
- * - Drawer toggle trigger
- * - Slide/fade animation
- * - Focus trap and keyboard navigation
- * - Mobile breakpoint detection
- * - Click-outside to close
+ * The drawer OWNS NO behaviour of its own: open / close / focus-into /
+ * focus-trap / body-scroll-lock (incl. iOS) / ESC / body-reparent (D323) /
+ * scrollbar-bounce compensation (D340) / `::backdrop` scrim all live in the
+ * shared `store('sgs/nav')` (src/shared/nav-interactivity/store.js). The store
+ * resolves this drawer by its `id` (= drawerRef) and its `[data-sgs-nav-close]`
+ * ×, wiring them imperatively on open (those survive the D323 body-reparent
+ * because they are id/attribute-based, not directive-based).
+ *
+ * Importing the store module REGISTERS it. @wordpress/scripts bundles a copy
+ * into this block's view module; the Interactivity runtime dedupes by the
+ * `sgs/nav` namespace and merges the identical registration, so importing here
+ * (as well as in sgs/nav-menu) is SAFE and guarantees the store exists whenever
+ * a drawer is on the page. Do NOT re-implement any of the mechanics above here.
  *
  * @package SGS\Blocks
  */
 
-// Phase-1 placeholder: no interactivity yet.
-console.log( 'sgs/nav-drawer: view module loaded (Phase-1 scaffold)' );
+import '../../shared/nav-interactivity/store';

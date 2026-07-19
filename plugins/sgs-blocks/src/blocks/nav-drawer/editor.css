@@ -1,18 +1,62 @@
 /**
- * Nav Drawer — editor stylesheet.
+ * SGS Nav Drawer — editor stylesheet.
  *
- * Phase-1 scaffold — minimal editor styling for block preview.
+ * In the editor the drawer is shown as an OPEN, styled preview shell so its
+ * InnerBlocks content (menu / logo / CTA) stays editable in place — a native
+ * `<dialog>` cannot host an editable InnerBlocks region while closed, and
+ * ServerSideRender cannot host editable InnerBlocks at all, so edit.js renders a
+ * styled editor shell instead (the standard InnerBlocks-container pattern, cf.
+ * core/group, core/cover). The shell's live styling (background / padding / gap /
+ * alignment) is applied by edit.js from the same attributes render.php reads, so
+ * SETTINGS are reflected without drift.
  */
 
-.wp-block-sgs-nav-drawer {
-	border: 1px dashed #999;
-	padding: 16px;
-	background: #f9f9f9;
+.wp-block-sgs-nav-drawer.sgs-nav-drawer__editor {
+	position: relative;
+	box-sizing: border-box;
+	min-height: 240px;
+	border-radius: 6px;
+	overflow: hidden;
 }
 
-.sgs-nav-drawer__content {
-	min-height: 100px;
-	background: #ffffff;
-	border: 1px solid #e0e0e0;
-	padding: 8px;
+/* The preview close × — non-functional in the editor, shown so the operator
+   sees the fixed chrome and understands it is not editable content. */
+.sgs-nav-drawer__editor .sgs-nav-drawer__close-preview {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 4px;
+	color: inherit;
+	opacity: 0.85;
+	pointer-events: none;
+}
+
+.sgs-nav-drawer__editor .sgs-nav-drawer__close-preview svg {
+	width: 28px;
+	height: 28px;
+}
+
+/* The editable InnerBlocks body inside the preview shell. */
+.sgs-nav-drawer__editor .sgs-nav-drawer__body {
+	display: flex;
+	flex-direction: column;
+	padding-top: 56px;
+}
+
+/* A subtle label so the operator knows this shell is the mobile drawer. */
+.sgs-nav-drawer__editor::before {
+	content: "Mobile drawer (preview)";
+	position: absolute;
+	top: 8px;
+	left: 12px;
+	font-size: 11px;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	opacity: 0.6;
+	pointer-events: none;
 }

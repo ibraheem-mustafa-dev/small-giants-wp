@@ -3,37 +3,94 @@
 	"apiVersion": 3,
 	"name": "sgs/nav-drawer",
 	"version": "0.1.0",
-	"title": "Nav Drawer",
+	"title": "SGS Nav Drawer",
 	"category": "sgs-interactive",
-	"description": "Phase-1 scaffold — full build pending. Navigation drawer for responsive mobile menu.",
+	"description": "The mobile off-canvas menu the burger opens. A full-screen native <dialog> modal (top layer — survives a transformed header ancestor). Its content is editable InnerBlocks (menu, logo, CTA); the × close button is fixed chrome the block always renders. Open/close/focus/scroll-lock/ESC are owned by the shared sgs/nav Interactivity store.",
 	"keywords": [
 		"nav",
 		"drawer",
 		"menu",
 		"navigation",
-		"mobile"
+		"mobile",
+		"dialog",
+		"off-canvas"
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "menu",
 	"supports": {
 		"sgs": {
-			"containerKind": "section",
-			"containerMirror": false
+			"containerKind": "content",
+			"is_section_root": true
 		},
 		"align": false,
-		"anchor": true,
-		"html": false
+		"anchor": false,
+		"html": false,
+		"reusable": false,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true,
+			"__experimentalSkipSerialization": true
+		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-nav-drawer"
+		"root": ".wp-block-sgs-nav-drawer",
+		"border": ".wp-block-sgs-nav-drawer"
 	},
-	"attributes": {},
+	"attributes": {
+		"drawerRef": {
+			"type": "string",
+			"default": "sgs-nav-drawer"
+		},
+		"edge": {
+			"type": "string",
+			"default": "full-screen",
+			"enum": [ "full-screen", "left", "right", "top" ]
+		},
+		"width": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerBg": {
+			"type": "string",
+			"default": "primary"
+		},
+		"toggleCloseColour": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerAlign": {
+			"type": "string",
+			"default": "left",
+			"enum": [ "left", "center", "right" ]
+		},
+		"drawerGap": {
+			"type": "object",
+			"default": { "desktop": "20px" }
+		},
+		"drawerPadding": {
+			"type": "object",
+			"default": {}
+		},
+		"submenuModel": {
+			"type": "string",
+			"default": "accordion",
+			"enum": [ "accordion", "drill-down" ]
+		},
+		"sgsCustomCss": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
 	"viewScriptModule": "file:./view.js",
-	"render": "file:./render.php",
 	"example": {
-		"attributes": {}
+		"attributes": {
+			"drawerBg": "primary"
+		}
 	}
 }

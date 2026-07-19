@@ -3,83 +3,57 @@
 	"apiVersion": 3,
 	"name": "sgs/nav-menu",
 	"version": "0.1.0",
-	"title": "SGS Menu",
+	"title": "SGS Nav Menu",
 	"category": "sgs-content",
 	"icon": "menu",
-	"description": "A styleable, server-rendered navigation menu. Renders the accordion menu the adaptive-nav drawer produces, but as a first-class block you can style and place anywhere — inside the drawer (inherits the navigation block's menu by default) or standalone (a footer column, e.g.). Pick which WordPress menu it renders, or let it inherit. Every link is a real crawlable <a href>.",
-	"keywords": [
-		"navigation",
-		"nav",
-		"menu",
-		"links",
-		"accordion"
-	],
+	"description": "The site's primary navigation bar. A flat horizontal row of real links on desktop; below the collapse point it becomes a burger that opens the sgs/nav-drawer via the shared sgs/nav Interactivity store. Menu content comes from a native WordPress menu.",
+	"keywords": [ "navigation", "nav", "menu", "links", "bar", "burger" ],
 	"textdomain": "sgs-blocks",
-	"usesContext": [ "sgs/navRef" ],
 	"supports": {
 		"anchor": true,
 		"customClassName": true,
 		"html": false,
 		"reusable": false,
-		"color": {
-			"background": false,
-			"text": true,
-			"gradients": false,
+		"sgs": {
+			"containerKind": "layout"
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
-		"ref": {
-			"type": "number"
-		},
-		"menuFallback": {
-			"type": "string",
-			"default": "page-list"
-		},
-		"linkColour": {
-			"type": "string",
-			"default": ""
-		},
-		"linkHoverColour": {
-			"type": "string",
-			"default": ""
-		},
-		"linkFontSize": {
-			"type": "object",
-			"default": {}
-		},
-		"linkFontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"linkFontStyle": {
-			"type": "string",
-			"default": ""
-		},
-		"linkLineHeight": {
-			"type": "number"
-		},
-		"linkLineHeightUnit": {
-			"type": "string",
-			"default": ""
-		},
-		"showDividers": {
-			"type": "boolean",
-			"default": true
-		},
-		"dividerColour": {
-			"type": "string",
-			"default": ""
-		},
-		"hoverStyle": {
-			"type": "string",
-			"default": "background",
-			"enum": [ "background", "underline" ]
-		},
-		"hoverBgColour": {
-			"type": "string",
-			"default": "accent"
-		}
+		"ref": { "type": "number", "default": 0 },
+		"collapsePoint": { "type": "number", "default": 768 },
+		"drawerRef": { "type": "string", "default": "sgs-nav-drawer" },
+		"featuredItemIds": { "type": "array", "default": [], "items": { "type": "string" } },
+		"navLabel": { "type": "string", "default": "Primary" },
+
+		"layout": { "type": "string", "default": "flex" },
+		"gap": { "type": "string", "default": "8px" },
+		"maxWidth": { "type": "string", "default": "" },
+		"paddingTablet": { "type": "object", "default": {} },
+		"paddingMobile": { "type": "object", "default": {} },
+
+		"itemColour": { "type": "string", "default": "" },
+		"itemHoverColour": { "type": "string", "default": "" },
+		"itemFontSize": { "type": "number" },
+		"itemFontSizeUnit": { "type": "string", "default": "" },
+		"itemFontSizeTablet": { "type": "number" },
+		"itemFontSizeMobile": { "type": "number" },
+		"itemFontWeight": { "type": "string", "default": "" },
+		"itemFontStyle": { "type": "string", "default": "" },
+		"itemLineHeight": { "type": "number" },
+		"itemLineHeightUnit": { "type": "string", "default": "" },
+
+		"featuredColour": { "type": "string", "default": "accent" },
+
+		"burgerColour": { "type": "string", "default": "" },
+		"burgerHoverColour": { "type": "string", "default": "" },
+		"burgerSize": { "type": "string", "default": "44px" },
+
+		"sgsCustomCss": { "type": "string", "default": "" }
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

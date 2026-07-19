@@ -1,228 +1,486 @@
 /**
- * SGS Menu (sgs/nav-menu) — editor.
+ * SGS Nav Menu (sgs/nav-menu) — editor.
  *
- * The menu is fully server-rendered by render.php (it resolves the wp_navigation
- * menu via SGS_Nav_Menu_Source — the same source the desktop bar reads). The
- * editor uses ServerSideRender for a live preview and exposes the menu source +
- * styling controls in the inspector.
+ * The bar is fully server-rendered by render.php (menu source resolved via
+ * SGS_Nav_Menu_Source). The editor uses ServerSideRender for the canvas
+ * preview (the ssr-fixes-hand-built-preview-drift lesson — a hand-built
+ * preview drifts from render.php) and exposes Settings + Styles as WP's
+ * native inspector tabs (`InspectorControls` default group = Settings,
+ * `group="styles"` = Styles; Advanced/className/anchor is WP's own
+ * automatic panel — no bespoke third tab).
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
+import { parse } from '@wordpress/blocks';
 import {
 	PanelBody,
 	SelectControl,
-	ToggleControl,
+	CheckboxControl,
+	TextControl,
+	ButtonGroup,
+	Button,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	DesignTokenPicker,
 	TypographyControls,
-	ResponsiveOverride,
+	StateToggleControl,
+	ResponsiveBoxControl,
 } from '../../components';
+
+const COLLAPSE_PRESETS = [ 640, 768, 1024 ];
+
+/**
+ * Client-side mirror of render.php's SGS_Nav_Menu_Bar_Renderer::flatten() —
+ * top-level items only (submenus/mega-menu collapse to their own link), same
+ * identifier rule ('id:<id>' when the block carries one, else 'label:<text>')
+ * so a ticked featuredItemIds entry matches the server-rendered item.
+ *
+ * @param {Array} blocks Parsed top-level nav blocks.
+ * @return {Array<{identifier: string, label: string}>} Flattened items.
+ */
+function flattenMenuItems( blocks ) {
+	const items = [];
+	( blocks || [] ).forEach( ( block ) => {
+		if ( 'core/home-link' === block.name ) {
+			items.push( {
+				identifier: 'special:home',
+				label: __( 'Home', 'sgs-blocks' ),
+			} );
+			return;
+		}
+		// core/page-list featured-marking is a Phase-1 limitation — the editor
+		// can't expand a page-list without a REST call, so page-list items are
+		// not offered in the featured checklist this phase.
+		if (
+			! [
+				'core/navigation-link',
+				'core/navigation-submenu',
+				'sgs/mega-menu',
+				'sgs/mega-menu-item',
+			].includes( block.name )
+		) {
+			return;
+		}
+		const label = block.attributes?.label;
+		if ( ! label ) {
+			return;
+		}
+		const id = block.attributes?.id;
+		items.push( {
+			identifier: id ? `id:${ id }` : `label:${ label }`,
+			label,
+		} );
+	} );
+	return items;
+}
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		ref,
-		linkColour,
-		linkHoverColour,
-		linkFontSize,
-		showDividers,
-		dividerColour,
-		hoverStyle,
-		hoverBgColour,
+		collapsePoint,
+		drawerRef,
+		navLabel,
+		featuredItemIds,
+		gap,
+		maxWidth,
+		itemColour,
+		itemHoverColour,
+		featuredColour,
+		burgerColour,
+		burgerHoverColour,
+		burgerSize,
 	} = attributes;
 
 	const { records: menus, isResolving } = useEntityRecords(
 		'postType',
 		'wp_navigation',
-		{
-			per_page: -1,
-			status: [ 'publish' ],
-		}
+		{ per_page: -1, status: [ 'publish' ], context: 'edit' }
 	);
 
 	const menuOptions = [
 		{
-			label: __(
-				'Inherit from navigation block / site menu',
-				'sgs-blocks'
-			),
+			label: __( 'Auto (site menu / navigation block)', 'sgs-blocks' ),
 			value: 0,
 		},
 		...( menus || [] ).map( ( menu ) => ( {
-			label:
-				menu.title?.rendered || __( '(untitled menu)', 'sgs-blocks' ),
+			label: menu.title?.rendered || __( '(untitled menu)', 'sgs-blocks' ),
 			value: menu.id,
 		} ) ),
 	];
+
+	const selectedMenu = ( menus || [] ).find( ( m ) => m.id === ref );
+
+	const resolvedItems = useMemo( () => {
+		if ( ! selectedMenu?.content?.raw ) {
+			return [];
+		}
+		try {
+			return flattenMenuItems( parse( selectedMenu.content.raw ) );
+		} catch {
+			return [];
+		}
+	}, [ selectedMenu?.content?.raw ] );
+
+	const toggleFeatured = ( identifier, checked ) => {
+		const next = checked
+			? [ ...( featuredItemIds || [] ), identifier ]
+			: ( featuredItemIds || [] ).filter( ( id ) => id !== identifier );
+		setAttributes( { featuredItemIds: next } );
+	};
 
 	const blockProps = useBlockProps();
 
 	return (
 		<>
+			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
-				<PanelBody title={ __( 'Menu source', 'sgs-blocks' ) }>
+				<PanelBody title={ __( 'Menu', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Menu', 'sgs-blocks' ) }
 						value={ ref || 0 }
 						options={ menuOptions }
 						onChange={ ( val ) =>
-							setAttributes( { ref: Number( val ) || undefined } )
+							setAttributes( { ref: Number( val ) || 0 } )
 						}
 						disabled={ isResolving }
 						help={ __(
-							'Leave on "Inherit" to use the same menu as the navigation block in this drawer. Choose a specific menu to render an independent one. Manage menus in Appearance → Editor → Navigation.',
+							'Auto follows the header navigation block / the site’s primary menu. Choose a specific menu to render an independent one. Manage menus in Appearance → Editor → Navigation.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
+				<PanelBody title={ __( 'Collapse point', 'sgs-blocks' ) }>
+					<UnitControl
+						label={ __( 'Switch to burger below', 'sgs-blocks' ) }
+						value={ `${ collapsePoint }px` }
+						units={ [ { value: 'px', label: 'px', default: 768 } ] }
+						onChange={ ( val ) => {
+							const n = parseInt( val, 10 );
+							if ( ! Number.isNaN( n ) && n > 0 ) {
+								setAttributes( { collapsePoint: n } );
+							}
+						} }
+						help={ __(
+							'A visual breakpoint (independent of the Tablet/Mobile style tiers) — the bar shows as links at or above this width, and as a burger below it.',
+							'sgs-blocks'
+						) }
+					/>
+					<ButtonGroup style={ { marginTop: '8px' } }>
+						{ COLLAPSE_PRESETS.map( ( preset ) => (
+							<Button
+								key={ preset }
+								variant={
+									collapsePoint === preset
+										? 'primary'
+										: 'secondary'
+								}
+								size="small"
+								onClick={ () =>
+									setAttributes( { collapsePoint: preset } )
+								}
+							>
+								{ preset }px
+							</Button>
+						) ) }
+						<Button
+							variant="tertiary"
+							size="small"
+							onClick={ () =>
+								setAttributes( { collapsePoint: 768 } )
+							}
+						>
+							{ __( 'Reset', 'sgs-blocks' ) }
+						</Button>
+					</ButtonGroup>
+				</PanelBody>
+
 				<PanelBody
-					title={ __( 'Link colours', 'sgs-blocks' ) }
+					title={ __( 'Featured items', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Link colour', 'sgs-blocks' ) }
-						value={ linkColour }
+					{ 0 === ref && (
+						<p>
+							{ __(
+								'Choose a specific menu above to pick which items are featured.',
+								'sgs-blocks'
+							) }
+						</p>
+					) }
+					{ 0 !== ref && 0 === resolvedItems.length && (
+						<p>
+							{ __(
+								'This menu has no top-level items yet.',
+								'sgs-blocks'
+							) }
+						</p>
+					) }
+					{ resolvedItems.map( ( item ) => (
+						<CheckboxControl
+							key={ item.identifier }
+							label={ item.label }
+							checked={ ( featuredItemIds || [] ).includes(
+								item.identifier
+							) }
+							onChange={ ( checked ) =>
+								toggleFeatured( item.identifier, checked )
+							}
+							__nextHasNoMarginBottom
+						/>
+					) ) }
+				</PanelBody>
+
+				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Navigation label', 'sgs-blocks' ) }
+						value={ navLabel }
 						onChange={ ( val ) =>
-							setAttributes( { linkColour: val } )
+							setAttributes( { navLabel: val } )
 						}
-						linked
+						help={ __(
+							'Accessible name for this menu landmark — make it unique if the page has more than one menu (e.g. Primary, Footer).',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
 					/>
-					<DesignTokenPicker
-						label={ __( 'Link hover colour', 'sgs-blocks' ) }
-						value={ linkHoverColour }
+				</PanelBody>
+
+				<PanelBody title={ __( 'Mobile drawer', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Drawer id', 'sgs-blocks' ) }
+						value={ drawerRef }
 						onChange={ ( val ) =>
-							setAttributes( { linkHoverColour: val } )
+							setAttributes( { drawerRef: val } )
+						}
+						help={ __(
+							'The id of the sgs/nav-drawer block the burger opens. Leave as the default unless the page has more than one drawer.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				<ToolsPanel
+					label={ __( 'Bar', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							gap: '8px',
+							maxWidth: '',
+							paddingTablet: {},
+							paddingMobile: {},
+						} )
+					}
+				>
+					<ToolsPanelItem
+						hasValue={ () => !! gap && gap !== '8px' }
+						label={ __( 'Item gap', 'sgs-blocks' ) }
+						onDeselect={ () => setAttributes( { gap: '8px' } ) }
+						isShownByDefault
+					>
+						<UnitControl
+							label={ __( 'Item gap', 'sgs-blocks' ) }
+							value={ gap }
+							onChange={ ( val ) =>
+								setAttributes( { gap: val || '8px' } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						hasValue={ () => !! maxWidth }
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						onDeselect={ () => setAttributes( { maxWidth: '' } ) }
+						isShownByDefault
+					>
+						<UnitControl
+							label={ __( 'Max width', 'sgs-blocks' ) }
+							value={ maxWidth }
+							onChange={ ( val ) =>
+								setAttributes( { maxWidth: val || '' } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						hasValue={ () =>
+							Object.keys( attributes.paddingTablet || {} )
+								.length > 0 ||
+							Object.keys( attributes.paddingMobile || {} )
+								.length > 0
+						}
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						onDeselect={ () =>
+							setAttributes( {
+								paddingTablet: {},
+								paddingMobile: {},
+							} )
+						}
+						isShownByDefault
+					>
+						<ResponsiveBoxControl
+							label={ __( 'Padding', 'sgs-blocks' ) }
+							values={ {
+								base: attributes.style?.spacing?.padding ?? {},
+								tablet: attributes.paddingTablet ?? {},
+								mobile: attributes.paddingMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( {
+										style: {
+											...attributes.style,
+											spacing: {
+												...attributes.style?.spacing,
+												padding: next,
+											},
+										},
+									} );
+								} else {
+									setAttributes( {
+										[ `padding${
+											'tablet' === tier
+												? 'Tablet'
+												: 'Mobile'
+										}` ]: next,
+									} );
+								}
+							} }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
+
+				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+					<StateToggleControl
+						label={ __( 'State', 'sgs-blocks' ) }
+						swatches={ [
+							{ label: __( 'Normal', 'sgs-blocks' ), value: itemColour },
+							{ label: __( 'Hover', 'sgs-blocks' ), value: itemHoverColour },
+						] }
+					>
+						{ ( state ) =>
+							'normal' === state ? (
+								<DesignTokenPicker
+									label={ __( 'Text colour', 'sgs-blocks' ) }
+									value={ itemColour }
+									onChange={ ( val ) =>
+										setAttributes( { itemColour: val } )
+									}
+									linked
+									enableAlpha
+									clearable
+								/>
+							) : (
+								<DesignTokenPicker
+									label={ __(
+										'Hover / current-page background',
+										'sgs-blocks'
+									) }
+									value={ itemHoverColour }
+									onChange={ ( val ) =>
+										setAttributes( {
+											itemHoverColour: val,
+										} )
+									}
+									linked
+									enableAlpha
+									clearable
+								/>
+							)
+						}
+					</StateToggleControl>
+
+					<TypographyControls
+						prefix="item"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Featured', 'sgs-blocks' ) } initialOpen={ false }>
+					<DesignTokenPicker
+						label={ __( 'Featured item colour', 'sgs-blocks' ) }
+						value={ featuredColour }
+						onChange={ ( val ) =>
+							setAttributes( { featuredColour: val } )
 						}
 						linked
+						enableAlpha
+						clearable
 					/>
 					<p className="sgs-nav-menu__inspector-note">
 						{ __(
-							'Leave the link colour empty to inherit the surrounding text colour — useful inside a coloured drawer where the readable colour is chosen for you.',
+							'Applies to the items ticked under Settings → Featured items.',
 							'sgs-blocks'
 						) }
 					</p>
-					<SelectControl
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ hoverStyle }
-						options={ [
-							{
-								label: __(
-									'Background highlight (recommended)',
-									'sgs-blocks'
-								),
-								value: 'background',
-							},
-							{
-								label: __( 'Underline', 'sgs-blocks' ),
-								value: 'underline',
-							},
+				</PanelBody>
+
+				<PanelBody title={ __( 'Burger', 'sgs-blocks' ) } initialOpen={ false }>
+					<StateToggleControl
+						label={ __( 'State', 'sgs-blocks' ) }
+						swatches={ [
+							{ label: __( 'Normal', 'sgs-blocks' ), value: burgerColour },
+							{ label: __( 'Hover', 'sgs-blocks' ), value: burgerHoverColour },
 						] }
-						onChange={ ( val ) =>
-							setAttributes( { hoverStyle: val } )
-						}
-						help={ __(
-							"Background highlight paints the item's own background so it stays readable on any menu colour; underline keeps the text on the menu background.",
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Hover / current-page background',
-							'sgs-blocks'
-						) }
-						value={ hoverBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { hoverBgColour: val } )
-						}
-						linked
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Link typography', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TypographyControls
-						prefix="link"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						showSize={ false }
-					/>
-					<ResponsiveOverride
-						label={ __( 'Link font size', 'sgs-blocks' ) }
-						value={ linkFontSize }
-						onChange={ ( obj ) =>
-							setAttributes( { linkFontSize: obj } )
-						}
 					>
-						{ ( {
-							ownValue,
-							effectiveValue,
-							inherited,
-							setOwnValue,
-						} ) => (
-							<UnitControl
-								label={ __( 'Link font size', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ ownValue || '' }
-								placeholder={
-									inherited && effectiveValue
-										? String( effectiveValue )
-										: ''
-								}
-								units={ [
-									{ value: 'px', label: 'px', default: 16 },
-									{ value: 'rem', label: 'rem', default: 1 },
-									{ value: 'em', label: 'em', default: 1 },
-								] }
-								onChange={ ( v ) => setOwnValue( v || '' ) }
-							/>
-						) }
-					</ResponsiveOverride>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Dividers', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Show dividers between items', 'sgs-blocks' ) }
-						checked={ !! showDividers }
+						{ ( state ) =>
+							'normal' === state ? (
+								<DesignTokenPicker
+									label={ __( 'Icon colour', 'sgs-blocks' ) }
+									value={ burgerColour }
+									onChange={ ( val ) =>
+										setAttributes( { burgerColour: val } )
+									}
+									linked
+									enableAlpha
+									clearable
+								/>
+							) : (
+								<DesignTokenPicker
+									label={ __(
+										'Hover background',
+										'sgs-blocks'
+									) }
+									value={ burgerHoverColour }
+									onChange={ ( val ) =>
+										setAttributes( {
+											burgerHoverColour: val,
+										} )
+									}
+									linked
+									enableAlpha
+									clearable
+								/>
+							)
+						}
+					</StateToggleControl>
+					<UnitControl
+						label={ __( 'Button size', 'sgs-blocks' ) }
+						value={ burgerSize }
+						units={ [ { value: 'px', label: 'px', default: 44 } ] }
 						onChange={ ( val ) =>
-							setAttributes( { showDividers: val } )
+							setAttributes( { burgerSize: val || '44px' } )
 						}
 						help={ __(
-							'A thin line under each menu item. Turn off for a plain list.',
+							'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
 					/>
-					{ !! showDividers && (
-						<DesignTokenPicker
-							label={ __( 'Divider colour', 'sgs-blocks' ) }
-							value={ dividerColour }
-							onChange={ ( val ) =>
-								setAttributes( { dividerColour: val } )
-							}
-							linked
-						/>
-					) }
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<ServerSideRender
-					block="sgs/nav-menu"
-					attributes={ attributes }
-				/>
+				<ServerSideRender block="sgs/nav-menu" attributes={ attributes } />
 			</div>
 		</>
 	);

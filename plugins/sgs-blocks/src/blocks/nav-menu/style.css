@@ -1,21 +1,25 @@
 /**
- * SGS Menu (sgs/nav-menu) — frontend + editor shared styles.
+ * SGS Nav Menu (sgs/nav-menu) — frontend + editor structural styles.
  *
- * Classes match render.php exactly. Structural rules only: the accordion layout,
- * 44px touch rows, focus outlines, chevron rotation. Link COLOUR, HOVER and
- * TYPOGRAPHY are attr-driven, emitted by render.php's #uid-scoped <style> (Spec
- * 32 no-inline) — this file deliberately hardcodes NONE of them, so an unset
- * control lets the value INHERIT the surrounding context (drawer, footer, …).
- *
- * These are a re-rooted COPY of adaptive-nav's drawer-menu structural rules
- * (`sgs-adaptive-nav__drawer-*`), stripped of the drawer's dark-background
- * colour assumptions so the block is context-agnostic.
+ * Classes match render.php exactly. Structural rules only — the flex bar
+ * layout, the burger button shape, 44px touch targets, focus outlines,
+ * `prefers-reduced-motion`. Colour / hover / typography / featured-item /
+ * burger-size / the bar↔burger collapse-point switch are ALL attr-driven,
+ * emitted by render.php's #uid-scoped <style> (Spec 32 no-inline). This file
+ * deliberately hardcodes none of them.
  */
 
-/* Block root — the <ul> IS the menu (single semantic element, no wrapper div). */
+/* Root nav element (rendered by SGS_Container_Wrapper as <nav>). */
 .sgs-nav-menu {
+	align-items: center;
 	display: flex;
-	flex-direction: column;
+	justify-content: space-between;
+}
+
+.sgs-nav-menu__bar {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -26,11 +30,10 @@
 }
 
 /*
- * Base link colour is `inherit` on a CLASS (0,1,0) so it beats the theme's bare
- * `a { color: … }` (0,0,1) — without this a themed global link colour repaints
- * the menu (the D338 drawer regression). render.php's #uid-scoped rule (higher
- * specificity) applies an operator-chosen linkColour when set; font size +
- * weight are likewise attr-driven, never hardcoded here.
+ * Base link colour is `inherit` on a CLASS (0,1,0) so it beats the theme's
+ * bare `a { color: … }` (0,0,1) — without this a themed global link colour
+ * repaints the bar. render.php's #uid-scoped rule (higher specificity)
+ * applies an operator-chosen itemColour when set.
  */
 .sgs-nav-menu__link {
 	align-items: center;
@@ -38,53 +41,35 @@
 	color: inherit;
 	display: flex;
 	min-height: 44px;
-	padding: 14px 0;
+	padding: 8px 12px;
 	text-decoration: none;
-	transition: color 200ms ease;
-}
-
-.sgs-nav-menu__link--no-href {
-	cursor: default;
+	transition: background-color 150ms ease, color 150ms ease;
+	white-space: nowrap;
 }
 
 /*
- * PROGRAMMATIC / mouse focus must NOT show the theme's link ":focus" styling.
- * theme.json elements.link ":focus" (theme.json:436) sets text-decoration:underline
- * + color:primary-dark and — because theme.json v3 has no ":focus-visible" key —
- * fires on ANY focus, including the drawer auto-focusing its first link on open,
- * which reads as "selected" before any user action. ":focus:not(:focus-visible)"
- * = focused-but-not-by-keyboard (a programmatic .focus() does not match
- * :focus-visible in Chromium). REAL keyboard focus (:focus-visible) still gets the
- * theme underline — WCAG 2.4.7 focus visibility preserved. Specificity (0,3,0)
- * beats the theme rule's (0,1,0).
+ * PROGRAMMATIC / mouse focus must NOT show the theme's link ":focus" styling
+ * (theme.json's elements.link ":focus" has no ":focus-visible" key, so it
+ * fires on ANY focus). ":focus:not(:focus-visible)" isolates real keyboard
+ * focus, which still gets the visible indicator via :focus-visible below.
  */
-.sgs-nav-menu__link:focus:not(:focus-visible),
-.sgs-nav-menu__sublink:focus:not(:focus-visible) {
+.sgs-nav-menu__link:focus:not(:focus-visible) {
 	color: inherit;
 	text-decoration: none;
 }
 
-/*
- * Hover / focus-visible / current-page (aria-current="page") state is
- * ENTIRELY render.php-driven (Spec 32 no-inline + hoverStyle/hoverBgColour):
- * a WCAG-computed background pill (default) or an underline (operator
- * opt-out), scoped to #uid at higher specificity than this file's base rule.
- * Nothing is hardcoded here so an unset hoverBgColour still degrades safely —
- * render.php falls back to an underline + `color: inherit` state when the
- * slug does not resolve, guaranteeing SOME visible state indicator (WCAG
- * 2.4.7) even before a scoped rule lands.
- */
-
-.sgs-nav-menu__item-row {
-	align-items: center;
-	display: flex;
+.sgs-nav-menu :focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
 }
 
-.sgs-nav-menu__item-row .sgs-nav-menu__link {
-	flex: 1;
+/* The toggle-wrap / burger — hidden above collapsePoint by render.php's
+ * scoped @media rule; this file only owns the button's SHAPE. */
+.sgs-nav-menu__toggle-wrap {
+	display: none;
 }
 
-.sgs-nav-menu__toggle {
+.sgs-nav-menu__burger {
 	align-items: center;
 	background: none;
 	border: none;
@@ -92,81 +77,44 @@
 	color: inherit;
 	cursor: pointer;
 	display: flex;
-	flex-shrink: 0;
 	height: 44px;
 	justify-content: center;
 	min-height: 44px;
 	min-width: 44px;
 	padding: 0;
-	transition: background 200ms ease;
+	transition: background-color 150ms ease;
 	width: 44px;
 }
 
-.sgs-nav-menu__toggle:hover,
-.sgs-nav-menu__toggle:focus-visible {
-	background: color-mix(in srgb, currentColor 8%, transparent);
+/* Burger ICON glyph size — distinct from `burgerSize`, which governs the 44px
+   button touch-target (render.php scoped). Zero-specificity :where() marks it an
+   overridable default so it never masks an attr-driven rule. */
+:where(.sgs-nav-menu__burger svg) {
+	height: 24px;
+	width: 24px;
 }
 
-@supports not (background: color-mix(in srgb, currentColor 8%, transparent)) {
-	.sgs-nav-menu__toggle:hover,
-	.sgs-nav-menu__toggle:focus-visible {
-		background: rgba(128, 128, 128, 0.12);
+@supports not (background-color: color-mix(in srgb, currentColor 8%, transparent)) {
+	.sgs-nav-menu__burger:hover,
+	.sgs-nav-menu__burger:focus-visible {
+		background-color: rgba(128, 128, 128, 0.12);
 	}
 }
 
-.sgs-nav-menu__chevron {
-	display: flex;
-	transition: transform 250ms ease;
-}
-
-.sgs-nav-menu__chevron svg {
-	height: 20px;
-	width: 20px;
-}
-
-.sgs-nav-menu__toggle[aria-expanded="true"] .sgs-nav-menu__chevron {
-	transform: rotate(180deg);
-}
-
-.sgs-nav-menu__submenu {
-	list-style: none;
-	margin: 0;
-	overflow: hidden;
-	padding: 0 0 0 var(--wp--preset--spacing--40, 1.5rem);
-}
-
-.sgs-nav-menu__submenu[hidden] {
-	display: none;
-}
-
-.sgs-nav-menu__subitem {
-	display: block;
-}
-
-.sgs-nav-menu__sublink {
-	align-items: center;
-	box-sizing: border-box;
-	color: inherit;
-	display: flex;
-	min-height: 44px;
-	padding: 10px 0;
-	text-decoration: none;
-	transition: color 200ms ease;
-}
-
-/* Sublink hover/focus/current-page state — same render.php-driven rule as
- * .sgs-nav-menu__link above (see the comment near the top of this file). */
-
-.sgs-nav-menu :focus-visible {
-	outline: 2px solid currentColor;
-	outline-offset: 2px;
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.sgs-nav-menu__chevron,
-	.sgs-nav-menu__link,
-	.sgs-nav-menu__sublink,
-	.sgs-nav-menu__toggle {
+	.sgs-nav-menu__burger,
+	.sgs-nav-menu__link {
 		transition-duration: 0.01ms !important;
+	}
+}
+
+/* Windows High Contrast / forced-colors: keep the burger's border + focus
+ * ring visible even when background-colour is neutralised by the mode. */
+@media (forced-colors: active) {
+	.sgs-nav-menu__burger {
+		border: 1px solid ButtonText;
+	}
+	.sgs-nav-menu :focus-visible {
+		outline-color: Highlight;
 	}
 }

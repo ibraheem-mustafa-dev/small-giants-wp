@@ -1,14 +1,187 @@
 /**
- * Nav Drawer — frontend stylesheet.
+ * SGS Nav Drawer — frontend stylesheet.
  *
- * Phase-1 scaffold — structural styles only.
- * Animation and interaction styles deferred to Phase 2.
+ * Structural geometry + interaction states for the full-screen modal drawer.
+ * Per-instance styling (background, foreground, padding, gap, alignment, close
+ * colour, border) is emitted by render.php into a scoped `.{uid}` <style> — see
+ * render.php. This file carries only the design-invariant chrome.
+ *
+ * ⚠ STOP-DIALOG-DISPLAY-GATE: never set `display` on the base
+ * `.wp-block-sgs-nav-drawer` rule. Any author `display` beats the UA
+ * `dialog:not([open]){display:none}` rule and the drawer would render OPEN in
+ * the page flow. The dialog's visibility is owned entirely by the UA open/closed
+ * mechanism (native `showModal()` from the shared store).
  */
 
+/* Full-screen modal geometry. No `display` here (see the gate above). The
+   native top layer + these box rules make the dialog fill the viewport and
+   escape any transformed/filtered header ancestor (belt-and-braces with the
+   store's D323 body-reparent). */
 .wp-block-sgs-nav-drawer {
-	/* Phase-1 placeholder — add styles in Phase 2 */
+	position: fixed;
+	inset: 0;
+	width: 100vw;
+	height: 100dvh;
+	max-width: 100vw;
+	max-height: 100dvh;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
 }
 
-.sgs-nav-drawer__content {
-	/* Navigation content area — Phase 2 */
+/* Opaque fallback so the modal is never see-through if a drawerBg slug ever
+   fails to resolve. Zero-specificity :where() so the scoped `.{uid}` rule
+   (drawerBg + WCAG-computed foreground, emitted by render.php) ALWAYS wins —
+   these system colours apply only when nothing else sets them (forced-colors
+   safe). Kept out of the base rule so it declares no property a control owns. */
+:where(.wp-block-sgs-nav-drawer) {
+	background-color: canvas;
+	color: canvastext;
+}
+
+/* Native modal scrim. */
+.wp-block-sgs-nav-drawer::backdrop {
+	background-color: rgba(0, 0, 0, 0.55);
+}
+
+/* A nav-menu placed inside the drawer renders as a vertical link list; its own
+   burger is suppressed (the drawer is opened by the header burger, not a nested one). */
+.sgs-nav-drawer .wp-block-sgs-nav-menu .sgs-nav-menu__bar { display: flex; flex-direction: column; }
+.sgs-nav-drawer .wp-block-sgs-nav-menu .sgs-nav-menu__toggle-wrap { display: none; }
+
+/* The editable content column. Flex so drawerGap (gap) + drawerAlign
+   (align-items) apply; min-height:100% lets a short menu still fill the screen
+   so the background reads as full-bleed. Default padding fallback until the
+   operator sets drawerPadding. */
+.sgs-nav-drawer__body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	box-sizing: border-box;
+	padding: clamp(16px, 6vw, 32px);
+	/* Room for the fixed × so the first content row never sits under it. */
+	padding-top: 64px;
+}
+
+/* ── × close button — fixed dialog chrome, 44px target, visible focus. ── */
+.sgs-nav-drawer__close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	border-radius: 4px;
+	cursor: pointer;
+	color: inherit; /* Inherits the drawer's computed foreground unless
+	                   toggleCloseColour overrides it (scoped rule). */
+	transition: opacity 0.15s ease;
+}
+
+.sgs-nav-drawer__close:hover {
+	opacity: 0.75;
+}
+
+.sgs-nav-drawer__close:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.sgs-nav-drawer__close svg {
+	width: 28px;
+	height: 28px;
+	display: block;
+}
+
+/* ── Reduced-motion-gated open/close animation. The CSS owns the transitions;
+   the store toggles [open] / .is-closing. Under `prefers-reduced-motion:
+   reduce` no animation is applied (the media query below simply doesn't add
+   any). ── */
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-sgs-nav-drawer[open] {
+		animation: sgs-nav-drawer-in 0.25s ease-out;
+	}
+
+	.wp-block-sgs-nav-drawer[open]::backdrop {
+		animation: sgs-nav-drawer-backdrop-in 0.25s ease-out;
+	}
+
+	.wp-block-sgs-nav-drawer.is-closing {
+		animation: sgs-nav-drawer-out 0.2s ease-in;
+	}
+}
+
+@keyframes sgs-nav-drawer-in {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-out {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+}
+
+@keyframes sgs-nav-drawer-backdrop-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+/* ── Partial-edge geometry (Phase 2+; declared, not gate-tested this phase).
+   Full-screen (the default) uses the base rule above. These position the panel
+   against one edge; the panel width/height comes from the scoped rule (width
+   attr). The `--sgs-header-height` binding (FR-36-9) lands in Phase 2. ── */
+.sgs-nav-drawer--edge-left {
+	right: auto;
+	width: min(88vw, 360px);
+}
+
+.sgs-nav-drawer--edge-right {
+	left: auto;
+	width: min(88vw, 360px);
+}
+
+.sgs-nav-drawer--edge-top {
+	bottom: auto;
+	height: auto;
+	max-height: 100dvh;
+}
+
+/* ── Windows High Contrast / forced-colors — keep a visible boundary + focus
+   ring when system colours replace the palette. ── */
+@media (forced-colors: active) {
+	.wp-block-sgs-nav-drawer {
+		border: 1px solid CanvasText;
+	}
+
+	.sgs-nav-drawer__close:focus-visible {
+		outline: 2px solid CanvasText;
+	}
 }

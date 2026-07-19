@@ -218,10 +218,15 @@ INSERTS: list[dict] = [
         "accepts_allowed_blocks": None,
     },
     {
-        # sgs/nav-drawer (2026-07-19, Spec 36 FR-36-6 Phase-1) — section-KIND
-        # off-canvas drawer container (full-screen <dialog>); keeps SGS_Container_Wrapper.
-        # Mirrors site-header/cta-section (section-root). wraps_block +
-        # container_kind='section' are set by sync-container-wrapping-blocks.py --apply.
+        # sgs/nav-drawer (2026-07-19, Spec 36 FR-36-6 Phase-1) — content-KIND
+        # off-canvas drawer: renders a full-screen <dialog> BLOCK-PRIVATE (a
+        # <dialog> cannot be hosted by SGS_Container_Wrapper, which coerces any
+        # non-allowed tag to <section>). It mirrors box/background/padding/gap/
+        # align via the shared scoped-CSS helpers with no divergence (the D294
+        # block-private pattern). container_kind='content' is set from
+        # block.json by sync-container-wrapping-blocks.py --apply.
+        # composition_role stays 'section-root' (an InnerBlocks-container role,
+        # needed for the F6 has_inner_blocks sync) — orthogonal to container_kind.
         "block_slug": "sgs/nav-drawer",
         "wraps_block": None,
         "composition_role": "section-root",
