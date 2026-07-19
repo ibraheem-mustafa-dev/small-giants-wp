@@ -1,5 +1,9 @@
 Invoke /autopilot before doing anything else. This is **Track 1 — Spec 35 block-inspector-UX, the cleanup + rollout phase** (continues from the registry + archetype design work).
 
+**FIRST — remove `~/.claude/.sgs-gate-off`** (`rm ~/.claude/.sgs-gate-off`). It was set to close the
+previous non-visual handoff (dead-attr removals verified by the dead-code gates, not a live deploy). This
+session does rendering work (hover migration etc.), so the SGS live-verify gate MUST be back on.
+
 ## State recap (plain English)
 
 Spec 35 makes every SGS block's editor sidebar complete + consistent so a non-coder client can
