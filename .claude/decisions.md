@@ -15,6 +15,36 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D349 [INCIDENT] — Spec 35 registry + archetype design + cleanup-linter suite; a live-code regression caught by verify-loop (2026-07-19)
+
+**Track 1, Spec 35 block-inspector-UX.** Shipped: (1) the **optimal-control registry**
+`plugins/sgs-blocks/scripts/consistency/setting-registry.json` — 82 genuine settings (60 CSS-property
++ 11 input-type + 11 behaviour-family), each → its optimal control; drafted → Bean-reviewed (6 flagged
+rows ruled: stroke reclassified, background-image=overlay-gradient, background-position verify-if-dead,
+font-family=native supports.typography.fontFamily display-blocks-only, json-config=InnerBlocks-vs-
+RepeaterControl, sticky-header→Track 2) → `/qc-council`-validated (24 corrections, incl. a FALSE
+"sgs/media missing poster" claim corrected + a fabricated "Part D4" citation across 11 rows). Design
+spine + rulings: `.claude/plans/spec-35-setting-registry-design.md`. (2) The **archetype design deck
+v2** (optimal UI drawn for every setting; 3-agent gap-reviewed + Bean-redlined — artifacts private).
+(3) A **3-linter cleanup suite** (`check-universal-fit.js`, `check-duplicate-controls.js`,
+`audit-block-file-consistency.py` — all WARN-only) + reclassify.py made DB-direct. ~40 verified-dead
+attrs removed from 13 block.json.
+
+**INCIDENT (verify-loop earned its keep):** the cross-file linter flagged WP-**support-provided** attrs
+(`textAlign` from `supports.typography.textAlign`) as "undeclared_render_ref" — a FALSE POSITIVE — and
+a Haiku cleanup swarm **deleted the LIVE `textAlign` reads on countdown-timer/notice-banner/team-member/
+cta-section** (would have broken client text-align). Caught during the consolidation verify pass
+(checked each block's `supports`); ALL render.php edits reverted, cta-section fully reverted, only
+verified-safe block.json removals kept. The linter was then fixed: support-aware (support→attr map) +
+pattern-aware (scans theme patterns). Lesson: `verify-framework-injected-attrs-before-delete`.
+
+**Branch/merge:** all committed + pushed on the SHARED `feat/brand-strip-inspector-rebuild` (co-active
+Track 2). NOT merged to main (shared branch — merge via isolated worktree at a joint checkpoint, never
+delete the branch). Next: tasks 1–6 in `.claude/next-session-prompt-spec35.md` (fold v2→registry,
+compound per-category control-sets, hover-duplicate migration, animation opt-out, cta-section redo,
+wire linters into prebuild). Utility universals (custom-css/conditional-visibility/responsive-visibility)
+confirmed universal-by-design (Bean); only `animation` is a real opt-out gap.
+
 
 ---
 
