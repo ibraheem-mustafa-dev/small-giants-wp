@@ -37,7 +37,7 @@
       "current_state": "70 distinct attr names / 125 instances across 43 blocks; observed_control_types: DesignTokenPicker, RangeControl, SelectControl, TextControl, ToggleControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
       "divergence": "70 attr names span colour AND a handful of behaviour/select uses (dedup groups every *Colour suffix together); several blocks use RangeControl/SelectControl/TextControl/ToggleControl instead of DesignTokenPicker, and DesignTokenPicker itself is not yet alpha-audited everywhere",
       "divergence_severity": "high",
-      "notes": "Highest-instance-count setting (125) — the single biggest lever in the registry. Some observed_control_types (RangeControl/ToggleControl) are almost certainly OTHER settings that share the dedup key by accident (e.g. a boolean 'use custom colour' toggle) — worth a spot-check, flagged in the parent report."
+      "notes": "Highest-instance-count setting (125) — the single biggest lever in the registry. Some observed_control_types (RangeControl/ToggleControl) are almost certainly OTHER settings that share the dedup key by accident (e.g. a boolean 'use custom colour' toggle) — worth a spot-check, flagged in the parent report. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
     },
     {
       "setting_key": "css:grid-template-columns",
@@ -90,7 +90,7 @@
         "reset_disclosure": "allowReset (per side + resetAll for the whole box)"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B BoxControl row + Part D4 (MULTI-VALUE dimension) + Part H",
+      "spec_ref": "Part B BoxControl row + design-spine dimension 4 (MULTI-VALUE) (MULTI-VALUE dimension) + Part H",
       "current_state": "23 distinct attr names / 106 instances across 39 blocks; observed_control_types: RangeControl, TextControl; observed_roles: layout, visual; box_families: contentBandPadding, contentPadding, imagePadding, mediaPadding, padding, pillPadding; conformance: divergent (dedup_confidence: high)",
       "divergence": "23 attrs carry SIX different box_family names (contentBandPadding, contentPadding, imagePadding, mediaPadding, padding, pillPadding) — every one of these is a genuine 4-side padding family that should be its own BoxControl instance, but only RangeControl/TextControl are observed, meaning none of the 6 are currently link/unlink 4-side controls",
       "divergence_severity": "high",
@@ -183,7 +183,7 @@
         "reset_disclosure": "allowReset (per side + resetAll)"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B BoxControl row + Part D4 + Part H",
+      "spec_ref": "Part B BoxControl row + design-spine dimension 4 (MULTI-VALUE) + Part H",
       "current_state": "4 distinct attr names / 80 instances across 41 blocks; observed_control_types: none captured; observed_roles: layout; box_families: margin; conformance: unknown (dedup_confidence: high)",
       "divergence": "4 attrs, box_family 'margin' correctly identified, but no observed_control_types at all (conformance: unknown) — cannot confirm any block currently exposes a margin control at all rather than a hardcoded render.php value",
       "divergence_severity": "high",
@@ -300,7 +300,7 @@
       "current_state": "37 distinct attr names / 49 instances across 25 blocks; observed_control_types: DesignTokenPicker, RangeControl, SelectControl, ToggleControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "high",
-      "notes": "37 attr names, 49 instances; SelectControl/ToggleControl/RangeControl usages likely mean some blocks only offer a preset SWATCH list or an on/off 'tinted background' toggle rather than a full picker — both are incomplete per Part F ('incomplete option sets')."
+      "notes": "37 attr names, 49 instances; SelectControl/ToggleControl/RangeControl usages likely mean some blocks only offer a preset SWATCH list or an on/off 'tinted background' toggle rather than a full picker — both are incomplete per Part F ('incomplete option sets'). | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
     },
     {
       "setting_key": "css:border-radius",
@@ -589,7 +589,7 @@
       "current_state": "6 distinct attr names / 19 instances across 10 blocks; observed_control_types: RangeControl, SelectControl, TextControl; observed_roles: behaviour, color; conformance: divergent (dedup_confidence: review)",
       "divergence": "6 attrs on RangeControl/SelectControl/TextControl — textbook Part B FAIL smell: a None/Small/Medium-style select with no real X/Y/blur/spread/colour builder",
       "divergence_severity": "high",
-      "notes": "This is Wave-1 Part J item 3 — ShadowControl is listed as 'built this phase' in the blessed-components table, so the fix is rollout (swap every block's ad hoc shadow select for ShadowControl), not a new build."
+      "notes": "This is Wave-1 Part J item 3 — ShadowControl is listed as 'built this phase' in the blessed-components table, so the fix is rollout (swap every block's ad hoc shadow select for ShadowControl), not a new build. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
     },
     {
       "setting_key": "css:height",
@@ -676,7 +676,7 @@
         "reset_disclosure": "clears to 'stretch'"
       },
       "shared_component": null,
-      "spec_ref": "Part H + Part G (native layout support covers verticalAlignment for flex partially)",
+      "spec_ref": "Part H + Part G (prefer native layout supports where available — verticalAlignment coverage is WP-general, not a Spec 35 quote)",
       "current_state": "4 distinct attr names / 17 instances across 15 blocks; observed_control_types: SelectControl; observed_roles: layout; conformance: consistent (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "low",
@@ -845,7 +845,7 @@
       "current_state": "9 distinct attr names / 15 instances across 12 blocks; observed_control_types: DesignTokenPicker, SelectControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "medium",
-      "notes": "9 attr names; mix of DesignTokenPicker + SelectControl. Should be one slot inside a unified border builder alongside border-width/border-style/border-radius, not a standalone picker per block."
+      "notes": "9 attr names; mix of DesignTokenPicker + SelectControl. Should be one slot inside a unified border builder alongside border-width/border-style/border-radius, not a standalone picker per block. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
     },
     {
       "setting_key": "css:border-width",
@@ -869,7 +869,7 @@
         "reset_disclosure": "allowReset"
       },
       "shared_component": "DesignTokenPicker (colour slot) + native BorderBoxControl shell",
-      "spec_ref": "Part B Border row (BorderBoxControl: enableStyle + enableAlpha + per-side split) + Part D4",
+      "spec_ref": "Part B Border row (BorderBoxControl: enableStyle + enableAlpha + per-side split) + design-spine dimension 4 (MULTI-VALUE)",
       "current_state": "5 distinct attr names / 12 instances across 12 blocks; observed_control_types: DesignTokenPicker, SelectControl; observed_roles: visual; box_families: borderWidth, imageBorderWidth; conformance: divergent (dedup_confidence: high)",
       "divergence": "5 attrs across 2 box_families (borderWidth, imageBorderWidth) on DesignTokenPicker/SelectControl — neither is a per-side border-width control; both read as single-value pickers",
       "divergence_severity": "high",
@@ -950,7 +950,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
       "current_state": "8 distinct attr names / 10 instances across 5 blocks; observed_control_types: TextControl; observed_roles: layout; conformance: consistent (dedup_confidence: high)",
       "divergence": "8 attrs on TextControl (consistent conformance) — a working scalar field, but still one-at-a-time rather than the shared 4-side BoxControl",
       "divergence_severity": "medium",
@@ -974,11 +974,11 @@
         "reset_disclosure": "native 'reset to default' behaviour of AlignmentControl"
       },
       "shared_component": null,
-      "spec_ref": "Part H (native components) + Part G (prefer native, don't hand-roll)",
+      "spec_ref": "Part H (segmented choice — ToggleGroupControl family; AlignmentControl by convention) + Part G (prefer native, don't hand-roll)",
       "current_state": "4 distinct attr names / 9 instances across 5 blocks; observed_control_types: SelectControl; observed_roles: none; conformance: consistent (dedup_confidence: high)",
       "divergence": "4 attrs all on bespoke SelectControl rather than WP's own AlignmentControl/AlignmentToolbar, and none are responsive-tiered even though 'centre on mobile, left on desktop' is a very common real request",
       "divergence_severity": "medium",
-      "notes": "This is a Part G 'prefer native' catch: WordPress ships AlignmentControl purpose-built for exactly this. Also a genuine responsive-tier gap (dimension 3) since text-align commonly needs to flip per breakpoint."
+      "notes": "This is a Part G 'prefer native' catch: WordPress ships AlignmentControl purpose-built for exactly this. Also a genuine responsive-tier gap (dimension 3) since text-align commonly needs to flip per breakpoint. | Note: AlignmentControl is a real WP core component but is NOT named in Spec 35 Part B/H — chosen by convention (segmented text-align), flagged for transparency."
     },
     {
       "setting_key": "css:margin-top",
@@ -998,7 +998,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
       "current_state": "5 distinct attr names / 7 instances across 3 blocks; observed_control_types: none captured; observed_roles: layout; conformance: unknown (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "medium",
@@ -1009,7 +1009,7 @@
       "category": "css-property",
       "label": "Font family",
       "optimal_control": {
-        "component": "ComboboxControl (searchable) — curated to theme.json families + installed Font Library fonts; display blocks only",
+        "component": "Native supports.typography.fontFamily:true — renders WP's own Font Family dropdown from theme.json's curated fontFamilies; scoped to display blocks (heading/quote/button). Optional Font-Library 'more fonts' ComboboxControl as a SECONDARY layer only, not a bespoke replacement.",
         "props": {
           "options": "theme.json settings.typography.fontFamilies + sgs-google-fonts collection (1,923 fonts)"
         },
@@ -1021,12 +1021,12 @@
         "alpha_clearable": "n/a",
         "reset_disclosure": "clears to theme default"
       },
-      "shared_component": "BUILD: SgsFontFamilyControl (ComboboxControl over theme.json families + Font Library) — display blocks only",
-      "spec_ref": "Part H (long/searchable list -> ComboboxControl) + Font Library Collection (plugins/sgs-blocks CLAUDE.md Backend Integrations)",
+      "shared_component": "Native supports.typography.fontFamily (reads theme.json settings.typography.fontFamilies) + optional Font-Library ComboboxControl secondary — display blocks only",
+      "spec_ref": "Part G (prefer native — supports.typography.fontFamily reads theme.json fontFamilies; don't hand-roll) + Part H + Font Library Collection (plugins/sgs-blocks CLAUDE.md)",
       "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl, TextControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
       "divergence": "fontFamily is NOT exposed to clients today (Bean confirmed). Build a curated searchable font picker, but scope it to DISPLAY blocks only — heading, quote, button — off body/structural blocks, to protect the design system.",
-      "divergence_severity": "medium",
-      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED."
+      "divergence_severity": "high",
+      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED. | COUNCIL REFINEMENT 2026-07-19 (honours Bean's display-only ruling, better implementation): route through the NATIVE supports.typography.fontFamily flag (per-block opt-in) which reads theme.json's curated list and integrates with Site-Editor Styles — NOT a bespoke SgsFontFamilyControl (Part G / theme.json-owns-typography). HC2 scope on sgs/quote: font-family governs the attribution + a wrapper-inheritable default via native support on the BLOCK ROOT only — NEVER a selector targeting .sgs-quote__body (child sgs/text inherits by cascade; a child-targeted parent control is dead per HC2/D192). Severity high: same 'not exposed at all' gap as the other native-missing rows (aspect-ratio etc.), scoped to display blocks."
     },
     {
       "setting_key": "css:text-decoration",
@@ -1160,7 +1160,7 @@
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: SelectControl, TextControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
       "divergence": "the 1 observed instance uses SelectControl/TextControl rather than WP's native aspectRatio support, which already ships this exact UI for free",
       "divergence_severity": "high",
-      "notes": "Part G HIGH-priority native-adoption item — SGS should declare `supports.dimensions.aspectRatio: true` rather than hand-rolling. Native support isn't per-breakpoint though, so a block needing a genuinely different ratio on mobile (e.g. square avatar image widening to 16:9 hero) still needs the bespoke ResponsiveControl-wrapped version; note both paths."
+      "notes": "Part G HIGH-priority native-adoption item — SGS should declare `supports.dimensions.aspectRatio: true` rather than hand-rolling. Native support isn't per-breakpoint though, so a block needing a genuinely different ratio on mobile (e.g. square avatar image widening to 16:9 hero) still needs the bespoke ResponsiveControl-wrapped version; note both paths. | Spec 32 routing: adopting this native supports.* flag MUST pair with __experimentalSkipSerialization + wp_style_engine_get_styles scoped-<style> emission (the D292 pattern) — never a bare supports declaration (it auto-inlines)."
     },
     {
       "setting_key": "css:background-attachment",
@@ -1300,7 +1300,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
       "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "medium",
@@ -1324,7 +1324,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
       "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "medium",
@@ -1354,7 +1354,7 @@
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: colour-gradient; conformance: unknown (dedup_confidence: review)",
       "divergence": "The attr is overlayGradient (role colour-gradient) — a background OVERLAY, not a background photo. Needs a real GradientPicker (+ solid-colour fallback + alpha), not a preset-only or absent control.",
       "divergence_severity": "high",
-      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background."
+      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
     },
     {
       "setting_key": "css:padding-bottom",
@@ -1374,7 +1374,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
       "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
       "divergence_severity": "medium",
@@ -1398,7 +1398,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
       "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
       "divergence_severity": "medium",
@@ -1422,7 +1422,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
       "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
       "divergence_severity": "medium",
@@ -1446,7 +1446,7 @@
         "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
       },
       "shared_component": "BoxControl",
-      "spec_ref": "Part B/D4 MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
       "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
       "divergence_severity": "medium",
@@ -1530,7 +1530,7 @@
       "current_state": "3 distinct attr names / 3 instances across 2 blocks; observed_control_types: RangeControl, TextControl; observed_roles: visual; conformance: divergent (dedup_confidence: high)",
       "divergence": "3 attrs on RangeControl/TextControl — a raw X/Y percentage pair typed into text or sliders, when WordPress ships a purpose-built visual crosshair picker for exactly this",
       "divergence_severity": "high",
-      "notes": "Clear Part G 'prefer native, don't hand-roll' catch — FocalPointPicker is a first-class WP component specifically for this property and is not being used anywhere in the current 3 attrs."
+      "notes": "Clear Part G 'prefer native, don't hand-roll' catch — FocalPointPicker is a first-class WP component specifically for this property and is not being used anywhere in the current 3 attrs. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension."
     },
     {
       "setting_key": "css:object-fit",
@@ -1560,7 +1560,7 @@
       "current_state": "2 distinct attr names / 2 instances across 2 blocks; observed_control_types: RangeControl, SelectControl; observed_roles: visual; conformance: divergent (dedup_confidence: high)",
       "divergence": "2 attrs on RangeControl/SelectControl — RangeControl driving a keyword property is a Part B mismatch",
       "divergence_severity": "medium",
-      "notes": "Pairs with object-position and the imageControls extension (plugins CLAUDE.md 'Image controls discipline') — both should ship together whenever a block declares supports.sgs.imageControls."
+      "notes": "Pairs with object-position and the imageControls extension (plugins CLAUDE.md 'Image controls discipline') — both should ship together whenever a block declares supports.sgs.imageControls. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension."
     },
     {
       "setting_key": "css:stroke",

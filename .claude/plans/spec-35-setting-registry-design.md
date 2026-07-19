@@ -52,6 +52,17 @@ These are Bean's stated dimensions + Spec 35, made into rules the drafters apply
    `ToolsPanel`/`ToolsPanelItem` (`resetAll`, 1–3 `isShownByDefault`); ranges use `allowReset` +
    `resetFallbackValue`.
 
+## Output-routing rule (Spec 32 — added post-council 2026-07-19)
+
+The 7 dimensions govern control **shape**; this rule governs control **output**. Any WP-native
+`supports.*` flag adopted per this registry (e.g. `supports.dimensions.aspectRatio`,
+`supports.position.sticky`, `supports.typography.fontFamily`) MUST pair with
+`__experimentalSkipSerialization` + `wp_style_engine_get_styles()` scoped-`<style>` emission (the
+D292 pattern already shipped on button/container/heading/text/quote/media/hero) — **never a bare
+`supports` declaration**, which auto-inlines via `get_block_wrapper_attributes()` and violates the
+no-inline-styling contract (Spec 32). Colour values additionally normalise to hex8 (D302) before any
+inline path.
+
 ## Blessed shared components (Part I — use these, don't hand-roll)
 
 | Job | Component | Status |
