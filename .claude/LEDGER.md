@@ -50,8 +50,20 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
 - **DEFERRED (Bean-ruled): block-registration deletion + live-header cutover** — the retired blocks stay live
   until the new nav is BUILT + the two client headers (Mama's + Indus) are re-authored via the editor (FR-36-18).
 - **Spec 33 Part 2 emit-target repoint** — after the nav build passes its gate, NOT now (FR-36-15).
-**Next: EXECUTE Phase 1 — the plan is WRITTEN + peer-reviewed (2 cold reviewers) + QC-clean (92/100): `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md`.**
-Full Spec-36-Phase-1 FR coverage + T0-T3 tiering + validated parallel waves (Wave 0 = 6 disjoint tasks; Wave 2 = the 2 blocks). Bean rulings baked in: converter/clone DEPRIORITISED until whole header+footer+nav done; featured-item = block attribute. Salvage input: `reports/2026-07-19-P2.5-phase6.5-salvage-audit.md` (PORT D323/D340; cart = 1-line role=status; logo per-device-image already built). Start = the 3-min cart fix (Step 1) OR dispatch Wave 0. Block deletion + live cutover still DEFERRED to post-build. Handoff: `next-session-prompt-nav-rework-P2.5.md`.
+**Phase 1 EXECUTING — the plan is QC-clean (92/100): `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md`.**
+- **WAVE 0 DONE + on main (`eaa4310e`+`f9c381f2`, npm build green):** (1) cart `role=status`; (2) responsive-logo
+  left-align + functional alt + per-tier max-box + SSR preview (per-device image was already built); (3)
+  `class-sgs-nav-menu-source` const→filterable+registry-pruned resolver +`sgs/nav-menu` (R-31-1); (4) `sgs/nav-drawer`
+  skeleton (section-KIND, InnerBlocks, +block_composition seed row); (5) **`src/shared/nav-interactivity/store.js`** =
+  the shared `store('sgs/nav')` — D323/D340+freeze PORTED verbatim, two focus-traps MERGED, **API contract published**
+  (`actions.openDrawer/closeDrawer/toggleDrawer`, `state.isOpen`) for Wave 2 to build against; (6) `scripts/nav-qa/`
+  Gate-1 tooling (axe/elementFromPoint/crawl/logical-lint)+axe-core devDep. Also fixed a pre-existing `sprintf`-import
+  bug in responsive-logo/edit.js. New-block gotcha captured: F6 gate needs a `seed-composition-roles.py` entry per new block.
+- **NEXT = WAVE 2 (the 2 blocks, PARALLEL, both dep on the store contract only):** Step 6 `sgs/nav-menu` flat bar+burger
+  (T2 Sonnet); Step 7 `sgs/nav-drawer` full-screen modal (T3→T2 Opus — the a11y-critical one). Then Wave 3 (deploy→cutover)
+  → Wave 4 (Gate-1 + Bean's eye). Bean rulings: converter/clone DEPRIORITISED until whole header+footer+nav done;
+  featured-item = block attribute. Visual-diff gate `--no-verify` used on Wave-0 (source only, not live; visual QC = Gate-1).
+Handoff: `next-session-prompt-nav-rework-P2.5.md` (Wave-2 orchestration plan). NOTE: `next-session-prompt.md` belongs to the CO-ACTIVE Track 1 (Spec 35 inspector-UX) — do NOT overwrite it.
 
 **Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
 the attribute-registry (Spec 35 UNIT A+) mapped through Phase 1c. Built: the inspector DONE-checklist;

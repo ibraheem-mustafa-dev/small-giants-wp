@@ -1,76 +1,91 @@
-# TRACK 2 · P2.5 — NAV SPEC SIGN-OFF → CODE SALVAGE → PURGE (fresh session)
+Invoke /autopilot before doing anything else.
 
-**Invoke `/autopilot` before doing anything else.**
+You are the SGS WordPress framework developer. This is **TRACK 2 — Spec 36 Phase 1 Wave 2**: build the two navigation blocks (the desktop bar + the mobile drawer), which build in PARALLEL against the shared engine Wave 0 already published.
 
-## State (plain English — re-ground)
-The canonical SGS navigation spec is **WRITTEN, gated, and QC-verified**: `specs/36-SGS-NAVIGATION-SYSTEM.md`
-**v2.1**, *pending Bean's final sign-off*. It reconciles two parallel P2.5 tracks (a 07-18 session that produced
-Spec 36 + a 07-19 session that re-ran the arc on a stale `wp_navigation` lock before catching that Spec 36 was
-the authoritative base). v2.1 = Spec 36 with the utility pieces (cart/search/social/logo/business-info) woven
-into the body (§4, FR-36-19..25) + per-device + structured-data-once + fact-check fixes, gated through a
-7-persona adversarial council + a qc-council empirical fact-check, integrated + QC'd (all 26 FRs survive).
+## State recap (plain English, re-grounded)
+Small Giants sites need a proper navigation menu. The rulebook is **Spec 36** (SIGNED-OFF v2.1). The build plan is `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md` (QC-clean 92/100). **Wave 0 is DONE and on `main`** (`eaa4310e`+`f9c381f2`, npm build green): the cart `role=status` fix, logo basics, the menu-source fix, a drawer skeleton, the **shared `store('sgs/nav')` engine** (the two hard drawer bug-fixes D323/D340 ported verbatim + one merged focus-trap), and the QA test tooling (`scripts/nav-qa/`). Wave 2 builds the two blocks that consume that engine. Nothing is deployed/live yet — deploy + editor cutover of Mama's is Wave 3; full visual QC is Wave 4 (Gate-1 + Bean's eye).
 
-**The remaining work is DESTRUCTIVE — do NOT start it until Bean signs off Spec 36 v2.1.**
+## MANDATORY READING (before any build)
+1. `specs/36-SGS-NAVIGATION-SYSTEM.md` — the governing spec, **read END TO END** (Bean-locked full-read gate). Phase-1 FRs: 1,2,4(flat),6,7,8,9,9a,10,11,12,13,14,17.
+2. `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md` — Steps 6 + 7 + the "Pre-emptive decisions (peer review)" block (the pinned contracts).
+3. `reports/2026-07-19-P2.5-phase6.5-salvage-audit.md` — what's salvaged.
+4. `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` — **read the API-contract comment block at the top** (both blocks bind to it).
+5. `.claude/plans/block-migration-DONE-checklist.md` + `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md` — the 11-item DONE-checklist + no-inline contract.
+6. `.claude/STOP-CATALOGUE.md` — the uncapped STOP catalogue + pre-flight ritual (structural defences — read before acting).
 
-## MANDATORY READING (in full, before any action)
-1. `specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1 — THE canonical nav spec. Read END TO END (Bean-locked full-read gate).
-2. `reports/2026-07-19-P2.5-phase6-spec-audit-register.md` — the exact DELETE/STRIP/CARRY-FORWARD map for the purge.
-3. `reports/2026-07-19-P2.5-spec36-v2-adversarial-council.md` — the council fix-list v2.1 integrated (context).
-4. LEDGER.md "⚠ CORRECTION (2026-07-19)" block — how the divergence happened + the reconciliation.
-5. `reports/2026-07-19-P2.5-pieces-research-{cart-search,logo-social-businessinfo}.md` — the meet-and-exceed
-   feature bar per piece (the salvage measures against THESE, not "block exists").
+## The store contract (Wave 0 published — both blocks bind to THIS)
+```
+store('sgs/nav') — actions.openDrawer / closeDrawer / toggleDrawer ; state.isOpen
+Burger:  <div data-wp-context='{"isOpen":false,"drawerRef":"sgs-nav-drawer-1"}'>
+           <button data-wp-on--click="actions.toggleDrawer"
+                   data-wp-bind--aria-expanded="state.isOpen" aria-controls="sgs-nav-drawer-1">
+Drawer:  <dialog id="{drawerRef}" data-sgs-nav-drawer> … </dialog>
+Close ×: element INSIDE the drawer carrying data-sgs-nav-close (chrome, undeletable)
+```
 
-## The plan
+## Skills to Invoke
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | ALWAYS — design/architecture decisions |
+| `/gap-analysis` | ALWAYS — grade outputs before delivery |
+| `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
+| `/research` | ALWAYS — auto-routes research tier |
+| `/strategic-plan` | ALWAYS — plan order before coding |
+| `/sgs-wp-engine` + `/wp-blocks` + `/sgs-db` | SGS block build + schema ground truth |
+| `/qc-council` | Gate-2 (multi-rater on the 2 new blocks, blub.db 255) |
+| `/dispatching-parallel-agents` | run Steps 6 + 7 in parallel |
 
-### GATE 0 — Bean signs off Spec 36 v2.1 (do first, do NOT skip)
-Confirm Bean has reviewed + signed off v2.1. Nothing destructive runs before this. Update the spec status line
-from "Pending Bean final sign-off" → signed-off once confirmed.
+## MCP Servers & Tools
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright | editor ServerSideRender preview check + isolated-drawer axe smoke |
 
-### Phase 6.5 — CODE SALVAGE (read-audit first; deletions after Bean's go)
-For EACH existing nav/utility block, audit **which of the spec's ABOVE-BASIC features are genuinely built vs
-to-build** against Spec 36 v2.1 — feature-by-feature, NOT "does the block exist" (⚠ the reused-block "~90% ready"
-audits were THIN-BAR: the cart is a **badge+link only**, the mini-cart drawer is UNbuilt; search's ARIA combobox
-IS shipped). Then keep ONLY clean code that TOTALLY matches the spec, mark those spec areas complete, delete the rest.
-Targets (query `/sgs-db` for the live roster first):
-- `sgs/adaptive-nav` + `sgs/mega-menu` — RETIRE (reference-only); salvage snippets only (esp. the drawer view.js
-  **D323 body-reparent + D340 scrollbar-compensation** — port, don't re-derive, per FR-36-6/-7).
-- `sgs/nav-menu` (registered slug) — a from-scratch same-slug rebuild (D270); its 617-line render.php is a full
-  rewrite, not an extension (wp-dev council finding).
-- `sgs/cart` — badge shell exists (Store-API hydrate + cache-safe + `aria-live`); the mini-cart drawer/flyout +
-  contents are a BUILD; the one cheap fix now = add `role="status"`.
-- `sgs/product-search` — the ARIA combobox IS shipped (genuine EXTEND; add product-preview + display modes).
-- `sgs/responsive-logo`, social block, `sgs/business-info` — audit above-basic per the pieces research.
-- Shared plumbing: `store('sgs/nav')` + the disclosure/dialog utility (prior art in `mega-menu/view.js`).
-Output a per-piece built-vs-to-build table; mark the matching spec FRs "already built (salvaged)".
+## Agents to Delegate To
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | both block builds (Steps 6 + 7) |
 
-### Phase 6 — FINAL PURGE (destructive; after salvage + Bean's go) — one source of truth
-Per the phase6-spec-audit-register map:
-- **DELETE** `specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` (its elementFromPoint baseline methodology is ALREADY
-  carried into Spec 36 §8 — verify before deleting).
-- **STRIP** Spec 17 §S9 nav FRs (S9-1 hook clause / S9-2 palette / S9-4 / S9-5 / S9-8 / S9-10 nav refs / S9-11
-  pointer) → KEEP all site-header/site-footer/rows/Site-Info/scroll/responsive-model.
-- **DELETE** Spec 02 §23 "Mega Menu" + the Nav-System summary section (salvage the "Replaces Max Mega Menu/
-  JetMenu/Kadence Pro" competitive line first).
-- **REPOINT** Spec 33 Part 2 emit target — but only UPDATE it with the TRUE header/footer setup AFTER the nav is
-  built + passes its test gate (Bean's ruling; NOT now — the specialised pipeline comes after this build).
-- Mechanical (POST-BUILD, not purge-time): 00 §2.1 + `no-header-footer-block.py` allow-list + Spec 29 roster rows
-  + 01 mega template-part file list need the new block-name roster once built; clean stale `block_composition`
-  rows (`sgs/mobile-nav`, banned `core/navigation` in site-header-row) via `/sgs-update`.
+---
 
-## Guardrails (Bean-locked)
-- Spec 36 v2.1 is the SINGLE source of truth — one home, no other options (that's the whole point of the purge).
-- **Shared worktree:** `git status` + `.git/MERGE_HEAD` before touching tracked files; commit path-scoped to `main`
-  via an isolated worktree (`git worktree add /c/tmp/x main`); NEVER `git add -A`; re-check branch in the SAME
-  command as the commit (STOP-RECHECK-BRANCH — this worktree drifts onto other branches).
-- Destructive-op discipline: salvage is a READ-AUDIT first; every deletion waits for Bean's explicit go + is
-  verified (content carried forward where the audit register says CARRY).
-- Converter: do NOT over-engineer — the spec's job is documenting the architecture + universal WP standards; the
-  targeted pipeline is built AFTER the nav passes its test gate (FR-36-15, Bean-ruled).
-- Research-ideal-before-reading-existing-code (memory `research-ideal-before-reading-existing-implementation`):
-  the spec IS the ideal now — salvage checks code against it, never the reverse.
+## Task 1 — Build `sgs/nav-menu` (flat bar + burger)  [Step 6]
+**What:** rebuild `sgs/nav-menu`: desktop horizontal bar of real `<a href>` (flat, NO submenus) that collapses below the collapse-point to a burger opening the drawer.
+**Why:** the visible menu; half the Gate-1 deliverable.  **Estimated time:** 45 min.
+**Orchestration:** delegated — **sonnet** (T2) via `/delegate`; single `wp-sgs-developer`; PARALLEL with Task 2.
+- Brief: same-slug rebuild (D270 — read the existing 617-line render.php then rebuild fresh, NO deprecation). Menu picker (`ref`) + collapse-point N (visual bp default 768, DISTINCT from the 768/1024 device tiers) + `featuredItemIds` array attr + inspector checklist (Bean's ruling) + `labelCollapse` reuse. Client-side `aria-current="page"` (LiteSpeed-safe). Import `store('sgs/nav')` for the burger. No inline styles (scoped `<style>` via `SGS_Container_Wrapper`). ServerSideRender editor preview.
+- Context: the store contract above; menu resolution reads `class-sgs-nav-menu-source.php` (Wave 0 made it registry-driven); `sgs/nav` is a store namespace NOT a block name.
+- Depends on: Wave 0 (done). Parallel with: Task 2. /qc gate after: yes — Gate 2.
+**Acceptance:** 5-item classic menu → bar ≥768, burger <768 opening the drawer via `drawerRef`; crawlable; zero inline `style=`; DONE-checklist 11/11.
 
-## Skills / tools
-`/autopilot` (first) · `/sgs-wp-engine` + `/sgs-db` + `/wp-blocks` (ground salvage against live blocks/DB) ·
-`/dispatching-parallel-agents` (salvage-audit the pieces in parallel) · `Explore` (read specs for the purge) ·
-`/handoff` (session close). Model: Sonnet for the mechanical salvage-audit; Opus for any judgement call on
-build-vs-salvage.
+## Task 2 — Build `sgs/nav-drawer` (full-screen modal)  [Step 7]
+**What:** build the drawer into the Wave-0 skeleton: full-screen `<dialog showModal>` modal, InnerBlocks `[nav-menu, responsive-logo, button]` (templateLock:false), × close as undeletable chrome, drawer-settings surface (FR-34-5), consuming the store.
+**Why:** the accessible mobile menu; the a11y-critical half.  **Estimated time:** 60 min.
+**Orchestration:** delegated — **opus** (T3, shape the a11y) → finish **sonnet** (T2) via `/delegate`; single `wp-sgs-developer`; PARALLEL with Task 1.
+- Brief: consume `store('sgs/nav')` (do NOT re-implement focus-trap/scroll-lock — the store owns it). `save.js` returns `<InnerBlocks.Content/>` only; render.php emits the × as a sibling of `$content` INSIDE `<dialog>`, OUTSIDE the editable zone. Drawer settings `drawerBg/toggleCloseColour/drawerAlign/drawerGap/drawerPadding` via `ResponsiveControl`, all scoped `<style>`. `edge:full-screen` only. Accordion submenu WIRED but untested (flat menu). no-JS `<details>` fallback. ServerSideRender preview.
+- Context: the store contract; the drawer's `<dialog>` `id` MUST equal the `drawerRef` Task 1 emits; keeps `SGS_Container_Wrapper` (section-KIND).
+- Depends on: Wave 0 (done). Parallel with: Task 1. /qc gate after: yes — Gate 2.
+**Acceptance:** burger opens full-screen modal; ESC closes + focus returns to burger; Tab contained; zero inline; DONE-checklist 11/11; isolated-drawer axe = 0.
+
+## Gate 2 — QC the two blocks (after Tasks 1 + 2)
+`npm run build` green (F3/F6/product-search/ghost pass); `check-no-inline` = 0 on both; DONE-checklist 11/11; ServerSideRender preview renders (not a static snapshot); isolated-drawer axe = 0; schema round-trip (no undeclared attrs, D338); then `/qc-council` multi-rater on the 2 blocks. Fix findings before Wave 3.
+
+## Dependency graph
+```
+Wave 0 (DONE, on main)
+  ↓
+Task 1 (sonnet)  +  Task 2 (opus→sonnet)     ← PARALLEL, both dep on the store contract only
+  ↓ Gate 2 (/qc-council + build + no-inline + isolated axe)
+Wave 3 (deploy → /sgs-update → editor cutover Mama's)   ← next session after this
+  ↓ Gate-1 (Wave 4: axe/elementFromPoint/crawl/perf via scripts/nav-qa/ + Bean's eye)
+```
+
+## Methodology guardrails (do not skip)
+- **SHARED BRANCH `feat/brand-strip-inspector-rebuild` + Track 1 (Spec 35) co-active (LOAD-BEARING).** Path-scope EVERY commit with an explicit `-- <paths>` pathspec; re-check `git branch --show-current` IN THE SAME command as the commit; NEVER `git add -A`, NEVER `git checkout`/branch-switch in this worktree. Merge to main ONLY via an isolated `git worktree add /c/tmp/<x> main` (a REAL merge — main carries both tracks). Do NOT delete the shared branch. Do NOT wholesale-rewrite `LEDGER.md`/`decisions.md` (Track 1 edits them too) — replace only the nav section. **Do NOT overwrite `next-session-prompt.md` — that's Track 1's; THIS file is Track 2's.**
+- **New block → seed its `block_composition` row.** A brand-new block fails the F6 build gate until it has a row — add it to `plugins/sgs-blocks/scripts/seed-composition-roles.py` INSERTS + run the script (Wave-0 lesson; `sgs/nav-drawer` already seeded).
+- **Build via PowerShell** (`npm run build`) — the Git-Bash node shim misfires on Windows. Do NOT pipe `git commit` through `Select-String -First` (silently aborts — use `Select-Object -Last`).
+- **Verify live + verify wiring, not the emit** — a control isn't done until the LIVE computed value is correct (D291/D302/D328 silent coercions). ServerSideRender preview, not hand-built (the `ssr-fixes-hand-built-preview-drift` lesson) — interactive drawer-open previews front-end only.
+- **NO block version bumps / no `deprecated.js`** (D293/D270). No inline styling (Spec 32 — scoped `<style>`). Complete code only, no stubs.
+- **Visual-diff commit gate:** Wave 2's blocks still aren't deployed/live, so `--no-verify` with a stated reason is honest (visual QC = Gate-1). Once Wave 3 deploys + cutover, real visual-diff reports + Bean's eye are the gate (R-31-13) — never close a visual task on a number alone.
+- **/qc-council BEFORE the Gate-2 commit** (converter/pipeline/SGS-block rule, blub.db 255).
+- **DB is authoritative** — query `/sgs-db`/`/wp-blocks`; never hardcode counts.
+- **STOP-29 / definition-of-done** — Spec 36 is a spec'd subsystem: done = the spec's FULL Phase-1 scope; map every deferral to a named phase, never "out of scope". Converter/clone is DEPRIORITISED until the whole header+footer+nav is done (Bean-ruled).
+- **Fact-check subagent output** (invented paths/dates/counts) against ground truth before acting.
