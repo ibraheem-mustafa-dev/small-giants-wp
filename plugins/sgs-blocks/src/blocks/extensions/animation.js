@@ -12,6 +12,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { AnimationControl } from '../../components';
+import { isExtensionHidden } from './hide-extensions';
 
 /**
  * Human-readable labels for each animation type.
@@ -80,6 +81,13 @@ function addAnimationAttributes( settings, name ) {
 		return settings;
 	}
 
+	// Declarative per-block opt-out (block.json supports.sgs.hideExtensions).
+	// Checked against the settings object here because the block is not yet
+	// registered at blocks.registerBlockType time — mirrors hover-effects.js.
+	if ( isExtensionHidden( settings, 'animation' ) ) {
+		return settings;
+	}
+
 	// Preserve per-block defaults declared in block.json.
 	// If a block explicitly sets a default (even '' or false), it wins over the
 	// extension fallback. Only undefined falls through to the extension default.
@@ -123,7 +131,10 @@ addFilter(
 
 const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-		if ( ! shouldHaveAnimation( props.name ) ) {
+		if (
+			! shouldHaveAnimation( props.name ) ||
+			isExtensionHidden( props.name, 'animation' )
+		) {
 			return <BlockEdit { ...props } />;
 		}
 

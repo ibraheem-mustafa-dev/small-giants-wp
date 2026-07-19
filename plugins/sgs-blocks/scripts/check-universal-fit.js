@@ -256,7 +256,7 @@ const EXTENSIONS = [
 		file: 'animation.js',
 		panel: 'Animation',
 		attrs: [ 'sgsAnimation', 'sgsAnimationDelay', 'sgsAnimationDuration', 'sgsAnimationEasing' ],
-		hideSlug: null, // NO opt-out mechanism in source — reported as a gap.
+		hideSlug: 'animation', // declarative opt-out wired 2026-07-19 (Task 4) — mirrors the other extensions.
 		appliesTo: ( b ) =>
 			! ANIMATION_DENYLIST.includes( b.name ) && b.name.startsWith( 'sgs/' ),
 	},
