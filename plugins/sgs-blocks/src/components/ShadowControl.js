@@ -95,7 +95,27 @@ const DEFAULT_PARTS = { inset: false, x: 0, y: 4, blur: 12, spread: 0, colour: '
  * @param {Function} props.onChange Receives the next raw box-shadow CSS string.
  */
 export default function ShadowControl( { label, value, onChange } ) {
-	const [ presets ] = useSettings( 'shadow.presets' );
+	// `useSettings( 'shadow.presets' )` can resolve to EITHER a flat array
+	// (already-merged) OR WordPress's origin-keyed object
+	// `{ default: [...], theme: [...], custom: [...] }` (raw feature shape,
+	// what WP 7.0.x surfaces here) — calling `.map` on the object throws
+	// `(o || []).map is not a function` and crashes the block. Normalise to a
+	// single flat array (custom → theme → default precedence) before mapping.
+	const [ presetSetting ] = useSettings( 'shadow.presets' );
+	const mergedPresets = Array.isArray( presetSetting )
+		? presetSetting
+		: [
+			...( presetSetting?.custom || [] ),
+			...( presetSetting?.theme || [] ),
+			...( presetSetting?.default || [] ),
+		];
+	// Dedupe by slug — first occurrence wins (custom → theme → default),
+	// matching WordPress's own origin precedence so a theme preset that
+	// re-declares a default slug shows once, not twice.
+	const presets = mergedPresets.filter(
+		( preset, i ) =>
+			mergedPresets.findIndex( ( p ) => p.slug === preset.slug ) === i
+	);
 	const parts = parseShadow( value ) || DEFAULT_PARTS;
 
 	const updatePart = ( key, next ) => {
