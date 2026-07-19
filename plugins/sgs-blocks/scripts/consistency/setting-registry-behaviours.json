@@ -1,0 +1,693 @@
+{
+  "_meta": {
+    "doc_type": "data",
+    "title": "Spec 35 optimal-control registry — behaviour-family slice (11 rows)",
+    "created": "2026-07-19",
+    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md",
+    "contract": ".claude/plans/spec-35-setting-registry-design.md",
+    "source": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json (behaviour_families, full_classification)",
+    "note": "Unlike css-property/input-type rows, each row here defines a control SET (control_set array) for a recurring UI behaviour, not a single control. optimal_control.component names the shared component that should own the whole set."
+  },
+  "rows": [
+    {
+      "setting_key": "behaviour:show-hide-display-toggle",
+      "category": "behaviour-family",
+      "label": "Show/hide content-element toggle",
+      "optimal_control": {
+        "component": "ToggleControl (native) — one per content element, grouped under a 'Display' ToolsPanel; NOT a bundling component (each toggle is independent, unrelated content, unlike carousel/disclosure which share live state)",
+        "props": {
+          "grouping": "ToolsPanel + ToolsPanelItem per element, 1-3 isShownByDefault (the block's most-recognisable pieces, e.g. Title/Date)",
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "ToolsPanel resetAll clears every show-toggle to its block.json default in one action (dimension 7)"
+      },
+      "control_set": [
+        {
+          "member_label": "Show <element> (e.g. Show avatar, Show date, Show rating)",
+          "component": "ToggleControl",
+          "dimensions_applied": [
+            "dimension 7 (ToolsPanel disclosure once a block has 4+ show-toggles)"
+          ]
+        }
+      ],
+      "shared_component": null,
+      "spec_ref": "Spec 35 Part A5 (ToolsPanel once ~6+ controls), Part A9 (in-row layout), Part H (segmented-choice component list — booleans stay ToggleControl)",
+      "current_state": "31 distinct attr names (showAggregate/showAuthor/showAvatar/showBreakdown/showCaptions/showCategory/showDate/showDays/showExcerpt/showFilters/showGoogleLogo/showHome/showHours/showImage/showLabel/showLadder/showMinutes/showNames/showNumeric/showPickers/showRating/showReadMore/showSchema/showSeconds/showSelectedTick/showSourceHeader/showSubtitle/showTitle/showTrustpilotLogo/showVerifiedBadge/showZero) across 14 blocks, every one a bare boolean-toggle at attr_type=boolean with no shared panel structure or ToolsPanel grouping — each block hand-rolls its own flat list of ToggleControls.",
+      "divergence": "not a wrong-component problem (ToggleControl is already correct per attr) — the divergence is presentation: dense blocks (post-grid has 8+ show-toggles, trustpilot-reviews has 7+) render them as one flat un-grouped list instead of a disclosure-managed 'Display' panel (Part A5/F anti-pattern 'no headers past a handful').",
+      "divergence_severity": "low",
+      "notes": "Distinct from visibility-responsive (below): this family is CONTENT-ELEMENT visibility (which pieces of the block's own markup render — show avatar, show rating) — always-on regardless of device/state. visibility-responsive is WHOLE-BLOCK visibility (device tier, empty-state, editor-preview-only). Never merge the two families into one component; they answer different questions ('what does this block show' vs 'when/where is this block visible')."
+    },
+    {
+      "setting_key": "behaviour:scroll-reveal-animation",
+      "category": "behaviour-family",
+      "label": "Scroll-triggered / entrance animation",
+      "optimal_control": {
+        "component": "BUILD: ScrollRevealControls (extends the existing AnimationControl/AnimationPanel — src/components/AnimationControl.js + universal-extensions/AnimationPanel.js — to cover parallax/Ken-Burns/SVG-draw/stagger, which today live OUTSIDE it as bespoke per-block attrs)",
+        "props": {
+          "style": "ToggleGroupControl or ComboboxControl (>10 options)",
+          "delay/duration/stagger": "RangeControl ms, withInputField+allowReset",
+          "trigger": "ToggleControl (reveal-on-scroll / autoplay-on-load)"
+        },
+        "preset_layer": "animation-style presets (fade/slide/zoom/draw/Ken-Burns) seed a real ms-level delay/duration/stagger box underneath — never presets alone",
+        "units": "ms (duration/delay/offset/stagger) — RangeControl with real min/max/step + input field, not unitless slider only",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for animationStyle/scrollDirection/svgAnimation (short sets); Custom path n/a — closed enum by design (CSS keyframe names)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue on every Range; ToolsPanel disclosure once >6 controls (parallax/Ken-Burns/SVG/stagger together comfortably exceeds this on trust-bar/hero/container)"
+      },
+      "control_set": [
+        {
+          "member_label": "Reduced motion (MANDATORY GATE)",
+          "component": "informational Notice + automatic prefers-reduced-motion CSS gate (not a client-facing override — animation must self-disable, per WCAG 2.3.3)",
+          "dimensions_applied": [
+            "Part C/E5 mandatory gate — NOT currently a registry attr; this is a GAP, see divergence"
+          ]
+        },
+        {
+          "member_label": "Animation style (fade/slide/zoom/reveal/draw/Ken-Burns/parallax)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5 dropdown completeness"
+          ]
+        },
+        {
+          "member_label": "Trigger (reveal-on-scroll / caption-reveal / path-draw-on-scroll / scroll-spy / smooth-scroll)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Stagger delay / reveal stagger / path-draw duration / trigger offset / scroll offset",
+          "component": "RangeControl (ms, withInputField, allowReset)",
+          "dimensions_applied": [
+            "dimension 2 units (ms)",
+            "dimension 7 reset"
+          ]
+        },
+        {
+          "member_label": "Background motion (Ken Burns / parallax + strength / flip-X)",
+          "component": "ToggleControl + RangeControl (strength)",
+          "dimensions_applied": [
+            "dimension 2 units"
+          ]
+        },
+        {
+          "member_label": "SVG animation (type/source/speed)",
+          "component": "ToggleGroupControl + RangeControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Scroll direction",
+          "component": "ToggleGroupControl (up/down)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: ScrollRevealControls (grows AnimationControl)",
+      "spec_ref": "Spec 35 Part C Motion/animation ('entrance P · scroll-triggered P · parallax P · prefers-reduced-motion gating on ALL animation T'), Part E5, Part I ('Reduced-motion gate — verify on animation ext')",
+      "current_state": "22 attrs across 12 blocks. A universal AnimationPanel/AnimationControl already exists (sgsAnimation/sgsAnimationDelay/sgsAnimationDuration/sgsAnimationEasing, wired globally to nearly all sgs/* blocks via editor.BlockEdit filter) but it is a NARROWER shape — plain entrance fade/slide only. The scroll-reveal-animation family's 22 attrs (bgKenBurns, bgParallax+parallaxStrength, bgSvgAnimation+Speed, svgAnimation+Source+Speed, revealOnScroll+revealStagger, staggerDelay, captionReveal, fadeOnScroll, flipX, pathDrawOnScroll+DurationMs+TriggerOffset, scrollDirection/Offset/Spy, smoothScroll, animationStyle) are ALL block-private, not routed through the universal AnimationControl at all — every block (container, cta-section, hero, trust-bar, decorative-image, gallery, timeline, table-of-contents, media, card-grid, post-grid, team-member, testimonial, google-reviews, trustpilot-reviews, responsive-logo, brand-strip) reinvents its own subset with its own naming.",
+      "divergence": "22 scroll/motion attrs are all block-private and bypass the existing universal AnimationControl, each block reinventing its own subset under its own names; and a per-block prefers-reduced-motion gate must be confirmed applied framework-wide (WCAG 2.3.3) before any consolidation.",
+      "divergence_severity": "high",
+      "notes": "MANDATORY: no member attr in setting-reclassification.json currently represents a per-block prefers-reduced-motion override — verify (per Spec 35 Part I 'ensure every animation is gated') whether the CSS gate is applied automatically at the framework/animation.js level (cause-agnostic, no client control needed) rather than exposing a toggle; if it is NOT applied framework-wide today, that is the #1 gap to close before any other scroll-reveal work, ahead of consolidating the 22 attrs. Do not add a client-facing 'disable animation' toggle as a substitute for the automatic CSS media-query gate — WCAG 2.3.3 requires it to fire without the client knowing to ask."
+    },
+    {
+      "setting_key": "behaviour:slider-carousel",
+      "category": "behaviour-family",
+      "label": "Slider / carousel controls",
+      "optimal_control": {
+        "component": "BUILD: CarouselControls (shared set — no such component exists today; every slider-carrying block hand-rolls its own)",
+        "props": {
+          "showArrows": "ToggleControl",
+          "showDots": "ToggleControl",
+          "autoplay": "ToggleControl",
+          "autoplaySpeed": "RangeControl (ms, withInputField, allowReset, reduced-motion-aware — pause autoplay entirely under prefers-reduced-motion)",
+          "slidesVisible": "RangeControl inside ResponsiveControl (device-tier: how many slides show per breakpoint)",
+          "pauseOnHover": "ToggleControl"
+        },
+        "preset_layer": null,
+        "units": "ms for speed controls (autoplaySpeed/autoScrollSpeed/carouselSpeed/scrollSpeed all converge to the same ms RangeControl)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a (all boolean/range) except scrollSpeed which today is enum-select — should convert to the same ms RangeControl as autoplaySpeed for consistency, not a separate slow/medium/fast enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset on every Range; ToolsPanel once autoplay+arrows+dots+speed+slidesVisible are all present (5 controls, borderline — group under a 'Carousel' panel regardless)"
+      },
+      "control_set": [
+        {
+          "member_label": "Show arrows",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Show dots/pagination",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Autoplay",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Autoplay speed",
+          "component": "RangeControl (ms)",
+          "dimensions_applied": [
+            "dimension 2 units (ms)",
+            "dimension 7 reset",
+            "Part E5 reduced-motion aware — pause when prefers-reduced-motion"
+          ]
+        },
+        {
+          "member_label": "Slides visible",
+          "component": "RangeControl inside ResponsiveControl",
+          "dimensions_applied": [
+            "dimension 3 device-tier (768/1024)"
+          ]
+        },
+        {
+          "member_label": "Pause on hover",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Fade edges / show dividers",
+          "component": "ToggleControl (block-specific extras, not core to every carousel — keep as opt-in ToolsPanelItem, not always-shown)",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "BUILD: CarouselControls",
+      "spec_ref": "Spec 35 Part C Motion (parallax/scroll P), Part I ('Reduced-motion gate — verify on animation ext' extends to autoplay), Part H (bounded numeric -> RangeControl, segmented choice -> ToggleGroupControl)",
+      "current_state": "18 attrs across 9 blocks, and this is THE clearest name-divergence case in the whole registry: the SAME 4 concepts (show-arrows / show-dots / autoplay-on-off / autoplay-speed) are reimplemented under 4 different naming schemes per block — 'showArrows'/'showDots' (google-reviews, testimonial-slider, trustpilot-reviews) vs 'carouselShowArrows'/'carouselShowDots' (gallery, post-grid) vs no direct equivalent on brand-strip/trust-bar (which use 'scrolling'/'autoScroll' + 'pauseOnHover'/'autoScrollPauseOnHover' + 'scrollSpeed'/'autoScrollSpeed' for a continuous-marquee variant rather than paged slides). 'autoplaySpeed' (google-reviews/testimonial-slider/trustpilot-reviews, number) vs 'carouselSpeed' (gallery/post-grid, number) vs 'autoScrollSpeed' (trust-bar, enum-select) vs 'scrollSpeed' (brand-strip, enum-select) are the SAME ms-duration concept under 4 names and 2 different control types (number vs enum).",
+      "divergence": "The same 4 concepts (arrows/dots/autoplay/speed) are reimplemented under 4 naming schemes and 2 control types (number vs enum) across 9 blocks; should converge on one CarouselControls component with a paged|marquee variant prop.",
+      "divergence_severity": "high",
+      "notes": "Two sub-variants exist and both should map onto CarouselControls: (1) PAGED carousel (testimonial-slider, google-reviews, trustpilot-reviews, gallery, post-grid) — arrows/dots/autoplay/slidesVisible all apply. (2) CONTINUOUS-MARQUEE ticker (brand-strip, trust-bar, icon-list, nav-menu) — no dots/slidesVisible (it scrolls continuously), but shares autoplay-speed/pause-on-hover/direction. Component should expose a `variant: 'paged' | 'marquee'` prop that shows/hides the paged-only controls (dots, slidesVisible, arrows) rather than forcing marquee blocks to carry unused paged attrs. autoplaySpeed/carouselSpeed/autoScrollSpeed/scrollSpeed all converge to ONE ms attr the moment CarouselControls exists — the enum-select variants (scrollSpeed, autoScrollSpeed) should become the same RangeControl, not stay a separate slow/medium/fast picker."
+    },
+    {
+      "setting_key": "behaviour:media-playback",
+      "category": "behaviour-family",
+      "label": "Video / audio playback controls",
+      "optimal_control": {
+        "component": "BUILD: MediaPlaybackControls (audio + video variants) — matches core/video and core/audio's own attribute set for feature parity (memory sgs-block-feature-parity-with-replaced-core)",
+        "props": {
+          "autoplay": "ToggleControl (with an inline Notice that autoplay implies muted — browser autoplay policy)",
+          "loop": "ToggleControl",
+          "muted": "ToggleControl",
+          "controls": "ToggleControl",
+          "preload": "ToggleGroupControl (none/metadata/auto — matches core video)",
+          "poster": "MediaUploadCheck + MediaUpload (video only)",
+          "playsInline": "ToggleControl (video only, mobile inline-play)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for preload (3 short options) — currently only declared on audio (audioPreload), missing on video",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset on toggles; group under a 'Playback' ToolsPanel once poster+preload are added (6 controls for video)"
+      },
+      "control_set": [
+        {
+          "member_label": "Autoplay",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Controls (show native player chrome)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Loop",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Muted",
+          "component": "ToggleControl (video only — audio has no mute-by-default concept)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Preload",
+          "component": "ToggleGroupControl (none/metadata/auto)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Poster image (video only) — GAP, not in current attr set",
+          "component": "MediaUploadCheck + MediaUpload",
+          "dimensions_applied": [
+            "Part C Media — 'video poster/autoplay/loop/mute/controls (N: core video attrs) T'"
+          ]
+        },
+        {
+          "member_label": "Plays inline (video only)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Lazy load (video only)",
+          "component": "ToggleControl (or fold into native loading behaviour if WP handles it automatically for video — verify before keeping as a client control)",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "BUILD: MediaPlaybackControls",
+      "spec_ref": "Spec 35 Part C Media ('video poster/autoplay/loop/mute/controls (N: core video attrs) T'), Part I ('Focal point / image size / aspect-ratio — partial')",
+      "current_state": "11 attrs across 3 blocks: sgs/audio (audioAutoplay/audioControls/audioLoop/audioPreload — 4 attrs, already has preload as enum-select, closest to core parity), sgs/media (videoAutoplay/videoControls/videoLazyLoad/videoLoop/videoMuted/videoPlaysInline — 6 attrs, no preload, no poster attr at all — confirmed absent from block.json), sgs/gallery (enableLightbox — a single boolean, not really 'playback' but grouped here by the classifier as it's a media-interaction toggle).",
+      "divergence": "Playback toggles are named per-block (audio* vs video*), and sgs/media (video) is missing poster + preload vs core/video — a genuine feature-parity gap, not just naming drift; should share MediaPlaybackControls.",
+      "divergence_severity": "medium",
+      "notes": "sgs/media (video) is MISSING poster + preload against core/video's own attribute set — a genuine feature-parity gap per the sgs-block-feature-parity-with-replaced-core memory rule, not just a naming-consistency issue like slider-carousel. enableLightbox (gallery) belongs more naturally in a lightbox-specific control (Part C 'native lightbox N: settings.lightbox') than this playback set — flag for reclassification in a future registry pass rather than force it into MediaPlaybackControls now."
+    },
+    {
+      "setting_key": "behaviour:disclosure",
+      "category": "behaviour-family",
+      "label": "Collapsible / expandable content (accordion, collapsible text, dropdown menu)",
+      "optimal_control": {
+        "component": "BUILD: DisclosureControls (shared set — accordion, accordion-item, collapsible-text, table-of-contents, mega-menu, pricing-table, business-info, product-faq-item all hand-roll their own subset today)",
+        "props": {
+          "collapsible": "ToggleControl",
+          "defaultOpen": "ToggleControl (per-item) OR RangeControl/index-picker (container-level 'which item opens by default', -1 = none)",
+          "allowMultiple": "ToggleControl",
+          "openOn": "ToggleGroupControl (click/hover)",
+          "toggleStyle / labelCollapse (icon style)": "ToggleGroupControl (chevron/plus-minus/arrow)",
+          "collapsedLines": "RangeControl (line-clamp count, text-truncation variant only)"
+        },
+        "preset_layer": null,
+        "units": "collapsedLines is a unitless integer (line count) — RangeControl min 1 max ~10, not a CSS length",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for openOn/toggleStyle/labelCollapse (2-4 short options each)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset; group under a 'Disclosure behaviour' panel once collapsible+allowMultiple+openOn+style are all present"
+      },
+      "control_set": [
+        {
+          "member_label": "Collapsible / defaultCollapsed",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Default-open item (container-level index, e.g. accordion)",
+          "component": "RangeControl or a compact index-picker (-1 = closed)",
+          "dimensions_applied": [
+            "dimension 2 (unitless integer, real min/max/step)"
+          ]
+        },
+        {
+          "member_label": "Is open (per-item persisted state, e.g. accordion-item, product-faq-item)",
+          "component": "ToggleControl on the CHILD block, not the container",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Allow multiple open at once",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Open trigger (click/hover)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Toggle icon style / label-collapse behaviour",
+          "component": "ToggleGroupControl (or an icon-pair picker if the block exposes custom open/close icons)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Collapsed line count (text-truncation variant)",
+          "component": "RangeControl",
+          "dimensions_applied": [
+            "dimension 2",
+            "dimension 7"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: DisclosureControls",
+      "spec_ref": "Spec 35 Part H ('optional-controls group -> ToolsPanel/ToolsPanelItem'), Part B Selection row (ToggleGroupControl for 2-5 short options)",
+      "current_state": "9 attrs across 9 blocks with no shared component: sgs/accordion (allowMultiple bool, defaultOpen number/index), sgs/accordion-item + sgs/product-faq-item (isOpen bool, per-item), sgs/collapsible-text (collapsible bool, collapsedLines number), sgs/table-of-contents (collapsible bool, defaultCollapsed bool — inverse-polarity duplicate of accordion's defaultOpen concept), sgs/business-info + sgs/button (labelCollapse enum — an odd pairing; button's 'labelCollapse' is really an icon-only-collapse-to-icon-button pattern, conceptually closer to a responsive-display toggle than a disclosure, worth a future reclass), sgs/mega-menu (openOn enum: click/hover), sgs/pricing-table (toggleStyle enum).",
+      "divergence": "9 open/collapse attrs across 9 blocks with no shared component and inverse-polarity duplicates (defaultOpen vs defaultCollapsed); should share DisclosureControls.",
+      "divergence_severity": "medium",
+      "notes": "sgs/button's labelCollapse is a borderline member — it collapses a text label to icon-only, not an expand/collapse-content disclosure. Keep it in this family per the source classification (do not silently move it without a registry-wide pass) but flag it in the eventual lint as a 'verify fit' case, not a hard-fail divergence."
+    },
+    {
+      "setting_key": "behaviour:link-target-behaviour",
+      "category": "behaviour-family",
+      "label": "Link target / rel / download behaviour",
+      "optimal_control": {
+        "component": "SgsLinkControl (existing — LinkControl wrapper, built this phase per the input-type slice's 'input:url-link' row). This family must NOT get its own separate toggles; every member folds into SgsLinkControl's settings prop.",
+        "props": {
+          "settings": "[{ id: 'opensInNewTab', label: 'Open in new tab' }, { id: 'nofollow', label: 'Mark as nofollow' }, { id: 'sponsored', label: 'Mark as sponsored' }, { id: 'download', label: 'Force download' } — rel is DERIVED from the settings checkboxes, never a separate raw rel string field]"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a — settings are checkboxes inside LinkControl's popover, not a standalone dropdown",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clearing the link clears new-tab/rel with it (single clear action, no separate reset needed)"
+      },
+      "control_set": [
+        {
+          "member_label": "Open in new tab",
+          "component": "SgsLinkControl settings checkbox (opensInNewTab)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "rel (nofollow/sponsored/noopener)",
+          "component": "SgsLinkControl settings checkboxes, auto-composed into the rel string — never a raw text/enum rel field",
+          "dimensions_applied": [
+            "dimension 5 — this IS the dropdown-completeness fix: rel today is a free enum-select per block rather than LinkControl's composable settings"
+          ]
+        },
+        {
+          "member_label": "Download",
+          "component": "SgsLinkControl settings checkbox (button/CTA blocks only)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Whole-block/card link target (blockLinkTarget / sgsBlockLinkTarget)",
+          "component": "Once the Part I 'whole-card link' overlay-<a> pattern (sgsBlockLink) is built, its new-tab behaviour should read the SAME SgsLinkControl settings object as the block's primary link — not a second bespoke boolean",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Link-to-home (responsive-logo only)",
+          "component": "ToggleControl — kept SEPARATE, this is not a link-target setting (it swaps the href to the site home URL, a content-source decision, not a target/rel decision)",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "SgsLinkControl",
+      "spec_ref": "Spec 35 Part B Link/CTA ('LinkControl — internal search + new-tab + rel'), Part C Links ('new-tab + auto-rel-noopener T · rel nofollow/sponsored T · whole-card/block clickable link T — high-impact gap'), Part F ('raw URL field instead of LinkControl')",
+      "current_state": "8 attrs across 7 blocks, ALL still raw/bespoke: blockLinkTarget + sgsBlockLinkTarget (2 different attr names, same concept, on info-box/team-member — whole-card-link new-tab flag, no LinkControl involved since the whole-card-link overlay pattern itself is unbuilt per Part I), download (button, plain boolean), linkOpensNewTab (media, plain boolean), linkRel (icon/media, enum-select of nofollow/sponsor/ugc/noopener), linkToHome (responsive-logo, plain boolean, different concept — see notes), opensInNewTab (mega-menu, plain boolean), rel (button, enum-select). None of these route through SgsLinkControl's settings prop yet.",
+      "divergence": "8 new-tab/rel/download attrs are raw/bespoke (2 names for one concept: blockLinkTarget vs sgsBlockLinkTarget); these settings belong inside SgsLinkControl's settings prop, not as parallel top-level attrs.",
+      "divergence_severity": "high",
+      "notes": "This is the input:url-link row's sibling — SgsLinkControl was already scoped as the shared component for the URL field itself; this row confirms the new-tab/rel/download SETTINGS also belong inside it, not as parallel top-level attrs. blockLinkTarget/sgsBlockLinkTarget (2 attr names for 1 concept across info-box/team-member) is a smaller internal duplication worth folding into one name once both blocks route through SgsLinkControl."
+    },
+    {
+      "setting_key": "behaviour:form-validation-conditional",
+      "category": "behaviour-family",
+      "label": "Form field validation + conditional-display logic",
+      "optimal_control": {
+        "component": "BUILD: ConditionalFieldControl (the conditionalField + conditionalOperator + conditionalValue triplet) for the per-field conditional-display set; plain ToggleControl/RangeControl for the sgs/form-level security & behaviour settings (honeypot/rateLimit/requireLogin/storeSubmissions/multiSelect) — these are two DIFFERENT sub-groups inside one classifier family, see notes",
+        "props": {
+          "conditionalField": "SelectControl, dynamically populated from sibling field labels in the same sgs/form (not free text)",
+          "conditionalOperator": "SelectControl, fixed set (equals/not-equals/contains/greater-than/less-than/is-empty/is-not-empty)",
+          "conditionalValue": "TextControl, only rendered once an operator that needs a value is chosen (is-empty/is-not-empty hide it)",
+          "required": "ToggleControl (per field)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "SelectControl for conditionalField (dynamic list, could grow past 10 siblings on a large form -> ComboboxControl) and conditionalOperator (fixed ~7 options, SelectControl is fine, ToggleGroupControl too wide for 7 labelled operators)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "conditionalValue only shows when the chosen operator needs one (progressive disclosure IS the reset/simplicity mechanism here, not a separate reset button)"
+      },
+      "control_set": [
+        {
+          "member_label": "Show this field only if… (sibling field)",
+          "component": "SelectControl (ComboboxControl if a form has 10+ fields)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "…is / is not / contains / etc. (operator)",
+          "component": "SelectControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "…this value",
+          "component": "TextControl, conditionally rendered",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Required",
+          "component": "ToggleControl (per field — 13 of 14 form-field blocks)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Multi-select (tiles field only)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Honeypot / rate limit / require login / store submissions (sgs/form root — anti-spam + storage, not per-field)",
+          "component": "ToggleControl + RangeControl (rateLimit is a submissions-per-window number)",
+          "dimensions_applied": [
+            "dimension 2 (rateLimit units)"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: ConditionalFieldControl (per-field triplet only)",
+      "spec_ref": "Spec 35 Part C Conditional/display ('by device T · by login/role T · by query/context P'), memory a11y-validation-feedback-informational-not-gate ('operator-facing a11y/validation fails = passive INFORMATIONAL editor/admin notices only; never a gate')",
+      "current_state": "8 attrs (behaviour-family) + conditionalValue (classified separately as text-content, same functional triplet) across 14-15 form-field blocks. conditionalField is already correctly a dynamic-dropdown SelectControl per the classifier's 'why', conditionalOperator already a fixed-set SelectControl — both closer to optimal than most families. No shared ConditionalFieldControl component exists; each of the 14 form-field blocks re-implements the same 3-field pattern independently (14x duplication of identical logic, the highest per-attr duplication count of any family in this registry).",
+      "divergence": "14 form-field blocks each re-implement the same conditional-field triplet independently (the registry's highest per-attr duplication); should share a per-field ConditionalFieldControl, distinct from the whole-block ConditionalVisibilityPanel.",
+      "divergence_severity": "medium",
+      "notes": "This family is functionally DIFFERENT from the universal ConditionalVisibilityPanel (src/components/universal-extensions/ConditionalVisibilityPanel.js, sgsConditionLoggedIn/DateStart/DateEnd/UrlParam/Referrer) — that panel controls whether the WHOLE BLOCK is visible (login/date/URL/referrer), while form-validation-conditional controls whether ONE FORM FIELD shows based on ANOTHER FIELD's live value in the same form (sibling-driven branching logic). Do not merge these two into one component — they solve different problems and the second requires live sibling-field awareness the first doesn't need. Per the a11y-validation-feedback-informational-not-gate memory, any 'required field not filled' or 'conditional logic invalid' feedback in the editor must stay a passive Notice, never a hard block on saving/publishing."
+    },
+    {
+      "setting_key": "behaviour:sticky-header-nav-behaviour",
+      "category": "behaviour-family",
+      "label": "Sticky / shrinking header & nav-collapse behaviour",
+      "optimal_control": {
+        "component": "BUILD: StickyBehaviourControls — the sticky-position BOOLEAN should route through native `position: { sticky: true }` block support where the block declares it (site-header, notice-banner); the SGS-only shrink/transparent/collapse-tier behaviours have NO native WP equivalent and stay bespoke",
+        "props": {
+          "headerSticky / stickyPosition": "native position.sticky supports flag where available; ToggleGroupControl(top/bottom) for notice-banner's stickyPosition since it can stick to either edge",
+          "headerShrink": "ToggleControl",
+          "headerTransparent": "ToggleControl",
+          "contrastSafe": "ToggleGroupControl (auto/light-text/dark-text — safety net for a transparent header over varying hero brightness)",
+          "collapseTier / collapseCustomPx": "ToggleGroupControl (768/1024/custom) + RangeControl(px) shown only when 'custom' is chosen"
+        },
+        "preset_layer": null,
+        "units": "collapseCustomPx is a px RangeControl (device-tier px value)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for collapseTier/contrastSafe/stickyPosition (all 2-4 short options)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "ToolsPanel — site-header alone already has 4 of the 7 members (headerSticky/Shrink/Transparent + contrastSafe), comfortably past the A5 threshold"
+      },
+      "control_set": [
+        {
+          "member_label": "Sticky on scroll",
+          "component": "native `position.sticky` block support (site-header, notice-banner) — prefer over a bespoke boolean per Part G",
+          "dimensions_applied": [
+            "Part G — 'prefer native, don't hand-roll'"
+          ]
+        },
+        {
+          "member_label": "Sticky edge (notice-banner: top/bottom)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Shrink on scroll",
+          "component": "ToggleControl (no native equivalent — genuine SGS behaviour)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Transparent until scroll",
+          "component": "ToggleControl (no native equivalent)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Contrast-safe text over transparent header",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Nav-collapse breakpoint tier",
+          "component": "ToggleGroupControl (768/1024/custom) + RangeControl(px) when custom",
+          "dimensions_applied": [
+            "dimension 3 device-tier",
+            "dimension 2 units (px)"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: StickyBehaviourControls (native position.sticky for the boolean; bespoke panel for the rest)",
+      "spec_ref": "Spec 35 Part G ('position.sticky N — HIGH priority, free inspector UI'), Part C Position/layout ('sticky (N: position.sticky) T')",
+      "current_state": "7 attrs across 3 blocks: sgs/site-header (contrastSafe enum, headerShrink/headerSticky/headerTransparent bool — verified live: site-header/block.json declares NO `supports.position.sticky`, so headerSticky is a fully bespoke boolean today, not routed through the native support), sgs/adaptive-nav (collapseCustomPx number, collapseTier enum — this is a responsive nav-collapse BREAKPOINT, not stickiness, see notes), sgs/notice-banner (stickyPosition enum top/bottom).",
+      "divergence": "headerSticky is fully bespoke where native position.sticky exists (site-header declares no position support); the family also conflates true stickiness with the nav-collapse breakpoint — should split into a native StickyToggle + a NavCollapseTier.",
+      "divergence_severity": "medium",
+      "notes": "The family name bundles two conceptually distinct behaviours the source classifier grouped together: (a) TRUE stickiness — stays fixed while scrolling (site-header's headerSticky, notice-banner's stickyPosition) — a native position.sticky candidate; (b) NAV-COLLAPSE BREAKPOINT — at what viewport width the nav switches from full menu to hamburger (adaptive-nav's collapseTier/collapseCustomPx) — a device-tier responsive concept, closer to visibility-responsive than to stickiness. Keep both under this one family per the source (do not silently split without a registry-wide pass) but the eventual shared component should likely be TWO small pieces (StickyToggle + NavCollapseTier) rather than one monolith, since site-header and adaptive-nav never both need the full set."
+    },
+    {
+      "setting_key": "behaviour:hover-effect",
+      "category": "behaviour-family",
+      "label": "Hover state visual effects",
+      "optimal_control": {
+        "component": "StateToggleControl (EXISTS, src/components/StateToggleControl.js — the Normal/Hover segmented switch). Every *Hover attr must route through it: the control renders whichever underlying property control (colour/scale/shadow/decoration) the block already has, scoped to the selected state — never a second bespoke 'Hover Effects' panel duplicating the Normal panel.",
+        "props": {
+          "swatches": "legend showing both Normal + Hover values stay visible in both states (discoverability)",
+          "children": "render-prop returning the SAME property controls used for Normal, just bound to the Hover-suffixed attr when state==='hover'"
+        },
+        "preset_layer": "effectHover (scale/shadow/zoom/grayscale/overlay/decoration) acts as a PRESET selector that seeds which fine-grained Hover control(s) appear beneath it — not a replacement for the fine controls",
+        "units": "scaleHover is a %/ratio RangeControl (e.g. 100-120), matching the existing sgsHoverScale pattern",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for effectHover/shadowHover/textDecorationHover (each a short closed set)",
+        "alpha_clearable": "n/a (colour hover states inherit alpha_clearable from whichever colour control they wrap, e.g. DesignTokenPicker)",
+        "reset_disclosure": "resetting Normal must not silently reset Hover and vice versa — each state's reset is independent, StateToggleControl keeps both value sets in memory regardless of which is on-screen"
+      },
+      "control_set": [
+        {
+          "member_label": "Effect type (which hover effect is active: scale/shadow/zoom/grayscale/overlay)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Scale amount",
+          "component": "RangeControl, scoped inside StateToggleControl's Hover state",
+          "dimensions_applied": [
+            "dimension 2",
+            "dimension 7"
+          ]
+        },
+        {
+          "member_label": "Shadow (hover)",
+          "component": "ShadowControl, scoped inside StateToggleControl's Hover state (shares the SAME builder as the block's resting-state shadow, not a separate Small/Medium/Large/Glow select)",
+          "dimensions_applied": [
+            "dimension 1 preset+custom"
+          ]
+        },
+        {
+          "member_label": "Grayscale on hover",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Image zoom on hover",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Overlay on hover",
+          "component": "ToggleControl (+ DesignTokenPicker for overlay colour if the block supports one)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Text decoration on hover (underline/none)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Transition duration + easing",
+          "component": "SelectControl (short named presets: instant/fast/medium/slow + default/ease-out/ease-in/spring/linear)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        }
+      ],
+      "shared_component": "StateToggleControl",
+      "spec_ref": "Spec 35 Part F ('duplicate hover panels / hover split from resting'), Part I ('Normal/Hover state — StateToggleControl EXISTS (2026-07-18) — roll out to stateful blocks'), Spec 35 checklist item 12",
+      "current_state": "7 behaviour-family attrs (effectHover/grayscaleHover/imageZoomHover/overlayHover/scaleHover/shadowHover/textDecorationHover) across 14 blocks — PLUS a SEPARATE, ALREADY-BUILT universal 'Hover Effects' panel (src/components/universal-extensions/HoverEffectsPanel.js, wired via src/blocks/extensions/hover-effects.js to every block) exposing sgsHoverBgColour/sgsHoverTextColour/sgsHoverBorderColour/sgsHoverScalePreset/sgsHoverScale/sgsHoverShadow/sgsHoverDuration/sgsHoverEasing/sgsHoverImageZoom. Neither system uses StateToggleControl (verified: HoverEffectsPanel.js imports DesignTokenPicker/SelectControl/RangeControl/ToggleControl directly, not StateToggleControl) — this is TWO parallel hover systems running simultaneously: the universal sgsHover* panel AND 14 blocks' own private *Hover attrs (scaleHover on 11 blocks alone).",
+      "divergence": "Two parallel hover systems run at once — the universal HoverEffectsPanel (sgsHover*) AND 14 blocks' private *Hover attrs — neither using StateToggleControl; migrate HoverEffectsPanel to StateToggleControl and retire the per-block duplicates.",
+      "divergence_severity": "high",
+      "notes": "This is the textbook Part F anti-pattern 'duplicate hover panels / hover split from resting', caught live rather than hypothetically: a block using BOTH the universal HoverEffectsPanel (sgsHoverScale) AND its own private scaleHover attr would show the client two different 'hover scale' controls with no indication they might conflict. Fix-shape: migrate HoverEffectsPanel itself to render through StateToggleControl (so Normal/Hover share one panel, one set of property controls), then retire the 14 blocks' private *Hover attrs onto the same StateToggleControl-scoped controls, deleting the duplicate universal-vs-per-block split entirely. This is the highest-severity consolidation in the behaviour-family slice by duplication count (2 systems x 14 blocks)."
+    },
+    {
+      "setting_key": "behaviour:visibility-responsive",
+      "category": "behaviour-family",
+      "label": "Whole-block visibility (device tier, empty-state, editor-preview)",
+      "optimal_control": {
+        "component": "DeviceVisibilityPanel (EXISTS, src/components/universal-extensions/DeviceVisibilityPanel.js + src/blocks/extensions/responsive-visibility.js — already wired globally via editor.BlockEdit filter to every block). Device-tier hide/show must ALWAYS route here; a block-private hideOnMobile/showOnDesktop pair is the divergence to remove, not a legitimate alternative.",
+        "props": {
+          "sgsHideOnMobile / sgsHideOnTablet / sgsHideOnDesktop": "ToggleControl x3, already built"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "ToolsPanel, already applied (PanelBody today — upgrade to ToolsPanel once bundled with the non-device members below)"
+      },
+      "control_set": [
+        {
+          "member_label": "Hide on mobile / tablet / desktop",
+          "component": "DeviceVisibilityPanel (existing, ToggleControl x3)",
+          "dimensions_applied": [
+            "dimension 3 device-tier (768/1024 — matches D2's locked standard, verify sgsHideOnTablet's stated '768px to 1023px' help text against the 768/1024 lock)"
+          ]
+        },
+        {
+          "member_label": "Hide when empty (no content to show, e.g. empty cart)",
+          "component": "ToggleControl — NOT a device-tier control, a content-conditional (belongs conceptually nearer form-validation-conditional's 'conditional display' set than device visibility)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Show placeholder/pending state in editor only",
+          "component": "ToggleControl — editor-only preview aid, not a frontend visibility rule at all",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "DeviceVisibilityPanel",
+      "spec_ref": "Spec 35 Part D (Responsive UX — D1 device-preview vs per-block responsive attrs, D2 locked 768/1024), Part C Conditional/display ('by device T')",
+      "current_state": "6 attrs across 4 blocks. sgs/decorative-image duplicates the universal panel directly: hideOnMobile + hideOnTablet (bespoke booleans) alongside the ALREADY-WIRED universal sgsHideOnMobile/sgsHideOnTablet/sgsHideOnDesktop — decorative-image is one of the few blocks that should simply DELETE its private pair and rely on the universal extension it already inherits. sgs/whatsapp-cta uses the INVERTED polarity (showOnDesktop/showOnMobile, 'show' not 'hide') for the same concept. sgs/cart's hideWhenEmpty and sgs/trust-bar's showPendingInEditor are not device-tier at all (see control_set notes).",
+      "divergence": "Per-block device show/hide duplicates the already-wired universal DeviceVisibilityPanel (decorative-image's hideOnMobile/Tablet is pure deletable duplication; whatsapp-cta uses inverted show* polarity); route all through the universal extension.",
+      "divergence_severity": "high",
+      "notes": "Distinct from show-hide-display-toggle (the first row in this registry): that family is CONTENT-ELEMENT visibility (which pieces of a block's own markup render, e.g. 'show avatar'); this family is WHOLE-BLOCK visibility (does the block render at all, and on which device). decorative-image's hideOnMobile/hideOnTablet is the single clearest 'delete this, the universal extension already covers it' case found in the whole behaviour-family slice — it is pure duplication with zero unique behaviour, unlike most other high-severity rows which need a genuine BUILD."
+    },
+    {
+      "setting_key": "behaviour:dismissible",
+      "category": "behaviour-family",
+      "label": "Dismiss / close-and-remember behaviour",
+      "optimal_control": {
+        "component": "BUILD: DismissibleControl (small, 2-control set) — currently inline in sgs/notice-banner's own edit.js with no shared component, but the pattern (a client-dismissable UI element that remembers the dismissal) is reusable beyond notice-banner (e.g. a future cookie-consent block, or a 'permanently hide this promo' variant of whatsapp-cta)",
+        "props": {
+          "dismissible": "ToggleControl",
+          "dismissBehaviour": "ToggleGroupControl (session/permanent — matches the existing block.json enum exactly)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for dismissBehaviour (2 options: session vs permanent) — currently confirmed as a SelectControl-shaped enum in block.json (`enum: [\"session\",\"permanent\"]`), a 2-option enum belongs in ToggleGroupControl per dimension 5, not a dropdown Select",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "dismissBehaviour only shown once dismissible is toggled on — progressive disclosure via conditional render, not a ToolsPanel (too small a set to warrant one)"
+      },
+      "control_set": [
+        {
+          "member_label": "Dismissible (show a close/X control on the frontend)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Remember dismissal for (this browser session / permanently)",
+          "component": "ToggleGroupControl, conditionally rendered when dismissible is on",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: DismissibleControl",
+      "spec_ref": "Spec 35 Part H (segmented choice -> ToggleGroupControl), Part A2 (sensible defaults — dismissBehaviour defaults to 'session' in block.json, correct default-to-least-permanent choice)",
+      "current_state": "2 attrs, 1 block only (sgs/notice-banner) — verified live in block.json: `dismissible` (boolean, default false) + `dismissBehaviour` (string enum session/permanent, default session). No shared component exists because there is currently only one consumer.",
+      "divergence": "Single consumer (notice-banner) with a bespoke dismissible/dismissBehaviour pair; extract a small shared DismissibleControl now, and switch dismissBehaviour from SelectControl to ToggleGroupControl (dimension 5).",
+      "divergence_severity": "low",
+      "notes": "Lowest-severity row in the slice by consumer count (n=1 block), but still worth a named shared component now rather than later: the pattern is a natural fit for any future announcement-bar-style or promo-CTA-style block, and building it small now (2 controls) is cheaper than reverse-engineering a shared shape once a second block needs it and has already diverged. dismissBehaviour's enum value should switch from SelectControl to ToggleGroupControl per dimension 5 (2 short options) even though it is the only member with a genuine control-type gap — everything else in this row is already correctly shaped."
+    }
+  ]
+}
