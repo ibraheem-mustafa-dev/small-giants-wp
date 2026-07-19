@@ -1,0 +1,72 @@
+{
+  "_comment": "Example probes file for elementfrompoint-sweep.mjs — Spec 36 §8 / FR-36-16. This is a PER-VIEWPORT config (one key per requested --viewports width). Copy this file, rename it per client/mockup, and replace every selector once sgs/nav-menu + sgs/nav-drawer are built. Do NOT point real gate runs at this example file — it is documentation, not a fixture.",
+
+  "375": {
+    "_comment": "Mobile: burger toggle opens the full-screen drawer. Baseline target: 10/10 on Mama's.",
+    "openSelector": ".sgs-nav-menu__toggle",
+    "probes": [
+      {
+        "name": "header-row-returns-toggle",
+        "kind": "point",
+        "xRatio": 0.92,
+        "yRatio": 0.05,
+        "expectSelector": ".sgs-nav-drawer__toggle"
+      },
+      {
+        "name": "drawer-link-1-returns-self",
+        "kind": "self",
+        "selector": ".sgs-nav-drawer__link:nth-of-type(1)"
+      },
+      {
+        "name": "drawer-link-2-returns-self",
+        "kind": "self",
+        "selector": ".sgs-nav-drawer__link:nth-of-type(2)"
+      },
+      {
+        "name": "below-header-unreachable",
+        "kind": "point",
+        "xRatio": 0.5,
+        "yRatio": 0.6,
+        "expectSelector": ".sgs-nav-drawer__scrim, [inert]"
+      }
+    ]
+  },
+
+  "768": {
+    "_comment": "Tablet: same drawer pattern as mobile, geometry differs.",
+    "openSelector": ".sgs-nav-menu__toggle",
+    "probes": [
+      {
+        "name": "header-row-returns-toggle",
+        "kind": "point",
+        "xRatio": 0.92,
+        "yRatio": 0.04,
+        "expectSelector": ".sgs-nav-drawer__toggle"
+      },
+      {
+        "name": "drawer-link-1-returns-self",
+        "kind": "self",
+        "selector": ".sgs-nav-drawer__link:nth-of-type(1)"
+      }
+    ]
+  },
+
+  "1440": {
+    "_comment": "Desktop: no drawer — probe an OPEN mega panel instead. openSelector targets the mega trigger, not the burger.",
+    "openSelector": ".sgs-nav-menu__item--has-mega .sgs-nav-menu__link",
+    "probes": [
+      {
+        "name": "mega-panel-link-1-returns-self",
+        "kind": "self",
+        "selector": ".sgs-nav-menu__mega-panel a:nth-of-type(1)"
+      },
+      {
+        "name": "below-mega-unreachable",
+        "kind": "point",
+        "xRatio": 0.5,
+        "yRatio": 0.7,
+        "expectSelector": ".sgs-nav-menu__mega-scrim, [inert]"
+      }
+    ]
+  }
+}

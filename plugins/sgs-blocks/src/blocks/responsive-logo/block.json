@@ -49,6 +49,11 @@
 		"root": ".wp-block-sgs-responsive-logo"
 	},
 	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "left",
+			"_comment": "FR-36-22 basics: explicit left-align default (NN/g: 6x better home-return). Plain string (no enum) mirrors WP core's auto-injected align attribute shape — matches the supports.align list above without a coercion risk (D291 gotcha: an out-of-enum stored value silently resets to default)."
+		},
 		"desktopLogoId": {
 			"type": "number"
 		},
@@ -86,6 +91,33 @@
 			"type": "number",
 			"default": 240
 		},
+		"maxWidth": {
+			"type": "number",
+			"_comment": "FR-36-22 basics: per-tier max box. null/unset = no cap."
+		},
+		"maxWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"maxWidthTablet": {
+			"type": "number"
+		},
+		"maxWidthMobile": {
+			"type": "number"
+		},
+		"maxHeight": {
+			"type": "number"
+		},
+		"maxHeightUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"maxHeightTablet": {
+			"type": "number"
+		},
+		"maxHeightMobile": {
+			"type": "number"
+		},
 		"linkToHome": {
 			"type": "boolean",
 			"default": true
@@ -121,7 +153,7 @@
 		"attributes": {
 			"width": 240,
 			"linkToHome": true,
-			"alt": "Company logo",
+			"alt": "Acme Co. home",
 			"animationStyle": "none"
 		}
 	}

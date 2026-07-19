@@ -46,6 +46,7 @@ $animation_style  = isset( $attributes['animationStyle'] ) ? sanitize_key( $attr
 $width            = isset( $attributes['width'] ) ? absint( $attributes['width'] ) : 240;
 $link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['linkToHome'] : true;
 $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
+$align            = isset( $attributes['align'] ) ? sanitize_key( $attributes['align'] ) : 'left';
 
 // Validate animationStyle against allowed values.
 $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
@@ -83,10 +84,27 @@ $mobile_url = $mobile_logo_id > 0 ? (string) wp_get_attachment_url( $mobile_logo
 $effective_tablet_url = $tablet_url ? $tablet_url : $desktop_url;
 $effective_mobile_url = $mobile_url ? $mobile_url : $desktop_url;
 
-// Alt text falls back to the site name when empty.
+// Functional default alt (FR-36-22 basics) — never the literal "logo" (an
+// a11y anti-pattern: it tells a screen-reader user WHAT the graphic is, not
+// what it DOES). Falls back to "[Business] home" so the alt communicates
+// destination intent; an operator-authored value always wins.
 if ( '' === $alt ) {
-	$alt = get_bloginfo( 'name' );
+	$alt = sprintf(
+		/* translators: %s: business/site name. */
+		__( '%s home', 'sgs-blocks' ),
+		get_bloginfo( 'name' )
+	);
 }
+
+// The wrapping <a>'s accessible name is driven DISTINCTLY from the <img alt>
+// (FR-36-22): the image alt describes WHAT the graphic depicts, the link's
+// aria-label describes WHERE it goes. Reusing one string for both risks a
+// duplicated/confusing screen-reader announcement on the linked logo.
+$link_aria_label = sprintf(
+	/* translators: %s: business/site name. */
+	__( 'Go to %s homepage', 'sgs-blocks' ),
+	get_bloginfo( 'name' )
+);
 
 // ── Animation modifier class ──────────────────────────────────────────────────
 
@@ -126,6 +144,42 @@ $scoped_css = array();
 // is now forbidden, no exception for custom-property values). Moved into the
 // same scoped uid-class rule as every other declaration on this block. ---
 $scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
+
+// --- Explicit left-alignment default (FR-36-22 basics) — NN/g: a left-aligned
+// logo returns visitors home 6x more reliably than other placements. Only
+// applied for the 'left' choice (the block's default) so an operator's
+// explicit centre/right/wide alignment is left untouched; pins the block to
+// the start of its flex/grid/block-level container without float (float
+// would break a header flex row). ---
+if ( 'left' === $align ) {
+	$scoped_css[] = $sel . '{margin-inline-end:auto;margin-inline-start:0}';
+}
+
+// --- Per-tier max box (FR-36-22 basics) — caps the rendered logo box on top
+// of the `width` custom property, independently per breakpoint. Unset tiers
+// emit nothing (no cap at that tier). ---
+$scoped_css[] = sgs_responsive_css_rule(
+	$attributes,
+	array(
+		array(
+			'attr'         => 'maxWidth',
+			'css'          => 'max-width',
+			'unit_attr'    => 'maxWidthUnit',
+			'unit_default' => 'px',
+			'tablet_attr'  => 'maxWidthTablet',
+			'mobile_attr'  => 'maxWidthMobile',
+		),
+		array(
+			'attr'         => 'maxHeight',
+			'css'          => 'max-height',
+			'unit_attr'    => 'maxHeightUnit',
+			'unit_default' => 'px',
+			'tablet_attr'  => 'maxHeightTablet',
+			'mobile_attr'  => 'maxHeightMobile',
+		),
+	),
+	$sel
+);
 
 // --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
 // scoped via the stable core style engine. ---
@@ -233,7 +287,7 @@ if ( $link_to_home ) {
 	printf(
 		'<a class="sgs-responsive-logo__link" href="%s" rel="home" aria-label="%s">',
 		esc_url( home_url( '/' ) ),
-		esc_attr( $alt )
+		esc_attr( $link_aria_label )
 	);
 }
 

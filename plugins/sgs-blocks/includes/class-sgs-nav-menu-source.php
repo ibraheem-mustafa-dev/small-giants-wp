@@ -33,15 +33,56 @@ defined( 'ABSPATH' ) || exit;
 class SGS_Nav_Menu_Source {
 
 	/**
-	 * The nav-holding block names searched for in the header, in priority order.
+	 * Resolve the nav-holding block names searched for in the header, in priority order.
 	 *
-	 * Order matters: sgs/adaptive-nav is the canonical SGS nav block (it replaces
-	 * core/navigation, which WooCommerce hooks its mini-cart/customer-account onto).
-	 * core/navigation is kept for back-compat with headers not yet migrated.
+	 * Order matters: sgs/nav-menu is the canonical SGS nav block (Spec 36 rebuild,
+	 * FR-36-1) and supersedes sgs/adaptive-nav (retiring, reference-only per Spec 36
+	 * §8a). core/navigation is kept for back-compat with headers not yet migrated —
+	 * WooCommerce hooks its mini-cart/customer-account onto it.
 	 *
-	 * @var string[]
+	 * NOT a bare hardcoded const (R-31-1 DB-first). This was `private const
+	 * NAV_BLOCK_NAMES` until Spec 36 Wave-0 flagged it as the exact anti-pattern the
+	 * binding rule forbids. The seed list below is run through two DB/registry-style
+	 * gates instead of being trusted as-is:
+	 *   1. `apply_filters( 'sgs_nav_menu_block_names', ... )` — a future nav-holding
+	 *      block (or a follow-up that declares `supports.sgs.navMenuBlock` in
+	 *      block.json and derives this list from the block registry) can extend or
+	 *      replace the seed without editing this class.
+	 *   2. Pruned to block names actually present in WordPress's OWN
+	 *      `WP_Block_Type_Registry` — a retired/renamed slug (e.g. sgs/adaptive-nav
+	 *      once its registration is removed, FR-36-18 cutover) drops out on its own,
+	 *      no edit needed here.
+	 *
+	 * Honest ceiling for this pass (documented per the build brief): sgs-framework.db
+	 * already has a `navigation` capability in `block_capabilities`, but it is
+	 * currently assigned to sgs/mega-menu, sgs/breadcrumbs and sgs/table-of-contents
+	 * — none of which are "menu-holding root block in a header row" in this class's
+	 * sense. Routing off that table as-is would silently break menu resolution, so it
+	 * was not used. The clean DB-first fix is a follow-up: either add the real
+	 * nav-holding blocks to `block_capabilities` under a distinct capability (e.g.
+	 * `nav-menu-holder`), or declare `supports.sgs.navMenuBlock` per block.json and
+	 * derive this list from the registry at runtime — both are block.json changes,
+	 * out of scope for this file-only pass.
+	 *
+	 * @return string[] Registered nav-holding block names, in priority order.
 	 */
-	private const NAV_BLOCK_NAMES = array( 'sgs/adaptive-nav', 'core/navigation' );
+	private static function get_nav_block_names(): array {
+		$names = (array) apply_filters(
+			'sgs_nav_menu_block_names',
+			array( 'sgs/nav-menu', 'sgs/adaptive-nav', 'core/navigation' )
+		);
+
+		$registry = WP_Block_Type_Registry::get_instance();
+
+		return array_values(
+			array_filter(
+				$names,
+				static function ( $name ) use ( $registry ) {
+					return $registry->is_registered( $name );
+				}
+			)
+		);
+	}
 
 	/**
 	 * Resolve the site's primary menu to an array of parsed nav blocks.
@@ -69,7 +110,7 @@ class SGS_Nav_Menu_Source {
 		if ( $header_content ) {
 			$parsed = parse_blocks( $header_content );
 
-			foreach ( self::NAV_BLOCK_NAMES as $nav_block_name ) {
+			foreach ( self::get_nav_block_names() as $nav_block_name ) {
 				$nav = self::find_block_recursive( $parsed, $nav_block_name );
 				if ( ! $nav ) {
 					continue;

@@ -202,6 +202,7 @@ $trigger_label = $aria_label . ' (' . $count_label . ')';
 
 		<span
 			class="sgs-cart__badge<?php echo ( $ssr_count > 0 || $show_zero ) ? ' sgs-cart__badge--visible' : ''; ?>"
+			role="status"
 			aria-live="polite"
 			aria-atomic="true"
 			data-sgs-cart-count

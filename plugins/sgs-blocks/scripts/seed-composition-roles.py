@@ -217,6 +217,16 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    {
+        # sgs/nav-drawer (2026-07-19, Spec 36 FR-36-6 Phase-1) — section-KIND
+        # off-canvas drawer container (full-screen <dialog>); keeps SGS_Container_Wrapper.
+        # Mirrors site-header/cta-section (section-root). wraps_block +
+        # container_kind='section' are set by sync-container-wrapping-blocks.py --apply.
+        "block_slug": "sgs/nav-drawer",
+        "wraps_block": None,
+        "composition_role": "section-root",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

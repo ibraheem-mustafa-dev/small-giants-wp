@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import ServerSideRender from '@wordpress/server-side-render';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -10,10 +11,60 @@ import {
 	SelectControl,
 	TextareaControl,
 	Notice,
+	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl } from '../../components';
+
+// Units offered on the max-width/max-height UnitControls (mirrors the shared
+// TypographyControls unit-set pattern — px is the common case for a logo cap;
+// % lets an operator cap relative to the header row).
+const MAX_BOX_UNITS = [
+	{ value: 'px', label: 'px', default: 240 },
+	{ value: '%', label: '%', default: 100 },
+	{ value: 'em', label: 'em', default: 20 },
+	{ value: 'rem', label: 'rem', default: 20 },
+];
+
+/**
+ * Compose a UnitControl display value from a numeric attr + unit string.
+ *
+ * @param {number|undefined} num  Numeric attribute value.
+ * @param {string}           unit Unit string.
+ * @return {string} Combined value, or '' when unset.
+ */
+function composeMaxBoxValue( num, unit ) {
+	if ( num === undefined || num === null || '' === num ) {
+		return '';
+	}
+	return `${ num }${ unit || '' }`;
+}
+
+/**
+ * Parse a UnitControl onChange value ('240px', '100%', …) into its numeric
+ * and unit parts. Preserves the current unit when the field is cleared.
+ *
+ * @param {string} raw         Raw value from UnitControl onChange.
+ * @param {string} currentUnit The currently-stored unit.
+ * @return {{ num: number|undefined, unit: string }}
+ */
+function parseMaxBoxValue( raw, currentUnit ) {
+	if ( ! raw && raw !== 0 ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const str = String( raw ).trim();
+	if ( '' === str ) {
+		return { num: undefined, unit: currentUnit || 'px' };
+	}
+	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
+	if ( match ) {
+		const num = parseFloat( match[ 1 ] );
+		const unit = match[ 2 ] || currentUnit || 'px';
+		return { num: isNaN( num ) ? undefined : num, unit };
+	}
+	return { num: undefined, unit: currentUnit || 'px' };
+}
 
 const ANIMATION_STYLE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
@@ -113,6 +164,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		svgAnimationSource,
 		animationStyle,
 		width,
+		maxWidthUnit,
+		maxHeightUnit,
 		linkToHome,
 		alt,
 		style,
@@ -121,6 +174,33 @@ export default function Edit( { attributes, setAttributes } ) {
 		marginTablet,
 		marginMobile,
 	} = attributes;
+
+	const maxWidthAttrMap = {
+		desktop: 'maxWidth',
+		tablet: 'maxWidthTablet',
+		mobile: 'maxWidthMobile',
+	};
+	const maxHeightAttrMap = {
+		desktop: 'maxHeight',
+		tablet: 'maxHeightTablet',
+		mobile: 'maxHeightMobile',
+	};
+
+	const onMaxWidthChange = ( breakpoint, raw ) => {
+		const { num, unit } = parseMaxBoxValue( raw, maxWidthUnit || 'px' );
+		setAttributes( {
+			[ maxWidthAttrMap[ breakpoint ] ]: num,
+			maxWidthUnit: unit,
+		} );
+	};
+
+	const onMaxHeightChange = ( breakpoint, raw ) => {
+		const { num, unit } = parseMaxBoxValue( raw, maxHeightUnit || 'px' );
+		setAttributes( {
+			[ maxHeightAttrMap[ breakpoint ] ]: num,
+			maxHeightUnit: unit,
+		} );
+	};
 
 	// We store URLs in the editor state via onSelect but don't persist them
 	// as block attributes — render.php derives them server-side from IDs.
@@ -314,11 +394,51 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<TextareaControl
 						label={ __( 'Alt text', 'sgs-blocks' ) }
-						help={ __( 'Describes the logo for screen readers. Leave empty to use the site name.', 'sgs-blocks' ) }
+						help={ __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically — never just "logo".', 'sgs-blocks' ) }
 						value={ alt }
 						onChange={ ( val ) => setAttributes( { alt: val } ) }
 						rows={ 2 }
 					/>
+				</PanelBody>
+
+				{ /* ── Panel 3b: Maximum size per device ── */ }
+				<PanelBody
+					title={ __( 'Maximum size (per device)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p className="sgs-responsive-logo-editor__panel-hint">
+						{ __( 'Cap the logo box independently per breakpoint. Leave a tier blank for no maximum at that size.', 'sgs-blocks' ) }
+					</p>
+					<ResponsiveControl label={ __( 'Max width', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<UnitControl
+								label={ __( 'Max width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ composeMaxBoxValue(
+									attributes[ maxWidthAttrMap[ breakpoint ] ],
+									maxWidthUnit || 'px'
+								) }
+								units={ MAX_BOX_UNITS }
+								onChange={ ( val ) => onMaxWidthChange( breakpoint, val ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveControl>
+					<ResponsiveControl label={ __( 'Max height', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<UnitControl
+								label={ __( 'Max height', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ composeMaxBoxValue(
+									attributes[ maxHeightAttrMap[ breakpoint ] ],
+									maxHeightUnit || 'px'
+								) }
+								units={ MAX_BOX_UNITS }
+								onChange={ ( val ) => onMaxHeightChange( breakpoint, val ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveControl>
 				</PanelBody>
 
 				{ /* ── Panel 4: Spacing ── */ }
@@ -359,34 +479,24 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
-			{ /* ── Editor canvas preview ── */ }
+			{ /* ── Editor canvas preview ──────────────────────────────────────
+			   Rendered via ServerSideRender (render.php) so the canvas NEVER
+			   drifts from the frontend — animation, the theme-customiser
+			   fallback logo, the functional alt default, left-align, and the
+			   new per-tier max-box all render exactly as they will on the
+			   live site (ssr-fixes-hand-built-preview-drift lesson,
+			   2026-07-18). Tradeoff: the SVG view.js animation itself doesn't
+			   run inside the static SSR preview — only its markup/CSS does.
+			   Gated on desktopLogoId (not the transient preview URL) so the
+			   placeholder is correct on reload before a logo is chosen; a
+			   theme-customiser fallback logo (when set) still renders once a
+			   logo is picked here, matching render.php's own fallback. ── */ }
 			<div { ...blockProps }>
-				{ desktopUrl ? (
-					<div
-						className="sgs-responsive-logo-editor__preview"
-						style={ { width: `${ width }px`, maxWidth: '100%' } }
-					>
-						<img
-							src={ desktopUrl }
-							alt={ alt || __( 'Logo preview', 'sgs-blocks' ) }
-							style={ { display: 'block', maxWidth: '100%', height: 'auto' } }
-						/>
-						{ ( tabletUrl || mobileUrl ) && (
-							<p className="sgs-responsive-logo-editor__preview-note">
-								{ __( '+ tablet/mobile variants set', 'sgs-blocks' ) }
-							</p>
-						) }
-						{ hasAnimation && svgAnimationSource && (
-							<p className="sgs-responsive-logo-editor__preview-note">
-								{ /* translators: %s is the animation style label */ }
-								{ sprintf(
-									__( 'SVG animation: %s (ID %d)', 'sgs-blocks' ),
-									animationStyle,
-									svgAnimationSource
-								) }
-							</p>
-						) }
-					</div>
+				{ desktopLogoId || desktopUrl ? (
+					<ServerSideRender
+						block="sgs/responsive-logo"
+						attributes={ attributes }
+					/>
 				) : (
 					<div className="sgs-responsive-logo-editor__empty">
 						<span className="dashicons dashicons-format-image" />
