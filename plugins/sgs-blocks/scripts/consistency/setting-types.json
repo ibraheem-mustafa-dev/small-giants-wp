@@ -5,8 +5,8 @@
     "total_attr_instances": 2291,
     "distinct_attr_names": 944,
     "unique_settings": 449,
-    "dedup_high_confidence": 100,
-    "dedup_needs_review": 349,
+    "dedup_high_confidence": 102,
+    "dedup_needs_review": 347,
     "conformance_consistent": 249,
     "conformance_divergent": 48,
     "conformance_unknown": 152
@@ -771,9 +771,9 @@
       ]
     },
     {
-      "setting_key": "unresolved:gridtemplaterows",
-      "css_property": null,
-      "basis": "unresolved",
+      "setting_key": "css:grid-template-rows",
+      "css_property": "grid-template-rows",
+      "basis": "css-property",
       "distinct_attr_names": [
         "gridTemplateRows",
         "gridTemplateRowsMobile",
@@ -804,11 +804,9 @@
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
-      "dedup_confidence": "review",
+      "dedup_confidence": "high",
       "conformance": "unknown",
-      "dedup_flags": [
-        "NO_PROPERTY_MATCH"
-      ]
+      "dedup_flags": []
     },
     {
       "setting_key": "css:background-color",
@@ -1838,9 +1836,9 @@
       "dedup_flags": []
     },
     {
-      "setting_key": "unresolved:gridautorows",
-      "css_property": null,
-      "basis": "unresolved",
+      "setting_key": "css:grid-auto-rows",
+      "css_property": "grid-auto-rows",
+      "basis": "css-property",
       "distinct_attr_names": [
         "gridAutoRows"
       ],
@@ -1869,11 +1867,9 @@
       "observed_emit_shapes": [],
       "observed_control_types": [],
       "observed_box_families": [],
-      "dedup_confidence": "review",
+      "dedup_confidence": "high",
       "conformance": "unknown",
-      "dedup_flags": [
-        "NO_PROPERTY_MATCH"
-      ]
+      "dedup_flags": []
     },
     {
       "setting_key": "css:justify-items",
@@ -12237,18 +12233,6 @@
       "count": 13
     },
     {
-      "setting_key": "unresolved:gridtemplaterows",
-      "dedup_flags": [
-        "NO_PROPERTY_MATCH"
-      ],
-      "sample_attrs": [
-        "gridTemplateRows",
-        "gridTemplateRowsMobile",
-        "gridTemplateRowsTablet"
-      ],
-      "count": 3
-    },
-    {
       "setting_key": "slot:label",
       "dedup_flags": [
         "MULTI_SHAPE:['child', 'nested']"
@@ -12295,16 +12279,6 @@
         "photo"
       ],
       "count": 15
-    },
-    {
-      "setting_key": "unresolved:gridautorows",
-      "dedup_flags": [
-        "NO_PROPERTY_MATCH"
-      ],
-      "sample_attrs": [
-        "gridAutoRows"
-      ],
-      "count": 1
     },
     {
       "setting_key": "unresolved:templatemode",
