@@ -17,14 +17,139 @@ input-type AND behaviour-family test AND isn't just a per-element variant of a c
 """
 import json
 import re
+import sqlite3
 import sys
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 HERE = Path(__file__).parent
-summary = json.load(open(HERE / "non_css_attr_summary.json", encoding="utf-8"))
-raw = json.load(open(HERE / "non_css_attrs.json", encoding="utf-8"))
+DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+# ---------------------------------------------------------------------------
+# Spec 35 Phase 2 Task 1 — DB-direct derivation of the non-CSS-property attr summary.
+#
+# This used to read two one-off scratchpad dumps (non_css_attr_summary.json /
+# non_css_attrs.json) that never existed in the repo, git history, or on disk — the script
+# crashed with FileNotFoundError on a clean checkout. It now queries sgs-framework.db
+# directly, mirroring build-roster.py's connection pattern (DB_PATH, fail-closed on 0 rows,
+# no partial file written).
+#
+# The "non-CSS-property" split MUST match Phase 1's dedup (build-setting-types.py) exactly,
+# or the denominator this script re-classifies drifts from what Phase 1b/Phase 1 called
+# "unresolved"/"slot:"/"role:" groups. So the split logic (strip_responsive,
+# boundary_suffix_match) is copied verbatim from build-setting-types.py — an attr is
+# CSS-property (and excluded here) iff its responsive-stripped name boundary-matches a
+# property_suffixes suffix with a real css_property; everything else is in-scope.
+# ---------------------------------------------------------------------------
+
+RESPONSIVE_SUFFIXES = ("Tablet", "Mobile", "Desktop")
+UNIT_SUFFIXES = ("Unit",)
+
+
+def _q(conn, sql):
+    return [dict(r) for r in conn.execute(sql).fetchall()]
+
+
+def _strip_responsive(name: str) -> str:
+    """Strip a trailing device-tier and/or Unit companion so paddingTablet == padding.
+    Verbatim copy of build-setting-types.py's strip_responsive."""
+    base = name
+    changed = True
+    while changed:
+        changed = False
+        for suf in RESPONSIVE_SUFFIXES + UNIT_SUFFIXES:
+            if base.endswith(suf) and len(base) > len(suf):
+                base = base[: -len(suf)]
+                changed = True
+    return base
+
+
+def _boundary_suffix_match(name: str, suffixes_by_len: list[str]) -> str | None:
+    """Verbatim copy of build-setting-types.py's boundary_suffix_match."""
+    low = name.lower()
+    for suf in suffixes_by_len:  # already sorted longest-first
+        sl = suf.lower()
+        if low == sl:
+            return suf
+        if low.endswith(sl):
+            start = len(name) - len(suf)
+            if start == 0 or name[start].isupper():
+                return suf
+    return None
+
+
+def _load_non_css_attr_summary() -> dict:
+    """
+    Build the `summary` dict this script classifies, straight from block_attributes: keyed by
+    attr NAME, each value carrying the aggregate attr_type/control/role/enum/blocks/
+    canonical_slot facts this file's classifiers (`input_type_of`, `element_of`, ...) read.
+    Restricted to attrs that are NOT a CSS-property attr per Phase 1's split (see module
+    docstring above) — the same denominator Phase 1b/Phase 1 called non-CSS-property.
+    """
+    if not DB_PATH.exists():
+        sys.exit(f"DB not found at {DB_PATH}")
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    try:
+        ps = _q(conn, "SELECT suffix, css_property FROM property_suffixes")
+        suffix_to_prop = {r["suffix"]: r["css_property"] for r in ps}
+        suffixes_by_len = sorted(suffix_to_prop.keys(), key=len, reverse=True)
+
+        attrs = _q(conn,
+            "SELECT block_slug, attr_name, attr_type, enum_values, role, canonical_slot, "
+            "inspector_control_type FROM block_attributes WHERE source='sgs'")
+    finally:
+        conn.close()
+
+    if not attrs:
+        sys.exit("0 sgs block_attributes rows returned — is /sgs-update stale? Aborting (no partial file).")
+
+    agg: dict[str, dict] = {}
+    for a in attrs:
+        name = a["attr_name"]
+        base = _strip_responsive(name)
+        suf = _boundary_suffix_match(base, suffixes_by_len)
+        css_prop = suffix_to_prop.get(suf) if suf else None
+        if css_prop and css_prop != "None":
+            continue  # CSS-property attr — owned by Phase 1's dedup, out of scope here.
+
+        m = agg.setdefault(name, {
+            "attr_type": set(), "control": set(), "role": set(),
+            "enum_sample": False, "blocks": set(), "canonical_slot": set(),
+        })
+        m["attr_type"].add(a["attr_type"])
+        if a["inspector_control_type"]:
+            m["control"].add(a["inspector_control_type"])
+        if a["role"]:
+            m["role"].add(a["role"])
+        if a["canonical_slot"]:
+            m["canonical_slot"].add(a["canonical_slot"])
+        m["blocks"].add(a["block_slug"])
+        if a["enum_values"]:
+            try:
+                vals = json.loads(a["enum_values"])
+            except (TypeError, ValueError):
+                vals = None
+            if vals:
+                m["enum_sample"] = True
+
+    out = {}
+    for name, m in agg.items():
+        blocks = sorted(m["blocks"])
+        out[name] = {
+            "attr_type": sorted(m["attr_type"]),
+            "control": sorted(m["control"]),
+            "role": sorted(m["role"]),
+            "enum_sample": m["enum_sample"],
+            "blocks": blocks,
+            "n_blocks": len(blocks),
+            "canonical_slot": sorted(m["canonical_slot"]),
+        }
+    return out
+
+
+summary = _load_non_css_attr_summary()
 
 # ---------------------------------------------------------------------------
 # INPUT-TYPE classification — regex/heuristic rules, checked in priority order.

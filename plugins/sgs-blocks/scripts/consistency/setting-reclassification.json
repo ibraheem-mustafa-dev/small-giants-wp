@@ -168,7 +168,12 @@
         "sgs/form-field-hidden",
         "sgs/form-field-number",
         "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
         "sgs/form-field-tiles",
+        "sgs/form-step",
         "sgs/gallery",
         "sgs/google-reviews",
         "sgs/heading",
@@ -197,6 +202,7 @@
         "sgs/site-header-row",
         "sgs/social-icons",
         "sgs/star-rating",
+        "sgs/tab",
         "sgs/table-of-contents",
         "sgs/tabs",
         "sgs/team-member",
@@ -361,6 +367,10 @@
         "sgs/form-field-file",
         "sgs/form-field-number",
         "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
         "sgs/form-field-tiles",
         "sgs/gallery",
         "sgs/google-reviews",
@@ -494,6 +504,11 @@
         "sgs/form-field-hidden",
         "sgs/form-field-number",
         "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles",
         "sgs/form-review",
         "sgs/google-reviews",
         "sgs/heading",
@@ -625,6 +640,7 @@
         "sgs/team-member",
         "sgs/testimonial",
         "sgs/testimonial-slider",
+        "sgs/text",
         "sgs/timeline",
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
@@ -791,9 +807,12 @@
         "sgs/post-grid",
         "sgs/process-steps",
         "sgs/product-card",
+        "sgs/quote",
         "sgs/separator",
         "sgs/social-icons",
         "sgs/testimonial",
+        "sgs/testimonial-slider",
+        "sgs/text",
         "sgs/trust-bar"
       ],
       "count": 20
@@ -1136,6 +1155,10 @@
         "sgs/form-field-hidden",
         "sgs/form-field-number",
         "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
         "sgs/form-field-tiles"
       ]
     },
@@ -1180,7 +1203,8 @@
         "sgs/quote",
         "sgs/team-member",
         "sgs/testimonial",
-        "sgs/testimonial-slider"
+        "sgs/testimonial-slider",
+        "sgs/text"
       ]
     },
     {
@@ -1233,6 +1257,7 @@
         "borderColourHover",
         "gridItemBorder",
         "svgContent",
+        "templateMode",
         "textColourHover",
         "verticalAlignment"
       ],
@@ -1272,6 +1297,9 @@
       ],
       "heading": [
         "headline"
+      ],
+      "label": [
+        "label"
       ],
       "overlay": [
         "overlayGradientAngle",
@@ -1584,7 +1612,11 @@
         "attributionEnabled",
         "attributionTag",
         "boxShadowHover",
-        "inheritStyle"
+        "inheritStyle",
+        "textColourHover"
+      ],
+      "background": [
+        "backgroundColourHover"
       ],
       "hover-effect": [
         "scaleHover"
@@ -1638,7 +1670,8 @@
         "bgSvgPosition"
       ],
       "root": [
-        "gridItemBorder"
+        "gridItemBorder",
+        "templateMode"
       ],
       "icon": [
         "iconCircleSize"
@@ -1684,6 +1717,7 @@
         "maxReviews",
         "placeId",
         "sortBy",
+        "templateMode",
         "textOnly",
         "theme"
       ],
@@ -1718,6 +1752,14 @@
         "showDots",
         "slidesVisible"
       ],
+      "background": [
+        "backgroundColourHover"
+      ],
+      "root": [
+        "borderColourHover",
+        "templateMode",
+        "textColourHover"
+      ],
       "card": [
         "cardStyle"
       ],
@@ -1743,6 +1785,7 @@
         "dataSource",
         "emptyState",
         "reviewsAverage",
+        "templateMode",
         "theme",
         "totalReviews",
         "trustScore",
@@ -1756,6 +1799,9 @@
         "direction",
         "layoutMode",
         "wrap"
+      ],
+      "animation": [
+        "sgsAnimation"
       ],
       "show-hide-display-toggle": [
         "showAuthor",
@@ -1781,6 +1827,9 @@
         "avatar",
         "avatarMedia"
       ],
+      "background": [
+        "backgroundColourHover"
+      ],
       "root": [
         "borderColourHover",
         "orgLogo",
@@ -1792,10 +1841,12 @@
         "schemaEnabled",
         "sourcePlatform",
         "summaryPhrase",
+        "textColourHover",
         "workMedia"
       ],
       "hover-effect": [
         "effectHover",
+        "scaleHover",
         "shadowHover"
       ],
       "quote": [
@@ -1808,6 +1859,9 @@
       ],
       "card": [
         "reviewDate"
+      ],
+      "animation": [
+        "sgsAnimation"
       ],
       "show-hide-display-toggle": [
         "showRating"
@@ -2029,6 +2083,7 @@
         "pagination",
         "postType",
         "postsPerPage",
+        "templateMode",
         "textColourHover"
       ],
       "card": [
@@ -2096,6 +2151,23 @@
         "steps"
       ]
     },
+    "sgs/text": {
+      "background": [
+        "backgroundColourHover"
+      ],
+      "root": [
+        "boxShadowHover",
+        "dropCap",
+        "inheritStyle",
+        "textColourHover"
+      ],
+      "hover-effect": [
+        "scaleHover"
+      ],
+      "text": [
+        "text"
+      ]
+    },
     "sgs/container": {
       "backgroundMedia": [
         "backgroundImage",
@@ -2143,6 +2215,9 @@
         "icon",
         "iconPosition"
       ],
+      "label": [
+        "label"
+      ],
       "disclosure": [
         "openOn"
       ],
@@ -2171,7 +2246,8 @@
         "plans"
       ],
       "root": [
-        "popularBadgeText"
+        "popularBadgeText",
+        "templateMode"
       ],
       "animation": [
         "sgsAnimation"
@@ -2205,6 +2281,7 @@
         "grayscaleHover",
         "imageZoomHover",
         "overlayHover",
+        "scaleHover",
         "shadowHover"
       ],
       "heading": [
@@ -2226,21 +2303,12 @@
         "staggerDelay"
       ]
     },
-    "sgs/text": {
-      "root": [
-        "boxShadowHover",
-        "dropCap",
-        "inheritStyle"
-      ],
-      "text": [
-        "text"
-      ]
-    },
     "sgs/product-search": {
       "root": [
         "buttonLabel",
         "displayMode",
-        "maxResults"
+        "maxResults",
+        "placeholder"
       ]
     },
     "sgs/gallery": {
@@ -2274,7 +2342,8 @@
         "images"
       ],
       "root": [
-        "mediaItems"
+        "mediaItems",
+        "templateMode"
       ],
       "overlay": [
         "overlayColourHover"
@@ -2397,6 +2466,7 @@
         "contentImpact"
       ],
       "label": [
+        "label",
         "pillSize",
         "pillStyle"
       ],
@@ -2530,7 +2600,8 @@
         "conditionalValue"
       ],
       "label": [
-        "fieldName"
+        "fieldName",
+        "label"
       ],
       "root": [
         "helpText",
@@ -2544,6 +2615,124 @@
       ],
       "card": [
         "step"
+      ]
+    },
+    "sgs/form-field-phone": {
+      "form-validation-conditional": [
+        "conditionalField",
+        "conditionalOperator",
+        "required"
+      ],
+      "text": [
+        "conditionalValue"
+      ],
+      "label": [
+        "fieldName",
+        "label"
+      ],
+      "root": [
+        "helpText",
+        "placeholder"
+      ]
+    },
+    "sgs/form-field-radio": {
+      "form-validation-conditional": [
+        "conditionalField",
+        "conditionalOperator",
+        "required"
+      ],
+      "text": [
+        "conditionalValue"
+      ],
+      "label": [
+        "fieldName",
+        "label"
+      ],
+      "root": [
+        "helpText"
+      ],
+      "options": [
+        "options"
+      ]
+    },
+    "sgs/form-field-select": {
+      "form-validation-conditional": [
+        "conditionalField",
+        "conditionalOperator",
+        "required"
+      ],
+      "text": [
+        "conditionalValue"
+      ],
+      "label": [
+        "fieldName",
+        "label"
+      ],
+      "root": [
+        "helpText",
+        "placeholder"
+      ],
+      "options": [
+        "options"
+      ]
+    },
+    "sgs/form-field-text": {
+      "form-validation-conditional": [
+        "conditionalField",
+        "conditionalOperator",
+        "required"
+      ],
+      "text": [
+        "conditionalValue"
+      ],
+      "label": [
+        "fieldName",
+        "label"
+      ],
+      "root": [
+        "helpText",
+        "placeholder"
+      ]
+    },
+    "sgs/form-field-textarea": {
+      "form-validation-conditional": [
+        "conditionalField",
+        "conditionalOperator",
+        "required"
+      ],
+      "text": [
+        "conditionalValue"
+      ],
+      "label": [
+        "fieldName",
+        "label"
+      ],
+      "root": [
+        "helpText",
+        "placeholder",
+        "rows"
+      ]
+    },
+    "sgs/form-field-tiles": {
+      "form-validation-conditional": [
+        "conditionalField",
+        "conditionalOperator",
+        "multiSelect",
+        "required"
+      ],
+      "text": [
+        "conditionalValue"
+      ],
+      "label": [
+        "fieldName",
+        "label"
+      ],
+      "root": [
+        "helpText",
+        "placeholder",
+        "selectedStyle",
+        "templateMode",
+        "tiles"
       ]
     },
     "sgs/site-header": {
@@ -2727,6 +2916,9 @@
         "schemaItemName",
         "schemaReviewCount"
       ],
+      "label": [
+        "label"
+      ],
       "max": [
         "maxRating"
       ],
@@ -2787,15 +2979,6 @@
       ],
       "icon": [
         "iconPosition"
-      ]
-    },
-    "sgs/form-field-phone": {
-      "root": [
-        "helpText",
-        "placeholder"
-      ],
-      "form-validation-conditional": [
-        "required"
       ]
     },
     "sgs/breadcrumbs": {
@@ -2866,7 +3049,20 @@
         "question"
       ]
     },
+    "sgs/form-step": {
+      "label": [
+        "label"
+      ]
+    },
+    "sgs/tab": {
+      "label": [
+        "label"
+      ]
+    },
     "sgs/whatsapp-cta": {
+      "label": [
+        "label"
+      ],
       "text": [
         "message"
       ],
@@ -2881,29 +3077,10 @@
         "variant"
       ]
     },
-    "sgs/form-field-tiles": {
-      "form-validation-conditional": [
-        "multiSelect"
-      ],
-      "root": [
-        "selectedStyle",
-        "templateMode",
-        "tiles"
-      ]
-    },
-    "sgs/form-field-radio": {
-      "options": [
-        "options"
-      ]
-    },
-    "sgs/form-field-select": {
-      "options": [
-        "options"
-      ]
-    },
     "sgs/tabs": {
       "root": [
-        "orientation"
+        "orientation",
+        "templateMode"
       ],
       "tab": [
         "tabAlignment",
@@ -2918,11 +3095,6 @@
     "sgs/site-header-row": {
       "root": [
         "rowSlot"
-      ]
-    },
-    "sgs/form-field-textarea": {
-      "root": [
-        "rows"
       ]
     },
     "sgs/label": {
@@ -3231,7 +3403,11 @@
         "sgs/hero",
         "sgs/info-box",
         "sgs/post-grid",
-        "sgs/process-steps"
+        "sgs/process-steps",
+        "sgs/quote",
+        "sgs/testimonial",
+        "sgs/testimonial-slider",
+        "sgs/text"
       ],
       "n_blocks": 12,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
@@ -3533,7 +3709,8 @@
         "sgs/info-box",
         "sgs/post-grid",
         "sgs/process-steps",
-        "sgs/testimonial"
+        "sgs/testimonial",
+        "sgs/testimonial-slider"
       ],
       "n_blocks": 9,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
@@ -3864,7 +4041,13 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-hidden",
-        "sgs/form-field-number"
+        "sgs/form-field-number",
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles"
       ],
       "n_blocks": 14,
       "why": "dynamic dropdown of sibling field names \u2014 a select, not free text"
@@ -3881,7 +4064,13 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-hidden",
-        "sgs/form-field-number"
+        "sgs/form-field-number",
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles"
       ],
       "n_blocks": 14,
       "why": "fixed operator set (equals/not-equals/contains/greater-than...)"
@@ -3898,7 +4087,13 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-hidden",
-        "sgs/form-field-number"
+        "sgs/form-field-number",
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles"
       ],
       "n_blocks": 14,
       "why": "the comparison value typed for the selected conditionalOperator"
@@ -4716,7 +4911,13 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-hidden",
-        "sgs/form-field-number"
+        "sgs/form-field-number",
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles"
       ],
       "n_blocks": 14,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
@@ -4974,7 +5175,12 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-number",
-        "sgs/form-field-phone"
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles"
       ],
       "n_blocks": 13,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
@@ -5354,7 +5560,21 @@
         "sgs/form-field-consent",
         "sgs/form-field-date",
         "sgs/form-field-email",
-        "sgs/form-field-file"
+        "sgs/form-field-file",
+        "sgs/form-field-number",
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles",
+        "sgs/form-step",
+        "sgs/hero",
+        "sgs/mega-menu",
+        "sgs/option-picker",
+        "sgs/star-rating",
+        "sgs/tab",
+        "sgs/whatsapp-cta"
       ],
       "n_blocks": 22,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
@@ -6164,7 +6384,12 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-number",
-        "sgs/form-field-phone"
+        "sgs/form-field-phone",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles",
+        "sgs/product-search"
       ],
       "n_blocks": 13,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
@@ -6612,7 +6837,12 @@
         "sgs/form-field-email",
         "sgs/form-field-file",
         "sgs/form-field-number",
-        "sgs/form-field-phone"
+        "sgs/form-field-phone",
+        "sgs/form-field-radio",
+        "sgs/form-field-select",
+        "sgs/form-field-text",
+        "sgs/form-field-textarea",
+        "sgs/form-field-tiles"
       ],
       "n_blocks": 13,
       "why": "attr_type=boolean"
@@ -6780,7 +7010,10 @@
         "sgs/icon",
         "sgs/info-box",
         "sgs/post-grid",
-        "sgs/quote"
+        "sgs/quote",
+        "sgs/team-member",
+        "sgs/testimonial",
+        "sgs/text"
       ],
       "n_blocks": 11,
       "why": "attr_type number/integer or Range/NumberControl"
@@ -6909,7 +7142,9 @@
         "sgs/post-grid",
         "sgs/pricing-table",
         "sgs/process-steps",
-        "sgs/team-member"
+        "sgs/team-member",
+        "sgs/testimonial",
+        "sgs/trustpilot-reviews"
       ],
       "n_blocks": 10,
       "why": "role=motion; scroll/entrance animation-family picker"
@@ -7844,7 +8079,16 @@
         "sgs/cta-section",
         "sgs/feature-grid",
         "sgs/form",
-        "sgs/form-field-tiles"
+        "sgs/form-field-tiles",
+        "sgs/gallery",
+        "sgs/google-reviews",
+        "sgs/hero",
+        "sgs/post-grid",
+        "sgs/pricing-table",
+        "sgs/tabs",
+        "sgs/testimonial-slider",
+        "sgs/trust-bar",
+        "sgs/trustpilot-reviews"
       ],
       "n_blocks": 17,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
@@ -7884,7 +8128,11 @@
         "sgs/hero",
         "sgs/info-box",
         "sgs/post-grid",
-        "sgs/process-steps"
+        "sgs/process-steps",
+        "sgs/quote",
+        "sgs/testimonial",
+        "sgs/testimonial-slider",
+        "sgs/text"
       ],
       "n_blocks": 12,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
