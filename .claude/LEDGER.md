@@ -15,6 +15,33 @@ note: "THE single living-status doc. Replaces the old 3-way split (state/handoff
 (or you) gets ONE true answer instead of three drifting ones. It replaces the old three
 docs (state / handoff / next-session-prompt) that kept contradicting each other.
 
+**Latest (2026-07-18, P2 session):** Track 2 **P2 (the header/footer/control BUILDER design-gate) is DONE
++ SIGNED OFF** — `plans/2026-07-18-P2-builder-ux-design-gate.md`. It designs the settings panel a
+non-coder uses to configure header/footer/nav, over a **CPT editing home** (`sgs_header`/`sgs_footer`
+CPTs — the findable admin screen, NOT the Site Editor; the device-switcher works there), a tri-state
+per-device control model, a starter-template picker, and a WP control-implementation spec bound to **Spec
+35**. Gated through a 6-critic council + gap-analysis (B+) + a build + a UX specialist review + Spec-35
+detail. **The NAVIGATION was carved out as a NEW phase P2.5 (full rework, Bean-locked)** — a 3-stream
+research pass + 4-critic council ran; the council said "salvage adaptive-nav", **Bean overrode: full
+rework, adaptive-nav is the messy patch-fixed block, gone.** Locked for P2.5: `wp_navigation` menu data;
+feature bar = core-base + competitors + general web/UX + Spec 35 + more; full rework. NOT locked (decide
+from research + council + QC): the block architecture, incl. the mega-menu implementation (Bean's CPT idea
+is a candidate, not a decision). **Next: P2.5 in a fresh session —
+`next-session-prompt-nav-rework-P2.5.md`** (ends with a spec-audit-and-PURGE of all scattered nav content).
+
+**Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
+the attribute-registry (Spec 35 UNIT A+) mapped through Phase 1c. Built: the inspector DONE-checklist;
+the block roster (79 blocks, DB-derived); **all 3 audits** (inspector-conformance JSX-AST, feature-parity,
+shrink-to-fit — all WARN-only, keyed to the roster); **3 shared components** (`DesignTokenPicker` enableAlpha,
+`SgsLinkControl`, `ShadowControl` — infra only, no block consumes them yet); brand-strip QC'd as the pilot
+exemplar; the **min-width:0 wrapper backstop** (Gate C0 approved, built, deployed to canary, no regression —
+but NOT live-emission-proven, homepage has no wrapper-grid container; UNIT D will prove it). **The registry
+insight (Bean-driven):** 944 attr names → ~80 TRUE settings (≈60 CSS-property + 12 input-types + 11
+behaviour-families); the "282 one-offs" were classifier laziness (dedup by NAME not property-identity). Dedup
+fully adjudicated (Haiku + Sonnet), 0 genuinely-unique. `plugins/sgs-blocks/scripts/consistency/` holds it all.
+**Next (Phase 2, fresh session):** define the OPTIMAL control per setting (needs Bean's design input) →
+Phase 3 lint → UNIT D pilot (sgs/media). See `.claude/next-session-prompt.md`.
+
 **Where we are (2026-07-17).** Two things run in parallel:
 1. **The website builder itself** — the header/footer/nav system + the drawer menu are built
    and LIVE on both your test site (sandybrown) and the Indus site (palestine-lives). The
@@ -45,7 +72,7 @@ session) and P4 (the LEDGER collapse) are done + live.
 ## Live status (machine-checkable — verify, don't trust the cache)
 
 - **Branch:** `main`. **HEAD:** past `3fb44a8f` (Indus Our-Brands session 2026-07-17 — 6 commits
-  `287c7c1f`→`3fb44a8f`, all pushed; co-active P5 track also on main, HEAD moves). **D-ceiling:** **D343**.
+  `287c7c1f`→`3fb44a8f`, all pushed; co-active P5 track also on main, HEAD moves). **D-ceiling:** **D344** (Track 2 P1 architecture decision, 2026-07-18, `6996f5da`). NOTE: this worktree is currently on `feat/brand-strip-inspector-rebuild` (Track 1) — Track 2 P1 docs were committed to `main` via an isolated worktree; re-check branch before any commit (STOP-RECHECK-BRANCH).
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the active header/footer/nav front, also `specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` + `specs/17` §S9.
 - **Sites:** dev = palestine-lives.org (Indus). staging/canary = sandybrown-nightingale-600381.hostingersite.com. Both WP 7.0.1.
@@ -160,7 +187,7 @@ worktree/history — if located on another branch, fold into decisions.md/parkin
 ## Active tracks (parallel — SHARED WORKTREE, commit path-scoped only)
 
 - **Track 1 — Indus / product / inline-zero rollout** (the front in `next-session-prompt.md`; co-active). Product queue below.
-- **Track 2 — Header/Footer/Nav FULL REBUILD** (NEW 2026-07-17). Roadmap: `plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md` (6 phases, each guarded by the 6 anti-failure gates derived from the 6-week failure pattern). Baton: **`next-session-prompt-header-footer-rebuild.md`** — starts at **P1 (Research → Architecture, merged)**. Gate 0 = validate the plan first. Do NOT build in P1.
+- **Track 2 — Header/Footer/Nav FULL REBUILD** (NEW 2026-07-17). Roadmap: `plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md` (6 phases). **P1 (Research → Architecture) CLOSED 2026-07-18 (D344)** — decision `plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`; council `reports/2026-07-18-P1-adversarial-council-gate1.md`. Verdict: **BUILD (fork disqualified on architecture — must be a clone-converter emit target), full clean rebuild, rich-but-simple (cascade+Advanced), tiered tri-state on/off, informational-only a11y (DP2a), converter-emittable by construction (DP6).** On `main` (`6996f5da`+). **Baton now → P2 (builder design-gate)** — `next-session-prompt-header-footer-rebuild.md`. Gate 0/1 both passed; do NOT build in P2, it's a design-gate.
 
 ## Standing programmes (parallel / deferred — not the active front)
 

@@ -1,106 +1,123 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: Track A DONE (inline-zero gate + core-block migration + page-13 21/21 + slider responsiveness, merged to main 17b65d34). Next = Task 3 — Spec 35 strategic plan.
-generated: 2026-07-18 (very long session — Steps 6/core-rows completed + slider root-caused/fixed + merged to main)
+thread: Track 1 — Spec 35 block-inspector-UX. Phase 0 DONE + attribute-registry mapped through Phase 1c (2026-07-19, 11 commits). Next = Phase 2 (optimal-spec catalog).
+generated: 2026-07-19
 ---
 
-Invoke `/autopilot` before doing anything else. This session is **plan-only** for Spec 35 —
-read `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` **IN FULL** before planning, and do NOT write
-any code until Bean signs off the plan (7-rules #7: design-gate shared-surface changes).
-
-You are the SGS WordPress framework developer. The previous session (Track A) is COMPLETE and
-**merged to `main` (`17b65d34`)**: the inline-zero anti-regression gate, the core→SGS migration
-pairings (separator/row/stack + roster audit), `sgs/separator` opacity (core-parity), the live
-21/21 page-13 migration, and the testimonial-slider mobile responsiveness fix. One task remains:
-the **Spec 35 strategic plan**.
+Invoke /autopilot before anything else. This is **Track 1 — Spec 35 block-inspector-UX, Phase 2**
+(the attribute-registry: define the OPTIMAL control per setting). Read in full: the strategic plan
+`.claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md`, the executable plan
+`.claude/plans/2026-07-19-spec-35-phase-0-executable-plan.md`, `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
+(Parts B/H are the optimal-control reference), the DONE-checklist `.claude/plans/spec-35-inspector-DONE-checklist.md`,
+and the registry artefacts under `plugins/sgs-blocks/scripts/consistency/`.
 
 ## State recap (plain English)
 
-"Spec 35" is the standard for how every SGS block's editor sidebar is organised and which controls
-it must expose (the brand-strip inspector rebuild was its pilot). This session writes the PLAN for
-that work — no code — using `/strategic-plan`, and gets Bean's sign-off on the first slice before
-anything is built. Three concrete requirements were surfaced last session and MUST be threaded into
-the plan (they are captured — do not re-derive):
-- **Feature-parity** — every SGS block must expose AT LEAST the functionality of the core block(s)
-  it replaces (per `replaces` roster), unless a named exception. Memory: `sgs-block-feature-parity-with-replaced-core`.
-- **Shrink-to-fit** — every block must be INTRINSICALLY responsive (min-content ≤ container at every
-  breakpoint), not forced to fit by a container clamp. A block standard like no-inline / dynamic.
-  Memory: `blocks-must-shrink-to-fit-container`. Includes landing the shared container/wrapper
-  `min-width:0` (+`min-height:0`) grid/flex-item **safeguard** as the framework backstop.
-- **sgs/media controls** — EVALUATE (don't assume) the optimal image AND video controls the framework
-  is missing and add them to `sgs/media` (a holistic media-control review vs Kadence/Spectra/GenerateBlocks).
-All three inputs are written up in `.claude/plans/2026-07-18-spec-35-captured-inputs.md` — read it first.
+Spec 35 makes every SGS block's editor sidebar complete + consistent so a non-coder client can self-serve
+(the "Bean as QC only" goal). Phase 0 (foundations) is DONE: a block roster (79 blocks, DB-derived), 3
+WARN-only audit scripts (inspector-conformance, feature-parity, shrink-to-fit), 3 shared components
+(transparent-colour `DesignTokenPicker`, `SgsLinkControl`, `ShadowControl` — built, not yet consumed by any
+block), and a `min-width:0` shared-wrapper backstop (deployed to canary, no regression; live-emission proven
+only when a wrapper-grid container exists — UNIT D will exercise it).
 
-## Task 1 — Spec 35 strategic plan (PLAN ONLY, Bean sign-off before code)
+The big Phase-1 result: **944 attribute names deduplicate to ~80 TRUE semantic settings** (≈60 CSS-property
+settings + 12 input-types + 11 behaviour-families). The earlier "282 unique one-offs" was wrong — the dedup
+had keyed non-CSS attrs by NAME. It is now fully adjudicated (0 genuinely-unique). Everything is in
+`scripts/consistency/`: `setting-types.json` (CSS-property dedup), `setting-reclassification.json` (input-type/
+behaviour-family collapse + `answers_to_bean`), `phase1b-adjudication.json`, and the generators.
 
-**What:** produce a `/strategic-plan` phase plan for Spec 35 (Block Inspector UX + Control-Completeness
-standard), threading the three captured requirements as design constraints (not last-phase checks).
-**Why:** the planned next major framework workstream; a plan Bean signs off unblocks the build.
-**Estimated time:** ~30 min for the plan.
+**Phase 2 is the fresh work:** for each of the ~80 settings, define its OPTIMAL inspector setup (canonical
+control + units + multi-value + responsive toggle + dropdown completeness + custom-box-plus-preset, per Spec 35
+Part B/H + Bean's dimensions) → Phase 3 builds the permanent lint that categorises every attr against the
+registry + flags new/uncategorised → UNIT D pilots sgs/media.
 
-**Orchestration:**
-- Execution: inline (main thread, Opus) — architectural planning.
-- Read `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` IN FULL + `.claude/plans/2026-07-18-spec-35-captured-inputs.md` FIRST.
-- Invoke `/strategic-plan`; thread feature-parity + shrink-to-fit + media-controls as design constraints
-  proven in the FIRST slice (memory `requirement-used-to-justify-is-not-requirement-made-a-design-constraint`).
-- Do NOT code before the plan + Bean's sign-off.
-- /qc gate after: `/gap-analysis` on the plan before presenting to Bean.
-- **Depends on:** none. **Parallel with:** none.
+## Skills to Invoke
 
-**Acceptance:** a `/strategic-plan` phase plan for Spec 35 exists, grades ≥ A- on `/gap-analysis`,
-and Bean approved the first slice. (No code this task without the plan.)
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | ALWAYS — the optimal-control decisions per setting are design calls |
+| `/gap-analysis` | ALWAYS — grade the registry before locking it |
+| `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
+| `/research` | ALWAYS — auto-routes; "best WP control for setting X" |
+| `/strategic-plan` | ALWAYS — order the Phase 2/3 build |
+| `/phase-planner` | break Phase 2 into executable steps before building |
+| `/sgs-db`, `/wp-blocks` | DB is authoritative — never hardcode counts |
+| `/sgs-wp-engine` | any SGS block/component work |
+| `/qc-council` | multi-rater validate the optimal-control choices before locking |
 
-## Follow-up items to fold into the Spec 35 plan (not standalone tasks)
-- **Container/wrapper `min-width:0` safeguard** — proven correct + low-risk last session (the canonical
-  CSS-Grid `min-width:auto` blow-out guard) but NOT landed (the slider fix resolved the live symptom
-  intrinsically). Land it as the framework backstop under the shrink-to-fit standard. Shared-container
-  change → design-gate.
-- **Shrink-to-fit audit** — a check that every block shrinks to fit its container at 360/768/1440.
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright | live-verify a control renders; shrink-to-fit + visual QC on the pilot |
+| `/sgs-db` (sgs-db.py) | query `block_attributes` (2286 rows) — the registry source |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | build the optimal-spec catalog + Phase 3 lint + UNIT D pilot (Sonnet) |
+| `design-reviewer` | visual QC of the pilot block's inspector + rendered output |
+
+---
+
+## Task 1 — Refactor reclassify.py to be DB-direct (blocker for Phase 3)
+
+**What:** `scripts/consistency/reclassify.py` reads an intermediate DB dump from the scratchpad — not re-runnable.
+**Why:** Phase 3's lint must re-run cleanly after `/sgs-update`. Make it query the DB directly like `build-roster.py`.
+**Orchestration:** delegated, Sonnet, single-agent. Depends on: none. /qc gate after: yes (re-run reproduces the committed classification).
+**Acceptance:** `python scripts/consistency/reclassify.py` runs standalone + reproduces `setting-reclassification.json`.
+
+## Task 2 — Build the optimal-spec catalog (Phase 2 core)
+
+**What:** for each of the ~80 settings, define its OPTIMAL inspector setup (the "font-size box + preset dropdown" vision, per setting).
+**Why:** the canonical golden master every wave standardises against.
+**Orchestration:** inline design (Bean's input) + Sonnet drafting per-category via /dispatching-parallel-agents (CSS / input-types / behaviour-families). Context: Spec 35 Part B (control-completeness table) + Part H (component-per-job) + Bean's dimensions (units, multi-value, how to toggle units/device-tiers, dropdown completeness, custom+preset). Depends on: Task 1. /qc gate after: yes — /qc-council on the choices.
+**Acceptance:** `scripts/consistency/setting-registry.json` — every setting has its optimal control + props + current-vs-optimal divergence, Bean-signed-off.
+
+## Task 3 — Build the registry lint (Phase 3, the permanent enforcement)
+
+**What:** a script that categorises EVERY attr into its setting, checks current-vs-optimal, flags NEW/uncategorised attrs; wire WARN-only into prebuild.
+**Why:** the auto-pickup Bean asked for — new attrs/blocks caught + classified forever.
+**Orchestration:** delegated, Sonnet. Depends on: Task 1 + 2. /qc gate after: yes.
+**Acceptance:** the lint reports per-attr conformance vs the registry + flags any uncategorised attr; WARN-only in prebuild.
+
+## Task 4 — UNIT D pilot: sgs/media to full Spec 35 DONE (Gate 0)
+
+**What:** build sgs/media to the DONE-checklist + the 3 threaded standards; seeds the registry; exercises the backstop live; SVG sanitise-on-upload (security, do FIRST).
+**Why:** proves the standard live before any framework-wide rollout.
+**Orchestration:** delegated Sonnet build + inline design; design-reviewer visual QC. Context: sgs/media stays OFF the shared imageControls extension (block.json is the converter's source of truth — block-private path); the 21 parity gaps (lightbox/focalPoint/sizeSlug/scale + video preload/tracks/poster) from the parity audit; every new attr editor-only OR carries a converter-population note. Depends on: Task 2. /qc gate after: Gate 0 (Bean's eye + all 3 audits green).
+**Acceptance:** sgs/media passes conformance + parity (0 unexplained) + shrink-to-fit (backstop OFF) LIVE + SVG sanitised + Bean sign-off.
 
 ## Dependency graph
 ```
-Task 1 (Spec 35 /strategic-plan, inline Opus) → /gap-analysis → Bean sign-off → (build in a LATER session)
+Task 1 (Sonnet) ─► Task 2 (inline+parallel, Bean sign-off) ─► Task 3 (Sonnet lint)
+                                     └───────────────────────► Task 4 (UNIT D pilot, Gate 0)
 ```
 
-## Skills to Invoke
-| Skill | When |
-|---|---|
-| `/brainstorming` | ALWAYS — design/architecture decisions in the plan |
-| `/gap-analysis` | ALWAYS — grade the plan before presenting to Bean |
-| `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
-| `/research` | ALWAYS — auto-routes research tier (media-controls competitor scan) |
-| `/strategic-plan` | ALWAYS — Task 1 is a strategic plan |
-| `/sgs-wp-engine` · `/wp-blocks` · `/sgs-db` | block/attr ground truth for the control-completeness audit |
+## Methodology guardrails (do not skip)
 
-## MCP Servers & Tools
-| Tool | For |
-|---|---|
-| Playwright | live-block inspector inspection / responsiveness spot-checks if the plan needs them |
-| Hostinger `hosting_clearWebsiteCacheV1` | clear CDN before any live measure (palestine-lives / sandybrown) |
+- **SHARED BRANCH `feat/brand-strip-inspector-rebuild` + Track 2 co-active (LOAD-BEARING).** Path-scope EVERY
+  commit with an explicit `-- <paths>` pathspec; re-check `git branch --show-current` IN THE SAME command as the
+  commit; NEVER `git add -A`, NEVER `git checkout`/branch-switch in this worktree. Merge to main ONLY via an
+  isolated `git worktree add /c/tmp/<x> main` (a real merge, not fast-forward — main carries Track 2 docs). Do
+  NOT delete the shared branch. Do NOT wholesale-rewrite `LEDGER.md`/`decisions.md` (Track 2 edits them too).
+- **Windows commits:** commit via PowerShell if Bash has a stale view of Write-tool files; do NOT pipe `git commit`
+  through `Select-String -First` (it silently aborts the commit — use `Select-Object -Last`).
+- **Verify live + verify the wiring, not the emit** — a control isn't done until the LIVE computed value is
+  correct (D302 strips functional colours; object/enum attrs coerce silently — D291/D328). READ THE SOURCE to
+  confirm a gate is actually wired (the min-width:0 backstop taught this — a `$layout` mismatch = silent no-op).
+- **Deploy before measure** — visible-on-URL changes need build + `build-deploy.py --target sandybrown` +
+  OPcache reset BEFORE any browser/pixel test. Stash uncommitted deployed-runtime files first. Clear CDN before every live measure.
+- **THE GATE IS BEAN'S EYE (R-31-13)** — never close a visual task on a number alone; screenshot 375/768/1440.
+- **No block version bumps / no `deprecated.js`** (D270). No inline styling (Spec 32 — scoped `<style>`). Complete code only.
+- **DB is authoritative** — query `/sgs-db`/`/wp-blocks`; never hardcode counts. Re-run `/sgs-update` if the DB may be stale (it found +6 attrs this session).
+- **Audits stay WARN-only** until Spec close — never block the co-active Track 2 build (`a11y-validation-informational-not-gate`).
+- **Dedup safety** — any new setting grouping: default to MATCHING an existing setting; justify any "unique" claim; setting identity = the property/input-type, NOT the name.
+- **STOP-29 / definition-of-done** — Spec 35 is a spec'd subsystem: done = the spec's FULL scope; map every deferral to a named spec stage, never "out of scope".
+- **Fact-check subagent output** (invented paths/dates/counts) against ground truth before acting.
 
-## Agents to Delegate To
-| Agent | When |
-|---|---|
-| `wp-sgs-developer` | any block/inspector build once the plan is approved (NOT this session — plan only) |
-| `design-reviewer` | inspector UX / responsive verification once building |
-
-## Guardrails (carry-forward + this session's)
-- **SHARED WORKTREE / co-active Track 2 (LOAD-BEARING):** Track 2 rebuilds header/footer/nav on the SAME
-  branch `feat/brand-strip-inspector-rebuild` + working dir. Re-check `git branch --show-current` in the
-  SAME guarded command as every commit; path-scope every commit (`git commit -- <paths>`); NEVER `git add -A`
-  or `git checkout`/branch-switch. Merge to main ONLY via an isolated `git worktree add /c/tmp/<x> main`
-  (proven last session — a real merge, NOT a fast-forward; main has Track 2's docs commits). Do NOT delete
-  the shared branch. Do NOT rewrite `LEDGER.md`/`decisions.md` — Track 2 has uncommitted edits there.
-- **PLAN-ONLY this session** — no code until Bean signs off the Spec 35 plan (7-rules #7 design-gate).
-- **Prove the cause before the fix; verify on the REAL live page (live DOM), not source/a test page.**
-  Root-cause with a subagent (`/systematic-debugging`) rather than a long inline investigation. Fact-check
-  subagent output (invented paths/dates) against ground truth before acting.
-- **THE GATE IS BEAN'S EYE (R-31-13):** never close a visual task on a number alone — screenshot at
-  375/768/1440; clear the CDN before EVERY live measure.
-- **No block version bumps / no `deprecated.js`** (D270). Complete code only — no stubs/TODOs. Editor content
-  on page 13 via `wp.data.dispatch`, NEVER WP-CLI `str_replace` on post_content.
-- **Inline-zero is now GATED** — `check-no-inline.py` runs in `prebuild`; any new block styling must render
-  scoped (no inline `style="--"` / empty `style=""`), or the build fails. `--selftest` proves it.
-- **STOP-29 / definition-of-done:** for Spec 35 (a spec'd subsystem), done = the spec's FULL scope; map every
-  deferral to a named spec stage — never "out of scope".
+## Uncommitted carry-over
+- `plugins/sgs-blocks/src/blocks/brand-strip/style.css` — a reduced-motion CSS fix, HELD behind the visual-diff
+  gate (needs deploy + `reports/visual-diff/brand-strip-<date>.md` with `verdict: PASS`). Land it with the UNIT D deploy.
