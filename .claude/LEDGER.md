@@ -15,7 +15,6 @@ note: "THE single living-status doc. Replaces the old 3-way split (state/handoff
 (or you) gets ONE true answer instead of three drifting ones. It replaces the old three
 docs (state / handoff / next-session-prompt) that kept contradicting each other.
 
-<<<<<<< HEAD
 **Latest (2026-07-18, P2 session):** Track 2 **P2 (the header/footer/control BUILDER design-gate) is DONE
 + SIGNED OFF** — `plans/2026-07-18-P2-builder-ux-design-gate.md`. It designs the settings panel a
 non-coder uses to configure header/footer/nav, over a **CPT editing home** (`sgs_header`/`sgs_footer`
@@ -51,8 +50,8 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
 - **DEFERRED (Bean-ruled): block-registration deletion + live-header cutover** — the retired blocks stay live
   until the new nav is BUILT + the two client headers (Mama's + Indus) are re-authored via the editor (FR-36-18).
 - **Spec 33 Part 2 emit-target repoint** — after the nav build passes its gate, NOT now (FR-36-15).
-**Next: build-planning Phase 1 (MVP — Mama's end-to-end classic-menu nav + drawer + cart badge fix + logo basics).**
-Handoff: `next-session-prompt-nav-rework-P2.5.md`.
+**Next: EXECUTE Phase 1 — the plan is WRITTEN + peer-reviewed (2 cold reviewers) + QC-clean (92/100): `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md`.**
+Full Spec-36-Phase-1 FR coverage + T0-T3 tiering + validated parallel waves (Wave 0 = 6 disjoint tasks; Wave 2 = the 2 blocks). Bean rulings baked in: converter/clone DEPRIORITISED until whole header+footer+nav done; featured-item = block attribute. Salvage input: `reports/2026-07-19-P2.5-phase6.5-salvage-audit.md` (PORT D323/D340; cart = 1-line role=status; logo per-device-image already built). Start = the 3-min cart fix (Step 1) OR dispatch Wave 0. Block deletion + live cutover still DEFERRED to post-build. Handoff: `next-session-prompt-nav-rework-P2.5.md`.
 
 **Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
 the attribute-registry (Spec 35 UNIT A+) mapped through Phase 1c. Built: the inspector DONE-checklist;
@@ -66,20 +65,6 @@ behaviour-families); the "282 one-offs" were classifier laziness (dedup by NAME 
 fully adjudicated (Haiku + Sonnet), 0 genuinely-unique. `plugins/sgs-blocks/scripts/consistency/` holds it all.
 **Next (Phase 2, fresh session):** define the OPTIMAL control per setting (needs Bean's design input) →
 Phase 3 lint → UNIT D pilot (sgs/media). See `.claude/next-session-prompt.md`.
-=======
-**Latest (2026-07-19):** Track 2 (header/footer/nav rebuild) — **P2 (the builder design-gate) closed +
-signed off**, and **P2.5 (the navigation FULL REWORK design) is DONE.** We produced **Spec 36 — SGS
-Navigation System v1.3**, the single canonical nav home, through the full gate: research → requirements/
-tooling inventory → architecture → spec → QC council (3 reviewers) + adversarial council (6 critics) +
-gap-analysis (3 expert graders, graded **B ~3.9**), all fact-checked + folded. Bean-locked design: the
-mega-menu is a page-like CPT you attach the normal way in **Appearance → Menus** (classic menus primary;
-block menus a later extra) — carries the real post ID, no bespoke plumbing; the drawer is a **full-screen
-modal** you fill with blocks (+ a "show header" toggle); **three mobile collapse options** (burger / "More"
-overflow / bottom tab bar); everything **crawlable for Google + AI search**. It is **DESIGN-ONLY — nothing
-built yet.** **Next: Phase 6** — sweep every spec for scattered nav content + delete/repoint (kill Spec 34),
-then build-planning (`/phase-planner`, model-tier per step) starting from the Mama's-first MVP slice. Full
-picture below; the nav track's governing spec is now **`specs/36-SGS-NAVIGATION-SYSTEM.md`**.
->>>>>>> origin/main
 
 **Where we are (2026-07-17).** Two things run in parallel:
 1. **The website builder itself** — the header/footer/nav system + the drawer menu are built
