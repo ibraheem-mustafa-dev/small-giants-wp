@@ -18,7 +18,7 @@
     "excluded": [
       "system-internal: className — 1 attr (sgs/button), WP wrapper plumbing (block-editor-assigned CSS class name), not a client-facing setting; no editor control to design"
     ],
-    "status": "REVIEWED + QC-COUNCIL-VALIDATED 2026-07-19 — 3 adversarial raters (spec/architecture/reality), all findings Opus-validated against ground truth and applied. Ready for Wave rollout (Tasks 3/4).",
+    "status": "REVIEWED + QC-COUNCIL-VALIDATED 2026-07-19 — 3 adversarial raters (spec/architecture/reality), all findings Opus-validated against ground truth and applied. Ready for Wave rollout (Tasks 3/4). | v2 archetype-deck corrections FOLDED 2026-07-19 (see _meta.v2_folded).",
     "bean_rulings_2026_07_19": [
       "css:stroke -> reclassified (accentStroke is a decoration toggle, not a colour)",
       "css:background-image -> Background overlay (GradientPicker+alpha); real bg image is a separate media picker",
@@ -36,6 +36,101 @@
     ],
     "cross_track": [
       "behaviour:sticky-header-nav -> OWNED BY TRACK 2 (header/footer/nav rebuild, Spec 17 + P1 architecture decision 2026-07-18); Spec 35 defers, no rollout action"
+    ],
+    "v2_folded": {
+      "date": "2026-07-19",
+      "source": "archetype deck v2 (artifact a35048a9-1c06-4e41-b03f-4c5b48ce0090) + catalog (f9646fa6-44cc-49dc-a4b2-aedca6f9502f)",
+      "summary": "Three-agent gap-review corrections folded into the golden master: colour/gradient split (text/border solid vs background ColorGradientControl solid+gradient), the compound Border builder (BorderBoxControl: width+style+colour+radius, All-sides/Per-side, border-style moved out of the 4-side box), per-stop gradient colour + angle (AnglePickerControl, Linear/Radial), shadow 6 named presets + Normal/Hover, media bulk + alt/decorative, repeater split, date range, multi-tag chips (FormTokenField), Focus=Hover, and the inspector-level structural-patterns layer."
+    },
+    "universal_control_behaviours": [
+      "reset - only active once the value has been changed",
+      "preset + custom - presets seed a real editable control, never replace it",
+      "768/1024 device switcher with an edit-dot on any tier the operator customised",
+      "real units (never px-only) via UnitControl",
+      "alpha + clear on every colour control (alpha-0 != unset)",
+      "every valid option present + a Custom path where the value is open-ended",
+      "progressive disclosure - a + reveals advanced controls",
+      "keyboard-operable - every drag gesture has an equivalent number-input / arrow-nudge / up-down alternative",
+      "Focus mirrors Hover - one shared state, no separate Focus tab, focus never invisible",
+      "screen-reader labels on swatches, icons and presets"
+    ],
+    "structural_patterns": [
+      {
+        "key": "on-canvas-block-toolbar",
+        "label": "On-canvas Block Toolbar",
+        "status": "NEW in v2 - the missing layer",
+        "detail": "Frequent controls live on the floating block toolbar, not buried in the sidebar. A control graduates to the toolbar by FREQUENCY, not importance. Includes align, format, quick colour, and copy/paste styles (the ... menu). The sidebar holds deeper, less-frequent settings.",
+        "spec_ref": "Spec 35 A1 (placement rule)"
+      },
+      {
+        "key": "settings-styles-advanced-tabs",
+        "label": "Settings / Styles / Advanced tabs",
+        "detail": "Native WP inspector tabs, never one long list. Settings = what it does; Styles = how it looks; Advanced = CSS class, anchor, custom CSS.",
+        "spec_ref": "Spec 35 Part A"
+      },
+      {
+        "key": "progressive-disclosure",
+        "label": "Progressive disclosure (+)",
+        "detail": "1-3 controls shown by default, the rest behind a + / ToolsPanel, with resetAll. Prevents the 10+-controls-at-once wall.",
+        "spec_ref": "Spec 35 A5"
+      },
+      {
+        "key": "conditional-controls-show-when",
+        "label": "Conditional controls (show-when)",
+        "status": "hand-rolled - no native WP API",
+        "detail": "A control appears only when relevant (e.g. Border colour shown only because Border style != none), with an aria-live announcement of the reveal for screen readers. Hand-rolled JSX; there is no native WP show-when API. Distinct from behaviour:form-validation-conditional (which is per-form-field sibling logic).",
+        "spec_ref": "Spec 35 Part A / Part F (irrelevant controls always visible)"
+      },
+      {
+        "key": "normal-hover-state",
+        "label": "Normal / Hover state",
+        "detail": "One control, two states, via the shared StateToggleControl. Keyboard Focus automatically mirrors the Hover style (Bean's call) - no separate Focus tab and focus never goes invisible. Applies to colour, shadow, scale, border.",
+        "spec_ref": "Spec 35 Part I (StateToggleControl EXISTS)"
+      },
+      {
+        "key": "control-states",
+        "label": "Control states",
+        "status": "NEW in v2",
+        "detail": "The non-happy states standardised once and reused everywhere: error, loading, disabled, empty (e.g. 'File too large - use an image under 2MB', 'Searching...', 'No matches - try another word'). Defined once, reused; not re-invented (or forgotten) per block.",
+        "spec_ref": "Spec 35 Part A"
+      }
+    ],
+    "compound_sets": {
+      "border_builder": {
+        "label": "Border builder",
+        "status": "NEW in v2 - Bean's compound idea",
+        "component": "native BorderBoxControl",
+        "members": [
+          "css:border-width",
+          "css:border-style",
+          "css:border-colour",
+          "css:border-radius"
+        ],
+        "layout": "width + style + colour together, plus corner radius, in ONE panel; 'All sides' / 'Per side' segmented toggle (own value per side when unlinked). border-style is MOVED OUT of the padding/margin 4-side box.",
+        "note": "This is a Task-1 seed for the Task-2 per-category compound control-set design; the four member rows below are flagged border_builder_member."
+      }
+    },
+    "composite_panels": {
+      "count": 8,
+      "families": [
+        "behaviour:slider-carousel",
+        "behaviour:media-playback",
+        "behaviour:disclosure",
+        "behaviour:hover-effect",
+        "behaviour:visibility-responsive",
+        "behaviour:dismissible",
+        "behaviour:scroll-reveal-animation",
+        "behaviour:form-validation-conditional"
+      ],
+      "eighth_added_post_review": "behaviour:form-validation-conditional (per-field conditional) - the 8th family, added after the three-agent gap review.",
+      "caveat": "Two families carry real FRONTEND ENGINE work, not just inspector controls: slider-carousel (paged vs marquee are different scroll engines) and scroll-reveal-animation (its reduced-motion gate must be verified first). 'Assemble the atomics' covers the sidebar, not the runtime."
+    },
+    "deferred": [
+      "Global / linked styles - change one master style and every block using it updates (Kadence/GenerateBlocks have it); deferred because WP save-as-default seeds NEW blocks and pre-launch we re-clone rather than hand-edit 40 live pages.",
+      "Transform controls (scale/rotate/tilt) - premium flourish; grow-on-hover already covered by the Normal/Hover scale option; Wave 2/3.",
+      "Fluid font-size (auto-scale) - the 768/1024 device switcher already gives per-device sizes; fluid can be turned on globally in the theme later.",
+      "Hierarchical category picker - only matters if a block needs nested-taxonomy selection; verify a real need before building.",
+      "Section sub-headers in a dense panel - progressive disclosure already keeps panels tidy; add only when a genuinely dense block proves the + isn't enough."
     ]
   },
   "rows": [
@@ -216,7 +311,7 @@
       "current_state": "8 attrs (behaviour-family) + conditionalValue (classified separately as text-content, same functional triplet) across 14-15 form-field blocks. conditionalField is already correctly a dynamic-dropdown SelectControl per the classifier's 'why', conditionalOperator already a fixed-set SelectControl — both closer to optimal than most families. No shared ConditionalFieldControl component exists; each of the 14 form-field blocks re-implements the same 3-field pattern independently (14x duplication of identical logic, the highest per-attr duplication count of any family in this registry).",
       "divergence": "14 form-field blocks each re-implement the same conditional-field triplet independently (the registry's highest per-attr duplication); should share a per-field ConditionalFieldControl, distinct from the whole-block ConditionalVisibilityPanel.",
       "divergence_severity": "medium",
-      "notes": "This family is functionally DIFFERENT from the universal ConditionalVisibilityPanel (src/components/universal-extensions/ConditionalVisibilityPanel.js, sgsConditionLoggedIn/DateStart/DateEnd/UrlParam/Referrer) — that panel controls whether the WHOLE BLOCK is visible (login/date/URL/referrer), while form-validation-conditional controls whether ONE FORM FIELD shows based on ANOTHER FIELD's live value in the same form (sibling-driven branching logic). Do not merge these two into one component — they solve different problems and the second requires live sibling-field awareness the first doesn't need. Per the a11y-validation-feedback-informational-not-gate memory, any 'required field not filled' or 'conditional logic invalid' feedback in the editor must stay a passive Notice, never a hard block on saving/publishing."
+      "notes": "This family is functionally DIFFERENT from the universal ConditionalVisibilityPanel (src/components/universal-extensions/ConditionalVisibilityPanel.js, sgsConditionLoggedIn/DateStart/DateEnd/UrlParam/Referrer) — that panel controls whether the WHOLE BLOCK is visible (login/date/URL/referrer), while form-validation-conditional controls whether ONE FORM FIELD shows based on ANOTHER FIELD's live value in the same form (sibling-driven branching logic). Do not merge these two into one component — they solve different problems and the second requires live sibling-field awareness the first doesn't need. Per the a11y-validation-feedback-informational-not-gate memory, any 'required field not filled' or 'conditional logic invalid' feedback in the editor must stay a passive Notice, never a hard block on saving/publishing. | v2 (2026-07-19): this is the 8th composite / behaviour family, added AFTER the three-agent gap review (the per-field conditional). See _meta.composite_panels."
     },
     {
       "setting_key": "behaviour:hover-effect",
@@ -234,7 +329,8 @@
         "multi_value": "none",
         "dropdown_completeness": "ToggleGroupControl for effectHover/shadowHover/textDecorationHover (each a short closed set)",
         "alpha_clearable": "n/a (colour hover states inherit alpha_clearable from whichever colour control they wrap, e.g. DesignTokenPicker)",
-        "reset_disclosure": "resetting Normal must not silently reset Hover and vice versa — each state's reset is independent, StateToggleControl keeps both value sets in memory regardless of which is on-screen"
+        "reset_disclosure": "resetting Normal must not silently reset Hover and vice versa — each state's reset is independent, StateToggleControl keeps both value sets in memory regardless of which is on-screen",
+        "focus_state": "Focus mirrors Hover - keyboard focus uses the Hover style; NO separate Focus tab, and focus never goes invisible (v2 Bean call). StateToggleControl owns the Normal/Hover pairing."
       },
       "control_set": [
         {
@@ -294,7 +390,7 @@
       "current_state": "7 behaviour-family attrs (effectHover/grayscaleHover/imageZoomHover/overlayHover/scaleHover/shadowHover/textDecorationHover) across 14 blocks — PLUS a SEPARATE, ALREADY-BUILT universal 'Hover Effects' panel (src/components/universal-extensions/HoverEffectsPanel.js, wired via src/blocks/extensions/hover-effects.js to every block) exposing sgsHoverBgColour/sgsHoverTextColour/sgsHoverBorderColour/sgsHoverScalePreset/sgsHoverScale/sgsHoverShadow/sgsHoverDuration/sgsHoverEasing/sgsHoverImageZoom. Neither system uses StateToggleControl (verified: HoverEffectsPanel.js imports DesignTokenPicker/SelectControl/RangeControl/ToggleControl directly, not StateToggleControl) — this is TWO parallel hover systems running simultaneously: the universal sgsHover* panel AND 14 blocks' own private *Hover attrs (scaleHover on 11 blocks alone).",
       "divergence": "Two parallel hover systems run at once — the universal HoverEffectsPanel (sgsHover*) AND 14 blocks' private *Hover attrs — neither using StateToggleControl; migrate HoverEffectsPanel to StateToggleControl and retire the per-block duplicates.",
       "divergence_severity": "high",
-      "notes": "This is the textbook Part F anti-pattern 'duplicate hover panels / hover split from resting', caught live rather than hypothetically: a block using BOTH the universal HoverEffectsPanel (sgsHoverScale) AND its own private scaleHover attr would show the client two different 'hover scale' controls with no indication they might conflict. Fix-shape: migrate HoverEffectsPanel itself to render through StateToggleControl (so Normal/Hover share one panel, one set of property controls), then retire the 14 blocks' private *Hover attrs onto the same StateToggleControl-scoped controls, deleting the duplicate universal-vs-per-block split entirely. This is the highest-severity consolidation in the behaviour-family slice by duplication count (2 systems x 14 blocks)."
+      "notes": "This is the textbook Part F anti-pattern 'duplicate hover panels / hover split from resting', caught live rather than hypothetically: a block using BOTH the universal HoverEffectsPanel (sgsHoverScale) AND its own private scaleHover attr would show the client two different 'hover scale' controls with no indication they might conflict. Fix-shape: migrate HoverEffectsPanel itself to render through StateToggleControl (so Normal/Hover share one panel, one set of property controls), then retire the 14 blocks' private *Hover attrs onto the same StateToggleControl-scoped controls, deleting the duplicate universal-vs-per-block split entirely. This is the highest-severity consolidation in the behaviour-family slice by duplication count (2 systems x 14 blocks). | v2 (2026-07-19): Focus = Hover (keyboard focus reuses the Hover style, one shared state). Confirms the StateToggleControl migration retires BOTH the universal sgsHover* panel and the 14 blocks' private *Hover attrs."
     },
     {
       "setting_key": "behaviour:link-target-behaviour",
@@ -843,7 +939,7 @@
       "category": "css-property",
       "label": "Background colour",
       "optimal_control": {
-        "component": "DesignTokenPicker",
+        "component": "WP ColorGradientControl (solid + gradient in ONE control) - a Solid | Gradient segmented switch; the token palette + custom + alpha live under Solid, the gradient builder under Gradient",
         "props": {
           "enableAlpha": true,
           "clearable": true,
@@ -855,21 +951,22 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": true,
-        "reset_disclosure": "native ColorPalette Clear button"
+        "reset_disclosure": "native ColorPalette Clear button",
+        "colour_channel": "solid + gradient - the one colour control that legitimately does BOTH (v2 split: this is where gradients are valid, unlike text/border)"
       },
-      "shared_component": "DesignTokenPicker",
+      "shared_component": "ColorGradientControl (WP native; wraps the theme.json palette + gradients; DesignTokenPicker-equivalent token list under Solid)",
       "spec_ref": "Part B Colour row + Part I",
       "current_state": "37 distinct attr names / 49 instances across 25 blocks; observed_control_types: DesignTokenPicker, RangeControl, SelectControl, ToggleControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
-      "divergence": null,
+      "divergence": "v2 split: background is the one place a gradient is valid, so the optimal control is ColorGradientControl (solid + gradient), NOT a plain solid-only DesignTokenPicker. Several blocks today offer only a preset swatch list or an on/off tinted-background toggle - both incomplete per Part F, and none expose the valid gradient path.",
       "divergence_severity": "high",
-      "notes": "37 attr names, 49 instances; SelectControl/ToggleControl/RangeControl usages likely mean some blocks only offer a preset SWATCH list or an on/off 'tinted background' toggle rather than a full picker — both are incomplete per Part F ('incomplete option sets'). | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
+      "notes": "37 attr names, 49 instances; SelectControl/ToggleControl/RangeControl usages likely mean some blocks only offer a preset SWATCH list or an on/off 'tinted background' toggle rather than a full picker — both are incomplete per Part F ('incomplete option sets'). | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): SPLIT OUT from the flat colour picker - background-colour uses WP ColorGradientControl (Solid | Gradient in one), the single control that legitimately does both. Text/border colours stay solid-only. D302 hex8 emission still applies to the solid channel."
     },
     {
       "setting_key": "css:background-image",
       "category": "css-property",
       "label": "Background overlay (gradient / colour)",
       "optimal_control": {
-        "component": "GradientPicker (custom builder + alpha stops) with a solid-colour fallback",
+        "component": "GradientPicker (custom builder + per-stop colour + alpha) with a solid-colour fallback, PLUS a Linear|Radial segmented switch and an AnglePickerControl (deg) for linear",
         "props": {
           "gradients": "theme.json preset gradients",
           "clearable": true,
@@ -881,14 +978,17 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": true,
-        "reset_disclosure": "GradientPicker's native Clear"
+        "reset_disclosure": "GradientPicker's native Clear",
+        "gradient_type": "Linear | Radial segmented switch",
+        "angle": "AnglePickerControl (deg) for linear gradients",
+        "a11y": "keyboard-operable gradient stops; per-stop colour picker + alpha"
       },
       "shared_component": "GradientPicker",
       "spec_ref": "Part B GradientPicker row + Part I ('Gradient / bg overlay — MISSING')",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: colour-gradient; conformance: unknown (dedup_confidence: review)",
       "divergence": "The attr is overlayGradient (role colour-gradient) — a background OVERLAY, not a background photo. Needs a real GradientPicker (+ solid-colour fallback + alpha), not a preset-only or absent control.",
       "divergence_severity": "high",
-      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
+      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): + angle (AnglePickerControl) + Linear/Radial switch + keyboard-operable per-stop colour/alpha. Overlay layer only (the real background image is the media-source picker)."
     },
     {
       "setting_key": "css:background-position",
@@ -915,14 +1015,15 @@
         "multi_value": "none",
         "dropdown_completeness": "9 combinations — too many for a plain ToggleGroupControl row, not a searchable list either; needs a dedicated compact 3x3 grid widget",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "clears to 'center center'"
+        "reset_disclosure": "clears to 'center center'",
+        "a11y": "keyboard: X/Y number inputs + arrow-nudge if exposed via FocalPointPicker"
       },
       "shared_component": null,
       "spec_ref": "Part H (focal point -> FocalPointPicker is the closest analogue, but that component positions an IMAGE crop point, not a CSS background-position keyword pair)",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
       "divergence": "backgroundPosition exists on container/cta-section/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
       "divergence_severity": "medium",
-      "notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one."
+      "notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one. | v2 (2026-07-19): if exposed (after the dead-control check), use FocalPointPicker with keyboard X/Y inputs; verify-if-dead first per Bean ruling 3."
     },
     {
       "setting_key": "css:background-repeat",
@@ -999,14 +1100,17 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": true,
-        "reset_disclosure": "native ColorPalette Clear button, shared reset with the border builder"
+        "reset_disclosure": "native ColorPalette Clear button, shared reset with the border builder",
+        "colour_channel": "solid only",
+        "a11y": "named swatches",
+        "border_builder_member": true
       },
       "shared_component": "DesignTokenPicker",
       "spec_ref": "Part B Border row + Part I",
       "current_state": "9 distinct attr names / 15 instances across 12 blocks; observed_control_types: DesignTokenPicker, SelectControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "medium",
-      "notes": "9 attr names; mix of DesignTokenPicker + SelectControl. Should be one slot inside a unified border builder alongside border-width/border-style/border-radius, not a standalone picker per block. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
+      "notes": "9 attr names; mix of DesignTokenPicker + SelectControl. Should be one slot inside a unified border builder alongside border-width/border-style/border-radius, not a standalone picker per block. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): member of the compound Border builder (native BorderBoxControl) - the colour slot sits alongside width + style + radius in one panel, not a standalone per-block picker. Solid only."
     },
     {
       "setting_key": "css:border-radius",
@@ -1028,14 +1132,15 @@
         "multi_value": "corner",
         "dropdown_completeness": "n/a",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "allowReset"
+        "reset_disclosure": "allowReset",
+        "border_builder_member": true
       },
       "shared_component": null,
       "spec_ref": "Part B BoxControl-family row + Part H (radius -> __experimentalBorderRadiusControl)",
       "current_state": "16 distinct attr names / 37 instances across 16 blocks; observed_control_types: DesignTokenPicker, RangeControl, TextControl, UnitControl; observed_roles: typography, visual; box_families: borderRadius, imageBorderRadius; conformance: divergent (dedup_confidence: high)",
       "divergence": "16 attrs across 2 box_families (borderRadius, imageBorderRadius) on DesignTokenPicker/RangeControl/TextControl/UnitControl — none are the dedicated 4-corner control; several look like single-value 'rounded corners' toggles",
       "divergence_severity": "high",
-      "notes": "Same multi-value failure as padding, at the corner level: link/unlink 4-corner control, not a single scalar. Marked non-responsive by default since radius rarely needs a device tier, but flag if a specific block proves otherwise."
+      "notes": "Same multi-value failure as padding, at the corner level: link/unlink 4-corner control, not a single scalar. Marked non-responsive by default since radius rarely needs a device tier, but flag if a specific block proves otherwise. | v2 (2026-07-19): folds into the compound Border builder panel (per-corner control + link toggle + units), presented together with border width/style/colour rather than on a separate panel."
     },
     {
       "setting_key": "css:border-style",
@@ -1058,14 +1163,15 @@
         "multi_value": "none",
         "dropdown_completeness": "5-option closed CSS enum — folds into BorderBoxControl's native style picker rather than a standalone ToggleGroupControl",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "'none' is the reset state"
+        "reset_disclosure": "'none' is the reset state",
+        "border_builder_member": true
       },
       "shared_component": null,
       "spec_ref": "Part B Border row",
       "current_state": "3 distinct attr names / 10 instances across 10 blocks; observed_control_types: SelectControl; observed_roles: visual; conformance: consistent (dedup_confidence: high)",
       "divergence": null,
       "divergence_severity": "low",
-      "notes": "3 attrs, already consistent on SelectControl — functionally fine today; the only real gap is that it's a separate control from width/colour/radius instead of one unified builder."
+      "notes": "3 attrs, already consistent on SelectControl — functionally fine today; the only real gap is that it's a separate control from width/colour/radius instead of one unified builder. | v2 (2026-07-19): MOVED OUT of the padding/margin 4-side box; lives in the Border builder's native style picker alongside width + colour + radius (native BorderBoxControl)."
     },
     {
       "setting_key": "css:border-width",
@@ -1086,14 +1192,16 @@
         "multi_value": "box",
         "dropdown_completeness": "n/a",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "allowReset"
+        "reset_disclosure": "allowReset",
+        "border_builder_member": true,
+        "layout": "All sides / Per side segmented toggle; own unit per side when unlinked"
       },
       "shared_component": "DesignTokenPicker (colour slot) + native BorderBoxControl shell",
       "spec_ref": "Part B Border row (BorderBoxControl: enableStyle + enableAlpha + per-side split) + design-spine dimension 4 (MULTI-VALUE)",
       "current_state": "5 distinct attr names / 12 instances across 12 blocks; observed_control_types: DesignTokenPicker, SelectControl; observed_roles: visual; box_families: borderWidth, imageBorderWidth; conformance: divergent (dedup_confidence: high)",
       "divergence": "5 attrs across 2 box_families (borderWidth, imageBorderWidth) on DesignTokenPicker/SelectControl — neither is a per-side border-width control; both read as single-value pickers",
       "divergence_severity": "high",
-      "notes": "Should unify with border-color + border-style + border-radius into ONE BorderBoxControl builder per box_family, not four separate settings each with their own half-built control."
+      "notes": "Should unify with border-color + border-style + border-radius into ONE BorderBoxControl builder per box_family, not four separate settings each with their own half-built control. | v2 (2026-07-19): member of the compound Border builder (native BorderBoxControl) - width sits with style + colour + radius in one interwoven panel."
     },
     {
       "setting_key": "css:bottom",
@@ -1128,7 +1236,7 @@
       "category": "css-property",
       "label": "Box shadow",
       "optimal_control": {
-        "component": "ShadowControl (X/Y/blur/spread/colour+alpha/inset builder, + presets on top)",
+        "component": "ShadowControl (real X/Y/blur/spread/colour+alpha/inset builder) with 6 NAMED visual presets on top and a Normal | Hover state switch",
         "props": {
           "presets": "theme.json shadow presets",
           "multiLayer": "ideal, not required at v1"
@@ -1139,14 +1247,17 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": true,
-        "reset_disclosure": "allowReset clears to 'no shadow'"
+        "reset_disclosure": "allowReset clears to 'no shadow'",
+        "presets": "6 named visual presets: None, Subtle, Soft, Lifted, Top-left, Hard (each named for screen readers) - they seed the builder, never replace it",
+        "states": "Normal | Hover segmented via StateToggleControl; keyboard Focus mirrors Hover",
+        "builder_fields": "X, Y, Blur, Spread + colour+alpha + an Inset toggle"
       },
       "shared_component": "ShadowControl",
       "spec_ref": "Part B Shadow row (real builder, FAIL smell = None/Small/Medium select) + Part I ('MISSING — build shared ShadowControl') + Part J Wave 1 item 3",
       "current_state": "6 distinct attr names / 19 instances across 10 blocks; observed_control_types: RangeControl, SelectControl, TextControl; observed_roles: behaviour, color; conformance: divergent (dedup_confidence: review)",
       "divergence": "6 attrs on RangeControl/SelectControl/TextControl — textbook Part B FAIL smell: a None/Small/Medium-style select with no real X/Y/blur/spread/colour builder",
       "divergence_severity": "high",
-      "notes": "This is Wave-1 Part J item 3 — ShadowControl is listed as 'built this phase' in the blessed-components table, so the fix is rollout (swap every block's ad hoc shadow select for ShadowControl), not a new build. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
+      "notes": "This is Wave-1 Part J item 3 — ShadowControl is listed as 'built this phase' in the blessed-components table, so the fix is rollout (swap every block's ad hoc shadow select for ShadowControl), not a new build. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): 6 NAMED presets (None/Subtle/Soft/Lifted/Top-left/Hard) + Normal/Hover state (StateToggleControl, Focus mirrors Hover) + Inset toggle. Replaces the None/Small/Medium select."
     },
     {
       "setting_key": "css:color",
@@ -1165,14 +1276,16 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": true,
-        "reset_disclosure": "native ColorPalette Clear button; sits in the block's colour ToolsPanel group"
+        "reset_disclosure": "native ColorPalette Clear button; sits in the block's colour ToolsPanel group",
+        "colour_channel": "solid only - NO gradient (v2 split: gradient is valid on backgrounds only; text/border take a flat colour). The rainbow swatch opens the full hue/hex picker.",
+        "a11y": "swatch/preset names exposed to screen readers"
       },
       "shared_component": "DesignTokenPicker",
       "spec_ref": "Part B Colour row + Part I (DesignTokenPicker exists, needs enableAlpha/clearable audit)",
       "current_state": "70 distinct attr names / 125 instances across 43 blocks; observed_control_types: DesignTokenPicker, RangeControl, SelectControl, TextControl, ToggleControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
       "divergence": "70 attr names span colour AND a handful of behaviour/select uses (dedup groups every *Colour suffix together); several blocks use RangeControl/SelectControl/TextControl/ToggleControl instead of DesignTokenPicker, and DesignTokenPicker itself is not yet alpha-audited everywhere",
       "divergence_severity": "high",
-      "notes": "Highest-instance-count setting (125) — the single biggest lever in the registry. Some observed_control_types (RangeControl/ToggleControl) are almost certainly OTHER settings that share the dedup key by accident (e.g. a boolean 'use custom colour' toggle) — worth a spot-check, flagged in the parent report. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path."
+      "notes": "Highest-instance-count setting (125) — the single biggest lever in the registry. Some observed_control_types (RangeControl/ToggleControl) are almost certainly OTHER settings that share the dedup key by accident (e.g. a boolean 'use custom colour' toggle) — worth a spot-check, flagged in the parent report. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): text colour is SOLID ONLY - no gradient on text; named swatches for a11y; custom full picker behind the rainbow swatch. See compound_sets/structural_patterns in _meta for the colour-split rationale."
     },
     {
       "setting_key": "css:display",
@@ -1283,7 +1396,7 @@
       "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl, TextControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
       "divergence": "fontFamily is NOT exposed to clients today (Bean confirmed). Build a curated searchable font picker, but scope it to DISPLAY blocks only — heading, quote, button — off body/structural blocks, to protect the design system.",
       "divergence_severity": "high",
-      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED. | COUNCIL REFINEMENT 2026-07-19 (honours Bean's display-only ruling, better implementation): route through the NATIVE supports.typography.fontFamily flag (per-block opt-in) which reads theme.json's curated list and integrates with Site-Editor Styles — NOT a bespoke SgsFontFamilyControl (Part G / theme.json-owns-typography). HC2 scope on sgs/quote: font-family governs the attribution + a wrapper-inheritable default via native support on the BLOCK ROOT only — NEVER a selector targeting .sgs-quote__body (child sgs/text inherits by cascade; a child-targeted parent control is dead per HC2/D192). Severity high: same 'not exposed at all' gap as the other native-missing rows (aspect-ratio etc.), scoped to display blocks."
+      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED. | COUNCIL REFINEMENT 2026-07-19 (honours Bean's display-only ruling, better implementation): route through the NATIVE supports.typography.fontFamily flag (per-block opt-in) which reads theme.json's curated list and integrates with Site-Editor Styles — NOT a bespoke SgsFontFamilyControl (Part G / theme.json-owns-typography). HC2 scope on sgs/quote: font-family governs the attribution + a wrapper-inheritable default via native support on the BLOCK ROOT only — NEVER a selector targeting .sgs-quote__body (child sgs/text inherits by cascade; a child-targeted parent control is dead per HC2/D192). Severity high: same 'not exposed at all' gap as the other native-missing rows (aspect-ratio etc.), scoped to display blocks. | v2 (2026-07-19) build note: reconcile sgs/button's existing dead font-family attr BEFORE wiring the native supports.typography.fontFamily flag (the artifact flags 'reconcile button's dead attr first')."
     },
     {
       "setting_key": "css:font-size",
@@ -1886,14 +1999,15 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "allowReset centres the focal point (0.5, 0.5)"
+        "reset_disclosure": "allowReset centres the focal point (0.5, 0.5)",
+        "a11y": "keyboard: X/Y number inputs + arrow-nudge alongside the drag crosshair (FocalPointPicker)"
       },
       "shared_component": null,
       "spec_ref": "Part C Media (native FocalPointPicker) + Part H (focal point -> FocalPointPicker) + Part I ('Focal point / image size / aspect-ratio — partial, EXTEND imageControls')",
       "current_state": "3 distinct attr names / 3 instances across 2 blocks; observed_control_types: RangeControl, TextControl; observed_roles: visual; conformance: divergent (dedup_confidence: high)",
       "divergence": "3 attrs on RangeControl/TextControl — a raw X/Y percentage pair typed into text or sliders, when WordPress ships a purpose-built visual crosshair picker for exactly this",
       "divergence_severity": "high",
-      "notes": "Clear Part G 'prefer native, don't hand-roll' catch — FocalPointPicker is a first-class WP component specifically for this property and is not being used anywhere in the current 3 attrs. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension."
+      "notes": "Clear Part G 'prefer native, don't hand-roll' catch — FocalPointPicker is a first-class WP component specifically for this property and is not being used anywhere in the current 3 attrs. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension. | v2 (2026-07-19): keyboard alternative to the drag crosshair - X/Y number inputs + arrow-nudge."
     },
     {
       "setting_key": "css:opacity",
@@ -2446,14 +2560,15 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": true,
-        "reset_disclosure": "clearable resets to unset (inherits base/no override), distinct from alpha-0 (Part B Colour row: alpha-0 ≠ unset)"
+        "reset_disclosure": "clearable resets to unset (inherits base/no override), distinct from alpha-0 (Part B Colour row: alpha-0 ≠ unset)",
+        "colour_channel": "solid only (the gradient channel is background-color's ColorGradientControl only)"
       },
       "shared_component": "DesignTokenPicker",
       "spec_ref": "Part B 'Colour' row (enableAlpha ≈always + clearable, alpha-0 ≠ unset; disableCustomColors false) + Part I 'Colour — DesignTokenPicker EXISTS — NO enableAlpha/clearable audit → ADD enableAlpha + clearable (framework-wide transparent fix)' + Part J Wave 1 #1 (highest-priority item in the whole roadmap) + D302 (emit hex8 so WP safecss doesn't strip functional rgba)",
       "current_state": "20 attrs across 20 blocks (all Hover-state or override colour variants — e.g. colourTextHover, ctaColourBorderHover, overlayGradientFrom/To, gradientColourStart/End). full_classification confirms every single member is already 'DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)' — the CORRECT component is already in use everywhere.",
       "divergence": "Component choice is already correct (DesignTokenPicker, matching the optimal control exactly) — the gap is entirely the enableAlpha/clearable AUDIT named in Part I as a still-open framework-wide fix, not a component swap. This is the one input-type row where 'current_state' and 'optimal_control' agree on the component and diverge only on props.",
       "divergence_severity": "high",
-      "notes": "Despite the component already matching, severity is HIGH because Part J ranks the enableAlpha+clearable fix as Wave-1 item #1 (highest framework-wide priority, 'fixes transparent everywhere') and D302 requires hex8 emission so WP's safecss_filter_attr doesn't silently strip functional rgba() on the frontend — a correctness bug, not just a UX gap. These are Hover-state/override colours specifically (not base colours), so StateToggleControl (Part I, EXISTS) should also wrap the Normal/Hover pairing rather than exposing 20 always-visible separate Hover fields."
+      "notes": "Despite the component already matching, severity is HIGH because Part J ranks the enableAlpha+clearable fix as Wave-1 item #1 (highest framework-wide priority, 'fixes transparent everywhere') and D302 requires hex8 emission so WP's safecss_filter_attr doesn't silently strip functional rgba() on the frontend — a correctness bug, not just a UX gap. These are Hover-state/override colours specifically (not base colours), so StateToggleControl (Part I, EXISTS) should also wrap the Normal/Hover pairing rather than exposing 20 always-visible separate Hover fields. | v2 (2026-07-19): these hover/override colours are SOLID only; they wrap Normal/Hover via StateToggleControl. Gradient is background-color's ColorGradientControl exclusively."
     },
     {
       "setting_key": "input:date",
@@ -2472,14 +2587,15 @@
         "multi_value": "none",
         "dropdown_completeness": "n/a",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "clear-to-none affordance; countdown-timer's targetDate needs a sane default (e.g. +7 days) rather than blank"
+        "reset_disclosure": "clear-to-none affordance; countdown-timer's targetDate needs a sane default (e.g. +7 days) rather than blank",
+        "range": "min/max exposed as ONE connected 'Available between: From - To' range UI (DateTimePicker pair), not two disconnected pickers"
       },
       "shared_component": null,
       "spec_ref": "Part H 'date → DateTimePicker'",
       "current_state": "4 attrs across 3 blocks: maxDate/minDate (sgs/form-field-date), reviewDate (sgs/testimonial), targetDate (sgs/countdown-timer). full_classification labels all uniformly 'date/datetime value' with no component detail.",
       "divergence": "No component evidence recoverable from source; the naming pattern (raw camelCase date attrs with no companion 'DateFormat'/'DateTimezone' attrs) is consistent with either a real DateTimePicker or a plain native <input type='date'> TextControl-equivalent — needs a per-block audit to confirm. sgs/form-field-date's maxDate/minDate are a bounds PAIR (like RangeControl's min/max) and should be edited together in one min/max UI, not as two independent unrelated pickers.",
       "divergence_severity": "medium",
-      "notes": "Small group (4 attrs) — cheap to audit and fix directly rather than needing a framework-wide sweep. targetDate (countdown-timer) is timezone-sensitive (the block already has evergreenMode/evergreenHours/evergreenMinutes as an alternative relative-countdown mode) — the picker should make clear whether the date is stored as UTC or site-local."
+      "notes": "Small group (4 attrs) — cheap to audit and fix directly rather than needing a framework-wide sweep. targetDate (countdown-timer) is timezone-sensitive (the block already has evergreenMode/evergreenHours/evergreenMinutes as an alternative relative-countdown mode) — the picker should make clear whether the date is stored as UTC or site-local. | v2 (2026-07-19): + date range - min/max edited as one connected From-To range, not two independent fields."
     },
     {
       "setting_key": "input:enum-select",
@@ -2504,14 +2620,15 @@
         "multi_value": "none",
         "dropdown_completeness": "ToggleGroupControl (2–5) or Combobox (>~10); every valid option present + Custom path where the underlying value is open-ended — dimension 5 is THE defining dimension for this input-type",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "allowReset (Combobox) or a documented default selection (ToggleGroupControl); lives in the relevant ToolsPanel"
+        "reset_disclosure": "allowReset (Combobox) or a documented default selection (ToggleGroupControl); lives in the relevant ToolsPanel",
+        "multi_value_path": "when a setting genuinely needs SEVERAL values at once (tags, roles, categories), use FormTokenField chips (add/remove + type-ahead) - the multi-select sibling of the single-select bands. Kept as a noted path here rather than a separate 82nd row (row count is Bean-locked)."
       },
       "shared_component": null,
       "spec_ref": "Part B 'Selection' row (ToggleGroupControl 2–5 / ComboboxControl >~10 / FormTokenField multi-value) + Part H 'segmented choice → ToggleGroupControl · long/searchable list → ComboboxControl' + Part F 'incomplete option sets (Small/Medium, no Custom)'",
       "current_state": "127 attrs across ~60 blocks. full_classification 'why' is almost uniformly 'enum_values present or SelectControl/ToggleGroupControl' — the reclassifier could not distinguish WHICH component renders each attr from static analysis, only that it's a closed-set choice. A handful of entries name the concrete UI need explicitly: menuFallback/conditionalField ('choose from a dynamic list — a select, not free text'), filterTaxonomy/postType/orderBy ('fixed option set'), thicknessUnit ('CSS-unit companion select — same UNIT-COMPANION pattern as every other responsive *Unit attr').",
       "divergence": "Cannot be scored precisely without a per-block component audit (the source data conflates SelectControl and ToggleGroupControl under one bucket) — but the pattern strongly implies a mix of bare native <select> (SelectControl) for both short (2–5) and long lists, which fails dimension 5's split rule; several attrs (dataSource, sourcePlatform, videoSource) look CSS/behaviour-adjacent with no visible Custom escape hatch.",
       "divergence_severity": "medium",
-      "notes": "Generic enum control only — enum-select members that gate a recurring interaction pattern (e.g. carousel vs grid layoutMode, tabStyle, accordion style) are refined by the behaviour-family slice, not here; this row states the baseline control shape every one of the 127 must clear. A structural per-block audit (component name + option count) is a prerequisite to close the divergence precisely — the reclassifier's static heuristic can't tell ToggleGroupControl from SelectControl from source alone."
+      "notes": "Generic enum control only — enum-select members that gate a recurring interaction pattern (e.g. carousel vs grid layoutMode, tabStyle, accordion style) are refined by the behaviour-family slice, not here; this row states the baseline control shape every one of the 127 must clear. A structural per-block audit (component name + option count) is a prerequisite to close the divergence precisely — the reclassifier's static heuristic can't tell ToggleGroupControl from SelectControl from source alone. | v2 (2026-07-19): multi-tag chips (FormTokenField) is the multi-select variant of this row - add/remove chips + type-ahead for tags/roles/categories, instead of comma-text or repeated toggles."
     },
     {
       "setting_key": "input:icon",
@@ -2535,14 +2652,15 @@
         "multi_value": "icons (sgs/social-icons, plural) is an array of icon-identity objects and needs the repeater treatment (see input:json-config), not a scalar icon control",
         "dropdown_completeness": "n/a — search-driven, not a closed dropdown",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "clear-to-none affordance on the picker"
+        "reset_disclosure": "clear-to-none affordance on the picker",
+        "a11y": "each icon tile carries its name for screen readers; search-as-you-type"
       },
       "shared_component": null,
       "spec_ref": "Part H 'compact secondary → Dropdown/DropdownMenu' (the picker's own popover shape) — icon-identity itself is not a separately named Part B/H/I line; it is inferred from lucide-icons.php's existing icon roster (plugins/sgs-blocks/includes/lucide-icons.php) plus the dedup-by-identity-not-name principle applied to source-fragmented attrs below",
       "current_state": "17 attrs across 12 blocks. full_classification labels all as 'icon-identity picker (slug/dashicon/emoji/wp-icon), not a media object' — but the member list itself reveals a fragmentation pattern: sgs/separator carries FIVE parallel attrs for what should be ONE icon identity — contentIconSource, contentIconDashicon, contentIconEmoji, contentIconName, contentIconWpIcon (one active value + 4 dormant siblings depending on source). sgs/icon similarly splits iconSource/dashiconName/emojiChar/wpIconName/iconName across 5 attrs for one logical icon.",
       "divergence": "This is the dedup-by-identity failure the project's own MEMORY.md names directly ('944 attrs → 0 truly-unique... classify by SEMANTIC IDENTITY not the name'): each icon setting is stored as N parallel scalar attrs (one per possible source) instead of ONE identity object ({source, value}) resolved by a single picker with an internal source switch. This is a genuine control-shape gap, not just a props gap.",
       "divergence_severity": "medium",
-      "notes": "icons (plural, sgs/social-icons) needs the repeater treatment on top of the identity-object fix — each repeater item is one icon-identity object, not another flat scalar. showIcon (business-info, notice-banner) is a boolean gate for whether the icon shows at all and belongs with input:boolean-toggle, not this row's control design, though it's correctly grouped here as a member of the icon-family attr set."
+      "notes": "icons (plural, sgs/social-icons) needs the repeater treatment on top of the identity-object fix — each repeater item is one icon-identity object, not another flat scalar. showIcon (business-info, notice-banner) is a boolean gate for whether the icon shows at all and belongs with input:boolean-toggle, not this row's control design, though it's correctly grouped here as a member of the icon-family attr set. | v2 (2026-07-19): searchable + each tile named for screen readers; one identity object, not 4-5 source-fragmented attrs."
     },
     {
       "setting_key": "input:json-config",
@@ -2596,14 +2714,16 @@
         "multi_value": "gallery: images, logos, mediaItems are array attrs and need MediaGalleryPicker; corner-note — logoSwitchMode/logoSwitchCustomPx/logoFit are companion settings that ride alongside the picker, not separate media-type controls",
         "dropdown_completeness": "n/a",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "MediaUpload's own 'Remove'/clear affordance; array pickers need a per-item remove + drag-reorder"
+        "reset_disclosure": "MediaUpload's own 'Remove'/clear affordance; array pickers need a per-item remove + drag-reorder",
+        "alt_text": "Alt text field + a 'Decorative (no alt needed)' toggle on every image slot (a11y); focal / size where the media is a still image",
+        "bulk": "MediaGalleryPicker (multiple='add' + gallery) for array/repeated media - select many from the library at once (Wave 2 build)"
       },
       "shared_component": "MediaGalleryPicker",
       "spec_ref": "Part B 'Media/gallery' row (multiple='add' + gallery + array attr + MediaUploadCheck + drag-drop — incomplete smell: scalar attr + single MediaUpload) + Part I 'Bulk media/gallery — MISSING (MediaPicker single) → BUILD MediaGalleryPicker' (Wave 2, #5) + Part C Media (focal point/aspect-ratio/object-fit T)",
       "current_state": "44 attrs across 16 blocks. full_classification labels most as 'role=image-object or media/logo/avatar/video attr name' (a single scalar media reference) and 3 explicitly as array/repeater-shaped: images (sgs/gallery), logos (sgs/brand-strip), mediaItems (sgs/gallery). Several attrs are fragmented facets of ONE logical media object rather than a single {id,url,alt} shape — e.g. sgs/media splits imageId/imageUrl/imageAlt into 3 sibling attrs instead of one object attr; sgs/audio splits audioId/audioUrl/audioMimeType similarly.",
       "divergence": "The array attrs (images, logos, mediaItems) confirm Part I's finding — MediaGalleryPicker is a framework-wide MISSING component, so these 3 (44 total member count includes their per-item companions like showNames/fadeEdges from other groups) are very likely still on a single MediaUpload with no bulk/gallery affordance. The scalar-but-fragmented attrs (imageId+imageUrl+imageAlt as 3 separate top-level attrs rather than one object) violate the object-attr shape named in the design spine's worked url-link example and Bean's dedup-by-identity lesson.",
       "divergence_severity": "high",
-      "notes": "Two distinct fixes bundled under one setting_key: (1) build MediaGalleryPicker and roll it out to the 3 array attrs (Wave 2 #5, already a named framework gap); (2) consolidate the scalar id/url/alt/mimeType triples into a single object attr per media slot, matching the {id,url,alt,...} shape Part B implies. Focal point / size / aspect-ratio (Part C) apply where the media is a still image — cross-reference sgs/decorative-image and sgs/media which already carry imageControls per CLAUDE.md's 'Image controls discipline'."
+      "notes": "Two distinct fixes bundled under one setting_key: (1) build MediaGalleryPicker and roll it out to the 3 array attrs (Wave 2 #5, already a named framework gap); (2) consolidate the scalar id/url/alt/mimeType triples into a single object attr per media slot, matching the {id,url,alt,...} shape Part B implies. Focal point / size / aspect-ratio (Part C) apply where the media is a still image — cross-reference sgs/decorative-image and sgs/media which already carry imageControls per CLAUDE.md's 'Image controls discipline'. | v2 (2026-07-19): + bulk add from library (MediaGalleryPicker) + Alt text + Decorative toggle on every image slot. A bulk logo wall is the driving case."
     },
     {
       "setting_key": "input:number",

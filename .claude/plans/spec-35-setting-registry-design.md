@@ -171,3 +171,33 @@ Bean reviewed the drafted catalog (82 rows) via the artifact + opened the live b
 4. **`css:font-family`** — RULED: expose a curated searchable font picker (theme.json families + Font Library) on **display blocks only** (heading/quote/button), OFF body/structural — protects the design system. Stays out of the per-element TypographyControls.
 5. **`input:json-config` (repeaters)** — RULED (Bean-directed research done). TWO patterns by one test — *does the item need rich content or its own toolbar?* Rich → InnerBlocks + `templateLock="insert"` (what Kadence/GenerateBlocks/Stackable/GreenShift all use); scalar → BUILD one shared `RepeaterControl` (array attr, collapsible per-item panel, "+ Add", remove + up/down reorder w/ roving tabindex + aria, empty state). NOT DataViews/DataForm (admin-only). Bean saw the gap live on pricing-table (on-canvas add, no inspector item settings).
 6. **`behaviour:sticky-header-nav-behaviour`** — NOT separately ruled; keeps the recommended split (native `position.sticky` StickyToggle + a NavCollapseTier device-tier control) pending Bean's confirmation.
+
+## Archetype deck v2 folded into the registry (2026-07-19)
+
+The three-agent-gap-reviewed, Bean-redlined archetype deck v2 (artifact `a35048a9-…`, catalog
+`f9646fa6-…`) was folded into `setting-registry.json` (18 rows + 6 new `_meta` sections). The registry
+is now ahead of this spine on control detail; the deltas:
+
+- **Colour split** — text/border (`css:color`, `css:border-color`, `input:colour-value`) are **solid
+  only** (new `optimal_control.colour_channel`); **background** (`css:background-color`) is the one
+  control that does both, via **WP `ColorGradientControl`** (Solid | Gradient), replacing the plain
+  solid picker. Gradient overlay (`css:background-image`) gains per-stop colour + alpha, an
+  **`AnglePickerControl`**, and a Linear/Radial switch.
+- **Compound Border builder** — `css:border-{width,style,colour,radius}` flagged
+  `optimal_control.border_builder_member: true` and recorded as `_meta.compound_sets.border_builder`
+  (native `BorderBoxControl`, width+style+colour+radius in one panel, All-sides/Per-side; border-style
+  **moved out** of the padding/margin 4-side box). This is the seed for the Task-2 per-category sets.
+- **Shadow** (`css:box-shadow`) — 6 named presets (None/Subtle/Soft/Lifted/Top-left/Hard) + Normal/Hover
+  via `StateToggleControl` + Inset toggle.
+- **Media** (`input:media-source`) — bulk `MediaGalleryPicker` + Alt-text + Decorative toggle per slot.
+- **Date** (`input:date`) — min/max as one connected range. **Multi-tag** (`input:enum-select`) — a
+  noted `FormTokenField` multi-value path (no new row — 82-row count is Bean-locked).
+- **Focus = Hover** (`behaviour:hover-effect`) — keyboard focus mirrors the Hover style; no Focus tab.
+- **New `_meta` sections:** `universal_control_behaviours` (the 10 behaviours every control carries),
+  `structural_patterns` (6 inspector-level layers: on-canvas Block Toolbar, Settings/Styles/Advanced
+  tabs, progressive disclosure, conditional show-when, Normal/Hover, control-states),
+  `composite_panels` (8 families — the 8th = per-field conditional — with the carousel/scroll-reveal
+  frontend-engine caveat), `compound_sets`, `deferred` (5 items), and `v2_folded` provenance.
+- **Row-schema growth:** `optimal_control` now carries optional keys `colour_channel`,
+  `border_builder_member`, `a11y`, `presets`, `states`, `builder_fields`, `angle`, `gradient_type`,
+  `range`, `alt_text`, `bulk`, `focus_state`, `multi_value_path` where a row needs them.
