@@ -22,6 +22,54 @@
 			"imageControls": true,
 			"arrayContentLift": true,
 			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ],
+			"elements": {
+				"tile": {
+					"label": "Tile",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "tile",
+					"attrMap": {
+						"css:background-color": "tileBackgroundColour",
+						"css:border-width": "tileBorderWidth",
+						"css:border-color": "tileBorderColour",
+						"css:border-radius": "tileRadius",
+						"css:box-shadow": "tileShadow",
+						"css:padding": "tilePadding",
+						"css:gap": "logoGap"
+					}
+				},
+				"logo-image": {
+					"label": "Logo image",
+					"order": 2,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus logoFit/imageEffect selects — outside the Text/Fill/Layout style clusters, so it declares none."
+				},
+				"caption": {
+					"label": "Caption",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "name",
+					"attrMap": {
+						"css:font-size": "nameFontSize",
+						"css:font-weight": "nameFontWeight",
+						"css:color": "nameColour"
+					}
+				},
+				"strip-spacing": {
+					"label": "Strip spacing",
+					"order": 4,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					}
+				}
+			},
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",
@@ -79,6 +127,9 @@
 						"type": "string"
 					},
 					"linkTarget": {
+						"type": "string"
+					},
+					"linkRel": {
 						"type": "string"
 					},
 					"name": {
@@ -192,7 +243,7 @@
 		},
 		"tileShadow": {
 			"type": "string",
-			"default": "none"
+			"default": ""
 		},
 		"backgroundColourHover": {
 			"type": "string",

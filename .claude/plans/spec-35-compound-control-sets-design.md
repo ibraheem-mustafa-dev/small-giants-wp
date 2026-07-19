@@ -199,6 +199,67 @@ The manifest is small (a handful of lines per block) and is the single source of
 script + the client inspector both read. Defining its schema + the attr→element convention precisely is
 the first build step of the rollout.
 
+### Schema reference (BUILT 2026-07-20 — rollout step 1)
+
+**Files:**
+- `plugins/sgs-blocks/scripts/consistency/cluster-member-sets.json` — the CLUSTER axis (`text` / `fill` /
+  `layout`) the setting-registry golden master doesn't carry. Each cluster lists its `members` (one per
+  registry `setting_key`, e.g. `css:font-size`), each member's default attr-name `suffixes` (tried in
+  order), and an optional `nativeSupportsPath` for members WordPress-native `supports` can satisfy without
+  a bespoke control.
+- `plugins/sgs-blocks/scripts/check-element-manifest-conformance.js` — the CLUSTER-COHERENCE checker. Reads
+  every `src/blocks/*/block.json`'s `supports.sgs.elements`, resolves each declared-cluster member, reports
+  `ok`/`gap`. WARN-ONLY (exit 0 always); promotion to a hard gate is a later rollout step (#5 below).
+
+**Element manifest shape** (`supports.sgs.elements` in `block.json`, under `supports.sgs`):
+
+```jsonc
+"elements": {
+  "<elementKey>": {
+    "label": "Display name",
+    "order": 1,                       // sort order; ties break by object/reading order
+    "clusters": [ "fill", "layout" ], // which of text/fill/layout this element HAS (the FLAG, F4)
+    "prefix": "tile",                 // OPTIONAL — default attr-name prefix for convention (b) below
+    "isWrapper": true,                // OPTIONAL — ONLY the element representing the block ROOT may set
+                                       // this; it's what gates the native `supports` fallback (c) below so
+                                       // a repeater-item element never falsely inherits the wrapper's
+                                       // native margin/border as its own
+    "attrMap": {                      // OPTIONAL — explicit overrides, always tried first
+      "css:font-size": "nameFontSize",         // → a flat block.json attribute name
+      "css:padding": "native:spacing.padding"  // → `native:<supports-dot-path>` for a WP-native support
+    }
+  }
+}
+```
+
+**Attr→element resolution order** (implemented in `resolveMember()`), for one (element, cluster member):
+
+1. **Explicit `attrMap[member.key]`** — always authoritative. A `native:<path>` value checks
+   `block.json.supports` at that dot-path for a truthy value; any other value is checked as a literal
+   attribute name in `block.json.attributes` (case-insensitive fallback).
+2. **Default convention** — `{element.prefix}{member.suffix}`, suffixes tried in the order
+   `cluster-member-sets.json` declares them, against the block's declared attributes. E.g. `tile` +
+   `BackgroundColour` → `tileBackgroundColour`.
+3. **Native-supports fallback** — ONLY when `element.isWrapper === true` and the member declares a
+   `nativeSupportsPath`: same dot-path check as (1)'s native form, but implicit (no attrMap entry needed).
+   Gated to the wrapper element specifically because native `supports` (color/spacing/`__experimentalBorder`)
+   apply to the block ROOT only — ungated, every element sharing the `layout` cluster would falsely inherit
+   the wrapper's margin/border as its own (caught live: brand-strip's `tile` element initially showed a
+   false "OK" on `layout/css:margin` via the wrapper's `spacing.margin` support before this gate was added).
+
+A member that resolves via none of the three is a **GAP** — reported, never silently dropped, never
+hand-excluded. Blocks with no `supports.sgs.elements` key at all are **skipped**, not flagged (the manifest
+is opt-in during rollout).
+
+**brand-strip's seeded manifest (the exemplar, live 2026-07-20):** 4 elements — `tile` (fill+layout),
+`logo-image` (no clusters — governed by the universal image-controls extension, not Text/Fill/Layout),
+`caption` (text), `strip-spacing` (layout, `isWrapper: true`). Real run: **16 OK / 22 GAP** of 38 checked
+members. The gaps are genuine current-state gaps (e.g. tile has no opacity/overlay/width/height/max-*/
+min-*/border-style control yet; caption's TypographyControls is called with `showStyle={false}
+showLineHeight={false}` so line-height/letter-spacing/font-style/text-transform/text-decoration/text-align
+are absent) — NOT fudged closed. Closing them (or explicitly scoping them out per-element) is a follow-on
+build, not this task's job.
+
 ## Behaviour + the Content tab (F8/F9 fix — the clusters govern the STYLE tab ONLY)
 
 The three clusters (Text/Fill/Layout) organise the **Style tab** — the LOOK. They are NOT the whole
