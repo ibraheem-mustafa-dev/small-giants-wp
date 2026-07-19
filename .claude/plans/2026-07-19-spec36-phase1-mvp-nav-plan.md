@@ -113,6 +113,30 @@ WAVE 4  (SEQUENTIAL — the exit gate)
 
 ---
 
+## Spec 35 inspector-UX binding (MANDATORY — every nav block + the mega CPT)
+Every block/CPT built in this plan follows **Spec 35** (`specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`) + the two signed-off reference artefacts (the panel-shape + the control archetypes — URLs in the next-session-prompt). Non-negotiable shape:
+
+**Panel structure (Artefact 2 — element-first):**
+- **Two native tabs only via the `group` prop:** `Settings` (behaviour/content) + `Styles` (appearance). "Advanced" (CSS class/anchor) is `group="advanced"` INSIDE Settings, never a 3rd tab (Part A3).
+- **Element-first panels** — group by block PART, not property type (nav-menu: Bar / Items / Burger / Featured; nav-drawer: Drawer container / Close button / Content) (Part A4).
+- **Fixed cluster order per element: Text → Fill → Layout (shape & size).**
+- **Normal/Hover = ONE `StateToggleControl`** re-pointing the same controls (never a second hover panel); **Focus mirrors Hover** (Part F).
+- **Per-device 768/1024 `ResponsiveControl`** on type/spacing/border/shadow, with an edit-dot on customised tiers (Part D2).
+- **Progressive disclosure** — `ToolsPanel`/`ToolsPanelItem` once a panel hits ~6 controls; 1–3 `isShownByDefault`, `resetAll`, rare controls behind one "More" (Part A5).
+
+**Control archetypes (Artefact 1 + Part B — no half-built controls):**
+- **Sizes/gaps** (collapse-N, drawerGap, font-size) → `UnitControl` with real `units` + preset pills + reset (never a bare px slider).
+- **Box props** (drawerPadding, margin) → `BoxControl` (4-side link/unlink, per-side units, `allowReset`) — the DB `box_family` object-attr shape.
+- **Colours** (drawerBg, toggleCloseColour, item/hover colours) → `DesignTokenPicker` with **`enableAlpha` + clearable**; gradient ONLY on a background (drawerBg may offer solid+gradient), NEVER on text/border.
+- **Choice by count** (drawerAlign, collapse-mode) → ≤5 `ToggleGroupControl` / 6–10 `SelectControl` / >10 `ComboboxControl`; ALWAYS every option + Custom; selected = bold+ring, not colour alone.
+- **Multi-select** (`featuredItemIds`) → `FormTokenField` or a `CheckboxControl` list of the resolved menu items (Bean's ruling).
+- **Menu picker** (`ref`) → `SelectControl`/`ComboboxControl` (searchable if many menus), never a raw text field.
+- **Links/CTAs** → `LinkControl` (internal search + new-tab + rel), never a raw URL `TextControl`.
+- **Typography** → the shared `TypographyControls` + `sgs_typography_css_rule` (R-22-13), never bespoke font controls.
+- **Universal:** reset path on every changed control · keyboard-operable (incl. any drag) · `prefers-reduced-motion` gate on animation · screen-reader labels on swatches/icons/presets · never duplicate a native `supports` panel (Part A6/R-31-9).
+
+Gate-2 verifies this (DONE-checklist + `/qc-council`). The Spec-35 `inspector-conformance` audit (WARN-only) also keys on these.
+
 ## Steps
 
 ### WAVE 0 — Independent foundations (PARALLEL)
