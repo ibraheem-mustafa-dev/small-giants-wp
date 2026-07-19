@@ -19,8 +19,7 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
-			"containerKind": "content",
-			"is_section_root": true
+			"containerKind": "content"
 		},
 		"align": false,
 		"anchor": false,
