@@ -15,11 +15,56 @@ note: "THE single living-status doc. Replaces the old 3-way split (state/handoff
 (or you) gets ONE true answer instead of three drifting ones. It replaces the old three
 docs (state / handoff / next-session-prompt) that kept contradicting each other.
 
-**Latest (2026-07-18):** Track 2 (the header/footer/nav rebuild) **Phase 1 is done** — we decided the
-architecture: build our own (not fork a competitor), clean rebuild, rich functionality behind a simple
-default, and crucially designed so the cloning tool can clone any client's header *into* it. It passed
-a plan-validation gate, a 3-round research council, a 6-critic adversarial gate, and a final QC. Next
-up for that track is **P2 — designing the visual builder** the clients will use. Full picture below.
+**Latest (2026-07-18, P2 session):** Track 2 **P2 (the header/footer/control BUILDER design-gate) is DONE
++ SIGNED OFF** — `plans/2026-07-18-P2-builder-ux-design-gate.md`. It designs the settings panel a
+non-coder uses to configure header/footer/nav, over a **CPT editing home** (`sgs_header`/`sgs_footer`
+CPTs — the findable admin screen, NOT the Site Editor; the device-switcher works there), a tri-state
+per-device control model, a starter-template picker, and a WP control-implementation spec bound to **Spec
+35**. Gated through a 6-critic council + gap-analysis (B+) + a build + a UX specialist review + Spec-35
+detail. **The NAVIGATION was carved out as a NEW phase P2.5 (full rework, Bean-locked)** — a 3-stream
+research pass + 4-critic council ran; the council said "salvage adaptive-nav", **Bean overrode: full
+rework, adaptive-nav is the messy patch-fixed block, gone.**
+
+**⚠ CORRECTION (2026-07-19):** the earlier "Locked for P2.5: `wp_navigation` menu data" was a STALE carry that
+was NOT reconciled with the signed-off Spec 36. **Spec 36 §12(f) resolved menu data to CLASSIC WP menus
+PRIMARY** (block-based `wp_navigation` = a Phase-3 extra — "not essential, not totally clear to implement yet",
+Bean 07-18). A parallel 07-19 P2.5 session was handed the stale `wp_navigation` lock and re-ran the whole
+research→architecture→council arc before catching that Spec 36 already existed and was the authoritative base.
+
+**P2.5 OUTCOME (2026-07-19): Spec 36 SIGNED-OFF v2.1 + salvage audit done + SAFE doc-purge done.**
+`specs/36-SGS-NAVIGATION-SYSTEM.md` is the SINGLE canonical nav home. The two parallel tracks were reconciled
+(Spec 36 = base; 07-19 added the utility-piece research + 6 refinements), gated through a 7-persona adversarial
+council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 2026-07-19.**
+- **Phase 6.5 code-salvage (DONE):** 4 parallel wp-sgs-dev audits, built-vs-to-build per piece vs v2.1, every
+  claim evidenced to `file:line` → `reports/2026-07-19-P2.5-phase6.5-salvage-audit.md`. Spec 36's own §8a claims
+  ALL held up. Salvage wins: D323 body-reparent + D340 scroll-lock (`adaptive-nav/view.js`, PORT verbatim);
+  product-search combobox = genuine EXTEND; business-info single-source + schema-non-duplication BUILT; cart =
+  badge shell only (mini-cart UNbuilt, Phase-1 fix = one-line `role="status"` at `cart/render.php:203`).
+  Correction recorded: the two old blocks' focus-trap code disagree → merge into ONE `store('sgs/nav')`, don't copy.
+- **Phase 6 SAFE doc-purge (DONE — Bean go, doc-only, no live-site risk):** carried FR-34-5 drawer-settings +
+  Spec 02 §23 competitive line INTO Spec 36 first, THEN: DELETED `specs/34`; Spec 02 §23 → pointer stub; Spec 17
+  FR-S9-4/-5 → Spec 36 pointers (FR-IDs kept for dependency lines); README index (34 DELETED, 35+36 rows added).
+- **DEFERRED to post-build (register §3 — needs the new block-name roster, which doesn't exist until the build):**
+  Spec 17 S9-1 hook allow-list / S9-2 typed-palette entry / S9-8 move-to-drawer / S9-10 nav refs; `00 §2.1` +
+  `no-header-footer-block.py` roster; Spec 29 rows; retire adaptive-nav/mega-menu/mobile-nav DB rows via `/sgs-update`.
+- **DEFERRED (Bean-ruled): block-registration deletion + live-header cutover** — the retired blocks stay live
+  until the new nav is BUILT + the two client headers (Mama's + Indus) are re-authored via the editor (FR-36-18).
+- **Spec 33 Part 2 emit-target repoint** — after the nav build passes its gate, NOT now (FR-36-15).
+**Next: build-planning Phase 1 (MVP — Mama's end-to-end classic-menu nav + drawer + cart badge fix + logo basics).**
+Handoff: `next-session-prompt-nav-rework-P2.5.md`.
+
+**Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
+the attribute-registry (Spec 35 UNIT A+) mapped through Phase 1c. Built: the inspector DONE-checklist;
+the block roster (79 blocks, DB-derived); **all 3 audits** (inspector-conformance JSX-AST, feature-parity,
+shrink-to-fit — all WARN-only, keyed to the roster); **3 shared components** (`DesignTokenPicker` enableAlpha,
+`SgsLinkControl`, `ShadowControl` — infra only, no block consumes them yet); brand-strip QC'd as the pilot
+exemplar; the **min-width:0 wrapper backstop** (Gate C0 approved, built, deployed to canary, no regression —
+but NOT live-emission-proven, homepage has no wrapper-grid container; UNIT D will prove it). **The registry
+insight (Bean-driven):** 944 attr names → ~80 TRUE settings (≈60 CSS-property + 12 input-types + 11
+behaviour-families); the "282 one-offs" were classifier laziness (dedup by NAME not property-identity). Dedup
+fully adjudicated (Haiku + Sonnet), 0 genuinely-unique. `plugins/sgs-blocks/scripts/consistency/` holds it all.
+**Next (Phase 2, fresh session):** define the OPTIMAL control per setting (needs Bean's design input) →
+Phase 3 lint → UNIT D pilot (sgs/media). See `.claude/next-session-prompt.md`.
 
 **Where we are (2026-07-17).** Two things run in parallel:
 1. **The website builder itself** — the header/footer/nav system + the drawer menu are built
