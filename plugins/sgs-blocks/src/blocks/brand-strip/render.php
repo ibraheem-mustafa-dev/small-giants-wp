@@ -81,7 +81,15 @@ $logo_fit            = in_array( $logo_fit_raw, array( 'contain', 'cover' ), tru
 $tile_bg_colour      = $attributes['tileBackgroundColour'] ?? '';
 $tile_border_width   = isset( $attributes['tileBorderWidth'] ) ? absint( $attributes['tileBorderWidth'] ) : 0;
 $tile_border_colour  = $attributes['tileBorderColour'] ?? '';
-$tile_shadow         = $attributes['tileShadow'] ?? 'none';
+// Raw CSS box-shadow VALUE (or theme shadow-preset slug) from the shared
+// ShadowControl builder — replaces the old none/small/medium enum SelectControl
+// (Spec 35 Task 2 element-first rebuild). A pre-migration legacy string such as
+// "small"/"medium" (neither a raw shadow nor a real theme.json shadow preset
+// slug — those are sm/md/lg/glow) falls through sgs_shadow_value() to an
+// unresolvable `var(--wp--preset--shadow--small)`, which the browser simply
+// ignores (initial box-shadow: none) — graceful degrade, no crash, no
+// deprecation needed (D270 no-deprecations policy).
+$tile_shadow         = $attributes['tileShadow'] ?? '';
 $hover_bg_colour     = $attributes['backgroundColourHover'] ?? '';
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
 $hover_border_colour = $attributes['borderColourHover'] ?? '';
@@ -103,8 +111,11 @@ $safe_hover_effect   = in_array( $hover_effect, $allowed_effects, true ) ? $hove
 $safe_direction      = in_array( $scroll_direction, array( 'left', 'right' ), true ) ? $scroll_direction : 'left';
 $allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
 $safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
-$allowed_shadows     = array( 'none', 'small', 'medium' );
-$safe_tile_shadow    = in_array( $tile_shadow, $allowed_shadows, true ) ? $tile_shadow : 'none';
+// tileShadow sanitisation happens at emission time via sgs_shadow_value()
+// (helpers-tokens.php) — it either passes a raw CSS shadow through (normalising
+// any embedded functional colour to hex) or resolves a theme shadow-preset slug
+// to `var(--wp--preset--shadow--{slug})`; there is no fixed enum to validate
+// against any more (see ShadowControl.js).
 
 // ---------------------------------------------------------------------------
 // 3. WP-native style groups (skip-serialised in block.json → NOT auto-inlined
@@ -167,9 +178,6 @@ if ( $fade_edges ) {
 }
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-brand-strip--hover-' . esc_attr( $safe_hover_effect );
-}
-if ( 'none' !== $safe_tile_shadow ) {
-	$classes[] = 'sgs-brand-strip--tile-shadow-' . esc_attr( $safe_tile_shadow );
 }
 if ( ! $pause_on_hover ) {
 	$classes[] = 'sgs-brand-strip--no-pause';
@@ -307,6 +315,22 @@ if ( $tile_border_width > 0 || '' !== $tile_border_colour ) {
 	}
 	if ( $tile_border_decls ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{" . implode( ';', $tile_border_decls ) . ';}';
+	}
+}
+
+// --- Tile shadow (Spec 35 Task 2 — ShadowControl builder replaces the old
+// none/small/medium enum). `sgs_shadow_value()` accepts either a raw CSS
+// box-shadow string (the builder's normal output — colour normalised to hex
+// so it survives `safecss_filter_attr()`-style stripping even though this
+// channel isn't subject to it) or a bare theme shadow-preset slug picked from
+// the preset row (sm/md/lg/glow), and resolves it to `var(--wp--preset--
+// shadow--{slug})`. Scoped, real `box-shadow` PROPERTY declaration — never
+// inline (Spec 32). Applies at rest; `.sgs-brand-strip--hover-lift` already
+// overrides box-shadow on hover via its own rule in style.css, unaffected. ---
+if ( '' !== $tile_shadow ) {
+	$safe_tile_shadow_value = sgs_shadow_value( $tile_shadow );
+	if ( '' !== $safe_tile_shadow_value ) {
+		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{box-shadow:{$safe_tile_shadow_value};}";
 	}
 }
 
@@ -454,15 +478,23 @@ if ( ! empty( $logos ) ) {
 
 		$name_id = $has_caption ? $uid . '-name-' . $logo_index : '';
 
-		$link_url = isset( $logo['linkUrl'] ) ? esc_url_raw( (string) $logo['linkUrl'] ) : '';
-		if ( '' !== $link_url ) {
-			$link_new_tab = isset( $logo['linkTarget'] ) && '_blank' === $logo['linkTarget'];
-			$link_attrs   = ' href="' . esc_url( $link_url ) . '"';
-			$link_attrs  .= $link_new_tab ? ' target="_blank" rel="noopener noreferrer"' : ' rel="noopener"';
+		// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
+		// Task 2) resolved via the shared sgs_link_attributes() render helper —
+		// mirrors sgs/icon's own link handling rather than hand-rolling target/rel
+		// again here. linkUrl/linkTarget/linkRel are the existing per-item storage
+		// keys (unchanged), so no per-item data is stranded by the editor swap.
+		$link_attrs_str = sgs_link_attributes(
+			array(
+				'url'           => $logo['linkUrl'] ?? '',
+				'opensInNewTab' => isset( $logo['linkTarget'] ) && '_blank' === $logo['linkTarget'],
+				'rel'           => $logo['linkRel'] ?? '',
+			)
+		);
+		if ( '' !== $link_attrs_str ) {
 			if ( '' !== $name_id ) {
-				$link_attrs .= ' aria-labelledby="' . esc_attr( $name_id ) . '"';
+				$link_attrs_str .= ' aria-labelledby="' . esc_attr( $name_id ) . '"';
 			}
-			$logo_html = '<a' . $link_attrs . '>' . $logo_html . '</a>';
+			$logo_html = '<a' . $link_attrs_str . '>' . $logo_html . '</a>';
 		}
 
 		if ( $has_caption ) {

@@ -22,7 +22,16 @@
     ],
     "supports": {
         "html": false,
-        "anchor": false
+        "anchor": false,
+        "sgs": {
+            "hideExtensions": [
+                "animation",
+                "blockLink",
+                "clickEffects",
+                "hover",
+                "parallax"
+            ]
+        }
     },
     "attributes": {
         "fieldName": {

@@ -189,9 +189,6 @@
 			"type": "string",
 			"default": "primary"
 		},
-		"titleFontSize": {
-			"type": "string"
-		},
 		"excerptColour": {
 			"type": "string",
 			"default": "text"
@@ -260,10 +257,6 @@
 		"carouselShowArrows": {
 			"type": "boolean",
 			"default": true
-		},
-		"staggerDelay": {
-			"type": "number",
-			"default": 60
 		},
 		"sgsAnimation": {
 			"type": "string",

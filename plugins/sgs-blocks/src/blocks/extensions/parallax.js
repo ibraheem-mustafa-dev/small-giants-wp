@@ -1,9 +1,19 @@
 /**
- * Parallax scroll extension — adds background and element parallax to any block.
+ * Parallax scroll extension — background parallax and element parallax.
  *
  * Adds sgsParallax (type) and sgsParallaxStrength (0–100) attributes to ALL
  * Gutenberg blocks that support className. The CSS and JS runtime handle the
  * actual parallax effect; this extension provides the editor controls only.
+ *
+ * The two effects are surfaced as two purpose-built controls:
+ *   1. Background parallax — a toggle in the native Colour panel (group="color"),
+ *      shown only on blocks that support a background colour. The block's
+ *      background moves at a different speed to its content on scroll.
+ *   2. Element parallax — a toggle in its own panel, available on any block. The
+ *      whole block drifts as the visitor scrolls, for a subtle sense of depth.
+ *
+ * Both write to the single sgsParallax enum ('none' | 'background' | 'element'),
+ * so the two effects are mutually exclusive and the server render is unchanged.
  *
  * Class and data-attribute injection is handled server-side by
  * includes/parallax.php (render_block filter, priority 11). The frontend
@@ -16,12 +26,12 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { getBlockType } from '@wordpress/blocks';
+import { getBlockType, getBlockSupport } from '@wordpress/blocks';
 import { isExtensionHidden } from './hide-extensions';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	SelectControl,
+	ToggleControl,
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
@@ -81,11 +91,28 @@ addFilter(
 );
 
 /**
- * Higher-order component that renders the Parallax panel in the inspector.
+ * Whether a block type supports a background colour.
  *
- * Uses a standard InspectorControls PanelBody (not Advanced) so the
- * control is easy to discover. The panel starts collapsed (initialOpen=false)
- * to keep the inspector clean on first open.
+ * The background-parallax toggle only makes sense where the block has a
+ * background to move, so it is surfaced only on background-colour-capable
+ * blocks and rendered inside the native Colour panel (group="color").
+ *
+ * @param {string} name Block name.
+ * @return {boolean} True when the block supports color.background.
+ */
+function supportsBackgroundColour( name ) {
+	return !! getBlockSupport( name, [ 'color', 'background' ] );
+}
+
+/**
+ * Higher-order component that renders the two parallax controls in the inspector.
+ *
+ * - Background parallax: a toggle inside the Colour panel (group="color"), only
+ *   on background-capable blocks.
+ * - Element parallax: a toggle in its own discoverable panel, on any block.
+ *
+ * Both controls drive the single sgsParallax enum, so enabling one disables the
+ * other (a block does one kind of parallax).
  */
 const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
@@ -97,91 +124,111 @@ const withParallaxControls = createHigherOrderComponent( ( BlockEdit ) => {
 			return <BlockEdit { ...props } />;
 		}
 
-		// Per-block opt-out (supports.sgs.hideExtensions): a logo wall etc.
-		// has no use for parallax.
+		// Per-block opt-out (supports.sgs.hideExtensions): a logo wall, form
+		// field etc. has no use for parallax.
 		if ( isExtensionHidden( name, 'parallax' ) ) {
 			return <BlockEdit { ...props } />;
 		}
 
 		const { sgsParallax, sgsParallaxStrength } = attributes;
-		const isActive = sgsParallax && 'none' !== sgsParallax;
+		const isBackground = 'background' === sgsParallax;
+		const isElement = 'element' === sgsParallax;
+		const isActive = isBackground || isElement;
+		const showBackground = supportsBackgroundColour( name );
 
 		return (
 			<>
 				<BlockEdit { ...props } />
-				<InspectorControls>
-					<PanelBody
-						title={ __( 'Parallax', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						{ isActive && (
-							<Notice
-								status="info"
-								isDismissible={ false }
-							>
-								{ __(
-									'Parallax active — not visible in the editor preview.',
-									'sgs-blocks'
-								) }
-							</Notice>
-						) }
 
-						<SelectControl
-							label={ __( 'Parallax type', 'sgs-blocks' ) }
-							value={ sgsParallax || 'none' }
-							options={ [
-								{
-									label: __( 'None', 'sgs-blocks' ),
-									value: 'none',
-								},
-								{
-									label: __( 'Background parallax', 'sgs-blocks' ),
-									value: 'background',
-									help: __(
-										'Background image moves at a different speed to content',
-										'sgs-blocks'
-									),
-								},
-								{
-									label: __( 'Element parallax', 'sgs-blocks' ),
-									value: 'element',
-									help: __(
-										'Entire block translates on scroll',
-										'sgs-blocks'
-									),
-								},
-							] }
-							onChange={ ( val ) =>
-								setAttributes( { sgsParallax: val } )
-							}
-							help={
-								'background' === sgsParallax
-									? __(
-										'Background image moves at a different speed to content',
-										'sgs-blocks'
-									)
-									: 'element' === sgsParallax
-									? __(
-										'Entire block translates on scroll',
-										'sgs-blocks'
-									)
-									: ''
+				{ showBackground && (
+					<InspectorControls group="color">
+						<ToggleControl
+							label={ __( 'Background parallax', 'sgs-blocks' ) }
+							help={ __(
+								'The background moves at a different speed to the content as visitors scroll. Needs a background image or video to be visible.',
+								'sgs-blocks'
+							) }
+							checked={ isBackground }
+							onChange={ ( on ) =>
+								setAttributes( {
+									sgsParallax: on ? 'background' : 'none',
+								} )
 							}
 							__nextHasNoMarginBottom
 						/>
 
-						{ isActive && (
+						{ isBackground && (
 							<RangeControl
 								label={ __( 'Strength', 'sgs-blocks' ) }
 								value={ sgsParallaxStrength ?? 30 }
 								onChange={ ( val ) =>
-									setAttributes( { sgsParallaxStrength: val } )
+									setAttributes( {
+										sgsParallaxStrength: val,
+									} )
 								}
 								min={ 0 }
 								max={ 100 }
 								step={ 5 }
+								help={ __(
+									'How far the background travels on scroll.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 							/>
+						) }
+					</InspectorControls>
+				) }
+
+				<InspectorControls>
+					<PanelBody
+						title={ __( 'Element parallax', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<p className="sgs-parallax-help">
+							{ __(
+								'Element parallax makes the whole block drift gently up or down as the visitor scrolls, so it moves at a slightly different speed to everything around it — giving a subtle sense of depth. Best used sparingly, on images or standalone sections.',
+								'sgs-blocks'
+							) }
+						</p>
+
+						<ToggleControl
+							label={ __( 'Enable element parallax', 'sgs-blocks' ) }
+							checked={ isElement }
+							onChange={ ( on ) =>
+								setAttributes( {
+									sgsParallax: on ? 'element' : 'none',
+								} )
+							}
+							__nextHasNoMarginBottom
+						/>
+
+						{ isElement && (
+							<RangeControl
+								label={ __( 'Strength', 'sgs-blocks' ) }
+								value={ sgsParallaxStrength ?? 30 }
+								onChange={ ( val ) =>
+									setAttributes( {
+										sgsParallaxStrength: val,
+									} )
+								}
+								min={ 0 }
+								max={ 100 }
+								step={ 5 }
+								help={ __(
+									'How far the block travels on scroll.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+
+						{ isActive && (
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'Parallax only shows on the live site, not here in the editor preview.',
+									'sgs-blocks'
+								) }
+							</Notice>
 						) }
 					</PanelBody>
 				</InspectorControls>

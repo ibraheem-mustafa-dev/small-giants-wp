@@ -560,3 +560,17 @@
 		transition: none !important;
 	}
 }
+
+/*
+ * Element-parallax help text in the block inspector (editor only).
+ *
+ * Matches WordPress's native help-text convention (12px, muted) so the
+ * plain-English explanation of what element parallax does reads as guidance,
+ * not body copy.
+ */
+.sgs-parallax-help {
+	margin: 0 0 12px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #757575;
+}

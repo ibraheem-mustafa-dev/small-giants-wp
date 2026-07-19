@@ -10,6 +10,7 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
+	TextControl,
 	Button,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -43,6 +44,7 @@ const STYLE_OPTIONS = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
+		blockLabel,
 		orientation,
 		tabAlignment,
 		tabStyle,
@@ -158,6 +160,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ STYLE_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { tabStyle: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Accessibility', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __(
+							'Accessible label (screen readers)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							"Read out by screen readers to identify this tab group. Leave blank to fall back to the first tab's label.",
+							'sgs-blocks'
+						) }
+						value={ blockLabel }
+						onChange={ ( val ) =>
+							setAttributes( { blockLabel: val } )
 						}
 						__nextHasNoMarginBottom
 					/>

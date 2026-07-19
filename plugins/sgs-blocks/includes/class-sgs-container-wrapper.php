@@ -1147,6 +1147,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= $grid_sel . '{' . implode( ';', $base_grid_real_decls ) . '}';
 			}
 
+			// Spec 35 shrink-to-fit BACKSTOP — grid/flex ITEMS default to
+			// min-width:auto/min-height:auto, so a child refuses to shrink below
+			// its own content's intrinsic size (a long word, a wide image, a
+			// table) and forces the grid/flex track wider than the viewport,
+			// causing horizontal overflow. The fix is min-width:0/min-height:0
+			// on the direct children of the grid/flex container, letting them
+			// shrink to fit. Preventive framework hardening (memory
+			// blocks-must-shrink-to-fit-container — "backstop, not a
+			// substitute"; per-block CSS is still the primary fix where
+			// needed). Same $grid_sel as the base grid/flex rule above so it
+			// always targets the actual grid/flex element (the __inner band
+			// when $grid_on_inner, else the outer .$uid); direct children only
+			// (>*) so it never reaches into a nested grid it shouldn't touch.
+			if ( $uid && ( 'grid' === $layout || 'flex' === $layout ) ) {
+				$responsive_css .= $grid_sel . '>*{min-width:0;min-height:0}';
+			}
+
 			if ( $has_responsive_attr ) {
 				// Grid CSS lives on the __inner band when $grid_on_inner (so the outer
 				// stays full-bleed); else on the outer (.uid). $grid_sel (computed

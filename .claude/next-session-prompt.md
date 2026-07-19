@@ -1,156 +1,123 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: Inline-zero rollout DONE (D345/D346, on main). Next = Step 6 gate → core/rows→sgs/container migration + replaces-table audit → begin Spec 35.
-generated: 2026-07-18 (very long session — framework-wide inline-zero rollout completed end-to-end + merged to main)
+thread: Track 1 — Spec 35 block-inspector-UX. Phase 0 DONE + attribute-registry mapped through Phase 1c (2026-07-19, 11 commits). Next = Phase 2 (optimal-spec catalog).
+generated: 2026-07-19
 ---
 
-Invoke `/autopilot` before doing anything else. Read the governing specs
-`specs/31-UNIVERSAL-CLONING-PIPELINE.md` + `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`
-IN FULL before touching the converter / walker / pipeline / block-styling surface.
-
-You are the SGS WordPress framework developer. Last session **completed the
-framework-wide inline-zero rollout** (D345/D346): both live sites (palestine-lives Indus
-+ sandybrown Mama's) now render every `sgs/*` block with ZERO inline `style` attributes —
-the shared `SGS_Container_Wrapper` Facet A+B change + all block conversions, merged to
-`main` at `3c070139`. Three tasks remain, in order.
+Invoke /autopilot before anything else. This is **Track 1 — Spec 35 block-inspector-UX, Phase 2**
+(the attribute-registry: define the OPTIMAL control per setting). Read in full: the strategic plan
+`.claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md`, the executable plan
+`.claude/plans/2026-07-19-spec-35-phase-0-executable-plan.md`, `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
+(Parts B/H are the optimal-control reference), the DONE-checklist `.claude/plans/spec-35-inspector-DONE-checklist.md`,
+and the registry artefacts under `plugins/sgs-blocks/scripts/consistency/`.
 
 ## State recap (plain English)
 
-"Inline styling" = CSS written onto an element's `style="…"` attribute instead of a
-stylesheet; it breaks responsive `@media` + `:hover` and bloats markup. That whole drive
-is now DONE and on `main`. This session: (1) build the gate that stops it regressing,
-(2) fix a gap in the core-block-replacement work — the Indus homepage still contains
-`core/row` blocks that were never given a converter migration to `sgs/container`, and
-(3) begin the Spec 35 Block-Inspector-UX work planned two sessions ago.
+Spec 35 makes every SGS block's editor sidebar complete + consistent so a non-coder client can self-serve
+(the "Bean as QC only" goal). Phase 0 (foundations) is DONE: a block roster (79 blocks, DB-derived), 3
+WARN-only audit scripts (inspector-conformance, feature-parity, shrink-to-fit), 3 shared components
+(transparent-colour `DesignTokenPicker`, `SgsLinkControl`, `ShadowControl` — built, not yet consumed by any
+block), and a `min-width:0` shared-wrapper backstop (deployed to canary, no regression; live-emission proven
+only when a wrapper-grid container exists — UNIT D will exercise it).
 
-**⚠ Shared worktree / co-active track (LOAD-BEARING):** a second session (Track 2) is
-rebuilding header/footer/nav on the SAME branch + working directory
-(`feat/brand-strip-inspector-rebuild`). Before EVERY commit, run `git branch --show-current`
-in the same guarded command, and path-scope every commit (`git commit -- <paths>`) — never
-`git add -A`. NEVER `git checkout`/branch-switch in the shared worktree (it changes their
-working dir out from under them). To merge to `main`, use an isolated
-`git worktree add /c/tmp/<x> main` (last session's proven method) — never a local checkout.
-Their WIP (specs/34, header-footer plans, lucide-icons.php, LEDGER.md, decisions.md D344)
-is theirs — do not stage or overwrite it.
+The big Phase-1 result: **944 attribute names deduplicate to ~80 TRUE semantic settings** (≈60 CSS-property
+settings + 12 input-types + 11 behaviour-families). The earlier "282 unique one-offs" was wrong — the dedup
+had keyed non-CSS attrs by NAME. It is now fully adjudicated (0 genuinely-unique). Everything is in
+`scripts/consistency/`: `setting-types.json` (CSS-property dedup), `setting-reclassification.json` (input-type/
+behaviour-family collapse + `answers_to_bean`), `phase1b-adjudication.json`, and the generators.
 
----
-
-## Task 1 — Step 6: structural anti-regression prebuild gate
-
-**What:** a build-time gate that FAILS the build if any `sgs/*` element would render an
-inline `style="--…"` or empty `style=""`. Locks in the inline-zero win permanently.
-**Why:** without it, a future block edit silently re-introduces inline styling and the
-whole rollout erodes. Bean deferred this from last session specifically to this one.
-**Estimated time:** ~30 min.
-
-**Orchestration:**
-- Execution: inline (main thread) — a focused gate script + wiring.
-- Build `plugins/sgs-blocks/scripts/no-inline/check-no-inline.py`: scan a fixture render
-  of each block (or the two canary pages) for `sgs/*` elements carrying `style="--` or
-  `style=""`; exit 1 with the offending block named. Wire into `package.json` `prebuild`
-  (alongside `check-dead-controls.js` / `check-hardcoded-render-defaults.js`).
-- Reuse last session's detector `plugins/sgs-blocks/scripts/no-inline/detect.py`
-  (live-render-driven; `--live-default` scans palestine-lives). The gate is its enforcing sibling.
-- The ONE allowed exception is the documented `sgsCustomCss` residual — match it narrowly, never blanket-allow.
-- /qc gate after: `/qc-inline` — prove it by injecting `style="--x:1"` into one block fixture (must FAIL) and removing it (must PASS).
-
-**Acceptance:** `npm run build` passes on the current tree; injecting an inline `--var`
-into any block fixture fails the build with that block named; the `sgsCustomCss` residual
-does not false-positive.
-
-## Task 2 — core/rows → sgs/container migration (a gap in the core-replacement work)
-
-**What:** the core-block-replacement system converts banned `core/*` blocks to SGS
-equivalents, driven by a DB `replaces` mapping + per-block migration scripts. `core/row`
-(row/columns layout) has **no migration script to `sgs/container`**, so the Indus homepage
-still ships live `core/row` blocks. Create that migration + register it in the `replaces`
-table, then AUDIT every `replaces` row to confirm each has a migration script (this gap
-suggests others may be missing).
-**Why:** `core/*` blocks on a live client homepage violate the "native SGS blocks only"
-contract and won't respond to container controls/cloning. The Indus build is live.
-**Estimated time:** ~45 min (migration + audit + live apply).
-
-**Orchestration:**
-- Ground truth FIRST: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` — inspect the
-  `blocks.replaces` mapping + `block-replacements.json`; find where existing `core/*→sgs/*`
-  migrations live: `plugins/sgs-blocks/scripts/migrate-core-blocks/` (`lint-page.py`,
-  `driver.py`, `APPLY.md`, `block-replacements.json`). Read `APPLY.md` for the editor-apply flow.
-- Write the `core/row → sgs/container` migration (row/columns layout → container
-  `layoutType:flex|grid` + gap/align; a row's inner columns → the container's grid items).
-  Register it in `block-replacements.json` + the DB `replaces` table via `/sgs-update`.
-- **Audit:** enumerate EVERY `replaces` row; confirm a migration script exists for each;
-  report the missing ones (like `core/row` was). Fix or park each with a reason.
-- Apply on the live Indus homepage (page 13, palestine-lives) via editor-apply
-  (`wp.data.dispatch` through Playwright, login user `Claude`) — NEVER WP-CLI `str_replace` on post_content.
-- Delegate the migration transform to `wp-sgs-developer`; keep the audit + registration inline.
-- /qc gate after: verify live — 0 `core/row` (+ 0 other banned `core/*`) on the Indus homepage; `sgs/container` renders the same layout (design-reviewer cropped before/after).
-
-**Acceptance:** the prebuild `check-no-core-blocks.py` gate passes on the Indus homepage;
-every `replaces` row has a registered migration script (audit report produced); homepage
-layout visually unchanged after `core/row→sgs/container`.
-
-## Task 3 — begin Spec 35 (SGS Block Inspector UX + Control-Completeness standard)
-
-**What:** start building against `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (the 6-stream
-research committed `6ee48656` — the standard for how every SGS block's editor sidebar is
-organised + which controls it must expose). The brand-strip inspector rebuild was its pilot.
-**Why:** the planned next major workstream.
-**Estimated time:** scope in-session — read Spec 35 IN FULL, then plan.
-
-**Orchestration:**
-- Execution: `/strategic-plan` inline FIRST (architectural — read Spec 35 in full, then plan the phase).
-- Do NOT code before the plan + Bean's sign-off (7-rules #7: design-gate sensitive/shared-surface changes).
-- /qc gate after: per the plan.
-
-**Acceptance:** a `/strategic-plan` phase plan for Spec 35 exists + Bean approved the first
-slice. (No code this task without the plan.)
-
-## Dependency graph
-
-```
-Task 1 (inline) ──/qc-inline──┐   (Task 1 + Task 2 independent — either order / parallel)
-Task 2 (inline + wp-sgs-developer delegate) ─┤
-                                             ↓
-Task 3 (/strategic-plan → Bean sign-off BEFORE any build)
-  ↓ path-scoped commits + isolated-worktree merge to main (see Guardrails)
-```
+**Phase 2 is the fresh work:** for each of the ~80 settings, define its OPTIMAL inspector setup (canonical
+control + units + multi-value + responsive toggle + dropdown completeness + custom-box-plus-preset, per Spec 35
+Part B/H + Bean's dimensions) → Phase 3 builds the permanent lint that categorises every attr against the
+registry + flags new/uncategorised → UNIT D pilots sgs/media.
 
 ## Skills to Invoke
 
-| Skill | When |
-|---|---|
-| `/autopilot` | FIRST (auto-injected by SessionStart) |
-| `/brainstorming` | ALWAYS — design/architecture (Task 3) |
-| `/gap-analysis` | ALWAYS — grade outputs before delivery |
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | ALWAYS — the optimal-control decisions per setting are design calls |
+| `/gap-analysis` | ALWAYS — grade the registry before locking it |
 | `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
-| `/research` | ALWAYS — auto-routes research tier |
-| `/strategic-plan` | ALWAYS — Task 3 phase plan before code |
-| `/systematic-debugging` | root-cause any regression (Task 2 edge cases) |
-| `/qc-inline` | Task 1 gate proof + Task 2 live verify |
-| `/sgs-wp-engine` · `/wp-blocks` · `/sgs-db` · `/sgs-clone` | block/attr/replaces ground truth |
-| `/dispatching-parallel-agents` | if Task 2 migration fans out |
+| `/research` | ALWAYS — auto-routes; "best WP control for setting X" |
+| `/strategic-plan` | ALWAYS — order the Phase 2/3 build |
+| `/phase-planner` | break Phase 2 into executable steps before building |
+| `/sgs-db`, `/wp-blocks` | DB is authoritative — never hardcode counts |
+| `/sgs-wp-engine` | any SGS block/component work |
+| `/qc-council` | multi-rater validate the optimal-control choices before locking |
 
 ## MCP Servers & Tools
 
-| Tool | For |
-|---|---|
-| Playwright | live-page verify (Task 1 gate, Task 2 core/row removal); page-13 editor-apply via `wp.data.dispatch` (login `Claude`) |
-| Hostinger `hosting_clearWebsiteCacheV1` | clear CDN before EVERY live measure (user `u945238940`; palestine-lives.org / sandybrown-nightingale-600381.hostingersite.com) |
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright | live-verify a control renders; shrink-to-fit + visual QC on the pilot |
+| `/sgs-db` (sgs-db.py) | query `block_attributes` (2286 rows) — the registry source |
 
 ## Agents to Delegate To
 
 | Agent | When |
-|---|---|
-| `wp-sgs-developer` | block/migration edits + build/deploy (Task 2 core/row migration) |
-| `design-reviewer` | Task 2 — confirm the Indus layout is unchanged after core/row→container |
+|-------|------|
+| `wp-sgs-developer` | build the optimal-spec catalog + Phase 3 lint + UNIT D pilot (Sonnet) |
+| `design-reviewer` | visual QC of the pilot block's inspector + rendered output |
 
-## Guardrails (carry-forward + this session's)
+---
 
-- **Shared-worktree discipline (LOAD-BEARING):** re-check `git branch --show-current` in the SAME guarded command as every commit; path-scope every commit; NEVER `git checkout`/branch-switch or `git add -A` in the shared worktree; merge to main only via an isolated `git worktree add`. A merge commit of already-gated commits may use `--no-verify` + a `[batch-ok:…]` token (the per-block visual-diff gate re-fires on merge = a false trigger there); a NORMAL commit must NOT skip hooks.
-- **THE GATE IS BEAN'S EYE (R-31-13):** never close a visual task on a number alone — screenshot at 375/768/1440 + full desktop width; cropped before/after; clear the CDN before EVERY measure.
-- **Deploy blocks-only, never full-theme:** `powershell.exe … python plugins/sgs-blocks/scripts/build-deploy.py --blocks-only --allow-dirty --target palestine-lives` (or `--target sandybrown`); after build `git checkout HEAD -- plugins/sgs-blocks/includes/lucide-icons.php`.
-- **Prove the cause before the fix; verify on the REAL live page (live DOM), not source/a test page.** Fact-check subagent output (invented file paths/dates/versions) against ground truth before acting on it.
-- **No block version bumps / no `deprecated.js`** (D270). Complete code only — no stubs/TODOs. Editor content on page 13 via `wp.data.dispatch`, NEVER WP-CLI `str_replace` on post_content.
-- **GOTCHA F (this session):** moving an inline `--var` to a scoped rule silently breaks any `[style*="--var"]` presence-selector — if any task touches a block's styling, grep its style.css for `[style*=` and rewrite to `var(--x, <resting>)` inert fallbacks.
-- **STOP-29 / definition-of-done:** for a spec'd subsystem (Spec 35, the `replaces` roster), done = the spec's FULL scope; map every deferral to a named spec stage — never "out of scope".
+## Task 1 — Refactor reclassify.py to be DB-direct (blocker for Phase 3)
+
+**What:** `scripts/consistency/reclassify.py` reads an intermediate DB dump from the scratchpad — not re-runnable.
+**Why:** Phase 3's lint must re-run cleanly after `/sgs-update`. Make it query the DB directly like `build-roster.py`.
+**Orchestration:** delegated, Sonnet, single-agent. Depends on: none. /qc gate after: yes (re-run reproduces the committed classification).
+**Acceptance:** `python scripts/consistency/reclassify.py` runs standalone + reproduces `setting-reclassification.json`.
+
+## Task 2 — Build the optimal-spec catalog (Phase 2 core)
+
+**What:** for each of the ~80 settings, define its OPTIMAL inspector setup (the "font-size box + preset dropdown" vision, per setting).
+**Why:** the canonical golden master every wave standardises against.
+**Orchestration:** inline design (Bean's input) + Sonnet drafting per-category via /dispatching-parallel-agents (CSS / input-types / behaviour-families). Context: Spec 35 Part B (control-completeness table) + Part H (component-per-job) + Bean's dimensions (units, multi-value, how to toggle units/device-tiers, dropdown completeness, custom+preset). Depends on: Task 1. /qc gate after: yes — /qc-council on the choices.
+**Acceptance:** `scripts/consistency/setting-registry.json` — every setting has its optimal control + props + current-vs-optimal divergence, Bean-signed-off.
+
+## Task 3 — Build the registry lint (Phase 3, the permanent enforcement)
+
+**What:** a script that categorises EVERY attr into its setting, checks current-vs-optimal, flags NEW/uncategorised attrs; wire WARN-only into prebuild.
+**Why:** the auto-pickup Bean asked for — new attrs/blocks caught + classified forever.
+**Orchestration:** delegated, Sonnet. Depends on: Task 1 + 2. /qc gate after: yes.
+**Acceptance:** the lint reports per-attr conformance vs the registry + flags any uncategorised attr; WARN-only in prebuild.
+
+## Task 4 — UNIT D pilot: sgs/media to full Spec 35 DONE (Gate 0)
+
+**What:** build sgs/media to the DONE-checklist + the 3 threaded standards; seeds the registry; exercises the backstop live; SVG sanitise-on-upload (security, do FIRST).
+**Why:** proves the standard live before any framework-wide rollout.
+**Orchestration:** delegated Sonnet build + inline design; design-reviewer visual QC. Context: sgs/media stays OFF the shared imageControls extension (block.json is the converter's source of truth — block-private path); the 21 parity gaps (lightbox/focalPoint/sizeSlug/scale + video preload/tracks/poster) from the parity audit; every new attr editor-only OR carries a converter-population note. Depends on: Task 2. /qc gate after: Gate 0 (Bean's eye + all 3 audits green).
+**Acceptance:** sgs/media passes conformance + parity (0 unexplained) + shrink-to-fit (backstop OFF) LIVE + SVG sanitised + Bean sign-off.
+
+## Dependency graph
+```
+Task 1 (Sonnet) ─► Task 2 (inline+parallel, Bean sign-off) ─► Task 3 (Sonnet lint)
+                                     └───────────────────────► Task 4 (UNIT D pilot, Gate 0)
+```
+
+## Methodology guardrails (do not skip)
+
+- **SHARED BRANCH `feat/brand-strip-inspector-rebuild` + Track 2 co-active (LOAD-BEARING).** Path-scope EVERY
+  commit with an explicit `-- <paths>` pathspec; re-check `git branch --show-current` IN THE SAME command as the
+  commit; NEVER `git add -A`, NEVER `git checkout`/branch-switch in this worktree. Merge to main ONLY via an
+  isolated `git worktree add /c/tmp/<x> main` (a real merge, not fast-forward — main carries Track 2 docs). Do
+  NOT delete the shared branch. Do NOT wholesale-rewrite `LEDGER.md`/`decisions.md` (Track 2 edits them too).
+- **Windows commits:** commit via PowerShell if Bash has a stale view of Write-tool files; do NOT pipe `git commit`
+  through `Select-String -First` (it silently aborts the commit — use `Select-Object -Last`).
+- **Verify live + verify the wiring, not the emit** — a control isn't done until the LIVE computed value is
+  correct (D302 strips functional colours; object/enum attrs coerce silently — D291/D328). READ THE SOURCE to
+  confirm a gate is actually wired (the min-width:0 backstop taught this — a `$layout` mismatch = silent no-op).
+- **Deploy before measure** — visible-on-URL changes need build + `build-deploy.py --target sandybrown` +
+  OPcache reset BEFORE any browser/pixel test. Stash uncommitted deployed-runtime files first. Clear CDN before every live measure.
+- **THE GATE IS BEAN'S EYE (R-31-13)** — never close a visual task on a number alone; screenshot 375/768/1440.
+- **No block version bumps / no `deprecated.js`** (D270). No inline styling (Spec 32 — scoped `<style>`). Complete code only.
+- **DB is authoritative** — query `/sgs-db`/`/wp-blocks`; never hardcode counts. Re-run `/sgs-update` if the DB may be stale (it found +6 attrs this session).
+- **Audits stay WARN-only** until Spec close — never block the co-active Track 2 build (`a11y-validation-informational-not-gate`).
+- **Dedup safety** — any new setting grouping: default to MATCHING an existing setting; justify any "unique" claim; setting identity = the property/input-type, NOT the name.
+- **STOP-29 / definition-of-done** — Spec 35 is a spec'd subsystem: done = the spec's FULL scope; map every deferral to a named spec stage, never "out of scope".
+- **Fact-check subagent output** (invented paths/dates/counts) against ground truth before acting.
+
+## Uncommitted carry-over
+- `plugins/sgs-blocks/src/blocks/brand-strip/style.css` — a reduced-motion CSS fix, HELD behind the visual-diff
+  gate (needs deploy + `reports/visual-diff/brand-strip-<date>.md` with `verdict: PASS`). Land it with the UNIT D deploy.

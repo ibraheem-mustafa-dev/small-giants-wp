@@ -1,0 +1,343 @@
+{
+  "_meta": {
+    "doc_type": "reference",
+    "title": "Spec 35 optimal-control registry — input-type slice (11 rows)",
+    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B/C/H/I)",
+    "design_spine": ".claude/plans/spec-35-setting-registry-design.md",
+    "source": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json (input_type_groups + full_classification)",
+    "category": "input-type",
+    "row_count": 11,
+    "excluded": [
+      "system-internal: className — 1 attr (sgs/button), WP wrapper plumbing (block-editor-assigned CSS class name), not a client-facing setting; no editor control to design"
+    ]
+  },
+  "rows": [
+    {
+      "setting_key": "input:enum-select",
+      "category": "input-type",
+      "label": "Choice (single-select from a fixed set)",
+      "optimal_control": {
+        "component": "ToggleGroupControl (2–5 short options) OR ComboboxControl (>~10 options, searchable)",
+        "props": {
+          "toggle_group": {
+            "isBlock": true,
+            "__next40pxDefaultSize": true
+          },
+          "combobox": {
+            "allowReset": true,
+            "options": "full enumerated set"
+          },
+          "custom_path": "when the underlying CSS/behaviour value is open-ended (not a closed vocabulary), add a 'Custom' option that reveals a free text/colour/unit field — never truncate the option set"
+        },
+        "preset_layer": "n/a — the enum members ARE the presets; no separate custom-box layer unless a Custom-path escape exists (dimension 5)",
+        "units": "n/a",
+        "responsive_device_tier": "case-by-case: layout/typography/sizing enums (e.g. direction, layoutMode, alignment) get the 768/1024 switcher; identity/content/behaviour enums (e.g. dataSource, orderBy, conditionalOperator) do not",
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl (2–5) or Combobox (>~10); every valid option present + Custom path where the underlying value is open-ended — dimension 5 is THE defining dimension for this input-type",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset (Combobox) or a documented default selection (ToggleGroupControl); lives in the relevant ToolsPanel"
+      },
+      "shared_component": null,
+      "spec_ref": "Part B 'Selection' row (ToggleGroupControl 2–5 / ComboboxControl >~10 / FormTokenField multi-value) + Part H 'segmented choice → ToggleGroupControl · long/searchable list → ComboboxControl' + Part F 'incomplete option sets (Small/Medium, no Custom)'",
+      "current_state": "127 attrs across ~60 blocks. full_classification 'why' is almost uniformly 'enum_values present or SelectControl/ToggleGroupControl' — the reclassifier could not distinguish WHICH component renders each attr from static analysis, only that it's a closed-set choice. A handful of entries name the concrete UI need explicitly: menuFallback/conditionalField ('choose from a dynamic list — a select, not free text'), filterTaxonomy/postType/orderBy ('fixed option set'), thicknessUnit ('CSS-unit companion select — same UNIT-COMPANION pattern as every other responsive *Unit attr').",
+      "divergence": "Cannot be scored precisely without a per-block component audit (the source data conflates SelectControl and ToggleGroupControl under one bucket) — but the pattern strongly implies a mix of bare native <select> (SelectControl) for both short (2–5) and long lists, which fails dimension 5's split rule; several attrs (dataSource, sourcePlatform, videoSource) look CSS/behaviour-adjacent with no visible Custom escape hatch.",
+      "divergence_severity": "medium",
+      "notes": "Generic enum control only — enum-select members that gate a recurring interaction pattern (e.g. carousel vs grid layoutMode, tabStyle, accordion style) are refined by the behaviour-family slice, not here; this row states the baseline control shape every one of the 127 must clear. A structural per-block audit (component name + option count) is a prerequisite to close the divergence precisely — the reclassifier's static heuristic can't tell ToggleGroupControl from SelectControl from source alone."
+    },
+    {
+      "setting_key": "input:boolean-toggle",
+      "category": "input-type",
+      "label": "On/off switch",
+      "optimal_control": {
+        "component": "ToggleControl (default) or ToggleGroupControl for a binary segmented choice with two meaningfully-labelled states (e.g. 'Grid'/'List' rather than a bare on/off)",
+        "props": {
+          "checked": "attr value",
+          "onChange": "setAttributes",
+          "help": "aria-describedby-linked hint text where the effect is non-obvious"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": "case-by-case: layout/visibility toggles that are meaningfully different per device (hideOnMobile/hideOnTablet, wrap/wrapTablet/wrapMobile) already carry per-tier companion attrs and should route through ResponsiveControl rather than 3 standalone booleans; content/behaviour toggles (autoplay, required, dismissible) do not",
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "a boolean's 'reset' is its documented default state; ToolsPanelItem where it lives in a dense panel"
+      },
+      "shared_component": null,
+      "spec_ref": "Part E2 (ToggleGroupControl selected/focus must be visible under High-Contrast, not colour alone; help via aria-describedby) + Part H 'segmented choice → ToggleGroupControl'. ToggleControl itself is the WP-core baseline for a boolean attr and is not separately enumerated as a Part B/H line — it is the unnamed default every other Part B/H entry assumes when a setting is a plain flag.",
+      "current_state": "121 attrs across ~57 blocks. full_classification uniformly reports 'attr_type=boolean' with no component detail — the attr TYPE is boolean, which is consistent with ToggleControl already being the rendering default (WP's own attribute-to-control heuristics favour ToggleControl for boolean attrs), but this is inferred, not confirmed per block.",
+      "divergence": "Likely low for the base control (ToggleControl is the path of least resistance for a boolean attr and SGS blocks have no reason to hand-roll a checkbox), but three concrete patterns need a per-block check: (1) responsive-tier companions (wrapMobile/wrapTablet/directionMobile pattern) that should route through ResponsiveControl rather than exist as 3 loose booleans; (2) toggles whose two states are really a segmented CHOICE (e.g. a hypothetical grid/list flag) miscast as a boolean instead of ToggleGroupControl; (3) missing aria-describedby help text on non-obvious toggles (Part E2).",
+      "divergence_severity": "low",
+      "notes": "Boolean-toggle members that gate a recurring interaction (autoplay+pauseOnHover+showArrows+showDots as a 'carousel controls' cluster, or showDate+showAuthor+showCategory as a 'post-grid meta' cluster) are refined by the behaviour-family slice, not here — this row is the generic control answer only."
+    },
+    {
+      "setting_key": "input:text-content",
+      "category": "input-type",
+      "label": "Text content (heading, label, body copy, placeholder)",
+      "optimal_control": {
+        "component": "RichText (inline formatted prose — quote/testimonial/description body) / TextControl (single-line label/name/short string) / TextareaControl (multi-line unformatted copy — help text, success message)",
+        "props": {
+          "richtext": {
+            "allowedFormats": "bold/italic/link at minimum",
+            "tagName": "matches semantic role"
+          },
+          "textcontrol": {
+            "__next40pxDefaultSize": true
+          },
+          "textarea": {
+            "rows": 3
+          }
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none for a single string; excludeKeywords ('comma-separated keyword-filter string') is a MULTI-VALUE violation — should be FormTokenField, not a delimited string in a text box (dimension 4)",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to empty string / block.json default"
+      },
+      "shared_component": null,
+      "spec_ref": "Part F anti-pattern list ('raw-px spacing instead of the token scale' is the closest named text-input anti-pattern; RichText/TextControl/TextareaControl split itself is not a separate Part B/H line — it is the standard WP native component triage assumed by every content-editing field in the spec) + Part A 'element-first panels' (a text field belongs to the specific inner element it edits, not a generic 'Content' catch-all)",
+      "current_state": "74 attrs across ~40 blocks. full_classification is dominated by the single generic label 'prose/label copy — role=text-content, Text(area)Control, or canonical_slot=text/content' for the large majority — the reclassifier cannot distinguish single-line labels from multi-line body copy from source alone. A few attrs are called out with a distinct shape: anchor ('HTML id/slug string'), excludeKeywords ('comma-separated keyword-filter string'), ratingScaleMax ('numeric scale-ceiling stored as a string'), schemaItemName ('Schema.org item-name string').",
+      "divergence": "The RichText/TextControl/TextareaControl split by sub-role cannot be scored from this source alone — needs a per-attr audit against each block's edit.js. Two concrete issues ARE visible in the data: excludeKeywords is a comma-delimited string that should be FormTokenField (dimension 4 violation); ratingScaleMax is a numeric value mis-typed as a string attr (attr_type mismatch, not a control mismatch).",
+      "divergence_severity": "medium",
+      "notes": "British English in all label copy this control produces. Body/description-length fields (bio, description, message, successMessage) should default to TextareaControl or RichText, not a cramped single-line TextControl — the per-block audit should check for this specific failure mode (a multi-sentence value crammed into a one-line input)."
+    },
+    {
+      "setting_key": "input:number",
+      "category": "input-type",
+      "label": "Numeric value (count, size, offset, timing)",
+      "optimal_control": {
+        "component": "RangeControl (bounded value — real min/max/step, +input field +reset) for dimensionless counts/percentages/speeds; UnitControl for anything carrying an implicit length/pixel/ms meaning",
+        "props": {
+          "range": {
+            "min": "real",
+            "max": "real",
+            "step": "real",
+            "withInputField": true,
+            "allowReset": true,
+            "resetFallbackValue": "block.json default"
+          },
+          "unit": {
+            "units": [
+              "px",
+              "%"
+            ],
+            "isResetValueOnUnitChange": true
+          }
+        },
+        "preset_layer": null,
+        "units": "px-shaped attrs (thickness/thicknessTablet/thicknessMobile, positionX/positionY + tier companions, collapseCustomPx, iconCircleSize, contentIconSize, ctaPaddingX/ctaPaddingY, scrollOffset) need a real unit, not a bare number — dimension 2",
+        "responsive_device_tier": "already-present tier companions (iconSizeMobile/iconSizeTablet, positionXMobile/Tablet, positionYMobile/Tablet, rotationMobile/Tablet, thicknessMobile/Tablet) confirm this input-type is device-tier-worthy and should route through ResponsiveControl rather than 3 loose sibling attrs",
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue on every RangeControl (Part B 'RangeControl' row); ToolsPanel where dense (e.g. sgs/decorative-image's position/rotation/parallax cluster)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part B 'RangeControl' row (min/max/step real; withInputField; allowReset+resetFallbackValue; unit shown — incomplete smell: slider only, no input/reset, arbitrary 0–100) + Part B 'UnitControl' row (units covering every meaningful unit; isResetValueOnUnitChange — incomplete smell: px-only) + Part H 'numeric+unit → UnitControl · bounded numeric → RangeControl (+input+reset)'",
+      "current_state": "65 attrs across ~28 blocks. full_classification reports only 'attr_type number/integer or Range/NumberControl' for every entry — no bound/unit/reset detail is recoverable from source alone. Several attrs are self-evidently pixel-shaped by name (thickness*, positionX/Y*, collapseCustomPx, iconCircleSize, contentIconSize) and already carry Tablet/Mobile sibling attrs, confirming they are responsive-worthy.",
+      "divergence": "The generic label 'Range/NumberControl' is itself the smell Part B calls out — 'Range/NumberControl' undifferentiated suggests some of these 65 are bare NumberControl inputs (no slider, no bounds shown) rather than a real RangeControl with min/max/step/input/reset; and pixel-shaped attrs almost certainly render as bare numbers with no unit suffix at all (dimension 2 gap) rather than UnitControl.",
+      "divergence_severity": "high",
+      "notes": "This is the input-type most exposed to Bean's CUSTOM-BOX-PLUS-PRESET and UNITS dimensions (1 and 2) — a RangeControl with no real min/max or a plain number field with no unit is exactly the FAIL smell Part B names. Recommend the per-block audit prioritise this group first: it's the cheapest fix (swap NumberControl → RangeControl/UnitControl) with the highest volume (65 attrs)."
+    },
+    {
+      "setting_key": "input:media-source",
+      "category": "input-type",
+      "label": "Image / video / audio media",
+      "optimal_control": {
+        "component": "MediaUpload + MediaUploadCheck (single item); MediaGalleryPicker (array/repeated media — multiple='add' + gallery)",
+        "props": {
+          "single": {
+            "onSelect": "setAttributes({ attr: {id,url,alt,width,height} })",
+            "allowedTypes": [
+              "image"
+            ],
+            "render": "MediaUploadCheck wraps every MediaUpload"
+          },
+          "gallery": {
+            "multiple": "add",
+            "gallery": true,
+            "addToGallery": true
+          }
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": "device-specific logo/background variants (desktopLogoId/tabletLogoId/mobileLogoId, backgroundImage/backgroundImageTablet/backgroundImageMobile, bgVideo/bgVideoMobile) are the media-equivalent of a responsive attribute — should route through the same 768/1024 device-tier switcher pattern rather than 3 parallel named attrs the operator must remember to fill separately",
+        "multi_value": "gallery: images, logos, mediaItems are array attrs and need MediaGalleryPicker; corner-note — logoSwitchMode/logoSwitchCustomPx/logoFit are companion settings that ride alongside the picker, not separate media-type controls",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "MediaUpload's own 'Remove'/clear affordance; array pickers need a per-item remove + drag-reorder"
+      },
+      "shared_component": "MediaGalleryPicker",
+      "spec_ref": "Part B 'Media/gallery' row (multiple='add' + gallery + array attr + MediaUploadCheck + drag-drop — incomplete smell: scalar attr + single MediaUpload) + Part I 'Bulk media/gallery — MISSING (MediaPicker single) → BUILD MediaGalleryPicker' (Wave 2, #5) + Part C Media (focal point/aspect-ratio/object-fit T)",
+      "current_state": "44 attrs across 16 blocks. full_classification labels most as 'role=image-object or media/logo/avatar/video attr name' (a single scalar media reference) and 3 explicitly as array/repeater-shaped: images (sgs/gallery), logos (sgs/brand-strip), mediaItems (sgs/gallery). Several attrs are fragmented facets of ONE logical media object rather than a single {id,url,alt} shape — e.g. sgs/media splits imageId/imageUrl/imageAlt into 3 sibling attrs instead of one object attr; sgs/audio splits audioId/audioUrl/audioMimeType similarly.",
+      "divergence": "The array attrs (images, logos, mediaItems) confirm Part I's finding — MediaGalleryPicker is a framework-wide MISSING component, so these 3 (44 total member count includes their per-item companions like showNames/fadeEdges from other groups) are very likely still on a single MediaUpload with no bulk/gallery affordance. The scalar-but-fragmented attrs (imageId+imageUrl+imageAlt as 3 separate top-level attrs rather than one object) violate the object-attr shape named in the design spine's worked url-link example and Bean's dedup-by-identity lesson.",
+      "divergence_severity": "high",
+      "notes": "Two distinct fixes bundled under one setting_key: (1) build MediaGalleryPicker and roll it out to the 3 array attrs (Wave 2 #5, already a named framework gap); (2) consolidate the scalar id/url/alt/mimeType triples into a single object attr per media slot, matching the {id,url,alt,...} shape Part B implies. Focal point / size / aspect-ratio (Part C) apply where the media is a still image — cross-reference sgs/decorative-image and sgs/media which already carry imageControls per CLAUDE.md's 'Image controls discipline'."
+    },
+    {
+      "setting_key": "input:json-config",
+      "category": "input-type",
+      "label": "Structured repeater data (items, options, steps)",
+      "optimal_control": {
+        "component": "TWO patterns by one test — rich item -> InnerBlocks(+templateLock='insert'); scalar item -> BUILD shared RepeaterControl (array attr, collapsible per-item panel, '+ Add', remove + up/down reorder w/ roving tabindex + aria, empty state)",
+        "props": {
+          "item_card": "collapsed summary row (drag handle, item label, remove button) that expands to the item's own typed controls",
+          "add_button": "'Add item' at the list foot",
+          "reorder": "drag-and-drop or up/down move buttons"
+        },
+        "preset_layer": "an empty/new item seeds from a documented default shape, never a blank object the operator must know how to fill",
+        "units": "n/a — the repeater's individual sub-fields carry their own unit/colour/media rules per their own input-type",
+        "responsive_device_tier": false,
+        "multi_value": "gallery",
+        "dropdown_completeness": "n/a at the repeater level; individual item sub-fields (e.g. a per-step icon or per-plan CTA style) carry their own dropdown-completeness rule",
+        "alpha_clearable": "n/a at the repeater level; per-item colour sub-fields (if any) need it",
+        "reset_disclosure": "remove-item + 'clear all' are the reset path; no single default value to reset TO since it's a list"
+      },
+      "shared_component": "BUILD: RepeaterControl (scalar items) + InnerBlocks pattern (rich items)",
+      "spec_ref": "Part B 'Media/gallery' row's array-attr principle extended to non-media repeaters (array attr + structured item UI, not a scalar) + Part I 'Bulk media/gallery — BUILD MediaGalleryPicker' is the media-specific sibling of this same repeater pattern + Part F anti-pattern 'bespoke Custom CSS field on the block' (the raw-JSON-textarea failure mode this row rules out)",
+      "current_state": "25 attrs across 20 blocks. full_classification labels every member identically: 'attr_type array/object holding structured repeater/config data, not a media object' — this confirms the attrs are genuinely array/object-shaped (good — not flattened into 20 scalar attrs), but gives no visibility into whether the CURRENT editor UI is a real per-item repeater panel or a raw JSON/serialised-text editing experience.",
+      "divergence": "21 blocks handle arrays inconsistently — most hand-roll an on-canvas array with thin/absent inspector controls (Bean saw this on sgs/pricing-table: add plans on-canvas, no per-item settings in the drawer); only sgs/testimonial-slider uses InnerBlocks. Standardise on two patterns.",
+      "divergence_severity": "medium",
+      "notes": "Bean-directed research 2026-07-19 (WP gold standard + Kadence/Spectra/GenerateBlocks/Stackable/GreenShift survey). DECISION RULE: does an item need rich text/media or its own block toolbar? YES -> InnerBlocks with a parent/child block pair + templateLock='insert' (on-canvas WYSIWYG, native reorder) — what every major plugin uses for rich items. NO (a few scalar fields) -> BUILD one shared RepeaterControl: array attr, collapsible per-item PanelBody, labelled '+ Add' button, per-item remove + up/down reorder (roving tabindex, role=listitem, positional aria-label), friendly empty state. NOT DataViews/DataForm (WP scopes it to admin/site-editor screens, not in-block editing). RESOLVED. | Scope note: 'only testimonial-slider uses InnerBlocks' is true WITHIN this row's scope (blocks that carry a json-config ARRAY attr); parent/child composite pairs (accordion/tabs/product-faq) also use InnerBlocks but are a different fixed-slot pattern, not variable-length array repeaters."
+    },
+    {
+      "setting_key": "input:colour-value",
+      "category": "input-type",
+      "label": "Colour (hover-state / override variant)",
+      "optimal_control": {
+        "component": "DesignTokenPicker",
+        "props": {
+          "enableAlpha": true,
+          "clearable": true,
+          "disableCustomColors": false
+        },
+        "preset_layer": "token swatches (theme.json palette) seed the picker; a custom hex/rgba value is always still editable underneath",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "clearable resets to unset (inherits base/no override), distinct from alpha-0 (Part B Colour row: alpha-0 ≠ unset)"
+      },
+      "shared_component": "DesignTokenPicker",
+      "spec_ref": "Part B 'Colour' row (enableAlpha ≈always + clearable, alpha-0 ≠ unset; disableCustomColors false) + Part I 'Colour — DesignTokenPicker EXISTS — NO enableAlpha/clearable audit → ADD enableAlpha + clearable (framework-wide transparent fix)' + Part J Wave 1 #1 (highest-priority item in the whole roadmap) + D302 (emit hex8 so WP safecss doesn't strip functional rgba)",
+      "current_state": "20 attrs across 20 blocks (all Hover-state or override colour variants — e.g. colourTextHover, ctaColourBorderHover, overlayGradientFrom/To, gradientColourStart/End). full_classification confirms every single member is already 'DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)' — the CORRECT component is already in use everywhere.",
+      "divergence": "Component choice is already correct (DesignTokenPicker, matching the optimal control exactly) — the gap is entirely the enableAlpha/clearable AUDIT named in Part I as a still-open framework-wide fix, not a component swap. This is the one input-type row where 'current_state' and 'optimal_control' agree on the component and diverge only on props.",
+      "divergence_severity": "high",
+      "notes": "Despite the component already matching, severity is HIGH because Part J ranks the enableAlpha+clearable fix as Wave-1 item #1 (highest framework-wide priority, 'fixes transparent everywhere') and D302 requires hex8 emission so WP's safecss_filter_attr doesn't silently strip functional rgba() on the frontend — a correctness bug, not just a UX gap. These are Hover-state/override colours specifically (not base colours), so StateToggleControl (Part I, EXISTS) should also wrap the Normal/Hover pairing rather than exposing 20 always-visible separate Hover fields."
+    },
+    {
+      "setting_key": "input:icon",
+      "category": "input-type",
+      "label": "Icon (dashicon / Lucide / emoji / WP icon)",
+      "optimal_control": {
+        "component": "The SGS icon picker — a single identity control with an internal source switch (dashicon/lucide-wp-icon/emoji), search-as-you-type, and a live preview swatch",
+        "props": {
+          "search": true,
+          "preview": true,
+          "sourceSwitch": [
+            "dashicon",
+            "wp-icon",
+            "emoji"
+          ],
+          "clearable": true
+        },
+        "preset_layer": "the icon library IS the preset set; no separate custom-box layer beyond the identity picker itself",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "icons (sgs/social-icons, plural) is an array of icon-identity objects and needs the repeater treatment (see input:json-config), not a scalar icon control",
+        "dropdown_completeness": "n/a — search-driven, not a closed dropdown",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clear-to-none affordance on the picker"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H 'compact secondary → Dropdown/DropdownMenu' (the picker's own popover shape) — icon-identity itself is not a separately named Part B/H/I line; it is inferred from lucide-icons.php's existing icon roster (plugins/sgs-blocks/includes/lucide-icons.php) plus the dedup-by-identity-not-name principle applied to source-fragmented attrs below",
+      "current_state": "17 attrs across 12 blocks. full_classification labels all as 'icon-identity picker (slug/dashicon/emoji/wp-icon), not a media object' — but the member list itself reveals a fragmentation pattern: sgs/separator carries FIVE parallel attrs for what should be ONE icon identity — contentIconSource, contentIconDashicon, contentIconEmoji, contentIconName, contentIconWpIcon (one active value + 4 dormant siblings depending on source). sgs/icon similarly splits iconSource/dashiconName/emojiChar/wpIconName/iconName across 5 attrs for one logical icon.",
+      "divergence": "This is the dedup-by-identity failure the project's own MEMORY.md names directly ('944 attrs → 0 truly-unique... classify by SEMANTIC IDENTITY not the name'): each icon setting is stored as N parallel scalar attrs (one per possible source) instead of ONE identity object ({source, value}) resolved by a single picker with an internal source switch. This is a genuine control-shape gap, not just a props gap.",
+      "divergence_severity": "medium",
+      "notes": "icons (plural, sgs/social-icons) needs the repeater treatment on top of the identity-object fix — each repeater item is one icon-identity object, not another flat scalar. showIcon (business-info, notice-banner) is a boolean gate for whether the icon shows at all and belongs with input:boolean-toggle, not this row's control design, though it's correctly grouped here as a member of the icon-family attr set."
+    },
+    {
+      "setting_key": "input:url-link",
+      "category": "input-type",
+      "label": "Link / URL",
+      "optimal_control": {
+        "component": "SgsLinkControl (LinkControl wrapper)",
+        "props": {
+          "settings": [
+            "opensInNewTab",
+            "rel"
+          ],
+          "showInitialSuggestions": true
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears cleanly to no href"
+      },
+      "shared_component": "SgsLinkControl",
+      "spec_ref": "Part B 'Link/CTA' row (LinkControl: internal search + new-tab + rel nofollow/sponsored via settings — incomplete smell: raw URL TextControl) + Part C Links (internal-content search T, new-tab+auto-rel-noopener T, rel nofollow/sponsored T) + Part F 'raw URL field instead of LinkControl' + Part G (LinkControl over raw URL text fields, HIGH priority) + Part I 'Link/CTA — likely raw URL fields → AUDIT + migrate to LinkControl wrapper' + Part J Wave 1 #2",
+      "current_state": "15 attrs across 12 blocks — matches the design spine's own worked example exactly (blockLink, businessUnitUrl, cta2Url, ctaPrimaryUrl, ctaSecondaryUrl, ctaUrl, indexVariationUrl, linkEmail, linkPhone, linkTarget, linkUrl, phoneNumber, reviewRequestUrl, sgsBlockLink, url). full_classification labels every member 'URL/href/link-target field' uniformly — consistent with raw TextControl/string attrs rather than SgsLinkControl's object shape.",
+      "divergence": "Raw URL fields lack internal search + new-tab + rel; the flat url/blockLink/ctaUrl string attrs need to become object shape {url, opensInNewTab, rel} to carry LinkControl's settings. linkEmail/linkPhone/phoneNumber are semantically constrained (mailto:/tel:) and should validate/prefix accordingly rather than accept an arbitrary URL — a sub-case LinkControl doesn't cover natively and needs a thin wrapper rule.",
+      "divergence_severity": "high",
+      "notes": "This row is copied near-verbatim from the design spine's own worked example (spec-35-setting-registry-design.md) — the source counts (15 attrs / 12 blocks) match exactly, confirming the worked example already reflects this exact group. Converter-population note: any cloned block that fills these attrs must emit the {url,opensInNewTab,rel} object shape, not a flat string, per the object-typed-attr-coerces-flat-to-default gotcha in MEMORY.md (D328) — a flat string emit would be silently coerced to the block.json default at render."
+    },
+    {
+      "setting_key": "input:date",
+      "category": "input-type",
+      "label": "Date / datetime value",
+      "optimal_control": {
+        "component": "DateTimePicker",
+        "props": {
+          "is12Hour": false,
+          "onChange": "setAttributes",
+          "currentDate": "attr value"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clear-to-none affordance; countdown-timer's targetDate needs a sane default (e.g. +7 days) rather than blank"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H 'date → DateTimePicker'",
+      "current_state": "4 attrs across 3 blocks: maxDate/minDate (sgs/form-field-date), reviewDate (sgs/testimonial), targetDate (sgs/countdown-timer). full_classification labels all uniformly 'date/datetime value' with no component detail.",
+      "divergence": "No component evidence recoverable from source; the naming pattern (raw camelCase date attrs with no companion 'DateFormat'/'DateTimezone' attrs) is consistent with either a real DateTimePicker or a plain native <input type='date'> TextControl-equivalent — needs a per-block audit to confirm. sgs/form-field-date's maxDate/minDate are a bounds PAIR (like RangeControl's min/max) and should be edited together in one min/max UI, not as two independent unrelated pickers.",
+      "divergence_severity": "medium",
+      "notes": "Small group (4 attrs) — cheap to audit and fix directly rather than needing a framework-wide sweep. targetDate (countdown-timer) is timezone-sensitive (the block already has evergreenMode/evergreenHours/evergreenMinutes as an alternative relative-countdown mode) — the picker should make clear whether the date is stored as UTC or site-local."
+    },
+    {
+      "setting_key": "input:code-svg",
+      "category": "input-type",
+      "label": "Raw SVG markup (decorative background shape)",
+      "optimal_control": {
+        "component": "TextareaControl (monospace font) for authoring/pasting the markup, gated by mandatory SVG-sanitise-on-upload before the value is ever stored or rendered",
+        "props": {
+          "fontFamily": "monospace",
+          "rows": 8,
+          "sanitise": "server-side SVG sanitiser (strip <script>, on* handlers, external refs) runs BEFORE the attribute is saved — never trust raw client input"
+        },
+        "preset_layer": "a small curated set of built-in decorative shapes (wave/blob/angle) seeds the field; pasting custom markup is the escape hatch, always sanitised",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clear-to-none/preset default"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Media 'SVG sanitise-on-upload (security — never raw) T' (table-stakes, explicitly named security requirement) — TextareaControl itself is not a separate Part B/H line but is the correct WP-native raw-markup editing component given the value is genuinely code, not prose",
+      "current_state": "2 attrs across 5 blocks: bgSvgContent (sgs/container, sgs/cta-section, sgs/hero) and svgContent (sgs/hero, sgs/media). full_classification labels both 'raw SVG markup string' with no sanitisation detail visible from source.",
+      "divergence": "SECURITY GAP, not just a UX gap — Part C names SVG sanitise-on-upload as table-stakes (never trust raw markup) and there is no evidence in the source data that either attr passes through a sanitiser before being stored or rendered (both are used as background decoration, i.e. rendered inline into the page, which is exactly the XSS-risk path the CLAUDE.md security non-negotiables and Part C both flag). This must be verified against render.php for sgs/container, sgs/cta-section, sgs/hero, sgs/media directly, not assumed safe.",
+      "divergence_severity": "high",
+      "notes": "Smallest member count (2 attrs) but flagged HIGH severity purely on security grounds per CLAUDE.md's non-negotiable 'no OWASP top 10' + Part C's explicit sanitise-on-upload requirement — raw SVG rendered inline is a known XSS vector (embedded <script>/event-handler attributes) regardless of how polished the editor control is. Verifying/adding server-side sanitisation (e.g. wp_kses with an SVG-safe tag allowlist, or a dedicated SVG sanitiser library) should be treated as a P0 fix independent of the Phase-3 lint rollout."
+    }
+  ]
+}

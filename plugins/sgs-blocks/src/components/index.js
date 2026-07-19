@@ -6,6 +6,8 @@ export {
 } from './ResponsiveBoxControl';
 export { default as ResponsiveBoxControls } from './ResponsiveBoxControls';
 export { default as DesignTokenPicker, resolveColorToken } from './DesignTokenPicker';
+export { default as SgsLinkControl } from './SgsLinkControl';
+export { default as ShadowControl } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';
 export { default as StateToggleControl } from './StateToggleControl';
 export { default as AnimationControl } from './AnimationControl';

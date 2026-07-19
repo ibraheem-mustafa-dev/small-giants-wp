@@ -263,10 +263,6 @@
 			"type": "string",
 			"default": "20"
 		},
-		"showPendingInEditor": {
-			"type": "boolean",
-			"default": true
-		},
 		"autoScroll": {
 			"type": "boolean",
 			"default": false

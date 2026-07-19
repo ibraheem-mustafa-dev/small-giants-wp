@@ -59,11 +59,20 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   (`actions.openDrawer/closeDrawer/toggleDrawer`, `state.isOpen`) for Wave 2 to build against; (6) `scripts/nav-qa/`
   Gate-1 tooling (axe/elementFromPoint/crawl/logical-lint)+axe-core devDep. Also fixed a pre-existing `sprintf`-import
   bug in responsive-logo/edit.js. New-block gotcha captured: F6 gate needs a `seed-composition-roles.py` entry per new block.
-- **NEXT = WAVE 2 (the 2 blocks, PARALLEL, both dep on the store contract only):** Step 6 `sgs/nav-menu` flat bar+burger
-  (T2 Sonnet); Step 7 `sgs/nav-drawer` full-screen modal (T3→T2 Opus — the a11y-critical one). Then Wave 3 (deploy→cutover)
-  → Wave 4 (Gate-1 + Bean's eye). Bean rulings: converter/clone DEPRIORITISED until whole header+footer+nav done;
-  featured-item = block attribute. Visual-diff gate `--no-verify` used on Wave-0 (source only, not live; visual QC = Gate-1).
-Handoff: `next-session-prompt-nav-rework-P2.5.md` (Wave-2 orchestration plan). NOTE: `next-session-prompt.md` belongs to the CO-ACTIVE Track 1 (Spec 35 inspector-UX) — do NOT overwrite it.
+- **WAVE 2 DONE + on main (`1ed828f0`, 2026-07-20):** `sgs/nav-menu` (flat classic-menu bar + burger→drawer via the
+  store; menu picker, collapse-point N, featuredItemIds checklist, configurable `navLabel` landmark, client-side
+  aria-current) + `sgs/nav-drawer` (full-screen `<dialog showModal>` modal, InnerBlocks content, × undeletable chrome,
+  consumes the store, FR-34-5 drawer settings via ResponsiveControl). Drawer is **content-KIND block-private** — a
+  `<dialog>` can't be hosted by `SGS_Container_Wrapper`, so it mirrors box/bg/padding via the shared helpers (D294;
+  Bean-approved reclassification from the earlier section-KIND label). Gate 2 all green + 3-rater `/qc-council`;
+  caught+fixed 2 Gate-1 blockers (missing `data-wp-interactive` island → burger couldn't open; nested nav-menu rendered
+  a self-closing burger) + a STOP-21 uid no-op. Follow-up: FR-36-13 `<dialog>`-exception spec note (apply in spec 36).
+- **WAVE 3 (deploy — 2026-07-20):** Track-1 (Spec 35) merged into main FIRST (so the deploy ships the complete plugin
+  and doesn't regress Track-1's live canary work). Then `/sgs-update` (register `sgs/nav-drawer`, prune stale
+  `sgs/mobile-nav*` + `core/navigation` rows) → `build-deploy.py --target sandybrown` → re-author Mama's header via the
+  EDITOR (FR-36-18, never WP-CLI). NEXT = Wave 4 = Gate-1 (axe/elementFromPoint/crawl/perf) + Bean's eye. Bean rulings:
+  converter/clone DEPRIORITISED until whole header+footer+nav done; featured-item = block attribute.
+Handoff: `next-session-prompt-nav-rework-P2.5.md`.
 
 **Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
 the attribute-registry (Spec 35 UNIT A+) mapped through Phase 1c. Built: the inspector DONE-checklist;

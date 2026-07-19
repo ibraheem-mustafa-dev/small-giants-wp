@@ -189,10 +189,6 @@
 			"type": "string",
 			"default": "ease-out"
 		},
-		"staggerDelay": {
-			"type": "number",
-			"default": 60
-		},
 		"contentWidth": {
 			"type": "string",
 			"default": ""
@@ -202,10 +198,6 @@
 			"default": ""
 		},
 		"layout": {
-			"type": "string",
-			"default": ""
-		},
-		"layoutMode": {
 			"type": "string",
 			"default": ""
 		},
@@ -272,10 +264,6 @@
 		"templateMode": {
 			"type": "string",
 			"default": "free"
-		},
-		"columnsDesktop": {
-			"type": "number",
-			"default": 0
 		},
 		"gap": {
 			"type": "string",

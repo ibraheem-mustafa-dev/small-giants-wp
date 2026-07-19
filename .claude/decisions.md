@@ -15,6 +15,52 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D349 [INCIDENT] — Spec 35 registry + archetype design + cleanup-linter suite; a live-code regression caught by verify-loop (2026-07-19)
+
+**Track 1, Spec 35 block-inspector-UX.** Shipped: (1) the **optimal-control registry**
+`plugins/sgs-blocks/scripts/consistency/setting-registry.json` — 82 genuine settings (60 CSS-property
++ 11 input-type + 11 behaviour-family), each → its optimal control; drafted → Bean-reviewed (6 flagged
+rows ruled: stroke reclassified, background-image=overlay-gradient, background-position verify-if-dead,
+font-family=native supports.typography.fontFamily display-blocks-only, json-config=InnerBlocks-vs-
+RepeaterControl, sticky-header→Track 2) → `/qc-council`-validated (24 corrections, incl. a FALSE
+"sgs/media missing poster" claim corrected + a fabricated "Part D4" citation across 11 rows). Design
+spine + rulings: `.claude/plans/spec-35-setting-registry-design.md`. (2) The **archetype design deck
+v2** (optimal UI drawn for every setting; 3-agent gap-reviewed + Bean-redlined — artifacts private).
+(3) A **3-linter cleanup suite** (`check-universal-fit.js`, `check-duplicate-controls.js`,
+`audit-block-file-consistency.py` — all WARN-only) + reclassify.py made DB-direct. ~40 verified-dead
+attrs removed from 13 block.json.
+
+**INCIDENT (verify-loop earned its keep):** the cross-file linter flagged WP-**support-provided** attrs
+(`textAlign` from `supports.typography.textAlign`) as "undeclared_render_ref" — a FALSE POSITIVE — and
+a Haiku cleanup swarm **deleted the LIVE `textAlign` reads on countdown-timer/notice-banner/team-member/
+cta-section** (would have broken client text-align). Caught during the consolidation verify pass
+(checked each block's `supports`); ALL render.php edits reverted, cta-section fully reverted, only
+verified-safe block.json removals kept. The linter was then fixed: support-aware (support→attr map) +
+pattern-aware (scans theme patterns). Lesson: `verify-framework-injected-attrs-before-delete`.
+
+**Branch/merge:** all committed + pushed on the SHARED `feat/brand-strip-inspector-rebuild` (co-active
+Track 2). NOT merged to main (shared branch — merge via isolated worktree at a joint checkpoint, never
+delete the branch). Next: tasks 1–6 in `.claude/next-session-prompt-spec35.md` (fold v2→registry,
+compound per-category control-sets, hover-duplicate migration, animation opt-out, cta-section redo,
+wire linters into prebuild). Utility universals (custom-css/conditional-visibility/responsive-visibility)
+confirmed universal-by-design (Bean); only `animation` is a real opt-out gap.
+
+
+---
+
+## 2026-07-19 — [ROUTINE] D348: Track 1 Spec 35 Phase 0 DONE + attribute-registry mapped (944 attrs → ~80 true settings)
+
+Track 1 (Spec 35 block-inspector-UX) Phase 0 foundations shipped (11 commits, `2f7d8d85`→`ddbfe9fd`, branch `feat/brand-strip-inspector-rebuild`): the inspector DONE-checklist (Part L transcribed); the block roster (79 blocks, DB-derived denominator, `scripts/consistency/roster.json`); **3 WARN-only audits** (inspector-conformance JSX-AST [55 findings: 12 raw-URL, 8 preset-shadow, 1 MediaUpload-no-check, 1 ungated-animation, 33 informational dense-panel], feature-parity [140-gap baseline, DB `native_wp` source — NOT the absent `@wordpress/block-library` node_module], shrink-to-fit [Playwright live-DOM]); **3 shared components** (`DesignTokenPicker` enableAlpha+clearable, `SgsLinkControl`, `ShadowControl` — infra only, D302 hex8 already handled); brand-strip QC'd EXEMPLAR-READY; **the `min-width:0` shared-wrapper backstop** (Gate C0 Bean-approved → built → deployed to canary [38s, `.bak` rollback] → no regression [13→13 overflow] → visual diff was a lazy image, NOT the backstop; live-emission NOT proven — homepage has no wrapper-grid container [block-private `feature-grid`], UNIT D will prove it). Property_suffixes grid-row gaps closed (`GridTemplateRows`/`GridAutoRows` migration — also fixes a converter drop).
+
+**Load-bearing insight (Bean-driven, the standardisation thesis proven from data):** the SGS blocks' 944 distinct attribute names deduplicate to **~80 TRUE semantic settings** — ≈60 CSS-property settings (58 pre-migration + the 2 grid-row settings this session added) + 12 input-types + 11 behaviour-families. The Phase-1 "282 unique one-offs" was WRONG: the dedup had keyed non-CSS attrs by NAME (inventing uniqueness). Bean challenged it; re-classification (Haiku adjudication + Sonnet reclassify) found **0 genuinely-unique** settings — `decorMedia`=1-of-44 media-source, `placeholder`=1-of-74 text-content, `carouselShowDots`=1-of-18 slider-carousel behaviours. Root cause named: **each slider/hover/media block was built independently instead of sharing a component** — which is the whole reason the standardisation registry exists. Dedup identity = the property/input-type, NEVER the name. Artefacts: `scripts/consistency/setting-types.json` + `setting-reclassification.json` + `phase1b-adjudication.json`. **Next: Phase 2 = define the OPTIMAL control per setting (needs Bean's design input) → Phase 3 lint → UNIT D pilot.** See `.claude/next-session-prompt.md`.
+
+---
+
+## 2026-07-18 — [ROUTINE] D347: Track 2 P2 (header/footer/control builder) design-gate CLOSED; nav carved out as P2.5 (full rework)
+
+Track 2 P2 — the header/footer/nav BUILDER design-gate (`plans/2026-07-18-P2-builder-ux-design-gate.md`) — **CLOSED + signed off**. Designs the non-coder settings panel over a **CPT editing home** (`sgs_header`/`sgs_footer` CPTs, not the Site Editor — the wp-sgs-developer analysis showed it wins on findability + the device-switcher works in the post editor), a **tri-state per-device control model** (resolves D328 by construction), a **starter-template picker**, and a **WP control-implementation spec bound to Spec 35** (exact component/props/version per control; current-defect→fix map). Gated: 6-critic council (GO-conditional, all convergent must-fixes folded) + gap-analysis B+ + a **build + a UX specialist review** (both code-grounded — caught 4 build-blockers + the a11y-contract-vs-live-component mismatch the council missed) + Spec-35 detail. Bean steers folded: template library (named goal), preset controls (decouple converter from inspector), first slice = drawer-settings-only, reorderable cap (default-off/tucked).
+
+**NAVIGATION carved out as P2.5 (full rework, Bean-locked 2026-07-18).** A 3-stream research pass (core-nav audit + competitor teardown + client-menu extraction) + a 4-critic code-grounded council ran (reports: `reports/2026-07-18-P2-nav-decision-council.md`). Core `core/navigation` ruled OUT as the UI engine (WP admits full-screen-overlay-only, no mega, inline styles, buggy submenu a11y). Council recommended salvaging `sgs/adaptive-nav`; **Bean OVERRODE on lived experience — adaptive-nav is the messy repeatedly-patch-fixed block, gone; full rework.** LOCKED: `wp_navigation` menu data; feature bar = core-base + competitors + general web/UX + Spec 35 + more. NOT locked (decide from research+council+QC): block architecture (count/roles/composition) + the mega-menu implementation (Bean's CPT idea is a candidate, not a decision). Next: P2.5 fresh session (`next-session-prompt-nav-rework-P2.5.md`) — inventory → architecture → mini-spec → council → spec-audit-and-PURGE of scattered nav content. **Process lesson: verify platform-capability claims against SOURCE (the competitor research oversold WP "levers" — 4/5 were private core-nav internals a bespoke block can't call; caught by the code-grounded critic).**
 
 ---
 

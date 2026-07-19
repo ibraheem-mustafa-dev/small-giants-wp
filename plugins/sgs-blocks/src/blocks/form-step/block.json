@@ -35,6 +35,11 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"hideExtensions": [
+				"animation"
+			]
 		}
 	},
 	"usesContext": [

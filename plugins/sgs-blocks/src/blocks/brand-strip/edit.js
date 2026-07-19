@@ -19,6 +19,8 @@ import {
 	ResponsiveBorderRadiusControl,
 	TypographyControls,
 	StateToggleControl,
+	ShadowControl,
+	SgsLinkControl,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
@@ -34,12 +36,6 @@ const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Greyscale', 'sgs-blocks' ), value: 'grayscale' },
 	{ label: __( 'Sepia', 'sgs-blocks' ), value: 'sepia' },
-];
-
-const TILE_SHADOW_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
 ];
 
 const SPEED_OPTIONS = [
@@ -115,24 +111,26 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				__nextHasNoMarginBottom
 			/>
 
-			<TextControl
-				label={ __( 'Link URL (optional)', 'sgs-blocks' ) }
-				value={ logo.linkUrl || '' }
-				onChange={ ( val ) => update( 'linkUrl', val ) }
-				type="url"
-				__nextHasNoMarginBottom
+			<SgsLinkControl
+				label={ __( 'Link (optional)', 'sgs-blocks' ) }
+				help={ __(
+					'Search your site or paste a URL to make this logo clickable.',
+					'sgs-blocks'
+				) }
+				value={ {
+					url: logo.linkUrl || '',
+					opensInNewTab: logo.linkTarget === '_blank',
+					rel: logo.linkRel || '',
+				} }
+				onChange={ ( next ) => {
+					onChange( {
+						...logo,
+						linkUrl: next.url || '',
+						linkTarget: next.opensInNewTab ? '_blank' : '_self',
+						linkRel: next.rel || '',
+					} );
+				} }
 			/>
-
-			{ logo.linkUrl && (
-				<ToggleControl
-					label={ __( 'Open link in new tab', 'sgs-blocks' ) }
-					checked={ logo.linkTarget === '_blank' }
-					onChange={ ( val ) =>
-						update( 'linkTarget', val ? '_blank' : '_self' )
-					}
-					__nextHasNoMarginBottom
-				/>
-			) }
 
 			<Button
 				variant="secondary"
@@ -266,7 +264,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( {
 			logos: [
 				...logos,
-				{ media: null, alt: '', name: '', linkUrl: '', linkTarget: '_self' },
+				{ media: null, alt: '', name: '', linkUrl: '', linkTarget: '_self', linkRel: '' },
 			],
 		} );
 	};
@@ -277,7 +275,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		scrolling ? 'sgs-brand-strip--scrolling' : '',
 		scrollDirection === 'right' ? 'sgs-brand-strip--reverse' : '',
 		fadeEdges ? 'sgs-brand-strip--fade' : '',
-		'none' !== tileShadow ? `sgs-brand-strip--tile-shadow-${ tileShadow }` : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -472,14 +469,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						__nextHasNoMarginBottom
 					/>
-					<SelectControl
+					<ShadowControl
 						label={ __( 'Tile shadow', 'sgs-blocks' ) }
 						value={ tileShadow }
-						options={ TILE_SHADOW_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { tileShadow: val } )
 						}
-						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Gap between logos (px)', 'sgs-blocks' ) }

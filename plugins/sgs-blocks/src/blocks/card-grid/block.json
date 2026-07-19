@@ -320,10 +320,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"layoutMode": {
-			"type": "string",
-			"default": ""
-		},
 		"gridTemplateColumns": {
 			"type": "string",
 			"default": ""
@@ -387,10 +383,6 @@
 		"templateMode": {
 			"type": "string",
 			"default": ""
-		},
-		"columnsDesktop": {
-			"type": "number",
-			"default": 0
 		},
 		"gapMobile": {
 			"type": "string",

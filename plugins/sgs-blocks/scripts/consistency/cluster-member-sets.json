@@ -1,0 +1,55 @@
+{
+	"_meta": {
+		"purpose": "Spec 35 Task 2 — the CLUSTER member sets (Text / Fill / Layout) that make the element-manifest CLUSTER-COHERENCE rule computable.",
+		"source": "Derived from setting-registry.json's css-property rows (golden master, 60 rows), grouped per the cluster table in .claude/plans/spec-35-compound-control-sets-design.md (\"The two-level model\" → Level 2 CLUSTER). Every member.key below is a real setting_key in setting-registry.json — this file adds the missing CLUSTER axis + the default attr-suffix candidates the conformance checker uses to resolve a member to a block attribute (or a native `supports` path) when a block doesn't declare an explicit attrMap.",
+		"spec": ".claude/plans/spec-35-compound-control-sets-design.md",
+		"consumed_by": "plugins/sgs-blocks/scripts/check-element-manifest-conformance.js",
+		"note_on_suffixes": "`suffixes` are candidate PascalCase attribute-name suffixes tried in order against `{elementPrefix}{suffix}` when the element manifest has no explicit attrMap entry for that member. `nativeSupportsPath` (where present) is an ADDITIONAL resolution path: if the block's block.json `supports` object has a truthy value at that dot-path, the member counts as satisfied via WordPress-native supports (e.g. `spacing.padding`, `__experimentalBorder.radius`) even with no matching flat attribute — this is the real mechanism `sgs/brand-strip`'s wrapper-level padding/margin/border already uses (Spec 32 no-inline contract)."
+	},
+	"order": [ "text", "fill", "layout" ],
+	"clusters": {
+		"text": {
+			"label": "Text",
+			"owningComponent": "TypographyControls + DesignTokenPicker",
+			"members": [
+				{ "key": "css:font-size", "label": "Font size", "suffixes": [ "FontSize" ] },
+				{ "key": "css:font-weight", "label": "Font weight", "suffixes": [ "FontWeight" ] },
+				{ "key": "css:line-height", "label": "Line height", "suffixes": [ "LineHeight" ] },
+				{ "key": "css:letter-spacing", "label": "Letter spacing", "suffixes": [ "LetterSpacing" ] },
+				{ "key": "css:font-style", "label": "Font style", "suffixes": [ "FontStyle" ] },
+				{ "key": "css:text-transform", "label": "Text transform", "suffixes": [ "TextTransform" ] },
+				{ "key": "css:text-decoration", "label": "Text decoration", "suffixes": [ "TextDecoration" ] },
+				{ "key": "css:color", "label": "Text colour", "suffixes": [ "Colour", "TextColour", "Color" ], "nativeSupportsPath": "color.text" },
+				{ "key": "css:text-align", "label": "Text align", "suffixes": [ "TextAlign", "Align" ] }
+			]
+		},
+		"fill": {
+			"label": "Fill",
+			"owningComponent": "ColorGradientControl + RangeControl + GradientPicker",
+			"members": [
+				{ "key": "css:background-color", "label": "Background (solid + gradient)", "suffixes": [ "BackgroundColour", "Bg", "Background" ], "nativeSupportsPath": "color.background" },
+				{ "key": "css:opacity", "label": "Opacity", "suffixes": [ "Opacity" ] },
+				{ "key": "css:background-image", "label": "Overlay (gradient + angle)", "suffixes": [ "Overlay", "OverlayColour", "OverlayGradient" ] }
+			]
+		},
+		"layout": {
+			"label": "Layout",
+			"owningComponent": "BoxControl + UnitControl + BorderBoxControl + ShadowControl",
+			"members": [
+				{ "key": "css:padding", "label": "Padding", "suffixes": [ "Padding" ], "nativeSupportsPath": "spacing.padding" },
+				{ "key": "css:margin", "label": "Margin", "suffixes": [ "Margin" ], "nativeSupportsPath": "spacing.margin" },
+				{ "key": "css:gap", "label": "Gap", "suffixes": [ "Gap" ] },
+				{ "key": "css:width", "label": "Width", "suffixes": [ "Width" ] },
+				{ "key": "css:height", "label": "Height", "suffixes": [ "Height" ] },
+				{ "key": "css:max-width", "label": "Max width", "suffixes": [ "MaxWidth" ] },
+				{ "key": "css:max-height", "label": "Max height", "suffixes": [ "MaxHeight" ] },
+				{ "key": "css:min-height", "label": "Min height", "suffixes": [ "MinHeight" ] },
+				{ "key": "css:border-width", "label": "Border width", "suffixes": [ "BorderWidth" ], "nativeSupportsPath": "__experimentalBorder.width" },
+				{ "key": "css:border-style", "label": "Border style", "suffixes": [ "BorderStyle" ], "nativeSupportsPath": "__experimentalBorder.style" },
+				{ "key": "css:border-color", "label": "Border colour", "suffixes": [ "BorderColour", "BorderColor" ], "nativeSupportsPath": "__experimentalBorder.color" },
+				{ "key": "css:border-radius", "label": "Border radius", "suffixes": [ "BorderRadius", "Radius" ], "nativeSupportsPath": "__experimentalBorder.radius" },
+				{ "key": "css:box-shadow", "label": "Box shadow", "suffixes": [ "Shadow", "BoxShadow" ] }
+			]
+		}
+	}
+}

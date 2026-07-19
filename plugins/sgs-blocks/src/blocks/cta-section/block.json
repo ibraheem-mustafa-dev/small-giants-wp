@@ -123,22 +123,6 @@
 			"type": "string",
 			"default": "text"
 		},
-		"headlineColour": {
-			"type": "string",
-			"default": "text"
-		},
-		"bodyColour": {
-			"type": "string",
-			"default": "text"
-		},
-		"buttonColour": {
-			"type": "string",
-			"default": "text-inverse"
-		},
-		"buttonBackground": {
-			"type": "string",
-			"default": "primary-dark"
-		},
 		"backgroundImage": {
 			"type": "object",
 			"default": null
@@ -164,36 +148,6 @@
 				}
 			}
 		},
-		"buttonStyle": {
-			"type": "string",
-			"default": "solid",
-			"enum": [
-				"solid",
-				"outline",
-				"ghost",
-				"gradient"
-			]
-		},
-		"buttonSize": {
-			"type": "string",
-			"default": "md",
-			"enum": [
-				"xs",
-				"sm",
-				"md",
-				"lg",
-				"xl"
-			]
-		},
-		"buttonBorderColour": {
-			"type": "string"
-		},
-		"buttonBorderWidth": {
-			"type": "number"
-		},
-		"buttonBorderRadius": {
-			"type": "number"
-		},
 		"gradientPreset": {
 			"type": "string",
 			"default": ""
@@ -217,18 +171,6 @@
 		"transitionEasing": {
 			"type": "string",
 			"default": "ease-in-out"
-		},
-		"textAlignMobile": {
-			"type": "string",
-			"default": ""
-		},
-		"textAlignTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"textAlignDesktop": {
-			"type": "string",
-			"default": ""
 		},
 		"contentLayout": {
 			"type": "string",

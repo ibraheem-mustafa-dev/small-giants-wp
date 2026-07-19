@@ -45,6 +45,10 @@
 		"root": ".wp-block-sgs-tabs"
 	},
 	"attributes": {
+		"blockLabel": {
+			"type": "string",
+			"default": ""
+		},
 		"orientation": {
 			"type": "string",
 			"default": "horizontal",

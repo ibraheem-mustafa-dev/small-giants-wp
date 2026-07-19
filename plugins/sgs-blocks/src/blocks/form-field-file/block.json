@@ -24,7 +24,16 @@
     "supports": {
         "html": false,
         "anchor": false,
-        "interactivity": true
+        "interactivity": true,
+        "sgs": {
+            "hideExtensions": [
+                "animation",
+                "blockLink",
+                "clickEffects",
+                "hover",
+                "parallax"
+            ]
+        }
     },
     "attributes": {
         "fieldName": {

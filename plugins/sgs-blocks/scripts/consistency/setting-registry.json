@@ -1,0 +1,2828 @@
+{
+  "_meta": {
+    "purpose": "Spec 35 Phase 2 — optimal-control registry (golden master). One row per genuine setting.",
+    "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B/H/I)",
+    "design_spine": ".claude/plans/spec-35-setting-registry-design.md",
+    "total_rows": 82,
+    "by_category": {
+      "css-property": 60,
+      "input-type": 11,
+      "behaviour-family": 11
+    },
+    "by_severity": {
+      "high": 25,
+      "medium": 35,
+      "low": 17,
+      "none": 5
+    },
+    "excluded": [
+      "system-internal: className — 1 attr (sgs/button), WP wrapper plumbing (block-editor-assigned CSS class name), not a client-facing setting; no editor control to design"
+    ],
+    "status": "REVIEWED + QC-COUNCIL-VALIDATED 2026-07-19 — 3 adversarial raters (spec/architecture/reality), all findings Opus-validated against ground truth and applied. Ready for Wave rollout (Tasks 3/4). | v2 archetype-deck corrections FOLDED 2026-07-19 (see _meta.v2_folded).",
+    "bean_rulings_2026_07_19": [
+      "css:stroke -> reclassified (accentStroke is a decoration toggle, not a colour)",
+      "css:background-image -> Background overlay (GradientPicker+alpha); real bg image is a separate media picker",
+      "css:background-position -> not exposed today; verify-if-dead then FocalPointPicker or delete",
+      "css:font-family -> curated font picker on DISPLAY blocks only (heading/quote/button)",
+      "input:json-config -> InnerBlocks for rich items, shared RepeaterControl for scalar items; not DataViews"
+    ],
+    "qc_council_2026_07_19": [
+      "media-playback: FALSE 'no poster' claim corrected — videoPoster + working control exist; only preload missing (caught a would-be redundant build)",
+      "11 box-model rows: fabricated 'Part D4' citation -> design-spine dimension 4 (Part D only has D1-D3)",
+      "font-family: route via NATIVE supports.typography.fontFamily (reads theme.json curated list), not a bespoke control (Part G) + HC2 quote-scope note + severity->high",
+      "D302 hex8 note carried to all 5 alpha colour rows (was on 1 of 6)",
+      "Spec 32 output-routing note added: native supports.* adoption must pair with __experimentalSkipSerialization + scoped-style (aspect-ratio, sticky-header)",
+      "minor: text-align/align-items citation hygiene; sgs/media imageControls carve-out on object-fit/position; repeater InnerBlocks scope qualifier"
+    ],
+    "cross_track": [
+      "behaviour:sticky-header-nav -> OWNED BY TRACK 2 (header/footer/nav rebuild, Spec 17 + P1 architecture decision 2026-07-18); Spec 35 defers, no rollout action"
+    ],
+    "v2_folded": {
+      "date": "2026-07-19",
+      "source": "archetype deck v2 (artifact a35048a9-1c06-4e41-b03f-4c5b48ce0090) + catalog (f9646fa6-44cc-49dc-a4b2-aedca6f9502f)",
+      "summary": "Three-agent gap-review corrections folded into the golden master: colour/gradient split (text/border solid vs background ColorGradientControl solid+gradient), the compound Border builder (BorderBoxControl: width+style+colour+radius, All-sides/Per-side, border-style moved out of the 4-side box), per-stop gradient colour + angle (AnglePickerControl, Linear/Radial), shadow 6 named presets + Normal/Hover, media bulk + alt/decorative, repeater split, date range, multi-tag chips (FormTokenField), Focus=Hover, and the inspector-level structural-patterns layer."
+    },
+    "universal_control_behaviours": [
+      "reset - only active once the value has been changed",
+      "preset + custom - presets seed a real editable control, never replace it",
+      "768/1024 device switcher with an edit-dot on any tier the operator customised",
+      "real units (never px-only) via UnitControl",
+      "alpha + clear on every colour control (alpha-0 != unset)",
+      "every valid option present + a Custom path where the value is open-ended",
+      "progressive disclosure - a + reveals advanced controls",
+      "keyboard-operable - every drag gesture has an equivalent number-input / arrow-nudge / up-down alternative",
+      "Focus mirrors Hover - one shared state, no separate Focus tab, focus never invisible",
+      "screen-reader labels on swatches, icons and presets"
+    ],
+    "structural_patterns": [
+      {
+        "key": "on-canvas-block-toolbar",
+        "label": "On-canvas Block Toolbar",
+        "status": "NEW in v2 - the missing layer",
+        "detail": "Frequent controls live on the floating block toolbar, not buried in the sidebar. A control graduates to the toolbar by FREQUENCY, not importance. Includes align, format, quick colour, and copy/paste styles (the ... menu). The sidebar holds deeper, less-frequent settings.",
+        "spec_ref": "Spec 35 A1 (placement rule)"
+      },
+      {
+        "key": "settings-styles-advanced-tabs",
+        "label": "Settings / Styles / Advanced tabs",
+        "detail": "Native WP inspector tabs, never one long list. Settings = what it does; Styles = how it looks; Advanced = CSS class, anchor, custom CSS.",
+        "spec_ref": "Spec 35 Part A"
+      },
+      {
+        "key": "progressive-disclosure",
+        "label": "Progressive disclosure (+)",
+        "detail": "1-3 controls shown by default, the rest behind a + / ToolsPanel, with resetAll. Prevents the 10+-controls-at-once wall.",
+        "spec_ref": "Spec 35 A5"
+      },
+      {
+        "key": "conditional-controls-show-when",
+        "label": "Conditional controls (show-when)",
+        "status": "hand-rolled - no native WP API",
+        "detail": "A control appears only when relevant (e.g. Border colour shown only because Border style != none), with an aria-live announcement of the reveal for screen readers. Hand-rolled JSX; there is no native WP show-when API. Distinct from behaviour:form-validation-conditional (which is per-form-field sibling logic).",
+        "spec_ref": "Spec 35 Part A / Part F (irrelevant controls always visible)"
+      },
+      {
+        "key": "normal-hover-state",
+        "label": "Normal / Hover state",
+        "detail": "One control, two states, via the shared StateToggleControl. Keyboard Focus automatically mirrors the Hover style (Bean's call) - no separate Focus tab and focus never goes invisible. Applies to colour, shadow, scale, border.",
+        "spec_ref": "Spec 35 Part I (StateToggleControl EXISTS)"
+      },
+      {
+        "key": "control-states",
+        "label": "Control states",
+        "status": "NEW in v2",
+        "detail": "The non-happy states standardised once and reused everywhere: error, loading, disabled, empty (e.g. 'File too large - use an image under 2MB', 'Searching...', 'No matches - try another word'). Defined once, reused; not re-invented (or forgotten) per block.",
+        "spec_ref": "Spec 35 Part A"
+      }
+    ],
+    "compound_sets": {
+      "border_builder": {
+        "label": "Border builder",
+        "status": "NEW in v2 - Bean's compound idea",
+        "component": "native BorderBoxControl",
+        "members": [
+          "css:border-width",
+          "css:border-style",
+          "css:border-colour",
+          "css:border-radius"
+        ],
+        "layout": "width + style + colour together, plus corner radius, in ONE panel; 'All sides' / 'Per side' segmented toggle (own value per side when unlinked). border-style is MOVED OUT of the padding/margin 4-side box.",
+        "note": "This is a Task-1 seed for the Task-2 per-category compound control-set design; the four member rows below are flagged border_builder_member."
+      }
+    },
+    "composite_panels": {
+      "count": 8,
+      "families": [
+        "behaviour:slider-carousel",
+        "behaviour:media-playback",
+        "behaviour:disclosure",
+        "behaviour:hover-effect",
+        "behaviour:visibility-responsive",
+        "behaviour:dismissible",
+        "behaviour:scroll-reveal-animation",
+        "behaviour:form-validation-conditional"
+      ],
+      "eighth_added_post_review": "behaviour:form-validation-conditional (per-field conditional) - the 8th family, added after the three-agent gap review.",
+      "caveat": "Two families carry real FRONTEND ENGINE work, not just inspector controls: slider-carousel (paged vs marquee are different scroll engines) and scroll-reveal-animation (its reduced-motion gate must be verified first). 'Assemble the atomics' covers the sidebar, not the runtime."
+    },
+    "deferred": [
+      "Global / linked styles - change one master style and every block using it updates (Kadence/GenerateBlocks have it); deferred because WP save-as-default seeds NEW blocks and pre-launch we re-clone rather than hand-edit 40 live pages.",
+      "Transform controls (scale/rotate/tilt) - premium flourish; grow-on-hover already covered by the Normal/Hover scale option; Wave 2/3.",
+      "Fluid font-size (auto-scale) - the 768/1024 device switcher already gives per-device sizes; fluid can be turned on globally in the theme later.",
+      "Hierarchical category picker - only matters if a block needs nested-taxonomy selection; verify a real need before building.",
+      "Section sub-headers in a dense panel - progressive disclosure already keeps panels tidy; add only when a genuinely dense block proves the + isn't enough."
+    ]
+  },
+  "rows": [
+    {
+      "setting_key": "behaviour:disclosure",
+      "category": "behaviour-family",
+      "label": "Collapsible / expandable content (accordion, collapsible text, dropdown menu)",
+      "optimal_control": {
+        "component": "BUILD: DisclosureControls (shared set — accordion, accordion-item, collapsible-text, table-of-contents, mega-menu, pricing-table, business-info, product-faq-item all hand-roll their own subset today)",
+        "props": {
+          "collapsible": "ToggleControl",
+          "defaultOpen": "ToggleControl (per-item) OR RangeControl/index-picker (container-level 'which item opens by default', -1 = none)",
+          "allowMultiple": "ToggleControl",
+          "openOn": "ToggleGroupControl (click/hover)",
+          "toggleStyle / labelCollapse (icon style)": "ToggleGroupControl (chevron/plus-minus/arrow)",
+          "collapsedLines": "RangeControl (line-clamp count, text-truncation variant only)"
+        },
+        "preset_layer": null,
+        "units": "collapsedLines is a unitless integer (line count) — RangeControl min 1 max ~10, not a CSS length",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for openOn/toggleStyle/labelCollapse (2-4 short options each)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset; group under a 'Disclosure behaviour' panel once collapsible+allowMultiple+openOn+style are all present"
+      },
+      "control_set": [
+        {
+          "member_label": "Collapsible / defaultCollapsed",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Default-open item (container-level index, e.g. accordion)",
+          "component": "RangeControl or a compact index-picker (-1 = closed)",
+          "dimensions_applied": [
+            "dimension 2 (unitless integer, real min/max/step)"
+          ]
+        },
+        {
+          "member_label": "Is open (per-item persisted state, e.g. accordion-item, product-faq-item)",
+          "component": "ToggleControl on the CHILD block, not the container",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Allow multiple open at once",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Open trigger (click/hover)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Toggle icon style / label-collapse behaviour",
+          "component": "ToggleGroupControl (or an icon-pair picker if the block exposes custom open/close icons)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Collapsed line count (text-truncation variant)",
+          "component": "RangeControl",
+          "dimensions_applied": [
+            "dimension 2",
+            "dimension 7"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: DisclosureControls",
+      "spec_ref": "Spec 35 Part H ('optional-controls group -> ToolsPanel/ToolsPanelItem'), Part B Selection row (ToggleGroupControl for 2-5 short options)",
+      "current_state": "9 attrs across 9 blocks with no shared component: sgs/accordion (allowMultiple bool, defaultOpen number/index), sgs/accordion-item + sgs/product-faq-item (isOpen bool, per-item), sgs/collapsible-text (collapsible bool, collapsedLines number), sgs/table-of-contents (collapsible bool, defaultCollapsed bool — inverse-polarity duplicate of accordion's defaultOpen concept), sgs/business-info + sgs/button (labelCollapse enum — an odd pairing; button's 'labelCollapse' is really an icon-only-collapse-to-icon-button pattern, conceptually closer to a responsive-display toggle than a disclosure, worth a future reclass), sgs/mega-menu (openOn enum: click/hover), sgs/pricing-table (toggleStyle enum).",
+      "divergence": "9 open/collapse attrs across 9 blocks with no shared component and inverse-polarity duplicates (defaultOpen vs defaultCollapsed); should share DisclosureControls.",
+      "divergence_severity": "medium",
+      "notes": "sgs/button's labelCollapse is a borderline member — it collapses a text label to icon-only, not an expand/collapse-content disclosure. Keep it in this family per the source classification (do not silently move it without a registry-wide pass) but flag it in the eventual lint as a 'verify fit' case, not a hard-fail divergence."
+    },
+    {
+      "setting_key": "behaviour:dismissible",
+      "category": "behaviour-family",
+      "label": "Dismiss / close-and-remember behaviour",
+      "optimal_control": {
+        "component": "BUILD: DismissibleControl (small, 2-control set) — currently inline in sgs/notice-banner's own edit.js with no shared component, but the pattern (a client-dismissable UI element that remembers the dismissal) is reusable beyond notice-banner (e.g. a future cookie-consent block, or a 'permanently hide this promo' variant of whatsapp-cta)",
+        "props": {
+          "dismissible": "ToggleControl",
+          "dismissBehaviour": "ToggleGroupControl (session/permanent — matches the existing block.json enum exactly)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for dismissBehaviour (2 options: session vs permanent) — currently confirmed as a SelectControl-shaped enum in block.json (`enum: [\"session\",\"permanent\"]`), a 2-option enum belongs in ToggleGroupControl per dimension 5, not a dropdown Select",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "dismissBehaviour only shown once dismissible is toggled on — progressive disclosure via conditional render, not a ToolsPanel (too small a set to warrant one)"
+      },
+      "control_set": [
+        {
+          "member_label": "Dismissible (show a close/X control on the frontend)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Remember dismissal for (this browser session / permanently)",
+          "component": "ToggleGroupControl, conditionally rendered when dismissible is on",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: DismissibleControl",
+      "spec_ref": "Spec 35 Part H (segmented choice -> ToggleGroupControl), Part A2 (sensible defaults — dismissBehaviour defaults to 'session' in block.json, correct default-to-least-permanent choice)",
+      "current_state": "2 attrs, 1 block only (sgs/notice-banner) — verified live in block.json: `dismissible` (boolean, default false) + `dismissBehaviour` (string enum session/permanent, default session). No shared component exists because there is currently only one consumer.",
+      "divergence": "Single consumer (notice-banner) with a bespoke dismissible/dismissBehaviour pair; extract a small shared DismissibleControl now, and switch dismissBehaviour from SelectControl to ToggleGroupControl (dimension 5).",
+      "divergence_severity": "low",
+      "notes": "Lowest-severity row in the slice by consumer count (n=1 block), but still worth a named shared component now rather than later: the pattern is a natural fit for any future announcement-bar-style or promo-CTA-style block, and building it small now (2 controls) is cheaper than reverse-engineering a shared shape once a second block needs it and has already diverged. dismissBehaviour's enum value should switch from SelectControl to ToggleGroupControl per dimension 5 (2 short options) even though it is the only member with a genuine control-type gap — everything else in this row is already correctly shaped."
+    },
+    {
+      "setting_key": "behaviour:form-validation-conditional",
+      "category": "behaviour-family",
+      "label": "Form field validation + conditional-display logic",
+      "optimal_control": {
+        "component": "BUILD: ConditionalFieldControl (the conditionalField + conditionalOperator + conditionalValue triplet) for the per-field conditional-display set; plain ToggleControl/RangeControl for the sgs/form-level security & behaviour settings (honeypot/rateLimit/requireLogin/storeSubmissions/multiSelect) — these are two DIFFERENT sub-groups inside one classifier family, see notes",
+        "props": {
+          "conditionalField": "SelectControl, dynamically populated from sibling field labels in the same sgs/form (not free text)",
+          "conditionalOperator": "SelectControl, fixed set (equals/not-equals/contains/greater-than/less-than/is-empty/is-not-empty)",
+          "conditionalValue": "TextControl, only rendered once an operator that needs a value is chosen (is-empty/is-not-empty hide it)",
+          "required": "ToggleControl (per field)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "SelectControl for conditionalField (dynamic list, could grow past 10 siblings on a large form -> ComboboxControl) and conditionalOperator (fixed ~7 options, SelectControl is fine, ToggleGroupControl too wide for 7 labelled operators)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "conditionalValue only shows when the chosen operator needs one (progressive disclosure IS the reset/simplicity mechanism here, not a separate reset button)"
+      },
+      "control_set": [
+        {
+          "member_label": "Show this field only if… (sibling field)",
+          "component": "SelectControl (ComboboxControl if a form has 10+ fields)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "…is / is not / contains / etc. (operator)",
+          "component": "SelectControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "…this value",
+          "component": "TextControl, conditionally rendered",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Required",
+          "component": "ToggleControl (per field — 13 of 14 form-field blocks)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Multi-select (tiles field only)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Honeypot / rate limit / require login / store submissions (sgs/form root — anti-spam + storage, not per-field)",
+          "component": "ToggleControl + RangeControl (rateLimit is a submissions-per-window number)",
+          "dimensions_applied": [
+            "dimension 2 (rateLimit units)"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: ConditionalFieldControl (per-field triplet only)",
+      "spec_ref": "Spec 35 Part C Conditional/display ('by device T · by login/role T · by query/context P'), memory a11y-validation-feedback-informational-not-gate ('operator-facing a11y/validation fails = passive INFORMATIONAL editor/admin notices only; never a gate')",
+      "current_state": "8 attrs (behaviour-family) + conditionalValue (classified separately as text-content, same functional triplet) across 14-15 form-field blocks. conditionalField is already correctly a dynamic-dropdown SelectControl per the classifier's 'why', conditionalOperator already a fixed-set SelectControl — both closer to optimal than most families. No shared ConditionalFieldControl component exists; each of the 14 form-field blocks re-implements the same 3-field pattern independently (14x duplication of identical logic, the highest per-attr duplication count of any family in this registry).",
+      "divergence": "14 form-field blocks each re-implement the same conditional-field triplet independently (the registry's highest per-attr duplication); should share a per-field ConditionalFieldControl, distinct from the whole-block ConditionalVisibilityPanel.",
+      "divergence_severity": "medium",
+      "notes": "This family is functionally DIFFERENT from the universal ConditionalVisibilityPanel (src/components/universal-extensions/ConditionalVisibilityPanel.js, sgsConditionLoggedIn/DateStart/DateEnd/UrlParam/Referrer) — that panel controls whether the WHOLE BLOCK is visible (login/date/URL/referrer), while form-validation-conditional controls whether ONE FORM FIELD shows based on ANOTHER FIELD's live value in the same form (sibling-driven branching logic). Do not merge these two into one component — they solve different problems and the second requires live sibling-field awareness the first doesn't need. Per the a11y-validation-feedback-informational-not-gate memory, any 'required field not filled' or 'conditional logic invalid' feedback in the editor must stay a passive Notice, never a hard block on saving/publishing. | v2 (2026-07-19): this is the 8th composite / behaviour family, added AFTER the three-agent gap review (the per-field conditional). See _meta.composite_panels."
+    },
+    {
+      "setting_key": "behaviour:hover-effect",
+      "category": "behaviour-family",
+      "label": "Hover state visual effects",
+      "optimal_control": {
+        "component": "StateToggleControl (EXISTS, src/components/StateToggleControl.js — the Normal/Hover segmented switch). Every *Hover attr must route through it: the control renders whichever underlying property control (colour/scale/shadow/decoration) the block already has, scoped to the selected state — never a second bespoke 'Hover Effects' panel duplicating the Normal panel.",
+        "props": {
+          "swatches": "legend showing both Normal + Hover values stay visible in both states (discoverability)",
+          "children": "render-prop returning the SAME property controls used for Normal, just bound to the Hover-suffixed attr when state==='hover'"
+        },
+        "preset_layer": "effectHover (scale/shadow/zoom/grayscale/overlay/decoration) acts as a PRESET selector that seeds which fine-grained Hover control(s) appear beneath it — not a replacement for the fine controls",
+        "units": "scaleHover is a %/ratio RangeControl (e.g. 100-120), matching the existing sgsHoverScale pattern",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for effectHover/shadowHover/textDecorationHover (each a short closed set)",
+        "alpha_clearable": "n/a (colour hover states inherit alpha_clearable from whichever colour control they wrap, e.g. DesignTokenPicker)",
+        "reset_disclosure": "resetting Normal must not silently reset Hover and vice versa — each state's reset is independent, StateToggleControl keeps both value sets in memory regardless of which is on-screen",
+        "focus_state": "Focus mirrors Hover - keyboard focus uses the Hover style; NO separate Focus tab, and focus never goes invisible (v2 Bean call). StateToggleControl owns the Normal/Hover pairing."
+      },
+      "control_set": [
+        {
+          "member_label": "Effect type (which hover effect is active: scale/shadow/zoom/grayscale/overlay)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Scale amount",
+          "component": "RangeControl, scoped inside StateToggleControl's Hover state",
+          "dimensions_applied": [
+            "dimension 2",
+            "dimension 7"
+          ]
+        },
+        {
+          "member_label": "Shadow (hover)",
+          "component": "ShadowControl, scoped inside StateToggleControl's Hover state (shares the SAME builder as the block's resting-state shadow, not a separate Small/Medium/Large/Glow select)",
+          "dimensions_applied": [
+            "dimension 1 preset+custom"
+          ]
+        },
+        {
+          "member_label": "Grayscale on hover",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Image zoom on hover",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Overlay on hover",
+          "component": "ToggleControl (+ DesignTokenPicker for overlay colour if the block supports one)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Text decoration on hover (underline/none)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Transition duration + easing",
+          "component": "SelectControl (short named presets: instant/fast/medium/slow + default/ease-out/ease-in/spring/linear)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        }
+      ],
+      "shared_component": "StateToggleControl",
+      "spec_ref": "Spec 35 Part F ('duplicate hover panels / hover split from resting'), Part I ('Normal/Hover state — StateToggleControl EXISTS (2026-07-18) — roll out to stateful blocks'), Spec 35 checklist item 12",
+      "current_state": "7 behaviour-family attrs (effectHover/grayscaleHover/imageZoomHover/overlayHover/scaleHover/shadowHover/textDecorationHover) across 14 blocks — PLUS a SEPARATE, ALREADY-BUILT universal 'Hover Effects' panel (src/components/universal-extensions/HoverEffectsPanel.js, wired via src/blocks/extensions/hover-effects.js to every block) exposing sgsHoverBgColour/sgsHoverTextColour/sgsHoverBorderColour/sgsHoverScalePreset/sgsHoverScale/sgsHoverShadow/sgsHoverDuration/sgsHoverEasing/sgsHoverImageZoom. Neither system uses StateToggleControl (verified: HoverEffectsPanel.js imports DesignTokenPicker/SelectControl/RangeControl/ToggleControl directly, not StateToggleControl) — this is TWO parallel hover systems running simultaneously: the universal sgsHover* panel AND 14 blocks' own private *Hover attrs (scaleHover on 11 blocks alone).",
+      "divergence": "Two parallel hover systems run at once — the universal HoverEffectsPanel (sgsHover*) AND 14 blocks' private *Hover attrs — neither using StateToggleControl; migrate HoverEffectsPanel to StateToggleControl and retire the per-block duplicates.",
+      "divergence_severity": "high",
+      "notes": "This is the textbook Part F anti-pattern 'duplicate hover panels / hover split from resting', caught live rather than hypothetically: a block using BOTH the universal HoverEffectsPanel (sgsHoverScale) AND its own private scaleHover attr would show the client two different 'hover scale' controls with no indication they might conflict. Fix-shape: migrate HoverEffectsPanel itself to render through StateToggleControl (so Normal/Hover share one panel, one set of property controls), then retire the 14 blocks' private *Hover attrs onto the same StateToggleControl-scoped controls, deleting the duplicate universal-vs-per-block split entirely. This is the highest-severity consolidation in the behaviour-family slice by duplication count (2 systems x 14 blocks). | v2 (2026-07-19): Focus = Hover (keyboard focus reuses the Hover style, one shared state). Confirms the StateToggleControl migration retires BOTH the universal sgsHover* panel and the 14 blocks' private *Hover attrs."
+    },
+    {
+      "setting_key": "behaviour:link-target-behaviour",
+      "category": "behaviour-family",
+      "label": "Link target / rel / download behaviour",
+      "optimal_control": {
+        "component": "SgsLinkControl (existing — LinkControl wrapper, built this phase per the input-type slice's 'input:url-link' row). This family must NOT get its own separate toggles; every member folds into SgsLinkControl's settings prop.",
+        "props": {
+          "settings": "[{ id: 'opensInNewTab', label: 'Open in new tab' }, { id: 'nofollow', label: 'Mark as nofollow' }, { id: 'sponsored', label: 'Mark as sponsored' }, { id: 'download', label: 'Force download' } — rel is DERIVED from the settings checkboxes, never a separate raw rel string field]"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a — settings are checkboxes inside LinkControl's popover, not a standalone dropdown",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clearing the link clears new-tab/rel with it (single clear action, no separate reset needed)"
+      },
+      "control_set": [
+        {
+          "member_label": "Open in new tab",
+          "component": "SgsLinkControl settings checkbox (opensInNewTab)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "rel (nofollow/sponsored/noopener)",
+          "component": "SgsLinkControl settings checkboxes, auto-composed into the rel string — never a raw text/enum rel field",
+          "dimensions_applied": [
+            "dimension 5 — this IS the dropdown-completeness fix: rel today is a free enum-select per block rather than LinkControl's composable settings"
+          ]
+        },
+        {
+          "member_label": "Download",
+          "component": "SgsLinkControl settings checkbox (button/CTA blocks only)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Whole-block/card link target (blockLinkTarget / sgsBlockLinkTarget)",
+          "component": "Once the Part I 'whole-card link' overlay-<a> pattern (sgsBlockLink) is built, its new-tab behaviour should read the SAME SgsLinkControl settings object as the block's primary link — not a second bespoke boolean",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Link-to-home (responsive-logo only)",
+          "component": "ToggleControl — kept SEPARATE, this is not a link-target setting (it swaps the href to the site home URL, a content-source decision, not a target/rel decision)",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "SgsLinkControl",
+      "spec_ref": "Spec 35 Part B Link/CTA ('LinkControl — internal search + new-tab + rel'), Part C Links ('new-tab + auto-rel-noopener T · rel nofollow/sponsored T · whole-card/block clickable link T — high-impact gap'), Part F ('raw URL field instead of LinkControl')",
+      "current_state": "8 attrs across 7 blocks, ALL still raw/bespoke: blockLinkTarget + sgsBlockLinkTarget (2 different attr names, same concept, on info-box/team-member — whole-card-link new-tab flag, no LinkControl involved since the whole-card-link overlay pattern itself is unbuilt per Part I), download (button, plain boolean), linkOpensNewTab (media, plain boolean), linkRel (icon/media, enum-select of nofollow/sponsor/ugc/noopener), linkToHome (responsive-logo, plain boolean, different concept — see notes), opensInNewTab (mega-menu, plain boolean), rel (button, enum-select). None of these route through SgsLinkControl's settings prop yet.",
+      "divergence": "8 new-tab/rel/download attrs are raw/bespoke (2 names for one concept: blockLinkTarget vs sgsBlockLinkTarget); these settings belong inside SgsLinkControl's settings prop, not as parallel top-level attrs.",
+      "divergence_severity": "high",
+      "notes": "This is the input:url-link row's sibling — SgsLinkControl was already scoped as the shared component for the URL field itself; this row confirms the new-tab/rel/download SETTINGS also belong inside it, not as parallel top-level attrs. blockLinkTarget/sgsBlockLinkTarget (2 attr names for 1 concept across info-box/team-member) is a smaller internal duplication worth folding into one name once both blocks route through SgsLinkControl."
+    },
+    {
+      "setting_key": "behaviour:media-playback",
+      "category": "behaviour-family",
+      "label": "Video / audio playback controls",
+      "optimal_control": {
+        "component": "BUILD: MediaPlaybackControls (audio + video variants) — matches core/video and core/audio's own attribute set for feature parity (memory sgs-block-feature-parity-with-replaced-core)",
+        "props": {
+          "autoplay": "ToggleControl (with an inline Notice that autoplay implies muted — browser autoplay policy)",
+          "loop": "ToggleControl",
+          "muted": "ToggleControl",
+          "controls": "ToggleControl",
+          "preload": "ToggleGroupControl (none/metadata/auto — matches core video)",
+          "poster": "MediaUploadCheck + MediaUpload (video only)",
+          "playsInline": "ToggleControl (video only, mobile inline-play)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for preload (3 short options) — currently only declared on audio (audioPreload), missing on video",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset on toggles; group under a 'Playback' ToolsPanel once poster+preload are added (6 controls for video)"
+      },
+      "control_set": [
+        {
+          "member_label": "Autoplay",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Controls (show native player chrome)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Loop",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Muted",
+          "component": "ToggleControl (video only — audio has no mute-by-default concept)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Preload",
+          "component": "ToggleGroupControl (none/metadata/auto)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Poster image (video only) — GAP, not in current attr set",
+          "component": "MediaUploadCheck + MediaUpload",
+          "dimensions_applied": [
+            "Part C Media — 'video poster/autoplay/loop/mute/controls (N: core video attrs) T'"
+          ]
+        },
+        {
+          "member_label": "Plays inline (video only)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Lazy load (video only)",
+          "component": "ToggleControl (or fold into native loading behaviour if WP handles it automatically for video — verify before keeping as a client control)",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "BUILD: MediaPlaybackControls",
+      "spec_ref": "Spec 35 Part C Media ('video poster/autoplay/loop/mute (N: core video attrs) T') + memory sgs-block-feature-parity-with-replaced-core",
+      "current_state": "11 attrs across 3 blocks: sgs/audio (audioAutoplay/audioControls/audioLoop/audioPreload — has preload), sgs/media video (videoAutoplay/videoControls/videoLazyLoad/videoLoop/videoMuted/videoPlaysInline — NO preload; poster IS present: videoPoster + videoPosterId attrs + a working MediaUpload poster control in edit.js), sgs/gallery (enableLightbox — a lightbox toggle grouped here).",
+      "divergence": "sgs/media (video) is missing only `preload` vs core/video — poster is already implemented (verified in block.json + edit.js). Playback toggles are also named per-block (audio* vs video*) rather than shared. Should share MediaPlaybackControls.",
+      "divergence_severity": "medium",
+      "notes": "CORRECTED post-council 2026-07-19: the earlier 'MISSING poster + preload — confirmed absent' was FALSE — videoPoster/videoPosterId + a working poster-upload control exist in sgs/media (edit.js PanelBody 'Poster Image'). The genuine gap is `preload` only (present on audio as audioPreload, absent on video). enableLightbox (gallery) belongs more naturally in a lightbox-specific control (Part C 'native lightbox') — flag for a future reclass. Feature-parity per memory sgs-block-feature-parity-with-replaced-core."
+    },
+    {
+      "setting_key": "behaviour:scroll-reveal-animation",
+      "category": "behaviour-family",
+      "label": "Scroll-triggered / entrance animation",
+      "optimal_control": {
+        "component": "BUILD: ScrollRevealControls (extends the existing AnimationControl/AnimationPanel — src/components/AnimationControl.js + universal-extensions/AnimationPanel.js — to cover parallax/Ken-Burns/SVG-draw/stagger, which today live OUTSIDE it as bespoke per-block attrs)",
+        "props": {
+          "style": "ToggleGroupControl or ComboboxControl (>10 options)",
+          "delay/duration/stagger": "RangeControl ms, withInputField+allowReset",
+          "trigger": "ToggleControl (reveal-on-scroll / autoplay-on-load)"
+        },
+        "preset_layer": "animation-style presets (fade/slide/zoom/draw/Ken-Burns) seed a real ms-level delay/duration/stagger box underneath — never presets alone",
+        "units": "ms (duration/delay/offset/stagger) — RangeControl with real min/max/step + input field, not unitless slider only",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for animationStyle/scrollDirection/svgAnimation (short sets); Custom path n/a — closed enum by design (CSS keyframe names)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue on every Range; ToolsPanel disclosure once >6 controls (parallax/Ken-Burns/SVG/stagger together comfortably exceeds this on trust-bar/hero/container)"
+      },
+      "control_set": [
+        {
+          "member_label": "Reduced motion (MANDATORY GATE)",
+          "component": "informational Notice + automatic prefers-reduced-motion CSS gate (not a client-facing override — animation must self-disable, per WCAG 2.3.3)",
+          "dimensions_applied": [
+            "Part C/E5 mandatory gate — NOT currently a registry attr; this is a GAP, see divergence"
+          ]
+        },
+        {
+          "member_label": "Animation style (fade/slide/zoom/reveal/draw/Ken-Burns/parallax)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5 dropdown completeness"
+          ]
+        },
+        {
+          "member_label": "Trigger (reveal-on-scroll / caption-reveal / path-draw-on-scroll / scroll-spy / smooth-scroll)",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Stagger delay / reveal stagger / path-draw duration / trigger offset / scroll offset",
+          "component": "RangeControl (ms, withInputField, allowReset)",
+          "dimensions_applied": [
+            "dimension 2 units (ms)",
+            "dimension 7 reset"
+          ]
+        },
+        {
+          "member_label": "Background motion (Ken Burns / parallax + strength / flip-X)",
+          "component": "ToggleControl + RangeControl (strength)",
+          "dimensions_applied": [
+            "dimension 2 units"
+          ]
+        },
+        {
+          "member_label": "SVG animation (type/source/speed)",
+          "component": "ToggleGroupControl + RangeControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Scroll direction",
+          "component": "ToggleGroupControl (up/down)",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        }
+      ],
+      "shared_component": "BUILD: ScrollRevealControls (grows AnimationControl)",
+      "spec_ref": "Spec 35 Part C Motion/animation ('entrance P · scroll-triggered P · parallax P · prefers-reduced-motion gating on ALL animation T'), Part E5, Part I ('Reduced-motion gate — verify on animation ext')",
+      "current_state": "22 attrs across 12 blocks. A universal AnimationPanel/AnimationControl already exists (sgsAnimation/sgsAnimationDelay/sgsAnimationDuration/sgsAnimationEasing, wired globally to nearly all sgs/* blocks via editor.BlockEdit filter) but it is a NARROWER shape — plain entrance fade/slide only. The scroll-reveal-animation family's 22 attrs (bgKenBurns, bgParallax+parallaxStrength, bgSvgAnimation+Speed, svgAnimation+Source+Speed, revealOnScroll+revealStagger, staggerDelay, captionReveal, fadeOnScroll, flipX, pathDrawOnScroll+DurationMs+TriggerOffset, scrollDirection/Offset/Spy, smoothScroll, animationStyle) are ALL block-private, not routed through the universal AnimationControl at all — every block (container, cta-section, hero, trust-bar, decorative-image, gallery, timeline, table-of-contents, media, card-grid, post-grid, team-member, testimonial, google-reviews, trustpilot-reviews, responsive-logo, brand-strip) reinvents its own subset with its own naming.",
+      "divergence": "22 scroll/motion attrs are all block-private and bypass the existing universal AnimationControl, each block reinventing its own subset under its own names; and a per-block prefers-reduced-motion gate must be confirmed applied framework-wide (WCAG 2.3.3) before any consolidation.",
+      "divergence_severity": "high",
+      "notes": "MANDATORY: no member attr in setting-reclassification.json currently represents a per-block prefers-reduced-motion override — verify (per Spec 35 Part I 'ensure every animation is gated') whether the CSS gate is applied automatically at the framework/animation.js level (cause-agnostic, no client control needed) rather than exposing a toggle; if it is NOT applied framework-wide today, that is the #1 gap to close before any other scroll-reveal work, ahead of consolidating the 22 attrs. Do not add a client-facing 'disable animation' toggle as a substitute for the automatic CSS media-query gate — WCAG 2.3.3 requires it to fire without the client knowing to ask."
+    },
+    {
+      "setting_key": "behaviour:show-hide-display-toggle",
+      "category": "behaviour-family",
+      "label": "Show/hide content-element toggle",
+      "optimal_control": {
+        "component": "ToggleControl (native) — one per content element, grouped under a 'Display' ToolsPanel; NOT a bundling component (each toggle is independent, unrelated content, unlike carousel/disclosure which share live state)",
+        "props": {
+          "grouping": "ToolsPanel + ToolsPanelItem per element, 1-3 isShownByDefault (the block's most-recognisable pieces, e.g. Title/Date)",
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "ToolsPanel resetAll clears every show-toggle to its block.json default in one action (dimension 7)"
+      },
+      "control_set": [
+        {
+          "member_label": "Show <element> (e.g. Show avatar, Show date, Show rating)",
+          "component": "ToggleControl",
+          "dimensions_applied": [
+            "dimension 7 (ToolsPanel disclosure once a block has 4+ show-toggles)"
+          ]
+        }
+      ],
+      "shared_component": null,
+      "spec_ref": "Spec 35 Part A5 (ToolsPanel once ~6+ controls), Part A9 (in-row layout), Part H (segmented-choice component list — booleans stay ToggleControl)",
+      "current_state": "31 distinct attr names (showAggregate/showAuthor/showAvatar/showBreakdown/showCaptions/showCategory/showDate/showDays/showExcerpt/showFilters/showGoogleLogo/showHome/showHours/showImage/showLabel/showLadder/showMinutes/showNames/showNumeric/showPickers/showRating/showReadMore/showSchema/showSeconds/showSelectedTick/showSourceHeader/showSubtitle/showTitle/showTrustpilotLogo/showVerifiedBadge/showZero) across 14 blocks, every one a bare boolean-toggle at attr_type=boolean with no shared panel structure or ToolsPanel grouping — each block hand-rolls its own flat list of ToggleControls.",
+      "divergence": "not a wrong-component problem (ToggleControl is already correct per attr) — the divergence is presentation: dense blocks (post-grid has 8+ show-toggles, trustpilot-reviews has 7+) render them as one flat un-grouped list instead of a disclosure-managed 'Display' panel (Part A5/F anti-pattern 'no headers past a handful').",
+      "divergence_severity": "low",
+      "notes": "Distinct from visibility-responsive (below): this family is CONTENT-ELEMENT visibility (which pieces of the block's own markup render — show avatar, show rating) — always-on regardless of device/state. visibility-responsive is WHOLE-BLOCK visibility (device tier, empty-state, editor-preview-only). Never merge the two families into one component; they answer different questions ('what does this block show' vs 'when/where is this block visible')."
+    },
+    {
+      "setting_key": "behaviour:slider-carousel",
+      "category": "behaviour-family",
+      "label": "Slider / carousel controls",
+      "optimal_control": {
+        "component": "BUILD: CarouselControls (shared set — no such component exists today; every slider-carrying block hand-rolls its own)",
+        "props": {
+          "showArrows": "ToggleControl",
+          "showDots": "ToggleControl",
+          "autoplay": "ToggleControl",
+          "autoplaySpeed": "RangeControl (ms, withInputField, allowReset, reduced-motion-aware — pause autoplay entirely under prefers-reduced-motion)",
+          "slidesVisible": "RangeControl inside ResponsiveControl (device-tier: how many slides show per breakpoint)",
+          "pauseOnHover": "ToggleControl"
+        },
+        "preset_layer": null,
+        "units": "ms for speed controls (autoplaySpeed/autoScrollSpeed/carouselSpeed/scrollSpeed all converge to the same ms RangeControl)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a (all boolean/range) except scrollSpeed which today is enum-select — should convert to the same ms RangeControl as autoplaySpeed for consistency, not a separate slow/medium/fast enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset on every Range; ToolsPanel once autoplay+arrows+dots+speed+slidesVisible are all present (5 controls, borderline — group under a 'Carousel' panel regardless)"
+      },
+      "control_set": [
+        {
+          "member_label": "Show arrows",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Show dots/pagination",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Autoplay",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Autoplay speed",
+          "component": "RangeControl (ms)",
+          "dimensions_applied": [
+            "dimension 2 units (ms)",
+            "dimension 7 reset",
+            "Part E5 reduced-motion aware — pause when prefers-reduced-motion"
+          ]
+        },
+        {
+          "member_label": "Slides visible",
+          "component": "RangeControl inside ResponsiveControl",
+          "dimensions_applied": [
+            "dimension 3 device-tier (768/1024)"
+          ]
+        },
+        {
+          "member_label": "Pause on hover",
+          "component": "ToggleControl",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Fade edges / show dividers",
+          "component": "ToggleControl (block-specific extras, not core to every carousel — keep as opt-in ToolsPanelItem, not always-shown)",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "BUILD: CarouselControls",
+      "spec_ref": "Spec 35 Part C Motion (parallax/scroll P), Part I ('Reduced-motion gate — verify on animation ext' extends to autoplay), Part H (bounded numeric -> RangeControl, segmented choice -> ToggleGroupControl)",
+      "current_state": "18 attrs across 9 blocks, and this is THE clearest name-divergence case in the whole registry: the SAME 4 concepts (show-arrows / show-dots / autoplay-on-off / autoplay-speed) are reimplemented under 4 different naming schemes per block — 'showArrows'/'showDots' (google-reviews, testimonial-slider, trustpilot-reviews) vs 'carouselShowArrows'/'carouselShowDots' (gallery, post-grid) vs no direct equivalent on brand-strip/trust-bar (which use 'scrolling'/'autoScroll' + 'pauseOnHover'/'autoScrollPauseOnHover' + 'scrollSpeed'/'autoScrollSpeed' for a continuous-marquee variant rather than paged slides). 'autoplaySpeed' (google-reviews/testimonial-slider/trustpilot-reviews, number) vs 'carouselSpeed' (gallery/post-grid, number) vs 'autoScrollSpeed' (trust-bar, enum-select) vs 'scrollSpeed' (brand-strip, enum-select) are the SAME ms-duration concept under 4 names and 2 different control types (number vs enum).",
+      "divergence": "The same 4 concepts (arrows/dots/autoplay/speed) are reimplemented under 4 naming schemes and 2 control types (number vs enum) across 9 blocks; should converge on one CarouselControls component with a paged|marquee variant prop.",
+      "divergence_severity": "high",
+      "notes": "Two sub-variants exist and both should map onto CarouselControls: (1) PAGED carousel (testimonial-slider, google-reviews, trustpilot-reviews, gallery, post-grid) — arrows/dots/autoplay/slidesVisible all apply. (2) CONTINUOUS-MARQUEE ticker (brand-strip, trust-bar, icon-list, nav-menu) — no dots/slidesVisible (it scrolls continuously), but shares autoplay-speed/pause-on-hover/direction. Component should expose a `variant: 'paged' | 'marquee'` prop that shows/hides the paged-only controls (dots, slidesVisible, arrows) rather than forcing marquee blocks to carry unused paged attrs. autoplaySpeed/carouselSpeed/autoScrollSpeed/scrollSpeed all converge to ONE ms attr the moment CarouselControls exists — the enum-select variants (scrollSpeed, autoScrollSpeed) should become the same RangeControl, not stay a separate slow/medium/fast picker."
+    },
+    {
+      "setting_key": "behaviour:sticky-header-nav-behaviour",
+      "category": "behaviour-family",
+      "label": "Sticky / shrinking header & nav-collapse behaviour",
+      "optimal_control": {
+        "component": "BUILD: StickyBehaviourControls — the sticky-position BOOLEAN should route through native `position: { sticky: true }` block support where the block declares it (site-header, notice-banner); the SGS-only shrink/transparent/collapse-tier behaviours have NO native WP equivalent and stay bespoke",
+        "props": {
+          "headerSticky / stickyPosition": "native position.sticky supports flag where available; ToggleGroupControl(top/bottom) for notice-banner's stickyPosition since it can stick to either edge",
+          "headerShrink": "ToggleControl",
+          "headerTransparent": "ToggleControl",
+          "contrastSafe": "ToggleGroupControl (auto/light-text/dark-text — safety net for a transparent header over varying hero brightness)",
+          "collapseTier / collapseCustomPx": "ToggleGroupControl (768/1024/custom) + RangeControl(px) shown only when 'custom' is chosen"
+        },
+        "preset_layer": null,
+        "units": "collapseCustomPx is a px RangeControl (device-tier px value)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for collapseTier/contrastSafe/stickyPosition (all 2-4 short options)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "ToolsPanel — site-header alone already has 4 of the 7 members (headerSticky/Shrink/Transparent + contrastSafe), comfortably past the A5 threshold"
+      },
+      "control_set": [
+        {
+          "member_label": "Sticky on scroll",
+          "component": "native `position.sticky` block support (site-header, notice-banner) — prefer over a bespoke boolean per Part G",
+          "dimensions_applied": [
+            "Part G — 'prefer native, don't hand-roll'"
+          ]
+        },
+        {
+          "member_label": "Sticky edge (notice-banner: top/bottom)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Shrink on scroll",
+          "component": "ToggleControl (no native equivalent — genuine SGS behaviour)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Transparent until scroll",
+          "component": "ToggleControl (no native equivalent)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Contrast-safe text over transparent header",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Nav-collapse breakpoint tier",
+          "component": "ToggleGroupControl (768/1024/custom) + RangeControl(px) when custom",
+          "dimensions_applied": [
+            "dimension 3 device-tier",
+            "dimension 2 units (px)"
+          ]
+        }
+      ],
+      "shared_component": "OWNED BY TRACK 2 (header/footer/nav rebuild) — do NOT design a split here",
+      "spec_ref": "Spec 35 Part G ('position.sticky N — HIGH priority, free inspector UI'), Part C Position/layout ('sticky (N: position.sticky) T')",
+      "current_state": "7 attrs across 3 blocks: sgs/site-header (contrastSafe enum, headerShrink/headerSticky/headerTransparent bool — verified live: site-header/block.json declares NO `supports.position.sticky`, so headerSticky is a fully bespoke boolean today, not routed through the native support), sgs/adaptive-nav (collapseCustomPx number, collapseTier enum — this is a responsive nav-collapse BREAKPOINT, not stickiness, see notes), sgs/notice-banner (stickyPosition enum top/bottom).",
+      "divergence": "Superseded: the sticky/transparent/shrink/contrast-safe + nav-collapse behaviour on site-header/adaptive-nav/notice-banner is being rebuilt by Track 2 (header/footer/nav) as a 3-state (inherit/on/off) value tiered per surface + breakpoint — a fuller model than a standalone StickyToggle+NavCollapseTier split. The Spec 35 rollout must NOT touch these blocks' sticky/collapse behaviour.",
+      "divergence_severity": "none",
+      "notes": "RESOLVED via Track 2 (Bean, 2026-07-19). Owner = the header/footer/nav FULL REBUILD — Spec 17 (§S9) + the P1 architecture decision `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md` (locked: every responsive on/off capability — sticky/transparent/shrink/contrast-safe — becomes a 3-state inherit/on/off value, tiered per surface + breakpoint; collapseTier default set there). The current flat booleans (headerSticky/headerTransparent/headerShrink + contrastSafe, no tiered siblings) are what that rebuild replaces. Spec 35's job here is ZERO: do not independently restyle or split these — defer to Track 2 to avoid a collision on the shared branch. This row is retained for completeness, marked deferred/none so the Wave rollout skips it."
+    },
+    {
+      "setting_key": "behaviour:visibility-responsive",
+      "category": "behaviour-family",
+      "label": "Whole-block visibility (device tier, empty-state, editor-preview)",
+      "optimal_control": {
+        "component": "DeviceVisibilityPanel (EXISTS, src/components/universal-extensions/DeviceVisibilityPanel.js + src/blocks/extensions/responsive-visibility.js — already wired globally via editor.BlockEdit filter to every block). Device-tier hide/show must ALWAYS route here; a block-private hideOnMobile/showOnDesktop pair is the divergence to remove, not a legitimate alternative.",
+        "props": {
+          "sgsHideOnMobile / sgsHideOnTablet / sgsHideOnDesktop": "ToggleControl x3, already built"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "ToolsPanel, already applied (PanelBody today — upgrade to ToolsPanel once bundled with the non-device members below)"
+      },
+      "control_set": [
+        {
+          "member_label": "Hide on mobile / tablet / desktop",
+          "component": "DeviceVisibilityPanel (existing, ToggleControl x3)",
+          "dimensions_applied": [
+            "dimension 3 device-tier (768/1024 — matches D2's locked standard, verify sgsHideOnTablet's stated '768px to 1023px' help text against the 768/1024 lock)"
+          ]
+        },
+        {
+          "member_label": "Hide when empty (no content to show, e.g. empty cart)",
+          "component": "ToggleControl — NOT a device-tier control, a content-conditional (belongs conceptually nearer form-validation-conditional's 'conditional display' set than device visibility)",
+          "dimensions_applied": []
+        },
+        {
+          "member_label": "Show placeholder/pending state in editor only",
+          "component": "ToggleControl — editor-only preview aid, not a frontend visibility rule at all",
+          "dimensions_applied": []
+        }
+      ],
+      "shared_component": "DeviceVisibilityPanel",
+      "spec_ref": "Spec 35 Part D (Responsive UX — D1 device-preview vs per-block responsive attrs, D2 locked 768/1024), Part C Conditional/display ('by device T')",
+      "current_state": "6 attrs across 4 blocks. sgs/decorative-image duplicates the universal panel directly: hideOnMobile + hideOnTablet (bespoke booleans) alongside the ALREADY-WIRED universal sgsHideOnMobile/sgsHideOnTablet/sgsHideOnDesktop — decorative-image is one of the few blocks that should simply DELETE its private pair and rely on the universal extension it already inherits. sgs/whatsapp-cta uses the INVERTED polarity (showOnDesktop/showOnMobile, 'show' not 'hide') for the same concept. sgs/cart's hideWhenEmpty and sgs/trust-bar's showPendingInEditor are not device-tier at all (see control_set notes).",
+      "divergence": "Per-block device show/hide duplicates the already-wired universal DeviceVisibilityPanel (decorative-image's hideOnMobile/Tablet is pure deletable duplication; whatsapp-cta uses inverted show* polarity); route all through the universal extension.",
+      "divergence_severity": "high",
+      "notes": "Distinct from show-hide-display-toggle (the first row in this registry): that family is CONTENT-ELEMENT visibility (which pieces of a block's own markup render, e.g. 'show avatar'); this family is WHOLE-BLOCK visibility (does the block render at all, and on which device). decorative-image's hideOnMobile/hideOnTablet is the single clearest 'delete this, the universal extension already covers it' case found in the whole behaviour-family slice — it is pure duplication with zero unique behaviour, unlike most other high-severity rows which need a genuine BUILD."
+    },
+    {
+      "setting_key": "css:align-content",
+      "category": "css-property",
+      "label": "Align content",
+      "optimal_control": {
+        "component": "ToggleGroupControl (flex-start / flex-end / center / space-between / space-around / stretch) inside ResponsiveControl",
+        "props": {
+          "options": [
+            "flex-start",
+            "flex-end",
+            "center",
+            "space-between",
+            "space-around",
+            "stretch"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "6-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'stretch'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H",
+      "current_state": "1 distinct attr names / 17 instances across 17 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "medium",
+      "notes": "1 attr, no observed control at all across 17 instances (conformance: unknown) — same 'strong missing signal' pattern as flex-direction/grid-auto-rows; needs a live-code check."
+    },
+    {
+      "setting_key": "css:align-items",
+      "category": "css-property",
+      "label": "Align items",
+      "optimal_control": {
+        "component": "ToggleGroupControl (flex-start / center / flex-end / stretch / baseline) inside ResponsiveControl",
+        "props": {
+          "options": [
+            "flex-start",
+            "center",
+            "flex-end",
+            "stretch",
+            "baseline"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "5-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'stretch'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H + Part G (prefer native layout supports where available — verticalAlignment coverage is WP-general, not a Spec 35 quote)",
+      "current_state": "4 distinct attr names / 17 instances across 15 blocks; observed_control_types: SelectControl; observed_roles: layout; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "4 attrs, already consistent on SelectControl."
+    },
+    {
+      "setting_key": "css:aspect-ratio",
+      "category": "css-property",
+      "label": "Aspect ratio",
+      "optimal_control": {
+        "component": "ToggleGroupControl (1:1, 4:3, 16:9, 21:9) + Custom text entry — mirrors native dimensions.aspectRatio support UI",
+        "props": {
+          "options": [
+            "1:1",
+            "4:3",
+            "16:9",
+            "21:9",
+            "custom"
+          ]
+        },
+        "preset_layer": "the ratio ToggleGroupControl IS the preset layer; 'Custom' reveals a free-text ratio field",
+        "units": "n/a (ratio, not a length)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl (short closed set) + explicit Custom path — meets dimension 5 exactly",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'auto' (no forced ratio)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Media (native dimensions.aspectRatio) + Part G (HIGH — prefer native over hand-rolled)",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: SelectControl, TextControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
+      "divergence": "the 1 observed instance uses SelectControl/TextControl rather than WP's native aspectRatio support, which already ships this exact UI for free",
+      "divergence_severity": "high",
+      "notes": "Part G HIGH-priority native-adoption item — SGS should declare `supports.dimensions.aspectRatio: true` rather than hand-rolling. Native support isn't per-breakpoint though, so a block needing a genuinely different ratio on mobile (e.g. square avatar image widening to 16:9 hero) still needs the bespoke ResponsiveControl-wrapped version; note both paths. | Spec 32 routing: adopting this native supports.* flag MUST pair with __experimentalSkipSerialization + wp_style_engine_get_styles scoped-<style> emission (the D292 pattern) — never a bare supports declaration (it auto-inlines)."
+    },
+    {
+      "setting_key": "css:background-attachment",
+      "category": "css-property",
+      "label": "Background image attachment",
+      "optimal_control": {
+        "component": "ToggleGroupControl (scroll / fixed / local)",
+        "props": {
+          "options": [
+            "scroll",
+            "fixed",
+            "local"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "3-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'scroll' (CSS initial)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "no observed control at all (conformance: unknown), 1 attr/4 instances",
+      "divergence_severity": "low",
+      "notes": "Note for the parent: 'fixed' (parallax-style) is commonly force-disabled on mobile for performance/scroll-jank reasons — if built, consider auto-downgrading fixed->scroll under 768px rather than exposing it as a naive per-device toggle."
+    },
+    {
+      "setting_key": "css:background-color",
+      "category": "css-property",
+      "label": "Background colour",
+      "optimal_control": {
+        "component": "WP ColorGradientControl (solid + gradient in ONE control) - a Solid | Gradient segmented switch; the token palette + custom + alpha live under Solid, the gradient builder under Gradient",
+        "props": {
+          "enableAlpha": true,
+          "clearable": true,
+          "disableCustomColors": false
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "native ColorPalette Clear button",
+        "colour_channel": "solid + gradient - the one colour control that legitimately does BOTH (v2 split: this is where gradients are valid, unlike text/border)"
+      },
+      "shared_component": "ColorGradientControl (WP native; wraps the theme.json palette + gradients; DesignTokenPicker-equivalent token list under Solid)",
+      "spec_ref": "Part B Colour row + Part I",
+      "current_state": "37 distinct attr names / 49 instances across 25 blocks; observed_control_types: DesignTokenPicker, RangeControl, SelectControl, ToggleControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
+      "divergence": "v2 split: background is the one place a gradient is valid, so the optimal control is ColorGradientControl (solid + gradient), NOT a plain solid-only DesignTokenPicker. Several blocks today offer only a preset swatch list or an on/off tinted-background toggle - both incomplete per Part F, and none expose the valid gradient path.",
+      "divergence_severity": "high",
+      "notes": "37 attr names, 49 instances; SelectControl/ToggleControl/RangeControl usages likely mean some blocks only offer a preset SWATCH list or an on/off 'tinted background' toggle rather than a full picker — both are incomplete per Part F ('incomplete option sets'). | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): SPLIT OUT from the flat colour picker - background-colour uses WP ColorGradientControl (Solid | Gradient in one), the single control that legitimately does both. Text/border colours stay solid-only. D302 hex8 emission still applies to the solid channel."
+    },
+    {
+      "setting_key": "css:background-image",
+      "category": "css-property",
+      "label": "Background overlay (gradient / colour)",
+      "optimal_control": {
+        "component": "GradientPicker (custom builder + per-stop colour + alpha) with a solid-colour fallback, PLUS a Linear|Radial segmented switch and an AnglePickerControl (deg) for linear",
+        "props": {
+          "gradients": "theme.json preset gradients",
+          "clearable": true,
+          "enableAlpha": true
+        },
+        "preset_layer": "theme.json gradient presets seed the builder; custom stops always editable",
+        "units": "n/a (gradient stops carry their own %, not a single unit)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "GradientPicker's native Clear",
+        "gradient_type": "Linear | Radial segmented switch",
+        "angle": "AnglePickerControl (deg) for linear gradients",
+        "a11y": "keyboard-operable gradient stops; per-stop colour picker + alpha"
+      },
+      "shared_component": "GradientPicker",
+      "spec_ref": "Part B GradientPicker row + Part I ('Gradient / bg overlay — MISSING')",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: colour-gradient; conformance: unknown (dedup_confidence: review)",
+      "divergence": "The attr is overlayGradient (role colour-gradient) — a background OVERLAY, not a background photo. Needs a real GradientPicker (+ solid-colour fallback + alpha), not a preset-only or absent control.",
+      "divergence_severity": "high",
+      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): + angle (AnglePickerControl) + Linear/Radial switch + keyboard-operable per-stop colour/alpha. Overlay layer only (the real background image is the media-source picker)."
+    },
+    {
+      "setting_key": "css:background-position",
+      "category": "css-property",
+      "label": "Background image position",
+      "optimal_control": {
+        "component": "FocalPointPicker (position the background layer) — NOT exposed today; verify-if-dead first",
+        "props": {
+          "presets": [
+            "top left",
+            "top center",
+            "top right",
+            "center left",
+            "center center",
+            "center right",
+            "bottom left",
+            "bottom center",
+            "bottom right"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a (keyword pairs, or FocalPointPicker-style 0-1 floats)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "9 combinations — too many for a plain ToggleGroupControl row, not a searchable list either; needs a dedicated compact 3x3 grid widget",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'center center'",
+        "a11y": "keyboard: X/Y number inputs + arrow-nudge if exposed via FocalPointPicker"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H (focal point -> FocalPointPicker is the closest analogue, but that component positions an IMAGE crop point, not a CSS background-position keyword pair)",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "backgroundPosition exists on container/cta-section/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
+      "divergence_severity": "medium",
+      "notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one. | v2 (2026-07-19): if exposed (after the dead-control check), use FocalPointPicker with keyboard X/Y inputs; verify-if-dead first per Bean ruling 3."
+    },
+    {
+      "setting_key": "css:background-repeat",
+      "category": "css-property",
+      "label": "Background image repeat",
+      "optimal_control": {
+        "component": "ToggleGroupControl (no-repeat / repeat / repeat-x / repeat-y)",
+        "props": {
+          "options": [
+            "no-repeat",
+            "repeat",
+            "repeat-x",
+            "repeat-y"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "4-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'repeat' (CSS initial)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "no observed control at all (conformance: unknown), 1 attr/4 instances",
+      "divergence_severity": "low",
+      "notes": "Small, self-contained enum control — lowest-risk of the background-* group to build."
+    },
+    {
+      "setting_key": "css:background-size",
+      "category": "css-property",
+      "label": "Background image size",
+      "optimal_control": {
+        "component": "ToggleGroupControl (cover / contain / auto) + Custom UnitControl path for an explicit size",
+        "props": {
+          "options": [
+            "cover",
+            "contain",
+            "auto",
+            "custom"
+          ]
+        },
+        "preset_layer": null,
+        "units": "px/% for the Custom path only",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "3 named presets + an explicit Custom path (dimension 5) since raw CSS background-size also accepts explicit lengths, not just the 3 keywords",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'auto'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "no observed control at all (conformance: unknown), 1 attr/4 instances",
+      "divergence_severity": "low",
+      "notes": "Bundle with background-position/-repeat/-attachment as one 'Background image' sub-panel once background-image (the actual media/gradient source) is built."
+    },
+    {
+      "setting_key": "css:border-color",
+      "category": "css-property",
+      "label": "Border colour",
+      "optimal_control": {
+        "component": "DesignTokenPicker (as the colour slot inside BorderBoxControl)",
+        "props": {
+          "enableAlpha": true,
+          "clearable": true,
+          "disableCustomColors": false
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "native ColorPalette Clear button, shared reset with the border builder",
+        "colour_channel": "solid only",
+        "a11y": "named swatches",
+        "border_builder_member": true
+      },
+      "shared_component": "DesignTokenPicker",
+      "spec_ref": "Part B Border row + Part I",
+      "current_state": "9 distinct attr names / 15 instances across 12 blocks; observed_control_types: DesignTokenPicker, SelectControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "medium",
+      "notes": "9 attr names; mix of DesignTokenPicker + SelectControl. Should be one slot inside a unified border builder alongside border-width/border-style/border-radius, not a standalone picker per block. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): member of the compound Border builder (native BorderBoxControl) - the colour slot sits alongside width + style + radius in one panel, not a standalone per-block picker. Solid only."
+    },
+    {
+      "setting_key": "css:border-radius",
+      "category": "css-property",
+      "label": "Border radius",
+      "optimal_control": {
+        "component": "__experimentalBorderRadiusControl (4-corner) via box_family",
+        "props": {
+          "units": [
+            "px",
+            "%",
+            "rem"
+          ],
+          "allowReset": true
+        },
+        "preset_layer": "theme.json custom border-radius tokens seed the corner control where available",
+        "units": "px/%/rem",
+        "responsive_device_tier": false,
+        "multi_value": "corner",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset",
+        "border_builder_member": true
+      },
+      "shared_component": null,
+      "spec_ref": "Part B BoxControl-family row + Part H (radius -> __experimentalBorderRadiusControl)",
+      "current_state": "16 distinct attr names / 37 instances across 16 blocks; observed_control_types: DesignTokenPicker, RangeControl, TextControl, UnitControl; observed_roles: typography, visual; box_families: borderRadius, imageBorderRadius; conformance: divergent (dedup_confidence: high)",
+      "divergence": "16 attrs across 2 box_families (borderRadius, imageBorderRadius) on DesignTokenPicker/RangeControl/TextControl/UnitControl — none are the dedicated 4-corner control; several look like single-value 'rounded corners' toggles",
+      "divergence_severity": "high",
+      "notes": "Same multi-value failure as padding, at the corner level: link/unlink 4-corner control, not a single scalar. Marked non-responsive by default since radius rarely needs a device tier, but flag if a specific block proves otherwise. | v2 (2026-07-19): folds into the compound Border builder panel (per-corner control + link toggle + units), presented together with border width/style/colour rather than on a separate panel."
+    },
+    {
+      "setting_key": "css:border-style",
+      "category": "css-property",
+      "label": "Border style",
+      "optimal_control": {
+        "component": "Segmented control inside the same BorderBoxControl as border-width/colour",
+        "props": {
+          "options": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "double"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "5-option closed CSS enum — folds into BorderBoxControl's native style picker rather than a standalone ToggleGroupControl",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "'none' is the reset state",
+        "border_builder_member": true
+      },
+      "shared_component": null,
+      "spec_ref": "Part B Border row",
+      "current_state": "3 distinct attr names / 10 instances across 10 blocks; observed_control_types: SelectControl; observed_roles: visual; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "3 attrs, already consistent on SelectControl — functionally fine today; the only real gap is that it's a separate control from width/colour/radius instead of one unified builder. | v2 (2026-07-19): MOVED OUT of the padding/margin 4-side box; lives in the Border builder's native style picker alongside width + colour + radius (native BorderBoxControl)."
+    },
+    {
+      "setting_key": "css:border-width",
+      "category": "css-property",
+      "label": "Border width",
+      "optimal_control": {
+        "component": "BorderBoxControl (per-side split + enableStyle) via box_family",
+        "props": {
+          "units": [
+            "px"
+          ],
+          "enableStyle": true,
+          "colors": "theme.json palette"
+        },
+        "preset_layer": null,
+        "units": "px (border-width doesn't take %)",
+        "responsive_device_tier": false,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset",
+        "border_builder_member": true,
+        "layout": "All sides / Per side segmented toggle; own unit per side when unlinked"
+      },
+      "shared_component": "DesignTokenPicker (colour slot) + native BorderBoxControl shell",
+      "spec_ref": "Part B Border row (BorderBoxControl: enableStyle + enableAlpha + per-side split) + design-spine dimension 4 (MULTI-VALUE)",
+      "current_state": "5 distinct attr names / 12 instances across 12 blocks; observed_control_types: DesignTokenPicker, SelectControl; observed_roles: visual; box_families: borderWidth, imageBorderWidth; conformance: divergent (dedup_confidence: high)",
+      "divergence": "5 attrs across 2 box_families (borderWidth, imageBorderWidth) on DesignTokenPicker/SelectControl — neither is a per-side border-width control; both read as single-value pickers",
+      "divergence_severity": "high",
+      "notes": "Should unify with border-color + border-style + border-radius into ONE BorderBoxControl builder per box_family, not four separate settings each with their own half-built control. | v2 (2026-07-19): member of the compound Border builder (native BorderBoxControl) - width sits with style + colour + radius in one interwoven panel."
+    },
+    {
+      "setting_key": "css:bottom",
+      "category": "css-property",
+      "label": "Position offset — bottom",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "%"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": null,
+        "units": "px/%",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part H + Part G",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "medium",
+      "notes": "Same standalone-scalar note as css:top — watch for a future left/right pair that would justify promoting to a shared family."
+    },
+    {
+      "setting_key": "css:box-shadow",
+      "category": "css-property",
+      "label": "Box shadow",
+      "optimal_control": {
+        "component": "ShadowControl (real X/Y/blur/spread/colour+alpha/inset builder) with 6 NAMED visual presets on top and a Normal | Hover state switch",
+        "props": {
+          "presets": "theme.json shadow presets",
+          "multiLayer": "ideal, not required at v1"
+        },
+        "preset_layer": "theme.json shadow presets seed the builder; every field stays editable",
+        "units": "px for X/Y/blur/spread",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "allowReset clears to 'no shadow'",
+        "presets": "6 named visual presets: None, Subtle, Soft, Lifted, Top-left, Hard (each named for screen readers) - they seed the builder, never replace it",
+        "states": "Normal | Hover segmented via StateToggleControl; keyboard Focus mirrors Hover",
+        "builder_fields": "X, Y, Blur, Spread + colour+alpha + an Inset toggle"
+      },
+      "shared_component": "ShadowControl",
+      "spec_ref": "Part B Shadow row (real builder, FAIL smell = None/Small/Medium select) + Part I ('MISSING — build shared ShadowControl') + Part J Wave 1 item 3",
+      "current_state": "6 distinct attr names / 19 instances across 10 blocks; observed_control_types: RangeControl, SelectControl, TextControl; observed_roles: behaviour, color; conformance: divergent (dedup_confidence: review)",
+      "divergence": "6 attrs on RangeControl/SelectControl/TextControl — textbook Part B FAIL smell: a None/Small/Medium-style select with no real X/Y/blur/spread/colour builder",
+      "divergence_severity": "high",
+      "notes": "This is Wave-1 Part J item 3 — ShadowControl is listed as 'built this phase' in the blessed-components table, so the fix is rollout (swap every block's ad hoc shadow select for ShadowControl), not a new build. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): 6 NAMED presets (None/Subtle/Soft/Lifted/Top-left/Hard) + Normal/Hover state (StateToggleControl, Focus mirrors Hover) + Inset toggle. Replaces the None/Small/Medium select."
+    },
+    {
+      "setting_key": "css:color",
+      "category": "css-property",
+      "label": "Text colour",
+      "optimal_control": {
+        "component": "DesignTokenPicker",
+        "props": {
+          "enableAlpha": true,
+          "clearable": true,
+          "disableCustomColors": false
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "native ColorPalette Clear button; sits in the block's colour ToolsPanel group",
+        "colour_channel": "solid only - NO gradient (v2 split: gradient is valid on backgrounds only; text/border take a flat colour). The rainbow swatch opens the full hue/hex picker.",
+        "a11y": "swatch/preset names exposed to screen readers"
+      },
+      "shared_component": "DesignTokenPicker",
+      "spec_ref": "Part B Colour row + Part I (DesignTokenPicker exists, needs enableAlpha/clearable audit)",
+      "current_state": "70 distinct attr names / 125 instances across 43 blocks; observed_control_types: DesignTokenPicker, RangeControl, SelectControl, TextControl, ToggleControl; observed_roles: color; conformance: divergent (dedup_confidence: high)",
+      "divergence": "70 attr names span colour AND a handful of behaviour/select uses (dedup groups every *Colour suffix together); several blocks use RangeControl/SelectControl/TextControl/ToggleControl instead of DesignTokenPicker, and DesignTokenPicker itself is not yet alpha-audited everywhere",
+      "divergence_severity": "high",
+      "notes": "Highest-instance-count setting (125) — the single biggest lever in the registry. Some observed_control_types (RangeControl/ToggleControl) are almost certainly OTHER settings that share the dedup key by accident (e.g. a boolean 'use custom colour' toggle) — worth a spot-check, flagged in the parent report. | D302: emit hex8 (alpha) — WP safecss_filter_attr strips inline functional rgba/hsl; the scoped-<style> channel is safe, but normalise to hex8 in the shared colour helper before any inline path. | v2 (2026-07-19): text colour is SOLID ONLY - no gradient on text; named swatches for a11y; custom full picker behind the rainbow swatch. See compound_sets/structural_patterns in _meta for the colour-split rationale."
+    },
+    {
+      "setting_key": "css:display",
+      "category": "css-property",
+      "label": "Display type",
+      "optimal_control": {
+        "component": "ToggleGroupControl (block / flex / grid / inline-block / none)",
+        "props": {
+          "options": [
+            "block",
+            "flex",
+            "grid",
+            "inline-block",
+            "none"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "5-option closed CSS enum, icon-labelled",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to the block's native default display"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H (segmented choice -> ToggleGroupControl) + Part D2 (this is exactly the 'block on mobile, grid on desktop' pattern D2 exists for)",
+      "current_state": "2 distinct attr names / 21 instances across 20 blocks; observed_control_types: SelectControl; observed_roles: layout; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "2 attrs, already consistent on SelectControl — swap component only; the responsive-tier gap (a device switch from grid->block on mobile) is the bigger real-world win here."
+    },
+    {
+      "setting_key": "css:flex-direction",
+      "category": "css-property",
+      "label": "Flex direction",
+      "optimal_control": {
+        "component": "ToggleGroupControl (row / column / row-reverse / column-reverse) inside ResponsiveControl",
+        "props": {
+          "options": [
+            "row",
+            "column",
+            "row-reverse",
+            "column-reverse"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "4-option closed CSS enum (native WP flex layout support only exposes horizontal/vertical, not the reverse variants, so SGS needs its own control for full parity)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'row'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H + Part C ('responsive column ordering' P) + Part G (native layout support covers the simple case, not reverse)",
+      "current_state": "1 distinct attr names / 17 instances across 17 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "1 attr, no observed control at all (conformance: unknown) across 17 instances — cannot confirm any client-facing control exists for this property today",
+      "divergence_severity": "high",
+      "notes": "17 instances with zero observed controls is a strong MISSING signal, not just a wrong-component one. If it turns out to be render.php/CSS-only, that's a real client-facing gap (stack order on mobile is a very common ask) per Part C 'responsive column ordering'."
+    },
+    {
+      "setting_key": "css:flex-wrap",
+      "category": "css-property",
+      "label": "Flex wrap",
+      "optimal_control": {
+        "component": "ToggleGroupControl (nowrap / wrap / wrap-reverse)",
+        "props": {
+          "options": [
+            "nowrap",
+            "wrap",
+            "wrap-reverse"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "3-option closed CSS enum (native WP flex layout support has a plain wrap on/off toggle but not the reverse variant)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'nowrap'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H + Part G",
+      "current_state": "1 distinct attr names / 20 instances across 20 blocks; observed_control_types: SelectControl; observed_roles: none; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "1 attr, already consistent on SelectControl — component swap + add the responsive tier, since wrapping behaviour commonly needs to differ by device."
+    },
+    {
+      "setting_key": "css:font-family",
+      "category": "css-property",
+      "label": "Font family",
+      "optimal_control": {
+        "component": "Native supports.typography.fontFamily:true — renders WP's own Font Family dropdown from theme.json's curated fontFamilies; scoped to display blocks (heading/quote/button). Optional Font-Library 'more fonts' ComboboxControl as a SECONDARY layer only, not a bespoke replacement.",
+        "props": {
+          "options": "theme.json settings.typography.fontFamilies + sgs-google-fonts collection (1,923 fonts)"
+        },
+        "preset_layer": "theme.json families act as the curated preset list; Font Library modal is the 'more fonts' escape hatch",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ComboboxControl — a searchable list of potentially hundreds of fonts is exactly the >~10 case Part H names for Combobox, not a plain SelectControl",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to theme default"
+      },
+      "shared_component": "Native supports.typography.fontFamily (reads theme.json settings.typography.fontFamilies) + optional Font-Library ComboboxControl secondary — display blocks only",
+      "spec_ref": "Part G (prefer native — supports.typography.fontFamily reads theme.json fontFamilies; don't hand-roll) + Part H + Font Library Collection (plugins/sgs-blocks CLAUDE.md)",
+      "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl, TextControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
+      "divergence": "fontFamily is NOT exposed to clients today (Bean confirmed). Build a curated searchable font picker, but scope it to DISPLAY blocks only — heading, quote, button — off body/structural blocks, to protect the design system.",
+      "divergence_severity": "high",
+      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED. | COUNCIL REFINEMENT 2026-07-19 (honours Bean's display-only ruling, better implementation): route through the NATIVE supports.typography.fontFamily flag (per-block opt-in) which reads theme.json's curated list and integrates with Site-Editor Styles — NOT a bespoke SgsFontFamilyControl (Part G / theme.json-owns-typography). HC2 scope on sgs/quote: font-family governs the attribution + a wrapper-inheritable default via native support on the BLOCK ROOT only — NEVER a selector targeting .sgs-quote__body (child sgs/text inherits by cascade; a child-targeted parent control is dead per HC2/D192). Severity high: same 'not exposed at all' gap as the other native-missing rows (aspect-ratio etc.), scoped to display blocks. | v2 (2026-07-19) build note: reconcile sgs/button's existing dead font-family attr BEFORE wiring the native supports.typography.fontFamily flag (the artifact flags 'reconcile button's dead attr first')."
+    },
+    {
+      "setting_key": "css:font-size",
+      "category": "css-property",
+      "label": "Font size",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl (via TypographyControls)",
+        "props": {
+          "units": [
+            "px",
+            "em",
+            "rem",
+            "%"
+          ],
+          "isResetValueOnUnitChange": true,
+          "withInputField": true
+        },
+        "preset_layer": "FontSizePicker presets seed the box (custom value always editable)",
+        "units": "px/em/rem/%; not unitless",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset; lives in the Typography ToolsPanel"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography + Part H (font size -> FontSizePicker/UnitControl)",
+      "current_state": "62 distinct attr names / 105 instances across 21 blocks; observed_control_types: TextControl; observed_roles: typography; conformance: consistent (dedup_confidence: high)",
+      "divergence": "blocks on a bare RangeControl or px-only lack the unit set + preset seeding",
+      "divergence_severity": "medium",
+      "notes": "Worked example from the design spine, reused verbatim. Per-element (title/label/price), not wrapper — TypographyControls owns the shape."
+    },
+    {
+      "setting_key": "css:font-style",
+      "category": "css-property",
+      "label": "Font style",
+      "optimal_control": {
+        "component": "SelectControl via TypographyControls",
+        "props": {
+          "options": "SGS_FONT_STYLE_OPTIONS (normal/italic + inherit)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "3 short options — a ToggleGroupControl would be more idiomatic per dimension 5, but this is the already-built shared component; not worth diverging from the blessed component for 3 items",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to '' (inherit)"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography row",
+      "current_state": "7 distinct attr names / 16 instances across 15 blocks; observed_control_types: SelectControl; observed_roles: typography; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "7 attrs, consistent conformance already."
+    },
+    {
+      "setting_key": "css:font-weight",
+      "category": "css-property",
+      "label": "Font weight",
+      "optimal_control": {
+        "component": "SelectControl via TypographyControls",
+        "props": {
+          "options": "SGS_FONT_WEIGHT_OPTIONS (100-900 + inherit)"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "SelectControl (10 options incl. inherit) — right at the Combobox threshold but kept as SelectControl to match the already-built, audited shared component; a ToggleGroupControl would be too wide for 10 items",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to '' (inherit)"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography row + Part H",
+      "current_state": "11 distinct attr names / 21 instances across 16 blocks; observed_control_types: SelectControl; observed_roles: typography; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "11 attrs, already consistent conformance. The only real gap is the handful of attrs not yet routed through TypographyControls at all."
+    },
+    {
+      "setting_key": "css:gap",
+      "category": "css-property",
+      "label": "Gap (row/column spacing)",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl (native layout.spacing.blockGap where the block genuinely never needs per-tier gap)",
+        "props": {
+          "units": [
+            "px",
+            "rem",
+            "%"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": "SpacingSizesControl token presets seed the box (theme.json spacing scale) alongside the raw UnitControl",
+        "units": "px/rem/%",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part B Spacing row (token-based SpacingSizesControl) + Part G (native layout.spacing.blockGap, HIGH) + Part H",
+      "current_state": "9 distinct attr names / 65 instances across 25 blocks; observed_control_types: RangeControl, SelectControl, UnitControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
+      "divergence": "9 attrs mix RangeControl/SelectControl/UnitControl; none currently offer the token-preset layer (dimension 1) on top of the raw box",
+      "divergence_severity": "medium",
+      "notes": "gap is the highest-value candidate for adopting the theme.json spacing token scale (SpacingSizesControl) rather than raw pixels — most card-grid/flex composite blocks want '40/Medium' not '38px'."
+    },
+    {
+      "setting_key": "css:grid-auto-rows",
+      "category": "css-property",
+      "label": "Grid auto row height",
+      "optimal_control": {
+        "component": "UnitControl (px / fr / rem / auto) inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "fr",
+            "rem"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": null,
+        "units": "px/fr/rem; 'auto' as the clear state",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part H (numeric+unit -> UnitControl)",
+      "current_state": "1 distinct attr names / 17 instances across 17 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "1 attr, no observed control at all across 17 instances (conformance: unknown)",
+      "divergence_severity": "high",
+      "notes": "Same missing-signal pattern as align-content/flex-direction/grid-template-rows — all four share 17 or 51 instances with zero observed controls. Worth a single combined live-code audit rather than four separate ones, since they may all trace to the same composite grid block."
+    },
+    {
+      "setting_key": "css:grid-template-columns",
+      "category": "css-property",
+      "label": "Grid columns",
+      "optimal_control": {
+        "component": "RangeControl (column count, 1-6, withInputField+allowReset) inside ResponsiveControl",
+        "props": {
+          "min": 1,
+          "max": 6,
+          "withInputField": true,
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "n/a (count, not a length)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part H (bounded numeric -> RangeControl) + Part G (native CSS-grid layout support has a columnCount UI but no per-breakpoint tiers, which SGS needs per D2)",
+      "current_state": "7 distinct attr names / 112 instances across 19 blocks; observed_control_types: RangeControl, SelectControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
+      "divergence": "7 attrs, second-highest instance count in the whole registry (112) mixing RangeControl + SelectControl; already the closest-to-optimal shape of the whole set",
+      "divergence_severity": "medium",
+      "notes": "112 instances make this the #2 highest-impact row after color. Native WP CSS-grid layout support (WP 6.7+) covers the non-responsive case for free — worth checking whether some of these 7 attrs could drop to native support and only the genuinely-responsive ones keep the bespoke RangeControl+ResponsiveControl."
+    },
+    {
+      "setting_key": "css:grid-template-rows",
+      "category": "css-property",
+      "label": "Grid rows",
+      "optimal_control": {
+        "component": "RangeControl (row count) inside ResponsiveControl, + a Custom text path for an explicit track-list string",
+        "props": {
+          "min": 1,
+          "max": 6,
+          "withInputField": true,
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "count-based like grid-template-columns, with a Custom escape hatch since some grids need an explicit track list (e.g. minmax()), not just a count",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'auto'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H + mirrors grid-template-columns treatment",
+      "current_state": "3 distinct attr names / 51 instances across 17 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "3 attrs, 51 instances, but NO observed control at all (conformance: unknown) — cannot confirm a client-facing row-count control exists anywhere today",
+      "divergence_severity": "high",
+      "notes": "51 instances with zero observed controls is the strongest 'likely missing entirely' signal in the whole 60-row set outside the explicit Part I MISSING items. Needs a live-code audit before committing to build scope."
+    },
+    {
+      "setting_key": "css:height",
+      "category": "css-property",
+      "label": "Height",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "%",
+            "vh"
+          ],
+          "isResetValueOnUnitChange": true,
+          "withInputField": true
+        },
+        "preset_layer": null,
+        "units": "px/%/vh; 'auto' as the clear state",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part B UnitControl row + Part H",
+      "current_state": "11 distinct attr names / 19 instances across 6 blocks; observed_control_types: RangeControl, TextControl, UnitControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
+      "divergence": "11 attrs mix RangeControl/TextControl/UnitControl",
+      "divergence_severity": "medium",
+      "notes": "Same shape as width — consolidate onto UnitControl+ResponsiveControl."
+    },
+    {
+      "setting_key": "css:justify-content",
+      "category": "css-property",
+      "label": "Justify content",
+      "optimal_control": {
+        "component": "ToggleGroupControl (flex-start / center / flex-end / space-between / space-around / space-evenly) inside ResponsiveControl",
+        "props": {
+          "options": [
+            "flex-start",
+            "center",
+            "flex-end",
+            "space-between",
+            "space-around",
+            "space-evenly"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "6 short icon-labelled options (native WP flex layout justifyContent only covers left/center/right/space-between — SGS needs the fuller CSS set plus device tiers, which native support doesn't provide)",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'flex-start'"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H + Part G (native layout support is the PARTIAL alternative, not a full replacement here)",
+      "current_state": "3 distinct attr names / 23 instances across 21 blocks; observed_control_types: SelectControl; observed_roles: none; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "3 attrs, already consistent on SelectControl. Real gap is adding the responsive tier (mobile often wants centered where desktop wants space-between) and the full 6-value CSS set."
+    },
+    {
+      "setting_key": "css:justify-items",
+      "category": "css-property",
+      "label": "Justify items (grid)",
+      "optimal_control": {
+        "component": "ToggleGroupControl (start / center / end / stretch)",
+        "props": {
+          "options": [
+            "start",
+            "center",
+            "end",
+            "stretch"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "4-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'stretch' (CSS initial)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H",
+      "current_state": "1 distinct attr names / 17 instances across 17 blocks; observed_control_types: SelectControl; observed_roles: none; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "1 attr, already consistent on SelectControl — component swap + responsive tier only."
+    },
+    {
+      "setting_key": "css:letter-spacing",
+      "category": "css-property",
+      "label": "Letter spacing",
+      "optimal_control": {
+        "component": "UnitControl via TypographyControls",
+        "props": {
+          "units": [
+            "px",
+            "em"
+          ]
+        },
+        "preset_layer": null,
+        "units": "px/em (no % — CSS letter-spacing doesn't take %)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset; Typography ToolsPanel"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography row",
+      "current_state": "4 distinct attr names / 12 instances across 4 blocks; observed_control_types: RangeControl, ResponsiveControl, SelectControl, UnitControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
+      "divergence": "TypographyControls' showLetterSpacing path is correct where used, but 4 attrs mix RangeControl/ResponsiveControl/SelectControl/UnitControl directly rather than the shared component, and none currently expose Tablet/Mobile tiers",
+      "divergence_severity": "medium",
+      "notes": "Same tiering gap as line-height — add letterSpacingTablet/Mobile to the shared component rather than per-block."
+    },
+    {
+      "setting_key": "css:line-height",
+      "category": "css-property",
+      "label": "Line height",
+      "optimal_control": {
+        "component": "UnitControl (unitless-capable) via TypographyControls",
+        "props": {
+          "units": [
+            {
+              "value": "",
+              "label": "—"
+            },
+            "em",
+            "rem",
+            "px"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": null,
+        "units": "unitless (empty-string unit) + em/rem/px",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset; Typography ToolsPanel"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography row + Part H (line-height -> LineHeightControl/UnitControl)",
+      "current_state": "17 distinct attr names / 31 instances across 13 blocks; observed_control_types: SelectControl, TextControl, UnitControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
+      "divergence": "TypographyControls already implements the correct unitless-capable UnitControl (17 attrs, 31 instances) but SGS_TEXT_ line-height carries NO Tablet/Mobile companions the way fontSize does — line-height cannot currently be tiered even though it is squarely a typography setting under dimension 3",
+      "divergence_severity": "medium",
+      "notes": "Optimal adds lineHeightTablet/lineHeightMobile mirroring the fontSize pattern in TypographyControls.js. Some observed SelectControl usages are pre-TypographyControls legacy and should migrate."
+    },
+    {
+      "setting_key": "css:margin",
+      "category": "css-property",
+      "label": "Margin (all sides)",
+      "optimal_control": {
+        "component": "BoxControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "rem",
+            "%"
+          ],
+          "allowReset": true,
+          "splitOnAxis": true
+        },
+        "preset_layer": "SpacingSizesControl token presets seed each side",
+        "units": "px/rem/%",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset (per side + resetAll)"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B BoxControl row + design-spine dimension 4 (MULTI-VALUE) + Part H",
+      "current_state": "4 distinct attr names / 80 instances across 41 blocks; observed_control_types: none captured; observed_roles: layout; box_families: margin; conformance: unknown (dedup_confidence: high)",
+      "divergence": "4 attrs, box_family 'margin' correctly identified, but no observed_control_types at all (conformance: unknown) — cannot confirm any block currently exposes a margin control at all rather than a hardcoded render.php value",
+      "divergence_severity": "high",
+      "notes": "Needs a live-code check: if margin is currently ONLY set via CSS/render.php with no editor control, this is a straight MISSING build, not a divergence fix."
+    },
+    {
+      "setting_key": "css:margin-bottom",
+      "category": "css-property",
+      "label": "Margin — bottom",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:margin BoxControl as one side",
+        "props": {
+          "see": "css:margin row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
+      "current_state": "8 distinct attr names / 10 instances across 5 blocks; observed_control_types: TextControl; observed_roles: layout; conformance: consistent (dedup_confidence: high)",
+      "divergence": "8 attrs on TextControl (consistent conformance) — a working scalar field, but still one-at-a-time rather than the shared 4-side BoxControl",
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule; optimal control is the shared margin BoxControl. margin-bottom is the only one of the four with consistent conformance/TextControl usage already — still a per-side scalar to fold in."
+    },
+    {
+      "setting_key": "css:margin-left",
+      "category": "css-property",
+      "label": "Margin — left",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:margin BoxControl as one side",
+        "props": {
+          "see": "css:margin row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
+      "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule; optimal control is the shared margin BoxControl. margin-bottom is the only one of the four with consistent conformance/TextControl usage already — still a per-side scalar to fold in."
+    },
+    {
+      "setting_key": "css:margin-right",
+      "category": "css-property",
+      "label": "Margin — right",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:margin BoxControl as one side",
+        "props": {
+          "see": "css:margin row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
+      "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule; optimal control is the shared margin BoxControl. margin-bottom is the only one of the four with consistent conformance/TextControl usage already — still a per-side scalar to fold in."
+    },
+    {
+      "setting_key": "css:margin-top",
+      "category": "css-property",
+      "label": "Margin — top",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:margin BoxControl as one side",
+        "props": {
+          "see": "css:margin row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE",
+      "current_state": "5 distinct attr names / 7 instances across 3 blocks; observed_control_types: none captured; observed_roles: layout; conformance: unknown (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule; optimal control is the shared margin BoxControl. margin-bottom is the only one of the four with consistent conformance/TextControl usage already — still a per-side scalar to fold in."
+    },
+    {
+      "setting_key": "css:max-height",
+      "category": "css-property",
+      "label": "Maximum height",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "%",
+            "vh"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": null,
+        "units": "px/%/vh",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part B UnitControl row",
+      "current_state": "4 distinct attr names / 5 instances across 2 blocks; observed_control_types: RangeControl; observed_roles: layout; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "4 attrs, already consistent on RangeControl — the gap is only that RangeControl lacks a real unit selector (px-only smell per Part B), not the responsive shape."
+    },
+    {
+      "setting_key": "css:max-width",
+      "category": "css-property",
+      "label": "Max width",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "%",
+            "rem",
+            "vw"
+          ],
+          "isResetValueOnUnitChange": true,
+          "withInputField": true
+        },
+        "preset_layer": null,
+        "units": "px/%/rem/vw; empty = full-width (theme default), never a hardcoded fallback per R-31-9",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset — clearing MUST mean 'no max-width', not silently re-apply a default"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part B UnitControl row + CLAUDE.md 'a property's absence -> full-width, overriding the theme default'",
+      "current_state": "7 distinct attr names / 58 instances across 38 blocks; observed_control_types: RangeControl, SelectControl, TextControl, UnitControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
+      "divergence": "7 attrs mix RangeControl/SelectControl/TextControl/UnitControl; TextControl is a free-text field for what should be a validated unit value",
+      "divergence_severity": "medium",
+      "notes": "This is also the container/wrapper contentWidth capability (Spec 31 §13.6 3-layer model) — must not silently reintroduce a hardcoded default per the 'hardcoded wrapper defaults are cheats' rule in CLAUDE.md."
+    },
+    {
+      "setting_key": "css:min-height",
+      "category": "css-property",
+      "label": "Minimum height",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl (native dimensions.minHeight support where the block doesn't need per-tier values)",
+        "props": {
+          "units": [
+            "px",
+            "%",
+            "vh"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": null,
+        "units": "px/%/vh",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part B UnitControl row + Part G ('Block supports: dimensions.minHeight' HIGH priority — prefer native over bespoke panel)",
+      "current_state": "7 distinct attr names / 22 instances across 5 blocks; observed_control_types: none captured; observed_roles: layout; conformance: unknown (dedup_confidence: high)",
+      "divergence": "no observed_control_types at all (conformance: unknown) across 7 attrs/22 instances — cannot confirm any of these blocks expose an editable min-height control today",
+      "divergence_severity": "high",
+      "notes": "Genuine unknown: either (a) it's set once via native `supports.dimensions.minHeight` and never surfaced as a distinct named React control (in which case it may already be fine and just invisible to this audit), or (b) it's a converter-only/render.php-only value with no client control at all. Needs a live-code check per block before treating as a build gap — flagged for parent."
+    },
+    {
+      "setting_key": "css:object-fit",
+      "category": "css-property",
+      "label": "Image object-fit",
+      "optimal_control": {
+        "component": "ToggleGroupControl (cover / contain / fill / none / scale-down)",
+        "props": {
+          "options": [
+            "cover",
+            "contain",
+            "fill",
+            "none",
+            "scale-down"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "5-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'fill' (CSS initial)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Media (object-fit/position T) + Part H",
+      "current_state": "2 distinct attr names / 2 instances across 2 blocks; observed_control_types: RangeControl, SelectControl; observed_roles: visual; conformance: divergent (dedup_confidence: high)",
+      "divergence": "2 attrs on RangeControl/SelectControl — RangeControl driving a keyword property is a Part B mismatch",
+      "divergence_severity": "medium",
+      "notes": "Pairs with object-position and the imageControls extension (plugins CLAUDE.md 'Image controls discipline') — both should ship together whenever a block declares supports.sgs.imageControls. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension."
+    },
+    {
+      "setting_key": "css:object-position",
+      "category": "css-property",
+      "label": "Image object-position",
+      "optimal_control": {
+        "component": "FocalPointPicker",
+        "props": {
+          "url": "the image being positioned, for the live preview crosshair"
+        },
+        "preset_layer": null,
+        "units": "n/a (FocalPointPicker stores x/y as 0-1 floats, not raw CSS units)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset centres the focal point (0.5, 0.5)",
+        "a11y": "keyboard: X/Y number inputs + arrow-nudge alongside the drag crosshair (FocalPointPicker)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Media (native FocalPointPicker) + Part H (focal point -> FocalPointPicker) + Part I ('Focal point / image size / aspect-ratio — partial, EXTEND imageControls')",
+      "current_state": "3 distinct attr names / 3 instances across 2 blocks; observed_control_types: RangeControl, TextControl; observed_roles: visual; conformance: divergent (dedup_confidence: high)",
+      "divergence": "3 attrs on RangeControl/TextControl — a raw X/Y percentage pair typed into text or sliders, when WordPress ships a purpose-built visual crosshair picker for exactly this",
+      "divergence_severity": "high",
+      "notes": "Clear Part G 'prefer native, don't hand-roll' catch — FocalPointPicker is a first-class WP component specifically for this property and is not being used anywhere in the current 3 attrs. | Carve-out: sgs/media is a documented exception — it OPTS OUT of the shared imageControls extension (its block.json is the cloning-converter source of truth) and keeps its own native object-fit/position; do not force it onto the shared extension. | v2 (2026-07-19): keyboard alternative to the drag crosshair - X/Y number inputs + arrow-nudge."
+    },
+    {
+      "setting_key": "css:opacity",
+      "category": "css-property",
+      "label": "Opacity",
+      "optimal_control": {
+        "component": "RangeControl (0-100%, withInputField+allowReset)",
+        "props": {
+          "min": 0,
+          "max": 100,
+          "withInputField": true,
+          "allowReset": true,
+          "resetFallbackValue": 100
+        },
+        "preset_layer": null,
+        "units": "% (0-100)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue=100"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H (bounded numeric -> RangeControl) + Part C (opacity T)",
+      "current_state": "6 distinct attr names / 15 instances across 9 blocks; observed_control_types: RangeControl; observed_roles: visual; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "6 attrs, already consistent on RangeControl — the textbook already-optimal case in the registry. Only worth checking each instance genuinely has withInputField + allowReset (Part B RangeControl completeness bar), not just a bare slider."
+    },
+    {
+      "setting_key": "css:order",
+      "category": "css-property",
+      "label": "Flex/grid item order",
+      "optimal_control": {
+        "component": "RangeControl (bounded, e.g. -5 to 5, withInputField+allowReset) inside ResponsiveControl",
+        "props": {
+          "min": -5,
+          "max": 5,
+          "withInputField": true,
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "n/a (integer, not a length)",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset to 0 (source order)"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part H (bounded numeric -> RangeControl) + Part C ('responsive column ordering' P)",
+      "current_state": "4 distinct attr names / 5 instances across 3 blocks; observed_control_types: SelectControl; observed_roles: none; conformance: consistent (dedup_confidence: high)",
+      "divergence": "4 attrs, already consistent on SelectControl — a fixed dropdown of order values works but caps the range arbitrarily and has no per-breakpoint reorder, which is the actual client value here",
+      "divergence_severity": "medium",
+      "notes": "The real product here is Part C's 'responsive column ordering' — reordering a card on mobile without moving it in the DOM. Component swap alone (Select->Range) is secondary to adding the responsive tier."
+    },
+    {
+      "setting_key": "css:overflow",
+      "category": "css-property",
+      "label": "Overflow behaviour",
+      "optimal_control": {
+        "component": "ToggleGroupControl (visible / hidden / scroll / auto / clip)",
+        "props": {
+          "options": [
+            "visible",
+            "hidden",
+            "scroll",
+            "auto",
+            "clip"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "5-option closed CSS enum",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'visible' (CSS initial)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H",
+      "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: SelectControl; observed_roles: visual; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "none",
+      "notes": "1 instance, already consistent on SelectControl — lowest-impact row in the registry; component swap only if ever revisited."
+    },
+    {
+      "setting_key": "css:padding",
+      "category": "css-property",
+      "label": "Padding (all sides)",
+      "optimal_control": {
+        "component": "BoxControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "rem",
+            "%"
+          ],
+          "allowReset": true,
+          "splitOnAxis": true
+        },
+        "preset_layer": "SpacingSizesControl token presets seed each side alongside the raw BoxControl",
+        "units": "px/rem/%",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset (per side + resetAll for the whole box)"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B BoxControl row + design-spine dimension 4 (MULTI-VALUE) (MULTI-VALUE dimension) + Part H",
+      "current_state": "23 distinct attr names / 106 instances across 39 blocks; observed_control_types: RangeControl, TextControl; observed_roles: layout, visual; box_families: contentBandPadding, contentPadding, imagePadding, mediaPadding, padding, pillPadding; conformance: divergent (dedup_confidence: high)",
+      "divergence": "23 attrs carry SIX different box_family names (contentBandPadding, contentPadding, imagePadding, mediaPadding, padding, pillPadding) — every one of these is a genuine 4-side padding family that should be its own BoxControl instance, but only RangeControl/TextControl are observed, meaning none of the 6 are currently link/unlink 4-side controls",
+      "divergence_severity": "high",
+      "notes": "This is the archetypal Part F 'no BoxControl, one linked number' failure, repeated 6 times under different names. Fix is universal: one BoxControl per box_family, not a padding-specific special case (dimension 4)."
+    },
+    {
+      "setting_key": "css:padding-bottom",
+      "category": "css-property",
+      "label": "Padding — bottom",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:padding BoxControl as one side",
+        "props": {
+          "see": "css:padding row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule, but the OPTIMAL control is the shared padding BoxControl, not a scalar UnitControl. Do not build a standalone control for this row."
+    },
+    {
+      "setting_key": "css:padding-left",
+      "category": "css-property",
+      "label": "Padding — left",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:padding BoxControl as one side",
+        "props": {
+          "see": "css:padding row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule, but the OPTIMAL control is the shared padding BoxControl, not a scalar UnitControl. Do not build a standalone control for this row."
+    },
+    {
+      "setting_key": "css:padding-right",
+      "category": "css-property",
+      "label": "Padding — right",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:padding BoxControl as one side",
+        "props": {
+          "see": "css:padding row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule, but the OPTIMAL control is the shared padding BoxControl, not a scalar UnitControl. Do not build a standalone control for this row."
+    },
+    {
+      "setting_key": "css:padding-top",
+      "category": "css-property",
+      "label": "Padding — top",
+      "optimal_control": {
+        "component": "NOT a standalone control — folds into the css:padding BoxControl as one side",
+        "props": {
+          "see": "css:padding row"
+        },
+        "preset_layer": null,
+        "units": "n/a (inherits px/rem/% from the parent BoxControl)",
+        "responsive_device_tier": true,
+        "multi_value": "box",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "resets via the parent BoxControl's per-side or resetAll"
+      },
+      "shared_component": "BoxControl",
+      "spec_ref": "Part B + design-spine dimension 4 (MULTI-VALUE) MULTI-VALUE — 'never a scalar attr added one-at-a-time'",
+      "current_state": "2 distinct attr names / 4 instances across 2 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "2 attrs, 4 instances each, no observed control — these are exactly the per-side scalars dimension 4 forbids drafting individually",
+      "divergence_severity": "medium",
+      "notes": "Drafted per the schema's one-row-per-property rule, but the OPTIMAL control is the shared padding BoxControl, not a scalar UnitControl. Do not build a standalone control for this row."
+    },
+    {
+      "setting_key": "css:percentage",
+      "category": "css-property",
+      "label": "Generic percentage value",
+      "optimal_control": {
+        "component": "RangeControl (0-100%, withInputField+allowReset)",
+        "props": {
+          "min": 0,
+          "max": 100,
+          "withInputField": true,
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "% (0-100)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H (bounded numeric -> RangeControl)",
+      "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: RangeControl; observed_roles: number-css-percent; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "none",
+      "notes": "1 instance, role tagged 'number-css-percent' (a generic percent, not tied to a named CSS property) — already consistent on RangeControl. Lowest-context row in the registry; whatever block uses it should be checked to see if it actually belongs under a more specific named property instead of this catch-all."
+    },
+    {
+      "setting_key": "css:stroke",
+      "category": "css-property",
+      "label": "Accent underline (decoration toggle)",
+      "optimal_control": {
+        "component": "ToggleControl (show/hide the decorative underline) — not a stroke-paint colour control",
+        "props": {
+          "enableAlpha": true,
+          "clearable": true
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "native ColorPalette Clear button"
+      },
+      "shared_component": null,
+      "spec_ref": "Part B Colour row (stroke is a paint property, same completeness bar as color/border-color)",
+      "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: ToggleControl; observed_roles: behaviour; conformance: consistent (dedup_confidence: review)",
+      "divergence": "Mis-keyed by the CSS dedup: the only attr is accentStroke on sgs/counter — a boolean ToggleControl that shows a short decorative underline beneath the number, NOT a stroke-paint colour. The underline's colour is a separate colour-value setting.",
+      "divergence_severity": "none",
+      "notes": "Bean-verified 2026-07-19 on sgs/counter ('Decoration' category, 'Accent underline stroke', tooltip 'Adds a short coloured line beneath the number'). RESOLVED: reclassify with behaviour/decoration toggles; there is no genuine stroke-paint setting. No build action."
+    },
+    {
+      "setting_key": "css:text-align",
+      "category": "css-property",
+      "label": "Text alignment",
+      "optimal_control": {
+        "component": "AlignmentControl (native @wordpress/block-editor component) inside ResponsiveControl",
+        "props": {
+          "alignmentControls": "left, center, right, justify"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "4 options via native icon toggle — closed CSS enum, no Custom path needed",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "native 'reset to default' behaviour of AlignmentControl"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H (segmented choice — ToggleGroupControl family; AlignmentControl by convention) + Part G (prefer native, don't hand-roll)",
+      "current_state": "4 distinct attr names / 9 instances across 5 blocks; observed_control_types: SelectControl; observed_roles: none; conformance: consistent (dedup_confidence: high)",
+      "divergence": "4 attrs all on bespoke SelectControl rather than WP's own AlignmentControl/AlignmentToolbar, and none are responsive-tiered even though 'centre on mobile, left on desktop' is a very common real request",
+      "divergence_severity": "medium",
+      "notes": "This is a Part G 'prefer native' catch: WordPress ships AlignmentControl purpose-built for exactly this. Also a genuine responsive-tier gap (dimension 3) since text-align commonly needs to flip per breakpoint. | Note: AlignmentControl is a real WP core component but is NOT named in Spec 35 Part B/H — chosen by convention (segmented text-align), flagged for transparency."
+    },
+    {
+      "setting_key": "css:text-decoration",
+      "category": "css-property",
+      "label": "Text decoration",
+      "optimal_control": {
+        "component": "SelectControl via TypographyControls",
+        "props": {
+          "options": "SGS_TEXT_DECORATION_OPTIONS"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "5 short options incl. inherit — borderline for ToggleGroupControl per dimension 5, kept as the existing shared-component SelectControl",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to '' (inherit)"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography row",
+      "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl, TextControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
+      "divergence": "2 attrs mix SelectControl + TextControl — the TextControl path is a free-text field for what should be a closed CSS enum",
+      "divergence_severity": "medium",
+      "notes": "The TextControl instance is the actual gap here (open-text field for a closed enum = Part F anti-pattern), not the SelectControl one."
+    },
+    {
+      "setting_key": "css:text-transform",
+      "category": "css-property",
+      "label": "Text transform",
+      "optimal_control": {
+        "component": "SelectControl via TypographyControls",
+        "props": {
+          "options": "SGS_TEXT_TRANSFORM_OPTIONS"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "5 short options; matches the shared-component pattern",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to '' (inherit)"
+      },
+      "shared_component": "TypographyControls",
+      "spec_ref": "Part B Typography row",
+      "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl; observed_roles: typography; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "low",
+      "notes": "2 attrs, consistent conformance already."
+    },
+    {
+      "setting_key": "css:top",
+      "category": "css-property",
+      "label": "Position offset — top",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "%"
+          ],
+          "isResetValueOnUnitChange": true
+        },
+        "preset_layer": null,
+        "units": "px/%",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ResponsiveControl",
+      "spec_ref": "Part H (numeric+unit -> UnitControl) + Part G (native position.sticky support handles the sticky CASE; an explicit top/bottom offset for a non-sticky absolutely-positioned element still needs this)",
+      "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
+      "divergence": "1 attr, no observed control at all across 4 instances (conformance: unknown)",
+      "divergence_severity": "medium",
+      "notes": "No box_family is set for top/bottom (unlike padding/margin) — currently modelled as a standalone scalar, not a 4-side family, since no left/right offset attrs were found in the audit. If left/right later appear, promote top/bottom/left/right into one position-offset BoxControl-style family rather than leaving four scalars."
+    },
+    {
+      "setting_key": "css:transition-duration",
+      "category": "css-property",
+      "label": "Transition duration",
+      "optimal_control": {
+        "component": "UnitControl (number + ms/s)",
+        "props": {
+          "units": [
+            "ms",
+            "s"
+          ],
+          "min": 0,
+          "max": 2000
+        },
+        "preset_layer": null,
+        "units": "ms/s",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset to the framework default (300ms)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Motion (prefers-reduced-motion gating, T) — this control feeds a reduced-motion-gated transition, never itself",
+      "current_state": "4 distinct attr names / 31 instances across 22 blocks; observed_control_types: RangeControl, SelectControl, TextControl; observed_roles: motion; conformance: divergent (dedup_confidence: high)",
+      "divergence": "4 attrs mix RangeControl/SelectControl/TextControl — none expose a real ms/s unit pair; RangeControl instances look 0-100 with no unit label (Part B RangeControl FAIL smell)",
+      "divergence_severity": "medium",
+      "notes": "Gate at render: whatever duration is set here must be wrapped by a `prefers-reduced-motion` media query per Part C/E5 so the control's value never overrides the reduced-motion contract."
+    },
+    {
+      "setting_key": "css:transition-timing-function",
+      "category": "css-property",
+      "label": "Transition easing",
+      "optimal_control": {
+        "component": "ToggleGroupControl (linear / ease / ease-in / ease-out / ease-in-out) + Custom cubic-bezier text path",
+        "props": {
+          "options": [
+            "linear",
+            "ease",
+            "ease-in",
+            "ease-out",
+            "ease-in-out",
+            "custom"
+          ]
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "5 short named options + an explicit Custom cubic-bezier(...) path — meets dimension 5's 'never a truncated set' bar since raw CSS timing functions are open-ended",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'ease' (CSS initial)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Motion + Part H (segmented choice -> ToggleGroupControl)",
+      "current_state": "3 distinct attr names / 26 instances across 19 blocks; observed_control_types: RangeControl, SelectControl; observed_roles: motion; conformance: divergent (dedup_confidence: high)",
+      "divergence": "3 attrs on RangeControl/SelectControl; RangeControl for a named-keyword property is a clear Part B mismatch (numeric slider driving a CSS keyword)",
+      "divergence_severity": "medium",
+      "notes": "Same reduced-motion gating note as transition-duration applies here."
+    },
+    {
+      "setting_key": "css:width",
+      "category": "css-property",
+      "label": "Width",
+      "optimal_control": {
+        "component": "UnitControl inside ResponsiveControl",
+        "props": {
+          "units": [
+            "px",
+            "%",
+            "em",
+            "rem",
+            "vw"
+          ],
+          "isResetValueOnUnitChange": true,
+          "withInputField": true
+        },
+        "preset_layer": null,
+        "units": "px/%/em/rem/vw; 'auto' as a clear-to-default state",
+        "responsive_device_tier": true,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue"
+      },
+      "shared_component": "ResponsiveControl / ResponsiveBoxControl",
+      "spec_ref": "Part B UnitControl row + Part H (numeric+unit -> UnitControl) + Part I (ResponsiveControl exists)",
+      "current_state": "24 distinct attr names / 91 instances across 56 blocks; observed_control_types: RangeControl, ResponsiveControl, SelectControl, ToggleControl, UnitControl; observed_roles: layout; conformance: divergent (dedup_confidence: review)",
+      "divergence": "24 attrs mix RangeControl/SelectControl/ToggleControl/UnitControl — only the UnitControl instances meet the bar; SelectControl usages read as a small fixed preset list (e.g. 'full/half/third') rather than a real editable box",
+      "divergence_severity": "medium",
+      "notes": "Already has some ResponsiveControl coverage (best-conforming of the mixed group) — the fix is consolidating the RangeControl/SelectControl stragglers onto the same UnitControl+ResponsiveControl shape, not building something new."
+    },
+    {
+      "setting_key": "css:z-index",
+      "category": "css-property",
+      "label": "Stack order (z-index)",
+      "optimal_control": {
+        "component": "RangeControl (or NumberControl for genuinely unbounded values) with allowReset",
+        "props": {
+          "min": 0,
+          "max": 999,
+          "withInputField": true,
+          "allowReset": true
+        },
+        "preset_layer": null,
+        "units": "n/a (integer)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset to 'auto' (removes the property rather than writing 0)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H (bounded numeric -> RangeControl)",
+      "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: RangeControl; observed_roles: position; conformance: consistent (dedup_confidence: high)",
+      "divergence": null,
+      "divergence_severity": "none",
+      "notes": "1 instance, already consistent on RangeControl. Lowest-impact row in the registry by instance count."
+    },
+    {
+      "setting_key": "input:boolean-toggle",
+      "category": "input-type",
+      "label": "On/off switch",
+      "optimal_control": {
+        "component": "ToggleControl (default) or ToggleGroupControl for a binary segmented choice with two meaningfully-labelled states (e.g. 'Grid'/'List' rather than a bare on/off)",
+        "props": {
+          "checked": "attr value",
+          "onChange": "setAttributes",
+          "help": "aria-describedby-linked hint text where the effect is non-obvious"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": "case-by-case: layout/visibility toggles that are meaningfully different per device (hideOnMobile/hideOnTablet, wrap/wrapTablet/wrapMobile) already carry per-tier companion attrs and should route through ResponsiveControl rather than 3 standalone booleans; content/behaviour toggles (autoplay, required, dismissible) do not",
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "a boolean's 'reset' is its documented default state; ToolsPanelItem where it lives in a dense panel"
+      },
+      "shared_component": null,
+      "spec_ref": "Part E2 (ToggleGroupControl selected/focus must be visible under High-Contrast, not colour alone; help via aria-describedby) + Part H 'segmented choice → ToggleGroupControl'. ToggleControl itself is the WP-core baseline for a boolean attr and is not separately enumerated as a Part B/H line — it is the unnamed default every other Part B/H entry assumes when a setting is a plain flag.",
+      "current_state": "121 attrs across ~57 blocks. full_classification uniformly reports 'attr_type=boolean' with no component detail — the attr TYPE is boolean, which is consistent with ToggleControl already being the rendering default (WP's own attribute-to-control heuristics favour ToggleControl for boolean attrs), but this is inferred, not confirmed per block.",
+      "divergence": "Likely low for the base control (ToggleControl is the path of least resistance for a boolean attr and SGS blocks have no reason to hand-roll a checkbox), but three concrete patterns need a per-block check: (1) responsive-tier companions (wrapMobile/wrapTablet/directionMobile pattern) that should route through ResponsiveControl rather than exist as 3 loose booleans; (2) toggles whose two states are really a segmented CHOICE (e.g. a hypothetical grid/list flag) miscast as a boolean instead of ToggleGroupControl; (3) missing aria-describedby help text on non-obvious toggles (Part E2).",
+      "divergence_severity": "low",
+      "notes": "Boolean-toggle members that gate a recurring interaction (autoplay+pauseOnHover+showArrows+showDots as a 'carousel controls' cluster, or showDate+showAuthor+showCategory as a 'post-grid meta' cluster) are refined by the behaviour-family slice, not here — this row is the generic control answer only."
+    },
+    {
+      "setting_key": "input:code-svg",
+      "category": "input-type",
+      "label": "Raw SVG markup (decorative background shape)",
+      "optimal_control": {
+        "component": "TextareaControl (monospace font) for authoring/pasting the markup, gated by mandatory SVG-sanitise-on-upload before the value is ever stored or rendered",
+        "props": {
+          "fontFamily": "monospace",
+          "rows": 8,
+          "sanitise": "server-side SVG sanitiser (strip <script>, on* handlers, external refs) runs BEFORE the attribute is saved — never trust raw client input"
+        },
+        "preset_layer": "a small curated set of built-in decorative shapes (wave/blob/angle) seeds the field; pasting custom markup is the escape hatch, always sanitised",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clear-to-none/preset default"
+      },
+      "shared_component": null,
+      "spec_ref": "Part C Media 'SVG sanitise-on-upload (security — never raw) T' (table-stakes, explicitly named security requirement) — TextareaControl itself is not a separate Part B/H line but is the correct WP-native raw-markup editing component given the value is genuinely code, not prose",
+      "current_state": "2 attrs across 5 blocks: bgSvgContent (sgs/container, sgs/cta-section, sgs/hero) and svgContent (sgs/hero, sgs/media). full_classification labels both 'raw SVG markup string' with no sanitisation detail visible from source.",
+      "divergence": "SECURITY GAP, not just a UX gap — Part C names SVG sanitise-on-upload as table-stakes (never trust raw markup) and there is no evidence in the source data that either attr passes through a sanitiser before being stored or rendered (both are used as background decoration, i.e. rendered inline into the page, which is exactly the XSS-risk path the CLAUDE.md security non-negotiables and Part C both flag). This must be verified against render.php for sgs/container, sgs/cta-section, sgs/hero, sgs/media directly, not assumed safe.",
+      "divergence_severity": "high",
+      "notes": "Smallest member count (2 attrs) but flagged HIGH severity purely on security grounds per CLAUDE.md's non-negotiable 'no OWASP top 10' + Part C's explicit sanitise-on-upload requirement — raw SVG rendered inline is a known XSS vector (embedded <script>/event-handler attributes) regardless of how polished the editor control is. Verifying/adding server-side sanitisation (e.g. wp_kses with an SVG-safe tag allowlist, or a dedicated SVG sanitiser library) should be treated as a P0 fix independent of the Phase-3 lint rollout."
+    },
+    {
+      "setting_key": "input:colour-value",
+      "category": "input-type",
+      "label": "Colour (hover-state / override variant)",
+      "optimal_control": {
+        "component": "DesignTokenPicker",
+        "props": {
+          "enableAlpha": true,
+          "clearable": true,
+          "disableCustomColors": false
+        },
+        "preset_layer": "token swatches (theme.json palette) seed the picker; a custom hex/rgba value is always still editable underneath",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": true,
+        "reset_disclosure": "clearable resets to unset (inherits base/no override), distinct from alpha-0 (Part B Colour row: alpha-0 ≠ unset)",
+        "colour_channel": "solid only (the gradient channel is background-color's ColorGradientControl only)"
+      },
+      "shared_component": "DesignTokenPicker",
+      "spec_ref": "Part B 'Colour' row (enableAlpha ≈always + clearable, alpha-0 ≠ unset; disableCustomColors false) + Part I 'Colour — DesignTokenPicker EXISTS — NO enableAlpha/clearable audit → ADD enableAlpha + clearable (framework-wide transparent fix)' + Part J Wave 1 #1 (highest-priority item in the whole roadmap) + D302 (emit hex8 so WP safecss doesn't strip functional rgba)",
+      "current_state": "20 attrs across 20 blocks (all Hover-state or override colour variants — e.g. colourTextHover, ctaColourBorderHover, overlayGradientFrom/To, gradientColourStart/End). full_classification confirms every single member is already 'DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)' — the CORRECT component is already in use everywhere.",
+      "divergence": "Component choice is already correct (DesignTokenPicker, matching the optimal control exactly) — the gap is entirely the enableAlpha/clearable AUDIT named in Part I as a still-open framework-wide fix, not a component swap. This is the one input-type row where 'current_state' and 'optimal_control' agree on the component and diverge only on props.",
+      "divergence_severity": "high",
+      "notes": "Despite the component already matching, severity is HIGH because Part J ranks the enableAlpha+clearable fix as Wave-1 item #1 (highest framework-wide priority, 'fixes transparent everywhere') and D302 requires hex8 emission so WP's safecss_filter_attr doesn't silently strip functional rgba() on the frontend — a correctness bug, not just a UX gap. These are Hover-state/override colours specifically (not base colours), so StateToggleControl (Part I, EXISTS) should also wrap the Normal/Hover pairing rather than exposing 20 always-visible separate Hover fields. | v2 (2026-07-19): these hover/override colours are SOLID only; they wrap Normal/Hover via StateToggleControl. Gradient is background-color's ColorGradientControl exclusively."
+    },
+    {
+      "setting_key": "input:date",
+      "category": "input-type",
+      "label": "Date / datetime value",
+      "optimal_control": {
+        "component": "DateTimePicker",
+        "props": {
+          "is12Hour": false,
+          "onChange": "setAttributes",
+          "currentDate": "attr value"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clear-to-none affordance; countdown-timer's targetDate needs a sane default (e.g. +7 days) rather than blank",
+        "range": "min/max exposed as ONE connected 'Available between: From - To' range UI (DateTimePicker pair), not two disconnected pickers"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H 'date → DateTimePicker'",
+      "current_state": "4 attrs across 3 blocks: maxDate/minDate (sgs/form-field-date), reviewDate (sgs/testimonial), targetDate (sgs/countdown-timer). full_classification labels all uniformly 'date/datetime value' with no component detail.",
+      "divergence": "No component evidence recoverable from source; the naming pattern (raw camelCase date attrs with no companion 'DateFormat'/'DateTimezone' attrs) is consistent with either a real DateTimePicker or a plain native <input type='date'> TextControl-equivalent — needs a per-block audit to confirm. sgs/form-field-date's maxDate/minDate are a bounds PAIR (like RangeControl's min/max) and should be edited together in one min/max UI, not as two independent unrelated pickers.",
+      "divergence_severity": "medium",
+      "notes": "Small group (4 attrs) — cheap to audit and fix directly rather than needing a framework-wide sweep. targetDate (countdown-timer) is timezone-sensitive (the block already has evergreenMode/evergreenHours/evergreenMinutes as an alternative relative-countdown mode) — the picker should make clear whether the date is stored as UTC or site-local. | v2 (2026-07-19): + date range - min/max edited as one connected From-To range, not two independent fields."
+    },
+    {
+      "setting_key": "input:enum-select",
+      "category": "input-type",
+      "label": "Choice (single-select from a fixed set)",
+      "optimal_control": {
+        "component": "ToggleGroupControl (2–5 short options) OR ComboboxControl (>~10 options, searchable)",
+        "props": {
+          "toggle_group": {
+            "isBlock": true,
+            "__next40pxDefaultSize": true
+          },
+          "combobox": {
+            "allowReset": true,
+            "options": "full enumerated set"
+          },
+          "custom_path": "when the underlying CSS/behaviour value is open-ended (not a closed vocabulary), add a 'Custom' option that reveals a free text/colour/unit field — never truncate the option set"
+        },
+        "preset_layer": "n/a — the enum members ARE the presets; no separate custom-box layer unless a Custom-path escape exists (dimension 5)",
+        "units": "n/a",
+        "responsive_device_tier": "case-by-case: layout/typography/sizing enums (e.g. direction, layoutMode, alignment) get the 768/1024 switcher; identity/content/behaviour enums (e.g. dataSource, orderBy, conditionalOperator) do not",
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl (2–5) or Combobox (>~10); every valid option present + Custom path where the underlying value is open-ended — dimension 5 is THE defining dimension for this input-type",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset (Combobox) or a documented default selection (ToggleGroupControl); lives in the relevant ToolsPanel",
+        "multi_value_path": "when a setting genuinely needs SEVERAL values at once (tags, roles, categories), use FormTokenField chips (add/remove + type-ahead) - the multi-select sibling of the single-select bands. Kept as a noted path here rather than a separate 82nd row (row count is Bean-locked)."
+      },
+      "shared_component": null,
+      "spec_ref": "Part B 'Selection' row (ToggleGroupControl 2–5 / ComboboxControl >~10 / FormTokenField multi-value) + Part H 'segmented choice → ToggleGroupControl · long/searchable list → ComboboxControl' + Part F 'incomplete option sets (Small/Medium, no Custom)'",
+      "current_state": "127 attrs across ~60 blocks. full_classification 'why' is almost uniformly 'enum_values present or SelectControl/ToggleGroupControl' — the reclassifier could not distinguish WHICH component renders each attr from static analysis, only that it's a closed-set choice. A handful of entries name the concrete UI need explicitly: menuFallback/conditionalField ('choose from a dynamic list — a select, not free text'), filterTaxonomy/postType/orderBy ('fixed option set'), thicknessUnit ('CSS-unit companion select — same UNIT-COMPANION pattern as every other responsive *Unit attr').",
+      "divergence": "Cannot be scored precisely without a per-block component audit (the source data conflates SelectControl and ToggleGroupControl under one bucket) — but the pattern strongly implies a mix of bare native <select> (SelectControl) for both short (2–5) and long lists, which fails dimension 5's split rule; several attrs (dataSource, sourcePlatform, videoSource) look CSS/behaviour-adjacent with no visible Custom escape hatch.",
+      "divergence_severity": "medium",
+      "notes": "Generic enum control only — enum-select members that gate a recurring interaction pattern (e.g. carousel vs grid layoutMode, tabStyle, accordion style) are refined by the behaviour-family slice, not here; this row states the baseline control shape every one of the 127 must clear. A structural per-block audit (component name + option count) is a prerequisite to close the divergence precisely — the reclassifier's static heuristic can't tell ToggleGroupControl from SelectControl from source alone. | v2 (2026-07-19): multi-tag chips (FormTokenField) is the multi-select variant of this row - add/remove chips + type-ahead for tags/roles/categories, instead of comma-text or repeated toggles."
+    },
+    {
+      "setting_key": "input:icon",
+      "category": "input-type",
+      "label": "Icon (dashicon / Lucide / emoji / WP icon)",
+      "optimal_control": {
+        "component": "The SGS icon picker — a single identity control with an internal source switch (dashicon/lucide-wp-icon/emoji), search-as-you-type, and a live preview swatch",
+        "props": {
+          "search": true,
+          "preview": true,
+          "sourceSwitch": [
+            "dashicon",
+            "wp-icon",
+            "emoji"
+          ],
+          "clearable": true
+        },
+        "preset_layer": "the icon library IS the preset set; no separate custom-box layer beyond the identity picker itself",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "icons (sgs/social-icons, plural) is an array of icon-identity objects and needs the repeater treatment (see input:json-config), not a scalar icon control",
+        "dropdown_completeness": "n/a — search-driven, not a closed dropdown",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clear-to-none affordance on the picker",
+        "a11y": "each icon tile carries its name for screen readers; search-as-you-type"
+      },
+      "shared_component": null,
+      "spec_ref": "Part H 'compact secondary → Dropdown/DropdownMenu' (the picker's own popover shape) — icon-identity itself is not a separately named Part B/H/I line; it is inferred from lucide-icons.php's existing icon roster (plugins/sgs-blocks/includes/lucide-icons.php) plus the dedup-by-identity-not-name principle applied to source-fragmented attrs below",
+      "current_state": "17 attrs across 12 blocks. full_classification labels all as 'icon-identity picker (slug/dashicon/emoji/wp-icon), not a media object' — but the member list itself reveals a fragmentation pattern: sgs/separator carries FIVE parallel attrs for what should be ONE icon identity — contentIconSource, contentIconDashicon, contentIconEmoji, contentIconName, contentIconWpIcon (one active value + 4 dormant siblings depending on source). sgs/icon similarly splits iconSource/dashiconName/emojiChar/wpIconName/iconName across 5 attrs for one logical icon.",
+      "divergence": "This is the dedup-by-identity failure the project's own MEMORY.md names directly ('944 attrs → 0 truly-unique... classify by SEMANTIC IDENTITY not the name'): each icon setting is stored as N parallel scalar attrs (one per possible source) instead of ONE identity object ({source, value}) resolved by a single picker with an internal source switch. This is a genuine control-shape gap, not just a props gap.",
+      "divergence_severity": "medium",
+      "notes": "icons (plural, sgs/social-icons) needs the repeater treatment on top of the identity-object fix — each repeater item is one icon-identity object, not another flat scalar. showIcon (business-info, notice-banner) is a boolean gate for whether the icon shows at all and belongs with input:boolean-toggle, not this row's control design, though it's correctly grouped here as a member of the icon-family attr set. | v2 (2026-07-19): searchable + each tile named for screen readers; one identity object, not 4-5 source-fragmented attrs."
+    },
+    {
+      "setting_key": "input:json-config",
+      "category": "input-type",
+      "label": "Structured repeater data (items, options, steps)",
+      "optimal_control": {
+        "component": "TWO patterns by one test — rich item -> InnerBlocks(+templateLock='insert'); scalar item -> BUILD shared RepeaterControl (array attr, collapsible per-item panel, '+ Add', remove + up/down reorder w/ roving tabindex + aria, empty state)",
+        "props": {
+          "item_card": "collapsed summary row (drag handle, item label, remove button) that expands to the item's own typed controls",
+          "add_button": "'Add item' at the list foot",
+          "reorder": "drag-and-drop or up/down move buttons"
+        },
+        "preset_layer": "an empty/new item seeds from a documented default shape, never a blank object the operator must know how to fill",
+        "units": "n/a — the repeater's individual sub-fields carry their own unit/colour/media rules per their own input-type",
+        "responsive_device_tier": false,
+        "multi_value": "gallery",
+        "dropdown_completeness": "n/a at the repeater level; individual item sub-fields (e.g. a per-step icon or per-plan CTA style) carry their own dropdown-completeness rule",
+        "alpha_clearable": "n/a at the repeater level; per-item colour sub-fields (if any) need it",
+        "reset_disclosure": "remove-item + 'clear all' are the reset path; no single default value to reset TO since it's a list"
+      },
+      "shared_component": "BUILD: RepeaterControl (scalar items) + InnerBlocks pattern (rich items)",
+      "spec_ref": "Part B 'Media/gallery' row's array-attr principle extended to non-media repeaters (array attr + structured item UI, not a scalar) + Part I 'Bulk media/gallery — BUILD MediaGalleryPicker' is the media-specific sibling of this same repeater pattern + Part F anti-pattern 'bespoke Custom CSS field on the block' (the raw-JSON-textarea failure mode this row rules out)",
+      "current_state": "25 attrs across 20 blocks. full_classification labels every member identically: 'attr_type array/object holding structured repeater/config data, not a media object' — this confirms the attrs are genuinely array/object-shaped (good — not flattened into 20 scalar attrs), but gives no visibility into whether the CURRENT editor UI is a real per-item repeater panel or a raw JSON/serialised-text editing experience.",
+      "divergence": "21 blocks handle arrays inconsistently — most hand-roll an on-canvas array with thin/absent inspector controls (Bean saw this on sgs/pricing-table: add plans on-canvas, no per-item settings in the drawer); only sgs/testimonial-slider uses InnerBlocks. Standardise on two patterns.",
+      "divergence_severity": "medium",
+      "notes": "Bean-directed research 2026-07-19 (WP gold standard + Kadence/Spectra/GenerateBlocks/Stackable/GreenShift survey). DECISION RULE: does an item need rich text/media or its own block toolbar? YES -> InnerBlocks with a parent/child block pair + templateLock='insert' (on-canvas WYSIWYG, native reorder) — what every major plugin uses for rich items. NO (a few scalar fields) -> BUILD one shared RepeaterControl: array attr, collapsible per-item PanelBody, labelled '+ Add' button, per-item remove + up/down reorder (roving tabindex, role=listitem, positional aria-label), friendly empty state. NOT DataViews/DataForm (WP scopes it to admin/site-editor screens, not in-block editing). RESOLVED. | Scope note: 'only testimonial-slider uses InnerBlocks' is true WITHIN this row's scope (blocks that carry a json-config ARRAY attr); parent/child composite pairs (accordion/tabs/product-faq) also use InnerBlocks but are a different fixed-slot pattern, not variable-length array repeaters."
+    },
+    {
+      "setting_key": "input:media-source",
+      "category": "input-type",
+      "label": "Image / video / audio media",
+      "optimal_control": {
+        "component": "MediaUpload + MediaUploadCheck (single item); MediaGalleryPicker (array/repeated media — multiple='add' + gallery)",
+        "props": {
+          "single": {
+            "onSelect": "setAttributes({ attr: {id,url,alt,width,height} })",
+            "allowedTypes": [
+              "image"
+            ],
+            "render": "MediaUploadCheck wraps every MediaUpload"
+          },
+          "gallery": {
+            "multiple": "add",
+            "gallery": true,
+            "addToGallery": true
+          }
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": "device-specific logo/background variants (desktopLogoId/tabletLogoId/mobileLogoId, backgroundImage/backgroundImageTablet/backgroundImageMobile, bgVideo/bgVideoMobile) are the media-equivalent of a responsive attribute — should route through the same 768/1024 device-tier switcher pattern rather than 3 parallel named attrs the operator must remember to fill separately",
+        "multi_value": "gallery: images, logos, mediaItems are array attrs and need MediaGalleryPicker; corner-note — logoSwitchMode/logoSwitchCustomPx/logoFit are companion settings that ride alongside the picker, not separate media-type controls",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "MediaUpload's own 'Remove'/clear affordance; array pickers need a per-item remove + drag-reorder",
+        "alt_text": "Alt text field + a 'Decorative (no alt needed)' toggle on every image slot (a11y); focal / size where the media is a still image",
+        "bulk": "MediaGalleryPicker (multiple='add' + gallery) for array/repeated media - select many from the library at once (Wave 2 build)"
+      },
+      "shared_component": "MediaGalleryPicker",
+      "spec_ref": "Part B 'Media/gallery' row (multiple='add' + gallery + array attr + MediaUploadCheck + drag-drop — incomplete smell: scalar attr + single MediaUpload) + Part I 'Bulk media/gallery — MISSING (MediaPicker single) → BUILD MediaGalleryPicker' (Wave 2, #5) + Part C Media (focal point/aspect-ratio/object-fit T)",
+      "current_state": "44 attrs across 16 blocks. full_classification labels most as 'role=image-object or media/logo/avatar/video attr name' (a single scalar media reference) and 3 explicitly as array/repeater-shaped: images (sgs/gallery), logos (sgs/brand-strip), mediaItems (sgs/gallery). Several attrs are fragmented facets of ONE logical media object rather than a single {id,url,alt} shape — e.g. sgs/media splits imageId/imageUrl/imageAlt into 3 sibling attrs instead of one object attr; sgs/audio splits audioId/audioUrl/audioMimeType similarly.",
+      "divergence": "The array attrs (images, logos, mediaItems) confirm Part I's finding — MediaGalleryPicker is a framework-wide MISSING component, so these 3 (44 total member count includes their per-item companions like showNames/fadeEdges from other groups) are very likely still on a single MediaUpload with no bulk/gallery affordance. The scalar-but-fragmented attrs (imageId+imageUrl+imageAlt as 3 separate top-level attrs rather than one object) violate the object-attr shape named in the design spine's worked url-link example and Bean's dedup-by-identity lesson.",
+      "divergence_severity": "high",
+      "notes": "Two distinct fixes bundled under one setting_key: (1) build MediaGalleryPicker and roll it out to the 3 array attrs (Wave 2 #5, already a named framework gap); (2) consolidate the scalar id/url/alt/mimeType triples into a single object attr per media slot, matching the {id,url,alt,...} shape Part B implies. Focal point / size / aspect-ratio (Part C) apply where the media is a still image — cross-reference sgs/decorative-image and sgs/media which already carry imageControls per CLAUDE.md's 'Image controls discipline'. | v2 (2026-07-19): + bulk add from library (MediaGalleryPicker) + Alt text + Decorative toggle on every image slot. A bulk logo wall is the driving case."
+    },
+    {
+      "setting_key": "input:number",
+      "category": "input-type",
+      "label": "Numeric value (count, size, offset, timing)",
+      "optimal_control": {
+        "component": "RangeControl (bounded value — real min/max/step, +input field +reset) for dimensionless counts/percentages/speeds; UnitControl for anything carrying an implicit length/pixel/ms meaning",
+        "props": {
+          "range": {
+            "min": "real",
+            "max": "real",
+            "step": "real",
+            "withInputField": true,
+            "allowReset": true,
+            "resetFallbackValue": "block.json default"
+          },
+          "unit": {
+            "units": [
+              "px",
+              "%"
+            ],
+            "isResetValueOnUnitChange": true
+          }
+        },
+        "preset_layer": null,
+        "units": "px-shaped attrs (thickness/thicknessTablet/thicknessMobile, positionX/positionY + tier companions, collapseCustomPx, iconCircleSize, contentIconSize, ctaPaddingX/ctaPaddingY, scrollOffset) need a real unit, not a bare number — dimension 2",
+        "responsive_device_tier": "already-present tier companions (iconSizeMobile/iconSizeTablet, positionXMobile/Tablet, positionYMobile/Tablet, rotationMobile/Tablet, thicknessMobile/Tablet) confirm this input-type is device-tier-worthy and should route through ResponsiveControl rather than 3 loose sibling attrs",
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset + resetFallbackValue on every RangeControl (Part B 'RangeControl' row); ToolsPanel where dense (e.g. sgs/decorative-image's position/rotation/parallax cluster)"
+      },
+      "shared_component": null,
+      "spec_ref": "Part B 'RangeControl' row (min/max/step real; withInputField; allowReset+resetFallbackValue; unit shown — incomplete smell: slider only, no input/reset, arbitrary 0–100) + Part B 'UnitControl' row (units covering every meaningful unit; isResetValueOnUnitChange — incomplete smell: px-only) + Part H 'numeric+unit → UnitControl · bounded numeric → RangeControl (+input+reset)'",
+      "current_state": "65 attrs across ~28 blocks. full_classification reports only 'attr_type number/integer or Range/NumberControl' for every entry — no bound/unit/reset detail is recoverable from source alone. Several attrs are self-evidently pixel-shaped by name (thickness*, positionX/Y*, collapseCustomPx, iconCircleSize, contentIconSize) and already carry Tablet/Mobile sibling attrs, confirming they are responsive-worthy.",
+      "divergence": "The generic label 'Range/NumberControl' is itself the smell Part B calls out — 'Range/NumberControl' undifferentiated suggests some of these 65 are bare NumberControl inputs (no slider, no bounds shown) rather than a real RangeControl with min/max/step/input/reset; and pixel-shaped attrs almost certainly render as bare numbers with no unit suffix at all (dimension 2 gap) rather than UnitControl.",
+      "divergence_severity": "high",
+      "notes": "This is the input-type most exposed to Bean's CUSTOM-BOX-PLUS-PRESET and UNITS dimensions (1 and 2) — a RangeControl with no real min/max or a plain number field with no unit is exactly the FAIL smell Part B names. Recommend the per-block audit prioritise this group first: it's the cheapest fix (swap NumberControl → RangeControl/UnitControl) with the highest volume (65 attrs)."
+    },
+    {
+      "setting_key": "input:text-content",
+      "category": "input-type",
+      "label": "Text content (heading, label, body copy, placeholder)",
+      "optimal_control": {
+        "component": "RichText (inline formatted prose — quote/testimonial/description body) / TextControl (single-line label/name/short string) / TextareaControl (multi-line unformatted copy — help text, success message)",
+        "props": {
+          "richtext": {
+            "allowedFormats": "bold/italic/link at minimum",
+            "tagName": "matches semantic role"
+          },
+          "textcontrol": {
+            "__next40pxDefaultSize": true
+          },
+          "textarea": {
+            "rows": 3
+          }
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none for a single string; excludeKeywords ('comma-separated keyword-filter string') is a MULTI-VALUE violation — should be FormTokenField, not a delimited string in a text box (dimension 4)",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to empty string / block.json default"
+      },
+      "shared_component": null,
+      "spec_ref": "Part F anti-pattern list ('raw-px spacing instead of the token scale' is the closest named text-input anti-pattern; RichText/TextControl/TextareaControl split itself is not a separate Part B/H line — it is the standard WP native component triage assumed by every content-editing field in the spec) + Part A 'element-first panels' (a text field belongs to the specific inner element it edits, not a generic 'Content' catch-all)",
+      "current_state": "74 attrs across ~40 blocks. full_classification is dominated by the single generic label 'prose/label copy — role=text-content, Text(area)Control, or canonical_slot=text/content' for the large majority — the reclassifier cannot distinguish single-line labels from multi-line body copy from source alone. A few attrs are called out with a distinct shape: anchor ('HTML id/slug string'), excludeKeywords ('comma-separated keyword-filter string'), ratingScaleMax ('numeric scale-ceiling stored as a string'), schemaItemName ('Schema.org item-name string').",
+      "divergence": "The RichText/TextControl/TextareaControl split by sub-role cannot be scored from this source alone — needs a per-attr audit against each block's edit.js. Two concrete issues ARE visible in the data: excludeKeywords is a comma-delimited string that should be FormTokenField (dimension 4 violation); ratingScaleMax is a numeric value mis-typed as a string attr (attr_type mismatch, not a control mismatch).",
+      "divergence_severity": "medium",
+      "notes": "British English in all label copy this control produces. Body/description-length fields (bio, description, message, successMessage) should default to TextareaControl or RichText, not a cramped single-line TextControl — the per-block audit should check for this specific failure mode (a multi-sentence value crammed into a one-line input)."
+    },
+    {
+      "setting_key": "input:url-link",
+      "category": "input-type",
+      "label": "Link / URL",
+      "optimal_control": {
+        "component": "SgsLinkControl (LinkControl wrapper)",
+        "props": {
+          "settings": [
+            "opensInNewTab",
+            "rel"
+          ],
+          "showInitialSuggestions": true
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears cleanly to no href"
+      },
+      "shared_component": "SgsLinkControl",
+      "spec_ref": "Part B 'Link/CTA' row (LinkControl: internal search + new-tab + rel nofollow/sponsored via settings — incomplete smell: raw URL TextControl) + Part C Links (internal-content search T, new-tab+auto-rel-noopener T, rel nofollow/sponsored T) + Part F 'raw URL field instead of LinkControl' + Part G (LinkControl over raw URL text fields, HIGH priority) + Part I 'Link/CTA — likely raw URL fields → AUDIT + migrate to LinkControl wrapper' + Part J Wave 1 #2",
+      "current_state": "15 attrs across 12 blocks — matches the design spine's own worked example exactly (blockLink, businessUnitUrl, cta2Url, ctaPrimaryUrl, ctaSecondaryUrl, ctaUrl, indexVariationUrl, linkEmail, linkPhone, linkTarget, linkUrl, phoneNumber, reviewRequestUrl, sgsBlockLink, url). full_classification labels every member 'URL/href/link-target field' uniformly — consistent with raw TextControl/string attrs rather than SgsLinkControl's object shape.",
+      "divergence": "Raw URL fields lack internal search + new-tab + rel; the flat url/blockLink/ctaUrl string attrs need to become object shape {url, opensInNewTab, rel} to carry LinkControl's settings. linkEmail/linkPhone/phoneNumber are semantically constrained (mailto:/tel:) and should validate/prefix accordingly rather than accept an arbitrary URL — a sub-case LinkControl doesn't cover natively and needs a thin wrapper rule.",
+      "divergence_severity": "high",
+      "notes": "This row is copied near-verbatim from the design spine's own worked example (spec-35-setting-registry-design.md) — the source counts (15 attrs / 12 blocks) match exactly, confirming the worked example already reflects this exact group. Converter-population note: any cloned block that fills these attrs must emit the {url,opensInNewTab,rel} object shape, not a flat string, per the object-typed-attr-coerces-flat-to-default gotcha in MEMORY.md (D328) — a flat string emit would be silently coerced to the block.json default at render."
+    }
+  ]
+}

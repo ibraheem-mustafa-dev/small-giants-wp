@@ -1,0 +1,260 @@
+{
+  "_meta": {
+    "phase": "Spec 35 UNIT A+ Phase 1b",
+    "purpose": "Adjudicate flagged dedup cases and identify property_suffixes gaps",
+    "analysis_date": "2026-07-19",
+    "adjudicator": "Claude Code"
+  },
+  "suspect_miskey": [
+    {
+      "attr": "fullWidth",
+      "verdict": "SPLIT",
+      "correct_setting": "behaviour:full-width",
+      "evidence": "Boolean type, ToggleControl, no description; only on sgs/label. Emits max-width constraint, not a CSS property value. Name is a behaviour toggle that gates whether an element stretches to full width or hugs its content."
+    },
+    {
+      "attr": "tagFullWidth",
+      "verdict": "SPLIT",
+      "correct_setting": "behaviour:full-width",
+      "evidence": "Boolean type, ToggleControl; explicit description: 'When true the in-body trial tag stretches to full width (block, 100%) instead of hugging its text.' This is a behaviour toggle on sgs/product-card, not a CSS width value assignment."
+    },
+    {
+      "attr": "bgSvgTextShadow",
+      "verdict": "SPLIT",
+      "correct_setting": "behaviour:apply-text-shadow-to-svg",
+      "evidence": "Boolean type, role=behaviour (explicitly marked), no control (likely server-only). Present on 4 blocks (container, cta-section, hero, trust-bar) where SVG backgrounds are a feature. Name is a gate/toggle that enables text-shadow on SVG layers, not a shadow property value."
+    },
+    {
+      "attr": "overlayGradient",
+      "verdict": "SPLIT",
+      "correct_setting": "behaviour:show-gradient-overlay",
+      "evidence": "Boolean type, role=colour-gradient, no control. Present on 4 blocks (container, cta-section, hero, trust-bar). Name signals a toggle that enables/disables a gradient overlay layer, not the gradient value itself. The gradient properties are separate (overlayGradientColor, etc.)."
+    },
+    {
+      "attr": "accentStroke",
+      "verdict": "SPLIT",
+      "correct_setting": "behaviour:apply-accent-stroke",
+      "evidence": "Boolean type, role=behaviour (explicitly marked), ToggleControl, only on sgs/counter. This is a toggle that gates whether the accent colour is applied to a stroke, not a stroke property value."
+    }
+  ],
+  "possible_splits": [
+    {
+      "attr": "iconName",
+      "verdict": "KEEP_SPLIT",
+      "group_a": {
+        "setting_key": "role:identity:iconname",
+        "attrs": ["iconName"],
+        "blocks": ["sgs/cart", "sgs/notice-banner"],
+        "semantic": "Identity icon (entity identifier, not a Lucide icon)"
+      },
+      "group_b": {
+        "setting_key": "role:icon-lucide:iconname",
+        "attrs": ["iconName"],
+        "blocks": ["sgs/icon"],
+        "semantic": "Lucide icon slug (a specific icon from the Lucide library)"
+      },
+      "evidence": "Same attr name, but different roles and blocks. sgs/cart and sgs/notice-banner use iconName to reference generic identity icons (cart icon, notice icon). sgs/icon uses iconName to select from Lucide's 1963 icon library. These are semantically distinct: one is an entity identifier, the other is a library selector. Merging would hide the semantic difference and break the per-block icon resolution. Keep as two separate settings with different roles."
+    },
+    {
+      "attr": "positionX / positionY",
+      "verdict": "MERGE",
+      "members": [
+        {
+          "setting_key": "slot:positionX",
+          "attrs": ["positionX"],
+          "canonical_slot": "positionX",
+          "blocks": ["sgs/decorative-image"]
+        },
+        {
+          "setting_key": "unresolved:positionx",
+          "attrs": ["positionXMobile", "positionXTablet"],
+          "canonical_slot": null,
+          "blocks": ["sgs/decorative-image"],
+          "note": "Responsive variants lack canonical_slot"
+        }
+      ],
+      "evidence": "These are the SAME setting across device tiers. The base form `positionX` has `canonical_slot` set correctly; the responsive variants `positionXMobile` and `positionXTablet` should also have `canonical_slot=positionX` set in the DB. The split is a data-integrity bug (incomplete slot assignment), not a semantic difference. All three attrs should resolve to `slot:positionX`. This is a DB backfill job: set `canonical_slot='positionX'` on the mobile/tablet variants in block_attributes."
+    }
+  ],
+  "property_suffixes_additions": [
+    {
+      "suffix": "GridTemplateRows",
+      "css_property": "grid-template-rows",
+      "example_attr": "gridTemplateRows",
+      "instances": 3,
+      "priority": "high",
+      "note": "Grid layout property for row track sizing; already has GridTemplateColumns in suffixes, this is the row equivalent."
+    },
+    {
+      "suffix": "GridAutoRows",
+      "css_property": "grid-auto-rows",
+      "example_attr": "gridAutoRows",
+      "instances": 1,
+      "priority": "high",
+      "note": "Grid auto row sizing; companion to GridAutoColumns (already in map)."
+    },
+    {
+      "suffix": "TextDecorationHover",
+      "css_property": "text-decoration",
+      "example_attr": "textDecorationHover",
+      "instances": 1,
+      "priority": "medium",
+      "note": "Hover-state text decoration (underline toggle). Not responsive; block-specific hover control."
+    },
+    {
+      "suffix": "VerticalAlignment",
+      "css_property": "vertical-align",
+      "example_attr": "verticalAlignment",
+      "instances": 1,
+      "priority": "medium",
+      "note": "Generic vertical-align property for alignment controls; already have HorizontalAlignment, this is the pair."
+    }
+  ],
+  "unresolved_bucketing": {
+    "rule": "Only CSS properties (n≈41) require shared-control standardisation via property_suffixes. Content, behaviour, media, and enum-select attributes (n≈282) are legitimately block-specific and DO NOT need a shared control spec — they're working as-is.",
+    "buckets": {
+      "css_properties": {
+        "count": 37,
+        "action": "add to property_suffixes map",
+        "examples": [
+          "gridtemplaterows",
+          "gridautorows",
+          "bgsvgposition",
+          "shadowhover",
+          "bordercolourhover"
+        ],
+        "note": "These SHOULD resolve to a CSS property in property_suffixes. Many are actual CSS properties with a few data gaps (GridTemplateRows, GridAutoRows, etc.). No shared control spec needed — property_suffixes handles them. ~4 high-priority additions identified above."
+      },
+      "content_text_attributes": {
+        "count": 53,
+        "action": "do NOT standardise",
+        "examples": [
+          "helptext",
+          "placeholder",
+          "svgcontent",
+          "headinglevel",
+          "addtocartlabel",
+          "labelcollapse"
+        ],
+        "note": "Block-specific text content (placeholder strings, help text, labels, SVG markup). All are per-block-unique and belong in each block's edit.js. No shared TextContentControl needed. These are working as-is."
+      },
+      "behaviour_toggles": {
+        "count": 56,
+        "action": "do NOT standardise",
+        "examples": [
+          "required",
+          "scalehover",
+          "effecthover",
+          "grayscalehover",
+          "imagezoomhover",
+          "carouselshowdots",
+          "showladder"
+        ],
+        "note": "Boolean toggles that enable/disable features (form field required, hover scale, carousel dots). All are per-block-specific behaviour gates. No shared BehaviourToggleControl needed. The 5 SUSPECT_MISKEY cases above belong here, not in CSS properties."
+      },
+      "enum_select_controls": {
+        "count": 26,
+        "action": "do NOT standardise",
+        "examples": [
+          "inheritstyle",
+          "connectorstyle",
+          "framingmode",
+          "theme",
+          "audiomimetype",
+          "consenttype"
+        ],
+        "note": "Enum selectors for mode/style/type choices (inherit-style, connector-style, framing-mode). All are per-block-specific; no shared EnumSelectControl needed. Already expose via block's own SelectControl in edit.js. These are working as-is."
+      },
+      "media_urls_assets": {
+        "count": 28,
+        "action": "do NOT standardise",
+        "examples": [
+          "bgsvganimation",
+          "bgsvganimationspeed",
+          "audiourl",
+          "businessuniturl",
+          "decorMedia",
+          "closeIcon"
+        ],
+        "note": "URLs, file paths, asset references. All are per-block-specific; no shared MediaPicker or URLControl needed (or they already have MediaUploadCheck). These are working as-is."
+      },
+      "other_unclassified": {
+        "count": 123,
+        "action": "do NOT standardise",
+        "examples": [
+          "thickness",
+          "blocklink",
+          "carouselspeed",
+          "collapsible",
+          "ctabehaviour",
+          "linkrel",
+          "menufallback"
+        ],
+        "note": "Misc per-block attributes (event routing, link behaviour, carousel tuning, menu fallback). All are block-specific or event-wired. No shared control spec needed. These are working as-is."
+      }
+    },
+    "spot_checks": [
+      {
+        "attr": "thickness",
+        "classification": "other (not CSS property)",
+        "reason": "No hyphen; likely a dimension value (border thickness, line thickness) used in a block-specific way, not a standard CSS property name. Working as-is."
+      },
+      {
+        "attr": "blocklink",
+        "classification": "other (block feature)",
+        "reason": "Links an entire block to a URL. Per-block feature, not a CSS property. Working as-is."
+      },
+      {
+        "attr": "carouselspeed",
+        "classification": "other (block parameter)",
+        "reason": "Tuning parameter for carousel animation speed. Per-block specific, not CSS. Working as-is."
+      },
+      {
+        "attr": "audiocontrols",
+        "classification": "behaviour (media playback toggle)",
+        "reason": "Boolean flag for whether audio player UI controls are shown. Per-block media setting, not CSS. Working as-is."
+      },
+      {
+        "attr": "bgsvganimation",
+        "classification": "media (asset property)",
+        "reason": "Selects animation type for SVG backgrounds. Per-block feature, not CSS. Working as-is."
+      },
+      {
+        "attr": "inheritstyle",
+        "classification": "enum_select (mode selector)",
+        "reason": "Selects style inheritance mode for a block element. Per-block enum, not CSS. Working as-is."
+      },
+      {
+        "attr": "attributiontag",
+        "classification": "content (structured markup)",
+        "reason": "Attribution/credit HTML element tag choice. Per-block content, not CSS. Working as-is."
+      },
+      {
+        "attr": "framingmode",
+        "classification": "enum_select (presentation mode)",
+        "reason": "Selects how to frame/present product value. Per-block mode selector. Working as-is."
+      }
+    ]
+  },
+  "summary": {
+    "suspect_miskey_count": 5,
+    "suspect_miskey_split_count": 5,
+    "possible_split_count": 2,
+    "possible_split_keep_split_count": 1,
+    "possible_split_merge_count": 1,
+    "property_suffixes_additions_count": 4,
+    "property_suffixes_priority_high": 2,
+    "property_suffixes_priority_medium": 2,
+    "unresolved_css_properties_identified": 37,
+    "unresolved_css_gaps_to_fill": 4,
+    "unresolved_block_specific_working_count": 282,
+    "bucketing_consensus": "Only ~41 unresolved attrs (CSS properties + gaps) need property_suffixes work. The remaining ~282 are legitimately block-specific and do NOT require shared control specs."
+  },
+  "recommendations": [
+    "Add 4 property_suffixes rows: GridTemplateRows→grid-template-rows, GridAutoRows→grid-auto-rows, TextDecorationHover→text-decoration, VerticalAlignment→vertical-align.",
+    "Split 5 SUSPECT_MISKEY attrs out of CSS property groups into behaviour:* settings. These are all toggles/gates, not property values.",
+    "Merge positionX / positionY: backfill canonical_slot on positionXMobile and positionYTablet in the DB, then re-run build-setting-types.py.",
+    "Keep iconName split (identity vs icon-lucide): different roles, different semantics, no merge.",
+    "Do NOT add shared control specs for content, behaviour, media, or enum-select unresolved attrs. They're working as block-specific implementations. Focus effort on the CSS property map closure (~41 attrs)."
+  ]
+}
