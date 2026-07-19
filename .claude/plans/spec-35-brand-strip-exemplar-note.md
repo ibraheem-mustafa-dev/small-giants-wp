@@ -13,6 +13,14 @@ sibling: .claude/plans/spec-35-inspector-DONE-checklist.md (the rubric this pass
 It is the only block on this branch already rebuilt against Spec 35. Read its files, don't
 re-derive the pattern from the spec prose — copy these choices verbatim into `sgs/media`.
 
+> **SCOPE CAVEAT (2026-07-19, Task-2 grading F2).** Brand-strip proves the **element-first PANEL
+> ARRANGEMENT** (Tile / Logo / Caption / Spacing sections in the Styles tab) — copy that. It does NOT yet
+> prove the **cluster composition** the Task-2 lint enforces: it still uses `tileShadow` as a
+> None/Small/Medium SELECT (edit.js:477, NOT `ShadowControl`) and a raw `TextControl` for the logo link
+> (edit.js:583, NOT `SgsLinkControl`) — even though both shared components now EXIST (commit `87a0e4de`).
+> So do NOT treat brand-strip's shadow/link handling as the bar; upgrade it (rollout step 2) so the
+> exemplar genuinely embodies every cluster. Findings 1–3 below are now RESOLVED at the COMPONENT level.
+
 ## Shared components it proves out (use the SAME ones on sgs/media)
 
 - **`ServerSideRender`** (edit.js) instead of a hand-built JS preview. The canvas renders
@@ -72,16 +80,16 @@ re-derive the pattern from the spec prose — copy these choices verbatim into `
 
 ## Findings (do NOT copy these — they are the gaps, not the bar)
 
-1. **`DesignTokenPicker` has no `enableAlpha`.** Every colour control on brand-strip inherits
-   this gap because it's a shared component. Fix belongs at the component (Wave 1 item 1,
-   Spec 35 Part J), not per-block — do not patch it locally on sgs/media either; raise it as
-   the Wave 1 blocker it is.
-2. **No `LinkControl` anywhere in the plugin.** Brand-strip's logo link uses a raw
-   `TextControl type="url"` + a separate `ToggleControl` for new-tab. Spec 35 Wave 1 item 2
-   (`SgsLinkControl`) hasn't been built yet — sgs/media's own link field (if it has one) will
-   have the same gap until that shared wrapper exists.
-3. **`tileShadow` is a `None/Small/Medium` select** — the exact Part-F anti-pattern
-   ("incomplete option sets"). The fix is the Wave 1 `ShadowControl` (Part I) — not built yet.
+1. **`DesignTokenPicker` `enableAlpha`** — RESOLVED (2026-07-19): the component now defaults
+   `enableAlpha: true`. No per-block patch needed; brand-strip inherits it. (Was Wave 1 item 1.)
+2. **`SgsLinkControl`** — RESOLVED at component level (2026-07-19): `src/components/SgsLinkControl.js`
+   now exists (wraps core `LinkControl`, 122 lines). BUT brand-strip's logo link still uses the raw
+   `TextControl type="url"` + separate new-tab `ToggleControl` (edit.js:583) — NOT yet migrated. Upgrade
+   brand-strip (and use `SgsLinkControl` on sgs/media) — the wrapper is built.
+3. **`ShadowControl`** — RESOLVED at component level (2026-07-19): `src/components/ShadowControl.js`
+   now exists (full X/Y/blur/spread/colour+alpha builder, 179 lines). BUT brand-strip still uses
+   `tileShadow` as a None/Small/Medium SELECT (edit.js:477) — NOT yet migrated. Upgrade brand-strip;
+   use `ShadowControl` on sgs/media.
 4. **The "Tile" Styles panel is dense (~9 controls) with no `ToolsPanel`.** Not wrong, just
    not using progressive disclosure — a real Spec 35 item-3 gap, deferred as non-trivial
    (needs isShownByDefault + resetAll decisions, a genuine UX call, not a mechanical fix).
@@ -90,6 +98,7 @@ re-derive the pattern from the spec prose — copy these choices verbatim into `
    explicitly allows), but the Wave-2 upgrade path for sgs/media is the gallery picker, not
    this per-item button pattern.
 
-None of these five are brand-strip-specific bugs — they are framework-level components not yet
-built. Do not re-derive or hand-roll a fix for any of them inside a single block; they're
-listed here so the sgs/media dispatch doesn't quietly inherit them without knowing why.
+None of these are brand-strip-specific bugs. **Findings 1–3 are now BUILT** (2026-07-19:
+`enableAlpha`, `SgsLinkControl`, `ShadowControl`) — the remaining work is migrating brand-strip's
+edit.js to USE them (rollout step 2). **Findings 4–5 remain open** (per-element `ToolsPanel`;
+bulk-logo `MediaGalleryPicker`, Wave 2). Do not hand-roll a fix inside a single block.
