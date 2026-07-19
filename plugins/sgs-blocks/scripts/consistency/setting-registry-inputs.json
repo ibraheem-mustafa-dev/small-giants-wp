@@ -19,8 +19,14 @@
       "optimal_control": {
         "component": "ToggleGroupControl (2–5 short options) OR ComboboxControl (>~10 options, searchable)",
         "props": {
-          "toggle_group": { "isBlock": true, "__next40pxDefaultSize": true },
-          "combobox": { "allowReset": true, "options": "full enumerated set" },
+          "toggle_group": {
+            "isBlock": true,
+            "__next40pxDefaultSize": true
+          },
+          "combobox": {
+            "allowReset": true,
+            "options": "full enumerated set"
+          },
           "custom_path": "when the underlying CSS/behaviour value is open-ended (not a closed vocabulary), add a 'Custom' option that reveals a free text/colour/unit field — never truncate the option set"
         },
         "preset_layer": "n/a — the enum members ARE the presets; no separate custom-box layer unless a Custom-path escape exists (dimension 5)",
@@ -44,7 +50,11 @@
       "label": "On/off switch",
       "optimal_control": {
         "component": "ToggleControl (default) or ToggleGroupControl for a binary segmented choice with two meaningfully-labelled states (e.g. 'Grid'/'List' rather than a bare on/off)",
-        "props": { "checked": "attr value", "onChange": "setAttributes", "help": "aria-describedby-linked hint text where the effect is non-obvious" },
+        "props": {
+          "checked": "attr value",
+          "onChange": "setAttributes",
+          "help": "aria-describedby-linked hint text where the effect is non-obvious"
+        },
         "preset_layer": null,
         "units": "n/a",
         "responsive_device_tier": "case-by-case: layout/visibility toggles that are meaningfully different per device (hideOnMobile/hideOnTablet, wrap/wrapTablet/wrapMobile) already carry per-tier companion attrs and should route through ResponsiveControl rather than 3 standalone booleans; content/behaviour toggles (autoplay, required, dismissible) do not",
@@ -67,9 +77,16 @@
       "optimal_control": {
         "component": "RichText (inline formatted prose — quote/testimonial/description body) / TextControl (single-line label/name/short string) / TextareaControl (multi-line unformatted copy — help text, success message)",
         "props": {
-          "richtext": { "allowedFormats": "bold/italic/link at minimum", "tagName": "matches semantic role" },
-          "textcontrol": { "__next40pxDefaultSize": true },
-          "textarea": { "rows": 3 }
+          "richtext": {
+            "allowedFormats": "bold/italic/link at minimum",
+            "tagName": "matches semantic role"
+          },
+          "textcontrol": {
+            "__next40pxDefaultSize": true
+          },
+          "textarea": {
+            "rows": 3
+          }
         },
         "preset_layer": null,
         "units": "n/a",
@@ -93,8 +110,21 @@
       "optimal_control": {
         "component": "RangeControl (bounded value — real min/max/step, +input field +reset) for dimensionless counts/percentages/speeds; UnitControl for anything carrying an implicit length/pixel/ms meaning",
         "props": {
-          "range": { "min": "real", "max": "real", "step": "real", "withInputField": true, "allowReset": true, "resetFallbackValue": "block.json default" },
-          "unit": { "units": ["px", "%"], "isResetValueOnUnitChange": true }
+          "range": {
+            "min": "real",
+            "max": "real",
+            "step": "real",
+            "withInputField": true,
+            "allowReset": true,
+            "resetFallbackValue": "block.json default"
+          },
+          "unit": {
+            "units": [
+              "px",
+              "%"
+            ],
+            "isResetValueOnUnitChange": true
+          }
         },
         "preset_layer": null,
         "units": "px-shaped attrs (thickness/thicknessTablet/thicknessMobile, positionX/positionY + tier companions, collapseCustomPx, iconCircleSize, contentIconSize, ctaPaddingX/ctaPaddingY, scrollOffset) need a real unit, not a bare number — dimension 2",
@@ -118,8 +148,18 @@
       "optimal_control": {
         "component": "MediaUpload + MediaUploadCheck (single item); MediaGalleryPicker (array/repeated media — multiple='add' + gallery)",
         "props": {
-          "single": { "onSelect": "setAttributes({ attr: {id,url,alt,width,height} })", "allowedTypes": ["image"] , "render": "MediaUploadCheck wraps every MediaUpload" },
-          "gallery": { "multiple": "add", "gallery": true, "addToGallery": true }
+          "single": {
+            "onSelect": "setAttributes({ attr: {id,url,alt,width,height} })",
+            "allowedTypes": [
+              "image"
+            ],
+            "render": "MediaUploadCheck wraps every MediaUpload"
+          },
+          "gallery": {
+            "multiple": "add",
+            "gallery": true,
+            "addToGallery": true
+          }
         },
         "preset_layer": null,
         "units": "n/a",
@@ -141,7 +181,7 @@
       "category": "input-type",
       "label": "Structured repeater data (items, options, steps)",
       "optimal_control": {
-        "component": "A structured per-item repeater panel — an ordered list of item cards, each expandable to its own mini-form of typed sub-fields (text/media/link/colour per item shape), with add/remove/drag-reorder — never a raw JSON textarea",
+        "component": "TWO patterns by one test — rich item -> InnerBlocks(+templateLock='insert'); scalar item -> BUILD shared RepeaterControl (array attr, collapsible per-item panel, '+ Add', remove + up/down reorder w/ roving tabindex + aria, empty state)",
         "props": {
           "item_card": "collapsed summary row (drag handle, item label, remove button) that expands to the item's own typed controls",
           "add_button": "'Add item' at the list foot",
@@ -150,17 +190,17 @@
         "preset_layer": "an empty/new item seeds from a documented default shape, never a blank object the operator must know how to fill",
         "units": "n/a — the repeater's individual sub-fields carry their own unit/colour/media rules per their own input-type",
         "responsive_device_tier": false,
-        "multi_value": "the entire setting_key IS the multi-value case — array of structured objects, not a scalar; this is the array/object equivalent of MULTI-VALUE dimension 4",
+        "multi_value": "gallery",
         "dropdown_completeness": "n/a at the repeater level; individual item sub-fields (e.g. a per-step icon or per-plan CTA style) carry their own dropdown-completeness rule",
         "alpha_clearable": "n/a at the repeater level; per-item colour sub-fields (if any) need it",
         "reset_disclosure": "remove-item + 'clear all' are the reset path; no single default value to reset TO since it's a list"
       },
-      "shared_component": null,
+      "shared_component": "BUILD: RepeaterControl (scalar items) + InnerBlocks pattern (rich items)",
       "spec_ref": "Part B 'Media/gallery' row's array-attr principle extended to non-media repeaters (array attr + structured item UI, not a scalar) + Part I 'Bulk media/gallery — BUILD MediaGalleryPicker' is the media-specific sibling of this same repeater pattern + Part F anti-pattern 'bespoke Custom CSS field on the block' (the raw-JSON-textarea failure mode this row rules out)",
       "current_state": "25 attrs across 20 blocks. full_classification labels every member identically: 'attr_type array/object holding structured repeater/config data, not a media object' — this confirms the attrs are genuinely array/object-shaped (good — not flattened into 20 scalar attrs), but gives no visibility into whether the CURRENT editor UI is a real per-item repeater panel or a raw JSON/serialised-text editing experience.",
-      "divergence": "Cannot be scored precisely without a per-block UI audit — the data proves the attr TYPE is already correct (array/object, not flattened scalars, which is the main MULTI-VALUE win) but not whether the CONTROL is a proper repeater panel. Given these are core SGS composite blocks (card-grid items, pricing-table plans, process-steps steps, form-field-select options) which are among the most mature blocks in the framework, a real repeater panel is plausible for most — but this is an assumption, not a measurement.",
-      "divergence_severity": "low",
-      "notes": "AMBIGUOUS INPUT-TYPE (flagged per report instructions): json-config is the one group where 'optimal component' cannot be stated with confidence from the source data alone, because a repeater panel is a UI/UX judgement call (per-item field set, disclosure depth) that varies by what each item actually IS (a pricing plan has different fields than a timeline entry) — Spec 35 Parts B/H describe the array-attr PRINCIPLE but no single named component covers 'repeater panel', unlike every other input-type row which maps to one concrete WP/SGS component."
+      "divergence": "21 blocks handle arrays inconsistently — most hand-roll an on-canvas array with thin/absent inspector controls (Bean saw this on sgs/pricing-table: add plans on-canvas, no per-item settings in the drawer); only sgs/testimonial-slider uses InnerBlocks. Standardise on two patterns.",
+      "divergence_severity": "medium",
+      "notes": "Bean-directed research 2026-07-19 (WP gold standard + Kadence/Spectra/GenerateBlocks/Stackable/GreenShift survey). DECISION RULE: does an item need rich text/media or its own block toolbar? YES -> InnerBlocks with a parent/child block pair + templateLock='insert' (on-canvas WYSIWYG, native reorder) — what every major plugin uses for rich items. NO (a few scalar fields) -> BUILD one shared RepeaterControl: array attr, collapsible per-item PanelBody, labelled '+ Add' button, per-item remove + up/down reorder (roving tabindex, role=listitem, positional aria-label), friendly empty state. NOT DataViews/DataForm (WP scopes it to admin/site-editor screens, not in-block editing). RESOLVED."
     },
     {
       "setting_key": "input:colour-value",
@@ -168,7 +208,11 @@
       "label": "Colour (hover-state / override variant)",
       "optimal_control": {
         "component": "DesignTokenPicker",
-        "props": { "enableAlpha": true, "clearable": true, "disableCustomColors": false },
+        "props": {
+          "enableAlpha": true,
+          "clearable": true,
+          "disableCustomColors": false
+        },
         "preset_layer": "token swatches (theme.json palette) seed the picker; a custom hex/rgba value is always still editable underneath",
         "units": "n/a",
         "responsive_device_tier": false,
@@ -190,7 +234,16 @@
       "label": "Icon (dashicon / Lucide / emoji / WP icon)",
       "optimal_control": {
         "component": "The SGS icon picker — a single identity control with an internal source switch (dashicon/lucide-wp-icon/emoji), search-as-you-type, and a live preview swatch",
-        "props": { "search": true, "preview": true, "sourceSwitch": ["dashicon", "wp-icon", "emoji"], "clearable": true },
+        "props": {
+          "search": true,
+          "preview": true,
+          "sourceSwitch": [
+            "dashicon",
+            "wp-icon",
+            "emoji"
+          ],
+          "clearable": true
+        },
         "preset_layer": "the icon library IS the preset set; no separate custom-box layer beyond the identity picker itself",
         "units": "n/a",
         "responsive_device_tier": false,
@@ -212,7 +265,13 @@
       "label": "Link / URL",
       "optimal_control": {
         "component": "SgsLinkControl (LinkControl wrapper)",
-        "props": { "settings": ["opensInNewTab", "rel"], "showInitialSuggestions": true },
+        "props": {
+          "settings": [
+            "opensInNewTab",
+            "rel"
+          ],
+          "showInitialSuggestions": true
+        },
         "preset_layer": null,
         "units": "n/a",
         "responsive_device_tier": false,
@@ -234,7 +293,11 @@
       "label": "Date / datetime value",
       "optimal_control": {
         "component": "DateTimePicker",
-        "props": { "is12Hour": false, "onChange": "setAttributes", "currentDate": "attr value" },
+        "props": {
+          "is12Hour": false,
+          "onChange": "setAttributes",
+          "currentDate": "attr value"
+        },
         "preset_layer": null,
         "units": "n/a",
         "responsive_device_tier": false,
@@ -256,7 +319,11 @@
       "label": "Raw SVG markup (decorative background shape)",
       "optimal_control": {
         "component": "TextareaControl (monospace font) for authoring/pasting the markup, gated by mandatory SVG-sanitise-on-upload before the value is ever stored or rendered",
-        "props": { "fontFamily": "monospace", "rows": 8, "sanitise": "server-side SVG sanitiser (strip <script>, on* handlers, external refs) runs BEFORE the attribute is saved — never trust raw client input" },
+        "props": {
+          "fontFamily": "monospace",
+          "rows": 8,
+          "sanitise": "server-side SVG sanitiser (strip <script>, on* handlers, external refs) runs BEFORE the attribute is saved — never trust raw client input"
+        },
         "preset_layer": "a small curated set of built-in decorative shapes (wave/blob/angle) seeds the field; pasting custom markup is the escape hatch, always sanitised",
         "units": "n/a",
         "responsive_device_tier": false,

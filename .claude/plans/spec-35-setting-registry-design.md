@@ -148,3 +148,15 @@ Three disjoint files (one per category, no write-collision), then merged by the 
 - `setting-registry-inputs.json` — 11 input-type rows (system-internal excluded, noted)
 - `setting-registry-behaviours.json` — 11 behaviour-family rows (these define a canonical control SET
   + which shared component owns the recurring behaviour, not always a single control)
+
+
+## Bean review rulings (2026-07-19)
+
+Bean reviewed the drafted catalog (82 rows) via the artifact + opened the live blocks. Rulings on the 6 flagged judgement-call rows:
+
+1. **`css:stroke`** — RESOLVED (reclassify). Verified on sgs/counter: `accentStroke` is a decoration ToggleControl ("Accent underline stroke — adds a short coloured line beneath the number"), not a stroke-paint colour. Move to behaviour/decoration; the underline colour is a separate colour setting.
+2. **`css:background-image`** — RESOLVED. It is `overlayGradient` (a background OVERLAY, role colour-gradient) → GradientPicker + solid colour + alpha; relabelled "Background overlay". The real background image is a separate per-device Image/Video/Animation picker (media-source).
+3. **`css:background-position`** — RESOLVED as missing/verify. Not exposed on container or hero today (no control). ACTION: verify `backgroundPosition` is consumed in render.php (dead-control check); if yes → FocalPointPicker, if no → delete. Do with the overlay work.
+4. **`css:font-family`** — RULED: expose a curated searchable font picker (theme.json families + Font Library) on **display blocks only** (heading/quote/button), OFF body/structural — protects the design system. Stays out of the per-element TypographyControls.
+5. **`input:json-config` (repeaters)** — RULED (Bean-directed research done). TWO patterns by one test — *does the item need rich content or its own toolbar?* Rich → InnerBlocks + `templateLock="insert"` (what Kadence/GenerateBlocks/Stackable/GreenShift all use); scalar → BUILD one shared `RepeaterControl` (array attr, collapsible per-item panel, "+ Add", remove + up/down reorder w/ roving tabindex + aria, empty state). NOT DataViews/DataForm (admin-only). Bean saw the gap live on pricing-table (on-canvas add, no inspector item settings).
+6. **`behaviour:sticky-header-nav-behaviour`** — NOT separately ruled; keeps the recommended split (native `position.sticky` StickyToggle + a NavCollapseTier device-tier control) pending Bean's confirmation.

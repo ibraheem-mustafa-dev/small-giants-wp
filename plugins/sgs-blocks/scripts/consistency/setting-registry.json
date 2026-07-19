@@ -10,15 +10,22 @@
       "behaviour-family": 11
     },
     "by_severity": {
-      "high": 25,
-      "medium": 36,
-      "low": 18,
-      "none": 3
+      "high": 24,
+      "medium": 37,
+      "low": 17,
+      "none": 4
     },
     "excluded": [
       "system-internal: className — 1 attr (sgs/button), WP wrapper plumbing (block-editor-assigned CSS class name), not a client-facing setting; no editor control to design"
     ],
-    "status": "DRAFT — awaiting Bean review"
+    "status": "REVIEWED — Bean ruled on 5 of 6 flagged rows 2026-07-19 (stroke/background-image/background-position/font-family/json-config); sticky-header-nav keeps the recommended StickyToggle+NavCollapseTier split pending confirmation. Ready for /qc-council then Wave rollout.",
+    "bean_rulings_2026_07_19": [
+      "css:stroke -> reclassified (accentStroke is a decoration toggle, not a colour)",
+      "css:background-image -> Background overlay (GradientPicker+alpha); real bg image is a separate media picker",
+      "css:background-position -> not exposed today; verify-if-dead then FocalPointPicker or delete",
+      "css:font-family -> curated font picker on DISPLAY blocks only (heading/quote/button)",
+      "input:json-config -> InnerBlocks for rich items, shared RepeaterControl for scalar items; not DataViews"
+    ]
   },
   "rows": [
     {
@@ -849,9 +856,9 @@
     {
       "setting_key": "css:background-image",
       "category": "css-property",
-      "label": "Background gradient / overlay",
+      "label": "Background overlay (gradient / colour)",
       "optimal_control": {
-        "component": "GradientPicker (+ MediaUpload fallback for a literal background photo)",
+        "component": "GradientPicker (custom builder + alpha stops) with a solid-colour fallback",
         "props": {
           "gradients": "theme.json preset gradients",
           "clearable": true,
@@ -868,16 +875,16 @@
       "shared_component": "GradientPicker",
       "spec_ref": "Part B GradientPicker row + Part I ('Gradient / bg overlay — MISSING')",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: colour-gradient; conformance: unknown (dedup_confidence: review)",
-      "divergence": "no SGS block currently exposes a gradient/overlay builder for this property at all (observed_control_types is empty, conformance unknown) — this is a straight MISSING build per Part I, not a divergent-control fix",
+      "divergence": "The attr is overlayGradient (role colour-gradient) — a background OVERLAY, not a background photo. Needs a real GradientPicker (+ solid-colour fallback + alpha), not a preset-only or absent control.",
       "divergence_severity": "high",
-      "notes": "UNCERTAIN which of the two real uses this covers: a CSS gradient (→ GradientPicker) or a literal background photo url (→ MediaUpload + focal point, which is really css:object-position/object-fit territory, not this property). role is tagged 'colour-gradient' in the source data so I've drafted for the gradient case; a code audit of the 1 instance/block should confirm before building."
+      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background."
     },
     {
       "setting_key": "css:background-position",
       "category": "css-property",
       "label": "Background image position",
       "optimal_control": {
-        "component": "A 3x3 position-grid picker (FocalPointPicker-style compact widget) — build gap, no exact SGS/WP component covers this today",
+        "component": "FocalPointPicker (position the background layer) — NOT exposed today; verify-if-dead first",
         "props": {
           "presets": [
             "top left",
@@ -902,9 +909,9 @@
       "shared_component": null,
       "spec_ref": "Part H (focal point -> FocalPointPicker is the closest analogue, but that component positions an IMAGE crop point, not a CSS background-position keyword pair)",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
-      "divergence": "no observed control at all (conformance: unknown), 1 attr/4 instances",
+      "divergence": "backgroundPosition exists on container/cta-section/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
       "divergence_severity": "medium",
-      "notes": "UNCERTAIN which component fits best — flagged for parent. FocalPointPicker is visually the right shape but semantically positions a foreground image inside its own box, not a background layer; a genuinely new small SGS component (`BackgroundPositionControl`) may be the cleanest fix rather than repurposing FocalPointPicker."
+      "notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one."
     },
     {
       "setting_key": "css:background-repeat",
@@ -1248,7 +1255,7 @@
       "category": "css-property",
       "label": "Font family",
       "optimal_control": {
-        "component": "ComboboxControl (searchable — theme.json font families + Font Library collection)",
+        "component": "ComboboxControl (searchable) — curated to theme.json families + installed Font Library fonts; display blocks only",
         "props": {
           "options": "theme.json settings.typography.fontFamilies + sgs-google-fonts collection (1,923 fonts)"
         },
@@ -1260,12 +1267,12 @@
         "alpha_clearable": "n/a",
         "reset_disclosure": "clears to theme default"
       },
-      "shared_component": null,
+      "shared_component": "BUILD: SgsFontFamilyControl (ComboboxControl over theme.json families + Font Library) — display blocks only",
       "spec_ref": "Part H (long/searchable list -> ComboboxControl) + Font Library Collection (plugins/sgs-blocks CLAUDE.md Backend Integrations)",
       "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl, TextControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
-      "divergence": "2 attrs use SelectControl/TextControl today — a plain SelectControl can't scale to the Font Library's font count without becoming an unusable giant dropdown",
+      "divergence": "fontFamily is NOT exposed to clients today (Bean confirmed). Build a curated searchable font picker, but scope it to DISPLAY blocks only — heading, quote, button — off body/structural blocks, to protect the design system.",
       "divergence_severity": "medium",
-      "notes": "Low instance count (5) but real gap: SelectControl doesn't scale once a client installs extra fonts via the Font Library. No shared SGS component for this yet — flagged as a build gap in the report."
+      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED."
     },
     {
       "setting_key": "css:font-size",
@@ -2118,9 +2125,9 @@
     {
       "setting_key": "css:stroke",
       "category": "css-property",
-      "label": "Icon stroke colour",
+      "label": "Accent underline (decoration toggle)",
       "optimal_control": {
-        "component": "DesignTokenPicker",
+        "component": "ToggleControl (show/hide the decorative underline) — not a stroke-paint colour control",
         "props": {
           "enableAlpha": true,
           "clearable": true
@@ -2130,15 +2137,15 @@
         "responsive_device_tier": false,
         "multi_value": "none",
         "dropdown_completeness": "n/a",
-        "alpha_clearable": true,
+        "alpha_clearable": "n/a",
         "reset_disclosure": "native ColorPalette Clear button"
       },
-      "shared_component": "DesignTokenPicker",
+      "shared_component": null,
       "spec_ref": "Part B Colour row (stroke is a paint property, same completeness bar as color/border-color)",
       "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: ToggleControl; observed_roles: behaviour; conformance: consistent (dedup_confidence: review)",
-      "divergence": "the CSS property is a colour/paint value but the only observed control is a boolean ToggleControl — reads as an on/off 'coloured stroke?' switch, not an actual colour picker",
-      "divergence_severity": "high",
-      "notes": "UNCERTAIN — only 1 instance, role tagged 'behaviour' not 'color'. Two readings: (a) it genuinely sets stroke paint and the current ToggleControl is a broken/incomplete implementation (my assumption above), or (b) it is really a boolean 'use stroke variant of icon' switch dedup'd onto the stroke property by name-matching and belongs in the behaviour-family registry, not here. Flagging for parent — see report."
+      "divergence": "Mis-keyed by the CSS dedup: the only attr is accentStroke on sgs/counter — a boolean ToggleControl that shows a short decorative underline beneath the number, NOT a stroke-paint colour. The underline's colour is a separate colour-value setting.",
+      "divergence_severity": "none",
+      "notes": "Bean-verified 2026-07-19 on sgs/counter ('Decoration' category, 'Accent underline stroke', tooltip 'Adds a short coloured line beneath the number'). RESOLVED: reclassify with behaviour/decoration toggles; there is no genuine stroke-paint setting. No build action."
     },
     {
       "setting_key": "css:text-align",
@@ -2531,7 +2538,7 @@
       "category": "input-type",
       "label": "Structured repeater data (items, options, steps)",
       "optimal_control": {
-        "component": "A structured per-item repeater panel — an ordered list of item cards, each expandable to its own mini-form of typed sub-fields (text/media/link/colour per item shape), with add/remove/drag-reorder — never a raw JSON textarea",
+        "component": "TWO patterns by one test — rich item -> InnerBlocks(+templateLock='insert'); scalar item -> BUILD shared RepeaterControl (array attr, collapsible per-item panel, '+ Add', remove + up/down reorder w/ roving tabindex + aria, empty state)",
         "props": {
           "item_card": "collapsed summary row (drag handle, item label, remove button) that expands to the item's own typed controls",
           "add_button": "'Add item' at the list foot",
@@ -2540,17 +2547,17 @@
         "preset_layer": "an empty/new item seeds from a documented default shape, never a blank object the operator must know how to fill",
         "units": "n/a — the repeater's individual sub-fields carry their own unit/colour/media rules per their own input-type",
         "responsive_device_tier": false,
-        "multi_value": "the entire setting_key IS the multi-value case — array of structured objects, not a scalar; this is the array/object equivalent of MULTI-VALUE dimension 4",
+        "multi_value": "gallery",
         "dropdown_completeness": "n/a at the repeater level; individual item sub-fields (e.g. a per-step icon or per-plan CTA style) carry their own dropdown-completeness rule",
         "alpha_clearable": "n/a at the repeater level; per-item colour sub-fields (if any) need it",
         "reset_disclosure": "remove-item + 'clear all' are the reset path; no single default value to reset TO since it's a list"
       },
-      "shared_component": null,
+      "shared_component": "BUILD: RepeaterControl (scalar items) + InnerBlocks pattern (rich items)",
       "spec_ref": "Part B 'Media/gallery' row's array-attr principle extended to non-media repeaters (array attr + structured item UI, not a scalar) + Part I 'Bulk media/gallery — BUILD MediaGalleryPicker' is the media-specific sibling of this same repeater pattern + Part F anti-pattern 'bespoke Custom CSS field on the block' (the raw-JSON-textarea failure mode this row rules out)",
       "current_state": "25 attrs across 20 blocks. full_classification labels every member identically: 'attr_type array/object holding structured repeater/config data, not a media object' — this confirms the attrs are genuinely array/object-shaped (good — not flattened into 20 scalar attrs), but gives no visibility into whether the CURRENT editor UI is a real per-item repeater panel or a raw JSON/serialised-text editing experience.",
-      "divergence": "Cannot be scored precisely without a per-block UI audit — the data proves the attr TYPE is already correct (array/object, not flattened scalars, which is the main MULTI-VALUE win) but not whether the CONTROL is a proper repeater panel. Given these are core SGS composite blocks (card-grid items, pricing-table plans, process-steps steps, form-field-select options) which are among the most mature blocks in the framework, a real repeater panel is plausible for most — but this is an assumption, not a measurement.",
-      "divergence_severity": "low",
-      "notes": "AMBIGUOUS INPUT-TYPE (flagged per report instructions): json-config is the one group where 'optimal component' cannot be stated with confidence from the source data alone, because a repeater panel is a UI/UX judgement call (per-item field set, disclosure depth) that varies by what each item actually IS (a pricing plan has different fields than a timeline entry) — Spec 35 Parts B/H describe the array-attr PRINCIPLE but no single named component covers 'repeater panel', unlike every other input-type row which maps to one concrete WP/SGS component."
+      "divergence": "21 blocks handle arrays inconsistently — most hand-roll an on-canvas array with thin/absent inspector controls (Bean saw this on sgs/pricing-table: add plans on-canvas, no per-item settings in the drawer); only sgs/testimonial-slider uses InnerBlocks. Standardise on two patterns.",
+      "divergence_severity": "medium",
+      "notes": "Bean-directed research 2026-07-19 (WP gold standard + Kadence/Spectra/GenerateBlocks/Stackable/GreenShift survey). DECISION RULE: does an item need rich text/media or its own block toolbar? YES -> InnerBlocks with a parent/child block pair + templateLock='insert' (on-canvas WYSIWYG, native reorder) — what every major plugin uses for rich items. NO (a few scalar fields) -> BUILD one shared RepeaterControl: array attr, collapsible per-item PanelBody, labelled '+ Add' button, per-item remove + up/down reorder (roving tabindex, role=listitem, positional aria-label), friendly empty state. NOT DataViews/DataForm (WP scopes it to admin/site-editor screens, not in-block editing). RESOLVED."
     },
     {
       "setting_key": "input:media-source",

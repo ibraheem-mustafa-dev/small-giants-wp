@@ -1009,7 +1009,7 @@
       "category": "css-property",
       "label": "Font family",
       "optimal_control": {
-        "component": "ComboboxControl (searchable — theme.json font families + Font Library collection)",
+        "component": "ComboboxControl (searchable) — curated to theme.json families + installed Font Library fonts; display blocks only",
         "props": {
           "options": "theme.json settings.typography.fontFamilies + sgs-google-fonts collection (1,923 fonts)"
         },
@@ -1021,12 +1021,12 @@
         "alpha_clearable": "n/a",
         "reset_disclosure": "clears to theme default"
       },
-      "shared_component": null,
+      "shared_component": "BUILD: SgsFontFamilyControl (ComboboxControl over theme.json families + Font Library) — display blocks only",
       "spec_ref": "Part H (long/searchable list -> ComboboxControl) + Font Library Collection (plugins/sgs-blocks CLAUDE.md Backend Integrations)",
       "current_state": "2 distinct attr names / 5 instances across 5 blocks; observed_control_types: SelectControl, TextControl; observed_roles: typography; conformance: divergent (dedup_confidence: high)",
-      "divergence": "2 attrs use SelectControl/TextControl today — a plain SelectControl can't scale to the Font Library's font count without becoming an unusable giant dropdown",
+      "divergence": "fontFamily is NOT exposed to clients today (Bean confirmed). Build a curated searchable font picker, but scope it to DISPLAY blocks only — heading, quote, button — off body/structural blocks, to protect the design system.",
       "divergence_severity": "medium",
-      "notes": "Low instance count (5) but real gap: SelectControl doesn't scale once a client installs extra fonts via the Font Library. No shared SGS component for this yet — flagged as a build gap in the report."
+      "notes": "Bean ruling 2026-07-19: expose a curated font picker (theme.json families + installed Font Library fonts, searchable ComboboxControl) on DISPLAY blocks only (heading/quote/button); keep it OFF body + structural blocks. Deliberately NOT part of the per-element TypographyControls (which stays size/weight/style/line-height). RESOLVED."
     },
     {
       "setting_key": "css:text-decoration",
@@ -1195,7 +1195,7 @@
       "category": "css-property",
       "label": "Background image position",
       "optimal_control": {
-        "component": "A 3x3 position-grid picker (FocalPointPicker-style compact widget) — build gap, no exact SGS/WP component covers this today",
+        "component": "FocalPointPicker (position the background layer) — NOT exposed today; verify-if-dead first",
         "props": {
           "presets": [
             "top left",
@@ -1220,9 +1220,9 @@
       "shared_component": null,
       "spec_ref": "Part H (focal point -> FocalPointPicker is the closest analogue, but that component positions an IMAGE crop point, not a CSS background-position keyword pair)",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
-      "divergence": "no observed control at all (conformance: unknown), 1 attr/4 instances",
+      "divergence": "backgroundPosition exists on container/cta-section/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
       "divergence_severity": "medium",
-      "notes": "UNCERTAIN which component fits best — flagged for parent. FocalPointPicker is visually the right shape but semantically positions a foreground image inside its own box, not a background layer; a genuinely new small SGS component (`BackgroundPositionControl`) may be the cleanest fix rather than repurposing FocalPointPicker."
+      "notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one."
     },
     {
       "setting_key": "css:background-repeat",
@@ -1333,9 +1333,9 @@
     {
       "setting_key": "css:background-image",
       "category": "css-property",
-      "label": "Background gradient / overlay",
+      "label": "Background overlay (gradient / colour)",
       "optimal_control": {
-        "component": "GradientPicker (+ MediaUpload fallback for a literal background photo)",
+        "component": "GradientPicker (custom builder + alpha stops) with a solid-colour fallback",
         "props": {
           "gradients": "theme.json preset gradients",
           "clearable": true,
@@ -1352,9 +1352,9 @@
       "shared_component": "GradientPicker",
       "spec_ref": "Part B GradientPicker row + Part I ('Gradient / bg overlay — MISSING')",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: colour-gradient; conformance: unknown (dedup_confidence: review)",
-      "divergence": "no SGS block currently exposes a gradient/overlay builder for this property at all (observed_control_types is empty, conformance unknown) — this is a straight MISSING build per Part I, not a divergent-control fix",
+      "divergence": "The attr is overlayGradient (role colour-gradient) — a background OVERLAY, not a background photo. Needs a real GradientPicker (+ solid-colour fallback + alpha), not a preset-only or absent control.",
       "divergence_severity": "high",
-      "notes": "UNCERTAIN which of the two real uses this covers: a CSS gradient (→ GradientPicker) or a literal background photo url (→ MediaUpload + focal point, which is really css:object-position/object-fit territory, not this property). role is tagged 'colour-gradient' in the source data so I've drafted for the gradient case; a code audit of the 1 instance/block should confirm before building."
+      "notes": "Bean-verified 2026-07-19 on sgs/hero: this row is the OVERLAY layer only. The real background image is a separate per-device Image/Video/Animation picker (the media-source setting), and the split-image overlay colour is a separate colour setting. RESOLVED: GradientPicker + solid colour + alpha; relabelled to avoid confusion with the media background."
     },
     {
       "setting_key": "css:padding-bottom",
@@ -1565,9 +1565,9 @@
     {
       "setting_key": "css:stroke",
       "category": "css-property",
-      "label": "Icon stroke colour",
+      "label": "Accent underline (decoration toggle)",
       "optimal_control": {
-        "component": "DesignTokenPicker",
+        "component": "ToggleControl (show/hide the decorative underline) — not a stroke-paint colour control",
         "props": {
           "enableAlpha": true,
           "clearable": true
@@ -1577,15 +1577,15 @@
         "responsive_device_tier": false,
         "multi_value": "none",
         "dropdown_completeness": "n/a",
-        "alpha_clearable": true,
+        "alpha_clearable": "n/a",
         "reset_disclosure": "native ColorPalette Clear button"
       },
-      "shared_component": "DesignTokenPicker",
+      "shared_component": null,
       "spec_ref": "Part B Colour row (stroke is a paint property, same completeness bar as color/border-color)",
       "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: ToggleControl; observed_roles: behaviour; conformance: consistent (dedup_confidence: review)",
-      "divergence": "the CSS property is a colour/paint value but the only observed control is a boolean ToggleControl — reads as an on/off 'coloured stroke?' switch, not an actual colour picker",
-      "divergence_severity": "high",
-      "notes": "UNCERTAIN — only 1 instance, role tagged 'behaviour' not 'color'. Two readings: (a) it genuinely sets stroke paint and the current ToggleControl is a broken/incomplete implementation (my assumption above), or (b) it is really a boolean 'use stroke variant of icon' switch dedup'd onto the stroke property by name-matching and belongs in the behaviour-family registry, not here. Flagging for parent — see report."
+      "divergence": "Mis-keyed by the CSS dedup: the only attr is accentStroke on sgs/counter — a boolean ToggleControl that shows a short decorative underline beneath the number, NOT a stroke-paint colour. The underline's colour is a separate colour-value setting.",
+      "divergence_severity": "none",
+      "notes": "Bean-verified 2026-07-19 on sgs/counter ('Decoration' category, 'Accent underline stroke', tooltip 'Adds a short coloured line beneath the number'). RESOLVED: reclassify with behaviour/decoration toggles; there is no genuine stroke-paint setting. No build action."
     },
     {
       "setting_key": "css:percentage",
