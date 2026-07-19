@@ -35,8 +35,21 @@
  *   3. NO-OPT-OUT ARCHITECTURAL FINDING — four of the nine extensions
  *      (animation, conditional-visibility, custom-css, responsive-
  *      visibility) have NO `hideExtensions` opt-out slug in source at all.
- *      This is the most actionable single finding (a structural gap, not a
- *      per-block judgement call) and is surfaced prominently, not buried.
+ *      Of those four, THREE are UTILITY extensions (conditional-visibility,
+ *      custom-css, responsive-visibility): Advanced-tab, opt-in-BY-USE
+ *      (an operator only sees an effect once they set a condition / write
+ *      CSS / hide a device tier — an unused panel is inert, not a bolted-on
+ *      styling affordance), and legitimately universal — every block can
+ *      meaningfully be conditionally visible, carry custom CSS, or be
+ *      hidden per device, the same way every block can have a className.
+ *      These are reported separately as "utility — universal by design",
+ *      NOT as a gap. The remaining one, `animation`, is a STYLING/
+ *      INTERACTION universal (alongside hover / blockLink / clickEffects /
+ *      parallax, which DO have opt-out slugs) — a scroll-triggered motion
+ *      effect a block did not ask for and cannot turn off is a genuine
+ *      poor-fit risk (see the ANIMATION_DENYLIST it already needs to hand-
+ *      roll instead of a declarative opt-out). `animation` is therefore the
+ *      SOLE real no-opt-out gap this script flags as actionable.
  *
  * The full raw block x extension matrix (the old "opt-out candidate" flag —
  * kept for supporting detail + baseline compatibility) is still computed and
@@ -286,16 +299,25 @@ const EXTENSIONS = [
 			'sgsConditionDateEnd', 'sgsConditionDays', 'sgsConditionUrlParam',
 			'sgsConditionReferrer',
 		],
-		hideSlug: null, // NO opt-out mechanism in source — reported as a gap.
+		hideSlug: null, // NO opt-out mechanism in source — UTILITY, see isUtility below.
 		appliesTo: ( b ) => b.supportsClassName,
+		// Advanced-tab, opt-in-by-use: an operator only sees an effect once
+		// they actually set a condition. Legitimately universal (any block
+		// can meaningfully be conditionally visible) — excluded from the
+		// "no-opt-out gap" finding, reported separately as utility-by-design.
+		isUtility: true,
 	},
 	{
 		id: 'customCss',
 		file: 'custom-css.js',
 		panel: 'Custom CSS (Advanced)',
 		attrs: [ 'sgsCustomCss' ],
-		hideSlug: null, // NO opt-out mechanism — gates only on settings.attributes existing (always true).
+		hideSlug: null, // NO opt-out mechanism — UTILITY, see isUtility below.
 		appliesTo: () => true,
+		// Advanced-tab, opt-in-by-use: an empty Custom CSS field is inert.
+		// Legitimately universal (any block can take custom CSS) —
+		// excluded from the "no-opt-out gap" finding.
+		isUtility: true,
 	},
 	{
 		id: 'customSpacing',
@@ -318,8 +340,12 @@ const EXTENSIONS = [
 		file: 'responsive-visibility.js',
 		panel: 'Device visibility',
 		attrs: [ 'sgsHideOnMobile', 'sgsHideOnTablet', 'sgsHideOnDesktop' ],
-		hideSlug: null, // NO opt-out mechanism in source — reported as a gap.
+		hideSlug: null, // NO opt-out mechanism in source — UTILITY, see isUtility below.
 		appliesTo: ( b ) => b.supportsClassName,
+		// Advanced-tab, opt-in-by-use: all three toggles default off/false.
+		// Legitimately universal (any block can meaningfully be hidden per
+		// device) — excluded from the "no-opt-out gap" finding.
+		isUtility: true,
 	},
 	{
 		id: 'imageControls',
@@ -515,13 +541,29 @@ function main() {
 		.sort( ( a, b ) => b.count - a.count );
 
 	// -------------------------------------------------------------------
-	// Signal 3: NO-OPT-OUT architectural gap — extensions with no
-	// hideExtensions slug in source at all, excluding opt-IN extensions
-	// (nothing to opt back out of) and the unresolved block-defaults
-	// button (injects no attribute, not a visual/motion panel).
+	// Signal 3: NO-OPT-OUT architectural gap — STYLING/INTERACTION
+	// extensions with no hideExtensions slug in source at all, excluding
+	// opt-IN extensions (nothing to opt back out of), the unresolved
+	// block-defaults button (injects no attribute, not a visual/motion
+	// panel), and UTILITY extensions (conditional-visibility / custom-css /
+	// responsive-visibility — Advanced-tab, opt-in-by-use, legitimately
+	// universal by design, see isUtility on each extension's definition
+	// above). `animation` is the sole extension that is BOTH a styling/
+	// motion affordance AND has no opt-out — the one real gap.
 	// -------------------------------------------------------------------
 	const noOptOutExtensions = EXTENSIONS.filter(
-		( extension ) => extension.hideSlug === null && ! extension.optIn && ! extension.unresolved
+		( extension ) =>
+			extension.hideSlug === null &&
+			! extension.optIn &&
+			! extension.unresolved &&
+			! extension.isUtility
+	).map( ( extension ) => ( { id: extension.id, file: extension.file, panel: extension.panel } ) );
+
+	// Utility extensions with no opt-out — NOT a gap, reported as a
+	// separate "universal by design" note so the finding isn't silently
+	// dropped, just correctly reframed.
+	const utilityNoOptOutExtensions = EXTENSIONS.filter(
+		( extension ) => extension.hideSlug === null && extension.isUtility
 	).map( ( extension ) => ( { id: extension.id, file: extension.file, panel: extension.panel } ) );
 
 	// -------------------------------------------------------------------
@@ -613,6 +655,7 @@ function main() {
 			byBlock: inappropriateFitBlocks,
 		},
 		noOptOutExtensions,
+		utilityNoOptOutExtensions,
 		// Supporting detail — the raw matrix (old headline, now demoted).
 		matrix: {
 			totalFlagged,
@@ -646,10 +689,13 @@ function main() {
 							.join( '\n' ) + '\n'
 					: '  none\n' ) +
 				'\n' +
-				`NO-OPT-OUT GAP: ${ noOptOutExtensions.length } of ${ EXTENSIONS.length } extensions have ` +
+				`NO-OPT-OUT GAP: ${ noOptOutExtensions.length } styling/interaction extension(s) have ` +
 				'NO hideExtensions opt-out mechanism in source at all:\n' +
 				noOptOutExtensions.map( ( e ) => `  ${ e.id } (${ e.file })` ).join( '\n' ) +
 				'\n\n' +
+				`  (${ utilityNoOptOutExtensions.length } utility extension(s) also have no opt-out — ` +
+				'universal by design, NOT a gap: ' +
+				utilityNoOptOutExtensions.map( ( e ) => e.id ).join( ', ' ) + '.)\n\n' +
 				`(Supporting detail: ${ totalFlagged } raw block x extension matrix flags, ` +
 				`${ totalBaselined } baselined — see --json / full report for the matrix, no longer the headline.)\n` +
 				'  Run without --check for the full breakdown.\n'
@@ -682,10 +728,24 @@ function main() {
 	process.stdout.write( '\n' );
 
 	process.stdout.write(
-		`=== 3. NO-OPT-OUT ARCHITECTURAL GAP (${ noOptOutExtensions.length } of ${ EXTENSIONS.length }) ===\n`
+		`=== 3. NO-OPT-OUT ARCHITECTURAL GAP (${ noOptOutExtensions.length } styling/interaction extension(s)) ===\n`
 	);
-	for ( const e of noOptOutExtensions ) {
-		process.stdout.write( `  - ${ e.id } (${ e.panel }, ${ e.file }) — no supports.sgs.hideExtensions slug exists for it.\n` );
+	if ( noOptOutExtensions.length ) {
+		for ( const e of noOptOutExtensions ) {
+			process.stdout.write( `  - ${ e.id } (${ e.panel }, ${ e.file }) — no supports.sgs.hideExtensions slug exists for it.\n` );
+		}
+	} else {
+		process.stdout.write( '  none\n' );
+	}
+	process.stdout.write( '\n' );
+	process.stdout.write(
+		`--- Utility extensions with no opt-out (${ utilityNoOptOutExtensions.length }) — universal by design, NOT a gap ---\n`
+	);
+	for ( const e of utilityNoOptOutExtensions ) {
+		process.stdout.write(
+			`  - ${ e.id } (${ e.panel }, ${ e.file }) — Advanced-tab, opt-in-by-use, legitimately universal; ` +
+				'no opt-out needed.\n'
+		);
 	}
 	process.stdout.write( '\n' );
 

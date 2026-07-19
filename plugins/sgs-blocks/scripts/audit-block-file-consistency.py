@@ -50,7 +50,20 @@ these paths (each mirrored from check-dead-controls.js's own hard-won rules):
     system (animation/visibility/click-effect/etc). Loaded from the generated
     includes/extension-attributes.generated.php, same as check-dead-controls.js.
   * WP-native supports attrs (align, className, style, backgroundColor, ...) —
-    same NATIVE set as check-dead-pattern-attrs.py.
+    same NATIVE set as check-dead-pattern-attrs.py, PLUS a per-block computed
+    set derived from the block's OWN declared `supports` (compute_support_
+    injected_attrs()) — e.g. a block declaring `supports.typography.textAlign`
+    legitimately gets a flat top-level `textAlign` attribute WP injects itself
+    (5 blocks — countdown-timer, cta-section, hero, notice-banner, team-member
+    — were false-flagged `undeclared_render_ref` on this before the map was
+    added).
+  * Theme pattern / part markup — an attr set as block markup in
+    theme/sgs-theme/patterns/*.php or theme/sgs-theme/parts/*.php|*.html (a
+    `<!-- wp:sgs/<block> {"attr":"value",...} /-->` JSON-attrs block comment)
+    counts as real consumption for the ORPHAN check even though nothing in
+    the block's own files references the attribute name textually (hero's
+    subHeadline/ctaPrimaryText/etc. are set this way, never read back by
+    name in hero's own corpus).
   * Shared "prefixed attribute set" PHP helpers (sgs_typography_css_rule,
     sgs_button_element_style_css) — build $attributes[$prefix.'Suffix'] via
     string concatenation, so the literal name never appears in source text.
@@ -104,6 +117,9 @@ EXTENSIONS_DIR = BLOCKS_DIR / 'extensions'
 ROSTER_FILE = SCRIPT_DIR / 'consistency' / 'roster.json'
 BASELINE_FILE = SCRIPT_DIR / 'block-file-consistency-baseline.json'
 EXTENSION_ATTRS_FILE = INCLUDES_DIR / 'extension-attributes.generated.php'
+THEME_DIR = REPO_ROOT / 'theme' / 'sgs-theme'
+PATTERNS_DIR = THEME_DIR / 'patterns'
+PARTS_DIR = THEME_DIR / 'parts'
 
 # ---------------------------------------------------------------------------
 # Structural allowlists (constant, each justified — not per-block dicts)
@@ -125,6 +141,142 @@ KEY_NOISE = {'id', 'url', 'alt', 'true', 'false', 'null', 'undefined'}
 EDITOR_ONLY_ATTRS = {
     'templateMode',  # container: drives allowedBlocks in the editor only.
 }
+
+
+def compute_support_injected_attrs(supports):
+    """Given a block.json `supports` object, return the set of top-level
+    attribute names WordPress' block-supports machinery auto-injects into the
+    block type at registration time — attributes that legitimately do NOT
+    (and must NOT) have their own entry in block.json `attributes`, so a
+    render/save/view read of one is NOT an undeclared-attr bug.
+
+    Mirrors the real WP core hooks (`packages/block-editor/src/hooks/*.js`
+    on WordPress/gutenberg) + this repo's own empirically-verified live
+    behaviour:
+
+      * anchor.js            -> `anchor`                (supports.anchor:true)
+      * custom-class-name.js -> `className`              (default true unless
+                                 explicit false)
+      * align.js             -> `align`                  (true, or an array
+                                 of allowed alignments)
+      * layout.js            -> `layout`                 (true or object;
+                                 separate from `style`)
+      * color.js             -> `backgroundColor` (+`style`) for
+                                 color.background; `textColor` (+`style`) for
+                                 color.text; `gradient` (+`style`) for
+                                 color.gradients; color.link contributes to
+                                 `style` only (style.elements.link), no
+                                 dedicated top-level attr
+      * font-size.js         -> `fontSize`  (+`style`)    (typography.fontSize
+                                 / __experimentalFontSize)
+      * font-family.js       -> `fontFamily` (+`style`)   (typography
+                                 .__experimentalFontFamily)
+      * text-align.js        -> `textAlign` (top-level, flat string; the ONE
+                                 that shipped 5 false positives here) for
+                                 typography.textAlign / __experimentalTextAlign
+                                 — CONFIRMED against this repo's own live
+                                 render.php comments (hero, cta-section,
+                                 notice-banner, team-member, countdown-timer
+                                 all read `$attributes['textAlign']` with a
+                                 documented "WP core applies has-text-align-*
+                                 from the textAlign attribute" comment,
+                                 verified against real rendering — this
+                                 in-repo empirical evidence is treated as
+                                 ground truth for this project over generic
+                                 upstream source reading, which disagreed).
+      * style.js (generic)   -> `style` only, no dedicated top-level attr, for:
+                                 remaining typography sub-supports (lineHeight,
+                                 fontWeight, fontStyle, letterSpacing,
+                                 textTransform, textDecoration, writingMode),
+                                 spacing.* (margin/padding/blockGap),
+                                 shadow, dimensions.* (aspectRatio/minHeight),
+                                 position
+      * border.js            -> `style` for any of
+                                 __experimentalBorder.{radius,width,style,color};
+                                 PLUS a dedicated top-level `borderColor`
+                                 (+`style`) specifically for
+                                 __experimentalBorder.color (mirrors
+                                 backgroundColor/textColor)
+
+    `__experimentalSkipSerialization` does NOT change whether an attribute is
+    injected/populated — it only changes whether
+    get_block_wrapper_attributes() auto-inlines it as HTML style="..."; the
+    attribute itself is still stored + readable. So it is ignored here.
+    """
+    injected = set()
+    if not isinstance(supports, dict):
+        return injected
+
+    if supports.get('anchor') is True:
+        injected.add('anchor')
+
+    if supports.get('customClassName', True) is not False:
+        injected.add('className')
+
+    align = supports.get('align')
+    if align is True or (isinstance(align, list) and align):
+        injected.add('align')
+
+    layout = supports.get('layout')
+    if layout is True or isinstance(layout, dict):
+        injected.add('layout')
+
+    color = supports.get('color')
+    if isinstance(color, dict):
+        if color.get('background'):
+            injected.add('backgroundColor')
+            injected.add('style')
+        if color.get('text'):
+            injected.add('textColor')
+            injected.add('style')
+        if color.get('gradients') or color.get('gradient'):
+            injected.add('gradient')
+            injected.add('style')
+        if color.get('link') or color.get('button') or color.get('heading'):
+            injected.add('style')
+
+    typography = supports.get('typography')
+    if isinstance(typography, dict):
+        if typography.get('textAlign') or typography.get('__experimentalTextAlign'):
+            injected.add('textAlign')
+        if typography.get('fontSize') or typography.get('__experimentalFontSize'):
+            injected.add('fontSize')
+            injected.add('style')
+        if typography.get('__experimentalFontFamily') or typography.get('fontFamily'):
+            injected.add('fontFamily')
+            injected.add('style')
+        style_only_typography_keys = (
+            'lineHeight', 'fontWeight', 'fontStyle', 'letterSpacing',
+            'textTransform', 'textDecoration', 'writingMode',
+            '__experimentalWritingMode',
+        )
+        if any(typography.get(k) for k in style_only_typography_keys):
+            injected.add('style')
+
+    spacing = supports.get('spacing')
+    if isinstance(spacing, dict) and any(
+        spacing.get(k) for k in ('margin', 'padding', 'blockGap', '__experimentalMargin', '__experimentalPadding')
+    ):
+        injected.add('style')
+
+    border = supports.get('__experimentalBorder')
+    if isinstance(border, dict):
+        if any(border.get(k) for k in ('radius', 'width', 'style', 'color')):
+            injected.add('style')
+        if border.get('color'):
+            injected.add('borderColor')
+
+    if supports.get('shadow'):
+        injected.add('style')
+
+    dimensions = supports.get('dimensions')
+    if isinstance(dimensions, dict) and any(dimensions.get(k) for k in ('aspectRatio', 'minHeight')):
+        injected.add('style')
+
+    if supports.get('position'):
+        injected.add('style')
+
+    return injected
 
 # Shared prefixed-attribute-set PHP helpers: each reads
 # $attributes[$prefix . 'Suffix'] via string concatenation, so the literal
@@ -559,6 +711,98 @@ def collect_nested_declared_names(attributes_schema):
 
 
 # ---------------------------------------------------------------------------
+# Theme pattern / part scan (Check 1 support) — an attr set as block markup
+# in a pattern/part IS real consumption even though nothing in the block's
+# OWN files (edit.js/render.php/save.js/view.js) references the attribute
+# name textually. Confirmed live: theme/sgs-theme/patterns/hero-centred.php
+# emits `<!-- wp:sgs/hero {"subHeadline":"...","ctaPrimaryText":"...",...} /-->`
+# — a single-line self-closing block comment carrying the full JSON attrs
+# object. WP writes these straight into post_content on pattern insert; the
+# operator then edits them via the block's own inspector, same as any other
+# instance.
+# ---------------------------------------------------------------------------
+
+BLOCK_COMMENT_SLUG_RE = re.compile(r"<!--\s*wp:(sgs/[a-z0-9-]+)\b")
+
+
+def _extract_balanced_json_bodies(src, slug):
+    """Find every `<!-- wp:{slug} {...json...} ... -->` occurrence of the
+    given block slug in `src` and return the raw JSON-attributes text for
+    each (the balanced `{...}` immediately following the slug), using
+    brace/quote-aware scanning so a nested object inside the attrs (e.g. a
+    `variants` map) never truncates the match early. A block instance with
+    no JSON attrs at all (`<!-- wp:sgs/x /-->`) yields nothing for that
+    occurrence."""
+    bodies = []
+    pattern = re.compile(r'<!--\s*wp:' + re.escape(slug) + r'\b\s*')
+    n = len(src)
+    for m in pattern.finditer(src):
+        i = m.end()
+        if i >= n or src[i] != '{':
+            continue
+        depth = 0
+        in_string = None
+        j = i
+        while j < n:
+            c = src[j]
+            if in_string:
+                if c == '\\' and j + 1 < n:
+                    j += 2
+                    continue
+                if c == in_string:
+                    in_string = None
+                j += 1
+                continue
+            if c in ('"', "'"):
+                in_string = c
+                j += 1
+                continue
+            if c == '{':
+                depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    bodies.append(src[i:j + 1])
+                    break
+            j += 1
+    return bodies
+
+
+def load_pattern_attr_corpus_by_slug():
+    """Build a per-block-slug corpus of every `wp:sgs/<slug>` JSON-attributes
+    region found across theme/sgs-theme/patterns/*.php and
+    theme/sgs-theme/parts/*.php|*.html. Never raises — missing directories
+    yield an empty dict, same fail-soft contract as the rest of this
+    script."""
+    corpus_by_slug = {}
+    files = []
+    if PATTERNS_DIR.exists():
+        files += sorted(PATTERNS_DIR.glob('*.php'))
+    if PARTS_DIR.exists():
+        files += sorted(PARTS_DIR.glob('*.php'))
+        files += sorted(PARTS_DIR.glob('*.html'))
+
+    full_src = '\n'.join(read_text(f) for f in files)
+    if not full_src:
+        return corpus_by_slug
+
+    for slug in sorted(set(BLOCK_COMMENT_SLUG_RE.findall(full_src))):
+        bodies = _extract_balanced_json_bodies(full_src, slug)
+        if bodies:
+            corpus_by_slug[slug] = '\n'.join(bodies)
+    return corpus_by_slug
+
+
+def attr_in_pattern_corpus(attr, pattern_corpus):
+    """True if `attr` appears as a JSON object key (`"attr":`) inside the
+    block's own pattern/part attrs corpus — i.e. some pattern/part
+    explicitly sets this attribute on an instance of the block."""
+    if not pattern_corpus:
+        return False
+    return re.search(r'"' + re.escape(attr) + r'"\s*:', pattern_corpus) is not None
+
+
+# ---------------------------------------------------------------------------
 # Per-block loading
 # ---------------------------------------------------------------------------
 
@@ -584,6 +828,7 @@ class BlockFiles:
         self.nested_declared = collect_nested_declared_names(attributes_schema)
         self.provides_context = (self.block_json or {}).get('providesContext', {}) or {}
         self.declared_dynamic = bool(self.block_json) and 'render' in self.block_json
+        self.support_injected = compute_support_injected_attrs((self.block_json or {}).get('supports', {}))
 
         self.edit_js_raw = read_text(block_dir / 'edit.js')
         self.render_php_raw = read_text(block_dir / 'render.php')
@@ -608,13 +853,14 @@ class BlockFiles:
 # ---------------------------------------------------------------------------
 
 
-def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_attrs):
+def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug):
     findings = []
     controlled = collect_controlled_attrs(block.edit_js)
     read_in_edit = collect_read_attrs(block.edit_js)
     full_corpus = block.own_corpus + '\n' + shared_php_corpus + '\n' + shared_js_corpus
     prefixed_consumed = collect_prefixed_helper_consumed(full_corpus)
     context_values = set(block.provides_context.values())
+    pattern_corpus = pattern_corpus_by_slug.get(block.slug, '')
 
     for attr in sorted(block.attrs):
         if is_extension_attr(attr, extension_attrs) or attr in NATIVE_ATTRS or attr in EDITOR_ONLY_ATTRS:
@@ -632,6 +878,8 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
             continue
         if attr in prefixed_consumed:
             continue
+        if attr_in_pattern_corpus(attr, pattern_corpus):
+            continue
 
         suffix = BREAKPOINT_SUFFIX_RE.search(attr)
         if suffix:
@@ -648,7 +896,8 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
             'attr': attr,
             'reason': (
                 'declared in block.json, no control in edit.js, and its name appears in no '
-                'render.php / save.js / view.js / shared includes — fully unused'
+                'render.php / save.js / view.js / shared includes / theme pattern or part '
+                'markup — fully unused'
             ),
         })
     return findings
@@ -671,7 +920,7 @@ def check_undeclared_render_refs(block, extension_attrs):
         for attr in sorted(refs):
             if attr in block.attrs or attr in block.nested_declared:
                 continue
-            if attr in NATIVE_ATTRS or is_extension_attr(attr, extension_attrs):
+            if attr in NATIVE_ATTRS or attr in block.support_injected or is_extension_attr(attr, extension_attrs):
                 continue
             findings.append({
                 'type': 'undeclared_render_ref',
@@ -692,7 +941,7 @@ def check_undeclared_controls(block, extension_attrs):
     for attr in sorted(controlled):
         if attr in block.attrs or attr in block.nested_declared:
             continue
-        if attr in NATIVE_ATTRS or is_extension_attr(attr, extension_attrs):
+        if attr in NATIVE_ATTRS or attr in block.support_injected or is_extension_attr(attr, extension_attrs):
             continue
         findings.append({
             'type': 'undeclared_control',
@@ -829,6 +1078,8 @@ def main():
     for block_dir in BLOCKS_DIR.glob('*/components'):
         shared_js_corpus += '\n' + strip_comments(load_dir_corpus(block_dir, '.js'))
 
+    pattern_corpus_by_slug = load_pattern_attr_corpus_by_slug()
+
     per_block_findings = {}
     all_findings = []
 
@@ -853,7 +1104,9 @@ def main():
 
         findings = []
         try:
-            findings += check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_attrs)
+            findings += check_orphan_attrs(
+                block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug
+            )
             findings += check_undeclared_render_refs(block, extension_attrs)
             findings += check_undeclared_controls(block, extension_attrs)
             findings += check_static_dynamic_mismatch(block)
