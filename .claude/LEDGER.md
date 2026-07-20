@@ -78,10 +78,36 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   Send to Ward★ / Gift Ideas / FAQs) + `sgs/nav-drawer`. 5 mockup pages created as menu targets. Verified LIVE: new nav
   renders, `data-wp-interactive="sgs/nav"` island present, adaptive-nav GONE, no PHP errors. adaptive-nav stays
   registered (dormant) for rollback. GitHub tidied: `feat/brand-strip-inspector-rebuild` merged + deleted on origin.
-- **NEXT = WAVE 4 (Gate-1, needs a live session with Bean):** run `scripts/nav-qa/` (axe on open drawer / elementFromPoint
-  occlusion / crawl / perf) + the interactive burger→drawer check + **Bean's eye** (R-31-13). Known content refinements
-  for Gate-1 (editor): the menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu
-  (flattened in Phase-1); the live bar shows 14 `nav-menu__link` (bar + drawer copy — confirm no duplication).
+- **WAVE 4 IN PROGRESS (2026-07-20) — machine sweep DONE, Bean's eye + 2 items remain.** Cache purged, then ran the
+  `scripts/nav-qa/` suite live. **GREEN:** axe on the OPEN drawer (375, scoped) = **0 violations**; crawl-assert PASS
+  (5 bar + 5 drawer + logo present with JS off — **the "14 links" worry is ANSWERED: bar+drawer copies, not
+  duplication**); burger-opens / ESC-closes / focus-returns-to-burger / Tab-contained all pass at 375; bar renders
+  768+1440. logical-props-lint = 5 WARN (nudge only, nav-drawer `left/right` → logical props).
+  **ONE REAL NAV BLOCKER FOUND + FIXED + LIVE-VERIFIED (D351, `cc3ec56d`+`45970282`, pushed):** the featured
+  "Send to Ward" item rendered accent-gold on cream at **1.35:1**. Root cause was NOT a contrast-policy gap —
+  `sgs/nav-menu` had **no `featuredBg` attribute at all**, so the converter had nowhere to put the draft's pill fill
+  (`background:var(--primary)` + `color:var(--text)`) and silently dropped it. Added `featuredBg` (default `''` =
+  label form unchanged); pill foreground routed through the existing `sgs_wcag_preferred_text_colour_for_bg` helper
+  so no palette can regress below AA. Draft pairing = 5.28:1 PASS — **the fidelity fix and the a11y fix were one fix.**
+  Deployed + re-measured: all 5 predictions (committed BEFORE the deploy ran) held exactly; drawer axe still 0, no
+  regression. Report `reports/visual-diff/nav-menu-2026-07-20.md` verdict PASS. *(Bean caught my first diagnosis —
+  I began designing a contrast fallback instead of reading the draft. Lesson in D351.)*
+- **WAVE 4 REMAINING:** (a) **Bean's eye (R-31-13)** — cropped before/after desktop-bar + open-mobile-drawer pair;
+  (b) the **manual D340 scrollbar-bounce test** (real windowed desktop browser — emulation cannot reproduce it);
+  (c) `elementfrompoint-sweep.mjs` still needs a real probes file authored for Mama's (baseline 10/10) — the shipped
+  `probes.example.json` is placeholders; (d) `wp-perf-gate` (JS<50KB / CSS<100KB) not yet run. Content refinements
+  for the editor: menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu
+  (flattened in Phase-1).
+- **NOT nav, recorded so it isn't re-flagged as a nav regression** (all present before the fix): 2 page contrast
+  fails (button #c56a7a/white 3.67:1, Trustpilot #00b67a/white 2.63:1) + a **duplicate `<main>` landmark** (3 axe
+  rules) — live-DOM probe traced the inner one to a `core/group` in the PAGE content, so it belongs to the queued
+  core→SGS migration (product-queue task A), not to nav.
+- **2 new gate findings logged, neither bypassed silently:** `P-AUDIT-COLOUR-ROLE-KEYED` (the uniformity audit's
+  supports.color check is NAME-keyed with a permanent false-positive class — re-key it on the Spec 35 element
+  manifest, which already has `isWrapper`+`attrMap`; 1/79 blocks seeded so it lands incrementally) and
+  `P-VISUAL-GATE-ORDERING` (the visual-diff commit gate wants live proof, but proof needs deploy and deploy needs
+  a clean tree — circular; best fix = split pre-commit "report exists + BEFORE captured" from a post-deploy AFTER
+  check wired into `build-deploy.py`'s verify leg).
   **Architectural follow-up:** the nav resolver (`class-sgs-nav-menu-source.php::blocks_from_ref`) only resolves
   `wp_navigation` posts + page-list fallback — it does NOT implement classic-menu resolution via
   `wp_get_nav_menu_items()`, so FR-36-1's "classic menus PRIMARY" is NOT built yet (a classic `nav_menu` term ref won't
@@ -148,8 +174,10 @@ session) and P4 (the LEDGER collapse) are done + live.
 
 ## Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`. **HEAD:** past `3fb44a8f` (Indus Our-Brands session 2026-07-17 — 6 commits
-  `287c7c1f`→`3fb44a8f`, all pushed; co-active P5 track also on main, HEAD moves). **D-ceiling:** **D344** (Track 2 P1 architecture decision, 2026-07-18, `6996f5da`). NOTE: this worktree is currently on `feat/brand-strip-inspector-rebuild` (Track 1) — Track 2 P1 docs were committed to `main` via an isolated worktree; re-check branch before any commit (STOP-RECHECK-BRANCH).
+- **Branch:** `main` (verified 2026-07-20; the old note about `feat/brand-strip-inspector-rebuild` is DEAD — that
+  branch was merged + deleted on origin in Wave 3). **HEAD:** `45970282` (Spec 36 Wave-4 D351, pushed).
+  **D-ceiling:** **D351** (nav featured-pill fidelity/a11y incident, 2026-07-20, `cc3ec56d`). Re-check the branch in
+  the SAME command as any commit (STOP-RECHECK-BRANCH) — these values drift, verify rather than trust this line.
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the active header/footer/nav front, also `specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` + `specs/17` §S9.
 - **Sites:** dev = palestine-lives.org (Indus). staging/canary = sandybrown-nightingale-600381.hostingersite.com. Both WP 7.0.1.
