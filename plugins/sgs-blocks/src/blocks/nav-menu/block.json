@@ -48,6 +48,7 @@
 		"itemLineHeightUnit": { "type": "string", "default": "" },
 
 		"featuredColour": { "type": "string", "default": "accent" },
+		"featuredBg": { "type": "string", "default": "" },
 
 		"burgerColour": { "type": "string", "default": "" },
 		"burgerHoverColour": { "type": "string", "default": "" },

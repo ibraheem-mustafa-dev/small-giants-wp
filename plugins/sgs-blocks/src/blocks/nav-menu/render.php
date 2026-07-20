@@ -293,11 +293,39 @@ if ( '' !== $item_hover_hex ) {
 	$css .= $hover_sel . '{text-decoration:underline;text-underline-offset:3px;}';
 }
 
-// 4d. Featured items — accent-colour label (FR-36-4).
-$featured_colour = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
+/*
+ * 4d. Featured items (FR-36-4). Two forms, both operator-set:
+ *
+ * LABEL form (featuredBg unset) — the accent-coloured label. Kept as the
+ * default so no existing site changes shape.
+ *
+ * PILL form (featuredBg set) — a filled pill, which is what a draft typically
+ * authors a "featured" nav item as (Mama's draft `.sgs-header__nav-featured` =
+ * `background:var(--primary)` + `color:var(--text)` + weight 600 on the base
+ * link's 8px radius). Without a background attribute the converter had nowhere
+ * to put the draft's fill and silently dropped it, leaving accent-on-surface
+ * text — 1.35:1 on Mama's, measured live 2026-07-20.
+ *
+ * The pill's foreground is contrast-checked against the resolved fill by the
+ * same shared helper the hover pill uses (4c): the operator's chosen colour
+ * wins when it clears AA, else the guaranteed-safe binary fallback. Mama's
+ * text #3a2e26 on primary #e68a95 = 5.28:1 PASS, so the draft's own pairing is
+ * adopted verbatim — the fidelity fix and the a11y fix are the same fix.
+ */
+$featured_sel     = $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link';
+$featured_colour  = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
 	? (string) $attributes['featuredColour']
 	: 'accent';
-$css            .= $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:600;}';
+$featured_bg_slug = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
+$featured_bg_hex  = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
+
+if ( '' !== $featured_bg_hex ) {
+	$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
+	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
+	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:600;border-radius:8px;}';
+} else {
+	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:600;}';
+}
 
 // 4e. Burger colour / hover / size.
 $burger_colour = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';

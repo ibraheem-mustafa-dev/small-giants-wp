@@ -94,6 +94,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemColour,
 		itemHoverColour,
 		featuredColour,
+		featuredBg,
 		burgerColour,
 		burgerHoverColour,
 		burgerSize,
@@ -417,9 +418,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						enableAlpha
 						clearable
 					/>
+					<DesignTokenPicker
+						label={ __( 'Featured item background', 'sgs-blocks' ) }
+						value={ featuredBg }
+						onChange={ ( val ) =>
+							setAttributes( { featuredBg: val } )
+						}
+						linked
+						enableAlpha
+						clearable
+					/>
 					<p className="sgs-nav-menu__inspector-note">
 						{ __(
-							'Applies to the items ticked under Settings → Featured items.',
+							'Applies to the items ticked under Settings → Featured items. Set a background to render them as a filled pill; leave it empty for a coloured label. The text colour is checked for contrast against the background and falls back to a readable one if it would be hard to read.',
 							'sgs-blocks'
 						) }
 					</p>

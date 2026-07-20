@@ -29,6 +29,25 @@ selectors to point at.
 - Run every command from `plugins/sgs-blocks/` (repo-relative examples
   below assume that cwd).
 
+## Real selectors (verified live 2026-07-20)
+
+The examples below were written in Wave-0 against placeholder names. These are
+the selectors the built blocks actually emit — confirmed against
+`nav-menu/render.php` + the live canary DOM:
+
+| Thing | Selector |
+|---|---|
+| Burger toggle (opens the drawer) | `.sgs-nav-menu__burger` |
+| Drawer root (`<dialog>`) | `.sgs-nav-drawer` |
+| Drawer close (×) | `.sgs-nav-drawer__close` |
+| Bar list | `.sgs-nav-menu__bar` |
+| Any nav link | `.sgs-nav-menu__link` |
+| Featured item | `.sgs-nav-menu__item--featured` |
+
+The Wave-0 draft of this README said `.sgs-nav-menu__toggle` for the burger —
+that class never existed; `axe-run.mjs` correctly exited 2 with
+`matched 0 elements` rather than silently passing on a whole-page fallback.
+
 ## 1. `axe-run.mjs` — accessibility gate
 
 **Covers:** FR-36-16 *"axe = 0 on the OPEN drawer AND an OPEN desktop
@@ -40,7 +59,7 @@ node scripts/nav-qa/axe-run.mjs https://sandybrown-nightingale-600381.hostingers
 
 # Open the drawer, scope the axe run to the drawer only
 node scripts/nav-qa/axe-run.mjs https://sandybrown-nightingale-600381.hostingersite.com/ \
-  --open ".sgs-nav-menu__toggle" --scope ".sgs-nav-drawer"
+  --open ".sgs-nav-menu__burger" --scope ".sgs-nav-drawer"
 
 # Open a desktop mega at a forced 1440 viewport, scope to the mega panel
 node scripts/nav-qa/axe-run.mjs https://palestine-lives.org/ \
