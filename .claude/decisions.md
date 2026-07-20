@@ -15,6 +15,44 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D352 [ROUTINE] — FR-36-1 classic-menu resolution: classic menus are now the nav's primary source (2026-07-20)
+
+**Gap.** `SGS_Nav_Menu_Source::blocks_from_ref()` resolved only `wp_navigation` posts. Spec 36 FR-36-1 names
+CLASSIC menus (*Appearance → Menus*, `nav_menu` terms) the PRIMARY source, so pointing the block at a classic
+menu rendered nothing. FR-36-1's stated fallback order (registered theme location → most-recent classic →
+most-recent block menu) was also absent — only the block-menu leg existed.
+
+**Ambiguity + Bean's ruling.** A `nav_menu` term id and a `wp_navigation` post id are independent sequences, so
+one number can name one of each. Options put to Bean: (a) keep the single numeric `ref`, resolve CLASSIC-FIRST;
+(b) add a `menuSource` discriminator attr; (c) reshape `ref` to `"classic:5"`. **Bean chose (a)** — classic
+winning the tie IS what "classic is primary" means, and it needs no new attribute and no reshape of stored
+values (D270: no deprecations pre-production). The editor marks a block menu whose id clashes with a classic
+one as disabled/unavailable rather than offering a silently-dead choice.
+
+**Shape.** Classic items are normalised into the same block-shaped array a `wp_navigation` post parses to
+(`core/navigation-link` / `core/navigation-submenu` + `innerBlocks`), so `flatten()`, the drawer and edit.js's
+featured mirror needed ZERO changes — one dialect, translated once at the source. Nesting is preserved even
+though Phase 1's flat bar collapses a submenu to its parent link; discarding it here would be a silent data
+loss of the D338 class. Identifier = `object_id`, matching `core/navigation-link`, so `featuredItemIds` entries
+match whichever format is in use.
+
+**Editor.** The picker listed only block menus, so a classic menu was unpickable — "no feature is complete
+until it has full block-editor UI". It now lists classic menus first and reads `nav_menu_item` records for the
+featured checklist.
+
+**Verified live** (canary, deploy checksum-matched local↔server `1eb568dc…`/16,962 B per
+STOP-VERIFY-DEPLOY-BY-CHECKSUM). ⚠ **The first acceptance run was VACUOUS and was caught + redone**: asserting
+the 5 menu labels on a page whose header renders the same 5 labels from the BLOCK menu would have passed
+identically with the resolver absent. Re-tested with a `ClassicOnlyMarker` item existing only in the classic
+menu: PRESENT on the classic test page, ABSENT on the homepage (negative control), anchors 28→29. 6 top-level
+items render as real `<a href>` in the pre-JS HTML with correct permalinks; the child item correctly does not
+appear in the flat bar; `Gift Ideas → /gift-ideas/` vs the header's `/gifts/` independently proves two distinct
+sources. No regression: homepage crawl-assert 5/5, drawer axe **0**, elementFromPoint sweep **20/20**.
+
+**Also** corrected Spec 36 FR-36-13, which wrongly claimed `sgs/nav-drawer` keeps `SGS_Container_Wrapper`, and
+added the `<dialog>`-exception rationale (the drawer's root must BE the `<dialog>` for `showModal()`, top-layer,
+`::backdrop` and native ESC; wrapping it would also trip STOP-DIALOG-DISPLAY-GATE). Commit `4a4c220a`.
+
 ## D351 [INCIDENT] — nav featured item: a MISSING block attribute silently dropped the draft's fill; the a11y failure was its symptom (2026-07-20)
 
 **Found by** the Spec 36 Wave-4 Gate-1 axe sweep on the sandybrown canary: the featured "Send to Ward" nav item rendered accent-gold `#f5d050` on the cream header `#fbf3dc` = **1.35:1** (WCAG AA needs 4.5:1) — the deliberately-highlighted item was the least readable thing in the menu.

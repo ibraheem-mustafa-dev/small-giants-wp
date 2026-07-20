@@ -112,8 +112,23 @@ Full narrative: `memory/session-2026-07-19*.md`.
   native `close` event remains the single teardown point and is untouched. Verified across 4 routes × reduced-motion;
   exit now reverses entry (`slide-in-right`→`slide-out-right`), reduce still closes instantly. **No regression:
   axe 0, sweep still 20/20, ESC/focus/Tab all pass.**
-- **WAVE 4 COMPLETE — Gate-1 is machine-green + Bean-signed.** Remaining before Phase 1 closes are the two
-  known-open items below, neither a Gate-1 blocker: FR-36-1 classic-menu resolver, and featured hover parity
+- **FR-36-1 CLASSIC-MENU RESOLVER — BUILT + LIVE-VERIFIED (D352, `4a4c220a`, pushed, 2026-07-20).** The nav
+  could only read block menus; Spec 36 makes CLASSIC menus (*Appearance → Menus*) primary, so a classic menu
+  rendered nothing. Resolver now goes CLASSIC-FIRST then `wp_navigation` (**Bean's ruling**: keep the single
+  numeric `ref`, let classic win the id tie — no new attr, no reshape), normalising classic items into the same
+  block-shaped array so `flatten()`/drawer/edit.js needed ZERO changes. FR-36-1's missing fallback order
+  (theme location → latest classic → latest block menu) also implemented. Editor picker now lists classic
+  menus (they were unpickable) and disables a block menu whose id clashes. Deploy **checksum-matched**
+  local↔server. ⚠ **First acceptance run was VACUOUS and was caught**: the 5 labels asserted also come from the
+  header's block menu, so it would have passed with the feature absent — redone with a `ClassicOnlyMarker`
+  present on the classic page and ABSENT on the homepage (negative control). 6 real `<a href>` in pre-JS HTML,
+  child item correctly flattened out, `/gift-ideas/` vs header's `/gifts/` proves distinct sources. No
+  regression: homepage crawl 5/5, drawer axe **0**, sweep **20/20**. Spec 36 FR-36-13 also corrected (it
+  wrongly said nav-drawer keeps `SGS_Container_Wrapper`) + `<dialog>`-exception documented.
+  **Test fixtures left on the canary for inspection — say the word and I'll remove:** classic menu term **94**
+  ("SGS Classic Test Menu", assigned to no location so it cannot affect the header) + page **1548**
+  `/fr-36-1-classic-menu-test/`.
+- **WAVE 4 COMPLETE — Gate-1 is machine-green + Bean-signed.** Remaining before Phase 1 closes: featured hover parity
   (now largely absorbed by Track 1's hover work — RECHECK before re-opening). Content refinements for the editor:
   menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu (flattened in Phase-1).
 - **NOT nav, recorded so it isn't re-flagged as a nav regression** (all present before the fix): 2 page contrast
@@ -126,11 +141,9 @@ Full narrative: `memory/session-2026-07-19*.md`.
   `P-VISUAL-GATE-ORDERING` (the visual-diff commit gate wants live proof, but proof needs deploy and deploy needs
   a clean tree — circular; best fix = split pre-commit "report exists + BEFORE captured" from a post-deploy AFTER
   check wired into `build-deploy.py`'s verify leg).
-  **Architectural follow-up:** the nav resolver (`class-sgs-nav-menu-source.php::blocks_from_ref`) only resolves
-  `wp_navigation` posts + page-list fallback — it does NOT implement classic-menu resolution via
-  `wp_get_nav_menu_items()`, so FR-36-1's "classic menus PRIMARY" is NOT built yet (a classic `nav_menu` term ref won't
-  render). Close this before claiming FR-36-1. Bean rulings: converter/clone DEPRIORITISED until whole
-  header+footer+nav done; featured-item = block attribute.
+  **Architectural follow-up — CLOSED 2026-07-20 (D352):** the classic-menu resolver is built + live-verified
+  (see the FR-36-1 entry above). Bean rulings still standing: converter/clone DEPRIORITISED until the whole
+  header+footer+nav is done; featured-item = a block attribute.
 Handoff: `next-session-prompt-nav-rework-P2.5.md`.
 
 **Latest (2026-07-20, Track 1 — Spec 35 rollout, 4 commits, all merged to main via `5672b4c6`).**
