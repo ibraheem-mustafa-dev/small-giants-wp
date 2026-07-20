@@ -333,9 +333,26 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 		? sgs_colour_value( (string) $attributes['underlineColourHover'] )
 		: $u_colour;
 
+	/*
+	 * A pseudo-element suffix must be applied to EACH selector in the list, not
+	 * concatenated onto the imploded string — `'a,b,c' . '::after'` attaches
+	 * ::after to `c` alone, so the bar would animate on [aria-current] only and
+	 * never on :hover or :focus-visible. Caught by reading the emitted CSS live;
+	 * the build, every gate and the unit pass were all green with it broken.
+	 */
+	$hover_after_sel = implode(
+		',',
+		array_map(
+			static function ( $sel ) {
+				return $sel . '::after';
+			},
+			$hover_targets
+		)
+	);
+
 	$css .= $link_sel . '{position:relative;}';
 	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform .2s ease,background-color .15s ease;pointer-events:none;}';
-	$css .= $hover_sel . '::after{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
+	$css .= $hover_after_sel . '{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
 	if ( '' !== $item_fg_hover ) {
 		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';}';
 	}
