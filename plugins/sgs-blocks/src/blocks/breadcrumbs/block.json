@@ -46,6 +46,38 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Breadcrumb bar",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					},
+					"_note": "No selectors.typography is declared (only selectors.root), so the block-level typography.fontSize serialises as an inherited default across link/separator/current rather than a per-crumb control — no text cluster claimed here for size."
+				},
+				"link": {
+					"label": "Crumb link",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "link"
+				},
+				"separator": {
+					"label": "Separator",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "separator"
+				},
+				"current": {
+					"label": "Current page",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "current"
+				}
 			}
 		}
 	},

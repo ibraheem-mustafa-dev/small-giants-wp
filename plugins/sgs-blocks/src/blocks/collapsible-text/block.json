@@ -51,6 +51,34 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Text box",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					}
+				},
+				"body": {
+					"label": "Body text",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "",
+					"attrMap": {
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:color": "native:color.text",
+						"css:text-align": "native:typography.textAlign"
+					},
+					"_note": "typography.fontSize is deliberately disabled at block level (supports.typography.fontSize:false) — this block's own bare fontSize/fontWeight/fontStyle/lineHeight attrs are the real, non-native control set for the body text. An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy), so every member here needs an explicit attrMap entry rather than relying on bare-attribute matching."
+				}
 			}
 		}
 	},

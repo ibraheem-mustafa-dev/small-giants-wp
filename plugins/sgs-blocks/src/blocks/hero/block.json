@@ -113,6 +113,125 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "shadow"
+					}
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "The content/media split grid (gridAreas: content, media). Declares no `prefix` so arrangement members map explicitly. No `display`, `align-items`, `order` or `overflow` attribute exists on this block — honest GAPs, not omissions."
+				},
+				"content-band": {
+					"label": "Content band",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:background-color": "contentBandBackground",
+						"css:width": "contentWidth"
+					},
+					"_note": "Mirrors sgs/container's content-band — the content-width constraining band, independent of the `content` grid-area below. Padding resolves via the default {prefix}{Suffix} convention (contentBandPadding)."
+				},
+				"content": {
+					"label": "Content column",
+					"layer": "GRID_AREA",
+					"order": 4,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "content",
+					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding)."
+				},
+				"media": {
+					"label": "Media column",
+					"layer": "GRID_AREA",
+					"order": 5,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "image",
+					"attrMap": {
+						"css:background-color": "mediaBackgroundColour",
+						"css:object-fit": "imageObjectFit",
+						"css:object-position": "imageObjectPosition"
+					},
+					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (imageBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here."
+				},
+				"grid-item": {
+					"label": "Grid item",
+					"layer": "GRID_AREA",
+					"order": 6,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "gridItem",
+					"attrMap": {
+						"css:background-color": "gridItemBackground",
+						"css:padding": "gridItemPadding",
+						"css:border-radius": "gridItemBorderRadius",
+						"css:border-width": "gridItemBorder",
+						"css:border-style": "gridItemBorder",
+						"css:border-color": "gridItemBorder",
+						"css:box-shadow": "gridItemShadow",
+						"css:color": "gridItemTextColour"
+					},
+					"_note": "Inherited from the sgs/container capability mirror — present on this block's attribute list but not exercised by any hero variant today. Declared so the attrs resolve rather than surface as orphans."
+				},
+				"headline": {
+					"label": "Headline",
+					"order": 7,
+					"clusters": [ "text" ],
+					"prefix": "headline",
+					"attrMap": {
+						"css:font-size": "native:typography.fontSize",
+						"css:font-weight": "native:typography.fontWeight",
+						"css:line-height": "native:typography.lineHeight",
+						"css:letter-spacing": "native:typography.letterSpacing",
+						"css:font-style": "native:typography.fontStyle",
+						"css:text-transform": "native:typography.textTransform",
+						"css:text-align": "native:typography.textAlign",
+						"css:color": "native:color.text"
+					},
+					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom`/`headlineMarginBottomMobile` are a genuine ORPHAN — a partial (bottom-only) margin, not the whole-box `layout.css:margin` member."
+				},
+				"sub-headline": {
+					"label": "Sub-headline",
+					"order": 8,
+					"clusters": [],
+					"_note": "No dedicated typography attrs — inherits the wrapper's native typography. `subHeadlineMaxWidth`/`subHeadlineMarginBottom(Mobile)` are layout-shaped but partial (not the whole-box padding/margin members), so left unclustered rather than manufacturing a false gap."
+				},
+				"cta": {
+					"label": "CTA buttons",
+					"order": 9,
+					"clusters": [],
+					"_note": "ctaPrimary*/ctaSecondary* are preset-style (accent/outline) + explicit hover-colour pairs, not raw Text/Fill/Layout cluster controls — same shape as sgs/button's own styling, out of scope for this cluster vocabulary."
+				}
 			}
 		}
 	},

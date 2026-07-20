@@ -56,6 +56,73 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "Mirrors sgs/container's wrapper/grid split — this block.json declares only fontSize+lineHeight (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) and no width/height/box-shadow/aspect-ratio attrs, so the remaining text+layout BOX members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `grid` element, not this one — same double-check pattern container's wrapper uses."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "alignItems",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Same composite-mirror grid capability as sgs/container (rendered via the shared SGS_Container_Wrapper, kind='layout'). Maps explicitly because this element declares no `prefix` — the default {prefix}{Suffix} convention cannot resolve a bare camelCase attribute (ROLLOUT REQUIREMENT 1). Members with no attribute on this block (display, order, overflow) remain honest gaps."
+				},
+				"header": {
+					"label": "Item header",
+					"order": 3,
+					"clusters": [ "text", "fill" ],
+					"attrMap": {
+						"css:color": "headerColour",
+						"css:background-color": "headerBackground"
+					},
+					"_note": "headerColour/headerBackground style every accordion-item's header row via block context (providesContext) — no independent header font-size/weight/line-height control exists, so the remaining text-cluster members are honest gaps."
+				},
+				"icon": {
+					"label": "Toggle icon",
+					"order": 4,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "iconColour"
+					},
+					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps."
+				},
+				"item": {
+					"label": "Accordion item",
+					"order": 5,
+					"clusters": [],
+					"_note": "Each item's title + body content is rendered by the child `sgs/accordion-item` block, which owns its own typography controls — this element documents that ownership, mirroring sgs/quote's quote-body."
+				}
 			}
 		}
 	},

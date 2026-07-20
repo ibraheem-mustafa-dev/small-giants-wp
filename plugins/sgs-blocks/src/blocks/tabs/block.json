@@ -39,6 +39,67 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "block.json declares no `typography` support at all on this block — every text-cluster member beyond colour is an honest gap. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `grid` element."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Composite-mirror grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute at all — an honest gap, not an omission."
+				},
+				"tab": {
+					"label": "Tab (resting state)",
+					"order": 3,
+					"clusters": [ "text", "fill", "motion" ],
+					"attrMap": {
+						"css:color": "tabTextColour",
+						"css:transition-duration": "transitionDuration"
+					},
+					"_note": "Resting-state colour + shared transition duration only. tabActiveTextColour/tabActiveBgColour/tabActiveIndicatorColour/tabHoverBgColour are ACTIVE/HOVER state variants — the manifest schema has no states/pseudo axis (Spec 35 'Out of scope'), so they surface as ORPHANs under this element's fallback prefix `tab`, not gaps; that is the correct, honest outcome. No resting background-colour attribute exists (only active/hover) — an honest gap. No transition-timing-function attribute exists on this block — also an honest gap."
+				},
+				"panel": {
+					"label": "Tab panel",
+					"order": 4,
+					"clusters": [ "fill", "layout" ],
+					"attrMap": {
+						"css:background-color": "panelBgColour",
+						"css:border-color": "panelBorderColour"
+					},
+					"_note": "Only background + border-colour are independently controlled for the panel — the remaining fill/layout members are honest gaps."
+				}
+			}
 		}
 	},
 	"selectors": {

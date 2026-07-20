@@ -31,6 +31,46 @@
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Counter box",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					}
+				},
+				"number": {
+					"label": "Number",
+					"order": 2,
+					"clusters": [ "text", "fill" ],
+					"prefix": "number",
+					"attrMap": {
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight"
+					},
+					"_note": "selectors.typography targets .sgs-counter__number, so the block-level typography.fontSize/lineHeight supports serialise onto this element specifically, not the wrapper — unlike quote's root-level inherited-default case."
+				},
+				"label": {
+					"label": "Label",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "label"
+				},
+				"icon": {
+					"label": "Icon",
+					"order": 4,
+					"clusters": [],
+					"_note": "The icon attribute is a bare slug with no colour/size control of its own — no Text/Fill/Layout member applies. accentStroke was adjudicated 2026-07-19 as a decoration toggle (an accent underline), not a paint/stroke style property, so it maps to no cluster member either."
+				}
 			}
 		},
 		"align": false,

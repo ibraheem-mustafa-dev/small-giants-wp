@@ -48,6 +48,93 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"grid": {
+					"label": "Grid",
+					"layer": "OUTER",
+					"_layer_note": "Block root and grid/list/masonry/carousel track combined. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid.",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs."
+				},
+				"card": {
+					"label": "Post card",
+					"order": 2,
+					"clusters": [ "fill" ],
+					"prefix": "card",
+					"attrMap": {
+						"css:background-color": "cardBgColour"
+					},
+					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap."
+				},
+				"card-image": {
+					"label": "Post image",
+					"order": 3,
+					"clusters": [],
+					"_note": "aspectRatio/imageSize/showImage/imageZoomHover govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it."
+				},
+				"title": {
+					"label": "Post title",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "title",
+					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs."
+				},
+				"excerpt": {
+					"label": "Post excerpt",
+					"order": 5,
+					"clusters": [ "text" ],
+					"prefix": "excerpt",
+					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member."
+				},
+				"meta": {
+					"label": "Meta (date/author)",
+					"order": 6,
+					"clusters": [ "text" ],
+					"prefix": "meta",
+					"_note": "css:color resolves via the default convention (metaColour)."
+				},
+				"category-badge": {
+					"label": "Category badge",
+					"order": 7,
+					"clusters": [ "text", "fill" ],
+					"prefix": "categoryBadge",
+					"attrMap": {
+						"css:background-color": "categoryBadgeBgColour"
+					},
+					"_note": "css:color resolves via the default convention (categoryBadgeColour)."
+				},
+				"read-more": {
+					"label": "Read more link",
+					"order": 8,
+					"clusters": [ "text" ],
+					"prefix": "readMore",
+					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style."
+				}
+			}
 		}
 	},
 	"selectors": {

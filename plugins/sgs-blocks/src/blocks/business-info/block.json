@@ -205,6 +205,41 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Info box",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					}
+				},
+				"text": {
+					"label": "Value text",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "text",
+					"attrMap": {
+						"css:font-size": "native:typography.fontSize",
+						"css:font-family": "native:typography.fontFamily"
+					}
+				},
+				"label": {
+					"label": "Label",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "label"
+				},
+				"icon": {
+					"label": "Icon",
+					"order": 4,
+					"clusters": [],
+					"_note": "iconColour/showIcon are bespoke icon controls, not a Text/Fill/Layout capability set — icon colour is not the value text's colour, so declaring a cluster here would misrepresent the control. Left for FR-35-4 orphan detection to surface iconColour automatically."
+				}
 			}
 		}
 	},

@@ -41,7 +41,114 @@
 		},
 		"sgs": {
 			"imageControls": false,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "Mirrors sgs/container's wrapper/grid split. Only fontSize+lineHeight are declared under `typography` (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) — the remaining text members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `grid` element."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Composite-mirror grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared (ROLLOUT REQUIREMENT 1). This block has NO `alignItems` attribute — an honest gap."
+				},
+				"title": {
+					"label": "Plan name",
+					"order": 3,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "titleColour"
+					},
+					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap."
+				},
+				"price": {
+					"label": "Price",
+					"order": 4,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "priceColour"
+					},
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap."
+				},
+				"feature": {
+					"label": "Feature list item",
+					"order": 5,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "featureColour"
+					},
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap."
+				},
+				"cta": {
+					"label": "CTA button",
+					"order": 6,
+					"clusters": [ "text", "fill" ],
+					"attrMap": {
+						"css:color": "ctaColour",
+						"css:background-color": "ctaBackground"
+					},
+					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps."
+				},
+				"badge": {
+					"label": "Popular badge",
+					"order": 7,
+					"prefix": "popularBadge",
+					"clusters": [ "text", "fill" ],
+					"attrMap": {
+						"css:color": "popularBadgeColour",
+						"css:background-color": "popularBadgeBackground"
+					},
+					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it)."
+				},
+				"ribbon": {
+					"label": "Per-plan ribbon",
+					"order": 8,
+					"clusters": [],
+					"_note": "`ribbonColour`/`ribbonText` vary PER PLAN INSTANCE inside the `plans` repeater array (not flat block attributes), so they cannot resolve via the block-attribute convention this manifest checks. Rendered per-instance as a `--sgs-pt-ribbon-bg` CSS custom-property VALUE (no-inline contract compliant), consumed by a single static scoped rule."
+				},
+				"plan-card": {
+					"label": "Plan card (repeater item)",
+					"order": 9,
+					"clusters": [],
+					"_note": "name/description/features/ctaText/ctaUrl/iconName/highlighted/period/savingsBadgeText are per-plan CONTENT fields inside the `plans` array, not independent style controls — mirrors sgs/card-grid's card-tile/card-badge documentation pattern for `arrayContentLift` blocks."
+				},
+				"behaviour": {
+					"label": "Toggle + animation behaviour",
+					"order": 10,
+					"clusters": [],
+					"_note": "billingToggle/toggleStyle/billingToggleMonthlyLabel/billingToggleYearlyLabel (toggle configuration) and sgsAnimation/sgsAnimationDuration/sgsAnimationEasing (scroll-reveal preset) are content/behaviour fields, not Text/Fill/Layout/Position/Motion style controls."
+				}
+			}
 		},
 		"__experimentalBorder": {
 			"radius": true,

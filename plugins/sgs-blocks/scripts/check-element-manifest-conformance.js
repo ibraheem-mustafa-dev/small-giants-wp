@@ -128,7 +128,17 @@ function resolveMember( element, member, blockJson ) {
 	}
 
 	// (b) default convention — {prefix}{suffix}, tried in suffix order.
-	if ( element.prefix ) {
+	//
+	// NOTE the `!== undefined` test, not a truthiness check. An explicit
+	// `"prefix": ""` means "my attributes are BARE" — a single-element block whose
+	// attrs are `fontSize` / `opacity` / `zIndex` rather than `captionFontSize`.
+	// Empty string is falsy, so a truthiness test silently skipped the whole default
+	// convention for those blocks and reported every member as a GAP. Two independent
+	// agents hit this on 2026-07-20 (collapsible-text `body`, decorative-image
+	// `image`) and both worked around it with hand-written attrMap entries.
+	// findAttrKeyCaseInsensitive() makes the bare case work: prefix '' + suffix
+	// 'FontSize' → candidate 'FontSize' → matches the real attr `fontSize`.
+	if ( element.prefix !== undefined ) {
 		for ( const suffix of member.suffixes || [] ) {
 			const candidate = element.prefix + suffix;
 			const found = findAttrKeyCaseInsensitive( attributes, candidate );
@@ -245,8 +255,13 @@ function findOrphans( elementKeys, elements, blockJson, claimedAttrs ) {
 		// Effective prefix: explicit element.prefix, else the element's own
 		// manifest key (this is why button's `icon` element — no explicit
 		// `prefix` — still matches `iconColour`/`iconSize`/`iconGap`).
-		const prefix = element.prefix || elementKey;
-		if ( ! prefix ) continue; // nothing to match on (explicit empty-string prefix)
+		// NOTE the `!== undefined` test, not `||`. An explicit `"prefix": ""` is a
+		// deliberate opt-OUT of orphan scanning, and `""` is falsy — so `||` would
+		// silently fall back to the element key and reinstate the very matching the
+		// author asked to suppress. That bug shipped and was caught by the
+		// form-field batch on 2026-07-20 (`help` element + `helpText` content attr).
+		const prefix = element.prefix !== undefined ? element.prefix : elementKey;
+		if ( prefix === '' ) continue; // explicit opt-out
 
 		for ( const attrName of attrNames ) {
 			if ( ! attrName.startsWith( prefix ) ) continue;

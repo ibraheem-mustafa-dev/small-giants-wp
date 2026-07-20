@@ -59,6 +59,36 @@
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Timer box",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					},
+					"_note": "No selectors.typography is declared (only selectors.root), so block-level typography.fontSize/textAlign serialise as an inherited default on the wrapper rather than a per-digit or per-label control — mirrors quote's root-typography-is-inherited-default precedent, so neither child element claims a text cluster for size."
+				},
+				"number": {
+					"label": "Number",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "number"
+				},
+				"label": {
+					"label": "Label",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "label"
+				}
 			}
 		}
 	},

@@ -19,7 +19,23 @@
         "anchor": true,
         "html": false,
         "sgs": {
-            "imageControls": true
+            "imageControls": true,
+            "elements": {
+                "image": {
+                    "label": "Image",
+                    "order": 1,
+                    "clusters": [ "layout", "fill", "position" ],
+                    "isWrapper": true,
+                    "prefix": "",
+                    "attrMap": {
+                        "css:max-width": "maxWidthPercent",
+                        "css:width": "width",
+                        "css:opacity": "opacity",
+                        "css:z-index": "zIndex"
+                    },
+                    "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are percentage-based anchor coordinates for the whole floating element, not literal CSS top/bottom offsets or object-position within a box, so they are deliberately left unmapped — css:top/css:bottom stay genuine gaps rather than being force-mapped to a different semantic. No layer field is declared (this is not a composite). parallaxStrength/pathDrawDurationMs/pathDrawEasing are JS-driven scroll-triggered animation parameters, not CSS transitions, so the motion cluster is not declared here — mapping them to transition-duration/transition-timing-function would misrepresent the mechanism."
+                }
+            }
         }
     },
     "attributes": {

@@ -37,6 +37,38 @@
       "color": true,
       "style": true,
       "__experimentalSkipSerialization": true
+    },
+    "sgs": {
+      "elements": {
+        "group": {
+          "label": "Button group",
+          "layer": "OUTER",
+          "order": 1,
+          "clusters": [ "text", "fill", "layout" ],
+          "isWrapper": true,
+          "attrMap": {
+            "css:color": "native:color.text",
+            "css:background-color": "native:color.background",
+            "css:border-width": "native:__experimentalBorder.width",
+            "css:border-style": "native:__experimentalBorder.style",
+            "css:border-color": "native:__experimentalBorder.color",
+            "css:border-radius": "native:__experimentalBorder.radius",
+            "css:max-width": "maxWidth",
+            "css:gap": "gap",
+            "css:flex-direction": "direction",
+            "css:flex-wrap": "wrap",
+            "css:justify-content": "justifyContent",
+            "css:align-items": "alignItems"
+          },
+          "_note": "The root IS the flex arranger (own scoped CSS in render.php, not the shared wrapper's grid layer) — layer OUTER is correct per the MF-3 guard, same reasoning as sgs/card-grid's `grid` element. No `spacing` or `typography` support is declared in block.json (padding/margin/font members are honest gaps). `display` is hardcoded to flex in render.php — not attribute-controlled, an honest gap. Attribute names diverge from the default suffix convention (`direction`/`wrap`, not `flexDirection`/`flexWrap`) — every arrangement member is explicitly mapped per ROLLOUT REQUIREMENT 1."
+        },
+        "button": {
+          "label": "Button",
+          "order": 2,
+          "clusters": [],
+          "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls — this element documents that ownership; multi-button itself controls only the group's own arrangement (see `group`)."
+        }
+      }
     }
   },
   "attributes": {
