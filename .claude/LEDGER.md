@@ -90,8 +90,17 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   label form unchanged); pill foreground routed through the existing `sgs_wcag_preferred_text_colour_for_bg` helper
   so no palette can regress below AA. Draft pairing = 5.28:1 PASS — **the fidelity fix and the a11y fix were one fix.**
   Deployed + re-measured: all 5 predictions (committed BEFORE the deploy ran) held exactly; drawer axe still 0, no
-  regression. Report `reports/visual-diff/nav-menu-2026-07-20.md` verdict PASS. *(Bean caught my first diagnosis —
-  I began designing a contrast fallback instead of reading the draft. Lesson in D351.)*
+  regression. Report `reports/visual-diff/nav-menu-2026-07-20.md` — **PASS for the RESTING state only.**
+  *(Bean caught my first diagnosis — I began designing a contrast fallback instead of reading the draft. Lesson in D351.)*
+  **⚠ Then it silently REGRESSED and Bean caught that too:** at 01:36 UTC a **co-active session's deploy overwrote the
+  canary** with a build lacking the commit (measured: live md5 `ffdb6129…`/15,865 B vs local `738c4558…`/17,462 B,
+  `featured_bg_hex`=0 server-side). Redeployed; server md5 now matches local exactly, pill correct at 768+1440.
+  **`build-deploy.py`'s verify leg did NOT catch this** — it asserts only HTTP 200 + generic SGS markers, which pass on
+  any working page including one running old code (`P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC` + `P-CANARY-SHARED-DEPLOY-RACE`).
+  **On a shared canary, treat "deployed + verified" as perishable — checksum the deployed file against local.**
+  **STILL DIVERGENT (Bean-deferred): HOVER.** Draft = pill + `inset 0 -2px 0 accent`, no underline; live adds an
+  underline from §4c's fallback branch. NOT fixed here — hover is being reworked at block level separately
+  (`P-NAV-FEATURED-HOVER-DRAFT-PARITY`). The featured item is draft-faithful at REST, not on hover.
 - **WAVE 4 REMAINING:** (a) **Bean's eye (R-31-13)** — cropped before/after desktop-bar + open-mobile-drawer pair;
   (b) the **manual D340 scrollbar-bounce test** (real windowed desktop browser — emulation cannot reproduce it);
   (c) `elementfrompoint-sweep.mjs` still needs a real probes file authored for Mama's (baseline 10/10) — the shipped
