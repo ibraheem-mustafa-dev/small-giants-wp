@@ -93,7 +93,7 @@
 					"label": "Grid / flex layout",
 					"layer": "GRID",
 					"order": 6,
-					"clusters": [ "layout", "flow" ],
+					"clusters": [ "layout" ],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -105,7 +105,7 @@
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "As on sgs/container: gridTemplateColumns/Rows, justifyItems/Content, flexDirection/Wrap define the grid itself and have no golden-master Text/Fill/Layout equivalent — only gap resolves; the rest are correctly-flagged GAPs."
+					"_note": "Grid/arrangement members map explicitly because this element declares no `prefix` — the default {prefix}{Suffix} convention cannot resolve a bare camelCase attribute. These are layout-cluster members: role=layout on a GRID element means arranging children, which the ELEMENT axis disambiguates from box-sizing on a tile element. Members with no attribute on this block (display, order, overflow, align-items) remain honest GAPs."
 				},
 				"content-band": {
 					"label": "Content band",

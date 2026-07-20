@@ -136,6 +136,9 @@ function resolveMember( element, member, blockJson ) {
 		}
 	}
 
+	// See memberAppliesToElement() above the caller for the element-axis gate that
+	// decides whether this member is even asked about for this element.
+
 	// (c) nativeSupportsPath fallback — ONLY for the element the manifest marks
 	// `isWrapper: true`. Native `supports` (color/spacing/__experimentalBorder)
 	// apply to the block ROOT only; without this gate every element sharing the
@@ -148,6 +151,43 @@ function resolveMember( element, member, blockJson ) {
 	}
 
 	return { resolved: false, via: null };
+}
+
+/**
+ * ELEMENT-AXIS GATE (Spec 35, 2026-07-20).
+ *
+ * Element is the PRIMARY mapping axis; cluster is SECONDARY. A member carrying
+ * `appliesToLayers` is an ARRANGEMENT property — it describes how an element lays
+ * out its CHILDREN (display / flex-* / grid-* / justify-* / align-* / order /
+ * overflow / gap). Such a member only makes sense on an element that HAS children
+ * to arrange. A member with NO `appliesToLayers` is a BOX property (padding,
+ * border, width…) and applies to every element.
+ *
+ * An element qualifies ONLY when its declared `layer` is in the member's
+ * `appliesToLayers` list. An element with NO `layer` is never asked about
+ * arrangement — which is the correct default, because it has not declared itself
+ * to be a structural layout layer.
+ *
+ * An earlier version also let any `isWrapper: true` element through as a
+ * compatibility shim. That was WRONG and was measured: it asked sgs/button
+ * whether it had grid-template-columns (a single-element block wrapper arranges
+ * nothing), producing 60 false gaps across button/quote/media/testimonial/
+ * brand-strip on 2026-07-20. Every wrapper is not a layout layer.
+ *
+ * This is what makes merging the old `flow` cluster into `layout` correct rather
+ * than merely tidy: role=layout on a GRID element means "arrange these children",
+ * the same role on a leaf tile means "size this box", and the ELEMENT tells them
+ * apart. Without this gate the merge produced 144 false gaps (measured 2026-07-20).
+ *
+ * @param {Object} member  Cluster member (may carry appliesToLayers).
+ * @param {Object} element Manifest element (may carry layer / isWrapper).
+ * @return {boolean} True when this member should be checked for this element.
+ */
+function memberAppliesToElement( member, element ) {
+	const layers = member.appliesToLayers;
+	if ( ! Array.isArray( layers ) || layers.length === 0 ) return true; // box member
+
+	return !! element.layer && layers.includes( element.layer );
 }
 
 // ---------------------------------------------------------------------------
@@ -254,6 +294,16 @@ function analyseBlock( blockSlug, blockJson, clusterSets, findings ) {
 			if ( ! cluster ) continue; // unknown cluster name in manifest — not this script's job to invent one
 
 			for ( const member of cluster.members ) {
+				// ELEMENT-AXIS SCOPING (see cluster-member-sets.json
+				// `_meta.note_on_appliesToLayers`). Element is the PRIMARY mapping
+				// axis; cluster is SECONDARY. An ARRANGEMENT member describes how an
+				// element lays out its CHILDREN, so it only applies to an element that
+				// HAS children to arrange — one at layer OUTER/GRID, or (when no layer
+				// is declared) one marked isWrapper. Without this a leaf tile is asked
+				// whether it has grid-template-columns: 144 false gaps, measured
+				// 2026-07-20 before this gate existed.
+				if ( ! memberAppliesToElement( member, element ) ) continue;
+
 				const result = resolveMember( element, member, blockJson );
 				if ( result.resolved && result.attr ) claimedAttrs.add( result.attr );
 				findings.push( {

@@ -62,9 +62,9 @@
 				"grid": {
 					"label": "Grid",
 					"layer": "OUTER",
-					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the flow cluster carries the grid properties.",
+					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the layout cluster carries the grid/arrangement properties, disambiguated by this element being the grid.",
 					"order": 1,
-					"clusters": [ "layout", "flow" ],
+					"clusters": [ "layout" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
