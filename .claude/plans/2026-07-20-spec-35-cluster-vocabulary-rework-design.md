@@ -67,13 +67,17 @@ structural layer they represent, using the cloning pipeline's existing vocabular
   "label": "Grid",        // client-facing, per block
   "layer": "GRID",        // canonical, shared with the converter
   "order": 3,
-  "clusters": [ "layout", "flow" ]
+  "clusters": [ "layout" ]
 }
 ```
 
 ### Rules
 
-- **`layer` is OPTIONAL.** Single-element and content-KIND blocks omit it entirely.
+- **`layer` is OPTIONAL — but it is what unlocks the arrangement members.** Per FR-35-2a, an
+  element with no `layer` is never asked about `display` / `flex-*` / `grid-*` / `justify-*` /
+  `align-*` / `order` / `overflow`. So a composite's grid element MUST declare
+  `"layer": "GRID"` (or `"OUTER"` where the root IS the grid) or those members are silently
+  never checked. Single-element and content-KIND blocks correctly omit it.
 - **A block declares only the layers it actually has.** Of the 23 composites, most have
   two or three. `accordion`, `tabs` and `multi-button` are flex/stack blocks with no GRID
   layer — that absence is CORRECT, not a gap. The contract is *naming discipline where a
@@ -107,9 +111,15 @@ manifest has full roster coverage.
 
 ---
 
-## FR-35-2 — Property axis: six clusters
+## FR-35-2 — Property axis: five clusters
 
-`cluster-member-sets.json` grows from three clusters to six. Every `css:*` row in
+> **REVISED 2026-07-20 (Bean).** This section originally specified SIX clusters, splitting
+> `layout` into `layout` ("size this box") and `flow` ("arrange these children"). That split
+> was built, measured, and then REVERSED the same day. The revised model is below; the
+> superseded rationale is preserved at the end of this section because the reasoning that
+> led to it is still the reason the vocabulary needed fixing at all.
+
+`cluster-member-sets.json` grows from three clusters to five. Every `css:*` row in
 `setting-registry.json` MUST belong to exactly one cluster, or be reclassified off the
 `css:` axis entirely.
 
@@ -117,26 +127,79 @@ manifest has full roster coverage.
 |---|---|---|
 | `text` | Type styling | TypographyControls + DesignTokenPicker |
 | `fill` | Paint — colour, gradient, image | ColorGradientControl + GradientPicker |
-| `layout` | **Size this box** | BoxControl + UnitControl |
-| `flow` | **Arrange these children** | SelectControl + ToggleGroupControl |
+| `layout` | Size this box **AND** arrange its children — the ELEMENT disambiguates | BoxControl + UnitControl + SelectControl |
 | `position` | Offset + stacking | UnitControl + RangeControl |
 | `motion` | Transition timing | RangeControl + easing presets |
 
-The `layout` / `flow` split is the load-bearing change. Everything else follows from it.
+### Why `flow` was merged back into `layout`
 
-### New cluster: `flow` (12 members)
+**ELEMENT is the PRIMARY mapping axis; cluster is SECONDARY.** Arrangement properties do
+control the layout of a block's items — the thing that separates *"size this box"* from
+*"arrange these children"* is not a second cluster, it is **which element the property is
+attached to**. `role=layout` on a `GRID` element means arrangement; the same role on a leaf
+tile means box-sizing. One mechanism, not two.
 
-`display`, `flex-direction`, `flex-wrap`, `align-items`, `align-content`,
-`justify-content`, `justify-items`, `order`, `grid-template-columns`,
-`grid-template-rows`, `grid-auto-rows`, `overflow`.
+This is corroborated by the DB: `block_attributes.role` has a single `layout` value covering
+both, and `canonical_slot` carries the element signal that disambiguates them. Deriving a
+second cluster was encoding in the property vocabulary something the element structure
+already expressed.
 
-**One cluster, not split into flex and grid** (Bean-approved 2026-07-20): flex and grid
-share their alignment vocabulary — `align-items` and `justify-content` apply to both.
-Splitting would duplicate those members across two clusters or force an arbitrary home.
+### `layout` cluster: 26 members, two scopes
 
-`display` and `overflow` both land here (Bean-approved): `display` gates which other flow
-properties apply at all, and `overflow` governs how children scroll and clip. Both
-describe content behaviour inside the box rather than the box's own dimensions.
+| Scope | n | Members | `appliesToLayers` |
+|---|---|---|---|
+| BOX | 14 | padding, margin, **gap**, width, height, max-width, max-height, min-height, border-width/style/color/radius, box-shadow, aspect-ratio | absent — applies to EVERY element |
+| ARRANGEMENT | 12 | display, flex-direction, flex-wrap, align-items, align-content, justify-content, justify-items, order, grid-template-columns, grid-template-rows, grid-auto-rows, overflow | `["OUTER","GRID"]` |
+
+**`css:gap` is deliberately a BOX member, not arrangement.** A leaf element legitimately has
+an internal gap — brand-strip's tile spaces its logo from its caption via `logoGap`. Tagging
+it as arrangement cost a real resolved member; caught by measurement and reverted.
+
+### FR-35-2a — The element-axis gate (what makes the merge correct)
+
+A member carrying `appliesToLayers` is checked ONLY when the element's `layer` is in that
+list. **An element with no `layer` is NEVER asked about arrangement** — the correct default,
+since it has not declared itself a structural layout layer.
+
+Implemented as `memberAppliesToElement()` in `check-element-manifest-conformance.js`.
+
+**Do NOT reintroduce an `isWrapper` fallback here.** An earlier version let any
+`isWrapper: true` element through as a compatibility shim; it asked `sgs/button` whether it
+had `grid-template-columns` and produced 60 false gaps across button/quote/media/testimonial/
+brand-strip. Every wrapper is not a layout layer.
+
+### Measured effect of the merge
+
+| Configuration | OK | GAP |
+|---|---|---|
+| Six clusters (pre-merge) | 184 | 311 |
+| Merged, no element gate | 184 | 455 |
+| + gate, with `isWrapper` shim | 184 | 395 |
+| **+ gate, layer-only (shipped)** | **184** | **335** |
+
+OK held at 184 throughout — no resolved member was lost. The residual +24 vs the pre-merge
+baseline is `container` / `cta-section`'s `wrapper` (12 each, layer `OUTER`) being asked about
+arrangement. Judged HONEST, not false: those section wrappers genuinely have no flex controls.
+Scoping arrangement to `GRID` only would suppress them but breaks `card-grid`, whose root IS
+the grid under the MF-3 guard.
+
+<details>
+<summary>SUPERSEDED — the original six-cluster rationale (kept for the reasoning, not the conclusion)</summary>
+
+The original argument for splitting `flow` out of `layout`: `layout` was doing two unrelated
+jobs — *"size this box"* (padding, border-radius — a `BoxControl` mental model) and *"arrange
+these children"* (flex/grid — a `SelectControl` mental model). Nobody could confidently file
+`flex-direction` next to `border-radius`, so 35 of 60 rows were never filed at all.
+
+**That diagnosis was correct and is still the reason this rework exists.** Only the remedy
+changed: the disambiguation belongs on the element axis, not in a second cluster.
+
+Also settled at the time and still true: `flow` was NOT split into separate flex and grid
+clusters, because flex and grid share their alignment vocabulary (`align-items`,
+`justify-content` apply to both) and splitting would duplicate members or force an arbitrary
+home. `display` and `overflow` were grouped with arrangement for the same reason they carry
+`appliesToLayers` today.
+</details>
 
 ### New cluster: `position` (3 members)
 
@@ -187,6 +250,24 @@ cluster member. A new unclustered row is a hard failure, not a silent omission �
 the structural defence against the gap this document exists to close recurring.
 
 ---
+
+## ROLLOUT REQUIREMENTS (read before manifesting any further block)
+
+Both were learned by measurement on 2026-07-20 and both cause SILENT wrong scores, not
+errors. Any prompt that rolls the manifest out to the remaining blocks must carry them.
+
+1. **A cluster with neither a `prefix` nor an `attrMap` resolves ZERO members — and makes the
+   score WORSE.** Declaring `clusters: ["layout"]` on an element whose attributes are bare
+   camelCase (`gridTemplateColumns`) resolves nothing, because the default convention is
+   `{prefix}{PascalCaseSuffix}` and there is no prefix to prepend. Measured: adding the
+   cluster to three composites raised GAP by 36 and resolved nothing until explicit `attrMap`
+   entries were added. Either declare a `prefix` or map every member explicitly.
+
+2. **A composite's grid element MUST declare `"layer"` or its arrangement members are never
+   checked.** Per FR-35-2a the 12 arrangement members only apply at layer `OUTER`/`GRID`. An
+   un-layered element silently skips all 12 — it will look clean while being unverified.
+   Use `GRID` for a dedicated grid element, `OUTER` where the block root IS the grid
+   (`card-grid` — MF-3 makes the root OUTER regardless of its own `display:grid`).
 
 ## Consequences
 
