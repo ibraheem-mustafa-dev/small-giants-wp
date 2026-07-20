@@ -101,12 +101,25 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   **STILL DIVERGENT (Bean-deferred): HOVER.** Draft = pill + `inset 0 -2px 0 accent`, no underline; live adds an
   underline from §4c's fallback branch. NOT fixed here — hover is being reworked at block level separately
   (`P-NAV-FEATURED-HOVER-DRAFT-PARITY`). The featured item is draft-faithful at REST, not on hover.
-- **WAVE 4 REMAINING:** (a) **Bean's eye (R-31-13)** — cropped before/after desktop-bar + open-mobile-drawer pair;
-  (b) the **manual D340 scrollbar-bounce test** (real windowed desktop browser — emulation cannot reproduce it);
-  (c) `elementfrompoint-sweep.mjs` still needs a real probes file authored for Mama's (baseline 10/10) — the shipped
-  `probes.example.json` is placeholders; (d) `wp-perf-gate` (JS<50KB / CSS<100KB) not yet run. Content refinements
-  for the editor: menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu
-  (flattened in Phase-1).
+- **WAVE 4 — occlusion sweep + perf DONE (2026-07-20).**
+  **(c) elementFromPoint sweep: `probes.mamas.json` AUTHORED + PASSING — TOTAL 20/20, including exactly 10/10 at 375,
+  the Spec 36 §8 Mama's baseline.** Written against the LIVE DOM, not the block source (the shipped
+  `probes.example.json` was Wave-0 placeholders whose selectors match 0 elements). Proves: the header row hit-tests
+  to the drawer's close control, all 5 drawer links + the logo return themselves at their own centres, the close
+  returns itself, and mid/low page are unreachable behind the modal; 5/5 bar links reachable at both 768 and 1440.
+  ⚠ **Selector trap documented in the file:** there are TWO `.sgs-nav-menu__bar` instances (header + the drawer's
+  copy) — a bare selector silently probes whichever is first in the DOM; every probe is scoped `.sgs-site-header`
+  or `.sgs-nav-drawer`.
+  **(d) Perf: CLS PASSES (0.0000 at 375, 0.0144 at 1440, budget <0.1). Page CSS/JS budget FAILS but NOT because of
+  the nav** — CSS 371.2KB vs 100KB, JS 84.0KB vs 50KB; nav share is only 17.3KB JS + ~0 separate CSS. Dominated by
+  WooCommerce (118.3KB CSS — WC alone exceeds the whole CSS budget), the theme's `woocommerce.css` (46.5KB),
+  core-blocks CSS (47.9KB) and jQuery (28.8KB, pulled by WC not by SGS code). **Cheap nav-adjacent win found:
+  `mega-menu-panels.css` (13.1KB) loads although Phase 1 ships no mega menu.** Logged `P-CANARY-PAGE-WEIGHT-BUDGET`
+  — **do NOT block Gate-1 on it** (nav is not the cause, CLS passes).
+- **WAVE 4 REMAINING — both need Bean, nothing else is blocked:** (a) **Bean's eye (R-31-13)** — cropped
+  desktop-bar + open-mobile-drawer pair; (b) the **manual D340 scrollbar-bounce test** (real windowed desktop
+  browser — device emulation cannot reproduce the scrollbar-vanish bounce). Content refinements for the editor:
+  menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu (flattened in Phase-1).
 - **NOT nav, recorded so it isn't re-flagged as a nav regression** (all present before the fix): 2 page contrast
   fails (button #c56a7a/white 3.67:1, Trustpilot #00b67a/white 2.63:1) + a **duplicate `<main>` landmark** (3 axe
   rules) — live-DOM probe traced the inner one to a `core/group` in the PAGE content, so it belongs to the queued
