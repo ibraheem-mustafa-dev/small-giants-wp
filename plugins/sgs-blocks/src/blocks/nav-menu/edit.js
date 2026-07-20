@@ -92,9 +92,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		gap,
 		maxWidth,
 		itemColour,
-		itemHoverColour,
+		itemBg,
+		itemColourHover,
+		itemBgHover,
+		itemRadius,
+		itemRadiusHover,
+		hoverStyle,
+		underlineColour,
+		underlineColourHover,
+		underlineThickness,
+		underlineOffset,
 		featuredColour,
 		featuredBg,
+		featuredColourHover,
+		featuredBgHover,
+		featuredRadius,
+		featuredRadiusHover,
+		featuredFontWeight,
+		featuredFontWeightHover,
 		burgerColour,
 		burgerHoverColour,
 		burgerSize,
@@ -361,43 +376,137 @@ export default function Edit( { attributes, setAttributes } ) {
 				</ToolsPanel>
 
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Hover style', 'sgs-blocks' ) }
+						value={ hoverStyle }
+						options={ [
+							{
+								label: __( 'Filled pill', 'sgs-blocks' ),
+								value: 'pill',
+							},
+							{
+								label: __( 'Underline', 'sgs-blocks' ),
+								value: 'underline',
+							},
+							{
+								label: __(
+									'Text colour only',
+									'sgs-blocks'
+								),
+								value: 'text',
+							},
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { hoverStyle: val } )
+						}
+						help={ __(
+							'How an item reacts on hover — and how the current page is marked. Underline draws a bar beneath the item.',
+							'sgs-blocks'
+						) }
+					/>
+
 					<StateToggleControl
 						label={ __( 'State', 'sgs-blocks' ) }
 						swatches={ [
-							{ label: __( 'Normal', 'sgs-blocks' ), value: itemColour },
-							{ label: __( 'Hover', 'sgs-blocks' ), value: itemHoverColour },
+							{
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: itemColour,
+							},
+							{
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: itemColourHover,
+							},
 						] }
 					>
-						{ ( state ) =>
-							'normal' === state ? (
-								<DesignTokenPicker
-									label={ __( 'Text colour', 'sgs-blocks' ) }
-									value={ itemColour }
-									onChange={ ( val ) =>
-										setAttributes( { itemColour: val } )
-									}
-									linked
-									enableAlpha
-									clearable
-								/>
-							) : (
-								<DesignTokenPicker
-									label={ __(
-										'Hover / current-page background',
-										'sgs-blocks'
-									) }
-									value={ itemHoverColour }
-									onChange={ ( val ) =>
-										setAttributes( {
-											itemHoverColour: val,
-										} )
-									}
-									linked
-									enableAlpha
-									clearable
-								/>
-							)
-						}
+						{ ( state ) => {
+							const isNormal = 'normal' === state;
+							return (
+								<>
+									<DesignTokenPicker
+										label={ __(
+											'Text colour',
+											'sgs-blocks'
+										) }
+										value={
+											isNormal
+												? itemColour
+												: itemColourHover
+										}
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? { itemColour: val }
+													: { itemColourHover: val }
+											)
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<DesignTokenPicker
+										label={ __(
+											'Background',
+											'sgs-blocks'
+										) }
+										value={ isNormal ? itemBg : itemBgHover }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? { itemBg: val }
+													: { itemBgHover: val }
+											)
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<UnitControl
+										label={ __(
+											'Corner radius',
+											'sgs-blocks'
+										) }
+										value={ `${
+											isNormal
+												? itemRadius
+												: itemRadiusHover ??
+												  itemRadius
+										}px` }
+										units={ [
+											{
+												value: 'px',
+												label: 'px',
+												default: 8,
+											},
+										] }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? {
+															itemRadius:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+													: {
+															itemRadiusHover:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+											)
+										}
+										help={
+											isNormal
+												? undefined
+												: __(
+														'Leave matching Normal for a pill that keeps its shape on hover.',
+														'sgs-blocks'
+												  )
+										}
+									/>
+								</>
+							);
+						} }
 					</StateToggleControl>
 
 					<TypographyControls
@@ -407,27 +516,234 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
+				{ 'underline' === hoverStyle && (
+					<PanelBody
+						title={ __( 'Underline', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<StateToggleControl
+							label={ __( 'State', 'sgs-blocks' ) }
+							swatches={ [
+								{
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: underlineColour,
+								},
+								{
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: underlineColourHover,
+								},
+							] }
+						>
+							{ ( state ) =>
+								'normal' === state ? (
+									<DesignTokenPicker
+										label={ __(
+											'Bar colour',
+											'sgs-blocks'
+										) }
+										value={ underlineColour }
+										onChange={ ( val ) =>
+											setAttributes( {
+												underlineColour: val,
+											} )
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+								) : (
+									<DesignTokenPicker
+										label={ __(
+											'Bar colour on hover',
+											'sgs-blocks'
+										) }
+										value={ underlineColourHover }
+										onChange={ ( val ) =>
+											setAttributes( {
+												underlineColourHover: val,
+											} )
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+								)
+							}
+						</StateToggleControl>
+						<UnitControl
+							label={ __( 'Thickness', 'sgs-blocks' ) }
+							value={ `${ underlineThickness }px` }
+							units={ [
+								{ value: 'px', label: 'px', default: 2 },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( {
+									underlineThickness:
+										parseFloat( val ) || 2,
+								} )
+							}
+						/>
+						<UnitControl
+							label={ __( 'Distance below text', 'sgs-blocks' ) }
+							value={ `${ underlineOffset }px` }
+							units={ [
+								{ value: 'px', label: 'px', default: 6 },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( {
+									underlineOffset: parseFloat( val ) || 6,
+								} )
+							}
+						/>
+						<p className="sgs-nav-menu__inspector-note">
+							{ __(
+								'Leave the colours empty to match the item text. The bar also marks the current page.',
+								'sgs-blocks'
+							) }
+						</p>
+					</PanelBody>
+				) }
+
 				<PanelBody title={ __( 'Featured', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Featured item colour', 'sgs-blocks' ) }
-						value={ featuredColour }
-						onChange={ ( val ) =>
-							setAttributes( { featuredColour: val } )
-						}
-						linked
-						enableAlpha
-						clearable
-					/>
-					<DesignTokenPicker
-						label={ __( 'Featured item background', 'sgs-blocks' ) }
-						value={ featuredBg }
-						onChange={ ( val ) =>
-							setAttributes( { featuredBg: val } )
-						}
-						linked
-						enableAlpha
-						clearable
-					/>
+					<StateToggleControl
+						label={ __( 'State', 'sgs-blocks' ) }
+						swatches={ [
+							{
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: featuredColour,
+							},
+							{
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: featuredColourHover,
+							},
+						] }
+					>
+						{ ( state ) => {
+							const isNormal = 'normal' === state;
+							return (
+								<>
+									<DesignTokenPicker
+										label={ __(
+											'Text colour',
+											'sgs-blocks'
+										) }
+										value={
+											isNormal
+												? featuredColour
+												: featuredColourHover
+										}
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? { featuredColour: val }
+													: {
+															featuredColourHover:
+																val,
+													  }
+											)
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<DesignTokenPicker
+										label={ __(
+											'Background',
+											'sgs-blocks'
+										) }
+										value={
+											isNormal
+												? featuredBg
+												: featuredBgHover
+										}
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? { featuredBg: val }
+													: { featuredBgHover: val }
+											)
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<UnitControl
+										label={ __(
+											'Corner radius',
+											'sgs-blocks'
+										) }
+										value={ `${
+											isNormal
+												? featuredRadius
+												: featuredRadiusHover ??
+												  featuredRadius
+										}px` }
+										units={ [
+											{
+												value: 'px',
+												label: 'px',
+												default: 8,
+											},
+										] }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? {
+															featuredRadius:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+													: {
+															featuredRadiusHover:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+											)
+										}
+									/>
+									<SelectControl
+										label={ __(
+											'Font weight',
+											'sgs-blocks'
+										) }
+										value={ String(
+											isNormal
+												? featuredFontWeight
+												: featuredFontWeightHover ??
+														featuredFontWeight
+										) }
+										options={ [
+											{ label: 'Regular', value: '400' },
+											{ label: 'Medium', value: '500' },
+											{ label: 'Semi-bold', value: '600' },
+											{ label: 'Bold', value: '700' },
+										] }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? {
+															featuredFontWeight:
+																parseInt(
+																	val,
+																	10
+																),
+													  }
+													: {
+															featuredFontWeightHover:
+																parseInt(
+																	val,
+																	10
+																),
+													  }
+											)
+										}
+									/>
+								</>
+							);
+						} }
+					</StateToggleControl>
 					<p className="sgs-nav-menu__inspector-note">
 						{ __(
 							'Applies to the items ticked under Settings → Featured items. Set a background to render them as a filled pill; leave it empty for a coloured label. The text colour is checked for contrast against the background and falls back to a readable one if it would be hard to read.',

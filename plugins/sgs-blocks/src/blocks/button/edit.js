@@ -15,6 +15,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	DesignTokenPicker,
+	StateToggleControl,
 	resolveColorToken,
 } from '../../components';
 
@@ -373,18 +374,38 @@ export default function Edit( { attributes, setAttributes } ) {
 								step={ 1 }
 								__nextHasNoMarginBottom
 							/>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Icon colour', 'sgs-blocks' ) }
-								value={ iconColour }
-								onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
-							/>
-							<DesignTokenPicker
-								linked
-								label={ __( 'Icon colour on hover', 'sgs-blocks' ) }
-								value={ iconColourHover }
-								onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
-							/>
+							{ /* Element-scoped colour states. Spec 35 keeps every control
+							     for an element INSIDE that element's own panel — the
+							     icon's hover colour is a STATE of the icon's colour, not
+							     a separate hover concept, so it belongs here rather than
+							     in a hover panel elsewhere in the sidebar. Swatches stay
+							     visible in both states so a set hover colour is never
+							     hidden (council mitigation 2026-07-18). */ }
+							<StateToggleControl
+								label={ __( 'Icon colours', 'sgs-blocks' ) }
+								swatches={ [
+									{ label: __( 'Normal', 'sgs-blocks' ), value: iconColour },
+									{ label: __( 'Hover', 'sgs-blocks' ), value: iconColourHover },
+								] }
+							>
+								{ ( state ) =>
+									state === 'normal' ? (
+										<DesignTokenPicker
+											linked
+											label={ __( 'Icon colour', 'sgs-blocks' ) }
+											value={ iconColour }
+											onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
+										/>
+									) : (
+										<DesignTokenPicker
+											linked
+											label={ __( 'Icon colour', 'sgs-blocks' ) }
+											value={ iconColourHover }
+											onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
+										/>
+									)
+								}
+							</StateToggleControl>
 							<TextControl
 								label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
 								value={ iconTitle }
