@@ -61,8 +61,10 @@
 			"elements": {
 				"grid": {
 					"label": "Grid",
+					"layer": "OUTER",
+					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the flow cluster carries the grid properties.",
 					"order": 1,
-					"clusters": [ "layout" ],
+					"clusters": [ "layout", "flow" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
@@ -72,7 +74,16 @@
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:align-items": "alignItems",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
 					}
 				},
 				"card-tile": {

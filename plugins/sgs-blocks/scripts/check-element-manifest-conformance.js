@@ -26,6 +26,38 @@
  * the manifest is opt-in during rollout; every other block is un-migrated,
  * not non-conformant).
  *
+ * ORPHAN detection (Spec 35 FR-35-4)
+ * -----------------------------------
+ * The rules above only check DECLARED cluster members — an element declaring
+ * `clusters: []` (e.g. sgs/button's `icon` element, whose iconColour/iconSize/
+ * iconGap controls don't nest cleanly into Text/Fill/Layout/Flow/Position/
+ * Motion) is invisible to the forward check, so its real controls could never
+ * be verified by anything.
+ *
+ * After resolving declared members for a block, this script also scans
+ * BACKWARDS: for every declared element, it computes an effective prefix
+ * (`element.prefix` if declared, else the element's own manifest key — this
+ * is why `icon` with no explicit `prefix` still matches `iconColour` etc.),
+ * then scans the block's `attributes` for any attribute that starts with
+ * that prefix (via the same `{prefix}{PascalCaseSuffix}` convention used by
+ * the forward resolver) and is NOT already claimed by ANY resolved member of
+ * ANY element in the block (whether via `attrMap` or the default
+ * convention). Every such attribute is reported as an ORPHAN finding — wired
+ * to a real block attribute, but invisible to cluster-coherence.
+ *
+ * An attribute belonging to a responsive/unit/hover suffix family of an
+ * already-claimed base attribute (`{base}Tablet`, `{base}Mobile`,
+ * `{base}Desktop`, `{base}Unit`, `{base}Hover`) is treated as belonging to
+ * that base attribute and is NOT reported as its own orphan — only the base
+ * form needs to resolve for the whole family to count as claimed.
+ *
+ * An element with no prefix (and no fallback — i.e. an empty-string
+ * `element.prefix`) is skipped for orphan scanning; there is nothing to
+ * match attribute names against.
+ *
+ * ORPHAN is WARN-ONLY like everything else here — it never affects the exit
+ * code.
+ *
  * WARN-ONLY: always exits 0. Mirrors the sibling audit-inspector-
  * conformance.js WARN-ONLY posture — promotion to a hard gate is a later
  * Spec 35 rollout step (see design doc "Rollout / hardening steps" #5), not
@@ -119,6 +151,85 @@ function resolveMember( element, member, blockJson ) {
 }
 
 // ---------------------------------------------------------------------------
+// ORPHAN DETECTION (Spec 35 FR-35-4)
+// ---------------------------------------------------------------------------
+
+// Suffix families that extend a base attribute rather than being their own
+// setting — an attribute in one of these families is "claimed" whenever its
+// base form is claimed, and is never itself reported as an orphan.
+const RESPONSIVE_AND_STATE_SUFFIXES = [ 'Tablet', 'Mobile', 'Desktop', 'Unit', 'Hover' ];
+
+/**
+ * Strip a trailing responsive/unit/hover suffix (repeatedly — e.g. an attr
+ * could in principle carry `UnitTablet`) to find the base attribute name a
+ * given attribute belongs to. Returns the original name unchanged if no
+ * known suffix matches.
+ */
+function baseAttrName( attrName ) {
+	let current = attrName;
+	let changed = true;
+	while ( changed ) {
+		changed = false;
+		for ( const suffix of RESPONSIVE_AND_STATE_SUFFIXES ) {
+			if ( current.length > suffix.length && current.endsWith( suffix ) ) {
+				current = current.slice( 0, current.length - suffix.length );
+				changed = true;
+				break;
+			}
+		}
+	}
+	return current;
+}
+
+/**
+ * Scan a block's attributes for ones that are wired to a declared element's
+ * prefix but never claimed by any resolved cluster member — the ORPHAN case.
+ * Must run AFTER every element's declared-cluster members have been
+ * resolved, so `claimedAttrs` reflects the full block, not just one element.
+ */
+function findOrphans( elementKeys, elements, blockJson, claimedAttrs ) {
+	const attributes = blockJson.attributes || {};
+	const attrNames = Object.keys( attributes );
+	const orphans = [];
+
+	// An attribute counts as claimed if its OWN name is claimed, or if the
+	// base name (with responsive/unit/hover suffixes stripped) is claimed.
+	const isClaimed = ( attrName ) => {
+		if ( claimedAttrs.has( attrName ) ) return true;
+		const base = baseAttrName( attrName );
+		return base !== attrName && claimedAttrs.has( base );
+	};
+
+	for ( const elementKey of elementKeys ) {
+		const element = elements[ elementKey ];
+		// Effective prefix: explicit element.prefix, else the element's own
+		// manifest key (this is why button's `icon` element — no explicit
+		// `prefix` — still matches `iconColour`/`iconSize`/`iconGap`).
+		const prefix = element.prefix || elementKey;
+		if ( ! prefix ) continue; // nothing to match on (explicit empty-string prefix)
+
+		for ( const attrName of attrNames ) {
+			if ( ! attrName.startsWith( prefix ) ) continue;
+			// Guard against accidental prefix collisions with no PascalCase
+			// suffix boundary, e.g. prefix "icon" must not match "icons".
+			const rest = attrName.slice( prefix.length );
+			if ( rest.length === 0 || rest[ 0 ] !== rest[ 0 ].toUpperCase() ) continue;
+			if ( isClaimed( attrName ) ) continue;
+
+			orphans.push( {
+				block: blockJson.name,
+				element: elementKey,
+				elementLabel: element.label || elementKey,
+				attr: attrName,
+				status: 'orphan',
+			} );
+		}
+	}
+
+	return orphans;
+}
+
+// ---------------------------------------------------------------------------
 // PER-BLOCK ANALYSIS
 // ---------------------------------------------------------------------------
 
@@ -129,6 +240,8 @@ function analyseBlock( blockSlug, blockJson, clusterSets, findings ) {
 	const elementKeys = Object.keys( elements ).sort(
 		( a, b ) => ( elements[ a ].order ?? 999 ) - ( elements[ b ].order ?? 999 )
 	);
+
+	const claimedAttrs = new Set();
 
 	for ( const elementKey of elementKeys ) {
 		const element = elements[ elementKey ];
@@ -142,6 +255,7 @@ function analyseBlock( blockSlug, blockJson, clusterSets, findings ) {
 
 			for ( const member of cluster.members ) {
 				const result = resolveMember( element, member, blockJson );
+				if ( result.resolved && result.attr ) claimedAttrs.add( result.attr );
 				findings.push( {
 					block: blockSlug,
 					element: elementKey,
@@ -158,6 +272,9 @@ function analyseBlock( blockSlug, blockJson, clusterSets, findings ) {
 		}
 	}
 
+	const orphans = findOrphans( elementKeys, elements, blockJson, claimedAttrs );
+	for ( const orphan of orphans ) findings.push( orphan );
+
 	return true;
 }
 
@@ -170,7 +287,9 @@ function printHuman( meta, findings ) {
 	process.stdout.write(
 		`Blocks with a manifest: ${ meta.manifested_count } | blocks skipped (no supports.sgs.elements): ${ meta.skipped_count }\n`
 	);
-	process.stdout.write( `Members checked: ${ meta.total_checked } | OK: ${ meta.total_ok } | GAP: ${ meta.total_gap }\n\n` );
+	process.stdout.write(
+		`Members checked: ${ meta.total_checked } | OK: ${ meta.total_ok } | GAP: ${ meta.total_gap } | ORPHAN: ${ meta.total_orphan }\n\n`
+	);
 
 	const byBlock = {};
 	for ( const f of findings ) {
@@ -198,8 +317,10 @@ function printHuman( meta, findings ) {
 						? `native supports.${ f.resolvedPath }`
 						: f.resolvedAttr;
 				process.stdout.write( `      [OK]  ${ f.cluster }/${ f.member } (${ f.memberLabel }) → ${ detail }\n` );
-			} else {
+			} else if ( f.status === 'gap' ) {
 				process.stdout.write( `      [GAP] ${ f.cluster }/${ f.member } (${ f.memberLabel }) — no attrMap entry and no default-convention attribute found\n` );
+			} else {
+				process.stdout.write( `      [ORPHAN] ${ f.attr } — wired to the block but not claimed by any declared cluster member\n` );
 			}
 		}
 	}
@@ -247,9 +368,15 @@ function main() {
 		}
 	}
 
-	const totalChecked = findings.length;
-	const totalOk = findings.filter( ( f ) => f.status === 'ok' ).length;
+	// total_checked/total_ok/total_gap cover cluster-member findings ONLY
+	// (unchanged shape/semantics from Task 2) — orphans are a separate,
+	// additive count so existing tooling parsing these three keys is
+	// unaffected by FR-35-4.
+	const clusterFindings = findings.filter( ( f ) => f.status === 'ok' || f.status === 'gap' );
+	const totalChecked = clusterFindings.length;
+	const totalOk = clusterFindings.filter( ( f ) => f.status === 'ok' ).length;
 	const totalGap = totalChecked - totalOk;
+	const totalOrphan = findings.filter( ( f ) => f.status === 'orphan' ).length;
 
 	const meta = {
 		audit: 'element-manifest-conformance',
@@ -259,6 +386,7 @@ function main() {
 		total_checked: totalChecked,
 		total_ok: totalOk,
 		total_gap: totalGap,
+		total_orphan: totalOrphan,
 	};
 
 	if ( process.argv.includes( '--json' ) ) {

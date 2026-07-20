@@ -72,6 +72,7 @@
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
+					"layer": "OUTER",
 					"order": 1,
 					"clusters": [ "text", "fill", "layout" ],
 					"isWrapper": true,
@@ -98,15 +99,25 @@
 				},
 				"grid": {
 					"label": "Grid / flex layout",
+					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [ "layout", "flow" ],
 					"attrMap": {
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "gridTemplateColumns/Rows, justifyItems/Content, flexDirection/Wrap drive the grid definition itself and have no equivalent in the golden-master Text/Fill/Layout member set — only gap resolves here; the rest are correctly-flagged GAPs, not missing controls."
+					"_note": "Flow-cluster members map explicitly because this element declares no `prefix` — the default {prefix}{Suffix} convention cannot resolve a bare camelCase attribute. Members with no attribute on this block (display, order, overflow, align-items) remain honest GAPs."
 				},
 				"content-band": {
 					"label": "Content band",
+					"layer": "CONTENT",
 					"order": 3,
 					"clusters": [ "fill", "layout" ],
 					"prefix": "contentBand",
@@ -117,6 +128,7 @@
 				},
 				"grid-item": {
 					"label": "Grid item",
+					"layer": "GRID_AREA",
 					"order": 4,
 					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "gridItem",

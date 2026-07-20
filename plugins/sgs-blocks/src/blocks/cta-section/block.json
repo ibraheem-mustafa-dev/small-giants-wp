@@ -38,6 +38,7 @@
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
+					"layer": "OUTER",
 					"order": 1,
 					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
@@ -90,15 +91,25 @@
 				},
 				"grid": {
 					"label": "Grid / flex layout",
+					"layer": "GRID",
 					"order": 6,
-					"clusters": [ "layout" ],
+					"clusters": [ "layout", "flow" ],
 					"attrMap": {
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
 					},
 					"_note": "As on sgs/container: gridTemplateColumns/Rows, justifyItems/Content, flexDirection/Wrap define the grid itself and have no golden-master Text/Fill/Layout equivalent — only gap resolves; the rest are correctly-flagged GAPs."
 				},
 				"content-band": {
 					"label": "Content band",
+					"layer": "CONTENT",
 					"order": 7,
 					"clusters": [ "fill", "layout" ],
 					"prefix": "contentBand",
@@ -109,6 +120,7 @@
 				},
 				"grid-item": {
 					"label": "Grid item (stats)",
+					"layer": "GRID_AREA",
 					"order": 8,
 					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "gridItem",
