@@ -114,10 +114,62 @@ every value of `animateFrom` by construction.
 | Tab contained in drawer | ✅ |
 | Bar unaffected at 768 | ✅ |
 
-## What this does NOT establish
+## D340 bounce test — PASSED (Bean, manual, 2026-07-20)
 
-**The D340 bounce test is still OPEN and still manual.** This change makes it *performable*; it
-does not perform it. The harness cannot reproduce the condition — headless Chromium reports
-`innerWidth - clientWidth = 0` (overlay scrollbars), so the scroll-lock's classic-scrollbar
-guard never fires and any in-harness delta is meaningless. Bean must run it in a real windowed
-desktop browser with a classic scrollbar. Reporting it as inconclusive, not as a pass.
+Bean ran it in a real desktop browser once the drawer entered horizontally:
+**"Just tested the bounce and it is 100% fixed. Totally not there anymore."**
+
+This closes D340's verification. Recording precisely who established it and how, because the
+harness could NOT: headless Chromium reports `innerWidth - clientWidth = 0` (overlay
+scrollbars), so the scroll-lock's classic-scrollbar guard never fires and any in-harness delta
+is meaningless. The fix (`store.js` pins the root scrollbar track while the body is locked) is
+now **verified by manual test on a real windowed browser**, which is the only instrument that
+can observe it.
+
+## FOLLOW-UP FIX — the exit animation never ran (same session)
+
+Bean, immediately after: *"the drawer when closed doesn't reverse the animation and just goes."*
+Correct, and **a real bug that predates the `animateFrom` work** — the original vertical exit
+keyframes were equally dead.
+
+**Cause (read from source, not inferred):** `runClose()` added `.is-closing` and then called
+`dialog.close()` in the **same tick**. `close()` removes `[open]`, which makes a `<dialog>`
+`display:none` immediately — so the browser never painted a single frame of `.is-closing` and
+the exit keyframes were unreachable. The old comment there reasoned about a CSS *transition* on
+a still-displayed element; a `display:none` element animates nothing.
+
+**Fix:** add the class, let the animation run, `close()` on `animationend` (target-checked,
+since `animationend` bubbles from children), with a fail-safe timeout that reads the **real
+computed `animationDuration`** rather than a hardcoded value — a stuck-open drawer is far worse
+than a missing animation. Re-entrancy guarded. Native **ESC** on a modal `<dialog>` bypassed
+`runClose` entirely, so it is now routed through the same path — all close routes behave
+identically.
+
+**Blast radius:** this is the SHARED `store('sgs/nav')`, consumed by `sgs/nav-drawer` and
+`sgs/nav-menu`. The native `close` event remains the single teardown point for
+aria/scroll/freeze/focus and is untouched.
+
+### Measured (live, 375, post-deploy, checksum-verified `b9b0ca37…` local↔server)
+
+| Close route | reduced motion | mid-exit | settled |
+|---|---|---|---|
+| × button | no-preference | still displayed, `.is-closing`, `slide-out-right` | closed, class cleared, focus→burger, scroll unlocked |
+| ESC | no-preference | still displayed, `.is-closing`, `slide-out-right` | closed, class cleared, focus→burger, scroll unlocked |
+| ESC | **reduce** | not displayed, no class, `animation-name: none` | closed, focus→burger, scroll unlocked |
+| × button | **reduce** | not displayed, no class, `animation-name: none` | closed, focus→burger, scroll unlocked |
+
+The exit now **reverses the entry** (`slide-in-right` → `slide-out-right`), and reduced motion
+still closes instantly with no animation. Teardown is intact on every route.
+
+**Not a defect, noted so it isn't retested as one:** the burger cannot be clicked to close while
+the drawer is open — the full-screen modal covers it. That is correct `<dialog>` modal
+behaviour; the close routes are ×, ESC and scrim. My first probe script asserted otherwise and
+was wrong.
+
+### Regression after the shared-store change
+
+| Check | Result |
+|---|---|
+| axe, drawer open, scoped, 375 | **0 violations** |
+| elementFromPoint occlusion sweep | **20/20** (10/10 at 375) |
+| burger opens / ESC closes / focus returns / Tab contained | ✅ |

@@ -127,13 +127,26 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   value is chosen — PROVEN by emulation, not asserted** (`reduce` → `animation-name:none`, `transform:none`, drawer
   still opens). Header set to `animateFrom:right`. 3/3 predictions held; axe still 0; no regression. Report
   `reports/visual-diff/nav-drawer-2026-07-20.md` PASS. Deploy **checksum-verified** local↔server this time.
-- **WAVE 4 REMAINING — ONE item, needs Bean:** the **manual D340 scrollbar-bounce test** in a real windowed desktop
-  browser. ⚠ **The harness CANNOT do this and must not claim it** — headless Chromium reports
-  `innerWidth - clientWidth = 0` (overlay scrollbars), so the store's classic-scrollbar guard never fires and any
-  measured delta is meaningless. The D340 fix IS present (`store.js:148-149` pins the root scrollbar track while
-  locked); it is UNVERIFIED, not proven. The drawer now enters horizontally, so the test is finally performable.
-  Content refinements for the editor: menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an
-  "Our Story" submenu (flattened in Phase-1).
+- **WAVE 4 — D340 BOUNCE TEST PASSED (Bean, manual, 2026-07-20): "100% fixed. Totally not there anymore."**
+  Established by Bean in a real windowed desktop browser — the ONLY instrument that can observe it. ⚠ The harness
+  cannot and must not claim this: headless Chromium reports `innerWidth - clientWidth = 0` (overlay scrollbars), so
+  the store's classic-scrollbar guard never fires. D340's fix (`store.js` pins the root scrollbar track while
+  locked) is now VERIFIED.
+- **WAVE 4 — drawer EXIT animation fixed (live-verified).** Bean caught it straight after: the drawer "just goes"
+  on close instead of reversing. **A real bug PREDATING the animateFrom work** — the original vertical exit
+  keyframes were equally dead. Cause (read from source): `runClose()` added `.is-closing` then called
+  `dialog.close()` in the SAME tick; `close()` removes `[open]` → `<dialog>` is `display:none` immediately → the
+  browser never painted a frame of `.is-closing`. Fix: animate, then close on `animationend` (target-checked;
+  fail-safe timeout reads the REAL computed `animationDuration`, so a stuck-open drawer is impossible). **Native
+  ESC bypassed `runClose` entirely** on a modal `<dialog>` — now routed through the same path, so ×/ESC/scrim
+  behave identically. ⚠ **SHARED-STORE change** (`store('sgs/nav')`, consumed by nav-drawer + nav-menu); the
+  native `close` event remains the single teardown point and is untouched. Verified across 4 routes × reduced-motion;
+  exit now reverses entry (`slide-in-right`→`slide-out-right`), reduce still closes instantly. **No regression:
+  axe 0, sweep still 20/20, ESC/focus/Tab all pass.**
+- **WAVE 4 COMPLETE — Gate-1 is machine-green + Bean-signed.** Remaining before Phase 1 closes are the two
+  known-open items below, neither a Gate-1 blocker: FR-36-1 classic-menu resolver, and featured hover parity
+  (now largely absorbed by Track 1's hover work — RECHECK before re-opening). Content refinements for the editor:
+  menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu (flattened in Phase-1).
 - **NOT nav, recorded so it isn't re-flagged as a nav regression** (all present before the fix): 2 page contrast
   fails (button #c56a7a/white 3.67:1, Trustpilot #00b67a/white 2.63:1) + a **duplicate `<main>` landmark** (3 axe
   rules) — live-DOM probe traced the inner one to a `core/group` in the PAGE content, so it belongs to the queued
