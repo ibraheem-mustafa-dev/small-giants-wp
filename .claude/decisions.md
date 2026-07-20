@@ -15,6 +15,52 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D353 [ROUTINE] — FR-36-5 `sgs_mega_menu` CPT built NAV-ONLY; `sgs-theme` had no `menus` support at all (2026-07-20)
+
+**Framework bug found en route (the bigger of the two).** `theme/sgs-theme` declared NO
+`add_theme_support('menus')` and NO `register_nav_menus()` — grep-verified across the whole theme. A block
+theme without that support fatals `nav-menus.php` with *"Your theme does not support navigation menus or
+widgets"*, so **Appearance → Menus was broken on EVERY SGS site**, not just the canary. FR-36-1 makes classic
+menus the PRIMARY nav data path and FR-36-5 attaches mega panels through that screen, so both were
+unreachable. Fixed: `menus` support + `register_nav_menus(primary/footer)` (the latter is FR-36-1's preferred
+resolution target).
+
+**Spike first, per Spec 36 §12 (which required PROOF, not assertion).** §8a flags
+`class-product-templates-cpt.php:70` as a WRONG citation — that file sets `show_in_nav_menus` to FALSE.
+Throwaway CPT on the canary: panel appears in the *Add menu items* column; the created `nav_menu_item` carries
+`_menu_item_object = <cpt>` + `_menu_item_object_id = <the real post id>`. **Negative control:** flipping the
+flag to false made the panel vanish — so the flag, not some other registration property, controls it. Wrong
+citation now corrected. Spike artefacts fully cleaned up.
+
+**Bean's ruling — panels are NAV-ONLY (`public`/`publicly_queryable` both false).** The build initially
+registered `public => true`, reading FR-36-5's "the trigger resolves to the mega post's own permalink" as
+mandatory. Review caught that the SAME sentence says *"or `#` when the panel is purely a container — operator
+choice"*, so a public URL is one of two supported options. Public would have meant: a standalone indexable URL
+serving unstyled duplicate nav markup (conflicting with FR-36-17, whose crawlability model is that mega content
+is crawlable *inside the nav on every page*), plus a required `flush_rewrite_rules()` activation hook, robots
+suppression, and sitemap exclusion. **Bean chose nav-only** — removes all of that, and makes FR-36-3's
+"mirrors `sgs_header`" exact rather than approximate.
+
+**A second vacuous-check caught (the D351/D352 class again).** The first implementation made the CPT's panel
+visible-by-default via the `default_hidden_meta_boxes` filter. **Verified against real WP 7.0.2 core on the
+canary: that filter is INERT on this screen.** `wp-admin/includes/nav-menu.php:226`
+`wp_initial_nav_menu_meta_boxes()` hardcodes four visible metaboxes
+(`add-post-type-page`/`add-post-type-post`/`add-custom-links`/`add-category`), marks everything else hidden,
+and writes it straight to user meta via `update_user_meta` — never calling `apply_filters()` or
+`get_hidden_meta_boxes()`. `default_hidden_meta_boxes` has exactly ONE core call site, `screen.php:181`, on
+post-edit screens. **The refinement that matters:** core returns early when `metaboxhidden_nav-menus` is
+already set, so the defect only ever hits users whose option is unset — an existing admin sees the panel
+regardless. Testing as the existing admin would have PASSED WITH THE FIX DELETED. Live proof therefore reset
+the option to simulate a genuine first visit, then re-ran with the hook disabled and confirmed the panel
+reverted to `hide-if-js`.
+
+**Live-verified on sandybrown** (md5 local↔server matched on both changed files BEFORE measuring — the
+`[verify] HTTP 200` leg proves nothing, D351): menus page loads · panel visible on a simulated first visit
+*with a working negative control* · attach stores the real post id · panel 404s as a standalone URL and is
+absent from site search · homepage clean. Bean confirmed the mega-menu builder page opens (R-31-13 eye).
+
+Commit `cc640511`. Sibling lessons: [[negative-control-or-the-test-is-vacuous]], [[verify-deploy-by-checksum-not-liveness]].
+
 ## D352 [ROUTINE] — FR-36-1 classic-menu resolution: classic menus are now the nav's primary source (2026-07-20)
 
 **Gap.** `SGS_Nav_Menu_Source::blocks_from_ref()` resolved only `wp_navigation` posts. Spec 36 FR-36-1 names

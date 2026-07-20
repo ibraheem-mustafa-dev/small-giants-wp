@@ -119,16 +119,20 @@ Full narrative: `memory/session-2026-07-19*.md`.
 **Why it matters.** You are QC-only on the framework; every drifting doc or missing guard-rail
 is time you have to spend catching mistakes.
 
-**⭐ LATEST (2026-07-20, session close) — SPEC 36 PHASE 1 IS CLOSED.** The new navigation is finished,
-live, signed off by you, and its paperwork is straight. This session: built the **classic-menu reader**
-(FR-36-1 — your *Appearance → Menus* menus now drive the nav; they rendered nothing before, D352), then
-worked the roster close-out. Two things worth knowing: a build gate (`/sgs-update` Stage 11) had been
-**silently failing** and is now green, and the database knew only **2 of 9** of the nav block's featured
-settings — 30 attributes were re-registered. I also **refused one instruction**: the handoff said to retire
-the `adaptive-nav` / `mega-menu` / `mobile-nav` database rows; checking showed `mobile-nav` was already gone,
-`adaptive-nav` is your rollback path, and `mega-menu` is Phase-2 work — so it was struck, not done.
+**⭐ LATEST (2026-07-20) — PHASE 1 CLOSED; PHASE 2 STARTED, mega CPT landed (D353).** Phase 1 finished
+earlier the same day (classic-menu reader FR-36-1 / D352; Stage-11 build gate un-silenced; 30 nav attrs
+re-registered; one handoff instruction refused because `adaptive-nav` is your rollback path).
+**Then Phase 2 opened with the `sgs_mega_menu` CPT** — you can now add a mega panel to a menu in
+*Appearance → Menus* exactly like adding a page, and the menu item stores a real link to that panel.
+Found en route: **`sgs-theme` declared no menu support at all**, so *Appearance → Menus* was broken on EVERY
+SGS site — fixed in the same commit (`cc640511`). Panels are **nav-only** (your ruling): no public URL, so
+nothing duplicate for Google to index. Proven live with a working negative control.
 **Deliberately NOT fixed (your call):** the featured item's hover still differs from the draft — that gap is
 now the planted TEST CASE for header cloning and is marked DO-NOT-FIX in parking.
+**⚠ OPEN, needs your decision:** the 7 old mega-menu layout patterns **cannot be migrated as-is** — all 7
+carry stale pre-D294 inline styles, a now-wrong `Block Types: core/template-part/mega-menu` header, and
+`core/list` (no `sgs/list` block exists). Spec 36 wants 5 layouts; the FR-36-5 **DB registry does not exist
+yet**. See the decision menu in the session notes.
 
 **Your single next action.** Nothing is blocked. Two independent fronts to pick from: the
 **product** front — the drawer link-colour polish (a 5-minute fix) at the top of the "Product
