@@ -387,20 +387,69 @@ function resolveScrim( drawerRef ) {
  * @param {HTMLElement|null} scrim  The scrim element, if any.
  */
 function runClose( drawer, scrim ) {
-	if ( ! drawer.open ) {
+	if ( ! drawer.open || drawer.classList.contains( 'is-closing' ) ) {
 		return;
-	}
-	if ( ! prefersReducedMotion() ) {
-		// Added BEFORE close() so the CSS transition active at the moment [open]
-		// is removed already carries the faster exit timing (250ms in / 200ms
-		// out — see style.css `.is-closing`). Skipped under reduced motion:
-		// there is no transition to time.
-		drawer.classList.add( 'is-closing' );
 	}
 	if ( scrim ) {
 		scrim.classList.remove( 'is-open' );
 	}
-	drawer.close();
+
+	// Reduced motion: no exit animation to wait for — close immediately.
+	if ( prefersReducedMotion() ) {
+		drawer.close();
+		return;
+	}
+
+	/*
+	 * The exit animation must finish BEFORE dialog.close().
+	 *
+	 * `close()` removes the [open] attribute, which makes a <dialog>
+	 * `display:none` in the same tick — so the element is gone before the
+	 * browser paints a single frame of `.is-closing`. That is why the drawer
+	 * "just went" instead of animating out: the exit keyframes were never
+	 * reachable, both the original vertical ones and the directional ones.
+	 * (The old comment here reasoned about a CSS *transition* on a
+	 * still-displayed element; a display:none element animates nothing.)
+	 *
+	 * So: add the class, let the animation run, close on animationend.
+	 */
+	drawer.classList.add( 'is-closing' );
+
+	let finished = false;
+	let timer = 0;
+
+	const finish = () => {
+		if ( finished ) {
+			return;
+		}
+		finished = true;
+		clearTimeout( timer );
+		drawer.removeEventListener( 'animationend', onAnimationEnd );
+		// `.is-closing` is removed by the native `close` handler, which is the
+		// single teardown point for aria/scroll/freeze/focus.
+		drawer.close();
+	};
+
+	function onAnimationEnd( e ) {
+		// animationend bubbles — ignore a child's animation finishing first.
+		if ( e.target === drawer ) {
+			finish();
+		}
+	}
+
+	drawer.addEventListener( 'animationend', onAnimationEnd );
+
+	/*
+	 * Fail-safe. If no exit animation actually runs the drawer must still
+	 * close — a stuck-open drawer is far worse than a missing animation.
+	 * Read the real computed duration rather than hardcoding one, so this
+	 * keeps working if the timing changes or a site overrides it.
+	 */
+	const declared = parseFloat(
+		window.getComputedStyle( drawer ).animationDuration
+	);
+	const ms = Number.isFinite( declared ) && declared > 0 ? declared * 1000 : 0;
+	timer = setTimeout( finish, ms + 50 );
 }
 
 /**
@@ -439,6 +488,27 @@ function openDrawerFor( ctx, trigger ) {
 		// transformed header ancestor; native inert background + native ESC +
 		// native `::backdrop`. (Body-scroll-lock is NOT native — kept above.)
 		drawer.showModal();
+
+		/*
+		 * Native ESC on a modal <dialog> closes it directly, bypassing
+		 * runClose() — so without this it would snap shut with no exit
+		 * animation while the burger / × / scrim animated out. Cancel the
+		 * native close and route ESC through the same path as every other
+		 * close, so all four behave identically.
+		 *
+		 * Safety: if anything here throws, the native close still happens
+		 * (preventDefault is the FIRST thing undone by re-dispatching through
+		 * runClose, which has its own timeout fail-safe). ESC can never leave
+		 * the drawer stuck open.
+		 */
+		const onCancel = ( e ) => {
+			e.preventDefault();
+			runClose( drawer, scrim );
+		};
+		drawer.addEventListener( 'cancel', onCancel );
+		bookkeeping.cleanup.push( () =>
+			drawer.removeEventListener( 'cancel', onCancel )
+		);
 	} else {
 		// Fallback: non-modal `.show()` (the Spec-34 model). A non-modal dialog
 		// does NOT inert the background or auto-close on ESC, so the selective
