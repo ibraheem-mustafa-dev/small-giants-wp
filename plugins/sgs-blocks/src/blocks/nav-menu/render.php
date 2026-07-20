@@ -265,32 +265,82 @@ $link_sel = $uid_sel . ' .sgs-nav-menu__link';
 // TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
 $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
-// 4b. Item colour (resting). Base is `inherit` in style.css; an unset slug
+// 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
 // leaves the surrounding context's colour untouched (header/footer agnostic).
+// Text and background are SEPARATE properties, each with its own Normal/Hover
+// state (Spec 35 element-first): the pre-2026-07-20 model paired resting TEXT
+// against hover BACKGROUND in one toggle, so an operator could never set a
+// hover text colour at all — it was auto-computed and unreachable.
 $item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
+$item_bg     = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
+$item_bg_hex = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+
 if ( '' !== $item_colour ) {
 	$css .= $link_sel . '{color:' . sgs_colour_value( $item_colour ) . ';}';
 }
+if ( '' !== $item_bg_hex ) {
+	$css .= $link_sel . '{background-color:' . esc_attr( $item_bg_hex ) . ';border-radius:8px;}';
+}
 
-// 4c. Hover / focus-visible / current-page state — WCAG-safe background pill,
-// computed against the resolved hover colour (never an operator-guessed
-// pairing). [aria-current="page"] is set by view.js at mount (client-side).
-$hover_targets   = array(
+// 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set
+// by view.js at mount (client-side), so the same treatment doubles as the
+// current-page indicator — which is why an operator-chosen style matters.
+$hover_targets = array(
 	$link_sel . ':hover',
 	$link_sel . ':focus-visible',
 	$link_sel . '[aria-current="page"]',
 );
-$hover_sel       = implode( ',', $hover_targets );
-$item_hover_slug = isset( $attributes['itemHoverColour'] ) ? sanitize_html_class( $attributes['itemHoverColour'] ) : '';
-$item_hover_hex  = '' !== $item_hover_slug ? sgs_resolve_palette_hex( $item_hover_slug, '' ) : '';
+$hover_sel     = implode( ',', $hover_targets );
 
-if ( '' !== $item_hover_hex ) {
-	$hover_fg = sgs_wcag_text_colour_for_bg( $item_hover_hex );
-	$css     .= $hover_sel . '{background-color:' . esc_attr( $item_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:8px;transition:background-color .15s ease,color .15s ease;}';
+$hover_style       = isset( $attributes['hoverStyle'] ) ? (string) $attributes['hoverStyle'] : 'pill';
+$item_bg_hover     = isset( $attributes['itemBgHover'] ) ? sanitize_html_class( $attributes['itemBgHover'] ) : '';
+$item_bg_hover_hex = '' !== $item_bg_hover ? sgs_resolve_palette_hex( $item_bg_hover, '' ) : '';
+$item_fg_hover     = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';
+
+/*
+ * PILL — a filled background on hover. The foreground honours the operator's
+ * chosen hover text colour when it clears AA against the resolved fill, and
+ * falls back to the guaranteed-safe binary only when it would not (or when the
+ * operator left it empty). Informational, never a gate: the operator's choice
+ * wins whenever it is readable.
+ */
+if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
+	$preferred = '' !== $item_fg_hover ? sgs_resolve_palette_hex( $item_fg_hover, '' ) : '';
+	$hover_fg  = '' !== $preferred
+		? sgs_wcag_preferred_text_colour_for_bg( $item_bg_hover_hex, $preferred )
+		: sgs_wcag_text_colour_for_bg( $item_bg_hover_hex );
+	$css      .= $hover_sel . '{background-color:' . esc_attr( $item_bg_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:8px;transition:background-color .15s ease,color .15s ease;}';
+} elseif ( 'text' === $hover_style && '' !== $item_fg_hover ) {
+	// TEXT — colour shift only, no fill, no bar.
+	$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';transition:color .15s ease;}';
 } else {
-	// No hover colour resolved: still guarantee SOME visible state (WCAG
-	// 1.4.1 / 2.4.7) via an underline, never silently zero feedback.
-	$css .= $hover_sel . '{text-decoration:underline;text-underline-offset:3px;}';
+	/*
+	 * UNDERLINE — a real ::after bar, and the fallback for every other case so
+	 * there is never zero visible feedback (WCAG 1.4.1 / 2.4.7).
+	 *
+	 * NOT `text-decoration:underline`, which was the pre-2026-07-20 fallback:
+	 * that hugs the baseline, breaks around descenders, spans only the glyphs
+	 * (so every item's line is a different length), and cannot animate. A
+	 * positioned bar spans the link box consistently and grows in from the
+	 * left. Bean reported it as "quite an ugly look"; the mechanism confirmed it.
+	 */
+	$u_thickness = isset( $attributes['underlineThickness'] ) ? (float) $attributes['underlineThickness'] : 2;
+	$u_offset    = isset( $attributes['underlineOffset'] ) ? (float) $attributes['underlineOffset'] : 6;
+	$u_colour    = isset( $attributes['underlineColour'] ) && '' !== $attributes['underlineColour']
+		? sgs_colour_value( (string) $attributes['underlineColour'] )
+		: 'currentColor';
+	$u_colour_h  = isset( $attributes['underlineColourHover'] ) && '' !== $attributes['underlineColourHover']
+		? sgs_colour_value( (string) $attributes['underlineColourHover'] )
+		: $u_colour;
+
+	$css .= $link_sel . '{position:relative;}';
+	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform .2s ease,background-color .15s ease;pointer-events:none;}';
+	$css .= $hover_sel . '::after{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
+	if ( '' !== $item_fg_hover ) {
+		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';}';
+	}
+	// Motion is decoration here — the bar's presence carries the meaning.
+	$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
 }
 
 /*
@@ -326,6 +376,40 @@ if ( '' !== $featured_bg_hex ) {
 } else {
 	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:600;}';
 }
+
+/*
+ * 4d-ii. Featured HOVER state. The featured item is the one nav item an
+ * operator most wants to stand out (it is usually the "Order now" / "Book"
+ * call to action), and before 2026-07-20 it had no hover state at all — it
+ * inherited the generic item hover, which fought its own pill. It now carries
+ * its own Normal|Hover pair for both text and background, resolved by the same
+ * contrast helper as the resting state so the operator's colour wins whenever
+ * it is readable.
+ */
+$featured_hover_sel = implode(
+	',',
+	array(
+		$featured_sel . ':hover',
+		$featured_sel . ':focus-visible',
+	)
+);
+$featured_bg_hover     = isset( $attributes['featuredBgHover'] ) ? sanitize_html_class( $attributes['featuredBgHover'] ) : '';
+$featured_bg_hover_hex = '' !== $featured_bg_hover ? sgs_resolve_palette_hex( $featured_bg_hover, '' ) : '';
+$featured_fg_hover     = isset( $attributes['featuredColourHover'] ) ? (string) $attributes['featuredColourHover'] : '';
+
+if ( '' !== $featured_bg_hover_hex ) {
+	$preferred_hover = '' !== $featured_fg_hover ? sgs_resolve_palette_hex( $featured_fg_hover, '' ) : '';
+	$featured_fg_h   = '' !== $preferred_hover
+		? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
+		: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
+	$css            .= $featured_hover_sel . '{background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color .15s ease,color .15s ease;}';
+} elseif ( '' !== $featured_fg_hover ) {
+	$css .= $featured_hover_sel . '{color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color .15s ease;}';
+}
+
+// The featured item owns its own treatment — suppress the generic item
+// underline bar on it so the two never render on top of each other.
+$css .= $featured_sel . '::after{content:none;}';
 
 // 4e. Burger colour / hover / size.
 $burger_colour = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
