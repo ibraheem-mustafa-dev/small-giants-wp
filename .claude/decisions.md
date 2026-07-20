@@ -15,6 +15,31 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D350 [ROUTINE] — Spec 35 rollout: parallax split + element-manifest contract + brand-strip exemplar made real (2026-07-20)
+
+**Track 1, Spec 35 block-inspector-UX.** Shipped + merged to main (via `5672b4c6`): (1) **Parallax split** —
+background parallax → a toggle inside the native Colour panel (`InspectorControls group="color"`), gated to
+`color.background`-capable blocks, with a conditional Strength slider; element parallax → its own renamed
+panel with a plain-English explanation + conditional Strength. Both drive the single `sgsParallax` enum
+(mutually exclusive), so `includes/parallax.php` render + the data model are UNCHANGED. (2) **Element-manifest
+machine contract** (Task 2 #1): `supports.sgs.elements` schema `{label,order,clusters[],prefix?,isWrapper?,attrMap?}`
++ `cluster-member-sets.json` (text/fill/layout member sets sourced from the golden-master registry, not a
+hardcoded dict) + `check-element-manifest-conformance.js` computing the CLUSTER-COHERENCE rule (WARN-only).
+brand-strip manifest seeded (4 elements) → honest run **16 OK / 22 gaps** (the gaps = the Task-2 step-5 work
+list). (3) **brand-strip exemplar upgraded to REAL controls** (Task 2 #2): `tileShadow` SELECT → shared
+`ShadowControl` (emits a real box-shadow via scoped `<style>` using `sgs_shadow_value()`, NO inline — Spec 32);
+per-logo link `TextControl`+toggle → shared `SgsLinkControl` (→ `linkUrl`/`linkTarget`/`linkRel`). No version
+bump, no `deprecated.js` (D270); old enum values degrade gracefully.
+
+**Near-miss caught by live-verify:** `ShadowControl` compiled + passed 180 unit tests but CRASHED on its FIRST
+live render — `useSettings('shadow.presets')` resolves to WP's origin-keyed `{default,theme,custom}` object on
+WP 7.0.x, not a flat array, so `(presets||[]).map` threw and the block showed "encountered an error and cannot
+be previewed". Fixed by normalising to a flat, slug-deduped array (`bffb00ff`). New defence
+**STOP-LIVE-VERIFY-SHARED-COMPONENTS** (build-green + a subagent report is NOT proof a shared editor component
+renders — open every tab that renders it in the real editor). Memory `live-verify-shared-components-build-green-not-enough`.
+Also **Task 4 live-verified** (form-field inspector decluttered). Commits `1d476c26`, `869fe84d`, `bffb00ff`,
+`7d7ecd18`. `brand-strip/style.css` held behind the visual-diff gate (renders fine without it — shadow via render.php).
+
 ## D349 [INCIDENT] — Spec 35 registry + archetype design + cleanup-linter suite; a live-code regression caught by verify-loop (2026-07-19)
 
 **Track 1, Spec 35 block-inspector-UX.** Shipped: (1) the **optimal-control registry**

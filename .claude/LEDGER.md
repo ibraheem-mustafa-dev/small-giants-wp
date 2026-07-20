@@ -89,11 +89,28 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   header+footer+nav done; featured-item = block attribute.
 Handoff: `next-session-prompt-nav-rework-P2.5.md`.
 
-**Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
+**Latest (2026-07-20, Track 1 — Spec 35 rollout, 4 commits, all merged to main via `5672b4c6`).**
+Element-first inspector design LOCKED + its machine contract BUILT + the exemplar made real:
+(1) **Parallax split** — background parallax = a toggle in the native Colour panel (`group="color"`,
+background-capable blocks only) with conditional Strength; element parallax = its own renamed+explained
+panel with conditional Strength; both drive the one `sgsParallax` enum (mutually exclusive) → zero
+render/data-model change; live-verified (`1d476c26`). (2) **Task 2 #1 — element manifest** (`supports.sgs.elements`
+= `{label,order,clusters[],prefix?,isWrapper?,attrMap?}`) + `cluster-member-sets.json` (text/fill/layout
+member sets from the registry) + `check-element-manifest-conformance.js` (CLUSTER-COHERENCE rule, WARN-only);
+brand-strip manifest seeded — honest run **16 OK / 22 gaps** (`869fe84d`). (3) **Task 2 #2 — brand-strip
+exemplar now CONSUMES the real controls**: `tileShadow` → `ShadowControl` (scoped `<style>`, no inline),
+per-logo link → `SgsLinkControl` (`869fe84d`). (4) **ShadowControl crash fix** — live-verify caught it
+crashing on first render (`useSettings('shadow.presets')` returns WP's origin-keyed `{default,theme,custom}`
+object on WP 7.0.x, not an array); normalised + slug-deduped; re-verified live (`bffb00ff`). Also: **Task 4
+live-verified** (form-field inspector decluttered). **Next:** Task 3 (hover-duplicate codemod — design-gate
+first), Task 6 (wire linters WARN-only), Task 2 #3 (per-device border/shadow — design-gate), #4 (content-tab
+spec), step-5 (per-block manifest gap-closing from the 22-gap list). Handoff: `next-session-prompt-spec35-track1.md`.
+
+**Prior (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
 the attribute-registry (Spec 35 UNIT A+) mapped through Phase 1c. Built: the inspector DONE-checklist;
 the block roster (79 blocks, DB-derived); **all 3 audits** (inspector-conformance JSX-AST, feature-parity,
 shrink-to-fit — all WARN-only, keyed to the roster); **3 shared components** (`DesignTokenPicker` enableAlpha,
-`SgsLinkControl`, `ShadowControl` — infra only, no block consumes them yet); brand-strip QC'd as the pilot
+`SgsLinkControl`, `ShadowControl` — infra; now consumed by brand-strip, see the 2026-07-20 entry); brand-strip QC'd as the pilot
 exemplar; the **min-width:0 wrapper backstop** (Gate C0 approved, built, deployed to canary, no regression —
 but NOT live-emission-proven, homepage has no wrapper-grid container; UNIT D will prove it). **The registry
 insight (Bean-driven):** 944 attr names → ~80 TRUE settings (≈60 CSS-property + 12 input-types + 11
