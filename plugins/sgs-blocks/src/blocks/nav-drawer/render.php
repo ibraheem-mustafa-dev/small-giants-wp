@@ -237,12 +237,30 @@ if ( '' !== $custom_css ) {
 // store resolves the drawer by getElementById — the id + data-sgs-nav-drawer
 // survive the D323 body-reparent). supports.anchor is false (block.json) so no
 // competing anchor id is emitted. The uid is added as a CLASS for the scoped CSS.
+
+/*
+ * Entry-animation direction (animateFrom). `auto` emits NO class, so the CSS
+ * default (the subtle vertical nudge) stands and no existing site changes
+ * shape. An explicit value slides the panel in from that side; `fade` is
+ * opacity-only. All directional rules live inside the CSS's
+ * `prefers-reduced-motion: no-preference` block, so a reduced-motion user is
+ * unaffected by whatever is chosen here.
+ */
+$allowed_anims = array( 'auto', 'fade', 'top', 'right', 'bottom', 'left' );
+$animate_from  = in_array( $attributes['animateFrom'] ?? 'auto', $allowed_anims, true )
+	? (string) $attributes['animateFrom']
+	: 'auto';
+
 $classes = array(
 	'sgs-nav-drawer',
 	$uid,
 	'sgs-nav-drawer--edge-' . $edge,
 	'sgs-nav-drawer--submenu-' . $submenu_model,
 );
+
+if ( 'auto' !== $animate_from ) {
+	$classes[] = 'sgs-nav-drawer--anim-' . $animate_from;
+}
 
 $wrapper_args       = array(
 	'class'               => implode( ' ', $classes ),
