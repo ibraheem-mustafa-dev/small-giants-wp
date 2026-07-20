@@ -203,6 +203,44 @@
 			"type": "string",
 			"default": ""
 		},
+		"nameFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"nameLineHeight": {
+			"type": "number"
+		},
+		"nameLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"nameLineHeightTablet": {
+			"type": "number"
+		},
+		"nameLineHeightMobile": {
+			"type": "number"
+		},
+		"nameLetterSpacing": {
+			"type": "number"
+		},
+		"nameLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameLetterSpacingTablet": {
+			"type": "number"
+		},
+		"nameLetterSpacingMobile": {
+			"type": "number"
+		},
+		"nameTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
 		"nameColour": {
 			"type": "string",
 			"default": ""

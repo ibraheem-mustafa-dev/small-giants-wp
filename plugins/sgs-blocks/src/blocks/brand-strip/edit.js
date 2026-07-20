@@ -658,8 +658,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="name"
-								showStyle={ false }
-								showLineHeight={ false }
+								showDecoration
+								showTransform
+								showLetterSpacing
 							/>
 							<DesignTokenPicker
 								label={ __( 'Caption colour', 'sgs-blocks' ) }
