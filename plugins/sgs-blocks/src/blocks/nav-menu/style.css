@@ -43,7 +43,8 @@
 	min-height: 44px;
 	padding: 8px 12px;
 	text-decoration: none;
-	transition: background-color 150ms ease, color 150ms ease;
+	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
+		color var(--wp--custom--transition--fast, 150ms ease);
 	white-space: nowrap;
 }
 
@@ -73,7 +74,7 @@
 	align-items: center;
 	background: none;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	color: inherit;
 	cursor: pointer;
 	display: flex;
@@ -82,7 +83,7 @@
 	min-height: 44px;
 	min-width: 44px;
 	padding: 0;
-	transition: background-color 150ms ease;
+	transition: background-color var(--wp--custom--transition--fast, 150ms ease);
 	width: 44px;
 }
 

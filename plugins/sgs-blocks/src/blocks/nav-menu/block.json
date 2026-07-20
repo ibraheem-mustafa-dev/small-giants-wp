@@ -37,7 +37,20 @@
 		"paddingMobile": { "type": "object", "default": {} },
 
 		"itemColour": { "type": "string", "default": "" },
-		"itemHoverColour": { "type": "string", "default": "" },
+		"itemBg": { "type": "string", "default": "" },
+		"itemColourHover": { "type": "string", "default": "" },
+		"itemBgHover": { "type": "string", "default": "" },
+		"itemRadius": { "type": "number", "default": 8 },
+		"itemRadiusHover": { "type": "number" },
+		"hoverStyle": {
+			"type": "string",
+			"default": "pill",
+			"enum": [ "pill", "underline", "text" ]
+		},
+		"underlineColour": { "type": "string", "default": "" },
+		"underlineColourHover": { "type": "string", "default": "" },
+		"underlineThickness": { "type": "number", "default": 2 },
+		"underlineOffset": { "type": "number", "default": 6 },
 		"itemFontSize": { "type": "number" },
 		"itemFontSizeUnit": { "type": "string", "default": "" },
 		"itemFontSizeTablet": { "type": "number" },
@@ -49,6 +62,12 @@
 
 		"featuredColour": { "type": "string", "default": "accent" },
 		"featuredBg": { "type": "string", "default": "" },
+		"featuredColourHover": { "type": "string", "default": "" },
+		"featuredBgHover": { "type": "string", "default": "" },
+		"featuredRadius": { "type": "number", "default": 8 },
+		"featuredRadiusHover": { "type": "number" },
+		"featuredFontWeight": { "type": "number", "default": 600 },
+		"featuredFontWeightHover": { "type": "number" },
 
 		"burgerColour": { "type": "string", "default": "" },
 		"burgerHoverColour": { "type": "string", "default": "" },

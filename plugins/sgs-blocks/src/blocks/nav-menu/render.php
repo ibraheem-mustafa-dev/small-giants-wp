@@ -265,32 +265,115 @@ $link_sel = $uid_sel . ' .sgs-nav-menu__link';
 // TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
 $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
-// 4b. Item colour (resting). Base is `inherit` in style.css; an unset slug
+// 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
 // leaves the surrounding context's colour untouched (header/footer agnostic).
+// Text and background are SEPARATE properties, each with its own Normal/Hover
+// state (Spec 35 element-first): the pre-2026-07-20 model paired resting TEXT
+// against hover BACKGROUND in one toggle, so an operator could never set a
+// hover text colour at all — it was auto-computed and unreachable.
 $item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
+$item_bg     = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
+$item_bg_hex = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+
+/*
+ * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals. The
+ * pre-2026-07-20 code hardcoded `border-radius:8px` on both pills, `font-weight:600`
+ * on the featured item and `.15s ease` on every transition — each of which bypasses
+ * a token theme.json already ships (--wp--custom--border-radius--medium,
+ * --wp--custom--transition--fast), so a client changing their theme's radius or
+ * motion scale saw the nav ignore it. Literal fallbacks are kept inside var() so
+ * the block still renders correctly on a non-SGS theme (the standalone-framework rule).
+ */
+$transition_fast = 'var(--wp--custom--transition--fast, 150ms ease)';
+
+$item_radius       = isset( $attributes['itemRadius'] ) ? (float) $attributes['itemRadius'] : 8;
+$item_radius_hover = isset( $attributes['itemRadiusHover'] ) && null !== $attributes['itemRadiusHover']
+	? (float) $attributes['itemRadiusHover']
+	: $item_radius;
+
 if ( '' !== $item_colour ) {
 	$css .= $link_sel . '{color:' . sgs_colour_value( $item_colour ) . ';}';
 }
+if ( '' !== $item_bg_hex ) {
+	$css .= $link_sel . '{background-color:' . esc_attr( $item_bg_hex ) . ';border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
+}
 
-// 4c. Hover / focus-visible / current-page state — WCAG-safe background pill,
-// computed against the resolved hover colour (never an operator-guessed
-// pairing). [aria-current="page"] is set by view.js at mount (client-side).
-$hover_targets   = array(
+// 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set
+// by view.js at mount (client-side), so the same treatment doubles as the
+// current-page indicator — which is why an operator-chosen style matters.
+$hover_targets = array(
 	$link_sel . ':hover',
 	$link_sel . ':focus-visible',
 	$link_sel . '[aria-current="page"]',
 );
-$hover_sel       = implode( ',', $hover_targets );
-$item_hover_slug = isset( $attributes['itemHoverColour'] ) ? sanitize_html_class( $attributes['itemHoverColour'] ) : '';
-$item_hover_hex  = '' !== $item_hover_slug ? sgs_resolve_palette_hex( $item_hover_slug, '' ) : '';
+$hover_sel     = implode( ',', $hover_targets );
 
-if ( '' !== $item_hover_hex ) {
-	$hover_fg = sgs_wcag_text_colour_for_bg( $item_hover_hex );
-	$css     .= $hover_sel . '{background-color:' . esc_attr( $item_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:8px;transition:background-color .15s ease,color .15s ease;}';
+$hover_style       = isset( $attributes['hoverStyle'] ) ? (string) $attributes['hoverStyle'] : 'pill';
+$item_bg_hover     = isset( $attributes['itemBgHover'] ) ? sanitize_html_class( $attributes['itemBgHover'] ) : '';
+$item_bg_hover_hex = '' !== $item_bg_hover ? sgs_resolve_palette_hex( $item_bg_hover, '' ) : '';
+$item_fg_hover     = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';
+
+/*
+ * PILL — a filled background on hover. The foreground honours the operator's
+ * chosen hover text colour when it clears AA against the resolved fill, and
+ * falls back to the guaranteed-safe binary only when it would not (or when the
+ * operator left it empty). Informational, never a gate: the operator's choice
+ * wins whenever it is readable.
+ */
+if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
+	$preferred = '' !== $item_fg_hover ? sgs_resolve_palette_hex( $item_fg_hover, '' ) : '';
+	$hover_fg  = '' !== $preferred
+		? sgs_wcag_preferred_text_colour_for_bg( $item_bg_hover_hex, $preferred )
+		: sgs_wcag_text_colour_for_bg( $item_bg_hover_hex );
+	$css      .= $hover_sel . '{background-color:' . esc_attr( $item_bg_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:' . esc_attr( (string) $item_radius_hover ) . 'px;transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ',border-radius ' . $transition_fast . ';}';
+} elseif ( 'text' === $hover_style && '' !== $item_fg_hover ) {
+	// TEXT — colour shift only, no fill, no bar.
+	$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
 } else {
-	// No hover colour resolved: still guarantee SOME visible state (WCAG
-	// 1.4.1 / 2.4.7) via an underline, never silently zero feedback.
-	$css .= $hover_sel . '{text-decoration:underline;text-underline-offset:3px;}';
+	/*
+	 * UNDERLINE — a real ::after bar, and the fallback for every other case so
+	 * there is never zero visible feedback (WCAG 1.4.1 / 2.4.7).
+	 *
+	 * NOT `text-decoration:underline`, which was the pre-2026-07-20 fallback:
+	 * that hugs the baseline, breaks around descenders, spans only the glyphs
+	 * (so every item's line is a different length), and cannot animate. A
+	 * positioned bar spans the link box consistently and grows in from the
+	 * left. Bean reported it as "quite an ugly look"; the mechanism confirmed it.
+	 */
+	$u_thickness = isset( $attributes['underlineThickness'] ) ? (float) $attributes['underlineThickness'] : 2;
+	$u_offset    = isset( $attributes['underlineOffset'] ) ? (float) $attributes['underlineOffset'] : 6;
+	$u_colour    = isset( $attributes['underlineColour'] ) && '' !== $attributes['underlineColour']
+		? sgs_colour_value( (string) $attributes['underlineColour'] )
+		: 'currentColor';
+	$u_colour_h  = isset( $attributes['underlineColourHover'] ) && '' !== $attributes['underlineColourHover']
+		? sgs_colour_value( (string) $attributes['underlineColourHover'] )
+		: $u_colour;
+
+	/*
+	 * A pseudo-element suffix must be applied to EACH selector in the list, not
+	 * concatenated onto the imploded string — `'a,b,c' . '::after'` attaches
+	 * ::after to `c` alone, so the bar would animate on [aria-current] only and
+	 * never on :hover or :focus-visible. Caught by reading the emitted CSS live;
+	 * the build, every gate and the unit pass were all green with it broken.
+	 */
+	$hover_after_sel = implode(
+		',',
+		array_map(
+			static function ( $sel ) {
+				return $sel . '::after';
+			},
+			$hover_targets
+		)
+	);
+
+	$css .= $link_sel . '{position:relative;}';
+	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
+	$css .= $hover_after_sel . '{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
+	if ( '' !== $item_fg_hover ) {
+		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';}';
+	}
+	// Motion is decoration here — the bar's presence carries the meaning.
+	$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
 }
 
 /*
@@ -319,13 +402,65 @@ $featured_colour  = isset( $attributes['featuredColour'] ) && '' !== $attributes
 $featured_bg_slug = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
 $featured_bg_hex  = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
 
+$featured_radius       = isset( $attributes['featuredRadius'] ) ? (float) $attributes['featuredRadius'] : 8;
+$featured_radius_hover = isset( $attributes['featuredRadiusHover'] ) && null !== $attributes['featuredRadiusHover']
+	? (float) $attributes['featuredRadiusHover']
+	: $featured_radius;
+$featured_weight       = isset( $attributes['featuredFontWeight'] ) ? (int) $attributes['featuredFontWeight'] : 600;
+$featured_weight_hover = isset( $attributes['featuredFontWeightHover'] ) && null !== $attributes['featuredFontWeightHover']
+	? (int) $attributes['featuredFontWeightHover']
+	: $featured_weight;
+
 if ( '' !== $featured_bg_hex ) {
 	$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
 	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
-	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:600;border-radius:8px;}';
+	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
 } else {
-	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:600;}';
+	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
 }
+
+/*
+ * 4d-ii. Featured HOVER state. The featured item is the one nav item an
+ * operator most wants to stand out (it is usually the "Order now" / "Book"
+ * call to action), and before 2026-07-20 it had no hover state at all — it
+ * inherited the generic item hover, which fought its own pill. It now carries
+ * its own Normal|Hover pair for both text and background, resolved by the same
+ * contrast helper as the resting state so the operator's colour wins whenever
+ * it is readable.
+ */
+$featured_hover_sel = implode(
+	',',
+	array(
+		$featured_sel . ':hover',
+		$featured_sel . ':focus-visible',
+	)
+);
+$featured_bg_hover     = isset( $attributes['featuredBgHover'] ) ? sanitize_html_class( $attributes['featuredBgHover'] ) : '';
+$featured_bg_hover_hex = '' !== $featured_bg_hover ? sgs_resolve_palette_hex( $featured_bg_hover, '' ) : '';
+$featured_fg_hover     = isset( $attributes['featuredColourHover'] ) ? (string) $attributes['featuredColourHover'] : '';
+
+if ( '' !== $featured_bg_hover_hex ) {
+	$preferred_hover = '' !== $featured_fg_hover ? sgs_resolve_palette_hex( $featured_fg_hover, '' ) : '';
+	$featured_fg_h   = '' !== $preferred_hover
+		? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
+		: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
+	$css            .= $featured_hover_sel . '{background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ';}';
+} elseif ( '' !== $featured_fg_hover ) {
+	$css .= $featured_hover_sel . '{color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
+}
+
+// Featured pill SHAPE on hover — emitted only when it differs from the resting
+// shape, so an unset hover control adds no rule at all rather than a no-op one.
+if ( $featured_radius_hover !== $featured_radius ) {
+	$css .= $featured_hover_sel . '{border-radius:' . esc_attr( (string) $featured_radius_hover ) . 'px;transition:border-radius ' . $transition_fast . ';}';
+}
+if ( $featured_weight_hover !== $featured_weight ) {
+	$css .= $featured_hover_sel . '{font-weight:' . esc_attr( (string) $featured_weight_hover ) . ';}';
+}
+
+// The featured item owns its own treatment — suppress the generic item
+// underline bar on it so the two never render on top of each other.
+$css .= $featured_sel . '::after{content:none;}';
 
 // 4e. Burger colour / hover / size.
 $burger_colour = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';

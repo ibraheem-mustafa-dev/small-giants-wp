@@ -35,8 +35,44 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
+import { useSettings } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
-import { colourVar } from '../utils';
+import { resolveColorToken } from './DesignTokenPicker';
+
+/**
+ * Flatten WordPress's colour palette to a single array of { slug, color }.
+ *
+ * useSettings( 'color.palette' ) may hand back either a flat array OR an
+ * origin-keyed object ({ default, theme, custom }) depending on WP version and
+ * how the setting was resolved — the same shape difference that crashed
+ * ShadowControl on its first live render (Spec 35 Task 2, 2026-07-20). Handle
+ * both rather than assuming, and de-duplicate by slug so a theme override wins
+ * over the core default of the same name.
+ *
+ * @param {Array|Object|undefined} palette Raw palette from useSettings.
+ * @return {Array} Flat array of palette entries.
+ */
+function flattenPalette( palette ) {
+	if ( ! palette ) {
+		return [];
+	}
+	const list = Array.isArray( palette )
+		? palette
+		: [
+			...( palette.custom || [] ),
+			...( palette.theme || [] ),
+			...( palette.default || [] ),
+		];
+
+	const seen = new Set();
+	return list.filter( ( entry ) => {
+		if ( ! entry?.slug || seen.has( entry.slug ) ) {
+			return false;
+		}
+		seen.add( entry.slug );
+		return true;
+	} );
+}
 
 const DEFAULT_STATES = [
 	{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ) },
@@ -50,6 +86,8 @@ export default function StateToggleControl( {
 	children,
 } ) {
 	const [ state, setState ] = useState( states[ 0 ].key );
+	const [ rawPalette ] = useSettings( 'color.palette' );
+	const palette = flattenPalette( rawPalette );
 
 	return (
 		<div className="sgs-state-toggle">
@@ -83,9 +121,9 @@ export default function StateToggleControl( {
 						color: 'var(--wp-admin-theme-color, #757575)',
 					} }
 				>
-					{ swatches.map( ( sw, i ) => (
+					{ swatches.map( ( sw ) => (
 						<li
-							key={ i }
+							key={ sw.label }
 							style={ {
 								display: 'flex',
 								alignItems: 'center',
@@ -100,8 +138,17 @@ export default function StateToggleControl( {
 									height: '12px',
 									borderRadius: '2px',
 									border: '1px solid rgba(0,0,0,0.2)',
+									// resolveColorToken, not colourVar: a raw hex from
+									// the custom colour picker must pass through
+									// untouched. colourVar() blindly wrapped every
+									// value as var(--wp--preset--color--{value}),
+									// which for '#111111' is an INVALID custom-property
+									// name — the browser silently drops the whole
+									// declaration and the swatch keeps its previous
+									// colour, showing the client a colour they did not
+									// choose. No console error, no build failure.
 									backgroundColor: sw.value
-										? colourVar( sw.value )
+										? resolveColorToken( sw.value, palette )
 										: 'transparent',
 								} }
 							/>
