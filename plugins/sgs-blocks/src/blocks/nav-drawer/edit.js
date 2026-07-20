@@ -73,6 +73,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		drawerRef,
 		edge,
+		animateFrom,
 		width,
 		drawerBg,
 		toggleCloseColour,
@@ -140,6 +141,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
 						] }
 						onChange={ ( value ) => setAttributes( { edge: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+
+					<SelectControl
+						label={ __( 'Open animation', 'sgs-blocks' ) }
+						help={ __(
+							'Which direction the drawer slides in from. Automatic uses a subtle fade-and-drop. Visitors who ask their device to reduce motion never see any movement, whichever you choose.',
+							'sgs-blocks'
+						) }
+						value={ animateFrom }
+						options={ [
+							{ label: __( 'Automatic', 'sgs-blocks' ), value: 'auto' },
+							{ label: __( 'Fade only (no movement)', 'sgs-blocks' ), value: 'fade' },
+							{ label: __( 'Slide in from the right', 'sgs-blocks' ), value: 'right' },
+							{ label: __( 'Slide in from the left', 'sgs-blocks' ), value: 'left' },
+							{ label: __( 'Slide down from the top', 'sgs-blocks' ), value: 'top' },
+							{ label: __( 'Slide up from the bottom', 'sgs-blocks' ), value: 'bottom' },
+						] }
+						onChange={ ( value ) => setAttributes( { animateFrom: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

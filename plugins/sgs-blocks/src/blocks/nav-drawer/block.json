@@ -47,6 +47,11 @@
 			"default": "full-screen",
 			"enum": [ "full-screen", "left", "right", "top" ]
 		},
+		"animateFrom": {
+			"type": "string",
+			"default": "auto",
+			"enum": [ "auto", "fade", "top", "right", "bottom", "left" ]
+		},
 		"width": {
 			"type": "string",
 			"default": ""

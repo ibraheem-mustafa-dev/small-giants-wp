@@ -154,6 +154,177 @@
 	}
 }
 
+/* ── Directional entry animation (animateFrom attr).
+   `auto` (default) emits NO --anim class and keeps the subtle vertical nudge
+   above, so no existing site changes shape. An explicit direction slides the
+   panel in from that side by 100% of its own box — the classic off-canvas
+   motion, and the only way to see a HORIZONTAL scrollbar-vanish bounce (D340)
+   on a full-screen drawer, whose default vertical nudge masks it.
+
+   `fade` = opacity only, no transform: the correct choice when any translate
+   would itself look like a shift.
+
+   All of these live INSIDE the reduced-motion block below-by-reference: they
+   are only ever applied by the `no-preference` media query, so a
+   reduced-motion user still gets no movement. ── */
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-fade[open] {
+		animation-name: sgs-nav-drawer-fade-in;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-fade.is-closing {
+		animation-name: sgs-nav-drawer-fade-out;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-top[open] {
+		animation-name: sgs-nav-drawer-slide-in-top;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-top.is-closing {
+		animation-name: sgs-nav-drawer-slide-out-top;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-bottom[open] {
+		animation-name: sgs-nav-drawer-slide-in-bottom;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-bottom.is-closing {
+		animation-name: sgs-nav-drawer-slide-out-bottom;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-left[open] {
+		animation-name: sgs-nav-drawer-slide-in-left;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-left.is-closing {
+		animation-name: sgs-nav-drawer-slide-out-left;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-right[open] {
+		animation-name: sgs-nav-drawer-slide-in-right;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--anim-right.is-closing {
+		animation-name: sgs-nav-drawer-slide-out-right;
+	}
+}
+
+@keyframes sgs-nav-drawer-fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes sgs-nav-drawer-fade-out {
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-in-right {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-out-right {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-in-left {
+	from {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-out-left {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-in-top {
+	from {
+		opacity: 0;
+		transform: translateY(-100%);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-out-top {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateY(-100%);
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-in-bottom {
+	from {
+		opacity: 0;
+		transform: translateY(100%);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sgs-nav-drawer-slide-out-bottom {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateY(100%);
+	}
+}
+
 /* ── Partial-edge geometry (Phase 2+; declared, not gate-tested this phase).
    Full-screen (the default) uses the base rule above. These position the panel
    against one edge; the panel width/height comes from the scoped rule (width
