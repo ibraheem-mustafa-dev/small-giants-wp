@@ -116,10 +116,24 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   core-blocks CSS (47.9KB) and jQuery (28.8KB, pulled by WC not by SGS code). **Cheap nav-adjacent win found:
   `mega-menu-panels.css` (13.1KB) loads although Phase 1 ships no mega menu.** Logged `P-CANARY-PAGE-WEIGHT-BUDGET`
   — **do NOT block Gate-1 on it** (nav is not the cause, CLS passes).
-- **WAVE 4 REMAINING — both need Bean, nothing else is blocked:** (a) **Bean's eye (R-31-13)** — cropped
-  desktop-bar + open-mobile-drawer pair; (b) the **manual D340 scrollbar-bounce test** (real windowed desktop
-  browser — device emulation cannot reproduce the scrollbar-vanish bounce). Content refinements for the editor:
-  menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu (flattened in Phase-1).
+- **WAVE 4 — Bean's eye (R-31-13) PASSED 2026-07-20** on both the desktop bar and the open mobile drawer.
+- **WAVE 4 — drawer open-animation direction control SHIPPED (`31209f58`, live-verified).** Bean could not judge
+  the D340 bounce test because the drawer entered with a VERTICAL nudge while the bounce is a HORIZONTAL geometry
+  shift — the entry animation masked the axis under test (the old drawer slid in from the right, which is why the
+  bounce was visible then). The entry animation was a hardcoded `translateY(-8px)` regardless of `edge` (and `edge`
+  is geometry, not motion). Added **`animateFrom`**: `auto` (default — emits NO class, existing sites unchanged) |
+  `fade` | `right` | `left` | `top` | `bottom`, with a plain-language inspector control. **Every directional rule
+  sits INSIDE the `prefers-reduced-motion: no-preference` block, so reduced-motion users see no movement whichever
+  value is chosen — PROVEN by emulation, not asserted** (`reduce` → `animation-name:none`, `transform:none`, drawer
+  still opens). Header set to `animateFrom:right`. 3/3 predictions held; axe still 0; no regression. Report
+  `reports/visual-diff/nav-drawer-2026-07-20.md` PASS. Deploy **checksum-verified** local↔server this time.
+- **WAVE 4 REMAINING — ONE item, needs Bean:** the **manual D340 scrollbar-bounce test** in a real windowed desktop
+  browser. ⚠ **The harness CANNOT do this and must not claim it** — headless Chromium reports
+  `innerWidth - clientWidth = 0` (overlay scrollbars), so the store's classic-scrollbar guard never fires and any
+  measured delta is meaningless. The D340 fix IS present (`store.js:148-149` pins the root scrollbar track while
+  locked); it is UNVERIFIED, not proven. The drawer now enters horizontally, so the test is finally performable.
+  Content refinements for the editor: menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an
+  "Our Story" submenu (flattened in Phase-1).
 - **NOT nav, recorded so it isn't re-flagged as a nav regression** (all present before the fix): 2 page contrast
   fails (button #c56a7a/white 3.67:1, Trustpilot #00b67a/white 2.63:1) + a **duplicate `<main>` landmark** (3 axe
   rules) — live-DOM probe traced the inner one to a `core/group` in the PAGE content, so it belongs to the queued

@@ -1,7 +1,7 @@
 # Visual-diff — sgs/nav-drawer open-animation direction control (2026-07-20)
 
-verdict: PENDING-DEPLOY
-first_paint_capture_passed: false
+verdict: PASS
+first_paint_capture_passed: true
 
 > **Same known gate ordering as D351** — the AFTER measurement needs a deploy, the deploy needs
 > a clean tree, and this gate blocks the commit (parking `P-VISUAL-GATE-ORDERING`). Committed
@@ -69,6 +69,55 @@ transform:        matrix(1, 0, 0, 1, <non-zero X>, 0)   <- X-axis, not Y
 
 Plus: drawer still opens/closes, ESC still closes, focus still returns, axe still 0.
 
-## AFTER — measured post-deploy
+## AFTER — measured post-deploy (live canary, 375, drawer open, cache purged)
 
-_Pending. To be completed in this session._
+**Deploy checksum-verified first** (applying today's `P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC`
+lesson — the deploy tool's own verify cannot detect an absent change):
+
+```
+local  build/blocks/nav-drawer/render.php  md5 412eb498704c49631aa14d4c17f22938
+server build/blocks/nav-drawer/render.php  md5 412eb498704c49631aa14d4c17f22938   <- exact match
+server render.php  'sgs-nav-drawer--anim-'  = 1
+server style.css   'slide-in-right'         = 1
+server header.html 'animateFrom'            = 1
+```
+
+| | Predicted (committed pre-deploy) | Measured | |
+|---|---|---|---|
+| class | `sgs-nav-drawer--anim-right` | present | ✅ |
+| `animation-name` | `sgs-nav-drawer-slide-in-right` | `sgs-nav-drawer-slide-in-right` | ✅ |
+| `transform` axis | X non-zero, Y zero | `matrix(1,0,0,1,131.863,0)` | ✅ |
+
+3 of 3 predictions held. The drawer now enters **horizontally**, so the D340 bounce — a
+horizontal geometry shift — is observable on the same axis.
+
+### Reduced-motion guarantee — PROVEN, not asserted
+
+Measured with Playwright's `reducedMotion` emulation, with `animateFrom: right` set:
+
+| `prefers-reduced-motion` | `animation-name` | `transform` | drawer visible |
+|---|---|---|---|
+| `no-preference` | `sgs-nav-drawer-slide-in-right` | `matrix(1,0,0,1,105.07,0)` | yes |
+| **`reduce`** | **`none`** | **`none`** | **yes** |
+
+A reduced-motion visitor gets no animation and no transform, and the drawer still opens and is
+visible. The directional rules are inside the `no-preference` media query, so this holds for
+every value of `animateFrom` by construction.
+
+### No regression
+
+| Check | Result |
+|---|---|
+| axe, drawer open, scoped, 375 | **0 violations** |
+| Burger opens the drawer | ✅ |
+| ESC closes + focus returns to burger | ✅ |
+| Tab contained in drawer | ✅ |
+| Bar unaffected at 768 | ✅ |
+
+## What this does NOT establish
+
+**The D340 bounce test is still OPEN and still manual.** This change makes it *performable*; it
+does not perform it. The harness cannot reproduce the condition — headless Chromium reports
+`innerWidth - clientWidth = 0` (overlay scrollbars), so the scroll-lock's classic-scrollbar
+guard never fires and any in-harness delta is meaningless. Bean must run it in a real windowed
+desktop browser with a classic scrollbar. Reporting it as inconclusive, not as a pass.
