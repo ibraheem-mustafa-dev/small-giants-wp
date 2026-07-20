@@ -2,12 +2,12 @@
 doc_type: phase-plan
 project: small-giants-wp
 spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
-phase: Spec 35 Task 3 — hover consolidation, remaining sweep ("Wave 4")
+phase: Spec 35 Task 3 — hover consolidation, remaining sweep (Phase 4)
 created: 2026-07-20
 status: READY — Phase 0 has no dependencies and can start cold
 ---
 
-# Hover consolidation — the remaining sweep
+# Hover consolidation — the remaining sweep (Phase 4)
 
 ## Plain English: what this is and why
 
@@ -68,6 +68,40 @@ omit the `default` entirely so the key is absent. Shipping the inference cost a
 whole build/deploy/verify cycle.
 
 ---
+
+## Pre-conditions
+
+Must all hold before Phase 0 starts:
+
+- Working in an ISOLATED worktree on `feat/spec-35-hover-consolidation` (`/c/tmp/sgs-hover`
+  exists and is 0 commits behind `origin/main`). Never `git checkout` in Bean's main folder.
+- `sgs/button` (`55dcee02`) and `sgs/nav-menu` (`cf641603`) are the two reference
+  implementations of the locked pattern and both render correctly on BOTH surfaces —
+  re-verify before copying the pattern, do not assume.
+- The canary is shared with Track 2 / Track C: `git merge origin/main` before ANY deploy,
+  and verify with a per-track marker + md5 rather than the generic HTTP-200 leg.
+- `.claude/secrets/sandybrown.env` is readable (it lives in Bean's MAIN worktree, not the
+  isolated one) and cannot be `source`d — read values with `sed -n 's/^KEY=//p'`.
+- The architecture is LOCKED (see above). If a phase seems to require changing it, stop and
+  design-gate with Bean rather than adapting the rule.
+
+## Parking lot
+
+Deferred deliberately; do not silently absorb into this phase.
+
+- **`P-NAV-ITEM-SEPARATORS`** — separators between nav items are genuinely not built
+  (framework-wide only `sgs/breadcrumbs` has one). A separator is a distinct ELEMENT, not a
+  link state, so it earns its own panel and touches none of the hover code.
+- **`P-NAV-INSTANCE-CONFIG-DUPLICATION`** — the header nav and the drawer nav are two
+  instances with two attribute sets; every setting must be applied twice. Cross-instance
+  inheritance is design-gate territory.
+- **`P-AUDIT-COLOUR-ROLE-KEYED`** — the uniformity audit's `supports.color` check is
+  NAME-keyed and carries a permanent false-positive class; re-key it on the Spec 35 element
+  manifest. Blocked on manifest coverage.
+- **nav-menu hardcoded pill radius/weight** — CLOSED this session (now attributes). Listed
+  so it is not re-opened.
+- **CLAUDE.md "null default = inherit"** — needs the static-vs-SSR asymmetry written in.
+  Belongs with Phase 5's G1 linter, not before it.
 
 ## Orchestration principle
 
