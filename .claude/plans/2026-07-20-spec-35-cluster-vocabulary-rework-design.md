@@ -212,13 +212,40 @@ the structural defence against the gap this document exists to close recurring.
 | The converter would benefit from a shared vocabulary | **ASSUMED — and deliberately not depended on.** FR-35-1 is naming-only, so if this proves false the cost is one declarative field. |
 | Every one of the 35 rows can be cleanly clustered | **PARTIALLY PROVEN** — all 35 received a verdict, 26 CONFIDENT; the 5 judgement calls were adjudicated by Bean and 2 were reclassifications, not clusterings |
 
+## FR-35-4 — Orphan-attribute detection (closes the `clusters: []` hole)
+
+Bean-proposed 2026-07-20, replacing an earlier "needs its own decision" fudge.
+
+The linter currently only checks DECLARED cluster members, so an element declaring
+`clusters: []` is invisible to it — `sgs/button`'s real `iconColour` control can never be
+verified. Rather than adding an escape-hatch marker, the linter works backwards as well:
+
+> Scan the block's attributes for any attribute matching a declared element's `prefix`
+> that NO declared cluster member claims, and report it as an ORPHAN.
+
+This catches `iconColour` automatically (attribute exists, matches prefix `icon`, nothing
+accounts for it) with no `_note` required, and generalises — any control added later
+without being declared gets flagged. The blind spot becomes a positive check.
+
+WARN-only, consistent with the rest of Spec 35.
+
+---
+
 ## Out of scope
 
-- Hover/state coverage. Surfaced during the pilot: `card-grid` cards have ONLY hover
-  styling and no static background, border or radius — **a real client-facing product gap**
-  the manifest cannot currently express. Logged separately; not solved here.
-- The `clusters: []` + `_note` oversight hole: an element declaring no clusters is
-  invisible to the linter, so `button`'s real `iconColour` control is unverifiable.
-  Needs its own decision.
+- **Card-grid resting-state styling gap** (surfaced during the pilot; wording CORRECTED
+  2026-07-20 after Bean challenged the original claim). Cards are NOT child blocks —
+  `card-grid` is fully dynamic, rendering an `items` attribute array or a `WP_Query`
+  result (`render.php:11` — *"Inner block content (unused — block is fully dynamic)"*).
+  The hover attributes DO apply (`render.php:275–294` emits `--sgs-hover-bg` /
+  `--sgs-hover-border` / `--sgs-hover-shadow`). The real gap is narrower and stranger than
+  first reported: **a client can change a card's hover background but not its resting
+  background.** The resting state is hardcoded at `style.css:29-31` to
+  `var(--wp--preset--color--surface)` + `var(--wp--preset--shadow--md)` with no attribute
+  behind it. Per the project's hardcoded-wrapper-defaults rule this is a cheat to remove,
+  not a constraint to preserve. Logged; not solved here.
+- Hover/state coverage in the manifest schema generally — there is no `states` or `pseudo`
+  axis, so hover-only wiring is invisible to a manifest that asks only about resting-state
+  clusters.
 - Building the missing controls that the gaps identify. This document fixes the
   *vocabulary*; closing gaps is per-block work that follows.
