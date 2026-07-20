@@ -382,7 +382,19 @@ Editor/admin a11y feedback = a passive Notice, never a gate. (The *operator-faci
 Nothing renders as inline `style="…"`: native supports flip to scoped serialisation
 (`__experimentalSkipSerialization` + `wp_style_engine_get_styles(...,['selector'=>"#uid"])` into the scoped
 `<style>`); box-object attrs; responsive tiers + `:hover` in stylesheet rules; custom bps → `sgsCustomCss`.
-`sgs/nav-menu` (bar) + `sgs/nav-drawer` keep the scoped `SGS_Container_Wrapper`.
+`sgs/nav-menu` (bar) keeps the scoped `SGS_Container_Wrapper`.
+
+**`<dialog>` exception — `sgs/nav-drawer` is content-KIND BLOCK-PRIVATE, not a wrapper composite** (D294,
+Bean-approved; built + live 2026-07-20). The drawer's root element must BE the `<dialog>` — that is what makes
+`showModal()`, the top-layer promotion, the `::backdrop`, and the native ESC/`cancel` behaviour available at
+all. `SGS_Container_Wrapper` emits its own `<div>` as the block root, so hosting the drawer in it would either
+bury the `<dialog>` one level down (losing the wrapper's box/width controls over the actual modal surface) or
+put a `display` value on the `<dialog>` base rule, which defeats the UA's `dialog:not([open]){display:none}`
+and leaves the drawer permanently visible (STOP-DIALOG-DISPLAY-GATE, D338). The drawer therefore renders
+block-private with its own scoped `<style>` — which is the D294 rule as written, not an exception to it: a
+content-KIND composite using only box+width may render block-private, since it never used the wrapper's
+grid/section/background machinery. Zero converter impact (CSS routes off `block_attributes` keyed on
+`block_slug`, never `wraps_block`/`container_kind`). The no-inline contract is unchanged and fully met.
 
 ### FR-36-14 — Control-completeness (Spec 35 Part L)
 Settings/Styles/Advanced via `group`; ≤3-default `PanelBody` + `ToolsPanel` (P2 §5); `LinkControl` per

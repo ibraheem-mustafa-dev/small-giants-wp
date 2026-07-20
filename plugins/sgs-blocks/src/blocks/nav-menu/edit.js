@@ -11,7 +11,7 @@
  *
  * @package SGS\Blocks
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
@@ -115,35 +115,104 @@ export default function Edit( { attributes, setAttributes } ) {
 		burgerSize,
 	} = attributes;
 
-	const { records: menus, isResolving } = useEntityRecords(
-		'postType',
-		'wp_navigation',
-		{ per_page: -1, status: [ 'publish' ], context: 'edit' }
+	// Classic menus (Appearance → Menus, `nav_menu` terms) are the PRIMARY source
+	// (Spec 36 FR-36-1); block-based wp_navigation menus are the Phase-3 extra.
+	const { records: classicMenus, isResolving: isResolvingClassic } =
+		useEntityRecords( 'taxonomy', 'nav_menu', { per_page: -1 } );
+
+	const { records: blockMenus, isResolving: isResolvingBlock } =
+		useEntityRecords( 'postType', 'wp_navigation', {
+			per_page: -1,
+			status: [ 'publish' ],
+			context: 'edit',
+		} );
+
+	const isResolving = isResolvingClassic || isResolvingBlock;
+
+	const classicIds = useMemo(
+		() => new Set( ( classicMenus || [] ).map( ( m ) => m.id ) ),
+		[ classicMenus ]
 	);
 
+	const selectedIsClassic = 0 !== ref && classicIds.has( ref );
+
+	// A `nav_menu` term id and a `wp_navigation` post id are independent sequences,
+	// so the same number can name one of each. render.php resolves CLASSIC-FIRST
+	// (Bean 2026-07-20), which means a block menu sharing a classic menu's id can
+	// never be reached — say so in the option rather than offering a dead choice.
 	const menuOptions = [
 		{
 			label: __( 'Auto (site menu / navigation block)', 'sgs-blocks' ),
 			value: 0,
 		},
-		...( menus || [] ).map( ( menu ) => ( {
-			label: menu.title?.rendered || __( '(untitled menu)', 'sgs-blocks' ),
+		...( classicMenus || [] ).map( ( menu ) => ( {
+			label: menu.name || __( '(untitled menu)', 'sgs-blocks' ),
 			value: menu.id,
 		} ) ),
+		...( blockMenus || [] ).map( ( menu ) => {
+			const name =
+				menu.title?.rendered || __( '(untitled menu)', 'sgs-blocks' );
+			return classicIds.has( menu.id )
+				? {
+						label: sprintf(
+							/* translators: %s: block menu name. */
+							__(
+								'%s (block menu — unavailable, its ID clashes with a classic menu)',
+								'sgs-blocks'
+							),
+							name
+						),
+						value: menu.id,
+						disabled: true,
+				  }
+				: {
+						label: sprintf(
+							/* translators: %s: block menu name. */
+							__( '%s (block menu)', 'sgs-blocks' ),
+							name
+						),
+						value: menu.id,
+				  };
+		} ),
 	];
 
-	const selectedMenu = ( menus || [] ).find( ( m ) => m.id === ref );
+	// Featured-item checklist source. A classic menu's items live in their own
+	// `nav_menu_item` records; a block menu's live in the post's block content.
+	const { records: classicItems } = useEntityRecords(
+		'postType',
+		'nav_menu_item',
+		{ menus: ref, per_page: -1, context: 'view' },
+		{ enabled: selectedIsClassic }
+	);
+
+	const selectedBlockMenu = ( blockMenus || [] ).find(
+		( m ) => m.id === ref && ! classicIds.has( m.id )
+	);
 
 	const resolvedItems = useMemo( () => {
-		if ( ! selectedMenu?.content?.raw ) {
+		// Mirrors render.php: top-level items only, identifier 'id:<object_id>'
+		// (the same value core/navigation-link carries), so a ticked featured
+		// entry matches whichever menu format is in use.
+		if ( selectedIsClassic ) {
+			return ( classicItems || [] )
+				.filter( ( item ) => ! item.parent )
+				.sort( ( a, b ) => ( a.menu_order || 0 ) - ( b.menu_order || 0 ) )
+				.map( ( item ) => ( {
+					identifier: `id:${ item.object_id ?? item.id }`,
+					label:
+						item.title?.rendered ||
+						__( '(untitled item)', 'sgs-blocks' ),
+				} ) );
+		}
+		if ( ! selectedBlockMenu?.content?.raw ) {
 			return [];
 		}
 		try {
-			return flattenMenuItems( parse( selectedMenu.content.raw ) );
+			return flattenMenuItems( parse( selectedBlockMenu.content.raw ) );
 		} catch {
 			return [];
 		}
-	}, [ selectedMenu?.content?.raw ] );
+	}, [ selectedIsClassic, classicItems, selectedBlockMenu?.content?.raw ] );
 
 	const toggleFeatured = ( identifier, checked ) => {
 		const next = checked
@@ -168,7 +237,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						disabled={ isResolving }
 						help={ __(
-							'Auto follows the header navigation block / the site’s primary menu. Choose a specific menu to render an independent one. Manage menus in Appearance → Editor → Navigation.',
+							'Auto follows the header navigation block / the site’s primary menu. Choose a specific menu to render an independent one. Manage menus in Appearance → Menus.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

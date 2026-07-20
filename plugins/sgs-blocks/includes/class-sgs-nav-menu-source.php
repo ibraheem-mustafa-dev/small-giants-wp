@@ -2,20 +2,28 @@
 /**
  * Shared navigation menu-source resolver.
  *
- * ONE source of truth for "where does the site's primary menu live". Both the
- * desktop bar (sgs/adaptive-nav) and the off-canvas drawer (sgs/mobile-nav)
- * resolve their menu through this class, so a single WordPress menu
- * (wp_navigation post) drives both — no divergent/duplicated menu content
- * (Spec 17 FR-S9-4 "one menu source"; composite-mirror R-31-9).
+ * ONE source of truth for "where does the site's primary menu live". The bar
+ * (sgs/nav-menu) and the drawer (sgs/nav-drawer) both resolve their menu through
+ * this class, so a single WordPress menu drives both — no divergent/duplicated
+ * menu content (Spec 17 FR-S9-4 "one menu source"; composite-mirror R-31-9).
+ *
+ * TWO menu formats resolve here (Spec 36 FR-36-1). **Classic menus are PRIMARY**
+ * (Appearance → Menus, `nav_menu` terms); block-based `wp_navigation` posts are
+ * the Phase-3 extra. A classic menu is normalised into the same block-shaped
+ * array a `wp_navigation` post parses to, so everything downstream —
+ * SGS_Nav_Menu_Bar_Renderer::flatten(), the drawer, edit.js's featured mirror —
+ * speaks one dialect and needs no knowledge of which format was picked.
  *
  * Resolution order (get_menu_blocks):
- *   1. An explicit ref (wp_navigation post id) passed by the caller — used by
- *      sgs/adaptive-nav's own render.php, which stores its ref attribute.
- *   2. The active header template part → the sgs/adaptive-nav block's ref
+ *   1. An explicit ref passed by the caller (the block's own `ref` attribute) —
+ *      resolved CLASSIC-FIRST, then wp_navigation (see blocks_from_ref).
+ *   2. The active header template part → the nav block's ref
  *      (used by the drawer, which does not know the ref itself).
  *   3. Back-compat: a core/navigation block in the header (its ref or inline
  *      innerBlocks) — so an un-migrated header still populates the drawer.
- *   4. Fallback: the most-recent published wp_navigation post.
+ *   4. Fallback, in FR-36-1's stated order: (a) a registered classic theme menu
+ *      location, (b) the most-recent classic menu, (c) the most-recent published
+ *      wp_navigation post.
  *   5. Empty array (caller then renders a page-list / get_pages fallback).
  *
  * All links resolved here are rendered SERVER-SIDE by the callers (crawlable +
@@ -140,7 +148,19 @@ class SGS_Nav_Menu_Source {
 			}
 		}
 
-		// 4. Fallback: the most-recent published wp_navigation post.
+		// 4a. FR-36-1 default: a registered classic theme menu location.
+		$located = self::blocks_from_theme_location();
+		if ( ! empty( $located ) ) {
+			return $located;
+		}
+
+		// 4b. Then the site's most-recent CLASSIC menu (classic is primary, FR-36-1).
+		$latest_classic = self::latest_classic_menu_blocks();
+		if ( ! empty( $latest_classic ) ) {
+			return $latest_classic;
+		}
+
+		// 4c. Then the most-recent published wp_navigation post (block menus, Phase-3 extra).
 		$latest = self::latest_menu_blocks();
 		if ( ! empty( $latest ) ) {
 			return $latest;
@@ -164,16 +184,207 @@ class SGS_Nav_Menu_Source {
 	}
 
 	/**
-	 * Parse a wp_navigation post's content into blocks.
+	 * Resolve a menu reference to blocks — CLASSIC menu first, then wp_navigation.
 	 *
-	 * @param int $ref wp_navigation post id.
-	 * @return array Parsed blocks, or empty array when the post is missing/wrong type.
+	 * FR-36-1: classic WordPress menus (Appearance -> Menus, `nav_menu` terms) are the
+	 * PRIMARY menu source; block-based `wp_navigation` posts are the Phase-3 extra. A
+	 * `nav_menu` term id and a `wp_navigation` post id are both plain integers drawn from
+	 * independent sequences, so the same number can name one of each. Bean's ruling
+	 * (2026-07-20): keep the single numeric `ref` and resolve CLASSIC-FIRST — which is
+	 * what "classic is primary" means when the two collide. No second attribute, no
+	 * reshape of the stored value (D270: no deprecations pre-production).
+	 *
+	 * @param int $ref nav_menu term id (classic) or wp_navigation post id (block).
+	 * @return array Parsed/normalised nav blocks, or empty array when neither resolves.
 	 */
 	public static function blocks_from_ref( int $ref ): array {
+		if ( $ref <= 0 ) {
+			return array();
+		}
+
+		$classic = self::blocks_from_classic_menu( $ref );
+		if ( ! empty( $classic ) ) {
+			return $classic;
+		}
+
 		$post = get_post( $ref );
 		if ( $post && 'wp_navigation' === $post->post_type ) {
 			return parse_blocks( $post->post_content );
 		}
+
+		return array();
+	}
+
+	/**
+	 * Normalise a classic menu (`nav_menu` term) into block-shaped nav items.
+	 *
+	 * The whole nav pipeline downstream of this class — SGS_Nav_Menu_Bar_Renderer::flatten(),
+	 * the drawer, and edit.js's featured-item mirror — already speaks ONE dialect: parsed
+	 * `core/navigation-link` / `core/navigation-submenu` arrays. So a classic menu is
+	 * translated into that dialect HERE, once, rather than teaching three consumers about a
+	 * second menu format. Nothing downstream changes.
+	 *
+	 * Nesting is preserved (children become the parent's innerBlocks on a
+	 * `core/navigation-submenu`) even though Phase 1's flat bar collapses a submenu to its
+	 * own link — the drawer's accordion (Phase 2) needs the real tree, and discarding it
+	 * here would be a silent data loss of exactly the D338 class.
+	 *
+	 * Identifier parity: `attrs['id']` is set to the menu item's `object_id` (the target
+	 * post/term id; WordPress sets it to the item's own id for custom links), which is the
+	 * same value `core/navigation-link` carries. A `featuredItemIds` entry therefore matches
+	 * whether the menu is classic or block-based.
+	 *
+	 * @param int $term_id nav_menu term id.
+	 * @return array Block-shaped nav items, or empty array when not a classic menu / no items.
+	 */
+	public static function blocks_from_classic_menu( int $term_id ): array {
+		$menu = wp_get_nav_menu_object( $term_id );
+		if ( ! $menu || is_wp_error( $menu ) ) {
+			return array();
+		}
+
+		$items = wp_get_nav_menu_items( $menu->term_id, array( 'update_post_term_cache' => false ) );
+		if ( empty( $items ) ) {
+			return array();
+		}
+
+		// Group by parent so the tree can be built without repeated passes.
+		$by_parent = array();
+		foreach ( $items as $item ) {
+			$by_parent[ (int) $item->menu_item_parent ][] = $item;
+		}
+
+		return self::classic_items_to_blocks( $by_parent, 0 );
+	}
+
+	/**
+	 * Recursively convert one level of grouped classic menu items into nav blocks.
+	 *
+	 * @param array $by_parent Menu items grouped by menu_item_parent.
+	 * @param int   $parent_id Parent menu-item id (0 = top level).
+	 * @return array Block-shaped nav items for this level.
+	 */
+	private static function classic_items_to_blocks( array $by_parent, int $parent_id ): array {
+		$blocks = array();
+
+		foreach ( $by_parent[ $parent_id ] ?? array() as $item ) {
+			$label = (string) $item->title;
+			if ( '' === $label ) {
+				continue;
+			}
+
+			$children   = self::classic_items_to_blocks( $by_parent, (int) $item->ID );
+			$block_name = empty( $children ) ? 'core/navigation-link' : 'core/navigation-submenu';
+
+			$blocks[] = array(
+				'blockName'    => $block_name,
+				'attrs'        => array(
+					'label'         => $label,
+					'url'           => (string) $item->url,
+					'id'            => (int) $item->object_id,
+					'kind'          => self::classic_item_kind( (string) $item->type ),
+					'type'          => (string) $item->object,
+					'description'   => (string) $item->description,
+					'title'         => (string) $item->attr_title,
+					'opensInNewTab' => '_blank' === (string) $item->target,
+				),
+				'innerBlocks'  => $children,
+				'innerHTML'    => '',
+				'innerContent' => array(),
+			);
+		}
+
+		return $blocks;
+	}
+
+	/**
+	 * Map a classic menu item's `type` to core/navigation-link's `kind` attribute.
+	 *
+	 * @param string $type Classic menu item type (post_type|taxonomy|custom|post_type_archive).
+	 * @return string core/navigation-link kind value.
+	 */
+	private static function classic_item_kind( string $type ): string {
+		switch ( $type ) {
+			case 'taxonomy':
+				return 'taxonomy';
+			case 'post_type':
+			case 'post_type_archive':
+				return 'post-type';
+			default:
+				return 'custom';
+		}
+	}
+
+	/**
+	 * Resolve the menu assigned to a registered classic theme menu location.
+	 *
+	 * FR-36-1's stated resolution default: "a registered theme menu location (classic
+	 * register_nav_menus), else the site's first/most-recent menu". `get_nav_menu_locations()`
+	 * is the CLASSIC mechanism and is used only for classic menus here — the spec explicitly
+	 * calls out misusing it on a block menu as a prior error.
+	 *
+	 * @return array Block-shaped nav items, or empty array when no location has a menu.
+	 */
+	public static function blocks_from_theme_location(): array {
+		$locations = get_nav_menu_locations();
+		if ( empty( $locations ) ) {
+			return array();
+		}
+
+		// Prefer a location conventionally named for the primary nav, else the first set one.
+		$preferred = array( 'primary', 'main', 'header', 'sgs-primary' );
+		$ordered   = array();
+
+		foreach ( $preferred as $slug ) {
+			if ( ! empty( $locations[ $slug ] ) ) {
+				$ordered[] = (int) $locations[ $slug ];
+			}
+		}
+		foreach ( $locations as $term_id ) {
+			if ( (int) $term_id > 0 ) {
+				$ordered[] = (int) $term_id;
+			}
+		}
+
+		foreach ( array_unique( $ordered ) as $term_id ) {
+			$blocks = self::blocks_from_classic_menu( $term_id );
+			if ( ! empty( $blocks ) ) {
+				return $blocks;
+			}
+		}
+
+		return array();
+	}
+
+	/**
+	 * Resolve the site's most-recently-created classic menu.
+	 *
+	 * The classic half of FR-36-1's "else the site's first/most-recent menu" fallback; the
+	 * wp_navigation half stays in latest_menu_blocks().
+	 *
+	 * @return array Block-shaped nav items, or empty array when the site has no classic menu.
+	 */
+	public static function latest_classic_menu_blocks(): array {
+		$menus = wp_get_nav_menus();
+		if ( empty( $menus ) || is_wp_error( $menus ) ) {
+			return array();
+		}
+
+		// wp_get_nav_menus() orders by name; most-recent = highest term id.
+		usort(
+			$menus,
+			static function ( $a, $b ) {
+				return (int) $b->term_id <=> (int) $a->term_id;
+			}
+		);
+
+		foreach ( $menus as $menu ) {
+			$blocks = self::blocks_from_classic_menu( (int) $menu->term_id );
+			if ( ! empty( $blocks ) ) {
+				return $blocks;
+			}
+		}
+
 		return array();
 	}
 
