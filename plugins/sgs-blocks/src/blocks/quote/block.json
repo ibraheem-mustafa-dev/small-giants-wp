@@ -19,6 +19,40 @@
 	"supports": {
 		"sgs": {
 			"scalarStylingLift": true,
+			"elements": {
+				"box": {
+					"label": "Quote box",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "boxShadow"
+					}
+				},
+				"quote-body": {
+					"label": "Quote text",
+					"order": 2,
+					"clusters": [],
+					"_note": "Body paragraphs are native InnerBlocks children (mirrors core/quote) — each child carries its own typography inspector, so this block declares no text cluster for them. The root's native typography.fontSize/lineHeight are wrapper-level inherited defaults, not a per-element control set."
+				},
+				"attribution": {
+					"label": "Attribution",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "attribution",
+					"attrMap": {
+						"css:color": "attributionColour"
+					}
+				}
+			},
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"
