@@ -56,6 +56,75 @@
 			"imageControls": true,
 			"containerKind": "content",
 			"scalarContentLift": true,
+			"elements": {
+				"quote-box": {
+					"label": "Quote box",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					}
+				},
+				"quote-text": {
+					"label": "Quote text",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "quote"
+				},
+				"reviewer-name": {
+					"label": "Reviewer name",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "name"
+				},
+				"reviewer-role": {
+					"label": "Reviewer role",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "role"
+				},
+				"org-name": {
+					"label": "Organisation name",
+					"order": 5,
+					"clusters": [ "text" ],
+					"prefix": "org"
+				},
+				"avatar-image": {
+					"label": "Avatar image",
+					"order": 6,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls), not the Text/Fill/Layout style clusters."
+				},
+				"org-logo-image": {
+					"label": "Organisation logo",
+					"order": 7,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls), not the Text/Fill/Layout style clusters."
+				},
+				"work-media": {
+					"label": "Work / case-study media",
+					"order": 8,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus workMedia's own picker, not the Text/Fill/Layout style clusters."
+				},
+				"rating": {
+					"label": "Rating",
+					"order": 9,
+					"clusters": [ "text" ],
+					"prefix": "rating",
+					"attrMap": {
+						"css:font-size": "ratingSize"
+					}
+				}
+			},
 			"variantAttr": "variant",
 			"variants": {
 				"classic-card": [

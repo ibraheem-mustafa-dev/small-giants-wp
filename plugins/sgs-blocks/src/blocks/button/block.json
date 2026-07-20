@@ -50,6 +50,41 @@
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
+			},
+			"elements": {
+				"button": {
+					"label": "Button",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:font-style": "fontStyle",
+						"css:text-transform": "textTransform",
+						"css:text-decoration": "textDecoration",
+						"css:color": "colourText",
+						"css:background-color": "colourBackground",
+						"css:width": "customWidth",
+						"css:min-height": "minHeight",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:gap": "iconGap",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "colourBorder",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "boxShadow"
+					}
+				},
+				"icon": {
+					"label": "Icon",
+					"order": 2,
+					"clusters": [],
+					"_note": "iconColour/iconSize/iconGap are bespoke button-icon controls, not a Text/Fill/Layout capability set — icon colour is not the button's text colour and icon size has no Text/Fill/Layout member to map to, so declaring any cluster here would misrepresent the control as something it isn't."
+				}
 			}
 		}
 	},

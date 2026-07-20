@@ -68,6 +68,75 @@
 					"contentBandPaddingTablet",
 					"contentBandPaddingMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:font-weight": "native:typography.fontWeight",
+						"css:line-height": "native:typography.lineHeight",
+						"css:letter-spacing": "native:typography.letterSpacing",
+						"css:font-style": "native:typography.fontStyle",
+						"css:text-transform": "native:typography.textTransform",
+						"css:text-align": "native:typography.textAlign",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:box-shadow": "shadow"
+					}
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap"
+					},
+					"_note": "gridTemplateColumns/Rows, justifyItems/Content, flexDirection/Wrap drive the grid definition itself and have no equivalent in the golden-master Text/Fill/Layout member set — only gap resolves here; the rest are correctly-flagged GAPs, not missing controls."
+				},
+				"content-band": {
+					"label": "Content band",
+					"order": 3,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "contentBand",
+					"attrMap": {
+						"css:background-color": "contentBandBackground",
+						"css:width": "contentWidth"
+					}
+				},
+				"grid-item": {
+					"label": "Grid item",
+					"order": 4,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "gridItem",
+					"attrMap": {
+						"css:background-color": "gridItemBackground",
+						"css:padding": "gridItemPadding",
+						"css:border-radius": "gridItemBorderRadius",
+						"css:border-width": "gridItemBorder",
+						"css:border-style": "gridItemBorder",
+						"css:border-color": "gridItemBorder",
+						"css:box-shadow": "gridItemShadow",
+						"css:color": "gridItemTextColour"
+					}
+				},
+				"decorative": {
+					"label": "Decorative background",
+					"order": 5,
+					"clusters": [],
+					"_note": "Background image/video (backgroundImage*/bgVideo*), background SVG (bgSvg*), overlay gradient (overlayGradient*), parallax/Ken Burns, and shape dividers (shapeDivider*) are governed by dedicated controls outside the Text/Fill/Layout style clusters, so this element declares none."
+				}
 			}
 		}
 	},

@@ -24,6 +24,31 @@
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
+			},
+			"elements": {
+				"media": {
+					"label": "Media",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:opacity": "opacity",
+						"css:height": "height",
+						"css:max-width": "maxWidth",
+						"css:max-height": "maxHeight",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "boxShadow"
+					}
+				},
+				"caption": {
+					"label": "Caption",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "caption"
+				}
 			}
 		},
 		"anchor": true,

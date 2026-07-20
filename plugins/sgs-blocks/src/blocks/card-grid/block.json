@@ -57,7 +57,55 @@
 		"sgs": {
 			"scalarStylingLift": true,
 			"imageControls": true,
-			"arrayContentLift": true
+			"arrayContentLift": true,
+			"elements": {
+				"grid": {
+					"label": "Grid",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:gap": "gap",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					}
+				},
+				"card-tile": {
+					"label": "Card",
+					"order": 2,
+					"clusters": [],
+					"_note": "GAP CANDIDATE, not a deliberate omission: the card tile has hover-only fill/border controls (backgroundColourHover, borderColourHover, shadowHover) but no STATIC background-colour, border, radius, or padding attrs for the resting state. Declaring the fill/layout clusters here would report every member as a gap since none are wired; flagging via this note instead so it reads as one clear finding rather than a wall of false-looking gaps."
+				},
+				"card-media": {
+					"label": "Card image",
+					"order": 3,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/overlayStyle, not the Text/Fill/Layout style clusters."
+				},
+				"card-title": {
+					"label": "Card title",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "title"
+				},
+				"card-subtitle": {
+					"label": "Card subtitle",
+					"order": 5,
+					"clusters": [ "text" ],
+					"prefix": "subtitle"
+				},
+				"card-badge": {
+					"label": "Card badge",
+					"order": 6,
+					"clusters": [],
+					"_note": "Per-item badge text + badgeVariant preset are content/variant fields, not exposed as independent style controls — no badge-specific text/fill/layout attrs exist on the block."
+				}
+			}
 		}
 	},
 	"selectors": {
