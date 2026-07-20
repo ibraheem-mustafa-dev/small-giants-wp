@@ -23,6 +23,30 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-VERIFY-DEPLOY-BY-CHECKSUM** — NEW 2026-07-20 (D351). `build-deploy.py` printing
+  `[DONE]` + `[verify] HTTP 200, markers present` does NOT mean your change shipped: the
+  verify asserts only that *a* page renders with generic `wp-block-sgs`/`sgs-` markers, which
+  pass on ANY working SGS page **including one running last week's code**. A deploy reported
+  success, was measured correct, and was then silently reverted by a co-active session's
+  deploy — a false `verdict: PASS` reached Bean. **After every deploy, `md5sum` the changed
+  file local vs server BEFORE measuring anything**, and re-check it before quoting a live
+  result later in the session. A liveness check that would still pass if the feature were
+  entirely absent is worse than no check. (Parking `P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC` +
+  `P-CANARY-SHARED-DEPLOY-RACE`.)
+- **STOP-READ-DRAFT-BEFORE-DESIGNING-A-CLONE-FIX** — NEW 2026-07-20 (D351). When a clone
+  diverges from its draft, READ THE DRAFT'S CSS FIRST and ask *"can the block express this
+  value at all?"* (grep its `block.json` attrs). The default cause is a MISSING ATTRIBUTE —
+  the converter had nowhere to put the draft's value and dropped it **silently** (the D338
+  class: no error, no gate, no failing build) — not a policy gap needing a new rule. An a11y
+  defect on a clone whose draft is ACCESSIBLE is a FIDELITY defect: measure the draft's own
+  pairing before designing a contrast fallback. Bean caught exactly this (`sgs/nav-menu` had
+  no `featuredBg`; the draft's pill measured 5.28:1 and one attribute fixed both).
+- **STOP-HARNESS-CANNOT-SEE-A-CLASSIC-SCROLLBAR** — NEW 2026-07-20. Headless Chromium uses
+  OVERLAY scrollbars: `window.innerWidth - documentElement.clientWidth === 0`. Any test whose
+  condition depends on a classic scrollbar existing (D340 scroll-lock bounce, scrollbar-gutter
+  compensation, layout-shift-on-lock) **cannot fire in-harness, and a 0px delta proves
+  NOTHING**. Report such a check as INCONCLUSIVE and route it to Bean on a real windowed
+  desktop browser. Never bank it as a pass. (Encoded in `nav-qa/README.md`.)
 - **STOP-RECHECK-BRANCH-BEFORE-COMMIT** — on a shared worktree with co-active sessions,
   put `git branch --show-current` in the SAME guarded command as the commit; a
   session-start check is stale the moment a co-active session runs `git checkout`. Use
@@ -154,6 +178,17 @@ points here. Neither ever silently drops a STOP.
   branch switch silently reverts your working-tree edits. Take your own `git worktree`;
   verify `git show <sha>:<path>`, never the working tree, before believing a file committed.
 
+- **STOP-DIALOG-CLOSE-KILLS-THE-EXIT-ANIMATION** — NEW 2026-07-20. `dialog.close()` removes
+  `[open]`, which makes a `<dialog>` `display:none` **in the same tick** — so an exit class
+  added immediately before `close()` never paints a single frame and its keyframes are
+  unreachable. (This shipped: the drawer's exit animation had never once run, for either the
+  original vertical keyframes or the new directional ones — Bean spotted it as "it just
+  goes".) Animate FIRST, `close()` on `animationend` (target-checked — `animationend` bubbles
+  from children), with a fail-safe timeout reading the REAL computed `animationDuration`; a
+  stuck-open dialog is far worse than a missing animation. Also: **native ESC on a modal
+  `<dialog>` bypasses your close handler entirely** — intercept `cancel` or ESC will behave
+  differently from every other close route.
+
 ### Standing architectural STOPs (always-on, not D-numbered)
 - **Composite-mirror (R-31-9 / D294)** — no per-block CSS hack that diverges from the
   shared wrapper's computed behaviour; content-KIND box+width composites go block-private,
@@ -208,3 +243,11 @@ for real before claiming done?
   process STOPs (§A) + standing architectural STOPs (§B tail). New count > old. PASS.
 - Every future `/handoff` re-runs this check: new unique-STOP count >= previous, or record
   the justification inline. Bare deletion = regression.
+- **2026-07-20 (Spec 36 Wave 4 / D351) re-run:** previous unique `STOP-*` tokens = **51**;
+  this session ADDED 4 (`STOP-VERIFY-DEPLOY-BY-CHECKSUM`,
+  `STOP-READ-DRAFT-BEFORE-DESIGNING-A-CLONE-FIX`,
+  `STOP-HARNESS-CANNOT-SEE-A-CLASSIC-SCROLLBAR`,
+  `STOP-DIALOG-CLOSE-KILLS-THE-EXIT-ANIMATION`) and SUBTRACTED none → **55**. 55 >= 51. PASS.
+  All four are earned: each records a failure that actually occurred this session (a false
+  `verdict: PASS` from a reverted deploy; a contrast policy designed before reading the draft;
+  an in-harness scrollbar test that could never fire; a never-once-run exit animation).

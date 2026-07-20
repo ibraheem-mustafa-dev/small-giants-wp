@@ -2,83 +2,52 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-17
+last_updated: 2026-07-20
 generated: 2026-07-17 (P4 — collapsed state.md + handoff.md + next-session-prompt.md into this one LEDGER)
 note: "THE single living-status doc. Replaces the old 3-way split (state/handoff/next-session-prompt) that drifted and overwrote each other. Current status is REPLACED here each session, never appended (that is how state.md ballooned to 66KB). History → dated snapshots in memory/session-YYYY-MM-DD.md (the ledger-rotate Stop hook backs this up). Structural defences (STOP catalogue + pre-flight ritual) live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24576 bytes — the rotate hook warns past that)."
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
-## ⭐ FOR BEAN — plain English (read this first)
+## Human Summary
+
+### ⭐ FOR BEAN — plain English (read this first)
 
 **What this is.** One file that answers "where are we and what's next," so a fresh session
 (or you) gets ONE true answer instead of three drifting ones. It replaces the old three
 docs (state / handoff / next-session-prompt) that kept contradicting each other.
 
-**Latest (2026-07-18, P2 session):** Track 2 **P2 (the header/footer/control BUILDER design-gate) is DONE
-+ SIGNED OFF** — `plans/2026-07-18-P2-builder-ux-design-gate.md`. It designs the settings panel a
-non-coder uses to configure header/footer/nav, over a **CPT editing home** (`sgs_header`/`sgs_footer`
-CPTs — the findable admin screen, NOT the Site Editor; the device-switcher works there), a tri-state
-per-device control model, a starter-template picker, and a WP control-implementation spec bound to **Spec
-35**. Gated through a 6-critic council + gap-analysis (B+) + a build + a UX specialist review + Spec-35
-detail. **The NAVIGATION was carved out as a NEW phase P2.5 (full rework, Bean-locked)** — a 3-stream
-research pass + 4-critic council ran; the council said "salvage adaptive-nav", **Bean overrode: full
-rework, adaptive-nav is the messy patch-fixed block, gone.**
-
-**⚠ CORRECTION (2026-07-19):** the earlier "Locked for P2.5: `wp_navigation` menu data" was a STALE carry that
-was NOT reconciled with the signed-off Spec 36. **Spec 36 §12(f) resolved menu data to CLASSIC WP menus
-PRIMARY** (block-based `wp_navigation` = a Phase-3 extra — "not essential, not totally clear to implement yet",
-Bean 07-18). A parallel 07-19 P2.5 session was handed the stale `wp_navigation` lock and re-ran the whole
-research→architecture→council arc before catching that Spec 36 already existed and was the authoritative base.
-
-**P2.5 OUTCOME (2026-07-19): Spec 36 SIGNED-OFF v2.1 + salvage audit done + SAFE doc-purge done.**
-`specs/36-SGS-NAVIGATION-SYSTEM.md` is the SINGLE canonical nav home. The two parallel tracks were reconciled
-(Spec 36 = base; 07-19 added the utility-piece research + 6 refinements), gated through a 7-persona adversarial
-council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 2026-07-19.**
-- **Phase 6.5 code-salvage (DONE):** 4 parallel wp-sgs-dev audits, built-vs-to-build per piece vs v2.1, every
-  claim evidenced to `file:line` → `reports/2026-07-19-P2.5-phase6.5-salvage-audit.md`. Spec 36's own §8a claims
-  ALL held up. Salvage wins: D323 body-reparent + D340 scroll-lock (`adaptive-nav/view.js`, PORT verbatim);
-  product-search combobox = genuine EXTEND; business-info single-source + schema-non-duplication BUILT; cart =
-  badge shell only (mini-cart UNbuilt, Phase-1 fix = one-line `role="status"` at `cart/render.php:203`).
-  Correction recorded: the two old blocks' focus-trap code disagree → merge into ONE `store('sgs/nav')`, don't copy.
-- **Phase 6 SAFE doc-purge (DONE — Bean go, doc-only, no live-site risk):** carried FR-34-5 drawer-settings +
-  Spec 02 §23 competitive line INTO Spec 36 first, THEN: DELETED `specs/34`; Spec 02 §23 → pointer stub; Spec 17
-  FR-S9-4/-5 → Spec 36 pointers (FR-IDs kept for dependency lines); README index (34 DELETED, 35+36 rows added).
-- **DEFERRED to post-build (register §3 — needs the new block-name roster, which doesn't exist until the build):**
-  Spec 17 S9-1 hook allow-list / S9-2 typed-palette entry / S9-8 move-to-drawer / S9-10 nav refs; `00 §2.1` +
-  `no-header-footer-block.py` roster; Spec 29 rows; retire adaptive-nav/mega-menu/mobile-nav DB rows via `/sgs-update`.
-- **DEFERRED (Bean-ruled): block-registration deletion + live-header cutover** — the retired blocks stay live
-  until the new nav is BUILT + the two client headers (Mama's + Indus) are re-authored via the editor (FR-36-18).
-- **Spec 33 Part 2 emit-target repoint** — after the nav build passes its gate, NOT now (FR-36-15).
+**Track 2 history (P2 + P2.5) — CLOSED, detail archived.** P2 (the header/footer/nav BUILDER
+design-gate) is DONE + SIGNED OFF: `plans/2026-07-18-P2-builder-ux-design-gate.md` — the
+settings panel a non-coder uses, over a CPT editing home (`sgs_header`/`sgs_footer`, NOT the
+Site Editor), tri-state per-device controls, starter-template picker, bound to Spec 35.
+Navigation was then carved out as P2.5 (full rework — Bean overrode the council's "salvage
+adaptive-nav"). **P2.5 outcome: `specs/36-SGS-NAVIGATION-SYSTEM.md` SIGNED OFF v2.1
+(2026-07-19)** — the single canonical nav home; 7-persona adversarial council + qc-council
+fact-check, all 26 FRs survive; code-salvage audit evidenced to `file:line`
+(`reports/2026-07-19-P2.5-phase6.5-salvage-audit.md`); safe doc-purge done (spec 34 DELETED,
+Spec 17/02 → Spec 36 pointers). Menu data = **CLASSIC WP menus PRIMARY** (`wp_navigation` is a
+Phase-3 extra — an earlier "wp_navigation locked" line was a stale carry, corrected 07-19).
+**Still deferred post-build (needs the new block-name roster):** Spec 17 S9-1/-2/-8/-10,
+`00 §2.1` + `no-header-footer-block.py` roster, Spec 29 rows, retiring
+adaptive-nav/mega-menu/mobile-nav DB rows via `/sgs-update`, the block-registration deletion +
+Indus header cutover (FR-36-18), and the Spec 33 Part 2 emit-target repoint (FR-36-15).
+Full narrative: `memory/session-2026-07-19*.md`.
 **Phase 1 EXECUTING — the plan is QC-clean (92/100): `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md`.**
-- **WAVE 0 DONE + on main (`eaa4310e`+`f9c381f2`, npm build green):** (1) cart `role=status`; (2) responsive-logo
-  left-align + functional alt + per-tier max-box + SSR preview (per-device image was already built); (3)
-  `class-sgs-nav-menu-source` const→filterable+registry-pruned resolver +`sgs/nav-menu` (R-31-1); (4) `sgs/nav-drawer`
-  skeleton (section-KIND, InnerBlocks, +block_composition seed row); (5) **`src/shared/nav-interactivity/store.js`** =
-  the shared `store('sgs/nav')` — D323/D340+freeze PORTED verbatim, two focus-traps MERGED, **API contract published**
-  (`actions.openDrawer/closeDrawer/toggleDrawer`, `state.isOpen`) for Wave 2 to build against; (6) `scripts/nav-qa/`
-  Gate-1 tooling (axe/elementFromPoint/crawl/logical-lint)+axe-core devDep. Also fixed a pre-existing `sprintf`-import
-  bug in responsive-logo/edit.js. New-block gotcha captured: F6 gate needs a `seed-composition-roles.py` entry per new block.
-- **WAVE 2 DONE + on main (`1ed828f0`, 2026-07-20):** `sgs/nav-menu` (flat classic-menu bar + burger→drawer via the
-  store; menu picker, collapse-point N, featuredItemIds checklist, configurable `navLabel` landmark, client-side
-  aria-current) + `sgs/nav-drawer` (full-screen `<dialog showModal>` modal, InnerBlocks content, × undeletable chrome,
-  consumes the store, FR-34-5 drawer settings via ResponsiveControl). Drawer is **content-KIND block-private** — a
-  `<dialog>` can't be hosted by `SGS_Container_Wrapper`, so it mirrors box/bg/padding via the shared helpers (D294;
-  Bean-approved reclassification from the earlier section-KIND label). Gate 2 all green + 3-rater `/qc-council`;
-  caught+fixed 2 Gate-1 blockers (missing `data-wp-interactive` island → burger couldn't open; nested nav-menu rendered
-  a self-closing burger) + a STOP-21 uid no-op. Follow-up: FR-36-13 `<dialog>`-exception spec note (apply in spec 36).
-- **WAVE 3 DONE + on main (2026-07-20):** Track-1 (Spec 35) MERGED into main FIRST (`5672b4c6`; LEDGER conflict
-  resolved by superset) so the deploy ships the complete plugin and doesn't regress Track-1's live canary work.
-  `/sgs-update` ran (reference regen 202 blocks, orphans pruned, `sgs/nav-drawer` registered); a real db-consistency
-  snag (is_section_root→tier=class-section wanted a container_kind) fixed by dropping `is_section_root` — the drawer is
-  content-KIND block-private, not a wrapper composite (`e6c10428`, db-consistency 0 violations). Deployed to sandybrown
-  via `build-deploy.py` (plugin+theme). **Header re-authored (`b41352fc`, `parts/header.html` — a version-controlled
-  file, the correct path for a block-theme part, NOT the DB/editor):** dropped the legacy `sgs/adaptive-nav` wrapper →
-  `sgs/nav-menu` (`ref=1467` "Primary Menu" wp_navigation; top-level items match the Mama's mockup: Shop / Our Story /
-  Send to Ward★ / Gift Ideas / FAQs) + `sgs/nav-drawer`. 5 mockup pages created as menu targets. Verified LIVE: new nav
-  renders, `data-wp-interactive="sgs/nav"` island present, adaptive-nav GONE, no PHP errors. adaptive-nav stays
-  registered (dormant) for rollback. GitHub tidied: `feat/brand-strip-inspector-rebuild` merged + deleted on origin.
-- **WAVE 4 IN PROGRESS (2026-07-20) — machine sweep DONE, Bean's eye + 2 items remain.** Cache purged, then ran the
+- **WAVES 0–3 DONE + on main** (`eaa4310e`, `f9c381f2`, `1ed828f0`, `5672b4c6`, `e6c10428`, `b41352fc`).
+  Built: the shared `store('sgs/nav')` (D323 body-reparent + D340 scroll-lock ported verbatim, the two
+  old focus-traps MERGED, API contract published); **`sgs/nav-menu`** (flat bar + burger→drawer, menu
+  picker, collapse-point N, featured checklist, configurable `navLabel`, client-side `aria-current`);
+  **`sgs/nav-drawer`** (full-screen `<dialog showModal>`, × undeletable chrome, FR-34-5 drawer settings)
+  — **content-KIND block-private**, since a `<dialog>` cannot be hosted by `SGS_Container_Wrapper` (D294,
+  Bean-approved); `scripts/nav-qa/` Gate-1 tooling; cart `role=status`; responsive-logo fixes. Track-1
+  (Spec 35) was merged FIRST so the deploy shipped a complete plugin; `/sgs-update` ran (db-consistency
+  0 violations after dropping `is_section_root`); deployed to sandybrown; **header re-authored** in
+  `parts/header.html` (the version-controlled block-theme part, NOT the DB) — legacy `sgs/adaptive-nav`
+  dropped for `sgs/nav-menu` (ref=1467) + `sgs/nav-drawer`, with adaptive-nav left registered but dormant
+  for rollback. Gotchas captured: a new block needs a `seed-composition-roles.py` entry for the F6 gate;
+  a nested nav-menu rendered a self-closing burger. Full narrative: `memory/session-2026-07-20*.md`.
+- **WAVE 4 COMPLETE (2026-07-20) — machine-green + Bean-signed. Detail:** Cache purged, then ran the
   `scripts/nav-qa/` suite live. **GREEN:** axe on the OPEN drawer (375, scoped) = **0 violations**; crawl-assert PASS
   (5 bar + 5 drawer + logo present with JS off — **the "14 links" worry is ANSWERED: bar+drawer copies, not
   duplication**); burger-opens / ESC-closes / focus-returns-to-burger / Tab-contained all pass at 375; bar renders
@@ -221,7 +190,9 @@ session) and P4 (the LEDGER collapse) are done + live.
 
 ---
 
-## Live status (machine-checkable — verify, don't trust the cache)
+## State Snapshot
+
+### Live status (machine-checkable — verify, don't trust the cache)
 
 - **Branch:** `main` (verified 2026-07-20; the old note about `feat/brand-strip-inspector-rebuild` is DEAD — that
   branch was merged + deleted on origin in Wave 3). **HEAD:** `45970282` (Spec 36 Wave-4 D351, pushed).
@@ -239,18 +210,25 @@ session) and P4 (the LEDGER collapse) are done + live.
 
 ---
 
-## Setup-simplification track (the meta plan — one phase per session)
+## Setup-simplification track (the meta plan) — CLOSED
 
-Plan: `plans/archive/2026-07-16-setup-simplification-and-protocol.md` — **fully executed (P0–P6) and ARCHIVED 2026-07-17.** Historical reference only; the go-forward protocol (plan §5) lives on as a captured lesson below.
+Plan: `plans/archive/2026-07-16-setup-simplification-and-protocol.md` — **fully executed
+(P0–P6) and ARCHIVED 2026-07-17.** Historical reference only. All 7 phases done and live on
+`main`: P0–P2 culls + archive-with-redirect · P3proj project enforcement (`spec-drift-commit-gate.py`
+wired, f5 machine-evidence converter guard) · P4 the 3-doc collapse into this LEDGER +
+`STOP-CATALOGUE.md` + the `ledger-rotate.py` Stop hook · P3glob 3 global hooks (machine-evidence
+sgs-selfreport, `baseline-update-gate.py`, handoff uncommitted-work warn) · P5 agent + skills
+refresh + WCAG 2.1 AA baseline (incl. the LEAN-RULER pivot and the `reasoning-skill-judge`) ·
+P6 global CLAUDE.md 276→51 lines + 2 new commit gates.
 
-| Phase | What | Status |
-|---|---|---|
-| P0/P1/P2 | in-flight commit · culls · archive-with-redirect | ✅ done (live on main) |
-| P3proj | project enforcement — f5 gained a machine-evidence converter-guard (folded the retired qc-on-converter-edit stub); NEW `spec-drift-commit-gate.py` wired; qc-on-converter-edit.py removed | ✅ done (live on main) |
-| P4 | collapsed the 3 status docs → this LEDGER + STOP-CATALOGUE.md + `ledger-rotate.py` Stop hook (wired, self-test + fired) + F1 global filename patch (additive, mini-sign-off approved, `~/.claude` commit `44f3b95`) | ✅ done (commits `a55d0fc1`+`410c7552`) |
-| P3glob | GLOBAL hook edits (mini-sign-off approved 2026-07-17): §3.1 sgs-selfreport now reads machine evidence (real verify tool-result, not typed `state=verified`) — once-per-session warn + HARD block at `/handoff` close if SGS edited & verified nowhere all session (council-added teeth); §3.2 NEW `baseline-update-gate.py` (PreToolUse/Bash, wired) denies `--update-baseline` on the 8 gates w/o `[baseline-ok:reason]` + off-switch + cwd-match + f5 drift-check + bypass log; §3.3 handoff-enforce Part B uncommitted-work warn (.claude-scoped, once/session). All 3 adversarial-council-hardened, self-tested (16/12/10), live-fired. `~/.claude` commit + settings.json wiring done. | ✅ done |
-| **P5** | agent refresh + skills refresh + WCAG 2.1 AA baseline | ✅ **COMPLETE (§4 agents + §4b skills + §4c WCAG all done, 2026-07-17).** §4c WCAG 2.1 DONE (`8f96c24`+`c59355bf`, pushed). §4 roster cleanup DONE (`97bb6ce`). **skillscore ruler RECALIBRATED** — agents were scored against *skill* rules, so "56–59%" was scorer bugs; agent path fixed + verified (honest spread). ⚠ LIVE but UNVERSIONED (`~/.agents` not a git repo). **§4 agent refresh 6/6 DONE + LIVE + A-grade** (Sonnet builds → inline-judged vs fixed ruler; each frontmatter-diffed + faithfulness-read): seo-auditor 100 / seo-schema 98 (caught+removed fabricated dates & invented file-ref) / project-manager 100 / site-reviewer 100 / wp-sgs-developer 100 / design-reviewer 93 (methodology MOVED to `agents/references/design-reviewer-methodology.md`, verified verbatim). git-persisted to `~/.claude` (`394a671`+`0a96908`); design-reviewer realigned to **WCAG 2.1 baseline** (agent body + description + CLAUDE.md blurb, `0a96908`). ⚠ the skillscore script itself (`~/.agents/.../sgs-skillscore.py`) is LIVE + verified but UNVERSIONED (`~/.agents` is not a git repo) — durability TODO. **§4 agent-vs-community comparison DONE** (wshobson + VoltAgent; judged on MERIT not skillscore per Lesson A): all 5 generic agents KEPT bespoke (evidence-based, not assumed); grafted design-reviewer's adversarial visual-verification principle from wshobson `ui-visual-validator` (`e9c4c83`). **§4 coverage-gap fill DONE** (`f225c01`): 2 NEW agents added — `nextjs-developer` 98% (builds Booking System + CV Writer AI Next.js/TS; no prior builder covered Next.js) + `security-auditor` 93% (general OWASP across WP+Next.js, distinct from ehr-security-reviewer); strict-contract-built, fact-checked vs the real `booking-system/package.json`. **§4b generic-skills refresh — STARTED 2026-07-17 (the LEAN-RULER PIVOT):** Bean challenged the premise — the bespoke "complexity" only exists because it was recommended, and the community `obra/superpowers` (256k⭐, deliberately lean) omits it. Research (Anthropic lean-context doctrine + superpowers' own writing-skills "prohibitions trended worse than nothing" + Goodhart/reward-hacking lit + Bean's own validate-grader lesson) CONFIRMED: lean beats structural-theatre; a ruler that scores STRUCTURE gets gamed. **skillscore SKILL-path validated** (community 48% F vs Bean skills 92–94% = ruler was Bean-convention-calibrated, NO cross-type bug unlike agent path — Lesson A holds). **RULER FIXED + live** (`~/.agents/.../sgs-skillscore.py`, ⚠UNVERSIONED, recovery=`.bak-2026-07-17-preLeanRuler`): new FLOOR tier @0% (reports absence, doesn't score); 14 theatre checks demoted (6-Lens/correction-ledger/goal/common-mistakes/references-hooks-scripts-dirs/numbered-stages/hard-gate/skill-type/process-summary/imperative-voice); REGISTRY tier authoritative; skill threshold 90→75. Validated: community 48→69%, Bean skills honest (brainstorming 100 / systematic-debugging 90 / autopilot 88 / gap-analysis 85), agent path 100/100/92 (design-reviewer 93→92, imperative_voice is `*`). **Full fork roster diffed (evidence-based):** brainstorming/systematic-debugging/requesting-code-review/executing-plans/TDD/receiving-code-review = KEEP (superset/identical); finishing-a-development-branch/using-git-worktrees/subagent-driven-development/dispatching-parallel-agents/skill-writer = GRAFT community bug-fixes. **NEW GRADING FOUNDATION (2nd Bean challenge, DONE):** experts judge skills by EVALS not structure (Anthropic "evals BEFORE docs"; obra "no skill without a failing test"). BUILT `~/.agents/.../reasoning-skill-judge.md` — an 8-criterion rubric a SUBAGENT reasons with (cold-agent-executability, minimal-sufficiency, failure-coverage, degrees-of-freedom, routing, terminology, testability + bias-check), outputs a **CUT LIST** (thinning, opposite of gap-analysis's bloat ratchet); AGENT variant A1-A6; 3-tier model FLOOR(skillscore)/JUDGE(this)/GOLD(evals). Validated: reasoning judge FLATTENED the scanner's bias (scanner 100/90/69 → judge 3.6/3.1/3.43, community competitive) + caught real defects the scanner scored 100% blind to (broken file refs, save-path contradiction, unsourced stats). Agent structural scanners (body_length/scope_creep/methodology_dupe) → FLOOR; gap-analysis kept for gap-DISCOVERY but paired with the CUT LIST, no longer a bloat-only grade. **§4b GRAFTS 5/5 DONE + LIVE (2026-07-17 cont.)** — each: fetched live from obra/superpowers, diffed, bug-claims fact-checked vs OUR text, `.bak`-backed-up (⚠ `~/.agents` still not a git repo — Bean: "not that dangerous, get on with it"), community-as-base + our grafts, then reasoning-judge-graded (Sonnet, cross-model from Opus author) + judge-findings fact-checked + fixes applied. (1) **finishing-a-development-branch** — community base fixes all 4 worktree bugs (kill-worktree-on-PR / branch-before-worktree / remove-from-inside / harness-owned); grafted back our `gh pr create` body + Integration + negative-routing; judge 3.57→applied test-cmd fix + `ExitWorktree` name + detached-HEAD detection. (2) **using-git-worktrees** — community Step-0 detection+submodule guard fixes our phantom-nested-worktree bug + native-tool preference + sandbox fallback; judge 3.57→added a native-tool DISCOVERY step (the exact gap this session hit with deferred `EnterWorktree`) + defined "your instructions". (3) **subagent-driven-development** — FULL ADOPT (Bean-picked): copied in community `implementer-prompt.md`+`task-reviewer-prompt.md`+3 scripts (task-brief/review-package/sdd-workspace; LF+chmod+syntax-checked) → FIXES the pre-existing broken `./implementer-prompt.md` refs; kept our `/delegate`+log-dispatch routing + SGS-BEM injection; judge 3.86→fixed a REAL broken ref I'd imported verbatim from community (`../requesting-code-review/code-reviewer.md` doesn't exist in Bean's fork → `references/dispatch-template.md`) + log-dispatch full path. (4) **dispatching-parallel-agents** — ours already superset; grafted the "multiple dispatch calls in one response = parallel" mechanism rule + subagent-isolation line; FIXED a stale dead-spec ref (Spec 13→Spec 00 §3.1); judge 3.57→cut ours-fork duplicate sections. (5) **skill-writer** — ADDITIVE graft onto ours (kept our discovery-gate + dual gap-analysis/skillscore gates): grafted 3 community sections (Match-the-Form-to-the-Failure table + no-nuance/no-exemption rules; Micro-Test-Wording protocol w/ mandatory no-guidance control + variance-as-metric into Stage 6; Bulletproofing = spirit-vs-letter + close-every-loophole + rationalisation-table + red-flags); FIXED stale skillscore threshold 90→75 in SKILL.md (4×) AND the bundled `hooks/skill-writer-enforce.py:42` message (judge caught the hook — I'd only done the prose; note: hook gates on stage-COMPLETION not the number, so the judge's "would reject a 76% skill" severity was overstated — fact-checked both ways); judge 4.0→fixed. **BATCH DECISION RESOLVED (Bean):** the community-STANDARD triple-restatement (Quick Reference / Common Mistakes / Red Flags) in the git skills = **KEEP PARITY with obra** (do NOT cut — easier re-sync; redundancy is a scan aid not a defect). Ours-fork-specific duplication WAS cut (dispatching-parallel-agents). **⚠ STILL UNVERSIONED:** all 5 grafts live under `~/.agents` which is NOT a git repo — recovery = per-skill `SKILL.md.bak-2026-07-17-preGraft`. Bean deferred versioning ("not that dangerous"); durability TODO stands. **§4b coverage-gap step B — DONE 2026-07-17 (closes §4b, closes P5).** Two independent parallel surveys of 4 collections (obra/superpowers, VoltAgent, alirezarezvani, Composio/travisvn) vs a domain coverage-map: obra = 0 net-new (all 15 already held); every domain SATURATED except one. **Exactly ONE genuine gap found (convergent across both surveys): Next.js/TS testing** — the `nextjs-developer` agent owns "vitest coverage" with no test-authoring skill; complaint-check confirmed real user-pain (testing-library #1209, Next.js async-RSC caveat). Bean picked "build lean". **BUILT `~/.agents/skills/nextjs-testing/SKILL.md`** (⚠UNVERSIONED — `~/.agents` still not a git repo, Bean deferred again; no `.bak` needed, new file) + symlinked into `~/.claude/skills/` (live/invokable). Grounded in the official Next.js Vitest doc (config + async-RSC→E2E caveat verbatim) — structured on ONE insight (match test-approach to unit KIND: server-action=call-direct / sync-component=render / async-RSC=route-to-E2E). Graded: skillscore FLOOR 80% (pass) + **reasoning-judge (Sonnet, cross-model) = SHIP 4.71/5, all 5 code patterns fact-checked CORRECT, 0 hallucinations**; applied 1 of 3 judge suggestions (illustrative-paths note), skipped 2 score-chasing ones per "never edit a skill to raise its score". gap-analysis-rewire + fork-deletions = confirmed closed (no pure-adopts; TDD byte-identical). Detail: `memory/session-2026-07-17-p5-skills-lean-ruler.md`. |
-| **P6** | remaining global simplifications + the 2 §5 gates | ✅ **COMPLETE 2026-07-17 (closes the setup-simplification plan).** Global CLAUDE.md **276→51 lines** (Karpathy R1 ≤80) — 170-line tool roster → `~/.claude/TOOLS.md`, prompt-writing standard → `~/.claude/references/prompt-writing.md`, Windows-Python → `rules/windows-python.md` (paths:`**/*.py`), behavioural sections compressed to pointers; **no rule lost** (keep/move/cut map approved by Bean). Rule path-scoping: `wp-project-tooling.md` + `measurement-vs-eye.md` gained `paths:` frontmatter → on-demand not always-on (mechanism EMPIRICALLY verified: pre-existing `wordpress.md`/`visual-standards.md` inject in matching WP sessions, gated out of this .md session). **2 new gates BUILT + self-tested + wired + live-fired:** `claude-md-linecount-gate.py` (PreToolUse Write\|Edit — denies global CLAUDE.md >80, project CLAUDE.mds exempt, new-violations-only) + `clean-folders-commit-gate.py` (PreToolUse Bash — denies >2MB staged blob, `[commit-ok:reason]` override) + `scratch-sweep.py` (Stop — non-blocking stray-ephemera warn). `__pycache__` removed + gitignored; `tooling-map-drift-check.py` confirmed already-gone (no live file). settings.json re-validated JSON. `~/.claude` commit `fd63ccc`. Global mini-sign-off honoured (map + draft approved before edits). |
+**Full per-phase detail** (it ran to ~20KB and was crowding this ledger out):
+`memory/session-2026-07-17-p5-skills-lean-ruler.md` + the archived plan + `~/.claude` commits
+`394a671` / `0a96908` / `f225c01` / `fd63ccc`.
+
+**Two durability caveats still standing:** `~/.agents` is NOT a git repo, so the skillscore
+script + the 5 grafted skills + `nextjs-testing` are LIVE but UNVERSIONED (recovery = per-file
+`.bak-2026-07-17-*`); and the `lifecycle-gate-stop.py` unwire is done locally but NOT yet
+committed to the `~/.claude` repo.
 
 **Stray thread CLOSED 2026-07-17 (was the last incomplete non-P6 item, plan §3.5):** the `lifecycle-gate-stop.py` no-op stub was **unwired from `~/.claude/settings.json` + the stub file deleted** (JSON re-validated; wiring hits = 0). Global CLAUDE.md doc-drift fixed (2 refs now say "unwired+deleted"). Also reworded the phantom `seo-geo` refs in `seo-technical.md` + `wp-sgs-developer.md` to make explicit it is the `/seo-geo` **skill**, not an agent. Backup: `~/.claude/settings.json.bak-2026-07-17-preLifecycleUnwire`. NOT yet committed to the `~/.claude` repo (offer stands).
 
@@ -263,14 +241,12 @@ Plan: `plans/archive/2026-07-16-setup-simplification-and-protocol.md` — **full
 
 ## Product queue (the website-builder work — reconcile before acting, some is already live)
 
-**Indus "Our Brands" clone fidelity — DONE 2026-07-17 (D343, live-verified).** Band matched to
-the reference at hero-grade via computed-CSS extraction (underline 27%×2px, logos fill 155²
-tiles, gap 0 + 10px band-teal→gold-hover border, band 272 centred, letter-spacing normal,
-overflow 0). Shipped: **NEW `sgs/separator` block** (built + registered; its replaces-table entry
-was REVERTED — see task A, it needs the migration pairing first), brand-strip tile controls + the WP `border-width` var-name-collision fix
-(STOP-WP-STYLE-SUBSTRING-COLLISION), framework letter-spacing fix (theme-deployed), **NEW
-`extract-css-diff.js`** (the STANDARD extract-and-diff tool + `--why` CDP provenance), **NEW
-theme-CSS hardcode lint**. Detail: decisions D343.
+**Indus "Our Brands" clone fidelity — DONE 2026-07-17 (D343, live-verified).** Matched to the
+reference at hero-grade via computed-CSS extraction. Shipped: NEW `sgs/separator` block (its
+replaces-table entry REVERTED pending the migration pairing — task A below), brand-strip tile
+controls, the WP `border-width` var-name-collision fix (STOP-WP-STYLE-SUBSTRING-COLLISION), a
+framework letter-spacing fix, NEW `extract-css-diff.js` (the standard extract-and-diff tool,
+`--why` = CDP provenance), NEW theme-CSS hardcode lint. Detail: `decisions.md` D343.
 
 **Indus next-session tasks (Bean-directed 2026-07-17, ties to Track C + the replaces table):**
 - **A — core→SGS migration (the "I thought all core blocks were already SGS" item).** Atomic unit:
@@ -287,25 +263,15 @@ theme-CSS hardcode lint**. Detail: decisions D343.
   responsive `fr`); Services button-border decision; Task-2 detection-method brainstorm (the
   extractor is the core of it — decide if it becomes a standard pre-close gate).
 
-**Last shipped (D341/D342, 2026-07-16, on `main` `a693e0e8`→merged into d3967a2c):** Phase 2
-nav/logo fixes — `sgs/responsive-logo` dropped the unshippable `auto` logo-switch for an
-operator `custom` breakpoint; `sgs/adaptive-nav` collapse tier now reads `SGS_Breakpoints`
-(fixes the burger missing the 768–1023 tablet band). Spec 34 disclosure drawer BUILT + live
-(Gate B all pass). Track C core→SGS migration (395→0 replaceable core blocks). All
-live-verified both sites. Detail: `decisions.md` D341/D342 + `memory/session-2026-07-16.md`
-(swept from the old handoff/state).
+**Last shipped before this track (D341/D342, 2026-07-16, on `main`):** Phase 2 nav/logo fixes —
+`sgs/responsive-logo` operator `custom` breakpoint; `sgs/adaptive-nav` collapse tier reads
+`SGS_Breakpoints`. Track C core→SGS migration (395→0 replaceable core blocks). All live-verified
+on both sites. Detail: `decisions.md` D341/D342 + `memory/session-2026-07-16.md`.
 
-1. **Phase 1 — drawer polish — DONE (2026-07-17, on `main`).** (a) Resting link colour now
-   prefers the client `text` token when it clears WCAG 4.5:1 (mamas `#3a2e26` adopts 5.28:1;
-   helping-doctors/indus keep the safe fallback — 2.90/2.39:1 fail, by design) via the new
-   shared `sgs_wcag_preferred_text_colour_for_bg` helper (commit `6fc11618`, live-verified).
-   (b) The drawer's auto-focused first link no longer shows the theme `:focus` underline on
-   open — `.sgs-nav-menu__link:focus:not(:focus-visible){text-decoration:none}` (commit
-   `73544914`→`09399f6d`; keyboard `:focus-visible` underline preserved, WCAG 2.4.7). ⚠
-   Deployed live to canary + build/specificity-verified, but the final post-deploy Playwright
-   eyeball (open=no underline / Tab=underline) was DEFERRED at Bean's wrap-up — honest report
-   `reports/visual-diff/nav-menu-2026-07-17.md` (verdict not fabricated). Finish that eyeball
-   next session, or Bean confirms on the canary.
+**Phase 1 drawer polish — DONE 2026-07-17 (superseded by the Spec 36 rebuild).** WCAG-preferred
+resting link colour via `sgs_wcag_preferred_text_colour_for_bg` + the auto-focus underline fix.
+Both behaviours now live in the NEW nav blocks; the old report's deferred eyeball is moot.
+
 2. **Phase 3 — finish Spec 34** (`specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md`, plan
    `plans/2026-07-15-spec34-build-plan.md`): Step 5 drawer settings (FR-34-5), Step 6
    builder reflection (FR-34-6 — RECONCILE, don't redo), Gate C (FR-34-7), then a FRESH
