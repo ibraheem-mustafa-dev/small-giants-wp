@@ -128,6 +128,31 @@ Full narrative: `memory/session-2026-07-19*.md`.
   **Test fixtures left on the canary for inspection — say the word and I'll remove:** classic menu term **94**
   ("SGS Classic Test Menu", assigned to no location so it cannot affect the header) + page **1548**
   `/fr-36-1-classic-menu-test/`.
+- **✅ SPEC 36 PHASE 1 IS CLOSED (2026-07-20).** Gate-1 machine-green + Bean-signed; FR-36-1 built + live-verified
+  (D352); the post-build roster deferrals worked through. **Roster close-out detail:**
+  - **`no-header-footer-block.py`** — NO CHANGE NEEDED, and this was proven by EXECUTING the hook, not by
+    re-reading its regex: `nav-menu`/`nav-drawer`/`site-header` → exit 0 (allowed), `nav`/`header` → exit 2
+    (blocked). The regex needs `nav` followed by a separator or end-of-string, so `nav-menu` never matched.
+    Spec 17 FR-S9-1's roster + acceptance list updated to say so with the fixture results inline.
+  - **Spec 00 §2.1** — refreshed. It still named `sgs/mobile-nav` as a live block; that block was DELETED at
+    D336/Task 1 on 2026-07-14, so the roster had been stale for six days. Now names `sgs/nav-menu` +
+    `sgs/nav-drawer` and marks `adaptive-nav` reference-only.
+  - **Spec 29 / container roster** — `/sgs-update` **Stage 11 was failing (exit 1)** and closing this fixed it.
+    The detector was RIGHT and the hardcoded expectation was stale: `sgs/nav-menu` + `sgs/brand-strip` (LAYOUT)
+    and `sgs/nav-drawer` (CONTENT) were all detected-but-unexpected. Added with rationale; validator now exits 0.
+    ⚠ Its mirror dry-run reports **259 attr additions + 20 support changes across 15 blocks** — NOT applied
+    (`--apply` withheld): that is shared-wrapper capability propagation, design-gate territory (Rule 7), and
+    unrelated to nav. Logged as its own decision to make, not silently skipped.
+  - **DB attribute drift — FIXED.** `/sgs-update` registered **30 new attrs**. `sgs/nav-menu` had only 2 of its
+    9 `featured*` attrs in the DB (D351's `featuredBg` and Track 1's 4 hover attrs had never been registered);
+    all 9 present now, `sgs/nav-drawer` at 11. Site is WP **7.0.2** (docs elsewhere still say 7.0.1).
+  - **⛔ "Retire the adaptive-nav / mega-menu / mobile-nav DB rows" — NOT ACTIONABLE, and doing it would be
+    WRONG.** Checked rather than executed: `mobile-nav` is ALREADY gone from both `src/` and the DB (no-op —
+    already done); `adaptive-nav` still has `src/` and MUST stay registered as the FR-36-18 rollback path until
+    the Indus header is re-authored; `mega-menu` still has `src/` and is **Phase-2 scope** (the mega CPT +
+    native attach), not superseded work. `/sgs-update` Stage 10 prunes by src-orphaning, so it correctly
+    deleted 0 blocks. **This deferral was written on an assumption that does not hold — it should be struck,
+    not carried forward.** Real trigger: the FR-36-18 Indus cutover (adaptive-nav) and Phase 2 (mega-menu).
 - **WAVE 4 COMPLETE — Gate-1 is machine-green + Bean-signed.** Remaining before Phase 1 closes: featured hover parity
   (now largely absorbed by Track 1's hover work — RECHECK before re-opening). Content refinements for the editor:
   menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu (flattened in Phase-1).

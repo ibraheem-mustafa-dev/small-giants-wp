@@ -1118,11 +1118,31 @@ def main() -> int:
             # sgs/site-footer-row added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325): the footer row
             # inside sgs/site-footer — a column grid (up to 6 cols → 1 on mobile) or flex cluster.
             "sgs/site-footer-row",
+            # sgs/nav-menu added 2026-07-20 (Spec 36 FR-36-2 / Phase-1 close): layout-KIND nav
+            # bar — the canonical nav block of the Spec 36 rebuild, superseding sgs/adaptive-nav
+            # (which stays listed above because it is still REGISTERED as the FR-36-18 rollback
+            # path; both are correctly detected until the Indus header cutover deletes one).
+            # It keeps SGS_Container_Wrapper (genuine layout row), unlike its drawer sibling.
+            "sgs/nav-menu",
+            # sgs/brand-strip added 2026-07-20: detected layout-KIND since the Track-1 Spec 35
+            # inspector rebuild gave it the grid/flex attr family. Detection was correct; the
+            # roster simply had not been refreshed since that work landed.
+            "sgs/brand-strip",
         },
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",
             "sgs/tab", "sgs/accordion-item", "sgs/form-step", "sgs/notice-banner",
             "sgs/option-picker",
+            # sgs/nav-drawer added 2026-07-20 (Spec 36 FR-36-6 / Phase-1 close): content-KIND,
+            # and deliberately BLOCK-PRIVATE — it does NOT call SGS_Container_Wrapper. Its root
+            # must BE the <dialog> for showModal()/top-layer/::backdrop/native-ESC to work, and
+            # putting `display` on a <dialog> base rule defeats the UA's
+            # dialog:not([open]){display:none} (STOP-DIALOG-DISPLAY-GATE). That is the D294 rule
+            # as written, not an exception to it: a content-KIND composite using only box+width
+            # may render block-private. It is listed here because it IS container-bearing by
+            # detection (InnerBlocks + containerKind override) — listing it keeps the validator
+            # honest; it does not imply wrapper delegation. See Spec 36 FR-36-13.
+            "sgs/nav-drawer",
             # sgs/mobile-nav REMOVED 2026-07-16 (qc-council, 2 raters): the block was
             # DELETED by `7c60b8ff` ("wire the theme to adaptive-nav drawer + delete
             # mobile-nav", Wave 2) and its off-canvas drawer absorbed into
