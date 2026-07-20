@@ -275,11 +275,27 @@ $item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemCo
 $item_bg     = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
 $item_bg_hex = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
 
+/*
+ * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals. The
+ * pre-2026-07-20 code hardcoded `border-radius:8px` on both pills, `font-weight:600`
+ * on the featured item and `.15s ease` on every transition — each of which bypasses
+ * a token theme.json already ships (--wp--custom--border-radius--medium,
+ * --wp--custom--transition--fast), so a client changing their theme's radius or
+ * motion scale saw the nav ignore it. Literal fallbacks are kept inside var() so
+ * the block still renders correctly on a non-SGS theme (the standalone-framework rule).
+ */
+$transition_fast = 'var(--wp--custom--transition--fast, 150ms ease)';
+
+$item_radius       = isset( $attributes['itemRadius'] ) ? (float) $attributes['itemRadius'] : 8;
+$item_radius_hover = isset( $attributes['itemRadiusHover'] ) && null !== $attributes['itemRadiusHover']
+	? (float) $attributes['itemRadiusHover']
+	: $item_radius;
+
 if ( '' !== $item_colour ) {
 	$css .= $link_sel . '{color:' . sgs_colour_value( $item_colour ) . ';}';
 }
 if ( '' !== $item_bg_hex ) {
-	$css .= $link_sel . '{background-color:' . esc_attr( $item_bg_hex ) . ';border-radius:8px;}';
+	$css .= $link_sel . '{background-color:' . esc_attr( $item_bg_hex ) . ';border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
 }
 
 // 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set
@@ -309,10 +325,10 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	$hover_fg  = '' !== $preferred
 		? sgs_wcag_preferred_text_colour_for_bg( $item_bg_hover_hex, $preferred )
 		: sgs_wcag_text_colour_for_bg( $item_bg_hover_hex );
-	$css      .= $hover_sel . '{background-color:' . esc_attr( $item_bg_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:8px;transition:background-color .15s ease,color .15s ease;}';
+	$css      .= $hover_sel . '{background-color:' . esc_attr( $item_bg_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:' . esc_attr( (string) $item_radius_hover ) . 'px;transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ',border-radius ' . $transition_fast . ';}';
 } elseif ( 'text' === $hover_style && '' !== $item_fg_hover ) {
 	// TEXT — colour shift only, no fill, no bar.
-	$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';transition:color .15s ease;}';
+	$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
 } else {
 	/*
 	 * UNDERLINE — a real ::after bar, and the fallback for every other case so
@@ -351,7 +367,7 @@ if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
 	);
 
 	$css .= $link_sel . '{position:relative;}';
-	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform .2s ease,background-color .15s ease;pointer-events:none;}';
+	$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;background-color:' . $u_colour . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
 	$css .= $hover_after_sel . '{transform:scaleX(1);background-color:' . $u_colour_h . ';}';
 	if ( '' !== $item_fg_hover ) {
 		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';}';
@@ -386,12 +402,21 @@ $featured_colour  = isset( $attributes['featuredColour'] ) && '' !== $attributes
 $featured_bg_slug = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
 $featured_bg_hex  = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
 
+$featured_radius       = isset( $attributes['featuredRadius'] ) ? (float) $attributes['featuredRadius'] : 8;
+$featured_radius_hover = isset( $attributes['featuredRadiusHover'] ) && null !== $attributes['featuredRadiusHover']
+	? (float) $attributes['featuredRadiusHover']
+	: $featured_radius;
+$featured_weight       = isset( $attributes['featuredFontWeight'] ) ? (int) $attributes['featuredFontWeight'] : 600;
+$featured_weight_hover = isset( $attributes['featuredFontWeightHover'] ) && null !== $attributes['featuredFontWeightHover']
+	? (int) $attributes['featuredFontWeightHover']
+	: $featured_weight;
+
 if ( '' !== $featured_bg_hex ) {
 	$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
 	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
-	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:600;border-radius:8px;}';
+	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
 } else {
-	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:600;}';
+	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
 }
 
 /*
@@ -419,9 +444,18 @@ if ( '' !== $featured_bg_hover_hex ) {
 	$featured_fg_h   = '' !== $preferred_hover
 		? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
 		: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
-	$css            .= $featured_hover_sel . '{background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color .15s ease,color .15s ease;}';
+	$css            .= $featured_hover_sel . '{background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ';}';
 } elseif ( '' !== $featured_fg_hover ) {
-	$css .= $featured_hover_sel . '{color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color .15s ease;}';
+	$css .= $featured_hover_sel . '{color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
+}
+
+// Featured pill SHAPE on hover — emitted only when it differs from the resting
+// shape, so an unset hover control adds no rule at all rather than a no-op one.
+if ( $featured_radius_hover !== $featured_radius ) {
+	$css .= $featured_hover_sel . '{border-radius:' . esc_attr( (string) $featured_radius_hover ) . 'px;transition:border-radius ' . $transition_fast . ';}';
+}
+if ( $featured_weight_hover !== $featured_weight ) {
+	$css .= $featured_hover_sel . '{font-weight:' . esc_attr( (string) $featured_weight_hover ) . ';}';
 }
 
 // The featured item owns its own treatment — suppress the generic item

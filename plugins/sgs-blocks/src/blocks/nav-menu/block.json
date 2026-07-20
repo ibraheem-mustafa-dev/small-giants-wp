@@ -40,6 +40,8 @@
 		"itemBg": { "type": "string", "default": "" },
 		"itemColourHover": { "type": "string", "default": "" },
 		"itemBgHover": { "type": "string", "default": "" },
+		"itemRadius": { "type": "number", "default": 8 },
+		"itemRadiusHover": { "type": "number", "default": null },
 		"hoverStyle": {
 			"type": "string",
 			"default": "pill",
@@ -62,6 +64,10 @@
 		"featuredBg": { "type": "string", "default": "" },
 		"featuredColourHover": { "type": "string", "default": "" },
 		"featuredBgHover": { "type": "string", "default": "" },
+		"featuredRadius": { "type": "number", "default": 8 },
+		"featuredRadiusHover": { "type": "number", "default": null },
+		"featuredFontWeight": { "type": "number", "default": 600 },
+		"featuredFontWeightHover": { "type": "number", "default": null },
 
 		"burgerColour": { "type": "string", "default": "" },
 		"burgerHoverColour": { "type": "string", "default": "" },

@@ -95,6 +95,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemBg,
 		itemColourHover,
 		itemBgHover,
+		itemRadius,
+		itemRadiusHover,
 		hoverStyle,
 		underlineColour,
 		underlineColourHover,
@@ -104,6 +106,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		featuredBg,
 		featuredColourHover,
 		featuredBgHover,
+		featuredRadius,
+		featuredRadiusHover,
+		featuredFontWeight,
+		featuredFontWeightHover,
 		burgerColour,
 		burgerHoverColour,
 		burgerSize,
@@ -454,6 +460,50 @@ export default function Edit( { attributes, setAttributes } ) {
 										enableAlpha
 										clearable
 									/>
+									<UnitControl
+										label={ __(
+											'Corner radius',
+											'sgs-blocks'
+										) }
+										value={ `${
+											isNormal
+												? itemRadius
+												: itemRadiusHover ??
+												  itemRadius
+										}px` }
+										units={ [
+											{
+												value: 'px',
+												label: 'px',
+												default: 8,
+											},
+										] }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? {
+															itemRadius:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+													: {
+															itemRadiusHover:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+											)
+										}
+										help={
+											isNormal
+												? undefined
+												: __(
+														'Leave matching Normal for a pill that keeps its shape on hover.',
+														'sgs-blocks'
+												  )
+										}
+									/>
 								</>
 							);
 						} }
@@ -616,6 +666,79 @@ export default function Edit( { attributes, setAttributes } ) {
 										linked
 										enableAlpha
 										clearable
+									/>
+									<UnitControl
+										label={ __(
+											'Corner radius',
+											'sgs-blocks'
+										) }
+										value={ `${
+											isNormal
+												? featuredRadius
+												: featuredRadiusHover ??
+												  featuredRadius
+										}px` }
+										units={ [
+											{
+												value: 'px',
+												label: 'px',
+												default: 8,
+											},
+										] }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? {
+															featuredRadius:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+													: {
+															featuredRadiusHover:
+																parseFloat(
+																	val
+																) || 0,
+													  }
+											)
+										}
+									/>
+									<SelectControl
+										label={ __(
+											'Font weight',
+											'sgs-blocks'
+										) }
+										value={ String(
+											isNormal
+												? featuredFontWeight
+												: featuredFontWeightHover ??
+														featuredFontWeight
+										) }
+										options={ [
+											{ label: 'Regular', value: '400' },
+											{ label: 'Medium', value: '500' },
+											{ label: 'Semi-bold', value: '600' },
+											{ label: 'Bold', value: '700' },
+										] }
+										onChange={ ( val ) =>
+											setAttributes(
+												isNormal
+													? {
+															featuredFontWeight:
+																parseInt(
+																	val,
+																	10
+																),
+													  }
+													: {
+															featuredFontWeightHover:
+																parseInt(
+																	val,
+																	10
+																),
+													  }
+											)
+										}
 									/>
 								</>
 							);
