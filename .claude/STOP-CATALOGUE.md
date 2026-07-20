@@ -47,6 +47,27 @@ points here. Neither ever silently drops a STOP.
   compensation, layout-shift-on-lock) **cannot fire in-harness, and a 0px delta proves
   NOTHING**. Report such a check as INCONCLUSIVE and route it to Bean on a real windowed
   desktop browser. Never bank it as a pass. (Encoded in `nav-qa/README.md`.)
+- **STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS** — NEW 2026-07-20 (D352). Before banking ANY
+  acceptance PASS, ask: **"would this still pass if the feature were entirely absent?"** If yes,
+  it proves nothing. Happened this session: FR-36-1's classic-menu render was "proven" by asserting
+  5 menu labels on a page — but the page's HEADER renders those same 5 labels from the BLOCK menu,
+  so the check would have passed identically with the resolver deleted. It was caught and redone
+  with a marker item existing ONLY in the classic menu, plus a **negative control** (marker must be
+  ABSENT on the homepage) and a countable delta (28→29 anchors). **Rule: an acceptance test needs a
+  signal unique to the thing under test, and wherever possible a negative control that FAILS.** This
+  is the same family as STOP-VERIFY-DEPLOY-BY-CHECKSUM (a liveness check that passes on any working
+  page) — generalised: *a check that cannot fail when the feature is missing is worse than no check,
+  because it manufactures false confidence and gets quoted to Bean as proof.*
+- **STOP-VERIFY-A-DEFERRAL-BEFORE-EXECUTING-IT** — NEW 2026-07-20 (D352). A task inherited from a
+  handoff / next-session-prompt / parking entry is a **hypothesis about the world at the time it was
+  written**, not a standing instruction. Check its premise still holds BEFORE doing it. Happened this
+  session: the prompt said to "retire the adaptive-nav / mega-menu / mobile-nav DB rows via
+  `/sgs-update`". Checked instead of executed: `mobile-nav` was ALREADY gone from `src/` and the DB
+  (no-op); `adaptive-nav` MUST stay registered as the FR-36-18 rollback path; `mega-menu` is Phase-2
+  scope, not superseded work. **Executing it as written would have deleted the rollback path.** The
+  deferral was struck with its reasoning rather than carried forward. Same family as
+  STOP-FACT-CHECK-COUNCIL/REGISTER-FINDINGS — a finding is a hypothesis — extended to *your own
+  project's queued work*, which feels authoritative precisely because it came from inside.
 - **STOP-RECHECK-BRANCH-BEFORE-COMMIT** — on a shared worktree with co-active sessions,
   put `git branch --show-current` in the SAME guarded command as the commit; a
   session-start check is stale the moment a co-active session runs `git checkout`. Use
@@ -251,3 +272,9 @@ for real before claiming done?
   All four are earned: each records a failure that actually occurred this session (a false
   `verdict: PASS` from a reverted deploy; a contrast policy designed before reading the draft;
   an in-harness scrollbar test that could never fire; a never-once-run exit animation).
+- **2026-07-20 (Spec 36 Phase-1 close / D352) re-run:** previous unique `STOP-*` tokens = **55**;
+  this session ADDED 2 (`STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS`,
+  `STOP-VERIFY-A-DEFERRAL-BEFORE-EXECUTING-IT`) and SUBTRACTED none → **57**. 57 >= 55. PASS.
+  Both are earned: a vacuous acceptance test that would have passed with the feature absent was
+  caught mid-session and redone with a negative control; and an inherited deferral, executed as
+  written, would have deleted the FR-36-18 rollback path.

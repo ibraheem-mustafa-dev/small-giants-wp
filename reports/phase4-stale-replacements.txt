@@ -1,7 +1,7 @@
-# Stale Block Replacement Mappings — 2026-07-16 19:47:09 UTC
+# Stale Block Replacement Mappings — 2026-07-20 04:49:37 UTC
 
-Checked: 22 | Valid: 22 | Stale: 0
+Checked: 22 | Valid: 21 | Stale: 1
 
 ## Stale mappings (manual review required)
 
-_(none — all mappings resolve to existing native_wp blocks)_
+- sgs/container replaces 'core/group,core/row,core/stack,core/columns,core/column' — targets not found: 'core/row', 'core/stack'

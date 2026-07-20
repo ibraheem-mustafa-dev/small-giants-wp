@@ -1,8 +1,8 @@
-# Stage 4 Style Variation Sync — 2026-07-16 19:47:09 UTC
+# Stage 4 Style Variation Sync — 2026-07-20 04:49:37 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 3 | Inserted: 26 | Skipped: 133 | Conflicts: 122
+Snapshots found: 8 | Missing: 3 | Inserted: 0 | Skipped: 126 | Conflicts: 115
 
 ## Per-client results
 
@@ -41,28 +41,21 @@ Inserted: 0 | Skipped: 5 | Conflicts: 14
 
 ### indus-foods
 
-Inserted: 26 | Skipped: 19 | Conflicts: 20
+Inserted: 0 | Skipped: 12 | Conflicts: 13
 
-- CONFLICT: color-primary (framework='#0D1B2A', client='#0a7ea8') → inserted as indus-foods-color-primary
-- CONFLICT: color-surface (framework='#FFFFFF', client='#ffffff') → inserted as indus-foods-color-surface
-- CONFLICT: color-text (framework='#1a1a1a', client='#2c3e50') → inserted as indus-foods-color-text
+- CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
 - CONFLICT: color-accent (framework='#C9A84C', client='#D8CA50') → inserted as indus-foods-color-accent
 - CONFLICT: color-accent-light (framework='#F0E4C3', client='#E7D768') → inserted as indus-foods-color-accent-light
 - CONFLICT: color-border-subtle (framework='#C9A84C', client='#2EADE2') → inserted as indus-foods-color-border-subtle
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as indus-foods-color-success
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F8F7F4') → inserted as indus-foods-color-surface-alt
+- CONFLICT: color-text (framework='#1a1a1a', client='#2C3E50') → inserted as indus-foods-color-text
 - CONFLICT: color-text-muted (framework='#6B6B6B', client='#5A6070') → inserted as indus-foods-color-text-muted
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#2C3E50') → inserted as indus-foods-color-footer-bg
-- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='"Source Sans Pro", sans-serif') → inserted as indus-foods-font-family-body
-- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-heading
-- CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-display
-- CONFLICT: spacing-30 (framework='0.75rem', client='1rem') → inserted as indus-foods-spacing-30
-- CONFLICT: spacing-40 (framework='1rem', client='1.5rem') → inserted as indus-foods-spacing-40
-- CONFLICT: spacing-50 (framework='1.5rem', client='2rem') → inserted as indus-foods-spacing-50
-- CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as indus-foods-spacing-60
-- CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as indus-foods-spacing-70
-- CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as indus-foods-spacing-80
+- CONFLICT: font-size-hero (framework='50px', client='clamp(2.5rem, calc(2.5rem + (100vw - 1024px) * 0.02404), 3.125rem)') → inserted as indus-foods-font-size-hero
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, system-ui, sans-serif') → inserted as indus-foods-font-family-heading
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client="'Source Sans 3', system-ui, sans-serif") → inserted as indus-foods-font-family-body
 
 ### mamas-munches
 

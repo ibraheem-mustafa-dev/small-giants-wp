@@ -184,7 +184,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target palestine-lives   # p
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- **Dev site:** palestine-lives.org. **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com. Both on **WP 7.0.1** (verified 2026-07-16 via Hostinger MCP `hosting_showWordPressCoreVersionV1`; WP 7.1 lands 19 Aug 2026 — re-check rather than trusting this line). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
+- **Dev site:** palestine-lives.org. **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com. Both on **WP 7.0.2** (verified 2026-07-20 via `wp core version` over SSH on BOTH sites — the more direct check; WP 7.1 lands 19 Aug 2026 — re-check rather than trusting this line). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
 - **Canary credentials (gitignored, ALWAYS available — no need to ask):** `.claude/secrets/sandybrown.env` holds the test-site logins — `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` (browser/admin login at wp-login.php) + `WP_APP_PWD_SANDYBROWN` (REST/Store-API Basic auth) + `WP_URL_SANDYBROWN`. Use them directly for Playwright editor login + REST verification. (Cloning dev-site app passwords: `A:/.openclaw/.secrets/wp-app-passwords.env`.)
 - **No Node.js on server** — build locally, deploy compiled `build/`.

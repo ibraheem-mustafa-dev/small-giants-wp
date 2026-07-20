@@ -138,7 +138,7 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 - **Local testing:** WordPress Playground or Local by Flywheel
 - **Dev site:** palestine-lives.org — primary integration target
 - **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary (page 144)
-- **WP version:** both sites on **7.0.1** (verified 2026-07-16 via Hostinger MCP; WP 7.1 lands 19 Aug 2026 — re-check, don't trust this line)
+- **WP version:** both sites on **7.0.2** (verified 2026-07-20 via `wp core version` over SSH on both; WP 7.1 lands 19 Aug 2026 — re-check, don't trust this line)
 - **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks
 - **Updates:** theme/plugin updates are code changes deployed via `build-deploy.py`, not WordPress auto-updates.
 

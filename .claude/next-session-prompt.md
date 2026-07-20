@@ -1,140 +1,220 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: Track 1 — Spec 35 block-inspector-UX. Parallax split + Task 2 #1+#2 (element manifest + conformance script + brand-strip real controls) SHIPPED + merged to main (2026-07-20, `cdfbd9e0`). Next = Task 3 (hover codemod, design-gate first), Task 6 (linters WARN-only), Task 2 #3/#4/step-5.
+thread: "Track 2 — Spec 36 navigation. PHASE 1 CLOSED 2026-07-20 (Gate-1 passed + Bean-signed; FR-36-1 classic menus shipped, D352; roster/DB close-out done). Next = Phase 2: mega CPT + Indus cutover + footer round-trip."
 generated: 2026-07-20
+note: "Track 1 (Spec 35 block-inspector-UX) has its own live prompt at .claude/next-session-prompt-spec35-track1.md — preserved verbatim 2026-07-20 when this canonical file was handed back to Track 2. Do not clobber it."
 ---
 
-# Spec 35 — Track 1 (block-inspector-UX) — next session
+# Next session — Spec 36 **PHASE 2** (mega menu + Indus + rich modes)
 
-**Invoke `/autopilot` before doing anything else.** Then read this file end-to-end.
+Invoke `/autopilot` before doing anything else.
 
-> **Track-1-scoped handoff.** Branch `feat/brand-strip-inspector-rebuild` is SHARED with a co-active
-> Track 2 (header/footer/nav) and a Track C (`feat/core-block-migration`). Do NOT rewrite `LEDGER.md` /
-> `next-session-prompt.md` / `decisions.md` — Track 2 owns them. Path-scope every commit; re-check
-> `git branch --show-current` in the SAME command as the commit; NEVER `git add -A` or `git checkout`.
-> See "Shared-branch discipline".
+> **Co-active tracks share this worktree.** Track 1 (Spec 35 inspector UX) is live at
+> `.claude/next-session-prompt-spec35-track1.md`; Track C is `feat/core-block-migration`. Path-scope every
+> commit, re-check `git branch --show-current` in the SAME command as the commit, never `git add -A`.
+
+## First action
+
+**Smallest first step, under 5 minutes, zero dependencies:** run the `show_in_nav_menus` spike for Task 1 —
+register a throwaway CPT with `show_in_nav_menus: true` on the canary and confirm it appears in the
+*Appearance → Menus* "add items" panel. Spec 36 §12 requires this be PROVEN before the mega work is built on
+it, and it settles the single riskiest assumption in Phase 2 before any code is written.
+
+## Mandatory READING — read these before anything else
+
+1. **`.claude/LEDGER.md`** — the single living status. Nav section first.
+2. **`.claude/STOP-CATALOGUE.md`** — **57** STOP entries + the pre-flight ritual. **Answer the ritual inline
+   before your first Write/Edit.** 6 entries are new from 2026-07-20; each records a real failure.
+3. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** — the canonical nav spec, IN FULL.
+   ⛔ **Spec 34 is DELETED — never cite it.** Spec 31 remains the standing cloning spec; read it in full for
+   any converter work.
 
 ## Why this matters (motivation — Rule 7)
 
-Spec 35 makes every SGS block's editor sidebar **complete + consistent** so a non-coder client can
-self-serve and Bean is **QC only**. The single biggest lever: one fixed inspector shape the client learns
-once and every block obeys (element-first: Content · Style tabs; Style tab = element sections; clusters
-Text → Fill → Layout). **Top USP:** the inspector reads the same on every block → less intervention over
-time. The element-first shape is now LOCKED, the machine contract that enforces it is BUILT, and the
-exemplar (brand-strip) genuinely embodies it with real controls.
+The header/footer/nav system is the last big gap between "SGS builds pages" and "SGS builds *sites*". Every
+client build needs a nav, and until this is done the cloning pipeline has nothing to emit into. **Top USP:**
+one nav that is faithful to a draft, accessible by construction, crawlable without JS, and editable by a
+non-coder — which is exactly what Kadence/Spectra headers are not. Phase 1 proved the shape works on a real
+client page; Phase 2 makes it rich enough for Indus.
 
-## What shipped this session (2026-07-20, all committed + pushed on the shared branch)
+## Plain-English state
 
-| Item | What | Commit |
-|---|---|---|
-| **Parallax split** | Background parallax → a toggle in the native Colour panel (`group="color"`), shown only on background-capable blocks, with a conditional Strength slider. Element parallax → its own renamed panel with a plain-English explanation + conditional Strength. Both drive the one `sgsParallax` enum (mutually exclusive) → zero render/data-model change. Live-verified. | `1d476c26` |
-| **Task 2 #1** | Element-manifest schema (`supports.sgs.elements` = `{label,order,clusters[],prefix?,isWrapper?,attrMap?}`) + `cluster-member-sets.json` (text/fill/layout member sets sourced from the golden-master registry) + `check-element-manifest-conformance.js` (computes the CLUSTER-COHERENCE rule, WARN-only). brand-strip manifest seeded (4 elements). Honest run: **16 OK / 22 gaps**. | `869fe84d` |
-| **Task 2 #2** | brand-strip exemplar upgraded to REAL controls: `tileShadow` SELECT → `ShadowControl` (scoped `<style>`, no inline), per-logo link → `SgsLinkControl` (→ linkUrl/linkTarget/linkRel). | `869fe84d` |
-| **ShadowControl fix** | Live-verify caught a crash: `useSettings('shadow.presets')` returns WP's origin-keyed `{default,theme,custom}` object on WP 7.0.x, not a flat array → `(o||[]).map` threw. Normalised to a flat, slug-deduped array. brand-strip was the first LIVE render of ShadowControl. Live re-verified: 10 deduped preset buttons, no crash. | `bffb00ff` |
-| **Task 4 live-verify** | Confirmed in the real editor: a form-field's inspector shows only Field Settings / Visibility Conditions / Spacing / Advanced — Animation/Hover/BlockLink/ClickEffects/Parallax all absent. | (verified, env) |
-| **Bash node shim** | Fixed permanently: removed the leftover blank `node` placeholder in `nvm/v24.16.0` (rogue-package remnant) that shadowed `node.exe` in Git Bash. `node`/`npm` now work in Bash. | (env, no commit) |
-| **info-box question** | Confirmed the child-`sgs/icon` emoji design is built + working (not broken); the audit finding was one stale converter-test post (trashed). | (investigation) |
+**Spec 36 Phase 1 is CLOSED.** The navigation is built, live on the sandybrown canary, machine-green, and
+signed off by Bean's eye. Classic WordPress menus (*Appearance → Menus*) now drive it — the last unbuilt
+requirement, landed 2026-07-20 (D352). The roster/doc close-out is done, and a build gate that had been
+silently failing (`/sgs-update` Stage 11) is green again.
 
-## Remaining Track-1 tasks (next-session priorities)
+## What is DONE — do not redo
 
-- **Task 3 — hover-duplicate migration (parked, heavy).** Migrate the 85 hover-duplicates (universal
-  `sgsHover*` panel + 22 blocks' private `*Hover` attrs) onto the shared `StateToggleControl`.
-  **Bean's approved approach:** ONE block inline to set the canonical shape, then a **script-driven
-  codemod** driven by the linter's known per-block `*Hover` attr list (NOT a blind regex — that broke
-  live `textAlign` before), gated by build + `php -l` + `check-duplicate-controls.js` dropping to 0 +
-  a live Playwright spot-check on 2–3 blocks. **Design-gate the codemod shape with Bean first.**
-- **Task 6 — wire the 3 linters into prebuild (WARN-only).** `check-universal-fit.js`,
-  `check-duplicate-controls.js`, `audit-block-file-consistency.py` → prebuild, exit 0 always. Do after
-  Task 3 so baselines start clean. Note: `check-element-manifest-conformance.js` (built this session) is
-  a 4th WARN-only candidate — wire it too, but the manifest only exists on brand-strip so far.
-- **Task 2 #3 — per-device border + shadow (DESIGN-GATE first).** Responsive wrappers + PHP `@media`
-  emitters for border (width/style/colour) + box-shadow, under the Spec 32 no-inline contract. Shared
-  styling machinery → design-gate the wrapper + emitter shape with Bean BEFORE building.
-- **Task 2 #4 — Content-tab organisation spec.** A doc: where the registry's behaviour-families +
-  composite panels live in the Content tab (Task 2 owned the Style tab only).
-- **Task 2 step 5 — per-block manifest rollout + gap-closing.** brand-strip has 22 conformance gaps
-  (tile lacks opacity/overlay/width/height/min-max/border-style; caption typography partially disabled;
-  strip-spacing lacks gap/width/height/box-shadow). Either add the missing controls or narrow an
-  element's declared `clusters`. Then roll `supports.sgs.elements` out to the other blocks.
+- **Phase 1:** shared `store('sgs/nav')`, `sgs/nav-menu` (bar + burger), `sgs/nav-drawer` (`<dialog
+  showModal>`, content-KIND block-private per D294), `scripts/nav-qa/` tooling, header re-authored in
+  `parts/header.html`. `sgs/adaptive-nav` stays registered but dormant = the rollback path.
+- **Gate-1 PASSED:** drawer axe **0** · elementFromPoint sweep **20/20** (10/10 at 375) · crawl-assert PASS
+  with JS off · burger/ESC/focus/Tab · CLS 0.0000–0.0144 · **Bean's eye** · **D340 bounce** (Bean, manual).
+- **FR-36-1 classic menus (D352):** resolves CLASSIC-FIRST then `wp_navigation`; classic items normalised
+  into the same block-shaped array so nothing downstream changed; editor picker lists classic menus.
+- **Close-out:** Spec 17 §S9-1 + Spec 00 §2.1 rosters refreshed · `no-header-footer-block.py` needs no change
+  (proven by executing it) · Spec 29 roster fixed → Stage 11 exits 0 · **30 DB attrs registered**.
 
-## FIRST ACTION (smallest, <5 min — Rule 2)
+## ⛔ Two things you must NOT "fix"
 
-Read the LOCKED design doc `.claude/plans/spec-35-compound-control-sets-design.md` §"Rollout steps" +
-run `node plugins/sgs-blocks/scripts/check-element-manifest-conformance.js` to see brand-strip's live
-16-OK/22-gap output — that IS the Task 2 step-5 gap list you'll work from. Zero deploy, zero risk.
+- **The featured item's hover does not match the draft. THIS IS DELIBERATE.** The draft's
+  `box-shadow: inset 0 -2px 0 var(--accent)` has no attribute to carry it. **Bean locked it as the planted
+  TEST CASE for header cloning** (`P-NAV-FEATURED-HOVER-DRAFT-PARITY`, status BLOCKED). Adding an attribute
+  or routing to `sgsCustomCss` is **forbidden** until header cloning exists and has run against it.
+- **Do NOT delete the `sgs/adaptive-nav` registration** until the Indus header is re-authored (FR-36-18) — it
+  is the rollback path. Same for `sgs/mega-menu`: Phase-2 scope, not dead code.
 
-## Shared-branch discipline (LOAD-BEARING)
+## Task 1 — `sgs_mega_menu` CPT + native attach
 
-- Branch `feat/brand-strip-inspector-rebuild`, shared with co-active Track 2 + Track C. Track-1 HEAD this
-  session ended at `bffb00ff`. NOT merged to main (deliberate).
-- Path-scope EVERY commit (`git add -- <paths>`); re-check `git branch --show-current` in the SAME
-  command; NEVER `git add -A`, NEVER `git checkout`/switch. Non-visual commits use
-  `git commit --no-verify` + a `[batch-ok: <reason>]` line.
-- Merge to main ONLY via an isolated `git worktree add /c/tmp/x main`. Do NOT delete the shared branch.
-- **Deploy ONLY via an isolated worktree** (`git worktree add --detach C:/tmp/sgs-deploy <commit>` +
-  junction node_modules + `build-deploy.py --target sandybrown --blocks-only`) — the shared worktree
-  carries Track 2 + Track C WIP; a deploy from it would ship their work. Remove the junction (PowerShell
-  `rmdir`) before `git worktree remove --force`.
-- `brand-strip/style.css` is HELD behind the visual-diff gate (carries pre-existing reduced-motion work +
-  this session's dead-shadow-rule cleanup) — leave it uncommitted; it renders fine without it (shadow via
-  render.php). Track 2/C's uncommitted files (nav-drawer/, shared/, cart, responsive-logo, LEDGER/specs)
-  are NOT Track 1's — leave them alone.
+**What:** Build the mega-menu CPT and prove an operator can attach one to a menu item in *Appearance → Menus*,
+rendering at its **real menu position** (the old "mega renders last" bug must be structurally impossible).
+**Why:** Gate-2 needs the Indus mega; everything else in Phase 2 depends on this existing.
+**Estimated time:** 40–60 min for the CPT + attach spike (layouts separate).
 
-## Structural defences (STOP catalogue — carry forward, never subtract)
+**Orchestration:**
+- Execution: **inline** (main thread, Opus) for the architecture; the 5 layout templates can be delegated.
+- **Do the `show_in_nav_menus` SPIKE FIRST** — Spec 36 §12 says this must be PROVEN, not asserted, and warns
+  that `class-product-templates-cpt.php:70` sets it to **FALSE** (a wrong citation). Register the CPT with
+  `show_in_nav_menus: true` and confirm it appears in the "add items" panel before building on it.
+- Model: n/a (inline). Depends on: none. Parallel with: Tasks 2 + 3.
+- **`/qc` gate after: yes** — `/qc-council` (converter/block logic, blub.db 255) + live canary check.
 
-- **STOP-LIVE-VERIFY-SHARED-COMPONENTS** (new this session): a subagent's build-green + unit-pass report
-  is NOT proof a shared editor component renders. Live-verify it in the real editor (insert block, open
-  EVERY tab that renders it, watch the error boundary + console) before closing. ShadowControl compiled +
-  passed 180 tests but crashed on first live render (origin-keyed `shadow.presets`). Memory:
-  `live-verify-shared-components-build-green-not-enough`.
-- **STOP-VERIFY-SUBAGENT-FACTS**: fact-check subagent-invented specifics (paths/versions/claims) vs
-  ground truth; STRUCTURE can be faithful while FACTS are wrong.
-- **STOP-BLIND-REGEX-CODEMOD** (Task 3): a blind `*Hover` regex broke live `textAlign` before — drive the
-  Task 3 codemod off the linter's KNOWN per-block attr list, `/verify-loop` per block.
-- **STOP-DEPLOY-FROM-SHARED-WORKTREE**: always deploy from an isolated worktree at a committed SHA.
-- **STOP-NO-VERSION-BUMPS / NO-DEPRECATIONS** (D270): pre-production; additive metadata + re-clone, never
-  a `deprecated.js`.
+**Acceptance:** a `sgs_mega_menu` post attached via *Appearance → Menus* renders its panel at its real
+position, server-side, crawlable with JS off, `nav-qa` still green. Per **STOP-29** map any unbuilt part to a
+named spec STAGE — never "out of scope". Per **STOP-NEGATIVE-CONTROL** the test must use a signal unique to
+the mega, not one the existing bar would produce anyway.
 
-## Pre-flight ritual (answer before first Write/Edit)
+## Task 2 — FR-36-18 Indus header cutover
 
-1. Am I on `feat/brand-strip-inspector-rebuild`, and is my next commit path-scoped?
-2. Am I about to touch a shared component / shared mechanism? → design-gate + plan to live-verify.
-3. Will this change render live? → deploy via isolated worktree, then verify in the real editor (not
-   build-green alone).
-4. Is anything I'm reporting a subagent claim? → fact-check vs ground truth before closing.
+**What:** Re-author the Indus (palestine-lives.org) header onto `sgs/nav-menu` + `sgs/nav-drawer`, as done for
+Mama's. Only once live and verified may the `adaptive-nav` registration + DB row be retired.
+**Why:** It is the last thing pinning the old nav block, and it proves R-31-9 universality on a 2nd client.
+**Estimated time:** 30–45 min.
 
-## Follow-ups / notes
+**Orchestration:**
+- Execution: inline, or delegate to `wp-sgs-developer` if it grows into heavy build work.
+- Depends on: none. Parallel with: Tasks 1 + 3.
+- **`/qc` gate after: yes** — per **STOP-VERIFY-EVERY-CLIENT**, verify on BOTH sites, not one.
 
-- **MEMORY.md is ~20.4KB** (limit 24.4KB) — compact soon (one line per entry; move detail to topic files).
-- **No D-numbers claimed** (avoided editing the shared `decisions.md`). Assign next session if wanted.
-- Linters stay WARN-only until Spec close. No block version bumps / no `deprecated.js`.
+**Acceptance:** Indus header renders from the new blocks; 0 overflow at 375/768/1440; drawer axe 0; crawl PASS
+with JS off. THEN delete the adaptive-nav registration + retire its DB row via `/sgs-update`.
 
-## Skills / Agents / MCP
+## Task 3 — Footer round-trip proof
 
-| Skill | When |
+**What:** Prove the Site-Editor → frontend round trip for the **FOOTER**. The header half is proven; the two
+are wired differently, so the footer needs its own test.
+**Why:** The one real residual from the struck Spec-34 item — do not lose it.
+**Estimated time:** 15 min. **Orchestration:** inline. Depends on: none. **`/qc` gate: yes.**
+**Acceptance:** an edit made in the Site Editor to the footer part appears on the live frontend after deploy.
+
+## Dependency graph
+
+```
+Task 1 (mega CPT — spike show_in_nav_menus FIRST)  ─┐
+Task 2 (Indus cutover)                             ─┼─ parallel, independent ─ /qc + nav-qa regression
+Task 3 (footer round-trip)                         ─┘
+                                                     ↓
+                        Task 2 green → delete adaptive-nav registration + DB row
+                                                     ↓
+                   commit (path-scoped, branch re-checked in the SAME command)
+```
+
+## Methodology guardrails (do not skip)
+
+- **Deploy before measure** — build + deploy + cache clear BEFORE any live test, or you measure stale output.
+- **Checksum every deploy.** `build-deploy.py` printing `[DONE]` + `[verify] HTTP 200, markers present` does
+  NOT mean your change shipped — that verify passes on ANY working SGS page, including one running old code.
+  `md5sum` the changed file local↔server BEFORE measuring. A co-active session once silently reverted a
+  verified fix and a false `verdict: PASS` reached Bean.
+- **On a shared canary a PASS is perishable** — re-assert before quoting an earlier live result.
+- **Negative control, or the test is vacuous** (NEW 2026-07-20) — before banking a PASS ask *"would this still
+  pass if the feature were absent?"* If yes it proves nothing. This caught a false FR-36-1 pass mid-session.
+- **Verify an inherited deferral before executing it** (NEW 2026-07-20) — a queued task is a hypothesis about
+  the world when it was written. One such item, executed as written, would have deleted the rollback path.
+- **Read the draft before designing a clone fix** — a divergence usually means the block has NO attribute able
+  to carry the value (silent drop, the D338 class), not a policy gap. An a11y defect on a clone whose draft is
+  accessible is a FIDELITY defect.
+- **Never claim a scrollbar-dependent test passed from the harness** — headless reports
+  `innerWidth - clientWidth = 0` (overlay scrollbars). Report INCONCLUSIVE and route it to Bean.
+- **`dialog.close()` kills exit animations** — `display:none` in the same tick. Animate first, close on
+  `animationend`. Native ESC bypasses your close handler entirely.
+- **Root cause before instance fix** — ask "what is the CLASS of failure?" before fixing the specific case.
+- **Outcome vs completion** — code shipped ≠ outcome achieved. Do not redefine done.
+- **Shared-worktree git discipline** — re-check branch in the SAME command as the commit; commit by EXACT path;
+  if `push` is rejected do NOT stash another session's files — use an isolated worktree
+  (`git worktree add /c/tmp/x origin/main`) or `git merge origin/main`.
+- **/qc multi-rater BEFORE every commit** touching converter / pipeline / SGS block logic (blub.db 255).
+- **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, never full-page (blub.db 256).
+- **WP_DEBUG_DISPLAY must stay false** on staging — debug notices contaminate every pixel-diff.
+
+## Known-open, NOT blockers (do not re-litigate)
+
+- **`P-NAV-STYLES-TAB-BLANKS-UNREPRODUCED`** — Bean reported the inspector's Styles tab blanking the sidebar on
+  `sgs/nav-menu`. **NOT REPRODUCED** across all 3 nav blocks with every panel force-opened, zero console errors.
+  Bean deprioritised it. Needs his console capture; do not guess at a cause.
+- **`P-CANARY-PAGE-WEIGHT-BUDGET`** — CSS 371KB / JS 84KB vs 100/50KB, but nav is only 17.3KB and WooCommerce
+  alone exceeds the CSS budget. Cheap win: `mega-menu-panels.css` (13.1KB) loads with no mega menu present —
+  **Task 1 may make this moot; recheck before acting.**
+- **`P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC`** + **`P-CANARY-SHARED-DEPLOY-RACE`** — see guardrails.
+- **`P-AUDIT-COLOUR-ROLE-KEYED`** · **`P-VISUAL-GATE-ORDERING`** · **`P-NAV-ITEM-SEPARATORS`** ·
+  **`P-NAV-INSTANCE-CONFIG-DUPLICATION`** · **`P-WP7-PLATFORM-ALIGNMENT`**.
+- **Container-mirror dry-run:** `sync-container-wrapping-blocks.py` reports **259 attr additions + 20 support
+  changes across 15 blocks** it could apply. NOT applied — shared-wrapper capability propagation is design-gate
+  territory (Rule 7). A decision for Bean, not a silent sweep.
+
+## Tool bindings
+
+The three tables below are the binding dispatch set for this session — skills, MCP servers, and agents.
+Route through them rather than hand-rolling equivalents.
+
+## Skills to Invoke
+
+| Skill | When to use |
 |---|---|
-| `/autopilot` | FIRST — live routing + ADHD support |
-| `/brainstorming` | design-gate the Task 2 #3 responsive machinery + Task 3 codemod shape |
-| `/strategic-plan` | order the remaining Task 2 / 3 / 6 work |
-| `/gap-analysis` | grade the Task 3 codemod design + the content-tab spec before lock |
-| `/research` | any gold-standard check before a design menu |
-| `/lifecycle` | if wiring linters / editing any skill/agent |
-| `/sgs-wp-engine`, `/wp-blocks`, `/sgs-db` | any SGS block work; DB is authoritative — never hardcode counts |
-| `/qc-council` | multi-rater validate the Task 3 codemod fix-shape before dispatch |
-| `/verify-loop` | MANDATORY per block edit (caught the textAlign regression) |
-| `/delegate` | route each dispatch (Haiku mechanical / Sonnet design) |
+| `/brainstorming` | Any architectural or design decision before building (mega layouts) |
+| `/gap-analysis` | Grade outputs before delivery |
+| `/lifecycle` | Before ANY skill / agent / pipeline change |
+| `/research` | Auto-routes to the right research tier |
+| `/strategic-plan` | Plan implementation order before writing code |
+| `/sgs-wp-engine` | The SGS framework skill — any block/theme work |
+| `/wp-block-development` | Core WP block-API questions (CPT registration, nav-item shapes) |
+| `/qc-inline` | Small acceptance gates |
+| `/qc-council` | Multi-rater before any converter/pipeline/SGS-block commit |
+| `/systematic-debugging` | Root cause before fix |
+| `/wp-sgs-deploy` | Deploy ceremony + gates |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|---|---|
+| `playwright` | Live DOM verification on the canary (R-31-11) — the canonical proof |
+| `chrome-devtools` | CDP matched-rule provenance if CSS provenance is disputed |
+| `hostinger` | Cache purge / WP version checks |
+
+## Agents to Delegate To
 
 | Agent | When |
 |---|---|
-| `wp-sgs-developer` | hover migration, per-device border/shadow build, per-block manifest rollout (Sonnet). Constrain: no deploy, no git commit — main thread commits path-scoped + deploys via isolated worktree + LIVE-verifies |
-| `design-reviewer` | visual + a11y QC of a migrated control |
+| `wp-sgs-developer` | If Task 1 or 2 grows into heavy WP build work |
+| `code-reviewer` | Pre-commit review of the CPT + attach code |
+| `test-and-explain` | Plain-English confirmation for Bean that the mega menu works |
 
-| MCP / tool | For |
-|---|---|
-| Chrome DevTools CLI (`chrome-devtools <tool>`) | live editor verification WITHOUT the shared MCP Playwright browser (Track 2 holds that profile). Installed globally this session. Log in via `.claude/secrets/sandybrown.env`; session drops on CLI reconnect — re-login each time |
-| Playwright MCP | live-verify (only if the shared browser is free) |
+## Pre-flight self-attestation ritual (answer inline before first Write/Edit)
 
-Canary creds (always available): `.claude/secrets/sandybrown.env` (`WP_USER/PWD_SANDYBROWN`). Deploy: the
-ONE path `build-deploy.py --target sandybrown` from an ISOLATED worktree (never the shared one). SSH alias
-`ssh hd`. Conformance script: `node plugins/sgs-blocks/scripts/check-element-manifest-conformance.js`.
+1. Read the governing spec (Spec 36 in full; Spec 31 for converter work) + recent decisions + LEDGER?
+2. Did the prior in-session work actually LAND? (Read the LEDGER's live status.)
+3. Am I about to assert a cause I have NOT tested? (STOP-PROVE-CAUSE-BEFORE-FIX.)
+4. Verifying colour/contrast on ALL 8 client palettes, not one? (STOP-VERIFY-EVERY-CLIENT.)
+5. Passing the declared SHAPE (object vs flat; support vs attr)? Shape freeze respected? (STOP-D328.)
+6. Does an SGS block/helper already do this? Did I grep? Did a parallel track already do it?
+   (STOP-HIDDEN-PARALLEL-SYSTEM.)
+7. Am I building ahead of reconciling with what already shipped? (rework trap.)
+8. Canary before dev-site? Full cache clear incl. Hostinger CDN before measuring? Desktop browser for any
+   scrollbar/geometry check? (STOP-SCROLLBAR-LOCK / STOP-HARNESS-CANNOT-SEE-A-CLASSIC-SCROLLBAR.)
+9. D-ceiling (`grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`) + branch verified in the SAME
+   command as the commit?
+10. Am I touching another track's files/branches without checking their state first?
+11. **Would my acceptance test still pass if the feature were absent?** (STOP-NEGATIVE-CONTROL.)
+12. **Is this inherited task's premise still true?** (STOP-VERIFY-A-DEFERRAL-BEFORE-EXECUTING-IT.)

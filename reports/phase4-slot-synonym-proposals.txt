@@ -1,7 +1,7 @@
-# Slot Synonym Auto-Seed Proposals — 2026-07-16 19:47:09 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-07-20 04:49:37 UTC
 
 ## Summary
-Unmapped rows: 63 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 2 | No match (low confidence): 61
+Unmapped rows: 63 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 3 | No match (low confidence): 60
 
 ## High confidence (auto-updated)
 
@@ -9,6 +9,7 @@ _(none)_
 
 ## Medium confidence (manual review required)
 
+- slot='drawer' → sgs/nav-drawer (contains match — review before accepting)
 - slot='feature' → sgs/feature-grid (prefix match — review before accepting)
 - slot='content' → sgs/content-collection (prefix match — review before accepting)
 
@@ -44,7 +45,6 @@ _(none)_
 - slot='showArrows' (no SGS block matches)
 - slot='showDate' (no SGS block matches)
 - slot='split' (no SGS block matches)
-- slot='drawer' (no SGS block matches)
 - slot='imageAlt' (no SGS block matches)
 - slot='letterSpacing' (no SGS block matches)
 - slot='hideOn' (no SGS block matches)
@@ -70,7 +70,7 @@ _(none)_
 - slot='header' (ambiguous — 2 contains matches, no auto-seed)
 - slot='bar' (no SGS block matches)
 - slot='__form_instance__' (no SGS block matches)
-- slot='nav' (ambiguous — 2 contains matches, no auto-seed)
+- slot='nav' (multiple prefix matches: sgs/nav-drawer, sgs/nav-menu)
 - slot='progress' (no SGS block matches)
 - slot='slot' (no SGS block matches)
 - slot='ribbon' (no SGS block matches)
