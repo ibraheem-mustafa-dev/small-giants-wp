@@ -347,6 +347,14 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 	if ( '' !== $name_colour ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{color:" . sgs_colour_value( $name_colour ) . ';}';
 	}
+	// Caption alignment. text-align is not part of the shared typography
+	// emitter's property set, so it is emitted here against the same selector.
+	// Allowlist-validated (heading/render.php precedent) — never interpolated raw.
+	$name_align_raw     = isset( $attributes['nameTextAlign'] ) ? sanitize_text_field( $attributes['nameTextAlign'] ) : '';
+	$allowed_name_align = array( 'left', 'center', 'right', 'justify' );
+	if ( in_array( $name_align_raw, $allowed_name_align, true ) ) {
+		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{--sgs-name-text-align:" . $name_align_raw . ';}';
+	}
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,

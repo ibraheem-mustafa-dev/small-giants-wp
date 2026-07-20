@@ -241,6 +241,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"nameTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
 		"nameColour": {
 			"type": "string",
 			"default": ""
