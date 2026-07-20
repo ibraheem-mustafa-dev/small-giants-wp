@@ -130,6 +130,32 @@ Task 3 remaining 40 (parallel Haiku, needs Task 1's pattern)
 Merge to main via isolated worktree
 ```
 
+## INCIDENT this session — I broke Track 2's canary twice (fixed)
+
+Deploying `--blocks-only` from an isolated worktree based on an OLDER `main` shipped a build
+missing Track 2's nav-menu featured-pill fix, overwriting their verified deploy — twice, the
+second time AFTER they had redeployed to fix the first. Measured, not inferred: server
+`nav-menu/render.php` was 15,865 B with `grep -c featured_bg_hex` = 0 while their correct local
+was 17,462 B / md5 `738c4558`.
+
+**Fixed:** merged `origin/main` into the branch (no conflicts), rebuilt, redeployed. Server md5
+now `738c4558…` == local, `featured_bg_hex`=4 (Track 2 live) AND `sgs-state-toggle`=1 (Track 1
+live). Both tracks coexist.
+
+**Root cause:** an isolated worktree protects FILES but the canary is SHARED, and `--blocks-only`
+ships the WHOLE plugin, not just changed blocks. Two tracks deploying from different base commits
+silently overwrite each other. `build-deploy.py`'s verify leg only asserts HTTP 200 + generic SGS
+markers, so it passes on ANY working page including one running the other track's old code
+(Track 2 logged this as `P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC`).
+
+**Rule going forward — before ANY deploy to a shared canary:**
+```bash
+git fetch origin main && git merge --no-edit origin/main   # rebuild on current main FIRST
+# after deploy, verify CHANGE-SPECIFICALLY, never on the generic marker check:
+md5sum plugins/sgs-blocks/build/blocks/<block>/render.php
+ssh hd 'md5sum <server path>'   # must match, and grep a marker unique to EACH active track
+```
+
 ## Blockers / known issues
 
 - **The linter's count is NOT the success criterion.** `check-duplicate-controls.js` reports 85
@@ -164,6 +190,10 @@ Merge to main via isolated worktree
 - **STOP-BLIND-REGEX-CODEMOD**: drive codemods off a KNOWN per-block attr list, `/verify-loop`
   per block.
 - **STOP-DEPLOY-FROM-SHARED-WORKTREE**: always deploy from an isolated worktree at a committed SHA.
+- **STOP-SHARED-CANARY-STALE-BASE-DEPLOY** (new, incident above): an isolated worktree pinned to
+  an older `main` + `--blocks-only` (which ships the WHOLE plugin) silently overwrites a
+  co-active track's deploy. ALWAYS `git merge origin/main` before deploying to a shared canary,
+  and verify with a per-track marker + md5 match — never the generic HTTP-200 verify.
 - **STOP-NO-VERSION-BUMPS / NO-DEPRECATIONS** (D270): pre-production; additive metadata +
   re-clone, never a `deprecated.js`.
 
