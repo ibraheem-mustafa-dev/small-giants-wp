@@ -261,16 +261,13 @@
 	opacity: 1;
 }
 
-/* ===== Static tile shadow (distinct from the hover-glow shadow above) =====
- * Applied at rest, unaffected by hover state. Two fixed tiers mirror the
- * SGS shadow scale used elsewhere in the framework. */
-.sgs-brand-strip--tile-shadow-small .sgs-brand-strip__item {
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.sgs-brand-strip--tile-shadow-medium .sgs-brand-strip__item {
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
+/* ===== Static tile shadow — moved to render.php (Spec 35 Task 2) =====
+ * The old none/small/medium enum + these two fixed-tier classes were replaced
+ * by the shared ShadowControl builder, which stores a real CSS box-shadow
+ * VALUE (or theme shadow-preset slug) and emits it as a scoped, real
+ * `box-shadow` PROPERTY declaration on `.sgs-brand-strip__item` — see
+ * render.php's "Tile shadow" block. Kept as a comment (not deleted silently)
+ * so the history of where this rule went is discoverable. */
 
 /* ===== Name caption (showNames) =====
  * `.sgs-brand-strip__tile` wraps the tile + caption as a column so the
@@ -492,6 +489,14 @@
 }
 
 /* ===== Reduced motion ===== */
+/* WCAG 2.3.3 / Spec 35 item 17: EVERY animation/transition on this block is
+ * reduced-motion-gated, not just the marquee — the hover-lift/hover-scale
+ * transform transitions below are motion too (a translateY/scale shift on
+ * pointer interaction), so they're neutralised here alongside the marquee
+ * and the image-effect crossfade. Colour-only transitions (tile bg/border,
+ * hover-glow box-shadow colour) are left running — WCAG 2.3.3 targets
+ * MOTION, not colour change, and disabling those too would remove useful
+ * hover feedback for no accessibility benefit. */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready {
 		animation: none;
@@ -500,5 +505,23 @@
 	.sgs-brand-strip--effect-grayscale .sgs-brand-strip__logo,
 	.sgs-brand-strip--effect-sepia .sgs-brand-strip__logo {
 		transition: none;
+	}
+
+	.sgs-brand-strip--hover-lift .sgs-brand-strip__item {
+		transition-property: box-shadow, border-color;
+	}
+
+	.sgs-brand-strip--hover-lift .sgs-brand-strip__item:hover {
+		transform: none;
+	}
+
+	.sgs-brand-strip--hover-scale .sgs-brand-strip__logo,
+	.sgs-brand-strip--hover-scale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
+		transition: none;
+	}
+
+	.sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
+	.sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip {
+		transform: none;
 	}
 }
