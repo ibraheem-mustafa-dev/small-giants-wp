@@ -251,6 +251,192 @@ the structural defence against the gap this document exists to close recurring.
 
 ---
 
+## FR-35-5 — The `states` axis
+
+**Status:** designed 2026-07-21, not yet built.
+
+### Problem
+
+113 state-variant attributes exist across 27 blocks (`backgroundColourHover`,
+`tabActiveTextColour`, `formFocusRingColour`…). The manifest has no way to express them, so
+they can only ever surface as ORPHANS — never as resolved, never as an honest gap. `sgs/tabs`
+carries 6 such orphans today and every rollout wave adds more.
+
+Separately this hides a real product defect already found: `card-grid` cards have hover
+styling but **no resting-state background/border/radius**. A client can restyle the hover and
+not the resting state. The manifest cannot currently say that.
+
+### Why states are DECLARED, never parsed from names
+
+The naming *nearly* encodes the answer, and "nearly" is the trap. Measured across all 113:
+
+| State-token position | n | Example |
+|---|---|---|
+| Suffix | **92 (81%)** | `backgroundColourHover` |
+| Infix | 11 | `linkHoverColour`, `tabActiveTextColour` |
+| Prefix | 3 | `activeLinkColour` |
+
+Two hard blockers to name-derivation:
+
+1. **False friends.** `pauseOnHover`, `effectHover`, `imageZoomHover`, `grayscaleHover` all
+   contain `Hover` and none is a state-variant style property — they are booleans and preset
+   selectors. A `*Hover` rule files them as CSS states and is wrong. (Sibling precedent: a
+   blind `*Hover` regex broke live `textAlign` previously — STOP-BLIND-REGEX-CODEMOD.)
+2. **"Active" does not mean `:active`.** VERIFIED on `sgs/tabs`: `tabActiveTextColour` renders
+   as `[aria-selected="true"]` (`render.php:232`, `style.css:110`). CSS `:active` means
+   *being clicked*. A name-derived mapping would emit click-flash styling instead of
+   selected-tab styling. **This is the single strongest argument for declaration.**
+
+### State vocabulary — component state, mapped to its CSS realisation
+
+A state name is a COMPONENT concept. Its CSS realisation is declared once here, centrally, so
+no block re-derives it:
+
+| State | CSS realisation | Notes |
+|---|---|---|
+| `hover` | `:hover` | Also emit `:focus-visible` where the control is focusable (a11y parity) |
+| `focus` | `:focus-visible` | NOT bare `:focus` — avoids the mouse-click focus ring |
+| `selected` | `[aria-selected="true"]`, `[aria-current]`, `.is-active` | The tabs/nav case. **NOT `:active`.** |
+| `pressed` | `:active` | Genuine mouse-down. Rare; distinct from `selected` |
+| `disabled` | `:disabled, [aria-disabled="true"]` | |
+
+`selected` and `pressed` are deliberately separate names precisely because the attribute
+naming conflates them.
+
+### Schema
+
+`states` sits on the ELEMENT, alongside `attrMap` — same authority model, same file.
+
+```jsonc
+"tab": {
+  "label": "Tab",
+  "order": 2,
+  "clusters": [ "text", "fill" ],
+  "prefix": "tab",
+  "states": {
+    "selected": {
+      "attrMap": {
+        "css:color":            "tabActiveTextColour",
+        "css:background-color": "tabActiveBgColour"
+      }
+    },
+    "hover": {
+      "suffix": "Hover",
+      "members": [ "css:background-color" ]
+    }
+  }
+}
+```
+
+Two resolution forms, mirroring the base axis:
+
+- **`attrMap`** — explicit, always authoritative. Required wherever naming is irregular
+  (infix, prefix, or semantically misleading like `tabActive*`).
+- **`suffix` + `members`** — the mechanical shortcut for the 81% suffix-shaped majority.
+  `members` names WHICH members have this state; `suffix` says HOW to derive the attribute
+  from the already-resolved base attribute (`backgroundColour` + `Hover`). **The author still
+  declares which members participate — the suffix only does the mechanical part.** This is
+  declare-which / derive-how, and it is what keeps the false friends out: `pauseOnHover` is
+  never reachable because nobody lists it as a member.
+
+### Rules
+
+1. **States are OPT-IN per element.** An element declaring no `states` is never asked about
+   them. A missing state is NOT a gap — most elements legitimately have no hover styling.
+2. **Only DECLARED members within a declared state are checked.** Declaring `hover` does not
+   ask about all 26 layout members at hover; it asks about the ones listed. This is the one
+   place the all-or-nothing cluster rule deliberately does NOT apply, because the
+   combinatorial product (5 states × 26 members × N elements) would be meaningless noise.
+3. **A member may be declared at a state without being resolved at base.** That is the
+   `card-grid` finding and it must stay VISIBLE, not be smoothed away — see the new finding
+   status below.
+4. **Attributes claimed by a state mapping are CLAIMED** for orphan-scan purposes. This is
+   what removes tabs' 6 orphans.
+5. **State findings are reported SEPARATELY from base findings.** `total_ok` / `total_gap`
+   keep their current meaning; new `total_state_ok` / `total_state_gap` sit alongside. A
+   finding carries `state: "<name>"`; its absence means base. Without this the headline
+   number silently changes meaning again.
+
+### New finding status: `STATE_WITHOUT_BASE`
+
+Emitted when a member resolves at a state but NOT at base — the client can style the hover
+but not the resting state.
+
+This is not a linter curiosity; it is a **client-facing defect class**, and `card-grid` is a
+live instance. It gets its own status so it cannot hide inside the gap count.
+
+### Deliberately NOT in scope
+
+- **Responsive × state combinations** (`hoverColourTablet`). No evidence of demand; adding a
+  third dimension now would be speculative.
+- **Auto-suggesting state mappings.** A helper could *offer* `{baseAttr}+Hover` for the 92
+  suffix-shaped attrs, but a human or agent confirms. Never a regex deciding.
+
+### Sequencing
+
+Build BEFORE rollout wave 2. `sgs/tabs` already carries 6 state orphans and every wave adds
+more; retro-fitting `states` across a finished roster costs more than carrying it forward.
+
+---
+
+## FR-35-6 — The `animation` cluster (JS-driven motion)
+
+**Status:** designed 2026-07-21, not yet built.
+
+### Problem
+
+Scroll- and reveal-driven motion controls have no cluster home and are invisible to BOTH the
+forward check and orphan detection (their names share no prefix with a declared element):
+
+| Attribute family | Blocks |
+|---|---|
+| `sgsAnimation` / `sgsAnimationDuration` / `sgsAnimationEasing` | **10 each** |
+| `bgParallax` | 4 |
+| `staggerDelay` | 3 |
+| `parallaxStrength`, `hasParallax`, `fadeOnScroll`, `revealOnScroll`, `revealStagger` | 1 each |
+| `pathDrawDurationMs` / `pathDrawEasing` / `pathDrawOnScroll` / `pathDrawTriggerOffset` | 1 each |
+
+### Why a SEPARATE cluster, not folded into `motion`
+
+1. **Different mechanism.** `motion` is CSS transitions (`transition-duration`,
+   `transition-timing-function`). These are JS scroll-observers. Merging them would mean a
+   cluster where half the members can never resolve on a CSS-transition-only block, and the
+   other half can never resolve on a scroll-animation block — manufacturing gaps on both
+   sides. That is the `flow`-merge failure mode inverted: `flow` was wrongly split because
+   the ELEMENT already disambiguated it; here nothing disambiguates, because the two
+   families genuinely do not co-occur on the same control surface.
+2. **Different control model.** `sgsAnimation` is a preset picker; `transition-duration` is a
+   range slider. Every other cluster maps to one owning control model; this would map to two.
+3. **Already a universal family.** `sgsAnimation*` appears on 10 blocks with identical naming
+   — it is an existing extension, not a per-block one-off.
+
+### Members
+
+| Key | Label | Suffixes |
+|---|---|---|
+| `anim:preset` | Animation preset | `Animation` |
+| `anim:duration` | Animation duration | `AnimationDuration`, `DurationMs` |
+| `anim:easing` | Animation easing | `AnimationEasing`, `Easing` |
+| `anim:stagger` | Stagger delay | `StaggerDelay`, `Stagger` |
+| `anim:parallax` | Parallax | `Parallax`, `ParallaxStrength` |
+| `anim:trigger` | Scroll trigger | `OnScroll`, `TriggerOffset` |
+
+**Note the `anim:` key prefix, not `css:`.** These do not correspond to CSS properties, and
+filing them under `css:` would be the same mis-keying that put `css:stroke` and
+`css:percentage` in the registry. New `anim:*` rows are added to `setting-registry.json`
+alongside the existing `css:*` / `input:*` / `behaviour:*` categories; FR-35-3's coverage
+validator is extended to require every `anim:*` row be clustered too.
+
+### Six clusters again — but on a mechanism boundary
+
+`text · fill · layout · position · motion · animation`.
+
+This is NOT a reinstatement of the `flow` split. `flow` was wrong because the ELEMENT axis
+already carried that distinction. Nothing carries the CSS-vs-JS distinction — it is a genuine
+mechanism boundary, and the two families never share a control surface.
+
+---
+
 ## ROLLOUT REQUIREMENTS (read before manifesting any further block)
 
 Both were learned by measurement on 2026-07-20 and both cause SILENT wrong scores, not
@@ -325,8 +511,8 @@ WARN-only, consistent with the rest of Spec 35.
   `var(--wp--preset--color--surface)` + `var(--wp--preset--shadow--md)` with no attribute
   behind it. Per the project's hardcoded-wrapper-defaults rule this is a cheat to remove,
   not a constraint to preserve. Logged; not solved here.
-- Hover/state coverage in the manifest schema generally — there is no `states` or `pseudo`
-  axis, so hover-only wiring is invisible to a manifest that asks only about resting-state
-  clusters.
+- ~~Hover/state coverage~~ — RESOLVED by FR-35-5 (`states` axis), designed 2026-07-21.
+- ~~JS-driven motion having no cluster home~~ — RESOLVED by FR-35-6 (`animation` cluster),
+  designed 2026-07-21.
 - Building the missing controls that the gaps identify. This document fixes the
   *vocabulary*; closing gaps is per-block work that follows.
