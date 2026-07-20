@@ -22,8 +22,36 @@ if not blocks_dir.exists():
 # Static blocks where source:html is INTENTIONAL (have save.js, not render.php)
 SOURCE_HTML_EXEMPT = {"sgs/certification-bar", "sgs/counter", "sgs/notice-banner"}
 
-# Blocks intentionally without supports.color (manual has-* injection — needs migration)
-SUPPORTS_COLOR_EXEMPT = set()  # populate after migration completes
+# Blocks intentionally without supports.color.
+#
+# ⚠ THIS CHECK IS NAME-KEYED AND HAS A PERMANENT FALSE-POSITIVE CLASS.
+# It flags any attribute whose NAME contains "colour". But WP's supports.color
+# only ever styles the BLOCK ROOT, so a PER-ELEMENT colour (a featured nav item's
+# fill, a burger icon, an inner link) physically cannot be expressed as
+# supports.color — those blocks fail this rule forever no matter how correct they
+# are, and every such entry added below makes a real violation harder to spot.
+#
+# LONG-TERM FIX (parking P-AUDIT-COLOUR-ROLE-KEYED, D351): re-key this check on
+# the Spec 35 element manifest (`supports.sgs.elements`), which already carries
+# `isWrapper` + `attrMap`. The rule becomes "a colour attr mapped to the WRAPPER
+# element must use supports.color; a colour attr mapped to a non-wrapper element
+# is block-owned and never flagged" — role-keyed, not name-keyed, matching the
+# project's route-by-role rule. That is STRICTER than today (it would also catch
+# an American-spelled `textColor` hand-rolled on a wrapper, which this rule misses
+# entirely). Blocked only on manifest coverage: 1 of 79 blocks seeded as of
+# 2026-07-20, filling as the Spec 35 rollout proceeds.
+#
+# Until then, entries here MUST state which elements the colours target.
+SUPPORTS_COLOR_EXEMPT = {
+    # Per-element colours only, no wrapper-level colour:
+    #   nav-menu   — itemColour / itemHoverColour / featuredColour / burgerColour
+    #                / burgerHoverColour → the link, the featured item, the burger.
+    #   nav-drawer — toggleCloseColour → the × close control.
+    # Both emit scoped <style> per Spec 32 (never inline), so there is no
+    # hand-rolled has-* injection here for supports.color to replace.
+    "sgs/nav-menu",
+    "sgs/nav-drawer",
+}
 
 issues = {"viewScript": [], "source_html": [], "typo_dup": [], "supports_color_missing": []}
 

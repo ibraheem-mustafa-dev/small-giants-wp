@@ -15,6 +15,20 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D351 [INCIDENT] — nav featured item: a MISSING block attribute silently dropped the draft's fill; the a11y failure was its symptom (2026-07-20)
+
+**Found by** the Spec 36 Wave-4 Gate-1 axe sweep on the sandybrown canary: the featured "Send to Ward" nav item rendered accent-gold `#f5d050` on the cream header `#fbf3dc` = **1.35:1** (WCAG AA needs 4.5:1) — the deliberately-highlighted item was the least readable thing in the menu.
+
+**First diagnosis was WRONG and Bean caught it.** I read the failure as a contrast-policy gap and began designing a WCAG fallback for `featuredColour`. Bean: *"the featured button should match the styling of the draft's featured button that it is based on."* Correct — I had skipped the source of truth.
+
+**Actual root cause (proven, not inferred).** The Mama's draft authors the featured item as a **filled pill** (`mockups/homepage/index.html:231-235`): `background:var(--primary)` #E68A95 + `color:var(--text)` #3A2E26 + weight 600, on the base link's 8px radius / 10-14px padding / 44px min-height. **`sgs/nav-menu` had no `featuredBg` attribute at all** — only `featuredColour`. The converter therefore had nowhere to put the draft's fill and silently dropped it, falling back to the `accent` text default. **The contrast failure was a SYMPTOM of a missing capability, not a policy gap.** Measured: draft pairing #3a2e26 on #e68a95 = **5.28:1 PASS**; clone = 1.35:1 FAIL. Fixing fidelity fixed accessibility — one fix, not two.
+
+**Shipped.** `featuredBg` attribute (default `''` = unchanged label form, no existing site changes shape); render.php 4d forks LABEL vs PILL; the pill's foreground goes through the same `sgs_wcag_preferred_text_colour_for_bg` helper the hover pill already uses (operator's colour wins when it clears AA, safe binary fallback otherwise) — so the draft's own pairing is adopted verbatim and no palette can regress below AA. Inspector control added (client-experience rule). `parts/header.html` bar → `featuredColour:text` + `featuredBg:primary`. **Drawer deliberately unchanged** — the draft authors no drawer (its hamburger targets a `#mobile-nav` that doesn't exist in the mockup) and the drawer already measured axe 0, so there was nothing to match and no evidence of a defect.
+
+**Generalisable lesson (the reason this is INCIDENT-tagged).** When a clone diverges from an accessible draft, check whether the block can *express* the draft's value before designing a policy to compensate. A missing attribute fails silently — no error, no gate, no build failure — exactly like the D338 undeclared-attribute class. **Read the draft before designing the fix.** Extends `fix-a11y-at-draft-source-not-the-clone` (that rule covers a defect INHERITED from the draft; this is its mirror — a defect the clone INTRODUCED by lacking the capability to carry the draft faithfully).
+
+**Also (pre-existing, surfaced not caused):** the commit gate `audit-block-uniformity.py` check 4 failed on both nav blocks — verified via `git show HEAD:` that the condition pre-dated this session's edits. Rule is NAME-keyed with a permanent false-positive class; exempted both blocks with per-element justification and logged the role-keyed re-key as parking `P-AUDIT-COLOUR-ROLE-KEYED`. Not bypassed, not silently weakened.
+
 ## D350 [ROUTINE] — Spec 35 rollout: parallax split + element-manifest contract + brand-strip exemplar made real (2026-07-20)
 
 **Track 1, Spec 35 block-inspector-UX.** Shipped + merged to main (via `5672b4c6`): (1) **Parallax split** —

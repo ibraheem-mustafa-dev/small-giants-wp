@@ -121,6 +121,19 @@ click/Enter/Space; **safe-triangle** hover path when the panel is offset + a clo
 states; active-trail (`aria-current="page"` + a visible style); a per-item **"featured"** flag; content-sized
 overlay with a max-width bound; optional backdrop blur; height-animated; `prefers-reduced-motion`-gated.
 
+**The featured flag renders in two forms (D351, 2026-07-20).** `featuredColour` alone gives the LABEL form
+(a coloured label). Setting `featuredBg` gives the PILL form (a filled pill on the base link's radius) —
+which is how a draft typically authors a featured nav item, and the form the Mama's draft uses
+(`.sgs-header__nav-featured` = `background:var(--primary)` + `color:var(--text)` + weight 600). `featuredBg`
+defaults to `''` so the label form stays the default and no existing site changes shape. **The pill's
+foreground is contrast-checked against the resolved fill** by the shared
+`sgs_wcag_preferred_text_colour_for_bg()` helper — the operator's colour wins when it clears AA, else the
+guaranteed-safe binary fallback — so no client palette can render a featured item below AA. Both forms are
+operator-set from the block inspector (Featured panel). **Why this is a spec-level note, not an
+implementation detail:** the block originally had NO background attribute, so the converter had nowhere to
+put a draft's featured fill and silently dropped it, producing accent-on-surface text at 1.35:1 on Mama's.
+A featured style a draft can author MUST have somewhere in the data model to land — see D351.
+
 ### FR-36-5 — The mega CPT + the native-menu association
 **Competitive positioning (carried from Spec 02 §23):** the mega system **replaces Max Mega Menu, JetMenu (Crocoblock), and Kadence Pro mega menu** — a block-native, ARIA-compliant mega menu with semantic HTML and **zero external dependencies**. Elementor's mega menu needs Elementor Pro ($59–399/yr) and generates heavy DOM; Max Mega Menu (the most popular free alternative) has documented WCAG failures + mobile-toggle issues. (The old Spec 02 §23 `sgs/mega-menu` block that carried this line used `role="menu"` + template-part panels — both BANNED here, FR-36-10/-5 — so the block is superseded; only its positioning survives.)
 - A mega panel is a **block-based CPT post** edited in its findable admin screen; the 5 layouts (photo-grid /
