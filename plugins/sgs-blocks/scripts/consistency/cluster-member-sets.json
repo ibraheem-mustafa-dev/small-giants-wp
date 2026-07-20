@@ -1,12 +1,13 @@
 {
 	"_meta": {
-		"purpose": "Spec 35 Task 2 — the CLUSTER member sets (Text / Fill / Layout) that make the element-manifest CLUSTER-COHERENCE rule computable.",
-		"source": "Derived from setting-registry.json's css-property rows (golden master, 60 rows), grouped per the cluster table in .claude/plans/spec-35-compound-control-sets-design.md (\"The two-level model\" → Level 2 CLUSTER). Every member.key below is a real setting_key in setting-registry.json — this file adds the missing CLUSTER axis + the default attr-suffix candidates the conformance checker uses to resolve a member to a block attribute (or a native `supports` path) when a block doesn't declare an explicit attrMap.",
-		"spec": ".claude/plans/spec-35-compound-control-sets-design.md",
+		"purpose": "Spec 35 Task 2 — the CLUSTER member sets (Text / Fill / Layout / Flow / Position / Motion) that make the element-manifest CLUSTER-COHERENCE rule computable. Expanded from three to six clusters per FR-35-2.",
+		"source": "Derived from setting-registry.json's css-property rows (golden master, 60 rows), grouped per the cluster table in .claude/plans/2026-07-20-spec-35-cluster-vocabulary-rework-design.md (FR-35-2). Every member.key below is a real setting_key in setting-registry.json — this file adds the missing CLUSTER axis + the default attr-suffix candidates the conformance checker uses to resolve a member to a block attribute (or a native `supports` path) when a block doesn't declare an explicit attrMap.",
+		"spec": ".claude/plans/2026-07-20-spec-35-cluster-vocabulary-rework-design.md",
 		"consumed_by": "plugins/sgs-blocks/scripts/check-element-manifest-conformance.js",
-		"note_on_suffixes": "`suffixes` are candidate PascalCase attribute-name suffixes tried in order against `{elementPrefix}{suffix}` when the element manifest has no explicit attrMap entry for that member. `nativeSupportsPath` (where present) is an ADDITIONAL resolution path: if the block's block.json `supports` object has a truthy value at that dot-path, the member counts as satisfied via WordPress-native supports (e.g. `spacing.padding`, `__experimentalBorder.radius`) even with no matching flat attribute — this is the real mechanism `sgs/brand-strip`'s wrapper-level padding/margin/border already uses (Spec 32 no-inline contract)."
+		"note_on_suffixes": "`suffixes` are candidate PascalCase attribute-name suffixes tried in order against `{elementPrefix}{suffix}` when the element manifest has no explicit attrMap entry for that member. `nativeSupportsPath` (where present) is an ADDITIONAL resolution path: if the block's block.json `supports` object has a truthy value at that dot-path, the member counts as satisfied via WordPress-native supports (e.g. `spacing.padding`, `__experimentalBorder.radius`) even with no matching flat attribute — this is the real mechanism `sgs/brand-strip`'s wrapper-level padding/margin/border already uses (Spec 32 no-inline contract).",
+		"note_on_absorbs": "`absorbs` (where present) lists OTHER setting-registry css rows that this member subsumes, so they need no member of their own. Used for the per-side box rows (css:padding-top/right/bottom/left, css:margin-*) which the shared BoxControl already covers via the merged `css:padding` / `css:margin` member. The FR-35-3 coverage validator counts an absorbed row as CLUSTERED — without this, the 8 per-side rows would be reported as false unclustered errors. Added 2026-07-20 (FR-35-2 merge case)."
 	},
-	"order": [ "text", "fill", "layout" ],
+	"order": [ "text", "fill", "layout", "flow", "position", "motion" ],
 	"clusters": {
 		"text": {
 			"label": "Text",
@@ -20,7 +21,8 @@
 				{ "key": "css:text-transform", "label": "Text transform", "suffixes": [ "TextTransform" ] },
 				{ "key": "css:text-decoration", "label": "Text decoration", "suffixes": [ "TextDecoration" ] },
 				{ "key": "css:color", "label": "Text colour", "suffixes": [ "Colour", "TextColour", "Color" ], "nativeSupportsPath": "color.text" },
-				{ "key": "css:text-align", "label": "Text align", "suffixes": [ "TextAlign", "Align" ] }
+				{ "key": "css:text-align", "label": "Text align", "suffixes": [ "TextAlign", "Align" ] },
+				{ "key": "css:font-family", "label": "Font family", "suffixes": [ "FontFamily" ], "nativeSupportsPath": "typography.fontFamily" }
 			]
 		},
 		"fill": {
@@ -29,15 +31,21 @@
 			"members": [
 				{ "key": "css:background-color", "label": "Background (solid + gradient)", "suffixes": [ "BackgroundColour", "Bg", "Background" ], "nativeSupportsPath": "color.background" },
 				{ "key": "css:opacity", "label": "Opacity", "suffixes": [ "Opacity" ] },
-				{ "key": "css:background-image", "label": "Overlay (gradient + angle)", "suffixes": [ "Overlay", "OverlayColour", "OverlayGradient" ] }
+				{ "key": "css:background-image", "label": "Overlay (gradient + angle)", "suffixes": [ "Overlay", "OverlayColour", "OverlayGradient" ] },
+				{ "key": "css:background-attachment", "label": "Background attachment", "suffixes": [ "BackgroundAttachment" ] },
+				{ "key": "css:background-position", "label": "Background position", "suffixes": [ "BackgroundPosition" ] },
+				{ "key": "css:background-repeat", "label": "Background repeat", "suffixes": [ "BackgroundRepeat" ] },
+				{ "key": "css:background-size", "label": "Background size", "suffixes": [ "BackgroundSize" ] },
+				{ "key": "css:object-fit", "label": "Image object-fit", "suffixes": [ "ObjectFit" ] },
+				{ "key": "css:object-position", "label": "Image object-position", "suffixes": [ "ObjectPosition" ] }
 			]
 		},
 		"layout": {
 			"label": "Layout",
 			"owningComponent": "BoxControl + UnitControl + BorderBoxControl + ShadowControl",
 			"members": [
-				{ "key": "css:padding", "label": "Padding", "suffixes": [ "Padding" ], "nativeSupportsPath": "spacing.padding" },
-				{ "key": "css:margin", "label": "Margin", "suffixes": [ "Margin" ], "nativeSupportsPath": "spacing.margin" },
+				{ "key": "css:padding", "label": "Padding", "suffixes": [ "Padding" ], "nativeSupportsPath": "spacing.padding", "absorbs": [ "css:padding-top", "css:padding-right", "css:padding-bottom", "css:padding-left" ] },
+				{ "key": "css:margin", "label": "Margin", "suffixes": [ "Margin" ], "nativeSupportsPath": "spacing.margin", "absorbs": [ "css:margin-top", "css:margin-right", "css:margin-bottom", "css:margin-left" ] },
 				{ "key": "css:gap", "label": "Gap", "suffixes": [ "Gap" ] },
 				{ "key": "css:width", "label": "Width", "suffixes": [ "Width" ] },
 				{ "key": "css:height", "label": "Height", "suffixes": [ "Height" ] },
@@ -48,7 +56,43 @@
 				{ "key": "css:border-style", "label": "Border style", "suffixes": [ "BorderStyle" ], "nativeSupportsPath": "__experimentalBorder.style" },
 				{ "key": "css:border-color", "label": "Border colour", "suffixes": [ "BorderColour", "BorderColor" ], "nativeSupportsPath": "__experimentalBorder.color" },
 				{ "key": "css:border-radius", "label": "Border radius", "suffixes": [ "BorderRadius", "Radius" ], "nativeSupportsPath": "__experimentalBorder.radius" },
-				{ "key": "css:box-shadow", "label": "Box shadow", "suffixes": [ "Shadow", "BoxShadow" ] }
+				{ "key": "css:box-shadow", "label": "Box shadow", "suffixes": [ "Shadow", "BoxShadow" ] },
+				{ "key": "css:aspect-ratio", "label": "Aspect ratio", "suffixes": [ "AspectRatio" ], "nativeSupportsPath": "dimensions.aspectRatio" }
+			]
+		},
+		"flow": {
+			"label": "Flow",
+			"owningComponent": "SelectControl + ToggleGroupControl (flex/grid layout mode)",
+			"members": [
+				{ "key": "css:display", "label": "Display type", "suffixes": [ "Display" ] },
+				{ "key": "css:flex-direction", "label": "Flex direction", "suffixes": [ "FlexDirection", "Direction" ] },
+				{ "key": "css:flex-wrap", "label": "Flex wrap", "suffixes": [ "FlexWrap", "Wrap" ] },
+				{ "key": "css:align-items", "label": "Align items", "suffixes": [ "AlignItems" ] },
+				{ "key": "css:align-content", "label": "Align content", "suffixes": [ "AlignContent" ] },
+				{ "key": "css:justify-content", "label": "Justify content", "suffixes": [ "JustifyContent", "Justify" ] },
+				{ "key": "css:justify-items", "label": "Justify items", "suffixes": [ "JustifyItems" ] },
+				{ "key": "css:order", "label": "Item order", "suffixes": [ "Order" ] },
+				{ "key": "css:grid-template-columns", "label": "Grid columns", "suffixes": [ "GridTemplateColumns", "Columns" ] },
+				{ "key": "css:grid-template-rows", "label": "Grid rows", "suffixes": [ "GridTemplateRows", "Rows" ] },
+				{ "key": "css:grid-auto-rows", "label": "Grid auto row height", "suffixes": [ "GridAutoRows" ] },
+				{ "key": "css:overflow", "label": "Overflow behaviour", "suffixes": [ "Overflow" ] }
+			]
+		},
+		"position": {
+			"label": "Position",
+			"owningComponent": "UnitControl + RangeControl",
+			"members": [
+				{ "key": "css:top", "label": "Position offset — top", "suffixes": [ "Top" ] },
+				{ "key": "css:bottom", "label": "Position offset — bottom", "suffixes": [ "Bottom" ] },
+				{ "key": "css:z-index", "label": "Stack order (z-index)", "suffixes": [ "ZIndex" ] }
+			]
+		},
+		"motion": {
+			"label": "Motion",
+			"owningComponent": "RangeControl (ms unit) + ToggleGroupControl (easing presets)",
+			"members": [
+				{ "key": "css:transition-duration", "label": "Transition duration", "suffixes": [ "TransitionDuration", "Duration" ] },
+				{ "key": "css:transition-timing-function", "label": "Transition easing", "suffixes": [ "TransitionTimingFunction", "Easing" ] }
 			]
 		}
 	}

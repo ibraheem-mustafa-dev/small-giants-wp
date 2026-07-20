@@ -3,11 +3,11 @@
     "purpose": "Spec 35 Phase 2 — optimal-control registry (golden master). One row per genuine setting.",
     "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B/H/I)",
     "design_spine": ".claude/plans/spec-35-setting-registry-design.md",
-    "total_rows": 82,
+    "total_rows": 81,
     "by_category": {
-      "css-property": 60,
+      "css-property": 58,
       "input-type": 11,
-      "behaviour-family": 11
+      "behaviour-family": 12
     },
     "by_severity": {
       "high": 25,
@@ -1923,7 +1923,7 @@
       "current_state": "7 distinct attr names / 58 instances across 38 blocks; observed_control_types: RangeControl, SelectControl, TextControl, UnitControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
       "divergence": "7 attrs mix RangeControl/SelectControl/TextControl/UnitControl; TextControl is a free-text field for what should be a validated unit value",
       "divergence_severity": "medium",
-      "notes": "This is also the container/wrapper contentWidth capability (Spec 31 §13.6 3-layer model) — must not silently reintroduce a hardcoded default per the 'hardcoded wrapper defaults are cheats' rule in CLAUDE.md."
+      "notes": "This is also the container/wrapper contentWidth capability (Spec 31 §13.6 3-layer model) — must not silently reintroduce a hardcoded default per the 'hardcoded wrapper defaults are cheats' rule in CLAUDE.md. Absorbed css:percentage 2026-07-20 — sgs/decorative-image `maxWidthPercent` (RangeControl 0-100) is a max-width in %, not a distinct property."
     },
     {
       "setting_key": "css:min-height",
@@ -2221,35 +2221,8 @@
       "notes": "Drafted per the schema's one-row-per-property rule, but the OPTIMAL control is the shared padding BoxControl, not a scalar UnitControl. Do not build a standalone control for this row."
     },
     {
-      "setting_key": "css:percentage",
-      "category": "css-property",
-      "label": "Generic percentage value",
-      "optimal_control": {
-        "component": "RangeControl (0-100%, withInputField+allowReset)",
-        "props": {
-          "min": 0,
-          "max": 100,
-          "withInputField": true,
-          "allowReset": true
-        },
-        "preset_layer": null,
-        "units": "% (0-100)",
-        "responsive_device_tier": false,
-        "multi_value": "none",
-        "dropdown_completeness": "n/a",
-        "alpha_clearable": "n/a",
-        "reset_disclosure": "allowReset"
-      },
-      "shared_component": null,
-      "spec_ref": "Part H (bounded numeric -> RangeControl)",
-      "current_state": "1 distinct attr names / 1 instances across 1 blocks; observed_control_types: RangeControl; observed_roles: number-css-percent; conformance: consistent (dedup_confidence: high)",
-      "divergence": null,
-      "divergence_severity": "none",
-      "notes": "1 instance, role tagged 'number-css-percent' (a generic percent, not tied to a named CSS property) — already consistent on RangeControl. Lowest-context row in the registry; whatever block uses it should be checked to see if it actually belongs under a more specific named property instead of this catch-all."
-    },
-    {
-      "setting_key": "css:stroke",
-      "category": "css-property",
+      "setting_key": "behaviour:decoration-stroke",
+      "category": "behaviour-family",
       "label": "Accent underline (decoration toggle)",
       "optimal_control": {
         "component": "ToggleControl (show/hide the decorative underline) — not a stroke-paint colour control",
