@@ -67,11 +67,26 @@ council + qc-council fact-check (all 26 FRs survive). **Bean signed off v2.1 on 
   Bean-approved reclassification from the earlier section-KIND label). Gate 2 all green + 3-rater `/qc-council`;
   caught+fixed 2 Gate-1 blockers (missing `data-wp-interactive` island → burger couldn't open; nested nav-menu rendered
   a self-closing burger) + a STOP-21 uid no-op. Follow-up: FR-36-13 `<dialog>`-exception spec note (apply in spec 36).
-- **WAVE 3 (deploy — 2026-07-20):** Track-1 (Spec 35) merged into main FIRST (so the deploy ships the complete plugin
-  and doesn't regress Track-1's live canary work). Then `/sgs-update` (register `sgs/nav-drawer`, prune stale
-  `sgs/mobile-nav*` + `core/navigation` rows) → `build-deploy.py --target sandybrown` → re-author Mama's header via the
-  EDITOR (FR-36-18, never WP-CLI). NEXT = Wave 4 = Gate-1 (axe/elementFromPoint/crawl/perf) + Bean's eye. Bean rulings:
-  converter/clone DEPRIORITISED until whole header+footer+nav done; featured-item = block attribute.
+- **WAVE 3 DONE + on main (2026-07-20):** Track-1 (Spec 35) MERGED into main FIRST (`5672b4c6`; LEDGER conflict
+  resolved by superset) so the deploy ships the complete plugin and doesn't regress Track-1's live canary work.
+  `/sgs-update` ran (reference regen 202 blocks, orphans pruned, `sgs/nav-drawer` registered); a real db-consistency
+  snag (is_section_root→tier=class-section wanted a container_kind) fixed by dropping `is_section_root` — the drawer is
+  content-KIND block-private, not a wrapper composite (`e6c10428`, db-consistency 0 violations). Deployed to sandybrown
+  via `build-deploy.py` (plugin+theme). **Header re-authored (`b41352fc`, `parts/header.html` — a version-controlled
+  file, the correct path for a block-theme part, NOT the DB/editor):** dropped the legacy `sgs/adaptive-nav` wrapper →
+  `sgs/nav-menu` (`ref=1467` "Primary Menu" wp_navigation; top-level items match the Mama's mockup: Shop / Our Story /
+  Send to Ward★ / Gift Ideas / FAQs) + `sgs/nav-drawer`. 5 mockup pages created as menu targets. Verified LIVE: new nav
+  renders, `data-wp-interactive="sgs/nav"` island present, adaptive-nav GONE, no PHP errors. adaptive-nav stays
+  registered (dormant) for rollback. GitHub tidied: `feat/brand-strip-inspector-rebuild` merged + deleted on origin.
+- **NEXT = WAVE 4 (Gate-1, needs a live session with Bean):** run `scripts/nav-qa/` (axe on open drawer / elementFromPoint
+  occlusion / crawl / perf) + the interactive burger→drawer check + **Bean's eye** (R-31-13). Known content refinements
+  for Gate-1 (editor): the menu 1467 uses `/gifts/` (mockup wants `/gift-ideas/`, page exists) + an "Our Story" submenu
+  (flattened in Phase-1); the live bar shows 14 `nav-menu__link` (bar + drawer copy — confirm no duplication).
+  **Architectural follow-up:** the nav resolver (`class-sgs-nav-menu-source.php::blocks_from_ref`) only resolves
+  `wp_navigation` posts + page-list fallback — it does NOT implement classic-menu resolution via
+  `wp_get_nav_menu_items()`, so FR-36-1's "classic menus PRIMARY" is NOT built yet (a classic `nav_menu` term ref won't
+  render). Close this before claiming FR-36-1. Bean rulings: converter/clone DEPRIORITISED until whole
+  header+footer+nav done; featured-item = block attribute.
 Handoff: `next-session-prompt-nav-rework-P2.5.md`.
 
 **Latest (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
