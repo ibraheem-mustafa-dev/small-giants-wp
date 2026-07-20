@@ -318,6 +318,11 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-rest-gate.php';
 Sgs_Block_CPTs::register();
 Sgs_Cpt_Rest_Gate::register();
 
+// SGS Mega Menu CPT (FR-36-3 / FR-36-5, Spec 36) — sgs_mega_menu, attached to a
+// classic nav menu item the native WordPress way (Appearance > Menus).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-mega-menu-cpt.php';
+Sgs_Mega_Menu_CPT::register();
+
 // SGS Content Types per-site capability flag (Spec 27 FR-24-1 / FR-24 #9, U1) —
 // owns the `sgs_content_types` option + the manage_options toggle + the one-time
 // backward-compat migration (init @1). Must register BEFORE Product_CPT so the

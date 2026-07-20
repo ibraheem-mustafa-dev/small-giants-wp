@@ -95,6 +95,28 @@ function setup(): void {
 	// Enables the Site Icon / favicon field in WP Admin → Appearance → Customise.
 	add_theme_support( 'site-icon' );
 
+	/*
+	 * Classic navigation menus (Appearance → Menus).
+	 *
+	 * A block theme does NOT expose Appearance → Menus unless it declares this
+	 * support — without it nav-menus.php fatals with "Your theme does not support
+	 * navigation menus or widgets". Spec 36 FR-36-1 makes classic menus the PRIMARY
+	 * menu-data path for the nav system, and FR-36-5 attaches mega-menu panels via
+	 * that screen, so the screen must be reachable on every SGS site.
+	 */
+	add_theme_support( 'menus' );
+
+	/*
+	 * Registered menu locations. FR-36-1's menu resolution prefers a registered
+	 * theme location before falling back to the site's first menu.
+	 */
+	register_nav_menus(
+		array(
+			'primary' => __( 'Primary Navigation', 'sgs-theme' ),
+			'footer'  => __( 'Footer Navigation', 'sgs-theme' ),
+		)
+	);
+
 	// WooCommerce theme support — enables product templates, gallery features.
 	add_theme_support( 'woocommerce' );
 	add_theme_support( 'wc-product-gallery-zoom' );
