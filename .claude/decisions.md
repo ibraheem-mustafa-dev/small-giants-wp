@@ -15,6 +15,71 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D355 [INCIDENT] — Spec 35: ELEMENT is the primary mapping axis; the `flow` cluster was built, measured and REVERSED the same day (2026-07-21)
+
+**Bean-ruled reversal.** FR-35-2 originally split the overloaded `layout` cluster into
+`layout` ("size this box") and `flow` ("arrange these children"). Built + shipped, then Bean
+reversed it: arrangement properties DO control the layout of a block's items, and the thing
+separating the two meanings is **which element the property is attached to**, not a second
+cluster. `role=layout` on a GRID element means arrangement; the same role on a leaf tile
+means box-sizing. One mechanism, not two. Corroborated by the DB — `block_attributes.role`
+has a single `layout` value covering both, and `canonical_slot` carries the disambiguating
+element signal.
+
+**Final: 5 clusters** — text / fill / layout(26 members) / position / motion.
+
+**The merge ALONE made the score worse** (gap 311 → 455): the linter had no element
+awareness, so a leaf tile was asked whether it had `grid-template-columns`. The missing half
+is `appliesToLayers` on the 12 arrangement members + a `memberAppliesToElement()` gate — a
+tagged member is checked ONLY when the element's `layer` is OUTER/GRID.
+
+Two of my own errors caught by measurement, both recorded inline in the data/code so they are
+not repeated: (a) tagging `css:gap` as arrangement cost a real resolved member — a leaf
+element legitimately has an internal gap (brand-strip's tile spaces logo from caption via
+`logoGap`); (b) an `isWrapper` compatibility shim asked `sgs/button` whether it had
+`grid-template-columns`, producing 60 false gaps. An explicit `layer` is now REQUIRED; no
+layer means never asked about arrangement.
+
+Progression: 184/455 → 184/395 (gate + shim) → **184/335** (gate, layer-only). OK never moved.
+Residual +24 vs the 311 baseline is container/cta-section `wrapper` at layer OUTER — judged
+HONEST, not false; tightening OUTER further breaks card-grid, whose root IS the grid (MF-3).
+
+Canonical: `.claude/plans/2026-07-20-spec-35-cluster-vocabulary-rework-design.md` FR-35-2/2a.
+
+## D354 [ROUTINE] — Spec 35: cluster vocabulary completed, coverage + orphan detection made structural (2026-07-21)
+
+The cluster axis had only ever been applied to **25 of the 60** css rows in the golden
+master; 35 were unfiled, including the entire grid/flex family. Root cause: `layout` was
+doing two unrelated jobs (BoxControl "size this box" vs SelectControl "arrange children"), so
+nobody could confidently file `flex-direction` next to `border-radius`. That diagnosis stands
+even though the remedy changed (see D355).
+
+Shipped: all 58 css rows now clustered or absorbed (`absorbs` on the merged padding/margin
+members covers the 8 per-side rows); `css:stroke` → `behaviour:decoration-stroke` (sgs/counter
+`accentStroke` is a decoration toggle, Bean-verified 2026-07-19) and `css:percentage` folded
+into `css:max-width` (sgs/decorative-image `maxWidthPercent`); **FR-35-3** coverage validator
+`check-cluster-coverage.py` (unclustered is now a hard error — Bean's ruling that a setting
+must apply to something); **FR-35-4** orphan detection (the linter works BACKWARDS — an attr
+matching an element prefix that no member claims is an ORPHAN, which made sgs/button's real
+`iconColour` visible for the first time); **FR-35-1** the `layer` field
+(OUTER/CONTENT/GRID/GRID_AREA borrowed from the converter's `layer_detect.py`) as a
+declarative naming contract — the converter does NOT read the manifest, deliberately.
+
+Rollout wave 1: 20 blocks via 4 parallel Sonnet agents, 8 → **28 of 67** manifested
+(site-header/footer/-row + adaptive-nav EXCLUDED — Track 2 owns them per
+`setting-registry _meta.cross_track`).
+
+**Two linter bugs, same JS falsy-empty-string trap, both found by agents not by review:**
+`element.prefix || elementKey` in the orphan scan, and `if (element.prefix)` in the resolver
+— both silently mishandled an explicit `"prefix": ""`. Fix proven, not assumed: removed
+decorative-image's `css:opacity` attrMap workaround and confirmed the member still resolved
+`via: default-attr`.
+
+**Approved, NOT built:** FR-35-5 (`states` axis — 113 state attrs across 27 blocks) and
+FR-35-6 (`animation` cluster — JS scroll motion, keyed `anim:*` not `css:*`). States are
+DECLARED never parsed: `tabActiveTextColour` renders as `[aria-selected="true"]`, NOT CSS
+`:active`, and four `*Hover` attrs are booleans rather than style properties.
+
 ## D353 [ROUTINE] — FR-36-5 `sgs_mega_menu` CPT built NAV-ONLY; `sgs-theme` had no `menus` support at all (2026-07-20)
 
 **Framework bug found en route (the bigger of the two).** `theme/sgs-theme` declared NO

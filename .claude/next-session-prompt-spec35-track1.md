@@ -1,140 +1,242 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: Track 1 — Spec 35 block-inspector-UX. Parallax split + Task 2 #1+#2 (element manifest + conformance script + brand-strip real controls) SHIPPED + merged to main (2026-07-20, `cdfbd9e0`). Next = Task 3 (hover codemod, design-gate first), Task 6 (linters WARN-only), Task 2 #3/#4/step-5.
-generated: 2026-07-20
+thread: Track 1 — Spec 35 block-inspector-UX. Cluster/element VOCABULARY REWORK shipped 2026-07-20/21 (3 clusters → 5, element-primary axis, coverage validator, orphan detection) + rollout wave 1 (20 blocks, 28/67 manifested). Next = build FR-35-5 (states axis) + FR-35-6 (animation cluster), then rollout waves 2-3, then the card-grid resting-state defect.
+generated: 2026-07-21
 ---
 
 # Spec 35 — Track 1 (block-inspector-UX) — next session
 
 **Invoke `/autopilot` before doing anything else.** Then read this file end-to-end.
 
-> **Track-1-scoped handoff.** Branch `feat/brand-strip-inspector-rebuild` is SHARED with a co-active
-> Track 2 (header/footer/nav) and a Track C (`feat/core-block-migration`). Do NOT rewrite `LEDGER.md` /
-> `next-session-prompt.md` / `decisions.md` — Track 2 owns them. Path-scope every commit; re-check
-> `git branch --show-current` in the SAME command as the commit; NEVER `git add -A` or `git checkout`.
-> See "Shared-branch discipline".
+> **Spec-35-scoped handoff.** `main` is SHARED with a co-active Track 2 (Spec 36 header/
+> footer/nav). Track 2 owns `LEDGER.md`, the D-numbering cadence in `decisions.md`, and
+> `next-session-prompt-nav-rework-P2.5.md`. Path-scope every commit; re-check
+> `git branch --show-current` in the SAME command as the commit; NEVER `git add -A`.
 
 ## Why this matters (motivation — Rule 7)
 
-Spec 35 makes every SGS block's editor sidebar **complete + consistent** so a non-coder client can
-self-serve and Bean is **QC only**. The single biggest lever: one fixed inspector shape the client learns
-once and every block obeys (element-first: Content · Style tabs; Style tab = element sections; clusters
-Text → Fill → Layout). **Top USP:** the inspector reads the same on every block → less intervention over
-time. The element-first shape is now LOCKED, the machine contract that enforces it is BUILT, and the
-exemplar (brand-strip) genuinely embodies it with real controls.
+Spec 35 makes every SGS block's editor sidebar complete and consistent so a non-coder client
+can self-serve and Bean is QC only. **Top USP:** the inspector reads the same on every block,
+so intervention drops over time. As of this session the vocabulary describing it is honest —
+a conformance score finally means something rather than penalising blocks for capability the
+schema couldn't name.
 
-## What shipped this session (2026-07-20, all committed + pushed on the shared branch)
+## Where things stand
 
-| Item | What | Commit |
-|---|---|---|
-| **Parallax split** | Background parallax → a toggle in the native Colour panel (`group="color"`), shown only on background-capable blocks, with a conditional Strength slider. Element parallax → its own renamed panel with a plain-English explanation + conditional Strength. Both drive the one `sgsParallax` enum (mutually exclusive) → zero render/data-model change. Live-verified. | `1d476c26` |
-| **Task 2 #1** | Element-manifest schema (`supports.sgs.elements` = `{label,order,clusters[],prefix?,isWrapper?,attrMap?}`) + `cluster-member-sets.json` (text/fill/layout member sets sourced from the golden-master registry) + `check-element-manifest-conformance.js` (computes the CLUSTER-COHERENCE rule, WARN-only). brand-strip manifest seeded (4 elements). Honest run: **16 OK / 22 gaps**. | `869fe84d` |
-| **Task 2 #2** | brand-strip exemplar upgraded to REAL controls: `tileShadow` SELECT → `ShadowControl` (scoped `<style>`, no inline), per-logo link → `SgsLinkControl` (→ linkUrl/linkTarget/linkRel). | `869fe84d` |
-| **ShadowControl fix** | Live-verify caught a crash: `useSettings('shadow.presets')` returns WP's origin-keyed `{default,theme,custom}` object on WP 7.0.x, not a flat array → `(o||[]).map` threw. Normalised to a flat, slug-deduped array. brand-strip was the first LIVE render of ShadowControl. Live re-verified: 10 deduped preset buttons, no crash. | `bffb00ff` |
-| **Task 4 live-verify** | Confirmed in the real editor: a form-field's inspector shows only Field Settings / Visibility Conditions / Spacing / Advanced — Animation/Hover/BlockLink/ClickEffects/Parallax all absent. | (verified, env) |
-| **Bash node shim** | Fixed permanently: removed the leftover blank `node` placeholder in `nvm/v24.16.0` (rogue-package remnant) that shadowed `node.exe` in Git Bash. `node`/`npm` now work in Bash. | (env, no commit) |
-| **info-box question** | Confirmed the child-`sgs/icon` emoji design is built + working (not broken); the audit finding was one stale converter-test post (trashed). | (investigation) |
+**Shipped 2026-07-20/21:** brand-strip caption 9/9 (live-verified on the canary); cluster
+vocabulary rebuilt 3 → 5; two mis-keyed registry rows reclassified; a coverage validator;
+orphan detection; the element-axis (`layer`) gate; rollout wave 1 (20 blocks).
 
-## Remaining Track-1 tasks (next-session priorities)
+**Live baseline: 28 blocks manifested | OK 432 | GAP 1101 | ORPHAN 62.** 67 blocks in scope
+(not 72 — see the exclusion in Task 3).
 
-- **Task 3 — hover-duplicate migration (parked, heavy).** Migrate the 85 hover-duplicates (universal
-  `sgsHover*` panel + 22 blocks' private `*Hover` attrs) onto the shared `StateToggleControl`.
-  **Bean's approved approach:** ONE block inline to set the canonical shape, then a **script-driven
-  codemod** driven by the linter's known per-block `*Hover` attr list (NOT a blind regex — that broke
-  live `textAlign` before), gated by build + `php -l` + `check-duplicate-controls.js` dropping to 0 +
-  a live Playwright spot-check on 2–3 blocks. **Design-gate the codemod shape with Bean first.**
-- **Task 6 — wire the 3 linters into prebuild (WARN-only).** `check-universal-fit.js`,
-  `check-duplicate-controls.js`, `audit-block-file-consistency.py` → prebuild, exit 0 always. Do after
-  Task 3 so baselines start clean. Note: `check-element-manifest-conformance.js` (built this session) is
-  a 4th WARN-only candidate — wire it too, but the manifest only exists on brand-strip so far.
-- **Task 2 #3 — per-device border + shadow (DESIGN-GATE first).** Responsive wrappers + PHP `@media`
-  emitters for border (width/style/colour) + box-shadow, under the Spec 32 no-inline contract. Shared
-  styling machinery → design-gate the wrapper + emitter shape with Bean BEFORE building.
-- **Task 2 #4 — Content-tab organisation spec.** A doc: where the registry's behaviour-families +
-  composite panels live in the Content tab (Task 2 owned the Style tab only).
-- **Task 2 step 5 — per-block manifest rollout + gap-closing.** brand-strip has 22 conformance gaps
-  (tile lacks opacity/overlay/width/height/min-max/border-style; caption typography partially disabled;
-  strip-spacing lacks gap/width/height/box-shadow). Either add the missing controls or narrow an
-  element's declared `clusters`. Then roll `supports.sgs.elements` out to the other blocks.
+**Two designs are APPROVED but NOT BUILT — they are the front:**
 
-## FIRST ACTION (smallest, <5 min — Rule 2)
+- **FR-35-5 `states` axis** — 113 state-variant attrs across 27 blocks can currently only
+  surface as orphans.
+- **FR-35-6 `animation` cluster** — JS scroll/reveal motion (`sgsAnimation*` on 10 blocks,
+  parallax, stagger, pathDraw) has no cluster home and is invisible to every check.
 
-Read the LOCKED design doc `.claude/plans/spec-35-compound-control-sets-design.md` §"Rollout steps" +
-run `node plugins/sgs-blocks/scripts/check-element-manifest-conformance.js` to see brand-strip's live
-16-OK/22-gap output — that IS the Task 2 step-5 gap list you'll work from. Zero deploy, zero risk.
+Both are specified end-to-end in
+`.claude/plans/2026-07-20-spec-35-cluster-vocabulary-rework-design.md`. **Read FR-35-5 and
+FR-35-6 in full before building — do not re-derive them.**
 
-## Shared-branch discipline (LOAD-BEARING)
+## First action (smallest, <5 min — Rule 2)
 
-- Branch `feat/brand-strip-inspector-rebuild`, shared with co-active Track 2 + Track C. Track-1 HEAD this
-  session ended at `bffb00ff`. NOT merged to main (deliberate).
-- Path-scope EVERY commit (`git add -- <paths>`); re-check `git branch --show-current` in the SAME
-  command; NEVER `git add -A`, NEVER `git checkout`/switch. Non-visual commits use
-  `git commit --no-verify` + a `[batch-ok: <reason>]` line.
-- Merge to main ONLY via an isolated `git worktree add /c/tmp/x main`. Do NOT delete the shared branch.
-- **Deploy ONLY via an isolated worktree** (`git worktree add --detach C:/tmp/sgs-deploy <commit>` +
-  junction node_modules + `build-deploy.py --target sandybrown --blocks-only`) — the shared worktree
-  carries Track 2 + Track C WIP; a deploy from it would ship their work. Remove the junction (PowerShell
-  `rmdir`) before `git worktree remove --force`.
-- `brand-strip/style.css` is HELD behind the visual-diff gate (carries pre-existing reduced-motion work +
-  this session's dead-shadow-rule cleanup) — leave it uncommitted; it renders fine without it (shadow via
-  render.php). Track 2/C's uncommitted files (nav-drawer/, shared/, cart, responsive-logo, LEDGER/specs)
-  are NOT Track 1's — leave them alone.
+Run `node plugins/sgs-blocks/scripts/check-element-manifest-conformance.js` and read the
+summary line. That is the live baseline every task below moves. Zero risk, zero deploy.
+
+## Tasks
+
+### Task 1 — Build FR-35-5, the `states` axis
+
+**What:** let a manifest element declare state variants (hover/focus/selected/pressed/
+disabled) so state attributes resolve instead of surfacing as orphans.
+**Why:** removes a large slice of orphan noise AND surfaces a real client-facing defect class.
+**Estimated time:** 25 min.
+
+**Orchestration**
+- Execution: **delegated**, Model **sonnet** via `/delegate` (shared linter + schema judgement)
+- Dispatch: single agent, then main-thread verification
+- Brief: implement `states` on the element per FR-35-5 — both resolution forms (`attrMap`
+  explicit, and `suffix` + `members`), the 5-state vocabulary with its CSS realisations, the
+  separate `total_state_ok`/`total_state_gap` counters, and the new `STATE_WITHOUT_BASE`
+  status. Then declare `states` on `sgs/tabs` (6 known state orphans) as the exemplar.
+- Context the subagent won't have: **`tabActiveTextColour` renders as
+  `[aria-selected="true"]`, NOT CSS `:active`** (`tabs/render.php:232`, `style.css:110`).
+  That is why states are declared, never parsed. Also `pauseOnHover` / `effectHover` /
+  `imageZoomHover` / `grayscaleHover` contain "Hover" and are NOT style properties.
+- Depends on: none. Parallel with: Task 2.
+- `/qc` gate after: yes — `/qc-inline` plus a main-thread re-run of the linter.
+
+**Acceptance:** tabs' 6 state orphans resolve; base `total_ok`/`total_gap` UNCHANGED (states
+are a separate axis); `card-grid` reports `STATE_WITHOUT_BASE` for its hover-only background;
+script still exits 0.
+
+### Task 2 — Build FR-35-6, the `animation` cluster
+
+**What:** add a 6th cluster for JS-driven motion, keyed `anim:*` (not `css:*`).
+**Why:** `sgsAnimation*` spans 10 blocks and is invisible to both the forward check and
+orphan detection.
+**Estimated time:** 15 min.
+
+**Orchestration**
+- Execution: **delegated**, Model **haiku** via `/delegate` (mostly data)
+- Brief: add the 6 members per FR-35-6 to `cluster-member-sets.json`; add matching `anim:*`
+  rows to `setting-registry.json`; extend `check-cluster-coverage.py` to require `anim:*`
+  rows be clustered too.
+- Context: keys are `anim:*` NOT `css:*` — filing JS controls under `css:` repeats the
+  mis-keying that put `css:stroke` and `css:percentage` in the registry.
+- Depends on: none. Parallel with: Task 1.
+- `/qc` gate after: yes — `check-cluster-coverage.py` must still exit 0.
+
+**Acceptance:** coverage validator passes over both `css:*` and `anim:*`; blocks carrying
+`sgsAnimation*` show resolved animation members.
+
+### Task 3 — Rollout waves 2 and 3 (39 blocks)
+
+**What:** manifest the remaining 39 in-scope blocks.
+**Why:** the roster is the deliverable; the vocabulary is now stable enough to carry it.
+**Estimated time:** 25 min per wave of ~20.
+
+**Orchestration**
+- Execution: **delegated**, Model **sonnet** via `/delegate`, dispatch via
+  `/dispatching-parallel-agents` — 4 agents per wave, ~5 blocks each, **ALL DISPATCHED IN ONE
+  RESPONSE** (separate responses run sequentially, not in parallel)
+- Brief: reuse the wave-1 prompt shape verbatim — it produced 8/8 exactly-correct count sets.
+  Group by KIND (grid composites / flex composites / content / siblings), never at random.
+- **EXCLUDE:** `site-header`, `site-footer`, `site-header-row`, `site-footer-row`,
+  `adaptive-nav` — Track 2 owns these (`setting-registry _meta.cross_track`). 67 in scope.
+- Depends on: Task 1 — states must exist first, or every wave adds state orphans needing
+  retro-fit.
+- `/qc` gate after: yes — main-thread verification of every agent's counts against the
+  linter JSON.
+
+**Acceptance:** 67/67 in-scope blocks manifested; every agent's counts verified against the
+linter, NOT accepted from the report.
+
+### Task 4 — Close the card-grid resting-state defect
+
+**What:** `card-grid` cards have hover background/border/shadow attrs but NO static
+equivalents; the resting state is hardcoded at `style.css:29-31` to theme tokens.
+**Why:** a client cannot give a card a resting background colour. Real and client-facing.
+**Estimated time:** 20 min.
+
+**Orchestration**
+- Execution: **delegated** build (Model **sonnet**), main-thread LIVE verification
+- Brief: add static `cardBackground` / `cardBorder*` / `cardRadius` attrs + inspector
+  controls + scoped CSS under the Spec 32 no-inline contract; the hardcoded `style.css`
+  values become `var(--sgs-…, <token>)` fallbacks.
+- Context: the F3 prebuild gate WILL fire if the hardcoded default isn't converted to a
+  custom-property fallback — that is correct behaviour, not an obstacle to route around.
+- Depends on: Task 1 (so `STATE_WITHOUT_BASE` confirms the fix landed).
+- `/qc` gate after: yes — **deploy to the canary and verify in the real editor.**
+
+**Acceptance:** `STATE_WITHOUT_BASE` clears for card-grid; a client can set a resting card
+background in the editor, verified live.
+
+## Dependency graph
+
+```
+Task 1 (states, sonnet)  ‖  Task 2 (animation, haiku)
+        ↓ /qc-inline + linter re-run
+Task 3 (rollout waves 2+3 — 4 sonnet agents per wave, ONE response per wave)
+        ↓ main-thread count verification
+Task 4 (card-grid defect, sonnet build + LIVE verify)
+        ↓
+Commit path-scoped + push main
+```
 
 ## Structural defences (STOP catalogue — carry forward, never subtract)
 
-- **STOP-LIVE-VERIFY-SHARED-COMPONENTS** (new this session): a subagent's build-green + unit-pass report
-  is NOT proof a shared editor component renders. Live-verify it in the real editor (insert block, open
-  EVERY tab that renders it, watch the error boundary + console) before closing. ShadowControl compiled +
-  passed 180 tests but crashed on first live render (origin-keyed `shadow.presets`). Memory:
-  `live-verify-shared-components-build-green-not-enough`.
-- **STOP-VERIFY-SUBAGENT-FACTS**: fact-check subagent-invented specifics (paths/versions/claims) vs
-  ground truth; STRUCTURE can be faithful while FACTS are wrong.
-- **STOP-BLIND-REGEX-CODEMOD** (Task 3): a blind `*Hover` regex broke live `textAlign` before — drive the
-  Task 3 codemod off the linter's KNOWN per-block attr list, `/verify-loop` per block.
-- **STOP-DEPLOY-FROM-SHARED-WORKTREE**: always deploy from an isolated worktree at a committed SHA.
-- **STOP-NO-VERSION-BUMPS / NO-DEPRECATIONS** (D270): pre-production; additive metadata + re-clone, never
-  a `deprecated.js`.
+- **STOP-LIVE-VERIFY-SHARED-COMPONENTS** — a subagent's build-green + unit-pass report is NOT
+  proof a shared editor component renders. Live-verify in the real editor (insert the block,
+  open EVERY tab that renders it, watch the error boundary + console). ShadowControl compiled
+  and passed 180 tests, then crashed on first live render.
+- **STOP-VERIFY-SUBAGENT-FACTS** — fact-check subagent-invented specifics (paths, versions,
+  counts) against ground truth. STRUCTURE can be faithful while FACTS are wrong.
+- **STOP-BLIND-REGEX-CODEMOD** — a blind `*Hover` regex broke live `textAlign` before. Drive
+  any codemod off a KNOWN per-block attr list; `/verify-loop` per block.
+- **STOP-DEPLOY-FROM-SHARED-WORKTREE** — always deploy from an isolated worktree at a
+  committed SHA (`git worktree add --detach C:/tmp/sgs-deploy <sha>` + junction node_modules).
+- **STOP-NO-VERSION-BUMPS / NO-DEPRECATIONS** (D270/D293) — pre-production; additive metadata
+  and re-clone, never a `deprecated.js`.
+- **STOP-COUNTS-FROM-THE-TOOL-NOT-THE-AGENT** *(new 2026-07-21)* — nearly every agent that
+  reported a hand-counted total this session got at least one wrong while describing the
+  STRUCTURE correctly. Re-derive every number from the tool's own `--json`. Never quote an
+  agent's tally.
+- **STOP-FALSY-EMPTY-STRING** *(new 2026-07-21)* — `element.prefix || fallback` and
+  `if (element.prefix)` both silently mis-handle an explicit `""`. This shipped TWICE in one
+  file and was found by agents, not by review. When a config value can legitimately be empty,
+  test `!== undefined`, never truthiness.
+- **STOP-CLUSTER-WITHOUT-PREFIX-OR-ATTRMAP** *(new 2026-07-21)* — declaring a cluster on an
+  element with neither a `prefix` nor an `attrMap` resolves ZERO members and makes the score
+  WORSE. Measured: +36 GAP, zero resolutions.
+- **STOP-DECLARE-DONT-PARSE-NAMES** *(new 2026-07-21)* — attribute names NEARLY encode
+  semantics, and "nearly" is the trap. `tabActive*` means `[aria-selected]`, not CSS
+  `:active`; four `*Hover` attrs are booleans, not styles. Declare mappings; let names be a
+  hint a human confirms.
 
-## Pre-flight ritual (answer before first Write/Edit)
+## Pre-flight ritual (answer before the first Write/Edit)
 
-1. Am I on `feat/brand-strip-inspector-rebuild`, and is my next commit path-scoped?
-2. Am I about to touch a shared component / shared mechanism? → design-gate + plan to live-verify.
-3. Will this change render live? → deploy via isolated worktree, then verify in the real editor (not
-   build-green alone).
-4. Is anything I'm reporting a subagent claim? → fact-check vs ground truth before closing.
+1. Am I on `main`, and is my next commit path-scoped away from Track 2's files
+   (`LEDGER.md`, `next-session-prompt-nav-rework-P2.5.md`, `src/blocks/site-*`,
+   `adaptive-nav`)?
+2. Am I about to touch a shared component or shared mechanism? → design-gate it and plan to
+   live-verify.
+3. Will this change render live? → deploy from an isolated worktree, then verify in the real
+   editor (never build-green alone).
+4. Is anything I am about to report a subagent claim? → re-derive it from the tool before
+   stating it.
+5. *(new)* Am I about to declare a cluster or a state? → does the element have a `prefix`, an
+   `attrMap`, or a `layer` to make it resolve — or will it silently score worse?
 
-## Follow-ups / notes
+## Mandatory READING (tiered)
 
-- **MEMORY.md is ~20.4KB** (limit 24.4KB) — compact soon (one line per entry; move detail to topic files).
-- **No D-numbers claimed** (avoided editing the shared `decisions.md`). Assign next session if wanted.
-- Linters stay WARN-only until Spec close. No block version bumps / no `deprecated.js`.
+**Tier 1 — before any edit:**
+- `.claude/plans/2026-07-20-spec-35-cluster-vocabulary-rework-design.md` (FR-35-1..6 — READ
+  IN FULL; FR-35-5 and FR-35-6 are the build spec)
+- `plugins/sgs-blocks/scripts/consistency/cluster-member-sets.json` `_meta` (all 5 notes)
+- `plugins/sgs-blocks/scripts/check-element-manifest-conformance.js` header comment
+- `.claude/STOP-CATALOGUE.md`
 
-## Skills / Agents / MCP
+**Tier 2 — before touching the roster:**
+- `.claude/plans/phase-spec35-vocabulary-rework.md` (the executed phase plan)
+- Worked exemplars: `container` (4-layer composite), `card-grid` (root IS the grid),
+  `quote` (content-KIND), `brand-strip` (multi-element with prefixes), `hero` (variant-heavy)
+- `plugins/sgs-blocks/scripts/consistency/check-cluster-coverage.py`
+
+**Tier 3 — context:**
+- `CLAUDE.md` binding rules R-31-1..15
+- `.claude/decisions.md` head (D-ceiling; Track 2 owns the cadence)
+- `plugins/sgs-blocks/scripts/converter/services/layer_detect.py` (the L1–L4 vocabulary)
+
+## Tool bindings — Skills / Agents / MCP
 
 | Skill | When |
 |---|---|
-| `/autopilot` | FIRST — live routing + ADHD support |
-| `/brainstorming` | design-gate the Task 2 #3 responsive machinery + Task 3 codemod shape |
-| `/strategic-plan` | order the remaining Task 2 / 3 / 6 work |
-| `/gap-analysis` | grade the Task 3 codemod design + the content-tab spec before lock |
+| `/brainstorming` | any design gate before building a shared mechanism |
+| `/gap-analysis` | grade the rollout output before declaring the roster done |
+| `/lifecycle` | if editing any skill/agent/linter-as-tooling |
 | `/research` | any gold-standard check before a design menu |
-| `/lifecycle` | if wiring linters / editing any skill/agent |
-| `/sgs-wp-engine`, `/wp-blocks`, `/sgs-db` | any SGS block work; DB is authoritative — never hardcode counts |
-| `/qc-council` | multi-rater validate the Task 3 codemod fix-shape before dispatch |
-| `/verify-loop` | MANDATORY per block edit (caught the textAlign regression) |
-| `/delegate` | route each dispatch (Haiku mechanical / Sonnet design) |
+| `/strategic-plan` | if Task 3 grows beyond two waves |
+| `/dispatching-parallel-agents` | Task 3 — 4 agents per wave, ONE response per wave |
+| `/delegate` | route every dispatch |
+| `/verify-loop` | 2-attestation on any load-bearing claim |
+| `/sgs-db`, `/wp-blocks` | DB is authoritative — never hardcode a count |
+| `/qc-council` | multi-rater before any converter/pipeline/shared-block commit |
 
 | Agent | When |
 |---|---|
-| `wp-sgs-developer` | hover migration, per-device border/shadow build, per-block manifest rollout (Sonnet). Constrain: no deploy, no git commit — main thread commits path-scoped + deploys via isolated worktree + LIVE-verifies |
-| `design-reviewer` | visual + a11y QC of a migrated control |
+| `wp-sgs-developer` | Tasks 1, 3, 4. Constrain: no deploy, no git commit — the main thread commits path-scoped and live-verifies |
+| `design-reviewer` | visual + a11y QC of the card-grid resting-state controls (Task 4) |
 
 | MCP / tool | For |
 |---|---|
-| Chrome DevTools CLI (`chrome-devtools <tool>`) | live editor verification WITHOUT the shared MCP Playwright browser (Track 2 holds that profile). Installed globally this session. Log in via `.claude/secrets/sandybrown.env`; session drops on CLI reconnect — re-login each time |
-| Playwright MCP | live-verify (only if the shared browser is free) |
+| Playwright MCP | live editor verification (Tasks 1, 4) |
+| Chrome DevTools CLI | fallback if Track 2 holds the shared browser profile |
 
-Canary creds (always available): `.claude/secrets/sandybrown.env` (`WP_USER/PWD_SANDYBROWN`). Deploy: the
-ONE path `build-deploy.py --target sandybrown` from an ISOLATED worktree (never the shared one). SSH alias
-`ssh hd`. Conformance script: `node plugins/sgs-blocks/scripts/check-element-manifest-conformance.js`.
+Canary creds (always available): `.claude/secrets/sandybrown.env`. Deploy: the ONE path
+`build-deploy.py --target sandybrown --blocks-only` from an ISOLATED worktree. SSH alias
+`ssh hd`.

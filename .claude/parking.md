@@ -471,6 +471,46 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 **Status:** OPEN
 
 
+### P-SPEC35-STATE-RESPONSIVE — Responsive × state combinations in the manifest (~30 min)
+**Status:** DEFERRED
+**Bucket:** framework
+
+**Trigger:** Only if a real block ships a `hoverColourTablet`-shaped attribute. No evidence of demand today.
+
+**What:** FR-35-5 deliberately scopes the `states` axis to base-tier only. A third dimension (responsive × state × member) was considered and excluded as speculative.
+
+**Approach:** If it surfaces, extend `states` with the existing device-tier suffix convention rather than a new axis.
+
+### P-SPEC35-STATE-AUTOSUGGEST — Helper to offer state mappings for the 81% suffix-shaped attrs (~45 min)
+**Status:** OPEN
+**Bucket:** tooling
+
+**Trigger:** After FR-35-5 ships and the roster starts declaring `states` at scale.
+
+**What:** 92 of 113 state attrs are suffix-shaped (`backgroundColourHover`). A helper could OFFER `{baseAttr}+Hover` mappings for an author to confirm. It must never decide — `pauseOnHover` / `effectHover` / `imageZoomHover` / `grayscaleHover` contain "Hover" and are not style properties (STOP-DECLARE-DONT-PARSE-NAMES).
+
+**Approach:** Suggestion-only CLI emitting a candidate `states` block for human/agent review.
+
+### P-SPEC35-UPSTREAM-REGISTRY-DRIFT — `css:stroke` / `css:percentage` still present in Phase-1 artefacts (~20 min)
+**Status:** OPEN
+**Bucket:** tooling
+
+**Trigger:** Before anyone regenerates `setting-registry.json` from Phase-1 data.
+
+**What:** Both rows were reclassified in the hand-curated golden master (D354) but still exist in `setting-types.json` and `setting-registry-css.json`, which are upstream Phase-1 artefacts. No live inconsistency today because the golden master is not regenerated from them — but a regeneration would silently revert the reclassification.
+
+**Approach:** Either reclassify upstream to match, or add a regeneration guard that fails on a known-reclassified key.
+
+### P-SPEC35-PARTIAL-BOX-MEMBERS — No vocabulary for a partially-modelled box member (~40 min)
+**Status:** OPEN
+**Bucket:** framework
+
+**Trigger:** If partial-box attrs proliferate beyond the current handful.
+
+**What:** Attributes like `headlineMarginBottom` and `attributionMarginTop` are a single side of a box member, not the whole `{top,right,bottom,left}` object `layout.css:margin` expects. The schema is binary resolved/gap, so these surface as orphans with no way to say "3/4 modelled". Surfaced by the wave-1 rollout.
+
+**Approach:** Consider a `partial` flag or a per-side member family. Do not build speculatively.
+
 ### P-WP-AUTOP-INTERACTION — Audit how WP `wpautop` interacts with sgs/text emission (~30 min)
 **Status:** DEFERRED
 
