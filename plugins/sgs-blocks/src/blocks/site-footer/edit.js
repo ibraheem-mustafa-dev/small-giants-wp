@@ -25,18 +25,18 @@ const TEMPLATE = [
 		{
 			rowSlot: 'columns',
 			layout: 'grid',
+			// Columns are an operator-set COUNT (Spec 37 §3.3, Bean-locked): the
+			// shared wrapper reads columns/columnsTablet/columnsMobile as flat
+			// integers (class-sgs-container-wrapper.php:149-154) and stacks to 1
+			// on mobile. No gridTemplateColumns object is seeded — an object here
+			// would flip $object_grid true (:138) and suppress the count path.
+			// A per-device custom template stays available as an advanced
+			// override (set gridTemplateColumns explicitly), never the default.
 			columns: 3,
 			columnsTablet: 3,
 			columnsMobile: 1,
-			// OBJECT shape is mandatory — this is D328, still live until now.
-			// site-footer-row declares gridTemplateColumns + gap as `type: object`
-			// ({desktop, mobile}). A flat string here is silently COERCED to the
-			// block.json default at render (WP prepare_attributes_for_render), so
-			// '2fr 1fr 1fr' became the default `repeat(3, 1fr)` — EQUAL THIRDS
-			// instead of the draft's 2fr 1fr 1fr — with no error and no test failure.
-			// `gridTemplateColumnsMobile` was not a declared attr at all and was
-			// discarded outright; the mobile collapse belongs in the `mobile` tier.
-			gridTemplateColumns: { desktop: '2fr 1fr 1fr', mobile: '1fr' },
+			// gap is a {desktop,tablet,mobile} object attr — a flat string would
+			// be coerced to the block.json default at render (D328).
 			gap: { desktop: '48px', mobile: '32px' },
 		},
 		[

@@ -4,15 +4,18 @@ spec_id: 37
 spec_version: 1.0.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
-status: draft
+status: active
 authors: [Claude Code, Bean]
-session_date: 2026-07-21
-last_verified: 2026-07-21
+session_date: 2026-07-22
+last_verified: 2026-07-22
 status_history:
-  - 2026-07-21 — v1.0.0 DRAFT. Written to replace Spec 17 as the canonical header/footer home.
-    Sources: P2 §2/§4/§5/§6 (builder-UX design-gate), P1 DP1–DP6 (architecture decision),
-    07-13 SYSTEM design-gate §3/§4/§4b/§6/§8/§9/§12, Spec 17 §S9 (the built parts), and live
-    code verified in-session. Awaiting the §9 coverage gate + /qc-council before sign-off.
+  - 2026-07-21 — v1.0.0. Written to replace Spec 17 as the canonical header/footer home.
+    §9 coverage gate + /qc-council passed; Spec 17 deleted in the same commit (matrix at
+    reports/2026-07-21-spec17-to-spec37-coverage.md). Signed off → status active.
+  - 2026-07-22 — 6-FR minimum core BUILT + committed (0da5ef6a). FR-37-2/3/4/5/25 live in
+    code (not yet canary-verified); FR-37-11 count path wired; §3.3a templateLock fixed.
+    Two bugs the pre-commit qc-council found were fixed before landing (see §2.4). FR-37-6
+    found BLOCKED on a client-data leak in parts/header.html (see §3.9a).
 references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
@@ -124,6 +127,34 @@ why they were deferred to `admin_init` in the first place.
 Direct render sidesteps the whole mechanism: read the post, run `do_blocks()`. It cannot be
 broken by pattern-registration timing because it never consults the registry.
 
+### 2.4 Two silent-failure bugs the direct-render branch introduced — and how they were closed (2026-07-22)
+
+A pre-commit `/qc-council` (three Sonnet raters incl. a source-verifying seat, cross-model to the
+Opus author) found two bugs in the FR-37-3 implementation before it landed. Both were the D338
+silent class — a header that renders and looks right while being subtly wrong — so they are recorded
+here as design facts, not just fixed-in-passing.
+
+1. **Empty render short-circuits to a blank header.** `pre_render_block` short-circuits on any
+   **non-null** return, not merely a truthy one. `render_active()` returned `(string) do_blocks(...)`,
+   so a valid, published, correctly-pointed post whose blocks all fail their own render callbacks
+   yields `''` — and that empty string still short-circuits, painting a blank header with no error.
+   **Fix:** validating `post_content` is necessary but not sufficient; the RENDER OUTPUT is now
+   checked too — an empty render returns `null` and falls through to the default.
+
+2. **A second header area on one page renders a DIFFERENT header.** The branch short-circuits before
+   `evaluate()`, so the rules engine's own `$evaluated_this_request` guard is still unset when a
+   second `core/template-part` for the same area is resolved. `evaluate()` then runs for the first
+   time, matches the immutable default rule, and paints the framework default header into the second
+   slot — the CPT header once, an unrelated header once, silently. **Fix:** `Sgs_Active_Layout`
+   tracks *attempted* and *served* separately; `has_served()` hands a second slot back to core rather
+   than to the rules engine, while an empty render (which set attempted but not served) still falls
+   through to the default.
+
+**Design lesson carried forward:** any hook that consumes the header through a route OTHER than
+`pre_render_block` (there is at least one — `Sgs_Header_Behaviours` on `body_class`) must be made
+CPT-aware in lockstep, and every short-circuit boundary must distinguish "I produced output" from "I
+tried". Both are now covered by a mutation-tested harness (removing either fix makes it fail).
+
 ### 2.3 Patterns still matter — as starters, not as a render path
 
 The two uses are distinct and must not be conflated again:
@@ -207,7 +238,9 @@ The mechanism already exists and is nearly correct:
   prevents adding and removing blocks but **still permits moving them** — so an operator can
   currently drag the bottom row above the top one. Both files' own comments claim
   *"operators can't add/remove/reorder rows"* (`site-header/edit.js:91`), which the chosen value
-  does not deliver. `'all'` closes it.
+  does not deliver. `'all'` closes it. **`BUILT` 2026-07-22 (commit `0da5ef6a`)** — both containers
+  now set `'all'`; verified that both row blocks still set `templateLock: false` at their own level
+  (`site-header-row/edit.js:48`, `site-footer-row/edit.js:76`), so freeform row content is untouched.
 - **Row content stays freeform.** `templateLock` does not cascade through nesting levels, and
   both row blocks set `templateLock: false` at their own level (`site-header-row/edit.js:48`,
   `site-footer-row/edit.js:76`). Locking the container therefore locks only the three rows —
@@ -288,6 +321,27 @@ mamas-munches AND indus-foods) as the primary guard: verifying on two clients de
 symptom after the fact; per-site storage removes the cause. Two-client verification is
 retained only where a *framework-level* capability is under test (FR-37-12, FR-37-23).
 
+### 3.9a ⛔ FR-37-6 is BLOCKED on de-clienting `parts/header.html` (discovered 2026-07-22)
+
+FR-37-6 (empty the header template part into a starter) cannot be executed as written, and the
+blocker is the very defect §3.9 exists to prevent — found from two independent directions this
+session:
+
+1. **The file carries live client data.** `parts/header.html` is git-tracked, not ignored, and
+   contains `"ref":1467` + `"featuredItemIds":["label:Send to Ward"]` — one client's menu and copy.
+   Copying that verbatim into a *framework* starter pattern (FR-37-6/FR-37-8) would ship one client's
+   header to **every** SGS install — exactly the `footer-indus-foods.php` failure §3.9 records.
+2. **It is a single shared theme file across all clients.** The Indus cutover recon found that a
+   routine `build-deploy.py --target palestine-lives --theme-only` would push the (Mama's-branded)
+   `parts/header.html` live onto **palestine-lives.org** — a client-content collision, not merely a
+   nav-shape change.
+
+**Therefore the ordered dependency is:** de-client `parts/header.html` first — split framework-shell
+vs per-site content (the per-site header lives in the CPT once authored; the framework file becomes a
+neutral shell / immutable default) — THEN FR-37-6 can empty it and FR-37-8 can seed a *generic*
+starter. Until then, FR-37-6 stays `NOT-BUILT` with this named blocker rather than being executed and
+leaking data. This also blocks the Spec 36 FR-36-18 Indus cutover for the same reason.
+
 ### 3.6 Never-overflow contract
 
 Carried from 07-13 §9, unchanged — it is implementation-ready and independent of editing home:
@@ -325,8 +379,9 @@ Site Editor is **not** an editing home for header/footer content, and no second 
 store exists. Rejected explicitly: Site-Editor-as-home, and the hybrid of both (P2 §2.1 —
 "WP has no native CPT↔template-part sync… two editable stores holding the same header drift
 the moment one is edited and not the other").
-**Status:** `PARTIAL` — CPTs + admin submenus exist (`class-sgs-block-cpts.php:67-165`,
-`:218-236`); they are not yet the binding source (FR-37-3).
+**Status:** `BUILT (code) — canary-unverified.` CPTs + admin submenus exist
+(`class-sgs-block-cpts.php:67-165`, `:218-236`); the binding now exists (FR-37-2/3, commit
+`0da5ef6a`). The end-to-end flow has NOT been exercised on the canary yet (FR-37-23 gate).
 **Done when:** an operator can create a header in *SGS → Advanced Headers*, set it active, and
 see it on the frontend, with no Site Editor step anywhere in that flow.
 
@@ -338,6 +393,11 @@ active per type).
 `build/`.
 **Done when:** the option holds the chosen post ID; setting another post active replaces it;
 the value survives a cache flush.
+**Status update 2026-07-22:** `BUILT` — `class-sgs-active-layout.php` (`set_active`/`clear_active`
+write `sgs_active_header_cpt_id`/`sgs_active_footer_cpt_id`; single-active enforced structurally
+by one option holding one id) + `class-sgs-active-layout-admin.php` ("Set as active" row action,
+nonce + `edit_theme_options` gated). Commit `0da5ef6a`. Guard/validation logic covered by a
+mutation-tested harness (16 checks incl. a negative control). Canary flow still unverified.
 
 #### FR-37-3 — Direct-render branch
 `Sgs_Header_Rules::filter_template_part()` gains an early branch, **before** `self::evaluate()`,
@@ -376,11 +436,16 @@ Carry forward the resolver's existing `transparent + contrastSafe='none' → 'sc
 (FR-37-15) drops it silently otherwise.
 **⛔ FR-37-6 is GATED on this clause landing first.** Emptying the template part before the
 resolver is CPT-aware breaks every behaviour on both sites at once.
-**Status:** `NOT-BUILT`.
+**Status:** `BUILT (code) — canary-unverified.` Commit `0da5ef6a`. Both rules engines gained the
+branch before `evaluate()` (`class-sgs-header-rules.php`, `class-sgs-footer-rules.php`);
+`Sgs_Active_Layout::render_active()` carries clause (a); `get_header_content()` gained the CPT-first
+branch for clause (b) (`class-sgs-nav-menu-source.php`); `get_active_id()` fails closed for clause
+(c). The WCAG `transparent + none → scrim` upgrade was verified downstream of the shared resolver,
+so it still fires for a CPT header.
 **Done when:** an active CPT header renders on a cold frontend request with all caches cleared;
 the page contains the CPT's content exactly once; **and a header with sticky enabled in the CPT
 emits its body class and is observably sticky on the frontend** — measured on the live page, not
-inferred from the emit.
+inferred from the emit. *(All four still owed — the canary run is the remaining work.)*
 
 #### FR-37-4 — Immutable fallback
 With no active CPT and no matching rule, the theme's framework default pattern renders
@@ -393,15 +458,22 @@ deleted by an operator.
 Both CPT list tables show an **Active** status column, following the pattern WP uses for the
 active theme, so an operator with several saved headers can see which is live without opening
 each.
-**Status:** `NOT-BUILT` — no `manage_*_posts_columns` hook for either CPT.
+**Status:** `BUILT (code) — canary-unverified` (commit `0da5ef6a`,
+`class-sgs-active-layout-admin.php` — `manage_{cpt}_posts_columns` + `display_post_states`). A row
+pointed at a non-published post shows "Active (not published — default is showing)" rather than
+falsely claiming Active, so a trashed active post is legible in the list table.
 **Done when:** exactly one row per type shows Active, and it matches the stored option.
 
 #### FR-37-6 — Template parts are thin shells
 `parts/header.html` and `parts/footer.html` contain only what is needed for WP's template
 system to resolve the area. Authored block content lives in the CPT, never in the part. The
 markup currently hand-authored in `parts/header.html` moves into a starter template.
-**Status:** `PARTIAL` — `parts/footer.html` is already a one-line shell;
-`parts/header.html` still carries 28 lines of hand-authored blocks.
+**Status:** `NOT-BUILT — BLOCKED.` `parts/footer.html` is already a one-line shell;
+`parts/header.html` still carries 28 lines of hand-authored blocks **that include live client data**
+(`"ref":1467`, `"Send to Ward"`). ⛔ **Blocked on de-clienting the file first — see §3.9a.** Emptying
+it into a framework starter as-is would leak one client's header to every install; and the binding it
+depends on (FR-37-3) is not canary-verified yet, and emptying the file before that is verified
+silently kills every header behaviour (the §2.2 / clause-(b) risk).
 **Done when:** neither part file contains authored content, and both sites render from CPTs.
 
 ### Starter templates
@@ -463,11 +535,33 @@ alongside `gridTemplateColumns`, and already implements "explicit template wins,
 fallback" (`class-sgs-container-wrapper.php:583-590`). What it lacks is object-shaped (per-tier)
 reading of `columns` — it coerces an array to the default `2` (`:150`). Extend that gating the
 same way `gridTemplateColumns` is already read per tier; do not add a parallel mechanism.
-**Status:** `NOT-BUILT` — and worse than absent: the attributes are set but silently discarded.
+**Status:** `BUILT (code) — canary-unverified` (2026-07-22). Three-part fix, all block-private,
+**wrapper untouched** (the capability was already there — this was a wiring bug, not a missing
+feature):
+1. `site-footer-row/block.json` declares `columns`/`columnsTablet`/`columnsMobile` (number) — stops
+   the silent discard (D338).
+2. The object `gridTemplateColumns` DEFAULT was removed, and the parent template
+   (`site-footer/edit.js`) no longer seeds `{desktop:'2fr 1fr 1fr', mobile:'1fr'}`. This matters
+   because of the wrapper's grid gate (`class-sgs-container-wrapper.php:138`,
+   `$object_grid = $object_model && is_array($gridTemplateColumns)`): an object present — even
+   `{}` — flips `$object_grid` true and SUPPRESSES the flat count path. With no object, the wrapper
+   renders `repeat(columns,1fr)` + the `sgs-cols-*` responsive classes (`:583-590`, `:800-811`).
+3. `site-footer-row/edit.js`: the existing count slider now writes the flat integer attrs directly
+   (via `ResponsiveOverride` bridged to the three attrs), instead of encoding a `repeat(N,1fr)`
+   template string that re-triggered the object path. The `columnsToTemplate`/`templateToColumns`
+   shims were deleted.
+
+> **Discovery, recorded:** the earlier "shared-wrapper change needed, design-gate territory" reading
+> was WRONG — it came from a review that saw only the wrapper's template path and missed the flat
+> count path six lines above it. The wrapper already reads a per-device count AND a per-device custom
+> template in grid mode; the footer row was simply defaulting to the template shape. `gridTemplateColumns`
+> is retained (no default) as the ADVANCED per-device custom-template override, never the operator
+> default (§3.3's ratio-is-a-developer-concept rule).
+
 **Done when:** an operator sets a column count with no CSS and no ratio string; the row renders
 that many columns on desktop and stacks to 1 on mobile with no further configuration; and the
 values set by `site-footer/edit.js` are no longer discarded — verified by reading the saved
-post content, not the editor state.
+post content, not the editor state. *(Live canary render of the count still owed.)*
 
 #### FR-37-12 — Never-overflow contract
 §3.6 holds on every shipped header and footer.
@@ -638,8 +732,10 @@ requirement is never lost in the hand-off.
 #### FR-37-25 — Reset to default
 An operator can clear the active header/footer and return to the framework default, from the
 admin, without touching code or the database.
-**Status:** `NOT-BUILT` — carried from Spec 17 FR-S2-3, which had a "Reset Header/Footer"
-button. FR-37-2 only covers *setting* active.
+**Status:** `BUILT (code) — canary-unverified` (commit `0da5ef6a`). `Sgs_Active_Layout::clear_active()`
++ the "Clear active" row action (`class-sgs-active-layout-admin.php`) delete the pointer; the branch
+then falls straight through to the rules engine and the immutable default. The previously-active post
+is untouched and re-activatable. This doubles as the rollback for the whole binding.
 **Done when:** the reset action clears the option; the immutable default (FR-37-4) renders; the
 previously-active post still exists and can be re-activated.
 
@@ -736,17 +832,26 @@ and eye are co-authoritative, neither closes alone).
 
 ## 5. Build status summary
 
+> **Updated 2026-07-22** — the 6-FR minimum core landed in code (commit `0da5ef6a`).
+> `BUILT (code)` below means shipped + mutation-tested + build-green, but **not yet exercised on the
+> canary** — the FR-37-23 acceptance gate (four live checks on a cold cache) is the remaining work
+> before any of these is "done".
+
 | Area | Status |
 |---|---|
 | CPTs + admin pages | `BUILT` |
-| CPT → frontend binding | `NOT-BUILT` — and currently **silently broken** (§2.2) |
+| Active pointer + "Set as active"/"Clear" (FR-37-2/25) | `BUILT (code)` — canary-unverified |
+| CPT → frontend binding (FR-37-3, incl. CPT-aware resolver) | `BUILT (code)` — was §2.2 silently broken; direct render replaces it |
+| "Active" list-table column (FR-37-5) | `BUILT (code)` — canary-unverified |
 | Container blocks exist | `BUILT` (2026-07-13, for Spec 17) |
-| Container blocks **conform to a defined end state** | `UNVERIFIED` — §3 is the first such definition |
+| Container blocks **conform to a defined end state** | `UNVERIFIED` — §3 is the first such definition (FR-37-9/10 audit not run) |
+| Row reorder-lock (`templateLock: 'all'`, §3.3a) | `BUILT (code)` |
+| Footer per-device column count (FR-37-11) | `BUILT (code)` — count path wired, wrapper untouched; canary-unverified |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
 | hide-on-scroll | `PARTIAL` — dormant JS, no attribute |
 | Tri-state shape | `NOT-BUILT` |
 | Scoped behaviour CSS | `NOT-BUILT` |
-| Footer per-device columns | `NOT-BUILT` |
+| Empty the header template part (FR-37-6) | `NOT-BUILT — BLOCKED` on de-clienting the file (§3.9a) |
 | Starter picker | `NOT-BUILT` |
 | Rules engine | `BUILT` |
 | Legacy retirement | `NOT-BUILT`, gated on FR-36-18 |

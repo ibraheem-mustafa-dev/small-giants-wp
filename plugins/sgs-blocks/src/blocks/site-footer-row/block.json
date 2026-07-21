@@ -61,8 +61,7 @@
 			"default": 1
 		},
 		"gridTemplateColumns": {
-			"type": "object",
-			"default": { "desktop": "repeat(3, 1fr)", "mobile": "1fr" }
+			"type": "object"
 		},
 		"flexWrap": {
 			"type": "string",

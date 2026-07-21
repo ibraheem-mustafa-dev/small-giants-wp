@@ -29,34 +29,43 @@ const ROW_LABELS = {
 	bottom: __( 'Bottom bar — copyright / legal / attribution', 'sgs-blocks' ),
 };
 
-// Client-friendly columns number <-> the CSS grid-template-columns the engine stores.
-const columnsToTemplate = ( n ) => ( n <= 1 ? '1fr' : `repeat(${ n }, 1fr)` );
-const templateToColumns = ( tpl ) => {
-	if ( ! tpl ) {
-		return 1;
-	}
-	const repeatMatch = /repeat\(\s*(\d+)/.exec( tpl );
-	if ( repeatMatch ) {
-		return parseInt( repeatMatch[ 1 ], 10 );
-	}
-	// Fall back to counting explicit track tokens (e.g. "1fr 2fr 1fr").
-	return tpl.trim().split( /\s+/ ).filter( Boolean ).length || 1;
-};
+// Columns are an operator-set COUNT per device (Spec 37 §3.3, Bean-locked), NOT
+// a CSS grid-template ratio string. These map 1:1 onto the shared wrapper's flat
+// integer attrs (class-sgs-container-wrapper.php:149-154), which render
+// repeat(N,1fr) + the sgs-cols-* responsive classes and stack to 1 on mobile.
+// The ResponsiveOverride device switcher wants a {desktop,tablet,mobile} object,
+// so we bridge the three flat attrs to that shape and back — no gridTemplateColumns
+// string is ever written from this control. A per-device custom template remains
+// available as an advanced override by setting gridTemplateColumns directly.
+const COUNT_ATTR = { desktop: 'columns', tablet: 'columnsTablet', mobile: 'columnsMobile' };
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { rowSlot, layout, gap, gridTemplateColumns, justifyContent } =
+	const { rowSlot, layout, gap, columns, columnsTablet, columnsMobile, justifyContent } =
 		attributes;
 
 	const isGrid = 'grid' === layout;
 
-	// Editor preview mirrors the frontend: grid rows preview as a column grid at
-	// the desktop tier, flex rows as a wrapping cluster.
+	// Bridge the three flat count attrs to the object shape ResponsiveOverride
+	// expects. A tier is present only when its attr is set, so a blank tablet /
+	// mobile reads as "inherit" in the switcher.
+	const countValue = {
+		...( columns !== undefined ? { desktop: columns } : {} ),
+		...( columnsTablet !== undefined ? { tablet: columnsTablet } : {} ),
+		...( columnsMobile !== undefined ? { mobile: columnsMobile } : {} ),
+	};
+	const onCountChange = ( obj ) =>
+		setAttributes( {
+			columns: obj.desktop,
+			columnsTablet: obj.tablet,
+			columnsMobile: obj.mobile,
+		} );
+
+	// Editor preview mirrors the frontend: grid rows preview as an equal-count
+	// column grid at the desktop tier, flex rows as a wrapping cluster.
 	const previewStyle = isGrid
 		? {
 				display: 'grid',
-				gridTemplateColumns:
-					( gridTemplateColumns && gridTemplateColumns.desktop ) ||
-					'repeat(3, 1fr)',
+				gridTemplateColumns: `repeat(${ columns || 3 }, 1fr)`,
 				gap: ( gap && gap.desktop ) || '48px',
 		  }
 		: {
@@ -91,23 +100,21 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ isGrid && (
 						<ResponsiveOverride
 							label={ __( 'Columns', 'sgs-blocks' ) }
-							value={ gridTemplateColumns }
-							onChange={ ( obj ) =>
-								setAttributes( { gridTemplateColumns: obj } )
-							}
+							value={ countValue }
+							onChange={ onCountChange }
 						>
 							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
 								const shown = inherited ? effectiveValue : ownValue;
 								return (
 									<RangeControl
-										value={ templateToColumns( shown ) }
-										onChange={ ( val ) =>
-											setOwnValue( columnsToTemplate( val ) )
+										value={
+											typeof shown === 'number' ? shown : 3
 										}
+										onChange={ ( val ) => setOwnValue( val ) }
 										min={ 1 }
 										max={ 6 }
 										help={ __(
-											'Columns at this device. Set fewer on mobile (e.g. 1) — leave a device blank to inherit the one above.',
+											'How many columns at this device. They stack to 1 on mobile automatically — leave a device blank to inherit the one above.',
 											'sgs-blocks'
 										) }
 										__nextHasNoMarginBottom
