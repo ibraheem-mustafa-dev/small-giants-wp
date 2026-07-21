@@ -30,6 +30,63 @@
             "text": true,
             "gradients": false,
             "__experimentalSkipSerialization": true
+        },
+        "sgs": {
+            "elements": {
+                "wrapper": {
+                    "label": "Wrapper",
+                    "layer": "OUTER",
+                    "order": 1,
+                    "clusters": [ "text", "fill" ],
+                    "isWrapper": true,
+                    "attrMap": {
+                        "css:color": "native:color.text",
+                        "css:background-color": "native:color.background"
+                    },
+                    "_note": "The rendered root `<li>.sgs-mega-menu` — no spacing/border `supports` declared on this block (`anchor`/`align` are false; no `spacing`/`__experimentalBorder` support), so the layout cluster is deliberately NOT declared here: adding it with no attrMap/prefix would resolve zero members and only worsen the score (ROLLOUT REQUIREMENT 1). Colour maps to WP-native `color` support, which this render.php reads itself (`$attributes['style']['color']`) and emits scoped via `wp_style_engine_get_styles` — never auto-inlined (`__experimentalSkipSerialization: true`)."
+                },
+                "trigger": {
+                    "label": "Trigger (link/button, resting state)",
+                    "order": 2,
+                    "clusters": [ "text", "fill" ],
+                    "attrMap": {
+                        "css:color": "linkColour",
+                        "css:background-color": "linkBgColour"
+                    },
+                    "states": {
+                        "hover": {
+                            "attrMap": {
+                                "css:color": "linkHoverColour",
+                                "css:background-color": "linkHoverBgColour"
+                            }
+                        }
+                    },
+                    "_note": "The `.sgs-mega-menu__trigger` `<a>`/`<button>`. `linkBgColour` (Spec 35 FR-35-5 fix, 2026-07-21) is a NEW resting-state base for `css:background-color` — previously the hover-only `linkHoverBgColour` had no resting counterpart a client could style (STATE_WITHOUT_BASE). Token-fallback pattern (Bean-locked, Option A): style.css's hardcoded `background: transparent` became `background: var(--sgs-mm-link-bg, transparent)`, so an unconfigured instance renders byte-identical. `style.css` also applies the SAME hover colour pair at `:focus-visible` (a11y parity per the states vocabulary's `hover` note) — one declared `hover` state covers both CSS realisations. No `font-*`/`text-*` attrs beyond colour exist on this element — honest text-cluster gaps."
+                },
+                "panel": {
+                    "label": "Panel (dropdown)",
+                    "order": 3,
+                    "clusters": [ "fill", "layout" ],
+                    "attrMap": {
+                        "css:background-color": "panelBgColour",
+                        "css:max-width": "panelMaxWidth"
+                    },
+                    "_note": "The `.sgs-mega-menu__panel`. `border-top` accent colour + `--sgs-mm-panel-padding` are hardcoded (style.css:158,156) with no attribute behind them — honest layout/fill gaps, not omissions. `panelWidth`/`panelAlignment` are variant-selector attrs (layout MODE, not a style member) and surface as ORPHANs via this element's default `panel` prefix, alongside `panelMaxWidth` (claimed above) — deliberately left as honest orphans."
+                },
+                "badge": {
+                    "label": "Badge",
+                    "order": 4,
+                    "clusters": [],
+                    "_note": "`badge` (text) and `badgeColour` are real attributes (render.php:74,241-249) but `badgeColour` is written only as `data-sgs-badge-colour=\"…\"` — no rule in style.css consumes that data attribute, so the control is currently DEAD CSS wiring (badge colour is hardcoded at style.css:124-125 instead). Logged as an honest zero-cluster element per FR-35-4 so both attrs surface as ORPHANs, not silently invisible. Out of scope for this manifest pass — fixing the dead wiring is separate per-block work, not a Spec 35 vocabulary task."
+                },
+                "icon": {
+                    "label": "Trigger icon",
+                    "order": 5,
+                    "clusters": [],
+                    "_note": "`icon` (Lucide slug) and `iconPosition` (before/after) are selector/scalar controls with no cluster-member equivalent — no colour/size override exists for the chevron. Honest zero-cluster element (mirrors `sgs/tabs`' `blockLabel` pattern) so both surface as ORPHANs rather than being invisible."
+                }
+            },
+            "_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): this block's `parent` is `[core/navigation, sgs/adaptive-nav]` (block.json:18-21) — it renders ONE `<li>` menu item + its dropdown panel; it does NOT own the surrounding `<ul>`/nav-bar chrome (nav background, item spacing/gap between siblings, mobile-drawer shell). Those belong to the PARENT (`core/navigation`'s own colour/spacing supports, or `sgs/adaptive-nav`'s wrapper). `menuTemplatePart` content rendered inside the panel (via `get_block_template()` + `do_blocks()`) is delegated-rendering — its internal blocks own their own styling and are NOT declared here, same boundary as `content-collection`'s card delegation."
         }
     },
     "selectors": {
@@ -95,6 +152,10 @@
         "linkColour": {
             "type": "string",
             "default": "text"
+        },
+        "linkBgColour": {
+            "type": "string",
+            "default": ""
         },
         "linkHoverColour": {
             "type": "string",

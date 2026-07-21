@@ -19,7 +19,42 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
-			"containerKind": "content"
+			"containerKind": "content",
+			"containerMirror": false,
+			"elements": {
+				"dialog": {
+					"label": "Drawer container",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "drawerBg",
+						"css:width": "width"
+					},
+					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix); border-width/style/color/radius resolve via the skip-serialised native __experimentalBorder support (nativeSupportsPath), not a flat attr. `width` is dual-purpose (edge=left/right -> panel width, edge=top -> panel height via the SAME attribute) so css:height is an honest gap — there is no separate height attribute. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
+				},
+				"body": {
+					"label": "Drawer content",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "drawerGap",
+						"css:padding": "drawerPadding",
+						"css:align-items": "drawerAlign"
+					},
+					"_note": "The `.sgs-nav-drawer__body` flex column that hosts the editable InnerBlocks (menu/logo/CTA). Layer GRID because it is the arrangement layer for this composite (flex-direction:column is a fixed style.css invariant, not an attribute — honest gap on css:flex-direction). drawerAlign maps to css:align-items (left/center/right -> flex-start/center/flex-end); drawerGap/drawerPadding are the responsive object-model box members."
+				},
+				"close": {
+					"label": "Close button",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "toggleClose",
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade (style.css:90-92, opacity:0.75) and its :focus-visible outline (style.css:94-97) have NO attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason)."
+				}
+			}
 		},
 		"align": false,
 		"anchor": false,

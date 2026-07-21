@@ -75,6 +75,7 @@ $badge               = $attributes['badge'] ?? '';
 $badge_colour        = $attributes['badgeColour'] ?? 'accent';
 $panel_bg_colour     = $attributes['panelBgColour'] ?? 'surface';
 $link_colour         = $attributes['linkColour'] ?? 'text';
+$link_bg_colour      = $attributes['linkBgColour'] ?? '';
 $link_hover_colour   = $attributes['linkHoverColour'] ?? 'primary';
 $link_hover_bg       = $attributes['linkHoverBgColour'] ?? 'surface-alt';
 
@@ -143,6 +144,16 @@ $wrapper_styles = array(
 	'--sgs-mm-link-hover:'      . sgs_colour_value( $link_hover_colour ),
 	'--sgs-mm-link-hover-bg:'   . sgs_colour_value( $link_hover_bg ),
 );
+// Spec 35 FR-35-5 STATE_WITHOUT_BASE fix — resting-state background for the
+// trigger link/button. NO default in block.json (Bean-locked Option A: an
+// unset control must render byte-identical to today), so this var is emitted
+// ONLY when a client has actually chosen a value; style.css's own fallback
+// `var(--sgs-mm-link-bg, transparent)` supplies today's hardcoded transparent
+// when it is absent — nothing changes for an unconfigured instance.
+$link_bg_value = sgs_colour_value( $link_bg_colour );
+if ( $link_bg_value ) {
+	$wrapper_styles[] = '--sgs-mm-link-bg:' . $link_bg_value;
+}
 // F3 DRAIN — panelMaxWidth now drives BOTH `content` and `custom` width
 // modes (previously `custom` only, so the control did nothing in `content`
 // mode). style.css's base `.sgs-mega-menu__panel` rule consumes this var

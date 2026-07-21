@@ -63,7 +63,7 @@
 	font-size:       inherit;
 	font-weight:     500;
 	color:           var(--sgs-mm-link-colour, var(--wp--preset--color--text, #1e1e1e));
-	background:      transparent;
+	background:      var(--sgs-mm-link-bg, transparent);
 	border:          none;
 	cursor:          pointer;
 	text-decoration: none;

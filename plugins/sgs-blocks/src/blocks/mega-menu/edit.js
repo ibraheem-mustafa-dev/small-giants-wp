@@ -53,6 +53,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		highlight,
 		badge,
 		badgeColour,
+		panelBgColour,
+		linkColour,
+		linkBgColour,
+		linkHoverColour,
+		linkHoverBgColour,
 	} = attributes;
 
 	// Fetch available template parts with area='mega-menu'.
@@ -252,6 +257,60 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Link Colours', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Link colour (resting)', 'sgs-blocks' ) }
+						value={ linkColour }
+						onChange={ ( val ) =>
+							setAttributes( { linkColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Link background (resting)',
+							'sgs-blocks'
+						) }
+						value={ linkBgColour }
+						onChange={ ( val ) =>
+							setAttributes( { linkBgColour: val } )
+						}
+						help={ __(
+							'Leave unset to keep the default transparent background.',
+							'sgs-blocks'
+						) }
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Link colour (hover/focus)',
+							'sgs-blocks'
+						) }
+						value={ linkHoverColour }
+						onChange={ ( val ) =>
+							setAttributes( { linkHoverColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Link background (hover/focus)',
+							'sgs-blocks'
+						) }
+						value={ linkHoverBgColour }
+						onChange={ ( val ) =>
+							setAttributes( { linkHoverBgColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Panel background', 'sgs-blocks' ) }
+						value={ panelBgColour }
+						onChange={ ( val ) =>
+							setAttributes( { panelBgColour: val } )
+						}
+					/>
 				</PanelBody>
 			</InspectorControls>
 

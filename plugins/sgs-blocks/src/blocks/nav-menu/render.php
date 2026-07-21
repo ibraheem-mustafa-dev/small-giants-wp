@@ -462,10 +462,22 @@ if ( $featured_weight_hover !== $featured_weight ) {
 // underline bar on it so the two never render on top of each other.
 $css .= $featured_sel . '::after{content:none;}';
 
-// 4e. Burger colour / hover / size.
+// 4e. Burger colour / resting background / hover / size.
 $burger_colour = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
 if ( '' !== $burger_colour ) {
 	$css .= $uid_sel . ' .sgs-nav-menu__burger{color:' . sgs_colour_value( $burger_colour ) . ';}';
+}
+
+/*
+ * RESTING background — the base for burgerHoverColour's hover state (Spec 35
+ * FR-35-5 STATE_WITHOUT_BASE). Before this, the burger's hover background had
+ * no resting counterpart: a client could style the hover fill but never the
+ * button's own resting fill. style.css's `background:none` stays the
+ * byte-identical default when this is left unset.
+ */
+$burger_bg = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
+if ( '' !== $burger_bg ) {
+	$css .= $uid_sel . ' .sgs-nav-menu__burger{background-color:' . sgs_colour_value( $burger_bg ) . ';}';
 }
 $burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attributes['burgerHoverColour'] : '';
 if ( '' !== $burger_hover_slug ) {

@@ -111,6 +111,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		featuredFontWeight,
 		featuredFontWeightHover,
 		burgerColour,
+		burgerBg,
 		burgerHoverColour,
 		burgerSize,
 	} = attributes;
@@ -831,16 +832,28 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						{ ( state ) =>
 							'normal' === state ? (
-								<DesignTokenPicker
-									label={ __( 'Icon colour', 'sgs-blocks' ) }
-									value={ burgerColour }
-									onChange={ ( val ) =>
-										setAttributes( { burgerColour: val } )
-									}
-									linked
-									enableAlpha
-									clearable
-								/>
+								<>
+									<DesignTokenPicker
+										label={ __( 'Icon colour', 'sgs-blocks' ) }
+										value={ burgerColour }
+										onChange={ ( val ) =>
+											setAttributes( { burgerColour: val } )
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<DesignTokenPicker
+										label={ __( 'Background', 'sgs-blocks' ) }
+										value={ burgerBg }
+										onChange={ ( val ) =>
+											setAttributes( { burgerBg: val } )
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+								</>
 							) : (
 								<DesignTokenPicker
 									label={ __(
