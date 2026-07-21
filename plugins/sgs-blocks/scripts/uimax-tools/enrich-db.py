@@ -396,36 +396,6 @@ def target_24_style_variations(conn: sqlite3.Connection, repo_path: Path | None,
 # TARGET 2.5 — inspector_control_type column + regex parse
 # ===========================================================================
 
-# Component name -> control type label
-CONTROL_COMPONENT_MAP = {
-    "RangeControl": "RangeControl",
-    "SelectControl": "SelectControl",
-    "ToggleControl": "ToggleControl",
-    "TextControl": "TextControl",
-    "TextareaControl": "TextareaControl",
-    "ColorPicker": "ColorPicker",
-    "MediaUpload": "MediaUpload",
-    "MediaPlaceholder": "MediaPlaceholder",
-    "DesignTokenPicker": "DesignTokenPicker",
-    "ColorPaletteControl": "ColorPaletteControl",
-    "GradientPicker": "GradientPicker",
-    "ToggleGroupControl": "ToggleGroupControl",
-    "ResponsiveControl": "ResponsiveControl",
-    "UnitControl": "UnitControl",
-    "NumberControl": "NumberControl",
-    "CheckboxControl": "CheckboxControl",
-    "RadioControl": "RadioControl",
-    "ComboboxControl": "ComboboxControl",
-    "FontSizePicker": "FontSizePicker",
-    "CustomSelectControl": "CustomSelectControl",
-    "MediaPicker": "MediaPicker",
-    "BorderBoxControl": "BorderBoxControl",
-    "BoxControl": "BoxControl",
-    "ShadowControl": "ShadowControl",
-    "Button": "Button",
-}
-
-
 def target_25_inspector_control_type(
     conn: sqlite3.Connection, repo_path: Path | None, dry_run: bool
 ) -> int:

@@ -38,7 +38,7 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
-from converter.services.tier_suffix import tier_suffix
+from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
 from converter.services.value_serialise import value_serialise
@@ -101,7 +101,7 @@ def _content_band_box_write(decl: Any, ctx: Any) -> Write | None:
     # Not a per-block literal (R-31-1 permitted-constant, same class as
     # _LAYER_PREFIXES itself).
     family = f"{prefix}BandPadding"
-    object_attr = tier_suffix(family, decl.tier, ctx.conn)
+    object_attr = tier_state_suffix(family, decl, ctx.conn)
     box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
     if box_family != family:
         return None
@@ -143,11 +143,15 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"(proposed_action: add attr or seed property_suffixes)",
         )
 
-    attr = tier_suffix(base_attr, decl.tier, ctx.conn)
+    # Step 4 + 4a: tier suffix THEN interaction-state suffix (universal shared helper,
+    # §3.A). A :hover/:focus/:active decl routes to `{base}{Tier}{State}` (validated
+    # below) else an honest gap.
+    attr = tier_state_suffix(base_attr, decl, ctx.conn)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
-            f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
+            f"{ctx.block_slug} does not declare {attr!r} "
+            f"(tier {decl.tier}{', state ' + decl.state if decl.state else ''})",
         )
 
     # Resolve a co-declared var() (max-width:var(--content-width)); identity

@@ -635,6 +635,7 @@ def declared_attrs_for_css_property(
     block_slug: str,
     css_property: str,
     css_layer: "str | None" = None,
+    base_only: bool = False,
 ) -> "tuple[str, ...]":
     """Column-first declarative CSS-property → attr lookup (Spec 31 FR-31-5.2/5.3).
 
@@ -664,13 +665,27 @@ def declared_attrs_for_css_property(
     """
     if not block_slug or not css_property:
         return ()
+    # base_only (Front 1, 2026-07-22): restrict to the BASE (unsuffixed/desktop) tier
+    # and base state, so a responsive/state resolver gets the single base attr rather
+    # than its mobile/tablet/hover siblings (which the breakpoint / state re-append
+    # handle separately, Spec 31 §3.A step 4/4a). The base attr carries css_tier NULL
+    # or 'desktop' (FR-31-5.2). This is what stops the layer resolver raising a spurious
+    # AmbiguousLayerAttrError on e.g. (sgs/media, OUTER, order) → [order,orderMobile,
+    # orderTablet]. Element is NOT excluded here — the layer resolver's CONTENT/GRID
+    # layers legitimately own non-root elements; element narrowing lives in
+    # _base_domain_attrs_for_css_property (the attr_for_property OUTER path) only.
+    _base_clause = (
+        " AND (css_tier IS NULL OR css_tier = 'desktop') AND css_state IS NULL"
+        if base_only else ""
+    )
     conn = sqlite3.connect(SGS_DB)
     try:
         if css_layer is None:
             rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? "
-                "ORDER BY rowid",
+                + _base_clause +
+                " ORDER BY rowid",
                 (block_slug, css_property),
             ).fetchall()
         else:
@@ -678,11 +693,80 @@ def declared_attrs_for_css_property(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? "
                 "AND (css_layer = ? OR css_layer IS NULL) "
-                "ORDER BY rowid",
+                + _base_clause +
+                " ORDER BY rowid",
                 (block_slug, css_property, css_layer),
             ).fetchall()
     except sqlite3.OperationalError:
         # css_property/css_layer column absent (pre-seed DB) → no declaration.
+        return ()
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
+class AmbiguousCssPropAttrError(RuntimeError):
+    """Front 1 (Spec 31 §3.A step 2-4 / FR-31-2.8.4, P-CSSPROP-RUNTIME-RESOLVER-
+    UNDER-KEYED): the column-first ``(block_slug, css_property)`` route matched ≥2
+    registered attrs EVEN AFTER restricting to the base-resolver domain (root/self
+    element + base/desktop tier + base state). A silent rowid-first pick between them
+    is insert-order-fragile and misroutes CSS — fail loud instead (raise, never a
+    guess; Bean-decided 2026-07-22, mirrors ``AmbiguousLayerAttrError`` / STOP-27).
+
+    The base-resolver domain is proven collision-free against the current seeded data
+    (0 residual), so this never fires today; it guards a future data change that
+    introduces a genuine same-element/same-tier/same-state duplicate. Resolution: a
+    ``css_element`` disambiguator on the routing unit, or removing the duplicate
+    registration."""
+
+
+# The set of css_element values the base OUTER/grid resolver treats as "the block's
+# own root/self element" — the only elements attr_for_property routes for (per-child
+# elements are served by styling_content.py's derived_selector path, NOT this one).
+_BASE_ELEMENTS = ("", "root", "self")
+
+
+@functools.lru_cache(maxsize=4096)
+def _base_domain_attrs_for_css_property(
+    block_slug: str,
+    css_property: str,
+) -> "tuple[str, ...]":
+    """Column-first attrs for (block, css_property) RESTRICTED to the base-resolver
+    domain — Front 1 (P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED, 2026-07-22).
+
+    ``attr_for_property`` routes the block's OWN root/node CSS (via attr_resolve /
+    grid). Its correct answer is the single BASE (unsuffixed / desktop) attr for the
+    property; the mobile/tablet tier siblings are re-appended by the separate breakpoint
+    mechanism (Spec 31 §3.A step 4), the ``:hover``/``:focus`` state siblings by step 4a,
+    and the per-CHILD-element attrs (titleColour vs labelColour …) by styling_content.py
+    keyed on each attr's own ``derived_selector``. So this base resolver must EXCLUDE:
+      * non-root css_element (a specific child element — not this resolver's job),
+      * css_tier in {mobile, tablet} (a responsive sibling — re-appended separately;
+        the base/unsuffixed attr carries css_tier NULL or 'desktop' per FR-31-5.2),
+      * css_state NOT NULL (a state sibling — re-appended separately).
+
+    Restricting to this domain collapses the raw column-first list (which the old
+    2-arg ``declared_attrs_for_css_property`` returned in full, then blindly took [0]
+    of — the mis-pick this fixes) to exactly one attr on the current data. Defensive:
+    the keyed columns are DERIVED (seeded by /sgs-update); an OperationalError on a
+    pre-seed DB is swallowed → () → the caller falls back to the suffix loop UNCHANGED.
+    """
+    if not block_slug or not css_property:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? "
+            f"AND (css_element IS NULL OR css_element IN ({placeholders})) "
+            "AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL "
+            "ORDER BY rowid",
+            (block_slug, css_property, *_BASE_ELEMENTS),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # css_element/css_state/css_tier columns absent (pre-seed DB) → no declaration.
         return ()
     finally:
         conn.close()
@@ -1668,15 +1752,30 @@ def attr_for_property(
     if not block_attr_map:
         return None
 
-    # Step 1a — COLUMN-FIRST (declarative, FR-31-5.2/5.3, D281). A block that
+    # Step 1a — COLUMN-FIRST (declarative, FR-31-5.2/5.3, D281; base-domain keyed
+    # Front 1, 2026-07-22, P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED). A block that
     # DECLARES css_property on one of its attrs wins over suffix name-guessing
     # (fixes the naming-mismatch strand: colourBorder never endswith BorderColour).
-    # First-by-rowid matches this function's first-wins contract; kind/writer_path
-    # keep the same DB semantics (from the property_suffixes rows already fetched).
+    # The match is RESTRICTED to the base-resolver domain (root/self element, base/
+    # desktop tier, base state) — the old 2-arg lookup returned tier/state/child-
+    # element siblings too and blindly took [0], an insert-order-fragile mis-pick
+    # (e.g. `gap` → [gap, gapMobile, gapTablet]). Tier siblings are re-appended by
+    # step 4, state by step 4a, per-child-element attrs served by styling_content.py.
+    # ≥2 survivors after the base-domain restriction → AmbiguousCssPropAttrError
+    # (Bean-decided fail-loud; proven 0-residual on current data, guards future drift).
     # An undeclared property returns () → the suffix loop below runs UNCHANGED
     # (parity-neutral: the ~650 undeclared attrs never enter this path).
-    declared = declared_attrs_for_css_property(block_slug, css_property)
-    if declared and declared[0] in block_attr_map:
+    declared = tuple(
+        a for a in _base_domain_attrs_for_css_property(block_slug, css_property)
+        if a in block_attr_map
+    )
+    if len(declared) > 1:
+        raise AmbiguousCssPropAttrError(
+            f"attr_for_property({block_slug!r}, {css_property!r}): "
+            f"{len(declared)} base-domain attrs match ({', '.join(declared)}); "
+            "add a css_element disambiguator or remove the duplicate registration."
+        )
+    if declared:
         attr_name = declared[0]
         writer_path = "typography" if css_property in _TYPOGRAPHY_CSS_SCOPE else "wrapper_css"
         _first_suffix, _first_role, _first_kind_override = rows[0]
@@ -3192,7 +3291,9 @@ def attr_for_layer_property(
     # contract is PRESERVED: ≥2 declared attrs for one (block, layer, property)
     # raise AmbiguousLayerAttrError (never a rowid-pick). An undeclared property
     # returns () → the suffix loop below runs UNCHANGED (parity-neutral).
-    _declared = declared_attrs_for_css_property(block_slug, css_property, css_layer=layer)
+    _declared = declared_attrs_for_css_property(
+        block_slug, css_property, css_layer=layer, base_only=True
+    )
     if len(_declared) > 1:
         raise AmbiguousLayerAttrError(
             f"MF-4 (column): ({block_slug}, {layer}, {css_property}) DECLARES "

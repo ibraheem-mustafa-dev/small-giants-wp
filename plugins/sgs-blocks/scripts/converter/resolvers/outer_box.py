@@ -100,7 +100,7 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
-from converter.services.tier_suffix import tier_suffix
+from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
 from converter.services.value_serialise import value_serialise
@@ -221,12 +221,15 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"{ctx.block_slug} has no OUTER attr for {prop}",
         )
 
-    # Step 4: re-append the tier suffix; step 7: validate the suffixed attr exists.
-    attr = tier_suffix(base_attr, decl.tier, ctx.conn)
+    # Step 4 + 4a: re-append the tier suffix THEN the interaction-state suffix
+    # (universal shared helper — §3.A). A :hover/:focus/:active decl routes to the
+    # block's `{base}{Tier}{State}` companion (validated below) else an honest gap.
+    attr = tier_state_suffix(base_attr, decl, ctx.conn)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,
-            f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
+            f"{ctx.block_slug} does not declare {attr!r} "
+            f"(tier {decl.tier}{', state ' + decl.state if decl.state else ''})",
         )
 
     # --- box-shadow: TOKEN-SNAP to a shadow preset slug (DB-sourced), never raw value.

@@ -44,3 +44,26 @@ def tier_suffix(base_attr: str, tier: str, conn: sqlite3.Connection) -> str:
             f"non-device-tier breakpoints to gap(NO_DESTINATION) first (design §10 A4)."
         )
     return f"{base_attr}{tier}"
+
+
+def tier_state_suffix(base_attr: str, decl, conn: sqlite3.Connection) -> str:
+    """Re-append the device-tier suffix (step 4) THEN the interaction-state suffix
+    (step 4a, D309) to a base attr, universally — Spec 31 §3.A.
+
+    This is the ONE shared re-append every box resolver (outer_box / content_band /
+    grid / grid_area) must call after ``attr_resolve`` so a ``:hover``/``:focus``/
+    ``:active`` declaration on ANY route (a grid's border, a per-area background, an
+    outer box colour) routes to the block's ``{base}{Tier}{State}`` companion instead
+    of silently writing the base attr (the colourBorder double-write conservation
+    collision, 2026-07-22). Order is tier-then-state per §3.A step 4a ("AFTER any tier
+    suffix"). ``decl.state`` is None for a resting declaration → tier-only, unchanged.
+
+    Whether the suffixed attr EXISTS on the block is validated downstream by
+    ``services.validate`` — a state a block does not declare becomes an honest gap,
+    never a wrong write (R-31-9 universal, DB-gated). ``decl`` carries ``.tier`` and
+    ``.state`` (the StateSuffix, e.g. ``'Hover'``, set by css_pass step 3b)."""
+    attr = tier_suffix(base_attr, decl.tier, conn)
+    state = getattr(decl, "state", None)
+    if state:
+        attr = f"{attr}{state}"
+    return attr

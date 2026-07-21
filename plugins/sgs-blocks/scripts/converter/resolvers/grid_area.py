@@ -35,7 +35,7 @@ from typing import Any
 from converter.models import GAP, GapOrigin, Write
 from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import split_value_unit, strip_important
-from converter.services.tier_suffix import tier_suffix
+from converter.services.tier_suffix import tier_state_suffix
 from converter.services.validate import attr_is_number, validate
 from converter.services.value_serialise import value_serialise
 from converter.db import db_lookup
@@ -85,7 +85,7 @@ def _area_box_write(decl: Any, ctx: Any, area: str) -> Write | None:
 
     area_prefix = area[0].lower() + area[1:]
     family = f"{area_prefix}Padding"
-    object_attr = tier_suffix(family, decl.tier, ctx.conn)
+    object_attr = tier_state_suffix(family, decl, ctx.conn)
     # Gate on the DB box_family classification (§3.A step-3b), NEVER a name regex.
     box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
     if box_family is None:
@@ -140,7 +140,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"(proposed_action: add attr {area}+{prop} or seed property_suffixes)",
         )
 
-    attr = tier_suffix(base_attr, decl.tier, ctx.conn)
+    attr = tier_state_suffix(base_attr, decl, ctx.conn)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,

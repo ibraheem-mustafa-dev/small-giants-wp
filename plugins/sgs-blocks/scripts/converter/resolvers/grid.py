@@ -32,7 +32,7 @@ from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import strip_important
-from converter.services.tier_suffix import tier_suffix
+from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
@@ -84,7 +84,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"{ctx.block_slug} has no attr for {prop}",
             )
         _wp, base_template_attr, _kind = resolved
-        template_attr = tier_suffix(base_template_attr, decl.tier, ctx.conn)
+        template_attr = tier_state_suffix(base_template_attr, decl, ctx.conn)
         if not validate(ctx, template_attr, decl.value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
@@ -100,7 +100,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         n = _parse_repeat_columns(raw)
         if n is not None:
             base_count_attr = "columns"
-            count_attr = tier_suffix(base_count_attr, decl.tier, ctx.conn)
+            count_attr = tier_state_suffix(base_count_attr, decl, ctx.conn)
             if validate(ctx, count_attr, str(n)):
                 writes.append(
                     Write(attr=count_attr, value=n, property=prop, tier=decl.tier)
@@ -118,7 +118,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"{ctx.block_slug} has no gap attr for {prop}",
             )
         _wp, base_gap_attr, _kind = resolved
-        gap_attr = tier_suffix(base_gap_attr, decl.tier, ctx.conn)
+        gap_attr = tier_state_suffix(base_gap_attr, decl, ctx.conn)
         if not validate(ctx, gap_attr, decl.value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
@@ -138,7 +138,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
             )
-        attr = tier_suffix(base_attr, decl.tier, ctx.conn)
+        attr = tier_state_suffix(base_attr, decl, ctx.conn)
         if not validate(ctx, attr, decl.value):
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,

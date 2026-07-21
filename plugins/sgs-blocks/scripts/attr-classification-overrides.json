@@ -1214,7 +1214,7 @@
       "slug": "sgs/option-picker",
       "attr": "pillBorderRadius",
       "fields": {
-        "role": "typography",
+        "role": "visual",
         "derived_selector": ".sgs-option-picker__pill"
       }
     },
@@ -1222,7 +1222,7 @@
       "slug": "sgs/option-picker",
       "attr": "pillSelectedBorderRadius",
       "fields": {
-        "role": "typography",
+        "role": "visual",
         "derived_selector": ".sgs-option-picker__pill--active"
       }
     },

@@ -99,6 +99,9 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         )
 
     # Tier-suffixed primary destination (fontSize / fontSizeTablet / fontSizeMobile).
+    # NOTE: plain tier_suffix here — typography appends the interaction-state suffix
+    # ITSELF just below (its own state path, predating the shared tier_state_suffix);
+    # using the shared helper here would double-append (textDecorationHoverHover).
     tgt = tier_suffix(primary_attr, decl.tier, ctx.conn)
 
     # Interaction-state suffix AFTER the tier suffix (D309, universal hover): a

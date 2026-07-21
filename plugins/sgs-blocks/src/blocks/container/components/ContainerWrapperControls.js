@@ -299,8 +299,11 @@ export function WidthPanel( { attributes, setAttributes } ) {
 				value={ cwPreset }
 				onChange={ ( val ) => {
 					if ( val === 'custom' ) {
-						// Keep existing literal if already set, otherwise seed empty so UnitControl appears.
-						setAttributes( { contentWidth: cwLiteral || '' } );
+						// Seed a real starter literal (not '') so contentWidthPreset() reads
+						// 'custom' on the next render — otherwise '' maps back to 'full' and the
+						// radio snaps back with no input box. 800px rarely equals a preset
+						// (content-size ≈ 1200 / wide-size ≈ 1400). Keep any existing literal.
+						setAttributes( { contentWidth: cwLiteral || '800px' } );
 					} else {
 						setAttributes( { contentWidth: val } );
 					}
@@ -350,7 +353,9 @@ export function WidthPanel( { attributes, setAttributes } ) {
 								value={ preset }
 								onChange={ ( val ) => {
 									if ( val === 'custom' ) {
-										setAttributes( { [ attr ]: literal || '' } );
+										// Seed a real starter literal (see desktop handler above)
+										// so the tier's preset reads 'custom' and its input appears.
+										setAttributes( { [ attr ]: literal || '800px' } );
 									} else {
 										setAttributes( { [ attr ]: val } );
 									}
