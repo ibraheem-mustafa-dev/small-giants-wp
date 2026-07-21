@@ -18,7 +18,75 @@
 	"supports": {
 		"sgs": {
 			"imageControls": true,
-			"containerKind": "layout"
+			"containerKind": "layout",
+			"elements": {
+				"slider": {
+					"label": "Slider",
+					"layer": "OUTER",
+					"_layer_note": "Root IS the carousel wrapper — SGS_Container_Wrapper kind='layout' renders it (render.php:460-471; DB block_composition.container_kind=layout, wraps_block=sgs/container). MF-3 makes the root OUTER, mirroring card-grid/content-collection.",
+					"order": 1,
+					"clusters": [ "layout", "fill", "text", "motion" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:gap": "gap",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:letter-spacing": "native:typography.letterSpacing",
+						"css:text-transform": "native:typography.textTransform",
+						"css:font-weight": "native:typography.fontWeight",
+						"css:font-style": "native:typography.fontStyle",
+						"css:text-align": "native:typography.textAlign",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap",
+						"css:justify-content": "justifyContent",
+						"css:justify-items": "justifyItems",
+						"css:align-content": "alignContent",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover",
+								"css:border-color": "borderColourHover"
+							}
+						}
+					},
+					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` (render.php:68) is a legacy top-level attribute this manifest cannot place under any element prefix — flagged here as a likely dead/orphan control, not fixed (out of scope for this rollout)."
+				},
+				"side-image": {
+					"label": "Side image (split layout)",
+					"order": 2,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) — sideImage is a MediaPicker object with no independent Text/Fill/Layout style attrs (render.php:374-389)."
+				},
+				"arrow": {
+					"label": "Prev/next arrow",
+					"order": 3,
+					"clusters": [],
+					"_note": "showArrows toggles visibility only (render.php:333-341) — no colour/size/style attrs exist per-arrow; styling comes from static style.css theme defaults."
+				},
+				"dot": {
+					"label": "Navigation dot",
+					"order": 4,
+					"clusters": [],
+					"_note": "showDots toggles visibility only (render.php:343-363) — no colour/size attrs exist per-dot."
+				}
+			},
+			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots, side-image) is declared above."
 		},
 		"align": [
 			"wide",

@@ -64,6 +64,50 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"box": {
+					"label": "Card box",
+					"order": 1,
+					"clusters": [ "fill", "layout", "animation" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "native:shadow",
+						"anim:preset": "sgsAnimation",
+						"anim:duration": "sgsAnimationDuration",
+						"anim:easing": "sgsAnimationEasing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover",
+								"css:border-color": "borderColourHover",
+								"css:box-shadow": "shadowHover"
+							}
+						}
+					}
+				},
+				"content": {
+					"label": "Card content",
+					"order": 2,
+					"clusters": [],
+					"_note": "Heading/subtitle/description/button are native InnerBlocks children (HC2/D192 — parent owns LAYOUT, child owns TYPOGRAPHY), each carrying its own typography inspector, so this block declares no text cluster for them."
+				},
+				"media": {
+					"label": "Icon / media",
+					"order": 3,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus mediaType/iconPosition selects — outside the Text/Fill/Layout style clusters."
+				}
 			}
 		}
 	},

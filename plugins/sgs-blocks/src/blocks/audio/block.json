@@ -40,6 +40,32 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Player wrapper",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					}
+				},
+				"accent": {
+					"label": "Accent colour",
+					"order": 2,
+					"clusters": [],
+					"prefix": "accent",
+					"_note": "accentColour is a functional player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent), not a Text/Fill/Layout style-cluster control. Declared clusters: [] so ORPHAN detection surfaces it honestly (mirrors sgs/button's iconColour) instead of it being invisible."
+				},
+				"spectrum": {
+					"label": "Spectrum colour",
+					"order": 3,
+					"clusters": [],
+					"prefix": "spectrum",
+					"_note": "spectrumColour drives the reactive spectrum/oscilloscope visualiser accent (--sgs-audio-spectrum) — a functional signal colour, not a styled element. Same ORPHAN treatment as accent."
+				}
 			}
 		}
 	},

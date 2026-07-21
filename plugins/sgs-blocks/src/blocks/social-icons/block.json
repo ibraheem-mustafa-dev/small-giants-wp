@@ -45,6 +45,37 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:text-align": "native:typography.textAlign",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:gap": "gap"
+					},
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps."
+				},
+				"icon": {
+					"label": "Icon",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "icon",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
+						}
+					},
+					"_note": "Per-item <a class=\"sgs-social-icons__item\"> (render.php:354). Only css:color resolves (default convention icon+Colour=iconColour, render.php --sgs-social-colour custom property). iconSize is a scalar glyph-size control with no cluster member (mirrors sgs/icon-list's iconSize) — an honest orphan, not a gap. No font-size/weight/line-height surface — an icon glyph has no typography."
+				}
 			}
 		}
 	},

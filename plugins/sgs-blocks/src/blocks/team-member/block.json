@@ -45,6 +45,70 @@
 		"sgs": {
 			"imageControls": true,
 			"scalarContentLift": true,
+			"elements": {
+				"card": {
+					"label": "Card",
+					"order": 1,
+					"clusters": [ "layout", "fill", "text", "motion" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:width": "contentWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text",
+						"css:font-size": "native:typography.fontSize",
+						"css:text-align": "native:typography.textAlign",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "shadowHover"
+							}
+						}
+					},
+					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). css:box-shadow at hover (`shadowHover`, render.php:239-243) resolves to STATE_WITHOUT_BASE — team-member has no static resting box-shadow attribute, only a hover one (same product-defect shape the design doc logs for card-grid, 'Out of scope' section). `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. line-height/letter-spacing/font-weight/font-style/text-transform/text-decoration/font-family are honest gaps — the card root only supports fontSize+textAlign natively (typography supports = {fontSize:true, textAlign:true} only)."
+				},
+				"photo": {
+					"label": "Photo",
+					"order": 2,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover/imageZoomHover behaviour toggles — none are Text/Fill/Layout style-cluster members."
+				},
+				"name": {
+					"label": "Name",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "name",
+					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly."
+				},
+				"role": {
+					"label": "Role",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "role",
+					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps."
+				},
+				"bio": {
+					"label": "Bio",
+					"order": 5,
+					"clusters": [],
+					"_note": "No bio-specific style attribute exists at all (no bioColour, no bioFontSize) — honest zero-cluster element; bio text inherits the card root's colour/typography."
+				},
+				"social": {
+					"label": "Social links",
+					"order": 6,
+					"clusters": [],
+					"_note": "socialLinks is a content array (platform+url); icons are fixed Lucide glyphs (render.php:290-349) with no per-icon colour/size style controls."
+				}
+			},
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

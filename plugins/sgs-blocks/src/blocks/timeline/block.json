@@ -67,6 +67,66 @@
 				"borderWidth": [
 					"borderWidth"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-color": "borderColour",
+						"css:border-style": "borderStyle",
+						"css:box-shadow": "native:shadow"
+					},
+					"_note": "Root <ol> — no `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
+				},
+				"title": {
+					"label": "Entry title",
+					"order": 2,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:font-weight": "native:typography.fontWeight",
+						"css:font-style": "native:typography.fontStyle",
+						"css:letter-spacing": "native:typography.letterSpacing",
+						"css:text-transform": "native:typography.textTransform",
+						"css:text-align": "native:typography.textAlign"
+					},
+					"_note": "block.json declares `selectors.typography: '.sgs-timeline__title'`, so the root's native typography support paints the entry TITLE, not the wrapper — declared on its own element to reflect where it actually renders. No independent title colour control exists (colour is the shared wrapper `color.text`) — honest gap."
+				},
+				"connector": {
+					"label": "Connector line / node",
+					"order": 3,
+					"clusters": [ "fill" ],
+					"attrMap": {
+						"css:background-color": "connectorColour"
+					},
+					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only."
+				},
+				"date": {
+					"label": "Entry date",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "date",
+					"attrMap": {
+						"css:color": "dateColour"
+					},
+					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`)."
+				},
+				"entry": {
+					"label": "Timeline entry",
+					"order": 5,
+					"clusters": [],
+					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `imageControls: true` governs the per-entry image via the universal image-controls extension, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`."
+				}
 			}
 		}
 	},

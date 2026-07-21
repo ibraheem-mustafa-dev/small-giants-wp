@@ -41,6 +41,20 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					},
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). No background-color/border/box-shadow/gap/aspect-ratio attribute or native support exists (no color/border supports declared on this block — logo images carry no theme-colour fill) — honest gaps. Governed separately by supports.sgs.imageControls (universal image extension) for the <img>/<picture> itself, which is not a Text/Fill/Layout member. desktopLogoId/tabletLogoId/mobileLogoId/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
+				}
 			}
 		},
 		"_comment_parallax": "Parallax deliberately excluded — not appropriate for a header logo."

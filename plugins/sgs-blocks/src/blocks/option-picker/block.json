@@ -45,6 +45,54 @@
 		},
 		"sgs": {
 			"scalarStylingLift": true,
+			"elements": {
+				"root": {
+					"label": "Picker (fieldset)",
+					"order": 1,
+					"clusters": [ "layout", "fill", "text" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:width": "contentWidth",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text"
+					},
+					"_note": "D294 content-KIND, no-wrapper (render.php:5-33) — the <fieldset> IS the block root (no SGS_Container_Wrapper call). Border radius stays WP-native; width/style/colour are SGS custom object/string attrs (borderWidth/borderStyle/borderColour) per render.php:123-135 — mapped explicitly since no prefix covers bare root attrs. Root has no independent typography (fontSize/weight/etc belong to legend/pill) — those text-cluster members are honest gaps."
+				},
+				"label": {
+					"label": "Group label (legend)",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "label",
+					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention. line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps (render.php:480-500 legend only sets font-size + colour + margin-bottom)."
+				},
+				"pill": {
+					"label": "Option pill",
+					"order": 3,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "pill",
+					"attrMap": {
+						"css:background-color": "pillBgColour"
+					},
+					"states": {
+						"selected": {
+							"attrMap": {
+								"css:background-color": "pillSelectedBgColour",
+								"css:color": "pillSelectedTextColour",
+								"css:border-color": "pillSelectedBorderColour",
+								"css:border-radius": "pillSelectedBorderRadius"
+							}
+						}
+					},
+					"_note": "FR-35-5 — 'selected' (NOT :hover/:active) is the correct state name: style.css:200/246/277 key the selected look off `input[type=radio]:checked ~ .pill`, which is the [aria-current]/is-active family the states vocabulary calls 'selected'. The CSS ALSO shows a `:hover` visual (style.css:192/241/272) but it is a STATIC preset-variant rule with no distinct hover-only attribute behind it (no pillHoverBgColour etc. exists) — correctly NOT declared as a state per FR-35-5 rule 1 (opt-in, attribute-backed only). css:background-color needs explicit attrMap (pillBgColour doesn't match the default Background/Bg/BackgroundColour suffixes); css:border-color (pillBorderColour) and css:border-radius (pillBorderRadius) and css:padding (pillPadding) and css:font-size (pillFontSize) all resolve via the default convention. css:font-weight is an honest gap — no pillFontWeight attr exists."
+				}
+			},
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

@@ -40,6 +40,46 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"grid": {
+					"label": "Grid",
+					"layer": "OUTER",
+					"_layer_note": "Root IS the grid — SGS_Container_Wrapper kind='layout' renders it (block_composition.container_kind=layout, wraps_block=sgs/container). layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display, so OUTER is correct (mirrors card-grid).",
+					"order": 1,
+					"clusters": [ "layout", "fill", "text" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:gap": "gap",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap",
+						"css:justify-content": "justifyContent",
+						"css:justify-items": "justifyItems",
+						"css:align-content": "alignContent",
+						"css:align-items": "alignItems"
+					},
+					"_note": "css:padding is an HONEST GAP — spacing.padding is explicitly false in supports and no flat padding attr exists; this block genuinely has no padding control. No `anim:*`/`position`/`motion` members — this block has no sgsAnimation/parallax/offset/transition attrs (unlike card-grid, which shares the grid layer shape but adds scroll-reveal). No `display`/`order`/`overflow` mapping exists (no flat attrs) — honest gaps."
+				},
+				"empty": {
+					"label": "Empty state message",
+					"order": 2,
+					"clusters": [],
+					"_note": "emptyMessage is plain operator text (FR-24-6) — no colour/font/size control exists for it. Honest zero-cluster element, not an omission."
+				}
+			},
+			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): this block runs its own WP_Query and renders each result through render_block(['blockName'=>'sgs/product-card', ...]) — see render.php §6. Card internals (title/price/image/desc/cta/tag/pill) belong ENTIRELY to sgs/product-card's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary this block does not own. Only markup this block itself emits (the OUTER grid/list wrapper + the empty-state message) is declared above."
 		}
 	},
 	"attributes": {

@@ -36,7 +36,31 @@
 		"sgs": {
 			"hideExtensions": [
 				"animation"
-			]
+			],
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "CONTENT-KIND composite mirror (SGS_Container_Wrapper 'content' kind) — no `layer` (this is the tab PANEL wrapper, a leaf, not a grid/section layer). block.json declares no `spacing`/`typography` supports on this block, so padding/margin/font-* are honest gaps."
+				},
+				"innerBlocks": {
+					"label": "Tab content",
+					"order": 2,
+					"clusters": [],
+					"_note": "Content is native InnerBlocks children (any block type) — each child owns its own typography. Mirrors sgs/quote's quote-body element. The `label` attribute is NOT rendered anywhere in THIS block's own render.php — it is read only by the PARENT sgs/tabs to render the tab BUTTON text, and its styling (tabTextColour/tabActiveTextColour/tabActiveBgColour/tabActiveIndicatorColour/tabHoverBgColour) is owned entirely by sgs/tabs's own `tab` manifest element (see tabs/block.json) — never duplicated here."
+				}
+			}
 		}
 	},
 	"usesContext": [

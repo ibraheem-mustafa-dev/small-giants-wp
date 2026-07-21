@@ -37,7 +37,37 @@
 		"sgs": {
 			"hideExtensions": [
 				"animation"
-			]
+			],
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "CONTENT-KIND composite mirror (SGS_Container_Wrapper 'content' kind) — no `layer` (root is a leaf details wrapper, not a grid/section layer), so the 12 ARRANGEMENT members are never asked. block.json declares no `spacing`/`typography` supports at all on this block, so padding/margin/gap/font-* are honest gaps, not omissions."
+				},
+				"header": {
+					"label": "Header (parent-context styled)",
+					"order": 2,
+					"clusters": [],
+					"_note": "Header text colour + background + toggle-icon colour are read from the PARENT sgs/accordion via block context (sgs/accordionHeaderColour, sgs/accordionHeaderBackground, sgs/accordionIconColour — see accordion/block.json's own `header`/`icon` elements, which are the true owners of those styles). This item's render.php only CONSUMES the context to emit a scoped rule; it has no styling attribute of its own to map, so no attrMap/prefix is declared here — documentation only, orphan-scan-exempt."
+				},
+				"innerBlocks": {
+					"label": "Panel content",
+					"order": 3,
+					"clusters": [],
+					"_note": "Panel body is native InnerBlocks children (any block type) — each child owns its own typography/colour controls. Mirrors sgs/quote's quote-body element."
+				}
+			}
 		}
 	},
 	"usesContext": [

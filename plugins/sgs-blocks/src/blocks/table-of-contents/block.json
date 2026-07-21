@@ -58,6 +58,54 @@
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					},
+					"_note": "Single-element block (the <nav> root) — no `layer` declared, so the 12 ARRANGEMENT members are never asked (this block has no grid/flex attrs at all — correct). Only fontSize+lineHeight are declared under typography support (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily), no width/height/box-shadow/aspect-ratio/max-width attrs exist — all honest gaps."
+				},
+				"title": {
+					"label": "TOC title",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "title",
+					"attrMap": {
+						"css:color": "titleColour"
+					},
+					"_note": "Only a design-token colour control exists for the title (titleColour) — resolves via default convention (`title`+`Colour`). No independent title font-size/weight/line-height control exists — honest gaps."
+				},
+				"link": {
+					"label": "TOC link",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "link",
+					"attrMap": {
+						"css:color": "linkColour"
+					},
+					"states": {
+						"selected": {
+							"attrMap": {
+								"css:color": "activeLinkColour"
+							}
+						}
+					},
+					"_note": "`activeLinkColour` styles the scroll-spy-active link (render.php:195 `.sgs-toc__link--active`, toggled by view.js) — a SELECTED state per FR-35-5, declared via explicit `states.selected.attrMap` because the naming is a PREFIX (`activeLinkColour`), not the mechanical suffix form, and would otherwise be unreachable by the default convention. No resting-state font-size/weight control exists on the link — honest gap."
+				}
 			}
 		}
 	},

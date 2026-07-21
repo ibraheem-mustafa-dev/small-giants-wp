@@ -17,7 +17,29 @@
 	"textdomain": "sgs-blocks",
 	"supports": {
 		"sgs": {
-			"imageControls": false
+			"imageControls": false,
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"layer": "OUTER",
+					"clusters": [ "text", "fill", "layout", "animation" ],
+					"isWrapper": true,
+					"prefix": "",
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"anim:preset": "sgsAnimation",
+						"anim:duration": "sgsAnimationDuration",
+						"anim:easing": "sgsAnimationEasing"
+					},
+					"_note": "Root, rendered by SGS_Container_Wrapper (container_kind=layout, wraps sgs/container — WS-4). Empty-string prefix lets the default {suffix} convention resolve the bare universal-container attrs case-insensitively: maxWidth, gap(+Tablet/Mobile), gridTemplateColumns/Rows(+Tablet/Mobile), gridAutoRows, flexDirection, flexWrap, alignItems, alignContent, justifyContent, justifyItems all resolve this way — no attrMap needed for those. Honest gaps: no display/order/overflow/width/height/max-height/min-height/box-shadow/aspect-ratio attribute exists on this block; no padding/margin attribute or native support is declared (spacing support absent); opacity/overlay/background-attachment/-position/-repeat/object-fit/object-position have no control (this block has no image element); anim:stagger/parallax/trigger have no matching attrs (no staggerDelay/parallax/scroll-trigger control here) — honest gaps, not orphans. starColour/cardStyle/theme/variant are variant/preset selectors, not style-cluster members — deliberately undeclared (no prefix claims them, so they surface neither as gap nor orphan)."
+				}
+			}
 		},
 		"align": [
 			"wide",

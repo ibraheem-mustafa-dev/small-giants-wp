@@ -38,6 +38,28 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					},
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-star-rating — display:flex hardcoded, no attribute, so no `layer`/arrangement members). No width/height/max-width/border/box-shadow/gap attribute exists on this block — honest gaps. Content-KIND, block-private (D294)."
+				},
+				"star": {
+					"label": "Star",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "star",
+					"_note": "SVG glyph fill (render.php:227/244, sgs_colour_value($attributes['starColour'])) — default convention star+Colour=starColour resolves css:color. emptyColour is a real but separate scalar (the unfilled-star fill) with no member of its own — an honest orphan mirroring sgs/icon-list's iconSize pattern. No font-size/weight/line-height surface — an SVG star has no typography."
+				}
 			}
 		}
 	},

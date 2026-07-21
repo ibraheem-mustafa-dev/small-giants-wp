@@ -51,6 +51,76 @@
 					"contentBandPaddingTablet",
 					"contentBandPaddingMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Section wrapper",
+					"layer": "OUTER",
+					"_layer_note": "section-KIND composite rendered via SGS_Container_Wrapper (D294 — keeps the wrapper, genuine grid/section). This element is both the block root and the grid definition, mirroring sgs/card-grid's grid element.",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:background-attachment": "backgroundAttachment",
+						"css:background-position": "backgroundPosition",
+						"css:background-repeat": "backgroundRepeat",
+						"css:background-size": "backgroundSize",
+						"css:background-image": "backgroundOverlayColour",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:max-width": "maxWidth",
+						"css:min-height": "minHeight",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "shadow",
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "gridTemplateColumns/Rows, gap, justify-*/align-content/flex-* are consumed by SGS_Container_Wrapper via the universal wrapper mechanism (render.php:214-220 comment). No alignItems/display/overflow/aspect-ratio/width/height/max-height attrs exist — honest gaps."
+				},
+				"icon-badge": {
+					"label": "Icon badge (icon-circle variant)",
+					"order": 2,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "icon",
+					"attrMap": {
+						"css:background-color": "iconCircleBackground",
+						"css:width": "iconCircleSize",
+						"css:height": "iconCircleSize",
+						"css:border-radius": "iconCircleBorderRadius",
+						"css:box-shadow": "iconCircleShadow"
+					},
+					"_note": "iconColour (the SVG stroke/fill colour, --sgs-trust-badge-icon-colour) is a functional icon-fill colour, not a Fill/background control — left unmapped so ORPHAN detection surfaces it honestly (mirrors sgs/button's iconColour). Only applies when badgeStyle='icon-circle' (supports.sgs.variants)."
+				},
+				"label": {
+					"label": "Badge label",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "label",
+					"_note": "Covers both variants — .sgs-trust-bar__label (icon-circle) and .sgs-trust-bar__badge-label (text-only/image-badge), same labelColour/labelFontSize/labelFontWeight/labelFontStyle attrs (render.php:393)."
+				},
+				"title": {
+					"label": "Title",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "title"
+				},
+				"badge-item": {
+					"label": "Badge item",
+					"order": 5,
+					"clusters": [],
+					"_note": "Per-item fillStyle/fillColour (image-badge and text-only item content) are repeater-row fields, not independent block-level style controls — no badge-item-specific text/fill/layout attrs exist at the block level."
+				}
 			}
 		},
 		"align": [

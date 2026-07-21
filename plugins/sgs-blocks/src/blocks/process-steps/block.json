@@ -63,6 +63,98 @@
 				"borderWidth": [
 					"borderWidth"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout", "motion" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-color": "borderColour",
+						"css:border-style": "borderStyle",
+						"css:box-shadow": "native:shadow",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:color": "textColourHover",
+								"css:border-color": "borderColourHover"
+							}
+						}
+					},
+					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). Root native `typography` is declared in block.json but routed via `selectors.typography` to `.sgs-process-steps__title`, NOT this wrapper — see the `title` element, which owns text-cluster typography instead."
+				},
+				"title": {
+					"label": "Step title",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "title",
+					"attrMap": {
+						"css:color": "titleColour",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:font-weight": "native:typography.fontWeight",
+						"css:font-style": "native:typography.fontStyle",
+						"css:letter-spacing": "native:typography.letterSpacing",
+						"css:text-transform": "native:typography.textTransform",
+						"css:text-align": "native:typography.textAlign"
+					},
+					"_note": "block.json declares `selectors.typography: '.sgs-process-steps__title'`, so the root's native typography paints the step TITLE. titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`)."
+				},
+				"number": {
+					"label": "Step number badge",
+					"order": 3,
+					"clusters": [ "text", "fill" ],
+					"prefix": "number",
+					"attrMap": {
+						"css:color": "numberColour",
+						"css:background-color": "numberBackground"
+					},
+					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`)."
+				},
+				"description": {
+					"label": "Step description",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "description",
+					"attrMap": {
+						"css:color": "descriptionColour"
+					},
+					"_note": "Only colour is independently controlled for the description — font-size/weight/line-height are honest gaps (no per-element typography attrs declared for this element)."
+				},
+				"connector": {
+					"label": "Connector line",
+					"order": 5,
+					"clusters": [],
+					"_note": "connectorStyle (line/none) is a structural variant selector — no colour/fill control exists for the connector on this block (unlike sgs/timeline's connectorColour). Declared for documentation only; orphan-scan-exempt (no prefix)."
+				},
+				"animation": {
+					"label": "Scroll-reveal animation",
+					"order": 6,
+					"clusters": [ "animation" ],
+					"attrMap": {
+						"anim:preset": "sgsAnimation",
+						"anim:duration": "sgsAnimationDuration",
+						"anim:easing": "sgsAnimationEasing"
+					},
+					"_note": "Spec 35 FR-35-6 — JS scroll-driven motion, a separate mechanism from the `motion` (CSS-transition) cluster on `wrapper`. No stagger/parallax/trigger attrs exist on this block — honest gaps."
+				},
+				"step": {
+					"label": "Process step",
+					"order": 7,
+					"clusters": [],
+					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
+				}
 			}
 		}
 	},

@@ -32,6 +32,22 @@
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
+			},
+			"elements": {
+				"button": {
+					"label": "Button",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"prefix": "label",
+					"_note": "Contract §B3 single-semantic-element block — the <a> IS the block root (no wrapper div); it plays both the wrapper and the button/label element. labelColour/labelFontSize/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention (prefix: 'label').",
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					}
+				}
 			}
 		},
 		"align": false,
