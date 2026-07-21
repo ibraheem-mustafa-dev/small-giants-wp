@@ -436,7 +436,25 @@ Carry forward the resolver's existing `transparent + contrastSafe='none' → 'sc
 (FR-37-15) drops it silently otherwise.
 **⛔ FR-37-6 is GATED on this clause landing first.** Emptying the template part before the
 resolver is CPT-aware breaks every behaviour on both sites at once.
-**Status:** `BUILT (code) — canary-unverified.` Commit `0da5ef6a`. Both rules engines gained the
+**Status:** `✅ BUILT + CANARY-VERIFIED 2026-07-22` (commits `0da5ef6a` + `9ff24f74`). All four
+acceptance checks passed live on sandybrown (cold cache, checksum-verified deploy): an active CPT
+header rendered; the marker appeared **exactly once** (re-entrancy guard); **sticky was live**
+(`sgs-header-behaviour-sticky` emitted — clause (b) proven); core's `wp-block-template-part` wrapper
+was replaced by the CPT render; and trashing the active post fell through to the framework default
+(no fatal, no blank header, marker gone — clause (c) proven).
+
+> **🐛 Bug the live test caught — that no code-read could (fixed `9ff24f74`).** The first canary run
+> FAILED to render the CPT header while the sticky class still appeared — the contradiction that
+> located the cause. `filter_template_part` gated on `attrs.area === 'header'`, but the SGS theme
+> references the part as `{"slug":"header","tagName":"header"}` with **no `area` attr**
+> (`front-page.html:1`, `index.html:1`). So the filter never fired — the header rendered via core, and
+> only the behaviour resolver saw the CPT (it reads the post directly). This was a **latent bug in the
+> rules engine that predates the CPT work** — the area-only gate never fired on this theme at all.
+> Both engines now match by **`area` OR `slug`**. Lesson: the mutation harness + every code-read
+> passed because the defect lives in the integration between the theme templates and the filter gate,
+> not in the branch logic — only a live render surfaced it (R-31-11).
+
+_Original build note:_ Commit `0da5ef6a`. Both rules engines gained the
 branch before `evaluate()` (`class-sgs-header-rules.php`, `class-sgs-footer-rules.php`);
 `Sgs_Active_Layout::render_active()` carries clause (a); `get_header_content()` gained the CPT-first
 branch for clause (b) (`class-sgs-nav-menu-source.php`); `get_active_id()` fails closed for clause
@@ -500,20 +518,42 @@ depends on database state.
 
 #### FR-37-9 — `sgs/site-header` + `sgs/site-header-row` conform to §3
 The header container and its rows implement §3.1, §3.3, §3.4, §3.6.
-**Status:** `PARTIAL — CONFORMANCE UNVERIFIED.` The blocks exist and are live
-(`src/blocks/site-header`, 26 attrs; `site-header-row`, 10 attrs, both `v0.1.0`, built
-2026-07-13 for Spec 17 FR-S9-1 at `a1433f82`/`c575a41d`). They were **never audited against a
-defined end state** — §3 is the first one. Known divergences: no `layoutMode` (§3.3); row is
-freeform with the palette unpromoted (§3.5); §3.4 empty-row-zero-output unverified.
+**Status:** `AUDIT DONE 2026-07-22 — 3 gaps carried, none silently dropped.` A per-clause audit
+(read-only, `file:line` per verdict) ran against §3. **PASS:** §3.1 three named rows; §3.4
+empty-row-zero-output (`site-header-row/render.php:29-31` guard, confirmed present — the earlier
+"unverified" is resolved); §3.5 no `allowedBlocks` lock; §3.6 `min-width:0` on children +
+`flex-shrink:0` on logo (`site-header-row/style.css`); no inline `style=""` (Spec 32);
+composite-mirror. **FAIL, carried as follow-ups (§3-audit-carried below):** §3.3 `layoutMode`,
+§3.5 promoted-palette, §3.6 container-queries. The §3.6 live overflow gate is FR-37-12 (canary).
 **Done when:** an audit against §3 is recorded per clause with a pass/fail and a `file:line`,
-and every fail is either fixed or carried as a named FR.
+and every fail is either fixed or carried as a named FR. ✅ met (findings + carried FRs below).
 
 #### FR-37-10 — `sgs/site-footer` + `sgs/site-footer-row` conform to §3
 As FR-37-9, against §3.2, §3.3, §3.4, §3.6.
-**Status:** `PARTIAL — CONFORMANCE UNVERIFIED.` Built 2026-07-13 (`944dad03`, FR-S9-3).
-`site-footer-row` carries `gridTemplateColumns` where `site-header-row` does not — an
-asymmetry §3.3 now makes intentional via `layoutMode`.
-**Done when:** as FR-37-9.
+**Status:** `AUDIT DONE 2026-07-22.` Same audit as FR-37-9; footer rows PASS the same clauses
+and share the same three carried gaps (one fix per gap covers both rows). The footer count
+wiring (FR-37-11) was confirmed live in the audit, not just declared.
+**Done when:** as FR-37-9. ✅ met.
+
+##### §3-audit-carried — three §3 gaps carried as follow-ups (2026-07-22, not silently dropped)
+
+Each is real feature work, none is a cheap lint fix, and each applies to BOTH row blocks (one
+mechanism covers both). Recorded here so a future session picks them up rather than rediscovering:
+
+- **FR-37-33 — `layoutMode` is implicit, not a first-class control (§3.3).** Neither row declares
+  a `layoutMode` attr; the mode is inferred from the `layout` string (`flex`/`grid`) fixed at
+  template-insert time, with no inspector control to switch a row between cluster and columns. Add
+  the attr + control + wiring. `NOT-BUILT`.
+- **FR-37-34 — the row inserter does not promote the common elements (§3.5).** Freeform is
+  correctly unlocked (no `allowedBlocks`), but there is zero "steering" — no promoted palette for
+  logo/nav/search/cart/account/CTA/contact/social. §3.5's plain-English "the inserter promotes…" is
+  aspirational, not shipped. Build the promoted-palette/placeholder. `NOT-BUILT`.
+- **FR-37-35 — container-query row reflow is absent (§3.6).** Only viewport-level `flex-wrap`
+  exists; no `@container` rule in either row's CSS. A row cannot yet collapse while the viewport is
+  wider (the STOP-CONTAINER-TIER-IS-NOT-VIEWPORT case). `NOT-BUILT`.
+
+`clamp()` for fluid type/space (§3.6, "where possible") is not shipped in the row CSS — noted as
+optional, not a fail.
 
 #### FR-37-11 — Footer columns: an operator-set count that stacks automatically
 The `columns` row exposes a **column count** as a number (§3.3). Desktop is the only tier an
