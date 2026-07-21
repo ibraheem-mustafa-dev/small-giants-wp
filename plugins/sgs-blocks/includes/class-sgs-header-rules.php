@@ -203,6 +203,39 @@ final class Sgs_Header_Rules {
 		if ( 'header' !== $area ) {
 			return $pre;
 		}
+
+		// FR-37-3 (Spec 37) — the active-CPT direct-render branch, deliberately
+		// placed BEFORE self::evaluate() so the common case (one header, set
+		// active in SGS > Advanced Headers) never touches the rules engine at
+		// all. The rules engine remains the advanced per-page-type path
+		// (FR-37-20) and is reached only when no valid active CPT exists.
+		//
+		// Sgs_Active_Layout::render_active() fails closed — it returns null for
+		// a missing, trashed, draft or wrong-type target — so a broken pointer
+		// falls through to the rules engine and then to the immutable framework
+		// default (FR-37-4) rather than rendering an empty header. It also
+		// carries its own per-request re-entrancy guard, which the
+		// $evaluated_this_request static below does NOT cover.
+		$active = Sgs_Active_Layout::render_active( Sgs_Active_Layout::AREA_HEADER );
+		if ( null !== $active ) {
+			return $active;
+		}
+
+		// A page can resolve the header area more than once. If the active CPT
+		// already served this request, hand the second slot back to core rather
+		// than to the rules engine below.
+		//
+		// Without this, the second slot renders a DIFFERENT header: the CPT
+		// branch short-circuits before self::evaluate() on the first pass, so
+		// $evaluated_this_request is still false when the second pass reaches
+		// it. evaluate() then runs for the first time, matches the immutable
+		// default rule (priority 9999, always present), and paints the framework
+		// default header underneath the operator's one. Two unlike headers on
+		// one page, silently — worse than a duplicate, and no error is raised.
+		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_HEADER ) ) {
+			return $pre;
+		}
+
 		$rendered = self::evaluate();
 		return null === $rendered ? $pre : $rendered;
 	}

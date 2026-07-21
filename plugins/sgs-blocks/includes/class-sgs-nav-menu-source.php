@@ -389,11 +389,50 @@ class SGS_Nav_Menu_Source {
 	}
 
 	/**
-	 * Load the active header template part content (DB record first, then the file).
+	 * Load the active header's block markup.
 	 *
-	 * @return string Header template-part content, or empty string.
+	 * Resolution order — active CPT, then the template-part DB record, then the
+	 * theme file:
+	 *
+	 *   1. The active `sgs_header` CPT post (FR-37-3 clause (b), Spec 37).
+	 *   2. The published `wp_template_part` post named "header".
+	 *   3. `parts/header.html` on disk.
+	 *
+	 * The CPT branch MUST come first, and it is load-bearing rather than a
+	 * convenience. This function is not only used to render — it is also how
+	 * `Sgs_Header_Behaviours` discovers whether the active header wants sticky /
+	 * transparent / shrink, and that class hooks `body_class`, a DIFFERENT hook
+	 * from the `pre_render_block` path that renders the header. So the two read
+	 * the header through two independent routes.
+	 *
+	 * Teach only the render route about the CPT and the page looks perfect while
+	 * every behaviour flag silently resolves false: no body classes, no sticky,
+	 * no error, no failing build. That is the D338 silent-failure class, and it
+	 * is exactly what FR-37-6 (emptying `parts/header.html`) would trigger if
+	 * this branch were absent. FR-37-6 is gated on this branch existing.
+	 *
+	 * ⚠ SCOPE OF THAT FIX — do not read it as broader than it is. This closes the
+	 * two-routes divergence for the ACTIVE-CPT case ONLY. The advanced path
+	 * (`Sgs_Header_Rules`, FR-37-20) can select a different header pattern per
+	 * page type, and this function does NOT consult the rules engine — so when a
+	 * rule matches and no CPT is active, the rendered header and the header these
+	 * behaviour flags describe can still be two different things (e.g. body says
+	 * sticky, the rendered per-page header is not). That gap PRE-DATES the CPT
+	 * work and is not introduced here, but it is real and still open. Parked as
+	 * `P-HEADER-RULES-INVISIBLE-TO-BEHAVIOURS`; do not assume it is handled.
+	 *
+	 * @return string Header block markup, or empty string.
 	 */
 	public static function get_header_content(): string {
+		if ( class_exists( '\\SGS\\Blocks\\Sgs_Active_Layout' ) ) {
+			$active = \SGS\Blocks\Sgs_Active_Layout::get_active_content(
+				\SGS\Blocks\Sgs_Active_Layout::AREA_HEADER
+			);
+			if ( '' !== $active ) {
+				return $active;
+			}
+		}
+
 		$header_post = get_posts(
 			array(
 				'post_type'      => 'wp_template_part',

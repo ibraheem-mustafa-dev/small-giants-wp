@@ -271,6 +271,24 @@ final class Sgs_Footer_Rules {
 		if ( 'footer' !== $area ) {
 			return $pre;
 		}
+
+		// FR-37-3 (Spec 37) — active-CPT direct-render branch. Exact mirror of
+		// Sgs_Header_Rules::filter_template_part(); see that method for the
+		// full rationale. Fails closed to the rules engine, then to the
+		// immutable framework default (FR-37-4).
+		$active = Sgs_Active_Layout::render_active( Sgs_Active_Layout::AREA_FOOTER );
+		if ( null !== $active ) {
+			return $active;
+		}
+
+		// Second footer area on one page — hand it back to core rather than to
+		// the rules engine, which would otherwise paint the framework default
+		// footer beneath the operator's one. See the header equivalent for the
+		// full mechanism.
+		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_FOOTER ) ) {
+			return $pre;
+		}
+
 		$rendered = self::evaluate();
 		return null === $rendered ? $pre : $rendered;
 	}

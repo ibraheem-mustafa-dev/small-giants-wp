@@ -88,10 +88,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
 		template: TEMPLATE,
-		// Fixed three rows: operators can't add/remove/reorder rows, but can
+		// Fixed three rows: operators can't add, remove, or reorder rows, but can
 		// fully edit the elements inside each row (the rows set their own
-		// templateLock:false for their content).
-		templateLock: 'insert',
+		// templateLock:false for their content). Note: 'insert' only blocks
+		// add/remove — it still permits dragging rows into a different order,
+		// so 'all' is required here.
+		templateLock: 'all',
 		orientation: 'vertical',
 	} );
 

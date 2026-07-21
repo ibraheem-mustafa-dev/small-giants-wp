@@ -318,6 +318,15 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-rest-gate.php';
 Sgs_Block_CPTs::register();
 Sgs_Cpt_Rest_Gate::register();
 
+// SGS active header/footer binding (FR-37-2 / FR-37-3 / FR-37-5 / FR-37-25, Spec 37) —
+// the pointer that makes a CPT-authored header the LIVE header. Loaded after the CPTs
+// because Sgs_Active_Layout maps an area token onto Sgs_Block_CPTs' post-type constants.
+// The rules engines registered earlier reference Sgs_Active_Layout only at render time,
+// so this ordering is correct: register() there merely attaches the filter.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout-admin.php';
+Sgs_Active_Layout_Admin::register();
+
 // SGS Mega Menu CPT (FR-36-3 / FR-36-5, Spec 36) — sgs_mega_menu, attached to a
 // classic nav menu item the native WordPress way (Appearance > Menus).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-mega-menu-cpt.php';
