@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — brand directory (Indus Foods)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MEGA PANEL — BRAND DIRECTORY (logo-grid)  ·  INDUS FOODS
+   Register C: built to the client's own brand, not a starter panel.
+   Indus is a Birmingham ethnic-food wholesaler (est. 1962) whose customers
+   navigate by the brands they stock — so this panel is built for EXPLORING
+   a large supplier list, not for displaying a tidy row of logos.
+
+   THE FOUR HARD PROBLEMS OF A LOGO WALL, and how each is solved here:
+
+   1. MIXED ASPECT RATIOS — client logos arrive wide, square and tall. Every
+      logo sits in a fixed-ratio tile with `object-fit: contain` and generous
+      padding, so nothing is ever cropped or stretched. The tile is the
+      constant; the logo floats inside its safe area.
+
+   2. MIXED LOGO BACKGROUNDS — some logos are dark-on-transparent, some light,
+      some ship a baked-in white box. On a coloured ground half of them would
+      vanish. SOLVED STRUCTURALLY: every logo sits on its own WHITE tile,
+      always, regardless of the panel ground. This is the only approach that
+      cannot break on a file the operator uploads.
+
+   3. THE SPREADSHEET LOOK — an even grid of logos is the definition of dull.
+      Character here comes from GROUPING (by product category, with counts),
+      an uneven featured row, and gold rules — not from decorating the cells.
+
+   4. SCALE — Indus may stock 8 brands or 60. Categories with counts and a
+      "view all" per group means the same pattern works at both ends; nothing
+      needs redesigning as the list grows.
+
+   Ground is `--footer-bg` #2c3e50: white tiles read at 10.98:1 on it and the
+   brand gold clears 6.53:1. A saturated ground would fight 40 logos that
+   already carry their own colours.
+   ========================================================================== */
+:root {
+  --primary: #0a7ea8;
+  --primary-dark: #076a8e;
+  --accent: #d8ca50;
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --text-inverse: #FFFFFF;
+  --footer-bg: #2c3e50;
+
+  --font-display: "Montserrat", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+
+  --radius-sm: 5px;
+
+  --space-xs: 8px;
+  --space-sm: 14px;
+  --space-md: 22px;
+  --space-lg: 32px;
+
+  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+.sgs-mega-brands {
+  --mx: 50%;
+  --my: 30%;
+  position: relative;
+  background:
+    radial-gradient(
+      680px circle at var(--mx) var(--my),
+      color-mix(in srgb, var(--primary) 22%, transparent) 0%,
+      transparent 62%
+    ),
+    var(--footer-bg);
+  color: var(--text-inverse);
+  font-family: var(--font-body);
+  padding: var(--space-lg) var(--space-md);
+}
+
+.sgs-mega-brands__inner {
+  max-width: var(--content-width);
+  --content-width: 1240px;
+  margin: 0 auto;
+}
+
+/* ---- Header --------------------------------------------------------- */
+.sgs-mega-brands__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
+  border-bottom: 2px solid var(--accent);
+}
+
+.sgs-mega-brands__eyebrow {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.sgs-mega-brands__title {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-inverse);
+  text-wrap: balance;
+  margin: 0;
+}
+
+.sgs-mega-brands__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+  padding: 13px 20px;
+  background: var(--accent);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform 200ms var(--spring);
+}
+
+.sgs-mega-brands__cta::after { content: "→"; }
+.sgs-mega-brands__cta:hover { transform: translateX(5px); }
+.sgs-mega-brands__cta:focus-visible { outline: 3px solid var(--text-inverse); outline-offset: 3px; }
+
+/* ---- Category groups — the exploration mechanism, and the thing that
+        stops this reading as a spreadsheet ----------------------------- */
+.sgs-mega-brands__items {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.sgs-mega-brands__item { display: flex; flex-direction: column; }
+
+.sgs-mega-brands__label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  padding-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-inverse) 60%, transparent);
+}
+
+/* The count is what makes a directory feel explorable rather than final. */
+.sgs-mega-brands__tag {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--accent);
+}
+
+.sgs-mega-brands__links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xs);
+}
+
+/* The FEATURED group runs wider and its tiles are larger — uneven weighting
+   is what breaks the even-grid monotony. */
+.sgs-mega-brands__item--featured .sgs-mega-brands__links {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ---- The logo tile: always white, always a fixed ratio ---------------- */
+.sgs-mega-brands__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 5 / 3;              /* the constant — logos vary, tiles do not */
+  min-height: 44px;
+  padding: var(--space-sm);
+  background: var(--surface);       /* ALWAYS white: the containment strategy */
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 220ms var(--spring), border-color 200ms ease;
+  will-change: transform;
+}
+
+.sgs-mega-brands__item--featured .sgs-mega-brands__link { aspect-ratio: 2 / 1; }
+
+/* contain + padding = a defined safe area. Nothing is ever cropped. */
+.sgs-mega-brands__image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Pre-rendered lift shadow — opacity fades, nothing repaints. */
+.sgs-mega-brands__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--radius-sm);
+  box-shadow: 3px 6px 0 0 var(--primary-dark);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.sgs-mega-brands__link:hover,
+.sgs-mega-brands__link:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.sgs-mega-brands__link:hover::after,
+.sgs-mega-brands__link:focus-visible::after { opacity: 1; }
+
+.sgs-mega-brands__link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* "View all" per group — how the pattern survives 60 brands. */
+.sgs-mega-brands__description {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+  min-height: 44px;
+  transition: border-color 200ms ease;
+}
+
+.sgs-mega-brands__description:hover { border-bottom-color: var(--accent); }
+.sgs-mega-brands__description:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+@media (max-width: 1023px) {
+  .sgs-mega-brands__items { grid-template-columns: 1fr 1fr; }
+  .sgs-mega-brands__item--featured { grid-column: span 2; }
+  .sgs-mega-brands__item--featured .sgs-mega-brands__links { grid-template-columns: repeat(4, 1fr); }
+  .sgs-mega-brands__title { font-size: 23px; }
+}
+
+@media (max-width: 767px) {
+  .sgs-mega-brands__items { grid-template-columns: 1fr; }
+  .sgs-mega-brands__item--featured { grid-column: auto; }
+  .sgs-mega-brands__item--featured .sgs-mega-brands__links { grid-template-columns: repeat(2, 1fr); }
+  .sgs-mega-brands__links { grid-template-columns: repeat(2, 1fr); }
+  .sgs-mega-brands__title { font-size: 21px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-brands__link,
+  .sgs-mega-brands__link::after,
+  .sgs-mega-brands__cta,
+  .sgs-mega-brands__description { transition: none; }
+  .sgs-mega-brands__link:hover { transform: none; }
+  .sgs-mega-brands { background: var(--footer-bg); }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-brands" id="sgs-brands">
+  <div class="sgs-mega-brands__inner">
+
+    <div class="sgs-mega-brands__header">
+      <div>
+        <span class="sgs-mega-brands__eyebrow">Stocked since 1962</span>
+        <h3 class="sgs-mega-brands__title">The brands we supply</h3>
+      </div>
+      <a class="sgs-mega-brands__cta" href="#">Browse all 60 brands</a>
+    </div>
+
+    <div class="sgs-mega-brands__items">
+
+      <div class="sgs-mega-brands__item sgs-mega-brands__item--featured">
+        <span class="sgs-mega-brands__label">Featured partners <span class="sgs-mega-brands__tag">4 of 60</span></span>
+        <div class="sgs-mega-brands__links">
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 60'%3E%3Ctext x='120' y='40' font-family='Georgia,serif' font-size='30' font-weight='700' fill='%231E1E1E' text-anchor='middle'%3EKohinoor%3C/text%3E%3C/svg%3E" alt="Kohinoor — browse products" width="240" height="60">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='52' r='34' fill='none' stroke='%230a7ea8' stroke-width='7'/%3E%3Ctext x='60' y='108' font-family='Helvetica,sans-serif' font-size='20' font-weight='700' fill='%231E1E1E' text-anchor='middle'%3ESHAN%3C/text%3E%3C/svg%3E" alt="Shan Foods — browse products" width="120" height="120">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 50'%3E%3Ctext x='150' y='36' font-family='Helvetica,sans-serif' font-size='34' font-weight='300' letter-spacing='6' fill='%231E1E1E' text-anchor='middle'%3EEAST END%3C/text%3E%3C/svg%3E" alt="East End Foods — browse products" width="300" height="50">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 90'%3E%3Crect x='30' y='16' width='100' height='34' rx='6' fill='%23d8ca50'/%3E%3Ctext x='80' y='42' font-family='Helvetica,sans-serif' font-size='19' font-weight='700' fill='%231E1E1E' text-anchor='middle'%3ETRS%3C/text%3E%3Ctext x='80' y='76' font-family='Helvetica,sans-serif' font-size='15' fill='%23424242' text-anchor='middle'%3EFoods%3C/text%3E%3C/svg%3E" alt="TRS Foods — browse products" width="160" height="90">
+          </a>
+        </div>
+        <a class="sgs-mega-brands__description" href="#">See all partners</a>
+      </div>
+
+      <div class="sgs-mega-brands__item">
+        <span class="sgs-mega-brands__label">Rice &amp; grains <span class="sgs-mega-brands__tag">14 brands</span></span>
+        <div class="sgs-mega-brands__links">
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Ctext x='100' y='40' font-family='Georgia,serif' font-size='26' font-style='italic' fill='%231E1E1E' text-anchor='middle'%3ETilda%3C/text%3E%3C/svg%3E" alt="Tilda — browse products" width="200" height="60">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,14 86,80 14,80' fill='none' stroke='%231E1E1E' stroke-width='6'/%3E%3C/svg%3E" alt="Daawat — browse products" width="100" height="100">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 50'%3E%3Ctext x='110' y='36' font-family='Helvetica,sans-serif' font-size='27' font-weight='700' fill='%23076a8e' text-anchor='middle'%3ELaila%3C/text%3E%3C/svg%3E" alt="Laila — browse products" width="220" height="50">
+          </a>
+        </div>
+        <a class="sgs-mega-brands__description" href="#">All 14 →</a>
+      </div>
+
+      <div class="sgs-mega-brands__item">
+        <span class="sgs-mega-brands__label">Spices &amp; masala <span class="sgs-mega-brands__tag">21 brands</span></span>
+        <div class="sgs-mega-brands__links">
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 70'%3E%3Ctext x='90' y='46' font-family='Georgia,serif' font-size='30' font-weight='700' fill='%231E1E1E' text-anchor='middle'%3EMDH%3C/text%3E%3C/svg%3E" alt="MDH — browse products" width="180" height="70">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 46'%3E%3Ctext x='130' y='34' font-family='Helvetica,sans-serif' font-size='24' letter-spacing='3' fill='%231E1E1E' text-anchor='middle'%3EEVEREST%3C/text%3E%3C/svg%3E" alt="Everest — browse products" width="260" height="46">
+          </a>
+          <a class="sgs-mega-brands__link" href="#">
+            <img class="sgs-mega-brands__image" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Crect x='18' y='18' width='74' height='74' rx='10' fill='%230a7ea8'/%3E%3Ctext x='55' y='68' font-family='Helvetica,sans-serif' font-size='30' font-weight='700' fill='%23FFFFFF' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E" alt="Rajah — browse products" width="110" height="110">
+          </a>
+        </div>
+        <a class="sgs-mega-brands__description" href="#">All 21 →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+/* Cursor wash only — two custom properties, rAF-throttled, skipped under
+   reduced-motion. The panel is fully functional without it. */
+(function () {
+  var el = document.getElementById('sgs-brands');
+  if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var frame = 0;
+  el.addEventListener('mousemove', function (e) {
+    if (frame) return;
+    frame = requestAnimationFrame(function () {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      frame = 0;
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

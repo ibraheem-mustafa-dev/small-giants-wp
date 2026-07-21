@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — photo grid (Editorial Broadsheet, inverted + blocked)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MEGA PANEL — PHOTO GRID  ·  "the poster"
+   Direction: Editorial Broadsheet, inverted + colour-blocked (DESIGN.md §4a)
+
+   Stacking inside a card (this is what broke in the previous revision —
+   the layers are now explicit rather than implied):
+     layer 0  .__image   real <img>, object-fit: cover        → sgs/media
+     layer 1  ::after    scrim, guarantees label contrast over ANY photo
+     layer 2  .__label / .__description
+   The accent tile carries its ground on the CARD, not on an image layer,
+   so removing an image can never leave it unstyled.
+   ========================================================================== */
+:root {
+  --text: #16211f;
+  --text-inverse: #fdfcf8;
+  --accent: #f5d050;
+
+  --font-display: "DM Serif Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 56px;
+}
+
+.sgs-mega-photo-grid {
+  background: var(--text);
+  color: var(--text-inverse);
+  font-family: var(--font-body);
+  padding: var(--space-xl) var(--space-md);
+  border-top: 4px solid var(--accent);
+}
+
+.sgs-mega-photo-grid__inner {
+  max-width: var(--content-width);
+  --content-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Title and CTA share the top row — the headline only fills the left half,
+   so the CTA takes that space rather than stranding below. */
+.sgs-mega-photo-grid__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-inverse) 22%, transparent);
+}
+
+.sgs-mega-photo-grid__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 60px;
+  line-height: 0.92;
+  font-weight: 400;
+  margin: 0;
+  color: var(--text-inverse);
+}
+
+.sgs-mega-photo-grid__title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* Asymmetric tile grid — one tile dominates, gaps tight so blocks collide. */
+.sgs-mega-photo-grid__cards {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  grid-template-rows: 216px 152px;
+  gap: 5px;
+}
+
+.sgs-mega-photo-grid__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-md);
+  text-decoration: none;
+  color: var(--text-inverse);
+  background: var(--text);
+  overflow: hidden;
+  min-height: 44px;
+}
+
+.sgs-mega-photo-grid__card--lead { grid-row: span 2; }
+
+/* Layer 0 — the image. MUST be a real <img>: only an image node maps to
+   sgs/media and gets the universal image controls, so the operator can
+   swap in their own photography from the editor. Grayscale keeps the
+   starter brand-agnostic — no client palette can clash with it, and it
+   is one line for an operator to remove. */
+.sgs-mega-photo-grid__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1) contrast(1.05);
+  transition: transform 340ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 340ms ease;
+}
+
+/* Layer 1 — the scrim. This is what makes the slot SAFE TO SWAP: whatever
+   photo an operator drops in, the label still clears contrast. */
+.sgs-mega-photo-grid__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--text) 92%, transparent) 0%,
+    color-mix(in srgb, var(--text) 74%, transparent) 45%,
+    color-mix(in srgb, var(--text) 42%, transparent) 100%
+  );
+}
+
+/* Layer 2 — content sits above both. */
+.sgs-mega-photo-grid__label,
+.sgs-mega-photo-grid__description { position: relative; z-index: 1; }
+
+/* The accent tile: its ground lives on the CARD itself, no image, no scrim,
+   so it can never be left unstyled by an image change. */
+.sgs-mega-photo-grid__card--block {
+  background: var(--accent);
+  color: var(--text);
+}
+.sgs-mega-photo-grid__card--block::after { content: none; }
+
+.sgs-mega-photo-grid__label {
+  font-family: var(--font-display);
+  font-size: 27px;
+  line-height: 1.05;
+  margin-bottom: 4px;
+}
+
+.sgs-mega-photo-grid__card--lead .sgs-mega-photo-grid__label { font-size: 40px; }
+
+.sgs-mega-photo-grid__card--block .sgs-mega-photo-grid__label {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 23px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.sgs-mega-photo-grid__description {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--text-inverse) 92%, transparent);
+  max-width: 32ch;
+}
+
+.sgs-mega-photo-grid__card--block .sgs-mega-photo-grid__description { color: var(--text); }
+
+/* Hover: the photo pushes in and regains its colour — the one moment of
+   life in the panel, and it needs no brand assumption to work. */
+.sgs-mega-photo-grid__card:hover .sgs-mega-photo-grid__image {
+  transform: scale(1.06);
+  filter: grayscale(0) contrast(1);
+}
+.sgs-mega-photo-grid__card:hover,
+.sgs-mega-photo-grid__card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+/* The accent tile needs its own hover — an accent outline on an accent
+   ground is invisible, so it inverts to the dark ground instead. */
+.sgs-mega-photo-grid__card--block:hover,
+.sgs-mega-photo-grid__card--block:focus-visible {
+  outline-color: var(--text);
+  background: color-mix(in srgb, var(--accent) 82%, var(--text));
+}
+
+.sgs-mega-photo-grid__cta {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 14px 22px;
+  background: var(--accent);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-photo-grid__cta:hover { transform: translateX(6px); }
+.sgs-mega-photo-grid__cta:focus-visible { outline: 3px solid var(--text-inverse); outline-offset: 3px; }
+
+@media (max-width: 1023px) {
+  .sgs-mega-photo-grid__cards { grid-template-columns: 1.4fr 1fr; grid-template-rows: 196px 144px; }
+  .sgs-mega-photo-grid__title { font-size: 46px; }
+}
+
+@media (max-width: 767px) {
+  .sgs-mega-photo-grid { padding: var(--space-lg) var(--space-md); }
+  .sgs-mega-photo-grid__cards { grid-template-columns: 1fr; grid-template-rows: none; }
+  .sgs-mega-photo-grid__card { min-height: 150px; }
+  .sgs-mega-photo-grid__card--lead { grid-row: auto; min-height: 200px; }
+  .sgs-mega-photo-grid__title { font-size: 34px; }
+  .sgs-mega-photo-grid__card--lead .sgs-mega-photo-grid__label { font-size: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-photo-grid__image, .sgs-mega-photo-grid__cta { transition: none; }
+  .sgs-mega-photo-grid__card:hover .sgs-mega-photo-grid__image { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-photo-grid">
+  <div class="sgs-mega-photo-grid__inner">
+
+    <div class="sgs-mega-photo-grid__header">
+      <h3 class="sgs-mega-photo-grid__title">The whole <em>range</em></h3>
+      <a class="sgs-mega-photo-grid__cta" href="#">Browse everything</a>
+    </div>
+
+    <div class="sgs-mega-photo-grid__cards">
+
+      <a class="sgs-mega-photo-grid__card sgs-mega-photo-grid__card--lead" href="#">
+        <img class="sgs-mega-photo-grid__image" src="https://picsum.photos/id/1080/800/900" alt="" width="800" height="900">
+        <span class="sgs-mega-photo-grid__label">Everyday</span>
+        <span class="sgs-mega-photo-grid__description">The core selection. Always available, always the same standard.</span>
+      </a>
+
+      <a class="sgs-mega-photo-grid__card" href="#">
+        <img class="sgs-mega-photo-grid__image" src="https://picsum.photos/id/292/700/500" alt="" width="700" height="500">
+        <span class="sgs-mega-photo-grid__label">Seasonal</span>
+        <span class="sgs-mega-photo-grid__description">Changes through the year.</span>
+      </a>
+
+      <a class="sgs-mega-photo-grid__card" href="#">
+        <img class="sgs-mega-photo-grid__image" src="https://picsum.photos/id/431/700/500" alt="" width="700" height="500">
+        <span class="sgs-mega-photo-grid__label">Specialist</span>
+        <span class="sgs-mega-photo-grid__description">For particular requirements.</span>
+      </a>
+
+      <a class="sgs-mega-photo-grid__card sgs-mega-photo-grid__card--block" href="#">
+        <span class="sgs-mega-photo-grid__label">New in</span>
+        <span class="sgs-mega-photo-grid__description">Just landed this month.</span>
+      </a>
+
+      <a class="sgs-mega-photo-grid__card" href="#">
+        <img class="sgs-mega-photo-grid__image" src="https://picsum.photos/id/225/700/500" alt="" width="700" height="500">
+        <span class="sgs-mega-photo-grid__label">Gifting</span>
+        <span class="sgs-mega-photo-grid__description">Ready to give, no wrapping needed.</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

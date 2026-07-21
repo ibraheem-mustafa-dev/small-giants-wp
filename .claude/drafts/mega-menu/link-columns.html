@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — link columns</title>
+<style>
+/* ==========================================================================
+   Draft tokens — the draft is the token SOURCE (Spec 33).
+   These role names become the client's palette slugs, so every value a client
+   could reasonably want to rebrand is a token. Nothing below repeats a raw hex.
+   The values here are neutral placeholders: a client's theme-snapshot.json
+   overrides every one of them at clone time.
+   ========================================================================== */
+:root {
+  --primary: #2f5d62;
+  --accent: #c2703d;
+  --surface: #ffffff;
+  --surface-alt: #f4f6f6;
+  --text: #16211f;
+  --text-muted: #4d5b59;
+  --border-subtle: #d8e0df;
+  --focus-ring: #16211f;
+
+  --font-heading: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+
+  --radius: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Style anchor: "Accessible & Ethical" (uimax styles table).
+   Chosen because its do_not_use_for is "None - accessibility universal" —
+   it constrains no industry, which is what keeps this panel brand-neutral.
+   The character comes from structure and typographic hierarchy, not decoration.
+   -------------------------------------------------------------------------- */
+.sgs-mega-link-columns {
+  background: var(--surface);
+  padding: var(--space-xl) var(--space-md);
+  font-family: var(--font-body);
+  color: var(--text);
+}
+
+.sgs-mega-link-columns__inner {
+  max-width: var(--content-width);
+  --content-width: 1180px;
+  margin: 0 auto;
+}
+
+/* Grid sits on the DIRECT parent of the items (authoring contract §4). */
+.sgs-mega-link-columns__groups {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+}
+
+.sgs-mega-link-columns__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* The group heading carries the panel's vertical-scan structure (NN/g's
+   number-one mega-menu recommendation: one clear heading per column). */
+.sgs-mega-link-columns__title {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 0 0 var(--space-xs);
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.sgs-mega-link-columns__item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: var(--space-sm);
+  margin: 0 calc(var(--space-sm) * -1);
+  border-radius: var(--radius);
+  min-height: 44px;
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.sgs-mega-link-columns__label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+/* Descriptions are what separate a designed mega panel from a bare link dump
+   — they let a visitor choose without clicking through (Baymard). */
+.sgs-mega-link-columns__description {
+  display: block;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.sgs-mega-link-columns__item:hover {
+  background: var(--surface-alt);
+}
+
+/* Focus is a visible ring rather than a colour shift — colour is never the
+   sole indicator, and the ring survives Windows High Contrast. */
+.sgs-mega-link-columns__item:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  background: var(--surface-alt);
+}
+
+.sgs-mega-link-columns__cta {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: var(--space-sm);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 44px;
+}
+
+.sgs-mega-link-columns__cta:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Device tiers only — the SGS breakpoints (authoring contract §7). */
+@media (max-width: 1023px) {
+  .sgs-mega-link-columns__groups {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .sgs-mega-link-columns {
+    padding: var(--space-lg) var(--space-md);
+  }
+  .sgs-mega-link-columns__groups {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-link-columns__item {
+    transition: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-link-columns">
+  <div class="sgs-mega-link-columns__inner">
+    <div class="sgs-mega-link-columns__groups">
+
+      <div class="sgs-mega-link-columns__group">
+        <h3 class="sgs-mega-link-columns__title">Browse by need</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Getting started</span>
+          <span class="sgs-mega-link-columns__description">The short version, if this is your first visit.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Popular choices</span>
+          <span class="sgs-mega-link-columns__description">What most people come here looking for.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Compare options</span>
+          <span class="sgs-mega-link-columns__description">Side by side, so you can decide quickly.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta" href="#">See everything</a>
+      </div>
+
+      <div class="sgs-mega-link-columns__group">
+        <h3 class="sgs-mega-link-columns__title">Browse by range</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Everyday</span>
+          <span class="sgs-mega-link-columns__description">The core selection, always available.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Seasonal</span>
+          <span class="sgs-mega-link-columns__description">Changes through the year — worth a look.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Specialist</span>
+          <span class="sgs-mega-link-columns__description">For particular requirements or occasions.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta" href="#">See the full range</a>
+      </div>
+
+      <div class="sgs-mega-link-columns__group">
+        <h3 class="sgs-mega-link-columns__title">Useful to know</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">How it works</span>
+          <span class="sgs-mega-link-columns__description">What happens, step by step, start to finish.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Questions and answers</span>
+          <span class="sgs-mega-link-columns__description">The things people ask us most often.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Delivery and timings</span>
+          <span class="sgs-mega-link-columns__description">When to expect things, and what it costs.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta" href="#">Read the guides</a>
+      </div>
+
+      <div class="sgs-mega-link-columns__group">
+        <h3 class="sgs-mega-link-columns__title">About us</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Our story</span>
+          <span class="sgs-mega-link-columns__description">Who we are and why we started.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Our people</span>
+          <span class="sgs-mega-link-columns__description">The team you will actually deal with.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Get in touch</span>
+          <span class="sgs-mega-link-columns__description">Phone, email, or come and find us.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta" href="#">More about us</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

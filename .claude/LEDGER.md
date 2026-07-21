@@ -119,20 +119,29 @@ Full narrative: `memory/session-2026-07-19*.md`.
 **Why it matters.** You are QC-only on the framework; every drifting doc or missing guard-rail
 is time you have to spend catching mistakes.
 
-**⭐ LATEST (2026-07-20) — PHASE 1 CLOSED; PHASE 2 STARTED, mega CPT landed (D353).** Phase 1 finished
-earlier the same day (classic-menu reader FR-36-1 / D352; Stage-11 build gate un-silenced; 30 nav attrs
-re-registered; one handoff instruction refused because `adaptive-nav` is your rollback path).
-**Then Phase 2 opened with the `sgs_mega_menu` CPT** — you can now add a mega panel to a menu in
-*Appearance → Menus* exactly like adding a page, and the menu item stores a real link to that panel.
-Found en route: **`sgs-theme` declared no menu support at all**, so *Appearance → Menus* was broken on EVERY
-SGS site — fixed in the same commit (`cc640511`). Panels are **nav-only** (your ruling): no public URL, so
-nothing duplicate for Google to index. Proven live with a working negative control.
-**Deliberately NOT fixed (your call):** the featured item's hover still differs from the draft — that gap is
-now the planted TEST CASE for header cloning and is marked DO-NOT-FIX in parking.
-**⚠ OPEN, needs your decision:** the 7 old mega-menu layout patterns **cannot be migrated as-is** — all 7
-carry stale pre-D294 inline styles, a now-wrong `Block Types: core/template-part/mega-menu` header, and
-`core/list` (no `sgs/list` block exists). Spec 36 wants 5 layouts; the FR-36-5 **DB registry does not exist
-yet**. See the decision menu in the session notes.
+**⭐ LATEST (2026-07-21) — MEGA CPT LIVE (D353) + EIGHT PANEL DESIGNS DRAFTED.**
+Phase 2 opened with the **`sgs_mega_menu` CPT**: you can add a mega panel to a menu in
+*Appearance → Menus* exactly like adding a page, and the item stores a real link to that panel.
+Found en route: **`sgs-theme` declared no menu support at all**, so *Appearance → Menus* was broken on
+EVERY SGS site — fixed in the same commit (`cc640511`, D353). Panels are **nav-only** (your ruling):
+no public URL, nothing duplicate for Google. Proven live with a working negative control.
+
+**Then the whole session went into DESIGN.** The 7 old mega patterns proved unmigratable (stale
+pre-D294 inline styles, a now-wrong `Block Types` header, `core/list` with no `sgs/list` block), so
+eight panels were designed fresh in `.claude/drafts/mega-menu/` against a locked `DESIGN.md`.
+The first attempts were **bland**, and the diagnosis was worth having: unguided generation lands on
+the statistical centre, and **`/frontend-design` — the skill built to prevent exactly that — was never
+invoked**. Direction then moved twice on your calls: dark editorial → SGS orange ground → per-client
+bespoke. **Approved by you: `depth-stack`** (hospitality; fanned card deck, Ken Burns background)
+and the **drill-down rebuild** of `browse-switch-sgs`.
+
+**⚠ TWO THINGS STILL NEED YOU.** (1) **`token-lint.py` IS INERT** — it reports "0 declarations" and
+would pass a draft of pure hardcoded hex, so **every contrast/token check across all eight panels was
+done BY HAND**. It is the gate protecting brand-colour safety; fixing it is the top open task.
+(2) **The client starter register (A editorial-dark vs B SGS-orange) is still unlocked** — building
+logo-grid for Indus specifically sidestepped the decision rather than settling it.
+**Deliberately NOT fixed (your call):** the featured item's hover still differs from the draft — the
+planted TEST CASE for header cloning, DO-NOT-FIX in parking.
 
 **Your single next action.** Nothing is blocked. Two independent fronts to pick from: the
 **product** front — the drawer link-colour polish (a 5-minute fix) at the top of the "Product
