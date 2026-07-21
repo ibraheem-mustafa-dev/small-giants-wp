@@ -32,59 +32,37 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ LATEST (2026-07-21 evening) — SPEC 17 DELETED, SPEC 37 IS THE HEADER/FOOTER HOME.**
-The spec problem that made this morning's work land on the wrong thing is now structurally closed.
+**⭐ LATEST (2026-07-22) — SPEC 37 6-FR CORE BUILT + CANARY-VERIFIED. A client can now author a
+header in *SGS → Advanced Headers*, set it active, and it renders live.** Proven on sandybrown, not
+inferred. This was the shortest path from "documented" to "Bean can see it work," and it landed.
 
-**What was wrong.** Spec 17 (1030 lines, 39 FRs) described a header/footer system nobody was
-building. It carried **three competing answers** to "where do you edit a header?" — the Site Editor
-(its own §3), the **WP Customiser** (Decision 21, 18 mentions, *never built* — and Spec 17 itself
-labelled part of that section "RETRACTED FICTION", naming four classes asserted as shipped that never
-existed), and the **CPT admin screen** that the P2 design-gate actually decided on. The CODE
-implemented the first. The DECISION was the third. A task earlier the same day was built and verified
-against the wrong one purely because the governing spec still described the superseded model.
+**What shipped (commits `0da5ef6a` → `87d1f94c` → `9b9a8028` → `9ff24f74` → `fc8e2796`):** the
+active-pointer + "Set as active" admin action (FR-37-2/25), the direct-render binding before the
+rules engine with a CPT-aware behaviour resolver and fail-closed validation (FR-37-3 a/b/c), the
+"Active" list-table column (FR-37-5), footer columns as an operator COUNT (FR-37-11, **wrapper
+untouched** — it already read a per-device count), `templateLock 'insert'→'all'` (§3.3a), and
+`parts/header.html` gutted to a 1-line shell with the client data removed (FR-37-6 file step).
 
-**What replaced it.** **`specs/37-HEADER-FOOTER-BUILDER.md`** — 31 FRs, docscore 100% Grade A, every
-FR carrying `BUILT`/`PARTIAL`/`NOT-BUILT` with a `file:line` pointer so nothing gets rebuilt and
-nothing is assumed working from a similar-sounding filename. Spec 36 (nav) is its extension.
+**Three bugs found + fixed — the process earned its keep.** Two by the pre-commit qc-council (empty
+render → blank header; a 2nd header area rendering a *different* header — both silent, both now
+covered by a mutation-tested harness). One by the **live canary**: the binding had **never fired on
+this theme** — `filter_template_part` gated on `attrs.area` but the SGS theme references the part by
+`slug`. A latent rules-engine bug predating the CPT work; fixed by matching `area` OR `slug`
+(`9ff24f74`). Only a live render caught it (STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR / D359, R-31-11).
 
-**The load-bearing find, verified hook by hook:** a CPT-authored header **can never reach the
-frontend today**. CPT patterns register on `admin_init` (`class-sgs-block-cpts.php:55`); the rules
-engine resolves on `pre_render_block`, a frontend hook (`class-sgs-header-rules.php:51`), via the
-pattern registry (`:329`) — finds nothing, returns `null`, falls through to the theme default.
-Silent, no error: the D338 class. Spec 37 replaces the mechanism with **direct render**.
+**Verified live (checksum-verified deploy, cold cache):** CPT header renders · exactly once · sticky
+live · core wrapper replaced · trashed-post fail-closed fallback. The §3 conformance audit (FR-37-9/10)
+is done — 3 gaps carried as **FR-37-33/34/35** (layoutMode control, promoted palette, container
+queries), none silently dropped.
 
-**All four open design questions were ANSWERED, not deferred** (your instruction — nothing left to
-surface mid-build): columns are an operator-set **count** that stacks on mobile automatically (a
-`gridTemplateColumns` ratio override was recommended and **you rejected it** — a CSS grid template is
-a developer concept); rows get `templateLock` `'insert'` → **`'all'`**; the per-device cascade is
-**HIDE not REMOVE** and **moved to Spec 35**; the Simple-surface controls adopt P2's roster verbatim.
+**Deferred with reason (not needed for usable):** tri-state behaviours (FR-37-14), scoped behaviour
+CSS (FR-37-15), starter picker (FR-37-7), legacy nav retirement (FR-37-21, gated on FR-36-18), the
+Simple/Advanced surface + a11y polish (FR-37-26..31). Sticky/transparent/shrink already work.
 
-**Three real bugs found while specifying.** (1) The CPT render break above. (2)
-`site-footer/edit.js:28-30` sets `columns`/`columnsTablet`/`columnsMobile` on a row whose `block.json`
-**declares none of them** — silently discarded at save (D338 again); fixing it *is* FR-37-11. (3)
-`templateLock:'insert'` **does not lock reordering** — both containers' comments claim it does, so an
-operator can drag the bottom row above the top one.
-
-**The adversarial council caught the spec writing fiction.** FR-37-3 originally justified itself via
-`sgs_header_rule_resolved` — a filter with **zero subscribers** (two hits in the tree: the
-`apply_filters` and a comment claiming it matters). The real breakage is one file over:
-`Sgs_Header_Behaviours` hooks `body_class` and resolves via `get_header_content()`, which reads
-`parts/header.html` — the file FR-37-6 empties. Built as written, the header would render and then
-**silently not be sticky**. FR-37-3 now carries the corrected contract; FR-37-6 is gated on it. The
-council also caught FR-37-16 ordering a reversal of **STOP-NO-KSORT** (D334, council-gated) — struck.
-
-**Earlier the same day (all shipped):** `token-lint.py` was **inert** — it read 0 of every draft's
-declarations because `.html` routed to the inline-attribute parser while the drafts put all CSS in a
-`<style>` block; fixed, all 11 drafts now read 8–31 declarations each, plus unresolved `var()` is now
-a hard fail. A **cross-palette contrast sweep** was built (176 combinations, axe-core) and made
-**warn-only** on your ruling. Its 496 findings turned out **not** to be draft defects: `depth-stack`
-measures **7.46:1 on its own palette** and only fails where a client's `primary-dark` is not actually
-dark (mamas-munches `#c56a7a`). Your call: change nothing. The **footer Site-Editor round trip** was
-proven live and then correctly re-scoped — it tested the route P2 rejected.
-
-**Your single next action.** The **6-FR minimum core** — `FR-37-2` → `3` → `4` → `25` → `5` → `6`,
-in that order, `FR-37-6` last so `parts/header.html` stays the rollback. About a day for the header,
-~45 min more for the footer. Everything else in Spec 37 is deferrable without touching the outcome.
+**Your next actions.** (1) **De-client `parts/header.html`'s source per site** so FR-37-6 fully
+closes ("both sites render from CPTs" needs a CPT authored per site) — this also unblocks the Indus
+cutover. (2) **FR-36-18 Indus header cutover** (recon plan ready, `memory/` — the shared theme file
+would push Mama's header onto Indus if deployed as-is). Everything else in Spec 37 is deferrable.
 
 ---
 
@@ -92,13 +70,15 @@ in that order, `FR-37-6` last so `parts/header.html` stays the rollback. About a
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`. **This session's commits (pushed):** `f0fe7b9d` (token-lint fix) → `1169060e`
-  (contrast sweep) → `d7985f10` (warn-only) → `d4d57693` (parking) → `b151d312` + `729ccf87` (Task 4
-  + its correction) → **`9dbe94fd` (Spec 37 + Spec 17 DELETED + 14 docs repointed)**.
-  ⚠ **Not HEAD** — a co-active Spec-35 track commits between handoffs (`2e455c5a`, `8a5b6ac4` landed
-  mid-session). Run `git log -1 --format=%h` for the real HEAD. **D-ceiling: D358** — verify with
+- **Branch:** `main`, HEAD `fc8e2796` (2026-07-22). **This session's commits (pushed):** `0da5ef6a`
+  (FR-37-2/3/5/25 binding) → `87d1f94c` (FR-37-11 footer count) → `9b9a8028` (FR-37-6 header gut) →
+  `9ff24f74` (slug-vs-area fix) → `fc8e2796` (spec verification record). **D-ceiling: D359.**
+  ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
+  landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
-  command as any commit (STOP-RECHECK-BRANCH).
+  command as any commit (STOP-RECHECK-BRANCH). **Gate note:** every commit used `[gates-ok:]` +
+  `--no-verify` for the co-active track's `sgs/trust-bar` F5/F6 finding
+  (P-TRUSTBAR-TRUSTPILOT-ATTR-COLLISIONS) — provably not ours, NOT baselined.
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the header/footer/nav front: **`specs/36-SGS-NAVIGATION-SYSTEM.md`** (the canonical nav home) + `specs/37-HEADER-FOOTER-BUILDER.md`.
   ⛔ **DELETED specs — never cite:** `34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` (P2.5 Phase 6 → Spec 36) and

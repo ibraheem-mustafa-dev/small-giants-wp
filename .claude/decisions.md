@@ -15,6 +15,36 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D359 [INCIDENT] — Spec 37 6-FR core BUILT + canary-verified; the header binding had never fired on this theme (slug-vs-area) (2026-07-22)
+
+**What shipped.** The Spec 37 minimum core that makes a CPT-authored header the live header:
+`Sgs_Active_Layout` (validated pointer `sgs_active_header_cpt_id`/`_footer_`, fail-closed on
+missing/trashed/draft/wrong-type — FR-37-2/3/25), the direct-render branch in both rules engines
+BEFORE `evaluate()`, the CPT-aware `get_header_content()` (FR-37-3b — the load-bearing clause), the
+"Active" list-table column (FR-37-5), footer columns as an operator COUNT with the wrapper untouched
+(FR-37-11), `templateLock 'insert'→'all'` (§3.3a), and `parts/header.html` gutted to a 1-line shell
+(FR-37-6 file step). Commits `0da5ef6a` → `87d1f94c` → `9b9a8028` → `9ff24f74` → `fc8e2796`.
+
+**Three bugs found + fixed, two by the pre-commit qc-council, one by the live canary:**
+1. **Empty render → blank header.** `pre_render_block` short-circuits on any NON-NULL; an empty
+   `do_blocks()` still short-circuited. Now checks render OUTPUT, not just `post_content`.
+2. **Double header area → a DIFFERENT header in the 2nd slot.** The branch short-circuits before
+   `evaluate()`, so the rules engine's guard was unset on a 2nd slot and it painted the framework
+   default there. `Sgs_Active_Layout` now tracks *attempted* vs *served*; `has_served()` hands a 2nd
+   slot back to core. Both covered by a mutation-tested harness (16 checks + negative control).
+3. **🔴 The binding had NEVER fired on this theme (slug-vs-area).** Live canary: the CPT header did
+   not render while its sticky class DID. Cause proven — the SGS theme references the part as
+   `{"slug":"header","tagName":"header"}` with **no `area` attr** (`front-page.html:1`), but
+   `filter_template_part` gated on `attrs.area === 'header'`. A latent rules-engine bug predating the
+   CPT work; both engines now match by `area` OR `slug` (`9ff24f74`). **Only a live render surfaced
+   it** — the mutation harness + every code-read passed because the defect lives in the
+   theme↔filter integration, not the branch logic (R-31-11 vindicated).
+
+**Canary-verified (sandybrown, checksum-verified deploy, cold cache):** CPT header renders · exactly
+once · sticky live · core wrapper replaced · trashed-post fail-closed fallback. FR-37-9/10 §3
+conformance audit done (3 gaps carried as FR-37-33/34/35: layoutMode control, promoted palette,
+container queries). FR-37-6 "both sites render from CPTs" still needs a CPT authored per site.
+
 ## D358 [INCIDENT] — Spec 17 DELETED; Spec 37 is the canonical header/footer home; CPT headers proved unrenderable (2026-07-21)
 
 **The failure.** Spec 17 (1030 lines, 39 FRs) carried THREE competing answers to "where is a header

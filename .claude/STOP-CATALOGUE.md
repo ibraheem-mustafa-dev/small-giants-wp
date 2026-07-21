@@ -23,6 +23,20 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR-FIRES-NEVER-AND-SILENTLY** — NEW 2026-07-22 (D359). A
+  `pre_render_block` (or any block) filter that gates on `attrs.X === 'value'` fires ONLY when the
+  block markup literally carries `X`. WP may resolve that property from registration metadata, but
+  the resolved value is NOT in the parsed `$block['attrs']` the filter sees. The SGS theme references
+  the header/footer part as `{"slug":"header","tagName":"header"}` with **no `area` attr**, so
+  `Sgs_Header_Rules::filter_template_part`'s `attrs.area === 'header'` gate never matched — the whole
+  conditional-header + CPT-binding mechanism had **never once fired on this theme**, silently. It was
+  invisible to every code-read and to a 16-check mutation harness because the defect lives in the
+  theme-markup↔filter-gate INTEGRATION, not the branch logic — **only a live render (R-31-11) caught
+  it**, via the tell that the behaviour resolver (reads the CPT directly) saw sticky while the render
+  path did not. Fix: match by `area` OR `slug`. General rule: before trusting a block-attr gate,
+  confirm the live markup actually carries that attr; and a mechanism that "should intercept X" must
+  be proven to fire on a real page, not assumed from the code.
+
 - **STOP-VERIFY-DEPLOY-BY-CHECKSUM** — NEW 2026-07-20 (D351). `build-deploy.py` printing
   `[DONE]` + `[verify] HTTP 200, markers present` does NOT mean your change shipped: the
   verify asserts only that *a* page renders with generic `wp-block-sgs`/`sgs-` markers, which
@@ -305,3 +319,7 @@ for real before claiming done?
   Both are earned: a spec describing an abandoned model caused a task to be built against the wrong
   one that same day, and five of six council reviewers rubber-stamped a citation to a filter that
   nothing hooks.
+- **2026-07-22 (Spec 37 6-FR core canary-verified / D359) re-run:** previous unique `STOP-*` = **59**;
+  ADDED 1 (`STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR-FIRES-NEVER-AND-SILENTLY`), SUBTRACTED none → **60**.
+  60 >= 59. PASS. Earned: a header binding gated on `attrs.area` never fired on this theme (markup uses
+  `slug`), invisible to code-reads + a mutation harness, caught only by a live render.
