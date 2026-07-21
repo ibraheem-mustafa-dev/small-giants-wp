@@ -914,8 +914,8 @@
 	"example": {
 		"attributes": {
 			"variant": "standard",
-			"headline": "Premium Food Wholesale, Delivered Next Day",
-			"subHeadline": "Supplying restaurants, retailers and caterers across the UK since 1962.",
+			"headline": "Your Compelling Headline Goes Here",
+			"subHeadline": "A brief supporting statement that explains your value proposition.",
 			"alignment": "left"
 		}
 	}

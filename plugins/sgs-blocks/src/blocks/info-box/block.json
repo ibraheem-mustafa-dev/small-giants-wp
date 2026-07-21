@@ -242,9 +242,9 @@
 	"render": "file:./render.php",
 	"example": {
 		"attributes": {
-			"icon": "truck",
-			"heading": "Next-Day Delivery",
-			"description": "Order before 2pm for guaranteed next-day delivery across mainland UK.",
+			"icon": "star",
+			"heading": "Your Compelling Headline Goes Here",
+			"description": "A brief supporting statement that explains your value proposition.",
 			"cardStyle": "elevated"
 		}
 	}

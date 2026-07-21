@@ -102,7 +102,7 @@
 	"editorScript": "file:./index.js",
 	"example": {
 		"attributes": {
-			"title": "What are your delivery options?",
+			"title": "What services do you offer?",
 			"isOpen": true
 		}
 	}

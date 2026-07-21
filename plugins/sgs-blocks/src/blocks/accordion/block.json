@@ -333,13 +333,13 @@
 			{
 				"name": "sgs/accordion-item",
 				"attributes": {
-					"title": "What are your delivery options?"
+					"title": "What services do you offer?"
 				}
 			},
 			{
 				"name": "sgs/accordion-item",
 				"attributes": {
-					"title": "What is your minimum order quantity?"
+					"title": "How do I get started?"
 				}
 			}
 		]

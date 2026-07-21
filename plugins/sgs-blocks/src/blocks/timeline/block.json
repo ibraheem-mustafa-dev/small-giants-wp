@@ -247,24 +247,24 @@
 			"alignment": "alternating",
 			"entries": [
 				{
-					"date": "1962-01-01",
+					"date": "2018-01-01",
 					"title": "Company Founded",
 					"description": "<p>Our story began with a vision and a handshake.</p>",
 					"icon": "building",
 					"image": 0
 				},
 				{
-					"date": "1975-06-01",
-					"title": "First Warehouse",
-					"description": "<p>Opened our first dedicated production facility.</p>",
-					"icon": "warehouse",
+					"date": "2020-06-01",
+					"title": "First Milestone",
+					"description": "<p>Reached an important milestone in our growth.</p>",
+					"icon": "flag",
 					"image": 0
 				},
 				{
-					"date": "2010-03-15",
+					"date": "2023-03-15",
 					"title": "National Expansion",
-					"description": "<p>Grew distribution across the UK.</p>",
-					"icon": "truck",
+					"description": "<p>Grew our reach across the UK.</p>",
+					"icon": "map",
 					"image": 0
 				}
 			]

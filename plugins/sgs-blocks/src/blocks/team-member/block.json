@@ -267,9 +267,9 @@
 	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
-			"name": "Sarah Mitchell",
-			"role": "Head of Procurement",
-			"bio": "Sarah has over 15 years of experience in food wholesale and leads our buying team.",
+			"name": "Jordan Taylor",
+			"role": "Team Lead",
+			"bio": "A brief supporting statement that explains your value proposition.",
 			"photoShape": "circle",
 			"cardStyle": "elevated"
 		}

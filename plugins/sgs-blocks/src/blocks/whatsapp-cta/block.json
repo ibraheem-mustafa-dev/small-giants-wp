@@ -159,7 +159,7 @@
 		"attributes": {
 			"variant": "floating",
 			"label": "Chat on WhatsApp",
-			"message": "Hi, I'd like to know more about your wholesale pricing."
+			"message": "Hi, I'd like to know more about your services."
 		}
 	},
 	"render": "file:./render.php"

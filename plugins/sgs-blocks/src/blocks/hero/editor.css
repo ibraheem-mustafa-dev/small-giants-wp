@@ -21,18 +21,15 @@
 	margin-bottom: 12px;
 }
 
-/* CTA preview in editor */
-.sgs-hero__ctas .sgs-hero__cta {
-	pointer-events: none;
-}
-
-/* HC2: mirror the frontend CTA-row gap in the editor preview. style.css is
-   frontend-only (compiles to style-index.css), so the editor needs its own
-   rule reading the same --sgs-hero-cta-gap custom property + spacing--30
-   fallback that render.php / edit.js set on the wrapper. */
-.sgs-hero__ctas {
-	gap: var(--sgs-hero-cta-gap, var(--wp--preset--spacing--30));
-}
+/* FR-22-6: the hero's CTA preview rules were removed 2026-07-21 alongside the
+   dead .sgs-hero__cta class family and the ctaGap* attributes (commit 03096e97).
+   CTAs are InnerBlocks children (sgs/multi-button > sgs/button) and bring their
+   own editor styling; nothing emits .sgs-hero__cta, and --sgs-hero-cta-gap is no
+   longer set by render.php or edit.js, so both rules were inert.
+   NOTE: `.sgs-hero__ctas` (PLURAL) remains live DRAFT-side vocabulary — the
+   cloning converter recognises it in SGS-BEM mockups and maps it to
+   sgs/multi-button (converter/recognition.py:83). Do not reintroduce it here as
+   rendered-output styling, but do not purge the name from the converter either. */
 
 /* ── Badge layout preview — matches frontend flex behaviour ────────────────── */
 .sgs-hero__badges {

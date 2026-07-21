@@ -408,10 +408,10 @@
 	"example": {
 		"attributes": {
 			"variant": "classic-card",
-			"quote": "The quality and reliability of SGS has been outstanding. Next-day delivery keeps our kitchen running smoothly.",
+			"quote": "The quality and reliability of the service has been outstanding from start to finish.",
 			"reviewerName": "James Thornton",
-			"reviewerRole": "Head Chef",
-			"orgName": "The Grand Hotel",
+			"reviewerRole": "Operations Manager",
+			"orgName": "Acme Ltd",
 			"showRating": true,
 			"ratingStars": 5
 		}

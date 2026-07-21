@@ -244,54 +244,6 @@ section.sgs-hero {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
-/* CTA buttons */
-.sgs-hero__cta {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: clamp(0.5rem, 1vw + 0.25rem, 0.875rem) clamp(1rem, 2vw + 0.5rem, 2rem);
-	border-radius: 8px;
-	font-weight: 600;
-	font-size: clamp(0.8125rem, 0.5vw + 0.75rem, 0.9375rem);
-	line-height: 1.4;
-	text-decoration: none;
-	min-height: 44px;
-	min-width: 44px;
-	cursor: pointer;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-	transition-property: background-color, color, border-color, box-shadow, transform;
-}
-
-.sgs-hero__cta--outline {
-	background-color: transparent;
-	border: 2px solid currentColor;
-	color: var(--wp--preset--color--surface, #fff);
-}
-
-.sgs-hero--split .sgs-hero__cta--outline {
-	color: var(--wp--preset--color--primary);
-}
-
-/* Invert on hover — fill with primary teal, white text. */
-.sgs-hero__cta--outline:hover {
-	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--surface);
-	border-color: var(--wp--preset--color--primary);
-}
-
-/* Custom — colours set entirely via inline style attributes from the editor.
-   We only provide a base layout; the actual colours come from ctaPrimaryColour
-   and ctaPrimaryBackground block attributes. */
-.sgs-hero__cta--custom {
-	border: 2px solid transparent;
-}
-
-.sgs-hero__cta--custom:hover {
-	filter: brightness(0.92);
-	transform: translateY(-2px);
-}
-
 /* Split image — defaults let CSS Grid drive column sizing, then the image fills
    its wrapper. All visual constraints (aspect ratio, max height, border radius,
    padding, object-fit, object-position) come from block attributes via inline
@@ -349,47 +301,6 @@ section.sgs-hero {
 	max-height: none;
 	height: 100%;
 	aspect-ratio: auto;
-}
-
-/* ── Per-CTA hover overrides (GOTCHA F rewrite) ──
- * When ctaPrimaryHoverBackground / ctaPrimaryHoverColour are set by the editor
- * they are written as CSS custom properties on the block wrapper. As of the
- * Facet B SGS_Container_Wrapper change these per-instance vars are emitted as
- * a SCOPED `.{uid}{--sgs-cta-pri-hover-bg:…}` rule, NOT an inline `style="--…"`
- * attribute — so the old `[style*="--sgs-cta-pri-hover-bg"]` presence gate no
- * longer matches and silently killed this hover override (GOTCHA F). Fix:
- * drop the presence gate and instead gate PER PROPERTY via `var(x, <inert
- * fallback>)` — unset → the property resolves to the button's own normal
- * resting-hover value (no visible change), set → the operator's colour wins.
- * Each button variant (accent/primary/outline/custom) has a DIFFERENT resting
- * hover appearance, so the combined selector list is split one rule per
- * variant — a single shared fallback can't be correct for all of them at once.
- * !important is kept to guarantee the override wins regardless of any future
- * source-order change (defensive; not required by specificity once the
- * `.sgs-hero[style*=…]` qualifier is gone). NOTE: `box-shadow`/`filter` resets
- * from the old gated block are intentionally NOT reproduced here — a colour
- * custom property can't be substituted into a shadow/filter value, so CSS has
- * no way to conditionally toggle those non-colour properties off this var's
- * presence without a dedicated boolean var from render.php (out of scope for
- * this rewrite). Effect: the accent variant's inset ring and the custom
- * variant's brightness/lift now layer on top of an operator-set hover colour
- * instead of being suppressed — a minor disclosed cosmetic change, not a
- * broken hover.
- *
- * .sgs-hero__cta-primary/--accent/--primary and .sgs-hero__cta-secondary
- * overrides removed (never render — see hero/render.php header comment).
- * .sgs-hero__cta--outline/--custom retained below (out of this cleanup's
- * verified scope). */
-.sgs-hero__cta--outline:hover {
-	background-color: var(--sgs-cta-sec-hover-bg, var(--wp--preset--color--primary)) !important;
-	color: var(--sgs-cta-sec-hover-colour, var(--wp--preset--color--surface)) !important;
-	border-color: var(--sgs-cta-sec-hover-bg, var(--wp--preset--color--primary)) !important;
-}
-
-.sgs-hero__cta--custom:hover {
-	background-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
-	color: var(--sgs-cta-sec-hover-colour, inherit) !important;
-	border-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
 }
 
 /* Badges — container */
@@ -544,15 +455,6 @@ section.sgs-hero {
 
 	.sgs-hero--split .sgs-hero__badge {
 		position: absolute;
-	}
-
-	.sgs-hero__cta {
-		width: 100%;
-		max-width: 100%;
-		/* KEEP: a full-width mobile CTA centres its own label — button-centring
-		   rationale, not a content textAlign target. */
-		text-align: center;
-		box-sizing: border-box;
 	}
 }
 
