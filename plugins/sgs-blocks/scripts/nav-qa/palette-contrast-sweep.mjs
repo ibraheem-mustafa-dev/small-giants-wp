@@ -50,10 +50,22 @@
  *   # One client only, while fixing
  *   node palette-contrast-sweep.mjs ../../../../.claude/drafts/mega-menu --client mamas-munches
  *
+ * WARN-ONLY BY DEFAULT (Bean-locked)
+ * ----------------------------------
+ * This reports; it does not block. Standing rule
+ * `a11y-validation-feedback-informational-not-gate`: a11y findings are passive
+ * notices, never gates. A contrast gate that fails a build turns "clone this
+ * draft" into a forced redesign, which is churn Bean did not ask for — and
+ * when a draft's OWN pairing is accessible, a failure on a client palette is a
+ * question about that palette, not a defect in the draft.
+ *
+ * Pass --strict to opt IN to a non-zero exit (e.g. wiring it into a release
+ * gate deliberately). Nothing enables that implicitly.
+ *
  * Exit codes
  * ----------
- *   0 — every draft passes on every client palette
- *   1 — at least one contrast failure (report printed)
+ *   0 — default, ALWAYS, however many findings (warn-only)
+ *   1 — contrast failures found AND --strict was passed
  *   2 — bad arguments, missing axe-core, or no drafts/snapshots found
  *
  * SELF-TEST
@@ -97,6 +109,7 @@ function parseArgs( argv ) {
 		client: null,
 		draft: null,
 		selfTest: false,
+		strict: false,
 	};
 	const rest = [ ...argv ];
 	if ( rest[ 0 ] && ! rest[ 0 ].startsWith( '--' ) ) {
@@ -108,6 +121,7 @@ function parseArgs( argv ) {
 		else if ( flag === '--client' ) args.client = rest.shift();
 		else if ( flag === '--draft' ) args.draft = rest.shift();
 		else if ( flag === '--json' ) args.json = true;
+		else if ( flag === '--strict' ) args.strict = true;
 		else if ( flag === '--self-test' ) args.selfTest = true;
 		else {
 			process.stderr.write(
@@ -273,7 +287,7 @@ async function sweep( { drafts, clients, axeSource, viewports } ) {
 	return { findings, combinations, gaps };
 }
 
-function report( { findings, combinations, gaps }, json ) {
+function report( { findings, combinations, gaps }, json, strict ) {
 	if ( json ) {
 		process.stdout.write(
 			JSON.stringify(
@@ -281,6 +295,7 @@ function report( { findings, combinations, gaps }, json ) {
 					combinations_tested: combinations,
 					failure_count: findings.length,
 					passed: findings.length === 0,
+					enforced: !! strict,
 					findings,
 					unmapped_tokens: Object.fromEntries(
 						[ ...gaps ].map( ( [ k, v ] ) => [ k, [ ...v ] ] )
@@ -352,9 +367,18 @@ function report( { findings, combinations, gaps }, json ) {
 	}
 
 	lines.push(
-		`FAIL — ${ findings.length } contrast failure(s) across ` +
+		`${ strict ? 'FAIL' : 'NOTICE' } — ${ findings.length } contrast finding(s) across ` +
 			`${ combinations } combination(s), in ${ grouped.size } draft/client pairing(s).`
 	);
+	if ( ! strict ) {
+		lines.push(
+			'',
+			'Warn-only: this is a report, not a gate — exit code 0. These are',
+			'questions about how a draft meets a particular client palette, and',
+			'a draft whose OWN pairing is accessible is not defective. Decide',
+			'per finding; pass --strict only to enforce deliberately.'
+		);
+	}
 	process.stdout.write( lines.join( '\n' ) + '\n' );
 }
 
@@ -486,8 +510,9 @@ async function main() {
 		axeSource,
 		viewports: VIEWPORTS,
 	} );
-	report( result, args.json );
-	return result.findings.length ? 1 : 0;
+	report( result, args.json, args.strict );
+	// Warn-only unless --strict was passed explicitly.
+	return args.strict && result.findings.length ? 1 : 0;
 }
 
 main()
