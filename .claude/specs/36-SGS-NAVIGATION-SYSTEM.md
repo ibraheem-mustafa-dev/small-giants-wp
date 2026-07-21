@@ -6,12 +6,12 @@ status: SIGNED-OFF (v2.1, Bean sign-off 2026-07-19 — the SINGLE canonical nav 
 owner: framework
 date: 2026-07-19
 companions:
-  - 17-HEADER-FOOTER-ARCHITECTURE.md (the header the nav plugs INTO; nav → header dependency only; FR-S9-8 labelCollapse/per-tier visibility is BUILT)
+  - 37-HEADER-FOOTER-BUILDER.md (the header the nav plugs INTO; nav → header dependency only; FR-S9-8 (Spec 37 §3.8) labelCollapse/per-tier visibility is BUILT; formerly 17-HEADER-FOOTER-ARCHITECTURE.md)
   - .claude/plans/2026-07-18-P2-builder-ux-design-gate.md (LOCKED header/footer builder; ResponsiveTriStateControl is DESIGNED-not-built there)
   - 32 (no-inline) · 35 (Part L controls + Part G native mechanisms incl. templateLock:contentOnly + the Responsive-Visibility extension) · 31 §13 + 33 Part 2 (converter — built AFTER the nav passes its test gate; see FR-36-15)
   - seo-schema / seo-technical skills own schema JSON-LD emission
 supersedes:
-  - 34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md (DELETED at Phase 6 — its elementFromPoint baseline methodology is carried verbatim into §8, D101) · 17 §S9 nav FRs (fold here; Spec 17 keeps a pointer)
+  - 34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md (DELETED at Phase 6 — its elementFromPoint baseline methodology is carried verbatim into §8, D101) · 17 §S9 nav FRs (fold here; Spec 17 has since been DELETED — see Spec 37 for the header-side FRs it also owned)
 derived_from:
   - .claude/plans/2026-07-18-P2.5-{nav-requirements-tooling-inventory,phase3-nav-block-architecture}.md
   - .claude/reports/2026-07-18-P2.5-{phase1-*,qc-*,adv-*,adversarial-council-synthesis,grade-*}.md
@@ -24,7 +24,7 @@ derived_from:
 
 A rebuilt, from-scratch set of blocks + a CPT that render a WordPress menu as a best-in-class navigation —
 a desktop bar with dropdowns + rich mega-menus, and a mobile off-canvas drawer — meeting AND exceeding top
-WP-theme competitors + general web/UX, fully accessible + crawlable, decoupled inside the header (Spec 17),
+WP-theme competitors + general web/UX, fully accessible + crawlable, decoupled inside the header (Spec 37),
 and a faithful cloning-pipeline emit target. Spec 36 is the SINGLE canonical home for the whole header/nav
 element set: the nav blocks AND the utility pieces the nav composes with (cart / search / social / logo /
 business-info — §4).
@@ -46,14 +46,28 @@ Phase 3 (§7 Opp 1).
 and the nav's accessibility, discoverability, and converter-emit contracts. **Also the header/nav
 PRESENTATION of the utility pieces it composes with** — cart, search, social, logo, business-info
 (FR-36-19..23): their nav/header rendering, behaviour + editor controls. (The underlying WooCommerce cart /
-Store-API logic remains WooCommerce's; the Site-Info option store remains Spec 17's — nav owns the
-*rendering* of Site-Info-driven pieces, not the data store.) The **single canonical home** for navigation
+Store-API logic remains WooCommerce's.) The **single canonical home** for navigation
 (Phase 6 consolidates all scattered nav content here — §1a lists the pointers to repoint).
 
-**Does NOT own (Spec 17 / header-footer builder):** the header/footer container blocks + row model, header
-behaviours (sticky/transparent/shrink, FR-S9-9), the CPT editing home + `Sgs_Header_Rules` binding +
-starter-picker, and the Site-Info **data store**. The nav adapts to these. Schema JSON-LD → `seo-schema`
-(FR-36-17).
+**AMENDED 2026-07-21 — this spec now ALSO owns the Site-Info data store.** The previous text read
+*"the Site-Info option store remains Spec 17's — nav owns the rendering of Site-Info-driven pieces, not
+the data store"*, and listed the data store under does-NOT-own. **Spec 17 has been deleted** (superseded by
+Spec 37), so that disclaimer pointed at a document that no longer exists — leaving `sgs_site_info` with no
+owner at all. The premise expired; the decision is therefore updated, not overruled.
+**Now owned here:** the `sgs_site_info` option store, the `sgs/site-info` block-bindings source (including
+its context-gated empty-value hints — operators see a hint, public visitors see an empty string), and the
+Site Info admin page with its server-side validation and reserved-key denylist (ex-Spec 17 FR-S4-1/2/3).
+**Bean's reasoning (2026-07-21):** the data is site-wide — an address belongs on a contact page as much as
+in a footer — it is delivered as a block, and all five blocks that consume it (FR-36-19…23) already live
+here. Splitting a store from its only consumers serves nobody.
+**⚠ Open defect inherited with it:** Site Info does **not** feed `sgs/responsive-logo` —
+`responsive-logo/render.php:66` reads `get_theme_mod('custom_logo')`, WP's native Customiser setting. So
+the logo resolves from a different source than contact/social. FR-36-22 should resolve this deliberately
+rather than inherit it silently.
+
+**Does NOT own (→ Spec 37, header/footer builder):** the header/footer container blocks + row model, header
+behaviours (sticky/transparent/shrink/hide-on-scroll), and the CPT editing home + `Sgs_Header_Rules`
+binding + starter-picker. The nav adapts to these. Schema JSON-LD → `seo-schema` (FR-36-17).
 
 **Superseded/replaced (REFERENCE-ONLY):** `sgs/adaptive-nav`, old `sgs/nav-menu`, `sgs/mega-menu`,
 `sgs/mobile-nav`. New `sgs/nav-menu` is a from-scratch rebuild under the same slug; old-shape posts are
@@ -65,10 +79,10 @@ totally clear to implement yet"); WooCommerce category/nav integration (category
 hooks the WC mini-cart, a cutover concern; the cart PIECE itself is FR-36-19, phased); multilingual
 (WPML/Polylang — the PHP `intl` extension does locale *formatting*, NOT translation, so real work);
 conditional/role-based/scheduled items; command-palette; Opps 1–3 (§7). The header's own row
-model/behaviours (Spec 17). Building the cloning WALKER (31/33).
+model/behaviours (Spec 37). Building the cloning WALKER (31/33).
 
 ### 1a. Phase-6 consolidation — pointers to repoint
-Spec 17 FR-S9-4/5 (fold→here) · FR-S9-8 (`sgs/mobile-nav`) · FR-S9-11 (clone slot-mapping) · FR-S9-2 (typed
+Spec 17 FR-S9-4/5 (fold→here, Spec 36) · FR-S9-8 → Spec 37 §3.8 (`sgs/mobile-nav`) · FR-S9-11 → Spec 37 FR-37-1 + FR-37-22 (clone slot-mapping) · FR-S9-2 → Spec 37 FR-37-9 (typed
 palette lists `adaptive-nav`) · Spec 33 Part 2 (emit target) · P2 §5.4/§14 · `block-migration-DONE-checklist.md`.
 
 ## 2. Architecture
@@ -181,7 +195,7 @@ editing the drawer's content can NEVER delete the last close affordance. This ma
 modal on TOUCH there is no ESC key and no tap-outside-the-panel (the panel fills the screen), so the × is the
 only reliable close — it must always render. (The burger↔× in the header is the same close at runtime; both
 persist by construction, not by a per-block lock.) **"Show header"
-toggle:** PER-ROW (a checkbox per header row, not a single all-or-nothing toggle — finer, closer to FR-S9-8's
+toggle:** PER-ROW (a checkbox per header row, not a single all-or-nothing toggle — finer, closer to FR-S9-8's (Spec 37 §3.8)
 per-element intent); inserts the chosen header rows as blocks at the top, burger becomes the × (the
 header-at-top look, no non-modal complexity). **Menu source:** its own picker (FR-36-1; defaults to
 inherit-from-bar); the inspector shows *which menu is bound* (bar vs drawer). **Geometry:** `edge`
@@ -226,7 +240,7 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   directional threshold (Baymard ~50-link abandonment cliff — validate on our sites, do NOT hard-code a DB
   default; never a gate — FR-36-12).
 - **Per-device visibility:** **reuse the BUILT Responsive-Visibility extension** (device show/hide, Spec 35 /
-  sgs-blocks) + `ResponsiveControl` for tiered values + the BUILT **`labelCollapse`** (Spec 17 FR-S9-8, live
+  sgs-blocks) + `ResponsiveControl` for tiered values + the BUILT **`labelCollapse`** (Spec 37 §3.8 / FR-S9-8, live
   on button/business-info — collapse an item's label to icon-only per tier). The `ResponsiveTriStateControl`
   (on/off/inherit tri-state, P2 §4.1) is **DESIGNED-not-built** — an *optional upgrade*, NOT a blocker;
   never invent a parallel control (R-31-9). Full per-device model + ownership split: FR-36-24.
@@ -235,7 +249,7 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
 Every header/footer/nav CONTAINER piece (rows + the pieces in §4) supports, per device tier
 (desktop/tablet/mobile), a **different set of blocks** AND **different SETTINGS** on those blocks. This is the
 confirmed central builder feature (Spectra parity). **Two ownership lines — do NOT conflate:**
-- **(a) Whole-piece show/hide per device = Spec 17 / row-level.** The nav pieces need ZERO extra code here —
+- **(a) Whole-piece show/hide per device = Spec 37 / row-level.** The nav pieces need ZERO extra code here —
   they simply honour the BUILT universal Responsive-Visibility extension (`extensions/responsive-visibility.js`
   + `includes/device-visibility.php`; `sgsHideOnMobile/Tablet/Desktop`).
 - **(b) Per-tier SETTINGS on a piece's own attributes = that block's own job**, via the shared
@@ -349,7 +363,7 @@ Phase 3.** **Extend** `sgs/responsive-logo`.
   themselves); responsive collapse to icon-only on mobile keeping the link + 44px target (reuse `labelCollapse`,
   BUILT).
 - **SHOULD:** live open/closed state from opening hours ("Open now — closes in 2h"); a utility bar as a distinct
-  zone above the nav row (header-builder territory, Spec 17); multi-location repeat-per-branch, schema-tagged.
+  zone above the nav row (header-builder territory, Spec 37); multi-location repeat-per-branch, schema-tagged.
 - **NICE:** auto phone normalisation; pre-filled `mailto:` subject.
 - **Differentiator:** ONE Site-Info source powering utility bar + footer + contact + schema simultaneously +
   native live open/closed without a plugin.
@@ -524,7 +538,7 @@ so the later pipeline is easy. *(wp_navigation-block emit + the "pack factory" a
 
 ## 10. Constraints
 Spec 32 no-inline · Spec 35 Part L + Part G (templateLock:contentOnly, Responsive-Visibility ext) · Spec 31/33
-emittable · Spec 17 decoupling + published state surface · WCAG 2.1 AA (+2.2; 44 px; forced-colors survival)
+emittable · Spec 37 decoupling + published state surface · WCAG 2.1 AA (+2.2; 44 px; forced-colors survival)
 · crawlable/no-AJAX/schema-friendly (FR-36-17) · `viewScriptModule` vanilla JS + honest no-JS scope, no jQuery
 · works in the header · transform-ancestor survival · perf budget (<100 KB CSS / <50 KB JS; no CLS;
 links-never-lazy split from below-fold `<img loading=lazy>`) · UK English · DB-first (5 mega layouts
@@ -573,7 +587,7 @@ Phase-1 research + QC council + adversarial council + gap-analysis (3 graders, B
 `header-behaviours/view.js`, `labelCollapse` (button/business-info — BUILT), `ResponsiveTriStateControl`
 (docs-only — unbuilt), sgs-blocks CLAUDE.md (`sgs/cart`, D270, TypographyControls R-22-13, Responsive-Visibility
 ext). Primary a11y: W3C APG, WCAG 2.1/2.2, MDN, Adrian Roselli. UX: NN/g, Baymard, Smashing, IxDF, LogRocket.
-Platform: MDN/Chrome (Popover, `<dialog>`, `<details name>` — ⚠ re-verify at build). Internal: Spec 17, 32, 35,
+Platform: MDN/Chrome (Popover, `<dialog>`, `<details name>` — ⚠ re-verify at build). Internal: Spec 37, 32, 35,
 31 §13, 33 Part 2, P2 builder design-gate; D270, D323, D334, D340; seo-schema/seo-technical.
 **v2 sources (added 2026-07-19):** the parallel 07-19 P2.5 pieces research + reconciliation + qc-council —
 `.claude/reports/2026-07-19-P2.5-pieces-research-cart-search.md`, `-logo-social-businessinfo.md`,

@@ -166,7 +166,7 @@ session) and P4 (the LEDGER collapse) are done + live.
   **D-ceiling:** **D352** (FR-36-1 classic-menu resolution, 2026-07-20, `4a4c220a`). Re-check the branch in
   the SAME command as any commit (STOP-RECHECK-BRANCH) — these values drift, verify rather than trust this line.
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
-  For the header/footer/nav front: **`specs/36-SGS-NAVIGATION-SYSTEM.md`** (the canonical nav home) + `specs/17` §S9.
+  For the header/footer/nav front: **`specs/36-SGS-NAVIGATION-SYSTEM.md`** (the canonical nav home) + `specs/37-HEADER-FOOTER-BUILDER.md`.
   ⛔ **`specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` was DELETED in P2.5 Phase 6 — never cite it; Spec 36 absorbed it.**
 - **Sites:** dev = palestine-lives.org (Indus). staging/canary = sandybrown-nightingale-600381.hostingersite.com.
   Both **WP 7.0.2** (verified 2026-07-20 by `wp core version` over SSH on both — docs previously said 7.0.1).

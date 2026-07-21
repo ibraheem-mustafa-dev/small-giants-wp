@@ -4,16 +4,16 @@ spec_id: 19
 spec_version: 0.2
 project: small-giants-wp
 title: SGS WP-CLI Command Reference — `wp sgs` Namespace
-status: SHIPPED — all 12 commands live as of Spec 17 Wave 3; CLI-command DB seed shipped as part of Phase 1 (2026-05-22)
+status: SHIPPED — all 12 commands live as of Spec 17 (now Spec 37) Wave 3; CLI-command DB seed shipped as part of Phase 1 (2026-05-22)
 shipped: true
 session_date: 2026-05-19
 last_updated: 2026-05-22
 authors: Bean + Claude (Sonnet 4.6)
-shipped_in: Spec 17 FR-S5-3
+shipped_in: Spec 37 FR-37-30 (reduced set; formerly Spec 17 FR-S5-3)
 phase_1_db_seed: "2026-05-22 Phase 1 (architecture programme) seeded all 12 wp sgs commands + 3 SGS pipeline scripts (sgs-clone-orchestrator, sgs-db, wp-blocks.py dump) as rows in sgs-framework.db `docs` table with `doc_type='cli-command'`, `source='sgs'`. Total 16 cli-command docs rows. Skills can now query these as DB rows alongside WP-CLI handbook docs (`source='native_wp'`)."
 implementation_file: plugins/sgs-blocks/includes/class-sgs-cli-commands.php
 references:
-  - .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md (parent spec)
+  - .claude/specs/37-HEADER-FOOTER-BUILDER.md (parent spec)
   - plugins/sgs-blocks/includes/class-sgs-cli-commands.php (canonical implementation — 622 lines)
   - plugins/sgs-blocks/includes/class-sgs-site-info.php
   - plugins/sgs-blocks/includes/class-sgs-template-part-seeder.php
@@ -25,14 +25,14 @@ references:
   - plugins/sgs-blocks/includes/class-sgs-variation-picker.php  # DELETED (Decision 18, 2026-05-21)
 cross_references:
   - wp-wpcli-and-ops skill (SKILL.md) — documents this command surface
-  - .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md §S5-3
+  - .claude/specs/37-HEADER-FOOTER-BUILDER.md FR-37-30
 ---
 
 # Spec 19 — `wp sgs` Command Reference
 
 ## 1. Overview
 
-The `wp sgs` namespace ships 12 WP-CLI sub-commands as part of Spec 17 FR-S5-3. Every
+The `wp sgs` namespace ships 12 WP-CLI sub-commands as part of Spec 37 FR-37-30 (formerly Spec 17 FR-S5-3). Every
 command is a thin delegation to the same PHP helper classes used by the admin handlers —
 no business logic lives in `class-sgs-cli-commands.php` itself.
 
@@ -195,7 +195,7 @@ wp sgs seed-template-parts --variation=mamas-munches --force --user=1
 **Delegates to:** `Sgs_Template_Part_Resetter::reset()`
 
 Resets header and/or footer template parts from the active style variation. Mirrors the
-*SGS Admin → Reset Header/Footer* page (FR-S2-3). When neither flag is given, both are
+*SGS Admin → Reset Header/Footer* page (Spec 37 FR-37-25, formerly Spec 17 FR-S2-3). When neither flag is given, both are
 reset.
 
 ```bash
@@ -284,7 +284,7 @@ wp sgs footer-rules remove rule_xyz99999 --user=1
 **Capability:** `edit_theme_options`
 **Delegates to:** `Sgs_Safety_Guard::arm()`
 
-Flips the FR-S7-3 seeding safety guard to armed (with a 0-second cooldown), allowing the
+Flips the seeding safety guard (FR-S7-3, retired with Spec 17 — no Spec 37 successor) to armed (with a 0-second cooldown), allowing the
 template-part seeder to fire on the next explicit `wp sgs seed-template-parts` call. The
 guard normally requires an upgrade cooldown period before seeding is permitted.
 
@@ -385,10 +385,10 @@ wp sgs migrations run [--target=<slug>] --user=1
 
 ## 6. Cross-references
 
-- **Spec 17 FR-S5-3** — the functional requirement that mandated this command surface
+- **Spec 37 FR-37-30** — the functional requirement that mandated this command surface (formerly Spec 17 FR-S5-3)
 - **`plugins/sgs-blocks/includes/class-sgs-cli-commands.php`** — canonical implementation (622 lines)
 - **`wp-wpcli-and-ops` skill (SKILL.md)** — the `/wp-wpcli-and-ops` skill documents this surface and should be invoked for any WP-CLI work in this project
-- **Spec 17 §S2 + §S3** — the `seed-template-parts`, `reset-template-parts`, `header-rules`, and `footer-rules` commands mirror the admin UI described there
+- **Spec 37** (FR-37-20 conditional rules, FR-37-25 reset, FR-37-7/FR-37-8 seeding) — the `seed-template-parts`, `reset-template-parts`, `header-rules`, and `footer-rules` commands mirror the admin UI described there (formerly Spec 17 §S2 + §S3)
 
 ---
 

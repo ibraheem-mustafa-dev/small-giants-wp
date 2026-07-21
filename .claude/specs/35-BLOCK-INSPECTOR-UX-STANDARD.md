@@ -107,6 +107,27 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
 - **D2.** Breakpoints = locked **768 / 1024** device standard; never a bespoke third value (device-tier
   vs arbitrary-visual-breakpoint rule).
 - **D3.** Mobile inherits from desktop unless overridden — blank tiers fall back safely.
+- **D4. Per-device CONTENT cascade (added 2026-07-21, re-homed from Spec 37 FR-37-24).** D3's
+  inheritance applies to content **presence**, not only to property values. Desktop is the base;
+  tablet inherits desktop; mobile inherits tablet. Hiding a block at a tier applies to that tier
+  **and every tier below**, never above; a tier that is explicitly edited stops inheriting.
+  - **HIDE, never REMOVE.** The cascade hides via CSS and never forks the block tree per tier.
+    `includes/device-visibility.php:10,15` already generates `display:none` media queries and
+    states *"Content remains in the DOM for SEO (display:none only hides visually)"*. A
+    structural remove would break crawlability (memory `degrade-to-more-content-never-less`) and
+    would need per-device cache fragments the page-cache model has no key for.
+  - **`inherit` resolves at render, never copies down at save.** Copying a parent's value into a
+    child tier at save time makes an inherited value indistinguishable from an explicit
+    override, so a later desktop edit can no longer cascade.
+  - **Why it lives here and not in Spec 37.** It reshapes
+    `sgsHideOnMobile`/`Tablet`/`Desktop` — a universal extension applied to every block
+    (`src/blocks/extensions/responsive-visibility.js`), currently three independent flat toggles
+    with no inheritance. Changing it from inside a header/footer spec would alter the meaning of
+    every existing use across the framework, which R-31-9 and the composite-mirror rule forbid.
+  - **Reuse the one cascade.** Resolve via the same `resolveTier()` shape P1 DP1 defines for
+    behaviours — do not introduce a second inheritance mechanism.
+  - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
+    the build.
 
 ## PART E — Accessibility (WCAG 2.1/2.2 AA)
 

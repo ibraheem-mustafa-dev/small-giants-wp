@@ -42,7 +42,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 |------|--------|-------|
 | **Architecture programme (8 phases, 31 decisions)** | DONE | All phases shipped across 2026-05-21 → 2026-05-22. DB consolidation, per-client theme-snapshot model established, button presets migrated to WP 7.0 theme.json, `/sgs-update` rebuilt as 9-stage v2, WP 7.0 alignment (all 69 blocks). See `.claude/plans/archive/2026-05-21-architecture-staging.md`. |
 | **WP 7.0 upgrade on sandybrown** | DONE | DB schema 60717 → 61833. `Sgs_Ai_Connector`, `wp_set_script_module_translations`, `WP_REST_Icons_Controller` all confirmed available. |
-| **Spec 17 — Header/Footer Architecture** | DONE | 16 FRs, 22 PHP classes, 12 WP-CLI commands across 3 waves. Full spec: `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` |
+| **Spec 37 — Header/Footer Builder** | DONE | 16 FRs, 22 PHP classes, 12 WP-CLI commands across 3 waves. Full spec: `.claude/specs/37-HEADER-FOOTER-BUILDER.md` |
 | **Floating UI Customiser** | DONE | `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` replace admin-page approach with live Customiser preview. `sgs/back-to-top` block deprecated to no-op. |
 
 ## Non-goals (out of scope this milestone)

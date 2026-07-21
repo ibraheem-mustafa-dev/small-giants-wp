@@ -23,7 +23,7 @@ references:
 
 # Spec 18 — SGS Floating UI
 
-> **⛔ RETRACTED 2026-07-16 (adversarial-council) — sister-spec sweep of Spec 17's identical retraction.** `Sgs_Header_Customiser` and `Sgs_Footer_Customiser` NEVER SHIPPED — `grep -rl "class Sgs_Header_Customiser"` over `plugins/` + `theme/` returns nothing; Spec 17 §Customiser Migration already retracted the identical claim (commit `87dd869d`, "retire plugin-side Customiser path") and this sister spec was never swept. Only `Sgs_Site_Info_Customiser` and `Sgs_Floating_UI_Customiser` are real — verified 2026-07-16 by grep + the `lint-spec-drift.py` PHP-CLASS gate. The struck names below are retained for audit only; the rest of the note (paint targets, View Transitions wiring) is unaffected and stands.
+> **⛔ RETRACTED 2026-07-16 (adversarial-council) — sister-spec sweep of Spec 17's (now Spec 37) identical retraction.** `Sgs_Header_Customiser` and `Sgs_Footer_Customiser` NEVER SHIPPED — `grep -rl "class Sgs_Header_Customiser"` over `plugins/` + `theme/` returns nothing; Spec 17 §Customiser Migration (now Spec 36, since the surviving `Sgs_Site_Info_Customiser` is Site-Info territory) already retracted the identical claim (commit `87dd869d`, "retire plugin-side Customiser path") and this sister spec was never swept. Only `Sgs_Site_Info_Customiser` and `Sgs_Floating_UI_Customiser` are real — verified 2026-07-16 by grep + the `lint-spec-drift.py` PHP-CLASS gate. The struck names below are retained for audit only; the rest of the note (paint targets, View Transitions wiring) is unaffected and stands.
 >
 > **Session B 2026-05-22 update — Customiser pattern from §8b replicated by 3 sibling sections.** Phase 5b (commit `60220b13` + paint-fix `0ef032fe`) shipped ~~`Sgs_Header_Customiser` + `Sgs_Footer_Customiser`~~ (RETRACTED — never existed) + `Sgs_Site_Info_Customiser` as direct structural clones of `Sgs_Floating_UI_Customiser`. The pattern documented in §8b is now the canonical SGS Customiser shape (confirmed by 3 successful replications). Notable empirical learning: paint targets must be `header.wp-block-template-part` / `footer.wp-block-template-part` (NOT `.wp-site-header` / `.wp-site-footer` — those classes are not emitted by SGS theme template parts); CSS custom properties belong on `:root` so they're cascade-available regardless of which wrapper exists. View Transitions wiring (Decision 27 in the staging doc) shipped in the same commit — uses `function_exists('wp_enqueue_view_transitions_admin_css')` check + inline `@view-transition{navigation:auto;}` fallback. Post WP 7.0 upgrade (also Session B), the native function exists; fallback is dead code on sandybrown but kept for any client site still on WP 6.x.
 
@@ -35,7 +35,7 @@ are site-wide, not per-page, so they belong in the Customiser rather than the bl
 
 **Lesson captured here:** retiring blocks before their replacement exists breaks operator
 workflows. The `sgs/back-to-top` and `sgs/reading-progress` blocks were removed in Spec 17
-Wave 1 when the Customiser system was only parked. This spec is the replacement. Future
+(now Spec 37) Wave 1 when the Customiser system was only parked. This spec is the replacement. Future
 retirement of any block MUST have a shipping replacement in the same PR or the retirement
 is blocked.
 
@@ -173,7 +173,7 @@ variables inline.
 
 ## 8. Council N1 compliance note
 
-Spec 17 Council Norm N1 governs writes to `wp_global_styles`. This spec does not write to
+Spec 37 Council Norm N1 (originally Spec 17) governs writes to `wp_global_styles`. This spec does not write to
 `wp_global_styles` — it uses `wp_options` for its own key (`sgs_floating_ui`). The spirit
 of N1 (no operator-supplied post_id routing, no trust escalation) is honoured: the
 Customiser sanitiser runs under standard WordPress capability checks, and the renderer
@@ -187,7 +187,7 @@ reads a static option with no user-supplied routing.
 
 | Spec | Section | What it adopts from Spec 18 |
 |---|---|---|
-| Spec 17 §Customiser migration | ~~`Sgs_Header_Customiser`, `Sgs_Footer_Customiser`~~ (RETRACTED 2026-07-16 — never existed) + `Sgs_Site_Info_Customiser` | `postMessage` transport, `wp_options` backing, capability gate, sanitiser pattern |
+| Spec 36 §Customiser migration (formerly Spec 17) | ~~`Sgs_Header_Customiser`, `Sgs_Footer_Customiser`~~ (RETRACTED 2026-07-16 — never existed) + `Sgs_Site_Info_Customiser` | `postMessage` transport, `wp_options` backing, capability gate, sanitiser pattern |
 | Spec 11 Decision 22 (Phase 5b) | Button presets in Site Editor → Styles → Buttons | WP 7.0 native theme.json rather than Customiser section; but the `postMessage` transport model for live preview is the same reference point |
 
 **Key patterns from this spec that MUST be followed:**
@@ -197,7 +197,7 @@ reads a static option with no user-supplied routing.
 4. Capability gate: `current_user_can('edit_theme_options')` on all write paths
 5. When both/all elements are disabled, the hook outputs nothing and skips asset enqueue entirely
 
-**WP 7.0 View Transitions (Decision 27):** Future Customiser sections should call `wp_enqueue_view_transitions_admin_css()` for smooth panel navigation. Spec 17's Phase 5b migration is the first SGS use of this WP 7.0 feature.
+**WP 7.0 View Transitions (Decision 27):** Future Customiser sections should call `wp_enqueue_view_transitions_admin_css()` for smooth panel navigation. Spec 17's (now Spec 36, for the surviving Site Info Customiser) Phase 5b migration is the first SGS use of this WP 7.0 feature.
 
 ---
 

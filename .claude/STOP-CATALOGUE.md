@@ -150,7 +150,7 @@ points here. Neither ever silently drops a STOP.
 - **STOP-TOKEN-NAME-IS-NOT-A-LUMINANCE (D338)** — `primary-dark` is a PINK on
   mamas-munches. Resolve slug→hex, COMPUTE the fg (`helpers-colour-wcag.php`).
 - **STOP-D328-SHAPE-NOT-JUST-VALUE (D338)** — specify the SHAPE (object vs flat; support vs
-  attr) or WP coerces to default. Now structurally frozen (Spec 17 §S9 Guardrail). (Memory
+  attr) or WP coerces to default. Now structurally frozen (Spec 37 Guardrail). (Memory
   `object-typed-attr-coerces-flat-to-default`, `blockjson-enum-coerces-invalid-to-default`.)
 - **STOP-GATE-BLIND-TO-DELETION (D338)** — delete attr + hardcode value ⇒ build stays
   green. Nothing catches render-without-control.

@@ -13,7 +13,7 @@ status_history:
 references:
   - specs/01-SGS-THEME.md            # §Per-site theme.json Model — D156 superseded by this spec
   - specs/11-SGS-BUTTON-ARCHITECTURE.md
-  - specs/17-HEADER-FOOTER-ARCHITECTURE.md
+  - specs/37-HEADER-FOOTER-BUILDER.md
   - specs/31-UNIVERSAL-CLONING-PIPELINE.md
   - specs/24-QUERY-DRIVEN-CONTENT-CARDS.md
   - specs/25-SGS-WOOCOMMERCE-EXPERIENCE-LAYER.md

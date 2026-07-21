@@ -35,7 +35,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
 | 10 | [10-COMPETITOR-RESEARCH.md](../../reports/10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research | shipped |
 | 11 | [11-SGS-BUTTON-ARCHITECTURE.md](11-SGS-BUTTON-ARCHITECTURE.md) | sgs/button + sgs/multi-button canonical (includes 2026-05-22 double-default fix) | shipped |
-| 17 | [17-HEADER-FOOTER-ARCHITECTURE.md](17-HEADER-FOOTER-ARCHITECTURE.md) | Header/footer infrastructure | shipped |
+| 17 | ~~17-HEADER-FOOTER-ARCHITECTURE.md~~ | **DELETED 2026-07-21** — superseded by **Spec 37** (Header/Footer Builder); Site-Info store + nav FRs folded into **Spec 36**. | DELETED → 37 |
 | 18 | [18-SGS-FLOATING-UI.md](18-SGS-FLOATING-UI.md) | Back to Top + Reading Progress | shipped |
 | 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree (includes Phase 1 DB seed) | shipped |
 | 20 | [20-CLONE-FIDELITY-MEASUREMENT.md](20-CLONE-FIDELITY-MEASUREMENT.md) | Clone fidelity measurement (computed-parity tool + Stage 11.6 + rule 4a) — the canonical rendered-fidelity signal (D259). Replaced the old Spec 20 (log surfacing) + Spec 21 (artefact inventory), archived to `../memory/specs-archive/`. | shipped |
@@ -53,7 +53,7 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 
 | 34 | ~~34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md~~ | **DELETED 2026-07-19 (P2.5 Phase 6 purge)** — nav is fully specified in **Spec 36** (the single canonical nav home). Its drawer a11y contract + `elementFromPoint` sweep methodology (10/10 Mama's / 18/18 Indus) + per-device drawer settings were carried verbatim into Spec 36 FR-36-6/-14/-16 before deletion. | DELETED → 36 |
 | 35 | [35-BLOCK-INSPECTOR-UX-STANDARD.md](35-BLOCK-INSPECTOR-UX-STANDARD.md) | SGS block inspector-UX + block standards (no-inline / dynamic / feature-parity / shrink-to-fit; Part L controls + Part G native mechanisms). | active |
-| 36 | [36-SGS-NAVIGATION-SYSTEM.md](36-SGS-NAVIGATION-SYSTEM.md) | **THE canonical SGS Navigation System** (SIGNED-OFF v2.1, 2026-07-19) — nav bar + mega CPT + off-canvas drawer + utility pieces (cart/search/social/logo/business-info); classic-menu primary; WCAG 2.1 AA; crawlable; converter-emittable. Single home — absorbed Spec 34 + Spec 17 §S9 nav FRs + Spec 02 §23. | active (build next) |
+| 36 | [36-SGS-NAVIGATION-SYSTEM.md](36-SGS-NAVIGATION-SYSTEM.md) | **THE canonical SGS Navigation System** (SIGNED-OFF v2.1, 2026-07-19) — nav bar + mega CPT + off-canvas drawer + utility pieces (cart/search/social/logo/business-info); classic-menu primary; WCAG 2.1 AA; crawlable; converter-emittable. Single home — absorbed Spec 34 + Spec 17 §S9 nav FRs (Spec 17 now deleted, see Spec 37 for its header-side successor) + Spec 02 §23. | active (build next) |
 
 ## Architecture programme (2026-05-21+) — archived
 
@@ -77,8 +77,8 @@ The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-archit
 
 Files prefixed `legacy-` are historical reference for systems substantively replaced. All four have been moved to `.claude/plans/archive/`:
 
-- [`legacy-2026-03-17-header-system-design.md`](../plans/archive/legacy-2026-03-17-header-system-design.md) — superseded by Spec 17
-- [`legacy-2026-03-25-mobile-nav-attributes.md`](../plans/archive/legacy-2026-03-25-mobile-nav-attributes.md) — superseded by Spec 17 mobile-nav work
+- [`legacy-2026-03-17-header-system-design.md`](../plans/archive/legacy-2026-03-17-header-system-design.md) — superseded by Spec 17 (now Spec 37)
+- [`legacy-2026-03-25-mobile-nav-attributes.md`](../plans/archive/legacy-2026-03-25-mobile-nav-attributes.md) — superseded by Spec 17 mobile-nav work (now Spec 36)
 - [`legacy-2026-03-27-mobile-nav-v2-composition.md`](../plans/archive/legacy-2026-03-27-mobile-nav-v2-composition.md) — same
 - [`legacy-2026-03-27-wp7-nav-overlay-compat.md`](../plans/archive/legacy-2026-03-27-wp7-nav-overlay-compat.md) — same
 
