@@ -241,7 +241,35 @@ drawer polish — both absorbed by the Spec 36 rebuild.
 2. **~~Phase 3 — finish Spec 34~~ — STRUCK 2026-07-20 (stale).** Spec 34 was DELETED in P2.5 Phase 6, absorbed
    into **Spec 36**. Drawer settings shipped in `sgs/nav-drawer`; the live-QC gate is now FR-36-16 / Gate-1,
    **PASSED**. ~~Genuinely still open: prove the Site-Editor→frontend round trip for the FOOTER~~ —
-   **PROVEN 2026-07-21 on the sandybrown canary. CLOSED.**
+   ⚠ **MIS-SCOPED TASK — the inherited wording tested the route P2 REJECTED. Corrected below.**
+   **Bean, 2026-07-21:** header + footer are to be edited in dedicated Header/Footer editor pages in
+   the admin sidebar, backed by CPTs, following the `sgs_mega_menu` CPT pattern (D353) — **not the
+   Site Editor**. This is P2 §2.1/§2.2 verbatim ("the EDITING HOME is a CPT admin screen, not the Site
+   Editor"), and §2.2 **explicitly REJECTS the dual-home option** (edit in both) because "WP has no
+   native CPT↔template-part sync". The Site-Editor round trip proven below is therefore the LEGACY
+   route, not the target. It is retained only because it documents the DB-override-outranks-theme-file
+   behaviour that the CPT migration has to reckon with.
+   **What actually exists vs what P2 designed (verified 2026-07-21, not assumed):**
+   - BUILT: `sgs_header`/`sgs_footer` CPTs + "Advanced Headers"/"Advanced Footers" admin submenus
+     (`class-sgs-block-cpts.php`, Spec 17 FR-S3-4); the `Sgs_Header_Rules` display-conditions engine.
+     The mega-menu CPT submenu docblock says it "mirrors `Sgs_Block_CPTs::register_submenus()`" — the
+     two already follow one pattern, as Bean said.
+   - NOT BUILT (P2 §2.2): the "Set as active header" action writing `wp_options['sgs_active_header_cpt_id']`;
+     the early `if ( get_option(...) )` branch in `Sgs_Header_Rules::filter_template_part()` before
+     `evaluate()`; that branch's own re-entrancy guard; re-applying `sgs_header_rule_resolved` on the
+     fast path (skip it and sticky/transparent/shrink silently stop working); the "Active" badge column.
+   - **🔴 CONFIRMED BUG (P2 listed it as "unverified as a live bug" — now proven by code inspection):**
+     a CPT-targeted header/footer rule **silently falls back to the theme default on the frontend**.
+     Chain: CPT patterns register on **`admin_init` only** (`class-sgs-block-cpts.php:55`) → the rules
+     engine resolves on **`pre_render_block`**, a frontend hook (`class-sgs-header-rules.php:51`) →
+     `render_pattern()` looks up `WP_Block_Patterns_Registry::get_registered($slug)` (`:329`) → the
+     pattern was never registered on that request → returns `null` (`:330-331`) → `filter_template_part`
+     returns `$pre` unchanged → theme template part renders instead. **No error, no warning** — the
+     D338 silent-failure class. P2's named first-P3 task ("create a CPT header, add a rule, hit the
+     frontend cold, confirm") is the live confirmation; the static chain above already shows the
+     mechanism. Fix per P2 §2.2 = the `cpt:{post_id}` direct-render branch (`do_blocks()` + re-apply
+     the filter), which is correct by construction and does not depend on pattern registration at all.
+   **The Site-Editor round trip (legacy route) — PROVEN 2026-07-21 on the sandybrown canary:**
    - **The "wired differently" concern was REAL and is now resolved.** `parts/header.html` contains blocks
      directly; `parts/footer.html` is a single `<!-- wp:pattern {"slug":"sgs/framework-footer-default"} /-->`
      reference (61 bytes). The open risk was whether a Site Editor edit survives, or is discarded when the
