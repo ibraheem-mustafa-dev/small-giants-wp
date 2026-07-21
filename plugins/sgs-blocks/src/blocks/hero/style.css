@@ -245,16 +245,6 @@ section.sgs-hero {
 }
 
 /* CTA buttons */
-/* CTA row gap is driven by the --sgs-hero-cta-gap custom property (set by
-   render.php from the ctaGap/ctaGapUnit attrs + tablet/mobile @media overrides).
-   The fallback preserves the original hardcoded spacing--30 for any instance
-   whose Button-gap control was never touched — unset = byte-identical. */
-.sgs-hero__ctas {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--sgs-hero-cta-gap, var(--wp--preset--spacing--30));
-}
-
 .sgs-hero__cta {
 	display: inline-flex;
 	align-items: center;
@@ -271,27 +261,6 @@ section.sgs-hero {
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: background-color, color, border-color, box-shadow, transform;
-}
-
-.sgs-hero__cta--accent {
-	background-color: var(--wp--preset--color--accent);
-	color: var(--wp--preset--color--text);
-}
-
-/* Invert on hover — transparent fill, accent text (ghost/outline effect). */
-.sgs-hero__cta--accent:hover {
-	background-color: transparent;
-	color: var(--wp--preset--color--accent);
-	box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);
-}
-
-.sgs-hero__cta--primary {
-	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--surface);
-}
-
-.sgs-hero__cta--primary:hover {
-	background-color: var(--wp--preset--color--primary-dark);
 }
 
 .sgs-hero__cta--outline {
@@ -405,31 +374,12 @@ section.sgs-hero {
  * this rewrite). Effect: the accent variant's inset ring and the custom
  * variant's brightness/lift now layer on top of an operator-set hover colour
  * instead of being suppressed — a minor disclosed cosmetic change, not a
- * broken hover. */
-.sgs-hero__cta-primary:hover {
-	background-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
-	color: var(--sgs-cta-pri-hover-colour, inherit) !important;
-	border-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
-}
-
-.sgs-hero__cta--accent:hover {
-	background-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
-	color: var(--sgs-cta-pri-hover-colour, var(--wp--preset--color--accent)) !important;
-	border-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
-}
-
-.sgs-hero__cta--primary:hover {
-	background-color: var(--sgs-cta-pri-hover-bg, var(--wp--preset--color--primary-dark)) !important;
-	color: var(--sgs-cta-pri-hover-colour, inherit) !important;
-	border-color: var(--sgs-cta-pri-hover-bg, transparent) !important;
-}
-
-.sgs-hero__cta-secondary:hover {
-	background-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
-	color: var(--sgs-cta-sec-hover-colour, inherit) !important;
-	border-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
-}
-
+ * broken hover.
+ *
+ * .sgs-hero__cta-primary/--accent/--primary and .sgs-hero__cta-secondary
+ * overrides removed (never render — see hero/render.php header comment).
+ * .sgs-hero__cta--outline/--custom retained below (out of this cleanup's
+ * verified scope). */
 .sgs-hero__cta--outline:hover {
 	background-color: var(--sgs-cta-sec-hover-bg, var(--wp--preset--color--primary)) !important;
 	color: var(--sgs-cta-sec-hover-colour, var(--wp--preset--color--surface)) !important;
@@ -440,21 +390,6 @@ section.sgs-hero {
 	background-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
 	color: var(--sgs-cta-sec-hover-colour, inherit) !important;
 	border-color: var(--sgs-cta-sec-hover-bg, transparent) !important;
-}
-
-/* D345 Facet-B polish (restores the box-shadow/filter resets the old
- * `[style*=…]`-gated block provided): when the operator sets a CUSTOM CTA hover
- * colour, suppress the variant's resting decoration so it doesn't layer under the
- * chosen colour. box-shadow/filter can't be substituted via `var()`, so these are
- * gated on the render-emitted `sgs-hero--cta-*-hover-set` class (added by render.php
- * only when the corresponding custom hover colour is set). Specificity 0,3,0 beats
- * the variant base 0,2,0 — no !important needed. */
-.sgs-hero--cta-pri-hover-set .sgs-hero__cta--accent:hover {
-	box-shadow: none;
-}
-
-.sgs-hero--cta-sec-hover-set .sgs-hero__cta--custom:hover {
-	filter: none;
 }
 
 /* Badges — container */
@@ -611,11 +546,6 @@ section.sgs-hero {
 		position: absolute;
 	}
 
-	.sgs-hero__ctas {
-		flex-direction: column;
-		width: 100%;
-	}
-
 	.sgs-hero__cta {
 		width: 100%;
 		max-width: 100%;
@@ -681,8 +611,7 @@ section.sgs-hero {
 .sgs-hero--ken-burns .sgs-hero__overlay,
 .sgs-hero--ken-burns .sgs-hero__content,
 .sgs-hero--ken-burns .sgs-hero__media,
-.sgs-hero--ken-burns .sgs-hero__badges,
-.sgs-hero--ken-burns .sgs-hero__ctas {
+.sgs-hero--ken-burns .sgs-hero__badges {
 	position: relative;
 	z-index: 1;
 }

@@ -3,9 +3,11 @@
  * Server-side render for the SGS Hero block.
  *
  * FR-22-6 migration: the content column (label, headline, sub-headline, CTAs)
- * is now rendered via InnerBlocks ($content). Scalar content attrs (label,
- * headline, subHeadline, ctaPrimary*, ctaSecondary*) are NO LONGER read here.
- * They are retained in block.json for deprecated.js back-compat only.
+ * is now rendered via InnerBlocks ($content). CTAs are child sgs/multi-button >
+ * sgs/button blocks — the scalar ctaPrimary/ctaSecondary content/style/hover
+ * attrs and ctaGap attrs were REMOVED entirely (no deprecated.js pre-production,
+ * D270/D293): they drove no rendering output (their target selectors
+ * .sgs-hero__cta-primary/--accent/--primary and .sgs-hero__ctas never render).
  * R-22-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
@@ -13,11 +15,11 @@
  *   splitImage, splitMedia, splitImageMobile, splitImageMobileObjectPosition,
  *   backgroundVideo, svgContent, minHeight*, badges, background/text/border colourHover,
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns, bgVideo*,
- *   splitImageBleed, ctaPrimary/SecondaryHover*,
+ *   splitImageBleed,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth, splitImageMobileHeight,
  *   imageObjectFit/Position, image*Width/Height*, imageBorderStyle/Colour,
- *   splitColumnRatio*, splitGap*, splitContentOrderMobile, verticalAlignment,
- *   ctaGap*. Headline / sub-headline / label FONT-SIZE (all breakpoints) is
+ *   splitColumnRatio*, splitGap*, splitContentOrderMobile, verticalAlignment.
+ *   Headline / sub-headline / label FONT-SIZE (all breakpoints) is
  *   owned by the child sgs/heading / sgs/text / sgs/label blocks — not emitted
  *   here.
  *
@@ -180,12 +182,6 @@ $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 // Split-image bleed — removes border-radius and inner padding from the media column.
 $split_image_bleed = ! empty( $attributes['splitImageBleed'] );
 
-// Per-CTA hover colour overrides.
-$cta_primary_hover_bg       = $attributes['ctaPrimaryHoverBackground'] ?? '';
-$cta_primary_hover_colour   = $attributes['ctaPrimaryHoverColour'] ?? '';
-$cta_secondary_hover_bg     = $attributes['ctaSecondaryHoverBackground'] ?? '';
-$cta_secondary_hover_colour = $attributes['ctaSecondaryHoverColour'] ?? '';
-
 // ── Phase 1: Image display attributes ──────────────────────────────────────
 $image_object_fit      = $attributes['imageObjectFit'] ?? 'cover';
 $image_object_position = $attributes['imageObjectPosition'] ?? 'center center';
@@ -256,17 +252,6 @@ $split_col_ratio_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
 // shared gap/gapTablet/gapMobile (see the gap emission below).
 $split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';
 
-// HC2: CTA row gap (.sgs-hero__ctas). Emitted as the --sgs-hero-cta-gap custom
-// property which style.css consumes with the legacy spacing--30 default as the
-// fallback — so an instance whose control was never touched is byte-unchanged.
-// ctaGap has a schema default (12), so gate desktop emit on the attr being
-// PRESENT in $attributes (operator actually set it), not on a non-null read.
-$cta_gap_unit   = $sgs_css_length( $attributes['ctaGapUnit'] ?? 'px' );
-$cta_gap_set    = array_key_exists( 'ctaGap', $attributes );
-$cta_gap        = $cta_gap_set ? absint( $attributes['ctaGap'] ) : null;
-$cta_gap_tablet = array_key_exists( 'ctaGapTablet', $attributes ) && null !== $attributes['ctaGapTablet'] ? absint( $attributes['ctaGapTablet'] ) : null;
-$cta_gap_mobile = array_key_exists( 'ctaGapMobile', $attributes ) && null !== $attributes['ctaGapMobile'] ? absint( $attributes['ctaGapMobile'] ) : null;
-
 // Vertical alignment. Content max-width now lives on the universal wrapper attr
 // `contentWidth` (rendered by SGS_Container_Wrapper as the .sgs-container__inner
 // cap) — the legacy per-hero contentMaxWidth* family was removed 2026-06-09.
@@ -292,12 +277,6 @@ $styles = array();
 // Transition custom properties — consumed by CSS vars on the block and its children.
 $styles = array_merge( $styles, sgs_transition_vars( $attributes ) );
 
-// HC2: desktop CTA-row gap. Only emitted when the operator actually set ctaGap
-// (array_key_exists) so untouched instances fall through to style.css's legacy
-// var(--wp--preset--spacing--30) fallback. The base var is NOT inline (Pattern A):
-// it has tablet/mobile tiers, so base+tiers are emitted together on the SAME
-// .uid selector in the scoped <style> below.
-
 if ( $hover_background_colour ) {
 	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
 }
@@ -306,21 +285,6 @@ if ( $hover_text_colour ) {
 }
 if ( $hover_border_colour ) {
 	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
-}
-
-// Per-CTA hover overrides — written as CSS custom properties so the CSS rule can
-// reference them without needing a unique selector per instance.
-if ( $cta_primary_hover_bg ) {
-	$styles[] = '--sgs-cta-pri-hover-bg:' . sgs_colour_value( $cta_primary_hover_bg );
-}
-if ( $cta_primary_hover_colour ) {
-	$styles[] = '--sgs-cta-pri-hover-colour:' . sgs_colour_value( $cta_primary_hover_colour );
-}
-if ( $cta_secondary_hover_bg ) {
-	$styles[] = '--sgs-cta-sec-hover-bg:' . sgs_colour_value( $cta_secondary_hover_bg );
-}
-if ( $cta_secondary_hover_colour ) {
-	$styles[] = '--sgs-cta-sec-hover-colour:' . sgs_colour_value( $cta_secondary_hover_colour );
 }
 
 // Standard variant: use <img> instead of CSS background-image so the browser can
@@ -636,19 +600,6 @@ if ( in_array( $text_align_mobile, $allowed_text_align, true ) ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_mobile . '}}';
 }
 
-// ── HC2: CTA row gap (.sgs-hero__ctas) ─────────────────────────────────────
-// Base + tablet + mobile --sgs-hero-cta-gap all on the SAME .uid selector
-// (Pattern A; style.css falls back to the legacy spacing--30 when unset).
-if ( null !== $cta_gap ) {
-	$responsive_css .= '.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap . esc_attr( $cta_gap_unit ) . '}';
-}
-if ( null !== $cta_gap_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap_tablet . esc_attr( $cta_gap_unit ) . '}}';
-}
-if ( null !== $cta_gap_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . '{--sgs-hero-cta-gap:' . $cta_gap_mobile . esc_attr( $cta_gap_unit ) . '}}';
-}
-
 // Build wrapper classes.
 $classes = array(
 	'sgs-hero',
@@ -675,17 +626,6 @@ if ( $bg_ken_burns ) {
 }
 if ( $split_image_bleed ) {
 	$classes[] = 'sgs-hero--split-bleed';
-}
-// D345 Facet-B polish: when the operator sets a CUSTOM CTA hover colour, the
-// variant's resting decoration (accent's inset ring / custom's brightness filter)
-// must still be suppressed so it doesn't layer under the chosen colour. box-shadow
-// /filter can't be var()-conditional, so the suppression is gated on these
-// render-emitted classes (restores the pre-Facet-B `[style*=…]`-gated behaviour).
-if ( $cta_primary_hover_bg ) {
-	$classes[] = 'sgs-hero--cta-pri-hover-set';
-}
-if ( $cta_secondary_hover_bg ) {
-	$classes[] = 'sgs-hero--cta-sec-hover-set';
 }
 
 // ── WP-native color / border / typography supports — no-inline contract (§A). ──

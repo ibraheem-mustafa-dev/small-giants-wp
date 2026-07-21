@@ -122,7 +122,10 @@
 	font-weight:      700;
 	line-height:      1;
 	color:            var(--wp--preset--color--surface, #fff);
-	background-color: var(--wp--preset--color--accent, currentColor);
+	/* badgeColour is emitted by render.php as --sgs-mm-badge-bg, scoped to this
+	   instance's block root; unset falls back to the original hardcoded accent
+	   so an unconfigured instance renders byte-identical. */
+	background-color: var(--sgs-mm-badge-bg, var(--wp--preset--color--accent, currentColor));
 	border-radius:    var(--wp--preset--border-radius--sm, 0.25rem);
 	text-transform:   uppercase;
 	letter-spacing:   0.05em;

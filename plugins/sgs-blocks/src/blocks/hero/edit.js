@@ -128,7 +128,7 @@ function RRangeControl( { label, attrDesktop, attrTablet, attrMobile, attributes
  * Converter supplies sgs/label + sgs/heading + sgs/text + sgs/multi-button.
  */
 const HERO_CONTENT_TEMPLATE = [
-	[ 'sgs/label', { className: 'sgs-hero__label', content: __( 'Eyebrow label', 'sgs-blocks' ) } ],
+	[ 'sgs/label', { className: 'sgs-hero__label', text: __( 'Eyebrow label', 'sgs-blocks' ) } ],
 	[ 'sgs/heading', { level: 'h1', className: 'sgs-hero__headline', content: __( 'Your hero headline', 'sgs-blocks' ) } ],
 	[ 'sgs/text', { className: 'sgs-hero__subheadline', text: __( 'Supporting sub-headline text goes here.', 'sgs-blocks' ) } ],
 	[ 'sgs/multi-button', {}, [
@@ -294,9 +294,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitContentOrderMobile,
 		// Phase 1 — vertical alignment.
 		verticalAlignment,
-		// H-8 — CTA gap.
-		ctaGap,
-		ctaGapUnit,
 		// HC2 — per-breakpoint text alignment on .sgs-hero__content.
 		textAlignDesktop,
 		textAlignTablet,
@@ -316,13 +313,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( minHeight ) {
 		wrapperStyle.minHeight = minHeight;
 	}
-	// HC2: preview the desktop CTA-row gap in the editor (frontend tablet/mobile
-	// overrides are @media-only and can't be shown in the iframe — matches how
-	// the block's other responsive controls preview desktop-only).
-	if ( ctaGap !== undefined && ctaGap !== null && ctaGap !== '' ) {
-		wrapperStyle[ '--sgs-hero-cta-gap' ] = `${ ctaGap }${ ctaGapUnit || 'px' }`;
-	}
-
 	// HC2: desktop text-align preview for the content column.
 	// Also preview contentBackground when set.
 	const contentPreviewStyle = {};
@@ -1081,30 +1071,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Notice status="info" isDismissible={ false }>
 						{ __( 'Buttons are now managed using the SGS Button Group block inside the hero. Click on a button in the editor to configure its style, colour, and link.', 'sgs-blocks' ) }
 					</Notice>
-					<RRangeControl
-						label={ __( 'Button gap', 'sgs-blocks' ) }
-						attrDesktop="ctaGap"
-						attrTablet="ctaGapTablet"
-						attrMobile="ctaGapMobile"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						min={ 0 }
-						max={ 80 }
-						step={ 1 }
-					/>
-					<UnitControl
-						label={ __( 'Gap unit', 'sgs-blocks' ) }
-						value={ `${ ctaGap || 0 }${ ctaGapUnit || 'px' }` }
-						units={ [
-							{ value: 'px', label: 'px', default: 0 },
-							{ value: '%',  label: '%',  default: 0 },
-						] }
-						onChange={ ( val ) => {
-							const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-							setAttributes( { ctaGapUnit: unit } );
-						} }
-						__nextHasNoMarginBottom
-					/>
 				</PanelBody>
 
 				{/* ── 8. Badges ── */}

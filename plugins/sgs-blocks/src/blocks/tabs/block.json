@@ -82,7 +82,7 @@
 				"tab": {
 					"label": "Tab (resting state)",
 					"order": 3,
-					"clusters": [ "text", "fill", "motion" ],
+					"clusters": [ "text", "fill", "layout", "motion" ],
 					"attrMap": {
 						"css:color": "tabTextColour",
 						"css:background-color": "tabBgColour",

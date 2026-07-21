@@ -233,7 +233,7 @@
 					"label": "CTA buttons",
 					"order": 9,
 					"clusters": [],
-					"_note": "ctaPrimary*/ctaSecondary* are preset-style (accent/outline) + explicit hover-colour pairs, not raw Text/Fill/Layout cluster controls — same shape as sgs/button's own styling, out of scope for this cluster vocabulary."
+					"_note": "CTAs render via InnerBlocks (sgs/multi-button > sgs/button children, FR-22-6) — no scalar cta* content/style attrs remain on this block, so nothing to cluster-map here."
 				}
 			}
 		}
@@ -359,30 +359,6 @@
 				}
 			}
 		},
-		"ctaPrimaryText": {
-			"type": "string",
-			"role": "content"
-		},
-		"ctaPrimaryUrl": {
-			"type": "string",
-			"role": "content"
-		},
-		"ctaPrimaryStyle": {
-			"type": "string",
-			"default": "accent"
-		},
-		"ctaSecondaryText": {
-			"type": "string",
-			"role": "content"
-		},
-		"ctaSecondaryUrl": {
-			"type": "string",
-			"role": "content"
-		},
-		"ctaSecondaryStyle": {
-			"type": "string",
-			"default": "outline"
-		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
@@ -432,22 +408,6 @@
 		"splitImageBleed": {
 			"type": "boolean",
 			"default": false
-		},
-		"ctaPrimaryHoverBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"ctaPrimaryHoverColour": {
-			"type": "string",
-			"default": ""
-		},
-		"ctaSecondaryHoverBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"ctaSecondaryHoverColour": {
-			"type": "string",
-			"default": ""
 		},
 		"subHeadlineMaxWidth": {
 			"type": "number",
@@ -592,22 +552,6 @@
 		"subHeadlineMarginBottomMobile": {
 			"type": "number",
 			"default": null
-		},
-		"_comment_ctaGap": "Gap between CTA buttons in the .sgs-hero__ctas flex container. Extracted from mockup .hero-ctas { gap: 12px } (desktop) and .hero-ctas { gap: 10px } (mobile).",
-		"ctaGap": {
-			"type": "integer",
-			"default": 12
-		},
-		"ctaGapMobile": {
-			"type": "integer",
-			"default": 10
-		},
-		"ctaGapTablet": {
-			"type": "integer"
-		},
-		"ctaGapUnit": {
-			"type": "string",
-			"default": "px"
 		},
 		"alignContent": {
 			"type": "string",
@@ -972,8 +916,6 @@
 			"variant": "standard",
 			"headline": "Premium Food Wholesale, Delivered Next Day",
 			"subHeadline": "Supplying restaurants, retailers and caterers across the UK since 1962.",
-			"ctaPrimaryText": "Request a Quote",
-			"ctaSecondaryText": "Browse Products",
 			"alignment": "left"
 		}
 	}

@@ -143,6 +143,13 @@ $wrapper_styles = array(
 	'--sgs-mm-link-colour:'     . sgs_colour_value( $link_colour ),
 	'--sgs-mm-link-hover:'      . sgs_colour_value( $link_hover_colour ),
 	'--sgs-mm-link-hover-bg:'   . sgs_colour_value( $link_hover_bg ),
+	// badgeColour was previously read + emitted ONLY as the inert
+	// `data-sgs-badge-colour` attribute (no style.css rule ever consumed it —
+	// badge colour was hardcoded to accent at style.css:125). Wired up as a
+	// scoped custom property, matching the other --sgs-mm-* vars on this
+	// block: style.css's own `var(--sgs-mm-badge-bg, <accent fallback>)`
+	// keeps an unconfigured instance byte-identical.
+	'--sgs-mm-badge-bg:' . sgs_colour_value( $badge_colour ),
 );
 // Spec 35 FR-35-5 STATE_WITHOUT_BASE fix — resting-state background for the
 // trigger link/button. NO default in block.json (Bean-locked Option A: an

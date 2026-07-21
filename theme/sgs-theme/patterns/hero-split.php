@@ -9,4 +9,12 @@
  */
 ?>
 
-<!-- wp:sgs/hero {"variant":"split","alignment":"left","headline":"Build Something Amazing Today","subHeadline":"We help businesses create stunning digital experiences that convert visitors into customers.","ctaPrimaryText":"Start Your Project","ctaPrimaryUrl":"#","ctaPrimaryStyle":"accent","minHeight":"520px"} /-->
+<!-- wp:sgs/hero {"variant":"split","alignment":"left","minHeight":"520px"} -->
+	<!-- wp:sgs/heading {"content":"Build Something Amazing Today","level":"h1","className":"sgs-hero__headline"} /-->
+
+	<!-- wp:sgs/text {"text":"We help businesses create stunning digital experiences that convert visitors into customers.","className":"sgs-hero__subheadline"} /-->
+
+	<!-- wp:sgs/multi-button -->
+		<!-- wp:sgs/button {"label":"Start Your Project","url":"#","inheritStyle":"primary"} /-->
+	<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/hero -->

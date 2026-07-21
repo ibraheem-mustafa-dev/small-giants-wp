@@ -77,7 +77,7 @@
                     "label": "Badge",
                     "order": 4,
                     "clusters": [],
-                    "_note": "`badge` (text) and `badgeColour` are real attributes (render.php:74,241-249) but `badgeColour` is written only as `data-sgs-badge-colour=\"…\"` — no rule in style.css consumes that data attribute, so the control is currently DEAD CSS wiring (badge colour is hardcoded at style.css:124-125 instead). Logged as an honest zero-cluster element per FR-35-4 so both attrs surface as ORPHANs, not silently invisible. Out of scope for this manifest pass — fixing the dead wiring is separate per-block work, not a Spec 35 vocabulary task."
+                    "_note": "`badge` (text) and `badgeColour` are real attributes (render.php:75,246-260). `badgeColour` now drives the badge background via the scoped `--sgs-mm-badge-bg` custom property (render.php + style.css, dead-wiring fix) — the `data-sgs-badge-colour` attribute is retained for JS/debugging visibility only. Left as an honest zero-cluster element per FR-35-4 (cluster/attrMap classification out of scope for this fix)."
                 },
                 "icon": {
                     "label": "Trigger icon",

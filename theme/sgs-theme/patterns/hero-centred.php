@@ -9,4 +9,13 @@
  */
 ?>
 
-<!-- wp:sgs/hero {"variant":"standard","alignment":"centre","headline":"Your Compelling Headline Goes Here","subHeadline":"A brief supporting statement that explains your value proposition and encourages visitors to take action.","ctaPrimaryText":"Get Started","ctaPrimaryUrl":"#","ctaPrimaryStyle":"accent","ctaSecondaryText":"Learn More","ctaSecondaryUrl":"#","ctaSecondaryStyle":"outline","minHeight":"520px"} /-->
+<!-- wp:sgs/hero {"variant":"standard","alignment":"centre","minHeight":"520px"} -->
+	<!-- wp:sgs/heading {"content":"Your Compelling Headline Goes Here","level":"h1","className":"sgs-hero__headline"} /-->
+
+	<!-- wp:sgs/text {"text":"A brief supporting statement that explains your value proposition and encourages visitors to take action.","className":"sgs-hero__subheadline"} /-->
+
+	<!-- wp:sgs/multi-button {"justifyContent":"center"} -->
+		<!-- wp:sgs/button {"label":"Get Started","url":"#","inheritStyle":"primary"} /-->
+		<!-- wp:sgs/button {"label":"Learn More","url":"#","inheritStyle":"outline"} /-->
+	<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/hero -->
