@@ -123,6 +123,16 @@ class NewTokenCandidate:
 
 
 @dataclasses.dataclass
+class UnresolvedVarReference:
+    """A `var(--x)` reference that no declaration or registered token satisfies."""
+
+    name: str
+    line: int
+    col: int
+    source_label: str
+
+
+@dataclasses.dataclass
 class TokenWritePlan:
     """Aggregate result from a discovery pass over one CSS document or HTML file."""
 
@@ -131,6 +141,10 @@ class TokenWritePlan:
     total_declarations_checked: int
     passed: bool   # always True in additive mode; may be False in --no-new-tokens strict
     summary: str   # human-readable one-liner
+    # Unresolved var() references fail the run in strict mode even in additive
+    # mode — a reference to a token nothing declares is broken CSS, never a
+    # "new token candidate".
+    unresolved_vars: list[UnresolvedVarReference] = dataclasses.field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -179,6 +193,7 @@ class LintResult:
     total_declarations_checked: int
     passed: bool
     exit_code: int
+    unresolved_vars: list[UnresolvedVarReference] = dataclasses.field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -233,6 +248,9 @@ def load_theme(path: Path) -> dict[str, Any]:
         "shadow_presets": settings.get("shadow", {}).get("presets", []),
         "font_families": settings.get("typography", {}).get("fontFamilies", []),
         "max_widths": max_widths,
+        # Every `--wp--custom--*` name this theme/variation generates, so a
+        # draft referencing one directly resolves during the var() check.
+        "custom_var_names": _flatten_custom_vars(settings.get("custom", {}) or {}, []),
     }
 
 
@@ -256,6 +274,12 @@ def merge_variation(theme: dict[str, Any], variation_path: Path) -> dict[str, An
                 merged[key][base_by_slug[slug]] = entry
             else:
                 merged[key].append(entry)
+    # custom_var_names is a flat list of strings, not slug-keyed dicts, so the
+    # loop above skips it — union it explicitly or a variation's own custom
+    # tokens would read as unresolved.
+    merged["custom_var_names"] = sorted(
+        set(merged.get("custom_var_names", [])) | set(variation.get("custom_var_names", []))
+    )
     return merged
 
 
@@ -459,6 +483,100 @@ def _is_exempt_value(value: str) -> bool:
     """Return True if *value* should be skipped entirely (already a token or non-snappable)."""
     stripped = value.strip()
     return bool(_EXEMPT_VALUE_PATTERNS.search(stripped))
+
+
+# ---------------------------------------------------------------------------
+# var() reference resolution
+# ---------------------------------------------------------------------------
+# A var() reference is exempt from token DISCOVERY (it is already a token
+# reference, not a raw value) — but it is NOT exempt from RESOLUTION.  A
+# reference to a custom property that nothing declares is broken CSS: the
+# browser falls back to the initial value and the styling silently vanishes.
+# Discovery never saw these because _EXEMPT_VALUE_PATTERNS skips `var(`, so
+# they are checked on a separate pass over the raw source.
+
+# Declaration of a custom property: `--name:` at the start of a declaration.
+_CUSTOM_PROP_DECL_RE = re.compile(r"(?:^|[;{\s\"'])(--[A-Za-z0-9_-]+)\s*:")
+
+# Usage of a custom property: `var(--name` — optionally with a fallback.
+_CUSTOM_PROP_USE_RE = re.compile(r"var\(\s*(--[A-Za-z0-9_-]+)")
+
+
+def _camel_to_kebab(name: str) -> str:
+    """Convert a camelCase theme.json key to the kebab-case WP uses in var names."""
+    return re.sub(r"(?<!^)(?=[A-Z])", "-", name).lower()
+
+
+def _flatten_custom_vars(node: Any, path: list[str]) -> list[str]:
+    """Flatten settings.custom into the `--wp--custom--a--b` names WP generates."""
+    names: list[str] = []
+    if isinstance(node, dict):
+        for key, value in node.items():
+            names.extend(_flatten_custom_vars(value, path + [_camel_to_kebab(str(key))]))
+    elif path:
+        names.append("--wp--custom--" + "--".join(path))
+    return names
+
+
+def _wp_preset_var_names(theme: dict[str, Any]) -> set[str]:
+    """Build the set of `--wp--preset--*` / `--wp--custom--*` names this theme generates.
+
+    A draft may legitimately reference a theme token directly rather than
+    declaring its own custom property, so these resolve too.
+    """
+    names: set[str] = set()
+    preset_groups = (
+        ("color", "palette"),
+        ("spacing", "spacing_sizes"),
+        ("font-size", "font_sizes"),
+        ("shadow", "shadow_presets"),
+        ("font-family", "font_families"),
+    )
+    for preset_name, theme_key in preset_groups:
+        for entry in theme.get(theme_key, []) or []:
+            if isinstance(entry, dict) and entry.get("slug"):
+                names.add(f"--wp--preset--{preset_name}--{entry['slug']}")
+    names.update(theme.get("custom_var_names", []) or [])
+    return names
+
+
+def _collect_declared_custom_properties(source: str) -> set[str]:
+    """Return every custom property NAME declared anywhere in *source*."""
+    return {m.group(1) for m in _CUSTOM_PROP_DECL_RE.finditer(_strip_comments(source))}
+
+
+def find_unresolved_var_references(
+    source: str,
+    source_label: str,
+    theme: dict[str, Any],
+) -> list[UnresolvedVarReference]:
+    """Return every `var(--x)` in *source* that resolves to nothing.
+
+    A reference resolves if the custom property is declared somewhere in the
+    same document, OR is a token this theme (plus any merged client variation)
+    registers as a `--wp--preset--*` / `--wp--custom--*` name.
+
+    A reference carrying a fallback — `var(--maybe, #fff)` — still counts as
+    unresolved when nothing declares `--maybe`: the fallback masks the missing
+    token, which is exactly how a typo ships unnoticed.
+    """
+    cleaned = _strip_comments(source)
+    resolvable = _collect_declared_custom_properties(source) | _wp_preset_var_names(theme)
+
+    unresolved: list[UnresolvedVarReference] = []
+    seen: set[str] = set()
+    for match in _CUSTOM_PROP_USE_RE.finditer(cleaned):
+        name = match.group(1)
+        if name in resolvable or name in seen:
+            continue
+        seen.add(name)
+        line, col = _compute_line_col(source, match.start())
+        unresolved.append(
+            UnresolvedVarReference(
+                name=name, line=line, col=col, source_label=source_label
+            )
+        )
+    return unresolved
 
 
 # Length-like pattern for splitting spacing shorthands.
@@ -1187,6 +1305,33 @@ def _extract_inline_styles(html_content: str) -> list[tuple[str, int, int]]:
     return parser.snippets
 
 
+_STYLE_BLOCK_RE = re.compile(
+    r"<style\b[^>]*>(.*?)</style\s*>", re.IGNORECASE | re.DOTALL
+)
+
+
+def _isolate_style_blocks(html_content: str) -> str:
+    """Blank every character OUTSIDE a `<style>` block, preserving line/col.
+
+    Returns a string the CSS parser can walk directly: the stylesheet bodies sit
+    at their true positions in the file and everything else is whitespace, so
+    reported line/col numbers point at the real source line with no offset
+    arithmetic.  (Same technique `_skip_at_blocks` already uses to drop
+    @keyframes without shifting positions.)
+
+    This is the fix for the inert-gate defect: a draft that puts all its CSS in
+    a `<style>` block — the normal way to write one — previously had ZERO of its
+    declarations read, because only `style=""` attributes were parsed.  The lint
+    then reported "All 0 declaration(s) already use registered tokens", which is
+    vacuously true and reads as a pass.
+    """
+    out = ["\n" if ch == "\n" else " " for ch in html_content]
+    for match in _STYLE_BLOCK_RE.finditer(html_content):
+        start, end = match.span(1)
+        out[start:end] = list(html_content[start:end])
+    return "".join(out)
+
+
 def _parse_inline_style_declarations(
     inline_css: str, base_line: int, base_col: int
 ) -> list[tuple[str, str, int, int]]:
@@ -1229,6 +1374,39 @@ def _load_theme_with_variations(
     return base
 
 
+def _attach_var_report(
+    result: TokenWritePlan | LintResult,
+    source: str,
+    source_label: str,
+    mode: Mode,
+    theme: dict[str, Any],
+) -> TokenWritePlan | LintResult:
+    """Run the var()-resolution pass and fold its findings into *result*.
+
+    An unresolved reference is a hard failure in strict mode — in BOTH additive
+    and --no-new-tokens mode. Additive mode's "always passes" contract is about
+    new token candidates (a bespoke 28px margin is a designer choice, not a
+    fault); a reference to a custom property nothing declares is simply broken.
+    In draft mode it is reported but does not fail, matching how draft mode
+    treats every other finding.
+    """
+    if mode == "legacy":
+        return result
+
+    unresolved = find_unresolved_var_references(source, source_label, theme)
+    result.unresolved_vars = unresolved
+
+    if unresolved and mode == "strict":
+        result.passed = False
+        if isinstance(result, LintResult):
+            result.exit_code = 1
+        else:
+            result.summary += (
+                f" FAILED — {len(unresolved)} unresolved var() reference(s)."
+            )
+    return result
+
+
 def lint_css_string(
     css: str,
     mode: Mode = "strict",
@@ -1252,8 +1430,10 @@ def lint_css_string(
     theme = _load_theme_with_variations(theme_json_path, variation_paths)
     declarations = _parse_css_declarations(css)
     if no_new_tokens:
-        return _lint_declarations_verdict(declarations, mode, source_label, theme)
-    return _build_write_plan(declarations, mode, source_label, theme)
+        result = _lint_declarations_verdict(declarations, mode, source_label, theme)
+    else:
+        result = _build_write_plan(declarations, mode, source_label, theme)
+    return _attach_var_report(result, css, source_label, mode, theme)
 
 
 def lint_css_file(
@@ -1308,15 +1488,20 @@ def lint_html_inline_styles(
             summary="Legacy mode — discovery bypassed.",
         )
 
-    snippets = _extract_inline_styles(html_content)
-    all_declarations: list[tuple[str, str, int, int]] = []
-    for inline_css, line, col in snippets:
-        decls = _parse_inline_style_declarations(inline_css, line, col)
-        all_declarations.extend(decls)
+    # 1. Declarations inside <style> blocks — the bulk of any real draft.
+    all_declarations: list[tuple[str, str, int, int, int]] = list(
+        _parse_css_declarations(_isolate_style_blocks(html_content))
+    )
+
+    # 2. Declarations in style="" attributes.
+    for inline_css, line, col in _extract_inline_styles(html_content):
+        all_declarations.extend(_parse_inline_style_declarations(inline_css, line, col))
 
     if no_new_tokens:
-        return _lint_declarations_verdict(all_declarations, mode, source_label, theme)
-    return _build_write_plan(all_declarations, mode, source_label, theme)
+        result = _lint_declarations_verdict(all_declarations, mode, source_label, theme)
+    else:
+        result = _build_write_plan(all_declarations, mode, source_label, theme)
+    return _attach_var_report(result, html_content, source_label, mode, theme)
 
 
 # ---------------------------------------------------------------------------
@@ -1504,9 +1689,30 @@ def apply_write_plan(
 # Human-readable + JSON output
 # ---------------------------------------------------------------------------
 
+def _format_unresolved_vars(
+    unresolved: list[UnresolvedVarReference], level: str
+) -> list[str]:
+    """Return report lines for unresolved var() references (empty if none)."""
+    if not unresolved:
+        return []
+    lines = ["", f"Unresolved var() references ({len(unresolved)}):"]
+    for ref in unresolved:
+        lines.append(
+            f"  {ref.source_label}:{ref.line}:{ref.col}: {level}: "
+            f"'{ref.name}' is referenced but never declared, and is not a "
+            f"registered theme token."
+        )
+    return lines
+
+
 def _format_human_plan(plan: TokenWritePlan) -> str:
     """Return a human-readable report for a TokenWritePlan."""
     lines: list[str] = [plan.summary]
+    lines.extend(
+        _format_unresolved_vars(
+            plan.unresolved_vars, "error" if plan.mode == "strict" else "warning"
+        )
+    )
 
     if not plan.new_tokens:
         return "\n".join(lines)
@@ -1535,6 +1741,12 @@ def _format_json_plan(plan: TokenWritePlan) -> str:
         "passed": plan.passed,
         "summary": plan.summary,
         "new_token_count": len(plan.new_tokens),
+        "unresolved_var_count": len(plan.unresolved_vars),
+        "unresolved_vars": [
+            {"name": r.name, "line": r.line, "col": r.col,
+             "source_label": r.source_label}
+            for r in plan.unresolved_vars
+        ],
         "new_tokens": [
             {
                 "token_class": c.token_class,
@@ -1569,6 +1781,8 @@ def _format_human_verdict(result: LintResult) -> str:
             f"-> nearest '{v.nearest_token}' (conf={v.confidence:.2f})"
         )
 
+    lines.extend(_format_unresolved_vars(result.unresolved_vars, level))
+
     total_v = len(result.violations)
     status = "PASS" if result.passed else "FAIL"
     lines.append(
@@ -1587,6 +1801,12 @@ def _format_json_verdict(result: LintResult) -> str:
         "passed": result.passed,
         "exit_code": result.exit_code,
         "violation_count": len(result.violations),
+        "unresolved_var_count": len(result.unresolved_vars),
+        "unresolved_vars": [
+            {"name": r.name, "line": r.line, "col": r.col,
+             "source_label": r.source_label}
+            for r in result.unresolved_vars
+        ],
         "violations": [
             {
                 "source_label": v.source_label,
@@ -1751,6 +1971,18 @@ def _run_self_tests() -> int:
     _report("Case 11: --no-new-tokens strict → passed=False, exit_code=1", case11_ok, failures)
 
     # ------------------------------------------------------------------
+    # Case 12: HTML <style> blocks are parsed (the inert-gate defect)
+    # ------------------------------------------------------------------
+    print()
+    _run_case12(failures)
+
+    # ------------------------------------------------------------------
+    # Case 13: var() references must resolve
+    # ------------------------------------------------------------------
+    print()
+    _run_case13(failures)
+
+    # ------------------------------------------------------------------
     # Summary
     # ------------------------------------------------------------------
     print()
@@ -1815,6 +2047,135 @@ def _run_case10(failures: list[str]) -> None:
 
     finally:
         tmp_path.unlink(missing_ok=True)
+
+
+_SELF_TEST_HTML = """\
+<!doctype html>
+<html>
+<head>
+<style>
+  :root { --panel-bg: #abcdef; }
+  .sgs-panel {
+    color: var(--panel-bg);
+    padding: 37px;
+    background-color: #123abc;
+  }
+</style>
+</head>
+<body><div class="sgs-panel" style="margin-top: 41px;">Hi</div></body>
+</html>
+"""
+
+# Identical to the above except `--panel-bg` is referenced under a typo that
+# nothing declares.  This is the NEGATIVE CONTROL for the var() leg.
+_SELF_TEST_HTML_BROKEN_VAR = _SELF_TEST_HTML.replace(
+    "color: var(--panel-bg);", "color: var(--panel-bgg);"
+)
+
+
+def _run_case12(failures: list[str]) -> None:
+    """Case 12: <style>-block declarations are read, not just style="" attrs.
+
+    This is the regression test for the inert-gate defect: before the fix the
+    lint reported 0 declarations for any HTML file whose CSS lived in a <style>
+    block, and a file of pure hardcoded hex passed.
+    """
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".html", delete=False, encoding="utf-8"
+    ) as tmp:
+        tmp.write(_SELF_TEST_HTML)
+        tmp_path = Path(tmp.name)
+
+    try:
+        plan = lint_html_inline_styles(tmp_path, mode="strict")
+        assert isinstance(plan, TokenWritePlan)
+
+        # NEGATIVE CONTROL for the <style>-block leg: reproduce the OLD
+        # inline-attributes-only behaviour and assert the new path reads
+        # strictly more.  Asserting a bare count would still pass if the
+        # style-block parsing were deleted and the number happened to match;
+        # comparing against the pre-fix path cannot.
+        #
+        # Of the 5 declarations in the fixture only 3 are checkable: a custom
+        # property DECLARATION is not a token candidate, and a `var()` value is
+        # already a token reference.  Pre-fix reads 1 (the inline attr alone).
+        theme = _load_theme_with_variations(None, None)
+        inline_only: list[tuple[str, str, int, int, int]] = []
+        for inline_css, line, col in _extract_inline_styles(_SELF_TEST_HTML):
+            inline_only.extend(
+                _parse_inline_style_declarations(inline_css, line, col)
+            )
+        pre_fix = _build_write_plan(
+            inline_only, "strict", "<pre-fix>", theme
+        ).total_declarations_checked
+
+        case12a_ok = (
+            plan.total_declarations_checked == 3
+            and pre_fix == 1
+            and plan.total_declarations_checked > pre_fix
+        )
+        _report(
+            f"Case 12a: NEGATIVE CONTROL — <style> block parsed: "
+            f"{plan.total_declarations_checked} checked vs {pre_fix} pre-fix",
+            case12a_ok,
+            failures,
+        )
+
+        values = {c.raw_value for c in plan.new_tokens}
+        case12b_ok = "#123abc" in values and "37px" in values
+        _report(
+            "Case 12b: hardcoded hex + off-scale spacing inside <style> are flagged",
+            case12b_ok,
+            failures,
+        )
+
+        # The inline style="" path must keep working — no regression.
+        case12c_ok = "41px" in values
+        _report("Case 12c: inline style=\"\" declarations still parsed", case12c_ok, failures)
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
+def _run_case13(failures: list[str]) -> None:
+    """Case 13: var() resolution — a good file passes, a typo'd file FAILS.
+
+    The failing half is the negative control: without it, a green run proves
+    nothing, because a check that cannot fail when the fault is present is
+    worse than no check.
+    """
+    theme = _load_theme_with_variations(None, None)
+
+    # Positive: --panel-bg is declared in the same document → resolves.
+    clean = find_unresolved_var_references(_SELF_TEST_HTML, "<clean>", theme)
+    _report("Case 13a: declared custom property resolves (0 unresolved)",
+            not clean, failures)
+
+    # Negative control: --panel-bgg is declared nowhere → must be caught.
+    broken = find_unresolved_var_references(
+        _SELF_TEST_HTML_BROKEN_VAR, "<broken>", theme
+    )
+    case13b_ok = len(broken) == 1 and broken[0].name == "--panel-bgg"
+    _report("Case 13b: NEGATIVE CONTROL — typo'd var() reference is caught",
+            case13b_ok, failures)
+
+    # A theme preset var resolves without any local declaration.
+    preset_css = ".x { color: var(--wp--preset--color--primary); }"
+    case13c_ok = not find_unresolved_var_references(preset_css, "<preset>", theme)
+    _report("Case 13c: registered theme preset var resolves", case13c_ok, failures)
+
+    # And strict mode must actually FAIL the run, not merely report.
+    broken_plan = lint_css_string(
+        ".x { color: var(--nope); }", mode="strict"
+    )
+    case13d_ok = broken_plan.passed is False
+    _report("Case 13d: NEGATIVE CONTROL — strict mode fails on unresolved var()",
+            case13d_ok, failures)
+
+    # Draft mode reports but does not fail.
+    draft_plan = lint_css_string(".x { color: var(--nope); }", mode="draft")
+    case13e_ok = draft_plan.passed is True and len(draft_plan.unresolved_vars) == 1
+    _report("Case 13e: draft mode reports the same finding without failing",
+            case13e_ok, failures)
 
 
 def _report(label: str, condition: bool, failures: list[str]) -> None:
