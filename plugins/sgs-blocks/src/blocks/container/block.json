@@ -74,7 +74,7 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [ "text", "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
@@ -94,8 +94,11 @@
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
-						"css:box-shadow": "shadow"
-					}
+						"css:box-shadow": "shadow",
+						"anim:parallax": "bgParallax",
+						"anim:duration": "bgAnimationDuration"
+					},
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes."
 				},
 				"grid": {
 					"label": "Grid / flex layout",

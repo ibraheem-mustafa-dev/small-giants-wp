@@ -9,7 +9,18 @@
 		"note_on_appliesToLayers": "`appliesToLayers` (where present) scopes a member to elements at specific structural layers. It exists because ELEMENT is the PRIMARY mapping axis and cluster is SECONDARY: the 12 ARRANGEMENT members (display/flex-*/grid-*/justify-*/align-*/order/overflow) describe how an element arranges its CHILDREN, so they only apply to elements that HAVE children to arrange — layer OUTER or GRID. The 14 BOX members (padding/margin/gap/width/height/border-*/box-shadow/aspect-ratio) carry no appliesToLayers and apply to every element. NOTE `css:gap` is deliberately a BOX member, not arrangement: a leaf element legitimately has an internal gap (brand-strip's tile spaces its logo from its caption via logoGap). Tagging it as arrangement cost a real resolved member — caught and reverted 2026-07-20. Resolution rule: a member with appliesToLayers is checked ONLY when the element's `layer` is in that list, OR the element has no `layer` but is `isWrapper: true` (a wrapper arranges children by definition). Without this, merging flow into layout asks a leaf tile whether it has grid-template-columns — 144 false gaps measured on 2026-07-20 before this was added.",
 		"note_on_layout_merge": "The `flow` cluster (grid/flex arrangement) was merged INTO `layout` on 2026-07-20, reversing an earlier same-day split. Rationale (Bean): arrangement properties do control the layout of the items in a block, and the ELEMENT axis — not a second cluster — is what disambiguates 'size this box' from 'arrange these children'. role='layout' on a GRID element means arrangement; the same role on a tile/box element means sizing. One mechanism, not two. Element is the PRIMARY mapping axis (block_attributes.canonical_slot); cluster/role is SECONDARY."
 	},
-	"order": [ "text", "fill", "layout", "position", "motion" ],
+	"states": {
+		"_note": "Spec 35 FR-35-5 — the STATES axis. A state is a COMPONENT concept (hover/focus/selected/pressed/disabled); its CSS realisation is declared ONCE here, centrally, so no block re-derives it. States are DECLARED on a manifest element (never parsed from attribute names — see FR-35-5 'Why states are DECLARED, never parsed from names': tabActiveTextColour renders as [aria-selected=\"true\"], NOT CSS :active, and pauseOnHover/effectHover/imageZoomHover/grayscaleHover contain 'Hover' but are booleans/preset selectors, not state-variant style properties).",
+		"order": [ "hover", "focus", "selected", "pressed", "disabled" ],
+		"definitions": {
+			"hover": { "label": "Hover", "cssRealisation": ":hover", "note": "Also emit :focus-visible where the control is focusable (a11y parity)." },
+			"focus": { "label": "Focus", "cssRealisation": ":focus-visible", "note": "NOT bare :focus — avoids the mouse-click focus ring." },
+			"selected": { "label": "Selected", "cssRealisation": "[aria-selected=\"true\"], [aria-current], .is-active", "note": "The tabs/nav case. NOT :active." },
+			"pressed": { "label": "Pressed", "cssRealisation": ":active", "note": "Genuine mouse-down. Rare; distinct from selected." },
+			"disabled": { "label": "Disabled", "cssRealisation": ":disabled, [aria-disabled=\"true\"]" }
+		}
+	},
+	"order": [ "text", "fill", "layout", "position", "motion", "animation" ],
 	"clusters": {
 		"text": {
 			"label": "Text",
@@ -89,6 +100,18 @@
 			"members": [
 				{ "key": "css:transition-duration", "label": "Transition duration", "suffixes": ["TransitionDuration", "Duration"] },
 				{ "key": "css:transition-timing-function", "label": "Transition easing", "suffixes": ["TransitionTimingFunction", "Easing"] }
+			]
+		},
+		"animation": {
+			"label": "Animation",
+			"owningComponent": "ToggleGroupControl (preset picker) + RangeControl (ms unit) + ToggleGroupControl (easing presets)",
+			"members": [
+				{ "key": "anim:preset", "label": "Animation preset", "suffixes": ["Animation"] },
+				{ "key": "anim:duration", "label": "Animation duration", "suffixes": ["AnimationDuration", "DurationMs"] },
+				{ "key": "anim:easing", "label": "Animation easing", "suffixes": ["AnimationEasing", "Easing"] },
+				{ "key": "anim:stagger", "label": "Stagger delay", "suffixes": ["StaggerDelay", "Stagger"] },
+				{ "key": "anim:parallax", "label": "Parallax", "suffixes": ["Parallax", "ParallaxStrength"] },
+				{ "key": "anim:trigger", "label": "Scroll trigger", "suffixes": ["OnScroll", "TriggerOffset"] }
 			]
 		}
 	}

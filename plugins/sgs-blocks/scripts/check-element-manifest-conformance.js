@@ -201,6 +201,129 @@ function memberAppliesToElement( member, element ) {
 }
 
 // ---------------------------------------------------------------------------
+// STATES AXIS (Spec 35 FR-35-5)
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a flat lookup of member.key -> { ...member, cluster: clusterKey } across
+ * every declared cluster, so a `states` block can reference a member by key
+ * (e.g. "css:background-color") without repeating its label/suffixes.
+ */
+function buildMemberIndex( clusterSets ) {
+	const index = {};
+	for ( const clusterKey of Object.keys( clusterSets.clusters || {} ) ) {
+		const cluster = clusterSets.clusters[ clusterKey ];
+		for ( const member of cluster.members || [] ) {
+			index[ member.key ] = Object.assign( {}, member, { cluster: clusterKey } );
+		}
+	}
+	return index;
+}
+
+/**
+ * Resolve one member at one STATE for one element. Mirrors resolveMember()'s two
+ * resolution forms (FR-35-5 schema):
+ *
+ *   (a) `attrMap` on the state — explicit, always authoritative, and the ONLY
+ *       correct form wherever the state token is infix/prefix or semantically
+ *       misleading (tabActiveTextColour is NOT :active — see module header).
+ *   (b) `suffix` + `members` — the mechanical shortcut for the 81% suffix-shaped
+ *       majority (`backgroundColour` + `Hover` = `backgroundColourHover`).
+ *       `members` names WHICH members participate; `suffix` derives the state
+ *       attribute name FROM THE ALREADY-RESOLVED BASE ATTRIBUTE, so a false
+ *       friend like `pauseOnHover` is never reachable — nobody lists it.
+ *
+ * Returns { resolved, via, attr? }. Does NOT decide STATE_WITHOUT_BASE — that is
+ * computed by the caller by separately resolving the member at base.
+ */
+function resolveStateMember( element, member, stateSpec, blockJson ) {
+	const attributes = blockJson.attributes || {};
+	const supports = blockJson.supports || {};
+
+	// (a) explicit attrMap on the state — always tried first, always authoritative.
+	if ( stateSpec.attrMap && Object.prototype.hasOwnProperty.call( stateSpec.attrMap, member.key ) ) {
+		const mapped = stateSpec.attrMap[ member.key ];
+		if ( mapped.startsWith( 'native:' ) ) {
+			const supportsPath = mapped.slice( 'native:'.length );
+			const val = get( supports, supportsPath );
+			return { resolved: !! val, via: 'state-attrMap-native', path: supportsPath };
+		}
+		const found = findAttrKeyCaseInsensitive( attributes, mapped );
+		return { resolved: !! found, via: 'state-attrMap', attr: mapped };
+	}
+
+	// (b) suffix + members — mechanical shortcut, only for members the author listed.
+	if ( typeof stateSpec.suffix === 'string' && Array.isArray( stateSpec.members ) && stateSpec.members.includes( member.key ) ) {
+		const base = resolveMember( element, member, blockJson );
+		if ( base.resolved && base.attr ) {
+			const candidate = base.attr + stateSpec.suffix;
+			const found = findAttrKeyCaseInsensitive( attributes, candidate );
+			if ( found ) return { resolved: true, via: 'state-suffix', attr: found, baseAttr: base.attr };
+		}
+		return { resolved: false, via: null };
+	}
+
+	return { resolved: false, via: null }; // member not declared for this state
+}
+
+/**
+ * Process every `states` entry on every declared element of a block. Adds
+ * `state-ok` / `state-gap` / `state-without-base` findings (a THIRD status,
+ * per FR-35-5, kept out of `state-gap` so a client-facing "hover works but the
+ * resting state doesn't" defect can't hide inside the gap count) and adds any
+ * resolved state attribute to `claimedAttrs` so it drops out of orphan-scan
+ * (FR-35-5 rule 4).
+ */
+function analyseStates( elementKeys, elements, blockJson, memberIndex, claimedAttrs, findings ) {
+	for ( const elementKey of elementKeys ) {
+		const element = elements[ elementKey ];
+		const states = element.states;
+		if ( ! states || typeof states !== 'object' ) continue; // opt-in — no states declared, nothing to check
+
+		for ( const stateName of Object.keys( states ) ) {
+			const stateSpec = states[ stateName ];
+			const memberKeys = new Set( [
+				...( stateSpec.attrMap ? Object.keys( stateSpec.attrMap ) : [] ),
+				...( Array.isArray( stateSpec.members ) ? stateSpec.members : [] ),
+			] );
+
+			for ( const memberKey of memberKeys ) {
+				const member = memberIndex[ memberKey ];
+				if ( ! member ) continue; // unknown member key — not this script's job to invent one
+
+				const stateResult = resolveStateMember( element, member, stateSpec, blockJson );
+				// Base resolution is checked INDEPENDENTLY of the element's declared
+				// `clusters` list — a state can be declared even where the base cluster
+				// isn't (card-grid's card-tile: clusters: [] but states.hover declared).
+				const baseResult = resolveMember( element, member, blockJson );
+
+				let status;
+				if ( stateResult.resolved ) {
+					status = baseResult.resolved ? 'state-ok' : 'state-without-base';
+					if ( stateResult.attr ) claimedAttrs.add( stateResult.attr );
+				} else {
+					status = 'state-gap';
+				}
+
+				findings.push( {
+					block: blockJson.name,
+					element: elementKey,
+					elementLabel: element.label || elementKey,
+					cluster: member.cluster,
+					member: member.key,
+					memberLabel: member.label,
+					state: stateName,
+					status,
+					via: stateResult.via,
+					resolvedAttr: stateResult.attr,
+					baseResolved: baseResult.resolved,
+				} );
+			}
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
 // ORPHAN DETECTION (Spec 35 FR-35-4)
 // ---------------------------------------------------------------------------
 
@@ -337,6 +460,12 @@ function analyseBlock( blockSlug, blockJson, clusterSets, findings ) {
 		}
 	}
 
+	// STATES AXIS (Spec 35 FR-35-5) — runs AFTER base-cluster resolution (states can
+	// reference members regardless of whether the base cluster was declared) and
+	// BEFORE orphan-scanning (a resolved state attribute is CLAIMED, FR-35-5 rule 4).
+	const memberIndex = buildMemberIndex( clusterSets );
+	analyseStates( elementKeys, elements, blockJson, memberIndex, claimedAttrs, findings );
+
 	const orphans = findOrphans( elementKeys, elements, blockJson, claimedAttrs );
 	for ( const orphan of orphans ) findings.push( orphan );
 
@@ -353,7 +482,10 @@ function printHuman( meta, findings ) {
 		`Blocks with a manifest: ${ meta.manifested_count } | blocks skipped (no supports.sgs.elements): ${ meta.skipped_count }\n`
 	);
 	process.stdout.write(
-		`Members checked: ${ meta.total_checked } | OK: ${ meta.total_ok } | GAP: ${ meta.total_gap } | ORPHAN: ${ meta.total_orphan }\n\n`
+		`Members checked: ${ meta.total_checked } | OK: ${ meta.total_ok } | GAP: ${ meta.total_gap } | ORPHAN: ${ meta.total_orphan }\n`
+	);
+	process.stdout.write(
+		`States (FR-35-5, separate from base): STATE_OK: ${ meta.total_state_ok } | STATE_GAP: ${ meta.total_state_gap } | STATE_WITHOUT_BASE: ${ meta.total_state_without_base }\n\n`
 	);
 
 	const byBlock = {};
@@ -384,7 +516,13 @@ function printHuman( meta, findings ) {
 				process.stdout.write( `      [OK]  ${ f.cluster }/${ f.member } (${ f.memberLabel }) → ${ detail }\n` );
 			} else if ( f.status === 'gap' ) {
 				process.stdout.write( `      [GAP] ${ f.cluster }/${ f.member } (${ f.memberLabel }) — no attrMap entry and no default-convention attribute found\n` );
-			} else {
+			} else if ( f.status === 'state-ok' ) {
+				process.stdout.write( `      [STATE_OK]  ${ f.state } ${ f.cluster }/${ f.member } (${ f.memberLabel }) → ${ f.resolvedAttr }\n` );
+			} else if ( f.status === 'state-gap' ) {
+				process.stdout.write( `      [STATE_GAP] ${ f.state } ${ f.cluster }/${ f.member } (${ f.memberLabel }) — no state attrMap entry and no derivable suffix attribute found\n` );
+			} else if ( f.status === 'state-without-base' ) {
+				process.stdout.write( `      [STATE_WITHOUT_BASE] ${ f.state } ${ f.cluster }/${ f.member } (${ f.memberLabel }) → ${ f.resolvedAttr } — client can style the ${ f.state } state but NOT the resting state (no base attribute)\n` );
+			} else if ( f.status === 'orphan' ) {
 				process.stdout.write( `      [ORPHAN] ${ f.attr } — wired to the block but not claimed by any declared cluster member\n` );
 			}
 		}
@@ -443,6 +581,15 @@ function main() {
 	const totalGap = totalChecked - totalOk;
 	const totalOrphan = findings.filter( ( f ) => f.status === 'orphan' ).length;
 
+	// STATE counters (Spec 35 FR-35-5) — kept SEPARATE from total_ok/total_gap
+	// (rule 5: "Without this the headline number silently changes meaning again").
+	// STATE_WITHOUT_BASE is its own count too, not folded into total_state_gap —
+	// it is a client-facing defect class (hover works, resting state doesn't),
+	// not a plain gap, and must not be able to hide inside the gap count.
+	const totalStateOk = findings.filter( ( f ) => f.status === 'state-ok' ).length;
+	const totalStateGap = findings.filter( ( f ) => f.status === 'state-gap' ).length;
+	const totalStateWithoutBase = findings.filter( ( f ) => f.status === 'state-without-base' ).length;
+
 	const meta = {
 		audit: 'element-manifest-conformance',
 		warn_only: true,
@@ -452,6 +599,9 @@ function main() {
 		total_ok: totalOk,
 		total_gap: totalGap,
 		total_orphan: totalOrphan,
+		total_state_ok: totalStateOk,
+		total_state_gap: totalStateGap,
+		total_state_without_base: totalStateWithoutBase,
 	};
 
 	if ( process.argv.includes( '--json' ) ) {

@@ -60,7 +60,7 @@
 				"quote-box": {
 					"label": "Quote box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -70,8 +70,13 @@
 						"css:border-width": "native:__experimentalBorder.width",
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
-					}
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"anim:preset": "sgsAnimation",
+						"anim:duration": "sgsAnimationDuration",
+						"anim:easing": "sgsAnimationEasing",
+						"anim:stagger": "staggerDelay"
+					},
+					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attrs on this block."
 				},
 				"quote-text": {
 					"label": "Quote text",

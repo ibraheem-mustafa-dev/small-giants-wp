@@ -119,7 +119,7 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -131,8 +131,11 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:box-shadow": "shadow"
-					}
+						"css:box-shadow": "shadow",
+						"anim:parallax": "bgParallax",
+						"anim:duration": "bgAnimationDuration"
+					},
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block."
 				},
 				"grid": {
 					"label": "Grid / flex layout",

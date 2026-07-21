@@ -64,7 +64,7 @@
 					"layer": "OUTER",
 					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the layout cluster carries the grid/arrangement properties, disambiguated by this element being the grid.",
 					"order": 1,
-					"clusters": [ "layout" ],
+					"clusters": [ "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
@@ -83,14 +83,28 @@
 						"css:align-content": "alignContent",
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
-					}
+						"css:flex-wrap": "flexWrap",
+						"anim:preset": "sgsAnimation",
+						"anim:duration": "sgsAnimationDuration",
+						"anim:easing": "sgsAnimationEasing",
+						"anim:stagger": "staggerDelay"
+					},
+					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
 				},
 				"card-tile": {
 					"label": "Card",
 					"order": 2,
 					"clusters": [],
-					"_note": "GAP CANDIDATE, not a deliberate omission: the card tile has hover-only fill/border controls (backgroundColourHover, borderColourHover, shadowHover) but no STATIC background-colour, border, radius, or padding attrs for the resting state. Declaring the fill/layout clusters here would report every member as a gap since none are wired; flagging via this note instead so it reads as one clear finding rather than a wall of false-looking gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:border-color": "borderColourHover",
+								"css:box-shadow": "shadowHover"
+							}
+						}
+					},
+					"_note": "Spec 35 FR-35-5 — the card tile's fill/border controls are HOVER-ONLY (backgroundColourHover, borderColourHover, shadowHover), with no STATIC background-colour, border, or box-shadow attrs for the resting state (resting state is hardcoded at style.css:29-31 — logged, not solved here, see design doc 'Out of scope'). Declaring the `fill`/`layout` clusters at base here would report every member as a false-looking gap since none are wired; the `states.hover` declaration above surfaces the REAL, narrower finding as STATE_WITHOUT_BASE for each of the 3 hover attrs instead — a client can restyle the hover fill but not the resting fill."
 				},
 				"card-media": {
 					"label": "Card image",

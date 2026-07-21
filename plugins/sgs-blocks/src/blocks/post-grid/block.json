@@ -56,7 +56,7 @@
 					"layer": "OUTER",
 					"_layer_note": "Block root and grid/list/masonry/carousel track combined. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid.",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -76,9 +76,13 @@
 						"css:justify-content": "justifyContent",
 						"css:align-content": "alignContent",
 						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap"
+						"css:flex-wrap": "flexWrap",
+						"anim:preset": "sgsAnimation",
+						"anim:duration": "sgsAnimationDuration",
+						"anim:easing": "sgsAnimationEasing"
 					},
-					"_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs."
+					"_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs.",
+					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) resolves via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). This block has NO staggerDelay attribute, so anim:stagger is an honest gap; anim:parallax/anim:trigger are also honest gaps (no bgParallax/scroll-trigger attrs)."
 				},
 				"card": {
 					"label": "Post card",

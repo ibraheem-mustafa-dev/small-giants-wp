@@ -2796,6 +2796,159 @@
       "divergence": "Raw URL fields lack internal search + new-tab + rel; the flat url/blockLink/ctaUrl string attrs need to become object shape {url, opensInNewTab, rel} to carry LinkControl's settings. linkEmail/linkPhone/phoneNumber are semantically constrained (mailto:/tel:) and should validate/prefix accordingly rather than accept an arbitrary URL — a sub-case LinkControl doesn't cover natively and needs a thin wrapper rule.",
       "divergence_severity": "high",
       "notes": "This row is copied near-verbatim from the design spine's own worked example (spec-35-setting-registry-design.md) — the source counts (15 attrs / 12 blocks) match exactly, confirming the worked example already reflects this exact group. Converter-population note: any cloned block that fills these attrs must emit the {url,opensInNewTab,rel} object shape, not a flat string, per the object-typed-attr-coerces-flat-to-default gotcha in MEMORY.md (D328) — a flat string emit would be silently coerced to the block.json default at render."
+    },
+    {
+      "setting_key": "anim:preset",
+      "category": "behaviour-family",
+      "label": "Animation preset (scroll/reveal/fade/slide/zoom/draw)",
+      "optimal_control": {
+        "component": "ToggleGroupControl or ComboboxControl (>10 preset options)",
+        "props": {
+          "options": "fade/slide/zoom/reveal/draw/Ken-Burns/parallax — closed CSS keyframe enum",
+          "preset_layer": "each preset seeds the underlying duration/easing/trigger controls beneath it"
+        },
+        "preset_layer": "animation-style presets seed a real ms-level delay/duration/stagger box underneath",
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "closed enum, no Custom path",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'none' (no animation)"
+      },
+      "shared_component": "ScrollRevealControls",
+      "spec_ref": "Spec 35 FR-35-6 (animation cluster member 1) + Part C Motion/animation (scroll-triggered P · entrance P) + Part I Reduced-motion gate",
+      "current_state": "10 instances across 10 blocks (sgsAnimation attrs on card-grid, cta-section, decorative-image, gallery, hero, post-grid, timeline, trust-bar, trustpilot-reviews, video-embed) with no shared component — every block uses its own naming or subset",
+      "divergence": "sgsAnimation* attrs bypass the existing universal AnimationPanel and each block-privately names/controls them; should consolidate into ScrollRevealControls",
+      "divergence_severity": "high",
+      "notes": "FR-35-6 establishes this cluster for the first time; 10 blocks carry sgsAnimation* today. The naming pattern (sgsAnimation, sgsAnimationDuration, sgsAnimationEasing with identical suffixes across 10 blocks) suggests a ready-to-extract common control set, but they are currently all block-private. Animation JS files (scroll observers, keyframe runners) live per-block; centralizing ScrollRevealControls is a future consolidation, not part of this build."
+    },
+    {
+      "setting_key": "anim:duration",
+      "category": "behaviour-family",
+      "label": "Animation duration (milliseconds)",
+      "optimal_control": {
+        "component": "RangeControl (ms unit, withInputField, allowReset)",
+        "props": {
+          "range": { "min": 0, "max": 5000, "step": 100 },
+          "withInputField": true,
+          "allowReset": true,
+          "resetFallbackValue": "block.json default (typically 600–1000ms)"
+        },
+        "preset_layer": null,
+        "units": "ms (milliseconds — real numeric unit, not unitless slider)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset clears to block.json default"
+      },
+      "shared_component": "ScrollRevealControls",
+      "spec_ref": "Spec 35 FR-35-6 (animation cluster member 2) + Part B RangeControl (ms unit, bounds, input field, reset)",
+      "current_state": "10 instances across 10 blocks as sgsAnimationDuration (card-grid, cta-section, decorative-image, gallery, hero, post-grid, timeline, trust-bar, trustpilot-reviews, video-embed) — all block-private",
+      "divergence": "All 10 use identical attr names (sgsAnimationDuration suffix) and should consolidate into one RangeControl inside ScrollRevealControls",
+      "divergence_severity": "high",
+      "notes": "Identical naming across all 10 blocks makes this the clearest consolidation candidate in the animation family."
+    },
+    {
+      "setting_key": "anim:easing",
+      "category": "behaviour-family",
+      "label": "Animation easing (timing function preset)",
+      "optimal_control": {
+        "component": "ToggleGroupControl (5–7 easing presets: ease-out/ease-in/ease-in-out/linear/spring/smooth, plus custom/none)",
+        "props": {
+          "options": "ease-out (default) / ease-in / ease-in-out / linear / spring / smooth / custom"
+        },
+        "preset_layer": null,
+        "units": "n/a",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "ToggleGroupControl for 5–7 named easing presets",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "clears to 'ease-out' (default)"
+      },
+      "shared_component": "ScrollRevealControls",
+      "spec_ref": "Spec 35 FR-35-6 (animation cluster member 3) + Part B ToggleGroupControl (short preset options, no custom entry)",
+      "current_state": "10 instances across 10 blocks as sgsAnimationEasing — all block-private",
+      "divergence": "Consolidate into ScrollRevealControls ToggleGroupControl",
+      "divergence_severity": "high",
+      "notes": "Paired with sgsAnimationDuration; same 10 blocks."
+    },
+    {
+      "setting_key": "anim:stagger",
+      "category": "behaviour-family",
+      "label": "Stagger delay (milliseconds between items)",
+      "optimal_control": {
+        "component": "RangeControl (ms unit, withInputField, allowReset)",
+        "props": {
+          "range": { "min": 0, "max": 500, "step": 50 },
+          "withInputField": true,
+          "allowReset": true,
+          "resetFallbackValue": 0
+        },
+        "preset_layer": null,
+        "units": "ms (milliseconds)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset"
+      },
+      "shared_component": "ScrollRevealControls",
+      "spec_ref": "Spec 35 FR-35-6 (animation cluster member 4) + Part B RangeControl",
+      "current_state": "3 instances (staggerDelay on card-grid, post-grid; revealStagger on gallery) — inconsistent attr names, block-private",
+      "divergence": "Three different attr names (staggerDelay, revealStagger) across three blocks for the same concept; consolidate under one anim:stagger member with consistent naming",
+      "divergence_severity": "medium",
+      "notes": "Lower instance count (3) than sgsAnimation* (10) but same consolidation pattern applies."
+    },
+    {
+      "setting_key": "anim:parallax",
+      "category": "behaviour-family",
+      "label": "Parallax (scroll-based depth effect)",
+      "optimal_control": {
+        "component": "ToggleControl (enable/disable) + RangeControl (parallaxStrength: 0–100%, scroll effect intensity)",
+        "props": {
+          "enable": "ToggleControl",
+          "strength": "RangeControl (0–100, representing parallax multiplier or effect strength)"
+        },
+        "preset_layer": null,
+        "units": "strength is typically a ratio/percentage (unitless 0–100)",
+        "responsive_device_tier": false,
+        "multi_value": "parallaxStrength is a separate related member, not multi-value",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset on strength; parallax toggle defaults false"
+      },
+      "shared_component": "ScrollRevealControls",
+      "spec_ref": "Spec 35 FR-35-6 (animation cluster member 5) + Part C Motion (parallax P)",
+      "current_state": "4 instances: bgParallax (4 blocks: cta-section, hero, trust-bar, gallery), parallaxStrength (on gallery), hasParallax (on decorative-image) — inconsistent naming and toggling",
+      "divergence": "Four different attr naming patterns (bgParallax bool, parallaxStrength number, hasParallax bool) across 4 blocks should consolidate into one parallax enable/strength pair",
+      "divergence_severity": "medium",
+      "notes": "Includes both enable and strength members; consolidate via ScrollRevealControls and route both through the anim:parallax member."
+    },
+    {
+      "setting_key": "anim:trigger",
+      "category": "behaviour-family",
+      "label": "Scroll trigger (scroll-based animation onset)",
+      "optimal_control": {
+        "component": "ToggleControl (enable scroll-driven animation) + optional RangeControl (triggerOffset: pixels above/below viewport when animation fires)",
+        "props": {
+          "triggerOnScroll": "ToggleControl (enable scroll-reveal animation)",
+          "triggerOffset": "RangeControl (pixels before element enters viewport, typically 0–200px negative offset = fire before element is visible)"
+        },
+        "preset_layer": null,
+        "units": "triggerOffset is px (pixel offset from viewport edge)",
+        "responsive_device_tier": false,
+        "multi_value": "none",
+        "dropdown_completeness": "n/a",
+        "alpha_clearable": "n/a",
+        "reset_disclosure": "allowReset on offset; trigger defaults false/0"
+      },
+      "shared_component": "ScrollRevealControls",
+      "spec_ref": "Spec 35 FR-35-6 (animation cluster member 6) + Part C Motion (scroll-triggered P)",
+      "current_state": "6 instances: revealOnScroll (gallery, cta-section, post-grid, media, decorative-image, timeline), fadeOnScroll (hero), pathDrawOnScroll (timeline), pathDrawTriggerOffset (timeline) — varied naming across 6 blocks, some combined with unrelated attributes",
+      "divergence": "Consolidate multiple scroll-trigger patterns (revealOnScroll bool, fadeOnScroll bool, pathDraw* attrs) into one anim:trigger member pair (triggerOnScroll bool + triggerOffset range)",
+      "divergence_severity": "medium",
+      "notes": "Highest variety in naming (revealOnScroll vs fadeOnScroll vs pathDrawOnScroll); triggerOffset appears only on pathDraw context, but the generic concept (fire animation at X pixels before viewport entry) applies universally."
     }
   ]
 }

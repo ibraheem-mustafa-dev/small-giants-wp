@@ -40,7 +40,7 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "fill", "layout", "animation" ],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -52,9 +52,12 @@
 						"css:border-radius": "native:__experimentalBorder.radius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
-						"css:box-shadow": "shadow"
+						"css:box-shadow": "shadow",
+						"anim:parallax": "bgParallax",
+						"anim:duration": "bgAnimationDuration"
 					},
-					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade, while typography (fontSize/lineHeight/etc) is re-selectored to .sgs-cta-section__headline — see the 'headline' element below for that half of the split."
+					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade, while typography (fontSize/lineHeight/etc) is re-selectored to .sgs-cta-section__headline — see the 'headline' element below for that half of the split.",
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block."
 				},
 				"headline": {
 					"label": "Headline",
