@@ -267,8 +267,14 @@ final class Sgs_Footer_Rules {
 		if ( 'core/template-part' !== ( $block['blockName'] ?? '' ) ) {
 			return $pre;
 		}
-		$area = $block['attrs']['area'] ?? '';
-		if ( 'footer' !== $area ) {
+		// Match by EITHER the `area` attr OR the `slug` attr — the SGS theme
+		// references the part as `{"slug":"footer","tagName":"footer"}` with no
+		// `area` attr, so an area-only gate never fires on this theme. See the
+		// header equivalent for the full rationale (proved live 2026-07-22).
+		$attrs = $block['attrs'] ?? array();
+		$area  = $attrs['area'] ?? '';
+		$slug  = $attrs['slug'] ?? '';
+		if ( 'footer' !== $area && 'footer' !== $slug ) {
 			return $pre;
 		}
 

@@ -199,8 +199,19 @@ final class Sgs_Header_Rules {
 		if ( 'core/template-part' !== ( $block['blockName'] ?? '' ) ) {
 			return $pre;
 		}
-		$area = $block['attrs']['area'] ?? '';
-		if ( 'header' !== $area ) {
+		// Match the header area by EITHER the `area` attr OR the `slug` attr.
+		// The SGS theme's templates reference the part as
+		// `{"slug":"header","tagName":"header"}` with NO `area` attr, so an
+		// `area`-only gate never fired on this theme at all — a latent bug in the
+		// rules engine that FR-37-3's binding inherited (proved live 2026-07-22:
+		// the CPT header did not render while the behaviour resolver, which reads
+		// the CPT directly, still saw it). WP resolves the area from the part's
+		// registration, but that resolution is not reflected in the parsed block
+		// attrs this filter sees, so we must also accept the slug.
+		$attrs = $block['attrs'] ?? array();
+		$area  = $attrs['area'] ?? '';
+		$slug  = $attrs['slug'] ?? '';
+		if ( 'header' !== $area && 'header' !== $slug ) {
 			return $pre;
 		}
 
