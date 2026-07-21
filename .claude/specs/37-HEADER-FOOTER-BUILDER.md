@@ -449,7 +449,7 @@ operator must set; the row **stacks to 1 column on mobile automatically**, like 
 content. A per-device override is available but never required. The count drives the shared
 container grid engine — no new engine (R-31-9 reuse).
 
-> **🐛 LIVE BUG this FR must fix — found 2026-07-21, verified.** `site-footer/edit.js:28-29`
+> **🐛 LIVE BUG this FR must fix — found 2026-07-21, verified.** `site-footer/edit.js:28-30`
 > inserts a footer row carrying `columns: 3`, `columnsTablet: 3`, `columnsMobile: 1` — but
 > `site-footer-row/block.json` **declares none of those three attributes** (only
 > `gridTemplateColumns`). Per D338, WordPress **silently discards** any attribute a block does

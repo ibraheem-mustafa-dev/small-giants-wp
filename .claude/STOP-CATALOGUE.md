@@ -68,6 +68,27 @@ points here. Neither ever silently drops a STOP.
   deferral was struck with its reasoning rather than carried forward. Same family as
   STOP-FACT-CHECK-COUNCIL/REGISTER-FINDINGS — a finding is a hypothesis — extended to *your own
   project's queued work*, which feels authoritative precisely because it came from inside.
+- **STOP-A-SPEC-DESCRIBING-A-SUPERSEDED-MODEL-ACTIVELY-MISDIRECTS-THE-BUILD** — NEW 2026-07-21
+  (D358). Spec 17 carried THREE competing answers to "where is a header edited?" — Site Editor,
+  WP Customiser (never built), and the CPT screen P2 actually decided on. The CODE implemented
+  the first; the DECISION was the third. A task earlier that same day was built and
+  live-verified against the superseded model **purely because the governing spec still described
+  it**. A stale spec is not neutral documentation debt — for a non-coder owner the spec IS the
+  system, so it steers the build wrong with full authority. **When a decision changes the model,
+  the governing spec is amended in the SAME work, or the next session builds the old one.**
+  Corollary: a doc that has to label its own content "RETRACTED FICTION" (Spec 17 did, naming
+  four classes asserted as shipped that never existed) has earned deletion, not a caveat.
+- **STOP-EVERY-COUNCIL-NEEDS-A-CODE-GROUNDED-SEAT** — NEW 2026-07-21 (D358), promoting P2's own
+  rule to a STOP because it was proved again the day it was written. A 6-persona adversarial
+  council reviewed Spec 37. **Five prose reviewers missed that FR-37-3's central instruction
+  cited a filter with ZERO subscribers** (`sgs_header_rule_resolved` — two hits in the tree: the
+  `apply_filters` and a comment claiming it matters). Only the seat whose entire job was
+  verifying claims against live source caught it, and traced the REAL breakage one file over
+  (`Sgs_Header_Behaviours` hooks `body_class`, resolves via `get_header_content()`, which reads
+  the file the spec's own FR-37-6 empties). Built as written it would have shipped a header that
+  renders and is then **silently not sticky**. The same seat caught FR-37-16 ordering a reversal
+  of council-gated STOP-NO-KSORT. **A council without a source-grounded reviewer converges on
+  rhetoric and rubber-stamps code-level claims** — including fiction the author just wrote.
 - **STOP-RECHECK-BRANCH-BEFORE-COMMIT** — on a shared worktree with co-active sessions,
   put `git branch --show-current` in the SAME guarded command as the commit; a
   session-start check is stale the moment a co-active session runs `git checkout`. Use
@@ -278,3 +299,9 @@ for real before claiming done?
   Both are earned: a vacuous acceptance test that would have passed with the feature absent was
   caught mid-session and redone with a negative control; and an inherited deferral, executed as
   written, would have deleted the FR-36-18 rollback path.
+- **2026-07-21 (Spec 37 / Spec 17 deletion / D358) re-run:** previous unique `STOP-*` tokens = **57**;
+  this session ADDED 2 (`STOP-A-SPEC-DESCRIBING-A-SUPERSEDED-MODEL-ACTIVELY-MISDIRECTS-THE-BUILD`,
+  `STOP-EVERY-COUNCIL-NEEDS-A-CODE-GROUNDED-SEAT`) and SUBTRACTED none → **59**. 59 >= 57. PASS.
+  Both are earned: a spec describing an abandoned model caused a task to be built against the wrong
+  one that same day, and five of six council reviewers rubber-stamped a citation to a filter that
+  nothing hooks.

@@ -15,6 +15,88 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D358 [INCIDENT] — Spec 17 DELETED; Spec 37 is the canonical header/footer home; CPT headers proved unrenderable (2026-07-21)
+
+**The failure.** Spec 17 (1030 lines, 39 FRs) carried THREE competing answers to "where is a header
+edited?" — the Site Editor (§3), the WP Customiser (Decision 21, 18 mentions, **never built**; Spec 17
+itself labelled part of that section "RETRACTED FICTION", naming four classes asserted as shipped that
+never existed), and the CPT admin screen P2 §2.1 actually decided on. **The code implemented the first;
+the decision was the third.** Earlier the same day a task was built and live-verified against the
+superseded model purely because the governing spec still described it. Docs are the system for a
+non-coder owner; a spec that describes an abandoned model actively misdirects the build.
+
+**Resolution.** `specs/37-HEADER-FOOTER-BUILDER.md` — 31 FRs, docscore 100% A, every FR carrying
+`BUILT`/`PARTIAL`/`NOT-BUILT` + `file:line`. Spec 17 deleted; 14 live docs repointed (historical plans
+and archives deliberately untouched — a stale pointer inside a May record is correct). Coverage matrix
+(all 39 FRs + 5 plan docs, CARRIED/MOVED/RETIRED-with-reason) at
+`reports/2026-07-21-spec17-to-spec37-coverage.md`; 8 gaps it found became FR-37-24…31.
+
+**The load-bearing find (verified hook by hook).** A CPT-authored header **can never reach the
+frontend**: CPT patterns register on `admin_init` (`class-sgs-block-cpts.php:55`), the rules engine
+resolves on `pre_render_block` (`class-sgs-header-rules.php:51`) via the pattern registry (`:329`),
+finds nothing, returns `null`, falls through to the theme default. **Silent — the D338 class.**
+Replaced by direct render, which never consults the registry.
+
+**Bean rulings, all four open questions answered (none deferred into the build):**
+1. **Columns = an operator-set COUNT** that stacks on mobile automatically. A `gridTemplateColumns`
+   ratio override was recommended by the dev agent and **rejected**: a CSS grid template is a
+   developer concept and fails the non-coder bar.
+2. **Rows:** `templateLock` `'insert'` → **`'all'`**. WP's `'insert'` blocks add/remove but still
+   permits MOVE — both containers' comments claim reorder is locked; it is not.
+3. **Per-device cascade: HIDE not REMOVE** (`device-visibility.php:10,15` keeps content in the DOM for
+   SEO), `inherit` resolves at render never copies down at save, and it **moves to Spec 35 §D4**
+   because it reshapes a framework-wide extension applied to every block.
+4. **Site Info → Spec 36** (amended same-commit). Its refusal ("remains Spec 17's") pointed at a
+   document being deleted, so the premise expired. Without the amendment `sgs_site_info` had NO owner.
+
+**Two live bugs found while specifying.** (a) `site-footer/edit.js:28-30` sets
+`columns`/`columnsTablet`/`columnsMobile` on a row whose `block.json` declares **none** of them →
+silently discarded at save (D338); fixing it IS FR-37-11. (b) the `templateLock` reorder gap above.
+
+**The council caught the spec writing fiction.** FR-37-3 originally justified itself via
+`sgs_header_rule_resolved` — a filter with **zero subscribers**. The real breakage is one file over:
+`Sgs_Header_Behaviours` hooks `body_class` and resolves via `get_header_content()`, which reads
+`parts/header.html` — the file FR-37-6 empties. Built as written, the header renders and is then
+**silently not sticky**. FR-37-3 now carries the corrected contract; FR-37-6 is gated on it. The
+council also caught FR-37-16 ordering a reversal of **STOP-NO-KSORT** (D334, council-gated) — struck.
+**Lesson reinforced:** a code-grounded reviewer is mandatory on this track (P2's own rule); the five
+prose reviewers all missed the zero-subscriber filter.
+
+## D357 [ROUTINE] — Contrast is warn-only even developer-side; cross-palette sweep built (2026-07-21)
+
+**Bean ruling, extending `a11y-validation-feedback-informational-not-gate`.** That rule's carve-out
+permitted hard gates for "developer/framework-side build checks". **It does not extend to contrast.**
+Bean: *"contrast should be a warn only system, it creates so much BS random changes when I just want to
+clone a draft."* `scripts/nav-qa/palette-contrast-sweep.mjs` (built this session — 176 combinations,
+axe-core, every draft × every client palette × 2 viewports) exits **0 by default**; `--strict` is an
+explicit opt-in, never wired to prebuild.
+
+**Why the carve-out fails for contrast specifically:** contrast is a property of a PAIRING, not of a
+component, so a draft that is perfectly accessible on its own palette can fail under a client's palette
+without being defective. Borne out immediately: 496 findings looked like 35 drafts to fix, but
+`depth-stack` measures **7.46:1 on its own palette** and only fails where a client's `primary-dark` is
+not actually dark (mamas-munches `#c56a7a`, luminance 0.236 — ~60× brighter than eye-care's). **A
+blocking gate would have forced 35 pointless draft edits to accommodate two palettes' naming.**
+Bean's ruling: change nothing — the drafts and the palettes both stay as they are.
+
+## D356 [ROUTINE] — token-lint was inert; starter panels are token-driven (2026-07-21)
+
+**`token-lint.py` checked nothing.** `:1941` routed every `.html` to the inline-style parser, which
+reads only `style=""` attributes — the drafts put all CSS in a `<style>` block, so **zero declarations
+were ever parsed** and it would have passed a draft of pure hardcoded hex. Measured on
+`link-columns-v3.html`: 0 `style=` attrs, 1 `<style>` block, ~118 declaration lines. Fixed via
+`_isolate_style_blocks()`; all 11 drafts now read 8–31 declarations each (was 0 for all 11).
+Unresolved `var()` is now a hard fail in strict mode — including when a fallback masks it, since the
+fallback is what hides a typo. Every leg carries a negative control (the pre-fix path is reproduced and
+asserted to read strictly less). ⚠ The parking entry's cited example (`--focus-ring`/`--on-primary`)
+was **stale** — all 11 drafts had 0 unresolved refs when checked.
+
+**Starter panels are token-driven (Bean).** The parked A-vs-B register question
+(`P-MEGA-CLIENT-REGISTER-UNLOCKED`) was **dissolved, not answered**: a panel declares its own
+`--primary`/`--surface`/`--text` and those are repointed at the CLIENT's tokens at build time, so the
+panel speaks whichever register that client's brand already speaks. Feasibility evidenced: 10 of 11
+drafts carry zero raw colours outside `:root`.
+
 ## D355 [INCIDENT] — Spec 35: ELEMENT is the primary mapping axis; the `flow` cluster was built, measured and REVERSED the same day (2026-07-21)
 
 **Bean-ruled reversal.** FR-35-2 originally split the overloaded `layout` cluster into

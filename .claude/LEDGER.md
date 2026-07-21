@@ -17,141 +17,74 @@ note: "THE single living-status doc. Replaces the old 3-way split (state/handoff
 (or you) gets ONE true answer instead of three drifting ones. It replaces the old three
 docs (state / handoff / next-session-prompt) that kept contradicting each other.
 
-**Track 2 history (P2 + P2.5) — CLOSED, detail archived.** P2 (the header/footer/nav BUILDER
-design-gate) is DONE + SIGNED OFF: `plans/2026-07-18-P2-builder-ux-design-gate.md` — the
-settings panel a non-coder uses, over a CPT editing home (`sgs_header`/`sgs_footer`, NOT the
-Site Editor), tri-state per-device controls, starter-template picker, bound to Spec 35.
-Navigation was then carved out as P2.5 (full rework — Bean overrode the council's "salvage
-adaptive-nav"). **P2.5 outcome: `specs/36-SGS-NAVIGATION-SYSTEM.md` SIGNED OFF v2.1
-(2026-07-19)** — the single canonical nav home; 7-persona adversarial council + qc-council
-fact-check, all 26 FRs survive; code-salvage audit evidenced to `file:line`
-(`reports/2026-07-19-P2.5-phase6.5-salvage-audit.md`); safe doc-purge done (spec 34 DELETED,
-Spec 17/02 → Spec 36 pointers). Menu data = **CLASSIC WP menus PRIMARY** (`wp_navigation` is a
-Phase-3 extra — an earlier "wp_navigation locked" line was a stale carry, corrected 07-19).
-**Post-build deferrals — WORKED 2026-07-20 (see the Phase-1 close-out below).** The roster items
-(Spec 17 §S9-1, `00 §2.1`, `no-header-footer-block.py`, Spec 29) are DONE; the DB-row retirement was
-struck as not-actionable. **Still genuinely open:** the block-registration deletion + Indus header
-cutover (**FR-36-18**) and the Spec 33 Part 2 emit-target repoint (**FR-36-15**) — both Phase-2 scope.
-Full narrative: `memory/session-2026-07-19*.md`.
-**Phase 1 CLOSED. Plan (historical, was QC-clean 92/100): `plans/2026-07-19-spec36-phase1-mvp-nav-plan.md`.**
-- **WAVES 0–4 + Gate-1 — ALL COMPLETE, Phase 1 CLOSED (2026-07-20).** Full blow-by-blow narrative swept to
-  **`memory/session-2026-07-20-11-spec36-phase1-close.md`** (verbatim) now that the phase is shut; the compressed
-  record follows. Built: the shared `store('sgs/nav')` (D323 body-reparent + D340 scroll-lock ported verbatim, the
-  two old focus-traps MERGED); **`sgs/nav-menu`** (flat bar + burger→drawer, menu picker, collapse-point, featured
-  checklist); **`sgs/nav-drawer`** (full-screen `<dialog showModal>`, × as undeletable chrome, `animateFrom`
-  direction control) — **content-KIND block-private**, because a `<dialog>` cannot be hosted by
-  `SGS_Container_Wrapper` (D294, Bean-approved; now documented as Spec 36 FR-36-13's `<dialog>` exception).
-  `scripts/nav-qa/` Gate-1 tooling; header re-authored in `parts/header.html`; `sgs/adaptive-nav` left registered
-  but dormant as the rollback path.
-- **Gate-1 evidence (all green, live on the canary):** drawer axe **0** · elementFromPoint sweep **20/20** (10/10
-  at 375, the Spec 36 §8 baseline, `probes.mamas.json`) · crawl-assert PASS with JS off · burger/ESC/focus/Tab ·
-  CLS 0.0000–0.0144 · **Bean's eye PASSED** · **D340 bounce PASSED** (Bean, manual, real desktop browser — the
-  harness CANNOT judge this; see STOP-HARNESS-CANNOT-SEE-A-CLASSIC-SCROLLBAR).
-- **Three real bugs found + fixed during Wave 4, each live-verified:** (1) **D351** — the featured item rendered at
-  **1.35:1**; root cause was a MISSING `featuredBg` attribute, so the converter silently dropped the draft's pill
-  fill. The fidelity fix and the a11y fix were one fix (draft pairing 5.28:1). (2) The drawer's **exit animation had
-  never once run** — `runClose()` called `dialog.close()` in the same tick, making the element `display:none` before
-  a frame painted; native ESC also bypassed the close handler entirely. (3) A co-active session's deploy **silently
-  reverted** the D351 fix and a false `verdict: PASS` reached Bean — `build-deploy.py`'s verify leg cannot detect an
-  absent change. All three are now STOP entries.
-- **FR-36-1 classic-menu resolver — BUILT + LIVE-VERIFIED (D352, `4a4c220a`).** Classic menus are the PRIMARY source
-  per spec but resolved to nothing. Now CLASSIC-FIRST then `wp_navigation` (**Bean's ruling:** keep the single numeric
-  `ref`, classic wins the id tie — no new attr, no reshape), normalising classic items into the same block-shaped
-  array so `flatten()`/drawer/edit.js needed ZERO changes; FR-36-1's missing fallback order also implemented; editor
-  picker now lists classic menus (they were unpickable). ⚠ **The first acceptance run was VACUOUS and was caught** —
-  the labels asserted also come from the header's block menu, so it would have passed with the feature absent.
-  Redone with a marker present on the classic page and ABSENT on the homepage. No regression.
-- **Phase-1 close-out (roster + DB):** `no-header-footer-block.py` needs NO change, proven by EXECUTING it
-  (`nav-menu`/`nav-drawer` → 0; `nav`/`header` → 2) · Spec 00 §2.1 refreshed (still named the six-days-deleted
-  `sgs/mobile-nav`) · **`/sgs-update` Stage 11 had been FAILING (exit 1)** — detection was right, the hardcoded
-  roster stale (`nav-menu`+`brand-strip` layout, `nav-drawer` content); now exits 0 · **30 attrs registered**
-  (`sgs/nav-menu` had 2 of its 9 `featured*`).
-- **⛔ One handoff instruction REFUSED:** "retire the adaptive-nav / mega-menu / mobile-nav DB rows". `mobile-nav`
-  is ALREADY gone from `src/` and the DB; `adaptive-nav` MUST stay as the FR-36-18 rollback path; `mega-menu` is
-  **Phase-2 scope**. Executing it as written would have deleted the rollback path — struck, not carried forward.
-- **Known-open, NOT blockers:** featured-item HOVER diverges from the draft (`box-shadow: inset 0 -2px 0 accent`
-  has no attribute) — **⛔ Bean-locked DO-NOT-FIX: the planted TEST CASE for header cloning**
-  (`P-NAV-FEATURED-HOVER-DRAFT-PARITY`, BLOCKED). Bean also reported the inspector's **Styles tab blanking the
-  sidebar** — **NOT REPRODUCED** (all 3 nav blocks, every panel forced open, zero console errors); he
-  deprioritised it (`P-NAV-STYLES-TAB-BLANKS-UNREPRODUCED`).
-- **NOT nav, recorded so it is not re-flagged:** 2 page contrast fails (button 3.67:1, Trustpilot 2.63:1) + a
-  **duplicate `<main>` landmark** traced to a `core/group` in the PAGE content — belongs to the queued core→SGS
-  migration (product-queue task A), not to nav. ("Our Story" has a submenu, flattened in Phase 1 by design;
-  menu 1467's `/gifts/` → `/gift-ideas/` was fixed by Bean himself.)
+**Track 2 history (P2 + P2.5) — CLOSED.** P2 (builder design-gate) signed off; navigation carved out as
+P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the header/footer half of P2 is now
+**`specs/37-HEADER-FOOTER-BUILDER.md`** (Spec 17 deleted). Full narrative:
+`memory/session-2026-07-21-ledger-sweep.md` + `memory/session-2026-07-19*.md`.
 
-**Latest (2026-07-20, Track 1 — Spec 35 rollout, 4 commits, all merged to main via `5672b4c6`).**
-Element-first inspector design LOCKED + its machine contract BUILT + the exemplar made real:
-(1) **Parallax split** — background parallax = a toggle in the native Colour panel (`group="color"`,
-background-capable blocks only) with conditional Strength; element parallax = its own renamed+explained
-panel with conditional Strength; both drive the one `sgsParallax` enum (mutually exclusive) → zero
-render/data-model change; live-verified (`1d476c26`). (2) **Task 2 #1 — element manifest** (`supports.sgs.elements`
-= `{label,order,clusters[],prefix?,isWrapper?,attrMap?}`) + `cluster-member-sets.json` (text/fill/layout
-member sets from the registry) + `check-element-manifest-conformance.js` (CLUSTER-COHERENCE rule, WARN-only);
-brand-strip manifest seeded — honest run **16 OK / 22 gaps** (`869fe84d`). (3) **Task 2 #2 — brand-strip
-exemplar now CONSUMES the real controls**: `tileShadow` → `ShadowControl` (scoped `<style>`, no inline),
-per-logo link → `SgsLinkControl` (`869fe84d`). (4) **ShadowControl crash fix** — live-verify caught it
-crashing on first render (`useSettings('shadow.presets')` returns WP's origin-keyed `{default,theme,custom}`
-object on WP 7.0.x, not an array); normalised + slug-deduped; re-verified live (`bffb00ff`). Also: **Task 4
-live-verified** (form-field inspector decluttered). **Next:** Task 3 (hover-duplicate codemod — design-gate
-first), Task 6 (wire linters WARN-only), Task 2 #3 (per-device border/shadow — design-gate), #4 (content-tab
-spec), step-5 (per-block manifest gap-closing from the 22-gap list). Handoff: `next-session-prompt-spec35-track1.md`.
+- **Spec 36 Phase 1 — CLOSED 2026-07-20, all Gate-1 evidence green** (drawer axe 0 · elementFromPoint 20/20 ·
+  crawl PASS with JS off · Bean's eye PASSED · D340 bounce PASSED on a real desktop browser). Built: shared
+  `store('sgs/nav')`, `sgs/nav-menu`, `sgs/nav-drawer`; FR-36-1 classic-menu resolver (D352). Three bugs found
+  + fixed live (D351 featured contrast 1.35:1 from a missing `featuredBg`; the drawer exit animation that had
+  never once run; a co-active deploy that silently reverted a verified fix). Full detail:
+  `memory/session-2026-07-20-11-spec36-phase1-close.md` + `memory/session-2026-07-21-ledger-sweep.md`.
+- **⛔ `sgs/adaptive-nav` stays registered** as the FR-36-18 rollback path until the Indus cutover is green.
 
-**Prior (2026-07-19, Track 1 — Spec 35 block-inspector-UX, 11 commits).** Phase 0 foundations DONE +
-attribute-registry mapped through Phase 1c. Built: the inspector DONE-checklist; the block roster
-(DB-derived); all 3 audits (inspector-conformance JSX-AST, feature-parity, shrink-to-fit — WARN-only);
-3 shared components (`DesignTokenPicker` enableAlpha, `SgsLinkControl`, `ShadowControl`); brand-strip as
-the pilot exemplar; the **min-width:0 wrapper backstop** (built + deployed, but NOT live-emission-proven —
-the homepage has no wrapper-grid container; UNIT D will prove it). **Registry insight (Bean-driven):**
-944 attr names → ~80 TRUE settings; the "282 one-offs" were classifier laziness (dedup by NAME not
-property-identity), fully adjudicated to 0 genuinely-unique. `plugins/sgs-blocks/scripts/consistency/`.
-Full narrative: `memory/session-2026-07-19*.md`.
+**Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**Where we are (2026-07-17).** Two things run in parallel:
-1. **The website builder itself** — the header/footer/nav system + the drawer menu are built
-   and LIVE on both your test site (sandybrown) and the Indus site (palestine-lives). The
-   last real product work (Phase 2 nav/logo fixes + the disclosure drawer) shipped and was
-   merged to the `main` line. A few small polish items and the Indus header/footer match are
-   still queued (below).
-2. **A tidy-up of how the project is run** — a signed-off plan
-   (now `plans/archive/2026-07-16-setup-simplification-and-protocol.md`) culled cruft and added
-   automatic guard-rails so the AI needs less babysitting. **FULLY COMPLETE (P0–P6) and archived.**
+**⭐ LATEST (2026-07-21 evening) — SPEC 17 DELETED, SPEC 37 IS THE HEADER/FOOTER HOME.**
+The spec problem that made this morning's work land on the wrong thing is now structurally closed.
 
-**Why it matters.** You are QC-only on the framework; every drifting doc or missing guard-rail
-is time you have to spend catching mistakes.
+**What was wrong.** Spec 17 (1030 lines, 39 FRs) described a header/footer system nobody was
+building. It carried **three competing answers** to "where do you edit a header?" — the Site Editor
+(its own §3), the **WP Customiser** (Decision 21, 18 mentions, *never built* — and Spec 17 itself
+labelled part of that section "RETRACTED FICTION", naming four classes asserted as shipped that never
+existed), and the **CPT admin screen** that the P2 design-gate actually decided on. The CODE
+implemented the first. The DECISION was the third. A task earlier the same day was built and verified
+against the wrong one purely because the governing spec still described the superseded model.
 
-**⭐ LATEST (2026-07-21) — MEGA CPT LIVE (D353) + EIGHT PANEL DESIGNS DRAFTED.**
-Phase 2 opened with the **`sgs_mega_menu` CPT**: you can add a mega panel to a menu in
-*Appearance → Menus* exactly like adding a page, and the item stores a real link to that panel.
-Found en route: **`sgs-theme` declared no menu support at all**, so *Appearance → Menus* was broken on
-EVERY SGS site — fixed in the same commit (`cc640511`, D353). Panels are **nav-only** (your ruling):
-no public URL, nothing duplicate for Google. Proven live with a working negative control.
+**What replaced it.** **`specs/37-HEADER-FOOTER-BUILDER.md`** — 31 FRs, docscore 100% Grade A, every
+FR carrying `BUILT`/`PARTIAL`/`NOT-BUILT` with a `file:line` pointer so nothing gets rebuilt and
+nothing is assumed working from a similar-sounding filename. Spec 36 (nav) is its extension.
 
-**Then the whole session went into DESIGN.** The 7 old mega patterns proved unmigratable (stale
-pre-D294 inline styles, a now-wrong `Block Types` header, `core/list` with no `sgs/list` block), so
-eight panels were designed fresh in `.claude/drafts/mega-menu/` against a locked `DESIGN.md`.
-The first attempts were **bland**, and the diagnosis was worth having: unguided generation lands on
-the statistical centre, and **`/frontend-design` — the skill built to prevent exactly that — was never
-invoked**. Direction then moved twice on your calls: dark editorial → SGS orange ground → per-client
-bespoke. **Approved by you: `depth-stack`** (hospitality; fanned card deck, Ken Burns background)
-and the **drill-down rebuild** of `browse-switch-sgs`.
+**The load-bearing find, verified hook by hook:** a CPT-authored header **can never reach the
+frontend today**. CPT patterns register on `admin_init` (`class-sgs-block-cpts.php:55`); the rules
+engine resolves on `pre_render_block`, a frontend hook (`class-sgs-header-rules.php:51`), via the
+pattern registry (`:329`) — finds nothing, returns `null`, falls through to the theme default.
+Silent, no error: the D338 class. Spec 37 replaces the mechanism with **direct render**.
 
-**⚠ TWO THINGS STILL NEED YOU.** (1) **`token-lint.py` IS INERT** — it reports "0 declarations" and
-would pass a draft of pure hardcoded hex, so **every contrast/token check across all eight panels was
-done BY HAND**. It is the gate protecting brand-colour safety; fixing it is the top open task.
-(2) **The client starter register (A editorial-dark vs B SGS-orange) is still unlocked** — building
-logo-grid for Indus specifically sidestepped the decision rather than settling it.
-**Deliberately NOT fixed (your call):** the featured item's hover still differs from the draft — the
-planted TEST CASE for header cloning, DO-NOT-FIX in parking.
+**All four open design questions were ANSWERED, not deferred** (your instruction — nothing left to
+surface mid-build): columns are an operator-set **count** that stacks on mobile automatically (a
+`gridTemplateColumns` ratio override was recommended and **you rejected it** — a CSS grid template is
+a developer concept); rows get `templateLock` `'insert'` → **`'all'`**; the per-device cascade is
+**HIDE not REMOVE** and **moved to Spec 35**; the Simple-surface controls adopt P2's roster verbatim.
 
-**Your single next action.** Nothing is blocked. Two independent fronts to pick from: the
-**product** front — the drawer link-colour polish (a 5-minute fix) at the top of the "Product
-queue" below, then the Indus header/footer match; or the **setup** front — the setup-simplification plan is now **FULLY CLOSED**: P5
-(WCAG 2.1 baseline + agent refresh + skills refresh) and **P6 (global tidy-ups — CLAUDE.md
-276→51 lines, `__pycache__` gone, situational rules path-scoped, plus 2 new auto-gates that
-stop CLAUDE.md re-bloating and big blobs entering commits) are both COMPLETE.** So the only
-remaining work is the **product** front (drawer polish, Indus header/footer). P3glob (the
-global enforcement hooks — the AI now has to PROVE it verified SGS work before it can close a
-session) and P4 (the LEDGER collapse) are done + live.
+**Three real bugs found while specifying.** (1) The CPT render break above. (2)
+`site-footer/edit.js:28-30` sets `columns`/`columnsTablet`/`columnsMobile` on a row whose `block.json`
+**declares none of them** — silently discarded at save (D338 again); fixing it *is* FR-37-11. (3)
+`templateLock:'insert'` **does not lock reordering** — both containers' comments claim it does, so an
+operator can drag the bottom row above the top one.
+
+**The adversarial council caught the spec writing fiction.** FR-37-3 originally justified itself via
+`sgs_header_rule_resolved` — a filter with **zero subscribers** (two hits in the tree: the
+`apply_filters` and a comment claiming it matters). The real breakage is one file over:
+`Sgs_Header_Behaviours` hooks `body_class` and resolves via `get_header_content()`, which reads
+`parts/header.html` — the file FR-37-6 empties. Built as written, the header would render and then
+**silently not be sticky**. FR-37-3 now carries the corrected contract; FR-37-6 is gated on it. The
+council also caught FR-37-16 ordering a reversal of **STOP-NO-KSORT** (D334, council-gated) — struck.
+
+**Earlier the same day (all shipped):** `token-lint.py` was **inert** — it read 0 of every draft's
+declarations because `.html` routed to the inline-attribute parser while the drafts put all CSS in a
+`<style>` block; fixed, all 11 drafts now read 8–31 declarations each, plus unresolved `var()` is now
+a hard fail. A **cross-palette contrast sweep** was built (176 combinations, axe-core) and made
+**warn-only** on your ruling. Its 496 findings turned out **not** to be draft defects: `depth-stack`
+measures **7.46:1 on its own palette** and only fails where a client's `primary-dark` is not actually
+dark (mamas-munches `#c56a7a`). Your call: change nothing. The **footer Site-Editor round trip** was
+proven live and then correctly re-scoped — it tested the route P2 rejected.
+
+**Your single next action.** The **6-FR minimum core** — `FR-37-2` → `3` → `4` → `25` → `5` → `6`,
+in that order, `FR-37-6` last so `parts/header.html` stays the rollback. About a day for the header,
+~45 min more for the footer. Everything else in Spec 37 is deferrable without touching the outcome.
 
 ---
 
@@ -159,15 +92,18 @@ session) and P4 (the LEDGER collapse) are done + live.
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main` (verified 2026-07-20). **This session's commits (pushed):** `4a4c220a` (FR-36-1 resolver)
-  → `62caa887` (D352 docs) → `0258137c` (parking recheck) → `19757245` (Phase-1 close-out).
-  ⚠ **Not HEAD** — co-active sessions push between handoffs (3 Spec-35 commits landed right after this close).
-  Run `git log -1 --format=%h` for the real HEAD; a cached hash here went stale within minutes and QC caught it.
-  **D-ceiling:** **D352** (FR-36-1 classic-menu resolution, 2026-07-20, `4a4c220a`). Re-check the branch in
-  the SAME command as any commit (STOP-RECHECK-BRANCH) — these values drift, verify rather than trust this line.
+- **Branch:** `main`. **This session's commits (pushed):** `f0fe7b9d` (token-lint fix) → `1169060e`
+  (contrast sweep) → `d7985f10` (warn-only) → `d4d57693` (parking) → `b151d312` + `729ccf87` (Task 4
+  + its correction) → **`9dbe94fd` (Spec 37 + Spec 17 DELETED + 14 docs repointed)**.
+  ⚠ **Not HEAD** — a co-active Spec-35 track commits between handoffs (`2e455c5a`, `8a5b6ac4` landed
+  mid-session). Run `git log -1 --format=%h` for the real HEAD. **D-ceiling: D358** — verify with
+  `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
+  command as any commit (STOP-RECHECK-BRANCH).
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the header/footer/nav front: **`specs/36-SGS-NAVIGATION-SYSTEM.md`** (the canonical nav home) + `specs/37-HEADER-FOOTER-BUILDER.md`.
-  ⛔ **`specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` was DELETED in P2.5 Phase 6 — never cite it; Spec 36 absorbed it.**
+  ⛔ **DELETED specs — never cite:** `34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` (P2.5 Phase 6 → Spec 36) and
+  **`17-HEADER-FOOTER-ARCHITECTURE.md` (2026-07-21 → Spec 37**; coverage matrix:
+  `reports/2026-07-21-spec17-to-spec37-coverage.md`).
 - **Sites:** dev = palestine-lives.org (Indus). staging/canary = sandybrown-nightingale-600381.hostingersite.com.
   Both **WP 7.0.2** (verified 2026-07-20 by `wp core version` over SSH on both — docs previously said 7.0.1).
 - **Live DB counts (verified 2026-07-20, do NOT cache elsewhere):** 80 `sgs/*` blocks · 2,817 `block_attributes`
