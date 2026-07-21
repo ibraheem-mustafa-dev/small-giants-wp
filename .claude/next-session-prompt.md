@@ -163,6 +163,10 @@ commit (path-scoped, branch re-checked in the SAME command)
   `animationend`. Native ESC bypasses your close handler entirely.
 - **Root cause before instance fix** — ask "what is the CLASS of failure?" before fixing the specific case.
 - **Outcome vs completion** — code shipped ≠ outcome achieved. Do not redefine done.
+- **STOP-29 — never "out of scope" on a spec'd surface.** Map every unbuilt part to a named spec
+  STAGE. A spec'd subsystem has no ad-hoc gaps: if a deferral cannot be mapped to a stage, that is
+  the signal the spec's full scope was not read. Acceptance for a spec'd task = the spec's FULL
+  scope for the surface touched, not the increment that shipped.
 - **Shared-worktree git discipline** — re-check branch in the SAME command as the commit; commit by
   EXACT path; if `push` is rejected do NOT stash another session's files — use an isolated worktree
   (`git worktree add /c/tmp/x origin/main`) or `git merge origin/main`.
