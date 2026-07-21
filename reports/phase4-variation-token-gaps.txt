@@ -1,4 +1,4 @@
-# Stage 4 Style Variation Sync — 2026-07-20 04:49:37 UTC
+# Stage 4 Style Variation Sync — 2026-07-21 17:34:49 UTC
 
 Phase 5a shipped. DB writes active.
 
