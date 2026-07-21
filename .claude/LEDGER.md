@@ -240,8 +240,27 @@ drawer polish — both absorbed by the Spec 36 rebuild.
 
 2. **~~Phase 3 — finish Spec 34~~ — STRUCK 2026-07-20 (stale).** Spec 34 was DELETED in P2.5 Phase 6, absorbed
    into **Spec 36**. Drawer settings shipped in `sgs/nav-drawer`; the live-QC gate is now FR-36-16 / Gate-1,
-   **PASSED**. **Genuinely still open:** prove the Site-Editor→frontend round trip for the **FOOTER** (the header
-   half is proven; the two are wired differently). Belongs to Spec 17 §S9 / Phase-2 footer work.
+   **PASSED**. ~~Genuinely still open: prove the Site-Editor→frontend round trip for the FOOTER~~ —
+   **PROVEN 2026-07-21 on the sandybrown canary. CLOSED.**
+   - **The "wired differently" concern was REAL and is now resolved.** `parts/header.html` contains blocks
+     directly; `parts/footer.html` is a single `<!-- wp:pattern {"slug":"sgs/framework-footer-default"} /-->`
+     reference (61 bytes). The open risk was whether a Site Editor edit survives, or is discarded when the
+     pattern re-expands at render. **It survives:** WP EXPANDS the pattern on load into real blocks
+     (`getBlocks()` → `sgs/site-footer` + 2 × `sgs/site-footer-row`, 20 blocks; `hasPatternBlock: false`),
+     so the save writes real blocks, not a pattern reference.
+   - **Evidence chain (fail-closed at each step):** baseline HTTP 200 / 139,969 bytes with the marker
+     provably ABSENT → edited a heading in the Site Editor → saved via the real UI Save button
+     (`isEditedPostDirty()` true → false) → live cache-busted fetch shows the marker INSIDE
+     `<footer class="wp-block-template-part">`, footer text `"Quick Links SGS-ROUNDTRIP-PROOF-20260721"`.
+     Reverted by DELETEing the override; `source` back to `theme`, footer text **byte-identical to baseline**.
+   - **⚠ The acceptance wording "appears on the live frontend AFTER DEPLOY" was wrong and is corrected here:
+     NO deploy is involved.** A Site Editor edit writes a `wp_template_part` DB record whose `source` flips
+     `theme` → `custom`, and it renders immediately. Deploy only ships theme FILES — which the DB override
+     then outranks. Anyone waiting for a deploy to see a Site Editor change is measuring the wrong pipeline.
+   - **Measurement trap recorded:** `<footer>` is a generic element — the page has 5, of which 4 are
+     `sgs-quote__attribution` / `sgs-testimonial__footer`. A naive `<footer.*?</footer>` regex grabs a
+     testimonial's 98-byte attribution and reads `"© Zainab, Founder of Mama's Munches"`. The site footer is
+     the LAST one, `<footer class="wp-block-template-part">`, 6,688 bytes. Key the assertion on the CLASS.
 3. **Step 1 — SPLIT framework vs per-site header/footer.** Move/delete
    `theme/sgs-theme/patterns/footer-indus-foods.php` (the only client-named framework
    pattern; leaks "Indus Foods Footer" + a hardcoded Google Place CID to every install);
