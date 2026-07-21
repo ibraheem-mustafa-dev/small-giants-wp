@@ -65,7 +65,8 @@
 						"css:font-size": "native:typography.fontSize",
 						"css:text-align": "native:typography.textAlign",
 						"css:transition-duration": "transitionDuration",
-						"css:transition-timing-function": "transitionEasing"
+						"css:transition-timing-function": "transitionEasing",
+						"css:box-shadow": "cardShadow"
 					},
 					"states": {
 						"hover": {
@@ -74,7 +75,7 @@
 							}
 						}
 					},
-					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). css:box-shadow at hover (`shadowHover`, render.php:239-243) resolves to STATE_WITHOUT_BASE — team-member has no static resting box-shadow attribute, only a hover one (same product-defect shape the design doc logs for card-grid, 'Out of scope' section). `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. line-height/letter-spacing/font-weight/font-style/text-transform/text-decoration/font-family are honest gaps — the card root only supports fontSize+textAlign natively (typography supports = {fontSize:true, textAlign:true} only)."
+					"_note": "D294 content-KIND, no-wrapper (render.php:5-47) — the root <div> IS the block, no SGS_Container_Wrapper call (dropped 2026-07-10). FR-35-5 Task 4c fix (2026-07-21, Bean's Option A): the card now has a RESTING-state `cardShadow` attr (render.php:118,247-256; style.css –sgs-card-shadow fallback) alongside the existing hover-only `shadowHover` (render.php:239-243), so shadowHover is STATE_OK not STATE_WITHOUT_BASE — same fix shape as card-grid's cardShadow (Task 4). An empty cardShadow control means the card inherits the theme token exactly as before. `scaleHover` (transform:scale on hover) has no matching cluster member (no css:transform exists in the vocabulary) — an honest ORPHAN, not a gap. line-height/letter-spacing/font-weight/font-style/text-transform/text-decoration/font-family are honest gaps — the card root only supports fontSize+textAlign natively (typography supports = {fontSize:true, textAlign:true} only)."
 				},
 				"photo": {
 					"label": "Photo",
@@ -187,6 +188,10 @@
 			"default": ""
 		},
 		"shadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadow": {
 			"type": "string",
 			"default": ""
 		},

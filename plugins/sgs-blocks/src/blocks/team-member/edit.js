@@ -41,7 +41,7 @@ import {
 	Button,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -204,6 +204,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardStyle,
 		photoShape,
 		overlayHover,
+		cardShadow,
 		displayMode,
 		socialLinks,
 		paddingTablet,
@@ -311,6 +312,15 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+					{ /* FR-35-5 Task 4c (2026-07-21) — resting-state shadow, pairs with
+					   the existing hover-only shadowHover. Empty = inherit the theme
+					   token exactly as before (Bean's Option A, same shape as
+					   card-grid's cardShadow). */ }
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						value={ cardShadow }
+						onChange={ ( val ) => setAttributes( { cardShadow: val } ) }
+					/>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>

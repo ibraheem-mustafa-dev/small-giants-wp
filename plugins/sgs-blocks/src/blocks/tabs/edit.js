@@ -49,8 +49,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabAlignment,
 		tabStyle,
 		tabTextColour,
+		tabBgColour,
 		tabActiveTextColour,
 		tabActiveBgColour,
+		tabIndicatorColour,
 		tabActiveIndicatorColour,
 		tabHoverBgColour,
 		panelBgColour,
@@ -83,11 +85,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( tabTextColour ) {
 		cssVars[ '--sgs-tab-text' ] = colourVar( tabTextColour );
 	}
+	if ( tabBgColour ) {
+		cssVars[ '--sgs-tab-bg' ] = colourVar( tabBgColour );
+	}
 	if ( tabActiveTextColour ) {
 		cssVars[ '--sgs-tab-active-text' ] = colourVar( tabActiveTextColour );
 	}
 	if ( tabActiveBgColour ) {
 		cssVars[ '--sgs-tab-active-bg' ] = colourVar( tabActiveBgColour );
+	}
+	if ( tabIndicatorColour ) {
+		cssVars[ '--sgs-tab-indicator' ] = colourVar( tabIndicatorColour );
 	}
 	if ( tabActiveIndicatorColour ) {
 		cssVars[ '--sgs-tab-active-indicator' ] = colourVar(
@@ -198,6 +206,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 					/>
 					<DesignTokenPicker
+						label={ __( 'Tab background (resting)', 'sgs-blocks' ) }
+						value={ tabBgColour }
+						onChange={ ( val ) =>
+							setAttributes( { tabBgColour: val } )
+						}
+					/>
+					<DesignTokenPicker
 						label={ __(
 							'Active tab text colour',
 							'sgs-blocks'
@@ -215,6 +230,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ tabActiveBgColour }
 						onChange={ ( val ) =>
 							setAttributes( { tabActiveBgColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Tab indicator colour (resting)',
+							'sgs-blocks'
+						) }
+						value={ tabIndicatorColour }
+						onChange={ ( val ) =>
+							setAttributes( { tabIndicatorColour: val } )
 						}
 					/>
 					<DesignTokenPicker

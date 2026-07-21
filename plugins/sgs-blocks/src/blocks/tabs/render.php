@@ -83,8 +83,10 @@ $css_vars = array();
 
 $colour_props = array(
 	'tabTextColour'            => '--sgs-tab-text',
+	'tabBgColour'              => '--sgs-tab-bg',
 	'tabActiveTextColour'      => '--sgs-tab-active-text',
 	'tabActiveBgColour'        => '--sgs-tab-active-bg',
+	'tabIndicatorColour'       => '--sgs-tab-indicator',
 	'tabActiveIndicatorColour' => '--sgs-tab-active-indicator',
 	'tabHoverBgColour'         => '--sgs-tab-hover-bg',
 	'panelBgColour'            => '--sgs-panel-bg',

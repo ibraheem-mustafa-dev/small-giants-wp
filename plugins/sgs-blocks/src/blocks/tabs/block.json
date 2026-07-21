@@ -85,6 +85,8 @@
 					"clusters": [ "text", "fill", "motion" ],
 					"attrMap": {
 						"css:color": "tabTextColour",
+						"css:background-color": "tabBgColour",
+						"css:border-color": "tabIndicatorColour",
 						"css:transition-duration": "transitionDuration"
 					},
 					"states": {
@@ -101,7 +103,7 @@
 							}
 						}
 					},
-					"_note": "Resting-state colour + shared transition duration only. tabActiveTextColour/tabActiveBgColour/tabActiveIndicatorColour/tabHoverBgColour are the SELECTED/HOVER state variants — Spec 35 FR-35-5 — declared explicitly via `states.<name>.attrMap` because the naming is irregular (infix `Active`/`Hover`, not a suffix) and `tabActiveTextColour` renders as `[aria-selected=\"true\"]` (render.php:232, style.css:110), NOT CSS `:active`; `tabActiveIndicatorColour` is mapped to css:border-color (render.php:88 — it drives the underline/box-shadow indicator colour). No resting background-colour attribute exists (only active/hover) — an honest base gap, and now visible as STATE_WITHOUT_BASE rather than hiding as an orphan. No transition-timing-function attribute exists on this block — also an honest gap."
+					"_note": "Resting-state colour + shared transition duration only. tabActiveTextColour/tabActiveBgColour/tabActiveIndicatorColour/tabHoverBgColour are the SELECTED/HOVER state variants — Spec 35 FR-35-5 — declared explicitly via `states.<name>.attrMap` because the naming is irregular (infix `Active`/`Hover`, not a suffix) and `tabActiveTextColour` renders as `[aria-selected=\"true\"]` (render.php:232, style.css:110), NOT CSS `:active`; `tabActiveIndicatorColour` is mapped to css:border-color (render.php:88 — it drives the underline/box-shadow indicator colour). `tabBgColour`/`tabIndicatorColour` (added Task 4b) are the RESTING bases those two states now sit between — token-fallback `transparent`, so an unconfigured client renders byte-identical to before (style.css:68, :121-128). No transition-timing-function attribute exists on this block — an honest gap."
 				},
 				"panel": {
 					"label": "Tab panel",
@@ -159,7 +161,13 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"tabBgColour": {
+			"type": "string"
+		},
 		"tabActiveBgColour": {
+			"type": "string"
+		},
+		"tabIndicatorColour": {
 			"type": "string"
 		},
 		"tabActiveIndicatorColour": {

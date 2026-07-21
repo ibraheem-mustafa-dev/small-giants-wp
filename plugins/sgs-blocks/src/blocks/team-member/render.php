@@ -115,6 +115,7 @@ $card_style        = $attributes['cardStyle'] ?? 'elevated';
 $photo_shape       = $attributes['photoShape'] ?? 'circle';
 $hover_scale       = $attributes['scaleHover'] ?? '';
 $hover_shadow      = $attributes['shadowHover'] ?? '';
+$card_shadow       = $attributes['cardShadow'] ?? '';
 $hover_img_zoom    = (bool) ( $attributes['imageZoomHover'] ?? false );
 $hover_grayscale   = (bool) ( $attributes['grayscaleHover'] ?? false );
 $hover_overlay     = (bool) ( $attributes['overlayHover'] ?? false );
@@ -240,6 +241,18 @@ $allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
 if ( $hover_shadow && in_array( $hover_shadow, $allowed_shadows, true ) ) {
 	$sgs_wrapper_styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
 	$sgs_classes[]        = 'sgs-has-hover';
+}
+
+// FR-35-5 STATE_WITHOUT_BASE fix (Task 4c, 2026-07-21, Bean's Option A) — the
+// card now has a RESTING-state shadow attr alongside the existing hover-only
+// one, so shadowHover is STATE_OK not STATE_WITHOUT_BASE. An empty control
+// means the card inherits the theme token exactly as before (custom-property
+// FALLBACK at style.css, never a baked default). Var-only inline declaration
+// (same exempt pattern as the hover vars above), mirrors card-grid's
+// --sgs-card-shadow (render.php:209) but scoped to this block's own root
+// rather than a nested repeater item, since team-member's card IS the root.
+if ( '' !== $card_shadow ) {
+	$sgs_wrapper_styles[] = '--sgs-card-shadow:' . sgs_shadow_value( $card_shadow );
 }
 
 // ---------------------------------------------------------------------------

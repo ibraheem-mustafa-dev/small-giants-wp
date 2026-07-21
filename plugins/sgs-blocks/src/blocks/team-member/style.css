@@ -20,7 +20,12 @@
 .sgs-team-member--elevated {
 	background: var(--wp--preset--color--surface, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: var(--wp--preset--shadow--md);
+	/* FR-35-5 STATE_WITHOUT_BASE fix (Task 4c, 2026-07-21, Bean's Option A):
+	   the hardcoded resting shadow becomes a custom-property FALLBACK — an
+	   empty cardShadow control means the card inherits this theme token
+	   exactly as before; the client opts in to a custom value via the
+	   resting-state inspector control. */
+	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--md));
 }
 .sgs-team-member--filled {
 	background: var(--wp--preset--color--surface-alt, #f5f7f7);
