@@ -68,9 +68,9 @@
 				"label": {
 					"label": "Group label (legend)",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "layout" ],
 					"prefix": "label",
-					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention. line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps (render.php:480-500 legend only sets font-size + colour + margin-bottom)."
+					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps."
 				},
 				"pill": {
 					"label": "Option pill",

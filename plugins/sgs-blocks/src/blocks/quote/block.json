@@ -46,11 +46,13 @@
 				"attribution": {
 					"label": "Attribution",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "layout" ],
 					"prefix": "attribution",
 					"attrMap": {
-						"css:color": "attributionColour"
-					}
+						"css:color": "attributionColour",
+						"css:margin-top": "attributionMarginTop"
+					},
+					"_note": "attributionMarginTop/attributionMarginTopTablet/attributionMarginTopMobile (render.php:290-313, `'css' => 'margin-top'`) resolve via the new css:margin-top layout member (Spec 35 vocabulary fix). attributionMarginUnit is a companion unit-selector for the margin-top value (not an independent CSS property) — left unmapped; its literal name does not reduce to the attributionMarginTop base under the checker's Unit-suffix-stripping convention, a naming-shape mismatch outside this fix's scope."
 				}
 			},
 			"boxFamilies": {

@@ -82,8 +82,18 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [],
-					"_note": "iconColour/iconSize/iconGap are bespoke button-icon controls, not a Text/Fill/Layout capability set — icon colour is not the button's text colour and icon size has no Text/Fill/Layout member to map to, so declaring any cluster here would misrepresent the control as something it isn't."
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "iconColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover"
+							}
+						}
+					},
+					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize/iconGap remain unmapped bespoke icon controls, not Text/Fill/Layout members."
 				}
 			}
 		}

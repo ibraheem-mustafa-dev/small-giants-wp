@@ -55,9 +55,12 @@
 				"accent": {
 					"label": "Accent colour",
 					"order": 2,
-					"clusters": [],
+					"clusters": [ "fill" ],
 					"prefix": "accent",
-					"_note": "accentColour is a functional player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent), not a Text/Fill/Layout style-cluster control. Declared clusters: [] so ORPHAN detection surfaces it honestly (mirrors sgs/button's iconColour) instead of it being invisible."
+					"attrMap": {
+						"css:background-color": "accentColour"
+					},
+					"_note": "accentColour is the player-brand colour (play button fill, seek thumb, progress arc — CSS var --sgs-audio-accent, style.css:61/86/94/103/107/174, all `background`/`background-image` uses). Mapped to css:background-color via explicit attrMap (Spec 35 vocabulary fix) rather than left as an honest zero-cluster orphan."
 				},
 				"spectrum": {
 					"label": "Spectrum colour",

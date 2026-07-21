@@ -76,8 +76,11 @@
                 "badge": {
                     "label": "Badge",
                     "order": 4,
-                    "clusters": [],
-                    "_note": "`badge` (text) and `badgeColour` are real attributes (render.php:75,246-260). `badgeColour` now drives the badge background via the scoped `--sgs-mm-badge-bg` custom property (render.php + style.css, dead-wiring fix) — the `data-sgs-badge-colour` attribute is retained for JS/debugging visibility only. Left as an honest zero-cluster element per FR-35-4 (cluster/attrMap classification out of scope for this fix)."
+                    "clusters": [ "fill" ],
+                    "attrMap": {
+                        "css:background-color": "badgeColour"
+                    },
+                    "_note": "`badge` (text) and `badgeColour` are real attributes (render.php:75,246-260). `badgeColour` drives the badge background via the scoped `--sgs-mm-badge-bg` custom property (render.php + style.css:128 `background-color: var(--sgs-mm-badge-bg, ...)`), now mapped to css:background-color (Spec 35 vocabulary fix) — the `data-sgs-badge-colour` attribute is retained for JS/debugging visibility only."
                 },
                 "icon": {
                     "label": "Trigger icon",

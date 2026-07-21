@@ -58,7 +58,9 @@
 			"owningComponent": "BoxControl + UnitControl + BorderBoxControl + ShadowControl",
 			"members": [
 				{ "key": "css:padding", "label": "Padding", "suffixes": ["Padding"], "nativeSupportsPath": "spacing.padding", "absorbs": ["css:padding-top", "css:padding-right", "css:padding-bottom", "css:padding-left"] },
-				{ "key": "css:margin", "label": "Margin", "suffixes": ["Margin"], "nativeSupportsPath": "spacing.margin", "absorbs": ["css:margin-top", "css:margin-right", "css:margin-bottom", "css:margin-left"] },
+				{ "key": "css:margin", "label": "Margin", "suffixes": ["Margin"], "nativeSupportsPath": "spacing.margin", "absorbs": ["css:margin-right", "css:margin-left"] },
+				{ "key": "css:margin-top", "label": "Margin (top only)", "suffixes": ["MarginTop"] },
+				{ "key": "css:margin-bottom", "label": "Margin (bottom only)", "suffixes": ["MarginBottom"] },
 				{ "key": "css:gap", "label": "Gap", "suffixes": ["Gap"] },
 				{ "key": "css:width", "label": "Width", "suffixes": ["Width"] },
 				{ "key": "css:height", "label": "Height", "suffixes": ["Height"] },

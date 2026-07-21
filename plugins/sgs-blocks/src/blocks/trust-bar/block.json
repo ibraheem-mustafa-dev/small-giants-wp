@@ -91,16 +91,17 @@
 				"icon-badge": {
 					"label": "Icon badge (icon-circle variant)",
 					"order": 2,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [ "fill", "layout", "text" ],
 					"prefix": "icon",
 					"attrMap": {
 						"css:background-color": "iconCircleBackground",
 						"css:width": "iconCircleSize",
 						"css:height": "iconCircleSize",
 						"css:border-radius": "iconCircleBorderRadius",
-						"css:box-shadow": "iconCircleShadow"
+						"css:box-shadow": "iconCircleShadow",
+						"css:color": "iconColour"
 					},
-					"_note": "iconColour (the SVG stroke/fill colour, --sgs-trust-badge-icon-colour) is a functional icon-fill colour, not a Fill/background control — left unmapped so ORPHAN detection surfaces it honestly (mirrors sgs/button's iconColour). Only applies when badgeStyle='icon-circle' (supports.sgs.variants)."
+					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants)."
 				},
 				"label": {
 					"label": "Badge label",

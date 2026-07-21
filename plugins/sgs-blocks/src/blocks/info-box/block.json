@@ -99,8 +99,11 @@
 				"content": {
 					"label": "Card content",
 					"order": 2,
-					"clusters": [],
-					"_note": "Heading/subtitle/description/button are native InnerBlocks children (HC2/D192 — parent owns LAYOUT, child owns TYPOGRAPHY), each carrying its own typography inspector, so this block declares no text cluster for them."
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:width": "contentWidth"
+					},
+					"_note": "Heading/subtitle/description/button are native InnerBlocks children (HC2/D192 — parent owns LAYOUT, child owns TYPOGRAPHY), each carrying its own typography inspector, so this block declares no text cluster for them. contentWidth resolves via css:width (render.php:298 `{$root_sel}{width:{$cw_safe};}` — a real `width` declaration, distinct from the separate maxWidth/css:max-width control, Spec 35 vocabulary fix)."
 				},
 				"media": {
 					"label": "Icon / media",

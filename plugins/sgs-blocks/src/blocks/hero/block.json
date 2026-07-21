@@ -209,7 +209,7 @@
 				"headline": {
 					"label": "Headline",
 					"order": 7,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "layout" ],
 					"prefix": "headline",
 					"attrMap": {
 						"css:font-size": "native:typography.fontSize",
@@ -219,9 +219,10 @@
 						"css:font-style": "native:typography.fontStyle",
 						"css:text-transform": "native:typography.textTransform",
 						"css:text-align": "native:typography.textAlign",
-						"css:color": "native:color.text"
+						"css:color": "native:color.text",
+						"css:margin-bottom": "headlineMarginBottom"
 					},
-					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom`/`headlineMarginBottomMobile` are a genuine ORPHAN — a partial (bottom-only) margin, not the whole-box `layout.css:margin` member."
+					"_note": "block.json `selectors.typography.root` scopes the wrapper's native typography support to `.sgs-hero__headline`, so these native paths are this element's controls, not the wrapper's. `headlineMarginBottom`/`headlineMarginBottomMobile` (render.php:364-372, `.sgs-hero__headline{margin-bottom:...}`) resolve via the new css:margin-bottom layout member (Spec 35 vocabulary fix) — a partial bottom-only margin, distinct from the whole-box `css:margin` member."
 				},
 				"sub-headline": {
 					"label": "Sub-headline",

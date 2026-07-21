@@ -237,8 +237,11 @@
 				"icon": {
 					"label": "Icon",
 					"order": 4,
-					"clusters": [],
-					"_note": "iconColour/showIcon are bespoke icon controls, not a Text/Fill/Layout capability set — icon colour is not the value text's colour, so declaring a cluster here would misrepresent the control. Left for FR-35-4 orphan detection to surface iconColour automatically."
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "iconColour"
+					},
+					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member."
 				}
 			}
 		}

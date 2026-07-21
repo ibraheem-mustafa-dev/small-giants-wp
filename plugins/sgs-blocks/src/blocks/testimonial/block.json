@@ -81,8 +81,12 @@
 				"quote-text": {
 					"label": "Quote text",
 					"order": 2,
-					"clusters": [ "text" ],
-					"prefix": "quote"
+					"clusters": [ "text", "layout" ],
+					"prefix": "quote",
+					"attrMap": {
+						"css:margin-bottom": "quoteMarginBottom"
+					},
+					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix)."
 				},
 				"reviewer-name": {
 					"label": "Reviewer name",

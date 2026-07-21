@@ -54,8 +54,11 @@
 				"image": {
 					"label": "Product image",
 					"order": 2,
-					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus the custom imageHeight dimension override — neither is a Text/Fill/Layout style-cluster member."
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:height": "imageHeight"
+					},
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls). imageHeight resolves via css:height (render.php:129-130 `--sgs-product-card-image-height`, consumed as `height: var(--sgs-product-card-image-height, 220px)` in style.css:53/665/704/938 — Spec 35 vocabulary fix)."
 				},
 				"title": {
 					"label": "Title",
