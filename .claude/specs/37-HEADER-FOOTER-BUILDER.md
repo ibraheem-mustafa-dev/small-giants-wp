@@ -321,26 +321,35 @@ mamas-munches AND indus-foods) as the primary guard: verifying on two clients de
 symptom after the fact; per-site storage removes the cause. Two-client verification is
 retained only where a *framework-level* capability is under test (FR-37-12, FR-37-23).
 
-### 3.9a ⛔ FR-37-6 is BLOCKED on de-clienting `parts/header.html` (discovered 2026-07-22)
+### 3.9a FR-37-6 file step DONE; residual de-client work is per-site CPTs + one orphan pattern (updated 2026-07-22)
 
-FR-37-6 (empty the header template part into a starter) cannot be executed as written, and the
-blocker is the very defect §3.9 exists to prevent — found from two independent directions this
-session:
+**History (the blocker was real).** FR-37-6 could not originally be executed as written because
+`parts/header.html` carried live client data (`"ref":1467` + `"featuredItemIds":["label:Send to
+Ward"]` — one client's menu and copy) and is a single shared theme file across all clients, so a
+routine `build-deploy.py --target palestine-lives --theme-only` would have pushed one client's header
+live onto another site.
 
-1. **The file carries live client data.** `parts/header.html` is git-tracked, not ignored, and
-   contains `"ref":1467` + `"featuredItemIds":["label:Send to Ward"]` — one client's menu and copy.
-   Copying that verbatim into a *framework* starter pattern (FR-37-6/FR-37-8) would ship one client's
-   header to **every** SGS install — exactly the `footer-indus-foods.php` failure §3.9 records.
-2. **It is a single shared theme file across all clients.** The Indus cutover recon found that a
-   routine `build-deploy.py --target palestine-lives --theme-only` would push the (Mama's-branded)
-   `parts/header.html` live onto **palestine-lives.org** — a client-content collision, not merely a
-   nav-shape change.
+**Resolved 2026-07-22 (commit `9b9a8028`) — verify, don't trust this line.** `parts/header.html` is now
+a one-line shell: `<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->`. `parts/footer.html`
+was already the footer equivalent. Both reference **framework** patterns that carry no client data
+(`framework-header-default.php` verified client-free 2026-07-22 — its only "Indus" mention was a
+description docblock, since reworded; `framework-footer-default.php` verified client-free). The file
+step of FR-37-6 is therefore DONE.
 
-**Therefore the ordered dependency is:** de-client `parts/header.html` first — split framework-shell
-vs per-site content (the per-site header lives in the CPT once authored; the framework file becomes a
-neutral shell / immutable default) — THEN FR-37-6 can empty it and FR-37-8 can seed a *generic*
-starter. Until then, FR-37-6 stays `NOT-BUILT` with this named blocker rather than being executed and
-leaking data. This also blocks the Spec 36 FR-36-18 Indus cutover for the same reason.
+**Residual de-client work (ground-truthed 2026-07-22):**
+
+1. **One orphan client pattern remains:** `theme/sgs-theme/patterns/footer-indus-foods.php` — leaks
+   "Indus Foods Footer" + a hardcoded Google Place CID. Referenced by nothing in the repo (grep for
+   `sgs/indus-foods-footer` = 0 hits bar its own slug line). ⚠ **Before deleting, confirm no *live*
+   template part on either site references the `sgs/indus-foods-footer` slug** (the Indus site's DB
+   content is not in the repo). Once confirmed orphaned, delete it — per-site footers live in the CPT.
+2. **The 7 `parts/mega-menu-*.html` files still carry Indus data** but are scheduled for FR-37-21
+   retirement *after* the FR-36-18 Indus cutover — not part of this step.
+3. **Per-site CPTs:** the FR-37-6 "both sites render from CPTs" done-condition needs each live site's
+   header/footer authored as a CPT post and set active. The canary CPT header binding is already
+   canary-verified (FR-37-3); authoring the canary footer + the Indus pair is the remaining live work,
+   and it also unblocks the Spec 36 FR-36-18 Indus cutover (a plain theme deploy would otherwise push
+   the framework-default header onto Indus).
 
 ### 3.6 Never-overflow contract
 
@@ -486,13 +495,14 @@ falsely claiming Active, so a trashed active post is legible in the list table.
 `parts/header.html` and `parts/footer.html` contain only what is needed for WP's template
 system to resolve the area. Authored block content lives in the CPT, never in the part. The
 markup currently hand-authored in `parts/header.html` moves into a starter template.
-**Status:** `NOT-BUILT — BLOCKED.` `parts/footer.html` is already a one-line shell;
-`parts/header.html` still carries 28 lines of hand-authored blocks **that include live client data**
-(`"ref":1467`, `"Send to Ward"`). ⛔ **Blocked on de-clienting the file first — see §3.9a.** Emptying
-it into a framework starter as-is would leak one client's header to every install; and the binding it
-depends on (FR-37-3) is not canary-verified yet, and emptying the file before that is verified
-silently kills every header behaviour (the §2.2 / clause-(b) risk).
-**Done when:** neither part file contains authored content, and both sites render from CPTs.
+**Status:** `PARTIAL — file step DONE, per-site CPTs owed.` Both part files are now one-line shells
+referencing client-free framework patterns (`parts/header.html` gutted in commit `9b9a8028`;
+`parts/footer.html` was already a shell — verified 2026-07-22). FR-37-3's CPT-aware binding is now
+canary-verified, so emptying the file no longer risks the clause-(b) behaviour break. **Remaining:**
+(1) delete the orphan `patterns/footer-indus-foods.php` after confirming no live template part
+references its slug; (2) author each live site's header/footer as a CPT + set active so the
+"both sites render from CPTs" condition holds. See §3.9a.
+**Done when:** neither part file contains authored content (✅), and both sites render from CPTs (owed).
 
 ### Starter templates
 
@@ -891,7 +901,7 @@ and eye are co-authoritative, neither closes alone).
 | hide-on-scroll | `PARTIAL` — dormant JS, no attribute |
 | Tri-state shape | `NOT-BUILT` |
 | Scoped behaviour CSS | `NOT-BUILT` |
-| Empty the header template part (FR-37-6) | `NOT-BUILT — BLOCKED` on de-clienting the file (§3.9a) |
+| Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`); per-site CPTs + orphan-pattern delete owed (§3.9a) |
 | Starter picker | `NOT-BUILT` |
 | Rules engine | `BUILT` |
 | Legacy retirement | `NOT-BUILT`, gated on FR-36-18 |

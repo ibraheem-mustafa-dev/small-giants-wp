@@ -7,7 +7,7 @@
  * Keywords: header, sgs, framework, default, logo, navigation
  * Viewport Width: 1440
  * Inserter: true
- * Description: Default SGS header on the never-overflow sgs/site-header block, following the Indus per-device pattern (FR-S9-8). Desktop: a top utility strip (phone/email/social) + logo + primary nav + cart. At ≤1024 the utility strip is hidden and a prominent "Call" button appears; nav collapses into the drawer, which also carries the email + social links (place-then-toggle, no magic primitive).
+ * Description: Default SGS header on the never-overflow sgs/site-header block, using the standard per-device pattern (FR-S9-8). Desktop: a top utility strip (phone/email/social) + logo + primary nav + cart. At ≤1024 the utility strip is hidden and a prominent "Call" button appears; nav collapses into the drawer, which also carries the email + social links (place-then-toggle, no magic primitive).
  *
  * @package SGS\Theme
  */
