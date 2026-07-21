@@ -55,6 +55,11 @@ $transition_dur     = $attributes['transitionDuration'] ?? '300';
 $transition_ease    = $attributes['transitionEasing'] ?? 'ease-in-out';
 $hover_scale        = $attributes['scaleHover'] ?? '';
 $hover_shadow       = $attributes['shadowHover'] ?? '';
+$card_background    = $attributes['cardBackground'] ?? '';
+$card_border_colour = $attributes['cardBorderColour'] ?? '';
+$card_border_width  = $attributes['cardBorderWidth'] ?? '';
+$card_radius        = $attributes['cardRadius'] ?? '';
+$card_shadow        = $attributes['cardShadow'] ?? '';
 $hover_image_zoom   = ! empty( $attributes['imageZoomHover'] );
 $hover_grayscale    = ! empty( $attributes['grayscaleHover'] );
 $stagger_delay      = $attributes['staggerDelay'] ?? 0;
@@ -175,6 +180,36 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 	if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
 		$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
 	}
+}
+
+// ── FR-35-5 STATE_WITHOUT_BASE fix (Task 4, 2026-07-21, Bean's Option A) ────
+// Resting-state fill/border/shadow for the card tile. An empty control means
+// the card inherits the theme token exactly as before — these are custom-
+// property FALLBACKS in style.css (`var(--sgs-card-background,
+// var(--wp--preset--color--surface, #fff))` etc.), never a baked default, so
+// an unmigrated instance renders byte-identical to pre-fix. Scoped to
+// `.sgs-card-grid__item` under this instance's own uid; the wc-product
+// delegation path (below) renders sgs/product-card markup, which has no
+// `.sgs-card-grid__item` element at all, so this rule is a harmless no-op
+// there and never leaks into product-card's own styling.
+$card_state_vars = array();
+if ( '' !== $card_background ) {
+	$card_state_vars[] = '--sgs-card-background:' . sgs_colour_value( $card_background ) . ';';
+}
+if ( '' !== $card_border_colour ) {
+	$card_state_vars[] = '--sgs-card-border-color:' . sgs_colour_value( $card_border_colour ) . ';';
+}
+if ( '' !== $card_border_width ) {
+	$card_state_vars[] = '--sgs-card-border-width:' . $sgs_css_length( $card_border_width ) . ';';
+}
+if ( '' !== $card_radius ) {
+	$card_state_vars[] = '--sgs-card-radius:' . $sgs_css_length( $card_radius ) . ';';
+}
+if ( '' !== $card_shadow ) {
+	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value( $card_shadow ) . ';';
+}
+if ( ! empty( $card_state_vars ) ) {
+	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
 }
 
 // Skip-serialised `color` support also stops WP auto-adding the standard

@@ -95,6 +95,13 @@
 					"label": "Card",
 					"order": 2,
 					"clusters": [],
+					"attrMap": {
+						"css:background-color": "cardBackground",
+						"css:border-color": "cardBorderColour",
+						"css:border-width": "cardBorderWidth",
+						"css:border-radius": "cardRadius",
+						"css:box-shadow": "cardShadow"
+					},
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -104,7 +111,7 @@
 							}
 						}
 					},
-					"_note": "Spec 35 FR-35-5 — the card tile's fill/border controls are HOVER-ONLY (backgroundColourHover, borderColourHover, shadowHover), with no STATIC background-colour, border, or box-shadow attrs for the resting state (resting state is hardcoded at style.css:29-31 — logged, not solved here, see design doc 'Out of scope'). Declaring the `fill`/`layout` clusters at base here would report every member as a false-looking gap since none are wired; the `states.hover` declaration above surfaces the REAL, narrower finding as STATE_WITHOUT_BASE for each of the 3 hover attrs instead — a client can restyle the hover fill but not the resting fill."
+					"_note": "Spec 35 FR-35-5 fix (2026-07-21, Task 4) — the card tile now has RESTING-STATE attrs (cardBackground/cardBorderColour/cardBorderWidth/cardRadius/cardShadow) alongside the existing hover-only ones, so backgroundColourHover/borderColourHover/shadowHover are STATE_OK not STATE_WITHOUT_BASE. An empty resting attr means the card inherits the theme token exactly as before (Bean's Option A — custom-property FALLBACK at style.css, never a baked default). The top-level `attrMap` on this element (not `clusters`) is deliberate: it resolves the 5 members for the states-axis base check without declaring the full fill/layout clusters, which would flood this repeater-item element with unrelated GAP findings (padding/width/aspect-ratio/etc. it genuinely doesn't have controls for)."
 				},
 				"card-media": {
 					"label": "Card image",
@@ -234,6 +241,26 @@
 		},
 		"subtitleFontSizeMobile": {
 			"type": "number"
+		},
+		"cardBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"cardRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadow": {
+			"type": "string",
+			"default": ""
 		},
 		"backgroundColourHover": {
 			"type": "string"

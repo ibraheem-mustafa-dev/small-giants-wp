@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker, TypographyControls } from '../../components';
+import { DesignTokenPicker, ShadowControl, TypographyControls } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
 
@@ -173,6 +173,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		effectHover,
 		titleColour,
 		subtitleColour,
+		cardBackground,
+		cardBorderColour,
+		cardBorderWidth,
+		cardRadius,
+		cardShadow,
 		source,
 		queryPostType,
 		queryPostsPerPage,
@@ -501,6 +506,63 @@ export default function Edit( { attributes, setAttributes } ) {
 						showWeight={ false }
 						showStyle={ false }
 						showLineHeight={ false }
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Card Styling (resting state)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p style={ { margin: '0 0 12px', fontSize: 12, color: '#757575' } }>
+						{ __(
+							'Leave any field empty to keep the theme default — these only override the card at rest (see also Hover effect above for the hover styling).',
+							'sgs-blocks'
+						) }
+					</p>
+					<DesignTokenPicker
+						label={ __( 'Background colour', 'sgs-blocks' ) }
+						value={ cardBackground }
+						onChange={ ( val ) =>
+							setAttributes( { cardBackground: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Border colour', 'sgs-blocks' ) }
+						value={ cardBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( { cardBorderColour: val } )
+						}
+					/>
+					<TextControl
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						value={ cardBorderWidth || '' }
+						onChange={ ( val ) =>
+							setAttributes( { cardBorderWidth: val } )
+						}
+						help={ __(
+							'e.g. 1px. Leave empty for no border.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ cardRadius || '' }
+						onChange={ ( val ) =>
+							setAttributes( { cardRadius: val } )
+						}
+						help={ __(
+							'e.g. 8px. Leave empty to use the theme default.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						value={ cardShadow }
+						onChange={ ( val ) =>
+							setAttributes( { cardShadow: val } )
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>

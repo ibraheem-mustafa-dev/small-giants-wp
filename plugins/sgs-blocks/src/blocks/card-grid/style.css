@@ -13,7 +13,7 @@
 .sgs-card-grid__item {
 	position: relative;
 	overflow: hidden;
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	border-radius: var(--sgs-card-radius, var(--wp--custom--border-radius--medium, 8px));
 	text-decoration: none;
 	color: inherit;
 	display: flex;
@@ -26,10 +26,16 @@
 	transition-property: background-color, color, border-color, transform, box-shadow;
 }
 
-/* Card variant — elevated card style */
+/* Card variant — elevated card style.
+   FR-35-5 STATE_WITHOUT_BASE fix (Task 4, 2026-07-21, Bean's Option A):
+   the hardcoded theme-token values become custom-property FALLBACKS — an
+   empty cardBackground/cardBorderColour/cardBorderWidth/cardShadow control
+   means the card inherits the theme token exactly as before; the client
+   opts in to a custom value via the resting-state inspector controls. */
 .sgs-card-grid--card .sgs-card-grid__item {
-	background: var(--wp--preset--color--surface, #fff);
-	box-shadow: var(--wp--preset--shadow--md);
+	background: var(--sgs-card-background, var(--wp--preset--color--surface, #fff));
+	border: var(--sgs-card-border-width, 0) solid var(--sgs-card-border-color, transparent);
+	box-shadow: var(--sgs-card-shadow, var(--wp--preset--shadow--md));
 }
 
 /* Image wrapper */
