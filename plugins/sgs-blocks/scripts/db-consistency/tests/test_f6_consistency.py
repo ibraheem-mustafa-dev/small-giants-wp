@@ -450,7 +450,10 @@ class TestCheck1PlantedViolation:
         assert v.check == "routing"
         assert "max-width" in v.detail
         assert "maxWidth" in v.detail or "contentSize" in v.detail
-        assert v.key == routing_key("sgs/test-routing", "max-width", "wrapper_css")
+        # Key now carries the widened writer_path:element:state:tier suffix
+        # (2026-07-21) — both attrs here are suffix-derived, so element/state/tier
+        # are all None.
+        assert v.key == routing_key("sgs/test-routing", "max-width", "wrapper_css:None:None:None")
 
     def test_check1_passes_two_attrs_different_writer_paths(self):
         """Two attrs from one css_property but different writer_paths → no ambiguity."""
@@ -644,10 +647,17 @@ class TestModelKeys:
 # ===========================================================================
 
 class TestEnumerateCandidates:
-    """enumerate_candidates groups by (css_property, writer_path) correctly."""
+    """enumerate_candidates groups by
+    (css_property, writer_path, css_element, css_state, css_tier) — widened
+    2026-07-21 from the original (css_property, writer_path) 2-tuple so attrs that
+    differ by element/state/tier are no longer collapsed into one false-collision
+    slot. Suffix-derived candidates (no block_attributes.css_property/css_element/
+    css_state/css_tier involved — these tests use property_suffixes only) always
+    carry (None, None, None) for the three new positions, since property_suffixes
+    has no such columns to source them from."""
 
     def test_single_attr_per_property(self):
-        """One attr per css_property → each (prop, path) list has length 1."""
+        """One attr per css_property → each key's list has length 1."""
         conn = _make_minimal_db(
             property_suffixes=[
                 ("max-width", "MaxWidth", "layout", None),
@@ -661,13 +671,14 @@ class TestEnumerateCandidates:
         candidates = enumerate_candidates("sgs/test", conn)
         conn.close()
 
-        for (prop, wp), attrs in candidates.items():
+        for key, attrs in candidates.items():
             assert len(attrs) == 1, (
-                f"Expected 1 attr for ({prop}, {wp}), got {attrs}"
+                f"Expected 1 attr for {key}, got {attrs}"
             )
 
     def test_two_attrs_same_property_and_writer(self):
-        """Two attrs from the same css_property + writer_path → list length 2."""
+        """Two attrs from the same css_property + writer_path (+ same NULL
+        element/state/tier) → list length 2 — a genuine collision on every axis."""
         conn = _make_minimal_db(
             property_suffixes=[
                 ("max-width", "MaxWidth", "layout", None),
@@ -681,7 +692,7 @@ class TestEnumerateCandidates:
         candidates = enumerate_candidates("sgs/test", conn)
         conn.close()
 
-        key = ("max-width", "wrapper_css")
+        key = ("max-width", "wrapper_css", None, None, None)
         assert key in candidates
         assert sorted(candidates[key]) == sorted(["maxWidth", "contentSize"])
 
@@ -699,8 +710,9 @@ class TestEnumerateCandidates:
         candidates = enumerate_candidates("sgs/test", conn)
         conn.close()
 
-        assert ("color", "typography") in candidates
-        assert "textColour" in candidates[("color", "typography")]
+        key = ("color", "typography", None, None, None)
+        assert key in candidates
+        assert "textColour" in candidates[key]
 
     def test_wrapper_css_property_classified_correctly(self):
         """A css_property NOT in _TYPOGRAPHY_CSS_SCOPE → writer_path='wrapper_css'."""
@@ -716,8 +728,9 @@ class TestEnumerateCandidates:
         candidates = enumerate_candidates("sgs/test", conn)
         conn.close()
 
-        assert ("gap", "wrapper_css") in candidates
-        assert "gap" in candidates[("gap", "wrapper_css")]
+        key = ("gap", "wrapper_css", None, None, None)
+        assert key in candidates
+        assert "gap" in candidates[key]
 
     def test_attr_name_override_applied(self):
         """grid-template-columns + 'Columns' suffix → 'gridTemplateColumns' via _ATTR_NAME_OVERRIDES."""
@@ -732,8 +745,73 @@ class TestEnumerateCandidates:
         candidates = enumerate_candidates("sgs/test", conn)
         conn.close()
 
-        assert ("grid-template-columns", "wrapper_css") in candidates
-        assert "gridTemplateColumns" in candidates[("grid-template-columns", "wrapper_css")]
+        key = ("grid-template-columns", "wrapper_css", None, None, None)
+        assert key in candidates
+        assert "gridTemplateColumns" in candidates[key]
+
+    def test_two_attrs_same_property_different_tier_not_flagged(self):
+        """Two COLUMN-declared attrs sharing one css_property but differing by
+        css_tier are DIFFERENT keys, not a collision — the fix under test. Mirrors
+        the real columnsDesktop/columnsTablet/columnsMobile case (37 of the
+        original 106 false positives)."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[
+                ("sgs/test", "columnsDesktop"),
+                ("sgs/test", "columnsTablet"),
+            ],
+        )
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_property TEXT")
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_element TEXT")
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_state TEXT")
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_tier TEXT")
+        conn.execute(
+            "UPDATE block_attributes SET css_property='grid-template-columns', css_tier='desktop' "
+            "WHERE attr_name='columnsDesktop'"
+        )
+        conn.execute(
+            "UPDATE block_attributes SET css_property='grid-template-columns', css_tier='tablet' "
+            "WHERE attr_name='columnsTablet'"
+        )
+        conn.commit()
+
+        candidates = enumerate_candidates("sgs/test", conn)
+        conn.close()
+
+        desktop_key = ("grid-template-columns", "wrapper_css", None, None, "desktop")
+        tablet_key = ("grid-template-columns", "wrapper_css", None, None, "tablet")
+        assert candidates.get(desktop_key) == ["columnsDesktop"]
+        assert candidates.get(tablet_key) == ["columnsTablet"]
+        # Neither key has >=2 attrs — no collision, which is the point of the fix.
+        assert all(len(v) < 2 for v in candidates.values())
+
+    def test_two_attrs_same_property_same_everything_still_flagged(self):
+        """Two COLUMN-declared attrs identical on css_property AND css_element AND
+        css_state AND css_tier are STILL a genuine collision — proves the widening
+        is not suppression."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[
+                ("sgs/test", "titleColour"),
+                ("sgs/test", "subtitleColour"),
+            ],
+        )
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_property TEXT")
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_element TEXT")
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_state TEXT")
+        conn.execute("ALTER TABLE block_attributes ADD COLUMN css_tier TEXT")
+        conn.execute(
+            "UPDATE block_attributes SET css_property='color' WHERE attr_name IN "
+            "('titleColour', 'subtitleColour')"
+        )
+        conn.commit()
+
+        candidates = enumerate_candidates("sgs/test", conn)
+        conn.close()
+
+        key = ("color", "typography", None, None, None)
+        assert key in candidates
+        assert sorted(candidates[key]) == sorted(["titleColour", "subtitleColour"])
 
 
 # ===========================================================================

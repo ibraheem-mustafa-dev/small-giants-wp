@@ -792,6 +792,45 @@ def _run_composition_role_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (composition-role seed): WARN {exc}")
 
 
+def _run_inspector_control_type_seed(conn: sqlite3.Connection) -> None:
+    """Run extract-signatures.py --task-b-only as a Stage 1 tail step (2026-07-21).
+
+    Bean's instruction: "wire the inspector controls seeder into sgs-update and
+    remove whatever is setting the current data." `inspector_control_type` had TWO
+    writers — a crude edit.js parser in uimax-tools/enrich-db.py (fill-NULL-only,
+    produced 93 wrong values) and this classifier's Task B (a better parser, but
+    policy was report-only, so the stale values from the other writer persisted
+    forever). enrich-db.py's writer is now REMOVED (see that file); this is the
+    SOLE remaining writer, and its policy now overwrites on disagreement (see
+    extract_inspector_control_types's own docstring — audit-justified: 88/93
+    DERIVED_CORRECT, 0 STORED_CORRECT). Wiring it here makes the corrected values
+    durable across every reseed, mirroring `_run_canonical_assignment` /
+    `_run_composition_role_seed` exactly — same subprocess pattern, same
+    swallow-as-warning failure handling.
+    """
+    try:
+        seeder_script = REPO_ROOT / "plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py"
+        if not seeder_script.exists():
+            print("Stage 1 tail (inspector-control-type seed): WARN script missing — not applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seeder_script), "--task-b-only"],
+            capture_output=True, text=True, timeout=60,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "written=" in ln]
+            print(f"Stage 1 tail (inspector-control-type seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (inspector-control-type seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (inspector-control-type seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -982,633 +1021,63 @@ def _render_consumes_content(block_dir: Path) -> bool:
 # writer and survive every /sgs-update. a tiny, cited override layer for genuine source-truth corrections
 # the heuristic mis-derives. Each entry MUST cite the reason + date.
 # Keyed (block_slug, attr_name) -> {column: value, ...} to UPDATE on block_attributes.
-ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = {
-    # TAG-IDENTITY attrs (CG-2 zero-h1 fix, 2026-07-05; role registered by
-    # migrations/2026-07-05-register-tag-identity-role.py). These attrs store the
-    # source element's HTML TAG (R-31-2 shape fact); assembly step 3a2 writes
-    # them, gated on enum membership. Explicit declaration per FR-31-2.1a —
-    # NEVER derived from enum-contains (hero.variant contains "video",
-    # quote.attributionTag contains "div" — over-broad, R-31-9).
-    #
-    # heading.level: render.php:94 defaults 'h2'; without this the whole page
-    #   rendered 0×h1/15×h2 (SEO + WCAG hierarchy, proven live 2026-07-05).
-    ("sgs/heading", "level"): {"role": "tag-identity"},
-    # media.mediaType: html_tag_to_core_block routes <video>/<iframe> to
-    #   sgs/media but nothing set the mode — a draft <video> emitted an
-    #   image-mode block (code-confirmed gap, H2 investigation 2026-07-05).
-    ("sgs/media", "mediaType"): {"role": "tag-identity"},
-    # sgs/trust-bar label family — the CG-9 residual finish (2026-07-05): the
-    # block's own element vocabulary is __label/__badge-label (render.php:284-292
-    # typography rule targets both), but Bean-controlled drafts write the badge
-    # caption as __text (mockup :356/:799+). The B1/B2 selector mechanism already
-    # supports comma-separated multi-selectors, first-non-None wins — the
-    # DOCUMENTED pattern for exactly this drift class ("handles __text↔__quote
-    # drift", scalar_content.py). Extending the declared selector is the
-    # FR-31-2.1a channel; a global slots alias would corrupt the distinct 'text'
-    # slot, and a code fallback would be a carve-out.
-    ("sgs/trust-bar", "labelFontSize"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
-    ("sgs/trust-bar", "labelFontSizeUnit"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
-    ("sgs/trust-bar", "labelFontSizeTablet"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
-    ("sgs/trust-bar", "labelFontSizeMobile"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
-    ("sgs/trust-bar", "labelFontWeight"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
-    ("sgs/trust-bar", "labelColour"): {"derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"},
-    # bgSvgTextShadow: a BOOLEAN toggle mis-seeded role='color' with the __text
-    # selector — inert while the capability gate no-op'd the whole block, but
-    # LIVE once scalarStylingLift flipped (2026-07-05 rater catch): a draft
-    # box/text-shadow on __text would write a raw CSS string into a boolean
-    # attr. It is a behaviour toggle, not a colour value.
-    ("sgs/trust-bar", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
-    # title family: stale '__heading' selectors — render.php emits __title
-    # only (2026-07-05 rater catch; harmless no-op before the capability, a
-    # live wrong-element path after).
-    ("sgs/trust-bar", "title"): {"derived_selector": ".sgs-trust-bar__title"},
-    ("sgs/trust-bar", "titleColour"): {"derived_selector": ".sgs-trust-bar__title"},
-    ("sgs/trust-bar", "titleFontSize"): {"derived_selector": ".sgs-trust-bar__title"},
-    ("sgs/trust-bar", "titleFontSizeUnit"): {"derived_selector": ".sgs-trust-bar__title"},
-    ("sgs/trust-bar", "titleFontSizeTablet"): {"derived_selector": ".sgs-trust-bar__title"},
-    ("sgs/trust-bar", "titleFontSizeMobile"): {"derived_selector": ".sgs-trust-bar__title"},
-    # ---- scalar-styling-lift rollout — latent boolean mis-seed fixes (D285, 2026-07-06) ----
-    # STOP-54: enabling `scalar-styling-lift` wakes EVERY role∈{color,typography}
-    # attr whose name suffix-matches a css_property. A BOOLEAN attr mis-classed
-    # role='color' with a selector would then have a raw CSS string written into
-    # it (_compute_value fall-through `return raw` → schema-invalid boolean). A
-    # full-roster pre-audit (2026-07-06, re-verified vs current code/DB, STOP-43)
-    # confirmed exactly the D280 four (the number FontSize/LineHeight attrs are
-    # the INTENDED targets — trust-bar precedent proves the split-value+unit path).
-    # Same one-line correction as the trust-bar bgSvgTextShadow fix (line 1002):
-    # role='behaviour' (a toggle, not a colour) + derived_selector=None (nothing
-    # to lift). Reseed-durable (STOP-24). accentStroke: counter's "draw a stroke
-    # around the accent" toggle. bgSvgTextShadow: the SVG-background text-shadow
-    # toggle on the 3 section composites carrying it.
-    ("sgs/counter", "accentStroke"): {"role": "behaviour", "derived_selector": None},
-    ("sgs/hero", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
-    ("sgs/cta-section", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
-    ("sgs/container", "bgSvgTextShadow"): {"role": "behaviour", "derived_selector": None},
-    # ---- scalar-styling-lift rollout — selector-drift corrections (D285, 2026-07-06) ----
-    # Render-verified DEAD selectors: the lift reads these classes off the DRAFT,
-    # but the block renders a DIFFERENT class, so the draft uses the current class
-    # too and the old selector matches nothing (harmless no-op, but the per-element
-    # style never lifts). Same __heading→__title correction as the trust-bar
-    # precedent (line 1006+). Confirmed against the blocks' true render surface
-    # (src/blocks/<b>/ + includes/), STOP-43. Only the genuinely-dead typography
-    # selectors are corrected — colour attrs on wrapper/state elements that no-op
-    # harmlessly are left as-is (not corruption, not a typography lift).
-    #
-    # card-grid: render emits __title/__subtitle (NOT __heading/__subheading).
-    ("sgs/card-grid", "titleColour"): {"derived_selector": ".sgs-card-grid__title"},
-    ("sgs/card-grid", "titleFontSize"): {"derived_selector": ".sgs-card-grid__title"},
-    ("sgs/card-grid", "titleFontSizeUnit"): {"derived_selector": ".sgs-card-grid__title"},
-    ("sgs/card-grid", "titleFontSizeTablet"): {"derived_selector": ".sgs-card-grid__title"},
-    ("sgs/card-grid", "titleFontSizeMobile"): {"derived_selector": ".sgs-card-grid__title"},
-    ("sgs/card-grid", "subtitleColour"): {"derived_selector": ".sgs-card-grid__subtitle"},
-    ("sgs/card-grid", "subtitleFontSize"): {"derived_selector": ".sgs-card-grid__subtitle"},
-    ("sgs/card-grid", "subtitleFontSizeUnit"): {"derived_selector": ".sgs-card-grid__subtitle"},
-    ("sgs/card-grid", "subtitleFontSizeTablet"): {"derived_selector": ".sgs-card-grid__subtitle"},
-    ("sgs/card-grid", "subtitleFontSizeMobile"): {"derived_selector": ".sgs-card-grid__subtitle"},
-    # quote: render emits ONLY __attribution (the old __text body element is gone —
-    # the quote body is now wrapper/InnerBlocks typography, HC2 inheritable default).
-    ("sgs/quote", "attributionColour"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionFontFamily"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionFontSize"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionFontSizeUnit"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionFontSizeTablet"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionFontSizeMobile"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionFontWeight"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionLineHeight"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionLineHeightUnit"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionTextDecoration"): {"derived_selector": ".sgs-quote__attribution"},
-    ("sgs/quote", "attributionTextTransform"): {"derived_selector": ".sgs-quote__attribution"},
-    # product-card: the card TITLE lift targets __heading, but includes/product-
-    # card-builtin-render.php emits the title as __title (verified render source,
-    # FR-31-2.1a / STOP-43). Correct the title family only — the pill*/pickerLabel*/
-    # cta* selectors are entangled with the D284 embedded-option-picker rework
-    # (the pills are now the child option-picker's __pill, not product-card's own),
-    # so those are left as harmless no-ops pending that area settling, not guessed.
-    ("sgs/product-card", "titleColour"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleFontSize"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleFontSizeUnit"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleFontSizeTablet"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleFontSizeMobile"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleFontWeight"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleLineHeight"): {"derived_selector": ".sgs-product-card__title"},
-    ("sgs/product-card", "titleLineHeightUnit"): {"derived_selector": ".sgs-product-card__title"},
-    # product-card DESCRIPTION family (D314, 2026-07-12): desc* was MISSED in the
-    # D285 title-family pass (role=NULL + derived_selector=NULL), so the draft's
-    # `.sgs-product-card__description { color:var(--text-muted); font-size:14px }`
-    # never routed and the clone fell to the block default `--text`. NOT entangled
-    # with the D284 cta* rework — render.php consumes descColour (:165) + the 'desc'
-    # typography family (:188) at `.sgs-product-card__description` (verified render
-    # source, STOP-44); the draft class is `.sgs-product-card__description`. Seed both
-    # role (canonical assignment skipped it) + derived_selector, mirroring title*.
-    ("sgs/product-card", "descColour"): {"role": "color", "derived_selector": ".sgs-product-card__description"},
-    ("sgs/product-card", "descFontSize"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
-    ("sgs/product-card", "descFontSizeUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
-    ("sgs/product-card", "descFontSizeTablet"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
-    ("sgs/product-card", "descFontSizeMobile"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
-    ("sgs/product-card", "descLineHeight"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
-    ("sgs/product-card", "descLineHeightUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__description"},
-    # product-card PRICE-NOTE family (D314 same-type sweep): the C-type null-role gap
-    # is NOT desc-only — the price-note ALSO drops. Draft `.sgs-product-card__price-note
-    # { font-size:13px; color:var(--text-muted) }` never routed (role=NULL). render.php
-    # consumes priceNoteColour (:166) + the 'priceNote' typography family (:193) at
-    # `.sgs-product-card__price-note` (verified render source, STOP-44). Same clean
-    # text-element pattern as desc*. (priceFromLabel* = bound-mode WC label, no typed
-    # draft element — seeded for completeness, harmless no-op on typed clones.)
-    ("sgs/product-card", "priceNoteColour"): {"role": "color", "derived_selector": ".sgs-product-card__price-note"},
-    ("sgs/product-card", "priceNoteFontSize"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
-    ("sgs/product-card", "priceNoteFontSizeUnit"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
-    ("sgs/product-card", "priceNoteFontSizeTablet"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
-    ("sgs/product-card", "priceNoteFontSizeMobile"): {"role": "typography", "derived_selector": ".sgs-product-card__price-note"},
-    # ---- scalar-styling-lift residual selector-drift (D285 completeness pass) ----
-    # Render-verified only (STOP-43): each corrected selector is where the block's
-    # render actually paints the attr. product-card tag*: the tag chip is __tag
-    # (includes/product-card-builtin-render.php:96/106/111), not __label. NOT
-    # touched (documented no-ops, P-SCALAR-LIFT-RESIDUAL-DRIFT): product-card
-    # pill*/pickerLabel* (the pills are now the embedded child sgs/option-picker,
-    # render_block :164 — no product-card pill element), product-card cta* (D284
-    # owns CTA styling via sgs_button_element_style_css on __cta--primary), and
-    # mobile-nav chrome colours (wrapper --sgs-mn-* CSS vars, no clean 1:1 element).
-    ("sgs/product-card", "tagFontSize"): {"derived_selector": ".sgs-product-card__tag"},
-    ("sgs/product-card", "tagFontSizeUnit"): {"derived_selector": ".sgs-product-card__tag"},
-    ("sgs/product-card", "tagFontSizeTablet"): {"derived_selector": ".sgs-product-card__tag"},
-    ("sgs/product-card", "tagFontSizeMobile"): {"derived_selector": ".sgs-product-card__tag"},
-    # option-picker pill*: render scopes pill typography/colour to __pill
-    # (render.php:255 $sel_pill), NOT __label (:254 is the group legend, correct
-    # for label*). Fix the 7 pill* attrs; leave label* untouched (already correct).
-    ("sgs/option-picker", "pillFontSize"): {"derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillFontSizeUnit"): {"derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillFontSizeTablet"): {"derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillFontSizeMobile"): {"derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillFontWeight"): {"derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillTextColour"): {"derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillBorderColour"): {"derived_selector": ".sgs-option-picker__pill"},
-    # NOTE (D281): the CSS-property naming-mismatch corrections for sgs/button's
-    # colourBorder/colourBackground/colourText were TRIALLED here then REVERTED —
-    # the column-first mechanism works (border-color lifts to colourBorder, D2
-    # shrinks) but the lifted VALUE is the draft's `var(--border)`, which the theme
-    # deploys as `--border-subtle` (not bare `--border`) so it doesn't resolve →
-    # a dark ghost-button border (proven live 2026-07-05). The faithful fix is a
-    # converter feature: resolve draft `var(--X)` colours against the draft :root
-    # map before token-snap. Re-add these overrides ONLY after that lands (parking:
-    # P-DRAFT-CSSVAR-COLOUR-RESOLUTION). The column MECHANISM + the reseed guard
-    # stay; the button SEED is deferred so page 8 keeps its faithful D2 border.
-    # sgs/product-card — 3 mis-seeds blocking the FR-31-2.6 per-attr walk from
-    # landing the card (QA Gate A, 2026-07-04). Every field verified against the
-    # BLOCK SOURCE (includes/product-card-builtin-render.php — the authoritative
-    # element↔attr map per FR-31-2.1a):
-    #
-    # priceLarge: mis-seeded role='select-from-enum' (it is the card's BIG price
-    #   TEXT — builtin-render.php:155 paints it inside
-    #   <span class="sgs-product-card__price">). role='text-content' admits it to
-    #   the content walk; canonical_slot='price' (already correct) gives the
-    #   draft's __price element a tier-0 match.
-    ("sgs/product-card", "priceLarge"): {"role": "text-content", "derived_selector": ".sgs-product-card__price"},
-    # priceNote: canonical_slot was 'price' — colliding tier-0 with priceLarge on
-    #   the draft's __price element (insert-order-fragile pick). Its REAL element
-    #   is __price-note (builtin-render.php:158); the normalised attr-name tier-0
-    #   match ('price-note' ≡ priceNote) resolves it without a slot row.
-    ("sgs/product-card", "priceNote"): {"canonical_slot": None, "derived_selector": ".sgs-product-card__price-note"},
-    # packSizes: the pack-size pills' owner (builtin-render.php:130-138 renders
-    #   the array as __pill buttons). canonical_slot='pill' marks the pill token
-    #   ARRAY-OWNED so the per-element walk never mis-binds a pill's text into a
-    #   scalar attr (trialTag got "8-pack", proven live 2026-07-04); the array
-    #   lift itself needs an items schema (tracked, Phase-5 backlog).
-    ("sgs/product-card", "packSizes"): {"canonical_slot": "pill", "derived_selector": ".sgs-product-card__pill"},
-    # trialTag: selector hygiene — the real element is __tag--trial
-    #   (builtin-render.php:106), not a derived guess.
-    ("sgs/product-card", "trialTag"): {"derived_selector": ".sgs-product-card__tag--trial"},
-    # ---- Trial-tag BOX attrs (2026-07-12, no-inline label/trial-tag mirror) ----
-    # The in-body trial tag renders through the SHARED sgs_label_box_css_rule()
-    # helper (render.php typed branch), scoped to the trial span's uid+BEM. Point
-    # every tag-box attr at the DRAFT's real trial-tag element so the universal
-    # lift reads the right rule. The two COLOUR attrs (role='color') transfer via
-    # the existing universal styling lift (styling_content.py — colour/typography
-    # only). The two GEOMETRY attrs (tagPadding/tagBorderRadius) are NOT lifted by
-    # the current engine (styling_helpers.py: geometry radius/padding is
-    # intentionally not routed) — seeded here for selector hygiene + a future
-    # per-element geometry lift; on page 8 they are moot (the draft trial tag's
-    # 4px 10px / 6px EQUAL the SGS style.css defaults). tagFullWidth is a card-
-    # design constant (block.json default true), not a lifted value.
-    ("sgs/product-card", "tagBackgroundColour"): {"role": "color", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
-    ("sgs/product-card", "tagTextColour"): {"role": "color", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
-    ("sgs/product-card", "tagBorderRadius"): {"role": "visual", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
-    ("sgs/product-card", "tagPadding"): {"role": "visual", "canonical_slot": "label", "derived_selector": ".sgs-product-card__tag--trial"},
-    # ctaUrl: mis-seeded role='content' (generic text role) instead of
-    #   'link-href' — builtin-render.php emits the CTA as
-    #   <a href="$cta_url" class="sgs-product-card__button">, i.e. this attr
-    #   is a HREF, not a text node. role='content' passed the
-    #   equivalent_block_for content-bearing gate (both are content-bearing
-    #   roles), so identity resolution to sgs/button already worked, but the
-    #   VALUE extraction dispatch (field_extractors.extract_field_value) has
-    #   no 'content' handler for hrefs — 'link-href' routes it through the
-    #   shared url-href/link-href extractor (walk.py leg-2 foreign-identity
-    #   arm, D279, 2026-07-05) so the featured-product card's CTA link
-    #   correctly lifts BOTH ctaText (role='text-content', unchanged) and
-    #   ctaUrl (now role='link-href') from the SAME <a class="sgs-button
-    #   sgs-button--primary" href="/product/zookies/">.
-    ("sgs/product-card", "ctaUrl"): {"role": "link-href"},
-    # sgs/team-member.name: assign-canonical routes this to canonical_slot='heading'
-    # → standalone_block='sgs/heading' → equivalent_block_for() returns 'sgs/heading'.
-    # has_inner_blocks derives to 0 naturally (save.js returns null, render.php never
-    # reads $content) so the walker never recurses children, and equivalent_block_for
-    # is never consulted for child routing.
-    # to lift the person's name from the <h3 class="sgs-team-member__name"> element.
-    # Setting role='text-content' is safe: the per-attr emit_shape walk
-    # (FR-31-2.6; the old block_accepts_inner_blocks gate died with the
-    # has_inner_blocks column, 2026-07-05) prevents the sgs/heading
-    # dead-child bug recurring. D221 regression fix. 2026-06-13.
-    ("sgs/team-member", "name"): {"role": "text-content", "derived_selector": ".sgs-team-member__name"},
-    # sgs/team-member.role: person's job title. canonical_slot='role' →
-    # standalone_block='sgs/label' → would emit a dead child with has_inner_blocks=1.
-    # has_inner_blocks derives to 0 naturally. Force role='text-content' so the scalar text of the
-    # <p class="sgs-team-member__role"> element is lifted into this string attr. 2026-06-13.
-    ("sgs/team-member", "role"): {"role": "text-content", "derived_selector": ".sgs-team-member__role"},
-    # sgs/team-member.photo + .memberMedia: object-typed scalar image attrs. Two
-    # corrections the heuristic gets wrong:
-    #   (1) derived_selector: assign-canonical derives '.sgs-team-member__media' from
-    #       the 'media' canonical_slot, but render.php + edit.js BOTH emit the image
-    #       under class '.sgs-team-member__photo' (render.php:125/133). The lift element
-    #       must match the REAL BEM class, so force '.sgs-team-member__photo'.
-    #   (2) role: NULL by default → _lift_scalar_attrs_by_selector skips it. Force
-    #       role='image-object' (content-bearing) so the G3-attrs path lifts the <img>
-    #       into the object attr via _lift_scalar_media_from_img.
-    # Both fields MUST live in this override (not a direct DB edit) so they survive
-    # every /sgs-update reseed — assign-canonical would otherwise re-derive __media +
-    # reset role to NULL, breaking the photo lift. 2026-06-13.
-    ("sgs/team-member", "photo"): {"role": "image-object", "derived_selector": ".sgs-team-member__photo"},
-    ("sgs/team-member", "memberMedia"): {"role": "image-object", "derived_selector": ".sgs-team-member__photo"},
-    # sgs/testimonial — 5 styling attrs mis-classified by assign-canonical.
-    # Verified against render.php (D222 2026-06-13).
-    #
-    # quoteFontSize: assign-canonical likely derives role='typography' + selector
-    #   '.sgs-testimonial__quote' correctly (DB confirmed). No change — left here
-    #   for completeness of the audit (do not add an override for a correct row).
-    #
-    # quoteColour: assign-canonical derives role='color' + selector
-    #   '.sgs-testimonial__quote' correctly (DB confirmed). No change.
-    #
-    # quoteFontStyle (CG-11, 2026-07-05; renamed from quoteStyle to match the
-    #   FontSize/FontWeight/LineHeight/FontStyle typography-suffix family —
-    #   property_suffixes.FontStyle.role corrected 'select-from-enum'->'typography'
-    #   the same day via migrations/2026-07-05-fontstyle-role-typography.py).
-    #   Pre-rename, assign-canonical peeled suffix 'Style' (longest-match;
-    #   'FontStyle' doesn't match 'quoteStyle') -> role='behaviour',
-    #   css_property=NULL. Post-rename the 'FontStyle' suffix now matches
-    #   correctly, but the override is kept explicit (belt-and-braces) with the
-    #   real selector. render.php: $quote_style emitted as font-style inline on
-    #   <blockquote class="sgs-testimonial__quote">.
-    ("sgs/testimonial", "quoteFontStyle"): {"role": "typography", "derived_selector": ".sgs-testimonial__quote"},
-    #
-    # CG-11 (2026-07-05): 4 more testimonial styling attrs left role=NULL +
-    #   derived_selector=NULL by assign-canonical (the 'Media' problem's sibling
-    #   for typography/colour suffixes on attrs whose canonical_slot doesn't
-    #   route them to the CSS-lift). Verified against render.php:
-    #     nameFontWeight: <cite>/name node is class="sgs-testimonial__name"
-    #       (render.php attribution block) — font-weight typography attr.
-    #     orgColour: org text renders in class="sgs-testimonial__org" — colour attr.
-    #     summaryColour / summaryFontSize: summary phrase renders in
-    #       <p class="sgs-testimonial__summary"> (render.php:272) — colour +
-    #       typography attrs (mirrors quoteColour/quoteFontSize's own override
-    #       precedent above; summaryFontSize already flows through the same
-    #       sgs_font_size_value()/style-attr mechanism as quoteFontSize).
-    #   Must live here (not DB-only) so they survive every /sgs-update reseed.
-    ("sgs/testimonial", "nameFontWeight"): {"role": "typography", "derived_selector": ".sgs-testimonial__name"},
-    ("sgs/testimonial", "orgColour"): {"role": "color", "derived_selector": ".sgs-testimonial__org"},
-    ("sgs/testimonial", "summaryColour"): {"role": "color", "derived_selector": ".sgs-testimonial__summary"},
-    ("sgs/testimonial", "summaryFontSize"): {"role": "typography", "derived_selector": ".sgs-testimonial__summary"},
-    #
-    # ratingSize: stale role='content' + selector '.sgs-testimonial__text, ...'.
-    #   Real element: <svg width="$rating_size" height="$rating_size"> inside
-    #   <div class="sgs-testimonial__rating sgs-testimonial__stars"> (lines 203/215).
-    #   ratingSize drives SVG width/height attributes, NOT a CSS font-size property.
-    #   Size.css_property = NULL in property_suffixes → NOT CSS-liftable by suffix.
-    #   BLOCKER: the CSS-lift cannot resolve ratingSize via suffix alone. Fix the
-    #   role to 'select-from-enum' (closest correct: it controls a dimension) and
-    #   the selector to the real rating container. The lift-capability gap is a
-    #   separate task — documented here, not papered over.
-    ("sgs/testimonial", "ratingSize"): {"role": "select-from-enum", "derived_selector": ".sgs-testimonial__rating"},
-    # sgs/testimonial — 3 object-typed media attrs. assign-canonical leaves their
-    # role=NULL + derived_selector=NULL because 'Media' suffix matches no typed
-    # property_suffix row → the content-extraction engine skips them entirely.
-    # Correct: role='image-object' (lifts <img> via _lift_scalar_media_from_img)
-    # + derived_selector matching the real BEM element in render.php + the draft.
-    #   avatarMedia: rendered in <div class="sgs-testimonial__avatar"> (render.php:249)
-    #   orgLogo:     rendered in <div class="sgs-testimonial__logo">   (render.php:257)
-    #   workMedia:   rendered in <figure class="sgs-testimonial__work"> (render.php:265)
-    # Must live here (not DB-only) so they survive every /sgs-update reseed.
-    # Paired with migration 2026-06-26-testimonial-media-role-selector.py for
-    # immediate effect without a full reseed. 2026-06-26.
-    ("sgs/testimonial", "avatarMedia"): {"role": "image-object", "derived_selector": ".sgs-testimonial__avatar"},
-    ("sgs/testimonial", "orgLogo"):     {"role": "image-object", "derived_selector": ".sgs-testimonial__logo"},
-    ("sgs/testimonial", "workMedia"):   {"role": "image-object", "derived_selector": ".sgs-testimonial__work"},
-    # Container→item selector fixes — council MF-2, 2026-06-28.
-    # assign-canonical derives __items (the container) from the plural BEM convention;
-    # the CSS-lift and array-resolver both need the PER-ITEM element selector so they
-    # target the rendered child, not the wrapper.
-    # sgs/card-grid.items: render.php:288 emits class="sgs-card-grid__item" (singular).
-    # Current derived_selector .sgs-card-grid__items is the container wrapper — wrong target.
-    ("sgs/card-grid", "items"): {"derived_selector": ".sgs-card-grid__item"},
-    # sgs/icon-list.items: render.php:140 emits class="sgs-icon-list__item" (singular).
-    # Current derived_selector .sgs-icon-list__items is the container wrapper — wrong target.
-    ("sgs/icon-list", "items"): {"derived_selector": ".sgs-icon-list__item"},
-    # sgs/hero.badges: render.php:621 emits class="sgs-hero__badge sgs-hero__badge--..." per item.
-    # Container is .sgs-hero__badges (render.php:633). Per-item class is .sgs-hero__badge.
-    ("sgs/hero", "badges"): {"derived_selector": ".sgs-hero__badge"},
-    # --- fingerprints.json migration (2026-07-03, P-FINGERPRINT-MIGRATION) ---
-    # The stale tools/recogniser/data/fingerprints.json attr_extractors[].selector
-    # overrides are folded into this live, reseed-surviving channel and the load is
-    # dropped from assign-canonical.py. Values are the CURRENT effective
-    # derived_selector for each fingerprint-covered (slug, attr) pair — so as the
-    # FINAL Stage-1 writer this reproduces the exact live state (verified: a full
-    # reseed produces a zero derived_selector diff). Any redundant-with-heuristic
-    # entries are harmless. team-member.name/.role carried their fingerprint
-    # selectors into the existing role overrides above.
-    ("core/button", "text"): {"derived_selector": "a,button"},  # migrated from fingerprints.json (db-current)
-    ("core/button", "url"): {"derived_selector": "a"},  # migrated from fingerprints.json (db-current)
-    ("core/heading", "content"): {"derived_selector": "h1,h2,h3,h4,h5,h6"},  # migrated from fingerprints.json (db-current)
-    ("core/image", "alt"): {"derived_selector": "img"},  # migrated from fingerprints.json (db-current)
-    ("core/image", "caption"): {"derived_selector": "figcaption"},  # migrated from fingerprints.json (db-current)
-    ("core/image", "url"): {"derived_selector": "img"},  # migrated from fingerprints.json (db-current)
-    ("core/list-item", "content"): {"derived_selector": "li"},  # migrated from fingerprints.json (db-current)
-    ("core/paragraph", "content"): {"derived_selector": "p"},  # migrated from fingerprints.json (db-current)
-    ("core/quote", "citation"): {"derived_selector": "cite"},  # migrated from fingerprints.json (db-current)
-    ("core/quote", "value"): {"derived_selector": "blockquote"},  # migrated from fingerprints.json (db-current)
-    ("sgs/accordion-item", "title"): {"derived_selector": ".sgs-accordion-item__title"},  # migrated from fingerprints.json (db-current)
-    ("sgs/counter", "label"): {"derived_selector": ".sgs-counter__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/cta-section", "headline"): {"derived_selector": ".sgs-cta-section__headline, h1, h2"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-address", "label"): {"derived_selector": ".sgs-form-field-address__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-checkbox", "label"): {"derived_selector": ".sgs-form-field-checkbox__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-consent", "label"): {"derived_selector": ".sgs-form-field-consent__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-date", "label"): {"derived_selector": ".sgs-form-field-date__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-email", "label"): {"derived_selector": ".sgs-form-field-email__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-file", "label"): {"derived_selector": ".sgs-form-field-file__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-number", "label"): {"derived_selector": ".sgs-form-field-number__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-phone", "label"): {"derived_selector": ".sgs-form-field-phone__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-radio", "label"): {"derived_selector": ".sgs-form-field-radio__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-select", "label"): {"derived_selector": ".sgs-form-field-select__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-text", "label"): {"derived_selector": ".sgs-form-field-text__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-textarea", "label"): {"derived_selector": ".sgs-form-field-textarea__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-field-tiles", "label"): {"derived_selector": ".sgs-form-field-tiles__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-review", "heading"): {"derived_selector": ".sgs-form-review__heading"},  # migrated from fingerprints.json (db-current)
-    ("sgs/form-step", "label"): {"derived_selector": ".sgs-form-step__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/hero", "ctaPrimaryText"): {"derived_selector": ".sgs-hero__cta--primary"},  # migrated from fingerprints.json (db-current)
-    ("sgs/hero", "ctaPrimaryUrl"): {"derived_selector": ".sgs-hero__cta--primary"},  # migrated from fingerprints.json (db-current)
-    ("sgs/hero", "ctaSecondaryText"): {"derived_selector": ".sgs-hero__cta--secondary"},  # migrated from fingerprints.json (db-current)
-    ("sgs/hero", "ctaSecondaryUrl"): {"derived_selector": ".sgs-hero__cta--secondary"},  # migrated from fingerprints.json (db-current)
-    ("sgs/hero", "headline"): {"derived_selector": ".sgs-hero__headline, h1, h2"},  # migrated from fingerprints.json (db-current)
-    ("sgs/hero", "subHeadline"): {"derived_selector": ".sgs-hero__sub-headline, p"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "ariaLabel"): {"derived_selector": ".sgs-icon, [aria-label]"},  # migrated from fingerprints.json (db-current)
-    # NOTE (2026-07-16): emojiChar/iconName previously appeared TWICE in this dict —
-    # here with a derived_selector, and again below with an icon-source role. Python
-    # dict literals are last-wins, so these two derived_selectors were SILENTLY
-    # DISCARDED at parse time (leg-1 lift_scalar_content needs them). Merged into the
-    # single entries below; a duplicate-key AST gate now fails the build on a repeat.
-    ("sgs/icon", "iconSource"): {"derived_selector": ".sgs-icon__glyph, [data-icon-source]"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "linkTarget"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
-    ("sgs/icon", "linkUrl"): {"derived_selector": ".sgs-icon__link, a"},  # migrated from fingerprints.json (db-current)
-    ("sgs/info-box", "description"): {"derived_selector": ".sgs-info-box__description"},  # migrated from fingerprints.json (db-current)
-    ("sgs/info-box", "heading"): {"derived_selector": ".sgs-info-box__heading"},  # migrated from fingerprints.json (db-current)
-    ("sgs/mega-menu", "label"): {"derived_selector": ".sgs-mega-menu__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/mobile-nav", "ctaText"): {"derived_selector": ".sgs-mobile-nav__cta--primary"},  # migrated from fingerprints.json (db-current)
-    ("sgs/mobile-nav", "ctaUrl"): {"derived_selector": ".sgs-mobile-nav__cta--primary"},  # migrated from fingerprints.json (db-current)
-    ("sgs/notice-banner", "text"): {"derived_selector": ".sgs-notice-banner__text"},  # migrated from fingerprints.json (db-current)
-    ("sgs/responsive-logo", "alt"): {"derived_selector": ".sgs-responsive-logo__image, img"},  # migrated from fingerprints.json (db-current)
-    ("sgs/responsive-logo", "width"): {"derived_selector": ".sgs-responsive-logo__image, img"},  # migrated from fingerprints.json (db-current)
-    ("sgs/star-rating", "label"): {"derived_selector": ".sgs-star-rating__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/tab", "label"): {"derived_selector": ".sgs-tab__label"},  # migrated from fingerprints.json (db-current)
-    ("sgs/table-of-contents", "title"): {"derived_selector": ".sgs-table-of-contents__title"},  # migrated from fingerprints.json (db-current)
-    ("sgs/testimonial", "nameColour"): {"derived_selector": ".sgs-testimonial__heading, .sgs-testimonial__author"},  # migrated from fingerprints.json (db-current)
-    # 2026-07-16 (qc-council, 2 raters + measured baseline): `role` ADDED alongside the
-    # existing selector. Both attrs below were the single root cause of 7 red converter
-    # tests. The two attrs fail at DIFFERENT gates in scalar_content.py, so they need
-    # DIFFERENT corrections — a role row alone fixes neither:
-    #   quote        — HAS a selector, so it clears :159, but role=NULL fails the
-    #                  :164 gate `role in ("text-content","content") and attr_type=="string"`
-    #                  -> needs ROLE.
-    #   reviewerName — has NEITHER, and :159 (`if not selector: continue`) skips it
-    #                  BEFORE :164 is ever reached -> needs SELECTOR **and** role.
-    # Selector shape mirrors quote's: the render-side class (`__name`, render.php) plus the
-    # draft-side synonym (`__author`, used by the drafts + the fixtures) — the documented
-    # comma-separated multi-selector drift pattern, first-non-None wins.
-    # WHY AN OVERRIDE AND NOT A SEEDER FIX: block.json DOES declare `"role": "content"` on
-    # both, and the seeder ignores it — but reading that declaration first was measured and
-    # REJECTED by the council: all 94 declared roles are the identical bulk marker
-    # `"content"` (the GENERIC CATCH-ALL that assign-canonical.py:1283-1286 deliberately
-    # UPGRADES AWAY FROM into link-href/image-object/image-alt). Declaration-first would
-    # DOWNGRADE 9 attrs — `sgs/button.url` would take the button's label text as its href.
-    # `ATTR_CLASSIFICATION_OVERRIDES` is the FR-31-2.1a-sanctioned channel for exactly this
-    # ("fix it via ATTR_CLASSIFICATION_OVERRIDES ... or by reading the block code") and is
-    # named the R-31-1 channel at decisions.md:329. Safe by measurement:
-    # detect_role_from_block_json proposes (None,None,None) for both, so the upgrade pass
-    # cannot steal them back, and this dict is the final writer regardless.
-    # RESIDUAL (tracked, NOT closed by this fix): the `_ATTR_NAME_RULES` name-regex tier
-    # remains a live FR-31-2.1a violation. Closing it needs the 9 wrong block.json
-    # declarations corrected at source THEN declaration-first + deleting the regex tier —
-    # its own design gate.
-    ("sgs/testimonial", "quote"): {
-        "role": "content",
-        "derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote",
-    },
-    ("sgs/testimonial", "reviewerName"): {
-        "role": "content",
-        "derived_selector": ".sgs-testimonial__name, .sgs-testimonial__author",
-    },  # migrated from fingerprints.json (db-current)
-    ("sgs/testimonial", "quoteColour"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
-    ("sgs/testimonial", "quoteFontSize"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
-    ("sgs/testimonial", "quoteLineHeight"): {"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"},  # migrated from fingerprints.json (db-current)
-    ("sgs/timeline", "entries"): {"derived_selector": ".sgs-timeline__item"},  # migrated from fingerprints.json (db-current)
-    ("sgs/whatsapp-cta", "label"): {"derived_selector": ".sgs-whatsapp-cta__label"},  # migrated from fingerprints.json (db-current)
-    # sgs/icon — icon-source role tags (Spec 31 §3.B.0, 2026-07-03). The named-leaf
-    # icon arm finds the target attr BY ROLE (like text/image/link) and writes the DB
-    # attr_name — never a hardcoded attr name (R-31-1). Each source value attr carries
-    # an `icon-<kind>` role so `resolve_icon_kind`'s kind binds to the attr via the DB.
-    # `iconSource` stays role='identity' (the discriminator storing the kind string);
-    # `iconName` is RETAGGED off 'identity' -> 'icon-lucide' so `iconSource` is the sole
-    # 'identity' attr the arm reads as the discriminator. Reseed-durable: assign-canonical
-    # re-derives block_attributes.role each reseed, so these MUST live here (the roles
-    # themselves are registered by migrations/2026-07-03-register-icon-source-roles.py).
-    ("sgs/icon", "iconName"): {"role": "icon-lucide", "derived_selector": ".sgs-icon__glyph, [data-icon-name]"},
-    ("sgs/icon", "emojiChar"): {"role": "icon-emoji", "derived_selector": ".sgs-icon__emoji"},
-    ("sgs/icon", "dashiconName"): {"role": "icon-dashicon"},
-    ("sgs/icon", "wpIconName"): {"role": "icon-wp-icon"},
-    # CG-8 (2026-07-05): the image-extractor builds a full {url,id,alt} dict, but
-    # walk.py/extraction.py DOWNCAST it to the bare URL for a string-typed image
-    # attr (sgs/product-card.image, sgs/media.imageUrl, sgs/decorative-image.
-    # imageUrl) — the alt was discarded even though all 3 blocks declare a
-    # sibling `imageAlt` string attr that render.php already reads + escapes
-    # into alt="" (product-card-builtin-render.php + media/render.php:313/691 +
-    # decorative-image/render.php:22). role=NULL on imageAlt meant nothing ever
-    # populated it (a11y defect — page 8 had 3 empty alt="" images). Found by a
-    # full-DB sweep for the SAME shape (role='image-object' + attr_type='string'
-    # + a sibling *Alt attr) — R-31-9 "no carve-outs": all 3 fixed together, not
-    # just the 2 verified live on page 8.
-    #
-    # role='image-alt' (registered by
-    # migrations/2026-07-05-register-image-alt-role.py) admits the attr to the
-    # DB-driven companion lookup (db_lookup.image_alt_companion_for); the NEW
-    # `alt_companion_attr` column names the image attr this alt belongs to — a
-    # genuine per-attr fact, NOT suffix-derivable (product-card's image attr is
-    # `image`, media's/decorative-image's is `imageUrl` — no shared naming rule,
-    # unlike the Unit-companion suffix family). Both fields MUST live here so
-    # they survive every /sgs-update reseed (assign-canonical would otherwise
-    # re-derive role=NULL + canonical_slot from the bare attr-name heuristic).
-    ("sgs/product-card", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "image"},
-    ("sgs/media", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "imageUrl"},
-    ("sgs/decorative-image", "imageAlt"): {"role": "image-alt", "alt_companion_attr": "imageUrl"},
-    # sgs/quote.attribution (2026-07-05, ONE-content-model rebuild): the block
-    # NEVER had an `equivalent_block_for` route into sgs/text for its footer
-    # string — assign-canonical mis-seeds role=NULL + emit_shape=NULL on this
-    # attr. role=NULL fails the FR-31-2.2 content-bearing allowlist in both
-    # db_lookup.equivalent_block_for() and content_attr_for_element(), so the
-    # per-attr walk could never route a draft's attribution paragraph here —
-    # it fell through Mechanism B's generic G-resolve (slot alias 'attribution'
-    # -> standalone sgs/text) and emitted as an indistinguishable 4th sgs/text
-    # child (verified live against sites/mamas-munches, brand-story section,
-    # 2026-07-05). role='text-content' admits it to the content-bearing
-    # allowlist; emit_shape='nested' marks it a scalar (not child-block) unit.
-    #
-    # canonical_slot explicitly cleared to NULL (mirrors the product-card
-    # priceNote override precedent above): assign-canonical's bare-name
-    # heuristic lands it on the shared 'text' slot, whose ALIAS LIST also
-    # contains 'body'/'author'/'caption'/'bio' etc. (generic text-slot
-    # synonyms used for IDENTITY resolution across many unrelated blocks).
-    # Once `body` stopped being its own dedicated attr (this same rebuild),
-    # a `.sgs-quote__body` element lost its Tier-0 attr-name destination and
-    # fell to Tier-1 alias matching on the SAME shared 'text' canonical_slot
-    # — silently and WRONGLY winning the 'attribution' attr ahead of the
-    # genuine `.sgs-quote__author`/`.sgs-quote__attribution` element (proven
-    # live against tests/fixtures/conformance/sgs-quote.html, whose
-    # `.sgs-quote__body` blockquote text was captured into `attribution`
-    # instead of the `.sgs-quote__author` cite text). canonical_slot=NULL
-    # closes the Tier-1 hole; `attr_name == bem_element` ('attribution' ==
-    # 'attribution') still gives content_attr_for_element() a Tier-0 direct
-    # match for a draft using the literal `attribution` token, and
-    # `derived_selector='.sgs-quote__text'` still gives equivalent_block_for()
-    # its identity resolution to sgs/text via Tier B — no identity is lost.
-    # Extraction-side wiring: run_mechanism_b's generic path
-    # (converter/services/extraction.py, `nested_attr_named` — EXACT attr-name
-    # match only, deliberately narrower than content_attr_for_element's Tier-1
-    # alias match, per the D279 QC regression guard) now checks for a 'nested'
-    # hit before falling back to a generic ChildBlock, so this attr routes
-    # without any block-slug literal and without the alias-collision risk.
-    ("sgs/quote", "attribution"): {"role": "text-content", "emit_shape": "nested", "canonical_slot": None},
-    # ---- box-object interface (Phase-1 pilot: container + button, 2026-07-09) ----
-    # Merged box families classify via box_family (the family name). box_side stays
-    # absent/None — the object attr holds all sides. Contract: .claude/plans/
-    # 2026-07-09-box-object-interface-contract.md §3 DB categorisation.
-    # These entries pre-register the classification; the object attrs are added to
-    # block.json in a later wave. The override dict is applied at the next /sgs-update
-    # after block.json lands.
-    #
-    # container: 3 box families × 3 tiers (base/tablet/mobile) = 9 attrs.
-    # button: 3 box families × 2–3 tiers (borderWidth/borderRadius have no base object
-    # currently, only tiers; padding/margin follow WP-native spacing base + tiers).
-    # Wave-1 box-family rollout (2026-07-09): heading/text/quote merge their flat
-    # per-side borderWidth into one SGS object attr. border-radius base routes to
-    # WP-native style.border.radius (no SGS attr → no seed); padding/margin are
-    # outside the border roster for these blocks (native or unchanged custom).
-    # quote (block-private, content-KIND → block-private per qc-council 2026-07-09):
-    # padding/margin tiers merge to SGS object attrs (base padding/margin route to
-    # WP-native style.spacing.*). border-radius base → WP-native style.border.radius.
-    # media (block-private, atomic img clone target → block-private): only border-radius
-    # migrates. Base radius → WP-native style.border.radius (no seed). Tier radius →
-    # SGS object attrs, seeded like button's radius tiers so the converter accumulator
-    # builds them from a draft's responsive corner declarations.
-    # hero (Task 2, section-KIND composite → KEEPS wrapper; 5 per-area SGS-custom box
-    # families rendered block-privately, migrated flat→object. Base per-area families are
-    # SGS custom objects (NOT WP-native — they target __content/__media/__split-image, not
-    # the section root). imageBorderWidth has no tiers (desktop only). contentBandPadding
-    # is consumed by SGS_Container_Wrapper (object, mirrors container).
-    # Wave-1 leaf blocks (2026-07-10, D297): 8 single-element/leaf blocks migrated
-    # block-private to no-inline. Each adds SGS padding/margin tier objects (base
-    # padding/margin route to WP-native style.spacing.*, already object-shaped, no
-    # seed). counter + whatsapp-cta also add border-radius tier objects (base radius
-    # -> WP-native style.border.radius, no seed). label has NO WP padding support
-    # (padding:false), so its BASE padding is a custom SGS object -> seeded here;
-    # its borderRadius stays a single scalar (uniform, not a 4-corner family -> no seed).
-    # Wave-2 batch 1 (2026-07-10): 4 leaf/inline block-private blocks migrated
-    # to no-inline. padding/margin base route to WP-native style.spacing.* (already
-    # object-shaped, no seed); tier objects seeded here. table-of-contents +
-    # countdown-timer add border-radius tier objects (base radius -> WP-native
-    # style.border.radius, no seed). decorative-image is an absolute-position/
-    # transform block with no box family -> no seed (inline-render fix only).
-    # Wave-2 batch 2 (2026-07-10): 4 leaf/array/timeline block-private blocks.
-    # padding/margin base -> WP-native style.spacing.* (object, no seed); tiers seeded.
-    # icon-list/timeline/process-steps take the quote route for border (custom
-    # borderWidth object + scalar colour/style, radius base native); brand-strip keeps
-    # native border wholesale (radius tiers only). process-steps has no responsive
-    # radius (no radius tier attrs). box-shadow (timeline/process-steps) stays the
-    # native shadow support, scoped -> NOT a box family, no seed.
-    # Wave-2 batch 3 (2026-07-10): the 2 keep-structure InnerBlocks navs.
-    # mobile-nav adds padding tier objects (base padding -> WP-native style.spacing.*,
-    # object, no seed). mega-menu is colour-only (no box family -> no seed).
-    # sgs/option-picker (2026-07-10, cloning-fidelity + no-inline pass): the
-    # option-picker's pill states are now converter-liftable via the universal
-    # styling-lift (Spec 31 §3.B B2 — the frozen __hover/__active/__focus
-    # exclusion was removed 2026-07-10, so a state-keyed derived_selector now
-    # routes correctly). RESTING attrs key on the base pill element
-    # (.sgs-option-picker__pill — already correct for pillTextColour/
-    # pillBorderColour, seeded 2026-07-05 — see the existing pillFontSize
-    # block above). SELECTED attrs key on the draft's STATIC `--active`
-    # modifier class: a mockup marks its selected pill by baking
-    # `sgs-option-picker__pill--active` directly into the markup (no live
-    # interaction in a static draft), and derived_selector resolution is a
-    # plain BeautifulSoup class match (`node.find(class_=...)`, no CSS
-    # pseudo-class support) — so ONLY a literal element class can be matched.
-    # pillBgColour was missing a role/derived_selector row entirely (verified
-    # against render.php: :164 emits it as `--sgs-op-bg` on the SAME pill
-    # element pillTextColour/pillBorderColour already route through).
-    ("sgs/option-picker", "pillBgColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillSelectedBgColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill--active"},
-    ("sgs/option-picker", "pillSelectedTextColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill--active"},
-    ("sgs/option-picker", "pillSelectedBorderColour"): {"role": "color", "derived_selector": ".sgs-option-picker__pill--active"},
-    # Border-radius — KEPT SCALAR (Spec 32 §6.1c discretion clause: a pill is
-    # semantically always uniform-radius, no per-corner design use-case, unlike
-    # button/heading/media/quote/text which DO merge to the 4-corner object —
-    # see this session's cloning report for the full reasoning). The attr is a
-    # CSS-length STRING ("6px"), matching the styling-lift's generic string value
-    # (SHIP-WITH-FIX: number->string migration removes the number/string mismatch
-    # AND makes an explicit "0"/"0px" distinguishable from unset). role='typography'
-    # is the SAME generic scalar-CSS-value bucket letter-spacing/line-height use in
-    # styling_content.py's `_compute_value` fallback (raw-string passthrough for any
-    # non-colour/font-weight/font-size css_property) — NOT a semantic mis-seed, it is
-    # the established mechanism for "any scalar element-level CSS value lifted by
-    # suffix", which the codebase names 'typography' for historical (font-first)
-    # reasons. UNVERIFIED: this session could not query a live sgs-framework.db
-    # (worktree copy has zero tables) to confirm property_suffixes has a resolvable
-    # 'BorderRadius' suffix -> css_property 'border-radius' row; the main session
-    # MUST verify this before/at the next /sgs-update (if the suffix is absent or
-    # NULL, these two rows are inert — no crash, just a silent non-lift, per the
-    # styling_content.py no-op floor).
-    ("sgs/option-picker", "pillBorderRadius"): {"role": "typography", "derived_selector": ".sgs-option-picker__pill"},
-    ("sgs/option-picker", "pillSelectedBorderRadius"): {"role": "typography", "derived_selector": ".sgs-option-picker__pill--active"},
-    # Root box-family migration (mirrors sgs/quote exactly — content-KIND,
-    # block-private, box+width only).
-    # pillPadding — SGS custom box family, NEW (2026-07-10): the pill is a
-    # content CHILD (not the block root), so there is no WP-native spacing
-    # support to route through; base + tiers are a dedicated box_family so a
-    # future converter accumulator pass can lift a draft's per-size pill
-    # padding onto it (currently authored-only via the editor BoxControl —
-    # no converter resolver targets `pillPadding*` yet, an honest gap, see
-    # the cloning report).
-    # sgs/product-card — R4 forward attrs (2026-07-10): liftable so a cloned
-    # card (a draft rendering its OWN `.sgs-product-card__pill` BEM elements,
-    # not a live sgs/option-picker block) routes the draft's pill CSS onto the
-    # card's own pickerPill* attrs, which render.php then forwards into every
-    # nested render_block('sgs/option-picker') call. Same resting/selected
-    # selector-pair convention as option-picker itself (static `--active`
-    # modifier class for the selected pill in the draft markup).
-    ("sgs/product-card", "pickerPillBgColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill"},
-    ("sgs/product-card", "pickerPillTextColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill"},
-    ("sgs/product-card", "pickerPillBorderColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill"},
-    ("sgs/product-card", "pickerPillSelectedBgColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill--active"},
-    ("sgs/product-card", "pickerPillSelectedTextColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill--active"},
-    ("sgs/product-card", "pickerPillSelectedBorderColour"): {"role": "color", "derived_selector": ".sgs-product-card__pill--active"},
-    # Same discretion + same unverified-suffix caveat as option-picker's own
-    # pillBorderRadius/pillSelectedBorderRadius above.
-    ("sgs/product-card", "pickerPillBorderRadius"): {"role": "typography", "derived_selector": ".sgs-product-card__pill"},
-    ("sgs/product-card", "pickerPillSelectedBorderRadius"): {"role": "typography", "derived_selector": ".sgs-product-card__pill--active"},
-}
+#
+# LIFTED OUT to its own truth-source file 2026-07-21 (Bean's explicit request —
+# "give the overrides their own file that they are fed from as a truth
+# source"). All 175 entries preserved EXACTLY (verified by a round-trip diff
+# against the prior inline dict before this change was made — this was a MOVE,
+# not a rewrite). The JSON structure + full rationale doc lives in the file
+# itself. This module still exposes ATTR_CLASSIFICATION_OVERRIDES as a
+# module-level dict[tuple[str, str], dict[str, object]] so every existing
+# import (check_css_property_reseed.py, this module's own Stage 1C) is
+# unaffected — only the storage format moved.
+_ATTR_OVERRIDES_JSON_PATH = Path(__file__).resolve().parent / "attr-classification-overrides.json"
+
+
+def _load_attr_classification_overrides(path: Path = _ATTR_OVERRIDES_JSON_PATH) -> dict[tuple[str, str], dict[str, object]]:
+    """Load the hand-authored override layer from its JSON truth-source file.
+
+    FAIL LOUD if the file is missing or malformed — this is load-bearing data
+    (175 corrections spanning role/derived_selector/css_property/box_family/
+    etc across the whole framework); a silent empty-dict fallback would quietly
+    wipe every one of those corrections on the next /sgs-update.
+    """
+    if not path.exists():
+        raise FileNotFoundError(
+            f"ATTR_CLASSIFICATION_OVERRIDES truth file not found at {path}. "
+            "This file is the reseed-durable override layer (175 entries) — "
+            "restore it before running /sgs-update."
+        )
+    data = json.loads(path.read_text(encoding="utf-8"))
+    entries = data.get("entries")
+    if not isinstance(entries, list):
+        raise ValueError(
+            f"{path} has no top-level 'entries' list — malformed override truth file."
+        )
+    out: dict[tuple[str, str], dict[str, object]] = {}
+    for entry in entries:
+        slug = entry.get("slug")
+        attr = entry.get("attr")
+        fields = entry.get("fields")
+        if not slug or not attr or not isinstance(fields, dict):
+            raise ValueError(
+                f"{path}: malformed entry {entry!r} — every entry needs "
+                "'slug', 'attr' and a 'fields' dict."
+            )
+        out[(slug, attr)] = fields
+    return out
+
+
+ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_attr_classification_overrides()
+
+# ---------------------------------------------------------------------------
+# The 175 entries formerly declared inline here (with per-entry rationale
+# comments — TAG-IDENTITY fix, box_family corrections, etc.) now live in
+# attr-classification-overrides.json (see _load_attr_classification_overrides
+# above). The original inline dict + comments are preserved in git history
+# (see the commit that introduced this loader) — the LIVE data is the JSON
+# file, never this module.
+# ---------------------------------------------------------------------------
 
 
 # _derive_has_inner_blocks / _populate_has_inner_blocks RETIRED (EXECUTION
@@ -1667,34 +1136,88 @@ def _collect_boxfamily_overrides(blocks_dir: Path) -> dict:
     return out
 
 
+_CSS_PROPERTY_CLASSIFICATIONS_JSON_PATH = Path(__file__).resolve().parent / "behavioural-analyser" / "css-property-classifications.json"
+
+
+def _load_css_property_classifications(path: Path = _CSS_PROPERTY_CLASSIFICATIONS_JSON_PATH) -> dict[tuple[str, str], dict[str, object]]:
+    """Load the DERIVED classifier layer (css_property/css_layer/css_element/
+    css_state/css_tier) generated by
+    `behavioural-analyser/extract-signatures.py::extract_css_property_and_layer`.
+
+    This is the BASE layer in the two-layer model Bean approved 2026-07-21:
+    derived-first, ATTR_CLASSIFICATION_OVERRIDES applied after and winning on any
+    field conflict — mirroring the existing `_collect_boxfamily_overrides` pattern
+    (a declarative, regenerated source merged in below, never hand-edited).
+
+    Soft-optional: unlike the override file, this file may legitimately not exist yet
+    (before the classifier has ever been run) — returns {} rather than failing loud,
+    since it is a derived cache, not hand-authored data that would be a silent data
+    loss if missing.
+    """
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    entries = data.get("entries")
+    if not isinstance(entries, list):
+        return {}
+    out: dict[tuple[str, str], dict[str, object]] = {}
+    for entry in entries:
+        slug = entry.get("slug")
+        attr = entry.get("attr")
+        fields = entry.get("fields")
+        if not slug or not attr or not isinstance(fields, dict):
+            continue
+        out[(slug, attr)] = fields
+    return out
+
+
 def _apply_attr_classification_overrides(
     conn: sqlite3.Connection,
     blocks_dir: Path,
     dry_run: bool = False,
 ) -> dict:
-    """Stage 1 sub-step C: apply ATTR_CLASSIFICATION_OVERRIDES + declarative
-    block.json box_family overrides (`supports.sgs.boxFamilies`).
+    """Stage 1 sub-step C: apply the derived css-property classification layer +
+    ATTR_CLASSIFICATION_OVERRIDES + declarative block.json box_family overrides
+    (`supports.sgs.boxFamilies`).
 
     Runs AFTER `_run_canonical_assignment` so it is the final writer on
     block_attributes.role/canonical_slot for the listed (slug, attr) pairs —
     correcting genuine mis-derivations the assign-canonical heuristic makes.
     box_family is NO LONGER hardcoded here — it is derived per-block from
-    block.json (`_collect_boxfamily_overrides`) and merged in, so the dict holds
-    only role/derived_selector/emit-shape corrections. Idempotent; re-applies on
-    every /sgs-update.
+    block.json (`_collect_boxfamily_overrides`) and merged in, so the hand-authored
+    dict holds only role/derived_selector/emit-shape/css_property corrections.
+    Idempotent; re-applies on every /sgs-update.
+
+    Layering (2026-07-21, Bean-approved — do not reorder):
+      1. DERIVED layer — css-property-classifications.json (classifier output:
+         css_property/css_layer/css_element/css_state/css_tier). Applied FIRST.
+      2. box_family — declarative block.json source. Merged in (own fields, no
+         overlap with layer 1's fields).
+      3. OVERRIDE layer — ATTR_CLASSIFICATION_OVERRIDES (hand-authored JSON truth
+         file). Applied LAST, wins on any field conflict with layers 1/2. Overrides
+         exist to record cases where what the code DOES and what it MEANS differ
+         (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but IS a colour
+         value — see attr-classification-overrides.json), not to correct classifier
+         accuracy bugs (fix those in the classifier itself).
 
     Returns counts dict: {"override_applied": int, "override_missing_row": int}.
     """
     c = conn.cursor()
     applied = 0
     missing = 0
-    # Combine the hand-authored role/derived_selector corrections with the
-    # DECLARATIVE box_family map read from each block.json (single source of
-    # truth; a block never appears in both for the SAME field).
+    # Layer 1: the derived classifier output (base layer).
     combined: dict[tuple[str, str], dict[str, object]] = {
-        k: dict(v) for k, v in ATTR_CLASSIFICATION_OVERRIDES.items()
+        k: dict(v) for k, v in _load_css_property_classifications().items()
     }
+    # Layer 2: declarative box_family (own fields; never overlaps layer 1/3 fields).
     for key, fields in _collect_boxfamily_overrides(blocks_dir).items():
+        combined.setdefault(key, {}).update(fields)
+    # Layer 3: hand-authored overrides — applied LAST so they win on any field
+    # conflict with the derived layer (per-field merge, not whole-row replace).
+    for key, fields in ATTR_CLASSIFICATION_OVERRIDES.items():
         combined.setdefault(key, {}).update(fields)
     # Idempotent column-add (mirrors the emit_shape column-add pattern above) —
     # lets an override introduce a new tracked column (e.g. box_family, or
@@ -2035,6 +1558,11 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # --- Stage 1 tail: apply composition_role corrections (seed data, no
         #     code populator) so a full reseed never silently reverts them. ---
         _run_composition_role_seed(conn)
+
+        # --- Stage 1 tail: regenerate inspector_control_type from edit.js (2026-07-21)
+        #     — the SOLE writer now (enrich-db.py's stale writer removed); overwrite-
+        #     on-disagreement policy, so this must run every reseed to stay durable. ---
+        _run_inspector_control_type_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(

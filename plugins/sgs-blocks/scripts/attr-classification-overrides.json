@@ -1,0 +1,1308 @@
+{
+  "_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control.",
+  "entries": [
+    {
+      "slug": "sgs/heading",
+      "attr": "level",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "mediaType",
+      "fields": {
+        "role": "tag-identity"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSize",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelColour",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__label, .sgs-trust-bar__text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "title",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleColour",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-trust-bar__title"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "accentStroke",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "bgSvgTextShadow",
+      "fields": {
+        "role": "behaviour",
+        "derived_selector": null
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleColour",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleColour",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__subtitle"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionColour",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontFamily",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSize",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLineHeightUnit",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextDecoration",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionTextTransform",
+      "fields": {
+        "derived_selector": ".sgs-quote__attribution"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleColour",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSize",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleLineHeightUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSize",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSizeUnit",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSizeTablet",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontSizeMobile",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLineHeight",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLineHeightUnit",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSize",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSizeUnit",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSizeTablet",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNoteFontSizeMobile",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSize",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSize",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSizeUnit",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSizeTablet",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontSizeMobile",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillFontWeight",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBorderColour",
+      "fields": {
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceLarge",
+      "fields": {
+        "role": "text-content",
+        "derived_selector": ".sgs-product-card__price"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceNote",
+      "fields": {
+        "canonical_slot": null,
+        "derived_selector": ".sgs-product-card__price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "packSizes",
+      "fields": {
+        "canonical_slot": "pill",
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "trialTag",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagBackgroundColour",
+      "fields": {
+        "role": "color",
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextColour",
+      "fields": {
+        "role": "color",
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagBorderRadius",
+      "fields": {
+        "role": "visual",
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagPadding",
+      "fields": {
+        "role": "visual",
+        "canonical_slot": "label",
+        "derived_selector": ".sgs-product-card__tag--trial"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaUrl",
+      "fields": {
+        "role": "link-href"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "name",
+      "fields": {
+        "role": "text-content",
+        "derived_selector": ".sgs-team-member__name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "role",
+      "fields": {
+        "role": "text-content",
+        "derived_selector": ".sgs-team-member__role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "photo",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-team-member__photo"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "memberMedia",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-team-member__photo"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontStyle",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-testimonial__quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameFontWeight",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-testimonial__name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-testimonial__org"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-testimonial__summary"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryFontSize",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-testimonial__summary"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingSize",
+      "fields": {
+        "role": "select-from-enum",
+        "derived_selector": ".sgs-testimonial__rating"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "avatarMedia",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-testimonial__avatar"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "orgLogo",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-testimonial__logo"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "workMedia",
+      "fields": {
+        "role": "image-object",
+        "derived_selector": ".sgs-testimonial__work"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "items",
+      "fields": {
+        "derived_selector": ".sgs-card-grid__item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "items",
+      "fields": {
+        "derived_selector": ".sgs-icon-list__item"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "badges",
+      "fields": {
+        "derived_selector": ".sgs-hero__badge"
+      }
+    },
+    {
+      "slug": "core/button",
+      "attr": "text",
+      "fields": {
+        "derived_selector": "a,button"
+      }
+    },
+    {
+      "slug": "core/button",
+      "attr": "url",
+      "fields": {
+        "derived_selector": "a"
+      }
+    },
+    {
+      "slug": "core/heading",
+      "attr": "content",
+      "fields": {
+        "derived_selector": "h1,h2,h3,h4,h5,h6"
+      }
+    },
+    {
+      "slug": "core/image",
+      "attr": "alt",
+      "fields": {
+        "derived_selector": "img"
+      }
+    },
+    {
+      "slug": "core/image",
+      "attr": "caption",
+      "fields": {
+        "derived_selector": "figcaption"
+      }
+    },
+    {
+      "slug": "core/image",
+      "attr": "url",
+      "fields": {
+        "derived_selector": "img"
+      }
+    },
+    {
+      "slug": "core/list-item",
+      "attr": "content",
+      "fields": {
+        "derived_selector": "li"
+      }
+    },
+    {
+      "slug": "core/paragraph",
+      "attr": "content",
+      "fields": {
+        "derived_selector": "p"
+      }
+    },
+    {
+      "slug": "core/quote",
+      "attr": "citation",
+      "fields": {
+        "derived_selector": "cite"
+      }
+    },
+    {
+      "slug": "core/quote",
+      "attr": "value",
+      "fields": {
+        "derived_selector": "blockquote"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "title",
+      "fields": {
+        "derived_selector": ".sgs-accordion-item__title"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-counter__label"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "headline",
+      "fields": {
+        "derived_selector": ".sgs-cta-section__headline, h1, h2"
+      }
+    },
+    {
+      "slug": "sgs/form-field-address",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-address__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-checkbox__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-consent",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-consent__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-date",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-date__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-email",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-email__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-file",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-file__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-number",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-number__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-phone",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-phone__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-radio",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-radio__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-select",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-select__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-text__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-textarea__label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-field-tiles__label"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "heading",
+      "fields": {
+        "derived_selector": ".sgs-form-review__heading"
+      }
+    },
+    {
+      "slug": "sgs/form-step",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-form-step__label"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaPrimaryText",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaPrimaryUrl",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaSecondaryText",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--secondary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "ctaSecondaryUrl",
+      "fields": {
+        "derived_selector": ".sgs-hero__cta--secondary"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "headline",
+      "fields": {
+        "derived_selector": ".sgs-hero__headline, h1, h2"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "subHeadline",
+      "fields": {
+        "derived_selector": ".sgs-hero__sub-headline, p"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "ariaLabel",
+      "fields": {
+        "derived_selector": ".sgs-icon, [aria-label]"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "iconSource",
+      "fields": {
+        "derived_selector": ".sgs-icon__glyph, [data-icon-source]"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "linkTarget",
+      "fields": {
+        "derived_selector": ".sgs-icon__link, a"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "linkUrl",
+      "fields": {
+        "derived_selector": ".sgs-icon__link, a"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "description",
+      "fields": {
+        "derived_selector": ".sgs-info-box__description"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "heading",
+      "fields": {
+        "derived_selector": ".sgs-info-box__heading"
+      }
+    },
+    {
+      "slug": "sgs/mega-menu",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-mega-menu__label"
+      }
+    },
+    {
+      "slug": "sgs/mobile-nav",
+      "attr": "ctaText",
+      "fields": {
+        "derived_selector": ".sgs-mobile-nav__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/mobile-nav",
+      "attr": "ctaUrl",
+      "fields": {
+        "derived_selector": ".sgs-mobile-nav__cta--primary"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "text",
+      "fields": {
+        "derived_selector": ".sgs-notice-banner__text"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "alt",
+      "fields": {
+        "derived_selector": ".sgs-responsive-logo__image, img"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "width",
+      "fields": {
+        "derived_selector": ".sgs-responsive-logo__image, img"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-star-rating__label"
+      }
+    },
+    {
+      "slug": "sgs/tab",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-tab__label"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "title",
+      "fields": {
+        "derived_selector": ".sgs-table-of-contents__title"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameColour",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__heading, .sgs-testimonial__author"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quote",
+      "fields": {
+        "role": "content",
+        "derived_selector": ".sgs-testimonial__text, .sgs-testimonial__quote"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "reviewerName",
+      "fields": {
+        "role": "content",
+        "derived_selector": ".sgs-testimonial__name, .sgs-testimonial__author"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteColour",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontSize",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLineHeight",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "entries",
+      "fields": {
+        "derived_selector": ".sgs-timeline__item"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "label",
+      "fields": {
+        "derived_selector": ".sgs-whatsapp-cta__label"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "iconName",
+      "fields": {
+        "role": "icon-lucide",
+        "derived_selector": ".sgs-icon__glyph, [data-icon-name]"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "emojiChar",
+      "fields": {
+        "role": "icon-emoji",
+        "derived_selector": ".sgs-icon__emoji"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "dashiconName",
+      "fields": {
+        "role": "icon-dashicon"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "wpIconName",
+      "fields": {
+        "role": "icon-wp-icon"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "imageAlt",
+      "fields": {
+        "role": "image-alt",
+        "alt_companion_attr": "image"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "imageAlt",
+      "fields": {
+        "role": "image-alt",
+        "alt_companion_attr": "imageUrl"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "imageAlt",
+      "fields": {
+        "role": "image-alt",
+        "alt_companion_attr": "imageUrl"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attribution",
+      "fields": {
+        "role": "text-content",
+        "emit_shape": "nested",
+        "canonical_slot": null
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBgColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedBgColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedTextColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedBorderColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillBorderRadius",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-option-picker__pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedBorderRadius",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-option-picker__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBgColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillTextColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBorderColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedBgColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedTextColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedBorderColour",
+      "fields": {
+        "role": "color",
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillBorderRadius",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pickerPillSelectedBorderRadius",
+      "fields": {
+        "role": "typography",
+        "derived_selector": ".sgs-product-card__pill--active"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabIndicatorColour",
+      "fields": {
+        "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
+      "attr": "tabActiveIndicatorColour",
+      "fields": {
+        "css_property": "border-color"
+      }
+    }
+  ]
+}

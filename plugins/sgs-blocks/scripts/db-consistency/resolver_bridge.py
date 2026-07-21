@@ -114,16 +114,29 @@ def _writer_path(css_property: str) -> str:
 def enumerate_candidates(
     block_slug: str,
     conn: sqlite3.Connection,
-) -> dict[tuple[str, str], list[str]]:
-    """Return all derivable attrs for block, grouped by (css_property, writer_path).
+) -> dict[tuple[str, str, "str | None", "str | None", "str | None"], list[str]]:
+    """Return all derivable attrs for block, grouped by
+    (css_property, writer_path, css_element, css_state, css_tier).
 
     For each css_property in property_suffixes, walks every suffix row
     (ORDER BY rowid — same priority as live resolver), derives the candidate
     attr name, and keeps those the block actually declares in block_attributes.
 
+    The element/state/tier positions are None for suffix-derived candidates
+    (property_suffixes carries no such dimensions — a genuine limitation of that
+    table, not a value this function invents) and populated from
+    `block_attributes.css_element/css_state/css_tier` for COLUMN-derived candidates
+    (2026-07-21 — see the COLUMN-FIRST shadow section below). Widening this key was
+    the fix for the 106/112 false "routing determinism" positives that fired once
+    css_property was bulk-populated: e.g. sgs/trust-bar's iconColour/labelColour/
+    textColour/titleColour all resolve to the SAME literal css_property ('color') but
+    are FOUR DIFFERENT elements — under the old 2-tuple key they collapsed into one
+    slot and looked like a genuine collision; under this 5-tuple key they are four
+    distinct, non-colliding slots, because that is what they actually are.
+
     Returns
     -------
-    dict[(css_property, writer_path) -> list[attr_name]]
+    dict[(css_property, writer_path, css_element, css_state, css_tier) -> list[attr_name]]
         The live resolver returns only the first element of each list.
         F6 check #1 flags any list with ≥2 entries (ambiguity).
     """
@@ -143,7 +156,7 @@ def enumerate_candidates(
     ).fetchall()
     declared: set[str] = {row[0] for row in ba_rows}
 
-    result: dict[tuple[str, str], list[str]] = {}
+    result: dict[tuple[str, str, "str | None", "str | None", "str | None"], list[str]] = {}
 
     for css_property, suffix in ps_rows:
         attr_name = _derive_attr_name(css_property, suffix)
@@ -152,29 +165,31 @@ def enumerate_candidates(
         if attr_name not in declared:
             continue
         wp = _writer_path(css_property)
-        key = (css_property, wp)
+        key = (css_property, wp, None, None, None)
         result.setdefault(key, []).append(attr_name)
 
     # COLUMN-FIRST shadow (declarative, FR-31-5.2/5.3, D281). A block that DECLARES
     # css_property on an attr (block_attributes.css_property) resolves via that attr
     # at runtime (db_lookup column-first-else-suffix), SHADOWING any suffix-derived
-    # candidate for the same (css_property, writer_path). Mirror it here so F6's
-    # ambiguity view + the lift surface reflect what actually resolves — else F6
-    # would enumerate a shadowed suffix attr and misreport the producer set.
-    # Two COLUMN attrs for one key stay ≥2 = a REAL ambiguity F6 must flag.
+    # candidate for the same (css_property, writer_path, element, state, tier). Mirror
+    # it here so F6's ambiguity view + the lift surface reflect what actually
+    # resolves — else F6 would enumerate a shadowed suffix attr and misreport the
+    # producer set. Two COLUMN attrs for one full key stay ≥2 = a REAL ambiguity F6
+    # must flag (two attrs identical on EVERY axis genuinely still contend).
     try:
         col_rows = conn.execute(
-            "SELECT css_property, attr_name FROM block_attributes "
+            "SELECT css_property, attr_name, css_element, css_state, css_tier "
+            "FROM block_attributes "
             "WHERE block_slug = ? AND css_property IS NOT NULL",
             (block_slug,),
         ).fetchall()
     except sqlite3.OperationalError:
         col_rows = []  # css_property column absent (pre-seed DB) — nothing declared.
-    col_by_key: dict[tuple[str, str], list[str]] = {}
-    for css_property, attr_name in col_rows:
+    col_by_key: dict[tuple[str, str, "str | None", "str | None", "str | None"], list[str]] = {}
+    for css_property, attr_name, css_element, css_state, css_tier in col_rows:
         if attr_name not in declared:
             continue
-        key = (css_property, _writer_path(css_property))
+        key = (css_property, _writer_path(css_property), css_element, css_state, css_tier)
         col_by_key.setdefault(key, []).append(attr_name)
     for key, attrs in col_by_key.items():
         result[key] = attrs  # column attrs shadow suffix-derived candidates

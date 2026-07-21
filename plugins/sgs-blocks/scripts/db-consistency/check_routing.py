@@ -47,26 +47,43 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     for block_slug in slugs:
         candidates = enumerate_candidates(block_slug, conn)
 
-        for (css_property, writer_path), attrs in candidates.items():
+        for (css_property, writer_path, css_element, css_state, css_tier), attrs in candidates.items():
             if len(attrs) < 2:
                 continue  # unambiguous — fine
 
-            # Two or more competing attrs for the same css_property + writer_path.
+            # Two or more competing attrs for the SAME (css_property, writer_path,
+            # css_element, css_state, css_tier) — a genuine collision on every axis, not
+            # just the same literal property string (2026-07-21 widening; see
+            # resolver_bridge.enumerate_candidates docstring). CRITICAL CAVEAT: the
+            # live resolver `attr_for_property(block_slug, css_property)` (db_lookup.py
+            # :1600) is called with ONLY block_slug + css_property — it has NO
+            # element/state/tier parameter at all. Widening THIS check's grouping key
+            # stops it flagging attrs that legitimately differ by element/state/tier,
+            # but does NOT by itself teach the real resolver to disambiguate them —
+            # that is a separate, load-bearing architectural gap (flagged, not silently
+            # fixed here; see the F6 report / handoff for the open follow-up).
             competing = ", ".join(f"'{a}'" for a in sorted(attrs))
+            key_desc = (
+                f"element={css_element or 'NULL'}, state={css_state or 'NULL'}, tier={css_tier or 'NULL'}"
+            )
             violation = Violation(
                 check="routing",
                 block=block_slug,
                 detail=(
                     f"css_property '{css_property}' resolves to {len(attrs)} competing "
-                    f"attrs ({competing}) in writer_path '{writer_path}' — the live resolver "
-                    f"silently picks the first by rowid order."
+                    f"attrs ({competing}) in writer_path '{writer_path}' ({key_desc}) — the live "
+                    f"resolver silently picks the first by rowid order. These attrs are identical "
+                    f"on EVERY routing axis (property/writer_path/element/state/tier), so they "
+                    f"genuinely contend for the same slot."
                 ),
                 fix=(
                     f"Two attributes on {block_slug} both receive CSS '{css_property}' "
-                    f"via the '{writer_path}' writer — rename or remove one so routing is "
-                    f"unambiguous.  Then run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
+                    f"via the '{writer_path}' writer with the SAME element/state/tier — rename or "
+                    f"remove one so routing is unambiguous, or add a distinguishing "
+                    f"css_element/css_state/css_tier if they legitimately differ.  Then run: "
+                    f"python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
                 ),
-                key=routing_key(block_slug, css_property, writer_path),
+                key=routing_key(block_slug, css_property, f"{writer_path}:{css_element}:{css_state}:{css_tier}"),
             )
             violations.append(violation)
 

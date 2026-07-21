@@ -1,0 +1,3747 @@
+{
+  "task_a": {
+    "resolved_count": 516,
+    "css_property_written": 516,
+    "css_layer_written": 6,
+    "unit_attrs_excluded": 10,
+    "unit_control_written": 0,
+    "resolved": {
+      "sgs/adaptive-nav::linkColour": [
+        "color"
+      ],
+      "sgs/adaptive-nav::linkHoverColour": [
+        "color"
+      ],
+      "sgs/adaptive-nav::justifyContent": [
+        "justify-content"
+      ],
+      "sgs/adaptive-nav::flexWrap": [
+        "flex-wrap"
+      ],
+      "sgs/adaptive-nav::verticalAlign": [
+        "align-items"
+      ],
+      "sgs/adaptive-nav::collapseCustomPx": [
+        "min-width"
+      ],
+      "sgs/adaptive-nav::linkFontSize": [
+        "font-size"
+      ],
+      "sgs/adaptive-nav::linkLineHeight": [
+        "line-height"
+      ],
+      "sgs/adaptive-nav::linkFontWeight": [
+        "font-weight"
+      ],
+      "sgs/adaptive-nav::linkFontStyle": [
+        "font-style"
+      ],
+      "sgs/audio::accentColour": [
+        "background-image",
+        "outline-color"
+      ],
+      "sgs/brand-strip::scrollSpeed": [
+        "animation"
+      ],
+      "sgs/brand-strip::maxHeight": [
+        "height",
+        "max-width",
+        "min-height",
+        "width"
+      ],
+      "sgs/brand-strip::columnsDesktop": [
+        "height",
+        "max-width",
+        "width"
+      ],
+      "sgs/brand-strip::columnsTablet": [
+        "height",
+        "max-width",
+        "width"
+      ],
+      "sgs/brand-strip::columnsMobile": [
+        "height",
+        "max-width",
+        "width"
+      ],
+      "sgs/brand-strip::tilePadding": [
+        "height",
+        "max-width",
+        "min-height",
+        "padding",
+        "width"
+      ],
+      "sgs/brand-strip::tileRadius": [
+        "border-radius"
+      ],
+      "sgs/brand-strip::tileBorderWidth": [
+        "border-width",
+        "height",
+        "max-width",
+        "min-height",
+        "width"
+      ],
+      "sgs/brand-strip::logoFit": [
+        "object-fit"
+      ],
+      "sgs/brand-strip::fadeWidth": [
+        "width"
+      ],
+      "sgs/brand-strip::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/brand-strip::textColourHover": [
+        "color"
+      ],
+      "sgs/brand-strip::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/brand-strip::tileBackgroundColour": [
+        "background-color"
+      ],
+      "sgs/brand-strip::logoGap": [
+        "gap",
+        "height",
+        "max-width",
+        "width"
+      ],
+      "sgs/brand-strip::tileBorderColour": [
+        "border-color"
+      ],
+      "sgs/brand-strip::nameColour": [
+        "color"
+      ],
+      "sgs/brand-strip::nameTextAlign": [
+        "text-align"
+      ],
+      "sgs/brand-strip::nameFontSize": [
+        "font-size"
+      ],
+      "sgs/brand-strip::nameFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/brand-strip::nameFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/brand-strip::nameLineHeight": [
+        "line-height"
+      ],
+      "sgs/brand-strip::nameLineHeightTablet": [
+        "line-height"
+      ],
+      "sgs/brand-strip::nameLineHeightMobile": [
+        "line-height"
+      ],
+      "sgs/brand-strip::nameLetterSpacing": [
+        "letter-spacing"
+      ],
+      "sgs/brand-strip::nameLetterSpacingTablet": [
+        "letter-spacing"
+      ],
+      "sgs/brand-strip::nameLetterSpacingMobile": [
+        "letter-spacing"
+      ],
+      "sgs/brand-strip::nameFontWeight": [
+        "font-weight"
+      ],
+      "sgs/brand-strip::nameFontStyle": [
+        "font-style"
+      ],
+      "sgs/brand-strip::nameTextTransform": [
+        "text-transform"
+      ],
+      "sgs/brand-strip::nameTextDecoration": [
+        "text-decoration"
+      ],
+      "sgs/breadcrumbs::linkColour": [
+        "color"
+      ],
+      "sgs/breadcrumbs::separatorColour": [
+        "color"
+      ],
+      "sgs/breadcrumbs::currentColour": [
+        "color"
+      ],
+      "sgs/business-info::iconColour": [
+        "color"
+      ],
+      "sgs/business-info::textColour": [
+        "color"
+      ],
+      "sgs/business-info::labelColour": [
+        "color"
+      ],
+      "sgs/business-info::linkHoverColour": [
+        "background-image",
+        "color"
+      ],
+      "sgs/button::colourText": [
+        "color"
+      ],
+      "sgs/button::colourBackground": [
+        "background-color"
+      ],
+      "sgs/button::colourBorder": [
+        "border-color"
+      ],
+      "sgs/button::colourTextHover": [
+        "color"
+      ],
+      "sgs/button::colourBackgroundHover": [
+        "background-color"
+      ],
+      "sgs/button::colourBorderHover": [
+        "border-color"
+      ],
+      "sgs/button::borderStyle": [
+        "border-style"
+      ],
+      "sgs/button::fontWeight": [
+        "font-weight"
+      ],
+      "sgs/button::fontStyle": [
+        "font-style"
+      ],
+      "sgs/button::textTransform": [
+        "text-transform"
+      ],
+      "sgs/button::textDecoration": [
+        "text-decoration"
+      ],
+      "sgs/button::iconColourHover": [
+        "color"
+      ],
+      "sgs/button::iconColour": [
+        "color"
+      ],
+      "sgs/card-grid::cardBackground": [
+        "background-color"
+      ],
+      "sgs/card-grid::cardBorderColour": [
+        "border-color"
+      ],
+      "sgs/card-grid::cardBorderWidth": [
+        "border-width"
+      ],
+      "sgs/card-grid::cardRadius": [
+        "border-radius"
+      ],
+      "sgs/card-grid::cardShadow": [
+        "box-shadow"
+      ],
+      "sgs/card-grid::columns": [
+        "grid-template-columns"
+      ],
+      "sgs/card-grid::columnsMobile": [
+        "grid-template-columns"
+      ],
+      "sgs/card-grid::columnsTablet": [
+        "grid-template-columns"
+      ],
+      "sgs/card-grid::gap": [
+        "gap"
+      ],
+      "sgs/card-grid::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/card-grid::textColourHover": [
+        "color"
+      ],
+      "sgs/card-grid::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/card-grid::transitionDuration": [
+        "transition",
+        "transition-duration"
+      ],
+      "sgs/card-grid::transitionEasing": [
+        "transition",
+        "transition-timing-function"
+      ],
+      "sgs/card-grid::scaleHover": [
+        "transform"
+      ],
+      "sgs/card-grid::shadowHover": [
+        "box-shadow"
+      ],
+      "sgs/card-grid::staggerDelay": [
+        "animation-delay"
+      ],
+      "sgs/card-grid::titleColour": [
+        "color"
+      ],
+      "sgs/card-grid::subtitleColour": [
+        "color"
+      ],
+      "sgs/card-grid::aspectRatio": [
+        "aspect-ratio"
+      ],
+      "sgs/card-grid::titleFontSize": [
+        "font-size"
+      ],
+      "sgs/card-grid::titleFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/card-grid::titleFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/card-grid::subtitleFontSize": [
+        "font-size"
+      ],
+      "sgs/card-grid::subtitleFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/card-grid::subtitleFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/cart::iconSize": [
+        "height",
+        "width"
+      ],
+      "sgs/cart::iconColour": [
+        "color"
+      ],
+      "sgs/cart::badgeColour": [
+        "background-color"
+      ],
+      "sgs/cart::badgeTextColour": [
+        "color"
+      ],
+      "sgs/collapsible-text::collapsedLines": [
+        "-webkit-line-clamp",
+        "line-clamp"
+      ],
+      "sgs/collapsible-text::fontSize": [
+        "font-size"
+      ],
+      "sgs/collapsible-text::fontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/collapsible-text::fontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/collapsible-text::lineHeight": [
+        "line-height"
+      ],
+      "sgs/collapsible-text::fontWeight": [
+        "font-weight"
+      ],
+      "sgs/collapsible-text::fontStyle": [
+        "font-style"
+      ],
+      "sgs/countdown-timer::numberColour": [
+        "color"
+      ],
+      "sgs/countdown-timer::labelColour": [
+        "color"
+      ],
+      "sgs/counter::numberColour": [
+        "color"
+      ],
+      "sgs/counter::labelColour": [
+        "color"
+      ],
+      "sgs/counter::labelFontSize": [
+        "font-size"
+      ],
+      "sgs/counter::labelFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/counter::labelFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/counter::labelLineHeight": [
+        "line-height"
+      ],
+      "sgs/counter::labelFontWeight": [
+        "font-weight"
+      ],
+      "sgs/counter::labelFontStyle": [
+        "font-style"
+      ],
+      "sgs/cta-section::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/cta-section::textColourHover": [
+        "color"
+      ],
+      "sgs/cta-section::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/cta-section::backgroundMedia": [
+        "background-image"
+      ],
+      "sgs/cta-section::shadow": [
+        "box-shadow"
+      ],
+      "sgs/cta-section::backgroundImageOpacity": [
+        "opacity"
+      ],
+      "sgs/decorative-image::positionX": [
+        "left"
+      ],
+      "sgs/decorative-image::positionY": [
+        "top"
+      ],
+      "sgs/decorative-image::width": [
+        "width"
+      ],
+      "sgs/decorative-image::maxWidthPercent": [
+        "max-width"
+      ],
+      "sgs/decorative-image::opacity": [
+        "opacity"
+      ],
+      "sgs/decorative-image::zIndex": [
+        "z-index"
+      ],
+      "sgs/form::submitColour": [
+        "color"
+      ],
+      "sgs/form::submitBackground": [
+        "background-color"
+      ],
+      "sgs/form::progressBarColour": [
+        "background-color",
+        "border-color"
+      ],
+      "sgs/form::formFocusRingWidth": [
+        "outline-width"
+      ],
+      "sgs/form::formFocusRingColour": [
+        "border-color",
+        "outline-color"
+      ],
+      "sgs/form::formFocusRingOpacity": [
+        "opacity"
+      ],
+      "sgs/form::formFocusRingOffset": [
+        "outline-offset"
+      ],
+      "sgs/gallery::columns": [
+        "column-count",
+        "grid-template-columns"
+      ],
+      "sgs/gallery::columnsTablet": [
+        "column-count",
+        "grid-template-columns"
+      ],
+      "sgs/gallery::columnsMobile": [
+        "column-count",
+        "grid-template-columns"
+      ],
+      "sgs/gallery::gap": [
+        "column-gap",
+        "gap",
+        "grid-template-columns",
+        "margin-bottom"
+      ],
+      "sgs/gallery::scaleHover": [
+        "transform"
+      ],
+      "sgs/gallery::shadowHover": [
+        "box-shadow"
+      ],
+      "sgs/gallery::staggerDelay": [
+        "animation-delay"
+      ],
+      "sgs/gallery::overlayColourHover": [
+        "background-color"
+      ],
+      "sgs/gallery::captionColour": [
+        "color"
+      ],
+      "sgs/gallery::captionBgColour": [
+        "background-color"
+      ],
+      "sgs/gallery::aspectRatio": [
+        "aspect-ratio"
+      ],
+      "sgs/google-reviews::starColour": [
+        "background-color"
+      ],
+      "sgs/heading::textColour": [
+        "color"
+      ],
+      "sgs/heading::fontWeight": [
+        "font-weight"
+      ],
+      "sgs/heading::lineHeight": [
+        "line-height"
+      ],
+      "sgs/heading::letterSpacing": [
+        "letter-spacing"
+      ],
+      "sgs/heading::textTransform": [
+        "text-transform"
+      ],
+      "sgs/heading::fontFamily": [
+        "font-family"
+      ],
+      "sgs/heading::fontStyle": [
+        "font-style"
+      ],
+      "sgs/heading::textDecoration": [
+        "text-decoration"
+      ],
+      "sgs/heading::backgroundColour": [
+        "background-color"
+      ],
+      "sgs/heading::borderStyle": [
+        "border-style"
+      ],
+      "sgs/heading::borderColour": [
+        "border-color"
+      ],
+      "sgs/heading::boxShadow": [
+        "box-shadow"
+      ],
+      "sgs/heading::customWidth": [
+        "width"
+      ],
+      "sgs/heading::textAlign": [
+        "text-align"
+      ],
+      "sgs/heading::textColourHover": [
+        "color"
+      ],
+      "sgs/heading::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/heading::boxShadowHover": [
+        "box-shadow"
+      ],
+      "sgs/hero::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/hero::textColourHover": [
+        "color"
+      ],
+      "sgs/hero::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/hero::verticalAlignment": [
+        "align-items",
+        "justify-content"
+      ],
+      "sgs/hero::minHeight": [
+        "min-height"
+      ],
+      "sgs/hero::minHeightTablet": [
+        "min-height"
+      ],
+      "sgs/hero::minHeightMobile": [
+        "min-height"
+      ],
+      "sgs/hero::headlineMarginBottom": [
+        "margin-bottom"
+      ],
+      "sgs/hero::subHeadlineMarginBottom": [
+        "margin-bottom"
+      ],
+      "sgs/hero::headlineMarginBottomMobile": [
+        "margin-bottom"
+      ],
+      "sgs/hero::subHeadlineMarginBottomMobile": [
+        "margin-bottom"
+      ],
+      "sgs/hero::subHeadlineMaxWidth": [
+        "max-width"
+      ],
+      "sgs/hero::splitImageMobileHeight": [
+        "height"
+      ],
+      "sgs/hero::gridTemplateColumns": [
+        "grid-template-columns"
+      ],
+      "sgs/hero::gap": [
+        "gap"
+      ],
+      "sgs/hero::gridTemplateColumnsTablet": [
+        "grid-template-columns"
+      ],
+      "sgs/hero::gridTemplateColumnsMobile": [
+        "grid-template-columns"
+      ],
+      "sgs/hero::gapTablet": [
+        "gap"
+      ],
+      "sgs/hero::gapMobile": [
+        "gap"
+      ],
+      "sgs/hero::imagePadding": [
+        "padding"
+      ],
+      "sgs/hero::imagePaddingTablet": [
+        "padding"
+      ],
+      "sgs/hero::imagePaddingMobile": [
+        "padding"
+      ],
+      "sgs/hero::imageBorderRadius": [
+        "border-radius"
+      ],
+      "sgs/hero::imageBorderRadiusTablet": [
+        "border-radius"
+      ],
+      "sgs/hero::imageBorderRadiusMobile": [
+        "border-radius"
+      ],
+      "sgs/hero::imageBorderStyle": [
+        "border-style"
+      ],
+      "sgs/hero::imageBorderWidth": [
+        "border-width"
+      ],
+      "sgs/hero::imageBorderColour": [
+        "border-color"
+      ],
+      "sgs/hero::imageObjectFit": [
+        "object-fit"
+      ],
+      "sgs/hero::imageObjectPosition": [
+        "object-position"
+      ],
+      "sgs/hero::imageWidth": [
+        "width"
+      ],
+      "sgs/hero::imageHeight": [
+        "height"
+      ],
+      "sgs/hero::imageWidthTablet": [
+        "width"
+      ],
+      "sgs/hero::imageWidthMobile": [
+        "width"
+      ],
+      "sgs/hero::imageHeightTablet": [
+        "height"
+      ],
+      "sgs/hero::imageHeightMobile": [
+        "height"
+      ],
+      "sgs/hero::mediaPadding": [
+        "padding"
+      ],
+      "sgs/hero::mediaPaddingTablet": [
+        "padding"
+      ],
+      "sgs/hero::mediaPaddingMobile": [
+        "padding"
+      ],
+      "sgs/hero::mediaBackground": [
+        "background-color"
+      ],
+      "sgs/hero::contentPadding": [
+        "padding"
+      ],
+      "sgs/hero::contentPaddingTablet": [
+        "padding"
+      ],
+      "sgs/hero::contentPaddingMobile": [
+        "padding"
+      ],
+      "sgs/hero::contentBackground": [
+        "background-color"
+      ],
+      "sgs/hero::textAlignDesktop": [
+        "text-align"
+      ],
+      "sgs/hero::textAlignTablet": [
+        "text-align"
+      ],
+      "sgs/hero::textAlignMobile": [
+        "text-align"
+      ],
+      "sgs/hero::backgroundOverlayColour": [
+        "background-color"
+      ],
+      "sgs/hero::backgroundOverlayOpacity": [
+        "opacity"
+      ],
+      "sgs/hero::splitImageMobileObjectPosition": [
+        "object-position"
+      ],
+      "sgs/icon::iconSize": [
+        "font-size",
+        "height",
+        "width"
+      ],
+      "sgs/icon::backgroundColour": [
+        "background-color",
+        "border-color"
+      ],
+      "sgs/icon::iconColourHover": [
+        "color"
+      ],
+      "sgs/icon::shapeColourHover": [
+        "background-color",
+        "border-color"
+      ],
+      "sgs/icon::scaleHover": [
+        "transform"
+      ],
+      "sgs/icon::iconColour": [
+        "color"
+      ],
+      "sgs/icon::backgroundPadding": [
+        "padding"
+      ],
+      "sgs/icon-list::iconColour": [
+        "color"
+      ],
+      "sgs/icon-list::textColour": [
+        "color"
+      ],
+      "sgs/icon-list::borderStyle": [
+        "border-style"
+      ],
+      "sgs/icon-list::borderColour": [
+        "border-color"
+      ],
+      "sgs/icon-list::gap": [
+        "gap"
+      ],
+      "sgs/info-box::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/info-box::textColourHover": [
+        "color"
+      ],
+      "sgs/info-box::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/info-box::scaleHover": [
+        "transform"
+      ],
+      "sgs/info-box::shadowHover": [
+        "box-shadow"
+      ],
+      "sgs/label::textColour": [
+        "color"
+      ],
+      "sgs/label::fontWeight": [
+        "font-weight"
+      ],
+      "sgs/label::lineHeight": [
+        "line-height"
+      ],
+      "sgs/label::letterSpacing": [
+        "letter-spacing"
+      ],
+      "sgs/label::textTransform": [
+        "text-transform"
+      ],
+      "sgs/label::textDecoration": [
+        "text-decoration"
+      ],
+      "sgs/label::fontFamily": [
+        "font-family"
+      ],
+      "sgs/label::fontStyle": [
+        "font-style"
+      ],
+      "sgs/label::textAlign": [
+        "text-align"
+      ],
+      "sgs/media::objectFit": [
+        "object-fit"
+      ],
+      "sgs/media::objectPosition": [
+        "object-position"
+      ],
+      "sgs/media::aspectRatio": [
+        "aspect-ratio"
+      ],
+      "sgs/media::opacity": [
+        "opacity"
+      ],
+      "sgs/media::boxShadow": [
+        "box-shadow"
+      ],
+      "sgs/media::maxWidth": [
+        "max-width"
+      ],
+      "sgs/media::maxHeight": [
+        "max-height"
+      ],
+      "sgs/media::height": [
+        "height"
+      ],
+      "sgs/media::maxWidthTablet": [
+        "max-width"
+      ],
+      "sgs/media::maxHeightTablet": [
+        "max-height"
+      ],
+      "sgs/media::heightTablet": [
+        "height"
+      ],
+      "sgs/media::maxWidthMobile": [
+        "max-width"
+      ],
+      "sgs/media::maxHeightMobile": [
+        "max-height"
+      ],
+      "sgs/media::heightMobile": [
+        "height"
+      ],
+      "sgs/media::order": [
+        "order"
+      ],
+      "sgs/media::orderTablet": [
+        "order"
+      ],
+      "sgs/media::orderMobile": [
+        "order"
+      ],
+      "sgs/media::captionColour": [
+        "color"
+      ],
+      "sgs/media::captionFontSize": [
+        "font-size"
+      ],
+      "sgs/mega-menu::panelBgColour": [
+        "background-color"
+      ],
+      "sgs/mega-menu::linkColour": [
+        "color"
+      ],
+      "sgs/mega-menu::linkHoverColour": [
+        "color"
+      ],
+      "sgs/mega-menu::linkHoverBgColour": [
+        "background-color"
+      ],
+      "sgs/mega-menu::badgeColour": [
+        "background-color"
+      ],
+      "sgs/mega-menu::linkBgColour": [
+        "background-color"
+      ],
+      "sgs/mega-menu::panelMaxWidth": [
+        "max-width"
+      ],
+      "sgs/modal::triggerColour": [
+        "color"
+      ],
+      "sgs/modal::triggerBackground": [
+        "background-color"
+      ],
+      "sgs/modal::modalBackground": [
+        "background-color"
+      ],
+      "sgs/modal::overlayColour": [
+        "background-color"
+      ],
+      "sgs/modal::overlayOpacity": [
+        "opacity"
+      ],
+      "sgs/multi-button::direction": [
+        "flex-direction"
+      ],
+      "sgs/multi-button::wrap": [
+        "flex-wrap"
+      ],
+      "sgs/multi-button::gap": [
+        "gap"
+      ],
+      "sgs/multi-button::justifyContent": [
+        "justify-content"
+      ],
+      "sgs/multi-button::alignItems": [
+        "align-items"
+      ],
+      "sgs/multi-button::directionTablet": [
+        "flex-direction"
+      ],
+      "sgs/multi-button::wrapTablet": [
+        "flex-wrap"
+      ],
+      "sgs/multi-button::justifyContentTablet": [
+        "justify-content"
+      ],
+      "sgs/multi-button::alignItemsTablet": [
+        "align-items"
+      ],
+      "sgs/multi-button::directionMobile": [
+        "flex-direction"
+      ],
+      "sgs/multi-button::wrapMobile": [
+        "flex-wrap"
+      ],
+      "sgs/multi-button::gapMobile": [
+        "gap"
+      ],
+      "sgs/multi-button::justifyContentMobile": [
+        "justify-content"
+      ],
+      "sgs/multi-button::alignItemsMobile": [
+        "align-items"
+      ],
+      "sgs/nav-drawer::drawerBg": [
+        "background-color",
+        "color"
+      ],
+      "sgs/nav-drawer::drawerAlign": [
+        "align-items"
+      ],
+      "sgs/nav-drawer::toggleCloseColour": [
+        "color"
+      ],
+      "sgs/nav-drawer::width": [
+        "height",
+        "width"
+      ],
+      "sgs/nav-menu::itemColour": [
+        "color"
+      ],
+      "sgs/nav-menu::itemBg": [
+        "background-color"
+      ],
+      "sgs/nav-menu::itemRadius": [
+        "border-radius"
+      ],
+      "sgs/nav-menu::itemBgHover": [
+        "background-color",
+        "color"
+      ],
+      "sgs/nav-menu::itemRadiusHover": [
+        "border-radius"
+      ],
+      "sgs/nav-menu::itemColourHover": [
+        "color"
+      ],
+      "sgs/nav-menu::underlineOffset": [
+        "position"
+      ],
+      "sgs/nav-menu::underlineThickness": [
+        "height"
+      ],
+      "sgs/nav-menu::underlineColour": [
+        "background-color"
+      ],
+      "sgs/nav-menu::underlineColourHover": [
+        "background-color"
+      ],
+      "sgs/nav-menu::featuredBg": [
+        "background-color",
+        "color"
+      ],
+      "sgs/nav-menu::featuredFontWeight": [
+        "font-weight"
+      ],
+      "sgs/nav-menu::featuredRadius": [
+        "border-radius"
+      ],
+      "sgs/nav-menu::featuredColour": [
+        "color"
+      ],
+      "sgs/nav-menu::featuredBgHover": [
+        "background-color",
+        "color"
+      ],
+      "sgs/nav-menu::featuredColourHover": [
+        "color"
+      ],
+      "sgs/nav-menu::featuredRadiusHover": [
+        "border-radius"
+      ],
+      "sgs/nav-menu::featuredFontWeightHover": [
+        "font-weight"
+      ],
+      "sgs/nav-menu::burgerColour": [
+        "color"
+      ],
+      "sgs/nav-menu::burgerBg": [
+        "background-color"
+      ],
+      "sgs/nav-menu::burgerHoverColour": [
+        "background-color"
+      ],
+      "sgs/nav-menu::burgerSize": [
+        "height",
+        "min-height",
+        "min-width",
+        "width"
+      ],
+      "sgs/nav-menu::collapsePoint": [
+        "max-width",
+        "min-width"
+      ],
+      "sgs/nav-menu::itemFontSize": [
+        "font-size"
+      ],
+      "sgs/nav-menu::itemFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/nav-menu::itemFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/nav-menu::itemLineHeight": [
+        "line-height"
+      ],
+      "sgs/nav-menu::itemFontWeight": [
+        "font-weight"
+      ],
+      "sgs/nav-menu::itemFontStyle": [
+        "font-style"
+      ],
+      "sgs/notice-banner::iconColour": [
+        "color"
+      ],
+      "sgs/option-picker::pillBgColour": [
+        "background-color"
+      ],
+      "sgs/option-picker::pillTextColour": [
+        "color"
+      ],
+      "sgs/option-picker::pillBorderColour": [
+        "border-color"
+      ],
+      "sgs/option-picker::pillSelectedBgColour": [
+        "background-color",
+        "border-color"
+      ],
+      "sgs/option-picker::pillSelectedTextColour": [
+        "border-bottom-color",
+        "border-left-color",
+        "color"
+      ],
+      "sgs/option-picker::pillSelectedBorderColour": [
+        "border-color"
+      ],
+      "sgs/option-picker::pillBorderRadius": [
+        "border-radius"
+      ],
+      "sgs/option-picker::pillSelectedBorderRadius": [
+        "border-radius"
+      ],
+      "sgs/option-picker::borderStyle": [
+        "border-style"
+      ],
+      "sgs/option-picker::maxWidth": [
+        "max-width"
+      ],
+      "sgs/option-picker::contentWidth": [
+        "width"
+      ],
+      "sgs/option-picker::labelColour": [
+        "color"
+      ],
+      "sgs/option-picker::labelMarginBottom": [
+        "margin-bottom"
+      ],
+      "sgs/option-picker::labelFontSize": [
+        "font-size"
+      ],
+      "sgs/option-picker::labelFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/option-picker::labelFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/option-picker::labelFontWeight": [
+        "font-weight"
+      ],
+      "sgs/option-picker::labelFontStyle": [
+        "font-style"
+      ],
+      "sgs/option-picker::pillFontSize": [
+        "font-size"
+      ],
+      "sgs/option-picker::pillFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/option-picker::pillFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/option-picker::pillFontWeight": [
+        "font-weight"
+      ],
+      "sgs/post-grid::columns": [
+        "column-count",
+        "flex",
+        "grid-template-columns"
+      ],
+      "sgs/post-grid::columnsTablet": [
+        "column-count",
+        "flex",
+        "grid-template-columns"
+      ],
+      "sgs/post-grid::columnsMobile": [
+        "column-count",
+        "flex",
+        "grid-template-columns"
+      ],
+      "sgs/post-grid::gap": [
+        "column-gap",
+        "flex",
+        "gap",
+        "margin-bottom"
+      ],
+      "sgs/post-grid::cardBgColour": [
+        "background-color",
+        "column-gap",
+        "flex",
+        "gap",
+        "margin-bottom"
+      ],
+      "sgs/post-grid::scaleHover": [
+        "background-color",
+        "transform"
+      ],
+      "sgs/post-grid::shadowHover": [
+        "box-shadow",
+        "transform"
+      ],
+      "sgs/post-grid::backgroundColourHover": [
+        "background-color",
+        "box-shadow"
+      ],
+      "sgs/post-grid::textColourHover": [
+        "background-color",
+        "color"
+      ],
+      "sgs/post-grid::borderColourHover": [
+        "border-color",
+        "border-top-color",
+        "color"
+      ],
+      "sgs/pricing-table::popularBadgeColour": [
+        "color"
+      ],
+      "sgs/pricing-table::popularBadgeBackground": [
+        "background-color"
+      ],
+      "sgs/pricing-table::priceColour": [
+        "color"
+      ],
+      "sgs/pricing-table::featureColour": [
+        "color"
+      ],
+      "sgs/pricing-table::ctaColour": [
+        "color"
+      ],
+      "sgs/pricing-table::ctaBackground": [
+        "background-color"
+      ],
+      "sgs/pricing-table::titleColour": [
+        "color"
+      ],
+      "sgs/process-steps::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/process-steps::textColourHover": [
+        "color"
+      ],
+      "sgs/process-steps::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/process-steps::transitionDuration": [
+        "transition-duration"
+      ],
+      "sgs/process-steps::transitionEasing": [
+        "transition-timing-function"
+      ],
+      "sgs/process-steps::borderStyle": [
+        "border-style"
+      ],
+      "sgs/process-steps::borderColour": [
+        "border-color"
+      ],
+      "sgs/process-steps::numberColour": [
+        "color"
+      ],
+      "sgs/process-steps::numberBackground": [
+        "background-color"
+      ],
+      "sgs/process-steps::titleColour": [
+        "color"
+      ],
+      "sgs/process-steps::descriptionColour": [
+        "color"
+      ],
+      "sgs/product-card::cardMaxWidth": [
+        "max-width"
+      ],
+      "sgs/product-card::imageHeight": [
+        "height"
+      ],
+      "sgs/product-card::innerPadding": [
+        "padding"
+      ],
+      "sgs/product-card::titleColour": [
+        "color"
+      ],
+      "sgs/product-card::priceColour": [
+        "color"
+      ],
+      "sgs/product-card::descColour": [
+        "color"
+      ],
+      "sgs/product-card::priceNoteColour": [
+        "color"
+      ],
+      "sgs/product-card::tagTextColour": [
+        "color"
+      ],
+      "sgs/product-card::ctaColourBackground": [
+        "background-color"
+      ],
+      "sgs/product-card::ctaColourText": [
+        "color"
+      ],
+      "sgs/product-card::ctaColourBorder": [
+        "border-color"
+      ],
+      "sgs/product-card::ctaColourBackgroundHover": [
+        "background-color"
+      ],
+      "sgs/product-card::ctaColourTextHover": [
+        "color"
+      ],
+      "sgs/product-card::ctaColourBorderHover": [
+        "border-color"
+      ],
+      "sgs/product-card::ctaBorderStyle": [
+        "border-style"
+      ],
+      "sgs/product-card::ctaBorderWidth": [
+        "border-width"
+      ],
+      "sgs/product-card::ctaBorderRadius": [
+        "border-radius"
+      ],
+      "sgs/product-card::ctaFontWeight": [
+        "font-weight"
+      ],
+      "sgs/product-card::ctaFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::ctaPaddingY": [
+        "padding"
+      ],
+      "sgs/product-card::ctaPaddingX": [
+        "padding"
+      ],
+      "sgs/product-card::ctaWidthType": [
+        "width"
+      ],
+      "sgs/product-card::titleFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::titleFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::titleFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/product-card::titleLineHeight": [
+        "line-height"
+      ],
+      "sgs/product-card::titleFontWeight": [
+        "font-weight"
+      ],
+      "sgs/product-card::titleFontStyle": [
+        "font-style"
+      ],
+      "sgs/product-card::priceFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::priceFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::priceFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/product-card::priceFontWeight": [
+        "font-weight"
+      ],
+      "sgs/product-card::descFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::descFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::descFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/product-card::descLineHeight": [
+        "line-height"
+      ],
+      "sgs/product-card::pillFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::pillFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::pillFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/product-card::priceNoteFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::priceNoteFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::priceNoteFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/product-card::priceFromLabelFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::priceFromLabelFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::priceFromLabelFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/product-card::tagFontSize": [
+        "font-size"
+      ],
+      "sgs/product-card::tagFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/product-card::tagFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/quote::attributionColour": [
+        "color"
+      ],
+      "sgs/quote::attributionFontWeight": [
+        "font-weight"
+      ],
+      "sgs/quote::attributionFontFamily": [
+        "font-family"
+      ],
+      "sgs/quote::attributionFontStyle": [
+        "font-style"
+      ],
+      "sgs/quote::attributionTextDecoration": [
+        "text-decoration"
+      ],
+      "sgs/quote::attributionTextTransform": [
+        "text-transform"
+      ],
+      "sgs/quote::textColourHover": [
+        "color"
+      ],
+      "sgs/quote::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/quote::boxShadowHover": [
+        "box-shadow"
+      ],
+      "sgs/quote::backgroundColour": [
+        "background-color"
+      ],
+      "sgs/quote::borderStyle": [
+        "border-style"
+      ],
+      "sgs/quote::borderColour": [
+        "border-color"
+      ],
+      "sgs/quote::boxShadow": [
+        "box-shadow"
+      ],
+      "sgs/quote::maxWidth": [
+        "max-width"
+      ],
+      "sgs/quote::contentWidth": [
+        "width"
+      ],
+      "sgs/separator::opacity": [
+        "opacity"
+      ],
+      "sgs/separator::contentIconSize": [
+        "height",
+        "width"
+      ],
+      "sgs/separator::contentIconColour": [
+        "color"
+      ],
+      "sgs/separator::contentTextColour": [
+        "color"
+      ],
+      "sgs/separator::contentFontSize": [
+        "font-size"
+      ],
+      "sgs/separator::contentFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/separator::contentFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/separator::contentLineHeight": [
+        "line-height"
+      ],
+      "sgs/separator::contentFontWeight": [
+        "font-weight"
+      ],
+      "sgs/separator::contentFontStyle": [
+        "font-style"
+      ],
+      "sgs/social-icons::gap": [
+        "gap"
+      ],
+      "sgs/social-icons::iconColour": [
+        "background-color",
+        "border-color",
+        "color"
+      ],
+      "sgs/social-icons::iconColourHover": [
+        "background-color",
+        "border-color",
+        "color"
+      ],
+      "sgs/table-of-contents::titleColour": [
+        "color"
+      ],
+      "sgs/table-of-contents::linkColour": [
+        "color"
+      ],
+      "sgs/table-of-contents::activeLinkColour": [
+        "color"
+      ],
+      "sgs/tabs::tabTextColour": [
+        "color"
+      ],
+      "sgs/tabs::tabBgColour": [
+        "background-color"
+      ],
+      "sgs/tabs::tabActiveTextColour": [
+        "color"
+      ],
+      "sgs/tabs::tabActiveBgColour": [
+        "background-color"
+      ],
+      "sgs/tabs::tabIndicatorColour": [
+        "box-shadow"
+      ],
+      "sgs/tabs::tabActiveIndicatorColour": [
+        "background-color",
+        "box-shadow"
+      ],
+      "sgs/tabs::panelBgColour": [
+        "background-color",
+        "border-bottom-color",
+        "border-right-color"
+      ],
+      "sgs/tabs::panelBorderColour": [
+        "border-bottom",
+        "border-bottom-color",
+        "border-color",
+        "border-right",
+        "border-right-color"
+      ],
+      "sgs/team-member::scaleHover": [
+        "transform"
+      ],
+      "sgs/team-member::shadowHover": [
+        "box-shadow"
+      ],
+      "sgs/team-member::cardShadow": [
+        "box-shadow"
+      ],
+      "sgs/team-member::nameColour": [
+        "color"
+      ],
+      "sgs/team-member::roleColour": [
+        "color"
+      ],
+      "sgs/testimonial::maxWidth": [
+        "max-width"
+      ],
+      "sgs/testimonial::contentWidth": [
+        "width"
+      ],
+      "sgs/testimonial::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/testimonial::textColourHover": [
+        "color"
+      ],
+      "sgs/testimonial::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/testimonial::transitionDuration": [
+        "transition",
+        "transition-duration"
+      ],
+      "sgs/testimonial::transitionEasing": [
+        "transition",
+        "transition-timing-function"
+      ],
+      "sgs/testimonial::scaleHover": [
+        "transform"
+      ],
+      "sgs/testimonial::shadowHover": [
+        "box-shadow"
+      ],
+      "sgs/testimonial-slider::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/testimonial-slider::textColourHover": [
+        "color"
+      ],
+      "sgs/testimonial-slider::borderColourHover": [
+        "border-color"
+      ],
+      "sgs/testimonial-slider::slidesVisible": [
+        "flex"
+      ],
+      "sgs/text::textColour": [
+        "color"
+      ],
+      "sgs/text::backgroundColour": [
+        "background-color"
+      ],
+      "sgs/text::fontWeight": [
+        "font-weight"
+      ],
+      "sgs/text::fontStyle": [
+        "font-style"
+      ],
+      "sgs/text::textDecoration": [
+        "text-decoration"
+      ],
+      "sgs/text::textTransform": [
+        "text-transform"
+      ],
+      "sgs/text::fontFamily": [
+        "font-family"
+      ],
+      "sgs/text::textAlign": [
+        "text-align"
+      ],
+      "sgs/text::maxWidth": [
+        "max-width"
+      ],
+      "sgs/text::customWidth": [
+        "width"
+      ],
+      "sgs/text::borderStyle": [
+        "border-style"
+      ],
+      "sgs/text::borderColour": [
+        "border-color"
+      ],
+      "sgs/text::boxShadow": [
+        "box-shadow"
+      ],
+      "sgs/text::fontSize": [
+        "font-size"
+      ],
+      "sgs/text::firstLetterFontSize": [
+        "font-size"
+      ],
+      "sgs/text::firstLetterFontWeight": [
+        "font-weight"
+      ],
+      "sgs/text::firstLetterColour": [
+        "color"
+      ],
+      "sgs/text::textColourHover": [
+        "color"
+      ],
+      "sgs/text::backgroundColourHover": [
+        "background-color"
+      ],
+      "sgs/text::boxShadowHover": [
+        "box-shadow"
+      ],
+      "sgs/trust-bar::iconCircleSize": [
+        "height",
+        "width"
+      ],
+      "sgs/trust-bar::iconCircleBackground": [
+        "background-color"
+      ],
+      "sgs/trust-bar::iconColour": [
+        "color"
+      ],
+      "sgs/trust-bar::textColour": [
+        "color"
+      ],
+      "sgs/trust-bar::iconCircleBorderRadius": [
+        "border-radius"
+      ],
+      "sgs/trust-bar::iconCircleShadow": [
+        "box-shadow"
+      ],
+      "sgs/trust-bar::titleColour": [
+        "color"
+      ],
+      "sgs/trust-bar::labelColour": [
+        "color"
+      ],
+      "sgs/trust-bar::labelFontSize": [
+        "font-size"
+      ],
+      "sgs/trust-bar::labelFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/trust-bar::labelFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/trust-bar::labelFontWeight": [
+        "font-weight"
+      ],
+      "sgs/trust-bar::labelFontStyle": [
+        "font-style"
+      ],
+      "sgs/trust-bar::titleFontSize": [
+        "font-size"
+      ],
+      "sgs/trust-bar::titleFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/trust-bar::titleFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/trust-bar::titleLineHeight": [
+        "line-height"
+      ],
+      "sgs/trust-bar::titleFontWeight": [
+        "font-weight"
+      ],
+      "sgs/trust-bar::titleFontStyle": [
+        "font-style"
+      ],
+      "sgs/trustpilot-reviews::columns": [
+        "flex",
+        "grid-template-columns"
+      ],
+      "sgs/trustpilot-reviews::columnsTablet": [
+        "flex",
+        "grid-template-columns"
+      ],
+      "sgs/trustpilot-reviews::columnsMobile": [
+        "flex",
+        "grid-template-columns"
+      ],
+      "sgs/whatsapp-cta::labelColour": [
+        "color"
+      ],
+      "sgs/whatsapp-cta::backgroundColour": [
+        "background-color"
+      ],
+      "sgs/whatsapp-cta::labelFontSize": [
+        "font-size"
+      ],
+      "sgs/whatsapp-cta::labelFontSizeTablet": [
+        "font-size"
+      ],
+      "sgs/whatsapp-cta::labelFontSizeMobile": [
+        "font-size"
+      ],
+      "sgs/whatsapp-cta::labelFontWeight": [
+        "font-weight"
+      ],
+      "sgs/whatsapp-cta::labelFontStyle": [
+        "font-style"
+      ]
+    },
+    "unresolved_reasons": {
+      "sgs/audio::spectrumColour": "custom property --sgs-audio-spectrum never reaches a real CSS declaration within depth 5 (stylesheet may only consume it via JS, e.g. getComputedStyle)",
+      "sgs/option-picker::borderColour": "custom property --sgs-op-root-border-colour never reaches a real CSS declaration within depth 5 (stylesheet may only consume it via JS, e.g. getComputedStyle)",
+      "sgs/tabs::tabHoverBgColour": "custom property --sgs-tab-hover-bg never reaches a real CSS declaration within depth 5 (stylesheet may only consume it via JS, e.g. getComputedStyle)",
+      "sgs/tabs::transitionDuration": "custom property --sgs-transition-duration never reaches a real CSS declaration within depth 5 (stylesheet may only consume it via JS, e.g. getComputedStyle)",
+      "sgs/testimonial::staggerDelay": "custom property --sgs-stagger never reaches a real CSS declaration within depth 5 (stylesheet may only consume it via JS, e.g. getComputedStyle)"
+    },
+    "disagreements": [
+      {
+        "block": "sgs/adaptive-nav",
+        "attr": "verticalAlign",
+        "role": "layout",
+        "css_property": [
+          "align-items"
+        ]
+      },
+      {
+        "block": "sgs/button",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/card-grid",
+        "attr": "cardBorderWidth",
+        "role": "visual",
+        "css_property": [
+          "border-width"
+        ]
+      },
+      {
+        "block": "sgs/card-grid",
+        "attr": "cardRadius",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/card-grid",
+        "attr": "cardShadow",
+        "role": "color",
+        "css_property": [
+          "box-shadow"
+        ]
+      },
+      {
+        "block": "sgs/cart",
+        "attr": "iconSize",
+        "role": "select-from-enum",
+        "css_property": [
+          "height",
+          "width"
+        ]
+      },
+      {
+        "block": "sgs/cta-section",
+        "attr": "shadow",
+        "role": "color",
+        "css_property": [
+          "box-shadow"
+        ]
+      },
+      {
+        "block": "sgs/decorative-image",
+        "attr": "maxWidthPercent",
+        "role": "number-css-percent",
+        "css_property": [
+          "max-width"
+        ]
+      },
+      {
+        "block": "sgs/decorative-image",
+        "attr": "zIndex",
+        "role": "position",
+        "css_property": [
+          "z-index"
+        ]
+      },
+      {
+        "block": "sgs/heading",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageBorderRadius",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageBorderRadiusMobile",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageBorderRadiusTablet",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageBorderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageBorderWidth",
+        "role": "visual",
+        "css_property": [
+          "border-width"
+        ]
+      },
+      {
+        "block": "sgs/icon",
+        "attr": "iconSize",
+        "role": "select-from-enum",
+        "css_property": [
+          "font-size",
+          "height",
+          "width"
+        ]
+      },
+      {
+        "block": "sgs/icon-list",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/nav-menu",
+        "attr": "itemRadius",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/nav-menu",
+        "attr": "itemRadiusHover",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/option-picker",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/option-picker",
+        "attr": "pillBorderRadius",
+        "role": "typography",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/option-picker",
+        "attr": "pillSelectedBorderRadius",
+        "role": "typography",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/process-steps",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "ctaBorderRadius",
+        "role": "visual",
+        "css_property": [
+          "border-radius"
+        ]
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "ctaBorderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "ctaBorderWidth",
+        "role": "visual",
+        "css_property": [
+          "border-width"
+        ]
+      },
+      {
+        "block": "sgs/quote",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      },
+      {
+        "block": "sgs/team-member",
+        "attr": "cardShadow",
+        "role": "color",
+        "css_property": [
+          "box-shadow"
+        ]
+      },
+      {
+        "block": "sgs/text",
+        "attr": "borderStyle",
+        "role": "visual",
+        "css_property": [
+          "border-style"
+        ]
+      }
+    ]
+  },
+  "task_b": {
+    "written": 0,
+    "disagreements": [
+      {
+        "block": "sgs/adaptive-nav",
+        "attr": "moreMenuLabel",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "attr": "backgroundColourHover",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/breadcrumbs",
+        "attr": "homeLabel",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/button",
+        "attr": "rel",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/button",
+        "attr": "ariaLabel",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/button",
+        "attr": "iconColour",
+        "existing": "RangeControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/button",
+        "attr": "transitionEasing",
+        "existing": "RangeControl",
+        "derived": "SelectControl"
+      },
+      {
+        "block": "sgs/card-grid",
+        "attr": "queryCategory",
+        "existing": "RangeControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/card-grid",
+        "attr": "productEmptyMessage",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/cart",
+        "attr": "iconColour",
+        "existing": "RangeControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/countdown-timer",
+        "attr": "targetDate",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/countdown-timer",
+        "attr": "expiredMessage",
+        "existing": "RangeControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/countdown-timer",
+        "attr": "numberColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/cta-section",
+        "attr": "ribbon",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "attr": "flipX",
+        "existing": "RangeControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "attr": "fadeOnScroll",
+        "existing": "RangeControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "attr": "pathDrawEasing",
+        "existing": "RangeControl",
+        "derived": "SelectControl"
+      },
+      {
+        "block": "sgs/filter-search",
+        "attr": "attributeId",
+        "existing": "NumberControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/filter-search",
+        "attr": "threshold",
+        "existing": "NumberControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/form",
+        "attr": "submitColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/form-field-number",
+        "attr": "min",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/form-field-textarea",
+        "attr": "required",
+        "existing": "RangeControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/form-field-tiles",
+        "attr": "width",
+        "existing": "RangeControl",
+        "derived": "SelectControl"
+      },
+      {
+        "block": "sgs/google-reviews",
+        "attr": "textOnly",
+        "existing": "RangeControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/google-reviews",
+        "attr": "excludeKeywords",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/google-reviews",
+        "attr": "reviewRequestUrl",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/google-reviews",
+        "attr": "showDots",
+        "existing": "RangeControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/heading",
+        "attr": "textColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/heading",
+        "attr": "borderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "gridTemplateColumns",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "splitImageBleed",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageObjectFit",
+        "existing": "RangeControl",
+        "derived": "SelectControl"
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageObjectPosition",
+        "existing": "RangeControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/hero",
+        "attr": "imageBorderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/icon",
+        "attr": "iconColour",
+        "existing": "RangeControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/icon",
+        "attr": "backgroundColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/icon",
+        "attr": "iconColourHover",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/icon-list",
+        "attr": "iconColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/icon-list",
+        "attr": "borderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/media",
+        "attr": "boxShadow",
+        "existing": "RangeControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/media",
+        "attr": "linkRel",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/media",
+        "attr": "videoUrl",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/media",
+        "attr": "videoPosterId",
+        "existing": "Button",
+        "derived": "MediaUpload"
+      },
+      {
+        "block": "sgs/mega-menu",
+        "attr": "panelMaxWidth",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/mega-menu",
+        "attr": "badge",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/modal",
+        "attr": "triggerColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/notice-banner",
+        "attr": "dismissible",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/notice-banner",
+        "attr": "showIcon",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/option-picker",
+        "attr": "borderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "attr": "ctaColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/process-steps",
+        "attr": "backgroundColourHover",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/process-steps",
+        "attr": "borderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "productName",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "ctaText",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "tagPadding",
+        "existing": "RangeControl",
+        "derived": "BoxControl"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "ctaText",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "pickerPillBgColour",
+        "existing": "ToggleControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "pickerPillTextColour",
+        "existing": "ToggleControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "pickerPillBorderRadius",
+        "existing": "DesignTokenPicker",
+        "derived": "UnitControl"
+      },
+      {
+        "block": "sgs/product-card",
+        "attr": "pickerPillSelectedBorderRadius",
+        "existing": "DesignTokenPicker",
+        "derived": "UnitControl"
+      },
+      {
+        "block": "sgs/product-search",
+        "attr": "placeholder",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/product-search",
+        "attr": "maxResults",
+        "existing": "TextControl",
+        "derived": "NumberControl"
+      },
+      {
+        "block": "sgs/quote",
+        "attr": "attributionColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/quote",
+        "attr": "contentWidth",
+        "existing": "ResponsiveControl",
+        "derived": "UnitControl"
+      },
+      {
+        "block": "sgs/quote",
+        "attr": "borderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/quote",
+        "attr": "textColourHover",
+        "existing": "TextControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/quote",
+        "attr": "backgroundColourHover",
+        "existing": "TextControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "attr": "linkToHome",
+        "existing": "RangeControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "attr": "alt",
+        "existing": "ToggleControl",
+        "derived": "TextareaControl"
+      },
+      {
+        "block": "sgs/star-rating",
+        "attr": "starColour",
+        "existing": "RangeControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/star-rating",
+        "attr": "label",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/star-rating",
+        "attr": "schemaItemName",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/table-of-contents",
+        "attr": "title",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/team-member",
+        "attr": "overlayHover",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/team-member",
+        "attr": "nameColour",
+        "existing": "ToggleControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/testimonial",
+        "attr": "ratingColour",
+        "existing": "TextControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/testimonial",
+        "attr": "summaryColour",
+        "existing": "TextControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "attr": "sideImage",
+        "existing": "Button",
+        "derived": "MediaUpload"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "attr": "transitionDuration",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "attr": "showArrows",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "attr": "backgroundColourHover",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "attr": "textColourHover",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/text",
+        "attr": "fontFamily",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/timeline",
+        "attr": "connectorColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/timeline",
+        "attr": "borderColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "attr": "iconCircleBackground",
+        "existing": "RangeControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "attr": "iconColour",
+        "existing": "SelectControl",
+        "derived": "DesignTokenPicker"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "attr": "autoScrollPauseOnHover",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "attr": "businessUnitUrl",
+        "existing": "SelectControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "attr": "trustScore",
+        "existing": "ToggleControl",
+        "derived": "NumberControl"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "attr": "totalReviews",
+        "existing": "TextControl",
+        "derived": "NumberControl"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "attr": "subtitleText",
+        "existing": "ToggleControl",
+        "derived": "TextControl"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "attr": "theme",
+        "existing": "RangeControl",
+        "derived": "SelectControl"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "attr": "showArrows",
+        "existing": "SelectControl",
+        "derived": "ToggleControl"
+      }
+    ],
+    "unresolved": [
+      {
+        "block": "sgs/adaptive-nav",
+        "control": "UnitControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/audio",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/audio",
+        "control": "TextControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['audioId', 'audioSource', 'audioUrl']"
+      },
+      {
+        "block": "sgs/audio",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/audio",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "MediaPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/brand-strip",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "UnitControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "UnitControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "DesignTokenPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "DesignTokenPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/button",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "MediaPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/card-grid",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/container",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/container",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/cta-section",
+        "control": "MediaPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['backgroundImage', 'backgroundMedia']"
+      },
+      {
+        "block": "sgs/cta-section",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/cta-section",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/cta-section",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "MediaPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/decorative-image",
+        "control": "MediaPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/feature-grid",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['minItemWidth', 'minItemWidthUnit']"
+      },
+      {
+        "block": "sgs/feature-grid",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/feature-grid",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-address",
+        "control": "CheckboxControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-checkbox",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-checkbox",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-checkbox",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-radio",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-radio",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-radio",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-select",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-select",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-select",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-tiles",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-tiles",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/form-field-tiles",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "RadioControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/gallery",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/google-reviews",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/google-reviews",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/heading",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['letterSpacing', 'letterSpacingUnit']"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "MediaPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['splitImage', 'splitMedia']"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['imageWidth', 'imageWidthUnit']"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['imageHeight', 'imageHeightUnit']"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/hero",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/icon-list",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/icon-list",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/icon-list",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/info-box",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/label",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['lineHeight', 'lineHeightUnit']"
+      },
+      {
+        "block": "sgs/label",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['letterSpacing', 'letterSpacingUnit']"
+      },
+      {
+        "block": "sgs/media",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "UnitControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/media",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/mega-menu",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/multi-button",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/nav-drawer",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "DesignTokenPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['itemColour', 'itemColourHover']"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "DesignTokenPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['itemBg', 'itemBgHover']"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['itemRadius', 'itemRadiusHover']"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "DesignTokenPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['featuredColour', 'featuredColourHover']"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "DesignTokenPicker",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['featuredBg', 'featuredBgHover']"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['featuredRadius', 'featuredRadiusHover']"
+      },
+      {
+        "block": "sgs/nav-menu",
+        "control": "SelectControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['featuredFontWeight', 'featuredFontWeightHover']"
+      },
+      {
+        "block": "sgs/notice-banner",
+        "control": "ToggleControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['iconName', 'iconSource']"
+      },
+      {
+        "block": "sgs/option-picker",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/option-picker",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/option-picker",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/option-picker",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/option-picker",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/post-grid",
+        "control": "RadioControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/post-grid",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/post-grid",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/post-grid",
+        "control": "RadioControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "DesignTokenPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "CheckboxControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/pricing-table",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/process-steps",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/process-steps",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/process-steps",
+        "control": "TextareaControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/process-steps",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/process-steps",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "CheckboxControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/product-card",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['attributionLineHeight', 'attributionLineHeightUnit']"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['attributionMarginTop', 'attributionMarginUnit']"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/quote",
+        "control": "UnitControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/responsive-logo",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/separator",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/separator",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/site-footer-row",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/social-icons",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/social-icons",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/social-icons",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/social-icons",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/social-icons",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/tabs",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/team-member",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/team-member",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/team-member",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/team-member",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/team-member",
+        "control": "MediaPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/testimonial-slider",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/text",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/text",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/text",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['letterSpacing', 'letterSpacingUnit']"
+      },
+      {
+        "block": "sgs/text",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['maxWidth', 'maxWidthUnit']"
+      },
+      {
+        "block": "sgs/text",
+        "control": "UnitControl",
+        "reason": "ambiguous \u2014 multiple distinct attrs referenced in one control: ['firstLetterFontSize', 'firstLetterFontSizeUnit']"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "MediaUpload",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/timeline",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "DesignTokenPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "MediaPicker",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "SelectControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trust-bar",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "ResponsiveControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "RangeControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "NumberControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "TextControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "TextareaControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "ToggleControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "TextareaControl",
+        "reason": "no attribute reference found in value/checked/onChange"
+      },
+      {
+        "block": "sgs/trustpilot-reviews",
+        "control": "Button",
+        "reason": "no attribute reference found in value/checked/onChange"
+      }
+    ]
+  }
+}

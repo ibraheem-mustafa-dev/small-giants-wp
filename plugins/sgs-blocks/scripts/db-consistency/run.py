@@ -123,12 +123,20 @@ _CHECK_LABELS = {
     "variant_reseed": "Check #5 — variant_slots ↔ block.json Determinism",
     "orphan_roles": "Check #6 — Role Referential Integrity",
     "tier_composition": "Check #7 — tier ↔ composition_role/container_kind",
+    "css_property_reseed": "Check #8 — css_property/css_layer/css_element/css_state/css_tier Reseed-Survival",
 }
 
 # Display order for the grouped report.
+# BUG FIXED 2026-07-21: "css_property_reseed" (Check #8) was collected into `groups`
+# but never listed here, so its violations were silently absent from the printed
+# report while still counting toward the top-line "N violation(s) total" — a report
+# that could show "0 violations" in its visible sections while 45 real Check #8
+# findings sat uncounted-by-eye in the total. Caught while verifying this task's own
+# acceptance criteria; see the session report for the discovery trail.
 _CHECK_ORDER = (
     "routing", "composition", "variants",
     "overrides_drift", "variant_reseed", "orphan_roles", "tier_composition",
+    "css_property_reseed",
 )
 
 

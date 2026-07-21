@@ -642,25 +642,324 @@ def _strip_php_comments(src: str) -> str:
     return "".join(out)
 
 
-def _custom_props_consumed(css_src: str) -> dict[str, set[str]]:
+# Shorthand properties this codebase's stylesheets author with a --sgs-* var that,
+# on inspection (grep across every SGS block's style.css, 2026-07-21 — see the Task A
+# extension report), ALWAYS feeds only the colour slot of the shorthand, never the
+# width/style slots (those are hardcoded literals alongside the var, e.g.
+# `border: 1px solid var(--sgs-x)`). Longhand normalisation target below. This is NOT
+# a hardcoded classification dict (R-31-1) in the sense of guessing — it is the
+# grammar fact that CSS `background`/`border`/`outline` shorthands each have exactly
+# one colour slot, confirmed empirically for every live occurrence in this codebase.
+_SHORTHAND_COLOUR_LONGHAND: dict[str, str] = {
+    "background": "background-color",
+    "border": "border-color",
+    "outline": "outline-color",
+}
+_GRADIENT_FN_RE = re.compile(r"(?:linear|radial|conic)-gradient\s*\(", re.IGNORECASE)
+
+
+# ── SELECTOR-CONTEXT state derivation (bug family #4, 2026-07-21) ──────────────
+# Three prior bugs this session (sprintf positional-arg tier collapse, mixed-shorthand
+# slot collapse, @media(...) wrapper misread as a declaration) were all the SAME
+# general defect: the classifier read a declaration correctly but discarded the
+# CONTEXT surrounding it. This is the fourth instance — css_state was never derived
+# at all, because `_DECL_RE.finditer` scans the whole stylesheet as flat text with no
+# concept of which SELECTOR a declaration sits under. `.sgs-hero:hover{background-
+# color:var(--sgs-hover-bg)}` and `.sgs-hero{background-color:var(--sgs-media-bg)}`
+# looked identical to the old scan — both just "a declaration feeding a var". Fixed
+# by walking actual RULE BLOCKS (selector + body) so every declaration carries its
+# owning selector, then deriving state from that selector text.
+#
+# State vocabulary is REUSED from the element manifest system (Bean's explicit
+# instruction — no invented state names). Querying every block.json's
+# `supports.sgs.elements.*.states` keys (2026-07-21) found exactly TWO in use across
+# the whole framework: 'hover' and 'selected'. Only those two are mapped here.
+# `[aria-selected="true"]` maps to 'selected' — NOT CSS `:active` (tabActive* is a
+# documented example of this: the manifest's own tabs.block.json note says
+# tabActiveIndicatorColour "renders as [aria-selected='true']... NOT CSS :active").
+# `:hover` maps to 'hover'. Other pseudo-classes/attribute-selectors that plainly
+# express a state concept but have NO existing manifest word (`:focus`,
+# `:focus-visible`, `:disabled`, `[aria-expanded="true"]`) are DETECTED but left
+# unmapped (None) — recorded in `_UNMAPPED_STATE_SELECTORS` for the Task-2 audit
+# rather than inventing new vocabulary unilaterally.
+_STATE_SELECTOR_PATTERNS: tuple[tuple[str, str], ...] = (
+    (r'aria-selected\s*=\s*["\']true["\']', "selected"),
+    (r":hover\b", "hover"),
+)
+_UNMAPPED_STATE_PATTERNS: tuple[str, ...] = (
+    r":focus-visible\b", r":focus\b", r":disabled\b",
+    r'aria-expanded\s*=\s*["\']true["\']', r"\[disabled\]",
+)
+# Populated at runtime by `_derive_state_from_selector` — a set of RAW selector
+# strings that expressed a genuine state concept with no manifest word to map it to.
+# Surfaced in the classifier's summary report (Task 2 audit requirement).
+_UNMAPPED_STATE_SELECTORS_SEEN: set[str] = set()
+
+
+def _derive_state_from_selector(selector: str) -> "str | None":
+    """Derive a manifest-vocabulary state name from a CSS selector's own text.
+
+    Checked against EVERY comma-separated part of a selector group (e.g.
+    `.a:hover, .b:hover{...}`) — if ANY part expresses a mapped state, that state
+    applies (conservative: a mixed group where parts disagree returns the first
+    match found, since in every occurrence checked in this codebase a selector
+    group shares one consistent state condition, never a mix of different ones).
+    """
+    sel = selector.lower()
+    for pattern, state_name in _STATE_SELECTOR_PATTERNS:
+        if re.search(pattern, sel):
+            return state_name
+    for pattern in _UNMAPPED_STATE_PATTERNS:
+        if re.search(pattern, sel):
+            _UNMAPPED_STATE_SELECTORS_SEEN.add(selector.strip())
+            break
+    return None
+
+
+def _iter_rule_blocks(css_src: str) -> "list[tuple[str, str]]":
+    """Walk a stylesheet into (selector, body) pairs for every LEAF rule — i.e. every
+    actual `selector { declarations }` block, with `@media(...)`/`@supports(...)`/
+    any other `@rule(...) { ... }` wrapper transparently flattened away (recursed
+    into, never treated as a selector itself). This is what lets a declaration be
+    matched back to the SELECTOR it actually renders under, regardless of how many
+    `@media` layers wrap it — exactly the context `_custom_props_consumed` used to
+    discard. Brace-depth-aware (handles nested @media > selector correctly); does
+    NOT handle a `{`/`}` appearing inside a string literal in a selector (not a
+    pattern this codebase's stylesheets use in selectors) — a documented, narrow
+    limitation, not a silent one (see Task 2 audit note in the module report).
+    """
+    blocks: list[tuple[str, str]] = []
+    i = 0
+    n = len(css_src)
+    while i < n:
+        brace_pos = css_src.find("{", i)
+        if brace_pos == -1:
+            break
+        header = css_src[i:brace_pos].strip()
+        depth = 1
+        j = brace_pos + 1
+        while j < n and depth > 0:
+            if css_src[j] == "{":
+                depth += 1
+            elif css_src[j] == "}":
+                depth -= 1
+            j += 1
+        body = css_src[brace_pos + 1:j - 1]
+        if header.startswith("@"):
+            blocks.extend(_iter_rule_blocks(body))
+        elif header:
+            blocks.append((header, body))
+        i = j
+    return blocks
+
+
+def _top_level_vars(value: str) -> set[str]:
+    """Return the --sgs-* var names whose OWN `var(...)` call opens at PAREN DEPTH 0
+    within a declaration's value — i.e. the var actually being assigned to the
+    property, as opposed to a var buried as a FALLBACK argument nested inside
+    another var()'s parentheses (`var(--a, var(--b, default))` — `--b` is `--a`'s
+    resting fallback, not something the declaration independently "sets").
+
+    Bug found + fixed 2026-07-21 (sgs/icon `backgroundColour` wrongly inheriting
+    `css_state='hover'`): `.sgs-icon--bg-outline .sgs-icon__link:hover{border-color:
+    var(--sgs-icon-hover-shape-colour, var(--sgs-icon-outline-colour, currentColor))}`
+    — `--sgs-icon-outline-colour` (fed by the RESTING attr `backgroundColour`) sits
+    nested inside `--sgs-icon-hover-shape-colour`'s own fallback slot. The plain
+    `re.findall(CUSTOM_PROP_RE, value)` scan used for `out`/chain-following correctly
+    still treats it as "consumed by this declaration" (needed for property
+    resolution — the fallback var IS what border-color would render as if the hover
+    var were unset), but state must NOT be attributed to it: being a resting var's
+    fallback used INSIDE a hover rule does not make the fallback itself a hover-state
+    property. Only depth-0 vars get state; nested fallback vars keep whatever state
+    (or none) their OWN declaration site assigns.
+    """
+    top: set[str] = set()
+    depth = 0
+    i = 0
+    n = len(value)
+    var_call_re = re.compile(r"var\(\s*(" + CUSTOM_PROP_RE + r")", re.IGNORECASE)
+    while i < n:
+        m = var_call_re.match(value, i)
+        if m:
+            if depth == 0:
+                top.add(m.group(1))
+            depth += 1
+            i = m.end()
+            continue
+        ch = value[i]
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        i += 1
+    return top
+
+
+_BEM_ELEMENT_RE = re.compile(r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)", re.IGNORECASE)
+
+
+def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "str | None":
+    """Derive the BEM ELEMENT name from a selector's own text — e.g.
+    `.sgs-hero__media:hover` -> 'media', `.sgs-hero__overlay` -> 'overlay'. Evidence
+    from the selector the declaration ACTUALLY sits under, never the attribute name
+    (Bean's explicit instruction, 2026-07-21 widen-css_element task).
+
+    Only matches `sgs-{THIS BLOCK'S OWN SHORT SLUG}__{element}` — a selector
+    referencing a DIFFERENT block's BEM class (nested child block markup, e.g.
+    `.sgs-option-picker__pill` inside `sgs/product-card`'s stylesheet) is correctly
+    ignored, since that markup belongs to the child block's own element vocabulary,
+    not this block's.
+
+    Takes the LAST matching `sgs-{slug}__{element}` occurrence in the selector
+    (closest to the actual declared property — the same "most specific/most recent"
+    convention already used for property-token resolution elsewhere in this module),
+    from the FIRST comma-separated selector part only (a comma-joined group, e.g.
+    `.sgs-hero__title, .sgs-hero__subtitle{...}`, spans TWO elements — genuinely
+    ambiguous, so returns None rather than guessing which part the shared property
+    belongs to; checked live and this shape does not occur for the collisions this
+    task targets).
+    """
+    first_part = selector.split(",")[0]
+    matches = [
+        m for m in _BEM_ELEMENT_RE.finditer(first_part)
+        if m.group(1).lower() == block_short_slug.lower()
+    ]
+    if not matches:
+        return None
+    return matches[-1].group(2)
+
+
+def _custom_props_consumed(
+    css_src: str,
+    block_short_slug: str = "",
+) -> tuple[
+    dict[str, set[str]],
+    dict[str, set[str]],
+    dict[tuple[str, str], str],
+    dict[tuple[str, str], str],
+    dict[tuple[str, str], str],
+]:
     """Map ``--sgs-var`` -> the set of props (real CSS OR another --sgs-* var) whose
     declared value consumes it, anywhere in the stylesheet (base + every @media tier —
-    layer/tier distinction is not needed for Q2, only "what property, ultimately")."""
+    layer/tier distinction is not needed for Q2, only "what property, ultimately").
+
+    Also returns:
+      `gradient_props` — for each var, the subset of those props where the var's
+        occurrence sits INSIDE a `linear-gradient()`/`radial-gradient()`/
+        `conic-gradient()` call within that declaration's value — e.g.
+        `background: linear-gradient(to right, var(--sgs-x) 50%, transparent)`. In
+        that shape the var feeds a gradient colour-stop, not the plain fill colour,
+        so the shorthand-normalisation step below must resolve `background` to
+        `background-image`, never `background-color` (verified: `audio`,
+        `brand-strip`, `media` blocks all use this shape for accent/track gradients).
+      `shorthand_slot` — for each (var, prop) pair where prop is `border`/`outline`
+        AND the declaration's value contains TWO OR MORE distinct --sgs-* vars, which
+        SLOT that specific var occupies: 'width' for every var except the LAST one in
+        the value, 'colour' for the last. Bug found + fixed 2026-07-21
+        (sgs/card-grid `cardBorderWidth`/`cardBorderColour` BOTH resolving to
+        'border-color', root-caused live at card-grid/style.css:37 —
+        `border: var(--sgs-card-border-width, 0) solid var(--sgs-card-border-color,
+        transparent);` — a MIXED shorthand where one var is genuinely the width slot
+        and another is the colour slot; the earlier blanket "every var in a border/
+        outline shorthand is colour-only" rule was true for every SINGLE-var
+        occurrence checked but false here. Confirmed the codebase's own convention is
+        width-first/colour-last in every mixed occurrence found (also
+        `sgs/form`'s `formFocusRingWidth`+`formFocusRingColour` via
+        `--sgs-focus-ring-width`+`--sgs-focus-ring-colour` in an `outline:` shorthand)
+        — CSS's own canonical shorthand order is width/style/colour, and no
+        counter-example exists in this codebase.
+      `state_of` — for each (var, prop) pair, the manifest-vocabulary state the
+        OWNING SELECTOR expresses (`_derive_state_from_selector`), or absent if the
+        selector expresses no mapped state. Bug found + fixed 2026-07-21
+        (sgs/hero `backgroundColourHover`/`borderColourHover` colliding with resting
+        attrs on the same property purely because state was never captured — see the
+        selector-context bug-family note above `_derive_state_from_selector`).
+      `element_of` — for each (var, prop) pair, the BEM element name the OWNING
+        SELECTOR expresses (`_derive_bem_element_from_selector`), gated to the
+        SAME top-level-var-only rule as state (a var nested inside another var's
+        fallback does not inherit the outer rule's element either — same
+        `sgs/icon` nested-fallback reasoning as state). New 2026-07-21 (widen-
+        css_element task) — this is what let sgs/hero mediaBackground resolve to
+        the 'media' element and backgroundOverlayColour to 'overlay', proving they
+        are NOT the same concept despite `hero/block.json:189`'s note (that note
+        covers `mediaBackground` vs `mediaBackgroundColour` — BOTH targeting
+        `.sgs-hero__media` — not this pair).
+    """
     css_src = _strip_css_comments(css_src)
     out: dict[str, set[str]] = defaultdict(set)
-    for m in _DECL_RE.finditer(css_src):
-        prop = m.group("prop").strip().lower()
-        for var in re.findall(CUSTOM_PROP_RE, m.group("value")):
-            out[var].add(prop)
-    return out
+    gradient_props: dict[str, set[str]] = defaultdict(set)
+    shorthand_slot: dict[tuple[str, str], str] = {}
+    state_of: dict[tuple[str, str], str] = {}
+    element_of: dict[tuple[str, str], str] = {}
+    for selector, body in _iter_rule_blocks(css_src):
+        state = _derive_state_from_selector(selector)
+        element = _derive_bem_element_from_selector(selector, block_short_slug) if block_short_slug else None
+        for m in _DECL_RE.finditer(body):
+            prop = m.group("prop").strip().lower()
+            value = m.group("value")
+            is_gradient_value = bool(_GRADIENT_FN_RE.search(value))
+            var_occurrences = re.findall(CUSTOM_PROP_RE, value)
+            distinct_vars_in_order = list(dict.fromkeys(var_occurrences))  # de-dup, keep first-seen order
+            mixed_border_outline = (
+                prop in ("border", "outline")
+                and not is_gradient_value
+                and len(distinct_vars_in_order) >= 2
+            )
+            top_level = _top_level_vars(value) if (state or element) else set()
+            for var in var_occurrences:
+                out[var].add(prop)
+                if is_gradient_value:
+                    gradient_props[var].add(prop)
+                if mixed_border_outline:
+                    is_last = var == distinct_vars_in_order[-1]
+                    shorthand_slot[(var, prop)] = "colour" if is_last else "width"
+                if state and var in top_level:
+                    state_of[(var, prop)] = state
+                if element and var in top_level:
+                    element_of[(var, prop)] = element
+    return out, gradient_props, shorthand_slot, state_of, element_of
+
+
+def _normalise_shorthand(
+    prop: str,
+    var: str,
+    gradient_props: dict[str, set[str]],
+    shorthand_slot: "dict[tuple[str, str], str] | None" = None,
+) -> str:
+    """Resolve a shorthand property token (`background`/`border`/`outline`) to the
+    longhand it actually sets, given the emission evidence gathered above. Non-shorthand
+    tokens pass through unchanged. See `_SHORTHAND_COLOUR_LONGHAND` for the rationale,
+    and `_custom_props_consumed`'s `shorthand_slot` docstring for the mixed-var case."""
+    if prop == "background" and var in gradient_props and prop in gradient_props[var]:
+        return "background-image"
+    if shorthand_slot and prop in ("border", "outline"):
+        slot = shorthand_slot.get((var, prop))
+        if slot == "width":
+            return f"{prop}-width"
+    return _SHORTHAND_COLOUR_LONGHAND.get(prop, prop)
+
+
+# Tier-suffix vocabulary read off this codebase's OWN emission convention, not
+# invented: `includes/helpers-responsive.php` names its two override params
+# `tablet_attr` / `mobile_attr` (base/desktop has no suffix — it's the unsuffixed
+# `attr` param), and every chained --sgs-* custom-property name in this codebase
+# follows the same base/-tablet/-mobile convention (e.g. --sgs-columns-desktop /
+# --sgs-columns-tablet / --sgs-columns-mobile, cited in this module's own Task A
+# docstring). "desktop" is accepted as an explicit suffix too, since some var names
+# spell the base tier out rather than leaving it bare.
+_TIER_SUFFIX_RE = re.compile(r"-(desktop|tablet|mobile)$")
 
 
 def _resolve_var_chain(
     var: str,
     consumed: dict[str, set[str]],
+    gradient_props: "dict[str, set[str]] | None" = None,
+    shorthand_slot: "dict[tuple[str, str], str] | None" = None,
+    state_of: "dict[tuple[str, str], str] | None" = None,
+    element_of: "dict[tuple[str, str], str] | None" = None,
     depth: int = 0,
     visited: "set[str] | None" = None,
-) -> set[str]:
+) -> tuple[set[str], set[str], set[str], set[str]]:
     """Follow a --sgs-* custom property through however many intermediate --sgs-*
     hand-offs it takes to reach real CSS declarations (REQUIREMENT 3: chained custom
     properties, e.g. --sgs-columns-desktop -> --sgs-columns -> grid-template-columns).
@@ -668,19 +967,131 @@ def _resolve_var_chain(
     Depth-capped at 5 and loop-guarded via a visited set — a var that resolves back to
     itself (directly or through a cycle) returns whatever real properties were already
     found on the way in, never hangs.
+
+    Returns (real_props, visited_vars, states):
+      `visited_vars` is the FULL set of --sgs-* custom-property names traversed to
+        reach those real props, i.e. the emission-chain evidence a caller can scan
+        for a tier suffix (FR: "tier from emission evidence, not name-parsing the
+        attribute"). Shorthand tokens are normalised to their longhand at this point
+        (`_normalise_shorthand`), so a caller never sees a bare
+        `background`/`border`/`outline` token.
+      `states` is the set of manifest-vocabulary state names (`state_of`, keyed by
+        (var, prop) at the LEAF hop where a var directly feeds a real declaration —
+        an intermediate --sgs-* hand-off carries no state of its own) collected while
+        resolving this chain. Selector-context evidence, not name-parsing.
     """
+    if gradient_props is None:
+        gradient_props = {}
+    if shorthand_slot is None:
+        shorthand_slot = {}
+    if state_of is None:
+        state_of = {}
+    if element_of is None:
+        element_of = {}
     if visited is None:
         visited = set()
     if depth > 5 or var in visited:
-        return set()
+        return set(), set(), set(), set()
     visited = visited | {var}
 
     direct = consumed.get(var, set())
-    real = {p for p in direct if not p.startswith("--")}
+    real: set[str] = set()
+    states: set[str] = set()
+    elements: set[str] = set()
+    for p in direct:
+        if p.startswith("--"):
+            continue
+        real.add(_normalise_shorthand(p, var, gradient_props, shorthand_slot))
+        leaf_state = state_of.get((var, p))
+        if leaf_state:
+            states.add(leaf_state)
+        leaf_element = element_of.get((var, p))
+        if leaf_element:
+            elements.add(leaf_element)
     chained_vars = {p for p in direct if p.startswith("--")}
     for cv in chained_vars:
-        real |= _resolve_var_chain(cv, consumed, depth + 1, visited)
-    return real
+        cv_real, cv_visited, cv_states, cv_elements = _resolve_var_chain(
+            cv, consumed, gradient_props, shorthand_slot, state_of, element_of, depth + 1, visited
+        )
+        real |= cv_real
+        visited |= cv_visited
+        states |= cv_states
+        elements |= cv_elements
+    return real, visited, states, elements
+
+
+def _derive_tier(
+    attr_name: str,
+    chain_vars: "set[str]",
+    known_vars: "frozenset[str] | None" = None,
+    block_attr_names: "set[str] | None" = None,
+) -> "str | None":
+    """Derive the responsive tier this attribute drives from EMISSION evidence — the
+    --sgs-* custom-property chain it feeds — never by parsing the attribute's own name
+    where that evidence is available (spec requirement). Returns 'desktop' / 'tablet' /
+    'mobile' or None (genuinely no tier concept applies — not part of any responsive
+    family at all).
+
+    BUG FIXED 2026-07-21 (coordinator-verified live: sgs/trustpilot-reviews columns/
+    columnsTablet/columnsMobile all read css_tier='mobile'; systematic — desktop=4 vs
+    mobile=52/tablet=46 across the whole DB). Two DISTINCT defects, both fixed:
+      (a) EXTRACTION bug in `_attr_to_raw_props_php` — a single sprintf()-style string
+          fragment declaring multiple property tokens (one per tier) was pairing ALL
+          subsequent positional var refs with the LAST token only, so the BASE attr's
+          own token got silently swapped for the mobile attr's token before this
+          function ever saw it. Fixed at the source (see that function's docstring) —
+          this function now genuinely receives the base attr's OWN emitted var, not a
+          descendant's.
+      (b) This function ITSELF had no way to express "this IS the base tier" as a
+          distinct, storable value — a base attr with no explicit suffix always fell
+          through to None (NULL in the DB), which is indistinguishable from "not part
+          of a responsive family at all" (e.g. a plain boolean toggle). Both cases
+          rendered as NULL, so a base/tablet/mobile family's base member was
+          invisible in any `GROUP BY css_tier` aggregate — exactly what the
+          coordinator's sanity check caught. Fixed by detecting a genuine sibling
+          family (below) and returning the explicit string 'desktop' for the base
+          member, so base/tablet/mobile are three DISTINCT, equally-visible values.
+
+    Precedence:
+      1. Any var in the resolved chain carries an explicit tier suffix (-desktop/
+         -tablet/-mobile) -> that tier. This is the strongest emission-evidence path.
+      2. The var(s) in the resolved chain are UNSUFFIXED but a sibling tier-suffixed
+         variant of the SAME base var name exists elsewhere in the stylesheet
+         (`known_vars` — e.g. this attr's own var is `--sgs-tp-cols` and
+         `--sgs-tp-cols-tablet` is declared/consumed somewhere in the same file) ->
+         this IS the base/desktop member of a genuine responsive family -> 'desktop'.
+         This is still emission evidence (the SIBLING'S emission site proves the
+         family exists), applied to THIS attr's own token, not inherited from a
+         descendant's chain.
+      3. No --sgs-* hop exists at all (chain_vars empty — the attr feeds a real CSS
+         property directly, Shape B/D):
+         a. The attribute's OWN name ends in Tablet/Mobile/Desktop -> that tier
+            (name-evidence fallback, used only when there is no --sgs-* chain).
+         b. Otherwise, if `block_attr_names` shows a sibling `{attr}Tablet` or
+            `{attr}Mobile` attribute declared on the SAME block -> this is the base
+            member of a family expressed directly at the attribute level -> 'desktop'.
+      4. Otherwise None — genuinely no responsive family involves this attribute.
+    """
+    for cv in chain_vars:
+        m = _TIER_SUFFIX_RE.search(cv)
+        if m:
+            return m.group(1)
+    if chain_vars and known_vars:
+        for cv in chain_vars:
+            if any(f"{cv}-{suffix}" in known_vars for suffix in ("desktop", "tablet", "mobile")):
+                return "desktop"
+    if not chain_vars:
+        if re.search(r"Tablet$", attr_name):
+            return "tablet"
+        if re.search(r"Mobile$", attr_name):
+            return "mobile"
+        if re.search(r"Desktop$", attr_name):
+            return "desktop"
+        if block_attr_names and (
+            f"{attr_name}Tablet" in block_attr_names or f"{attr_name}Mobile" in block_attr_names
+        ):
+            return "desktop"
+    return None
 
 
 def _build_php_var_attr_map(php_src: str) -> dict[str, str]:
@@ -828,7 +1239,8 @@ def _attr_to_raw_props_php(
     php_src: str,
     known_css_props: "frozenset[str]",
     var_attr: dict[str, str],
-) -> dict[str, set[str]]:
+    block_short_slug: str = "",
+) -> tuple[dict[str, set[str]], dict[str, str], dict[str, str]]:
     """Shapes A/B/C: map attrName -> the set of property tokens (real CSS OR --sgs-*
     custom property) it feeds directly in render.php.
 
@@ -839,8 +1251,30 @@ def _attr_to_raw_props_php(
                           routed through a --sgs-* custom property at all)
       C) via variable:   $v = $attributes['attrName']; ... '--sgs-foo:' . esc_attr($v)
                           (custom prop OR real prop, via a possibly multi-hop $v)
+
+    Also returns `attr_state`: attrName -> selector-context state (WORKSTREAM 2,
+    2026-07-21). Some blocks build a CSS SELECTOR string directly in PHP rather than
+    via style.css, e.g. sgs/adaptive-nav/render.php:258 —
+      $css .= $root_sel . ' .sgs-adaptive-nav__link:hover,' . $root_sel
+        . ' .sgs-adaptive-nav__link:focus-visible{color:var(--wp--preset--color--'
+        . $link_hover . ');}';
+    — invisible to `_custom_props_consumed` (which only reads style.css). Applying
+    the SAME evidence rule here: `_derive_state_from_selector` runs against each
+    string fragment's own text (which, unlike a stylesheet declaration, mixes the
+    selector AND the property in one literal), tracked with the same reset-per-
+    fragment discipline as `prop_queue` above — state comes from what the fragment's
+    selector text expresses, never from the attribute name.
+
+    Also returns `attr_element`: attrName -> BEM element name, same PHP-string
+    mechanism, for the SAME reason `_custom_props_consumed`'s BEM-element detection
+    (2026-07-21 widen-coverage task) needed the CSS-file path — sgs/hero's
+    `mediaBackground`/`backgroundOverlayColour` build `.sgs-hero__media{...}`/
+    `.sgs-hero__overlay{...}` as PHP string concatenation (render.php:554,843), never
+    touching style.css, so the CSS-file BEM scan alone could not see them either.
     """
     attr_props: dict[str, set[str]] = defaultdict(set)
+    attr_state: dict[str, str] = {}
+    attr_element: dict[str, str] = {}
 
     # ---- shape A: 'attrName' => '--sgs-foo'
     for m in re.finditer(
@@ -875,6 +1309,40 @@ def _attr_to_raw_props_php(
     # opacity attribute's value to max-width. Fix: search for a property token
     # ANYWHERE in the fragment (not anchored to its end) and take the LAST match —
     # "most recent declaration wins" mirrors how left-to-right concatenation reads.
+    # Bug found + fixed 2026-07-21 (sgs/trustpilot-reviews::columns/columnsTablet/
+    # columnsMobile — reported live as a tier-mis-derivation, root-caused here): the
+    # "last token wins for every subsequent var ref" rule above is WRONG when a SINGLE
+    # string fragment declares MULTIPLE property tokens in a positional sprintf()
+    # template, each meant for its own later positional arg —
+    #   sprintf('--sgs-tp-cols:%d;--sgs-tp-cols-tablet:%d;--sgs-tp-cols-mobile:%d',
+    #     max(1,$columns), max(1,$columns_tablet), max(1,$columns_mobile))
+    # Taking candidates[-1] ('--sgs-tp-cols-mobile') and pairing it with ALL THREE
+    # subsequent var refs collapsed $columns (the BASE/desktop attr) and
+    # $columns_tablet onto the MOBILE custom property — so `columns`, a base attr with
+    # NO tier, inherited css_tier='mobile' from a token it never actually feeds. Fix:
+    # keep the FULL ordered list of property tokens found in a fragment as a
+    # POSITIONAL QUEUE, and consume one token per subsequent var/attr reference in the
+    # order they appear (matches sprintf's own positional-argument contract). A
+    # fragment with exactly one token still behaves exactly as before (every
+    # subsequent ref reuses that one token — the audio accent/spectrum case, and the
+    # decorative-image opacity case, both still pass; queue length 1 always yields the
+    # same index). When there are MORE refs than queued tokens, the queue index is
+    # clamped to the last token (matches prior "keep reusing the most recent
+    # declaration" semantics for that shape).
+    # Bug found + fixed 2026-07-21 (sgs/media borderRadiusMobile/maxWidthMobile both
+    # resolving to 'max-width' — root-caused via direct instrumentation): render.php
+    # routinely embeds a LITERAL `@media(max-width:767px){` / `@media(max-width:1023px){`
+    # breakpoint-wrapper string as plain PHP concatenation, e.g.
+    #   $responsive_css .= '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
+    # The `@media(max-width:767px)` CONDITION happens to spell a real, recognised CSS
+    # property name ("max-width") followed by a colon — indistinguishable from a genuine
+    # declaration by the plain `word:` pattern below. So `$radius_mob_out` (a border-
+    # radius value from `wp_style_engine_get_styles`) got attributed to the property
+    # 'max-width' purely because it's textually positioned right after that media-query
+    # wrapper text, not because it feeds max-width at all. Fix: strip any `@media(...)`
+    # parenthesised condition out of a string fragment BEFORE scanning it for property
+    # candidates — the breakpoint condition is never a real declaration.
+    _MEDIA_COND_RE = re.compile(r"@media\s*\([^)]*\)", re.IGNORECASE)
     prop_any_re = re.compile(
         r"(" + CUSTOM_PROP_RE + r"|[a-z-]+)\s*:", re.IGNORECASE
     )
@@ -882,26 +1350,62 @@ def _attr_to_raw_props_php(
         r"'([^']*)'|\"([^\"]*)\"|\$(?:attributes|attrs)\[['\"](\w+)['\"]\]|\$(\w+)"
     )
     for stmt in _split_php_statements(php_src):
-        current_prop: "str | None" = None
+        prop_queue: list[str] = []
+        queue_index = 0
+        current_state: "str | None" = None
+        current_element: "str | None" = None
         for m in fragment_re.finditer(stmt):
             str_single, str_double, direct_attr, var_ref = m.groups()
             content = str_single if str_single is not None else str_double
             if content is not None:
+                content_no_media_cond = _MEDIA_COND_RE.sub("", content)
+                # Selector-context state — checked on EVERY string fragment, not just
+                # ones carrying a property token. A concatenated selector is routinely
+                # split across several fragments before its declaration ever appears,
+                # e.g. adaptive-nav/render.php:258:
+                #   $root_sel . ' .sgs-adaptive-nav__link:hover,' . $root_sel
+                #     . ' .sgs-adaptive-nav__link:focus-visible{color:var(...)'
+                # — ":hover" sits in an EARLIER fragment than "color:". Gating state
+                # detection on "this fragment also has a property" (as first tried)
+                # missed it entirely. `current_state` is STICKY within a statement —
+                # a fragment expressing no mapped state does not clear a state an
+                # earlier fragment in the SAME statement already established (matches
+                # how PHP concatenation builds one selector piecemeal); it only
+                # updates when a fragment DOES express a mapped state.
+                found_state = _derive_state_from_selector(content_no_media_cond)
+                if found_state:
+                    current_state = found_state
+                # Same sticky-within-statement rule for BEM element (2026-07-21).
+                if block_short_slug:
+                    found_element = _derive_bem_element_from_selector(content_no_media_cond, block_short_slug)
+                    if found_element:
+                        current_element = found_element
                 candidates = [
-                    tok for tok in prop_any_re.findall(content)
+                    tok for tok in prop_any_re.findall(content_no_media_cond)
                     if tok.startswith("--sgs-") or tok in known_css_props
                 ]
                 if candidates:
-                    current_prop = candidates[-1]
+                    prop_queue = candidates
+                    queue_index = 0
                 continue
-            if current_prop is None:
+            if not prop_queue:
                 continue
+            current_prop = prop_queue[min(queue_index, len(prop_queue) - 1)]
+            queue_index += 1
             if direct_attr:
                 attr_props[direct_attr].add(current_prop)
+                if current_state:
+                    attr_state[direct_attr] = current_state
+                if current_element:
+                    attr_element[direct_attr] = current_element
             elif var_ref and var_ref in var_attr:
                 attr_props[var_attr[var_ref]].add(current_prop)
+                if current_state:
+                    attr_state[var_attr[var_ref]] = current_state
+                if current_element:
+                    attr_element[var_attr[var_ref]] = current_element
 
-    return attr_props
+    return attr_props, attr_state, attr_element
 
 
 def _split_php_statements(php_src: str) -> list[str]:
@@ -975,10 +1479,177 @@ def _classify_css_layer(attr_name: str, real_props: "set[str]") -> "str | None":
     return None
 
 
+_CLUSTER_MEMBER_SETS_PATH = Path(__file__).resolve().parents[1] / "consistency" / "cluster-member-sets.json"
+
+
+def _load_cluster_suffix_vocabulary() -> dict[str, list[str]]:
+    """Load {cluster_name: [suffix, ...]} from the SAME `cluster-member-sets.json`
+    truth file `check-element-manifest-conformance.js` itself reads (verified live —
+    that script loads `consistency/cluster-member-sets.json` and its "text" cluster's
+    member `suffixes` arrays are exactly FontSize/FontWeight/LineHeight/
+    LetterSpacing/FontStyle/TextTransform/TextDecoration/Colour+TextColour+Color/
+    TextAlign+Align/FontFamily). Reusing this file — not restating the vocabulary —
+    is what lets the prefix-convention lookup below never drift from the real linter.
+    """
+    if not _CLUSTER_MEMBER_SETS_PATH.exists():
+        return {}
+    try:
+        data = json.loads(_CLUSTER_MEMBER_SETS_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    clusters = data.get("clusters")
+    if not isinstance(clusters, dict):
+        return {}
+    out: dict[str, list[str]] = {}
+    for cluster_name, cluster_def in clusters.items():
+        if not isinstance(cluster_def, dict):
+            continue
+        suffixes: list[str] = []
+        for member in cluster_def.get("members") or []:
+            if isinstance(member, dict):
+                suffixes.extend(s for s in (member.get("suffixes") or []) if isinstance(s, str))
+        if suffixes:
+            out[cluster_name] = suffixes
+    return out
+
+
+_CLUSTER_SUFFIX_VOCAB = _load_cluster_suffix_vocabulary()
+
+
+def _load_element_manifest_reverse(
+    block_dir: Path, block_attr_names: "set[str] | None" = None
+) -> dict[str, dict[str, "str | None"]]:
+    """Read a block's own `block.json` `supports.sgs.elements` manifest (the SAME
+    vocabulary `check-element-manifest-conformance.js` validates against — element /
+    cluster / member / state) and build the reverse lookup
+    attr_name -> {"css_element": <manifest element key>, "css_state": <state name or
+    None>, "manifest_css_key": <the css:X property key, "css:" stripped>}.
+
+    This is the spec-mandated element/state source — reusing the EXISTING manifest
+    vocabulary rather than inventing a parallel one (the mistake that produced the
+    tainted `role` column). Blocks with no manifest (most of the framework — only 67
+    blocks have one as of 2026-07-21) contribute nothing here; their attrs keep
+    css_element/css_state as an honest NULL rather than a guess.
+
+    TWO sources of membership, BOTH already used by the real linter (2026-07-21 —
+    this function only read the first before, which is why e.g. sgs/trust-bar's
+    titleFontSize/labelFontSize kept colliding despite the manifest ALREADY declaring
+    them correctly via the second):
+      1. Explicit `attrMap` — a hand-declared `"css:X": "attrName"` entry.
+      2. The DEFAULT PREFIX CONVENTION — `element.prefix` (or the element's own key
+         if `prefix` is undefined; `prefix === ""` is a legitimate explicit opt-out,
+         tested with `is not None`, never truthiness) concatenated with a declared
+         cluster's member SUFFIX (from `cluster-member-sets.json`, reused not
+         restated) forms a candidate attr name; if the block actually declares that
+         attr, it belongs to this element. E.g. sgs/trust-bar's `title` element
+         declares `"prefix": "title"` + `"clusters": ["text"]` — no attrMap needed at
+         all for `titleFontSize`/`titleColour` to resolve via this convention, which
+         is exactly what the REAL linter already does and this classifier did not.
+    """
+    bj_path = block_dir / "block.json"
+    if not bj_path.exists():
+        return {}
+    try:
+        data = json.loads(bj_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    elements = ((data.get("supports") or {}).get("sgs", {}) or {}).get("elements")
+    if not isinstance(elements, dict):
+        return {}
+
+    out: dict[str, dict[str, "str | None"]] = {}
+    for element_key, element_def in elements.items():
+        if not isinstance(element_def, dict):
+            continue
+        # Base (resting) attrMap — no state.
+        for css_key, attr_name in (element_def.get("attrMap") or {}).items():
+            if not isinstance(attr_name, str):
+                continue
+            out[attr_name] = {
+                "css_element": element_key,
+                "css_state": None,
+                "manifest_css_key": css_key[4:] if css_key.startswith("css:") else css_key,
+                "source": "attrMap",
+            }
+        # Per-state attrMaps (e.g. states.selected.attrMap, states.hover.attrMap).
+        for state_name, state_def in (element_def.get("states") or {}).items():
+            if not isinstance(state_def, dict):
+                continue
+            for css_key, attr_name in (state_def.get("attrMap") or {}).items():
+                if not isinstance(attr_name, str):
+                    continue
+                out[attr_name] = {
+                    "css_element": element_key,
+                    "css_state": state_name,
+                    "manifest_css_key": css_key[4:] if css_key.startswith("css:") else css_key,
+                    "source": "attrMap",
+                }
+        # Default prefix convention (see docstring point 2). `!== undefined` test,
+        # not truthiness — an explicit empty-string prefix means "bare attrs, no
+        # prefix" and is legitimate (matches the real linter's own rule), NOT "skip".
+        # Tagged "source": "prefix" — a GENERIC heuristic guess, weaker evidence than
+        # an explicit attrMap OR a direct BEM-selector observation (2026-07-21 bug
+        # found live: hero's `media` element declares `prefix: "image"` + cluster
+        # "layout" [covers "Padding"], so the convention claims `imagePadding`
+        # belongs to `media` — but render.php:449 shows imagePadding ACTUALLY targets
+        # `.sgs-hero__split-image`, a DIFFERENT element, when split layout is active.
+        # The manifest's own convention is a stale/wrong assumption for this specific
+        # attr; concrete BEM-selector evidence overrides it in the merge step below —
+        # this function only TAGS the source, the precedence decision lives at the
+        # call site so it stays visible/auditable rather than silently baked in here.
+        prefix = element_def.get("prefix", element_key)
+        if prefix is None:
+            continue  # explicit null = opt-out (distinct from "" = bare-attrs)
+        clusters = element_def.get("clusters") or []
+        for cluster_name in clusters:
+            for suffix in _CLUSTER_SUFFIX_VOCAB.get(cluster_name, []):
+                base_candidate = prefix + suffix
+                # Mirror check-element-manifest-conformance.js's own
+                # RESPONSIVE_AND_STATE_SUFFIXES / baseAttrName() logic exactly (that
+                # script's own comment: "an attribute in one of these families is
+                # 'claimed' whenever its base form is claimed" — verified live,
+                # 2026-07-21) — a tiered variant of an already-claimed base member
+                # belongs to the SAME element. This is what closed sgs/trust-bar's
+                # remaining titleFontSizeMobile/Tablet vs labelFontSizeMobile/Tablet
+                # collisions: only the bare `titleFontSize` matched the cluster suffix
+                # directly; the tiered forms needed this same suffix-stripping the
+                # real linter already does.
+                for candidate in (base_candidate, base_candidate + "Tablet", base_candidate + "Mobile", base_candidate + "Desktop"):
+                    if block_attr_names is not None and candidate not in block_attr_names:
+                        continue
+                    if candidate in out:
+                        continue  # an explicit attrMap/state entry already claimed it — wins
+                    out[candidate] = {
+                        "css_element": element_key,
+                        "css_state": None,
+                        "manifest_css_key": None,
+                        "source": "prefix",
+                    }
+    return out
+
+
+# Path for the DERIVED-LAYER data file this function now writes to, instead of a bare
+# `UPDATE` (2026-07-21 architecture correction — see the module docstring: derived
+# classifier output must land in its own generated file, which sgs-update-v2.py's
+# Stage 1C reads as the BASE layer, with ATTR_CLASSIFICATION_OVERRIDES applied on top
+# as the override layer that wins on any field conflict. This mirrors the existing
+# box_family pattern in sgs-update-v2.py exactly — box_family already reads its
+# declarative source [block.json] fresh every run rather than writing a bare UPDATE).
+CSS_PROPERTY_CLASSIFICATIONS_PATH = Path(__file__).resolve().parent / "css-property-classifications.json"
+
+
 def extract_css_property_and_layer() -> dict:
-    """TASK A entry point. Writes `block_attributes.css_property` / `css_layer` for
-    every SGS block with both a render.php and a style.css. Returns a stats dict used by
-    the caller to build the verification report (Task C)."""
+    """TASK A entry point. DERIVES `css_property` / `css_layer` / `css_element` /
+    `css_state` / `css_tier` for every SGS block with both a render.php and a
+    style.css, and writes them to `css-property-classifications.json` — the DERIVED
+    LAYER data file `sgs-update-v2.py` Stage 1C reads as its base layer (applied
+    before ATTR_CLASSIFICATION_OVERRIDES, which wins on any field conflict). Returns a
+    stats dict used by the caller to build the verification report (Task C).
+
+    css_layer is OUT OF SCOPE for this pass (Bean's decision, 2026-07-21) — its
+    existing behaviour via `_classify_css_layer` is preserved unchanged, just routed
+    through the new JSON channel instead of a bare UPDATE.
+    """
     conn = sqlite3.connect(str(DB_PATH))
     cur = conn.cursor()
 
@@ -993,8 +1664,48 @@ def extract_css_property_and_layer() -> dict:
     for b, a, _r in all_rows:
         attrs_by_block[b].add(a)
 
+    # ---- Bean's ruling (2026-07-21, verbatim): "[unit attrs are] not a css property.
+    # They're a measurement type." A unit attr does not DRIVE a css_property — it
+    # modifies a COMPANION attr's value (px/em/rem/%/unitless). Same defect class as
+    # sgs/tabs tabIndicatorColour -> box-shadow: accurate-but-unusable. Detect by
+    # EVIDENCE, not by the attr name ending "Unit": the block's OWN declared
+    # `default_value` is a literal drawn from CSS's small closed length/measurement
+    # unit vocabulary (px/em/rem/%/vh/vw/ch/ex/pt/deg/ms/s/unitless — CSS grammar
+    # itself, not a framework-specific hardcoded dict, same "grammar fact" standing
+    # as `_SHORTHAND_COLOUR_LONGHAND` above). Confirmed empirically: every attr this
+    # matches ALSO happens to end in "Unit" (verified via a live DB query, 2026-07-21
+    # — ~55 attrs framework-wide), but the SIGNAL used here is the default value, an
+    # independent piece of evidence from the block's own declaration, not the name.
+    # NOTE: the empty string ("" = CSS unitless, a real member of the vocabulary for
+    # `lineHeightUnit`-style attrs) was tried and REJECTED here after live measurement:
+    # dozens of unrelated attrs (colours, enums, toggles — `justifyContent`,
+    # `linkFontStyle`, `colourBackground`...) ALSO legitimately default to an empty
+    # string for unrelated reasons ("no value chosen yet"), so "" is not a safe,
+    # SPECIFIC signal — including it wiped css_property on 216 attrs, only a handful
+    # of which were genuine unit attrs. Evidence-based detection is NOT feasible for
+    # the unitless-default subset without also consulting the attribute's own name
+    # (which the brief explicitly forbids as the detection signal) — so those stay
+    # OUT of scope for this pass rather than either guessing or falling back to
+    # name-parsing. Only the five NON-empty, unambiguous CSS unit tokens are used.
+    _CSS_UNIT_TOKENS = frozenset({"px", "em", "rem", "%", "vh", "vw", "ch", "ex", "pt"})
+    cur.execute("SELECT block_slug, attr_name, default_value, inspector_control_type FROM block_attributes")
+    unit_attr_evidence: set[tuple[str, str]] = set()
+    unit_attr_existing_control: dict[tuple[str, str], "str | None"] = {}
+    for b, a, dv, ict in cur.fetchall():
+        unit_attr_existing_control[(b, a)] = ict
+        if dv is None:
+            continue
+        stripped = dv.strip().strip('"').strip("'")
+        if stripped in _CSS_UNIT_TOKENS:
+            unit_attr_evidence.add((b, a))
+
     resolved: dict[tuple[str, str], set[str]] = {}
+    resolved_tier: dict[tuple[str, str], "str | None"] = {}
+    resolved_state: dict[tuple[str, str], str] = {}
+    resolved_bem_element: dict[tuple[str, str], str] = {}
+    unit_attrs_excluded: set[tuple[str, str]] = set()
     unresolved_reasons: dict[tuple[str, str], str] = {}
+    manifest_by_block: dict[str, dict[str, dict[str, "str | None"]]] = {}
 
     cur.execute("SELECT slug FROM blocks WHERE slug LIKE 'sgs/%' ORDER BY slug")
     block_slugs = [r[0] for r in cur.fetchall()]
@@ -1011,11 +1722,12 @@ def extract_css_property_and_layer() -> dict:
         css_src_raw = css_path.read_text(encoding="utf-8", errors="ignore")
         php_src = _strip_php_comments(php_src_raw)
 
-        consumed = _custom_props_consumed(css_src_raw)
+        consumed, gradient_props, shorthand_slot, state_of, element_of = _custom_props_consumed(css_src_raw, short_slug)
         var_attr = _build_php_var_attr_map(php_src)
         block_attr_names = attrs_by_block.get(slug, set())
+        manifest_by_block[slug] = _load_element_manifest_reverse(block_dir, block_attr_names)
 
-        raw = _attr_to_raw_props_php(php_src, known_css_props, var_attr)
+        raw, php_attr_state, php_attr_element = _attr_to_raw_props_php(php_src, known_css_props, var_attr, short_slug)
         helper = _attrs_from_helper_calls(php_src, block_attr_names)
         for attr, props in helper.items():
             raw[attr] = raw.get(attr, set()) | props
@@ -1023,14 +1735,52 @@ def extract_css_property_and_layer() -> dict:
         for attr, tokens in raw.items():
             if attr not in block_attr_names:
                 continue  # not a real DB attr for this block — ignore (avoids false hits)
+            if (slug, attr) in unit_attr_evidence:
+                # Bean's ruling: a unit attr is a measurement type, not a css_property
+                # driver — never enters the resolved/css_property dataset at all.
+                unit_attrs_excluded.add((slug, attr))
+                continue
             real_props: set[str] = set()
+            chain_vars: set[str] = set()
+            attr_states: set[str] = set()
+            attr_bem_elements: set[str] = set()
             for tok in tokens:
                 if tok.startswith("--sgs-"):
-                    real_props |= _resolve_var_chain(tok, consumed)
+                    tok_real, tok_chain, tok_states, tok_elements = _resolve_var_chain(
+                        tok, consumed, gradient_props, shorthand_slot, state_of, element_of
+                    )
+                    real_props |= tok_real
+                    chain_vars |= tok_chain
+                    attr_states |= tok_states
+                    attr_bem_elements |= tok_elements
                 else:
-                    real_props.add(tok)  # already real (shape B direct / shape D)
+                    real_props.add(_SHORTHAND_COLOUR_LONGHAND.get(tok, tok))  # shape B direct / shape D
+            # PHP-embedded selector state (WORKSTREAM 2, 2026-07-21) — merge in
+            # alongside the CSS-file-derived states above; same "unanimous or
+            # unassigned" rule applies to the combined set.
+            php_state = php_attr_state.get(attr)
+            if php_state:
+                attr_states.add(php_state)
+            php_element = php_attr_element.get(attr)
+            if php_element:
+                attr_bem_elements.add(php_element)
             if real_props:
                 resolved[(slug, attr)] = real_props
+                resolved_tier[(slug, attr)] = _derive_tier(
+                    attr, chain_vars,
+                    known_vars=frozenset(consumed.keys()),
+                    block_attr_names=block_attr_names,
+                )
+                # Selector-context state (2026-07-21) — only assign when every real
+                # declaration this attr resolved to agreed on ONE state; a genuinely
+                # mixed set (an attr feeding both a resting AND a hover declaration)
+                # is honestly ambiguous and left unassigned rather than guessed.
+                if len(attr_states) == 1:
+                    resolved_state[(slug, attr)] = next(iter(attr_states))
+                # Selector-context BEM element (2026-07-21 widen-coverage task) —
+                # same unanimous-or-unassigned discipline as state.
+                if len(attr_bem_elements) == 1:
+                    resolved_bem_element[(slug, attr)] = next(iter(attr_bem_elements))
             else:
                 chained_only = {t for t in tokens if t.startswith("--sgs-")}
                 if chained_only:
@@ -1041,23 +1791,97 @@ def extract_css_property_and_layer() -> dict:
                         "(stylesheet may only consume it via JS, e.g. getComputedStyle)"
                     )
 
-    # ---- write to DB (see the module-level docstring above re: reseed-drift risk)
+    # ---- write the DERIVED LAYER to its JSON truth file (base layer; overrides win —
+    # see CSS_PROPERTY_CLASSIFICATIONS_PATH docstring above). No bare DB UPDATE here.
     css_property_written = 0
     css_layer_written = 0
-    for (slug, attr), real_props in resolved.items():
+    classification_entries: list[dict] = []
+    for (slug, attr), real_props in sorted(resolved.items()):
         css_property = ",".join(sorted(real_props))
         css_layer = _classify_css_layer(attr, real_props)
-        cur.execute(
-            "UPDATE block_attributes SET css_property = ? WHERE block_slug = ? AND attr_name = ?",
-            (css_property, slug, attr),
-        )
-        css_property_written += cur.rowcount
+        manifest_hit = manifest_by_block.get(slug, {}).get(attr)
+        fields: dict[str, object] = {"css_property": css_property}
+        css_property_written += 1
         if css_layer:
-            cur.execute(
-                "UPDATE block_attributes SET css_layer = ? WHERE block_slug = ? AND attr_name = ?",
-                (css_layer, slug, attr),
-            )
-            css_layer_written += cur.rowcount
+            fields["css_layer"] = css_layer
+            css_layer_written += 1
+        tier = resolved_tier.get((slug, attr))
+        if tier:
+            fields["css_tier"] = tier
+        # Element precedence (2026-07-21, refined after a live discrepancy found on
+        # sgs/hero — see _load_element_manifest_reverse's "source": "prefix" note):
+        #   1. Explicit manifest attrMap (a hand-curated, per-attr declaration) —
+        #      strongest evidence, always wins.
+        #   2. Direct BEM-selector observation (`resolved_bem_element` — the actual
+        #      rendered selector the declaration sits under) — concrete evidence
+        #      from the real markup.
+        #   3. The generic prefix-convention guess — a heuristic that can be WRONG
+        #      when a variant (e.g. hero's split layout) routes a prefixed attr onto
+        #      a different element than its "home" element's convention assumes
+        #      (imagePadding -> .sgs-hero__split-image, not .sgs-hero__media, despite
+        #      the `media` element's `prefix: "image"` + "layout" cluster claiming
+        #      it). BEM evidence overrides this guess when they disagree.
+        bem_element = resolved_bem_element.get((slug, attr))
+        if manifest_hit and manifest_hit.get("source") == "attrMap":
+            element = manifest_hit["css_element"]
+        elif bem_element:
+            element = bem_element
+        elif manifest_hit:
+            element = manifest_hit["css_element"]
+        else:
+            element = None
+        if element:
+            fields["css_element"] = element
+        # State: the manifest's own states.<name>.attrMap entry (if this attr is
+        # explicitly declared there) is the most authoritative source — it is a
+        # human-curated declaration, same standing as element. Selector-context
+        # evidence (2026-07-21) is the fallback for the ~465 attrs on blocks with no
+        # manifest coverage for this attr; it is still evidence, not name-parsing.
+        state = (manifest_hit or {}).get("css_state") or resolved_state.get((slug, attr))
+        if state:
+            fields["css_state"] = state
+        classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
+
+    # Unit attrs (Bean's ruling, 2026-07-21): NEVER enter css_property at all — no
+    # entry means the merge/apply layer leaves that column NULL for them (and clears
+    # any stale prior value, since the reseed-durable channel is authoritative).
+    # Classify them via the EXISTING inspector_control_type mechanism instead (R-31-8
+    # — enumerated the schema first: this column already carries a 'UnitControl'
+    # value on sgs/hero.imageHeightUnit, proving it's the right existing channel, not
+    # a new field). Gap-fill only — never overwrite a value Task B's own edit.js
+    # evidence already set (e.g. leaves sgs/hero.imageWidthUnit's existing
+    # 'SelectControl' untouched, since that's real evidence from a different source).
+    unit_control_written = 0
+    for slug, attr in sorted(unit_attrs_excluded):
+        fields = {}
+        if unit_attr_existing_control.get((slug, attr)) is None:
+            fields["inspector_control_type"] = "UnitControl"
+            unit_control_written += 1
+        classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
+
+    CSS_PROPERTY_CLASSIFICATIONS_PATH.write_text(
+        json.dumps(
+            {
+                "_doc": (
+                    "css-property-classifications.json — the DERIVED LAYER (Task A "
+                    "classifier output: css_property/css_layer/css_element/css_state/"
+                    "css_tier) generated by extract-signatures.py. This is a REGENERATED "
+                    "file, not hand-edited — re-run "
+                    "`python plugins/sgs-blocks/scripts/behavioural-analyser/"
+                    "extract-signatures.py` to refresh it. Applied by sgs-update-v2.py "
+                    "Stage 1C as the BASE classification layer; "
+                    "attr-classification-overrides.json is applied AFTER and wins on any "
+                    "field conflict (2026-07-21 architecture, mirrors the existing "
+                    "box_family declarative-source pattern)."
+                ),
+                "generated_by": "behavioural-analyser/extract-signatures.py::extract_css_property_and_layer",
+                "entries": classification_entries,
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
 
     conn.commit()
 
@@ -1098,6 +1922,8 @@ def extract_css_property_and_layer() -> dict:
         "resolved_count": len(resolved),
         "css_property_written": css_property_written,
         "css_layer_written": css_layer_written,
+        "unit_attrs_excluded": len(unit_attrs_excluded),
+        "unit_control_written": unit_control_written,
         "resolved": {f"{s}::{a}": sorted(p) for (s, a), p in resolved.items()},
         "unresolved_reasons": {f"{s}::{a}": r for (s, a), r in unresolved_reasons.items()},
         "disagreements": disagreements,
@@ -1233,9 +2059,51 @@ def _attrs_from_onchange(text: str, valid_attrs: "set[str]") -> "set[str]":
     return found
 
 
+# DUAL_BOUND overrides — 2026-07-21, per the independent 2-audit review
+# (.claude/reports/inspector-control-type-audit-2026-07-21.md, Finding 3). These 5
+# attrs are edited by TWO different components in edit.js (a modern/fallback ternary,
+# or two genuinely separate editing surfaces), so the main loop's "last tag wins"
+# derivation is not reliable for them — it would self-conflict WITHIN one run
+# depending on which JSX tag physically appears first in the file. Forced here as an
+# explicit, audited final pass rather than hand-writing all 93 disagreements (the
+# other 88 are DERIVED_CORRECT and the loop below gets them right unaided).
+# inspector_control_type is the SIDEBAR/inspector control specifically — a canvas
+# surface (e.g. `sgs/product-card::productName`'s on-canvas `RichText` heading) does
+# NOT count for this column even though it also writes the attribute; `RichText`
+# isn't in `_KNOWN_CONTROLS` at all, so the loop below never sees it as a candidate —
+# only the genuine sidebar `TextControl` (edit.js:401-410, Advanced panel) can ever be
+# derived for this attr, which is exactly the audit's verdict.
+_DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES: dict[tuple[str, str], str] = {
+    # NumberControl/TextControl fallback ternary (wp?.components?.__experimentalNumberControl
+    # availability) — the modern control (NumberControl) is the client-facing answer;
+    # TextControl[type=number] is only the old-WP fallback branch.
+    ("sgs/filter-search", "attributeId"): "NumberControl",
+    ("sgs/filter-search", "threshold"): "NumberControl",
+    ("sgs/product-search", "maxResults"): "NumberControl",
+    # SelectControl (preset ratio picker) / TextControl (custom-ratio override, only
+    # rendered when isCustom) — SelectControl is the primary/default-path control.
+    ("sgs/hero", "gridTemplateColumns"): "SelectControl",
+    # Advanced-panel inspector TextControl vs on-canvas RichText — RichText is a
+    # canvas surface, not an inspector control (see module comment above).
+    ("sgs/product-card", "productName"): "TextControl",
+}
+
+
 def extract_inspector_control_types() -> dict:
     """TASK B entry point. Writes `block_attributes.inspector_control_type` for every
-    unambiguous (component, attribute) association found in each block's edit.js."""
+    unambiguous (component, attribute) association found in each block's edit.js.
+
+    POLICY (flipped 2026-07-21, was report-only "never overwrite silently"): now
+    OVERWRITES on disagreement. Justified by the independent 2-audit review
+    (.claude/reports/inspector-control-type-audit-2026-07-21.md) — of 93 unique
+    disagreement rows between the stored value and a fresh derivation, 88 were
+    DERIVED_CORRECT (the stored value was a genuine data error — e.g. a colour attr
+    stored as `SelectControl` when every colour control in this framework is
+    `DesignTokenPicker`) and ZERO were STORED_CORRECT. No case existed where the
+    original stored value was right and the derivation was wrong. The disagreements
+    list is still returned/reported for visibility — only the WRITE behaviour changed
+    from skip-and-report to apply-and-report.
+    """
     conn = sqlite3.connect(str(DB_PATH))
     cur = conn.cursor()
 
@@ -1308,14 +2176,21 @@ def extract_inspector_control_types() -> dict:
                 continue
 
             attr = next(iter(candidates))
+            if (slug, attr) in _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES:
+                # Handled entirely by the explicit override pass after this loop —
+                # skip here so the loop's "whichever tag is encountered" order can
+                # never self-conflict for these 5 known dual-write-site attrs.
+                continue
             existing_val = existing.get((slug, attr))
             if existing_val and existing_val != control:
                 disagreements.append({
                     "block": slug, "attr": attr,
                     "existing": existing_val, "derived": control,
                 })
-                continue  # never overwrite silently — human review only
-            if existing_val == control:
+                # POLICY (2026-07-21): overwrite on disagreement — see this function's
+                # docstring for the audit citation (88/93 DERIVED_CORRECT, 0
+                # STORED_CORRECT). Falls through to the same write below.
+            elif existing_val == control:
                 continue  # already correct, no-op
             cur.execute(
                 "UPDATE block_attributes SET inspector_control_type = ? "
@@ -1325,11 +2200,28 @@ def extract_inspector_control_types() -> dict:
             written += cur.rowcount
             existing[(slug, attr)] = control  # keep local cache consistent for this run
 
+    # DUAL_BOUND final pass (see _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES docstring) —
+    # applied unconditionally, after the main loop, so these 5 always land on the
+    # audited sidebar-control answer regardless of edit.js tag order.
+    dual_bound_written = 0
+    for (slug, attr), control in _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES.items():
+        if (slug, attr) not in existing:
+            continue  # attr not on this block in the live DB — nothing to set
+        if existing.get((slug, attr)) == control:
+            continue  # already correct, no-op
+        cur.execute(
+            "UPDATE block_attributes SET inspector_control_type = ? "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (control, slug, attr),
+        )
+        dual_bound_written += cur.rowcount
+
     conn.commit()
     conn.close()
 
     return {
         "written": written,
+        "dual_bound_written": dual_bound_written,
         "disagreements": disagreements,
         "unresolved": unresolved,
     }
@@ -1346,6 +2238,20 @@ if __name__ == "__main__":
         print(f"ERROR: Blocks directory not found at {BLOCKS_DIR}", file=sys.stderr)
         sys.exit(1)
 
+    # --task-b-only: run ONLY the inspector_control_type seeder (2026-07-21) — this
+    # is what sgs-update-v2.py's Stage 1 tail step calls, mirroring
+    # _run_canonical_assignment/_run_composition_role_seed's subprocess pattern. Kept
+    # separate from the full run (Task A signature extraction + css_property/layer)
+    # so wiring this into every /sgs-update doesn't also re-run the heavier,
+    # already-Stage-1C-driven css_property classifier on every reseed.
+    if "--task-b-only" in sys.argv:
+        stats = extract_inspector_control_types()
+        print(f"[inspector-control-type] written={stats['written']} "
+              f"dual_bound_written={stats['dual_bound_written']} "
+              f"disagreements={len(stats['disagreements'])} "
+              f"unresolved={len(stats['unresolved'])}")
+        sys.exit(0)
+
     extract_all_signatures()
 
     print()
@@ -1358,6 +2264,14 @@ if __name__ == "__main__":
     print(f"  css_layer rows written                     : {task_a_stats['css_layer_written']}")
     print(f"  Disagreements vs name-derived role          : {len(task_a_stats['disagreements'])}")
     print(f"  Unresolved (chain hit a JS-only sink etc.)  : {len(task_a_stats['unresolved_reasons'])}")
+    if _UNMAPPED_STATE_SELECTORS_SEEN:
+        print()
+        print(f"  UNMAPPED STATE SELECTORS ({len(_UNMAPPED_STATE_SELECTORS_SEEN)}) — genuine state concepts")
+        print("  with NO word in the element-manifest vocabulary (only 'hover'/'selected'")
+        print("  exist today). Detected, NOT guessed a name for (Task 2 audit — report,")
+        print("  don't invent):")
+        for sel in sorted(_UNMAPPED_STATE_SELECTORS_SEEN):
+            print(f"    - {sel}")
 
     print()
     print("=" * 60)
@@ -1369,7 +2283,15 @@ if __name__ == "__main__":
     print(f"  Unresolved (ambiguous / no reference found)  : {len(task_b_stats['unresolved'])}")
 
     # Dump full JSON for the report-writer to consume without re-running extraction.
-    out_path = REPO_ROOT / ".claude" / "reports" / "emission-derived-classification-raw.json"
+    # REDIRECTED 2026-07-21 (Bean instruction): the old fixed filename
+    # "emission-derived-classification-raw.json" is a PRIOR SESSION's cited evidence
+    # artefact, not a regenerable output — this run must never overwrite it. Every
+    # run now writes its own dated filename instead.
+    from datetime import date as _date
+    out_path = (
+        REPO_ROOT / ".claude" / "reports"
+        / f"emission-derived-classification-raw-{_date.today().isoformat()}.json"
+    )
     out_path.write_text(
         json.dumps({"task_a": task_a_stats, "task_b": task_b_stats}, indent=2),
         encoding="utf-8",

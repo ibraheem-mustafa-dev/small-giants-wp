@@ -426,107 +426,35 @@ CONTROL_COMPONENT_MAP = {
 }
 
 
-def _parse_edit_js_controls(edit_js_path: Path) -> dict[str, str]:
-    """Parse edit.js and return {attr_name: control_type} via regex.
-
-    Strategy: look for setAttributes({<attrName>: <expr>}) within ~5 lines of a control component.
-    This is a heuristic — NULL is left for cases that can't be auto-detected.
-    """
-    if not edit_js_path.exists():
-        return {}
-
-    try:
-        content = edit_js_path.read_text(encoding="utf-8", errors="ignore")
-    except OSError:
-        return {}
-
-    result: dict[str, str] = {}
-
-    # Pattern: find setAttributes call and look backwards for the nearest control component
-    # setAttributes( { attrName: value } )
-    set_attr_pattern = re.compile(
-        r"setAttributes\s*\(\s*\{\s*([a-zA-Z_$][a-zA-Z0-9_$]*):\s*[^}]+\}\s*\)",
-    )
-
-    lines = content.split("\n")
-
-    for line_idx, line in enumerate(lines):
-        sa_match = set_attr_pattern.search(line)
-        if not sa_match:
-            continue
-        attr_name = sa_match.group(1)
-        if attr_name in result:
-            continue  # first occurrence wins
-
-        # Look backwards up to 15 lines for a control component
-        start = max(0, line_idx - 15)
-        preceding = "\n".join(lines[start:line_idx + 1])
-
-        for component, control_type in CONTROL_COMPONENT_MAP.items():
-            if re.search(r"\b" + re.escape(component) + r"\b", preceding):
-                result[attr_name] = control_type
-                break
-
-    return result
-
-
 def target_25_inspector_control_type(
     conn: sqlite3.Connection, repo_path: Path | None, dry_run: bool
 ) -> int:
-    """Add inspector_control_type column and populate via regex."""
-    # Step 1: add column if missing
+    """Ensure the inspector_control_type column exists.
+
+    REMOVED 2026-07-21 (Bean instruction: "wire the inspector controls seeder into
+    sgs-update and remove whatever is setting the current data"): this function used
+    to ALSO populate the column via a crude regex parse (`_parse_edit_js_controls` —
+    a "look backwards up to 15 lines for a control component" heuristic that missed
+    nested render-prop shapes like `<MediaUpload render={({open}) => <Button.../>}>`
+    and dual-bound fallback ternaries). That heuristic produced 93 wrong values which
+    then persisted forever, because the BETTER parser (extract-signatures.py's Task
+    B) had a fill-NULL-only policy and never overwrote them.
+
+    The population responsibility has moved entirely to
+    `behavioural-analyser/extract-signatures.py::extract_inspector_control_types`,
+    now wired into `sgs-update-v2.py` Stage 1 as a tail step
+    (`_run_inspector_control_type_seed`) with an overwrite-on-disagreement policy,
+    justified by `.claude/reports/inspector-control-type-audit-2026-07-21.md` (88/93
+    DERIVED_CORRECT, 0 STORED_CORRECT). This function now ONLY ensures the column
+    exists (idempotent, harmless to keep here since other enrich-db.py targets may
+    run before sgs-update-v2.py on a fresh DB) — it writes NO row data.
+    """
     existing_cols = {row[1] for row in conn.execute("PRAGMA table_info(block_attributes)").fetchall()}
     if "inspector_control_type" not in existing_cols:
         if not dry_run:
             conn.execute("ALTER TABLE block_attributes ADD COLUMN inspector_control_type TEXT")
             conn.commit()
-
-    if repo_path is None:
-        print("  2.5 SKIP: no repo path for regex parse")
-        return 0
-
-    blocks_dir = repo_path / "plugins" / "sgs-blocks" / "src" / "blocks"
-    updated = 0
-
-    for block_dir in sorted(blocks_dir.iterdir()):
-        if not block_dir.is_dir():
-            continue
-        edit_js = block_dir / "edit.js"
-        if not edit_js.exists():
-            continue
-
-        block_json_path = block_dir / "block.json"
-        if block_json_path.exists():
-            try:
-                bdata = json.loads(block_json_path.read_text(encoding="utf-8"))
-                slug = bdata.get("name", f"sgs/{block_dir.name}")
-            except Exception:
-                slug = f"sgs/{block_dir.name}"
-        else:
-            slug = f"sgs/{block_dir.name}"
-
-        controls = _parse_edit_js_controls(edit_js)
-
-        for attr_name, control_type in controls.items():
-            if not dry_run:
-                cur = conn.execute(
-                    """UPDATE block_attributes
-                       SET inspector_control_type=?
-                       WHERE block_slug=? AND attr_name=? AND inspector_control_type IS NULL""",
-                    (control_type, slug, attr_name),
-                )
-                updated += cur.rowcount
-            else:
-                row = conn.execute(
-                    "SELECT id FROM block_attributes WHERE block_slug=? AND attr_name=? AND inspector_control_type IS NULL",
-                    (slug, attr_name),
-                ).fetchone()
-                if row:
-                    updated += 1
-
-    if not dry_run and updated:
-        conn.commit()
-    return updated
+    return 0
 
 
 # ===========================================================================
