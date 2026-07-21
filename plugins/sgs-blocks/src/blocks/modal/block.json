@@ -18,7 +18,37 @@
 	"supports": {
 		"sgs": {
 			"containerKind": "section",
-			"containerMirror": false
+			"containerMirror": false,
+			"elements": {
+				"trigger": {
+					"label": "Trigger button",
+					"order": 1,
+					"clusters": [ "text", "fill" ],
+					"prefix": "trigger",
+					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline."
+				},
+				"dialog": {
+					"label": "Dialog",
+					"order": 2,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "modalBackground"
+					},
+					"_note": "This block declares containerMirror:false (does NOT wrap SGS_Container_Wrapper) and disables native color support entirely — every declaration is block-private, scoped via render.php:37-79. maxWidth resolves via the bare-prefix default convention (case-insensitive `MaxWidth` -> `maxWidth`, render.php:21,95); modalBackground is mapped explicitly since the bare prefix + Background/Bg suffixes do not match its 'modal' name segment."
+				},
+				"backdrop": {
+					"label": "Backdrop / overlay",
+					"order": 3,
+					"clusters": [ "fill" ],
+					"prefix": "overlay",
+					"attrMap": {
+						"css:background-color": "overlayColour",
+						"css:opacity": "overlayOpacity"
+					},
+					"_note": "overlayColour/overlayOpacity drive `--sgs-modal-backdrop-colour`/`--sgs-modal-backdrop-opacity` custom-property VALUES on the wrapper (render.php:54-66), allowed inline per contract §A since they are variable values, not real property declarations. Mapped explicitly — overlayColour doesn't carry a Colour/BackgroundColour suffix match under the default convention."
+				}
+			}
 		},
 		"align": false,
 		"anchor": true,

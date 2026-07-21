@@ -42,6 +42,31 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"label": {
+					"label": "Label",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:font-style": "fontStyle",
+						"css:text-transform": "textTransform",
+						"css:text-decoration": "textDecoration",
+						"css:color": "textColour",
+						"css:text-align": "textAlign",
+						"css:font-family": "fontFamily",
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-radius": "borderRadius"
+					},
+					"_note": "Single-semantic-element block — the <span> root IS the wrapper (render.php:63, block-level element by contract). `padding` support is declared `false` (spacing.padding=false) — padding is instead the SGS custom object attr `padding` (pill-gated, base + paddingTablet/paddingMobile tiers), not native. No __experimentalBorder support at all — border-radius is the scalar `borderRadius` attr, and border-width/style/colour have no controls on this block (honest gaps: label has no border feature). No box-shadow, no hover states, no width/height/gap/aspect-ratio attrs — all honest gaps; label is a small text chip with no image surface (no fill members beyond background-color)."
+				}
 			}
 		}
 	},

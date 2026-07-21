@@ -27,6 +27,31 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"line": {
+					"label": "Line",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:border-width": "thickness",
+						"css:border-style": "lineStyle",
+						"css:border-color": "colour",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:width": "width",
+						"css:opacity": "opacity"
+					},
+					"_note": "The visible divider — the block ROOT itself when contentMode='none' (a single <hr>, no wrapper — single-semantic-element rule), or each `.sgs-separator__line` flanking span when contentMode is 'icon'/'text' (render.php: one mechanism renders the border-bottom for both shapes, module header). `thickness`/`lineStyle`/`colour` map onto css:border-width/style/color because the visible line IS rendered as a border-bottom (render.php:140-156), not a background bar — no css:background-color member resolves (honest gap: a line has no fill). gradientColourStart/End/Angle are a genuine second fill mechanism (border-image) with no cluster member of their own (Spec 35 vocabulary has no gradient-stop member) — left unclaimed, not force-mapped. No border-radius/box-shadow/max-width/height/gap/aspect-ratio attrs — honest gaps. No `layer` — a line has no children to arrange."
+				},
+				"content": {
+					"label": "Content (icon or text)",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "content",
+					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php:286-332, `.sgs-separator__content`). css:font-size/font-weight/font-style/line-height resolve via the default `content`+suffix convention (contentFontSize/contentFontWeight/contentFontStyle/contentLineHeight). css:color resolves to contentTextColour (the text-mode colour, suffix `TextColour`) — contentIconColour is a SEPARATE icon-mode colour attr with no cluster member of its own (this slot renders either an icon OR text, never both) and surfaces as an orphan. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls, also honest orphans. text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps."
+				}
 			}
 		},
 		"className": true,

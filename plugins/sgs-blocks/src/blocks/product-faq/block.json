@@ -57,6 +57,28 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"box": {
+					"label": "FAQ section",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "Content-KIND composite (supports.sgs.containerKind='content', D294 box+width only) — every style control here is a WordPress-native wrapper support (typography/color/spacing/border) plus maxWidth; no per-element (heading/icon) typography attrs exist on this block, so heading/icon text styling is an honest gap inherited from the wrapper, not independently controlled."
+				}
 			}
 		}
 	},

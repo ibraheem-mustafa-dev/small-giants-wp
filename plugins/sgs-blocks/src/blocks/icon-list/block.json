@@ -59,6 +59,44 @@
 				"borderWidth": [
 					"borderWidth"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "List wrapper",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:gap": "gap"
+					},
+					"_note": "The root <ul> (render.php step 6). `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist)."
+				},
+				"item-icon": {
+					"label": "Item icon",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "icon",
+					"_note": "Per-item icon span (render.php:457, `.sgs-icon-list__icon`). Only `css:color` resolves (default convention `icon`+`Colour`=`iconColour`, render.php:221-223) — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps."
+				},
+				"item-text": {
+					"label": "Item text",
+					"order": 3,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "textColour",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:text-align": "native:typography.textAlign"
+					},
+					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item text — honest gaps."
+				}
 			}
 		}
 	},

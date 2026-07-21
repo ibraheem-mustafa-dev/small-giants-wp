@@ -47,6 +47,47 @@
           "marginTablet",
           "marginMobile"
         ]
+      },
+      "elements": {
+        "heading": {
+          "label": "Heading",
+          "order": 1,
+          "clusters": [ "text", "fill", "layout", "motion" ],
+          "isWrapper": true,
+          "attrMap": {
+            "css:font-size": "fontSize",
+            "css:font-weight": "fontWeight",
+            "css:line-height": "lineHeight",
+            "css:letter-spacing": "letterSpacing",
+            "css:font-style": "fontStyle",
+            "css:text-transform": "textTransform",
+            "css:text-decoration": "textDecoration",
+            "css:color": "textColour",
+            "css:text-align": "textAlign",
+            "css:font-family": "fontFamily",
+            "css:background-color": "backgroundColour",
+            "css:padding": "native:spacing.padding",
+            "css:margin": "native:spacing.margin",
+            "css:border-width": "borderWidth",
+            "css:border-style": "borderStyle",
+            "css:border-color": "borderColour",
+            "css:border-radius": "native:__experimentalBorder.radius",
+            "css:box-shadow": "boxShadow",
+            "css:width": "customWidth",
+            "css:transition-duration": "transitionDuration",
+            "css:transition-timing-function": "transitionEasing"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "textColourHover",
+                "css:background-color": "backgroundColourHover",
+                "css:box-shadow": "boxShadowHover"
+              }
+            }
+          },
+          "_note": "Single-semantic-element block (D293) — the h1-h6/p/div root IS the wrapper, no separate box element. No `layer` declared: heading has no children to arrange, so the 12 ARRANGEMENT members are correctly never asked. maxWidth/height/max-height/min-height/gap/aspect-ratio/opacity/overlay/background-* image members have no attribute on this block — honest gaps (heading has no image surface). scaleHover has no cluster member in the Spec 35 vocabulary (no `transform`/`scale` member exists) so it is left unclaimed rather than force-mapped."
+        }
       }
     }
   },

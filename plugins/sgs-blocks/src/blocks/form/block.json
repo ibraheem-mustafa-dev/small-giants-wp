@@ -57,6 +57,72 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:width": "contentWidth"
+					},
+					"_note": "WS-4 composite-mirror — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "Composite-mirror grid capability (shared SGS_Container_Wrapper, kind='layout'). Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1)."
+				},
+				"submit-button": {
+					"label": "Submit button",
+					"order": 3,
+					"clusters": [ "text", "fill" ],
+					"prefix": "submit",
+					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline."
+				},
+				"progress-bar": {
+					"label": "Progress bar",
+					"order": 4,
+					"clusters": [ "fill" ],
+					"prefix": "progressBar",
+					"attrMap": {
+						"css:background-color": "progressBarColour"
+					},
+					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value (render.php:230-235) — a colour setting, not a real background-color declaration, so mapped explicitly rather than via the default Bg/Background suffixes."
+				},
+				"focus-ring": {
+					"label": "Focus ring",
+					"order": 5,
+					"clusters": [],
+					"prefix": "formFocusRing",
+					"_note": "formFocusRingColour/Width/Opacity/Offset (render.php:82-86,237-243) drive :focus-visible custom-property values on form inputs — a distinct focus-ring control surface outside the Text/Fill/Layout/Position/Motion clusters (no 'outline colour'/'ring width' member exists), so this element declares none and its attributes surface as ORPHANs (FR-35-4), same treatment as sgs/button's icon element."
+				}
 			}
 		}
 	},

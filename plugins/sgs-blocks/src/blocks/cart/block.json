@@ -40,6 +40,39 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Cart wrapper",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:margin": "native:spacing.margin"
+					},
+					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — layout is scoped to margin only (every other layout member is a real gap, not a missing declaration)."
+				},
+				"icon": {
+					"label": "Cart icon",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "icon",
+					"attrMap": {
+						"css:color": "iconColour"
+					},
+					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4)."
+				},
+				"badge": {
+					"label": "Item-count badge",
+					"order": 3,
+					"clusters": [ "text", "fill" ],
+					"prefix": "badge",
+					"attrMap": {
+						"css:background-color": "badgeColour",
+						"css:color": "badgeTextColour"
+					},
+					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1."
+				}
 			}
 		}
 	},

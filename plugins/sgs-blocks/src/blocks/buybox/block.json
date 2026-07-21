@@ -36,6 +36,18 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Buybox wrapper",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:margin": "native:spacing.margin"
+					},
+					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling). layout is scoped to margin only; every other layout member is an honest gap."
+				}
 			}
 		}
 	},

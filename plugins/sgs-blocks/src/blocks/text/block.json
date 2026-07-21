@@ -42,6 +42,59 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"text": {
+					"label": "Text",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout", "motion" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:font-style": "fontStyle",
+						"css:text-transform": "textTransform",
+						"css:text-decoration": "textDecoration",
+						"css:color": "textColour",
+						"css:text-align": "textAlign",
+						"css:font-family": "fontFamily",
+						"css:background-color": "backgroundColour",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:box-shadow": "boxShadow",
+						"css:width": "customWidth",
+						"css:max-width": "maxWidth",
+						"css:transition-duration": "transitionDuration",
+						"css:transition-timing-function": "transitionEasing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-color": "backgroundColourHover",
+								"css:box-shadow": "boxShadowHover"
+							}
+						}
+					},
+					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color/background-color map to the SGS custom textColour/backgroundColour attrs directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed."
+				},
+				"first-letter": {
+					"label": "Drop cap (first letter)",
+					"order": 2,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:font-size": "firstLetterFontSize",
+						"css:font-weight": "firstLetterFontWeight",
+						"css:color": "firstLetterColour"
+					},
+					"_note": "Opt-in via the `dropCap` boolean (render.php:463-480) — emits a scoped `::first-letter` pseudo-element rule, a genuinely distinct visual element from the body text. line-height/letter-spacing/font-style/text-transform/text-decoration/text-align/font-family have no first-letter-specific attribute — honest gaps, the drop-cap render hardcodes float:left/line-height:0.8/margins rather than exposing them as controls."
+				}
 			}
 		}
 	},

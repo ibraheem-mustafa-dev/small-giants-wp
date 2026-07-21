@@ -39,7 +39,28 @@
 		"sgs": {
 			"hideExtensions": [
 				"animation"
-			]
+			],
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "CONTENT",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:padding": "native:spacing.padding",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:width": "contentWidth"
+					},
+					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer."
+				}
+			}
 		}
 	},
 	"usesContext": [

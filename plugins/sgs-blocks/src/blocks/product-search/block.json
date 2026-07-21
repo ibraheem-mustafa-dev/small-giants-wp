@@ -36,6 +36,19 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Search wrapper",
+					"order": 1,
+					"clusters": [ "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin"
+					},
+					"_note": "No color, typography or __experimentalBorder support is declared on this block at all. clusters is deliberately scoped to layout (native spacing only) to avoid a zero-resolution declaration (ROLLOUT REQUIREMENT 1)."
+				}
 			}
 		}
 	},

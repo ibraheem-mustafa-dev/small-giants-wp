@@ -31,6 +31,98 @@
 				"featured": [
 					"featuredTag"
 				]
+			},
+			"elements": {
+				"box": {
+					"label": "Card",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "native:color.background",
+						"css:color": "native:color.text",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "cardMaxWidth",
+						"css:padding": "innerPadding"
+					},
+					"_note": "Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven via innerPadding, not native), so css:padding resolves via attrMap not native fallback."
+				},
+				"image": {
+					"label": "Product image",
+					"order": 2,
+					"clusters": [],
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus the custom imageHeight dimension override — neither is a Text/Fill/Layout style-cluster member."
+				},
+				"title": {
+					"label": "Title",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "title"
+				},
+				"price": {
+					"label": "Price",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "price"
+				},
+				"desc": {
+					"label": "Description",
+					"order": 5,
+					"clusters": [ "text" ],
+					"prefix": "desc"
+				},
+				"priceNote": {
+					"label": "Price note",
+					"order": 6,
+					"clusters": [ "text" ],
+					"prefix": "priceNote"
+				},
+				"priceFromLabel": {
+					"label": "\"From\" label",
+					"order": 7,
+					"clusters": [ "text" ],
+					"prefix": "priceFromLabel",
+					"_note": "No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
+				},
+				"tag": {
+					"label": "Tag (trial/featured badge)",
+					"order": 8,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "tag"
+				},
+				"pill": {
+					"label": "Option-picker pill",
+					"order": 9,
+					"clusters": [ "text" ],
+					"prefix": "pill",
+					"_note": "Targets the real sgs/option-picker pill rendered inside the card (both typed and bound modes) — see render.php sgs_typography_css_rule( $attributes, 'pill', … )."
+				},
+				"cta": {
+					"label": "Call to action",
+					"order": 10,
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "cta",
+					"attrMap": {
+						"css:background-color": "ctaColourBackground",
+						"css:color": "ctaColourText",
+						"css:border-color": "ctaColourBorder",
+						"css:padding": "ctaPaddingY"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "ctaColourBackgroundHover",
+								"css:color": "ctaColourTextHover",
+								"css:border-color": "ctaColourBorderHover"
+							}
+						}
+					},
+					"_note": "css:padding maps to ctaPaddingY only — ctaPaddingX is a real but separate attribute (no merged box object exists for the CTA); an honest partial resolution, not a full gap."
+				}
 			}
 		},
 		"html": false,

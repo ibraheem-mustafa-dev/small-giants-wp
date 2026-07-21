@@ -58,6 +58,39 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"banner": {
+					"label": "Banner",
+					"layer": "CONTENT",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:font-size": "native:typography.fontSize",
+						"css:line-height": "native:typography.lineHeight",
+						"css:font-style": "native:typography.fontStyle",
+						"css:text-align": "native:typography.textAlign",
+						"css:padding": "native:spacing.padding",
+						"css:margin": "native:spacing.margin",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:width": "contentWidth"
+					},
+					"_note": "NO-WRAPPER, content-KIND (D294, render.php:9-21) — dropped SGS_Container_Wrapper, block-private; every declaration scoped to the block's own `.{uid}` style (render.php:200-278). Layer CONTENT names the structural role (this block has no GRID layer)."
+				},
+				"icon": {
+					"label": "Icon",
+					"order": 2,
+					"clusters": [ "text" ],
+					"prefix": "icon",
+					"_note": "iconColour resolves via the default {prefix}{suffix} convention (Colour suffix). Emitted as a scoped rule `.{uid} .sgs-notice-banner__icon{color:...}` (render.php:203-207), not inline."
+				}
 			}
 		}
 	},

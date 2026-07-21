@@ -26,7 +26,45 @@
 			"imageControls": false,
 			"hideExtensions": [
 				"animation"
-			]
+			],
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:max-width": "maxWidth",
+						"css:width": "contentWidth"
+					},
+					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container."
+				},
+				"grid": {
+					"label": "Grid / flex layout",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:gap": "gap",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-rows": "gridTemplateRows",
+						"css:grid-auto-rows": "gridAutoRows",
+						"css:justify-items": "justifyItems",
+						"css:justify-content": "justifyContent",
+						"css:align-content": "alignContent",
+						"css:flex-direction": "flexDirection",
+						"css:flex-wrap": "flexWrap"
+					},
+					"_note": "WS-4: the tile grid delegates to SGS_Container_Wrapper (kind='layout', render.php:231-242) so it mirrors sgs/container's grid/flex capabilities. Maps explicitly — no `prefix` declared, so the default convention cannot resolve bare camelCase attrs (ROLLOUT REQUIREMENT 1). display/order/overflow/align-items remain honest gaps (no attribute on this block)."
+				}
+			}
 		},
 		"html": false,
 		"anchor": false,

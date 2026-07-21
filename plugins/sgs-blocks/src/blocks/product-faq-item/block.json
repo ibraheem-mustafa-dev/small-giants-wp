@@ -33,6 +33,25 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"elements": {
+				"item": {
+					"label": "FAQ item",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "native:color.text",
+						"css:background-color": "native:color.background",
+						"css:border-width": "native:__experimentalBorder.width",
+						"css:border-style": "native:__experimentalBorder.style",
+						"css:border-color": "native:__experimentalBorder.color",
+						"css:border-radius": "native:__experimentalBorder.radius"
+					},
+					"_note": "No `text` cluster declared — this block declares no `typography` support at all and no per-element font attrs (question/isOpen are content-only), so a text cluster would resolve zero members and violate ROLLOUT REQUIREMENT 1. Similarly no `spacing` support exists (padding/margin absent) — those layout members are honest gaps."
+				}
+			}
 		}
 	},
 	"usesContext": [

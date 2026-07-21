@@ -46,6 +46,27 @@
 					"marginTablet",
 					"marginMobile"
 				]
+			},
+			"elements": {
+				"icon": {
+					"label": "Icon",
+					"order": 1,
+					"clusters": [ "text", "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:color": "iconColour",
+						"css:background-color": "backgroundColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:background-color": "shapeColourHover"
+							}
+						}
+					},
+					"_note": "Single-semantic-element block — the root <div> (or <a> when linkUrl is set) IS the icon element (render.php). css:color/background-color map to iconColour/backgroundColour rather than native: paths — render.php steps 3-4 drive the literal colour/shape-fill declarations from these SGS attrs directly. css:padding/margin resolve via the native fallback (isWrapper + spacing support). `backgroundPadding` is a bespoke single-value shape-inset control (Spec 32 §6.1c — deliberately NOT a BoxControl padding family) with no cluster member of its own, same carve-out reasoning as sgs/button's icon element (clusters: []) — left an honest orphan, not force-mapped. iconSize/iconAlign/scaleHover are bespoke icon controls with no Spec 35 vocabulary member (no size/scale/align member exists) — left unclaimed. No border-width/style/box-shadow/width/height/gap/aspect-ratio attrs on this block — honest gaps."
+				}
 			}
 		}
 	},
