@@ -245,6 +245,52 @@ on every MediaUpload · [ ] no native-supports panel duplicated · [ ] native su
 + ARIA-label where needed · [ ] keyboard + contrast + `aria-describedby` a11y pass · [ ] client patterns
 use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 
+## PART M — Implementation status (living; updated 2026-07-22)
+
+**The STANDARD (Parts A–L) is COMPLETE as a written spec (v2.0).** What follows tracks BUILD
+against it — a standard is not "done" until blocks meet it and a gate enforces it (Part K).
+
+**Measurement & enablement layer (makes Part L enforceable) — SUBSTANTIALLY BUILT:**
+- **Element-manifest conformance linter** (`plugins/sgs-blocks/scripts/check-element-manifest-
+  conformance.js`): per-block OK/GAP/ORPHAN + a states axis. **67 of 80 blocks manifested, 13
+  skipped; resting-state defect class CLOSED.** GAP is a queryable catalogue, not a backlog.
+- **Code-derived control classification** (`extract-signatures.py`, committed `20ea88fe`
+  2026-07-21): each attribute now carries which CSS property it drives (`css_property`), on
+  which **element / state / tier** — all derived from code, never names. Routing-determinism
+  ambiguity is **0 in the data** (was 106). Two-layer override architecture
+  (`attr-classification-overrides.json` applied after the derived layer).
+- **`inspector_control_type` made edit.js-AUTHORITATIVE** and wired into `/sgs-update` (reseeds
+  every run); **93 wrong control types corrected** (2 independent audits, 0 stored-correct;
+  incl. the nested `MediaUpload>Button` trap). This is the machine signal Part B (control
+  completeness) and Part L (per-block DoD) need: you can now query, per block, which control
+  each attribute actually renders — the prerequisite for the Part-K structural gate.
+
+**New findings that shape the approach (2026-07-21):**
+- **`role` (value-type) and `css_property`+element/state/tier (delivery) are PERPENDICULAR
+  axes**, not competing — a control's completeness needs BOTH (what the value IS + how it is
+  delivered). `role` measured **~99% accurate** on its measurable overlap; do NOT replace it.
+  (parking `P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES`.)
+- **Confirmed Part-B failure live in the wrapper:** `sgs/container` content band-width "custom"
+  frequently won't select and shows no input box — an incomplete control (Part B / Part F).
+  (parking `P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN`.)
+
+**Roadmap (Part J) — BUILD status:**
+- **Exists:** `ResponsiveControl`/`ResponsiveBoxControl`, `TypographyControls`,
+  `DesignTokenPicker` (NO alpha audit yet), `StateToggleControl` (2026-07-18),
+  `hideExtensions` (2026-07-18).
+- **Wave 1 NOT started:** `enableAlpha`+clearable on `DesignTokenPicker` (1.1),
+  `LinkControl` migration (1.2), shared `ShadowControl` (1.3), `templateLock:"contentOnly"`
+  in patterns (1.4).
+- **Wave 2 / 3 NOT started:** `MediaGalleryPicker`, extended `imageControls`, whole-card link,
+  ToolsPanel disclosure rollout, reduced-motion gate audit, Block Bindings, native
+  duotone/aspect-ratio/sticky adoption.
+- **Part K structural gate NOT built** — the enablement data now exists to build it (a lint
+  flagging colour-without-alpha, URL-not-LinkControl, preset-only shadow).
+
+**Also outstanding across the board:** editor-CANVAS verification — everything to date verified
+by frontend render + REST attribute registration, never by opening the block editor
+(`ShadowControl` precedent: crashed on first live render despite 180 passing unit tests, R-31-13).
+
 ## Sources
 
 developer.wordpress.org Block Editor Handbook (all component references + Block Design, Accessibility,
