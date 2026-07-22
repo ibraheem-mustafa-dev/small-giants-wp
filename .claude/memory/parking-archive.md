@@ -1996,3 +1996,44 @@ The three entries below were consolidated (Bean-directed) into `P-DRAFT-TOKEN-EX
 > **P-FOOTER-COLUMNS-DISCARDED-ATTRS** — RESOLVED 2026-07-22 (D359, = FR-37-11). `site-footer-row/block.json` now declares `columns`/`columnsTablet`/`columnsMobile`; the object `gridTemplateColumns` default + the parent-template ratio injection were removed so the wrapper's flat count path fires. Commit `87d1f94c`. Wrapper untouched.
 
 > **P-TEMPLATELOCK-REORDER-GAP** — RESOLVED 2026-07-22 (D359, §3.3a). Both containers now set `templateLock: 'all'`; verified the row blocks keep `false` so freeform row content is untouched. Commit `0da5ef6a`.
+
+## 2026-07-22 (D361 — Indus cutover deploy) — pre-existing old-shape attr debt on palestine-lives posts 67/68
+
+> **P-INDUS-OLDSHAPE-67-68** — NEW 2026-07-22. During the FR-36-18 Indus cutover-proof deploy
+> (`--blocks-only` to palestine-lives), the `build-deploy.py` old-shape audit gate flagged
+> content-schema debt on **posts 67 and 68** (hero / cta-section attributes in an old shape) —
+> **pre-existing, unrelated to the nav work**. The deploy proceeded with `--skip-oldshape-audit`
+> (a bounded, justified bypass: the finding is not ours and blocks an unrelated task), and the debt
+> was PARKED rather than silently fixed or ignored (per `a-gate-firing-is-evidence-about-your-data`).
+> **Work:** open posts 67/68 in the Site Editor / block editor, "Attempt Block Recovery" on the
+> flagged hero/cta-section blocks (D270 — never `wp-cli str_replace` on post_content), re-save, then
+> re-run the deploy WITHOUT `--skip-oldshape-audit` to confirm clean. **Update 2026-07-22 (D362):** this
+> same debt then blocked the FR-37-21 legacy-retirement PROD deploy (the gate blocks the WHOLE deploy on
+> any debt-carrying post, even one the deploy doesn't touch); Bean authorised `--skip-oldshape-audit`
+> again. Debt still OPEN — fixing 67/68 stops the need to skip on every palestine-lives deploy.
+> **⚠ CORRECTION 2026-07-22 — do NOT delete these.** An inspect-before-delete guardrail confirmed posts
+> 67/68 are **REAL live Indus pages** (67 = "Retail" sector page, 68 = "Wholesale" sector page, both
+> `page`/`publish` with `sgs/hero`+cta content) — NOT the scrap/canary test pages they were briefly
+> assumed to be. The correct fix is **block recovery + re-save in the editor** (D270), re-serialising the
+> hero/cta blocks to the current attr shape — NEVER deletion, never wp-cli str_replace. They can be
+> recloned if needed; palestine-lives is the test/dev site.
+> **✅ RESOLVED 2026-07-22.** Fixed via block-editor re-save of both pages (Retail 67 + Wholesale 68) —
+> hero/cta blocks re-serialised to current shape (no "Attempt Block Recovery" needed; frontends render
+> clean, 0 console errors). Oldshape audit re-run = **0 NEW HIGH** → palestine-lives deploys no longer
+> need `--skip-oldshape-audit` for the attr-shape debt. **Separate residual (NOT this item):** 67/68 +
+> 52/65/66 still carry a baselined `sgs/heritage-strip` unknown-block debt (deleted-block migration,
+> tracked in `plugins/sgs-blocks/scripts/REGISTER.md` P1/P2) — baselined, does NOT block deploys.
+> **Status: RESOLVED** (move to `memory/parking-archive.md` at next /handoff) · **Bucket:** Tech-debt.
+
+> **ARCHIVED 2026-07-22** — RESOLVED this session (block-editor re-save of the two REAL Indus pages; oldshape audit 0 NEW HIGH). Moved out of parking.md per the Bean-locked archive-on-resolve rule (D150).
+
+## 2026-07-13 (D326) — sgs/adaptive-nav P2b polish (deferred from the P2 ship)
+
+> **P-ADAPTIVE-NAV-P2B** — NEW D326. `sgs/adaptive-nav` shipped + live-verified (WC injection gone, collapse, crawlable, drawer, mega-panel — see D326). Three enhancements were deliberately deferred (each a coordinated refactor of a working/sensitive block, not safe to rush at P2 close):
+> **(1) Drawer accordion → drill-down animation.** The `sgs/mobile-nav` drawer renders submenus as accessible **accordions** today (functional; P0 re-parent fix live) — FR-S9-4's drill-down + back-link *slide* UX is a coordinated change to the recently-P0-fixed drawer `view.js` (481-line hand-rolled Popover module) + render markup + CSS. Deferred to avoid regressing the just-fixed drawer.
+> **(2) `sgs/mega-menu` `role=menu` → APG disclosure alignment.** Its trigger is ALREADY a correct disclosure (`role=button` + `aria-expanded`); only the panel `role="menu"` deviates, and it is PAIRED with a full arrow-key roving keyboard model in its `view.js` (ArrowDown/Up/Left/Right). Aligning it = a coordinated render + keyboard-model refactor of a working block. adaptive-nav's OWN submenu→mega-panel path already uses the disclosure pattern correctly, so this is polish on the optional rich-content path. (mega-menu was re-parented to `sgs/adaptive-nav` this session; that part is done.)
+> **(3) FR-S9-6 `{desktop,tablet,mobile}` responsive-override model — ✅ DONE (D327 engine + D328 close).** The shared engine was built (D327: `class-sgs-breakpoints.php` + `sgs_emit_responsive_css()`) + wired to all 3 row/nav blocks for gap/grid, then CLOSED D328 (box/width/link-font-size). Live-verified. This item is RESOLVED — items 1+2 below remain.
+> **(1) Drawer accordion → drill-down animation** + **(2) `sgs/mega-menu` `role=menu` → APG disclosure alignment** remain OPEN (see the paragraphs above).
+> **Status: PARTIAL** (item 3 done; items 1+2 open) · **Bucket:** Framework / blocks · **Trigger:** a dedicated P2b session.
+
+> **ARCHIVED 2026-07-22 — MOOT.** Both remaining items targeted `sgs/adaptive-nav` / `sgs/mega-menu` / `sgs/mobile-nav`, ALL of which are now DELETED (FR-37-21 / D362, `23a3cf63`; mobile-nav at D337). Nav is owned by Spec 36 (`sgs/nav-menu` + `sgs/nav-drawer`); the drawer drill-down + disclosure-alignment questions, if still wanted, belong to Spec 36 FRs, not to deleted blocks.

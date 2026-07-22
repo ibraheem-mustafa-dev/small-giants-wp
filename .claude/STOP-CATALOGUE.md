@@ -54,6 +54,29 @@ points here. Neither ever silently drops a STOP.
   STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR (both: a mechanism that "should work" must be proven on a real
   request, R-31-11) and STOP-VERIFY-DEPLOY-BY-CHECKSUM.
 
+- **STOP-INSPECT-THE-TARGET-BEFORE-DELETING-ON-A-LIVE-SITE** — NEW 2026-07-22 (D362). Before deleting
+  ANY post / page / template-part / option on a live site, OPEN IT and confirm what it actually is —
+  even when a parking entry, a handoff, an audit finding, or **Bean himself** describes it as scrap.
+  A description is a hypothesis about the world; the object is the ground truth. Proven three times in
+  one session: canary draft 1320 was flagged as a blocking `sgs/mega-menu` reference but held only
+  `patternName` metadata text (a FALSE positive — safe to delete for a different reason); prod
+  `wp_navigation` post 100 WAS a real orphan (safe); and posts 67/68, described as "canary pages that
+  should be scrapped", turned out to be the **live Indus "Retail" and "Wholesale" sector pages** — a
+  delete-as-instructed would have destroyed real client content on a production site. The inspect step
+  cost one `wp post get` per object and prevented that. **Rule: a delete instruction is authorisation to
+  ACT, never authorisation to SKIP VERIFICATION.** If the object does not match its description, STOP and
+  report rather than proceeding. Sibling of STOP-VERIFY-A-DEFERRAL-BEFORE-EXECUTING-IT (generalised: an
+  inherited *description* is a hypothesis) and STOP-CONFIRM-WHAT-YOUR-OUTPUT-DESCRIBES.
+
+- **STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE** — NEW 2026-07-22 (D362). A `wp-sgs-developer` (or
+  any implementer) subagent dispatched to DO work will sometimes spawn its OWN sub-agents instead of
+  executing — burning a full cycle, producing nested/duplicate agents that then need stopping, and
+  returning a plan instead of a result. Happened twice in one session. **Fix that works: put an explicit
+  line in every implementer dispatch — "EXECUTE YOURSELF with your OWN tools (Bash/SSH/Playwright). Do
+  NOT use the Agent/Task tool to delegate — you are the implementer. Report actual command outputs."**
+  Also: an agent's "done" is a CLAIM — verify it against the real repo / live state before believing it
+  (held all session and caught real gaps). Pairs with STOP-VERIFY-DEPLOY-BY-CHECKSUM.
+
 - **STOP-VERIFY-DEPLOY-BY-CHECKSUM** — NEW 2026-07-20 (D351). `build-deploy.py` printing
   `[DONE]` + `[verify] HTTP 200, markers present` does NOT mean your change shipped: the
   verify asserts only that *a* page renders with generic `wp-block-sgs`/`sgs-` markers, which
@@ -368,6 +391,13 @@ for real before claiming done?
   none → **61**. 61 >= 60. PASS. Earned: a raw `wp option update` on the shared canary wrote the active
   header/footer pointer to a different store than the live domain reads, presenting as a broken CPT
   binding and nearly triggering a fix to correct code — the disciplined probe proved the code fine.
+- **2026-07-22 (FR-36-18 cutover + FR-37-21 retirement / D361-D362) re-run:** previous unique `STOP-*`
+  = **61**; ADDED 2 (`STOP-INSPECT-THE-TARGET-BEFORE-DELETING-ON-A-LIVE-SITE`,
+  `STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE`), SUBTRACTED none → **63**. 63 >= 61. PASS.
+  Both earned: posts described as "scrap canary pages" were the LIVE Indus Retail/Wholesale sector
+  pages — inspecting before deleting prevented destroying real client content on production; and two
+  dispatched implementer agents delegated instead of executing, burning a cycle and spawning nested
+  agents that needed stopping.
 - **2026-07-22 (Track-1 converter reconciliation) re-run:** previous unique `STOP-*` = **61**;
   Track 1 carried in **6** earned-but-unlanded tokens from its Fronts-1/2 session
   (`STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`, `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`,

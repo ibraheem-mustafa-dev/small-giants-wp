@@ -28,58 +28,42 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
   + fixed live (D351 featured contrast 1.35:1 from a missing `featuredBg`; the drawer exit animation that had
   never once run; a co-active deploy that silently reverted a verified fix). Full detail:
   `memory/session-2026-07-20-11-spec36-phase1-close.md` + `memory/session-2026-07-21-ledger-sweep.md`.
-- **⛔ `sgs/adaptive-nav` stays registered** as the FR-36-18 rollback path until the Indus cutover is green.
+- **`sgs/adaptive-nav` is DELETED (FR-37-21 / D362, `23a3cf63`)** — the old "stays registered as the rollback path" note is SUPERSEDED. Rollback is now git history only.
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**Spec 37 6-FR core (earlier 2026-07-22, D359 — full detail in decisions D359 + `memory/`).** A client
-can author a header in *SGS → Advanced Headers*, set it active, and it renders live (proven on
-sandybrown). Shipped (`0da5ef6a`→`fc8e2796`): active-pointer + "Set as active" (FR-37-2/25), direct-
-render binding with CPT-aware resolver + fail-closed validation (FR-37-3), "Active" column (FR-37-5),
-footer columns as an operator count (FR-37-11, wrapper untouched), `templateLock 'all'` (§3.3a),
-`parts/header.html` gutted to a shell (FR-37-6 file step). Three silent bugs caught + fixed (2 by the
-pre-commit qc-council, 1 by the live canary — the binding gated on `attrs.area` but the theme uses
-`slug`, so it had NEVER fired; now matches area OR slug). §3 audit done, 3 gaps carried as FR-37-33/34/35.
-Deferred (not needed for usable): tri-state (FR-37-14), scoped behaviour CSS (FR-37-15), starter picker
-(FR-37-7), legacy retirement (FR-37-21), Simple/Advanced + a11y polish (FR-37-26..31).
+**⭐ CURRENT (2026-07-22, D359–D362 — full detail in `decisions.md`; do not re-narrate here).**
+**The header/footer/nav thread is CLOSED end-to-end.** A client can author a header in *SGS → Advanced
+Headers*, press "Set as active", and it renders live — proven on BOTH sites, via the real operator path.
 
-**⭐ LATEST (2026-07-22 later session, D360/D361/D362) — Task-1 de-client DONE + FR-37-3 render RE-PROVEN
-live + FR-37-21 legacy nav RETIRED (full detail: decisions D360/D361/D362).** Repo now carries **no
-client data** (deleted orphan `footer-indus-foods.php` after a 0-ref check both sites — `47c93db2`,
-`94ab240f`; Spec 37 §3.9a/FR-37-6 stale claims corrected). **FR-37-3 scare (D360):** a fresh canary test
-showed the CPT header NOT rendering — a probe proved the binding CODE was perfect; the "failure" was a
-**store mismatch** (a raw `wp option update` wrote to a different option store than the live domain reads,
-no object cache). Setting active via the real **"Set as active" admin action** rendered both markers
-once — acceptance MET live. Defence: `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`.
-**Canary state:** generic proof CPTs #1570/#1571 left ACTIVE (clear via admin "Clear active" to restore).
+- **Spec 37 core BUILT + canary-verified (D359):** active-pointer + "Set as active" (FR-37-2/25),
+  direct-render binding w/ CPT-aware resolver + fail-closed validation (FR-37-3), "Active" column
+  (FR-37-5), footer columns as an operator count (FR-37-11, wrapper untouched), `templateLock 'all'`
+  (§3.3a), `parts/header.html` gutted to a shell (FR-37-6 file step). §3 audit done → 3 gaps carried
+  as **FR-37-33/34/35**.
+- **De-client DONE (D360):** repo carries **no client data** (orphan `footer-indus-foods.php` deleted
+  after a 0-ref check on both sites). Spec 37 §3.9a/FR-37-6 stale claims corrected.
+- **FR-37-3 scare → not a bug (D360):** a probe proved the binding CODE was perfect; the "failure" was a
+  **store mismatch** (raw `wp option update` wrote to a different option store than the live domain
+  reads). Defence: `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`.
+- **FR-36-18 cutover PROVEN + FR-37-21 legacy nav RETIRED (D361/D362):** generic proof header #360 on
+  palestine-lives passed every gate; then **`sgs/adaptive-nav` + `sgs/mega-menu` DELETED**
+  (`f1f86ea0`+`23a3cf63`) — repo + canary + **PRODUCTION** verified, **Bean confirmed the Indus mobile
+  drawer on a real device**. adaptive-nav rollback is now git-only. The cutover/retirement are the
+  MECHANISM + cleanup — the faithful branded Indus header still comes via cloning (Spec 33 Part 2).
+- **Site state (both show GENERIC proof headers):** sandybrown = CPTs #1570/#1571 active;
+  palestine-lives = header #360 active. Restore via the admin **"Clear active"** row action per site.
+- **Debt RESOLVED:** `P-INDUS-OLDSHAPE-67-68` — posts 67/68 are REAL Indus Retail/Wholesale pages (a
+  guardrail caught they are NOT scrap); fixed by block-editor re-save, NOT deleted. Oldshape audit =
+  0 NEW HIGH. (Separate baselined `heritage-strip` debt on 67/68+52/65/66 remains — REGISTER.md P1/P2,
+  non-blocking.)
 
-**⭐ FR-36-18 Indus cutover PROVEN live + FR-37-21 legacy nav RETIRED (D361/D362).** A GENERIC proof
-header (#360 on palestine-lives, `sgs/nav-menu` ref:3 + `sgs/nav-drawer`, set active via the admin
-action) passed every gate on the production Indus site (render/menu/drawer/no-overflow/no-JS-crawl). Then
-**`sgs/adaptive-nav` + `sgs/mega-menu` were DELETED** (Bean-directed; `f1f86ea0`+`23a3cf63`) — repo +
-canary + **PRODUCTION verified** (deployed `--skip-oldshape-audit`, checksum-matched; Indus mobile drawer
-opens as a `<dialog>` with 7 links, 0 console errors, 0 fatals, no legacy markup). The zero-live-instances
-gate caught 2 refs first (canary draft 1320 = false positive; prod `wp_navigation` 100 = orphan) — both
-cleared. adaptive-nav rollback is now git-only. Both cutover + retirement are the MECHANISM/cleanup — the
-faithful branded Indus header still comes via cloning (Spec 33 Part 2). **Bean confirmed the Indus mobile
-drawer opens fine with no overflow on a real device (2026-07-22) — FR-37-21 fully verified end-to-end.**
-
-**Canary + Indus state (both show GENERIC proof headers now):** sandybrown = proof CPTs #1570/#1571
-active; palestine-lives = proof header #360 active. Restore normal via the admin **"Clear active"** row
-action per site. Real headers land via cloning later.
-
-**Your next actions (NEXT SESSION — Bean-directed).** (1) **Conformance audit of Spec 36 + 37** — the
-Spec 36 completion map is at `.claude/reports/2026-07-22-spec36-completion-audit.md` (per-FR verified
-status + cost-tier + deps); extend it to Spec 37's remaining FRs. (2) **Then `/plan`** to orchestrate the
-remaining Spec 36 + 37 tasks: classify each by whether a python script / haiku / sonnet agent can do it
-in whole or part, map dependencies + what can run in PARALLEL vs a set order, then spawn a batch of
-sonnet agents for the sonnet-tier points — **Opus inline = orchestration + QC ONLY** (does not implement).
-Remaining feature FRs: Spec 37 FR-37-33/34/35 (§3 gaps), FR-37-14/15 (tri-state + scoped CSS), FR-37-7/8
-(starter picker), FR-37-26..31 (Simple/Advanced + a11y); Spec 36 per the audit map.
-**Debt RESOLVED 2026-07-22:** posts 67/68 (Indus "Retail"/"Wholesale" REAL pages — a guardrail caught
-that they are NOT scrap; fixed via block-editor re-save, NOT deleted) — `P-INDUS-OLDSHAPE-67-68` closed,
-oldshape audit = 0 NEW HIGH, palestine-lives deploys no longer need `--skip-oldshape-audit` for it. (A
-separate baselined `sgs/heritage-strip` debt on 67/68+52/65/66 remains — REGISTER.md P1/P2, non-blocking.)
+**Your next session (Bean-directed) → see `.claude/next-session-prompt.md` for the orchestration plan.**
+Shape: (1) **conformance audit** of Spec 36 + 37 — the Spec 36 map already exists at
+`.claude/reports/2026-07-22-spec36-completion-audit.md` (per-FR verified status + cost-tier + deps);
+extend it to Spec 37. (2) **Then `/plan`** — classify each remaining FR by python-script / haiku /
+sonnet, map deps + what runs in PARALLEL, then **spawn sonnet agents in batches**;
+**Opus inline = orchestration + QC ONLY (never implements).**
 
 ---
 
@@ -87,11 +71,12 @@ separate baselined `sgs/heritage-strip` debt on 67/68+52/65/66 remains — REGIS
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`, HEAD `fc8e2796` (2026-07-22). **This session's commits (pushed):** `0da5ef6a`
+- **Branch:** `main`, HEAD `f8e04016` (2026-07-22; co-active commits land on top — re-check). **This session's commits (pushed):** `0da5ef6a`
   (FR-37-2/3/5/25 binding) → `87d1f94c` (FR-37-11 footer count) → `9b9a8028` (FR-37-6 header gut) →
   `9ff24f74` (slug-vs-area fix) → `fc8e2796` (spec verification record). Later session (D360):
   `47c93db2` (spec de-client correction) → `94ab240f` (orphan pattern delete) → `93b1f8a0`
-  (FR-36-18 cutover proof). **D-ceiling: D361.**
+  (FR-36-18 cutover proof) → `f1f86ea0`+`23a3cf63` (FR-37-21 legacy nav retirement) →
+  `766b2992`/`703e0daf` (docs). **D-ceiling: D362.**
   ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
   landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
@@ -225,13 +210,13 @@ drawer polish — both absorbed by the Spec 36 rebuild.
      testimonial's 98-byte attribution and reads `"© Zainab, Founder of Mama's Munches"`. The site footer is
      the LAST one, `<footer class="wp-block-template-part">`, 6,688 bytes. Key the assertion on the CLASS.
 3. **Step 1 — SPLIT framework vs per-site header/footer.** Move/delete
-   `theme/sgs-theme/patterns/footer-indus-foods.php` (the only client-named framework
+   ~~`theme/sgs-theme/patterns/footer-indus-foods.php`~~ **DELETED 2026-07-22 (`94ab240f`)** (was the only client-named framework
    pattern; leaks "Indus Foods Footer" + a hardcoded Google Place CID to every install);
    decide the per-site channel (JSON snapshot vs REST); gitignore per-site files. Do this
    BEFORE Goals 4/1 so they write to the per-site channel.
 4. **Goal 4 — match the Mama's draft** (`sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md`):
    fix its 2 liabilities first (cites non-existent `header/footer-mamas-munches` patterns;
-   maps the hamburger to the deleted `sgs/mobile-nav-toggle` → re-point at `sgs/adaptive-nav`).
+   maps the hamburger to the deleted `sgs/mobile-nav-toggle` → re-point at `sgs/nav-menu` + `sgs/nav-drawer` (adaptive-nav is also deleted now — D362).
    Bean's heading-specific eye pass (R-31-13) lands here.
 5. **Goal 1 — replicate the Indus header/footer.** BASELINE = the preserved hand-built
    Astra/Spectra site https://lightsalmon-tarsier-683012.hostingersite.com/ (NOT the

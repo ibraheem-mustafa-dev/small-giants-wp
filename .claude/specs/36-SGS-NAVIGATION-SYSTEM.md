@@ -490,11 +490,18 @@ removing the registrations.
 re-authored `b41352fc`. **Indus (palestine-lives) proven live** with a GENERIC proof header (`sgs_header`
 #360 on `sgs/nav-menu` ref:3 + `sgs/nav-drawer`, set active via the admin action): renders from CPT
 (marker once, core wrapper replaced, no legacy adaptive-nav in output) · desktop 7-link menu · mobile
-burger→drawer axe 0 · no-overflow 375/768/1440 · no-JS crawl · adaptive-nav still registered. This
-demonstrates the cutover MECHANISM end-to-end; the faithful branded Indus header is deferred to the
-Spec 33 Part 2 header/footer cloning pipeline. **⛔ Do NOT run FR-37-21 (legacy deletion) on the proof
-alone** — retiring adaptive-nav before the REAL Indus header is cutover would strand Indus on a generic
-header. Retirement stays gated on the real cutover, not this proof.
+burger→drawer axe 0 · no-overflow 375/768/1440 · no-JS crawl. This demonstrates the cutover MECHANISM
+end-to-end; the faithful branded Indus header is deferred to the Spec 33 Part 2 header/footer cloning
+pipeline.
+
+> **⚠ The "retirement stays gated" clause that stood here is SUPERSEDED (D362, 2026-07-22, Bean-directed.)**
+> It said: *do NOT run FR-37-21 on the proof alone — retiring adaptive-nav before the REAL Indus header is
+> cutover would strand Indus on a generic header.* Bean overruled it: FR-37-21's only gate is FR-36-18
+> green (met), and the "real branded header" is a **cloning** concern (Spec 33 Part 2), not a retirement
+> gate. **FR-37-21 is DONE** — `sgs/adaptive-nav` + `sgs/mega-menu`, the 7 `mega-menu-*` parts, the 7
+> `mega-menu-*` patterns and their `theme.json` entries were DELETED (`f1f86ea0` + `23a3cf63`), verified on
+> repo + canary + production. **The rollback path is now git history only** (the blocks are no longer
+> registered). Both sites currently render generic proof headers until cloning delivers the branded ones.
 
 ### 8a. Verified build notes (live-code items — cite at build; fact-check-corrected)
 - **Menu-source detection (fact-check):** `SGS_Nav_Menu_Source::NAV_BLOCK_NAMES`

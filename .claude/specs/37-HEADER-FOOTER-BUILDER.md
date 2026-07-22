@@ -338,13 +338,12 @@ step of FR-37-6 is therefore DONE.
 
 **Residual de-client work (ground-truthed 2026-07-22):**
 
-1. **One orphan client pattern remains:** `theme/sgs-theme/patterns/footer-indus-foods.php` — leaks
-   "Indus Foods Footer" + a hardcoded Google Place CID. Referenced by nothing in the repo (grep for
-   `sgs/indus-foods-footer` = 0 hits bar its own slug line). ⚠ **Before deleting, confirm no *live*
-   template part on either site references the `sgs/indus-foods-footer` slug** (the Indus site's DB
-   content is not in the repo). Once confirmed orphaned, delete it — per-site footers live in the CPT.
-2. **The 7 `parts/mega-menu-*.html` files still carry Indus data** but are scheduled for FR-37-21
-   retirement *after* the FR-36-18 Indus cutover — not part of this step.
+1. **✅ DONE — orphan client pattern DELETED.** `theme/sgs-theme/patterns/footer-indus-foods.php` (leaked
+   "Indus Foods Footer" + a hardcoded Google Place CID) was confirmed referenced by nothing in the repo
+   AND by no live template part on EITHER site (read-only `SELECT ... LIKE '%indus-foods-footer%'` = 0
+   rows on sandybrown and palestine-lives), then deleted (`94ab240f`). Per-site footers live in the CPT.
+2. **✅ DONE — the 7 `parts/mega-menu-*.html` files (and their 7 patterns + `theme.json` entries) are
+   DELETED** as part of FR-37-21 (`23a3cf63`), so the Indus data they carried is gone from the framework.
 3. **Per-site CPTs:** the FR-37-6 "both sites render from CPTs" done-condition needs each live site's
    header/footer authored as a CPT post and set active. The canary CPT header binding is already
    canary-verified (FR-37-3); authoring the canary footer + the Indus pair is the remaining live work,
@@ -492,8 +491,10 @@ deleted by an operator.
 Both CPT list tables show an **Active** status column, following the pattern WP uses for the
 active theme, so an operator with several saved headers can see which is live without opening
 each.
-**Status:** `BUILT (code) — canary-unverified` (commit `0da5ef6a`,
-`class-sgs-active-layout-admin.php` — `manage_{cpt}_posts_columns` + `display_post_states`). A row
+**Status:** `✅ BUILT + CANARY-VERIFIED 2026-07-22 (D360)` (commit `0da5ef6a`,
+`class-sgs-active-layout-admin.php` — `manage_{cpt}_posts_columns` + `display_post_states`). Verified live:
+the Advanced Headers/Footers list tables showed the proof posts as NOT active before the admin action and
+Active after it — which is also what exposed the CLI-vs-web option-store mismatch (see FR-37-1). A row
 pointed at a non-published post shows "Active (not published — default is showing)" rather than
 falsely claiming Active, so a trashed active post is legible in the list table.
 **Done when:** exactly one row per type shows Active, and it matches the stored option.
@@ -907,18 +908,18 @@ and eye are co-authoritative, neither closes alone).
 | Area | Status |
 |---|---|
 | CPTs + admin pages | `BUILT` |
-| Active pointer + "Set as active"/"Clear" (FR-37-2/25) | `BUILT (code)` — canary-unverified |
+| Active pointer + "Set as active"/"Clear" (FR-37-2/25) | `✅ BUILT + CANARY-VERIFIED` (D360) — set active via the admin row action, header+footer rendered live |
 | CPT → frontend binding (FR-37-3, incl. CPT-aware resolver) | `BUILT (code)` — was §2.2 silently broken; direct render replaces it |
-| "Active" list-table column (FR-37-5) | `BUILT (code)` — canary-unverified |
+| "Active" list-table column (FR-37-5) | `✅ BUILT + CANARY-VERIFIED` (D360) — list table showed "Not active" pre-set and "Active" post-set |
 | Container blocks exist | `BUILT` (2026-07-13, for Spec 17) |
 | Container blocks **conform to a defined end state** | `UNVERIFIED` — §3 is the first such definition (FR-37-9/10 audit not run) |
 | Row reorder-lock (`templateLock: 'all'`, §3.3a) | `BUILT (code)` |
-| Footer per-device column count (FR-37-11) | `BUILT (code)` — count path wired, wrapper untouched; canary-unverified |
+| Footer per-device column count (FR-37-11) | `BUILT (code)` — count path wired, wrapper untouched. **Still canary-unverified:** a footer CPT rendered live, but the COLUMN COUNT + mobile stacking were never measured |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
 | hide-on-scroll | `PARTIAL` — dormant JS, no attribute |
 | Tri-state shape | `NOT-BUILT` |
 | Scoped behaviour CSS | `NOT-BUILT` |
-| Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`); per-site CPTs + orphan-pattern delete owed (§3.9a) |
+| Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
 | Starter picker | `NOT-BUILT` |
 | Rules engine | `BUILT` |
 | Legacy retirement (FR-37-21) | `✅ DONE` repo + canary (D362, `f1f86ea0`+`23a3cf63`) — adaptive-nav + mega-menu deleted; prod deploy in LEDGER |

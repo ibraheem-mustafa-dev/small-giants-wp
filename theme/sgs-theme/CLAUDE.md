@@ -119,7 +119,7 @@ Version bump history (recent):
 - Dark mode toggle + `light-dark()` colour palette (P2) — `dark-mode.css` + `dark-mode.js` are scaffolded
 - `content-visibility: auto` on below-fold sections (P2, performance)
 - Block patterns library — hero, feature, testimonial, CTA, content, footer, header patterns (P2)
-- **Mega-menu generic layout patterns SHIPPED 2026-06-02** — 7 patterns registered under `mega-menu-layouts` category; create-panel inspector shortcut added. See `patterns/` directory.
+- ~~**Mega-menu generic layout patterns SHIPPED 2026-06-02** — 7 patterns under `mega-menu-layouts`~~ — **RETIRED + DELETED 2026-07-22 (FR-37-21 / D362, commit `23a3cf63`).** The 7 `mega-menu-*.php` patterns, the 7 `mega-menu-*.html` parts, their `theme.json` `templateParts` entries, `mega-menu-panels.css`, and the `sgs/mega-menu` + `sgs/adaptive-nav` blocks were all removed. Nav is now owned by **Spec 36** (`sgs/nav-menu` + `sgs/nav-drawer` + the `sgs_mega_menu` CPT — note the CPT is a DIFFERENT thing from the deleted `sgs/mega-menu` block).
 - **Header search patterns SHIPPED 2026-06-12** — `header-search-bar-above`, `header-search-bar-below`, `header-search-icon` registered under `sgs-headers` category (D214).
 
 See `docs/plans/2026-02-21-master-feature-audit.md` for the full graded roadmap.
