@@ -29,6 +29,10 @@ from converter.services.styling_helpers import (
     collect_state_decls_for_element,
     serialise_residual_bands,
 )
+from converter.services.pseudo_overlay import (
+    collect_pseudo_decls_for_element,
+    resolve_pseudo_overlay,
+)
 from converter.models import ResidualBand
 from converter.services.root_supports import (
     lift_root_supports_to_style,
@@ -207,6 +211,21 @@ def _build_css_attrs(
         if decls:
             result = process_element(ctx, decls)
             merged.update(result.attrs())
+
+        # ---- Step 3c: ::before/::after pseudo-element overlay lift (Unit B1) ----
+        # A pseudo-element rule has no matching DOM node, so it never entered
+        # base_decls/bp_decls/state_decls above (collect_css_decls_for_element's
+        # class/tag matcher excludes any selector whose final compound carries a
+        # ':' — same guard that isolates :hover). Collected + resolved separately
+        # here so it is never silently dropped: lifted onto the universal overlay
+        # attr family when rec.slug declares it, else an honest
+        # attribute_gap_candidates row per unmapped property (R-22-6/R-31-15).
+        pseudo_decls = collect_pseudo_decls_for_element(node, css_rules)
+        if pseudo_decls:
+            node_classes = node.get("class", []) or []
+            source_class = f".{node_classes[0]}" if node_classes else (node.name or "")
+            overlay_attrs = resolve_pseudo_overlay(rec.slug, pseudo_decls, source_class)
+            merged.update(overlay_attrs)
 
         # ---- F-ii residual → sgsCustomCss (FR-31-5.2 passthrough) ----
         # Serialise any captured non-device-tier bands into the block's
