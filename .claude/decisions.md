@@ -15,6 +15,34 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D360 [INCIDENT] — Task-1 de-client DONE; FR-37-3 "failure" was a WP-CLI option-store mismatch, not a code bug (2026-07-22)
+
+**De-client (FR-37-6 residual).** `parts/header.html` was already a shell (D359); Spec 37 §3.9a/FR-37-6
+were STALE, still describing it as leaking client data — corrected to `PARTIAL — file step DONE`. The
+only real leak left was the orphan pattern `theme/sgs-theme/patterns/footer-indus-foods.php` ("Indus
+Foods Footer" + a hardcoded Google Place CID); confirmed 0 live references on BOTH sites (read-only
+`SELECT ... LIKE '%indus-foods-footer%'`) and deleted (`94ab240f`). Framework `patterns/` now carries
+no client data (the 7 `mega-menu-*.html` retire with FR-37-21 after the cutover). Also de-cl a stray
+"Indus" description comment in `framework-header-default.php`. Commits `47c93db2`, `94ab240f`.
+
+**The scare — prove-the-cause paid for itself.** A fresh canary test showed CPT header+footer NOT
+rendering, contradicting D359's "canary-verified". A systematic-debugging probe (4 `error_log` lines at
+the `filter_template_part` + `render_active` boundaries, deployed via isolated worktree, reverted after)
+showed the filter fired, matched by slug, called `render_active` — which read `get_stored_id`=**0** on
+the live request while `wp option get` read **1570**, with **no object cache**. Runtime-filter branch
+falsified locally (nothing filters `sgs_active_*_cpt_id`; only `set_active`/`clear_active` write them).
+**Proven cause:** WP-CLI and the live web request read DIFFERENT option stores — the agent's raw
+`wp option update` landed in a different install/prefix than the domain serves. **The binding CODE
+(`Sgs_Active_Layout`, `filter_template_part`) was always correct.** Setting active via the real
+**"Set as active" admin action** (web context) rendered both markers exactly once, wrapper replaced,
+0 console errors — FR-37-1/2/3 acceptance MET live. Nearly fixed correct code; the probe stopped it.
+
+**Defence:** `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION` (STOP catalogue #61).
+General form: a live read contradicting a CLI read with no object cache = suspect a store/prefix/webroot
+mismatch BEFORE the code; verify an option-driven feature by setting the option in the context that
+reads it. **Canary state:** generic proof CPTs #1570/#1571 left active (clear via admin "Clear active"
+to restore the normal header/footer).
+
 ## D359 [INCIDENT] — Spec 37 6-FR core BUILT + canary-verified; the header binding had never fired on this theme (slug-vs-area) (2026-07-22)
 
 **What shipped.** The Spec 37 minimum core that makes a CPT-authored header the live header:

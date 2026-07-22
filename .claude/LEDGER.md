@@ -59,10 +59,25 @@ queries), none silently dropped.
 CSS (FR-37-15), starter picker (FR-37-7), legacy nav retirement (FR-37-21, gated on FR-36-18), the
 Simple/Advanced surface + a11y polish (FR-37-26..31). Sticky/transparent/shrink already work.
 
-**Your next actions.** (1) **De-client `parts/header.html`'s source per site** so FR-37-6 fully
-closes ("both sites render from CPTs" needs a CPT authored per site) — this also unblocks the Indus
-cutover. (2) **FR-36-18 Indus header cutover** (recon plan ready, `memory/` — the shared theme file
-would push Mama's header onto Indus if deployed as-is). Everything else in Spec 37 is deferrable.
+**⭐ NEXT UPDATE (2026-07-22 later session, D360) — Task-1 de-client DONE + FR-37-3 render RE-PROVEN
+live.** The framework repo now carries **no client data** (`parts/header.html` was already a shell;
+deleted the orphan `footer-indus-foods.php` after a 0-reference check on BOTH sites — `47c93db2`,
+`94ab240f`). Spec 37 §3.9a/FR-37-6 were STALE (said the file still leaked); corrected. **A scare
+worth recording:** a fresh canary test showed the CPT header/footer NOT rendering — a systematic-
+debugging probe proved the binding CODE was perfect and the "failure" was a **store mismatch**: a raw
+`wp option update` on the shared canary wrote the active-layout pointer to a different store than the
+live domain reads (`wp option get`=1570 while frontend `get_option`=0, no object cache). Setting active
+via the real **"Set as active" admin action** rendered both markers exactly once (wrapper replaced,
+0 console errors) — FR-37-3/FR-37-2/FR-37-1 acceptance MET live. New defence:
+`STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`. **Canary state:** generic proof CPTs
+`sgs_header` #1570 + `sgs_footer` #1571 left ACTIVE (labelled "Proof Header/Footer" — the real ones
+come via the header/footer cloning pipeline later; clear them via the admin "Clear active" action if the
+canary's normal header/footer is wanted back).
+
+**Your next actions.** (1) ~~De-client per site~~ **DONE** (above). (2) **FR-36-18 Indus header cutover**
+(recon plan ready, `memory/` — the shared theme file would push the framework header onto Indus if
+deployed as-is; now safe to proceed since the binding is proven). (3) The three carried §3 FRs
+(FR-37-33/34/35). Everything else in Spec 37 is deferrable.
 
 ---
 
@@ -72,7 +87,8 @@ would push Mama's header onto Indus if deployed as-is). Everything else in Spec 
 
 - **Branch:** `main`, HEAD `fc8e2796` (2026-07-22). **This session's commits (pushed):** `0da5ef6a`
   (FR-37-2/3/5/25 binding) → `87d1f94c` (FR-37-11 footer count) → `9b9a8028` (FR-37-6 header gut) →
-  `9ff24f74` (slug-vs-area fix) → `fc8e2796` (spec verification record). **D-ceiling: D359.**
+  `9ff24f74` (slug-vs-area fix) → `fc8e2796` (spec verification record). Later session (D360):
+  `47c93db2` (spec de-client correction) → `94ab240f` (orphan pattern delete). **D-ceiling: D360.**
   ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
   landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME

@@ -388,11 +388,18 @@ Site Editor is **not** an editing home for header/footer content, and no second 
 store exists. Rejected explicitly: Site-Editor-as-home, and the hybrid of both (P2 §2.1 —
 "WP has no native CPT↔template-part sync… two editable stores holding the same header drift
 the moment one is edited and not the other").
-**Status:** `BUILT (code) — canary-unverified.` CPTs + admin submenus exist
-(`class-sgs-block-cpts.php:67-165`, `:218-236`); the binding now exists (FR-37-2/3, commit
-`0da5ef6a`). The end-to-end flow has NOT been exercised on the canary yet (FR-37-23 gate).
+**Status:** `✅ BUILT + CANARY-VERIFIED 2026-07-22 (D360).` CPTs + admin submenus exist
+(`class-sgs-block-cpts.php:67-165`, `:218-236`); the binding exists (FR-37-2/3, `0da5ef6a`). The
+end-to-end operator flow was exercised live on sandybrown: a generic `sgs_header` CPT (#1570) was set
+active via the **"Set as active" admin row action** (`admin-post.php?action=sgs_set_active_layout`, no
+Site Editor step) and its marker rendered on the cold-cache frontend exactly once, core's
+`wp-block-template-part` wrapper replaced; footer (#1571) identical. **⚠ Harness note (D360):** an
+earlier run of this same test FAILED only because the pointer was set with a raw `wp option update`
+from a WP-CLI context whose option store differs from the live domain's — a store mismatch, NOT a code
+bug (probe: frontend `get_option`=0 while `wp option get`=1570, no object cache). Always set active via
+the web-context admin action — `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`.
 **Done when:** an operator can create a header in *SGS → Advanced Headers*, set it active, and
-see it on the frontend, with no Site Editor step anywhere in that flow.
+see it on the frontend, with no Site Editor step anywhere in that flow. ✅ met.
 
 #### FR-37-2 — "Set as active" action and stored pointer
 A row action + editor action on each CPT writes `wp_options['sgs_active_header_cpt_id']` /

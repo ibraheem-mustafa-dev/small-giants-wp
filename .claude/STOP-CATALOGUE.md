@@ -37,6 +37,23 @@ points here. Neither ever silently drops a STOP.
   confirm the live markup actually carries that attr; and a mechanism that "should intercept X" must
   be proven to fire on a real page, not assumed from the code.
 
+- **STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION** — NEW 2026-07-22 (D360). The
+  active header/footer pointer (`sgs_active_header_cpt_id` / `sgs_active_footer_cpt_id`) MUST be
+  written in the SAME PHP context the frontend reads it from — the "Set as active" admin action
+  (`admin-post.php?action=sgs_set_active_layout`) or a request against the live domain — NEVER a raw
+  `wp option update` from an arbitrary WP-CLI `--path`. On the shared Hostinger canary, WP-CLI can
+  read/write a DIFFERENT option store (install path / table-prefix) than the live domain serves: a
+  probe proved `wp option get` returned `1570` while the frontend `get_option` returned `0` on the
+  same page load, with **no object cache** to explain it. The symptom presented as "the CPT-render
+  binding is broken" and pointed straight at freshly-shipped code — it nearly triggered a fix to
+  `Sgs_Active_Layout` / `filter_template_part`, both of which were CORRECT (proven: setting active via
+  the admin action rendered both markers exactly once, wrapper replaced). **General rule:** when a live
+  read contradicts a CLI read with no persistent object cache, suspect a **store/prefix/webroot
+  mismatch before the code** (`prove-the-cause-before-fix`); and to verify any option-driven feature,
+  set the option through the same context the feature reads it, not a CLI shortcut. Sibling of
+  STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR (both: a mechanism that "should work" must be proven on a real
+  request, R-31-11) and STOP-VERIFY-DEPLOY-BY-CHECKSUM.
+
 - **STOP-VERIFY-DEPLOY-BY-CHECKSUM** — NEW 2026-07-20 (D351). `build-deploy.py` printing
   `[DONE]` + `[verify] HTTP 200, markers present` does NOT mean your change shipped: the
   verify asserts only that *a* page renders with generic `wp-block-sgs`/`sgs-` markers, which
@@ -323,3 +340,8 @@ for real before claiming done?
   ADDED 1 (`STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR-FIRES-NEVER-AND-SILENTLY`), SUBTRACTED none → **60**.
   60 >= 59. PASS. Earned: a header binding gated on `attrs.area` never fired on this theme (markup uses
   `slug`), invisible to code-reads + a mutation harness, caught only by a live render.
+- **2026-07-22 (Spec 37 de-client + FR-37-3 store-mismatch / D360) re-run:** previous unique `STOP-*`
+  = **60**; ADDED 1 (`STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`), SUBTRACTED
+  none → **61**. 61 >= 60. PASS. Earned: a raw `wp option update` on the shared canary wrote the active
+  header/footer pointer to a different store than the live domain reads, presenting as a broken CPT
+  binding and nearly triggering a fix to correct code — the disciplined probe proved the code fine.
