@@ -87,7 +87,8 @@ hero/cta-section old-shape attr debt (parking `P-INDUS-OLDSHAPE-67-68`) — unre
 - **Branch:** `main`, HEAD `fc8e2796` (2026-07-22). **This session's commits (pushed):** `0da5ef6a`
   (FR-37-2/3/5/25 binding) → `87d1f94c` (FR-37-11 footer count) → `9b9a8028` (FR-37-6 header gut) →
   `9ff24f74` (slug-vs-area fix) → `fc8e2796` (spec verification record). Later session (D360):
-  `47c93db2` (spec de-client correction) → `94ab240f` (orphan pattern delete). **D-ceiling: D360.**
+  `47c93db2` (spec de-client correction) → `94ab240f` (orphan pattern delete) → `93b1f8a0`
+  (FR-36-18 cutover proof). **D-ceiling: D361.**
   ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
   landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
