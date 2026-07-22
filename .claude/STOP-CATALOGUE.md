@@ -398,10 +398,23 @@ for real before claiming done?
   pages — inspecting before deleting prevented destroying real client content on production; and two
   dispatched implementer agents delegated instead of executing, burning a cycle and spawning nested
   agents that needed stopping.
-- **2026-07-22 (Track-1 converter reconciliation) re-run:** previous unique `STOP-*` = **61**;
-  Track 1 carried in **6** earned-but-unlanded tokens from its Fronts-1/2 session
-  (`STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`, `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`,
-  `STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT`, `STOP-VERIFY-THE-DELIVERABLE-EXISTS`,
-  `STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START`, `STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT`),
-  SUBTRACTED none → **67**. 67 >= 61. PASS. All 6 earned in the prior Track-1 converter session
-  (Fronts 1/2) and landed in the shared catalogue now as the deferred cross-track reconciliation.
+- **2026-07-22 (Track-1 converter reconciliation) re-run:** Track 1 ADDED **6** earned-but-unlanded
+  tokens from its Fronts-1/2 session (`STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`,
+  `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`, `STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT`,
+  `STOP-VERIFY-THE-DELIVERABLE-EXISTS`, `STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START`,
+  `STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT`), SUBTRACTED none. **All 6 verified present as
+  DEFINED entries** (`grep -cE '^\s*-\s+\*\*STOP-<token>'` = 1 each) — no defence was lost.
+  > ⚠ **RECEIPT-ARITHMETIC RACE — corrected 2026-07-22 by the handoff QC gate (do not repeat).**
+  > This entry originally claimed "previous 61 → 67". That was WRONG, and so is the
+  > D361-D362 entry directly above it: **both co-active tracks computed `previous` as 61 from a
+  > stale read**, so neither chained off the other (Track 1's 6 landed in `e8f57958` BEFORE
+  > Track 2's 2 in `a20a234d`, yet Track 2 still started from 61). The claimed totals (63 and 67)
+  > are therefore both fiction. **The tokens themselves are all present and correct — only the
+  > arithmetic was wrong.**
+  > **Canonical count method from now on (state the command, never a bare number):**
+  > `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  > → **63 DEFINED entries** at this commit. (Counting every `STOP-…` mention anywhere gives 71 —
+  > it includes prose cross-references, which is why bare counts drifted. A `[A-Z-]+` character
+  > class also silently truncates any token containing a digit, giving 59; that is the third
+  > wrong answer this file has carried.) **On a shared checkout, re-run the command immediately
+  > before writing a receipt — never carry a `previous` figure forward from a prior read.**

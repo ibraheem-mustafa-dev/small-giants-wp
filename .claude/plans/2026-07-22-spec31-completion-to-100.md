@@ -5,6 +5,7 @@ project: small-giants-wp
 thread: cloning-pipeline (Track 1)
 created: 2026-07-22
 status: active
+progress: "2026-07-22 — A1-A6 DONE, B1 DONE (5a7466cc), B3 DONE (f8a4388e, the Bean-caught transform/filter un-exclude + hover-lift), C1a DONE (51629e37, F3 LANDED runtime + batch runner). REMAINING = C1b/C2: deploy phase-f fixtures as canary pages (the gating dependency), wire check_landed(), drive the 14 baselined UNACCOUNTED to 0, live verify + Bean's eye."
 governing_spec: specs/31-UNIVERSAL-CLONING-PIPELINE.md (§5 completion matrix + §12.6 remaining scope)
 goal: Drive Spec 31 to provable 100% fulfilment so Track 1 can close it before moving to Spec 35.
 ---

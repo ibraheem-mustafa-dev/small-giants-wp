@@ -1,148 +1,251 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: "Track 1 — converter resolver + variant fronts DONE + pushed (2026-07-22). Next = conformity audit → /plan Spec 31 completion (tier-0 scripts + tier-1 Haiku first, parallelise, then Sonnet)."
+thread: "Track 1 — Spec 31 completion wave DONE + pushed (2026-07-22, 11 commits). Next = close Spec 31 to 100% (deploy fixtures → wire check_landed → UNACCOUNTED→0 → live verify), THEN conformance-audit Spec 35 and take it to 100% the same way."
 generated: 2026-07-22
 track: 1-converter
-note: "Track 1's prompt lives HERE, not .claude/next-session-prompt.md — that canonical path is contended by Track 2 (Spec 37). See the top warning."
+note: "Track 1's prompt lives HERE, not .claude/next-session-prompt.md — that canonical path is contended by Track 2 (Spec 36/37). See the top warning."
 ---
 
 # Track 1 — Next Session Prompt (2026-07-22)
 
 **Invoke `/autopilot` before anything else.** Then read this end-to-end.
 
-> ⚠ `main` is SHARED with a co-active **Track 2** (Spec 36/37 header/footer/nav), and the
-> two tracks CONTEND for `.claude/next-session-prompt.md` — Track 2 currently owns that
-> canonical path. **THIS is Track 1's prompt** (`next-session-prompt-track1-converter.md`).
-> Track 2 also owns `LEDGER.md`, `parking.md`, `decisions.md`, `STOP-CATALOGUE.md`, the
-> D-numbering cadence. Path-scope every commit; re-check `git branch --show-current` in the
-> SAME command as the commit; NEVER `git add -A`.
+> ⚠ `main` is SHARED with a co-active **Track 2** (Spec 36/37 header/footer/nav) and **Track 1b**
+> (Spec 35 inspector-UX). Track 2 owns `LEDGER.md`, `parking.md`, `decisions.md`,
+> `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, and the D-numbering cadence.
+> **THIS is Track 1's prompt** (`next-session-prompt-track1-converter.md`).
+> Path-scope every commit; re-check `git branch --show-current` in the SAME command as the commit;
+> NEVER `git add -A`.
 > **VERIFY every commit landed via `git log -1`, NOT the hash the commit reported** — on this
-> shared checkout a co-active commit can race in and the reported HEAD may be theirs (this bit
-> us: a Front-2 commit "reported" a hash that was Track 2's ledger commit; the real changes sat
-> uncommitted until re-committed + verified).
+> shared checkout a co-active commit can race in and the reported HEAD may be theirs.
+> Last session this discipline held across 11 commits with zero collisions, and Track 2's session
+> close (`a20a234d`) did NOT clobber Track 1's parking/STOP entries (verified by grep afterwards —
+> do that check again next time rather than assuming).
 
 ## Plain-English state (where we are)
 
-Track 1 landed the **converter resolver + variant fronts** and pushed both:
-- **Front 1 (`7a6a7586`, pushed):** the routing resolver was under-keyed — it returned every
-  attr sharing a (block, CSS-property) pair (incl. tier/hover siblings) and took the first by
-  row order. Now keyed to the base-resolver domain (root element, base/desktop tier, base
-  state), fail-loud on genuine ambiguity. Also fixed a pre-existing `:hover` state-separation
-  bug it unmasked: a new shared `tier_state_suffix` helper applies tier+state re-append across
-  **all four box resolvers** (outer_box/content_band/grid/grid_area), so a `:hover` border
-  routes to `{attr}Hover`, not the base attr. converter/tests **10 failing → 0** (449 pass);
-  Gate A byte-identical (18 pre-existing stale goldens). Front 3 (container band-width `800px`
-  seed) + 2 cleanups (option-picker role at source; dead `CONTROL_COMPONENT_MAP` removed)
-  rode in this commit.
-- **Front 2 (`ccfb7967`, pushed):** trust-bar `image-badge` had zero discriminators
-  (undetectable) and the F6 gate flagged icon-circle's 5 css markers as "lift-producible".
-  Added 4 genuine image controls (`badgeImageBorderRadius/Size/Shadow/ObjectFit`) that double
-  as image-badge's recogniser (scoped CSS, Spec 32; conditional inspector panel); rewrote the
-  F6 gate from "no lift-producible discriminator" to an **ambiguity rule** (2+ variants sharing
-  an identical/empty signature = violation; one zero-signature fallback allowed). **F6 0
-  violations** (was 5; negative-control-verified it still bites); converter 449; db-consistency
-  52. Built via `/subagent-driven-development` (implementer + reviewer; reviewer's Important
-  shadow-allowlist finding fixed).
+**Spec 31 (the cloning pipeline) is much closer to done than its own text implies.** A live-code
+grounding pass on 2026-07-22 found most of §12.6's "what's left" list was ALREADY BUILT — the spec
+just lagged the code. Last session shipped the genuinely-open remainder except the closing gate.
 
-**Committed-and-pushed; NOT live-clone-verified** (Bean-approved: no clone-verify this session).
-The visual-diff gate was bypassed with `--no-verify` per its own guidance for non-visual changes.
+Shipped last session (11 commits, all pushed, all gates green):
 
-## THIS SESSION'S PLAN (Bean-directed)
-1. **Conformity audit** — docs/data vs live code + DB (dispatch parallel `Explore`/`general-purpose`
-   to spot-check high-traffic specs, esp. Spec 31, against the live converter + `/sgs-db` counts).
-   Also reconcile the deferred shared-doc items below — ONLY when Track 2 is idle, committed atomically.
-2. **`/plan` Spec 31 completion**, ordered **tier-0 (scripts) + tier-1 (Haiku, mechanical) FIRST**;
-   map **file-independent** tasks → parallelise (`/dispatching-parallel-agents`); **overlapping** →
-   combine; then layer in **Sonnet** subagents for reasoning-heavy tasks. Maximise fan-out; sequence
-   only where files/state collide.
+| Unit | What landed |
+|---|---|
+| Conformity audit | Spec 31 §3.A/§4 reconciled to Front-1's declarative routing columns; MF-4 marked CLOSED; 6 stale hardcoded counts removed from `CLAUDE.md:207`; parking reframed honestly; 6 earned STOP tokens landed (D101 receipt 61→67) |
+| A1–A6 | property seed/exclude audit; `check_variants` fail-loud on missing/malformed enum; `object-position` proven to LAND; exclude-with-reason migration; spec residuals refreshed |
+| **B1** (`5a7466cc`) | `::before`/`::after` pseudo-element overlay lift — was a SILENT production drop (the DOM matcher's `':' not in last_part` guard excluded `::` too) |
+| **B3** (`f8a4388e`) | **transform/filter/top/left un-excluded + hover-lift** — `scaleHover` (11 blocks), `imageZoomHover` (4), `grayscaleHover` (4), `positionY`/`positionX`. Every draft hover scale/zoom/grayscale effect had been silently dropped |
+| **C1a** (`51629e37`) | F3 LANDED runtime + multi-fixture batch runner with the §7b false-win guards |
 
-## MANDATORY READING GATE (before any converter edit)
+**Current test/gate state:** 761 converter+ledger tests pass, 200 oracle tests pass; coverage gate
+0 NEW UNACCOUNTED (14 baselined); `no_slug_literal` + `db-consistency` clean.
+
+**What Spec 31 = 100% still needs — and its hard prerequisite.** The F3 LANDED instrument now
+EXISTS but can prove nothing, because no per-fixture canary pages are deployed.
+`ledger/coverage_check.py::check_landed()` is DELIBERATELY still unwired: wiring it with no live
+URLs returns `NOT-RENDERED` for all 36 fixtures and would **fail the F5 gate for every session,
+including Track 2's**. That deploy is Task 1's first move.
+
+**Then Spec 35** (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — the block-inspector-UX
+standard, i.e. what a non-coder client actually sees in the editor sidebar). Bean wants it taken to
+100% the SAME way Spec 31 was: conformance-audit it against live code + the DB FIRST, then plan,
+then execute. Live status per LEDGER Track 1b: **28 of 67 blocks manifested | OK 432 | GAP 1101 |
+ORPHAN 62**; FR-35-5 (`states` axis) + FR-35-6 (`animation` cluster) are APPROVED but NOT BUILT.
+
+## First action (≤5 min, zero dependencies)
+
+**Read Spec 31 in full** (item 2 of the reading gate below) — it is the Bean-locked gate before any
+converter edit and it primes everything in Task 1. Then run the suites to confirm the inherited
+state is genuinely green before changing anything:
+`cd plugins/sgs-blocks/scripts && python -m pytest converter/ ledger/ -q && python ledger/coverage_check.py --check`
+(expect 761 pass + `0 NEW UNACCOUNTED`). If either differs from that, STOP and reconcile before
+building — the inherited state is a claim, not a fact.
+
+## Mandatory READING (gate — before any converter edit)
 1. `/autopilot` (first).
-2. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** (Bean-locked).
-3. `.claude/STOP-CATALOGUE.md` — pre-flight ritual (Track 2's file; read, don't rewrite mid-race).
+2. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** (Bean-locked, ~672 lines).
+3. `.claude/STOP-CATALOGUE.md` — the pre-flight ritual + STOP entries (Track 2's file; read, don't rewrite mid-race).
+4. `.claude/plans/2026-07-22-spec31-completion-to-100.md` — the live plan + its AUDIT CORRECTION section.
+5. For Task 2 only: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — **IN FULL** before any Spec 35 work.
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
 | `/brainstorming` | Design gates before any converter/spec change |
-| `/gap-analysis` | Grade the conformity-audit output |
+| `/gap-analysis` | Grade the conformance-audit output before acting on it |
 | `/lifecycle` | Before any skill/agent/pipeline change |
 | `/research` | Auto-routes research tier when a decision is unclear |
-| `/strategic-plan` + `/phase-planner` | Plan + break down the spec-completion order |
-| `/dispatching-parallel-agents` | Fan out file-independent tier-0/tier-1 tasks |
+| `/strategic-plan` + `/phase-planner` | Plan + break down the Spec 35 completion order |
+| `/dispatching-parallel-agents` | Fan out file-independent audit + build tasks |
 | `/subagent-driven-development` | Implementer + reviewer loop per converter task |
 | `/delegate` | Route every dispatch (Haiku mechanical / Sonnet architectural) |
-| `/qc-council` | Multi-rater before any converter/pipeline/SGS-block commit (blub.db 255) |
+| `/qc-council` | Multi-rater before ANY converter/pipeline/SGS-block commit (blub.db 255) |
 | `/sgs-db` + `/wp-blocks` | DB authoritative — never hardcode a count |
+| `/wp-sgs-deploy` | The deploy ceremony for Task 1's canary fixture pages |
 
-## MCP Servers & Tools
+## Tool bindings — MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| `/sgs-db` (sgs-db.py) | Block schema/attrs/variants/counts |
-| `python ~/.claude/hooks/wp-blocks.py` | Block schema/markup/variations before "missing X" |
-| Playwright MCP | Live-page verification if a task needs it (clone-verify deferred by default) |
+| `/sgs-db` (sgs-db.py) | Block schema/attrs/variants/counts — the authoritative source |
+| `python ~/.claude/hooks/wp-blocks.py` | Block schema/markup/variations before any "missing X" claim |
+| Playwright MCP | Live-page verification (C2), editor probes, the oracle's live leg |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
 | `wp-sgs-developer` | Any converter/block build (constrain: no deploy/commit unless told) |
-| `Explore` / `general-purpose` | Parallel conformity-audit spot-checks (docs vs live code/DB) |
-| `feature-dev:code-reviewer` | Cross-check reviewer in the subagent-driven loop |
+| `Explore` / `general-purpose` | Parallel conformance-audit spot-checks (docs vs live code/DB) |
+| `feature-dev:code-reviewer` | Cross-check reviewer in the council loop before every converter commit |
 
 ---
 
-## Task 1 — Conformity audit (docs/data vs live code + DB)
-**What:** Spot-check high-traffic specs (esp. Spec 31) + doc counts vs live converter + `/sgs-db`; reconcile the deferred shared-doc items below.
-**Why:** Catches drift before planning spec-completion on a stale map.
-**Orchestration:** delegated — parallel `Explore`/`general-purpose` (Haiku/Sonnet via `/delegate`), file-independent → concurrent. Depends on: none. /qc gate: `/gap-analysis` on findings.
-**Acceptance:** a drift findings list (wrong FR status / count drift / spec-vs-code divergence), each mapped to a fix; deferred shared-doc items reconciled + committed atomically.
+## Task 1 — Spec 31 to 100%
+**What:** Close the LANDED gate so Spec 31 can be provably marked complete.
+**Why:** Bean's stated exit condition before Spec 35. Spec 31 §5/§12 define done as: across the
+multi-shape fixture set, every draft declaration is TRANSFERRED-and-LANDED, EXCLUDED-with-reason,
+or a tracked GAP — **zero UNACCOUNTED, zero WRITTEN-not-LANDED, zero CHEAT**.
+**Estimated time:** deploy ~20 min; wiring ~10 min; UNACCOUNTED triage ~45 min; live verify ~30 min.
 
-## Task 2 — `/plan` Spec 31 completion (tier-0/tier-1 first, parallelise)
-**What:** Strategic + phase plan for remaining Spec 31 scope, ordered tier-0 scripts → tier-1 Haiku → Sonnet, with a parallel/sequential dependency map.
-**Why:** Maximise cheap parallel throughput before expensive reasoning.
-**Orchestration:** inline (`/strategic-plan` → `/phase-planner`), then `/dispatching-parallel-agents` (file-independent) + `/subagent-driven-development` (per task). Depends on: Task 1. /qc gate: `/qc-council` before any converter commit.
-**Acceptance:** a plan whose tasks name model tier + parallel/sequential + file scope + acceptance per the Spec 31 §12 stage map (STOP-29: every deferral mapped to a named stage, never "out of scope").
+**Sub-steps, in dependency order:**
+1. **Deploy the phase-f fixture corpus as canary pages** (`P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES`).
+   Use `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — **NEVER hand-roll
+   tar/scp (D336 took two client sites down ~2.5h)**. Then populate
+   `plugins/sgs-blocks/scripts/oracle/fixture-canary-urls.json`.
+2. **Wire `check_landed()`** — the exact function body is in the `51629e37` commit message. Only
+   after step 1, or it fails the F5 gate for everyone.
+3. **Drive the 14 baselined UNACCOUNTED to 0** — each is enumerated in the coverage-gate output
+   (hero `padding`, media `max-width`, feature-grid `grid-template-columns`, trust-bar `font-size`,
+   cta-section `background-size`/`padding`, two `display:none` state selectors). For each: transfer,
+   exclude-with-reason, or keep as a justified tracked GAP. Do NOT bulk-baseline them away.
+4. **Live verify (C2)** — computed-parity per section on the canary **+ Bean's eye** (R-31-11 /
+   R-31-13). Numbers alone do not close; his eye alone does not close.
+5. **Then** mark Spec 31 COMPLETE and record the D-number.
 
-## Deferred shared-doc reconciliation (Track 1 owes; do in Task 1 when Track 2 idle)
-- **parking → archive (resolved):** `P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED` (Front 1),
-  `P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` (Front 2), `P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES`
-  (option-picker role fixed at source). `P-CSSLAYER-DROPPED-ON-AN-UNASKED-QUESTION` = DECIDED: layer
-  stays on its own `attr_for_layer_property` resolver, NOT folded into the element key → archive with
-  that decision. `P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN` = source-fixed (`800px` seed), NOT live-verified
-  → keep OPEN as "fix shipped, verify live".
-- **New parking (open):** `P-CHECK-VARIANTS-ENUM-SILENT-CONTINUE` — `check_variants.py` silently
-  `continue`s on a missing/malformed `enum_values` for a variant_attr block (reviewer Minor): a block
-  with a broken enum passes with 0 violations though detect_variant can't discriminate it. Fail-loud or
-  report. **Bucket:** tooling · **Status:** OPEN.
-- **Product-card follow-up (from Front-1 cleanup subagent):** `pickerPillBorderRadius`/
-  `pickerPillSelectedBorderRadius` carry the same wrong `role: typography` (pill* name-collision) in
-  attr-classification-overrides.json — same one-line `visual` fix as option-picker; left for Bean's call.
+**Orchestration:** step 1 inline (deploy is sensitive); step 3 fans out via
+`/dispatching-parallel-agents` (the 14 items are file-independent triage); step 4 inline with
+Playwright. Depends on: none. /qc gate: `/qc-council` before any converter commit.
+**Acceptance:** coverage gate reports **0 UNACCOUNTED + 0 WRITTEN-not-LANDED** across the corpus,
+the oracle batch shows real LANDED cells, live verify passes per section, Bean signs off.
 
-## STOP entries to carry into STOP-CATALOGUE (Track 2 owns the file; add when idle — D101, never subtract)
-Carry the 4 earned prior session (STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT,
-STOP-VERIFY-THE-DELIVERABLE-EXISTS, STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START,
-STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT) PLUS this session's two:
-- **STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT** — on a shared checkout with a co-active session,
-  the hash a `git commit` reports can be the OTHER session's racing commit. Verify via `git log -1`
-  (your message at HEAD) + `git status` (files clean), NEVER the reported hash. Extends
-  STOP-SHARED-CHECKOUT-HAZARD. (Recovered a nearly-lost Front 2.)
-- **STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC** — the SGS pre-commit visual-diff gate blocks any touch
-  of a block's render.php/block.json/edit.js without a passing visual-diff report; its own message
-  sanctions `--no-verify` for non-visual (logic/attr/meta) changes — use that, never fabricate a PASS.
+## Task 2 — Spec 35 conformance audit, then to 100%
+**What:** Run the SAME two-phase treatment on Spec 35 that worked on Spec 31: (a) conformance-audit
+the spec against live code + the DB, (b) plan + execute to 100%.
+**Why:** Spec 35 is closer to Bean's actual end-goal than the converter — it governs whether a
+non-coder client gets a complete, correct editor sidebar for every block.
+**Estimated time:** audit ~30 min (parallel); plan ~20 min; build scales with what the audit finds.
+
+**Sub-steps:**
+1. **Read Spec 35 IN FULL** before anything else.
+2. **Conformance audit** — dispatch parallel `Explore`/`general-purpose` agents to check the spec's
+   FR statuses against live code + `/sgs-db`. **Apply last session's hard-won lesson: audit by the
+   DECLARED SEMANTIC (`css_property`, `role`, the manifest), never by identifier NAME, and require
+   ≥2 signals before recording an "absent/missing" verdict** — a name-keyed audit wrongly excluded
+   `transform` because its consumer is called `scaleHover`. Expect the spec to LAG the code.
+3. **Grade the audit** with `/gap-analysis`, then `/strategic-plan` → `/phase-planner`, ordering
+   tier-0/tier-1 mechanical work FIRST and mapping file-independent tasks to parallel fan-out.
+4. **Execute** — known open work: FR-35-5 (`states` axis) + FR-35-6 (`animation` cluster), both
+   APPROVED NOT BUILT; rollout waves 2–3 (28 of 67 blocks manifested); the card-grid resting-state
+   defect; the ORPHAN 62 / GAP 1101 backlog. Canonical design:
+   `plans/2026-07-20-spec-35-cluster-vocabulary-rework-design.md`.
+5. Fold in `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` — 94 attrs where the derived
+   `inspector_control_type` disagrees with the stored value; of 18 hand-traced, **15 showed the
+   stored value was WRONG**; 76 unaudited. Bean's standing instruction: **finish the audit before
+   overwriting 94 rows on an 18-row sample.** This sits squarely on Spec 35's end-goal.
+
+**Orchestration:** step 2 delegated + parallel; step 3 inline; step 4 via
+`/subagent-driven-development`. Depends on: Task 1 closing first (Bean's sequence).
+**Acceptance:** a drift findings list with each item mapped to a fix; a phase plan whose tasks name
+model tier + parallel/sequential + file scope + acceptance; then Spec 35's own completion criteria
+met and verified live.
+
+---
+
+## Dependency graph
+```
+Task 1.1 deploy fixtures (inline)
+   ↓
+Task 1.2 wire check_landed (inline)
+   ↓
+Task 1.3 UNACCOUNTED triage (PARALLEL fan-out — 14 independent items)
+   ↓ /qc-council gate
+Task 1.4 live verify + Bean's eye  →  SPEC 31 = 100%
+   ↓
+Task 2.1 read Spec 35 in full (inline)
+   ↓
+Task 2.2 conformance audit (PARALLEL agents)
+   ↓ /gap-analysis
+Task 2.3 plan (inline)  →  Task 2.4 execute (subagent-driven)  →  SPEC 35 = 100%
+```
+
+## Structural defences — STOP catalogue (carry forward, never subtract — D101)
+The 6 STOP tokens this track owed were **LANDED into `.claude/STOP-CATALOGUE.md` last session**
+(count 61→67, receipt recorded in that file): `STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`,
+`STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`, `STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT`,
+`STOP-VERIFY-THE-DELIVERABLE-EXISTS`, `STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START`,
+`STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT`. **Justification for their removal from this prompt's
+"to carry" list: ABSORBED into the canonical catalogue, not dropped.** The four most load-bearing
+for this track, restated because they will bite again:
+
+- **STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT** — the hash a `git commit` REPORTS can be the
+  other session's racing commit. Verify via `git log -1` + `git status`, never the reported hash.
+- **STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC** — the pre-commit visual-diff gate blocks any touch
+  of a block's render.php/block.json/edit.js; its own message sanctions `--no-verify` for
+  non-visual (logic/attr/meta) changes. Use that; never fabricate a PASS report.
+- **STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS** — before banking a PASS ask "would this still
+  pass if the feature were absent?" Last session the ordering guard was only trusted after proving
+  it FAILS under the old ordering. Do that, don't reason about it.
+- **STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE** (Track 2, D362) — put "EXECUTE YOURSELF
+  with your OWN tools; do NOT use the Agent/Task tool to delegate" in every implementer dispatch.
+
+**NEW this session — ADD to STOP-CATALOGUE.md when Track 2 is idle (count must go 67 → 68):**
+- **STOP-AUDIT-BY-DECLARED-SEMANTIC-NOT-IDENTIFIER-NAME** — asking "does anything consume X?" by
+  searching identifier NAMES misses semantically-named consumers (`scaleHover` consumes
+  `transform`; `grayscaleHover` consumes `filter`). It wrongly excluded 2 CSS properties and
+  silently dropped every hover scale/zoom/grayscale effect across 15+ blocks. Query the DECLARED
+  semantic (`css_property` / `role` / the manifest) **plus** a semantic sweep, and require ≥2
+  signals before recording an "absent" verdict — `css_property` alone was only partly seeded, so a
+  single-signal audit fails in BOTH directions. An exclusion is a load-bearing claim that silently
+  deletes fidelity. (Bean-caught, 2026-07-22.)
 
 ## Pre-flight ritual (answer before first Write/Edit)
 1. On `main`? Next commit path-scoped away from Track 2 (`LEDGER.md`, `parking.md`, `decisions.md`,
-   `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, `site-*`, `adaptive-nav`, `mega-menu`,
-   spec 36/37, `header-*` patterns)?
-2. Touching the converter? → Spec 31 read in full, design-gated, `/qc-council` before commit.
-3. About to accept a subagent "done/irreducible/pre-existing" claim? → re-derive from the tool; check
-   the deliverable exists; ask what the number should be.
-4. After committing → `git log -1` shows MY message at HEAD + `git status` clean? (shared-checkout race.)
+   `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, `site-*`, `mega-menu`, spec 36/37,
+   `header-*` patterns)?
+2. Touching the converter? → Spec 31 read IN FULL, design-gated, `/qc-council` before commit.
+3. About to accept a subagent "done / clean / irreducible / pre-existing" claim? → re-derive it from
+   the tool; check the deliverable EXISTS; ask what the number SHOULD be. Last session a "clean"
+   review rested on a DB claim that was false — the query took 30 seconds and found a real bug.
+4. After committing → does `git log -1` show MY message at HEAD + `git status` clean?
+5. Banking a PASS? → would it still pass if the feature were absent? If yes, the check is vacuous.
+6. Recording something as "absent / missing / excluded"? → did I check ≥2 signals, including the
+   declared semantic, not just the identifier name?
 
 ## Guardrails
-- Converter changes: `/qc-council` multi-rater before commit (blub.db 255); verify on the REAL draft +
-  live code path, not synthetic unit-green.
+- **Deploy: `build-deploy.py --target sandybrown` ONLY.** Never hand-roll tar/scp/`rm -rf` (D336).
+  Don't reach for `--allow-dirty` or `--skip-verify`. `md5sum` local↔server BEFORE measuring.
+- Converter changes: `/qc-council` multi-rater before commit (blub.db 255); verify on the REAL draft
+  + the live code path, not synthetic unit-green.
 - DB authoritative — never hardcode a count (`/sgs-db`, `/wp-blocks`).
-- Clone-verify DEFERRED by default (Bean); the F6 + converter test suites are the gate.
+- Every deferral maps to a named spec STAGE, never "out of scope" (STOP-29).
 - Time estimates default LOW; smallest first action < 5 min.
+- Suites before AND after, from `plugins/sgs-blocks/scripts`:
+  `python -m pytest converter/ ledger/ -q` · `python -m pytest oracle/ -q` ·
+  `python ledger/coverage_check.py --check` · `python converter/gates/no_slug_literal.py` ·
+  `python db-consistency/run.py`.
+
+## Open residuals (parked, not blockers)
+The previous prompt's "Deferred shared-doc reconciliation" section is **DONE** — all items were
+reconciled and committed last session (`e8f57958`, `10b154c1`). Current parked residuals:
+
+- `P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES` — Task 1.1; THE gating dependency for Spec 31 100%.
+- `P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE` — real fidelity gap the new height guard exposed
+  (244px vs 327px; items clone to `sgs/info-box`, which brings its own box model). Was invisible
+  because the old artefact had `draft_height_px=null` → the guard was SKIPPED, not passed.
+- `P-NAVMENU-UNDERLINEOFFSET-CSSPROP-MISSEED` — `underlineOffset` seeded as `css_property='position'`.
+- `P-POSTGRID-SCALEHOVER-OUT-OF-B3-SCOPE` — per-item + multi-property, outside the root-domain state
+  lookup B3 built; its hover scale still drops.
+- `P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN` — an EDITOR control-state bug, **not** fixed by the 800px
+  seed (the previous prompt conflated the two). Still needs a live Playwright repro.
+- `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` — Task 2.5.
