@@ -100,6 +100,21 @@ def test_object_fit_written_to_media_objectFit(conn):
     assert (out.attr, out.value) == ("objectFit", "cover")
 
 
+def test_object_position_written_to_media_objectPosition(conn):
+    # A5 grounding check (2026-07-22): 'object-position' has a property_suffixes row
+    # (suffix='ObjectPosition', role=visual, kind=string) and sgs/media declares a
+    # matching 'objectPosition' attr (verified against the live DB). It was never
+    # mentioned in outer_box.py's docstring/allowlist commentary, so it was untested
+    # — but the SAME generic mechanism object-fit uses (attr_resolve →
+    # attr_for_layer_property → block_attributes, name-free) already routes it with
+    # zero extra code: candidate = suffix[0].lower()+suffix[1:] = 'objectPosition',
+    # which matches sgs/media's registered attr exactly. This test proves the real
+    # (non-gap) transfer, closing the untested-but-working gap.
+    out = outer_box.resolve(Decl("object-position", "top center", "Base"), _ctx(conn, "sgs/media"))
+    assert isinstance(out, Write)
+    assert (out.attr, out.value) == ("objectPosition", "top center")
+
+
 def test_opacity_written_to_media_opacity_as_number(conn):
     out = outer_box.resolve(Decl("opacity", "0.5", "Base"), _ctx(conn, "sgs/media"))
     assert isinstance(out, list) and len(out) == 1

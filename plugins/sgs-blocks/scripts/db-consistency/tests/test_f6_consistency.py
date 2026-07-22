@@ -489,6 +489,77 @@ class TestCheck3PlantedViolation:
         )
 
 
+class TestCheck3PlantedMissingOrMalformedEnum:
+    """Negative-control-or-the-test-is-vacuous fix (2026-07-22, parking
+    P-CHECK-VARIANTS-ENUM-SILENT-CONTINUE): a variant_attr block with
+    missing/malformed enum_values must be REPORTED, not silently skipped.
+    Before the fix these all returned [] — proving the check would have
+    passed even though detect_variant has no roster to discriminate with."""
+
+    def test_check3_flags_missing_enum_row(self):
+        """Plant: variant_attr block with NO block_attributes row at all for
+        its variant attr (no enum_row) → must be flagged, not silently skipped."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/no-enum-block", "variant")],
+            # No variant_enum row planted at all — enum_row will be None.
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 violation for a missing enum row, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.block == "sgs/no-enum-block"
+        assert v.check == "variants"
+        assert v.key == variant_key("sgs/no-enum-block", "__missing_enum__")
+
+    def test_check3_flags_malformed_enum_json(self):
+        """Plant: enum_values is present but not valid JSON → must be flagged."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/bad-json-block", "variant")],
+            variant_enum=[
+                ("sgs/bad-json-block", "variant", "{not valid json"),
+            ],
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 violation for malformed enum JSON, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.block == "sgs/bad-json-block"
+        assert v.check == "variants"
+        assert v.key == variant_key("sgs/bad-json-block", "__malformed_enum__")
+
+    def test_check3_flags_non_list_enum(self):
+        """Plant: enum_values decodes to valid JSON but not a list (e.g. an
+        object) → must be flagged, not silently skipped."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[("sgs/non-list-block", "variant")],
+            variant_enum=[
+                ("sgs/non-list-block", "variant", '{"not": "a list"}'),
+            ],
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 violation for a non-list enum, got {len(violations)}"
+        )
+        v = violations[0]
+        assert v.block == "sgs/non-list-block"
+        assert v.check == "variants"
+        assert v.key == variant_key("sgs/non-list-block", "__non_list_enum__")
+
+
 class TestCheck1PlantedViolation:
     """Check #1 must flag a block with ≥2 attrs from one css_property + writer_path."""
 

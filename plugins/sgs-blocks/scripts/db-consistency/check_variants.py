@@ -78,13 +78,66 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             (block_slug, variant_attr_col),
         ).fetchone()
         if not enum_row or not enum_row[0]:
-            continue  # no enum recorded for the variant attr — nothing to compare
+            # A variant_attr block with NO enum recorded is not "nothing to
+            # compare" — it means detect_variant has no roster to discriminate
+            # against at all. Silently skipping this made the gate pass with
+            # 0 violations for a block whose variant enum is simply missing
+            # (negative-control-or-the-test-is-vacuous class). Surface it.
+            violations.append(Violation(
+                check="variants",
+                block=block_slug,
+                detail=(
+                    f"{block_slug}: variant_attr '{variant_attr_col}' has no "
+                    f"enum_values recorded in block_attributes — detect_variant "
+                    f"has no variant roster to discriminate against for this block."
+                ),
+                fix=(
+                    f"Declare an 'enum' for '{variant_attr_col}' on "
+                    f"src/blocks/{block_slug.replace('sgs/', '')}/block.json, then run: "
+                    f"python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
+                ),
+                key=variant_key(block_slug, "__missing_enum__"),
+            ))
+            continue
 
         try:
             raw_variant_names = json.loads(enum_row[0])
         except (TypeError, ValueError):
+            violations.append(Violation(
+                check="variants",
+                block=block_slug,
+                detail=(
+                    f"{block_slug}: variant_attr '{variant_attr_col}' has a "
+                    f"malformed enum_values value in block_attributes (not valid "
+                    f"JSON) — detect_variant cannot read a variant roster for "
+                    f"this block."
+                ),
+                fix=(
+                    f"Re-run: python plugins/sgs-blocks/scripts/sgs-update-v2.py "
+                    f"--stage 1 to reseed enum_values for '{block_slug}' from its "
+                    f"block.json 'enum'. If the reseed does not fix it, the "
+                    f"block.json 'enum' itself is malformed and needs correcting."
+                ),
+                key=variant_key(block_slug, "__malformed_enum__"),
+            ))
             continue
         if not isinstance(raw_variant_names, list):
+            violations.append(Violation(
+                check="variants",
+                block=block_slug,
+                detail=(
+                    f"{block_slug}: variant_attr '{variant_attr_col}' enum_values "
+                    f"decodes to a {type(raw_variant_names).__name__}, not a list — "
+                    f"detect_variant cannot read a variant roster for this block."
+                ),
+                fix=(
+                    f"Check the 'enum' declared for '{variant_attr_col}' on "
+                    f"src/blocks/{block_slug.replace('sgs/', '')}/block.json is a "
+                    f"JSON array, then run: python plugins/sgs-blocks/scripts/"
+                    f"sgs-update-v2.py --stage 1"
+                ),
+                key=variant_key(block_slug, "__non_list_enum__"),
+            ))
             continue
 
         # '' in a variant enum is the universal "no variant chosen yet" sentinel
