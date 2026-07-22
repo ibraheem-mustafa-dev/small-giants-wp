@@ -43,33 +43,26 @@ pre-commit qc-council, 1 by the live canary — the binding gated on `attrs.area
 Deferred (not needed for usable): tri-state (FR-37-14), scoped behaviour CSS (FR-37-15), starter picker
 (FR-37-7), legacy retirement (FR-37-21), Simple/Advanced + a11y polish (FR-37-26..31).
 
-**⭐ LATEST (2026-07-22 later session, D360/D361) — Task-1 de-client DONE + FR-37-3 render RE-PROVEN
-live.** The framework repo now carries **no client data** (`parts/header.html` was already a shell;
-deleted the orphan `footer-indus-foods.php` after a 0-reference check on BOTH sites — `47c93db2`,
-`94ab240f`). Spec 37 §3.9a/FR-37-6 were STALE (said the file still leaked); corrected. **A scare
-worth recording:** a fresh canary test showed the CPT header/footer NOT rendering — a systematic-
-debugging probe proved the binding CODE was perfect and the "failure" was a **store mismatch**: a raw
-`wp option update` on the shared canary wrote the active-layout pointer to a different store than the
-live domain reads (`wp option get`=1570 while frontend `get_option`=0, no object cache). Setting active
-via the real **"Set as active" admin action** rendered both markers exactly once (wrapper replaced,
-0 console errors) — FR-37-3/FR-37-2/FR-37-1 acceptance MET live. New defence:
-`STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`. **Canary state:** generic proof CPTs
-`sgs_header` #1570 + `sgs_footer` #1571 left ACTIVE (labelled "Proof Header/Footer" — the real ones
-come via the header/footer cloning pipeline later; clear them via the admin "Clear active" action if the
-canary's normal header/footer is wanted back).
+**⭐ LATEST (2026-07-22 later session, D360/D361/D362) — Task-1 de-client DONE + FR-37-3 render RE-PROVEN
+live + FR-37-21 legacy nav RETIRED (full detail: decisions D360/D361/D362).** Repo now carries **no
+client data** (deleted orphan `footer-indus-foods.php` after a 0-ref check both sites — `47c93db2`,
+`94ab240f`; Spec 37 §3.9a/FR-37-6 stale claims corrected). **FR-37-3 scare (D360):** a fresh canary test
+showed the CPT header NOT rendering — a probe proved the binding CODE was perfect; the "failure" was a
+**store mismatch** (a raw `wp option update` wrote to a different option store than the live domain reads,
+no object cache). Setting active via the real **"Set as active" admin action** rendered both markers
+once — acceptance MET live. Defence: `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`.
+**Canary state:** generic proof CPTs #1570/#1571 left ACTIVE (clear via admin "Clear active" to restore).
 
-**⭐ FR-36-18 Indus cutover mechanism PROVEN live (D361, 2026-07-22).** A GENERIC proof header
-(`sgs_header` #360 on palestine-lives) built on `sgs/nav-menu` (ref:3) + `sgs/nav-drawer`, set active
-via the admin action, passed EVERY gate on the production Indus site: marker renders once + core wrapper
-replaced + no legacy adaptive-nav in output · desktop 7-link menu · mobile burger→drawer opens axe 0 ·
-no-overflow 375/768/1440 · no-JS crawl · **adaptive-nav still registered (rollback intact)**.
-palestine-lives now runs the current `main` sgs-blocks build (it lacked `nav-drawer` + the FR-37
-binding; deployed clean via isolated worktree, checksum-verified). **This is a MINIMAL proof of the
-mechanism, NOT the faithful branded Indus header** — that comes via the header/footer cloning pipeline
-(Spec 33 Part 2). **FR-37-21 legacy retirement DONE (D362, Bean-directed): `sgs/adaptive-nav` +
-`sgs/mega-menu` DELETED** (`f1f86ea0`+`23a3cf63`) — repo + canary verified; production deploy authorised
-with `--skip-oldshape-audit` (result below). The gate caught 2 live refs first (canary draft 1320 =
-false positive; prod `wp_navigation` 100 = orphan) — both cleared. adaptive-nav rollback is now git-only.
+**⭐ FR-36-18 Indus cutover PROVEN live + FR-37-21 legacy nav RETIRED (D361/D362).** A GENERIC proof
+header (#360 on palestine-lives, `sgs/nav-menu` ref:3 + `sgs/nav-drawer`, set active via the admin
+action) passed every gate on the production Indus site (render/menu/drawer/no-overflow/no-JS-crawl). Then
+**`sgs/adaptive-nav` + `sgs/mega-menu` were DELETED** (Bean-directed; `f1f86ea0`+`23a3cf63`) — repo +
+canary + **PRODUCTION verified** (deployed `--skip-oldshape-audit`, checksum-matched; Indus mobile drawer
+opens as a `<dialog>` with 7 links, 0 console errors, 0 fatals, no legacy markup). The zero-live-instances
+gate caught 2 refs first (canary draft 1320 = false positive; prod `wp_navigation` 100 = orphan) — both
+cleared. adaptive-nav rollback is now git-only. Both cutover + retirement are the MECHANISM/cleanup — the
+faithful branded Indus header still comes via cloning (Spec 33 Part 2). (axe/overflow not re-run this pass
+— same blocks were axe-0 pre-retirement.)
 
 **Canary + Indus state (both show GENERIC proof headers now):** sandybrown = proof CPTs #1570/#1571
 active; palestine-lives = proof header #360 active. Restore normal via the admin **"Clear active"** row
