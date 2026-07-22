@@ -17,8 +17,11 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 > was PARKED rather than silently fixed or ignored (per `a-gate-firing-is-evidence-about-your-data`).
 > **Work:** open posts 67/68 in the Site Editor / block editor, "Attempt Block Recovery" on the
 > flagged hero/cta-section blocks (D270 — never `wp-cli str_replace` on post_content), re-save, then
-> re-run the deploy WITHOUT `--skip-oldshape-audit` to confirm clean. **Status: OPEN** · **Bucket:**
-> Tech-debt · **Trigger:** next palestine-lives content/deploy session.
+> re-run the deploy WITHOUT `--skip-oldshape-audit` to confirm clean. **Update 2026-07-22 (D362):** this
+> same debt then blocked the FR-37-21 legacy-retirement PROD deploy (the gate blocks the WHOLE deploy on
+> any debt-carrying post, even one the deploy doesn't touch); Bean authorised `--skip-oldshape-audit`
+> again. Debt still OPEN — fixing 67/68 stops the need to skip on every palestine-lives deploy. **Status:
+> OPEN** · **Bucket:** Tech-debt · **Trigger:** next palestine-lives content/deploy session.
 
 ## 2026-07-20 (/handoff Gate 4.6) — LEDGER + decisions.md still over their size caps; 2 docscore checks are false positives
 

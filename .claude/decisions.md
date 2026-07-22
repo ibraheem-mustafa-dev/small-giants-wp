@@ -15,6 +15,35 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D362 [INCIDENT] — FR-37-21 legacy nav retired (adaptive-nav + mega-menu deleted); repo + canary done, prod deploy gate-skipped (2026-07-22)
+
+**Supersedes D361's "retirement stays gated."** Bean directed: FR-37-21's only gate is FR-36-18 green
+(met), so retire now — the "real branded header" is a cloning concern, not a retirement gate. Executed:
+`f1f86ea0` (re-point framework-header-default + 3 search starters off the adaptive-nav wrapper onto
+`sgs/nav-menu` + `sgs/nav-drawer`) → `23a3cf63` (delete `sgs/adaptive-nav` + `sgs/mega-menu` src+build,
+`class-sgs-adaptive-nav-renderer.php`, 7 `mega-menu-*.html` parts, 7 `mega-menu-*.php` patterns, 7
+`theme.json` templateParts entries, `mega-menu-panels.css`; clean all functional refs; `/sgs-update`
+pruned DB: orphan_blocks_deleted=2, 14 supports, 1 capability, 44 attrs).
+
+**The zero-live-instances gate earned its keep.** It halted deletion twice on found live references before
+Bean authorised clearing them: canary draft page 1320 = a FALSE positive (`patternName` metadata text
+only, 0 real block instances — deleted as test cruft); production `wp_navigation` post 100 "Primary
+Navigation" = a REAL orphan (contained `sgs/mega-menu` usage but the live header uses `sgs/nav-menu
+{ref:3}`, a classic menu TERM not that post — confirmed unreferenced, deleted). **Latent bug fixed in
+passing:** `site-header/edit.js`'s insert TEMPLATE still auto-inserted the now-deleted adaptive-nav →
+would render an invalid-block placeholder on every fresh header; retargeted to `sgs/nav-menu`.
+
+**Orchestration lesson (INCIDENT):** two dispatched wp-sgs-developer agents mis-behaved by DELEGATING
+(spawning sub-agents) instead of executing, wasting a cycle and creating duplicate/nested agents that
+needed stopping. Fix that worked: re-dispatch with an explicit "EXECUTE YOURSELF with your own tools, do
+NOT use the Agent/Task tool to delegate — you are the implementer" instruction. Verify every agent's
+"done" against the real repo/live state before believing it (held all session).
+
+**Deployed + canary-verified** (fresh-default renders the new nav, grep=0 functional refs, 0 console
+errors). **Production (palestine-lives) deploy** gated by pre-existing unrelated oldshape debt on posts
+67/68 (`P-INDUS-OLDSHAPE-67-68`); Bean authorised `--skip-oldshape-audit` for it (deploy ships the nav
+change, not those posts' content). Prod live-verification recorded in the LEDGER.
+
 ## D361 [ROUTINE] — FR-36-18 Indus cutover MECHANISM proven live (minimal proof); legacy retirement stays gated (2026-07-22)
 
 **What.** Proved Spec 36 Phase-2's live cutover works on the production Indus site (palestine-lives)

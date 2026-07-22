@@ -66,17 +66,26 @@ no-overflow 375/768/1440 · no-JS crawl · **adaptive-nav still registered (roll
 palestine-lives now runs the current `main` sgs-blocks build (it lacked `nav-drawer` + the FR-37
 binding; deployed clean via isolated worktree, checksum-verified). **This is a MINIMAL proof of the
 mechanism, NOT the faithful branded Indus header** — that comes via the header/footer cloning pipeline
-(Spec 33 Part 2). **⛔ FR-37-21 (delete adaptive-nav + mega-menu) stays GATED** until the REAL branded
-Indus header is cutover — retiring now would strand Indus on a generic header.
+(Spec 33 Part 2). **FR-37-21 legacy retirement DONE (D362, Bean-directed): `sgs/adaptive-nav` +
+`sgs/mega-menu` DELETED** (`f1f86ea0`+`23a3cf63`) — repo + canary verified; production deploy authorised
+with `--skip-oldshape-audit` (result below). The gate caught 2 live refs first (canary draft 1320 =
+false positive; prod `wp_navigation` 100 = orphan) — both cleared. adaptive-nav rollback is now git-only.
 
 **Canary + Indus state (both show GENERIC proof headers now):** sandybrown = proof CPTs #1570/#1571
 active; palestine-lives = proof header #360 active. Restore normal via the admin **"Clear active"** row
 action per site. Real headers land via cloning later.
 
-**Your next actions.** (1) ~~De-client per site~~ **DONE**. (2) ~~FR-36-18 Indus cutover~~ **mechanism
-PROVEN** (real branded header deferred to cloning). (3) The three carried §3 FRs (FR-37-33/34/35). All
-else in Spec 37 deferrable. **Flagged debt:** palestine-lives posts 67/68 carry pre-existing
-hero/cta-section old-shape attr debt (parking `P-INDUS-OLDSHAPE-67-68`) — unrelated to nav, not fixed.
+**Your next actions (NEXT SESSION — Bean-directed).** (1) **Conformance audit of Spec 36 + 37** — the
+Spec 36 completion map is at `.claude/reports/2026-07-22-spec36-completion-audit.md` (per-FR verified
+status + cost-tier + deps); extend it to Spec 37's remaining FRs. (2) **Then `/plan`** to orchestrate the
+remaining Spec 36 + 37 tasks: classify each by whether a python script / haiku / sonnet agent can do it
+in whole or part, map dependencies + what can run in PARALLEL vs a set order, then spawn a batch of
+sonnet agents for the sonnet-tier points — **Opus inline = orchestration + QC ONLY** (does not implement).
+Remaining feature FRs: Spec 37 FR-37-33/34/35 (§3 gaps), FR-37-14/15 (tri-state + scoped CSS), FR-37-7/8
+(starter picker), FR-37-26..31 (Simple/Advanced + a11y); Spec 36 per the audit map.
+**Flagged debt:** palestine-lives posts 67/68 pre-existing hero/cta old-shape attr debt
+(`P-INDUS-OLDSHAPE-67-68`) — gated the FR-37-21 prod deploy (skipped, Bean-authorised); resolve when
+touching Indus content.
 
 ---
 

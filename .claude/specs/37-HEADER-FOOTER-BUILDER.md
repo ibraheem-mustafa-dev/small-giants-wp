@@ -735,13 +735,23 @@ Delete, in one commit, gated on **Spec 36 FR-36-18** (Indus cutover) being green
 `templateParts` entries, and the 7 `mega-menu-*` patterns. Update
 `patterns/framework-header-default.php` — it currently emits `sgs/adaptive-nav` at lines
 29-33, so **every fresh SGS install gets the retired nav**.
-**Status:** `NOT-BUILT` — both blocks still registered via the unconditional `scandir`
-(`class-sgs-blocks.php:100-109`); 12 theme files still emit them.
-**⛔ Do not delete `sgs/adaptive-nav` before FR-36-18 is green — it is the rollback path.**
-**Note:** the retired block `sgs/mega-menu` and the live CPT `sgs_mega_menu` have nearly
-identical names and are unrelated. Check which you are deleting.
-**Done when:** zero references to either block outside `git log`; a fresh install renders the
-Spec 36 nav.
+**Status:** `✅ BUILT — repo + canary DONE 2026-07-22 (D362); production deploy separate.` Executed in
+two commits: `f1f86ea0` (re-point `framework-header-default.php` + the 3 `header-search-*` starters off
+the adaptive-nav wrapper onto `sgs/nav-menu` + `sgs/nav-drawer`) → `23a3cf63` (delete `sgs/adaptive-nav`
++ `sgs/mega-menu` src+build, `class-sgs-adaptive-nav-renderer.php`, the 7 `mega-menu-*.html` parts, the 7
+`mega-menu-*.php` patterns, the 7 `theme.json` templateParts entries, `mega-menu-panels.css`; clean all
+functional refs; `/sgs-update` pruned the DB — `orphan_blocks_deleted=2`, 14 supports, 44 attrs). Two
+blocking LIVE references were cleared first (Bean-authorised, the FR-36-18 zero-live-instances gate):
+canary draft page 1320 (a false-positive — only `patternName` metadata text) and production
+`wp_navigation` post 100 (a real orphan — the live header uses `sgs/nav-menu {ref:3}`, a classic menu
+term, not that post). **Latent bug fixed in passing:** `site-header/edit.js`'s insert TEMPLATE still
+auto-inserted the deleted adaptive-nav → now `sgs/nav-menu`. Deployed + verified clean on the canary
+(fresh-default renders the new nav, grep=0 functional refs, 0 console errors). **Production
+(palestine-lives) deploy** was gated by the pre-existing, unrelated oldshape debt on posts 67/68 (parking
+`P-INDUS-OLDSHAPE-67-68`); Bean authorised `--skip-oldshape-audit` for that deploy (ships the nav change,
+not those posts' content) — see the LEDGER for its live-verification result.
+**Done when:** zero references to either block outside `git log` (✅ repo); a fresh install renders the
+Spec 36 nav (✅ verified on the canary fresh-default). Production deploy tracked in the LEDGER.
 
 ### Pipeline
 
@@ -911,7 +921,7 @@ and eye are co-authoritative, neither closes alone).
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`); per-site CPTs + orphan-pattern delete owed (§3.9a) |
 | Starter picker | `NOT-BUILT` |
 | Rules engine | `BUILT` |
-| Legacy retirement | `NOT-BUILT`, gated on FR-36-18 |
+| Legacy retirement (FR-37-21) | `✅ DONE` repo + canary (D362, `f1f86ea0`+`23a3cf63`) — adaptive-nav + mega-menu deleted; prod deploy in LEDGER |
 
 ---
 
