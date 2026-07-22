@@ -15,7 +15,10 @@ Tests
      (verified by checking that testimonial's discriminators are inspected too)
 
 3. Planted violations — each check REJECTS a bad input:
-   - Check #3: synthetic block whose variant discriminator IS lift-producible
+   - Check #3 (ambiguity rule, 2026-07-22): synthetic block where two variants
+     share an identical discriminator signature (empty or non-empty), PLUS
+     negative controls proving a single empty-signature fallback and the ''
+     enum default-sentinel are both accepted, not flagged
    - Check #1: synthetic block with 2 attrs derivable from one css_property + writer_path
    - Check #2: synthetic stale has_inner_blocks (DB says 1, AND-rule derivation says 0)
 
@@ -137,6 +140,7 @@ def _make_minimal_db(
     variant_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_slot)
     block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks) or (..., composition_role, container_kind)
     roles: list[tuple] | None = None,  # (role_name,)
+    variant_enum: list[tuple] | None = None,  # (block_slug, attr_name, enum_values_json)
 ) -> sqlite3.Connection:
     """Create a minimal in-memory SQLite DB for unit tests.
 
@@ -145,6 +149,10 @@ def _make_minimal_db(
     blocks rows may be 2-tuples (slug, variant_attr) or 3-tuples (slug, variant_attr, tier).
     block_composition rows may be 2-tuples (block_slug, has_inner_blocks) or
     4-tuples (block_slug, has_inner_blocks, composition_role, container_kind).
+    variant_enum rows are 3-tuples (block_slug, attr_name, enum_values_json) —
+    the variant-attr's own declared enum roster (check #3's ambiguity rule
+    reads this to see zero-discriminator variants that never get a
+    variant_slots row).
     """
     conn = sqlite3.connect(":memory:")
     conn.execute(
@@ -153,7 +161,7 @@ def _make_minimal_db(
     )
     conn.execute(
         "CREATE TABLE block_attributes "
-        "(block_slug TEXT, attr_name TEXT, role TEXT, canonical_slot TEXT)"
+        "(block_slug TEXT, attr_name TEXT, role TEXT, canonical_slot TEXT, enum_values TEXT)"
     )
     conn.execute(
         "CREATE TABLE blocks "
@@ -209,6 +217,11 @@ def _make_minimal_db(
                 )
     if roles:
         conn.executemany("INSERT INTO roles (role_name) VALUES (?)", roles)
+    if variant_enum:
+        conn.executemany(
+            "INSERT INTO block_attributes (block_slug, attr_name, enum_values) VALUES (?,?,?)",
+            variant_enum,
+        )
     conn.commit()
     return conn
 
@@ -356,64 +369,123 @@ class TestCheck3LiveDB:
 # ===========================================================================
 
 class TestCheck3PlantedViolation:
-    """Check #3 must flag a synthetic discriminator that IS lift-producible."""
+    """Check #3 (ambiguity rule, 2026-07-22) must flag two variants that share
+    the same discriminator signature, and must NOT flag a single intentional
+    empty-signature fallback."""
 
-    def test_check3_flags_lift_producible_discriminator(self):
-        """Plant: variant discriminator 'gridTemplateColumns' on a test block.
+    def test_check3_flags_two_zero_discriminator_variants(self):
+        """Plant: two variants BOTH with no discriminating slots at all.
 
-        'grid-template-columns' → via _ATTR_NAME_OVERRIDES → 'gridTemplateColumns'.
-        The block declares gridTemplateColumns → lift-producible.
-        → check #3 MUST raise a Violation.
+        detect_variant genuinely cannot tell 'text-only' and 'image-badge'
+        apart when neither has a unique styling attr — this IS the real bug
+        this check exists to catch (trust-bar's pre-fix shape).
         """
         conn = _make_minimal_db(
-            property_suffixes=[
-                ("grid-template-columns", "Columns", "layout", "string"),
-            ],
-            block_attributes=[
-                ("sgs/test-block", "gridTemplateColumns"),
-            ],
+            property_suffixes=[],
+            block_attributes=[],
             blocks=[
                 ("sgs/test-block", "variant"),
             ],
             variant_slots=[
-                ("sgs/test-block", "split", "gridTemplateColumns"),
+                # Only 'icon-circle' gets a discriminator row; 'text-only' and
+                # 'image-badge' get none — both signatures are empty.
+                ("sgs/test-block", "icon-circle", "iconCircleSize"),
+            ],
+            variant_enum=[
+                ("sgs/test-block", "variant", '["icon-circle", "text-only", "image-badge"]'),
             ],
         )
         violations = check_variants.run(conn)
         conn.close()
 
         assert len(violations) == 1, (
-            f"Expected 1 violation for a lift-producible discriminator, got {len(violations)}"
+            f"Expected 1 violation for two empty-signature variants, got {len(violations)}"
         )
         v = violations[0]
         assert v.block == "sgs/test-block"
         assert v.check == "variants"
-        assert "gridTemplateColumns" in v.detail
-        assert v.key == variant_key("sgs/test-block", "gridTemplateColumns")
+        assert "image-badge" in v.detail and "text-only" in v.detail
+        assert v.key == variant_key("sgs/test-block", "image-badge|text-only")
 
-    def test_check3_passes_non_lift_producible_discriminator(self):
-        """A discriminator NOT in property_suffixes must pass check #3."""
+    def test_check3_flags_two_identical_nonempty_signatures(self):
+        """Plant: two variants that share the exact same non-empty discriminator
+        set — equally ambiguous, not just the empty-signature case."""
         conn = _make_minimal_db(
-            property_suffixes=[
-                ("gap", "Gap", "layout", None),
-            ],
-            block_attributes=[
-                ("sgs/test-block", "gap"),
-                ("sgs/test-block", "splitImage"),
-            ],
+            property_suffixes=[],
+            block_attributes=[],
             blocks=[
                 ("sgs/test-block", "variant"),
             ],
             variant_slots=[
-                # splitImage is NOT derivable from any property_suffixes row
-                ("sgs/test-block", "split", "splitImage"),
+                ("sgs/test-block", "variant-a", "sharedAttr"),
+                ("sgs/test-block", "variant-b", "sharedAttr"),
+            ],
+            variant_enum=[
+                ("sgs/test-block", "variant", '["variant-a", "variant-b"]'),
+            ],
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert len(violations) == 1, (
+            f"Expected 1 violation for identical non-empty signatures, got {len(violations)}"
+        )
+        assert violations[0].key == variant_key("sgs/test-block", "variant-a|variant-b")
+
+    def test_check3_passes_single_empty_signature_fallback(self):
+        """NEGATIVE CONTROL: exactly ONE empty-signature variant (the intentional
+        no-unique-feature fallback) must NOT trigger a violation — proves the
+        gate distinguishes 'one fallback' from 'two indistinguishable variants'.
+        """
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[
+                ("sgs/test-block", "variant"),
+            ],
+            variant_slots=[
+                ("sgs/test-block", "icon-circle", "iconCircleSize"),
+                ("sgs/test-block", "image-badge", "badgeImageSize"),
+                # 'text-only' has zero slots — the sole intentional fallback.
+            ],
+            variant_enum=[
+                ("sgs/test-block", "variant", '["icon-circle", "image-badge", "text-only"]'),
             ],
         )
         violations = check_variants.run(conn)
         conn.close()
 
         assert violations == [], (
-            f"Expected 0 violations for a non-lift-producible discriminator, got {len(violations)}"
+            f"Expected 0 violations for a single empty-signature fallback, got {len(violations)}: "
+            + "\n".join(v.detail for v in violations)
+        )
+
+    def test_check3_ignores_empty_string_default_sentinel(self):
+        """NEGATIVE CONTROL: an enum's '' default-placeholder entry (e.g.
+        sgs/testimonial's un-set default) must never be compared as if it were
+        a real variant — it would otherwise spuriously collide with a genuine
+        single empty-signature fallback."""
+        conn = _make_minimal_db(
+            property_suffixes=[],
+            block_attributes=[],
+            blocks=[
+                ("sgs/test-block", "variant"),
+            ],
+            variant_slots=[
+                ("sgs/test-block", "classic-card", "ratingStars"),
+                # 'minimal-quote' has zero slots — the sole intentional fallback.
+            ],
+            variant_enum=[
+                ("sgs/test-block", "variant", '["", "classic-card", "minimal-quote"]'),
+            ],
+        )
+        violations = check_variants.run(conn)
+        conn.close()
+
+        assert violations == [], (
+            "The '' sentinel must be excluded from ambiguity comparison — "
+            f"got {len(violations)} violation(s): "
+            + "\n".join(v.detail for v in violations)
         )
 
 

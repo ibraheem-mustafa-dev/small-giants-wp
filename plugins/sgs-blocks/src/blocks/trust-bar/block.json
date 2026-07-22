@@ -35,7 +35,12 @@
 					"iconCircleShadow"
 				],
 				"text-only": [],
-				"image-badge": []
+				"image-badge": [
+					"badgeImageBorderRadius",
+					"badgeImageSize",
+					"badgeImageShadow",
+					"badgeImageObjectFit"
+				]
 			},
 			"boxFamilies": {
 				"padding": [
@@ -321,6 +326,26 @@
 		"iconCircleShadow": {
 			"type": "string",
 			"default": "sm"
+		},
+		"badgeImageBorderRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeImageSize": {
+			"type": "number",
+			"default": 60
+		},
+		"badgeImageShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeImageObjectFit": {
+			"type": "string",
+			"default": "contain",
+			"enum": [
+				"cover",
+				"contain"
+			]
 		},
 		"textColour": {
 			"type": "string",

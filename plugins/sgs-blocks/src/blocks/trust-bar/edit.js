@@ -228,6 +228,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconCircleBorderRadius,
 		iconCircleShadow,
+		badgeImageBorderRadius,
+		badgeImageSize,
+		badgeImageShadow,
+		badgeImageObjectFit,
 		textColour,
 		columns,
 		gap,
@@ -522,6 +526,50 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
+				{ /* ── image-badge appearance controls ──────────────────────── */ }
+				{ badgeStyle === 'image-badge' && (
+					<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
+						<RangeControl
+							label={ __( 'Badge image size (px)', 'sgs-blocks' ) }
+							value={ badgeImageSize }
+							onChange={ ( val ) => setAttributes( { badgeImageSize: val } ) }
+							min={ 24 }
+							max={ 160 }
+							step={ 4 }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Image fit', 'sgs-blocks' ) }
+							value={ badgeImageObjectFit }
+							options={ [
+								{ label: __( 'Contain (show whole logo)', 'sgs-blocks' ), value: 'contain' },
+								{ label: __( 'Cover (fill the box)', 'sgs-blocks' ), value: 'cover' },
+							] }
+							onChange={ ( val ) => setAttributes( { badgeImageObjectFit: val } ) }
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Badge image border radius', 'sgs-blocks' ) }
+							value={ badgeImageBorderRadius }
+							onChange={ ( val ) => setAttributes( { badgeImageBorderRadius: val } ) }
+							help={ __( "CSS border-radius, e.g. '8px' (rounded), '50%' (circle). Leave blank for square corners.", 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Badge image shadow', 'sgs-blocks' ) }
+							value={ badgeImageShadow }
+							options={ [
+								{ label: __( 'None', 'sgs-blocks' ),   value: '' },
+								{ label: __( 'Small', 'sgs-blocks' ),  value: 'sm' },
+								{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
+								{ label: __( 'Large', 'sgs-blocks' ),  value: 'lg' },
+							] }
+							onChange={ ( val ) => setAttributes( { badgeImageShadow: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
 				{ /* ── text-only / image-badge label styling ─────────────────── */ }
 				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
 					<PanelBody title={ __( 'Label styling', 'sgs-blocks' ) } initialOpen={ false }>
@@ -702,6 +750,15 @@ export default function Edit( { attributes, setAttributes } ) {
 											src={ mediaUrl }
 											alt={ mediaAlt }
 											className="sgs-trust-bar__badge-img"
+											style={ {
+												width: `${ badgeImageSize }px`,
+												height: `${ badgeImageSize }px`,
+												objectFit: badgeImageObjectFit === 'cover' ? 'cover' : 'contain',
+												borderRadius: badgeImageBorderRadius || undefined,
+												boxShadow: badgeImageShadow
+													? `var(--wp--preset--shadow--${ badgeImageShadow })`
+													: undefined,
+											} }
 										/>
 									) }
 									{ item.label && (

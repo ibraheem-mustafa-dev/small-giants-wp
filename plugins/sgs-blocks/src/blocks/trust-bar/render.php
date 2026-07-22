@@ -54,6 +54,12 @@ $icon_colour               = $attributes['iconColour'] ?? 'primary-dark';
 $text_colour               = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
 $icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'sm';
+
+// --- image-badge attributes (mirrors icon-circle's own control set) -----------
+$badge_image_border_radius = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';
+$badge_image_size          = isset( $attributes['badgeImageSize'] ) ? absint( $attributes['badgeImageSize'] ) : 60;
+$badge_image_shadow        = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
+$badge_image_object_fit    = sanitize_html_class( $attributes['badgeImageObjectFit'] ?? 'contain' );
 // $columns and $gap_slug are no longer needed locally:
 // - grid columns are driven by gridTemplateColumns attr via the shared wrapper helper.
 // - gap is consumed by the shared wrapper helper directly from $attributes['gap'].
@@ -65,6 +71,9 @@ $auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $at
 
 // Clamp circle size.
 $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
+
+// Clamp image-badge size.
+$badge_image_size = max( 24, min( 160, $badge_image_size ) );
 
 // --- Resolve colour values ----------------------------------------------------
 $circle_bg_value   = sgs_colour_value( $icon_circle_bg );
@@ -263,6 +272,32 @@ $items = $attributes['items'] ?? array();
 // $uid_scope); font-size/weight/style via sgs_typography_css_rule() further down.
 if ( $label_colour_val ) {
 	$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge-label{color:' . esc_attr( $label_colour_val ) . '}';
+}
+
+// --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----
+// Mirrors icon-circle's own control set (size/shadow/border-radius) plus an
+// image-specific object-fit control. Only emitted when the variant is active.
+if ( 'image-badge' === $badge_style ) {
+	$img_sel   = $uid_scope . ' .sgs-trust-bar__badge-img';
+	$img_decls = array();
+
+	$img_decls[] = 'width:' . $badge_image_size . 'px';
+	$img_decls[] = 'height:' . $badge_image_size . 'px';
+	$img_decls[] = 'object-fit:' . ( in_array( $badge_image_object_fit, array( 'cover', 'contain' ), true ) ? $badge_image_object_fit : 'contain' );
+
+	if ( '' !== $badge_image_border_radius ) {
+		$safe_img_radius = preg_replace( '/[^A-Za-z0-9\s%().,\-]/', '', $badge_image_border_radius );
+		$img_decls[]     = 'border-radius:' . esc_attr( trim( $safe_img_radius ) );
+	}
+
+	// Allowlist against the real preset roster the SelectControl offers (sm/md/lg),
+	// mirroring the object-fit fallback above — a stale/invalid stored value must fall
+	// back to "no shadow", never emit a dead --wp--preset--shadow--* var reference.
+	if ( in_array( $badge_image_shadow, array( 'sm', 'md', 'lg' ), true ) ) {
+		$img_decls[] = 'box-shadow:var(--wp--preset--shadow--' . esc_attr( $badge_image_shadow ) . ')';
+	}
+
+	$tb_extra_scoped_css .= $img_sel . '{' . implode( ';', $img_decls ) . '}';
 }
 
 // --- Build badge items HTML ---------------------------------------------------
