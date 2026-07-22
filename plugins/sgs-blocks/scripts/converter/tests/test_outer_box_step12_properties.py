@@ -203,26 +203,50 @@ def test_metamorphic_bem_rename_identical_for_opacity(conn):
 
 
 # ---------------------------------------------------------------------------
-# transform / filter / transition — EXCLUDED from LIFT (F4), per
-# migrations/2026-07-04-property-suffixes-transform-filter-transition.py.
-# Verified end-to-end via dispatch_table.resolver_id against the REAL DB (not an
-# in-memory fixture) — the migration's rows genuinely resolve to the 'excluded'
-# sink, which the orchestrator treats as GAP(origin=EXCLUDED) — tracked, not silent.
+# transition — still EXCLUDED from LIFT (F4): genuinely zero consumers (no
+# block declares a bare `transition` attr; per migrations/2026-07-04-property-
+# suffixes-transform-filter-transition.py + 2026-07-22-exclude-no-destination-
+# props.py). Verified end-to-end via dispatch_table.resolver_id against the
+# REAL DB — the row resolves to the 'excluded' sink (GAP(origin=EXCLUDED)),
+# tracked, not silent.
+#
+# transform / filter — UN-EXCLUDED 2026-07-22 (coupled UN-EXCLUDE + HOVER-LIFT,
+# migrations/2026-07-22-transform-filter-hover-lift-unexclude.py): a
+# pre-existing audit finding that these had 0 consuming attrs was WRONG — real
+# consumers exist (scaleHover/grayscaleHover/imageZoomHover across 10+ blocks;
+# see converter/tests/test_state_value_lift.py for the direct-state-lift proof).
+# They now route BY LAYER (outer_box for OUTER) so the new
+# `state_value_lift.resolve_state_property` direct-lookup channel — wired at
+# the top of every box resolver — gets a chance to run before any
+# property_suffixes-liftability gate.
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("prop", ["transform", "filter", "transition"])
-def test_transform_filter_transition_route_to_excluded_via_real_db(conn, prop):
+def test_transition_still_routes_to_excluded_via_real_db(conn):
     from converter.dispatch_table import resolver_id
-    rid = resolver_id("OUTER", prop, delegates_content=1, conn=conn)
+    rid = resolver_id("OUTER", "transition", delegates_content=1, conn=conn)
     assert rid == "excluded"
 
 
-@pytest.mark.parametrize("prop", ["transform", "filter", "transition"])
-def test_transform_filter_transition_excluded_row_has_reason(conn, prop):
+def test_transition_excluded_row_has_reason(conn):
     row = conn.execute(
         "SELECT reason, decided_by, date FROM excluded_properties WHERE css_property=?",
-        (prop,),
+        ("transition",),
     ).fetchone()
     assert row is not None
     reason, decided_by, date = row
     assert reason and decided_by and date
+
+
+@pytest.mark.parametrize("prop", ["transform", "filter"])
+def test_transform_filter_route_by_layer_not_excluded(conn, prop):
+    from converter.dispatch_table import resolver_id
+    rid = resolver_id("OUTER", prop, delegates_content=1, conn=conn)
+    assert rid == "outer_box"
+
+
+@pytest.mark.parametrize("prop", ["transform", "filter"])
+def test_transform_filter_no_longer_in_excluded_properties(conn, prop):
+    row = conn.execute(
+        "SELECT 1 FROM excluded_properties WHERE css_property=?", (prop,),
+    ).fetchone()
+    assert row is None, f"{prop} should have been un-excluded 2026-07-22"

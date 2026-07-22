@@ -38,6 +38,7 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
+from converter.services.state_value_lift import resolve_state_property
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -121,6 +122,13 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             ctx, decl, GapOrigin.NO_DESTINATION,
             f"non-device-tier breakpoint {decl.tier!r} for {prop} (§3.A A4)",
         )
+
+    # Direct (block, css_property, css_state) lift for a hover-ONLY destination
+    # attr with no un-suffixed base sibling (Spec 31 §3.A step 4a extension,
+    # 2026-07-22). None -> fall through to the ordinary chain, unchanged.
+    state_write = resolve_state_property(decl, ctx)
+    if state_write is not None:
+        return state_write
 
     # Box-object contract (§3/§4): a padding-side decl accumulates into the
     # owner's merged contentBandPadding{Tier} object attr when box_family

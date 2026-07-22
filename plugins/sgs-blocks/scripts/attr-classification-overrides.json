@@ -1,5 +1,5 @@
 {
-  "_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control.",
+  "_doc": "attr-classification-overrides.json — the hand-authored, reseed-durable OVERRIDE layer for block_attributes classification corrections (role/derived_selector/css_property/css_element/css_state/css_tier/box_family/etc). Lifted verbatim from sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (Bean request, 2026-07-21). This is the single source of truth Bean asked for — sgs-update-v2.py now READS this file rather than declaring the dict inline. Applied AFTER the derived classifier layer (css-property-classifications.json) as Stage 1 sub-step C, so an override here wins on any field conflict with the derived layer. Records here exist to correct genuine mis-derivations OR to record cases where what the code DOES and what it MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow but is a COLOUR value type) — never to correct plain accuracy bugs in the classifier, which should be fixed at the classifier itself. Two entries added 2026-07-21 for the value-type-vs-delivery-property fix: sgs/tabs tabIndicatorColour/tabActiveIndicatorColour resolve via the classifier chain-walk to box-shadow (render.php:84-100 colour_props array -> style.css:120 inset box-shadow underline) — accurate but unusable for a consumer picking a control type. The manifest (tabs/block.json supports.sgs.elements.tab.attrMap) already declares these as css:border-color (its own documented rationale: the active variant renders via [aria-selected='true'], not CSS :active, and drives the underline/box-shadow INDICATOR colour). css_property overridden here to border-color to match that already-established, coordinator-approved manifest vocabulary — a colour-family property a consumer control-picker can route to a colour picker, not a shadow control. 18 entries added 2026-07-22 (Spec 31 coupled UN-EXCLUDE + HOVER-LIFT): scaleHover (10 blocks, excl. sgs/post-grid whose scaleHover is a per-item css_element=card derived-selector attr with a multi-property css_property, out of this base-domain resolver channel) / grayscaleHover (4 blocks) / imageZoomHover (4 blocks incl. sgs/post-grid, whose imageZoomHover IS root-scoped) now carry css_property=transform|filter + css_state=hover — these attrs have NO un-suffixed base sibling (the effect only ever exists as a hover interaction), so the new converter.db.db_lookup.attr_for_state_property direct-lookup channel resolves them by (css_property, css_state) rather than the base+Hover-suffix-append convention tabIndicatorColour-style pairs use.",
   "entries": [
     {
       "slug": "sgs/heading",
@@ -1302,6 +1302,147 @@
       "attr": "tabActiveIndicatorColour",
       "fields": {
         "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "scaleHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "scaleHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "grayscaleHover",
+      "fields": {
+        "css_property": "filter",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "imageZoomHover",
+      "fields": {
+        "css_property": "transform",
+        "css_state": "hover"
       }
     }
   ]

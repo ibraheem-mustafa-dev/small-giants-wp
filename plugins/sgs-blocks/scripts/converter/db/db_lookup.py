@@ -563,6 +563,31 @@ def box_family_for(block_slug: str, attr_name: str) -> "str | None":
 
 
 @functools.lru_cache(maxsize=1024)
+def attr_is_boolean(block_slug: str, attr_name: str) -> bool:
+    """True iff the block declares ``attr_name`` with ``attr_type='boolean'``.
+
+    Mirrors ``services.validate.attr_is_number`` / ``attr_is_colour_role``: the
+    type-family comparison lives INSIDE the SQL WHERE clause (a string, not a
+    Python ``==``) specifically so ``gates/no_slug_literal.py`` — which taints
+    any local derived from an expression touching ``ctx.block_slug`` and flags
+    a subsequent literal comparison in resolver/service bodies — never sees a
+    Python ``attr_type == 'boolean'`` Compare node outside this module. Callers
+    (e.g. ``services.state_value_lift._coerce_for_attr_type``) branch on the
+    boolean return, never on a type-name string.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ? AND attr_type = 'boolean'",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row is not None
+
+
+@functools.lru_cache(maxsize=1024)
 def attr_is_colour_role(block_slug: str, attr_name: str) -> bool:
     """True iff the block's attr is DB-classified ``role='color'``.
 
@@ -771,6 +796,83 @@ def _base_domain_attrs_for_css_property(
     finally:
         conn.close()
     return tuple(r[0] for r in rows)
+
+
+class AmbiguousStateAttrError(RuntimeError):
+    """Spec 31 §3.A step 4a extension (2026-07-22, coupled UN-EXCLUDE + HOVER-LIFT):
+    the direct (block, css_property, css_state) route matched ≥2 registered attrs.
+    Mirrors ``AmbiguousCssPropAttrError`` — fail loud rather than a rowid-first guess.
+    Resolution: a ``css_element`` disambiguator, or removing the duplicate row."""
+
+
+@functools.lru_cache(maxsize=4096)
+def attr_for_state_property(
+    block_slug: str,
+    css_property: str,
+    state_suffix: str,
+) -> "str | None":
+    """Direct (block, css_property, css_state) -> attr NAME resolution for a
+    hover-ONLY destination attr that has NO un-suffixed base sibling.
+
+    Spec 31 §3.A step 4a (D309) assumes a base attr (e.g. ``backgroundColour``,
+    css_property set, css_state NULL) exists, and its state companion (e.g.
+    ``backgroundColourHover``) is a pure NAME-suffix derivation (base_attr + the
+    StateSuffix) with NO ``css_property`` of its own -- ``tier_state_suffix``
+    string-concatenates, never looks the companion up in the DB. That
+    convention cannot represent an attr whose OWN name already carries the
+    state (``scaleHover`` / ``grayscaleHover`` / ``imageZoomHover`` -- no bare
+    ``scale``/``grayscale``/``imageZoom`` attr is ever registered, because the
+    effect ONLY ever exists as a hover interaction, never a resting style).
+
+    This is the sibling lookup for that shape: the attr's OWN row carries both
+    ``css_property`` (e.g. ``'transform'``) AND ``css_state`` (the LOWERCASE
+    state name, e.g. ``'hover'`` -- matching the pre-existing documentation
+    convention already used on rows like ``sgs/brand-strip.backgroundColourHover``
+    css_state='hover'). When a match is found, the returned attr name IS the
+    final destination -- no further tier/state suffix append (D309 tier_state_
+    suffix is for the OTHER shape). Callers try this FIRST when ``decl.state``
+    is set; a ``None`` return means "no direct-state row" and the caller falls
+    through to the ordinary ``attr_resolve`` + ``tier_state_suffix`` path
+    UNCHANGED (parity-neutral for every existing base+Hover-companion pair,
+    since those rows have ``css_property IS NULL`` and never match here).
+
+    Restricted to the same root/self + base/desktop-tier domain as
+    ``_base_domain_attrs_for_css_property`` (per-child-element attrs, e.g.
+    ``sgs/post-grid.scaleHover`` css_element='card', are served by
+    ``styling_content.py``'s derived_selector path, NOT this one).
+
+    R-31-1: DB-only read path, no per-block slug literal. Raises
+    ``AmbiguousStateAttrError`` on ≥2 matches (fail loud, never a guess).
+    """
+    if not block_slug or not css_property or not state_suffix:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? AND css_state = ? "
+            f"AND (css_element IS NULL OR css_element IN ({placeholders})) "
+            "AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "ORDER BY rowid",
+            (block_slug, css_property, state_suffix.lower(), *_BASE_ELEMENTS),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # css_state/css_element/css_tier columns absent (pre-seed DB) -> no declaration.
+        return None
+    finally:
+        conn.close()
+    if len(rows) > 1:
+        raise AmbiguousStateAttrError(
+            f"attr_for_state_property({block_slug!r}, {css_property!r}, "
+            f"{state_suffix!r}): {len(rows)} attrs match ({', '.join(r[0] for r in rows)}); "
+            "add a css_element disambiguator or remove the duplicate registration."
+        )
+    if not rows:
+        _trace("db_lookup_miss", lookup="attr_for_state_property",
+               block_slug=block_slug, css_property=css_property, state_suffix=state_suffix)
+        return None
+    return rows[0][0]
 
 
 @functools.lru_cache(maxsize=256)

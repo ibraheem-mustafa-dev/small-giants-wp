@@ -100,6 +100,7 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
+from converter.services.state_value_lift import resolve_state_property
 from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import attr_is_number, validate
@@ -194,6 +195,20 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             "extraction stage (fold_helpers._expand_box_shorthand); it reached "
             "outer_box unexpanded — wire shorthand expansion at extraction",
         )
+
+    # Step 1c: direct (block, css_property, css_state) lift for a hover-ONLY
+    # destination attr with no un-suffixed base sibling (scaleHover/grayscale
+    # Hover/imageZoomHover — Spec 31 §3.A step 4a extension, 2026-07-22 coupled
+    # UN-EXCLUDE + HOVER-LIFT). Tried BEFORE the property_suffixes-liftability
+    # gate below: `transform`/`filter` have NO property_suffixes row (they are
+    # NOT suffix-derived properties — their only destinations are these direct
+    # css_property+css_state attrs), so the ordinary gate would stub-gap them
+    # before ever reaching a chain that could route them. None -> no
+    # direct-state row -> fall through to the ordinary liftability gate +
+    # attr_resolve + tier_state_suffix chain, unchanged.
+    state_write = resolve_state_property(decl, ctx)
+    if state_write is not None:
+        return state_write
 
     if not db_lookup.css_property_has_suffix_row(prop):
         # Liftability is the DB fact (Spec 31 §4): no property_suffixes row ⇒
