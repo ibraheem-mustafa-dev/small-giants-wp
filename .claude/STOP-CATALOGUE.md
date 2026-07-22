@@ -262,6 +262,29 @@ points here. Neither ever silently drops a STOP.
   `<dialog>` bypasses your close handler entirely** — intercept `cancel` or ESC will behave
   differently from every other close route.
 
+- **STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT** — NEW 2026-07-22 (Track-1, earned Fronts
+  1/2). On a shared checkout with a co-active session, the hash a `git commit` REPORTS can be
+  the OTHER session's racing commit. Verify via `git log -1` (your message at HEAD) + `git
+  status` (files clean), NEVER the reported hash. (Recovered a nearly-lost Front 2 whose
+  "reported" hash was Track 2's ledger commit.) Extends STOP-SHARED-CHECKOUT-HAZARD.
+- **STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC** — NEW 2026-07-22 (Track-1). The SGS pre-commit
+  visual-diff gate blocks any touch of a block's render.php/block.json/edit.js without a passing
+  visual-diff report; its OWN message sanctions `--no-verify` for non-visual (logic/attr/meta)
+  changes — use that, never fabricate a PASS report.
+- **STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT** — NEW 2026-07-22 (Track-1). A subagent
+  (or you) declaring a leftover "irreducible / can't be lowered further" is a hypothesis — re-derive
+  it from the tool/DB before banking it; the residue usually has a real cause.
+- **STOP-VERIFY-THE-DELIVERABLE-EXISTS** — NEW 2026-07-22 (Track-1). Before accepting a
+  "done" claim, confirm the named deliverable (file/function/attr/row) actually EXISTS — open it,
+  don't trust the name or the wiring claim.
+- **STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START** — NEW 2026-07-22 (Track-1). When a subagent
+  says a finding is "pre-existing" (not caused by this session), verify against the session-start
+  baseline — a Front-2 subagent claimed 5 variant findings pre-existing and was wrong (this
+  session's data caused them).
+- **STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT** — NEW 2026-07-22 (Track-1). A commit can be
+  gated by more than one hook layer (path-scope gate + secret-scan + visual-diff); check ALL of
+  them before assuming a bare `git commit` will land, and read each gate's own bypass guidance.
+
 ### Standing architectural STOPs (always-on, not D-numbered)
 - **Composite-mirror (R-31-9 / D294)** — no per-block CSS hack that diverges from the
   shared wrapper's computed behaviour; content-KIND box+width composites go block-private,
@@ -345,3 +368,10 @@ for real before claiming done?
   none → **61**. 61 >= 60. PASS. Earned: a raw `wp option update` on the shared canary wrote the active
   header/footer pointer to a different store than the live domain reads, presenting as a broken CPT
   binding and nearly triggering a fix to correct code — the disciplined probe proved the code fine.
+- **2026-07-22 (Track-1 converter reconciliation) re-run:** previous unique `STOP-*` = **61**;
+  Track 1 carried in **6** earned-but-unlanded tokens from its Fronts-1/2 session
+  (`STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`, `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`,
+  `STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT`, `STOP-VERIFY-THE-DELIVERABLE-EXISTS`,
+  `STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START`, `STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT`),
+  SUBTRACTED none → **67**. 67 >= 61. PASS. All 6 earned in the prior Track-1 converter session
+  (Fronts 1/2) and landed in the shared catalogue now as the deferred cross-track reconciliation.
