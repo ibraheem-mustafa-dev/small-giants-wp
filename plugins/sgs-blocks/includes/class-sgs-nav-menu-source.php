@@ -44,9 +44,9 @@ class SGS_Nav_Menu_Source {
 	 * Resolve the nav-holding block names searched for in the header, in priority order.
 	 *
 	 * Order matters: sgs/nav-menu is the canonical SGS nav block (Spec 36 rebuild,
-	 * FR-36-1) and supersedes sgs/adaptive-nav (retiring, reference-only per Spec 36
-	 * §8a). core/navigation is kept for back-compat with headers not yet migrated —
-	 * WooCommerce hooks its mini-cart/customer-account onto it.
+	 * FR-36-1). sgs/adaptive-nav was retired (FR-37-21). core/navigation is kept for
+	 * back-compat with headers not yet migrated — WooCommerce hooks its
+	 * mini-cart/customer-account onto it.
 	 *
 	 * NOT a bare hardcoded const (R-31-1 DB-first). This was `private const
 	 * NAV_BLOCK_NAMES` until Spec 36 Wave-0 flagged it as the exact anti-pattern the
@@ -57,15 +57,14 @@ class SGS_Nav_Menu_Source {
 	 *      block.json and derives this list from the block registry) can extend or
 	 *      replace the seed without editing this class.
 	 *   2. Pruned to block names actually present in WordPress's OWN
-	 *      `WP_Block_Type_Registry` — a retired/renamed slug (e.g. sgs/adaptive-nav
-	 *      once its registration is removed, FR-36-18 cutover) drops out on its own,
+	 *      `WP_Block_Type_Registry` — a retired/renamed slug drops out on its own,
 	 *      no edit needed here.
 	 *
 	 * Honest ceiling for this pass (documented per the build brief): sgs-framework.db
 	 * already has a `navigation` capability in `block_capabilities`, but it is
-	 * currently assigned to sgs/mega-menu, sgs/breadcrumbs and sgs/table-of-contents
-	 * — none of which are "menu-holding root block in a header row" in this class's
-	 * sense. Routing off that table as-is would silently break menu resolution, so it
+	 * currently assigned to sgs/breadcrumbs and sgs/table-of-contents — neither of
+	 * which is "menu-holding root block in a header row" in this class's sense.
+	 * Routing off that table as-is would silently break menu resolution, so it
 	 * was not used. The clean DB-first fix is a follow-up: either add the real
 	 * nav-holding blocks to `block_capabilities` under a distinct capability (e.g.
 	 * `nav-menu-holder`), or declare `supports.sgs.navMenuBlock` per block.json and
@@ -77,7 +76,7 @@ class SGS_Nav_Menu_Source {
 	private static function get_nav_block_names(): array {
 		$names = (array) apply_filters(
 			'sgs_nav_menu_block_names',
-			array( 'sgs/nav-menu', 'sgs/adaptive-nav', 'core/navigation' )
+			array( 'sgs/nav-menu', 'core/navigation' )
 		);
 
 		$registry = WP_Block_Type_Registry::get_instance();
@@ -97,15 +96,14 @@ class SGS_Nav_Menu_Source {
 	 *
 	 * When nothing resolves and $page_list_fallback is true, returns a synthetic
 	 * core/page-list block so BOTH the bar and the drawer render the published
-	 * page hierarchy identically (one-source parity). adaptive-nav passes false
-	 * when its menuFallback attribute is 'none'.
+	 * page hierarchy identically (one-source parity).
 	 *
-	 * @param int  $ref                Optional explicit wp_navigation post id (adaptive-nav's own ref).
+	 * @param int  $ref                Optional explicit wp_navigation post id.
 	 * @param bool $page_list_fallback Whether to fall back to a page-list when no menu resolves.
-	 * @return array Parsed nav blocks (core/navigation-link / -submenu / page-list / mega-menu).
+	 * @return array Parsed nav blocks (core/navigation-link / -submenu / page-list).
 	 */
 	public static function get_menu_blocks( int $ref = 0, bool $page_list_fallback = true ): array {
-		// 1. Explicit ref wins (adaptive-nav render.php passes its own ref).
+		// 1. Explicit ref wins (caller's own ref attribute, e.g. sgs/nav-menu).
 		if ( $ref > 0 ) {
 			$blocks = self::blocks_from_ref( $ref );
 			if ( ! empty( $blocks ) ) {
@@ -133,15 +131,8 @@ class SGS_Nav_Menu_Source {
 				}
 
 				// Inline innerBlocks are the menu ONLY for core/navigation, whose
-				// children ARE the menu (core/navigation-link blocks).
-				//
-				// They are NEVER the menu for sgs/adaptive-nav: its innerBlocks are
-				// sgs/mega-menu panels and drawer content (D337 routes any non-mega
-				// child into the drawer). Treating them as the menu returns non-nav
-				// blocks AND short-circuits the wp_navigation lookup at step 4 —
-				// emptying BOTH the desktop bar and the drawer. Proven live on the
-				// sandybrown canary 2026-07-14: moving the drawer's business-info
-				// email inside adaptive-nav took the bar from 5 links to 0.
+				// children ARE the menu (core/navigation-link blocks). sgs/nav-menu
+				// always resolves via its `ref` attribute above, never innerBlocks.
 				if ( 'core/navigation' === $nav_block_name && ! empty( $nav['innerBlocks'] ) ) {
 					return $nav['innerBlocks'];
 				}

@@ -215,7 +215,7 @@ Behaviour:
 - Focus is trapped inside the drawer when it is open (native `<dialog>` `showModal()` — keyboard accessibility).
 - The page behind is locked so it does not scroll while the drawer is open.
 
-This is entirely owned by the `sgs/adaptive-nav` block (its own toggle + `<dialog>` drawer, absorbed from the retired `sgs/mobile-nav` + `sgs/mobile-nav-toggle` blocks). No separate toggle block or theme asset is needed — configure it via the block's Inspector "Collapse to drawer" and "Drawer" panels.
+This is owned by `sgs/nav-menu` (bar + burger toggle) and `sgs/nav-drawer` (the off-canvas drawer content), both driven by the shared `sgs/nav` Interactivity store (Spec 36 rebuild; `sgs/adaptive-nav` retired FR-37-21). No separate toggle block or theme asset is needed — configure the collapse breakpoint via `sgs/nav-menu`'s Inspector.
 
 ---
 

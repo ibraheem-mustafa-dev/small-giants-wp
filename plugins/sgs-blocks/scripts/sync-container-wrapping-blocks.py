@@ -1111,17 +1111,13 @@ def main() -> int:
             # sgs/site-header-row added 2026-07-13 (Spec 17 §S9 / FR-S9-7): the never-overflow
             # cluster row inside sgs/site-header (containerKind override: layout).
             "sgs/site-header-row",
-            # sgs/adaptive-nav added 2026-07-13 (Spec 17 §S9 / FR-S9-4): layout-KIND nav
-            # container (replaces core/navigation in the header); delegates outer frame to
-            # SGS_Container_Wrapper (containerKind override: layout).
-            "sgs/adaptive-nav",
             # sgs/site-footer-row added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325): the footer row
             # inside sgs/site-footer — a column grid (up to 6 cols → 1 on mobile) or flex cluster.
             "sgs/site-footer-row",
             # sgs/nav-menu added 2026-07-20 (Spec 36 FR-36-2 / Phase-1 close): layout-KIND nav
-            # bar — the canonical nav block of the Spec 36 rebuild, superseding sgs/adaptive-nav
-            # (which stays listed above because it is still REGISTERED as the FR-36-18 rollback
-            # path; both are correctly detected until the Indus header cutover deletes one).
+            # bar — the canonical nav block of the Spec 36 rebuild.
+            # sgs/adaptive-nav (the block it superseded) was RETIRED 2026-07-22 (FR-37-21) —
+            # deleted from the codebase and pruned from the DB by /sgs-update Stage 10.
             # It keeps SGS_Container_Wrapper (genuine layout row), unlike its drawer sibling.
             "sgs/nav-menu",
             # sgs/brand-strip added 2026-07-20: detected layout-KIND since the Track-1 Spec 35

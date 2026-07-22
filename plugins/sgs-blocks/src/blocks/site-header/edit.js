@@ -30,9 +30,10 @@ const ALLOWED_BLOCKS = [ 'sgs/site-header-row' ];
 
 // Three fixed rows. The middle row is pre-filled to match the current site
 // header (logo + navigation + cart) so content parity holds on first insert.
-// The mobile burger + drawer are owned entirely by sgs/adaptive-nav (Task 1 /
-// D336) — no separate toggle block. Top and bottom rows start empty and emit
-// zero output until an operator adds elements (FR-S9-2 empty-row-zero-output).
+// The mobile burger + drawer are owned entirely by sgs/nav-menu + sgs/nav-drawer
+// (Spec 36 rebuild, FR-37-21 — sgs/adaptive-nav retired) — no separate toggle
+// block. Top and bottom rows start empty and emit zero output until an
+// operator adds elements (FR-S9-2 empty-row-zero-output).
 const TEMPLATE = [
 	[ 'sgs/site-header-row', { rowSlot: 'top' } ],
 	[
@@ -43,23 +44,22 @@ const TEMPLATE = [
 			// custom_logo when no per-breakpoint images set). Draft: logo | nav | icons.
 			[ 'sgs/responsive-logo', { width: 180, linkToHome: true } ],
 			// Primary nav (centre on desktop; hidden <768 → lives in the drawer).
-			// sgs/adaptive-nav — matches the live header part (theme/sgs-theme/parts/header.html)
-			// so a fresh insert doesn't re-arm the WooCommerce mini-cart/customer-account
-			// auto-injection that WC hooks onto core/navigation via Block Hooks, and keeps
-			// the mega-menu capability that core/navigation doesn't have.
+			// sgs/nav-menu — matches the live header part / sgs_header CPT so a
+			// fresh insert doesn't re-arm the WooCommerce mini-cart/customer-account
+			// auto-injection that WC hooks onto core/navigation via Block Hooks
+			// (FR-37-21: was sgs/adaptive-nav, now retired).
 			[
-				'sgs/adaptive-nav',
+				'sgs/nav-menu',
 				{
-					linkColour: 'text',
-					gap: { desktop: '28px' },
+					itemColour: 'text',
+					gap: '28px',
 				},
 			],
 			// Icons cluster (right): cart. Grouped so the row has exactly 3 flex
 			// children → logo-left / nav-centre / icons-right. (The burger is no
-			// longer listed here: sgs/adaptive-nav renders its own toggle + drawer
-			// since D336/D337, and sgs/mobile-nav-toggle is deleted — a TEMPLATE
-			// entry for a deleted block would make every FRESH header insert render
-			// an invalid-content placeholder.)
+			// longer listed here: sgs/nav-menu renders its own toggle, and opens
+			// sgs/nav-drawer — a TEMPLATE entry for a deleted block would make
+			// every FRESH header insert render an invalid-content placeholder.)
 			//
 			// sgs/container, NOT core/group: the DB (`blocks.replaces`) records
 			// sgs/container as the replacement for core/group|core/columns|core/column,

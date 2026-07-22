@@ -39,7 +39,7 @@ const COLLAPSE_PRESETS = [ 640, 768, 1024 ];
 
 /**
  * Client-side mirror of render.php's SGS_Nav_Menu_Bar_Renderer::flatten() —
- * top-level items only (submenus/mega-menu collapse to their own link), same
+ * top-level items only (submenus collapse to their own link), same
  * identifier rule ('id:<id>' when the block carries one, else 'label:<text>')
  * so a ticked featuredItemIds entry matches the server-rendered item.
  *
@@ -63,8 +63,6 @@ function flattenMenuItems( blocks ) {
 			! [
 				'core/navigation-link',
 				'core/navigation-submenu',
-				'sgs/mega-menu',
-				'sgs/mega-menu-item',
 			].includes( block.name )
 		) {
 			return;

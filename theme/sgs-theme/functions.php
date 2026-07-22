@@ -101,8 +101,8 @@ function setup(): void {
 	 * A block theme does NOT expose Appearance → Menus unless it declares this
 	 * support — without it nav-menus.php fatals with "Your theme does not support
 	 * navigation menus or widgets". Spec 36 FR-36-1 makes classic menus the PRIMARY
-	 * menu-data path for the nav system, and FR-36-5 attaches mega-menu panels via
-	 * that screen, so the screen must be reachable on every SGS site.
+	 * menu-data path for the nav system (sgs/nav-menu), so the screen must be
+	 * reachable on every SGS site.
 	 */
 	add_theme_support( 'menus' );
 
@@ -305,17 +305,8 @@ function enqueue_styles(): void {
 	);
 
 	// Mobile navigation (burger + off-canvas drawer) is owned entirely by the
-	// sgs/adaptive-nav block (Task 1 / D336 — absorbed sgs/mobile-nav +
-	// sgs/mobile-nav-toggle, both retired). CSS and JS load automatically via
-	// block.json (style-index.css + view.js) — no theme-level enqueue.
-
-	// Mega menu panel styles — shared class system, hover effects, transitions.
-	wp_enqueue_style(
-		'sgs-mega-menu-panels',
-		get_theme_file_uri( 'assets/css/mega-menu-panels.css' ),
-		array( 'sgs-core-blocks-critical' ),
-		$theme_version
-	);
+	// sgs/nav-drawer block (FR-37-21 — sgs/adaptive-nav + sgs/mega-menu retired).
+	// CSS and JS load automatically via block.json — no theme-level enqueue.
 
 	// Header behaviour (sticky / transparent-on-scroll / shrink) is owned by the
 	// sgs-blocks plugin's body-class layer, driven by the sgs/site-header block
@@ -418,7 +409,7 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_global_layout_fixes'
  * @return string Possibly-rewritten tag with deferred media swap.
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = array( 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions', 'sgs-mega-menu-panels' );
+	$deferred = array( 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions' );
 
 	if ( in_array( $handle, $deferred, true ) ) {
 		// Replace media="all" with media="print" and add onload swap.
@@ -485,13 +476,6 @@ function register_pattern_categories(): void {
 		'sgs-footers',
 		array(
 			'label' => __( 'SGS Footers', 'sgs-theme' ),
-		)
-	);
-	register_block_pattern_category(
-		'mega-menu-layouts',
-		array(
-			'label'       => __( 'Mega Menu Layouts', 'sgs-theme' ),
-			'description' => __( 'Generic layout skeletons for mega menu template parts. Drop one into a template part, then replace the placeholder content with your own.', 'sgs-theme' ),
 		)
 	);
 }
@@ -744,8 +728,8 @@ function fix_duotone_arg_count(): void {
 add_action( 'plugins_loaded', __NAMESPACE__ . '\fix_duotone_arg_count', 1 );
 
 // Note: role="menubar" was previously added here but removed.
-// The mega-menu trigger now uses role="button" instead of role="menuitem",
-// eliminating the need for a menubar parent entirely.
+// Nav triggers use role="button" instead of role="menuitem", eliminating
+// the need for a menubar parent entirely.
 /**
  * Remove non-li direct children from navigation <ul> elements to satisfy
  * ARIA list structure rules (descendants of ul/ol must be li elements).
@@ -755,8 +739,7 @@ add_action( 'plugins_loaded', __NAMESPACE__ . '\fix_duotone_arg_count', 1 );
  * server-side render contexts. This filter ensures compliance.
  *
  * Strategy: the existing WordPress output already uses <li> for navigation
- * items. The sgs/mega-menu render.php renders its own <li> wrapping. So
- * the primary fix is ensuring nothing bypasses the <li> wrapper.
+ * items. The primary fix is ensuring nothing bypasses the <li> wrapper.
  *
  * If Lighthouse flags elements with role="none" as non-li children, it is
  * because the block wrapper <li> has role="none" on it — which is correct
@@ -782,7 +765,7 @@ function ensure_nav_list_structure( string $block_content, array $block ): strin
 	 * ARIA list structure requirement.
 	 */
 	$block_content = preg_replace(
-		'/(<li(?![^>]*sgs-mega-menu)[^>]*?)\s+role="none"([^>]*>)/i',
+		'/(<li[^>]*?)\s+role="none"([^>]*>)/i',
 		'$1$2',
 		$block_content
 	);

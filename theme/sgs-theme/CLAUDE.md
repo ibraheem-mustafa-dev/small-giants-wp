@@ -21,7 +21,7 @@ sgs-theme/
 ├── parts/                    # Template parts:
 │   │                         #   header (default + shrink + sticky + transparent)
 │   │                         #   footer (default + minimal)
-│   │                         #   sidebar, mega-menu-* (7 panels)
+│   │                         #   sidebar
 │   │                         #   sgs-archive-toolbar.html — shop filter/search bar (Spec 30, D213/D214)
 │   │                         #   sgs-pdp-buybox.html      — PDP buybox part (Spec 30, D210)
 │   │                         #   sgs-pdp-content.html     — PDP description/tabs part (Spec 30, D210)
@@ -30,7 +30,6 @@ sgs-theme/
 │   │                         #   header: header-centred, header-full, header-minimal,
 │   │                         #     header-search-bar-above, header-search-bar-below,
 │   │                         #     header-search-icon (category: sgs-headers, D214)
-│   │                         #   mega-menu layouts (7, D213)
 │   │                         #   hero, cta, testimonial, about, services, stats,
 │   │                         #     footer layouts, and others
 ├── styles/                   # Style variations — one JSON per client site
@@ -38,8 +37,6 @@ sgs-theme/
 │   ├── css/
 │   │   ├── core-blocks.css          # Overrides for WP core blocks
 │   │   ├── core-blocks-critical.css # Critical subset, inlined
-│   │   ├── header-modes.css         # Header sticky/transparent/shrink variants
-│   │   ├── mega-menu-panels.css     # Mega-menu panel layouts
 │   │   ├── dark-mode.css            # Dark-mode token overrides
 │   │   ├── utilities.css            # .sr-only, .container, .text-centre, etc.
 │   │   └── woocommerce.css          # WooCommerce shop/PDP/cart styling (Spec 30, D213)

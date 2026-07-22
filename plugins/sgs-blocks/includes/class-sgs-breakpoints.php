@@ -11,9 +11,9 @@
  * desktop = 1024px and up. Emission uses max-width tiers (mobile-first-up):
  *   - tablet override:  @media/@container (max-width: TABLET_MAX)   → <=1023px
  *   - mobile override:  @media/@container (max-width: MOBILE_MAX)   → <=767px
- * A block MAY additionally declare a fourth CUSTOM-px tier (e.g. sgs/adaptive-nav
- * collapseCustomPx) — that value is per-instance, but it is still emitted through
- * this same helper so the query grammar stays consistent.
+ * A block MAY additionally declare a fourth CUSTOM-px tier (e.g. a per-instance
+ * collapse breakpoint) — that value is per-instance, but it is still emitted
+ * through this same helper so the query grammar stays consistent.
  *
  * @package SGS\Blocks
  */

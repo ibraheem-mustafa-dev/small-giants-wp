@@ -102,13 +102,6 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							'label'      => __( 'Home', 'sgs-blocks' ),
 						);
 						break;
-					case 'sgs/mega-menu':
-					case 'sgs/mega-menu-item':
-						$item = $this->from_link( $block['attrs'] ?? array() );
-						if ( $item ) {
-							$items[] = $item;
-						}
-						break;
 					case 'core/page-list':
 						$items = array_merge( $items, $this->from_page_list( (int) ( $block['attrs']['parentPageID'] ?? 0 ) ) );
 						break;
