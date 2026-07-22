@@ -1,0 +1,243 @@
+{
+  "tool": "oracle.batch_runner",
+  "diagnostic_only": true,
+  "diagnostic_note": "R-31-4: this is a per-commit DIAGNOSTIC signal, NEVER the LANDED closing gate. The closing gate is computed-style-vs-draft + Bean's eye (R-31-13).",
+  "fixture_count": 36,
+  "per_fixture_status": {
+    "rt-background-url": "SKIPPED-NO-LIVE-URL",
+    "rt-centred-maxwidth": "LIVE-PROBED",
+    "rt-media-600": "SKIPPED-NO-LIVE-URL",
+    "rt-pseudo-before": "SKIPPED-NO-LIVE-URL",
+    "rt-video-media": "SKIPPED-NO-LIVE-URL",
+    "sgs-media": "SKIPPED-NO-LIVE-URL",
+    "mamas-trust-bar-real": "SKIPPED-NO-LIVE-URL",
+    "precedence-collision": "SKIPPED-NO-LIVE-URL",
+    "sgs-accordion-item": "SKIPPED-NO-LIVE-URL",
+    "sgs-accordion": "SKIPPED-NO-LIVE-URL",
+    "sgs-card-grid": "SKIPPED-NO-LIVE-URL",
+    "sgs-content-collection": "SKIPPED-NO-LIVE-URL",
+    "sgs-cta-section": "SKIPPED-NO-LIVE-URL",
+    "sgs-feature-grid": "SKIPPED-NO-LIVE-URL",
+    "sgs-form-field-tiles": "SKIPPED-NO-LIVE-URL",
+    "sgs-form-step": "SKIPPED-NO-LIVE-URL",
+    "sgs-form": "SKIPPED-NO-LIVE-URL",
+    "sgs-gallery": "SKIPPED-NO-LIVE-URL",
+    "sgs-google-reviews": "SKIPPED-NO-LIVE-URL",
+    "sgs-hero": "SKIPPED-NO-LIVE-URL",
+    "sgs-info-box": "SKIPPED-NO-LIVE-URL",
+    "sgs-modal": "SKIPPED-NO-LIVE-URL",
+    "sgs-multi-button": "SKIPPED-NO-LIVE-URL",
+    "sgs-notice-banner": "SKIPPED-NO-LIVE-URL",
+    "sgs-option-picker": "SKIPPED-NO-LIVE-URL",
+    "sgs-post-grid": "SKIPPED-NO-LIVE-URL",
+    "sgs-pricing-table": "SKIPPED-NO-LIVE-URL",
+    "sgs-product-card": "SKIPPED-NO-LIVE-URL",
+    "sgs-quote": "SKIPPED-NO-LIVE-URL",
+    "sgs-tab": "SKIPPED-NO-LIVE-URL",
+    "sgs-tabs": "SKIPPED-NO-LIVE-URL",
+    "sgs-team-member": "SKIPPED-NO-LIVE-URL",
+    "sgs-testimonial-slider": "SKIPPED-NO-LIVE-URL",
+    "sgs-testimonial": "SKIPPED-NO-LIVE-URL",
+    "sgs-trust-bar": "SKIPPED-NO-LIVE-URL",
+    "sgs-trustpilot-reviews": "SKIPPED-NO-LIVE-URL"
+  },
+  "status_counts": {
+    "SKIPPED-NO-LIVE-URL": 35,
+    "LIVE-PROBED": 1
+  },
+  "cell_verdict_counts": {
+    "LANDED": 0,
+    "UNVERIFIED": 0,
+    "WRITTEN-not-LANDED": 0,
+    "GUARD-FAIL": 11,
+    "NOT-RENDERED": 96
+  },
+  "total_unattributed_cells": 393,
+  "warnings": {
+    "rt-centred-maxwidth": [
+      "AMBIGUOUS SELECTOR: '.wp-block-sgs-container' matched 2 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
+    ]
+  },
+  "per_fixture": {
+    "rt-background-url": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-cta-section' (cta-section) NOT-RENDERED: the page did not load — 9 cell(s) could not be checked.",
+      "unattributed_cell_count": 13
+    },
+    "rt-centred-maxwidth": {
+      "oracle_status": "LIVE-PROBED",
+      "plain_summary": "Section 'section-1-container@Base' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 8 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False. Section 'section-1-container@Mobile' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+      "unattributed_cell_count": 16
+    },
+    "rt-media-600": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-feature-grid' (feature-grid) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+      "unattributed_cell_count": 22
+    },
+    "rt-pseudo-before": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-info-box' (info-box) NOT-RENDERED: the page did not load — 5 cell(s) could not be checked.",
+      "unattributed_cell_count": 18
+    },
+    "rt-video-media": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-hero' (hero) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+      "unattributed_cell_count": 26
+    },
+    "sgs-media": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-media' (media) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 10
+    },
+    "mamas-trust-bar-real": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-trust-bar' (trust-bar) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 30
+    },
+    "precedence-collision": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-info-box' (info-box) NOT-RENDERED: the page did not load — 7 cell(s) could not be checked.",
+      "unattributed_cell_count": 5
+    },
+    "sgs-accordion-item": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-accordion-item' (accordion-item) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-accordion": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-accordion' (accordion) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-card-grid": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-card-grid' (card-grid) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 9
+    },
+    "sgs-content-collection": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-content-collection' (content-collection) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-cta-section": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-cta-section' (cta-section) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 9
+    },
+    "sgs-feature-grid": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-feature-grid' (feature-grid) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 13
+    },
+    "sgs-form-field-tiles": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-form-field-tiles' (form-field-tiles) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 12
+    },
+    "sgs-form-step": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-form-step' (form-step) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+      "unattributed_cell_count": 5
+    },
+    "sgs-form": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-form' (form) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-gallery": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-gallery' (gallery) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 9
+    },
+    "sgs-google-reviews": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-google-reviews' (google-reviews) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-hero": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-hero' (hero) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+      "unattributed_cell_count": 10
+    },
+    "sgs-info-box": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-info-box' (info-box) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-modal": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-modal' (modal) NOT-RENDERED: the page did not load — 6 cell(s) could not be checked.",
+      "unattributed_cell_count": 16
+    },
+    "sgs-multi-button": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-multi-button' (multi-button) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
+      "unattributed_cell_count": 0
+    },
+    "sgs-notice-banner": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-notice-banner' (notice-banner) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
+      "unattributed_cell_count": 3
+    },
+    "sgs-option-picker": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-option-picker' (option-picker) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 14
+    },
+    "sgs-post-grid": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-post-grid' (post-grid) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 6
+    },
+    "sgs-pricing-table": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-pricing-table' (pricing-table) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 16
+    },
+    "sgs-product-card": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-product-card' (product-card) NOT-RENDERED: the page did not load — 5 cell(s) could not be checked.",
+      "unattributed_cell_count": 11
+    },
+    "sgs-quote": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-quote' (quote) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-tab": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-tab' (tab) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 4
+    },
+    "sgs-tabs": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-tabs' (tabs) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+      "unattributed_cell_count": 12
+    },
+    "sgs-team-member": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-team-member' (team-member) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
+      "unattributed_cell_count": 12
+    },
+    "sgs-testimonial-slider": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-testimonial-slider' (testimonial-slider) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 11
+    },
+    "sgs-testimonial": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-testimonial' (testimonial) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
+      "unattributed_cell_count": 8
+    },
+    "sgs-trust-bar": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-trust-bar' (trust-bar) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 16
+    },
+    "sgs-trustpilot-reviews": {
+      "oracle_status": "SKIPPED-NO-LIVE-URL",
+      "plain_summary": "Section 'section-1-trustpilot-reviews' (trustpilot-reviews) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+      "unattributed_cell_count": 7
+    }
+  }
+}

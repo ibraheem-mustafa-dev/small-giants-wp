@@ -1,0 +1,5 @@
+{
+  "_comment": "Fixture-stem -> deployed live canary URL. Only fixtures with an entry here are genuinely probed live by oracle/batch_runner.py; every other fixture in the corpus honestly reports SKIPPED-NO-LIVE-URL (never a fabricated pass). Add an entry here only after a real per-fixture canary page has been deployed (out of scope for this runtime to create).",
+  "_note_rt_centred_maxwidth": "This canary page IS live (verified 2026-07-22) but currently produces NO-SECTIONS: the fixture's top-level DOM node carries only the semantic class '.sgs-team-member-grid', which is not itself a registered block slug, so oracle.render_oracle.discover_sections finds zero root candidates on it (a pre-existing recognition-layer gap, not something this batch runner should paper over). Kept here as a real, honestly-reported finding rather than removed.",
+  "rt-centred-maxwidth": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-centred-maxwidth/"
+}

@@ -1,0 +1,33 @@
+{
+  "fixture": "sgs-content-collection",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-content-collection",
+      "block_slug": "sgs/content-collection",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-content-collection",
+      "cells": [
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "64px 24px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-content-collection' (content-collection) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 6
+}

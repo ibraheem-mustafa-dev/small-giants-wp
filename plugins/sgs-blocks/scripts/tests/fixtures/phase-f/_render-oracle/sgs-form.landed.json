@@ -1,0 +1,41 @@
+{
+  "fixture": "sgs-form",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-form",
+      "block_slug": "sgs/form",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-form",
+      "cells": [
+        {
+          "property": "background",
+          "tier": "Base",
+          "draft_value": "white",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "48px 24px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-form' (form) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 8
+}

@@ -1,0 +1,49 @@
+{
+  "fixture": "sgs-hero",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-hero",
+      "block_slug": "sgs/hero",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-hero",
+      "cells": [
+        {
+          "property": "background",
+          "tier": "Base",
+          "draft_value": "#f8f4ef",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "80px 24px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Mobile",
+          "draft_value": "48px 16px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-hero' (hero) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 10
+}

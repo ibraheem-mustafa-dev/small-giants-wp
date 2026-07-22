@@ -1,0 +1,65 @@
+{
+  "fixture": "sgs-product-card",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-product-card",
+      "block_slug": "sgs/product-card",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-product-card",
+      "cells": [
+        {
+          "property": "background",
+          "tier": "Base",
+          "draft_value": "white",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "border",
+          "tier": "Base",
+          "draft_value": "1px solid #e5e0db",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "border-radius",
+          "tier": "Base",
+          "draft_value": "16px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "overflow",
+          "tier": "Base",
+          "draft_value": "hidden",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "16px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-product-card' (product-card) NOT-RENDERED: the page did not load — 5 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 11
+}

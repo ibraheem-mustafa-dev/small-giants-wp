@@ -6,67 +6,125 @@
   },
   "sections": [
     {
-      "section_id": "section-1",
+      "section_id": "section-1-container@Base",
       "block_slug": "sgs/container",
       "guards": {
         "empty": true,
         "element": true,
-        "height": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-container",
       "cells": [
         {
-          "property": "max-width",
-          "tier": "Desktop",
-          "draft_value": "1200px",
-          "computed_value": "1200px",
-          "expected_default": "",
-          "verdict": "LANDED"
+          "property": "align-items",
+          "tier": "Base",
+          "draft_value": "start",
+          "computed_value": "normal",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
         },
         {
-          "property": "padding-top",
-          "tier": "Desktop",
-          "draft_value": "64px",
-          "computed_value": "64px",
-          "expected_default": "",
-          "verdict": "LANDED"
-        },
-        {
-          "property": "background-color",
-          "tier": "Desktop",
+          "property": "background",
+          "tier": "Base",
           "draft_value": "#f5f0eb",
-          "computed_value": "rgb(245, 240, 235)",
-          "expected_default": "",
-          "verdict": "LANDED"
+          "computed_value": "rgb(245, 240, 235) none repeat scroll 0% 0% / auto padding-box border-box",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        },
+        {
+          "property": "display",
+          "tier": "Base",
+          "draft_value": "grid",
+          "computed_value": "grid",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "gap",
-          "tier": "Desktop",
+          "tier": "Base",
           "draft_value": "32px",
           "computed_value": "32px",
-          "expected_default": "",
-          "verdict": "LANDED"
-        },
-        {
-          "property": "align-items",
-          "tier": "Desktop",
-          "draft_value": "start",
-          "computed_value": "start",
-          "expected_default": "start",
-          "verdict": "UNVERIFIED"
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "grid-template-columns",
-          "tier": "Desktop",
+          "tier": "Base",
           "draft_value": "repeat(4, 1fr)",
           "computed_value": "264px 264px 264px 264px",
-          "expected_default": "",
-          "verdict": "UNVERIFIED"
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        },
+        {
+          "property": "margin",
+          "tier": "Base",
+          "draft_value": "0 auto",
+          "computed_value": "0px 96px",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        },
+        {
+          "property": "max-width",
+          "tier": "Base",
+          "draft_value": "1200px",
+          "computed_value": "1200px",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "64px 24px",
+          "computed_value": "64px 24px",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        }
+      ]
+    },
+    {
+      "section_id": "section-1-container@Mobile",
+      "block_slug": "sgs/container",
+      "guards": {
+        "empty": true,
+        "element": true,
+        "height": false,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-container",
+      "cells": [
+        {
+          "property": "gap",
+          "tier": "Mobile",
+          "draft_value": "16px",
+          "computed_value": "16px",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        },
+        {
+          "property": "grid-template-columns",
+          "tier": "Mobile",
+          "draft_value": "repeat(2, 1fr)",
+          "computed_value": "131.5px 131.5px",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
+        },
+        {
+          "property": "padding",
+          "tier": "Mobile",
+          "draft_value": "40px 16px",
+          "computed_value": "64px 24px",
+          "expected_default": null,
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1' (container): 4 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
-  "page_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-centred-maxwidth/"
+  "plain_summary": "Section 'section-1-container@Base' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 8 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False. Section 'section-1-container@Mobile' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 16,
+  "ambiguous_selector_matches": {
+    ".wp-block-sgs-container": 2
+  },
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-centred-maxwidth/"
 }

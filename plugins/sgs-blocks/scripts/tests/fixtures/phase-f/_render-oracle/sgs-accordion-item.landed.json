@@ -1,0 +1,41 @@
+{
+  "fixture": "sgs-accordion-item",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-accordion-item",
+      "block_slug": "sgs/accordion-item",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-accordion-item",
+      "cells": [
+        {
+          "property": "border-bottom",
+          "tier": "Base",
+          "draft_value": "1px solid #e5e0db",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "16px 0",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-accordion-item' (accordion-item) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 6
+}

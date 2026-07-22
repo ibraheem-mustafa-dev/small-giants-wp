@@ -1,0 +1,97 @@
+{
+  "fixture": "rt-background-url",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-cta-section",
+      "block_slug": "sgs/cta-section",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-cta-section",
+      "cells": [
+        {
+          "property": "background-color",
+          "tier": "Base",
+          "draft_value": "#2d1b4e",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "background-image",
+          "tier": "Base",
+          "draft_value": "url(\"/media/pattern-dots.svg\")",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "background-position",
+          "tier": "Base",
+          "draft_value": "center right",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "background-repeat",
+          "tier": "Base",
+          "draft_value": "repeat",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "background-size",
+          "tier": "Base",
+          "draft_value": "320px 320px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "72px 32px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "position",
+          "tier": "Base",
+          "draft_value": "relative",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "background-size",
+          "tier": "Mobile",
+          "draft_value": "200px 200px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Mobile",
+          "draft_value": "48px 20px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-cta-section' (cta-section) NOT-RENDERED: the page did not load — 9 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 13
+}

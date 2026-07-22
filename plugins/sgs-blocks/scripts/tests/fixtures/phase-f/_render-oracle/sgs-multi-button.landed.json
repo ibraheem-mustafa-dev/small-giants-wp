@@ -1,0 +1,57 @@
+{
+  "fixture": "sgs-multi-button",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-multi-button",
+      "block_slug": "sgs/multi-button",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-multi-button",
+      "cells": [
+        {
+          "property": "display",
+          "tier": "Base",
+          "draft_value": "flex",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "flex-wrap",
+          "tier": "Base",
+          "draft_value": "wrap",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "gap",
+          "tier": "Base",
+          "draft_value": "12px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        },
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "16px 0",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-multi-button' (multi-button) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 0
+}

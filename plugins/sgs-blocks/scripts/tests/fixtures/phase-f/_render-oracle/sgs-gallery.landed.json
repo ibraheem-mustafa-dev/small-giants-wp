@@ -1,0 +1,33 @@
+{
+  "fixture": "sgs-gallery",
+  "generated_by": {
+    "module": "oracle.verdict",
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "section_id": "section-1-gallery",
+      "block_slug": "sgs/gallery",
+      "guards": {
+        "empty": false,
+        "element": false,
+        "height": true,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-gallery",
+      "cells": [
+        {
+          "property": "padding",
+          "tier": "Base",
+          "draft_value": "48px 24px",
+          "computed_value": null,
+          "expected_default": null,
+          "verdict": "NOT-RENDERED"
+        }
+      ]
+    }
+  ],
+  "plain_summary": "Section 'section-1-gallery' (gallery) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+  "oracle_status": "SKIPPED-NO-LIVE-URL",
+  "unattributed_cell_count": 9
+}
