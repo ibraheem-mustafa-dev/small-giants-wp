@@ -211,6 +211,52 @@ Raw ~2h15m; wall-clock with Wave-1/2 fan-out ≈ one focused session for A→B, 
   never "out of scope".
 - **R-31-13**: Spec 31 cannot be marked 100% on numbers alone — C2 needs Bean's eye.
 
+---
+
+## ⚠ AUDIT CORRECTION (2026-07-22, Bean-caught) — A1's exclude list was partly WRONG
+
+**What happened.** A1 decided seed-vs-exclude by searching attribute NAMES containing the CSS
+property (`%transform%`, `%filter%`…). Bean challenged it: *"wouldn't hover effects on buttons
+that increase scale be a transform prop?"* — and he was right. The consumers exist but are named
+**semantically**, not after the property:
+
+| Property | Real consumers (missed by the name search) |
+|---|---|
+| `transform` | `scaleHover` on button, card-grid, gallery, heading, icon, info-box, post-grid, quote, team-member, testimonial, text; `imageZoomHover` on card-grid, gallery, post-grid, team-member |
+| `filter` | `grayscaleHover` on card-grid, gallery, info-box, team-member |
+| `top` | `sgs/decorative-image.positionY` (carries `css_property='top'`) |
+| `left` | `sgs/decorative-image.positionX` (carries `css_property='left'`) |
+
+**Effect:** every draft hover scale / zoom / grayscale effect is currently DROPPED — a real,
+visible fidelity loss on exactly the interactions clients notice.
+
+**The lesson (generalises):** audit by the DECLARED SEMANTIC (`block_attributes.css_property`,
+`role`) — never by the identifier's name. A control called `scaleHover` consumes `transform`; a
+name-keyed search can never see that. Note even `css_property` alone is INSUFFICIENT here (it is
+only partly seeded: card-grid.scaleHover has it, button.scaleHover is NULL) — the reliable audit
+needs BOTH signals plus a semantic sweep. Sibling rules: `verify-wider-than-the-agent-did`,
+`dedup-by-identity-not-name-challenge-uniqueness`.
+
+**Still genuinely excluded** (zero consumers by either signal): `transition` (its
+duration/easing/delay sub-props already cover it), `position`, `overflow-x/y`, `right`, `bottom`,
+`inset`, `flex-grow/shrink/basis`.
+
+**Data bug flagged (separate):** `sgs/nav-menu.underlineOffset` carries `css_property='position'`
+— almost certainly a mis-seed (it is `text-underline-offset`). Not a real `position` consumer.
+
+### NEW UNIT — B3: coupled un-exclude + hover-lift  [T2 · Sonnet] ON-CRITICAL-PATH
+  PURPOSE: un-exclude transform/filter/top/left AND build the semantic lift that consumes them,
+           in ONE change (un-excluding without the lift turns those decls UNACCOUNTED → gate fail).
+  WORK:    seed the missing `css_property` on the NULL consumers (declarative channel + dated
+           migration, FR-31-2.1a); idempotent DELETE migration for the 4 un-excluded props;
+           semantic VALUE parse (`transform:scale(1.05)`→1.05, `filter:grayscale(1)`→attr type,
+           top/left→positionY/positionX) routed via the Front-1 declarative resolver + the D309
+           `:hover` state mechanism (§3.A step 4a) — no slug literal (R-31-1/R-31-9); honest gap
+           on anything unparseable (§3.A step 8).
+  FILES:   migrations/2026-07-22-*.py, converter resolver path, new phase-f fixtures + tests
+  TEST:    fixtures proving a hover-scale/grayscale/top-left LANDS; coverage gate stays 0 NEW
+           UNACCOUNTED; no_slug_literal clean; live-verify batched to C2 (hover is visible).
+
 ## Next action (≤5 min, zero deps)
 
 **Dispatch A1** — the property-attr audit (read-only /sgs-db + block.json grep). It resolves the
