@@ -74,10 +74,25 @@ via the real **"Set as active" admin action** rendered both markers exactly once
 come via the header/footer cloning pipeline later; clear them via the admin "Clear active" action if the
 canary's normal header/footer is wanted back).
 
-**Your next actions.** (1) ~~De-client per site~~ **DONE** (above). (2) **FR-36-18 Indus header cutover**
-(recon plan ready, `memory/` — the shared theme file would push the framework header onto Indus if
-deployed as-is; now safe to proceed since the binding is proven). (3) The three carried §3 FRs
-(FR-37-33/34/35). Everything else in Spec 37 is deferrable.
+**⭐ FR-36-18 Indus cutover mechanism PROVEN live (D361, 2026-07-22).** A GENERIC proof header
+(`sgs_header` #360 on palestine-lives) built on `sgs/nav-menu` (ref:3) + `sgs/nav-drawer`, set active
+via the admin action, passed EVERY gate on the production Indus site: marker renders once + core wrapper
+replaced + no legacy adaptive-nav in output · desktop 7-link menu · mobile burger→drawer opens axe 0 ·
+no-overflow 375/768/1440 · no-JS crawl · **adaptive-nav still registered (rollback intact)**.
+palestine-lives now runs the current `main` sgs-blocks build (it lacked `nav-drawer` + the FR-37
+binding; deployed clean via isolated worktree, checksum-verified). **This is a MINIMAL proof of the
+mechanism, NOT the faithful branded Indus header** — that comes via the header/footer cloning pipeline
+(Spec 33 Part 2). **⛔ FR-37-21 (delete adaptive-nav + mega-menu) stays GATED** until the REAL branded
+Indus header is cutover — retiring now would strand Indus on a generic header.
+
+**Canary + Indus state (both show GENERIC proof headers now):** sandybrown = proof CPTs #1570/#1571
+active; palestine-lives = proof header #360 active. Restore normal via the admin **"Clear active"** row
+action per site. Real headers land via cloning later.
+
+**Your next actions.** (1) ~~De-client per site~~ **DONE**. (2) ~~FR-36-18 Indus cutover~~ **mechanism
+PROVEN** (real branded header deferred to cloning). (3) The three carried §3 FRs (FR-37-33/34/35). All
+else in Spec 37 deferrable. **Flagged debt:** palestine-lives posts 67/68 carry pre-existing
+hero/cta-section old-shape attr debt (parking `P-INDUS-OLDSHAPE-67-68`) — unrelated to nav, not fixed.
 
 ---
 

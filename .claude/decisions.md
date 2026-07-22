@@ -15,6 +15,28 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D361 [ROUTINE] — FR-36-18 Indus cutover MECHANISM proven live (minimal proof); legacy retirement stays gated (2026-07-22)
+
+**What.** Proved Spec 36 Phase-2's live cutover works on the production Indus site (palestine-lives)
+with a GENERIC proof header — NOT brand parity (Bean-scoped: "set it up enough to prove the new blocks +
+header CPT function"). `sgs_header` post #360 = `sgs/site-header` > row(middle) > marker + `sgs/nav-menu`
+(`ref:3` classic menu "Primary Navigation", `drawerRef:'sgs-nav-drawer'`) + `sgs/nav-drawer` (matching
+drawerRef). Authored via the editor (D270), set active via the admin "Set as active" action (D360 — NOT
+`wp option update`). palestine-lives was missing `sgs/nav-drawer` + the FR-37 binding classes; deployed
+the current `main` sgs-blocks build clean (isolated worktree, `--blocks-only --skip-build`, md5-verified
+local↔server, OPcache+LiteSpeed cleared). All gates PASS: marker once + core wrapper replaced + no
+legacy `sgs/adaptive-nav` in output; desktop 7-link menu; mobile burger→drawer axe 0; no-overflow
+375/768/1440 (360/753/1425 ≤ viewport); no-JS crawl; **adaptive-nav still registered (rollback intact)**.
+
+**Load-bearing nuance.** This is the MECHANISM proof, not the real branded header (which comes via Spec
+33 Part 2 cloning). **FR-37-21 (delete adaptive-nav + mega-menu) stays GATED on the REAL cutover** —
+retiring on the proof alone would strand Indus on a generic header. Both sites now display generic proof
+headers (sandybrown #1570/#1571, palestine-lives #360); restore via admin "Clear active".
+
+**Flagged, not fixed:** the deploy's oldshape-audit gate flagged pre-existing hero/cta-section old-shape
+attr debt on palestine-lives posts 67/68 (unrelated to nav); bypassed with `--skip-oldshape-audit` and
+parked as `P-INDUS-OLDSHAPE-67-68` rather than silently fixed or ignored.
+
 ## D360 [INCIDENT] — Task-1 de-client DONE; FR-37-3 "failure" was a WP-CLI option-store mismatch, not a code bug (2026-07-22)
 
 **De-client (FR-37-6 residual).** `parts/header.html` was already a shell (D359); Spec 37 §3.9a/FR-37-6

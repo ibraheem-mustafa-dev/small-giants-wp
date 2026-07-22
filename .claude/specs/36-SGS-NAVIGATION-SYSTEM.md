@@ -486,6 +486,16 @@ over-engineer):** keep the retired block registrations **DORMANT briefly post-cu
 the new nav regresses) before **measuring zero live stored instances** of the retired blocks' attrs and then
 removing the registrations.
 
+**Status (2026-07-22, D361):** `MECHANISM PROVEN — real branded cutover deferred.` Canary (Mama's)
+re-authored `b41352fc`. **Indus (palestine-lives) proven live** with a GENERIC proof header (`sgs_header`
+#360 on `sgs/nav-menu` ref:3 + `sgs/nav-drawer`, set active via the admin action): renders from CPT
+(marker once, core wrapper replaced, no legacy adaptive-nav in output) · desktop 7-link menu · mobile
+burger→drawer axe 0 · no-overflow 375/768/1440 · no-JS crawl · adaptive-nav still registered. This
+demonstrates the cutover MECHANISM end-to-end; the faithful branded Indus header is deferred to the
+Spec 33 Part 2 header/footer cloning pipeline. **⛔ Do NOT run FR-37-21 (legacy deletion) on the proof
+alone** — retiring adaptive-nav before the REAL Indus header is cutover would strand Indus on a generic
+header. Retirement stays gated on the real cutover, not this proof.
+
 ### 8a. Verified build notes (live-code items — cite at build; fact-check-corrected)
 - **Menu-source detection (fact-check):** `SGS_Nav_Menu_Source::NAV_BLOCK_NAMES`
   (`class-sgs-nav-menu-source.php:44`) hardcodes `['sgs/adaptive-nav', 'core/navigation']`. When the rebuild
