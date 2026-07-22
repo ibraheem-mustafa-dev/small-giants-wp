@@ -18,7 +18,7 @@
 <!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
 <!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
 
-<!-- wp:sgs/adaptive-nav {"linkColour":"text","gap":{"desktop":"28px"}} /-->
+<!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 
 <!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap"} -->
 <!-- wp:sgs/product-search {"displayMode":"icon","buttonLabel":"Search products"} /-->
@@ -27,3 +27,8 @@
 <!-- /wp:sgs/container -->
 <!-- /wp:sgs/site-header-row -->
 <!-- /wp:sgs/site-header -->
+
+<!-- wp:sgs/nav-drawer -->
+<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
+<!-- /wp:sgs/nav-drawer -->

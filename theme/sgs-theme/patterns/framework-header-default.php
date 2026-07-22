@@ -26,11 +26,7 @@
 <!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
 <!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
 
-<!-- wp:sgs/adaptive-nav {"linkColour":"text","gap":{"desktop":"28px"}} -->
-<!-- wp:sgs/nav-menu /-->
-<!-- wp:sgs/business-info {"displayType":"email"} /-->
-<!-- wp:sgs/social-icons {"source":"site-info","iconColour":"surface","iconSize":20} /-->
-<!-- /wp:sgs/adaptive-nav -->
+<!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 
 <!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap"} -->
 <!-- wp:sgs/cart /-->
@@ -41,3 +37,8 @@
 <!-- wp:sgs/business-info {"displayType":"phone","className":"is-style-button","sgsHideOnDesktop":true} /-->
 <!-- /wp:sgs/site-header-row -->
 <!-- /wp:sgs/site-header -->
+
+<!-- wp:sgs/nav-drawer -->
+<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
+<!-- /wp:sgs/nav-drawer -->
