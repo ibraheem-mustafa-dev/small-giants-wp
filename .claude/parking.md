@@ -20,8 +20,20 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 > re-run the deploy WITHOUT `--skip-oldshape-audit` to confirm clean. **Update 2026-07-22 (D362):** this
 > same debt then blocked the FR-37-21 legacy-retirement PROD deploy (the gate blocks the WHOLE deploy on
 > any debt-carrying post, even one the deploy doesn't touch); Bean authorised `--skip-oldshape-audit`
-> again. Debt still OPEN — fixing 67/68 stops the need to skip on every palestine-lives deploy. **Status:
-> OPEN** · **Bucket:** Tech-debt · **Trigger:** next palestine-lives content/deploy session.
+> again. Debt still OPEN — fixing 67/68 stops the need to skip on every palestine-lives deploy.
+> **⚠ CORRECTION 2026-07-22 — do NOT delete these.** An inspect-before-delete guardrail confirmed posts
+> 67/68 are **REAL live Indus pages** (67 = "Retail" sector page, 68 = "Wholesale" sector page, both
+> `page`/`publish` with `sgs/hero`+cta content) — NOT the scrap/canary test pages they were briefly
+> assumed to be. The correct fix is **block recovery + re-save in the editor** (D270), re-serialising the
+> hero/cta blocks to the current attr shape — NEVER deletion, never wp-cli str_replace. They can be
+> recloned if needed; palestine-lives is the test/dev site.
+> **✅ RESOLVED 2026-07-22.** Fixed via block-editor re-save of both pages (Retail 67 + Wholesale 68) —
+> hero/cta blocks re-serialised to current shape (no "Attempt Block Recovery" needed; frontends render
+> clean, 0 console errors). Oldshape audit re-run = **0 NEW HIGH** → palestine-lives deploys no longer
+> need `--skip-oldshape-audit` for the attr-shape debt. **Separate residual (NOT this item):** 67/68 +
+> 52/65/66 still carry a baselined `sgs/heritage-strip` unknown-block debt (deleted-block migration,
+> tracked in `plugins/sgs-blocks/scripts/REGISTER.md` P1/P2) — baselined, does NOT block deploys.
+> **Status: RESOLVED** (move to `memory/parking-archive.md` at next /handoff) · **Bucket:** Tech-debt.
 
 ## 2026-07-20 (/handoff Gate 4.6) — LEDGER + decisions.md still over their size caps; 2 docscore checks are false positives
 

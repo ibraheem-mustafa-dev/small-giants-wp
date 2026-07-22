@@ -61,8 +61,8 @@ canary + **PRODUCTION verified** (deployed `--skip-oldshape-audit`, checksum-mat
 opens as a `<dialog>` with 7 links, 0 console errors, 0 fatals, no legacy markup). The zero-live-instances
 gate caught 2 refs first (canary draft 1320 = false positive; prod `wp_navigation` 100 = orphan) — both
 cleared. adaptive-nav rollback is now git-only. Both cutover + retirement are the MECHANISM/cleanup — the
-faithful branded Indus header still comes via cloning (Spec 33 Part 2). (axe/overflow not re-run this pass
-— same blocks were axe-0 pre-retirement.)
+faithful branded Indus header still comes via cloning (Spec 33 Part 2). **Bean confirmed the Indus mobile
+drawer opens fine with no overflow on a real device (2026-07-22) — FR-37-21 fully verified end-to-end.**
 
 **Canary + Indus state (both show GENERIC proof headers now):** sandybrown = proof CPTs #1570/#1571
 active; palestine-lives = proof header #360 active. Restore normal via the admin **"Clear active"** row
@@ -76,9 +76,10 @@ in whole or part, map dependencies + what can run in PARALLEL vs a set order, th
 sonnet agents for the sonnet-tier points — **Opus inline = orchestration + QC ONLY** (does not implement).
 Remaining feature FRs: Spec 37 FR-37-33/34/35 (§3 gaps), FR-37-14/15 (tri-state + scoped CSS), FR-37-7/8
 (starter picker), FR-37-26..31 (Simple/Advanced + a11y); Spec 36 per the audit map.
-**Flagged debt:** palestine-lives posts 67/68 pre-existing hero/cta old-shape attr debt
-(`P-INDUS-OLDSHAPE-67-68`) — gated the FR-37-21 prod deploy (skipped, Bean-authorised); resolve when
-touching Indus content.
+**Debt RESOLVED 2026-07-22:** posts 67/68 (Indus "Retail"/"Wholesale" REAL pages — a guardrail caught
+that they are NOT scrap; fixed via block-editor re-save, NOT deleted) — `P-INDUS-OLDSHAPE-67-68` closed,
+oldshape audit = 0 NEW HIGH, palestine-lives deploys no longer need `--skip-oldshape-audit` for it. (A
+separate baselined `sgs/heritage-strip` debt on 67/68+52/65/66 remains — REGISTER.md P1/P2, non-blocking.)
 
 ---
 
