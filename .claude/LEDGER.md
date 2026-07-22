@@ -32,34 +32,18 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ LATEST (2026-07-22) — SPEC 37 6-FR CORE BUILT + CANARY-VERIFIED. A client can now author a
-header in *SGS → Advanced Headers*, set it active, and it renders live.** Proven on sandybrown, not
-inferred. This was the shortest path from "documented" to "Bean can see it work," and it landed.
+**Spec 37 6-FR core (earlier 2026-07-22, D359 — full detail in decisions D359 + `memory/`).** A client
+can author a header in *SGS → Advanced Headers*, set it active, and it renders live (proven on
+sandybrown). Shipped (`0da5ef6a`→`fc8e2796`): active-pointer + "Set as active" (FR-37-2/25), direct-
+render binding with CPT-aware resolver + fail-closed validation (FR-37-3), "Active" column (FR-37-5),
+footer columns as an operator count (FR-37-11, wrapper untouched), `templateLock 'all'` (§3.3a),
+`parts/header.html` gutted to a shell (FR-37-6 file step). Three silent bugs caught + fixed (2 by the
+pre-commit qc-council, 1 by the live canary — the binding gated on `attrs.area` but the theme uses
+`slug`, so it had NEVER fired; now matches area OR slug). §3 audit done, 3 gaps carried as FR-37-33/34/35.
+Deferred (not needed for usable): tri-state (FR-37-14), scoped behaviour CSS (FR-37-15), starter picker
+(FR-37-7), legacy retirement (FR-37-21), Simple/Advanced + a11y polish (FR-37-26..31).
 
-**What shipped (commits `0da5ef6a` → `87d1f94c` → `9b9a8028` → `9ff24f74` → `fc8e2796`):** the
-active-pointer + "Set as active" admin action (FR-37-2/25), the direct-render binding before the
-rules engine with a CPT-aware behaviour resolver and fail-closed validation (FR-37-3 a/b/c), the
-"Active" list-table column (FR-37-5), footer columns as an operator COUNT (FR-37-11, **wrapper
-untouched** — it already read a per-device count), `templateLock 'insert'→'all'` (§3.3a), and
-`parts/header.html` gutted to a 1-line shell with the client data removed (FR-37-6 file step).
-
-**Three bugs found + fixed — the process earned its keep.** Two by the pre-commit qc-council (empty
-render → blank header; a 2nd header area rendering a *different* header — both silent, both now
-covered by a mutation-tested harness). One by the **live canary**: the binding had **never fired on
-this theme** — `filter_template_part` gated on `attrs.area` but the SGS theme references the part by
-`slug`. A latent rules-engine bug predating the CPT work; fixed by matching `area` OR `slug`
-(`9ff24f74`). Only a live render caught it (STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR / D359, R-31-11).
-
-**Verified live (checksum-verified deploy, cold cache):** CPT header renders · exactly once · sticky
-live · core wrapper replaced · trashed-post fail-closed fallback. The §3 conformance audit (FR-37-9/10)
-is done — 3 gaps carried as **FR-37-33/34/35** (layoutMode control, promoted palette, container
-queries), none silently dropped.
-
-**Deferred with reason (not needed for usable):** tri-state behaviours (FR-37-14), scoped behaviour
-CSS (FR-37-15), starter picker (FR-37-7), legacy nav retirement (FR-37-21, gated on FR-36-18), the
-Simple/Advanced surface + a11y polish (FR-37-26..31). Sticky/transparent/shrink already work.
-
-**⭐ NEXT UPDATE (2026-07-22 later session, D360) — Task-1 de-client DONE + FR-37-3 render RE-PROVEN
+**⭐ LATEST (2026-07-22 later session, D360/D361) — Task-1 de-client DONE + FR-37-3 render RE-PROVEN
 live.** The framework repo now carries **no client data** (`parts/header.html` was already a shell;
 deleted the orphan `footer-indus-foods.php` after a 0-reference check on BOTH sites — `47c93db2`,
 `94ab240f`). Spec 37 §3.9a/FR-37-6 were STALE (said the file still leaked); corrected. **A scare
