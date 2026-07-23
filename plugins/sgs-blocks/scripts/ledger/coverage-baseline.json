@@ -1,28 +1,4 @@
 {
-  "hash": "7bdcb478305bcd8ac35a4e0e0bf812fcc7216d83e4ccfbf501719073fe413029",
-  "keys": [
-    "mamas-trust-bar-real|.sgs-trust-bar__badge[data-pending=\"true\"]|display|Base",
-    "mamas-trust-bar-real|.sgs-trust-bar__badge[hidden]|display|Base",
-    "mamas-trust-bar-real|.sgs-trust-bar__inner|grid-template-columns|Base",
-    "mamas-trust-bar-real|.sgs-trust-bar__inner|grid-template-columns|Other:(min-width: 600px)",
-    "mamas-trust-bar-real|.sgs-trust-bar__text|font-size|Base",
-    "mamas-trust-bar-real|.sgs-trust-bar__text|font-size|Desktop",
-    "rt-background-url|.sgs-cta-section--bg|background-size|Base",
-    "rt-background-url|.sgs-cta-section--bg|background-size|Mobile",
-    "rt-background-url|.sgs-cta-section--bg|padding|Base",
-    "rt-background-url|.sgs-cta-section--bg|padding|Mobile",
-    "rt-media-600|.sgs-feature-grid__inner|gap|Base",
-    "rt-media-600|.sgs-feature-grid__inner|gap|Other:(max-width: 600px)",
-    "rt-media-600|.sgs-feature-grid__inner|grid-template-columns|Base",
-    "rt-media-600|.sgs-feature-grid__inner|grid-template-columns|Mobile",
-    "rt-media-600|.sgs-feature-grid__inner|grid-template-columns|Other:(max-width: 600px)",
-    "sgs-hero|.sgs-hero|padding|Base",
-    "sgs-hero|.sgs-hero|padding|Mobile",
-    "sgs-media|.sgs-media__image|border-radius|Base",
-    "sgs-media|.sgs-media__image|border-radius|Mobile",
-    "sgs-media|.sgs-media__image|max-width|Base",
-    "sgs-media|.sgs-media__image|max-width|Mobile",
-    "sgs-trust-bar|.sgs-trust-bar__inner|grid-template-columns|Base",
-    "sgs-trust-bar|.sgs-trust-bar__inner|grid-template-columns|Other:(min-width: 600px)"
-  ]
+  "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "keys": []
 }

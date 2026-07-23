@@ -582,7 +582,22 @@ def route_css(
             if has_typed_attr:
                 # D1 — typed attribute lift.
                 skip_snap = _is_non_tokenisable(raw_value)
-                attr_path = f"{block_slug}.{css_prop}"
+                # The key MUST carry the media/tier axis. Keyed on
+                # f"{block}.{css_prop}" alone, a breakpoint rule OVERWROTE the
+                # base rule for the same (block, property) and the base
+                # declaration vanished from the bucket entirely — making the
+                # §12.2.1 coverage-conservation invariant
+                # (UNACCOUNTED = draft − (bucketed ∪ excluded)) structurally
+                # unsatisfiable for EVERY responsive pair. That accounted for 6
+                # of the 14 baselined UNACCOUNTED rows (2026-07-23, Spec 31
+                # unit C1b); the join was already media-aware (D240), only this
+                # source was not. Base keeps the bare path so existing readers
+                # of the unsuffixed key are unaffected.
+                attr_path = (
+                    f"{block_slug}.{css_prop}"
+                    if media is None
+                    else f"{block_slug}.{css_prop}@{media}"
+                )
                 d1_for_section[attr_path] = {
                     "value": raw_value,
                     "role": _infer_role(css_prop),

@@ -725,3 +725,112 @@ class TestRunCorpusIntegration:
         assert summary["total_unaccounted"] <= summary["total_relevant"], (
             "UNACCOUNTED cannot exceed RELEVANT — arithmetic invariant violated."
         )
+
+
+# ---------------------------------------------------------------------------
+# 2026-07-23 — the D1 responsive-pair accounting bugs (Spec 31 unit C1b).
+#
+# ROOT CAUSE (proven, not inferred): 12 of the 14 baselined UNACCOUNTED rows were
+# NOT converter drops — the converter demonstrably transfers them (sgs-hero's
+# padding is present in tests/fixtures/conformance/sgs-hero.golden.json as
+# style.spacing.padding). They were ACCOUNTING losses in two places:
+#
+#   BUG 1 (clobber) — css_router keyed each D1 entry on `f"{block}.{css_prop}"`
+#     with NO tier/media axis, so a breakpoint rule OVERWROTE the base rule for
+#     the same (block, property). The base declaration vanished from the bucket.
+#   BUG 2 (format)  — D1 stored the media condition as `@media (cond)` while
+#     declare_input and the D2 re-parse use `(cond)`. The join compares literally,
+#     so even the surviving entry missed.
+#
+# Both bugs hit ONLY properties whose sole bucket is D1; a property that also
+# lands in D2/D3 was rescued by the D2 re-parse's correctly-normalised form,
+# which is why `.sgs-hero__heading` font-size passed while `.sgs-hero` padding
+# did not — and why the failures always appeared as a Base+tier PAIR.
+# ---------------------------------------------------------------------------
+
+_RESPONSIVE_PAIR_CSS = """
+.sgs-hero { padding: 80px 24px; }
+@media (max-width: 768px) {
+  .sgs-hero { padding: 48px 16px; }
+}
+"""
+
+
+def test_d1_responsive_pair_buckets_both_base_and_breakpoint():
+    """A base declaration and a breakpoint declaration of the SAME
+    (selector, property) must BOTH be bucketed.
+
+    Negative control: before the fix this asserted-on set contained only
+    ('.sgs-hero','padding','@media (max-width: 768px)') — the base was clobbered
+    by the breakpoint write, and the surviving entry carried the '@media '
+    prefix that the join could not match. Both assertions below therefore FAILED.
+    """
+    from orchestrator.css_router import route_css
+    from ledger import coverage_check as cc
+
+    bucketed = cc._bucketed_sel_props(
+        route_css(_RESPONSIVE_PAIR_CSS, {}, {}, "test-responsive-pair")
+    )
+
+    # BUG 1 — the base must survive the breakpoint write.
+    assert (".sgs-hero", "padding", None) in bucketed, (
+        "base padding was clobbered by the breakpoint write (D1 key lacks a "
+        f"tier/media axis). bucketed={sorted(map(str, bucketed))}"
+    )
+    # BUG 2 — the breakpoint must be keyed in declare_input's media format
+    # ('(cond)'), not css_router's raw '@media (cond)'.
+    assert (".sgs-hero", "padding", "(max-width: 768px)") in bucketed, (
+        "breakpoint padding missing in declare_input media format — the D1 "
+        f"'@media ' prefix was not normalised. bucketed={sorted(map(str, bucketed))}"
+    )
+
+
+_SELECTOR_LIST_CSS = """
+.sgs-trust-bar__badge[hidden],
+.sgs-trust-bar__badge[data-pending="true"] { display: none; }
+"""
+
+
+def test_d1_selector_list_buckets_every_member():
+    """BUG 3 (selector list) — css_router stores a comma-separated rule's
+    selector VERBATIM as ONE string; declare_input emits one row per member.
+    The join is selector-keyed, so a list-scoped rule could never match.
+
+    Negative control: before the fix the bucketed set held only the combined
+    '.sgs-trust-bar__badge[hidden],\n.sgs-trust-bar__badge[data-pending="true"]'
+    string, so BOTH assertions below failed — these were the last 2 of the 14
+    baselined UNACCOUNTED rows.
+    """
+    from orchestrator.css_router import route_css
+    from ledger import coverage_check as cc
+
+    bucketed = cc._bucketed_sel_props(
+        route_css(_SELECTOR_LIST_CSS, {}, {}, "test-selector-list")
+    )
+    for member in (
+        '.sgs-trust-bar__badge[hidden]',
+        '.sgs-trust-bar__badge[data-pending="true"]',
+    ):
+        assert (member, "display", None) in bucketed, (
+            f"selector-list member {member!r} not bucketed — the list was not "
+            f"expanded. bucketed={sorted(map(str, bucketed))}"
+        )
+
+
+def test_selector_list_splitter_respects_brackets_and_quotes():
+    """Commas INSIDE brackets/parens/quotes are not list separators."""
+    from ledger import coverage_check as cc
+    import inspect
+    # _split_selector_list is a closure inside _bucketed_sel_props; exercise it
+    # through the public path using a selector that would mis-split naively.
+    src = inspect.getsource(cc._bucketed_sel_props)
+    assert "_split_selector_list" in src, "splitter missing from the join"
+
+    from orchestrator.css_router import route_css
+    css = '.a[data-x="p,q"], .b:is(.c, .d) { display: none; }'
+    bucketed = cc._bucketed_sel_props(route_css(css, {}, {}, "test-split-guard"))
+    sels = {s for s, _p, _m in bucketed}
+    # The quoted comma and the :is() comma must NOT create phantom members.
+    assert not any(s in ('"p', 'q"', '.d)') for s in sels), (
+        f"splitter broke a bracketed/quoted comma: {sorted(sels)}"
+    )

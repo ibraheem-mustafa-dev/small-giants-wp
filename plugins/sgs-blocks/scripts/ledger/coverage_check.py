@@ -176,6 +176,20 @@ def _extract_sel_props_from_raw_css(raw_css_lines: list[str]) -> set[tuple[str, 
 # Bucketed set extraction from css_router result
 # ---------------------------------------------------------------------------
 
+def _norm_selector(sel: str) -> str:
+    """Collapse internal whitespace in a selector so both sides of the join agree.
+
+    css_router stores a rule's selector VERBATIM (newlines/tabs from the source
+    CSS included); `declare_input` serialises via tinycss2 and only `.strip()`s
+    each member, so a descendant selector written across lines (`.a\\n  .b`)
+    keeps its internal whitespace there. Normalising ONE side only would be a
+    join defect in its own right (it would silently over-report UNACCOUNTED),
+    so this helper is applied to BOTH the bucketed set and the declared row
+    (2026-07-23, Spec 31 unit C1b — §12.2.1 requires comparing like with like).
+    """
+    return " ".join(sel.split())
+
+
 def _bucketed_sel_props(router_result: dict) -> set[tuple[str, str, str | None]]:
     """Collect every (selector, property, media) triple that landed in ANY css_router bucket.
 
@@ -195,6 +209,73 @@ def _bucketed_sel_props(router_result: dict) -> set[tuple[str, str, str | None]]
     """
     bucketed: set[tuple[str, str, str | None]] = set()
 
+    def _split_selector_list(sel: str) -> list[str]:
+        """Split a CSS selector LIST into its members, matching declare_input.
+
+        css_router stores a comma-separated rule's selector VERBATIM as one
+        string (newlines included); declare_input emits one row per member. The
+        join is keyed on the selector, so a list-scoped rule could never match
+        without this expansion. Commas inside brackets/parens are NOT separators
+        (`[data-x="a,b"]`, `:is(.a, .b)`), so track depth rather than str.split.
+        """
+        out: list[str] = []
+        buf: list[str] = []
+        depth = 0
+        in_q: str | None = None
+        for ch in sel:
+            if in_q:
+                buf.append(ch)
+                if ch == in_q:
+                    in_q = None
+                continue
+            if ch in "\"'":
+                in_q = ch
+                buf.append(ch)
+            elif ch in "([":
+                depth += 1
+                buf.append(ch)
+            elif ch in ")]":
+                depth = max(0, depth - 1)
+                buf.append(ch)
+            elif ch == "," and depth == 0:
+                out.append("".join(buf).strip())
+                buf = []
+            else:
+                buf.append(ch)
+        if buf:
+            out.append("".join(buf).strip())
+        # Collapse internal whitespace via the SHARED normaliser (the same one
+        # the membership test applies to the declared row) so both sides agree.
+        return [_norm_selector(s) for s in out if s.strip()]
+
+    def _norm_media(m: str | None) -> str | None:
+        """Normalise a media condition to declare_input's format.
+
+        css_router's D1 and D3 store the condition VERBATIM including the
+        leading ``@media `` keyword, while ``declare_input`` (and the D0/D2
+        re-parse below) store the bare condition ``(max-width: 768px)``. The
+        join compares literally, so an un-normalised entry could never match a
+        declared row — which silently produced 6 of the 14 baselined
+        UNACCOUNTED rows even where css_router HAD dispositioned the
+        declaration (2026-07-23, Spec 31 unit C1b). Normalising here (rather
+        than changing the router's stored value) keeps this accounting-only:
+        zero pipeline behaviour change.
+        """
+        if m is None:
+            return None
+        s = m.strip()
+        # css_router builds the label as f"@{node.at_keyword} {condition}"
+        # (css_router.py:188), so the prefix is NOT always '@media' — an
+        # '@supports (...)' rule would keep its prefix and could never match a
+        # declared row. Today such rules divert to D2 before reaching D1, but
+        # that invariant is not structurally enforced, so strip ANY leading
+        # at-keyword rather than depending on it (qc-council finding, ~55 conf,
+        # 2026-07-23 unit C1b — fails in the safe direction either way).
+        if s.startswith("@"):
+            _, _, rest = s.partition(" ")
+            s = rest.strip()
+        return s or None
+
     # D1 — the richest bucket: exact (selector, property, media) info preserved.
     for section_key, attrs in router_result.get("d1", {}).items():
         # section_key format: '<block_slug>:<selector>'
@@ -202,16 +283,25 @@ def _bucketed_sel_props(router_result: dict) -> set[tuple[str, str, str | None]]
         _, _, selector = section_key.partition(":")
         for _attr_path, info in attrs.items():
             prop = info.get("css_prop", "").lower()
-            # D1 carries the media condition verbatim (None = base).
-            media: str | None = info.get("media", None)
+            # D1 carries the media condition verbatim (None = base) — normalise
+            # off the leading '@media ' so it can match a declared row.
+            media: str | None = _norm_media(info.get("media", None))
             if selector and prop:
-                bucketed.add((selector, prop, media))
+                # A selector LIST is ONE entry here but N rows in declare_input
+                # (which splits on commas), so the join could never match a
+                # list-scoped rule — e.g. the trust-bar's
+                # `.sgs-trust-bar__badge[hidden], .sgs-trust-bar__badge[data-pending="true"]
+                # { display:none }` produced the last 2 of the 14 baselined
+                # UNACCOUNTED rows even though css_router HAD bucketed it into
+                # D1. Expand to one triple per member (2026-07-23, unit C1b).
+                for member in _split_selector_list(selector):
+                    bucketed.add((member, prop, media))
 
     # D3 — gap candidates: property-level info and media preserved.
     for entry in router_result.get("d3", []):
         src_cls = entry.get("source_class", "")
         prop = entry.get("css_property", "").lower()
-        media = entry.get("media", None)
+        media = _norm_media(entry.get("media", None))
         if src_cls and prop:
             # source_class is the bare class name (e.g. 'sgs-hero'); normalise to selector.
             selector = f".{src_cls}"
@@ -384,7 +474,9 @@ def _analyse_fixture(
         sel = row.selector
         prop = row.property
 
-        is_bucketed = (sel, prop, row.media) in bucketed
+        # Normalise the DECLARED selector with the same helper the bucketed set
+        # uses — normalising one side only would silently over-report (C1b).
+        is_bucketed = (_norm_selector(sel), prop, row.media) in bucketed
         is_excluded = prop in excluded_props
 
         if not is_bucketed and not is_excluded:
