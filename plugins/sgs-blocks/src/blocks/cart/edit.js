@@ -1,14 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	RangeControl,
-	ToggleControl,
-	TextControl,
-	Notice,
-} from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl } from '../../components';
+import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { IconPreview, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
+import PanelSettingsControls from './PanelSettingsControls';
+import TriggerSettingsControls from './TriggerSettingsControls';
 
 /**
  * SGS Cart — block editor component.
@@ -20,9 +16,14 @@ import { colourVar } from '../../utils';
  *
  * If WooCommerce is not active (window.sgsCartData.wcActive is falsy) a
  * dismissible notice is shown below the placeholder.
+ *
+ * @param {Object}   root0               Block edit props.
+ * @param {Object}   root0.attributes    The block's current attributes.
+ * @param {Function} root0.setAttributes Setter for the block's attributes.
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		displayMode,
 		iconName,
 		iconSize,
 		iconColour,
@@ -34,7 +35,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: blockStyle,
 		marginTablet,
 		marginMobile,
+		panelHeading,
+		emptyCartMessage,
+		emptyCartCtaLabel,
+		viewCartLabel,
+		checkoutLabel,
+		autoOpenOnAdd,
+		hideOnCartCheckoutPages,
+		panelBg,
+		panelTextColour,
 	} = attributes;
+
+	const hasPanel = 'link' !== ( displayMode || 'link' );
 
 	// WooCommerce availability flag — injected by render.php via wp_localize_script
 	// equivalent in the editor. Falls back to true when the data object is absent
@@ -45,7 +57,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
-		'--sgs-cart-badge-text-colour': colourVar( badgeTextColour ) || undefined,
+		'--sgs-cart-badge-text-colour':
+			colourVar( badgeTextColour ) || undefined,
 	};
 
 	const blockProps = useBlockProps( {
@@ -56,66 +69,31 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
-					<IconPicker
-						label={ __( 'Cart icon', 'sgs-blocks' ) }
-						value={ { source: 'lucide', name: iconName } }
-						onChange={ ( { name } ) =>
-							setAttributes( { iconName: name } )
-						}
-					/>
-					<RangeControl
-						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-						value={ iconSize }
-						onChange={ ( val ) => setAttributes( { iconSize: val } ) }
-						min={ 16 }
-						max={ 64 }
-						step={ 4 }
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Icon colour', 'sgs-blocks' ) }
-						value={ iconColour }
-						onChange={ ( val ) => setAttributes( { iconColour: val } ) }
-					/>
-				</PanelBody>
+				<PanelSettingsControls
+					displayMode={ displayMode }
+					hasPanel={ hasPanel }
+					panelHeading={ panelHeading }
+					emptyCartMessage={ emptyCartMessage }
+					emptyCartCtaLabel={ emptyCartCtaLabel }
+					viewCartLabel={ viewCartLabel }
+					checkoutLabel={ checkoutLabel }
+					panelBg={ panelBg }
+					panelTextColour={ panelTextColour }
+					autoOpenOnAdd={ autoOpenOnAdd }
+					hideOnCartCheckoutPages={ hideOnCartCheckoutPages }
+					setAttributes={ setAttributes }
+				/>
 
-				<PanelBody title={ __( 'Badge', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Badge background', 'sgs-blocks' ) }
-						value={ badgeColour }
-						onChange={ ( val ) => setAttributes( { badgeColour: val } ) }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Badge text colour', 'sgs-blocks' ) }
-						value={ badgeTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { badgeTextColour: val } )
-						}
-					/>
-					<ToggleControl
-						label={ __( 'Show badge when cart is empty', 'sgs-blocks' ) }
-						help={ __(
-							'When off, the badge hides until there is at least one item in the cart.',
-							'sgs-blocks'
-						) }
-						checked={ showZero }
-						onChange={ ( val ) => setAttributes( { showZero: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Hide cart until it has items', 'sgs-blocks' ) }
-						help={ __(
-							'When on, the cart icon is hidden entirely until at least one item is in the cart.',
-							'sgs-blocks'
-						) }
-						checked={ hideWhenEmpty }
-						onChange={ ( val ) =>
-							setAttributes( { hideWhenEmpty: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
+				<TriggerSettingsControls
+					iconName={ iconName }
+					iconSize={ iconSize }
+					iconColour={ iconColour }
+					badgeColour={ badgeColour }
+					badgeTextColour={ badgeTextColour }
+					showZero={ showZero }
+					hideWhenEmpty={ hideWhenEmpty }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __( 'Accessibility', 'sgs-blocks' ) }
@@ -128,7 +106,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						value={ ariaLabel }
-						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { ariaLabel: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -146,9 +126,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						onChange={ ( tier, next ) => {
 							if ( 'base' === tier ) {
-								setAttributes( { style: { ...blockStyle, spacing: { ...blockStyle?.spacing, margin: next } } } );
+								setAttributes( {
+									style: {
+										...blockStyle,
+										spacing: {
+											...blockStyle?.spacing,
+											margin: next,
+										},
+									},
+								} );
 							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+								setAttributes( {
+									[ `margin${
+										'tablet' === tier ? 'Tablet' : 'Mobile'
+									}` ]: next,
+								} );
 							}
 						} }
 					/>
@@ -174,10 +166,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					aria-label={ ariaLabel }
 				>
 					<span className="sgs-cart__icon" aria-hidden="true">
-						<IconPreview source="lucide" name={ iconName } size={ iconSize } />
+						<IconPreview
+							source="lucide"
+							name={ iconName }
+							size={ iconSize }
+						/>
 					</span>
 					<span
-						className={ `sgs-cart__badge${ showZero ? ' sgs-cart__badge--visible' : '' }` }
+						className={ `sgs-cart__badge${
+							showZero ? ' sgs-cart__badge--visible' : ''
+						}` }
 					>
 						0
 					</span>

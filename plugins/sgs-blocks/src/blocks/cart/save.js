@@ -5,7 +5,7 @@
  * render.php). WordPress serialises only the block comment delimiters and
  * attributes into post_content — no inner HTML is stored.
  *
- * @return {null}
+ * @return {null} Always null — nothing is serialised into post_content.
  */
 export default function Save() {
 	return null;

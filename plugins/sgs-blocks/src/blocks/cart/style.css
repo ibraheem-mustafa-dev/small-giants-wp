@@ -136,4 +136,391 @@
 	.sgs-cart__trigger {
 		transition: none;
 	}
+
+	.sgs-cart__panel--flyout,
+	.sgs-cart__panel--drawer[open] {
+		animation: none !important; /* stylelint-disable-line declaration-no-important */
+	}
+}
+
+/* ── FR-36-19 Phase 2 — mini-cart panel (flyout + drawer share this) ─────────── */
+/* Per-instance colours (panelBg/panelTextColour) are scoped custom-property
+   VALUES from render.php (Spec 32 no-inline) — this file consumes the vars only. */
+.sgs-cart__panel {
+	background-color: var(--sgs-cart-panel-bg, var(--wp--preset--color--base, #fff));
+	color: var(--sgs-cart-panel-text, var(--wp--preset--color--contrast, #111));
+}
+
+/* ── Flyout — DISCLOSURE (FR-36-10): a plain absolutely-positioned popover,
+   no dimming/blocking of the rest of the page, no backdrop. ──────────────── */
+.sgs-cart__panel--flyout {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	z-index: 20;
+	width: min(360px, 92vw);
+	margin-top: 8px;
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+	overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-cart__panel--flyout:not([hidden]) {
+		animation: sgs-cart-flyout-in 0.15s ease-out;
+	}
+}
+
+@keyframes sgs-cart-flyout-in {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ── Drawer — DIALOG (FR-36-10): a right-anchored off-canvas panel opened via
+   the shared store('sgs/nav') `showModal()`. Never set `display` on the base
+   rule (STOP-DIALOG-DISPLAY-GATE, D338) — the UA's dialog:not([open]) rule
+   owns visibility. ──────────────────────────────────────────────────────── */
+.sgs-cart__panel--drawer {
+	position: fixed;
+	inset: 0 0 0 auto;
+	width: min(400px, 92vw);
+	height: 100dvh;
+	max-width: 100vw;
+	max-height: 100dvh;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.sgs-cart__panel--drawer::backdrop {
+	background-color: rgba(0, 0, 0, 0.55);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-cart__panel--drawer[open] {
+		animation: sgs-cart-drawer-in 0.25s ease-out;
+	}
+
+	.sgs-cart__panel--drawer[open]::backdrop {
+		animation: sgs-cart-drawer-backdrop-in 0.25s ease-out;
+	}
+
+	.sgs-cart__panel--drawer.is-closing {
+		animation: sgs-cart-drawer-out 0.2s ease-in;
+	}
+}
+
+@keyframes sgs-cart-drawer-in {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes sgs-cart-drawer-out {
+	from {
+		opacity: 1;
+		transform: none;
+	}
+
+	to {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+@keyframes sgs-cart-drawer-backdrop-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+.sgs-cart__panel-close {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	border-radius: 4px;
+	cursor: pointer;
+	color: inherit;
+}
+
+.sgs-cart__panel-close:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.sgs-cart__panel-close svg {
+	width: 24px;
+	height: 24px;
+	display: block;
+}
+
+/* ── Shared panel-inner layout (flyout + drawer) ─────────────────────────────── */
+.sgs-cart__panel-inner {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-height: min(80vh, 640px);
+	padding: 20px;
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
+.sgs-cart__panel--drawer .sgs-cart__panel-inner {
+	max-height: none;
+	padding-top: 56px; /* room for the fixed × */
+}
+
+.sgs-cart__panel-header {
+	margin-bottom: 12px;
+}
+
+.sgs-cart__panel-heading {
+	margin: 0;
+	font-size: 1.1rem;
+	font-weight: 700;
+}
+
+/* Visually hidden but announced — this is the panel's OWN status live
+   region, distinct from the badge (FR-36-19 no-double-announce). */
+.sgs-cart__panel-status {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+.sgs-cart__panel-items {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	min-height: 40px;
+}
+
+.sgs-cart__panel-loading,
+.sgs-cart__panel-error {
+	margin: 0;
+	font-size: 0.9rem;
+	opacity: 0.75;
+}
+
+/* ── Empty-cart state — distinct + actionable, not a blank panel ─────────────── */
+.sgs-cart__panel-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 24px 0;
+}
+
+.sgs-cart__panel-empty-message {
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+.sgs-cart__panel-empty-cta {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0 16px;
+	background-color: var(--wp--preset--color--primary, #111);
+	color: var(--wp--preset--color--primary-text, #fff);
+	text-decoration: none;
+	border-radius: 4px;
+	font-weight: 600;
+}
+
+.sgs-cart__panel-empty-cta:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+/* ── Item row ─────────────────────────────────────────────────────────────────── */
+.sgs-cart__item {
+	display: grid;
+	grid-template-columns: 48px 1fr auto;
+	gap: 12px;
+	align-items: flex-start;
+	padding-bottom: 12px;
+	border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+.sgs-cart__item-thumb {
+	width: 48px;
+	height: 48px;
+	object-fit: cover;
+	border-radius: 4px;
+	background-color: rgba(128, 128, 128, 0.12);
+}
+
+.sgs-cart__item-info {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.sgs-cart__item-name {
+	font-size: 0.9rem;
+	font-weight: 600;
+	overflow-wrap: break-word;
+}
+
+.sgs-cart__item-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.sgs-cart__item-qty-label {
+	font-size: 0.75rem;
+	opacity: 0.75;
+}
+
+.sgs-cart__item-qty-input {
+	width: 56px;
+	min-height: 32px;
+	padding: 2px 6px;
+	border: 1px solid rgba(128, 128, 128, 0.4);
+	border-radius: 4px;
+	font-size: 0.85rem;
+}
+
+.sgs-cart__item-qty-input:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #111);
+	outline-offset: 1px;
+}
+
+.sgs-cart__item-price {
+	font-size: 0.85rem;
+	font-weight: 600;
+	margin-left: auto;
+}
+
+.sgs-cart__item-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 1.1rem;
+	line-height: 1;
+	color: inherit;
+	opacity: 0.7;
+}
+
+.sgs-cart__item-remove:hover {
+	opacity: 1;
+}
+
+.sgs-cart__item-remove:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+/* ── Footer — subtotal + transparency note + CTAs ────────────────────────────── */
+.sgs-cart__panel-footer {
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+.sgs-cart__panel-subtotal {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	font-size: 1rem;
+	font-weight: 700;
+	margin-bottom: 4px;
+}
+
+.sgs-cart__panel-tax-note {
+	margin: 0 0 12px;
+	font-size: 0.75rem;
+	opacity: 0.75;
+}
+
+.sgs-cart__panel-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.sgs-cart__panel-view,
+.sgs-cart__panel-checkout {
+	flex: 1 1 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 12px;
+	text-decoration: none;
+	border-radius: 4px;
+	font-weight: 600;
+	font-size: 0.9rem;
+	text-align: center;
+}
+
+.sgs-cart__panel-view {
+	background-color: transparent;
+	color: inherit;
+	border: 1px solid currentColor;
+}
+
+.sgs-cart__panel-checkout {
+	background-color: var(--wp--preset--color--primary, #111);
+	color: var(--wp--preset--color--primary-text, #fff);
+	border: 1px solid transparent;
+}
+
+.sgs-cart__panel-view:focus-visible,
+.sgs-cart__panel-checkout:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #111);
+	outline-offset: 2px;
+}
+
+/* ── Windows High Contrast / forced-colors ───────────────────────────────────── */
+@media (forced-colors: active) {
+	.sgs-cart__panel {
+		border: 1px solid CanvasText;
+	}
+
+	.sgs-cart__panel-close:focus-visible,
+	.sgs-cart__panel-view:focus-visible,
+	.sgs-cart__panel-checkout:focus-visible {
+		outline: 2px solid CanvasText;
+	}
 }

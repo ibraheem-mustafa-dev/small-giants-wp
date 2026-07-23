@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "SGS Cart",
 	"category": "sgs-interactive",
-	"description": "WooCommerce mini-cart badge showing live item count. Reads the WooCommerce Store API; hydrates client-side to bypass full-page cache. Phase 2 will add a slide-in drawer.",
+	"description": "WooCommerce mini-cart: live item-count badge plus an optional flyout (disclosure) or drawer (dialog) panel with AJAX add/qty/remove via the WooCommerce Store API. Hydrates client-side to bypass full-page cache.",
 	"keywords": [
 		"cart",
 		"basket",
@@ -72,6 +72,17 @@
 						"css:color": "badgeTextColour"
 					},
 					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1."
+				},
+				"panel": {
+					"label": "Mini-cart panel",
+					"order": 4,
+					"clusters": [ "fill", "text" ],
+					"prefix": "panel",
+					"attrMap": {
+						"css:background-color": "panelBg",
+						"css:color": "panelTextColour"
+					},
+					"_note": "FR-36-19 Phase 2 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer."
 				}
 			}
 		}
@@ -85,6 +96,7 @@
 			"default": "link",
 			"enum": [
 				"link",
+				"flyout",
 				"drawer"
 			]
 		},
@@ -127,6 +139,42 @@
 		"marginMobile": {
 			"type": "object",
 			"default": {}
+		},
+		"panelHeading": {
+			"type": "string",
+			"default": "Your cart"
+		},
+		"emptyCartMessage": {
+			"type": "string",
+			"default": "Your cart is empty"
+		},
+		"emptyCartCtaLabel": {
+			"type": "string",
+			"default": "Continue shopping"
+		},
+		"viewCartLabel": {
+			"type": "string",
+			"default": "View cart"
+		},
+		"checkoutLabel": {
+			"type": "string",
+			"default": "Checkout"
+		},
+		"autoOpenOnAdd": {
+			"type": "boolean",
+			"default": true
+		},
+		"hideOnCartCheckoutPages": {
+			"type": "boolean",
+			"default": true
+		},
+		"panelBg": {
+			"type": "string",
+			"default": "base"
+		},
+		"panelTextColour": {
+			"type": "string",
+			"default": "contrast"
 		}
 	},
 	"editorScript": "file:./index.js",

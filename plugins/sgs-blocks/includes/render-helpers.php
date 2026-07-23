@@ -75,3 +75,4 @@ require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-link.php';
+require_once __DIR__ . '/helpers-cart-panel.php';
