@@ -156,11 +156,11 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No footers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor footer layouts selectable as a site footer variant.', 'sgs-blocks' ),
-					// FR-S9-3 (2026-07-13, D325): a new Advanced Footer opens pre-seeded with
-					// the specialised sgs/site-footer block (columns row + bottom bar) rather
-					// than a bare canvas. ADD (no prior 'template' key existed) — mirrors the
-					// sgs_header CPT template added at D323/D324.
-					'template'    => array( array( 'sgs/site-footer' ) ),
+					// FR-37-7 (2026-07-24): the registration `template` seed is REMOVED (mirrors
+					// the sgs_header change) so a new Advanced Footer opens EMPTY and WordPress's
+					// native "Choose a pattern" starter modal fires with the sgs_footer starters.
+					// "Start from scratch" = the minimal footer-scratch card (the bare sgs/site-footer
+					// shell). Was FR-S9-3/D325: `'template' => array( array( 'sgs/site-footer' ) )`.
 				)
 			)
 		);

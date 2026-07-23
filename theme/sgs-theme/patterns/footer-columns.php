@@ -3,7 +3,8 @@
  * Title: Footer — Multi-Column
  * Slug: sgs/footer-columns
  * Categories: sgs-footers
- * Block Types: core/template-part/footer
+ * Block Types: core/post-content
+ * Post Types: sgs_footer
  * Description: Four-column footer with company info, links, and newsletter. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a 4-column "columns" row (an operator-set count, per §3.3 — not a fixed ratio) that stacks to 1 column on mobile automatically.
  *
  * @package SGS\Theme

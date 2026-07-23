@@ -2,7 +2,8 @@
 /**
  * Title: SGS Framework Header — Centred
  * Slug: sgs/framework-header-centred
- * Block Types: core/template-part/header
+ * Block Types: core/post-content
+ * Post Types: sgs_header
  * Categories: sgs-headers
  * Keywords: header, sgs, framework, centred, centered, logo, balanced, elegant
  * Viewport Width: 1440

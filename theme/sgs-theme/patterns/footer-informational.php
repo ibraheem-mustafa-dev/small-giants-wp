@@ -2,7 +2,8 @@
 /**
  * Title: SGS Framework Footer — Informational
  * Slug: sgs/framework-footer-informational
- * Block Types: core/template-part/footer
+ * Block Types: core/post-content
+ * Post Types: sgs_footer
  * Categories: sgs-footers
  * Keywords: footer, sgs, framework, informational, three-column, links, hours, map, address
  * Viewport Width: 1440

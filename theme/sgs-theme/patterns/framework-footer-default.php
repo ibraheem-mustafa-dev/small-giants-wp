@@ -2,7 +2,8 @@
 /**
  * Title: SGS Framework Footer — Default
  * Slug: sgs/framework-footer-default
- * Block Types: core/template-part/footer
+ * Block Types: core/post-content
+ * Post Types: sgs_footer
  * Categories: sgs-footers
  * Keywords: footer, sgs, framework, default, contact, socials, links
  * Viewport Width: 1440

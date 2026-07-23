@@ -3,7 +3,8 @@
  * Title: Footer — Simple
  * Slug: sgs/footer-simple
  * Categories: sgs-footers
- * Block Types: core/template-part/footer
+ * Block Types: core/post-content
+ * Post Types: sgs_footer
  * Description: Minimal footer with copyright text and policy links. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a single bottom row.
  *
  * @package SGS\Theme

@@ -2,7 +2,8 @@
 /**
  * Title: SGS Header — Search Icon
  * Slug: sgs/header-search-icon
- * Block Types: core/template-part/header
+ * Block Types: core/post-content
+ * Post Types: sgs_header
  * Categories: sgs-headers
  * Keywords: header, search, icon, shop, product, woocommerce, compact
  * Viewport Width: 1440

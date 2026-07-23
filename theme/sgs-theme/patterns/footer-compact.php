@@ -2,7 +2,8 @@
 /**
  * Title: SGS Framework Footer — Compact
  * Slug: sgs/framework-footer-compact
- * Block Types: core/template-part/footer
+ * Block Types: core/post-content
+ * Post Types: sgs_footer
  * Categories: sgs-footers
  * Keywords: footer, sgs, framework, compact, two-column, contact, socials
  * Viewport Width: 1440

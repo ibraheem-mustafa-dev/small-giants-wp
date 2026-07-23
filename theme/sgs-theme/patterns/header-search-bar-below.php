@@ -2,7 +2,8 @@
 /**
  * Title: SGS Header — Search Bar (below menu)
  * Slug: sgs/header-search-bar-below
- * Block Types: core/template-part/header
+ * Block Types: core/post-content
+ * Post Types: sgs_header
  * Categories: sgs-headers
  * Keywords: header, search, shop, product, woocommerce, bar
  * Viewport Width: 1440

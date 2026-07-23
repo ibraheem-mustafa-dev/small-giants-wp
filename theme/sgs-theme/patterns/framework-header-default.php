@@ -2,7 +2,8 @@
 /**
  * Title: SGS Framework Header — Default
  * Slug: sgs/framework-header-default
- * Block Types: core/template-part/header
+ * Block Types: core/post-content
+ * Post Types: sgs_header
  * Categories: sgs-headers
  * Keywords: header, sgs, framework, default, logo, navigation
  * Viewport Width: 1440
