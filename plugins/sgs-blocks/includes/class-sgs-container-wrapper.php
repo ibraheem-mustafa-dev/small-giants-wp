@@ -796,21 +796,30 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// (or an explicit tier template via QB-2 below) governs the tier. This extends
 			// the desktop guard to all tiers — same principle as D228 ("hardcoded/default
 			// shorthands that override a faithfully-transferred template are cheats").
-			if ( ( $is_section || $is_layout ) && 'grid' === $layout ) {
-				// Object model owns grid columns via sgs_emit_responsive_css(); suppress
-				// the legacy sgs-cols-* shorthand under $object_model (else the columns
-				// default 2/2/1 would emit sgs-cols-2 etc. and fight the object grid).
-				$has_base_template = '' !== trim( (string) $grid_template );
-				if ( ! $has_base_template && ! $object_grid ) {
-					$classes[] = 'sgs-cols-' . absint( $columns );
-				}
-				if ( ! $has_base_template && ! $object_grid && $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
-					$classes[] = 'sgs-cols-tablet-' . absint( $columns_tablet );
-				}
-				if ( ! $has_base_template && ! $object_grid && $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
-					$classes[] = 'sgs-cols-mobile-' . absint( $columns_mobile );
-				}
-			}
+			// ⛔ The `sgs-cols-*` shorthand CLASSES were REMOVED 2026-07-23 — they were
+			// structurally unable to work under the object model, and silently so.
+			//
+			// The classes were added to $classes (the OUTER element) and matched by
+			// force-flagged single-column rules keyed on `.sgs-cols-mobile-N` in
+			// container/style.css. But `$grid_on_inner` is FORCED true under the object
+			// model (see :514-516 — @container needs the grid on a DESCENDANT because an
+			// element cannot size-query itself), so the grid lives on
+			// `.sgs-container__inner` while the class sat on its parent. The rule landed
+			// on an element with `display:block` and no grid: inert, no error, no gate.
+			// `!important` could not save it — it was on the wrong element.
+			//
+			// Live proof (canary, footer row columns=4 / columnsMobile=1): desktop
+			// rendered 4 columns correctly (the BASE count routes through $gtc_base ->
+			// $grid_sel, which IS grid-aware) while 375px rendered 4x66px instead of
+			// stacking. FR-37-35 (container queries) introduced the forcing of
+			// $grid_on_inner and therefore caused this FR-37-11 regression; both shipped
+			// the same day, both unexercised, so the combination was never run.
+			//
+			// The tier COUNTS now emit as scoped rules at $grid_sel alongside the
+			// explicit tier TEMPLATES (see QB-2 below) — one mechanism, grid-aware by
+			// construction, no `!important`, and it follows the grid wherever it lives.
+			// This also completes D228: a hardcoded shorthand that can override a
+			// faithfully-transferred template is a cheat, and this was the last one.
 
 			// ----------------------------------------------------------------
 			// Native content-alignment (typography.textAlign support). WP core does
@@ -1324,6 +1333,31 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_mobile ) ) {
 						$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
+					}
+
+					// Tier COUNT fallback — replaces the removed `sgs-cols-*` shorthand
+					// classes (see the removal note in the class-building section above).
+					// Emitted at $grid_sel, so it follows the grid onto
+					// `.sgs-container__inner` when $grid_on_inner is true — which the
+					// classes could not do, and which is the whole FR-37-11 bug.
+					//
+					// Guards carried forward VERBATIM from the class logic so behaviour is
+					// otherwise unchanged (D228): a tier count is emitted ONLY when that
+					// tier has no explicit template, the BASE has no explicit template
+					// (a set base governs every wider tier), and the object grid is not
+					// driving columns via sgs_emit_responsive_css(). No `!important` — a
+					// same-specificity @media rule emitted after the base rule already wins.
+					//
+					// Order matters and matches the explicit-template block directly above:
+					// tablet (max-width:1023px) is emitted BEFORE mobile (max-width:767px),
+					// so at =<767px both match and the later mobile rule wins on source order.
+					if ( 'grid' === $layout && ! $object_grid && '' === trim( (string) $grid_template ) ) {
+						if ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) ) {
+							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:repeat(' . absint( $columns_tablet ) . ',1fr)}}';
+						}
+						if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
+							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:repeat(' . absint( $columns_mobile ) . ',1fr)}}';
+						}
 					}
 
 					// QB-1: Responsive gridTemplateRows — section + layout kinds.

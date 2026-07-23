@@ -32,7 +32,10 @@ const ROW_LABELS = {
 // Columns are an operator-set COUNT per device (Spec 37 §3.3, Bean-locked), NOT
 // a CSS grid-template ratio string. These map 1:1 onto the shared wrapper's flat
 // integer attrs (class-sgs-container-wrapper.php:149-154), which render
-// repeat(N,1fr) + the sgs-cols-* responsive classes and stack to 1 on mobile.
+// repeat(N,1fr) as scoped per-tier rules at the grid selector and stack to 1 on
+// mobile. (Until 2026-07-23 the tiers rode on `sgs-cols-*` classes instead —
+// removed because they addressed the wrapper while the grid had moved to
+// `.sgs-container__inner`, so mobile never stacked. FR-37-11.)
 // The ResponsiveOverride device switcher wants a {desktop,tablet,mobile} object,
 // so we bridge the three flat attrs to that shape and back — no gridTemplateColumns
 // string is ever written from this control. A per-device custom template remains

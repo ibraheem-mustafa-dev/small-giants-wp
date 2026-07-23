@@ -5,9 +5,12 @@
  * owned by the shared SGS_Container_Wrapper via block attributes (layout,
  * columns*, gridTemplateColumns*, gap, verticalAlign, justifyContent) — NOT
  * hardcoded here (Gate B / no-inline, composite-mirror R-31-9). The responsive
- * column collapse (sgs-cols-mobile-1 etc.) is emitted by the wrapper and its CSS
- * lives in sgs/container's style.css. This file only adds the non-attr hardening
- * that keeps the row from ever overflowing.
+ * column collapse is emitted by the wrapper as scoped per-tier rules at the grid
+ * selector (QB-2). It is NOT a `sgs-cols-*` class any more — those were removed
+ * 2026-07-23 because they sat on the wrapper while container queries had moved
+ * the grid to `.sgs-container__inner`, so they silently did nothing (FR-37-11).
+ * This file only adds the non-attr hardening that keeps the row from ever
+ * overflowing.
  */
 
 /* Let every child shrink to fit instead of forcing the row wider than the

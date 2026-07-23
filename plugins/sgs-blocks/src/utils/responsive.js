@@ -102,12 +102,13 @@ export function responsiveClasses( attributes ) {
 	return classes.join( ' ' );
 }
 
-export function gridColumnClasses( desktop, tablet, mobile ) {
-	return [
-		`sgs-cols-${ desktop }`,
-		tablet && `sgs-cols-tablet-${ tablet }`,
-		mobile && `sgs-cols-mobile-${ mobile }`,
-	]
-		.filter( Boolean )
-		.join( ' ' );
-}
+// `gridColumnClasses()` was REMOVED 2026-07-23 along with the `sgs-cols-*` CSS it
+// fed. It had zero callers and was not re-exported from utils/index.js, so it was
+// already dead — but it was a live trap: it minted class names whose stylesheet
+// rules no longer exist, so any future caller would have got silent no-ops.
+//
+// Per-tier column counts are emitted server-side as scoped rules at the grid
+// selector (class-sgs-container-wrapper.php, QB-2), which follows the grid onto
+// `.sgs-container__inner` when container queries force it there. A class on the
+// wrapper structurally cannot address a grid on the inner — that was the FR-37-11
+// bug. Do not reintroduce a class-based column shorthand.

@@ -61,19 +61,20 @@
 	flex-direction: column;
 }
 
-/* Responsive grid columns */
-@media (max-width: 767px) {
-	.sgs-cols-mobile-1 { grid-template-columns: 1fr !important; }
-	.sgs-cols-mobile-2 { grid-template-columns: repeat(2, 1fr) !important; }
-	.sgs-cols-mobile-3 { grid-template-columns: repeat(3, 1fr) !important; }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-	.sgs-cols-tablet-1 { grid-template-columns: 1fr !important; }
-	.sgs-cols-tablet-2 { grid-template-columns: repeat(2, 1fr) !important; }
-	.sgs-cols-tablet-3 { grid-template-columns: repeat(3, 1fr) !important; }
-	.sgs-cols-tablet-4 { grid-template-columns: repeat(4, 1fr) !important; }
-}
+/* Responsive grid columns — REMOVED 2026-07-23.
+ *
+ * These were `.sgs-cols-mobile-N` / `.sgs-cols-tablet-N` shorthand rules matched
+ * against classes the wrapper put on the OUTER element. Under the object model
+ * `$grid_on_inner` is forced true (container queries need the grid on a
+ * descendant), so the grid moved to `.sgs-container__inner` and these rules
+ * landed on its parent — an element with `display:block` and no grid. Inert,
+ * silently: `!important` cannot help a rule on the wrong element.
+ *
+ * Per-tier column counts are now emitted by the wrapper as scoped rules at
+ * `$grid_sel` alongside the explicit per-tier templates
+ * (`class-sgs-container-wrapper.php`, QB-2), so they follow the grid wherever it
+ * lives and need no `!important`. Do NOT reintroduce a class-based shorthand
+ * here — a class on the wrapper cannot address a grid on the inner. */
 
 /* --- Shape Dividers --- */
 
