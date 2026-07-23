@@ -32,45 +32,35 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-23, D363–D367 — full detail in `decisions.md`; do not re-narrate here).**
-**Specs 36+37 — verified vs merely shipped (tiers kept SEPARATE, deliberately).**
-~16 of 64 FRs are genuinely verified done; **~9 more are `DEPLOYED (unexercised)` — shipped and
-checksum-verified but never actually run**; the rest are unbuilt. The denominator GREW from 60 to
-64 this session because scope was ADDED (FR-36-26/a/b/c).
-*(An earlier draft claimed a single "24/64 complete" — conflating `DEPLOYED (unexercised)` with
-done, the completion theatre Spec 37 §5's tiers exist to prevent; caught by the handoff `/qc`
-subagent. Counts are approximate — Spec 37 §5 is by area, not per FR. Derive precise figures
-from the per-FR tables; do not quote this line.)*
+**⭐ CURRENT (2026-07-23 eve, D369–D371 — full detail in `decisions.md`; do not re-narrate here).**
+**Task 1 (verify what shipped) DONE + a footer-columns bug fixed into a full feature.**
 
-- **Deploy proven, not assumed:** 4/4 md5 local↔server; oldshape audit PASS; axe **0 NEW** vs
-  palestine-lives as an UN-DEPLOYED control. **LIVE-VERIFIED:** FR-37-12 never-overflow
-  (375/768/1440) + FR-37-35 container queries on both rows.
-- **⚠ THE HONEST GAP — most new work is `DEPLOYED (unexercised)`, not done.** The canary homepage
-  carries no cart, no search, and **no `sgs/nav-menu` at all**; notices + `DeviceTabs` are
-  editor-surface; hide-on-scroll ships off. **Next session's Task 1 is to CREATE the pages/settings
-  that make each render, then check them** (`next-session-prompt.md`).
-- **Shipped:** mini-cart (FR-36-19) · search extends (36-20) · social one-source (36-21) · nav +
-  header/footer notices (36-12, 37-19) · 2 structural gates (36-24, 37-27) · container queries
-  (37-35) · hide-on-scroll (37-13) · shared `DeviceTabs` fixing the switcher on **21 blocks**
-  (37-29) · all 9 legacy patterns + `framework-footer-default` re-targeted to the CPT model (37-8).
-- **Bugs found + fixed (detail: D366/D367):** an **XSS** in the mini-cart escaper; `sgs/cta-section`
-  rendering an undeclared `textAlign`; `sgs/nav-menu` emitting **zero `<nav>` landmarks** while its
-  `aria-label` sat on a roleless div naming nothing; the core-block gate blind to 13 files incl. both
-  framework defaults; `core/navigation`'s ban silently lapsed when adaptive-nav was deleted (D362).
-- **Bean corrected me four times (D363/D364/D368):** Spec 33 Part 2 is gated on 36+37, not the
-  reverse — and it is **NOT ownerless**: Part 2 is the header/footer CLONING pipeline, Spec 37
-  owns the architecture + build. `labelCollapse` RETAINED. And the ≤3 Simple-surface figure is a
-  **DEFAULT, not a ceiling** — a shipped gate enforced the wrong reading and is now advisory.
-- **New scope:** FR-36-26/a/b/c — the icon-list link-list for footers, fully scoped + dispatchable
-  (heading, markers, typography, `source` toggle) with its a11y/SEO/schema contract, and its
-  converter ROUTING declared now (recognition deferred to Part 2).
+- **8 DEPLOYED-unexercised items → LIVE-VERIFIED (D370):** FR-36-19 mini-cart (flyout=disclosure /
+  drawer=`:modal` dialog, qty-edit + remove + empty state, no reload) · FR-36-20 search (3 modes,
+  matched-`<mark>` highlight, no-JS form returns results) · FR-36-21 social (auto names, `rel`, 44px,
+  focus) · FR-36-12 nav notice (55-link, save persists) · FR-37-19 header contrast notice (saves with
+  warning — DP2a) · FR-37-29 `DeviceTabs` (roving tabindex, native `deviceType` sync). **2 defects
+  fixed (`57251002`):** social glyph `aria-hidden`; search "1 products"→`_n()` pluralisation.
+- **Nav landmark: D367's "zero `<nav>`" was FALSE — reverted a shipped nested-`<nav>` regression (D369,
+  `ed8324cd`).** Root: a grep that couldn't match the wrapper file. Real bug fixed = the unreachable
+  `navLabel` menu-name fallback (default `'Primary'`→`''`). The framework `landmark-unique`/`region`
+  axe hits are NOT the nav's (negative control: nav-free homepage = identical 5; cause = two unnamed
+  `<main>`, separate open theme defect).
+- **FR-37-11 footer columns FIXED + FR-37-33 per-row columns BUILT (D371).** Two bugs: classes on the
+  wrapper while FR-37-35 container-queries moved the grid to `.__inner` (inert), and the emit gated out.
+  **FR-37-35 caused the FR-37-11 regression.** Researched (per-device COUNT is the right control, every
+  major builder; auto-fit is an escape hatch). Now: a "Cluster / Columns" switch on BOTH row types,
+  header rows gained column attrs, **every row (3 header + 3 footer) sets columns independently** (the
+  Astra model). Universal — both KIND branches live-proven (footer 2/4/3→stack; `sgs/container` 3→1).
+  4 commits `a28a1121`→`ec551c94`, all pushed.
 
-**Prior session (D359–D362) — swept** to `decisions.md` + `memory/`. **Both sites still show GENERIC
-proof headers** (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
+**Latent + open (not this session):** ZERO uses of the `minmax(min(Xpx,100%),1fr)` guard framework-wide
+(`feature-grid` 240px, theme 200px) — no live Reflow violation, deferred. Both sites still show GENERIC
+proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
-**Your next session → `.claude/next-session-prompt.md`.** Task 1 = make the DEPLOYED-but-
-unexercised work actually RENDER (Playwright/WP-CLI create the pages + settings), then verify
-it. Tasks 2-3 = the two FR-36-26c icon-list dispatches (fully scoped in Spec 36).
+**Your next session → `.claude/next-session-prompt.md`.** FR-36-26c icon-list link-lists (fully scoped,
+2 dispatches — were Tasks 2-3, not started) · FR-37-13 hide-on-scroll (header CPT 1655 built + stored,
+never activated/observed) · FR-37-7 starter picker (= Spec 36 FR-36-3, highest-leverage remaining).
 
 ---
 
@@ -78,15 +68,16 @@ it. Tasks 2-3 = the two FR-36-26c icon-list dispatches (fully scoped in Spec 36)
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`, HEAD `2699211c` (2026-07-23; a co-active Spec-31/35 track commits between handoffs — re-check with `git log -1`).
-  **D-ceiling: D368.** This session: 18 commits, `c63749c8` → `2699211c` (interleaved
-  with a co-active Spec-31/35 track — verify with `git log`, never a cached hash).
-  ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
-  landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
-  `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
-  command as any commit (STOP-RECHECK-BRANCH). **Gate note:** every commit used `[gates-ok:]` +
-  `--no-verify` for the co-active track's `sgs/trust-bar` F5/F6 finding
-  (P-TRUSTBAR-TRUSTPILOT-ATTR-COLLISIONS) — provably not ours, NOT baselined.
+- **Branch:** `main`, HEAD `ec551c94` (2026-07-23 eve; a co-active Spec-31/35 track commits between handoffs — re-check with `git log -1`).
+  **D-ceiling: D371.** This session: 6 commits, `ed8324cd` → `ec551c94` (all pushed; the
+  Task-1 verify + FR-37-11/FR-37-33 front — verify with `git log`, never a cached hash).
+  ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs. Run `git log -1 --format=%h`
+  for the real HEAD; verify D-ceiling with `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`;
+  re-check the branch in the SAME command as any commit (STOP-RECHECK-BRANCH). **Gate note:** every commit
+  used `[gates-ok:]` + built via `npx wp-scripts build` directly, for the co-active track's `sgs/tabs`
+  `tabIndicatorColour` DB↔block.json reseed finding (STOP-24) — provably not ours, NOT reseeded, NOT
+  baselined. **Uncommitted tree = co-active track's** (`lucide-icons.php`, `behavioural-analyser/*`,
+  `sgs-update-v2.py`, `phase4-*.txt`, `mistakes.md`, `next-session-prompt-spec35*`) — do NOT commit.
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the header/footer/nav front: **`specs/36-SGS-NAVIGATION-SYSTEM.md`** (the canonical nav home) + `specs/37-HEADER-FOOTER-BUILDER.md`.
   ⛔ **DELETED specs — never cite:** `34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` (P2.5 Phase 6 → Spec 36) and
