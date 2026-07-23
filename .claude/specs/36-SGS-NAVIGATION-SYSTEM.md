@@ -241,7 +241,14 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   default; never a gate — FR-36-12).
 - **Per-device visibility:** **reuse the BUILT Responsive-Visibility extension** (device show/hide, Spec 35 /
   sgs-blocks) + `ResponsiveControl` for tiered values + the BUILT **`labelCollapse`** (Spec 37 §3.8 / FR-S9-8, live
-  on button/business-info — collapse an item's label to icon-only per tier). The `ResponsiveTriStateControl`
+  on button/business-info — collapse an item's label to icon-only per tier). **⚠ Cross-spec conflict RESOLVED
+  2026-07-23 — do not re-litigate:** Spec 37 §3.8 previously said `labelCollapse` was "not carried forward as-is",
+  directly contradicting this instruction and FR-36-23's. Bean's rule (keep an operator TOGGLE, bin an AUTOMATIC
+  behaviour) settled it; code confirms it is a toggle (`button/edit.js:347`, `business-info/edit.js:88` — a
+  `SelectControl` defaulting to `'none'`), and the per-device cascade Spec 37 would have deferred to is Spec 35's
+  and is NOT BUILT. **`labelCollapse` is RETAINED**; Spec 37 §3.8 + §8.2 were amended in the same commit. Note the
+  two mechanisms are not interchangeable: the cascade HIDES an element at a tier, `labelCollapse` KEEPS the element
+  and its link while collapsing its label to icon-only. The `ResponsiveTriStateControl`
   (on/off/inherit tri-state, P2 §4.1) is **DESIGNED-not-built** — an *optional upgrade*, NOT a blocker;
   never invent a parallel control (R-31-9). Full per-device model + ownership split: FR-36-24.
 

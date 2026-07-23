@@ -16,6 +16,11 @@ status_history:
     code (not yet canary-verified); FR-37-11 count path wired; §3.3a templateLock fixed.
     Two bugs the pre-commit qc-council found were fixed before landing (see §2.4). FR-37-6
     found BLOCKED on a client-data leak in parts/header.html (see §3.9a).
+  - 2026-07-23 — §3.8 amended: `labelCollapse` is RETAINED, resolving a direct
+    contradiction with Spec 36 FR-36-8/FR-36-23 (which instruct twice to reuse it).
+    Bean's rule — keep an operator TOGGLE, bin an AUTOMATIC behaviour — decided it;
+    code confirms it is a toggle. Spec 36 amended in the same commit per §1.2's
+    both-specs-same-commit boundary rule. §8.2 open question 1 closed.
 references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
@@ -301,9 +306,32 @@ mechanisms:
 
 **Retired in favour of this (Bean, 2026-07-21):** the `move-to-drawer` mechanism (FR-S9-8) —
 relocating a header element into the drawer at small widths — is **dropped as too complex**
-for the value it returns. `labelCollapse` (icon-only collapse) is **not carried forward as-is**
-and is re-evaluated against this cascade before any rebuild: an element that should disappear
-on mobile is hidden by the cascade, which needs no per-element mechanism at all.
+for the value it returns.
+
+**`labelCollapse` is RETAINED — amended 2026-07-23, superseding this section's earlier
+"not carried forward as-is" wording.** That wording put this spec in direct conflict with
+Spec 36, which instructs twice (FR-36-8, FR-36-23) to *"reuse the BUILT `labelCollapse`"*.
+Two governing specs giving opposite instructions about one shipped mechanism is the D358
+failure — a stale spec misdirects the build with full authority — so it is resolved here
+rather than left for a future session to discover mid-dispatch.
+
+**Bean's rule (2026-07-23):** *keep it if it is a setting the operator can toggle on and off
+in the block settings; bin it if it is automatic.* **Verified from code: it is a toggle.**
+Both consumers declare `labelCollapse` as a `block.json` attribute driven by a real inspector
+`SelectControl` — `button/edit.js:347` and `business-info/edit.js:88`, each with `value` +
+`onChange`, defaulting to `'none'` (off). It is therefore operator-controlled, opt-in, and
+inert unless deliberately switched on. **It stays.**
+
+**Why this is not simply Spec 36 winning the argument.** The per-device cascade this section
+proposed deferring to is owned by **Spec 35** (see FR-37-24, MOVED) and is **NOT BUILT**.
+Deleting a working, operator-facing control in favour of a replacement that does not yet
+exist would strand the capability — and "dormant capability with no control" is precisely
+the D338 trap §8.2 raised. The two are also not equivalent: the cascade HIDES an element at
+a tier, whereas `labelCollapse` keeps the element and its link target while collapsing its
+label to icon-only. Hiding is not collapsing.
+
+**Revisit condition (not left open-ended):** if and when Spec 35 ships the cascade, re-test
+whether `labelCollapse` still earns its place. Until then it is a live, supported control.
 
 ### 3.9 Header and footer content is per-site, never git-tracked
 
@@ -990,9 +1018,14 @@ and eye are co-authoritative, neither closes alone).
 
 ### 8.2 Still open
 
-1. **`labelCollapse`'s fate.** §3.8 says re-evaluate. If the cascade covers every real case it
-   should be deleted, not kept dormant — dormant capability with no control is the D338 trap
-   this spec already documents twice (FR-37-13). Decide during the FR-37-9 audit.
+1. ~~**`labelCollapse`'s fate.**~~ **RESOLVED 2026-07-23 → §3.8: RETAINED.** Bean's rule was
+   "keep it if it is an operator toggle, bin it if it is automatic"; code confirms it is a
+   toggle (`button/edit.js:347`, `business-info/edit.js:88` — a `SelectControl` defaulting to
+   `'none'`). The cascade it would have deferred to is Spec 35's and is NOT BUILT, so deleting
+   first would strand the capability — and the two are not equivalent anyway (the cascade
+   HIDES; `labelCollapse` COLLAPSES a label to icon-only while keeping the element and its
+   link). Spec 36 FR-36-8/FR-36-23 amended in the same commit. Revisit if Spec 35 ships the
+   cascade. Full reasoning in §3.8.
 2. **`sgs/site-header` version.** Both containers are `v0.1.0`. Pre-production policy says no
    version bumps; confirm they stay at `0.1.0` through this work.
 3. **FR-37-20's rule-target limitation.** Rules can only target file-registered patterns, not
