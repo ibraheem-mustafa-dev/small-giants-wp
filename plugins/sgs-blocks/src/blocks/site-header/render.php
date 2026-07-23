@@ -8,9 +8,23 @@
  * SGS_Container_Wrapper (section KIND) per composite-mirror (R-31-9 / D294) —
  * no divergent per-block styling path.
  *
- * Rendered with tag <div>: the header landmark (<header>) is provided by the
- * FSE header template part that this block lives inside, so the block does not
- * duplicate it (and 'header' is not in the wrapper's tag allowlist).
+ * Rendered with tag <header> (FR-37-13 fix B, D375): this block IS the site
+ * banner landmark. The SGS header engine (Sgs_Header_Rules::filter_template_part)
+ * short-circuits core/template-part on every request via the priority-9999
+ * default rule, so core never emits its own <header class="wp-block-template-part">
+ * wrapper — leaving the page with zero <header> landmarks and the scroll-behaviour
+ * JS/CSS (header-behaviours) targeting an element that never rendered (all four
+ * behaviours silently dead, live-proven 2026-07-23). Emitting <header> here revives
+ * sticky/transparent/shrink/hide-on-scroll AND adds the missing banner landmark.
+ * 'header' is in SGS_Container_Wrapper's tag allowlist. The behaviours key on the
+ * block-guaranteed '.sgs-site-header' class. No nested landmark in the current
+ * template roster: rows render as <div> (site-header-row) and the engine's
+ * short-circuit means core's <header class="wp-block-template-part"> wrapper is not
+ * emitted. RESIDUAL (not a live path today): if a template/pattern ever resolves the
+ * header template-part TWICE on one request, Sgs_Header_Rules::filter_template_part's
+ * has_served() branch hands the second slot back to core, which WOULD then wrap a
+ * second sgs/site-header in core's <header> = nested banner landmarks. Guard at that
+ * branch if a double-header template is ever added (parking P-HEADER-DOUBLE-SLOT-NEST).
  *
  * Variables from WordPress:
  *   $attributes  array     Block attributes.
@@ -128,7 +142,7 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	'section',
 	array(
-		'tag'           => 'div',
+		'tag'           => 'header',
 		'extra_classes' => $classes,
 		'extra_attrs'   => array( 'id' => $uid ),
 	)

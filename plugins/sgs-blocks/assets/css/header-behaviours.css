@@ -9,7 +9,7 @@
  * and are INDEPENDENT — sticky / transparent / shrink / hide-on-scroll /
  * contrast-safe can all be active at once (a header can be sticky AND
  * transparent). CSS selectors
- * descend from body to `header.wp-block-template-part` so no DOM class
+ * descend from body to `header.sgs-site-header` so no DOM class
  * injection is needed. State classes (is-header-scrolled, is-header-shrunk,
  * is-header-scrolling-down) are also toggled on body by view.js.
  *
@@ -35,7 +35,7 @@
  * CSS — no JS state needed.
  * ---------------------------------------------------------------------- */
 
-body.sgs-header-behaviour-sticky header.wp-block-template-part {
+body.sgs-header-behaviour-sticky header.sgs-site-header {
 	position: sticky !important;
 	top: 0 !important;
 	z-index: 100;
@@ -48,7 +48,7 @@ body.sgs-header-behaviour-sticky header.wp-block-template-part {
  * transitions to the theme surface colour.
  * ---------------------------------------------------------------------- */
 
-body.sgs-header-behaviour-transparent header.wp-block-template-part {
+body.sgs-header-behaviour-transparent header.sgs-site-header {
 	position: absolute !important;
 	top: 0 !important;
 	left: 0;
@@ -57,7 +57,7 @@ body.sgs-header-behaviour-transparent header.wp-block-template-part {
 	z-index: 100;
 }
 
-body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-template-part {
+body.sgs-header-behaviour-transparent.is-header-scrolled header.sgs-site-header {
 	background: var( --wp--preset--color--surface, #ffffff );
 }
 
@@ -75,7 +75,7 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
  * ---------------------------------------------------------------------- */
 
 @supports ( animation-timeline: scroll() ) {
-	body.sgs-header-behaviour-shrink header.wp-block-template-part {
+	body.sgs-header-behaviour-shrink header.sgs-site-header {
 		animation-name: sgs-header-shrink;
 		animation-duration: 1ms; /* driven by scroll progress, not wall-clock time */
 		animation-fill-mode: both;
@@ -93,24 +93,24 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
 	}
 
 	@media ( prefers-reduced-motion: reduce ) {
-		body.sgs-header-behaviour-shrink header.wp-block-template-part {
+		body.sgs-header-behaviour-shrink header.sgs-site-header {
 			animation: none;
 		}
 	}
 }
 
 @supports not ( animation-timeline: scroll() ) {
-	body.sgs-header-behaviour-shrink header.wp-block-template-part {
+	body.sgs-header-behaviour-shrink header.sgs-site-header {
 		padding-block: var( --wp--preset--spacing--30, 1.5rem );
 		transition: padding-block 200ms ease;
 	}
 
-	body.sgs-header-behaviour-shrink.is-header-shrunk header.wp-block-template-part {
+	body.sgs-header-behaviour-shrink.is-header-shrunk header.sgs-site-header {
 		padding-block: var( --wp--preset--spacing--10, 0.5rem );
 	}
 
 	@media ( prefers-reduced-motion: reduce ) {
-		body.sgs-header-behaviour-shrink header.wp-block-template-part {
+		body.sgs-header-behaviour-shrink header.sgs-site-header {
 			transition: none;
 		}
 	}
@@ -131,12 +131,12 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
  * qc-council MUST-FIX 3 / D336 finding against the now-retired
  * sgs/adaptive-nav drawer — sgs/adaptive-nav was deleted at D362/FR-37-21;
  * the current drawer is sgs/nav-drawer, a sibling block rendered inside the
- * SAME `header.wp-block-template-part` wrapper — verified via
+ * SAME `header.sgs-site-header` wrapper — verified via
  * theme/sgs-theme/patterns/framework-header-default.php, which emits
  * wp:sgs/site-header then wp:sgs/nav-drawer inside the same "header" area
  * template part):
  *
- * `transform: translateY(...)` on `header.wp-block-template-part` makes that
+ * `transform: translateY(...)` on `header.sgs-site-header` makes that
  * element a containing block for CSS purposes. A native `<dialog>` opened
  * via `showModal()` is promoted to the top layer, and per D323/D337 (this
  * repo's own prior research — decisions.md) that promotion is exactly why
@@ -156,17 +156,17 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
  * shipping that combination to a client.
  * ---------------------------------------------------------------------- */
 
-body.sgs-header-behaviour-hide-on-scroll-down header.wp-block-template-part {
+body.sgs-header-behaviour-hide-on-scroll-down header.sgs-site-header {
 	transition: transform 200ms ease;
 	will-change: transform;
 }
 
-body.sgs-header-behaviour-hide-on-scroll-down.is-header-scrolling-down header.wp-block-template-part {
+body.sgs-header-behaviour-hide-on-scroll-down.is-header-scrolling-down header.sgs-site-header {
 	transform: translateY( -100% );
 }
 
 @media ( prefers-reduced-motion: reduce ) {
-	body.sgs-header-behaviour-hide-on-scroll-down header.wp-block-template-part {
+	body.sgs-header-behaviour-hide-on-scroll-down header.sgs-site-header {
 		transition: none;
 	}
 }
@@ -184,11 +184,11 @@ body.sgs-header-behaviour-hide-on-scroll-down.is-header-scrolling-down header.wp
  *          transparent rule off via :not() so the two never fight.
  * ---------------------------------------------------------------------- */
 
-body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part {
+body.sgs-header-behaviour-contrast-scrim header.sgs-site-header {
 	position: relative;
 }
 
-body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part::before {
+body.sgs-header-behaviour-contrast-scrim header.sgs-site-header::before {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -197,21 +197,21 @@ body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part::before {
 	background: linear-gradient( to bottom, rgba( 0, 0, 0, 0.55 ), rgba( 0, 0, 0, 0 ) );
 }
 
-body.sgs-header-behaviour-contrast-scrim header.wp-block-template-part > * {
+body.sgs-header-behaviour-contrast-scrim header.sgs-site-header > * {
 	position: relative;
 	z-index: 1;
 }
 
 /* Cosmetic only — see doc-comment above; do not treat as a WCAG fix. */
-body.sgs-header-behaviour-contrast-shadow header.wp-block-template-part a,
-body.sgs-header-behaviour-contrast-shadow header.wp-block-template-part button {
+body.sgs-header-behaviour-contrast-shadow header.sgs-site-header a,
+body.sgs-header-behaviour-contrast-shadow header.sgs-site-header button {
 	text-shadow: 0 1px 3px rgba( 0, 0, 0, 0.6 );
 }
 
-body.sgs-header-behaviour-transparent:not( .sgs-header-behaviour-contrast-force-solid ) header.wp-block-template-part {
+body.sgs-header-behaviour-transparent:not( .sgs-header-behaviour-contrast-force-solid ) header.sgs-site-header {
 	background: transparent;
 }
 
-body.sgs-header-behaviour-contrast-force-solid header.wp-block-template-part {
+body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
 	background: var( --wp--preset--color--surface, #ffffff ) !important;
 }

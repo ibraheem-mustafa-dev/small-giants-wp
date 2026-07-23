@@ -3,8 +3,11 @@
  * Header Behaviours — body_class injector and asset enqueuer (F4, FR-S9-9).
  *
  * Hooks into `body_class` to append SGS header behaviour classes to <body>.
- * CSS and JS then target `body.sgs-header-behaviour-{flag} header.wp-block-template-part`
- * — no DOM rewriting needed at all.
+ * CSS and JS then target `body.sgs-header-behaviour-{flag} header.sgs-site-header`
+ * — no DOM rewriting needed at all. (The selector was `header.wp-block-template-part`
+ * until FR-37-13 fix B / D375: sgs/site-header renders <header class="sgs-site-header">
+ * itself, so the behaviours key on its own class rather than a core template-part
+ * wrapper that the SGS header engine short-circuits and never emits.)
  *
  * SOURCE (FR-S9-9 + FR-37-13): the active header's `sgs/site-header` block
  * attrs (headerSticky / headerTransparent / headerShrink / headerHideOnScroll

@@ -39,7 +39,7 @@
 	 * @return {HTMLElement|null}
 	 */
 	function getHeaderEl() {
-		return document.querySelector( 'header.wp-block-template-part' );
+		return document.querySelector( 'header.sgs-site-header' );
 	}
 
 	/**
