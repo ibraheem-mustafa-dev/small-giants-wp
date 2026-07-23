@@ -44,7 +44,13 @@ function initInstance( root ) {
 	const noResults = root.dataset.noResults || 'No products found';
 	const busy =
 		root.dataset.busy || 'Search is busy — please try again in a moment';
-	const countTemplate = root.dataset.countTemplate || '%d products found';
+	// Both plural forms come from PHP (_n_noop() in render.php) — never do
+	// English-only pluralisation rules or string surgery here; this text is
+	// read aloud by the aria-live status region (WCAG 4.1.3).
+	const countTemplateOne =
+		root.dataset.countTemplateOne || '%d product found';
+	const countTemplateOther =
+		root.dataset.countTemplateOther || '%d products found';
 	const maxResultsDesktop =
 		Number.parseInt( root.dataset.maxResults, 10 ) || 10;
 	const maxResultsMobile =
@@ -340,6 +346,8 @@ function initInstance( root ) {
 
 			ul.hidden = false;
 			input.setAttribute( 'aria-expanded', 'true' );
+			const countTemplate =
+				capped.length === 1 ? countTemplateOne : countTemplateOther;
 			announce( countTemplate.replace( '%d', capped.length ) );
 		} catch ( err ) {
 			// Ignore AbortError — this is intentional cancellation.

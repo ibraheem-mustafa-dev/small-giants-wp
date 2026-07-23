@@ -176,8 +176,17 @@ if ( $sgs_mobile_decls ) {
 // -------------------------------------------------------------------------
 $i18n_no_results = esc_attr__( 'No products found', 'sgs-blocks' );
 $i18n_busy       = esc_attr__( 'Search is busy — please try again in a moment', 'sgs-blocks' );
+
+// The result count is only known client-side (view.js populates the listbox
+// after a REST fetch), so both plural forms are resolved here and handed to
+// view.js — it selects the correct form by count rather than doing English-
+// only string surgery on a single template (WCAG 4.1.3: this text is read
+// aloud by the aria-live status region).
 // translators: %d is replaced with the number of products found.
-$i18n_count_template = esc_attr__( '%d products found', 'sgs-blocks' );
+$i18n_count_nooop = _n_noop( '%d product found', '%d products found', 'sgs-blocks' );
+
+$i18n_count_template_one   = esc_attr( translate_nooped_plural( $i18n_count_nooop, 1, 'sgs-blocks' ) );
+$i18n_count_template_other = esc_attr( translate_nooped_plural( $i18n_count_nooop, 2, 'sgs-blocks' ) );
 
 // -------------------------------------------------------------------------
 // REST endpoint URL for view.js.
@@ -193,13 +202,14 @@ $rest_url = esc_url( rest_url( 'sgs/v1/product-search' ) );
 // data-display="full-screen-overlay" (the <dialog> DIALOG — FR-36-10).
 // -------------------------------------------------------------------------
 $sgs_ps_common_data = array(
-	'data-sgs-product-search' => '',
-	'data-rest'               => $rest_url,
-	'data-no-results'         => $i18n_no_results,
-	'data-busy'               => $i18n_busy,
-	'data-count-template'     => $i18n_count_template,
-	'data-max-results'        => esc_attr( (string) $max_results ),
-	'data-max-results-mobile' => esc_attr( (string) $max_results_mobile ),
+	'data-sgs-product-search'   => '',
+	'data-rest'                 => $rest_url,
+	'data-no-results'           => $i18n_no_results,
+	'data-busy'                 => $i18n_busy,
+	'data-count-template-one'   => $i18n_count_template_one,
+	'data-count-template-other' => $i18n_count_template_other,
+	'data-max-results'          => esc_attr( (string) $max_results ),
+	'data-max-results-mobile'   => esc_attr( (string) $max_results_mobile ),
 );
 
 if ( 'icon-expand' === $display ) {

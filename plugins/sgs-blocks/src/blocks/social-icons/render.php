@@ -444,6 +444,17 @@ foreach ( $icons as $icon_item ) {
 		$glyph_html = sgs_get_lucide_icon( $icon_name );
 	}
 
+	// FR-36-21 MUST — decorative glyph hidden from assistive tech (Spec 36).
+	// The link's accessible name comes solely from `aria-label` above; without
+	// this the raw <svg>/<img> is exposed a second time, doubling the
+	// announcement in some screen readers. Matches the house pattern used by
+	// sgs/cart (cart/render.php:235, `<span class="sgs-cart__icon"
+	// aria-hidden="true">`) and sgs/business-info (business-info/render.php:85).
+	// Descendant selectors only (`.sgs-social-icons__item svg`/`img` in
+	// style.css + the scoped per-instance <style> below) so the extra span
+	// changes nothing visually.
+	$glyph_html = sprintf( '<span class="sgs-social-icons__icon" aria-hidden="true">%s</span>', $glyph_html );
+
 	// FR-36-21 MUST — brand vs monochrome/theme colour. Brand mode overrides
 	// ONLY the resting colour per item (nth-child, no inline style, contract
 	// §A); hover colour stays the single theme-token control in both modes.
