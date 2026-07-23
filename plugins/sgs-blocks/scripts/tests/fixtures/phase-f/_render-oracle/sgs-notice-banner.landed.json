@@ -11,7 +11,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-notice-banner",
@@ -22,7 +22,7 @@
           "draft_value": "#2d5016",
           "computed_value": "rgb(45, 80, 22) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "color",
@@ -30,7 +30,7 @@
           "draft_value": "white",
           "computed_value": "rgb(255, 255, 255)",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "padding",
@@ -38,7 +38,7 @@
           "draft_value": "12px 24px",
           "computed_value": "12px 24px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "text-align",
@@ -46,13 +46,19 @@
           "draft_value": "center",
           "computed_value": "start",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 4 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 2 LANDED, 1 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: text-align [Base] written 'center' but rendered 'start' (not landed).",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 3,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden contains child InnerBlocks (>1 wp: block)"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-notice-banner/"
 }

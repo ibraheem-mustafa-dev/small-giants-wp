@@ -11,7 +11,7 @@
       "guards": {
         "empty": false,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-feature-grid",
@@ -35,8 +35,14 @@
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-feature-grid@Base' (feature-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "plain_summary": "Section 'section-1-feature-grid@Base' (feature-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 22,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": false,
+    "reason": "no golden found — defaulting to STRICT (expects text), so a real empty-render regression cannot hide behind a missing baseline"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-media-600/"
 }

@@ -46,15 +46,34 @@ HEIGHT_TOLERANCE_FRAC: float = 0.10
 # Guard 1 — empty-section guard
 # ---------------------------------------------------------------------------
 
-def guard_empty_section(element_present: bool, inner_text_len: int) -> GuardResult:
-    """Guard 1: the rendered section must be present AND non-empty.
+def guard_empty_section(
+    element_present: bool,
+    inner_text_len: int,
+    expects_text: bool = True,
+) -> GuardResult:
+    """Guard 1: the rendered section must be present, and non-empty IF its
+    golden expects text.
 
     Fires when:
     - element_present is False (section did not render at all), OR
-    - inner_text_len == 0 (section rendered but has no visible text content).
+    - inner_text_len == 0 AND `expects_text` (section should have rendered text
+      but rendered none).
 
-    A section with no text is likely a false-win: a truncated render or a
+    A section with no text is normally a false-win: a truncated render, or a
     completely empty block matching an empty draft section on background colour.
+
+    `expects_text` (added 2026-07-23) makes the GOLDEN the reference rather than
+    the assumption that every section renders text. Several fixtures legitimately
+    convert to a content-less block carrying only box CSS — ``sgs-info-box``
+    converts to one self-closing ``<!-- wp:sgs/info-box {...} /-->`` and its
+    CURRENT golden records exactly that. Firing there flagged output that was
+    byte-consistent with its own LANDED-verified baseline.
+
+    This is NOT a way to silence the guard: `expects_text` defaults True, and a
+    fixture whose golden DOES carry content keeps the full guard — that is the
+    case this guard exists for and it must still fail. Only the golden-proven
+    expected-empty case is reclassified, and the element-present half fires
+    regardless of expectation.
 
     On fire: GUARD-FAIL (not a match).
     """
@@ -64,11 +83,21 @@ def guard_empty_section(element_present: bool, inner_text_len: int) -> GuardResu
             reason="Guard 1 (empty-section): element not present in rendered page.",
         )
     if inner_text_len == 0:
+        if expects_text:
+            return GuardResult(
+                passed=False,
+                reason=(
+                    "Guard 1 (empty-section): element present but innerText.length == 0, "
+                    "and the golden expects rendered text. Section rendered empty — "
+                    "possible false-win (STOP-10)."
+                ),
+            )
         return GuardResult(
-            passed=False,
+            passed=True,
             reason=(
-                "Guard 1 (empty-section): element present but innerText.length == 0. "
-                "Section rendered empty — possible false-win (STOP-10)."
+                "Guard 1 (empty-section): element rendered empty, and the golden "
+                "expects NO text for this fixture — consistent with the baseline, "
+                "not a false-win. Nothing to verify from text content here."
             ),
         )
     return GuardResult(passed=True, reason="Guard 1 (empty-section): passed.")
@@ -146,6 +175,7 @@ def guard_height_parity(
     draft_height_px: Optional[float],
     tolerance_px: float = HEIGHT_TOLERANCE_PX,
     tolerance_frac: float = HEIGHT_TOLERANCE_FRAC,
+    comparable: bool = True,
 ) -> HeightGuardResult:
     """Guard 4: the rendered section height must match the draft within tolerance.
 
@@ -165,6 +195,18 @@ def guard_height_parity(
 
     On fire: GUARD-FAIL.
     """
+    if not comparable:
+        return HeightGuardResult(
+            passed=True,
+            measured=False,
+            reason=(
+                "Guard 4 (height-parity): draft and clone were rendered in "
+                "NON-COMPARABLE environments (e.g. a bare file:// draft fragment "
+                "vs a themed WordPress page), so an absolute height comparison "
+                "would measure the theme, not transfer fidelity. Height parity is "
+                "NOT confirmed — this is a coverage gap, never a pass."
+            ),
+        )
     if rendered_height_px is None or draft_height_px is None:
         return HeightGuardResult(
             passed=True,

@@ -11,7 +11,7 @@
       "guards": {
         "empty": false,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-form-field-tiles",
@@ -27,8 +27,14 @@
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-form-field-tiles@Base' (form-field-tiles): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "plain_summary": "Section 'section-1-form-field-tiles@Base' (form-field-tiles): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 12,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden contains raw text outside the block comments"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-form-field-tiles/"
 }

@@ -91,6 +91,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from oracle.render_oracle import _default_element_selector  # noqa: E402
 from oracle.models import CellInput, RenderedObservation  # noqa: E402
 from oracle.verdict import compute_report  # noqa: E402
+from oracle.golden_expectations import expectation_for  # noqa: E402
 
 from converter.recognition import recognise_section, _root_classes  # noqa: E402
 
@@ -204,6 +205,16 @@ _RELEVANT_KINDS = ("box-css", "custom-prop", "inline-style")
 # selectors are NOT attributed — they are counted, honestly, as unattributed
 # rather than guessed at (guard (b) above).
 _SIMPLE_CLASS_SELECTOR_RE = re.compile(r"^\.[A-Za-z0-9_-]+$")
+
+# This harness renders the DRAFT as a bare file:// fragment (no WP theme) and the
+# CLONE as a full WordPress page (header, footer, theme CSS). Absolute section
+# heights across those two environments differ for reasons that say nothing about
+# transfer fidelity, so guard 4 is reported as NOT-CONFIRMED rather than fabricating
+# a failure (see RenderedObservation.height_comparable). The F3 design doc says the
+# same of pixel-diff: render the draft in the same environment, or gate on a delta
+# baseline — "never an absolute". Set True only once the draft is rendered inside
+# the same WP/theme environment as the clone.
+_HEIGHT_COMPARABLE = False
 
 
 # ---------------------------------------------------------------------------
@@ -368,6 +379,7 @@ def load_urls_map(path: Path = _DEFAULT_URLS_MAP) -> dict[str, str]:
 def _skipped_observations(
     sections: list[dict],
     cells_by_section: dict[str, list[CellInput]],
+    expects_text: bool = True,
 ) -> list[RenderedObservation]:
     """Build observations for a fixture we did NOT probe live.
 
@@ -405,6 +417,8 @@ def _skipped_observations(
             draft_height_px=None,
             cells=forced_cells,
             page_loaded=False,
+            expects_text=expects_text,
+            height_comparable=_HEIGHT_COMPARABLE,
         ))
     return observations
 
@@ -482,6 +496,7 @@ def run_live_fixture(
     live_url: str,
     sections: list[dict],
     cells_by_section: dict[str, list[CellInput]],
+    expects_text: bool = True,
 ) -> tuple[list[RenderedObservation], dict[str, int]]:
     """Genuinely probe ONE fixture's live canary page + local draft file.
 
@@ -573,6 +588,8 @@ def run_live_fixture(
                         draft_height_px=draft_height if draft_present else None,
                         cells=resolved_cells,
                         page_loaded=live_loaded,
+                        expects_text=expects_text,
+                        height_comparable=_HEIGHT_COMPARABLE,
                     ))
                     draft_page.close()
                     live_page.close()
@@ -623,29 +640,35 @@ def run_fixture(
 
     cells_by_section, unattributed = attribute_cells_to_sections(draft_html, sections, declared_rows)
 
+    # Resolve what this fixture's GOLDEN says should render, so guard 1 judges
+    # against the baseline rather than assuming every section renders text.
+    # Fails STRICT (expects_text=True) when no golden exists.
+    expectation = expectation_for(stem)
+    expects_text = expectation.expects_text
+
     live_url = urls_map.get(stem)
     ambiguous_matches: dict[str, int] = {}
 
     if live_url is None:
         status = "SKIPPED-NO-LIVE-URL"
-        observations = _skipped_observations(sections, cells_by_section)
+        observations = _skipped_observations(sections, cells_by_section, expects_text)
     elif not _playwright_available():
         status = "SKIPPED-NO-PLAYWRIGHT"
         warnings.append(
             "playwright (python) is not installed — run: pip install playwright && "
             "playwright install chromium"
         )
-        observations = _skipped_observations(sections, cells_by_section)
+        observations = _skipped_observations(sections, cells_by_section, expects_text)
     else:
         status = "LIVE-PROBED"
         try:
             observations, ambiguous_matches = run_live_fixture(
-                stem, draft_path, live_url, sections, cells_by_section
+                stem, draft_path, live_url, sections, cells_by_section, expects_text
             )
         except Exception as exc:
             status = "ERROR"
             warnings.append(f"live probe raised for {stem}: {exc}")
-            observations = _skipped_observations(sections, cells_by_section)
+            observations = _skipped_observations(sections, cells_by_section, expects_text)
 
     for sel, count in ambiguous_matches.items():
         warnings.append(
@@ -658,6 +681,15 @@ def run_fixture(
     report = report_obj.as_dict()
     report["oracle_status"] = status
     report["unattributed_cell_count"] = unattributed
+    # Surface the expectation so a reader can see WHY guard 1 did or did not
+    # fire, without re-deriving it (an unexplained guard result is how the
+    # previous run's 87 GUARD-FAILs were misread as converter defects).
+    report["golden_expectation"] = {
+        "expects_text": expectation.expects_text,
+        "golden_found": expectation.golden_found,
+        "reason": expectation.reason,
+    }
+    report["height_comparable"] = _HEIGHT_COMPARABLE
     if ambiguous_matches:
         report["ambiguous_selector_matches"] = ambiguous_matches
     if live_url:

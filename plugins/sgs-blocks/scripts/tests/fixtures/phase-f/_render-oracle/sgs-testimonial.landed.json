@@ -54,5 +54,11 @@
   "plain_summary": "Section 'section-1-testimonial@Base' (testimonial): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 8,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden sets content-role attr sgs/testimonial.quote"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-testimonial/"
 }

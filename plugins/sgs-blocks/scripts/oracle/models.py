@@ -220,6 +220,31 @@ class RenderedObservation:
     page loaded is a GUARD-FAIL (element-present guard 2), NOT NOT-RENDERED.
     F3-runtime splits NOT-RENDERED into infra-vs-content (§5)."""
 
+    expects_text: bool = True
+    """Whether this section's GOLDEN expects any rendered text (see
+    oracle/golden_expectations.py).
+
+    Guard 1 was written assuming every converted section renders text, so an
+    empty render is a false-win. That does not hold across the fixture corpus:
+    several fixtures legitimately convert to a content-less block carrying only
+    box CSS, and their CURRENT goldens record exactly that. Defaults True (the
+    STRICT setting) so an unknown expectation is never the lenient one — a
+    caller must opt IN to expected-empty by proving it from the golden."""
+
+    height_comparable: bool = True
+    """Whether draft and rendered heights were captured in COMPARABLE
+    environments.
+
+    Guard 4 compares absolute heights. That is only meaningful when the draft
+    and the clone render under the same theme/CSS. The fixture-canary harness
+    renders the draft as a bare file:// fragment with no theme, against a full
+    WordPress page with header, footer and theme CSS — heights there differ for
+    reasons that say nothing about transfer fidelity. The F3 design doc says the
+    same of pixel-diff: render the draft in the same environment, or gate on a
+    delta baseline, "never an absolute". When False, guard 4 reports
+    measured=False (honestly NOT confirmed) instead of fabricating a failure.
+    Defaults True so same-environment callers (run_canary_proof) are unchanged."""
+
 
 # ---------------------------------------------------------------------------
 # Output: per-cell result (§6 contract)

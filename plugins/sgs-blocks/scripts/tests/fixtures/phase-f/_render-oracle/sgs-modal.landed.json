@@ -11,7 +11,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-modal",
@@ -22,7 +22,7 @@
           "draft_value": "rgba(0,0,0,0.5)",
           "computed_value": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "display",
@@ -30,7 +30,7 @@
           "draft_value": "none",
           "computed_value": "block",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         },
         {
           "property": "inset",
@@ -38,7 +38,7 @@
           "draft_value": "0",
           "computed_value": "auto",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "padding",
@@ -46,7 +46,7 @@
           "draft_value": "24px",
           "computed_value": "0px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         },
         {
           "property": "position",
@@ -54,7 +54,7 @@
           "draft_value": "fixed",
           "computed_value": "static",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         },
         {
           "property": "z-index",
@@ -62,13 +62,19 @@
           "draft_value": "9999",
           "computed_value": "auto",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 6 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 2 UNVERIFIED, 4 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: display [Base] written 'none' but rendered 'block' (not landed).",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 16,
+  "golden_expectation": {
+    "expects_text": false,
+    "golden_found": true,
+    "reason": "golden emits no child blocks, no raw text and no content-role attrs"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-modal/"
 }

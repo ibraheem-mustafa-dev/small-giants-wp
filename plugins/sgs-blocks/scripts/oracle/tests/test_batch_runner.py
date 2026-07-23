@@ -355,7 +355,9 @@ class TestNoSilentSectionDiscoveryRegression:
         if not draft.exists():
             pytest.skip("rt-centred-maxwidth fixture not present in this checkout")
 
-        def _fake_run_live_fixture(stem, draft_path, live_url, sections, cells_by_section):
+        def _fake_run_live_fixture(
+            stem, draft_path, live_url, sections, cells_by_section, expects_text=True,
+        ):
             observations = []
             for sec in sections:
                 cells = cells_by_section.get(sec["section_id"], [])

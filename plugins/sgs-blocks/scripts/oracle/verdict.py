@@ -403,9 +403,17 @@ def compute_section_result(obs: RenderedObservation) -> SectionResult:
     page_did_not_load = not obs.page_loaded
 
     # Run section-level guards (1, 2, 4).
-    g1 = guard_empty_section(obs.element_present, obs.inner_text_len)
+    # expects_text / height_comparable make the GOLDEN and the render ENVIRONMENT
+    # the reference for guards 1 and 4, instead of the assumptions that every
+    # section renders text and that two renders are always height-comparable.
+    # Both default True on the model, so existing callers are unchanged.
+    g1 = guard_empty_section(
+        obs.element_present, obs.inner_text_len, expects_text=obs.expects_text,
+    )
     g2 = guard_element_present(obs.element_present, obs.element_selector)
-    g4 = guard_height_parity(obs.rendered_height_px, obs.draft_height_px)
+    g4 = guard_height_parity(
+        obs.rendered_height_px, obs.draft_height_px, comparable=obs.height_comparable,
+    )
 
     # Guard 3 summary: True if at least one cell is non-default.
     g3_summary = any(

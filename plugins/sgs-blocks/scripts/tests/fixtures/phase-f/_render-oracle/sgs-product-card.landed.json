@@ -11,7 +11,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-product-card",
@@ -22,7 +22,7 @@
           "draft_value": "white",
           "computed_value": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "border",
@@ -30,7 +30,7 @@
           "draft_value": "1px solid #e5e0db",
           "computed_value": "1px solid rgb(229, 224, 219)",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "border-radius",
@@ -38,7 +38,7 @@
           "draft_value": "16px",
           "computed_value": "16px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "overflow",
@@ -46,7 +46,7 @@
           "draft_value": "hidden",
           "computed_value": "hidden",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "padding",
@@ -54,13 +54,19 @@
           "draft_value": "16px",
           "computed_value": "0px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-product-card@Base' (product-card): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 5 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-product-card@Base' (product-card): 2 LANDED, 2 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: padding [Base] written '16px' but rendered '0px' (not landed).",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 11,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden sets content-role attr sgs/product-card.image"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-product-card/"
 }

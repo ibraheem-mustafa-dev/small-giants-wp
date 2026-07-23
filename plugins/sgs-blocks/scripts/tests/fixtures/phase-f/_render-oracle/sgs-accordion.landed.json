@@ -11,7 +11,7 @@
       "guards": {
         "empty": false,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-accordion",
@@ -27,8 +27,14 @@
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-accordion@Base' (accordion): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "plain_summary": "Section 'section-1-accordion@Base' (accordion): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 8,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden contains child InnerBlocks (>1 wp: block)"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-accordion/"
 }

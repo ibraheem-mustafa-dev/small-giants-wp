@@ -9,9 +9,9 @@
       "section_id": "section-1-info-box@Base",
       "block_slug": "sgs/info-box",
       "guards": {
-        "empty": false,
+        "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-info-box",
@@ -22,7 +22,7 @@
           "draft_value": "white",
           "computed_value": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "border",
@@ -30,7 +30,7 @@
           "draft_value": "1px solid #e5e0db",
           "computed_value": "1px solid rgb(229, 224, 219)",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "border-radius",
@@ -38,7 +38,7 @@
           "draft_value": "12px",
           "computed_value": "12px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "padding",
@@ -46,13 +46,19 @@
           "draft_value": "32px 24px",
           "computed_value": "32px 24px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-info-box@Base' (info-box): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 4 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "plain_summary": "Section 'section-1-info-box@Base' (info-box): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 8,
+  "golden_expectation": {
+    "expects_text": false,
+    "golden_found": true,
+    "reason": "golden emits no child blocks, no raw text and no content-role attrs"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-info-box/"
 }

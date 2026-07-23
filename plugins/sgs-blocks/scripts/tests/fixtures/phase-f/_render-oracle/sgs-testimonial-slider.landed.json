@@ -9,9 +9,9 @@
       "section_id": "section-1-testimonial-slider@Base",
       "block_slug": "sgs/testimonial-slider",
       "guards": {
-        "empty": false,
+        "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-testimonial-slider",
@@ -22,7 +22,7 @@
           "draft_value": "#f8f4ef",
           "computed_value": "rgb(248, 244, 239) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "padding",
@@ -30,13 +30,19 @@
           "draft_value": "64px 24px",
           "computed_value": "64px 24px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-testimonial-slider@Base' (testimonial-slider): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "plain_summary": "Section 'section-1-testimonial-slider@Base' (testimonial-slider): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 11,
+  "golden_expectation": {
+    "expects_text": false,
+    "golden_found": true,
+    "reason": "golden emits no child blocks, no raw text and no content-role attrs"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-testimonial-slider/"
 }

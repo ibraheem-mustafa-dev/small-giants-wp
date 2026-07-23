@@ -30,5 +30,11 @@
   "plain_summary": "Section 'section-1-card-grid@Base' (card-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 9,
+  "golden_expectation": {
+    "expects_text": false,
+    "golden_found": true,
+    "reason": "golden emits no child blocks, no raw text and no content-role attrs"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-card-grid/"
 }

@@ -38,5 +38,11 @@
   "plain_summary": "Section 'section-1-trust-bar@Base' (trust-bar): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 30,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden contains raw text outside the block comments"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-mamas-trust-bar-real/"
 }

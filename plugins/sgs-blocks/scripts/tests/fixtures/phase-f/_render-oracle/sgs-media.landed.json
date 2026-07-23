@@ -29,5 +29,11 @@
   ],
   "plain_summary": "Section 'section-1-media' (media) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
   "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 10
+  "unattributed_cell_count": 10,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": false,
+    "reason": "no golden found — defaulting to STRICT (expects text), so a real empty-render regression cannot hide behind a missing baseline"
+  },
+  "height_comparable": false
 }

@@ -11,7 +11,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-accordion-item",
@@ -22,7 +22,7 @@
           "draft_value": "1px solid #e5e0db",
           "computed_value": "0px none rgb(58, 46, 38)",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "WRITTEN-not-LANDED"
         },
         {
           "property": "padding",
@@ -30,13 +30,19 @@
           "draft_value": "16px 0",
           "computed_value": "0px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-accordion-item@Base' (accordion-item): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-accordion-item@Base' (accordion-item): 0 LANDED, 1 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: border-bottom [Base] written '1px solid #e5e0db' but rendered '0px none rgb(58, 46, 38)' (not landed).",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 6,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden contains child InnerBlocks (>1 wp: block)"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-accordion-item/"
 }

@@ -40,7 +40,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-hero",
@@ -51,13 +51,19 @@
           "draft_value": "48px 16px",
           "computed_value": "48px 16px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-hero@Base' (hero): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. Section 'section-1-hero@Mobile' (hero): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-hero@Base' (hero): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. Section 'section-1-hero@Mobile' (hero): 1 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. OK.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 10,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden contains child InnerBlocks (>1 wp: block)"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-hero/"
 }

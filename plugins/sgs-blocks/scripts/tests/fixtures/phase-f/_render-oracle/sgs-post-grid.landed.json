@@ -11,7 +11,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-post-grid",
@@ -22,13 +22,19 @@
           "draft_value": "64px 24px",
           "computed_value": "64px 24px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-post-grid@Base' (post-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-post-grid@Base' (post-grid): 1 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. OK.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 6,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": true,
+    "reason": "golden sets content-role attr sgs/post-grid.readMoreText"
+  },
+  "height_comparable": false,
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-post-grid/"
 }

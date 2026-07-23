@@ -11,7 +11,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-container",
@@ -22,7 +22,7 @@
           "draft_value": "start",
           "computed_value": "start",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "background",
@@ -30,7 +30,7 @@
           "draft_value": "#f5f0eb",
           "computed_value": "rgb(245, 240, 235) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "display",
@@ -38,7 +38,7 @@
           "draft_value": "grid",
           "computed_value": "grid",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "gap",
@@ -46,7 +46,7 @@
           "draft_value": "32px",
           "computed_value": "32px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "grid-template-columns",
@@ -54,7 +54,7 @@
           "draft_value": "repeat(4, 1fr)",
           "computed_value": "264px 264px 264px 264px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "margin",
@@ -62,7 +62,7 @@
           "draft_value": "0 auto",
           "computed_value": "0px 96px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "max-width",
@@ -70,7 +70,7 @@
           "draft_value": "1200px",
           "computed_value": "1200px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "padding",
@@ -78,7 +78,7 @@
           "draft_value": "64px 24px",
           "computed_value": "64px 24px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         }
       ]
     },
@@ -88,7 +88,7 @@
       "guards": {
         "empty": true,
         "element": true,
-        "height": false,
+        "height": true,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-container",
@@ -99,7 +99,7 @@
           "draft_value": "16px",
           "computed_value": "16px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         },
         {
           "property": "grid-template-columns",
@@ -107,7 +107,7 @@
           "draft_value": "repeat(2, 1fr)",
           "computed_value": "139.5px 139.5px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "padding",
@@ -115,14 +115,20 @@
           "draft_value": "40px 16px",
           "computed_value": "40px 16px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-container@Base' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 8 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False. Section 'section-1-container@Mobile' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "plain_summary": "Section 'section-1-container@Base' (container): 5 LANDED, 3 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. Section 'section-1-container@Mobile' (container): 2 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 16,
+  "golden_expectation": {
+    "expects_text": true,
+    "golden_found": false,
+    "reason": "no golden found — defaulting to STRICT (expects text), so a real empty-render regression cannot hide behind a missing baseline"
+  },
+  "height_comparable": false,
   "ambiguous_selector_matches": {
     ".wp-block-sgs-container": 2
   },
