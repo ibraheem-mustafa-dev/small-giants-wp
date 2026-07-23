@@ -35,6 +35,7 @@ import { Button } from '@wordpress/components';
 import { desktop, tablet, mobile, link as linkIcon } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
+import DeviceTabs from './DeviceTabs';
 
 const TIERS = [
 	{ key: 'desktop', icon: desktop, label: __( 'Desktop', 'sgs-blocks' ) },
@@ -48,7 +49,6 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 	const [ active, setActive ] = useState( 'desktop' );
 	const obj = value && typeof value === 'object' ? value : {};
 
-	const activeIndex = TIERS.findIndex( ( t ) => t.key === active );
 	const resolved = resolveResponsiveTier( obj, active );
 	// desktop is always its own value; tablet/mobile inherit when they have none.
 	const ownRaw = obj?.[ active ];
@@ -68,23 +68,12 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 	const setOwnValue = ( v ) => writeTier( active, v );
 	const resetTier = () => writeTier( active, '' );
 
-	// Arrow-key roving tabindex across the tier tabs.
-	const onTabKeyDown = ( e ) => {
-		let nextIndex = null;
-		if ( e.key === 'ArrowRight' || e.key === 'ArrowDown' ) {
-			nextIndex = ( activeIndex + 1 ) % TIERS.length;
-		} else if ( e.key === 'ArrowLeft' || e.key === 'ArrowUp' ) {
-			nextIndex = ( activeIndex - 1 + TIERS.length ) % TIERS.length;
-		} else if ( e.key === 'Home' ) {
-			nextIndex = 0;
-		} else if ( e.key === 'End' ) {
-			nextIndex = TIERS.length - 1;
-		}
-		if ( nextIndex !== null ) {
-			e.preventDefault();
-			setActive( TIERS[ nextIndex ].key );
-		}
-	};
+	// A tier (other than desktop) with no own value renders an "(inherited)"
+	// label suffix — the inherit-state affordance DeviceTabs itself has no
+	// concept of, so it's supplied via the getTabLabel callback.
+	const tierHasOwnValue = ( tierKey ) =>
+		tierKey === 'desktop' ||
+		( obj?.[ tierKey ] !== undefined && obj?.[ tierKey ] !== null && obj?.[ tierKey ] !== '' );
 
 	return (
 		<div className="sgs-responsive-override">
@@ -92,46 +81,26 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 				{ label && (
 					<span className="sgs-responsive-override__label">{ label }</span>
 				) }
-				<div
+				<DeviceTabs
 					className="sgs-responsive-override__tabs"
-					role="tablist"
-					aria-label={ sprintf(
+					tiers={ TIERS }
+					active={ active }
+					onChange={ setActive }
+					ariaLabel={ sprintf(
 						/* translators: %s: control label. */
 						__( '%s — device', 'sgs-blocks' ),
 						label || __( 'Responsive', 'sgs-blocks' )
 					) }
-					style={ { display: 'flex', gap: '2px' } }
-				>
-					{ TIERS.map( ( t ) => {
-						const isActive = t.key === active;
-						const tierHasOwn =
-							t.key === 'desktop' ||
-							( obj?.[ t.key ] !== undefined && obj?.[ t.key ] !== null && obj?.[ t.key ] !== '' );
-						return (
-							<Button
-								key={ t.key }
-								role="tab"
-								icon={ t.icon }
-								isPressed={ isActive }
-								aria-selected={ isActive }
-								tabIndex={ isActive ? 0 : -1 }
-								onKeyDown={ onTabKeyDown }
-								onClick={ () => setActive( t.key ) }
-								label={
-									tierHasOwn
-										? t.label
-										: sprintf(
-												/* translators: %s: device name. */
-												__( '%s (inherited)', 'sgs-blocks' ),
-												t.label
-										  )
-								}
-								showTooltip
-								style={ { minWidth: '44px', minHeight: '44px' } }
-							/>
-						);
-					} ) }
-				</div>
+					getTabLabel={ ( t ) =>
+						tierHasOwnValue( t.key )
+							? t.label
+							: sprintf(
+									/* translators: %s: device name. */
+									__( '%s (inherited)', 'sgs-blocks' ),
+									t.label
+							  )
+					}
+				/>
 			</div>
 
 			<div

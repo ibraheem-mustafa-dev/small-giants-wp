@@ -19,6 +19,15 @@
  * Falls back to local state where `core/editor` isn't available (e.g. a
  * site-editor / widget context without the post-editor store).
  *
+ * ── Accessible device switcher (FR-37-29, 2026-07-23) ─────────────────────
+ * The switcher UI is the shared `DeviceTabs` component — a real
+ * `role="tablist"`/`role="tab"` structure with roving tabindex, arrow/Home/End
+ * keyboard navigation and >=44x44px targets, replacing the previous plain
+ * `ButtonGroup` of small (~24-32px) Tab-key-only buttons. `DeviceTabs` is
+ * presentational only; this component still owns which tier is active (either
+ * WP's native device preview or the local-state fallback above) and passes
+ * that state straight through.
+ *
  * Usage:
  *   <ResponsiveControl label="Columns">
  *     { ( breakpoint ) => <RangeControl ... /> }
@@ -26,9 +35,9 @@
  */
 import { useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { ButtonGroup, Button, Tooltip } from '@wordpress/components';
 import { desktop, tablet, mobile } from '@wordpress/icons';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+import DeviceTabs from './DeviceTabs';
 
 const BREAKPOINTS = [
 	{ key: 'desktop', device: 'Desktop', icon: desktop, label: __( 'Desktop', 'sgs-blocks' ) },
@@ -58,11 +67,12 @@ export default function ResponsiveControl( { children, label } ) {
 		? DEVICE_TO_KEY[ nativeDevice ] || 'desktop'
 		: localKey;
 
-	const pick = ( bp ) => {
+	const pick = ( key ) => {
 		if ( usingNative ) {
+			const bp = BREAKPOINTS.find( ( b ) => b.key === key );
 			setDeviceType( bp.device );
 		} else {
-			setLocalKey( bp.key );
+			setLocalKey( key );
 		}
 	};
 
@@ -74,19 +84,17 @@ export default function ResponsiveControl( { children, label } ) {
 						{ label }
 					</span>
 				) }
-				<ButtonGroup className="sgs-responsive-control__buttons">
-					{ BREAKPOINTS.map( ( bp ) => (
-						<Tooltip key={ bp.key } text={ bp.label }>
-							<Button
-								icon={ bp.icon }
-								label={ bp.label }
-								isPressed={ breakpoint === bp.key }
-								onClick={ () => pick( bp ) }
-								size="small"
-							/>
-						</Tooltip>
-					) ) }
-				</ButtonGroup>
+				<DeviceTabs
+					className="sgs-responsive-control__buttons"
+					tiers={ BREAKPOINTS }
+					active={ breakpoint }
+					onChange={ pick }
+					ariaLabel={ sprintf(
+						/* translators: %s: control label. */
+						__( '%s — device', 'sgs-blocks' ),
+						label || __( 'Responsive', 'sgs-blocks' )
+					) }
+				/>
 			</div>
 			{ children( breakpoint ) }
 		</div>

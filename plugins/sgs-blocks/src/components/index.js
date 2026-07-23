@@ -1,5 +1,6 @@
 export { default as ResponsiveControl } from './ResponsiveControl';
 export { default as ResponsiveOverride } from './ResponsiveOverride';
+export { default as DeviceTabs } from './DeviceTabs';
 export {
 	default as ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
