@@ -23,6 +23,7 @@ import {
 	TextControl,
 	ButtonGroup,
 	Button,
+	Notice,
 	__experimentalUnitControl as UnitControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
@@ -36,6 +37,16 @@ import {
 } from '../../components';
 
 const COLLAPSE_PRESETS = [ 640, 768, 1024 ];
+
+/**
+ * Link-count threshold for informational notice (FR-36-8, FR-36-12).
+ * Baymard's research identified ~50 links as the abandonment cliff in navigation.
+ * This is directional; validate against our own sites and adjust as needed.
+ * NOT a gate — the operator can always save/publish regardless.
+ *
+ * @see https://baymard.com/blog/website-navigation-menu-increase-usability
+ */
+const LINK_COUNT_THRESHOLD = 50;
 
 /**
  * Client-side mirror of render.php's SGS_Nav_Menu_Bar_Renderer::flatten() —
@@ -226,6 +237,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
+				{ resolvedItems.length > LINK_COUNT_THRESHOLD && (
+					<Notice status="info" isDismissible={ true } style={ { marginBottom: '16px' } }>
+						{ sprintf(
+							/* translators: %d is the number of links. */
+							__( 'This menu has %d links. Consider simplifying to reduce cognitive load and improve usability.', 'sgs-blocks' ),
+							resolvedItems.length
+						) }
+					</Notice>
+				) }
+
 				<PanelBody title={ __( 'Menu', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Menu', 'sgs-blocks' ) }

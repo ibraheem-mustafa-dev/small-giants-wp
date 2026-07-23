@@ -1,16 +1,95 @@
 import { __ } from '@wordpress/i18n';
+import { useEffect, useRef, useState } from 'react';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, Notice } from '@wordpress/components';
 import {
 	WidthPanel,
 	ResponsiveSpacingPanel,
 } from '../container/components/ContainerWrapperControls';
 
 const ALLOWED_BLOCKS = [ 'sgs/site-footer-row' ];
+
+/**
+ * Compute WCAG 2.1 relative luminance from an sRGB hex, RGB, or CSS variable colour.
+ * Mirrors the PHP sgs_wcag_relative_luminance() algorithm.
+ *
+ * @param {string} hex Colour: '#f3e5ab', 'rgb(243,229,171)', or 'var(--wp--preset--color--primary)'
+ * @param {HTMLElement} refEl Reference element for computing CSS variables (optional)
+ * @return {number} Relative luminance in [0.0, 1.0], or -1.0 on failure
+ */
+function calculateRelativeLuminance( hex, refEl = null ) {
+	// Handle CSS variables: resolve via computed style on a probe element
+	if ( /^var\(/i.test( hex ) ) {
+		if ( ! refEl ) return -1.0;
+		const probe = document.createElement( 'div' );
+		probe.style.color = hex;
+		refEl.appendChild( probe );
+		const resolved = getComputedStyle( probe ).color;
+		refEl.removeChild( probe );
+		hex = resolved;
+	}
+
+	// Handle rgb() or rgba() — extract the numeric channels
+	const rgbMatch = hex.match( /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/ );
+	if ( rgbMatch ) {
+		const r = parseInt( rgbMatch[ 1 ], 10 ) / 255.0;
+		const g = parseInt( rgbMatch[ 2 ], 10 ) / 255.0;
+		const b = parseInt( rgbMatch[ 3 ], 10 ) / 255.0;
+
+		const linearise = ( c ) =>
+			c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
+
+		return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
+	}
+
+	// Handle hex: normalise, expand shorthand, parse
+	hex = hex.replace( /^#/, '' ).toUpperCase();
+	if ( hex.length === 3 ) {
+		hex = hex[ 0 ] + hex[ 0 ] + hex[ 1 ] + hex[ 1 ] + hex[ 2 ] + hex[ 2 ];
+	}
+	if ( hex.length !== 6 || ! /^[0-9A-F]+$/.test( hex ) ) {
+		return -1.0;
+	}
+
+	const r = parseInt( hex.substr( 0, 2 ), 16 ) / 255.0;
+	const g = parseInt( hex.substr( 2, 2 ), 16 ) / 255.0;
+	const b = parseInt( hex.substr( 4, 2 ), 16 ) / 255.0;
+
+	const linearise = ( c ) =>
+		c <= 0.03928 ? c / 12.92 : Math.pow( ( c + 0.055 ) / 1.055, 2.4 );
+
+	return 0.2126 * linearise( r ) + 0.7152 * linearise( g ) + 0.0722 * linearise( b );
+}
+
+/**
+ * Calculate WCAG 2.1 contrast ratio between two luminance values.
+ *
+ * @param {number} l1 Luminance of first colour
+ * @param {number} l2 Luminance of second colour
+ * @return {number} Contrast ratio, or -1 on invalid input
+ */
+function calculateContrastRatio( l1, l2 ) {
+	if ( l1 < 0 || l2 < 0 ) return -1;
+	const lighter = Math.max( l1, l2 );
+	const darker = Math.min( l1, l2 );
+	return ( lighter + 0.05 ) / ( darker + 0.05 );
+}
+
+/**
+ * Determine if contrast meets WCAG 2.1 AA thresholds.
+ *
+ * @param {number} ratio Contrast ratio
+ * @param {boolean} isLargeText True if text is 18px+ or 14px+ bold
+ * @return {boolean} True if contrast meets AA standard
+ */
+function meetsWCAG_AA( ratio, isLargeText = false ) {
+	if ( ratio < 0 ) return false;
+	return isLargeText ? ratio >= 3.0 : ratio >= 4.5;
+}
 
 // Three rows matching the draft `.mm-footer`: an optional top strip (CTA /
 // newsletter, empty by default → zero output), a columns grid (brand + link
@@ -106,6 +185,7 @@ const TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( { className: 'sgs-site-footer' } );
+	const refEl = useRef( null );
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
@@ -118,9 +198,50 @@ export default function Edit( { attributes, setAttributes } ) {
 		orientation: 'vertical',
 	} );
 
+	const { style } = attributes;
+
+	// Check contrast ratio on attribute changes
+	const [ contrastNotice, setContrastNotice ] = useState( null );
+
+	useEffect( () => {
+		if ( ! style?.color?.background || ! style?.color?.text ) {
+			setContrastNotice( null );
+			return;
+		}
+
+		const bgLuminance = calculateRelativeLuminance(
+			style.color.background,
+			refEl.current
+		);
+		const textLuminance = calculateRelativeLuminance(
+			style.color.text,
+			refEl.current
+		);
+
+		const ratio = calculateContrastRatio( bgLuminance, textLuminance );
+
+		// Check both normal text (4.5:1) and large text (3:1) — use the stricter threshold
+		if ( ! meetsWCAG_AA( ratio, false ) ) {
+			setContrastNotice(
+				__( 'This text colour may be hard to read on this background. Consider adjusting the colour for better readability.', 'sgs-blocks' )
+			);
+		} else {
+			setContrastNotice( null );
+		}
+	}, [ style?.color?.background, style?.color?.text ] );
+
 	return (
 		<>
 			<InspectorControls>
+				{ contrastNotice && (
+					<Notice
+						status="warning"
+						isDismissible={ false }
+						className="sgs-contrast-notice"
+					>
+						{ contrastNotice }
+					</Notice>
+				) }
 				<PanelBody title={ __( 'Footer width', 'sgs-blocks' ) }>
 					<WidthPanel
 						attributes={ attributes }
@@ -133,7 +254,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			</InspectorControls>
 
-			<div { ...innerBlocksProps } />
+			<div ref={ refEl } { ...innerBlocksProps } />
 		</>
 	);
 }
