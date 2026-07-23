@@ -764,17 +764,27 @@ def _base_domain_attrs_for_css_property(
     property; the mobile/tablet tier siblings are re-appended by the separate breakpoint
     mechanism (Spec 31 §3.A step 4), the ``:hover``/``:focus`` state siblings by step 4a,
     and the per-CHILD-element attrs (titleColour vs labelColour …) by styling_content.py
-    keyed on each attr's own ``derived_selector``. So this base resolver must EXCLUDE:
-      * non-root css_element (a specific child element — not this resolver's job),
-      * css_tier in {mobile, tablet} (a responsive sibling — re-appended separately;
+    keyed on each attr's own ``derived_selector``. So the base-resolver domain is:
+      * an OWN-ROOT attr — EITHER css_element IN ('',root,self)/NULL, OR css_layer='OUTER'
+        (the OUTER-LAYER union, D-2026-07-23): 57 of 59 isWrapper blocks name their root
+        something other than root/self (`wrapper`/`box`/`grid`/`card`/`banner`…), so a
+        wrapper attr like ``hero.minHeight`` (css_element='wrapper') was INVISIBLE to the
+        element-only filter. Its now-seeded css_layer='OUTER' makes it visible by MEANING
+        (the block's own outer box) rather than by the block's arbitrary element label.
+        Collision-free on current data (26 wrapper attrs recovered, 0 new (block,property)
+        ties — verified vs the css_state='hover' backfill that de-conflicted the quote
+        box-shadow / testimonial colour Hover siblings). NAMED sub-element attrs stay OUT
+        (they are NOT css_layer='OUTER' — a leaf/child element declares no container layer).
+      * css_tier in {mobile, tablet} EXCLUDED (a responsive sibling — re-appended separately;
         the base/unsuffixed attr carries css_tier NULL or 'desktop' per FR-31-5.2),
-      * css_state NOT NULL (a state sibling — re-appended separately).
+      * css_state NOT NULL EXCLUDED (a state sibling — re-appended separately).
 
     Restricting to this domain collapses the raw column-first list (which the old
     2-arg ``declared_attrs_for_css_property`` returned in full, then blindly took [0]
-    of — the mis-pick this fixes) to exactly one attr on the current data. Defensive:
-    the keyed columns are DERIVED (seeded by /sgs-update); an OperationalError on a
-    pre-seed DB is swallowed → () → the caller falls back to the suffix loop UNCHANGED.
+    of — the mis-pick this fixes) to exactly one attr on the current data; ≥2 → the
+    caller (``attr_for_property``) raises ``AmbiguousCssPropAttrError`` (fail loud).
+    Defensive: the keyed columns are DERIVED (seeded by /sgs-update); an OperationalError
+    on a pre-seed DB is swallowed → () → the caller falls back to the suffix loop UNCHANGED.
     """
     if not block_slug or not css_property:
         return ()
@@ -784,7 +794,8 @@ def _base_domain_attrs_for_css_property(
         rows = conn.execute(
             "SELECT attr_name FROM block_attributes "
             "WHERE block_slug = ? AND css_property = ? "
-            f"AND (css_element IS NULL OR css_element IN ({placeholders})) "
+            f"AND (css_element IS NULL OR css_element IN ({placeholders}) "
+            "OR css_layer = 'OUTER') "
             "AND (css_tier IS NULL OR css_tier = 'desktop') "
             "AND css_state IS NULL "
             "ORDER BY rowid",
@@ -3502,29 +3513,50 @@ def attr_for_layer_property(
     return None
 
 
+class AmbiguousAreaAttrError(RuntimeError):
+    """Spec 31 §3.A L4 (per-area resolver): the declarative
+    ``(block_slug, css_property, css_element=area)`` route matched ≥2 registered attrs
+    EVEN restricted to the base-resolver domain (base/desktop tier, base state). A
+    silent rowid-first pick misroutes a draft area's CSS — fail loud instead (mirrors
+    ``AmbiguousCssPropAttrError`` / ``AmbiguousLayerAttrError``, Bean fail-loud policy;
+    the callers do not catch it — a genuine two-attr contention is a data bug to fix,
+    not to silently paper over). Proven 0-residual on current data (2026-07-23, after
+    the hero split-image-height duplicate was de-routed); guards future drift.
+    Resolution: a css_state/css_tier disambiguator, or remove the duplicate row."""
+
+
 @functools.lru_cache(maxsize=512)
 def attr_for_area_property(
     block_slug: str,
     area: str,
     css_property: str,
 ) -> "str | None":
-    """Per-block GRID-PER-AREA → attr resolver (the `<areaName>+<suffix>` layer).
+    """Per-block GRID-PER-AREA (L4) → attr resolver: which attr owns the CSS a draft's
+    NAMED grid sub-area (``content`` / ``media`` …) declares.
 
-    Bean design steer 2026-06-11 (next-session-prompt Task 3 / FR-31-21 per-area
-    grid layer candidate): a composite that renders named grid areas itself
-    (hero: "content" / "media") exposes per-AREA styling attrs whose names are
-    DERIVABLE as ``areaName + PropertySuffix`` — ``content``+``PaddingTop`` →
-    ``contentPaddingTop``; ``media``+``PaddingTop`` → ``mediaPaddingTop``.
-    NOTE the deliberate distinction from the CONTENT layer: the hero's
-    ``contentPadding*`` is padding on the grid COLUMN whose area name is
-    "content" — NOT the container-mirror's content-width band (name collision;
-    Bean caught it 2026-06-11).
+    DECLARATIVE (2026-07-23, qc-council-validated — replaces the former fuzzy
+    ``areaName + PropertySuffix`` name-build). Match ``block_attributes`` on
+    ``css_property`` + ``css_element = area``, restricted to the base-resolver domain
+    (``css_tier IN (NULL,'desktop')``, ``css_state IS NULL``; the tier/state siblings are
+    re-appended by grid_area.py's tier_suffix, Spec 31 §3.A.4). Exactly one → return;
+    ≥2 → raise ``AmbiguousAreaAttrError`` (never rowid-pick); zero → None (honest gap;
+    caller gap-tracks — flag-not-drop, Spec 31 §3.A.8).
 
-    Same name-free mechanism as ``attr_for_layer_property`` (D194): the suffix
-    comes from ``property_suffixes`` for the css_property; the candidate is
-    checked against the block's REAL registered attrs; first match wins; None
-    on miss (caller logs a gap-candidate — flag-not-drop). Universal: works for
-    any block + any area name with zero per-block intelligence.
+    Why declarative beats the old name-build (measured differential, 2026-07-23,
+    qc-council rater): the name-build glued ``area`` + a ``property_suffixes`` suffix and
+    DB-existence-checked the built NAME — blind to ``css_state``/``css_tier`` and to the
+    attr's real ``css_element``, so a RESTING declaration could land on a HOVER attr
+    (option-picker ``pill``, tabs ``panel``) and it matched by NAME an attr whose real
+    element differs (social-icons ``iconColour`` is element=``item``, not ``icon``). It
+    silently MISSED 213 correct routes (attrs whose name doesn't follow the convention)
+    and WRONG-routed 6; the declarative match is blind to none of those axes and loses
+    ZERO correct routes (the 6 it drops are all wrong). Where a draft area token matches
+    no ``css_element`` the declarative gaps — but so did the name-build (it builds a
+    non-existent attr), so no correct route is lost.
+
+    The former ``Band*`` skip (guarding the content/contentBand name-collision) is
+    UNNECESSARY here: ``contentBandPadding*`` carry ``css_property=NULL`` so they never
+    enter this equality match (verified) — the collision cannot occur by construction.
     """
     if not block_slug or not area or not css_property:
         return None
@@ -3532,48 +3564,34 @@ def attr_for_area_property(
     conn = sqlite3.connect(SGS_DB)
     try:
         rows = conn.execute(
-            "SELECT suffix FROM property_suffixes "
-            "WHERE css_property = ? ORDER BY rowid",
-            (css_property,),
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? AND css_element = ? "
+            "AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL "
+            "ORDER BY rowid",
+            (block_slug, css_property, area),
         ).fetchall()
     except sqlite3.OperationalError:
+        # css_element/css_property/css_state/css_tier columns absent (pre-seed DB).
         return None
     finally:
         conn.close()
 
-    if not rows:
-        return None
-
-    block_attr_map = block_attrs(block_slug)
-    if not block_attr_map:
-        return None
-
-    area_prefix = area[0].lower() + area[1:]
-    for (suffix,) in rows:
-        if not suffix:
-            continue
-        # A band-mirror suffix (``Band*`` — BandPaddingTop, BandGap, …) binds to the
-        # L2 CONTAINER-BAND attr family (``contentBandPadding*``), NOT an L4 PER-AREA
-        # attr. This resolver is L4-only, so it must NEVER fall through to a band attr:
-        # when a composite registers the band alias but not the direct per-area attr
-        # (e.g. cta-section has ``contentBandPaddingTop`` but no ``contentPaddingTop``),
-        # returning the band attr routes a nested ``__content`` column's padding onto the
-        # OUTER container band — the documented content/contentBand name-collision hazard
-        # (Bean caught it 2026-06-11; see this function's docstring). Every band-mirror
-        # suffix is prefixed ``Band``; no direct per-area suffix is, so this is a precise
-        # universal filter (no per-block literal). Miss -> None -> caller gap-tracks.
-        if suffix.startswith("Band"):
-            continue
-        candidate = area_prefix + suffix[0].upper() + suffix[1:]
-        if candidate in block_attr_map:
-            _trace(
-                "attr_for_area_property_hit",
-                block_slug=block_slug,
-                area=area,
-                css_property=css_property,
-                attr_name=candidate,
-            )
-            return candidate
+    if len(rows) > 1:
+        raise AmbiguousAreaAttrError(
+            f"attr_for_area_property({block_slug!r}, {area!r}, {css_property!r}): "
+            f"{len(rows)} base-domain attrs match ({', '.join(r[0] for r in rows)}); "
+            "add a css_state/css_tier disambiguator or remove the duplicate registration."
+        )
+    if rows:
+        _trace(
+            "attr_for_area_property_hit",
+            block_slug=block_slug,
+            area=area,
+            css_property=css_property,
+            attr_name=rows[0][0],
+        )
+        return rows[0][0]
 
     _trace(
         "attr_for_area_property_miss",
