@@ -75,8 +75,8 @@
       "attr": "logoGap",
       "fields": {
         "css_property": "gap,height,max-width,width",
-        "css_element": "tile",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "tile"
       }
     },
     {
@@ -335,7 +335,7 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -343,7 +343,7 @@
       "attr": "colourBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -359,7 +359,7 @@
       "attr": "colourBorder",
       "fields": {
         "css_property": "border-color",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -375,7 +375,7 @@
       "attr": "colourText",
       "fields": {
         "css_property": "color",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -391,7 +391,7 @@
       "attr": "fontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -399,7 +399,7 @@
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -424,7 +424,7 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -432,7 +432,7 @@
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -533,8 +533,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -558,8 +558,8 @@
       "attr": "staggerDelay",
       "fields": {
         "css_property": "animation-delay",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -881,8 +881,8 @@
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "wrapper",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -898,8 +898,8 @@
       "attr": "maxWidthPercent",
       "fields": {
         "css_property": "max-width",
-        "css_element": "image",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -907,7 +907,7 @@
       "attr": "opacity",
       "fields": {
         "css_property": "opacity",
-        "css_element": "image"
+        "css_element": "wrapper"
       }
     },
     {
@@ -932,7 +932,7 @@
       "fields": {
         "css_property": "width",
         "css_tier": "desktop",
-        "css_element": "image"
+        "css_element": "wrapper"
       }
     },
     {
@@ -940,7 +940,7 @@
       "attr": "zIndex",
       "fields": {
         "css_property": "z-index",
-        "css_element": "image"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1025,8 +1025,8 @@
       "fields": {
         "css_property": "column-count,grid-template-columns",
         "css_tier": "desktop",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1035,8 +1035,8 @@
       "fields": {
         "css_property": "column-count,grid-template-columns",
         "css_tier": "mobile",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1045,8 +1045,8 @@
       "fields": {
         "css_property": "column-count,grid-template-columns",
         "css_tier": "tablet",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1054,8 +1054,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "column-gap,gap,grid-template-columns,margin-bottom",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1087,8 +1087,8 @@
       "attr": "staggerDelay",
       "fields": {
         "css_property": "animation-delay",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1104,7 +1104,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1112,7 +1112,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "heading",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1121,7 +1121,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1129,7 +1129,7 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1137,8 +1137,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "heading",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1146,8 +1146,8 @@
       "attr": "boxShadowHover",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "heading",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1156,7 +1156,7 @@
       "attr": "customWidth",
       "fields": {
         "css_property": "width",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1164,7 +1164,7 @@
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1172,7 +1172,7 @@
       "attr": "fontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1180,7 +1180,7 @@
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1188,7 +1188,7 @@
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1196,7 +1196,7 @@
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1204,7 +1204,7 @@
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1212,7 +1212,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1220,7 +1220,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "heading",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1229,7 +1229,7 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1237,7 +1237,7 @@
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "heading"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1277,8 +1277,8 @@
       "attr": "contentBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1287,8 +1287,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "desktop",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1297,8 +1297,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "mobile",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1307,8 +1307,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "tablet",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1317,8 +1317,8 @@
       "fields": {
         "css_property": "gap",
         "css_tier": "desktop",
-        "css_element": "grid",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "grid"
       }
     },
     {
@@ -1345,8 +1345,8 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_tier": "desktop",
-        "css_element": "grid",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "grid"
       }
     },
     {
@@ -1390,8 +1390,8 @@
       "attr": "imageBorderColour",
       "fields": {
         "css_property": "border-color",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1400,8 +1400,8 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "desktop",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1410,8 +1410,8 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "mobile",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1420,8 +1420,8 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "tablet",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1429,8 +1429,8 @@
       "attr": "imageBorderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1438,8 +1438,8 @@
       "attr": "imageBorderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1448,8 +1448,8 @@
       "fields": {
         "css_property": "height",
         "css_tier": "desktop",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1458,8 +1458,8 @@
       "fields": {
         "css_property": "height",
         "css_tier": "mobile",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1468,8 +1468,8 @@
       "fields": {
         "css_property": "height",
         "css_tier": "tablet",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1477,8 +1477,8 @@
       "attr": "imageObjectFit",
       "fields": {
         "css_property": "object-fit",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1486,8 +1486,8 @@
       "attr": "imageObjectPosition",
       "fields": {
         "css_property": "object-position",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1496,8 +1496,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "desktop",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1506,8 +1506,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "mobile",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1516,8 +1516,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "tablet",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1526,8 +1526,8 @@
       "fields": {
         "css_property": "width",
         "css_tier": "desktop",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1536,8 +1536,8 @@
       "fields": {
         "css_property": "width",
         "css_tier": "mobile",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1546,8 +1546,8 @@
       "fields": {
         "css_property": "width",
         "css_tier": "tablet",
-        "css_element": "split-image",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "split-image"
       }
     },
     {
@@ -1555,8 +1555,8 @@
       "attr": "mediaBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1565,8 +1565,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "desktop",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1575,8 +1575,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "mobile",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1585,8 +1585,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "tablet",
-        "css_element": "media",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -1595,8 +1595,8 @@
       "fields": {
         "css_property": "min-height",
         "css_tier": "desktop",
-        "css_element": "wrapper",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1665,8 +1665,8 @@
       "fields": {
         "css_property": "text-align",
         "css_tier": "desktop",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1675,8 +1675,8 @@
       "fields": {
         "css_property": "text-align",
         "css_tier": "mobile",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1685,8 +1685,8 @@
       "fields": {
         "css_property": "text-align",
         "css_tier": "tablet",
-        "css_element": "content",
-        "css_layer": "GRID_AREA"
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -1710,7 +1710,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color,border-color",
-        "css_element": "icon"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1725,7 +1725,7 @@
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
-        "css_element": "icon"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1733,7 +1733,7 @@
       "attr": "iconColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "icon",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1757,7 +1757,7 @@
       "attr": "shapeColourHover",
       "fields": {
         "css_property": "background-color,border-color",
-        "css_element": "icon",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1782,8 +1782,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_element": "wrapper",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1807,7 +1807,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "box",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1816,7 +1816,7 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
-        "css_element": "box",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1832,8 +1832,8 @@
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "box",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1842,7 +1842,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "box",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -1851,7 +1851,7 @@
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1859,7 +1859,7 @@
       "attr": "fontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1867,7 +1867,7 @@
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1875,7 +1875,7 @@
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1883,7 +1883,7 @@
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1891,7 +1891,7 @@
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1899,7 +1899,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1907,7 +1907,7 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1915,7 +1915,7 @@
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "label"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1930,8 +1930,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "media",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -1956,7 +1956,7 @@
       "fields": {
         "css_property": "height",
         "css_tier": "desktop",
-        "css_element": "media"
+        "css_element": "wrapper"
       }
     },
     {
@@ -1981,7 +1981,7 @@
       "fields": {
         "css_property": "max-height",
         "css_tier": "desktop",
-        "css_element": "media"
+        "css_element": "wrapper"
       }
     },
     {
@@ -2006,8 +2006,8 @@
       "fields": {
         "css_property": "max-width",
         "css_tier": "desktop",
-        "css_element": "media",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2047,7 +2047,7 @@
       "attr": "opacity",
       "fields": {
         "css_property": "opacity",
-        "css_element": "media"
+        "css_element": "wrapper"
       }
     },
     {
@@ -2120,8 +2120,8 @@
       "fields": {
         "css_property": "align-items",
         "css_tier": "desktop",
-        "css_element": "group",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2148,8 +2148,8 @@
       "fields": {
         "css_property": "flex-direction",
         "css_tier": "desktop",
-        "css_element": "group",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2176,8 +2176,8 @@
       "fields": {
         "css_property": "gap",
         "css_tier": "desktop",
-        "css_element": "group",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2195,8 +2195,8 @@
       "fields": {
         "css_property": "justify-content",
         "css_tier": "desktop",
-        "css_element": "group",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2223,8 +2223,8 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_tier": "desktop",
-        "css_element": "group",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2250,8 +2250,8 @@
       "attr": "drawerAlign",
       "fields": {
         "css_property": "align-items",
-        "css_element": "body",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "body"
       }
     },
     {
@@ -2259,8 +2259,8 @@
       "attr": "drawerBg",
       "fields": {
         "css_property": "background-color,color",
-        "css_element": "dialog",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2276,8 +2276,8 @@
       "attr": "width",
       "fields": {
         "css_property": "height,width",
-        "css_element": "dialog",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2537,7 +2537,7 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "root"
+        "css_element": "wrapper"
       }
     },
     {
@@ -2545,8 +2545,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
-        "css_element": "root",
-        "css_layer": "CONTENT"
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2613,8 +2613,8 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "root",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2745,8 +2745,8 @@
       "attr": "cardBgColour",
       "fields": {
         "css_property": "background-color,column-gap,flex,gap,margin-bottom",
-        "css_element": "card",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "card"
       }
     },
     {
@@ -2755,8 +2755,8 @@
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
         "css_tier": "desktop",
-        "css_element": "inner",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -2765,8 +2765,8 @@
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
         "css_tier": "mobile",
-        "css_element": "inner",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -2775,8 +2775,8 @@
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
         "css_tier": "tablet",
-        "css_element": "inner",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -2784,8 +2784,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "column-gap,flex,gap,margin-bottom",
-        "css_element": "grid",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2965,8 +2965,8 @@
       "attr": "cardMaxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "box",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3062,21 +3062,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "ctaPaddingX",
-      "fields": {
-        "css_property": "padding"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ctaPaddingY",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "cta"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "ctaWidthType",
       "fields": {
         "css_property": "width"
@@ -3138,8 +3123,8 @@
       "attr": "innerPadding",
       "fields": {
         "css_property": "padding",
-        "css_element": "box",
-        "css_layer": "CONTENT"
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3421,7 +3406,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
-        "css_element": "box"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3436,7 +3421,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
-        "css_element": "box"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3444,7 +3429,7 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "box"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3452,8 +3437,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "box",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3478,8 +3463,8 @@
       "fields": {
         "css_property": "max-width",
         "css_tier": "desktop",
-        "css_element": "box",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3568,7 +3553,7 @@
       "attr": "opacity",
       "fields": {
         "css_property": "opacity",
-        "css_element": "line"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3576,8 +3561,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_element": "wrapper",
-        "css_layer": "GRID"
+        "css_layer": "GRID",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3696,8 +3681,8 @@
       "attr": "cardShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "card",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3728,8 +3713,8 @@
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "card",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3760,8 +3745,8 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "quote-box",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3806,8 +3791,8 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "slider",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3816,8 +3801,8 @@
       "attr": "borderColourHover",
       "fields": {
         "css_property": "border-color",
-        "css_element": "slider",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3834,8 +3819,8 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "slider",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3844,7 +3829,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3852,7 +3837,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "text",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3861,7 +3846,7 @@
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3869,7 +3854,7 @@
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3877,8 +3862,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "text",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3886,8 +3871,8 @@
       "attr": "boxShadowHover",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "text",
         "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3896,7 +3881,7 @@
       "attr": "customWidth",
       "fields": {
         "css_property": "width",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3928,7 +3913,7 @@
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3937,7 +3922,7 @@
       "fields": {
         "css_property": "font-size",
         "css_tier": "desktop",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3945,7 +3930,7 @@
       "attr": "fontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3953,7 +3938,7 @@
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3961,8 +3946,8 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "text",
-        "css_layer": "OUTER"
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -3970,7 +3955,7 @@
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3978,7 +3963,7 @@
       "attr": "textColour",
       "fields": {
         "css_property": "color",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -3986,7 +3971,7 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "text",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -3995,7 +3980,7 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4003,7 +3988,7 @@
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4225,7 +4210,7 @@
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4233,7 +4218,7 @@
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4242,7 +4227,7 @@
       "fields": {
         "css_property": "font-size",
         "css_tier": "desktop",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4251,7 +4236,7 @@
       "fields": {
         "css_property": "font-size",
         "css_tier": "mobile",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4260,7 +4245,7 @@
       "fields": {
         "css_property": "font-size",
         "css_tier": "tablet",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4268,7 +4253,7 @@
       "attr": "labelFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {
@@ -4276,7 +4261,7 @@
       "attr": "labelFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "button"
+        "css_element": "wrapper"
       }
     },
     {

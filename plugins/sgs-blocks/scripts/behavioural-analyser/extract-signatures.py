@@ -1912,8 +1912,6 @@ def extract_css_property_and_layer() -> dict:
             element = manifest_hit["css_element"]
         else:
             element = None
-        if element:
-            fields["css_element"] = element
         # css_layer (L1-L4) — computed AFTER element resolution so it keys on the FINAL
         # resolved element (Bean, 2026-07-23). Priority:
         #   1. the final element's own declared manifest `layer` — handles a BEM-resolved
@@ -1938,6 +1936,19 @@ def extract_css_property_and_layer() -> dict:
         if css_layer:
             fields["css_layer"] = css_layer
             css_layer_written += 1
+        # css_element — written AFTER the layer block so `element` stayed original for the
+        # layer lookup above. Normalise the block's OWN isWrapper root element to a
+        # canonical, self-documenting 'wrapper' (Bean 2026-07-23): box/card/grid/quote-box/
+        # dialog/banner/… are arbitrary per-block labels for the SAME concept — the block's
+        # structural wrapper. The css_layer disambiguates WHICH part (wrapper+OUTER = the
+        # root box; wrapper+CONTENT = the inner band). Named SUB-elements (content/media/
+        # title/label/…) keep their real name — P4 area routing + styling_content depend on
+        # them. Resolution is unaffected: the base resolver keys on css_layer='OUTER'
+        # (P3a union), NOT the element name (so 'wrapper' need not be a base-domain element).
+        if element:
+            fields["css_element"] = (
+                "wrapper" if (root_key is not None and element == root_key) else element
+            )
         # State: the manifest's own states.<name>.attrMap entry (if this attr is
         # explicitly declared there) is the most authoritative source — it is a
         # human-curated declaration, same standing as element. Selector-context
