@@ -48,6 +48,18 @@
 			"type": "string",
 			"default": "flex"
 		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
 		"flexWrap": {
 			"type": "string",
 			"default": "wrap"

@@ -4,12 +4,12 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import { PanelBody, SelectControl, RangeControl } from '@wordpress/components';
 import {
-	PanelBody,
-	SelectControl,
-	RangeControl,
-} from '@wordpress/components';
-import { ResponsiveOverride, SpacingControl, ResponsiveBoxControls } from '../../components';
+	ResponsiveOverride,
+	SpacingControl,
+	ResponsiveBoxControls,
+} from '../../components';
 
 // No allowedBlocks restriction: site-footer-row is a container-equivalent (like
 // sgs/container in free mode) — it accepts ANY block, not a curated palette.
@@ -23,9 +23,21 @@ const DISTRIBUTION_OPTIONS = [
 	{ label: __( 'Spread apart', 'sgs-blocks' ), value: 'space-between' },
 ];
 
+// Row layout maps to the shared wrapper's `layout` attr — Cluster (wrapping flex)
+// or Columns (equal grid of N per device, stacks to 1 on mobile). Every row
+// chooses independently. The footer's `columns` row defaults to grid; the CTA and
+// copyright strips default to cluster, but any of them can switch.
+const LAYOUT_OPTIONS = [
+	{ label: __( 'Cluster (wraps)', 'sgs-blocks' ), value: 'flex' },
+	{ label: __( 'Columns (grid)', 'sgs-blocks' ), value: 'grid' },
+];
+
 const ROW_LABELS = {
 	top: __( 'Top row — CTA / newsletter strip', 'sgs-blocks' ),
-	columns: __( 'Columns row — up to 6 columns (collapse to 1 on mobile)', 'sgs-blocks' ),
+	columns: __(
+		'Columns row — up to 6 columns (collapse to 1 on mobile)',
+		'sgs-blocks'
+	),
 	bottom: __( 'Bottom bar — copyright / legal / attribution', 'sgs-blocks' ),
 };
 
@@ -40,11 +52,22 @@ const ROW_LABELS = {
 // so we bridge the three flat attrs to that shape and back — no gridTemplateColumns
 // string is ever written from this control. A per-device custom template remains
 // available as an advanced override by setting gridTemplateColumns directly.
-const COUNT_ATTR = { desktop: 'columns', tablet: 'columnsTablet', mobile: 'columnsMobile' };
+const COUNT_ATTR = {
+	desktop: 'columns',
+	tablet: 'columnsTablet',
+	mobile: 'columnsMobile',
+};
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { rowSlot, layout, gap, columns, columnsTablet, columnsMobile, justifyContent } =
-		attributes;
+	const {
+		rowSlot,
+		layout,
+		gap,
+		columns,
+		columnsTablet,
+		columnsMobile,
+		justifyContent,
+	} = attributes;
 
 	const isGrid = 'grid' === layout;
 
@@ -58,9 +81,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 	const onCountChange = ( obj ) =>
 		setAttributes( {
-			columns: obj.desktop,
-			columnsTablet: obj.tablet,
-			columnsMobile: obj.mobile,
+			[ COUNT_ATTR.desktop ]: obj.desktop,
+			[ COUNT_ATTR.tablet ]: obj.tablet,
+			[ COUNT_ATTR.mobile ]: obj.mobile,
 		} );
 
 	// Editor preview mirrors the frontend: grid rows preview as an equal-count
@@ -80,7 +103,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		  };
 
 	const blockProps = useBlockProps( {
-		className: `sgs-site-footer-row${ rowSlot ? ` sgs-site-footer-row--${ rowSlot }` : '' }`,
+		className: `sgs-site-footer-row${
+			rowSlot ? ` sgs-site-footer-row--${ rowSlot }` : ''
+		}`,
 		style: previewStyle,
 	} );
 
@@ -100,20 +125,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						</p>
 					) }
 
+					<SelectControl
+						label={ __( 'Row layout', 'sgs-blocks' ) }
+						value={ layout || 'flex' }
+						options={ LAYOUT_OPTIONS }
+						onChange={ ( val ) => setAttributes( { layout: val } ) }
+						help={ __(
+							'Cluster: elements sit in a row and wrap when cramped. Columns: an equal grid of N columns that stacks to 1 on mobile.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+
 					{ isGrid && (
 						<ResponsiveOverride
 							label={ __( 'Columns', 'sgs-blocks' ) }
 							value={ countValue }
 							onChange={ onCountChange }
 						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
-								const shown = inherited ? effectiveValue : ownValue;
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => {
+								const shown = inherited
+									? effectiveValue
+									: ownValue;
 								return (
 									<RangeControl
 										value={
-											typeof shown === 'number' ? shown : 3
+											typeof shown === 'number'
+												? shown
+												: 3
 										}
-										onChange={ ( val ) => setOwnValue( val ) }
+										onChange={ ( val ) =>
+											setOwnValue( val )
+										}
 										min={ 1 }
 										max={ 6 }
 										help={ __(
@@ -148,7 +196,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ gap }
 						onChange={ ( obj ) => setAttributes( { gap: obj } ) }
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SpacingControl
 								freeInput
 								value={ ownValue }
