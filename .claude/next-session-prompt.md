@@ -7,17 +7,35 @@ Invoke `/autopilot` before doing anything else.
 
 ---
 
-You are the orchestrator for the SGS header/footer/nav programme (Specs 36 + 37). **This session you do
-NOT implement.** You audit, plan, dispatch, and QC. Opus inline = orchestration + QC only; the building is
-done by sonnet/haiku agents and python scripts you dispatch.
+# Next session — SGS header/footer/nav (Specs 36 + 37)
+
+You are the engineer-orchestrator for the SGS header/footer/nav programme (Specs 36 + 37).
+
+**Task 1 you DO hands-on, inline.** It is live verification: use Playwright/WP-CLI yourself to CREATE
+the pages and settings that make last session's `DEPLOYED (unexercised)` work actually render, then
+check it. That cannot be delegated — it is judgement about whether something looks and behaves right.
+
+**Tasks 2-3 you DISPATCH** (two sequential SONNET agents) and QC their returns yourself.
+
+*(The previous version of this line read "This session you do NOT implement" — correct for the
+2026-07-22 orchestration session, wrong for this one, and it would have blocked Task 1. Fixed
+2026-07-23.)*
 
 ## First action
 
-**Smallest first step, under 5 minutes, zero dependencies:**
-`python plugins/sgs-blocks/scripts/check-simple-surface-cap.js --help || node plugins/sgs-blocks/scripts/check-simple-surface-cap.js`
+**Smallest first step, under 5 minutes, zero dependencies — see the gap Task 1 exists to close:**
 
-That runs one of the two gates built on 2026-07-23 and tells you immediately whether the tree is
-healthy. Then read the LEDGER.
+```bash
+curl -s "https://sandybrown-nightingale-600381.hostingersite.com/?nocache=$(date +%s)"   | grep -oE 'wp-block-sgs-[a-z-]+' | sort -u
+```
+
+That lists every SGS block actually rendering on the canary homepage. You will see **no
+`sgs-cart`, no `sgs-product-search`, and no `sgs-nav-menu`** — which is precisely why most of
+2026-07-23's work is `DEPLOYED (unexercised)` and cannot be verified yet. Then read the LEDGER.
+
+*(The previous version of this first action was `python …check-simple-surface-cap.js --help` —
+broken three ways: it is a NODE script, there is no `--help` flag, and it was described as
+reporting tree health when that gate is advisory and always exits 0. Fixed 2026-07-23.)*
 
 ## Mandatory READING — before anything else
 
@@ -27,7 +45,8 @@ healthy. Then read the LEDGER.
 3. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** §6a (verified progress) + **FR-36-26/a/b/c** (the
    fully-scoped link-list build) — IN FULL.
 4. **`.claude/specs/37-HEADER-FOOTER-BUILDER.md`** §5 (the three verification tiers) + the **§6
-   ownership note** on "Spec 33 Part 2" — IN FULL.
+   note on "Spec 33 Part 2"** — which is the header/footer CLONING pipeline, NOT this spec. Spec 37
+   owns the architecture and the BUILD. Read both IN FULL.
    ⛔ Specs 17 and 34 are DELETED — never cite them.
 
 ## Why this matters (motivation — Rule 7)
@@ -120,6 +139,19 @@ remaining item, and the SAME build as Spec 36 FR-36-3 (schedule it ONCE, never t
 `sgs/site-header` shows 7 default-visible controls vs the P2 §5 DEFAULT of 3 — advisory only, NOT a blocker (FR-37-27 roster work).
 
 ## Methodology guardrails (do not skip)
+
+- **The ≤3 Simple-surface figure is a DEFAULT, not a ceiling (D368).** P2 §5 says so three times and
+  explicitly REJECTED the hard-cap reading. `check-simple-surface-cap.js` is WARN-ONLY (exit 0);
+  `--strict` enforces on demand. `sgs/site-header` at 7 default-visible controls is a NUDGE toward the
+  P2 §5 roster — **not a defect, not a blocker**. Do NOT "fix" it by hiding controls a client relies on.
+- **"Spec 33 Part 2" is the header/footer CLONING pipeline — it is NOT ownerless (D368).** Spec 37 owns
+  the architecture and the BUILD (containers, CPT editing home, binding, behaviours, and every block
+  inside a header/footer); Part 2 is separate, unstarted work that CONSUMES it. Specs 36+37 complete
+  FIRST. Spec 33's own wording collapses the two labels — correct it when Part 2 is picked up.
+- **A doc set can be internally consistent and uniformly wrong (D368).** This session's handoff `/qc`
+  passed, then Bean corrected two claims it had verified — because QC checked the docs against THIS
+  SESSION'S WORK, not against the source docs (P2) they cited. When a doc cites a source, open the
+  source.
 
 - **A dispatched agent must EXECUTE, not delegate** (NEW D362) — put the explicit "you are the
   implementer, do not use the Agent tool" line in every implementer dispatch. Two agents delegated
