@@ -1440,42 +1440,63 @@ def _split_php_statements(php_src: str) -> list[str]:
     return stmts
 
 
-def _classify_css_layer(attr_name: str, real_props: "set[str]") -> "str | None":
-    """Q2's sibling: css_layer, populated ONLY via this codebase's ALREADY-established
-    layer-prefix convention (db_lookup.attr_for_layer_property docstring, D194 DEC-3):
-        OUTER   -> ''         (unprefixed)   -> stored as NULL (self/OUTER)
-        CONTENT -> 'content'  prefix
-        GRID    -> 'gridItem' prefix
+# Arrangement CSS properties (display:grid/flex track + alignment definition). These
+# are unambiguously the GRID (L3) layer regardless of block — a property whose only
+# home is the element that lays out its children. Used by _classify_css_layer's
+# FALLBACK below. Kept in sync with the shared wrapper's `grid` element attrMap
+# (sgs/container block.json) — the canonical L3 vocabulary.
+_ARRANGEMENT_PROPS = frozenset({
+    "grid-template-columns", "grid-template-rows", "grid-auto-rows", "grid-auto-columns",
+    "grid-auto-flow", "gap", "row-gap", "column-gap",
+    "justify-items", "justify-content", "align-content", "align-items",
+    "flex-direction", "flex-wrap",
+})
 
-    Deliberately conservative: a name-prefix match is ONLY trusted when every resolved
-    css_property is in a narrow structural-box whitelist (the actual property universe
-    content_band.py / grid_area.py document as theirs — padding/margin/gap/max-width/
-    min-height). This avoids miscasting a "content"-prefixed but non-structural attr
-    (e.g. sgs/separator's contentIconSize/contentIconColour — icon sizing/colour, not a
-    content-band box constraint) as a CONTENT-layer routing attribute. GRID_AREA (the
-    4th value in the schema's documented enum) is a walker-runtime, per-repeater-item
-    concept that cannot be derived from a flat attribute name — left NULL, logged.
+
+def _classify_css_layer(
+    attr_name: str, real_props: "set[str]", is_root_element: bool = True
+) -> "str | None":
+    """FALLBACK css_layer derivation — used ONLY when the block.json element manifest
+    does not declare a `layer` for the element that owns this attr.
+
+    The PRIMARY, authoritative css_layer source is the element manifest's own `layer`
+    field (OUTER/CONTENT/GRID/GRID_AREA), read in `_load_element_manifest_reverse` and
+    applied first in `extract_css_property_and_layer` (Bean, 2026-07-23). 22
+    shared-wrapper blocks declare it; a leaf/content element declares none, which is the
+    leaf guard (a leaf is not a container layer).
+
+    Two fallback tiers, both PER-ATTR (not per-element) so they correctly split a
+    "cluster" element such as product-card's `box`, which holds BOTH cardMaxWidth (OUTER)
+    and innerPadding (CONTENT) under one manifest key:
+      1. ARRANGEMENT css (grid/flex track + alignment) -> GRID (L3), unambiguous on any block.
+      2. Block-private STRUCTURAL box css (Bean option 2, 2026-07-23) -> layer by
+         css_property + name against the shared-wrapper reference vocabulary (sgs/container):
+           * max-width / min-height / box-shadow -> OUTER (the block's own outer box, L1)
+           * width + name starting "content"      -> CONTENT (content-width band, L2)
+           * padding + name containing "inner"     -> CONTENT (inner-body padding, L2)
+    The former name-prefix rules (`^content`->CONTENT, `^gridItem`->GRID) were REMOVED
+    2026-07-23: `gridItem*` is L4 GRID_AREA not L3 GRID, and blanket `^content`->CONTENT
+    mislabeled hero's GRID_AREA contentPadding. A LEAF sub-element attr (cta padding,
+    title colour) matches none of these -> honest NULL = the leaf guard (a leaf is not a
+    container layer). The 22 blocks that declare a manifest `layer` never reach this
+    fallback (their layer is applied first, upstream).
     """
-    structural = {
-        "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
-        "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
-        "gap", "row-gap", "column-gap", "max-width", "min-height",
-        # 'width' included alongside 'max-width': verified live that sgs/quote,
-        # sgs/option-picker and sgs/testimonial each emit a literal `width:` (not
-        # `max-width:`) for their `contentWidth` attr — the exact canonical
-        # CONTENT-layer name from db_lookup.attr_for_layer_property's own docstring
-        # example — so excluding bare 'width' would wrongly drop a real case. A
-        # non-structural "width" (e.g. an icon's width) never reaches this branch
-        # alone: separator's contentIconSize resolves to {color,height,width} and
-        # 'color' is NOT in this whitelist, so the subset check still excludes it.
-        "width",
-    }
-    if not real_props or not real_props.issubset(structural):
+    if not real_props:
         return None
-    if re.match(r"^content[A-Z]", attr_name):
+    if real_props & _ARRANGEMENT_PROPS:
+        return "GRID"  # arrangement is unambiguously L3 wherever it sits
+    # The box-model structural rules below are the block's OWN OUTER/CONTENT box, so
+    # they apply ONLY to an attr on the block's ROOT element. A box property on a named
+    # SUB-element (e.g. sgs/tabs `tab` indicator, whose underline delivers via an inset
+    # box-shadow) is a leaf, not a container layer -> stays NULL (the leaf guard).
+    if not is_root_element:
+        return None
+    if real_props & {"max-width", "min-height", "box-shadow"}:
+        return "OUTER"
+    if "width" in real_props and attr_name.startswith("content"):
         return "CONTENT"
-    if re.match(r"^gridItem[A-Z]", attr_name):
-        return "GRID"
+    if "padding" in real_props and "inner" in attr_name.lower():
+        return "CONTENT"
     return None
 
 
@@ -1561,6 +1582,13 @@ def _load_element_manifest_reverse(
     for element_key, element_def in elements.items():
         if not isinstance(element_def, dict):
             continue
+        # The element's own declared L1-L4 layer (OUTER/CONTENT/GRID/GRID_AREA), added
+        # 2026-07-23 (Bean): the PRIMARY, authoritative css_layer source. An element
+        # WITHOUT a `layer` field (a leaf/content element — cta, title, label,
+        # decorative) yields None here, which is exactly the leaf guard — a leaf is not
+        # a container layer and correctly contributes no css_layer. This value rides on
+        # every attr the element claims (attrMap + prefix convention below).
+        element_layer = element_def.get("layer")
         # Base (resting) attrMap — no state.
         for css_key, attr_name in (element_def.get("attrMap") or {}).items():
             if not isinstance(attr_name, str):
@@ -1568,6 +1596,7 @@ def _load_element_manifest_reverse(
             out[attr_name] = {
                 "css_element": element_key,
                 "css_state": None,
+                "css_layer": element_layer,
                 "manifest_css_key": css_key[4:] if css_key.startswith("css:") else css_key,
                 "source": "attrMap",
             }
@@ -1581,6 +1610,7 @@ def _load_element_manifest_reverse(
                 out[attr_name] = {
                     "css_element": element_key,
                     "css_state": state_name,
+                    "css_layer": element_layer,
                     "manifest_css_key": css_key[4:] if css_key.startswith("css:") else css_key,
                     "source": "attrMap",
                 }
@@ -1622,10 +1652,60 @@ def _load_element_manifest_reverse(
                     out[candidate] = {
                         "css_element": element_key,
                         "css_state": None,
+                        "css_layer": element_layer,
                         "manifest_css_key": None,
                         "source": "prefix",
                     }
     return out
+
+
+def _load_element_layers(block_dir: Path) -> dict[str, str]:
+    """Read a block's `block.json` element manifest into {element_key: layer}
+    (OUTER/CONTENT/GRID/GRID_AREA), 2026-07-23. This lets css_layer be keyed on the
+    FINAL RESOLVED element (which may be a BEM-selector observation, e.g. hero's
+    `mediaPadding`->`media`, that no attrMap/prefix entry claimed) rather than only on
+    the claiming manifest_hit. An element with no `layer` field is omitted (the leaf
+    guard). No `layer` declared anywhere -> {} (block-private; layer stays a fallback).
+    """
+    bj_path = block_dir / "block.json"
+    if not bj_path.exists():
+        return {}
+    try:
+        data = json.loads(bj_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    elements = ((data.get("supports") or {}).get("sgs", {}) or {}).get("elements")
+    if not isinstance(elements, dict):
+        return {}
+    return {
+        k: v["layer"]
+        for k, v in elements.items()
+        if isinstance(v, dict) and isinstance(v.get("layer"), str)
+    }
+
+
+def _load_root_element(block_dir: Path) -> "str | None":
+    """The manifest element key marked `isWrapper: true` — the block's OWN root/outer
+    element (2026-07-23). Used to gate the block-private structural css_layer fallback
+    to the ROOT only: a box-shadow/max-width on the root is OUTER, but the SAME property
+    on a named SUB-element (e.g. sgs/tabs `tab`, whose indicator underline delivers via
+    an inset box-shadow) is NOT a container layer — it is a leaf, and must stay NULL
+    (the leaf guard). Returns the first isWrapper key, or None if none is declared.
+    """
+    bj_path = block_dir / "block.json"
+    if not bj_path.exists():
+        return None
+    try:
+        data = json.loads(bj_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    elements = ((data.get("supports") or {}).get("sgs", {}) or {}).get("elements")
+    if not isinstance(elements, dict):
+        return None
+    for k, v in elements.items():
+        if isinstance(v, dict) and v.get("isWrapper") is True:
+            return k
+    return None
 
 
 # Path for the DERIVED-LAYER data file this function now writes to, instead of a bare
@@ -1646,9 +1726,13 @@ def extract_css_property_and_layer() -> dict:
     before ATTR_CLASSIFICATION_OVERRIDES, which wins on any field conflict). Returns a
     stats dict used by the caller to build the verification report (Task C).
 
-    css_layer is OUT OF SCOPE for this pass (Bean's decision, 2026-07-21) — its
-    existing behaviour via `_classify_css_layer` is preserved unchanged, just routed
-    through the new JSON channel instead of a bare UPDATE.
+    css_layer (2026-07-23, Bean): PRIMARY source is now the block.json element
+    manifest's own `layer` field (OUTER/CONTENT/GRID/GRID_AREA), read via
+    `_load_element_manifest_reverse` and applied below — the declarative L1-L4 signal
+    that already existed on 22 shared-wrapper blocks but was never read. The old
+    name-prefix regex (`_classify_css_layer`) is now a narrow FALLBACK (arrangement->
+    GRID only) for attrs whose owning element declares no layer. Routed through the
+    same JSON channel Stage 1C applies.
     """
     conn = sqlite3.connect(str(DB_PATH))
     cur = conn.cursor()
@@ -1706,6 +1790,8 @@ def extract_css_property_and_layer() -> dict:
     unit_attrs_excluded: set[tuple[str, str]] = set()
     unresolved_reasons: dict[tuple[str, str], str] = {}
     manifest_by_block: dict[str, dict[str, dict[str, "str | None"]]] = {}
+    elem_layer_by_block: dict[str, dict[str, str]] = {}
+    root_elem_by_block: dict[str, "str | None"] = {}
 
     cur.execute("SELECT slug FROM blocks WHERE slug LIKE 'sgs/%' ORDER BY slug")
     block_slugs = [r[0] for r in cur.fetchall()]
@@ -1726,6 +1812,8 @@ def extract_css_property_and_layer() -> dict:
         var_attr = _build_php_var_attr_map(php_src)
         block_attr_names = attrs_by_block.get(slug, set())
         manifest_by_block[slug] = _load_element_manifest_reverse(block_dir, block_attr_names)
+        elem_layer_by_block[slug] = _load_element_layers(block_dir)
+        root_elem_by_block[slug] = _load_root_element(block_dir)
 
         raw, php_attr_state, php_attr_element = _attr_to_raw_props_php(php_src, known_css_props, var_attr, short_slug)
         helper = _attrs_from_helper_calls(php_src, block_attr_names)
@@ -1798,13 +1886,9 @@ def extract_css_property_and_layer() -> dict:
     classification_entries: list[dict] = []
     for (slug, attr), real_props in sorted(resolved.items()):
         css_property = ",".join(sorted(real_props))
-        css_layer = _classify_css_layer(attr, real_props)
         manifest_hit = manifest_by_block.get(slug, {}).get(attr)
         fields: dict[str, object] = {"css_property": css_property}
         css_property_written += 1
-        if css_layer:
-            fields["css_layer"] = css_layer
-            css_layer_written += 1
         tier = resolved_tier.get((slug, attr))
         if tier:
             fields["css_tier"] = tier
@@ -1832,6 +1916,30 @@ def extract_css_property_and_layer() -> dict:
             element = None
         if element:
             fields["css_element"] = element
+        # css_layer (L1-L4) — computed AFTER element resolution so it keys on the FINAL
+        # resolved element (Bean, 2026-07-23). Priority:
+        #   1. the final element's own declared manifest `layer` — handles a BEM-resolved
+        #      element that NO attrMap/prefix claimed (hero mediaPadding -> `media`,
+        #      whose declared layer GRID_AREA the prefix path missed because media's
+        #      prefix is `image`);
+        #   2. else the claiming manifest_hit's layer — covers a prefix/attrMap element
+        #      that differs from the final BEM element (hero imagePadding: claimed by
+        #      media/prefix=GRID_AREA, final BEM element `split-image` carries no layer);
+        #   3. else the arrangement->GRID fallback (_classify_css_layer).
+        # A leaf/content element declares no layer -> None at every step = the leaf guard.
+        root_key = root_elem_by_block.get(slug)
+        is_root_element = (
+            element in (None, "", "root", "self")
+            or (root_key is not None and element == root_key)
+        )
+        css_layer = (
+            elem_layer_by_block.get(slug, {}).get(element)
+            or (manifest_hit or {}).get("css_layer")
+            or _classify_css_layer(attr, real_props, is_root_element)
+        )
+        if css_layer:
+            fields["css_layer"] = css_layer
+            css_layer_written += 1
         # State: the manifest's own states.<name>.attrMap entry (if this attr is
         # explicitly declared there) is the most authoritative source — it is a
         # human-curated declaration, same standing as element. Selector-context
@@ -2250,6 +2358,20 @@ if __name__ == "__main__":
               f"dual_bound_written={stats['dual_bound_written']} "
               f"disagreements={len(stats['disagreements'])} "
               f"unresolved={len(stats['unresolved'])}")
+        sys.exit(0)
+
+    # --task-a-only: regenerate ONLY css-property-classifications.json (the derived
+    # css_property/css_layer/css_element/css_state/css_tier base layer Stage 1C
+    # applies) WITHOUT the heavier full signature extraction (2026-07-23). Symmetric
+    # with --task-b-only. Use this to refresh the JSON after a block.json `layer` /
+    # manifest change, then commit the JSON — the reseed-durable channel. JSON-only,
+    # no DB mutation.
+    if "--task-a-only" in sys.argv:
+        task_a_stats = extract_css_property_and_layer()
+        print(f"[task-a] css_property_written={task_a_stats['css_property_written']} "
+              f"css_layer_written={task_a_stats['css_layer_written']} "
+              f"resolved={task_a_stats['resolved_count']} "
+              f"unresolved={len(task_a_stats['unresolved_reasons'])}")
         sys.exit(0)
 
     extract_all_signatures()

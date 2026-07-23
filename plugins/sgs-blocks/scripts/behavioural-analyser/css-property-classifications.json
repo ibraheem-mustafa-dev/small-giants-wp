@@ -3,79 +3,6 @@
   "generated_by": "behavioural-analyser/extract-signatures.py::extract_css_property_and_layer",
   "entries": [
     {
-      "slug": "sgs/adaptive-nav",
-      "attr": "collapseCustomPx",
-      "fields": {
-        "css_property": "min-width"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "flexWrap",
-      "fields": {
-        "css_property": "flex-wrap"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "justifyContent",
-      "fields": {
-        "css_property": "justify-content"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "linkColour",
-      "fields": {
-        "css_property": "color",
-        "css_element": "link"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "linkFontSize",
-      "fields": {
-        "css_property": "font-size"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "linkFontStyle",
-      "fields": {
-        "css_property": "font-style"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "linkFontWeight",
-      "fields": {
-        "css_property": "font-weight"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "linkHoverColour",
-      "fields": {
-        "css_property": "color",
-        "css_element": "link",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "linkLineHeight",
-      "fields": {
-        "css_property": "line-height"
-      }
-    },
-    {
-      "slug": "sgs/adaptive-nav",
-      "attr": "verticalAlign",
-      "fields": {
-        "css_property": "align-items"
-      }
-    },
-    {
       "slug": "sgs/audio",
       "attr": "accentColour",
       "fields": {
@@ -106,7 +33,8 @@
       "attr": "columnsDesktop",
       "fields": {
         "css_property": "height,max-width,width",
-        "css_tier": "desktop"
+        "css_tier": "desktop",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -114,7 +42,8 @@
       "attr": "columnsMobile",
       "fields": {
         "css_property": "height,max-width,width",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -122,7 +51,8 @@
       "attr": "columnsTablet",
       "fields": {
         "css_property": "height,max-width,width",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -145,14 +75,16 @@
       "attr": "logoGap",
       "fields": {
         "css_property": "gap,height,max-width,width",
-        "css_element": "tile"
+        "css_element": "tile",
+        "css_layer": "GRID"
       }
     },
     {
       "slug": "sgs/brand-strip",
       "attr": "maxHeight",
       "fields": {
-        "css_property": "height,max-width,min-height,width"
+        "css_property": "height,max-width,min-height,width",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -574,7 +506,8 @@
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "desktop"
+        "css_tier": "desktop",
+        "css_layer": "GRID"
       }
     },
     {
@@ -582,7 +515,8 @@
       "attr": "columnsMobile",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -590,7 +524,8 @@
       "attr": "columnsTablet",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -598,7 +533,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -622,7 +558,8 @@
       "attr": "staggerDelay",
       "fields": {
         "css_property": "animation-delay",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -750,6 +687,22 @@
       "fields": {
         "css_property": "height,width",
         "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelBg",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelTextColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "panel"
       }
     },
     {
@@ -928,7 +881,8 @@
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "wrapper"
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -944,7 +898,8 @@
       "attr": "maxWidthPercent",
       "fields": {
         "css_property": "max-width",
-        "css_element": "image"
+        "css_element": "image",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1070,7 +1025,8 @@
       "fields": {
         "css_property": "column-count,grid-template-columns",
         "css_tier": "desktop",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1079,7 +1035,8 @@
       "fields": {
         "css_property": "column-count,grid-template-columns",
         "css_tier": "mobile",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1088,7 +1045,8 @@
       "fields": {
         "css_property": "column-count,grid-template-columns",
         "css_tier": "tablet",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1096,7 +1054,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "column-gap,gap,grid-template-columns,margin-bottom",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1128,7 +1087,8 @@
       "attr": "staggerDelay",
       "fields": {
         "css_property": "animation-delay",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1177,7 +1137,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "heading"
+        "css_element": "heading",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1186,6 +1147,7 @@
       "fields": {
         "css_property": "box-shadow",
         "css_element": "heading",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -1315,7 +1277,8 @@
       "attr": "contentBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1323,9 +1286,9 @@
       "attr": "contentPadding",
       "fields": {
         "css_property": "padding",
-        "css_layer": "CONTENT",
         "css_tier": "desktop",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1333,9 +1296,9 @@
       "attr": "contentPaddingMobile",
       "fields": {
         "css_property": "padding",
-        "css_layer": "CONTENT",
         "css_tier": "mobile",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1343,9 +1306,9 @@
       "attr": "contentPaddingTablet",
       "fields": {
         "css_property": "padding",
-        "css_layer": "CONTENT",
         "css_tier": "tablet",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1354,7 +1317,8 @@
       "fields": {
         "css_property": "gap",
         "css_tier": "desktop",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1362,7 +1326,8 @@
       "attr": "gapMobile",
       "fields": {
         "css_property": "gap",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1370,7 +1335,8 @@
       "attr": "gapTablet",
       "fields": {
         "css_property": "gap",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1379,7 +1345,8 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_tier": "desktop",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1387,7 +1354,8 @@
       "attr": "gridTemplateColumnsMobile",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1395,7 +1363,8 @@
       "attr": "gridTemplateColumnsTablet",
       "fields": {
         "css_property": "grid-template-columns",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1421,7 +1390,8 @@
       "attr": "imageBorderColour",
       "fields": {
         "css_property": "border-color",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1430,7 +1400,8 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "desktop",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1439,7 +1410,8 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "mobile",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1448,7 +1420,8 @@
       "fields": {
         "css_property": "border-radius",
         "css_tier": "tablet",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1456,7 +1429,8 @@
       "attr": "imageBorderStyle",
       "fields": {
         "css_property": "border-style",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1464,7 +1438,8 @@
       "attr": "imageBorderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1473,7 +1448,8 @@
       "fields": {
         "css_property": "height",
         "css_tier": "desktop",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1482,7 +1458,8 @@
       "fields": {
         "css_property": "height",
         "css_tier": "mobile",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1491,7 +1468,8 @@
       "fields": {
         "css_property": "height",
         "css_tier": "tablet",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1499,7 +1477,8 @@
       "attr": "imageObjectFit",
       "fields": {
         "css_property": "object-fit",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1507,7 +1486,8 @@
       "attr": "imageObjectPosition",
       "fields": {
         "css_property": "object-position",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1516,7 +1496,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "desktop",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1525,7 +1506,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "mobile",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1534,7 +1516,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "tablet",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1543,7 +1526,8 @@
       "fields": {
         "css_property": "width",
         "css_tier": "desktop",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1552,7 +1536,8 @@
       "fields": {
         "css_property": "width",
         "css_tier": "mobile",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1561,7 +1546,8 @@
       "fields": {
         "css_property": "width",
         "css_tier": "tablet",
-        "css_element": "split-image"
+        "css_element": "split-image",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1569,7 +1555,8 @@
       "attr": "mediaBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1578,7 +1565,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "desktop",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1587,7 +1575,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "mobile",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1596,7 +1585,8 @@
       "fields": {
         "css_property": "padding",
         "css_tier": "tablet",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1605,7 +1595,8 @@
       "fields": {
         "css_property": "min-height",
         "css_tier": "desktop",
-        "css_element": "wrapper"
+        "css_element": "wrapper",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1613,7 +1604,8 @@
       "attr": "minHeightMobile",
       "fields": {
         "css_property": "min-height",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1621,7 +1613,8 @@
       "attr": "minHeightTablet",
       "fields": {
         "css_property": "min-height",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -1672,7 +1665,8 @@
       "fields": {
         "css_property": "text-align",
         "css_tier": "desktop",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1681,7 +1675,8 @@
       "fields": {
         "css_property": "text-align",
         "css_tier": "mobile",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1690,7 +1685,8 @@
       "fields": {
         "css_property": "text-align",
         "css_tier": "tablet",
-        "css_element": "content"
+        "css_element": "content",
+        "css_layer": "GRID_AREA"
       }
     },
     {
@@ -1705,7 +1701,8 @@
       "slug": "sgs/hero",
       "attr": "verticalAlignment",
       "fields": {
-        "css_property": "align-items,justify-content"
+        "css_property": "align-items,justify-content",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1785,7 +1782,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_element": "wrapper"
+        "css_element": "wrapper",
+        "css_layer": "GRID"
       }
     },
     {
@@ -1835,6 +1833,7 @@
       "fields": {
         "css_property": "box-shadow",
         "css_element": "box",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -1931,7 +1930,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2006,7 +2006,8 @@
       "fields": {
         "css_property": "max-width",
         "css_tier": "desktop",
-        "css_element": "media"
+        "css_element": "media",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2014,7 +2015,8 @@
       "attr": "maxWidthMobile",
       "fields": {
         "css_property": "max-width",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2022,7 +2024,8 @@
       "attr": "maxWidthTablet",
       "fields": {
         "css_property": "max-width",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2072,64 +2075,6 @@
       }
     },
     {
-      "slug": "sgs/mega-menu",
-      "attr": "badgeColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "badge"
-      }
-    },
-    {
-      "slug": "sgs/mega-menu",
-      "attr": "linkBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "trigger"
-      }
-    },
-    {
-      "slug": "sgs/mega-menu",
-      "attr": "linkColour",
-      "fields": {
-        "css_property": "color",
-        "css_element": "trigger"
-      }
-    },
-    {
-      "slug": "sgs/mega-menu",
-      "attr": "linkHoverBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "trigger",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/mega-menu",
-      "attr": "linkHoverColour",
-      "fields": {
-        "css_property": "color",
-        "css_element": "trigger",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/mega-menu",
-      "attr": "panelBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "panel"
-      }
-    },
-    {
-      "slug": "sgs/mega-menu",
-      "attr": "panelMaxWidth",
-      "fields": {
-        "css_property": "max-width",
-        "css_element": "panel"
-      }
-    },
-    {
       "slug": "sgs/modal",
       "attr": "modalBackground",
       "fields": {
@@ -2175,7 +2120,8 @@
       "fields": {
         "css_property": "align-items",
         "css_tier": "desktop",
-        "css_element": "group"
+        "css_element": "group",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2183,7 +2129,8 @@
       "attr": "alignItemsMobile",
       "fields": {
         "css_property": "align-items",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2191,7 +2138,8 @@
       "attr": "alignItemsTablet",
       "fields": {
         "css_property": "align-items",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2200,7 +2148,8 @@
       "fields": {
         "css_property": "flex-direction",
         "css_tier": "desktop",
-        "css_element": "group"
+        "css_element": "group",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2208,7 +2157,8 @@
       "attr": "directionMobile",
       "fields": {
         "css_property": "flex-direction",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2216,7 +2166,8 @@
       "attr": "directionTablet",
       "fields": {
         "css_property": "flex-direction",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2225,7 +2176,8 @@
       "fields": {
         "css_property": "gap",
         "css_tier": "desktop",
-        "css_element": "group"
+        "css_element": "group",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2233,7 +2185,8 @@
       "attr": "gapMobile",
       "fields": {
         "css_property": "gap",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2242,7 +2195,8 @@
       "fields": {
         "css_property": "justify-content",
         "css_tier": "desktop",
-        "css_element": "group"
+        "css_element": "group",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2250,7 +2204,8 @@
       "attr": "justifyContentMobile",
       "fields": {
         "css_property": "justify-content",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2258,7 +2213,8 @@
       "attr": "justifyContentTablet",
       "fields": {
         "css_property": "justify-content",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2267,7 +2223,8 @@
       "fields": {
         "css_property": "flex-wrap",
         "css_tier": "desktop",
-        "css_element": "group"
+        "css_element": "group",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2275,7 +2232,8 @@
       "attr": "wrapMobile",
       "fields": {
         "css_property": "flex-wrap",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2283,7 +2241,8 @@
       "attr": "wrapTablet",
       "fields": {
         "css_property": "flex-wrap",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2291,7 +2250,8 @@
       "attr": "drawerAlign",
       "fields": {
         "css_property": "align-items",
-        "css_element": "body"
+        "css_element": "body",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2299,7 +2259,8 @@
       "attr": "drawerBg",
       "fields": {
         "css_property": "background-color,color",
-        "css_element": "dialog"
+        "css_element": "dialog",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2315,7 +2276,8 @@
       "attr": "width",
       "fields": {
         "css_property": "height,width",
-        "css_element": "dialog"
+        "css_element": "dialog",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2355,7 +2317,8 @@
       "slug": "sgs/nav-menu",
       "attr": "collapsePoint",
       "fields": {
-        "css_property": "max-width,min-width"
+        "css_property": "max-width,min-width",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2582,8 +2545,8 @@
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
-        "css_layer": "CONTENT",
-        "css_element": "root"
+        "css_element": "root",
+        "css_layer": "CONTENT"
       }
     },
     {
@@ -2650,7 +2613,8 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "root"
+        "css_element": "root",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2764,6 +2728,7 @@
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color,box-shadow",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -2780,7 +2745,8 @@
       "attr": "cardBgColour",
       "fields": {
         "css_property": "background-color,column-gap,flex,gap,margin-bottom",
-        "css_element": "card"
+        "css_element": "card",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2789,7 +2755,8 @@
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
         "css_tier": "desktop",
-        "css_element": "inner"
+        "css_element": "inner",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2798,7 +2765,8 @@
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
         "css_tier": "mobile",
-        "css_element": "inner"
+        "css_element": "inner",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2807,7 +2775,8 @@
       "fields": {
         "css_property": "column-count,flex,grid-template-columns",
         "css_tier": "tablet",
-        "css_element": "inner"
+        "css_element": "inner",
+        "css_layer": "GRID"
       }
     },
     {
@@ -2815,7 +2784,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "column-gap,flex,gap,margin-bottom",
-        "css_element": "grid"
+        "css_element": "grid",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -2995,7 +2965,8 @@
       "attr": "cardMaxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "box"
+        "css_element": "box",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -3167,7 +3138,8 @@
       "attr": "innerPadding",
       "fields": {
         "css_property": "padding",
-        "css_element": "box"
+        "css_element": "box",
+        "css_layer": "CONTENT"
       }
     },
     {
@@ -3480,14 +3452,16 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "box"
+        "css_element": "box",
+        "css_layer": "OUTER"
       }
     },
     {
       "slug": "sgs/quote",
       "attr": "boxShadowHover",
       "fields": {
-        "css_property": "box-shadow"
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -3504,7 +3478,8 @@
       "fields": {
         "css_property": "max-width",
         "css_tier": "desktop",
-        "css_element": "box"
+        "css_element": "box",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -3601,7 +3576,8 @@
       "attr": "gap",
       "fields": {
         "css_property": "gap",
-        "css_element": "wrapper"
+        "css_element": "wrapper",
+        "css_layer": "GRID"
       }
     },
     {
@@ -3720,7 +3696,8 @@
       "attr": "cardShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "card"
+        "css_element": "card",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -3752,6 +3729,7 @@
       "fields": {
         "css_property": "box-shadow",
         "css_element": "card",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -3782,7 +3760,8 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "quote-box"
+        "css_element": "quote-box",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -3797,6 +3776,7 @@
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -3827,6 +3807,7 @@
       "fields": {
         "css_property": "background-color",
         "css_element": "slider",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -3836,6 +3817,7 @@
       "fields": {
         "css_property": "border-color",
         "css_element": "slider",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -3853,6 +3835,7 @@
       "fields": {
         "css_property": "color",
         "css_element": "slider",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -3894,7 +3877,8 @@
       "attr": "boxShadow",
       "fields": {
         "css_property": "box-shadow",
-        "css_element": "text"
+        "css_element": "text",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -3903,6 +3887,7 @@
       "fields": {
         "css_property": "box-shadow",
         "css_element": "text",
+        "css_layer": "OUTER",
         "css_state": "hover"
       }
     },
@@ -3976,7 +3961,8 @@
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
-        "css_element": "text"
+        "css_element": "text",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -4018,6 +4004,35 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "badgeImageBorderRadius",
+      "fields": {
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "badgeImageObjectFit",
+      "fields": {
+        "css_property": "object-fit"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "badgeImageShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "badgeImageSize",
+      "fields": {
+        "css_property": "height,width"
       }
     },
     {
@@ -4183,7 +4198,8 @@
       "attr": "columns",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "desktop"
+        "css_tier": "desktop",
+        "css_layer": "GRID"
       }
     },
     {
@@ -4191,7 +4207,8 @@
       "attr": "columnsMobile",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "mobile"
+        "css_tier": "mobile",
+        "css_layer": "GRID"
       }
     },
     {
@@ -4199,7 +4216,8 @@
       "attr": "columnsTablet",
       "fields": {
         "css_property": "flex,grid-template-columns",
-        "css_tier": "tablet"
+        "css_tier": "tablet",
+        "css_layer": "GRID"
       }
     },
     {

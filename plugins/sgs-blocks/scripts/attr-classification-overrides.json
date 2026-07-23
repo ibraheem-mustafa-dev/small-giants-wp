@@ -1444,6 +1444,55 @@
         "css_property": "transform",
         "css_state": "hover"
       }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "textColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "textColourHover",
+      "fields": {
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitImageMobileHeight",
+      "fields": {
+        "css_property": null
+      }
     }
   ]
 }

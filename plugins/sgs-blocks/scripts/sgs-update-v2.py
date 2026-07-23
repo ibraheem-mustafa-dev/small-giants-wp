@@ -1228,6 +1228,16 @@ def _apply_attr_classification_overrides(
         if not dry_run:
             c.execute(f"ALTER TABLE block_attributes ADD COLUMN {col} TEXT")
         existing_cols.add(col)
+    # css_layer (L1-L4) is a DERIVED column OWNED SOLELY by the classifications JSON
+    # (layer 1 — verified 2026-07-23: no ATTR_CLASSIFICATION_OVERRIDES / box_family
+    # source writes it). The per-attr UPDATE below is additive-per-field and cannot
+    # express "clear to NULL", so a row whose correct layer became NULL (e.g.
+    # option-picker/quote/testimonial.contentWidth, de-classified from a wrong CONTENT
+    # to the block's own root width) would keep its STALE value across a reseed. Reset
+    # the whole column FIRST so the reseed is AUTHORITATIVE — every row's css_layer is
+    # then exactly what the JSON declares this run, and nothing stale survives.
+    if not dry_run and "css_layer" in existing_cols:
+        c.execute("UPDATE block_attributes SET css_layer = NULL")
     for (slug, attr), fields in combined.items():
         if not fields:
             continue
