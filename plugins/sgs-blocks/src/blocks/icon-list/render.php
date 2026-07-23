@@ -52,6 +52,73 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
+
+// ---------------------------------------------------------------------------
+// 0. FR-36-26c Dispatch B — resolve `source: menu` into flat { text, url }
+// items via the ONE shared resolver (SGS_Nav_Menu_Source, R-31-9 — never a
+// second menu-walker). This mirrors sgs/nav-menu's own
+// SGS_Nav_Menu_Bar_Renderer::flatten() (top-level items only; a submenu
+// collapses to its own parent link, matching the bar's Phase-1 behaviour) —
+// that class is declared inside nav-menu/render.php's own file scope and is
+// not reusable across blocks, so the FLATTENING step (not the menu-walking
+// step) is reproduced here at the same, small scope. The actual menu
+// resolution (classic-menu lookup, term → items) is entirely delegated to
+// SGS_Nav_Menu_Source; nothing here re-implements that.
+// ---------------------------------------------------------------------------
+
+/**
+ * Flatten resolved nav blocks (from SGS_Nav_Menu_Source::get_menu_blocks())
+ * into `{ text, url }` pairs shaped like an `sgs/icon-list` typed item, so
+ * they can be rendered through the SAME per-item loop as typed items.
+ *
+ * @param array $blocks Parsed nav blocks.
+ * @return array<int, array{text:string, url:string}>
+ */
+function sgs_icon_list_flatten_menu_blocks( array $blocks ) {
+	$flat = array();
+	foreach ( $blocks as $block ) {
+		$name = $block['blockName'] ?? '';
+		switch ( $name ) {
+			case 'core/navigation-link':
+			case 'core/navigation-submenu': // Parent's own link only — no nested children this phase.
+				$label = (string) ( $block['attrs']['label'] ?? '' );
+				if ( '' === $label ) {
+					break;
+				}
+				$flat[] = array(
+					'text' => $label,
+					'url'  => (string) ( $block['attrs']['url'] ?? '#' ),
+				);
+				break;
+			case 'core/home-link':
+				$flat[] = array(
+					'text' => __( 'Home', 'sgs-blocks' ),
+					'url'  => home_url( '/' ),
+				);
+				break;
+			case 'core/page-list':
+				$pages = get_pages(
+					array(
+						'parent'      => (int) ( $block['attrs']['parentPageID'] ?? 0 ),
+						'sort_column' => 'menu_order,post_title',
+						'post_status' => 'publish',
+					)
+				);
+				foreach ( $pages as $page ) {
+					$flat[] = array(
+						'text' => (string) $page->post_title,
+						'url'  => (string) get_permalink( $page->ID ),
+					);
+				}
+				break;
+			default:
+				// Whitespace / unknown block — skip.
+				break;
+		}
+	}
+	return $flat;
+}
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
@@ -118,6 +185,89 @@ $dividers       = ! empty( $attributes['dividers'] );
 $text_colour    = $attributes['textColour'] ?? '';
 $gap            = $attributes['gap'] ?? '20';
 
+// FR-36-26c: heading + marker-type. `heading` blank = no heading element at
+// all. `headingLevel`/`markerType` carry no JSON `enum` (an out-of-enum
+// stored value is otherwise silently coerced to the block.json default —
+// blockjson-enum-coerces-invalid-to-default), so both are validated here.
+$heading_text           = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading'] ) : '';
+$allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
+$heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+	? $attributes['headingLevel']
+	: 'h3';
+$marker_type            = sgs_list_marker_sanitise_type( $attributes['markerType'] ?? '', 'icon' );
+$list_tag               = sgs_list_marker_element_tag( $marker_type );
+
+// FR-36-26c Dispatch B: `source`/`menuRef`/`renderLandmark` carry no JSON
+// `enum` either (same blockjson-enum-coerces-invalid-to-default reason), so
+// `source` is validated here too.
+$source    = in_array( $attributes['source'] ?? '', array( 'typed', 'menu' ), true ) ? $attributes['source'] : 'typed';
+$menu_ref  = absint( $attributes['menuRef'] ?? 0 );
+$want_nav  = ! empty( $attributes['renderLandmark'] );
+$menu_name = '';
+
+// --- Resolve items for the two sources into ONE shape ({text,url,...}) so
+// the SAME per-item render loop (step 7) handles both. `source: menu` with
+// no menuRef set (0/invalid) renders nothing extra — fail soft, no fatal. ---
+if ( 'menu' === $source ) {
+	$resolved_items = array();
+	if ( $menu_ref > 0 ) {
+		// Resolve ONLY the requested menu ref (fail soft to empty on a
+		// stale/deleted ref). `get_menu_blocks()` is the "find ANY menu"
+		// resolver — on an unresolvable ref it falls through to the site
+		// header nav / theme-location / latest-menu chain, which would make a
+		// footer link-list silently render the SITE NAVIGATION instead of
+		// nothing. That is especially likely on a CLONED site, where a numeric
+		// ref from the source install has no matching menu id on the target.
+		// `blocks_from_ref()` resolves the ref alone and returns [] when it
+		// does not resolve — the fail-soft contract this block documents.
+		$menu_blocks    = SGS_Nav_Menu_Source::blocks_from_ref( $menu_ref );
+		$resolved_items = sgs_icon_list_flatten_menu_blocks( $menu_blocks );
+
+		$menu_obj = wp_get_nav_menu_object( $menu_ref );
+		if ( $menu_obj && ! is_wp_error( $menu_obj ) && ! empty( $menu_obj->name ) ) {
+			$menu_name = (string) $menu_obj->name;
+		}
+	}
+} else {
+	$resolved_items = $items;
+}
+
+// --- FR-36-26a heading contract. An operator-entered `heading` is STICKY —
+// it always wins over the menu's own name, so a later menu rename never
+// silently replaces an operator's chosen title. Only a BLANK heading falls
+// back to the resolved menu's name. ---
+if ( '' === $heading_text && 'menu' === $source && '' !== $menu_name ) {
+	$heading_text = $menu_name;
+}
+
+// --- FR-36-26a `<nav>` contract (rule 3: OPT-IN, never automatic).
+// menu-bound  → always a landmark (when it resolved any items).
+// typed + urls → landmark only when the operator opted in via renderLandmark.
+// typed, no urls → NEVER a landmark, regardless of the renderLandmark attr —
+// a list nobody can navigate through is not a navigation landmark. ---
+$items_have_urls = false;
+foreach ( $resolved_items as $maybe_url_item ) {
+	if ( ! empty( $maybe_url_item['url'] ) ) {
+		$items_have_urls = true;
+		break;
+	}
+}
+
+// A <nav> landmark MUST carry an accessible name (FR-36-26a rule 1 —
+// aria-labelledby points at the visible heading). A nameless <nav> is an
+// a11y defect and, when two link-list columns are both landmarks (this
+// block's own multi-column-footer use case), fails axe `landmark-unique`.
+// So the landmark is emitted ONLY when a heading exists to name it: for the
+// menu source the heading has already fallen back to the menu's own name
+// above, so a resolved menu always has one; a typed list needs the operator
+// to have set a heading. No heading → degrade to a plain list, never a
+// nameless landmark.
+if ( 'menu' === $source ) {
+	$render_landmark = ! empty( $resolved_items ) && '' !== $heading_text;
+} else {
+	$render_landmark = $want_nav && $items_have_urls && '' !== $heading_text;
+}
+
 // Validate icon size — only allow known sizes.
 $allowed_icon_sizes = array( 'small', 'medium', 'large', 'xlarge' );
 if ( ! in_array( $icon_size, $allowed_icon_sizes, true ) ) {
@@ -150,10 +300,10 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 	}
 }
 
-$padding_tablet_obj      = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj      = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj       = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj       = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
+$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
+$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
+$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 
@@ -188,20 +338,20 @@ $border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
 $border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
 $border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
 $border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
-$has_border_width     = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
 $allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-$border_style           = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
-$border_colour          = $attributes['borderColour'] ?? '';
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+$border_colour         = $attributes['borderColour'] ?? '';
 
 // WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
-$style_color_text   = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg     = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$preset_text_slug   = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug     = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-$style_font_size    = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
-$style_line_height  = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
+$style_color_text  = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
+$style_color_bg    = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+$preset_text_slug  = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug    = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
+$style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
 
 // ---------------------------------------------------------------------------
 // 5. Scoped CSS assembly. uid is a CLASS (this block has anchor support — the
@@ -213,8 +363,31 @@ $uid      = 'sgs-ilist-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-icon-list';
 $icon_sel = $root_sel . ' .sgs-icon-list__icon';
 $text_sel = $root_sel . ' .sgs-icon-list__text';
+// Heading id for FR-36-26a `aria-labelledby`. NOT derived from $uid: the uid
+// is md5($attributes), so two blocks with byte-identical attributes share it —
+// harmless for the class-scoped CSS (identical blocks want identical styling)
+// but an INVALID duplicate DOM id, and it makes aria-labelledby ambiguous. A
+// per-request unique id keeps the heading element's id and the wrapper's
+// aria-labelledby consistent within THIS render while guaranteeing uniqueness
+// on the page. (The CSS selector below is class-based, so it is unaffected.)
+$heading_id   = wp_unique_id( 'sgs-ilist-heading-' );
+$heading_sel  = $root_sel . ' .sgs-icon-list__heading';
+$item_row_sel = $root_sel . ' .sgs-icon-list__item';
 
 $scoped_css = array();
+
+// --- Heading + item typography families (Bean R-22-13 — shared emitter,
+// never a bespoke font-size control). Only set properties are emitted. ---
+if ( function_exists( 'sgs_typography_css_rule' ) ) {
+	$heading_typography_css = sgs_typography_css_rule( $attributes, 'heading', $heading_sel );
+	if ( '' !== $heading_typography_css ) {
+		$scoped_css[] = $heading_typography_css;
+	}
+	$item_typography_css = sgs_typography_css_rule( $attributes, 'item', $item_row_sel );
+	if ( '' !== $item_typography_css ) {
+		$scoped_css[] = $item_typography_css;
+	}
+}
 
 // --- Per-item icon/text colour — emitted ONCE, scoped, never inline on the
 // repeated <li> elements. ---
@@ -305,10 +478,10 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 if ( 'none' !== $border_style ) {
 	$border_decls = array();
 	if ( $has_border_width ) {
-		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt            = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr            = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb            = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl            = '' !== $border_width_left ? $border_width_left : '0';
 		$border_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
 	}
 	$border_decls[] = 'border-style:' . $border_style;
@@ -389,30 +562,37 @@ if ( $mobile_decls ) {
 // CSS property declarations (contract §A).
 // ---------------------------------------------------------------------------
 
-$wrapper_classes = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' ' . $uid;
+// $list_visual_classes carries the LAYOUT classes (list-style/flex/gap in
+// style.css) — always present on the `<ul>`/`<ol>` itself, whether or not it
+// is also the wp-block root. $wrapper_only_classes carries the uid + WP
+// preset colour classes and is added ONLY to whichever element ends up being
+// the wp-block root (the list itself when there is no heading; the wrapping
+// `<div>` when there is — see step 8).
+$list_visual_classes = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' sgs-icon-list--marker-' . esc_attr( $marker_type );
 if ( $dividers ) {
-	$wrapper_classes .= ' sgs-icon-list--dividers';
+	$list_visual_classes .= ' sgs-icon-list--dividers';
 }
+
+$wrapper_only_classes = $uid;
 if ( '' !== $preset_text_slug ) {
-	$wrapper_classes .= ' has-text-color has-' . $preset_text_slug . '-color';
+	$wrapper_only_classes .= ' has-text-color has-' . $preset_text_slug . '-color';
 }
 if ( '' !== $preset_bg_slug ) {
-	$wrapper_classes .= ' has-background has-' . $preset_bg_slug . '-background-color';
+	$wrapper_only_classes .= ' has-background has-' . $preset_bg_slug . '-background-color';
 }
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => $wrapper_classes,
-		'style' => $gap_slug ? '--sgs-icon-list-gap: var(--wp--preset--spacing--' . $gap_slug . ');' : '',
-	)
-);
+$root_style = $gap_slug ? '--sgs-icon-list-gap: var(--wp--preset--spacing--' . $gap_slug . ');' : '';
 
-// Enqueue Dashicons on the frontend if any item (or the default) uses that source.
-$uses_dashicon = 'dashicon' === $default_source;
-foreach ( $items as $maybe_dashicon ) {
-	if ( ( $maybe_dashicon['iconSource'] ?? '' ) === 'dashicon' ) {
-		$uses_dashicon = true;
-		break;
+// Enqueue Dashicons on the frontend only when a dashicon can actually render
+// (marker types other than icon/emoji never render the icon span at all).
+$uses_dashicon = false;
+if ( in_array( $marker_type, array( 'icon', 'emoji' ), true ) ) {
+	$uses_dashicon = 'dashicon' === $default_source;
+	foreach ( $items as $maybe_dashicon ) {
+		if ( ( $maybe_dashicon['iconSource'] ?? '' ) === 'dashicon' ) {
+			$uses_dashicon = true;
+			break;
+		}
 	}
 }
 if ( $uses_dashicon ) {
@@ -421,56 +601,138 @@ if ( $uses_dashicon ) {
 
 // ---------------------------------------------------------------------------
 // 7. Build each item's markup. NO inline style on the icon/text spans — the
-// shared colour rules live in the scoped <style> above (step 5).
+// shared colour rules live in the scoped <style> above (step 5). The marker
+// itself (icon span, or nothing for bullet/numbered/none) is built by the
+// ONE shared helper, sgs_list_marker_render() (includes/helpers-list-markers.php).
 // ---------------------------------------------------------------------------
 
+$render_marker_icon = in_array( $marker_type, array( 'icon', 'emoji' ), true );
+
+// $resolved_items (step 0/3 above) is the SAME shape for both sources —
+// typed items keep their optional iconSource/iconName/newTab keys, menu
+// items carry only text/url. Iterating one array means BOTH sources render
+// through this one loop (real <li><a> for menu-bound lists, per FR-36-26a).
 $items_html = '';
-foreach ( $items as $item ) {
-	// Resolve the item's icon source + name (migrating legacy {icon: slug} items).
-	if ( ! empty( $item['iconSource'] ) ) {
-		$item_source = $item['iconSource'];
-		$item_name   = $item['iconName'] ?? $default_icon;
-	} elseif ( ! empty( $item['icon'] ) ) {
-		$item_source = 'lucide';
-		$item_name   = $icon_map[ $item['icon'] ] ?? $item['icon'];
-	} else {
-		$item_source = $default_source;
-		$item_name   = $default_icon;
+foreach ( $resolved_items as $item ) {
+	$marker_html = '';
+	if ( $render_marker_icon ) {
+		// Resolve the item's icon source + name (migrating legacy {icon: slug} items).
+		if ( ! empty( $item['iconSource'] ) ) {
+			$item_source = $item['iconSource'];
+			$item_name   = $item['iconName'] ?? $default_icon;
+		} elseif ( ! empty( $item['icon'] ) ) {
+			$item_source = 'lucide';
+			$item_name   = $icon_map[ $item['icon'] ] ?? $item['icon'];
+		} else {
+			$item_source = $default_source;
+			$item_name   = $default_icon;
+		}
+		$svg         = $render_icon( $item_source, $item_name );
+		$marker_html = sgs_list_marker_render( $marker_type, $svg );
 	}
-	$svg       = $render_icon( $item_source, $item_name );
+
 	$item_text = $item['text'] ?? '';
 	$item_url  = isset( $item['url'] ) ? esc_url( $item['url'] ) : '';
 
-	// Wrap text in <a> when a per-item URL is provided.
+	// Wrap text in <a> when a per-item URL is provided. `data-sgs-nav-path`
+	// mirrors nav-menu/view.js's contract exactly (FR-36-26a rule 2):
+	// aria-current is computed CLIENT-SIDE only — a server-baked value would
+	// be cached by LiteSpeed and served to every visitor on every page
+	// (FR-36-11). Emitted for ANY item with a url, not just landmark items —
+	// the FR-36-26a table's aria-current column applies whenever items carry
+	// urls, independent of whether a <nav> wrapper is also rendered.
 	if ( $item_url ) {
+		// The text goes INSIDE this item's own <a>, so a stray <a> pasted into
+		// the text field would nest anchors — invalid HTML and a broken focus
+		// target. Allow inline formatting but strip anchors for the linked case.
+		$linked_allowed = wp_kses_allowed_html( 'post' );
+		unset( $linked_allowed['a'] );
 		$text_content = sprintf(
-			'<a href="%s" class="sgs-icon-list__item-link"%s>%s</a>',
+			'<a href="%s" class="sgs-icon-list__item-link" data-sgs-nav-path="%s"%s>%s</a>',
 			$item_url,
+			esc_attr( wp_parse_url( $item_url, PHP_URL_PATH ) ?? '' ),
 			! empty( $item['newTab'] ) ? ' target="_blank" rel="noopener noreferrer"' : '',
-			wp_kses_post( $item_text )
+			wp_kses( $item_text, $linked_allowed )
 		);
 	} else {
 		$text_content = wp_kses_post( $item_text );
 	}
 
 	$items_html .= sprintf(
-		'<li class="sgs-icon-list__item"><span class="sgs-icon-list__icon" aria-hidden="true">%s</span><span class="sgs-icon-list__text">%s</span></li>',
-		$svg,
+		'<li class="sgs-icon-list__item">%s<span class="sgs-icon-list__text">%s</span></li>',
+		$marker_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by sgs_list_marker_render() from $render_icon()/esc_html output.
 		$text_content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
 	);
 }
 
 // ---------------------------------------------------------------------------
-// 8. Render.
+// 8. Render. Root element depends on the heading + FR-36-26a landmark
+// contract:
+// - no heading, no landmark → root = the <ul>/<ol> itself (ZERO markup
+// change vs. the pre-existing block).
+// - heading and/or landmark → a wrapping element becomes the wp-block
+// root: `<nav>` when $render_landmark is true (menu-bound, always; typed
+// only when the operator opted in AND items carry urls — rule 3, never
+// automatic), else the pre-existing plain `<div>`. The `<nav>` carries
+// `aria-labelledby` pointing at the rendered heading's id — the visible
+// heading becomes the landmark's accessible name (rule 1), so unique
+// landmark names hold by construction. No aria-labelledby is added when
+// no heading is rendered (nothing for it to point at).
 // ---------------------------------------------------------------------------
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $items_html built with esc_url/wp_kses_post above; $scoped_css pre-sanitised ($sgs_css_length/$sgs_css_keyword/allowlists/wp_style_engine_get_styles/sgs_colour_value) + wrapped in wp_strip_all_tags.
+$needs_wrapper = ( '' !== $heading_text ) || $render_landmark;
+$wrapper_tag   = $render_landmark ? 'nav' : 'div';
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $items_html/$heading_html built with esc_url/wp_kses_post/esc_attr above; $scoped_css pre-sanitised ($sgs_css_length/$sgs_css_keyword/allowlists/wp_style_engine_get_styles/sgs_colour_value/sgs_typography_css_rule) + wrapped in wp_strip_all_tags.
 if ( $scoped_css ) {
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }
-printf(
-	'<ul %s>%s</ul>',
-	$wrapper_attributes,
-	$items_html
-);
+
+if ( $needs_wrapper ) {
+	$wrapper_extra_attrs = array();
+	// aria-labelledby belongs on the landmark ONLY (FR-36-26a: "when <nav>").
+	// A plain <div> wrapper has no ARIA role, so labelling it names nothing and
+	// is a spec deviation. $render_landmark already implies a non-empty heading
+	// (see the landmark gate above), so a named landmark always resolves.
+	if ( $render_landmark && '' !== $heading_text ) {
+		$wrapper_extra_attrs['aria-labelledby'] = $heading_id;
+	}
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array_merge(
+			array(
+				'class' => $wrapper_only_classes,
+				'style' => $root_style,
+			),
+			$wrapper_extra_attrs
+		)
+	);
+	$heading_html       = '' !== $heading_text ? sprintf(
+		'<%1$s id="%2$s" class="sgs-icon-list__heading">%3$s</%1$s>',
+		esc_attr( $heading_level ),
+		esc_attr( $heading_id ),
+		wp_kses_post( $heading_text )
+	) : '';
+	printf(
+		'<%1$s %2$s>%3$s<%4$s class="%5$s">%6$s</%4$s></%1$s>',
+		esc_attr( $wrapper_tag ),
+		$wrapper_attributes,
+		$heading_html,
+		esc_attr( $list_tag ),
+		esc_attr( $list_visual_classes ),
+		$items_html
+	);
+} else {
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => $list_visual_classes . ' ' . $wrapper_only_classes,
+			'style' => $root_style,
+		)
+	);
+	printf(
+		'<%1$s %2$s>%3$s</%1$s>',
+		esc_attr( $list_tag ),
+		$wrapper_attributes,
+		$items_html
+	);
+}
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -9,6 +9,31 @@
 	gap: var(--sgs-icon-list-gap, var(--wp--preset--spacing--20));
 }
 
+/* FR-36-26c — heading + marker-type variants. `bullet`/`numbered` get their
+   marker from the list itself (native `::marker`, not a custom icon span —
+   the icon span is never rendered for these marker types, see render.php);
+   both need a little left indent for the marker to sit inside, unlike the
+   default icon-driven list which has no native marker to make room for. */
+.sgs-icon-list__heading {
+	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
+}
+
+.sgs-icon-list--marker-bullet {
+	list-style: disc;
+	padding-inline-start: 1.25em;
+}
+
+.sgs-icon-list--marker-numbered {
+	list-style: decimal;
+	padding-inline-start: 1.5em;
+}
+
+.sgs-icon-list--marker-bullet .sgs-icon-list__item,
+.sgs-icon-list--marker-numbered .sgs-icon-list__item,
+.sgs-icon-list--marker-none .sgs-icon-list__item {
+	display: list-item;
+}
+
 /* Individual item */
 .sgs-icon-list__item {
 	display: flex;

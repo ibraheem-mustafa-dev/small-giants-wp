@@ -48,6 +48,13 @@
  *                                     {url,opensInNewTab,rel} object attr
  *                                     into a safe href/target/rel string)
  *
+ *   helpers-list-markers.php        — sgs_list_marker_types,
+ *                                     sgs_list_marker_sanitise_type,
+ *                                     sgs_list_marker_element_tag,
+ *                                     sgs_list_marker_render (Spec 36
+ *                                     FR-36-26c — the ONE shared list-marker
+ *                                     renderer: icon/emoji/bullet/numbered/none)
+ *
  *   helpers-responsive.php          — sgs_responsive_css_rule,
  *                                     sgs_responsive_box_shorthand_rule
  *                                     (Pattern A general responsive emitter —
@@ -76,3 +83,4 @@ require_once __DIR__ . '/helpers-button-style.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-link.php';
 require_once __DIR__ . '/helpers-cart-panel.php';
+require_once __DIR__ . '/helpers-list-markers.php';

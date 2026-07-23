@@ -218,12 +218,93 @@
 				"outset"
 			],
 			"default": "none"
+		},
+		"heading": {
+			"type": "string",
+			"default": ""
+		},
+		"headingLevel": {
+			"type": "string",
+			"default": "h3"
+		},
+		"markerType": {
+			"type": "string",
+			"default": "icon"
+		},
+		"source": {
+			"type": "string",
+			"default": "typed"
+		},
+		"menuRef": {
+			"type": "integer",
+			"default": 0
+		},
+		"renderLandmark": {
+			"type": "boolean",
+			"default": false
+		},
+		"headingFontSize": {
+			"type": "number"
+		},
+		"headingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"headingFontSizeTablet": {
+			"type": "number"
+		},
+		"headingFontSizeMobile": {
+			"type": "number"
+		},
+		"headingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"headingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"headingLineHeight": {
+			"type": "number"
+		},
+		"headingLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontSize": {
+			"type": "number"
+		},
+		"itemFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"itemFontSizeTablet": {
+			"type": "number"
+		},
+		"itemFontSizeMobile": {
+			"type": "number"
+		},
+		"itemFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"itemLineHeight": {
+			"type": "number"
+		},
+		"itemLineHeightUnit": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
 			"items": [
