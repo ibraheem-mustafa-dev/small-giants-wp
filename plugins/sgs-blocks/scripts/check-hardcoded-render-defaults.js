@@ -404,7 +404,7 @@ const HELPER_SELECTOR_SUFFIXES = {
 			'ColourBackground', 'ColourText', 'ColourBorder',
 			'ColourBackgroundHover', 'ColourTextHover', 'ColourBorderHover',
 			'BorderStyle', 'BorderWidth', 'BorderRadius',
-			'FontWeight', 'FontSize', 'PaddingY', 'PaddingX', 'WidthType',
+			'FontWeight', 'FontSize', 'Padding', 'WidthType',
 		],
 		extraTokens: [ 'sgs-button' ],
 	},

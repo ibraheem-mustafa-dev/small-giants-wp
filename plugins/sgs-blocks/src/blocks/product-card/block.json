@@ -22,6 +22,11 @@
 			"scalarStylingLift": true,
 			"imageControls": true,
 			"arrayContentLift": true,
+			"boxFamilies": {
+				"ctaPadding": [
+					"ctaPadding"
+				]
+			},
 			"variantAttr": "variantStyle",
 			"variants": {
 				"standard": [],
@@ -113,7 +118,7 @@
 						"css:background-color": "ctaColourBackground",
 						"css:color": "ctaColourText",
 						"css:border-color": "ctaColourBorder",
-						"css:padding": "ctaPaddingY"
+						"css:padding": "ctaPadding"
 					},
 					"states": {
 						"hover": {
@@ -124,7 +129,7 @@
 							}
 						}
 					},
-					"_note": "css:padding maps to ctaPaddingY only — ctaPaddingX is a real but separate attribute (no merged box object exists for the CTA); an honest partial resolution, not a full gap."
+					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root."
 				}
 			}
 		},
@@ -296,13 +301,10 @@
 			"type": "number",
 			"default": null
 		},
-		"ctaPaddingY": {
-			"type": "number",
-			"default": 14
-		},
-		"ctaPaddingX": {
-			"type": "number",
-			"default": 24
+		"ctaPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the built-in CTA button { top, right, bottom, left }. Migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (FR-31-22) — mirrors sgs/button's padding box family and this block's own tagPadding attr. Rendered scoped via sgs_button_element_style_css()."
 		},
 		"ctaWidthType": {
 			"type": "string",

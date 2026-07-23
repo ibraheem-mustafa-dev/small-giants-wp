@@ -21,6 +21,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-box.php';
 
 if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 
@@ -40,8 +41,10 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *   ctaBorderRadius           number  (px)
 	 *   ctaFontWeight             string  (100-900)
 	 *   ctaFontSize               number  (px)
-	 *   ctaPaddingY               number  (px, vertical padding top+bottom)
-	 *   ctaPaddingX               number  (px, horizontal padding left+right)
+	 *   ctaPadding                object  {top,right,bottom,left} box padding
+	 *                                     (box-object standard, FR-31-22 —
+	 *                                     shorthanded via the shared
+	 *                                     sgs_box_object_shorthand() helper)
 	 *   ctaWidthType              string  (fit|full)
 	 *
 	 * Every property is independently optional — an unset/empty attribute
@@ -84,10 +87,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$font_size_raw = $read( 'FontSize' );
 		$font_size     = ( '' !== $font_size_raw && null !== $font_size_raw ) ? absint( $font_size_raw ) : null;
 
-		$padding_y_raw = $read( 'PaddingY' );
-		$padding_y     = ( '' !== $padding_y_raw && null !== $padding_y_raw ) ? absint( $padding_y_raw ) : null;
-		$padding_x_raw = $read( 'PaddingX' );
-		$padding_x     = ( '' !== $padding_x_raw && null !== $padding_x_raw ) ? absint( $padding_x_raw ) : null;
+		$padding_raw = $read( 'Padding' );
+		$padding_obj = is_array( $padding_raw ) ? $padding_raw : array();
 
 		// ── Base rule ─────────────────────────────────────────────────────
 		$base_decls = array();
@@ -116,12 +117,14 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( null !== $font_size ) {
 			$base_decls[] = 'font-size:' . $font_size . 'px;';
 		}
-		// Padding shorthand (vertical horizontal). Emitted when EITHER axis is set;
-		// an unset axis falls back to 0 so the shorthand stays valid.
-		if ( null !== $padding_y || null !== $padding_x ) {
-			$py           = null !== $padding_y ? $padding_y : 0;
-			$px           = null !== $padding_x ? $padding_x : 0;
-			$base_decls[] = 'padding:' . $py . 'px ' . $px . 'px;';
+		// Padding — box-object standard (FR-31-22): a single {top,right,bottom,left}
+		// object attr, shorthanded via the shared sgs_box_object_shorthand() helper
+		// (the same one sgs/label + the product-card trial tag use, via
+		// sgs_label_box_css_rule()). An unset side falls back to '0' inside the
+		// helper so the shorthand stays valid.
+		$padding_shorthand = sgs_box_object_shorthand( $padding_obj );
+		if ( null !== $padding_shorthand ) {
+			$base_decls[] = 'padding:' . $padding_shorthand . ';';
 		}
 		if ( 'full' === $width_type ) {
 			$base_decls[] = 'width:100%;';

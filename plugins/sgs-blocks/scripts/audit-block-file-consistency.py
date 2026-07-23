@@ -294,7 +294,7 @@ PREFIXED_HELPER_SUFFIXES = {
         'ColourBackground', 'ColourText', 'ColourBorder',
         'ColourBackgroundHover', 'ColourTextHover', 'ColourBorderHover',
         'BorderStyle', 'BorderWidth', 'BorderRadius', 'FontWeight', 'FontSize',
-        'PaddingY', 'PaddingX', 'WidthType',
+        'Padding', 'WidthType',
     ],
 }
 

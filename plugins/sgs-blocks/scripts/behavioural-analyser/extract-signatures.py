@@ -1184,11 +1184,9 @@ _HELPER_SUFFIX_PROPS: dict[str, dict[str, str]] = {
         "BorderRadius": "border-radius",
         "FontWeight": "font-weight",
         "FontSize": "font-size",
-        # Y and X are read independently but always emitted together as the ONE
-        # `padding` shorthand (helpers-button-style.php:119-125) — both attrs
-        # legitimately drive the same property.
-        "PaddingY": "padding",
-        "PaddingX": "padding",
+        # Box-object standard (FR-31-22): a single {top,right,bottom,left} attr
+        # shorthanded via sgs_box_object_shorthand() (helpers-button-style.php).
+        "Padding": "padding",
         "WidthType": "width",
     },
     "sgs_typography_css_rule": {

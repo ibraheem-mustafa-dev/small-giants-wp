@@ -636,8 +636,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaColourBorder,
 		ctaBorderRadius,
 		ctaFontSize,
-		ctaPaddingY,
-		ctaPaddingX,
+		ctaPadding,
 		ctaWidthType,
 	} = attributes;
 
@@ -1299,41 +1298,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							__nextHasNoMarginBottom
 						/>
-						<NumberControl
-							label={ __(
-								'Vertical padding (px)',
-								'sgs-blocks'
-							) }
-							value={ ctaPaddingY ?? '' }
-							min={ 0 }
-							max={ 80 }
-							onChange={ ( v ) =>
-								setAttributes( {
-									ctaPaddingY:
-										v === '' || v === undefined
-											? undefined
-											: Number.parseInt( v, 10 ),
-								} )
+						<BoxControl
+							label={ __( 'CTA padding', 'sgs-blocks' ) }
+							values={ ctaPadding ?? {} }
+							onChange={ ( next ) =>
+								setAttributes( { ctaPadding: next } )
 							}
-							__nextHasNoMarginBottom
-						/>
-						<NumberControl
-							label={ __(
-								'Horizontal padding (px)',
-								'sgs-blocks'
-							) }
-							value={ ctaPaddingX ?? '' }
-							min={ 0 }
-							max={ 120 }
-							onChange={ ( v ) =>
-								setAttributes( {
-									ctaPaddingX:
-										v === '' || v === undefined
-											? undefined
-											: Number.parseInt( v, 10 ),
-								} )
-							}
-							__nextHasNoMarginBottom
 						/>
 						<DesignTokenPicker
 							label={ __( 'Background colour', 'sgs-blocks' ) }

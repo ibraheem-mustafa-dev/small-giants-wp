@@ -204,11 +204,11 @@
 	 * framework button's own defaults so a cloned CTA rendered smaller than the
 	 * draft's standard `.sgs-button`. Extends the D310 colour composite-mirror fix
 	 * (lines below) to layout. Base .sgs-button = display:inline-flex; min-height:48px.
-	 * A per-instance ctaPaddingY/X / minHeight still wins via sgs_button_element_style_css(). */
+	 * A per-instance ctaPadding / minHeight still wins via sgs_button_element_style_css(). */
 	text-align: center;
 	/*
 	 * padding, border-radius and font-size are ATTR-DRIVEN in bound mode —
-	 * sgs_button_element_style_css() emits ctaPaddingY/ctaPaddingX,
+	 * sgs_button_element_style_css() emits ctaPadding (box-object standard),
 	 * ctaBorderRadius and ctaFontSize scoped to .product-card__view /
 	 * .product-card__add-to-cart. No competing hardcoded constants live on this
 	 * higher-specificity rule (F3). font-family is intentionally NOT set here so
@@ -227,7 +227,7 @@
 /*
  * CTA visual defaults (radius + padding + font-size). :where() keeps these at
  * specificity 0 so they are true overridable defaults: bound-mode cards emit
- * ctaBorderRadius / ctaPaddingY / ctaPaddingX / ctaFontSize via
+ * ctaBorderRadius / ctaPadding / ctaFontSize via
  * sgs_button_element_style_css() scoped to .product-card__view /
  * .product-card__add-to-cart (specificity 0,2,0) which wins, while typed-mode
  * CTAs (.sgs-button--{style}, no cta* controls) keep these design defaults.
@@ -239,7 +239,7 @@
 	/* padding MIRRORS the shared .sgs-button base (14px 24px) — the former
 	 * `12px 20px` was a per-block LAYOUT divergence (composite-mirror FR-31-21.1 /
 	 * D314); removed so a cloned CTA matches the draft's standard `.sgs-button`
-	 * padding. A per-instance ctaPaddingY/X still wins via the helper (0,2,0). */
+	 * padding. A per-instance ctaPadding still wins via the helper (0,2,0). */
 	font-size: 15px;
 }
 
