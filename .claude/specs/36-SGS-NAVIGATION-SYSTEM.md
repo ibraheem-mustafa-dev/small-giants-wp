@@ -385,8 +385,16 @@ Phase 3.** **Extend** `sgs/responsive-logo`.
 ### FR-36-26 — Link lists (footer + anywhere): typed or menu-bound, in ONE block
 **Added 2026-07-23 (Bean-directed). REVISED the same day — an earlier draft proposed a compound
 wrapper switching between two child blocks; that is SUPERSEDED by the simpler shape below.
-Status: `NOT-BUILT`.** Replaces §1's "footer menus use the native WP core menu", which the
-2026-07-23 `core/navigation` ban made unbuildable.
+Status: `BUILT + LIVE-VERIFIED 2026-07-23` (D374, commits `bf312016` + `d08d3149`).** Both
+dispatches shipped: presentation (heading + markers + typography) and data+semantics (source
+toggle + menu binding + the FR-36-26a contract). Multi-rater pre-commit review found 2 HIGH
+defects (fixed pre-ship — see FR-36-26c). Live-verified on the sandybrown canary (page 1720, five
+instances): all three FR-36-26a types render exactly per the table below; `numbered` → real `<ol>`;
+`<nav>` only for menu-bound + typed-with-urls-and-heading; `aria-labelledby` = the visible heading;
+`aria-current` client-side (page 1721 proof). axe: zero block-defect violations (the one
+`color-contrast` hit is the Mama's brand-primary token `#e68a95` on cream — an inherited palette
+issue, not a block defect; the block sets no inline colour). Replaces §1's "footer menus use the
+native WP core menu", which the 2026-07-23 `core/navigation` ban made unbuildable.
 
 **The need.** A footer needs a titled list of links — sometimes typed by the operator, sometimes
 bound to a real WP menu so it stays in step with the site. Both render "a heading plus a list of
@@ -631,6 +639,27 @@ Then `nav-qa/axe-run.mjs` clean on that page.
 converter recognition step (Part 2's problem — only the ROUTING is declared, not the detection), and
 any change to `sgs/nav-menu`, which keeps the bar/drawer role untouched.
 
+**BUILT + LIVE-VERIFIED 2026-07-23 (D374).** Both dispatches shipped as spec'd (`bf312016` +
+`d08d3149`). Notes for future readers:
+- **Spec 35 Part B consistency:** `source` + `markerType` use `ToggleGroupControl` (2–5 short
+  options), not a `Select` — matching hero/nav-drawer/StateToggleControl.
+- **Menu resolution uses `SGS_Nav_Menu_Source::blocks_from_ref($menuRef)`, NOT `get_menu_blocks()`.**
+  A HIGH review finding: `get_menu_blocks()` is the "find ANY menu" resolver — on a stale/invalid
+  ref it falls through to the site header nav / theme-location chain, so a footer list would silently
+  render the SITE NAV (especially likely on a cloned site where source menu ids don't match).
+  `blocks_from_ref()` resolves the ref alone and returns `[]` — the fail-soft contract. Live-proven
+  (invalid ref 999999 → empty list, not the site nav).
+- **A nameless `<nav>` is unreachable:** `$render_landmark` is gated on a non-empty heading in BOTH
+  source branches (a second HIGH finding). renderLandmark-on + no-heading degrades to a plain list.
+  Live-proven.
+- **The flatten helper `sgs_icon_list_flatten_menu_blocks()` lives in `includes/helpers-list-markers.php`,
+  NEVER in render.php** — render.php is re-included per block instance, so a top-level function there
+  fatals with "Cannot redeclare" on the 2nd icon-list on a page. Caught only by a **multi-instance live
+  render** (a 5-instance page 500'd) — every build gate AND both code reviewers passed it. Lesson.
+- **Heading id is `wp_unique_id()`, not derived from the md5-of-attrs uid** (two identical-attr blocks
+  would otherwise share a DOM id + ambiguous `aria-labelledby`).
+- Reusable canary fixtures: pages **1720** (5 cases) + **1721** (aria-current self-link proof).
+
 ## 5. Accessibility (governing; primary-source-grounded)
 
 ### FR-36-10 — Disclosure vs dialog
@@ -699,7 +728,7 @@ application in SGS — see FR-36-3). Custom/preset UI welcome where it improves 
 | **36-21** social one-source | `DEPLOYED (unexercised)` | Auto-generated + editable accessible names (verb+platform), custom SVG, `rel` handling, brand-vs-theme colour. ⚠ `colourMode:'brand'` is opt-in and NOT contrast-swept per client — Snapchat yellow on filled/pill could fail SC 1.4.11 |
 | **36-24** responsive-control gate | `GATE BUILT` | `lint-responsive-controls.py` — DB-first, self-discovers sanctioned wrappers, proven by negative control (fails on a bespoke switcher fixture). 0 findings across 78 blocks. Not wired into prebuild (separate decision) |
 | 36-22 logo | `PARTIAL + open defect` | Still reads `get_theme_mod('custom_logo')`, so the logo resolves from a DIFFERENT source than contact/social. §1 flags it; FR-36-22 must resolve it deliberately |
-| **36-26** link lists | `NOT-BUILT` | New this session — see §4 |
+| **36-26** link lists | `BUILT + LIVE-VERIFIED` 2026-07-23 (D374) | Both dispatches shipped `bf312016`+`d08d3149`; multi-rater-reviewed (2 HIGH fixed); canary pages 1720/1721 — see §4 |
 | 36-3/4/5/8/10/17/9a | `NOT-BUILT` | The mega spine — strictly sequential. **36-3's picker is the SAME build as Spec 37 FR-37-7**; schedule it ONCE |
 | **36-10, 36-11** landmark | `LIVE-VERIFIED 2026-07-23` | One `<nav>` per instance, one label, on `/t1-nav/` (canary, classic menu 98). Distinct names derived per menu — "Primary" / "T1 Verify" — verified with BOTH exposed (drawer open), which is the case FR-36-11 governs. The 2026-07-23 "zero `<nav>`" finding was FALSE and its fix was reverted; the real bug was the unreachable menu-name fallback (`navLabel` default `'Primary'` → `''`). See the retraction note in §4. `sgs/nav-menu` contributes **zero** axe violations — negative control: the nav-free homepage reports the identical 5 |
 | 36-11, 36-16 | `GATE` | Live axe/Playwright + Bean's eye. Partial progress 2026-07-23: never-overflow PASS at 375/768/1440 and axe 0-new (control-verified) on the canary. **Owed:** axe on the OPEN drawer (harness click timeout — INCONCLUSIVE, not banked) |

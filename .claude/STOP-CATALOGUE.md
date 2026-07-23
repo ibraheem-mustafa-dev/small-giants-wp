@@ -23,6 +23,19 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-NO-TOP-LEVEL-FUNCTION-IN-PER-RENDER-PHP** — NEW 2026-07-23 (D374). A reusable function
+  declared at the top level of a dynamic block's `render.php` fatals the WHOLE page ("Cannot
+  redeclare") the moment TWO instances of that block appear — WordPress runs the render_callback
+  (`render.php`) via `include`, once PER INSTANCE. Put shared functions in a `function_exists`-guarded
+  `includes/*.php` helper (aggregated once by `render-helpers.php`); render.php CALLS them. Proven live:
+  Dispatch B put `sgs_icon_list_flatten_menu_blocks()` top-level in render.php; a single instance
+  rendered fine, a 5-instance page 500'd. **Every prebuild gate AND both pre-commit code reviewers
+  passed it** — none tested 2 instances. **Corollary: a page with 2+ instances of the SAME block is a
+  MANDATORY live-verify case for every block.** The R-31-13 lesson (code correct by read ≠ live render
+  works). To surface a fatal `debug.log` misses when `WP_DEBUG_LOG` is off: a scoped probe PHP file
+  (`require wp-load.php; do_blocks($markup)` with `display_errors=1`, curl, delete) — NOT `wp eval`
+  (content-guard-blocked) and it touches no post_content. (Memory `no-top-level-function-in-per-render-php`.)
+
 - **STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING** — 2026-07-23 (D367). **The rule stands;
   its cited instance was RETRACTED 2026-07-23 — see the correction below.** An `aria-label` on a bare
   `<div>`/`<span>` with no role is **IGNORED by assistive tech**. It is not a weak label — it is no
@@ -503,3 +516,10 @@ for real before claiming done?
   false diagnosis that had already caused a regression to ship. Per D101 this is a correction, not a
   subtraction — the token count is unchanged by it and no defence was lost. The new entry is earned:
   a fix built on an unproven "X is missing" shipped `<nav>` nested inside `<nav>` to the canary.
+- **2026-07-23 (FR-36-26c icon-list link-list / D374-D375) re-run:** previous DEFINED entries = **68**
+  (re-measured with this file's own canonical command immediately before writing); this session ADDED 1
+  (`STOP-NO-TOP-LEVEL-FUNCTION-IN-PER-RENDER-PHP`) and SUBTRACTED **none** → **69**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **69**. 69 >= 68. PASS. Earned: a top-level function in a per-render render.php fataled a 5-instance
+  page live, and every build gate + both pre-commit code reviewers missed it (only a multi-instance
+  live render caught it).

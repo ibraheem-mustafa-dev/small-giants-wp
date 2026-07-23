@@ -674,14 +674,38 @@ the live page, not asserted.
 #### FR-37-13 — The behaviour set
 Four independent header behaviours: **sticky**, **transparent**, **shrink**,
 **hide-on-scroll**. Any combination may be active.
-**Status:** `PARTIAL` — sticky/transparent/shrink are built
-(`class-sgs-header-behaviours.php`); **hide-on-scroll is dormant and unreachable**: the scroll
-handler exists (`src/header-behaviours/view.js:15,57,107` — self-described "legacy/dormant
-path") but there is **no attribute, no control, and nothing emits the
-`sgs-header-behaviour-hide-on-scroll-down` body class**. The D338 class: capability present,
-no attribute to reach it.
-**Done when:** all four are settable from the inspector and observable on the frontend, and the
-dormant JS path is either reached by a real control or deleted.
+**Status:** `🔴 BUILT-BUT-DEAD — none of the JS scroll behaviours actually function on an SGS header
+(D375, live-verified 2026-07-23).** Two corrections to the earlier text, both from live verification:
+
+1. **The "no attribute / dormant" note above was STALE.** hide-on-scroll IS wired end to end in code:
+   `site-header/block.json:76` `headerHideOnScroll` (boolean) + an Advanced ToolsPanel control in
+   `site-header/edit.js` + `class-sgs-header-behaviours.php:205,264` emits the
+   `sgs-header-behaviour-hide-on-scroll-down` body class. sticky/transparent/shrink are likewise wired.
+2. **But the JS + CSS layer targets an element no SGS header renders, so ALL THREE scroll behaviours
+   (transparent, shrink, hide-on-scroll) are silently dead.** `header-behaviours/view.js:42`
+   `getHeaderEl()` = `document.querySelector('header.wp-block-template-part')`, and
+   `assets/css/header-behaviours.css:60,108,164` key every state rule on the same
+   `header.wp-block-template-part`. **No SGS-served header produces that element** — the header renders
+   as `<div class="wp-block-sgs-site-header">` (0 `<header>` elements on the page), on BOTH the active-CPT
+   path AND the cleared/immutable-default path (negative control confirmed). So `getHeaderEl()` returns
+   null, `boot()` bails, the scroll listener never wires, and even if it did the CSS would match nothing.
+   Live-proven on the sandybrown canary with header CPT 1655 active: body class present, `is-header-
+   scrolling-down` never toggles on scroll, header `transform` stays `none`. (Sticky is CSS-`position:sticky`
+   only, no JS — unaffected. The header being `position:relative` on CPT 1655 is a separate config point.)
+
+This is the D338 silent-failure class realised, and exactly the "code correct by read, dead on live
+render" trap (R-31-13) — the earlier "chain proven by code-read" note in §5 was the trap talking.
+
+**APPROVED FIX (Bean, 2026-07-23): Option B — render the SGS site header AS a semantic `<header>`
+element** with a stable class both the JS `getHeaderEl()` and the CSS state rules target. This revives
+all three scroll behaviours AND adds the missing banner/`<header>` landmark (a WCAG win — the site
+currently has zero `<header>` landmarks). **Higher blast radius (changes the header root element) →
+design-gate FIRST (`/frontend-design` + `/brainstorming` → Bean sign-off), THEN build.** Queued; not
+yet started. (Rejected alternatives: A = just broaden the JS+CSS selector to `.wp-block-sgs-site-header`
+— quick but leaves the header a non-semantic `<div>`; C = park.)
+**Done when:** the SGS header is a semantic `<header>`; all four behaviours are settable from the
+inspector AND observable on the frontend (hide/return on scroll, verified with the drawer opened while
+scrolled — the D323 transformed-ancestor interaction, still unobserved).
 
 #### FR-37-14 — Behaviour attributes are tri-state
 Each behaviour is a **tri-state** (`inherit` / `on` / `off`) per device tier, not a flat
@@ -1000,7 +1024,7 @@ and eye are co-authoritative, neither closes alone).
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
-| hide-on-scroll (FR-37-13) | `DEPLOYED (unexercised)` — dead capability CLOSED: `headerHideOnScroll` attr + Advanced ToolsPanel control + resolver flag + body class. Chain proven by code-read end to end; **ships off by default so nothing has yet run it.** ⚠ Untested interaction: it puts a `transform` on the header, and a transformed ancestor breaks fixed/top-layer positioning — the drawer's body-reparent (D323) very likely covers it, but "likely" is not "observed" |
+| hide-on-scroll + transparent + shrink (FR-37-13) | `🔴 BUILT-BUT-DEAD` (D375, live-verified 2026-07-23) — the attr/control/body-class chain IS built, but `header-behaviours/view.js:42` + `header-behaviours.css:60/108/164` target `header.wp-block-template-part`, which **no SGS header renders** (it's a `<div class="wp-block-sgs-site-header">`), so the scroll listener never wires and the CSS matches nothing. **"Chain proven by code-read" was the R-31-13 trap** — a multi-instance live render (CPT 1655 active) proved `is-header-scrolling-down` never toggles. Approved fix: **Option B — semantic `<header>` element** (revives all 3 + adds the banner landmark), design-gate first. See FR-37-13 above |
 | Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
 | Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
 | Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |

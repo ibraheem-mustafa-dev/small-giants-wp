@@ -32,35 +32,34 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-23 eve, D369–D371 — full detail in `decisions.md`; do not re-narrate here).**
-**Task 1 (verify what shipped) DONE + a footer-columns bug fixed into a full feature.**
+**⭐ CURRENT (2026-07-24, D374–D375 — full detail in `decisions.md`; do not re-narrate here).**
+**Task 1 (footer link-lists) SHIPPED + live-verified. Task 2 (hide-on-scroll) found a real shared bug.**
 
-- **8 DEPLOYED-unexercised items → LIVE-VERIFIED (D370):** FR-36-19 mini-cart (flyout=disclosure /
-  drawer=`:modal` dialog, qty-edit + remove + empty state, no reload) · FR-36-20 search (3 modes,
-  matched-`<mark>` highlight, no-JS form returns results) · FR-36-21 social (auto names, `rel`, 44px,
-  focus) · FR-36-12 nav notice (55-link, save persists) · FR-37-19 header contrast notice (saves with
-  warning — DP2a) · FR-37-29 `DeviceTabs` (roving tabindex, native `deviceType` sync). **2 defects
-  fixed (`57251002`):** social glyph `aria-hidden`; search "1 products"→`_n()` pluralisation.
-- **Nav landmark: D367's "zero `<nav>`" was FALSE — reverted a shipped nested-`<nav>` regression (D369,
-  `ed8324cd`).** Root: a grep that couldn't match the wrapper file. Real bug fixed = the unreachable
-  `navLabel` menu-name fallback (default `'Primary'`→`''`). The framework `landmark-unique`/`region`
-  axe hits are NOT the nav's (negative control: nav-free homepage = identical 5; cause = two unnamed
-  `<main>`, separate open theme defect).
-- **FR-37-11 footer columns FIXED + FR-37-33 per-row columns BUILT (D371).** Two bugs: classes on the
-  wrapper while FR-37-35 container-queries moved the grid to `.__inner` (inert), and the emit gated out.
-  **FR-37-35 caused the FR-37-11 regression.** Researched (per-device COUNT is the right control, every
-  major builder; auto-fit is an escape hatch). Now: a "Cluster / Columns" switch on BOTH row types,
-  header rows gained column attrs, **every row (3 header + 3 footer) sets columns independently** (the
-  Astra model). Universal — both KIND branches live-proven (footer 2/4/3→stack; `sgs/container` 3→1).
-  4 commits `a28a1121`→`ec551c94`, all pushed.
+- **FR-36-26c icon-list footer link-list — BUILT + LIVE-VERIFIED (D374, `bf312016`+`d08d3149`).** Two
+  Sonnet dispatches (presentation → data+semantics), then a **multi-rater pre-commit review that found
+  2 HIGH defects, both fixed pre-ship + live-proven:** (1) a stale/invalid `menuRef` rendered the SITE
+  NAV via `get_menu_blocks()`'s find-ANY fallback → now `blocks_from_ref()` (fail-soft; critical for
+  cloned sites); (2) `renderLandmark`+no-heading = a nameless `<nav>` → now gated on a heading. **A fatal
+  every gate + BOTH reviewers missed** (a top-level fn in render.php → "Cannot redeclare" on 2 instances)
+  was caught only by a **5-instance live render** (R-31-13) → moved to the shared include. Spec 35 Part B:
+  `source`+`markerType` are `ToggleGroupControl`. Live-verified on canary pages 1720/1721: 3 FR-36-26a
+  types exact, `numbered`→`<ol>`, `<nav>` only where named, `aria-current` client-side, axe zero
+  block-defect (lone contrast hit = Mama's palette, not the block).
+- **Task 2 — hide-on-scroll is BUILT-BUT-DEAD, and so are transparent + shrink (D375).** Live-verified:
+  the attr/control/body-class chain IS built, but `header-behaviours` JS+CSS target
+  `header.wp-block-template-part`, which **no SGS header renders** (it's a `<div>`; 0 `<header>` on the
+  page, negative-control confirmed on both paths). The "chain proven by code-read" note was the R-31-13
+  trap. **Bean approved fix B — render the header AS a semantic `<header>`** (revives all 3 + adds the
+  banner landmark); **design-gate FIRST**, then build. Parking `P-HEADER-BEHAVIOURS-DEAD-SELECTOR`.
 
-**Latent + open (not this session):** ZERO uses of the `minmax(min(Xpx,100%),1fr)` guard framework-wide
-(`feature-grid` 240px, theme 200px) — no live Reflow violation, deferred. Both sites still show GENERIC
-proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
+**Latent + open (not this session):** hide-on-scroll fix B (design-gate queued, `P-HEADER-BEHAVIOURS-DEAD-SELECTOR`)
+· Mama's brand-primary `#e68a95` fails contrast as text (`P-MAMAS-PRIMARY-CONTRAST`, theme-source fix) ·
+`minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC proof headers
+(sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
-**Your next session → `.claude/next-session-prompt.md`.** FR-36-26c icon-list link-lists (fully scoped,
-2 dispatches — were Tasks 2-3, not started) · FR-37-13 hide-on-scroll (header CPT 1655 built + stored,
-never activated/observed) · FR-37-7 starter picker (= Spec 36 FR-36-3, highest-leverage remaining).
+**Your next session → `.claude/next-session-prompt.md`.** **FR-37-7 starter picker (= Spec 36 FR-36-3) —
+the highest-leverage unbuilt item, design-gate first** · hide-on-scroll fix B (design-gate, then build) ·
+Spec 36 Phase 2 (mega CPT).
 
 ---
 
@@ -68,16 +67,20 @@ never activated/observed) · FR-37-7 starter picker (= Spec 36 FR-36-3, highest-
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`, HEAD `ec551c94` (2026-07-23 eve; a co-active Spec-31/35 track commits between handoffs — re-check with `git log -1`).
-  **D-ceiling: D371.** This session: 6 commits, `ed8324cd` → `ec551c94` (all pushed; the
-  Task-1 verify + FR-37-11/FR-37-33 front — verify with `git log`, never a cached hash).
-  ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs. Run `git log -1 --format=%h`
-  for the real HEAD; verify D-ceiling with `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`;
-  re-check the branch in the SAME command as any commit (STOP-RECHECK-BRANCH). **Gate note:** every commit
-  used `[gates-ok:]` + built via `npx wp-scripts build` directly, for the co-active track's `sgs/tabs`
-  `tabIndicatorColour` DB↔block.json reseed finding (STOP-24) — provably not ours, NOT reseeded, NOT
-  baselined. **Uncommitted tree = co-active track's** (`lucide-icons.php`, `behavioural-analyser/*`,
-  `sgs-update-v2.py`, `phase4-*.txt`, `mistakes.md`, `next-session-prompt-spec35*`) — do NOT commit.
+- **Branch:** `main`, this session's tip `d08d3149` (2026-07-24; a co-active Spec-31/35 track commits
+  between handoffs, so real HEAD is likely higher — re-check with `git log -1`).
+  **D-ceiling: D375.** This session: 2 icon-list commits, `bf312016` (FR-36-26c) → `d08d3149` (the
+  redeclare fatal-fix), both pushed — verify with `git log`, never a cached hash.
+  ⚠ **Shared branch** — a co-active Spec-35/31 track commits between handoffs (D372/D373 landed mid-session).
+  Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
+  `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
+  command as any commit (STOP-RECHECK-BRANCH). **Gate note:** both icon-list commits used `--no-verify`
+  (the visual-diff gate's OWN sanctioned bypass for logic-predominant changes — STOP-VISUAL-DIFF-GATE-
+  NO-VERIFY-FOR-LOGIC), path-scoped, deployed via an isolated worktree at the commit so the co-active
+  `lucide-icons.php` WIP stayed out; checksum-verified local↔server. The co-active `sgs/tabs` db-consistency
+  finding is still RED in the shared prebuild (not ours). **Uncommitted tree = co-active track's**
+  (`lucide-icons.php`, `behavioural-analyser/*`, `sgs-update-v2.py`, `phase4-*.txt`, `mistakes.md`,
+  `next-session-prompt-spec35*`) — do NOT commit.
 - **Canonical spec:** `specs/31-UNIVERSAL-CLONING-PIPELINE.md` — the standing governing spec for cloning-pipeline work; read IN FULL each cloning session.
   For the header/footer/nav front: **`specs/36-SGS-NAVIGATION-SYSTEM.md`** (the canonical nav home) + `specs/37-HEADER-FOOTER-BUILDER.md`.
   ⛔ **DELETED specs — never cite:** `34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md` (P2.5 Phase 6 → Spec 36) and
