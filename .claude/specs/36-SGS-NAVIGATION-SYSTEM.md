@@ -382,48 +382,115 @@ Phase 3.** **Extend** `sgs/responsive-logo`.
 - **Differentiator:** ONE Site-Info source powering utility bar + footer + contact + schema simultaneously +
   native live open/closed without a plugin.
 
-### FR-36-26 — Link lists (footer + anywhere): menu-bound vs typed, and who owns which
-**Added 2026-07-23 (Bean-directed).** Replaces the superseded "footer menus use the native WP core
-menu" line in §1, which the `core/navigation` ban made unbuildable. **Status: `NOT-BUILT`.**
+### FR-36-26 — Link lists (footer + anywhere): typed or menu-bound, in ONE block
+**Added 2026-07-23 (Bean-directed). REVISED the same day — an earlier draft proposed a compound
+wrapper switching between two child blocks; that is SUPERSEDED by the simpler shape below.
+Status: `NOT-BUILT`.** Replaces §1's "footer menus use the native WP core menu", which the
+2026-07-23 `core/navigation` ban made unbuildable.
 
 **The need.** A footer needs a titled list of links — sometimes typed by the operator, sometimes
-bound to a real WP menu so it stays in step with the site's navigation. Both render "a heading plus
-a list of links"; they differ only in where the links come from and whether the result is a landmark.
+bound to a real WP menu so it stays in step with the site. Both render "a heading plus a list of
+links"; they differ only in where the links come from and whether the result is a landmark.
 
-**The ownership rule (decided; do not re-litigate per-block).** Split by DATA SOURCE, never by page
-position:
+#### The shape: extend `sgs/icon-list`. No new block, no compound.
+`sgs/icon-list` gains a **heading**, a **marker set**, the shared **`TypographyControls`** family,
+and a **`source` toggle** (`typed` | `menu`). `sgs/nav-menu` is UNCHANGED and keeps the site
+navigation role (bar + drawer).
 
-| Case | Owner | Why |
-|---|---|---|
-| Bound to a WP menu (classic or block) | **`sgs/nav-menu`** — gains a vertical/footer variant + heading | It is now the declared replacement for `core/navigation`, so every migration lands there; and menu→markup logic (`SGS_Nav_Menu_Source`, nesting, `aria-current`, no-JS crawlability) must exist in exactly ONE place |
-| A list the operator types | **`sgs/icon-list`** — gains heading + marker options | Already owns `items[]` with per-item link + icon |
-| Marker rendering (icon / emoji / bullet / numbered / none) | **one shared PHP helper**, consumed by both | Same seam as the `DeviceTabs` extraction (D-2026-07-23): shared PRESENTATION, each block keeps its own data + semantics |
+**Why a `source` attribute and NOT a compound block swapping child blocks (decided — do not
+re-litigate):** swapping InnerBlocks on a toggle is fragile in Gutenberg AND destroys whatever the
+operator typed the moment they try menu mode. A `source` attribute keeps both datasets intact —
+typed `items[]` stay stored while menu mode renders — so flipping back is lossless. This is the
+`sourceMode` pattern already used legitimately on `sgs/product-card` (`wc-product`/`sgs-cpt`).
 
-**Two renderers of a WP menu would drift** — the failure already seen twice this month
-(`labelCollapse` contradicting across specs; `sgs_site_info` left ownerless). R-31-9 / STOP-HIDDEN-PARALLEL-SYSTEM.
+**Why `icon-list` and not `nav-menu` owns this (corrected reasoning, recorded so it is not redone).**
+An earlier draft argued nav-menu must own anything menu-bound because "menu→markup must exist in ONE
+place". That is satisfied by CALLING the shared resolver: `SGS_Nav_Menu_Source` is a static utility
+class with public methods (`get_menu_blocks`, `blocks_from_classic_menu`, `blocks_from_ref`…)
+**already consumed by two files** (`nav-menu/render.php`, `class-sgs-header-behaviours.php`).
+Calling it is REUSE, not duplication. The cost asymmetry then decides it: nav-menu would have to
+absorb markers + typography + heading + dividers — icon-list's entire presentation surface — whereas
+icon-list needs one resolver call plus a conditional landmark wrapper.
 
-**Heading behaviour (all three cases):** blank by default for a typed list; when bound to a menu it
-defaults to that menu's NAME; an operator-entered title overrides both. The override is sticky — a
-later menu rename must not silently replace it.
+**No collision with the `core/navigation` redirect.** That mapping fires only on an actual core menu
+block. A draft heading is not part of one, and a typed link list has nothing to redirect.
 
-**Marker set:** `icon` | `emoji` | `bullet` | `numbered` | `none`. `numbered` requires `<ol>` — the
-element changes with the marker, it is not CSS-only. **Honest baseline (verified 2026-07-23, do not
-assume richer):** `sgs/icon-list` today has `items/icon/defaultIconSource/iconColour/iconSize/
-dividers/textColour` + spacing/border, renders `<ul>` ONLY, has an emoji path, and has **no**
-marker-type attr, **no** `<ol>`, **no** heading, and **no** `TypographyControls` family. Bullets,
-numbering, none, the heading and the typography surface are all NEW BUILD, not configuration.
+**Heading behaviour:** blank by default when `source: typed`; defaults to the MENU'S NAME when
+`source: menu`; an operator-entered title overrides both and is **sticky** — a later menu rename
+must never silently replace it.
 
-**Semantics fork (the part most likely to be got wrong):** a menu-bound list renders inside
-`<nav aria-label="…">` with `aria-current` on the active item; a typed decorative list must NOT —
-a false landmark is worse than no landmark for screen-reader users.
+**Marker set:** `icon` | `emoji` | `bullet` | `numbered` | `none`. **`numbered` requires a real
+`<ol>`** — when order is meaningful the ELEMENT must say so; CSS counters reach neither assistive
+tech nor crawlers. The marker renderer is ONE shared PHP helper (same seam as the 2026-07-23
+`DeviceTabs` extraction: shared presentation, each consumer keeps its own data and semantics).
 
-**Operator UX:** the client must never have to choose between two blocks. Ship a **"Footer Links"
-pattern** that inserts the right block pre-configured (FR-37-8 starter library). Presentation
-problem, presentation fix — do not merge the two blocks to paper over it.
+**Honest baseline (verified 2026-07-23 — do NOT assume richer).** `sgs/icon-list` today has
+`items/icon/defaultIconSource/iconColour/iconSize/dividers/textColour` plus spacing/border, renders
+`<ul>` ONLY, has an emoji path, and has **no** marker-type attr, **no** `<ol>`, **no** heading and
+**no** `TypographyControls` family. Bullets, numbering, none, the heading and the typography surface
+are all NEW BUILD, not configuration.
 
-**Constraints:** all of §10 (no-inline, Part L controls, converter-emittable, WCAG 2.1 AA, crawlable
-server-rendered links, UK English). The menu-bound variant is defined via `blocks.variant_attr` +
-`variant_slots` (FR-31-20), never a bespoke selector.
+#### FR-36-26a — Discoverability contract: a11y / SEO / AI-crawl / schema, per type
+The correct output genuinely DIFFERS by type. This table is the contract:
+
+| Type | Element | Accessible name | `aria-current` | Schema |
+|---|---|---|---|---|
+| `source: menu` (navigation) | `<nav>` + real `<ul><li><a>` | `aria-labelledby` → the visible heading | client-side | `SiteNavigationElement`-consumable markup |
+| `source: typed`, items HAVE urls | `<nav>` **opt-in** (default off), else plain `<ul>` | `aria-labelledby` → heading, when `<nav>` | client-side | plain semantic links |
+| `source: typed`, items have NO urls | `<ul>` / `<ol>` — **never `<nav>`** | n/a | n/a | none |
+
+Three rules that make this optimal rather than box-ticking:
+
+1. **`aria-labelledby` points at the VISIBLE heading.** The heading becomes the landmark's accessible
+   name, so unique landmark names hold **by construction** and `landmark-unique` cannot regress —
+   with no duplicated label to drift out of sync.
+2. **`aria-current="page"` is computed CLIENT-SIDE — reuse it, never re-derive it.**
+   `nav-menu/view.js:48` already does this and documents why: LiteSpeed (this stack's confirmed
+   cache layer) would otherwise cache one page's answer and serve it on every page (FR-36-11).
+3. **`<nav>` is OPT-IN, never automatic.** A four-column footer where every column is a landmark
+   yields four nav landmarks; landmark bloat is itself an accessibility defect. Menu-bound defaults
+   ON, typed defaults OFF.
+
+**Schema boundary (FR-36-17, binding):** the block ships schema-FRIENDLY MARKUP only. **JSON-LD
+emission is owned by `seo-schema` — no schema in blocks** — and the block must not block it. Honest
+note: `SiteNavigationElement` has weak real-world support and Google has never documented consuming
+it; the semantic HTML is what actually earns the SEO and AI-crawl benefit. Keep it; do not oversell it.
+
+Inherited free from FR-36-17, NOT restated as new work: server-rendered, no AJAX, no lazy-load,
+descriptive anchor text.
+
+> **⚠ Conformance gap found while writing this (2026-07-23) — tracked separately, NOT part of this FR.**
+> `sgs/nav-menu` emits **zero `<nav>` elements** (`grep -c "<nav" nav-menu/render.php` → 0; it renders
+> `<ul class="sgs-nav-menu__bar">` inside a plain div). FR-36-10 requires `<nav aria-label>` and
+> FR-36-11 requires unique labels across multiple `<nav>`s, so the SHIPPED nav block does not meet its
+> own spec. This is consistent with the live axe findings on 2026-07-23, where `region` (content not
+> contained by landmarks) and `landmark-unique` appeared on BOTH sites — framework-wide, not a deploy
+> artefact. Fix it against FR-36-10/36-11 on `sgs/nav-menu` itself; do not let it ride along inside
+> this footer-list FR, where it would be lost.
+
+#### FR-36-26b — Converter routing target (declared NOW; recognition deferred to Part 2)
+**Bean-directed 2026-07-23.** The specialised header/footer converter ("Spec 33 Part 2") is not built
+and is deliberately not designed here. But its EMIT TARGET for this content type is stable and
+knowable today, so it is declared now — cheap now, expensive to retrofit. When Part 2 is built it
+INHERITS the mapping below and only has to solve RECOGNITION (identifying the region in a draft) plus
+the conversion mechanics.
+
+**Declared routing — a draft footer "heading + list of links" region maps to:**
+
+| Draft signal | Emit |
+|---|---|
+| Heading + list whose items link to site pages | ONE `sgs/icon-list`, `source: "typed"`, heading = the draft's heading text, one `items[]` entry per link (`text` + `url`) |
+| The same, where the draft list appears to mirror a site menu | STILL `source: "typed"` on a first pass — binding to a real menu is an OPERATOR decision, not something the converter should infer |
+| Heading + list with NO links | ONE `sgs/icon-list`, `source: "typed"`, `markerType` per the draft's visual marker, `<nav>` OFF |
+
+**Binding constraints on that emit:** never `core/list` or `core/navigation` (both banned);
+`markerType` derived from the draft's RENDERED marker (`icon`/`emoji`/`bullet`/`numbered`/`none`),
+with `numbered` forcing `<ol>`; the heading is the block's own `heading` ATTRIBUTE, never a sibling
+`sgs/heading` block — a sibling would break the `aria-labelledby` contract in FR-36-26a; and the
+`<nav>` landmark defaults OFF for converted typed lists, per rule 3 above.
+
+**Explicitly NOT decided here:** how Part 2 RECOGNISES a footer link-list region in an arbitrary
+draft. That is Part 2's design problem. This entry exists so the MAPPING is not re-litigated then.
 
 ## 5. Accessibility (governing; primary-source-grounded)
 
