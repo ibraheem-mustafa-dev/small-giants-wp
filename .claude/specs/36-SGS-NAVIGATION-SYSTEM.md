@@ -71,7 +71,14 @@ binding + starter-picker. The nav adapts to these. Schema JSON-LD → `seo-schem
 
 **Superseded/replaced (REFERENCE-ONLY):** `sgs/adaptive-nav`, old `sgs/nav-menu`, `sgs/mega-menu`,
 `sgs/mobile-nav`. New `sgs/nav-menu` is a from-scratch rebuild under the same slug; old-shape posts are
-re-cloned, not migrated (D270). Spec 34 DELETED in Phase 6. **Footer menus use the native WP core menu.**
+re-cloned, not migrated (D270). Spec 34 DELETED in Phase 6.
+
+**⛔ "Footer menus use the native WP core menu" is SUPERSEDED (2026-07-23).** That sentence stood
+here and is now unbuildable: `core/navigation` was restored to the banned-core-block list on
+2026-07-23 (`sgs/nav-menu` declares it in `block-replacements.json`), so a footer can no longer use
+the core menu block at all. The ban had silently lapsed when `sgs/adaptive-nav` — the only block
+declaring the replacement — was deleted at D362; restoring it closed a real hole, and closing it
+invalidated this line. **Footer menus are now served by FR-36-26.**
 
 **Non-goals — DEFERRED to Phase 3 (§7):** the **block-based `wp_navigation` menu system** (classic menus
 are the primary/MVP path; block-menu support is a follow-on extra — Bean 2026-07-18, "not essential, not
@@ -375,6 +382,49 @@ Phase 3.** **Extend** `sgs/responsive-logo`.
 - **Differentiator:** ONE Site-Info source powering utility bar + footer + contact + schema simultaneously +
   native live open/closed without a plugin.
 
+### FR-36-26 — Link lists (footer + anywhere): menu-bound vs typed, and who owns which
+**Added 2026-07-23 (Bean-directed).** Replaces the superseded "footer menus use the native WP core
+menu" line in §1, which the `core/navigation` ban made unbuildable. **Status: `NOT-BUILT`.**
+
+**The need.** A footer needs a titled list of links — sometimes typed by the operator, sometimes
+bound to a real WP menu so it stays in step with the site's navigation. Both render "a heading plus
+a list of links"; they differ only in where the links come from and whether the result is a landmark.
+
+**The ownership rule (decided; do not re-litigate per-block).** Split by DATA SOURCE, never by page
+position:
+
+| Case | Owner | Why |
+|---|---|---|
+| Bound to a WP menu (classic or block) | **`sgs/nav-menu`** — gains a vertical/footer variant + heading | It is now the declared replacement for `core/navigation`, so every migration lands there; and menu→markup logic (`SGS_Nav_Menu_Source`, nesting, `aria-current`, no-JS crawlability) must exist in exactly ONE place |
+| A list the operator types | **`sgs/icon-list`** — gains heading + marker options | Already owns `items[]` with per-item link + icon |
+| Marker rendering (icon / emoji / bullet / numbered / none) | **one shared PHP helper**, consumed by both | Same seam as the `DeviceTabs` extraction (D-2026-07-23): shared PRESENTATION, each block keeps its own data + semantics |
+
+**Two renderers of a WP menu would drift** — the failure already seen twice this month
+(`labelCollapse` contradicting across specs; `sgs_site_info` left ownerless). R-31-9 / STOP-HIDDEN-PARALLEL-SYSTEM.
+
+**Heading behaviour (all three cases):** blank by default for a typed list; when bound to a menu it
+defaults to that menu's NAME; an operator-entered title overrides both. The override is sticky — a
+later menu rename must not silently replace it.
+
+**Marker set:** `icon` | `emoji` | `bullet` | `numbered` | `none`. `numbered` requires `<ol>` — the
+element changes with the marker, it is not CSS-only. **Honest baseline (verified 2026-07-23, do not
+assume richer):** `sgs/icon-list` today has `items/icon/defaultIconSource/iconColour/iconSize/
+dividers/textColour` + spacing/border, renders `<ul>` ONLY, has an emoji path, and has **no**
+marker-type attr, **no** `<ol>`, **no** heading, and **no** `TypographyControls` family. Bullets,
+numbering, none, the heading and the typography surface are all NEW BUILD, not configuration.
+
+**Semantics fork (the part most likely to be got wrong):** a menu-bound list renders inside
+`<nav aria-label="…">` with `aria-current` on the active item; a typed decorative list must NOT —
+a false landmark is worse than no landmark for screen-reader users.
+
+**Operator UX:** the client must never have to choose between two blocks. Ship a **"Footer Links"
+pattern** that inserts the right block pre-configured (FR-37-8 starter library). Presentation
+problem, presentation fix — do not merge the two blocks to paper over it.
+
+**Constraints:** all of §10 (no-inline, Part L controls, converter-emittable, WCAG 2.1 AA, crawlable
+server-rendered links, UK English). The menu-bound variant is defined via `blocks.variant_attr` +
+`variant_slots` (FR-31-20), never a bespoke selector.
+
 ## 5. Accessibility (governing; primary-source-grounded)
 
 ### FR-36-10 — Disclosure vs dialog
@@ -427,6 +477,34 @@ on any `<img>` block; reduced-motion gate; **editor preview via `<ServerSideRend
 static snapshot — the `ssr-fixes-hand-built-preview-drift` lesson; interactive behaviour previews front-end);
 keyboard + contrast + `aria-describedby`; **`templateLock:"contentOnly"` on client patterns** (first
 application in SGS — see FR-36-3). Custom/preset UI welcome where it improves UX (P2 §2.6).
+
+## 6a. Progress — verified status (updated 2026-07-23)
+
+> Per-FR evidence: `.claude/reports/2026-07-22-spec36-completion-audit.md`. Three tiers, never
+> conflated: `LIVE-VERIFIED` (observed running on the canary) / `DEPLOYED (unexercised)` (shipped +
+> checksum-verified but no page or setting currently renders it) / `BUILT (code)`.
+
+| FR | State | Evidence / what remains |
+|---|---|---|
+| 36-1, 36-2, 36-7, 36-13 | `DONE` | Phase-1 close, D352 |
+| **36-12** operator notices | `DEPLOYED (unexercised)` | Link-count `Notice` on `sgs/nav-menu`, threshold a named constant (directional per FR-36-8, deliberately not a DB default). Verified in code to carry NO save/publish gate (P1 DP2a). Editor-surface — needs an editor session. **Deferred, not dropped:** the heading-less mega-panel notice needs the `sgs_mega_menu` CPT editor (Phase 2) |
+| **36-19** mini-cart | `DEPLOYED (unexercised)` | Store API (never cart-fragments), qty-edit/remove, empty state, `displayMode` link/flyout/drawer auto-swapping DISCLOSURE↔DIALOG per FR-36-10 via the SHARED `store('sgs/nav')`. **No cart block on any canary page yet** |
+| **36-20** search extends | `DEPLOYED (unexercised)` | Genuine EXTEND — the shipped ARIA combobox is reused unmodified across all 3 display modes. **NOT DONE:** product prices; the search REST controller fixes its response shape and states "no price data — ever", so it needs its own dispatch. `filter-search` deliberately untouched (verified: no combobox, different mechanism) |
+| **36-21** social one-source | `DEPLOYED (unexercised)` | Auto-generated + editable accessible names (verb+platform), custom SVG, `rel` handling, brand-vs-theme colour. ⚠ `colourMode:'brand'` is opt-in and NOT contrast-swept per client — Snapchat yellow on filled/pill could fail SC 1.4.11 |
+| **36-24** responsive-control gate | `GATE BUILT` | `lint-responsive-controls.py` — DB-first, self-discovers sanctioned wrappers, proven by negative control (fails on a bespoke switcher fixture). 0 findings across 78 blocks. Not wired into prebuild (separate decision) |
+| 36-22 logo | `PARTIAL + open defect` | Still reads `get_theme_mod('custom_logo')`, so the logo resolves from a DIFFERENT source than contact/social. §1 flags it; FR-36-22 must resolve it deliberately |
+| **36-26** link lists | `NOT-BUILT` | New this session — see §4 |
+| 36-3/4/5/8/10/17/9a | `NOT-BUILT` | The mega spine — strictly sequential. **36-3's picker is the SAME build as Spec 37 FR-37-7**; schedule it ONCE |
+| 36-11, 36-16 | `GATE` | Live axe/Playwright + Bean's eye. Partial progress 2026-07-23: never-overflow PASS at 375/768/1440 and axe 0-new (control-verified) on the canary |
+
+**⚠ Build-order correction (2026-07-23, Bean-caught).** A progress summary claimed FR-36-15, 36-18
+and 36-25 were "gated on Spec 33 Part 2". **Two of the three were wrong.** The specs say the
+opposite: this spec's own frontmatter has *"33 Part 2 (converter — built AFTER the nav passes its
+test gate)"*, and §7 repeats it. **Specs 36+37 complete first; Part 2 consumes them.** FR-36-15
+FEEDS Part 2 (its job is documenting the architecture) and is blocked by nothing; FR-36-25 depends
+on FR-36-21/22/23, not Part 2; only the *branded* Indus header sliver of FR-36-18 genuinely waits.
+See Spec 37 §6 for the full note — including that "Spec 33 Part 2" is currently **ownerless**, which
+must be fixed before any Part 2 work is scheduled.
 
 ## 7. Phasing — MVP first, prove before the plumbing
 

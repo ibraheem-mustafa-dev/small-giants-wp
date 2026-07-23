@@ -788,7 +788,11 @@ Spec 36 nav (✅ verified on the canary fresh-default). Production deploy tracke
 Every capability above must be settable by the cloning converter and mappable from what the
 converter extracts from a draft header/footer — a design constraint on this spec, not a
 later bolt-on (P1 DP6).
-**Status:** `NOT-BUILT` — the header/footer walker is Spec 33 Part 2, not started.
+**Status:** `NOT-BUILT` — the header/footer walker ("Spec 33 Part 2") is not started, **and is
+currently ownerless — see the §6 ownership note before scheduling any of it.**
+**Build order (corrected 2026-07-23):** this FR is one of only TWO items in Specs 36+37 that
+genuinely wait on Part 2. Part 2 itself is built **after** Specs 36 and 37 are complete — it
+consumes them. Do not treat this FR as a blocker on anything else in this spec.
 **Done when:** a drafted header clones into an active CPT header with its structure and
 behaviours carried, verified on the real homepage (R-31-11).
 
@@ -928,10 +932,27 @@ and eye are co-authoritative, neither closes alone).
 
 ## 5. Build status summary
 
-> **Updated 2026-07-22** — the 6-FR minimum core landed in code (commit `0da5ef6a`).
-> `BUILT (code)` below means shipped + mutation-tested + build-green, but **not yet exercised on the
-> canary** — the FR-37-23 acceptance gate (four live checks on a cold cache) is the remaining work
-> before any of these is "done".
+> **Updated 2026-07-23.** Nine further FRs landed and were deployed to the canary. Three
+> verification tiers are used below and MUST NOT be conflated — conflating them is how this
+> project has repeatedly shipped "done" work that nobody had seen run:
+>
+> | Tier | Means |
+> |---|---|
+> | `LIVE-VERIFIED` | Observed working on the deployed canary with evidence recorded |
+> | `DEPLOYED (unexercised)` | Shipped + checksum-verified on the canary, but **no page or setting currently renders it**, so it has never actually run |
+> | `BUILT (code)` | In the repo + build-green, not deployed or not reachable |
+>
+> **2026-07-23 deploy evidence:** 4/4 md5 local↔server match; oldshape audit PASS (0 NEW HIGH,
+> after fixing a latent `sgs/cta-section` undeclared-`textAlign` bug it correctly blocked on);
+> axe **0 new violations** — measured against palestine-lives as an un-deployed control (5 types
+> on the canary vs 4 on the control; the single delta is a Trustpilot-green contrast issue on a
+> block this work never touched).
+>
+> ⚠ **The honest gap:** most of the newly-landed work is `DEPLOYED (unexercised)`. The canary
+> homepage carries no cart and no search block; editor notices and `DeviceTabs` are
+> editor-surface only; hide-on-scroll ships off by default. The next session opens by using
+> Playwright/WP-CLI to CREATE the pages and settings that make each one render, then checking
+> both that it works and that it looks right.
 
 | Area | Status |
 |---|---|
@@ -940,15 +961,21 @@ and eye are co-authoritative, neither closes alone).
 | CPT → frontend binding (FR-37-3, incl. CPT-aware resolver) | `BUILT (code)` — was §2.2 silently broken; direct render replaces it |
 | "Active" list-table column (FR-37-5) | `✅ BUILT + CANARY-VERIFIED` (D360) — list table showed "Not active" pre-set and "Active" post-set |
 | Container blocks exist | `BUILT` (2026-07-13, for Spec 17) |
-| Container blocks **conform to a defined end state** | `UNVERIFIED` — §3 is the first such definition (FR-37-9/10 audit not run) |
+| Container blocks **conform to a defined end state** | `DONE` — FR-37-9/10 audits RUN 2026-07-22, per-clause with `file:line`; 3 gaps carried as FR-37-33/34/35, none dropped |
 | Row reorder-lock (`templateLock: 'all'`, §3.3a) | `BUILT (code)` |
-| Footer per-device column count (FR-37-11) | `BUILT (code)` — count path wired, wrapper untouched. **Still canary-unverified:** a footer CPT rendered live, but the COLUMN COUNT + mobile stacking were never measured |
+| Footer per-device column count (FR-37-11) | `DEPLOYED (unexercised)` — count path wired, wrapper untouched. The COLUMN COUNT + mobile stacking are still unmeasured; needs a footer CPT with a known count rendered live |
+| Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
+| Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
-| hide-on-scroll | `PARTIAL` — dormant JS, no attribute |
-| Tri-state shape | `NOT-BUILT` |
-| Scoped behaviour CSS | `NOT-BUILT` |
+| hide-on-scroll (FR-37-13) | `DEPLOYED (unexercised)` — dead capability CLOSED: `headerHideOnScroll` attr + Advanced ToolsPanel control + resolver flag + body class. Chain proven by code-read end to end; **ships off by default so nothing has yet run it.** ⚠ Untested interaction: it puts a `transform` on the header, and a transformed ancestor breaks fixed/top-layer positioning — the drawer's body-reparent (D323) very likely covers it, but "likely" is not "observed" |
+| Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
+| Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. **The roster itself does NOT yet conform:** `sgs/site-header` shows **7 default-visible controls against a cap of 3**. The gate is not wired into prebuild (separate decision) |
+| Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |
+| Tri-state shape (FR-37-14) | `NOT-BUILT` |
+| Scoped behaviour CSS (FR-37-15) | `NOT-BUILT` |
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
-| Starter picker | `NOT-BUILT` |
+| Starter library (FR-37-8) | `PARTIAL → patterns DONE` — all 9 legacy header/footer patterns RE-TARGETED to the CPT model 2026-07-23, plus `framework-header-default.php` and `framework-footer-default.php`. Zero banned core blocks remain; valid `rowSlot` vocabulary throughout. **The picker (FR-37-7) is still NOT-BUILT**, so nothing surfaces them yet |
+| Starter picker (FR-37-7) | `NOT-BUILT` — **the single highest-leverage remaining item.** It is the SAME build as Spec 36 FR-36-3 (that spec assumes this reuse), and it gates FR-37-8's library, FR-37-31's second half and FR-37-28 |
 | Rules engine | `BUILT` |
 | Legacy retirement (FR-37-21) | `✅ DONE` repo + canary (D362, `f1f86ea0`+`23a3cf63`) — adaptive-nav + mega-menu deleted; prod deploy in LEDGER |
 
@@ -957,7 +984,36 @@ and eye are co-authoritative, neither closes alone).
 ## 6. Out of scope (the NOT list)
 
 - **Nav internals** — Spec 36. This spec never describes a menu, dropdown, mega panel or drawer.
-- **The header/footer clone walker** — Spec 33 Part 2.
+- **The header/footer clone walker** — "Spec 33 Part 2". ⚠ **See the ownership + direction note
+  immediately below; that label is currently ownerless and its gating is widely mis-stated.**
+
+> ### ⚠ "Spec 33 Part 2" — ownership defect + the CORRECT build direction (recorded 2026-07-23)
+>
+> **The defect.** Nobody owns it. Spec 33 is marked `COMPLETE` and says Part 2 — the header/footer
+> converter — belongs to **Spec 37** (`33:20`, `33:34-36`). This spec's FR-37-22 says the walker is
+> **"Spec 33 Part 2"**. Each points at the other, so the work has no home. This is the identical
+> circular-pointer failure that left `sgs_site_info` ownerless until it was resolved on 2026-07-21 —
+> and it is exactly why the build ORDER below kept being stated backwards.
+>
+> **The correct direction (Bean-corrected 2026-07-23, and what the specs actually say).**
+> Spec 36's own frontmatter: *"33 Part 2 (converter — **built AFTER the nav passes its test gate**;
+> see FR-36-15)"*. Spec 36 §7: *"**After Gate-2 passes**, before Phase 3: update Spec 33 Part 2 …
+> the clone pipeline comes after the nav is built + tested."*
+>
+> **So: Specs 36 + 37 complete FIRST → then Part 2 is built.** Part 2 is a CONSUMER of this work,
+> not a prerequisite for it.
+>
+> **What this corrects.** A 2026-07-23 progress summary claimed FR-36-15, FR-36-18 and FR-36-25 were
+> "gated on Spec 33 Part 2". That was wrong in two of three cases and is struck here:
+> - **FR-36-15** — the reverse. Its job is to DOCUMENT the architecture so Part 2 is easy later. It
+>   FEEDS Part 2 and is blocked by nothing.
+> - **FR-36-25** — not related to Part 2 at all; it depends on FR-36-21/22/23.
+> - **FR-36-18** — the cutover MECHANISM is already done (D361). Only the faithful *branded* Indus
+>   header waits on Part 2, because that is a cloning output, not a nav capability.
+>
+> **Only two items genuinely wait on Part 2:** that branded-header sliver of FR-36-18, and FR-37-22.
+> Everything else in both specs is buildable now. **Assigning Part 2 a single named owner is a
+> prerequisite before any Part 2 work starts** — do not begin it while two specs disclaim it.
 - **The WP Customiser.** Spec 17's `§Customiser Migration` (Decision 21, Phase 5b) is
   **dropped, not deferred.** The classes it named never existed; Spec 17 itself marks that
   block "RETRACTED FICTION". Superseded by FR-37-1.
