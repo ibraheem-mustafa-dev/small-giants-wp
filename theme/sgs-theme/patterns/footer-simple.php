@@ -2,26 +2,27 @@
 /**
  * Title: Footer — Simple
  * Slug: sgs/footer-simple
- * Categories: sgs
- * Description: Minimal footer with copyright text and social links.
+ * Categories: sgs-footers
+ * Block Types: core/template-part/footer
+ * Description: Minimal footer with copyright text and policy links. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a single bottom row.
  *
  * @package SGS\Theme
  */
+
 ?>
 
-<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull has-primary-dark-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"primary-dark","contentWidth":"normal"} -->
 
-	<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
-	<div class="wp-block-group">
-		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-		<p class="has-text-inverse-color has-text-color has-small-font-size">© 2026 Your Company. All rights reserved.</p>
-		<!-- /wp:paragraph -->
-		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-		<p class="has-text-inverse-color has-text-color has-small-font-size"><a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a></p>
-		<!-- /wp:paragraph -->
-	</div>
-	<!-- /wp:group -->
+<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--50)","bottom":"var(--wp--preset--spacing--50)"}}} -->
 
-</div>
-<!-- /wp:group -->
+<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+
+<!-- wp:sgs/multi-button {"gap":"12px","wrap":"wrap"} -->
+<!-- wp:sgs/button {"label":"Privacy Policy","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":14} /-->
+
+<!-- wp:sgs/button {"label":"Terms of Service","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":14} /-->
+<!-- /wp:sgs/multi-button -->
+
+<!-- /wp:sgs/site-footer-row -->
+
+<!-- /wp:sgs/site-footer -->

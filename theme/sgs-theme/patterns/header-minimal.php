@@ -7,25 +7,23 @@
  * Keywords: header, sgs, framework, minimal, compact, landing
  * Viewport Width: 1440
  * Inserter: true
- * Description: Compact header — logo left, primary navigation right. No top bar or mobile drawer. Best for landing pages.
+ * Description: Compact header — logo left, primary navigation right, no top utility bar. Best for landing pages. Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with the standard nav-menu + nav-drawer pair (Spec 36). The drawer is included (not optional): sgs/nav-menu opens it via the shared burger below the collapse point, so omitting it would leave mobile visitors with a non-functional burger.
  *
  * @package SGS\Theme
  */
 
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","metadata":{"name":"Minimal Header"}} -->
-<div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface"} -->
 
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":"flex","justifyContent":"space-between","flexWrap":"nowrap","metadata":{"name":"Navigation Bar"}} -->
-	<div class="wp-block-group" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}},"style":{"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}}} -->
+<!-- wp:sgs/responsive-logo {"width":250,"linkToHome":true} /-->
+<!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
+<!-- /wp:sgs/site-header-row -->
 
-		<!-- wp:sgs/responsive-logo {"width":250} /-->
+<!-- /wp:sgs/site-header -->
 
-		<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
-
-	</div>
-	<!-- /wp:sgs/container -->
-
-</div>
-<!-- /wp:sgs/container -->
+<!-- wp:sgs/nav-drawer -->
+<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
+<!-- /wp:sgs/nav-drawer -->

@@ -4,24 +4,21 @@
  * Slug: sgs/footer-minimal
  * Categories: sgs-footers
  * Block Types: core/template-part/footer
- * Description: Single-row minimal footer with copyright and social icons. Content auto-populates from Settings > Business Details.
+ * Description: Single-row minimal footer with copyright and social icons. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a single bottom row.
  *
  * @package SGS\Theme
  */
+
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Minimal Footer"}} -->
-<div class="wp-block-group has-footer-bg-background-color has-background" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"footer-bg","contentWidth":"normal"} -->
 
-	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
-	<div class="wp-block-group alignwide">
+<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}}} -->
 
-		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
 
-		<!-- wp:sgs/business-info {"displayType":"socials"} /-->
+<!-- wp:sgs/business-info {"displayType":"socials"} /-->
 
-	</div>
-	<!-- /wp:group -->
+<!-- /wp:sgs/site-footer-row -->
 
-</div>
-<!-- /wp:group -->
+<!-- /wp:sgs/site-footer -->

@@ -4,41 +4,32 @@
  * Slug: sgs/header-full
  * Categories: sgs-headers
  * Block Types: core/template-part/header
- * Description: Full header with contact top bar (phone, email, socials), logo, navigation, and mobile drawer. Contact info auto-populates from Settings > Business Details.
+ * Description: Full header with contact top bar (phone, email, socials), logo, navigation, and mobile drawer. Contact info auto-populates from Settings > Business Details. Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with the standard nav-menu + nav-drawer pair (Spec 36).
  *
  * @package SGS\Theme
  */
+
 ?>
 
-<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","metadata":{"name":"Site Header"}} -->
-<div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface"} -->
 
-	<!-- Top Bar -->
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":"flex","justifyContent":"space-between","flexWrap":"nowrap","metadata":{"name":"Top Bar"},"className":"sgs-header-top-bar"} -->
-	<div class="wp-block-group sgs-header-top-bar has-primary-background-color has-background" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"space-between","backgroundColor":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}}} -->
+<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":"medium"} /-->
+<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","fontSize":"medium"} /-->
+<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface"} /-->
+<!-- /wp:sgs/site-header-row -->
 
-		<!-- wp:sgs/container {"tagName":"div","layout":"flex","flexWrap":"nowrap","style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
-		<div class="wp-block-group" style="gap:var(--wp--preset--spacing--40)">
-			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
-			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
-		</div>
-		<!-- /wp:sgs/container -->
+<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}},"style":{"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}}} -->
+<!-- wp:sgs/responsive-logo {"width":300,"linkToHome":true} /-->
+<!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
+<!-- /wp:sgs/site-header-row -->
 
-		<!-- wp:sgs/business-info {"displayType":"socials"} /-->
+<!-- /wp:sgs/site-header -->
 
-	</div>
-	<!-- /wp:sgs/container -->
-
-	<!-- Main Navigation -->
-	<!-- wp:sgs/container {"tagName":"div","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":"flex","justifyContent":"space-between","flexWrap":"nowrap","metadata":{"name":"Main Navigation"}} -->
-	<div class="wp-block-group" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
-
-		<!-- wp:sgs/responsive-logo {"width":300} /-->
-
-		<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
-
-	</div>
-	<!-- /wp:sgs/container -->
-
-</div>
-<!-- /wp:sgs/container -->
+<!-- wp:sgs/nav-drawer -->
+<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
+<!-- wp:sgs/business-info {"displayType":"phone"} /-->
+<!-- wp:sgs/business-info {"displayType":"email"} /-->
+<!-- wp:sgs/business-info {"displayType":"socials"} /-->
+<!-- /wp:sgs/nav-drawer -->

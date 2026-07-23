@@ -7,54 +7,41 @@
  * Keywords: footer, sgs, framework, compact, two-column, contact, socials
  * Viewport Width: 1440
  * Inserter: true
- * Description: Two-column footer — logo and tagline left, contact details and social icons right. Content auto-populates from Settings > Business Details.
+ * Description: Two-column footer — logo and tagline left, contact details and social icons right. Content auto-populates from Settings > Business Details. Starter template for the sgs_footer CPT (Spec 37 FR-37-8) — built on sgs/site-footer with a 2-column "columns" row.
  *
  * @package SGS\Theme
  */
 
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Compact Footer"}} -->
-<div class="wp-block-group has-footer-bg-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:0;padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"footer-bg","contentWidth":"normal"} -->
 
-	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|60"}}}} -->
-	<div class="wp-block-columns alignwide">
+<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":2,"padding":{"desktop":{"top":"var(--wp--preset--spacing--60)"}}} -->
 
-		<!-- Column 1: Logo + Description -->
-		<!-- wp:column {"width":"55%"} -->
-		<div class="wp-block-column" style="flex-basis:55%">
-			<!-- wp:site-logo {"width":200,"shouldSyncIcon":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
+<!-- wp:sgs/responsive-logo {"width":200,"linkToHome":true} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":"small"} /-->
-		</div>
-		<!-- /wp:column -->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- /wp:sgs/container -->
 
-		<!-- Column 2: Contact + Socials -->
-		<!-- wp:column {"width":"45%"} -->
-		<div class="wp-block-column" style="flex-basis:45%">
-			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Get In Touch</h3>
-			<!-- /wp:heading -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"}} -->
+<!-- wp:sgs/heading {"content":"Get In Touch","level":"h3","textColour":"surface","fontWeight":"700","fontSize":"medium"} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":"small"} /-->
-			<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":"small"} /-->
-			<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
+<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":"small"} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"socials","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
-		</div>
-		<!-- /wp:column -->
+<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":"small"} /-->
 
-	</div>
-	<!-- /wp:columns -->
+<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":"small"} /-->
 
-	<!-- Copyright Bar -->
-	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|border-subtle","width":"1px"}}}} -->
-	<div class="wp-block-group alignwide" style="border-top-color:var(--wp--preset--color--border-subtle);border-top-width:1px;margin-top:var(--wp--preset--spacing--50);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
+<!-- wp:sgs/business-info {"displayType":"socials"} /-->
+<!-- /wp:sgs/container -->
 
-		<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- /wp:sgs/site-footer-row -->
 
-	</div>
-	<!-- /wp:group -->
+<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"margin":{"desktop":{"top":"var(--wp--preset--spacing--50)"}},"style":{"border":{"top":{"color":"var:preset|color|border-subtle","width":"1px"}}}} -->
 
-</div>
-<!-- /wp:group -->
+<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+
+<!-- /wp:sgs/site-footer-row -->
+
+<!-- /wp:sgs/site-footer -->
