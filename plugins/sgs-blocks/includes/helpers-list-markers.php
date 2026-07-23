@@ -35,7 +35,7 @@ if ( ! function_exists( 'sgs_list_marker_sanitise_type' ) ) {
 	/**
 	 * Validate a stored `markerType` value, falling back to a safe default.
 	 *
-	 * @param mixed  $raw          Stored attribute value.
+	 * @param mixed  $raw           Stored attribute value.
 	 * @param string $fallback_type Fallback when invalid/unknown. Default 'icon'.
 	 * @return string One of sgs_list_marker_types().
 	 */
@@ -87,5 +87,70 @@ if ( ! function_exists( 'sgs_list_marker_render' ) ) {
 			default:
 				return '';
 		}
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_list_flatten_menu_blocks' ) ) {
+	/**
+	 * Flatten resolved nav blocks (from SGS_Nav_Menu_Source::blocks_from_ref())
+	 * into `{ text, url }` pairs shaped like an `sgs/icon-list` typed item, so a
+	 * menu-bound list renders through the SAME per-item loop as typed items.
+	 *
+	 * Top-level items only — a submenu collapses to its own parent link,
+	 * matching sgs/nav-menu's Phase-1 bar behaviour. The menu RESOLUTION
+	 * (classic-menu lookup, term -> items) stays in SGS_Nav_Menu_Source; only
+	 * the flatten step is here.
+	 *
+	 * MUST live in this shared include, NOT in a block's render.php: render.php
+	 * is re-included once per block instance, so a top-level function declared
+	 * there fatals ("Cannot redeclare") the moment a page holds two of the same
+	 * block. (Caught live 2026-07-23 — a 5-instance test page 500'd.)
+	 *
+	 * @param array $blocks Parsed nav blocks.
+	 * @return array<int, array{text:string, url:string}>
+	 */
+	function sgs_icon_list_flatten_menu_blocks( array $blocks ) {
+		$flat = array();
+		foreach ( $blocks as $block ) {
+			$name = $block['blockName'] ?? '';
+			switch ( $name ) {
+				case 'core/navigation-link':
+				case 'core/navigation-submenu': // Parent's own link only — no nested children this phase.
+					$label = (string) ( $block['attrs']['label'] ?? '' );
+					if ( '' === $label ) {
+						break;
+					}
+					$flat[] = array(
+						'text' => $label,
+						'url'  => (string) ( $block['attrs']['url'] ?? '#' ),
+					);
+					break;
+				case 'core/home-link':
+					$flat[] = array(
+						'text' => __( 'Home', 'sgs-blocks' ),
+						'url'  => home_url( '/' ),
+					);
+					break;
+				case 'core/page-list':
+					$pages = get_pages(
+						array(
+							'parent'      => (int) ( $block['attrs']['parentPageID'] ?? 0 ),
+							'sort_column' => 'menu_order,post_title',
+							'post_status' => 'publish',
+						)
+					);
+					foreach ( $pages as $page ) {
+						$flat[] = array(
+							'text' => (string) $page->post_title,
+							'url'  => (string) get_permalink( $page->ID ),
+						);
+					}
+					break;
+				default:
+					// Whitespace / unknown block — skip.
+					break;
+			}
+		}
+		return $flat;
 	}
 }

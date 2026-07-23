@@ -67,58 +67,12 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 // SGS_Nav_Menu_Source; nothing here re-implements that.
 // ---------------------------------------------------------------------------
 
-/**
- * Flatten resolved nav blocks (from SGS_Nav_Menu_Source::get_menu_blocks())
- * into `{ text, url }` pairs shaped like an `sgs/icon-list` typed item, so
- * they can be rendered through the SAME per-item loop as typed items.
- *
- * @param array $blocks Parsed nav blocks.
- * @return array<int, array{text:string, url:string}>
- */
-function sgs_icon_list_flatten_menu_blocks( array $blocks ) {
-	$flat = array();
-	foreach ( $blocks as $block ) {
-		$name = $block['blockName'] ?? '';
-		switch ( $name ) {
-			case 'core/navigation-link':
-			case 'core/navigation-submenu': // Parent's own link only — no nested children this phase.
-				$label = (string) ( $block['attrs']['label'] ?? '' );
-				if ( '' === $label ) {
-					break;
-				}
-				$flat[] = array(
-					'text' => $label,
-					'url'  => (string) ( $block['attrs']['url'] ?? '#' ),
-				);
-				break;
-			case 'core/home-link':
-				$flat[] = array(
-					'text' => __( 'Home', 'sgs-blocks' ),
-					'url'  => home_url( '/' ),
-				);
-				break;
-			case 'core/page-list':
-				$pages = get_pages(
-					array(
-						'parent'      => (int) ( $block['attrs']['parentPageID'] ?? 0 ),
-						'sort_column' => 'menu_order,post_title',
-						'post_status' => 'publish',
-					)
-				);
-				foreach ( $pages as $page ) {
-					$flat[] = array(
-						'text' => (string) $page->post_title,
-						'url'  => (string) get_permalink( $page->ID ),
-					);
-				}
-				break;
-			default:
-				// Whitespace / unknown block — skip.
-				break;
-		}
-	}
-	return $flat;
-}
+// sgs_icon_list_flatten_menu_blocks() lives in includes/helpers-list-markers.php
+// (aggregated by render-helpers.php), NOT here: render.php is re-included once
+// per block instance, so a top-level function declared in it fatals with
+// "Cannot redeclare" the moment a page holds two icon-lists. Caught live
+// 2026-07-23 (a 5-instance test page 500'd); moved to the shared, once-loaded
+// include alongside the marker helpers.
 
 // ---------------------------------------------------------------------------
 // 1. Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
@@ -369,7 +323,7 @@ $text_sel = $root_sel . ' .sgs-icon-list__text';
 // but an INVALID duplicate DOM id, and it makes aria-labelledby ambiguous. A
 // per-request unique id keeps the heading element's id and the wrapper's
 // aria-labelledby consistent within THIS render while guaranteeing uniqueness
-// on the page. (The CSS selector below is class-based, so it is unaffected.)
+// on the page; the CSS selector below is class-based, so it is unaffected.
 $heading_id   = wp_unique_id( 'sgs-ilist-heading-' );
 $heading_sel  = $root_sel . ' .sgs-icon-list__heading';
 $item_row_sel = $root_sel . ' .sgs-icon-list__item';
