@@ -537,22 +537,91 @@ class TestGateJoinLogic:
 
 
 # ---------------------------------------------------------------------------
-# 6. check_landed placeholder raises NotImplementedError
+# 6. check_landed — the LANDED leg (ARMED 2026-07-23; was a DEFERRED placeholder)
 # ---------------------------------------------------------------------------
 
-class TestCheckLandedDeferred:
-    def test_raises_not_implemented(self):
-        """check_landed() must raise NotImplementedError (DEFERRED — F3 not yet landed)."""
-        with pytest.raises(NotImplementedError) as exc_info:
-            check_landed("test-fixture", {})
-        assert "DEFERRED" in str(exc_info.value)
-        assert "F3" in str(exc_info.value)
+class TestCheckLanded:
+    """The LANDED leg reads the F3 oracle artefact and judges its cell verdicts.
 
-    def test_error_message_mentions_spec(self):
-        """The NotImplementedError message must reference Spec 31 §12.2.2."""
-        with pytest.raises(NotImplementedError) as exc_info:
-            check_landed("x", {})
-        assert "12.2.2" in str(exc_info.value) or "§12.2" in str(exc_info.value)
+    The load-bearing property under test is that it can NEVER pass vacuously:
+    a missing/unprobed/unreadable artefact must produce a finding, because an
+    empty return would mean the check "passes" exactly when it never ran
+    (Spec 31 §7b — an unmeasured surface is UNVERIFIED, never COVERED).
+    """
+
+    def _write(self, tmp_path, monkeypatch, stem, payload):
+        import ledger.coverage_check as cc
+        oracle_dir = tmp_path / "_render-oracle"
+        oracle_dir.mkdir(parents=True, exist_ok=True)
+        (oracle_dir / f"{stem}.landed.json").write_text(
+            json.dumps(payload), encoding="utf-8"
+        )
+        monkeypatch.setattr(cc, "_RENDER_ORACLE_DIR", oracle_dir)
+
+    def test_missing_artefact_is_not_a_pass(self, tmp_path, monkeypatch):
+        """NEGATIVE CONTROL — no artefact must NOT return an empty (passing) list."""
+        import ledger.coverage_check as cc
+        monkeypatch.setattr(cc, "_RENDER_ORACLE_DIR", tmp_path / "nope")
+        findings = check_landed("absent-fixture", {})
+        assert len(findings) == 1
+        assert findings[0]["kind"] == "MISSING-ORACLE-ARTEFACT"
+
+    def test_written_not_landed_is_flagged(self, tmp_path, monkeypatch):
+        """A WRITTEN-not-LANDED cell is the §12.2.2 hard-fail class."""
+        self._write(tmp_path, monkeypatch, "f", {
+            "oracle_status": "LIVE-PROBED",
+            "sections": [{
+                "section_id": "s1", "block_slug": "sgs/container",
+                "cells": [{
+                    "property": "max-width", "tier": "Desktop",
+                    "draft_value": "1200px", "computed_value": "none",
+                    "verdict": "WRITTEN-not-LANDED",
+                }],
+            }],
+        })
+        findings = check_landed("f", {})
+        assert [f["kind"] for f in findings] == ["WRITTEN-not-LANDED"]
+        assert findings[0]["property"] == "max-width"
+
+    def test_landed_cells_produce_no_findings(self, tmp_path, monkeypatch):
+        """A fully-LANDED, genuinely-probed fixture is clean."""
+        self._write(tmp_path, monkeypatch, "f", {
+            "oracle_status": "LIVE-PROBED",
+            "sections": [{
+                "section_id": "s1", "block_slug": "sgs/container",
+                "cells": [{
+                    "property": "gap", "tier": "Desktop",
+                    "draft_value": "32px", "computed_value": "32px",
+                    "verdict": "LANDED",
+                }],
+            }],
+        })
+        assert check_landed("f", {}) == []
+
+    def test_unprobed_fixture_is_not_a_pass(self, tmp_path, monkeypatch):
+        """SKIPPED-NO-LIVE-URL must surface — it is UNVERIFIED, not COVERED."""
+        self._write(tmp_path, monkeypatch, "f", {
+            "oracle_status": "SKIPPED-NO-LIVE-URL", "sections": [],
+        })
+        findings = check_landed("f", {})
+        assert [f["kind"] for f in findings] == ["NOT-PROBED"]
+
+    def test_guard_fail_is_reported_but_not_a_regression(self, tmp_path, monkeypatch):
+        """GUARD-FAIL/UNVERIFIED are reported explicitly, never as hard fails."""
+        self._write(tmp_path, monkeypatch, "f", {
+            "oracle_status": "LIVE-PROBED",
+            "sections": [{
+                "section_id": "s1", "block_slug": "sgs/hero",
+                "cells": [
+                    {"property": "gap", "tier": "Base", "draft_value": "8px",
+                     "computed_value": None, "verdict": "GUARD-FAIL"},
+                    {"property": "color", "tier": "Base", "draft_value": "red",
+                     "computed_value": "red", "verdict": "UNVERIFIED"},
+                ],
+            }],
+        })
+        findings = check_landed("f", {})
+        assert {f["kind"] for f in findings} == {"NOT-LANDED-OTHER"}
 
 
 # ---------------------------------------------------------------------------

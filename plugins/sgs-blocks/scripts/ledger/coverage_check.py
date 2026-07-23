@@ -366,29 +366,115 @@ def _load_excluded_properties(db_path: Path) -> set[str]:
 # LANDED leg placeholder (DEFERRED — F3 runtime not yet landed)
 # ---------------------------------------------------------------------------
 
-def check_landed(fixture_stem: str, router_result: dict) -> list[dict]:
-    """PLACEHOLDER — the LANDED leg of the coverage gate.
+# Directory holding the F3 oracle's per-fixture verdict artefacts, written by
+# oracle/batch_runner.py (`<stem>.landed.json`, the frozen §6 contract).
+_RENDER_ORACLE_DIR = _FIXTURES_PHASE_F_DIR / "_render-oracle"
 
-    This function verifies that a *transferred* attr (placed in D1 by css_router)
-    actually RENDERS correctly on the live clone — i.e., the value round-trips
-    through the converter and is present in the live DOM with the expected
-    computed style.
+# Cell verdicts the LANDED leg treats as a HARD FAIL (Spec 31 §12.2.2:
+# "WRITTEN-not-LANDED count >0 = hard fail"). Every OTHER non-LANDED verdict
+# (UNVERIFIED / NOT-RENDERED / GUARD-FAIL) is reported as a non-passing
+# observation but is NOT a converter regression — §7b requires those be shown
+# explicitly and never silently counted as LANDED.
+_LANDED_HARD_FAIL_VERDICTS = frozenset({"WRITTEN-not-LANDED"})
 
-    DEFERRED: this leg requires the F3 render-oracle RUNTIME (live Playwright
-    DOM probe + computed-style comparison). F3 has not yet landed. This function
-    will be armed when F3-runtime lands.
 
-    Raises NotImplementedError unconditionally. The --report output explicitly
-    states this deferral so no consumer can mistake it for a passing check.
+def check_landed(fixture_stem: str, router_result: dict | None = None) -> list[dict]:
+    """The LANDED leg of the coverage gate — ARMED 2026-07-23.
 
-    Spec ref: specs/31-UNIVERSAL-CONTAINER-CSS-TRANSFER.md §12.2.2 (WRITTEN vs LANDED)
+    Verifies that a *transferred* attr (placed in D1 by css_router) actually
+    RENDERS on the live clone: the value round-trips through the converter and
+    is present in the live DOM with the expected computed style.
+
+    This does NOT re-probe the browser. It READS the F3 render-oracle's
+    per-fixture verdict artefact (``_render-oracle/<stem>.landed.json``,
+    produced by ``oracle/batch_runner.py`` against the deployed canary pages)
+    and translates its per-cell verdicts into coverage-gate findings. Keeping
+    the probe in the oracle and the *judgement* here preserves one verdict
+    engine (R-31-9) — this module never re-implements guard or verdict logic.
+
+    Returns a list of finding dicts, each with a ``kind``:
+
+      ``WRITTEN-not-LANDED``   — the hard-fail class (§12.2.2). An attr WAS
+                                 emitted but the live computed style does not
+                                 match the draft: a wrong-layer / wrong-attr
+                                 transfer the UNACCOUNTED leg cannot see.
+      ``NOT-LANDED-OTHER``     — UNVERIFIED / NOT-RENDERED / GUARD-FAIL cells.
+                                 Reported explicitly, never counted as LANDED
+                                 (§7b), but not attributed as a regression.
+      ``MISSING-ORACLE-ARTEFACT`` — no artefact for this fixture. This is an
+                                 UNVERIFIED surface, NOT a pass — returning an
+                                 empty list here would make the check vacuous
+                                 (it would "pass" precisely when the LANDED
+                                 leg had never run).
+      ``NOT-PROBED``           — an artefact exists but the fixture was never
+                                 genuinely probed live (``oracle_status`` is
+                                 SKIPPED-NO-LIVE-URL / SKIPPED-NO-PLAYWRIGHT /
+                                 ERROR / NO-SECTIONS). Also not a pass.
+
+    Severity is deliberately the CALLER's decision, not this function's: the
+    F5 gate blocks on ``WRITTEN-not-LANDED`` only under ``--with-landed``, so
+    an un-run oracle can never fail every other session's commit gate (the
+    exact reason this leg was left unwired until the canary pages existed).
+
+    ``router_result`` is accepted for call-signature compatibility with the
+    UNACCOUNTED leg and is currently unused — the oracle artefact already
+    carries the per-cell WRITTEN flag that css_router's D1 bucket informs.
+
+    Spec ref: Spec 31 §12.2.2 (WRITTEN vs LANDED) + §7b (false-win guards).
     """
-    raise NotImplementedError(
-        "check_landed() is DEFERRED — the F3 render-oracle RUNTIME has not yet landed. "
-        "This function will be armed when the F3 live-DOM probe infrastructure is available. "
-        "The UNACCOUNTED leg (this module's primary gate) is active and operational. "
-        "Spec ref: Spec 31 §12.2.2."
-    )
+    artefact = _RENDER_ORACLE_DIR / f"{fixture_stem}.landed.json"
+    if not artefact.exists():
+        return [{
+            "kind": "MISSING-ORACLE-ARTEFACT",
+            "fixture": fixture_stem,
+            "detail": (
+                f"no {artefact.name} — run oracle/batch_runner.py to produce it. "
+                "An unmeasured fixture is UNVERIFIED, never COVERED (Spec 31 §7b)."
+            ),
+        }]
+
+    try:
+        report = json.loads(artefact.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [{
+            "kind": "MISSING-ORACLE-ARTEFACT",
+            "fixture": fixture_stem,
+            "detail": f"artefact unreadable ({exc}) — treated as UNVERIFIED, not a pass.",
+        }]
+
+    findings: list[dict] = []
+    status = report.get("oracle_status", "UNKNOWN")
+    if status != "LIVE-PROBED":
+        findings.append({
+            "kind": "NOT-PROBED",
+            "fixture": fixture_stem,
+            "detail": (
+                f"oracle_status={status} — the fixture was not genuinely probed "
+                "against a live canary page, so no cell can be LANDED."
+            ),
+        })
+
+    for section in report.get("sections", []):
+        for cell in section.get("cells", []):
+            verdict = cell.get("verdict")
+            if verdict == "LANDED":
+                continue
+            findings.append({
+                "kind": (
+                    "WRITTEN-not-LANDED"
+                    if verdict in _LANDED_HARD_FAIL_VERDICTS
+                    else "NOT-LANDED-OTHER"
+                ),
+                "fixture": fixture_stem,
+                "section_id": section.get("section_id"),
+                "block_slug": section.get("block_slug"),
+                "property": cell.get("property"),
+                "tier": cell.get("tier"),
+                "draft_value": cell.get("draft_value"),
+                "computed_value": cell.get("computed_value"),
+                "verdict": verdict,
+            })
+    return findings
 
 
 # ---------------------------------------------------------------------------
@@ -745,6 +831,59 @@ def _print_report(summary: dict, baseline: set[str]) -> None:
     print()
 
 
+def _print_landed_report(summary: dict) -> list[dict]:
+    """Print the LANDED leg per fixture. Returns the hard-fail findings only.
+
+    Spec 31 §12.2.2 — WRITTEN-not-LANDED is the hard-fail class. Everything
+    else non-LANDED is shown explicitly so an unmeasured or guard-blocked
+    surface can never read as a pass (§7b).
+    """
+    stems = sorted(summary["per_fixture"])
+    hard_fails: list[dict] = []
+    kind_totals: dict[str, int] = {}
+
+    print("=" * 70)
+    print("  F5 Coverage-Conservation Gate — LANDED leg (Spec 31 §12.2.2)")
+    print("  Source: tests/fixtures/phase-f/_render-oracle/<stem>.landed.json")
+    print("=" * 70)
+    print()
+
+    for stem in stems:
+        findings = check_landed(stem)
+        for f in findings:
+            kind_totals[f["kind"]] = kind_totals.get(f["kind"], 0) + 1
+        fixture_fails = [f for f in findings if f["kind"] == "WRITTEN-not-LANDED"]
+        hard_fails.extend(fixture_fails)
+
+        if not findings:
+            print(f"  [{stem}]  LANDED — all probed cells match the draft.")
+            continue
+        kinds = sorted({f["kind"] for f in findings})
+        print(f"  [{stem}]  {len(findings)} finding(s): {', '.join(kinds)}")
+        for f in fixture_fails:
+            print(
+                f"    [WRITTEN-not-LANDED]  {f['property']} [{f['tier']}]  "
+                f"draft={f['draft_value']!r}  live={f['computed_value']!r}  "
+                f"({f['block_slug']} / {f['section_id']})"
+            )
+
+    print()
+    for kind, n in sorted(kind_totals.items()):
+        print(f"  {kind:26s} {n}")
+    print()
+    if hard_fails:
+        print(f"  LANDED leg: {len(hard_fails)} WRITTEN-not-LANDED cell(s) — HARD FAIL class.")
+    else:
+        print("  LANDED leg: 0 WRITTEN-not-LANDED cells.")
+        if kind_totals:
+            print(
+                "  NOTE: non-LANDED observations above are UNVERIFIED surfaces, "
+                "NOT passes (Spec 31 §7b)."
+            )
+    print()
+    return hard_fails
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -806,6 +945,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Path to sgs-framework.db (auto-detected if omitted).",
     )
+    parser.add_argument(
+        "--with-landed",
+        action="store_true",
+        default=False,
+        help=(
+            "Also run the LANDED leg (Spec 31 §12.2.2) from the F3 oracle "
+            "artefacts in tests/fixtures/phase-f/_render-oracle/. With --check "
+            "this makes any WRITTEN-not-LANDED cell a hard failure. OFF by "
+            "default so a stale/absent oracle run cannot fail every commit — "
+            "run oracle/batch_runner.py first, then gate with this flag."
+        ),
+    )
     args = parser.parse_args(argv)
 
     # Default mode is --report.
@@ -840,7 +991,21 @@ def main(argv: list[str] | None = None) -> int:
 
     _print_report(summary, baseline)
 
+    landed_hard_fails: list[dict] = []
+    if args.with_landed:
+        landed_hard_fails = _print_landed_report(summary)
+
     if args.check:
+        if args.with_landed and landed_hard_fails:
+            print(
+                f"\n[F5] GATE FAILED (LANDED leg) — {len(landed_hard_fails)} "
+                "WRITTEN-not-LANDED cell(s).\n"
+                "  An attr was emitted but the LIVE computed style does not match the draft.\n"
+                "  This is a wrong-layer / wrong-attr transfer the UNACCOUNTED leg cannot see.\n"
+                "  Spec ref: Spec 31 §12.2.2."
+            )
+            return 1
+
         # FIX 2: Hash integrity check — catches hand-edited baselines (self-blessing protection).
         if baseline and stored_hash is not None:
             expected_hash = _compute_hash(sorted(baseline))

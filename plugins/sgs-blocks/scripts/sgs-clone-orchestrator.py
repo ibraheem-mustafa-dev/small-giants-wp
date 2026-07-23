@@ -2746,11 +2746,22 @@ def main():
             # to the target site. Phase 5a (2026-05-22 Decision 16') replacement for
             # the deleted /wp-json/sgs/v1/active-variation REST endpoint and the
             # retired theme/sgs-theme/styles/<client>.json overlay system.
+            #
+            # --client is OPTIONAL and is OMITTED when unknown (2026-07-23). A mockup
+            # outside sites/<client>/ (e.g. a tests/fixtures/ conformance or phase-f
+            # fixture) leaves args.client None; appending None to the argv raised
+            # TypeError inside subprocess.run, which the broad soft-fail below
+            # swallowed as "deploy soft-failed" — so --deploy-target was a silent
+            # no-op for EVERY non-client clone. upload_and_patch.py already treats
+            # --client as optional ("No --client passed; skipping theme.json snapshot
+            # push"), so omitting the flag is the correct universal behaviour, not a
+            # fixture carve-out (R-31-9).
             _upload_cmd = [
                 sys.executable, str(_upload_script), str(run_dir),
                 "--target", target_kind, "--target-id", str(target_id),
-                "--client", args.client,
             ]
+            if args.client:
+                _upload_cmd += ["--client", args.client]
             if args.push_theme_snapshot:
                 _upload_cmd.append("--push-theme-snapshot")
             result = subprocess.run(
