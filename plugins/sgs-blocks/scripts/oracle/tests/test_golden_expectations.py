@@ -17,8 +17,13 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent.parent.parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from oracle.golden_expectations import expectation_for, _markup_expects_text
-from oracle.guards import guard_empty_section, guard_height_parity
+from oracle.golden_expectations import (
+    expectation_for,
+    expected_default_for,
+    is_parent_constrained,
+    _markup_expects_text,
+)
+from oracle.guards import guard_empty_section, guard_height_parity, guard_non_default_value
 
 
 # ---------------------------------------------------------------------------
@@ -119,6 +124,94 @@ class TestGuardEmptySectionGoldenAware:
 # ---------------------------------------------------------------------------
 # Guard 4 — environment comparability
 # ---------------------------------------------------------------------------
+
+class TestParentConstrainedComposition:
+    """A parent-constrained block cloned standalone is an invalid composition.
+
+    sgs/accordion-item has NO style.css of its own; its border-bottom lives in
+    accordion/style.css under a parent-scoped selector. Cloning a bare
+    accordion-item deploys an orphan, so that border can never render — a
+    fixture-composition fact, not a converter transfer failure.
+    """
+
+    def test_accordion_item_is_parent_constrained(self):
+        is_child, parent = is_parent_constrained("sgs/accordion-item")
+        assert is_child is True
+        assert parent == "sgs/accordion"
+
+    def test_tab_is_parent_constrained(self):
+        """Not a one-block special case — 18 blocks carry a parent."""
+        is_child, parent = is_parent_constrained("sgs/tab")
+        assert is_child is True
+        assert parent == "sgs/tabs"
+
+    def test_top_level_block_is_not_constrained(self):
+        """NEGATIVE CONTROL — a normal section block must NOT be flagged."""
+        assert is_parent_constrained("sgs/container")[0] is False
+        assert is_parent_constrained("sgs/hero")[0] is False
+
+    def test_unknown_slug_is_not_constrained(self):
+        assert is_parent_constrained("sgs/does-not-exist")[0] is False
+
+
+class TestExpectedDefault:
+    """Guard 3 needs the block's own default to catch coincidental matches."""
+
+    def test_unknown_property_returns_none(self):
+        """None is conservative — guard 3 skips rather than passing a cell."""
+        assert expected_default_for("sgs/container", "no-such-property") is None
+
+    def test_unknown_block_returns_none(self):
+        assert expected_default_for("sgs/does-not-exist", "padding") is None
+
+    def test_guard3_fires_when_draft_equals_default(self):
+        """The coincidental-default false-win: draft == default -> UNVERIFIED.
+
+        This is the shape that hid the Mama's product-card finding: the draft
+        asked for 20px, the block's own fallback is 20px, so the clone looked
+        faithful while transferring nothing.
+        """
+        assert guard_non_default_value("20px", "20px").passed is False
+
+    def test_guard3_passes_when_draft_differs_from_default(self):
+        assert guard_non_default_value("32px", "20px").passed is True
+
+    def test_guard3_skips_on_unknown_default(self):
+        """NEGATIVE CONTROL — unknown default must not be treated as a match."""
+        assert guard_non_default_value("32px", None).passed is True
+
+
+class TestDraftHiddenSections:
+    """A display:none draft element's paint styles are not comparable."""
+
+    def _row(self, selector, prop, value):
+        class R:
+            pass
+        r = R()
+        r.selector, r.property, r.value = selector, prop, value
+        return r
+
+    def test_display_none_marks_section_hidden(self):
+        from oracle.batch_runner import _draft_hidden_sections
+        sections = [{"section_id": "s1", "block_slug": "sgs/modal"}]
+        rows = [self._row(".sgs-modal", "display", "none")]
+        hidden = _draft_hidden_sections(sections, rows, {"s1": {"sgs-modal"}})
+        assert hidden == {"s1"}
+
+    def test_visible_section_is_not_hidden(self):
+        """NEGATIVE CONTROL — a normal section must stay comparable."""
+        from oracle.batch_runner import _draft_hidden_sections
+        sections = [{"section_id": "s1", "block_slug": "sgs/hero"}]
+        rows = [self._row(".sgs-hero", "display", "grid")]
+        assert _draft_hidden_sections(sections, rows, {"s1": {"sgs-hero"}}) == set()
+
+    def test_display_none_on_a_DIFFERENT_element_does_not_hide_the_section(self):
+        """NEGATIVE CONTROL — must not over-fire from an unrelated selector."""
+        from oracle.batch_runner import _draft_hidden_sections
+        sections = [{"section_id": "s1", "block_slug": "sgs/hero"}]
+        rows = [self._row(".sgs-other-thing", "display", "none")]
+        assert _draft_hidden_sections(sections, rows, {"s1": {"sgs-hero"}}) == set()
+
 
 class TestGuardHeightComparability:
     def test_non_comparable_reports_unmeasured_not_failed(self):

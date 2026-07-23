@@ -30,7 +30,7 @@
           "draft_value": "none",
           "computed_value": "block",
           "expected_default": null,
-          "verdict": "WRITTEN-not-LANDED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "inset",
@@ -46,7 +46,7 @@
           "draft_value": "24px",
           "computed_value": "0px",
           "expected_default": null,
-          "verdict": "WRITTEN-not-LANDED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "position",
@@ -54,7 +54,7 @@
           "draft_value": "fixed",
           "computed_value": "static",
           "expected_default": null,
-          "verdict": "WRITTEN-not-LANDED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "z-index",
@@ -62,12 +62,12 @@
           "draft_value": "9999",
           "computed_value": "auto",
           "expected_default": null,
-          "verdict": "WRITTEN-not-LANDED"
+          "verdict": "UNVERIFIED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 2 UNVERIFIED, 4 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: display [Base] written 'none' but rendered 'block' (not landed).",
+  "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 6 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 16,
   "golden_expectation": {

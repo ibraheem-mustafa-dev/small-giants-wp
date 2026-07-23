@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-accordion-item@Base",
+      "section_id": "section-1-accordion-item",
       "block_slug": "sgs/accordion-item",
       "guards": {
-        "empty": true,
-        "element": true,
+        "empty": false,
+        "element": false,
         "height": true,
         "non_default": true
       },
@@ -20,23 +20,23 @@
           "property": "border-bottom",
           "tier": "Base",
           "draft_value": "1px solid #e5e0db",
-          "computed_value": "0px none rgb(58, 46, 38)",
+          "computed_value": null,
           "expected_default": null,
-          "verdict": "WRITTEN-not-LANDED"
+          "verdict": "NOT-RENDERED"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "16px 0",
-          "computed_value": "0px",
+          "computed_value": null,
           "expected_default": null,
-          "verdict": "UNVERIFIED"
+          "verdict": "NOT-RENDERED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-accordion-item@Base' (accordion-item): 0 LANDED, 1 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: border-bottom [Base] written '1px solid #e5e0db' but rendered '0px none rgb(58, 46, 38)' (not landed).",
-  "oracle_status": "LIVE-PROBED",
+  "plain_summary": "Section 'section-1-accordion-item' (accordion-item) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
+  "oracle_status": "COMPOSITION-INVALID",
   "unattributed_cell_count": 6,
   "golden_expectation": {
     "expects_text": true,

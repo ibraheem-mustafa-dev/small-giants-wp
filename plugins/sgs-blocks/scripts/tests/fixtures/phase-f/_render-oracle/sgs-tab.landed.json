@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-tab@Base",
+      "section_id": "section-1-tab",
       "block_slug": "sgs/tab",
       "guards": {
         "empty": false,
-        "element": true,
+        "element": false,
         "height": true,
         "non_default": true
       },
@@ -20,15 +20,15 @@
           "property": "padding",
           "tier": "Base",
           "draft_value": "24px",
-          "computed_value": "0px",
+          "computed_value": null,
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "NOT-RENDERED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-tab@Base' (tab): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
-  "oracle_status": "LIVE-PROBED",
+  "plain_summary": "Section 'section-1-tab' (tab) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
+  "oracle_status": "COMPOSITION-INVALID",
   "unattributed_cell_count": 4,
   "golden_expectation": {
     "expects_text": true,
@@ -36,8 +36,5 @@
     "reason": "golden contains child InnerBlocks (>1 wp: block)"
   },
   "height_comparable": false,
-  "ambiguous_selector_matches": {
-    ".wp-block-sgs-tab": 3
-  },
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-tab/"
 }

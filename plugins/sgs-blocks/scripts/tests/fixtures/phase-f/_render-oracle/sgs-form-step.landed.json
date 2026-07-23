@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-form-step@Base",
+      "section_id": "section-1-form-step",
       "block_slug": "sgs/form-step",
       "guards": {
-        "empty": true,
-        "element": true,
+        "empty": false,
+        "element": false,
         "height": true,
         "non_default": true
       },
@@ -20,31 +20,31 @@
           "property": "border",
           "tier": "Base",
           "draft_value": "1px solid #e5e0db",
-          "computed_value": "1px solid rgb(229, 224, 219)",
+          "computed_value": null,
           "expected_default": null,
-          "verdict": "UNVERIFIED"
+          "verdict": "NOT-RENDERED"
         },
         {
           "property": "border-radius",
           "tier": "Base",
           "draft_value": "8px",
-          "computed_value": "8px",
+          "computed_value": null,
           "expected_default": null,
-          "verdict": "LANDED"
+          "verdict": "NOT-RENDERED"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "32px 24px",
-          "computed_value": "32px 24px",
+          "computed_value": null,
           "expected_default": null,
-          "verdict": "LANDED"
+          "verdict": "NOT-RENDERED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-form-step@Base' (form-step): 2 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
-  "oracle_status": "LIVE-PROBED",
+  "plain_summary": "Section 'section-1-form-step' (form-step) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
+  "oracle_status": "COMPOSITION-INVALID",
   "unattributed_cell_count": 5,
   "golden_expectation": {
     "expects_text": false,

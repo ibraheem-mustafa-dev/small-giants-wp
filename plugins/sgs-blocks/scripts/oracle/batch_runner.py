@@ -91,7 +91,11 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from oracle.render_oracle import _default_element_selector  # noqa: E402
 from oracle.models import CellInput, RenderedObservation  # noqa: E402
 from oracle.verdict import compute_report  # noqa: E402
-from oracle.golden_expectations import expectation_for  # noqa: E402
+from oracle.golden_expectations import (  # noqa: E402
+    expectation_for,
+    expected_default_for,
+    is_parent_constrained,
+)
 
 from converter.recognition import recognise_section, _root_classes  # noqa: E402
 
@@ -296,6 +300,43 @@ def _section_class_sets(draft_html: str, sections: list[dict]) -> dict[str, set[
     return out
 
 
+def _draft_hidden_sections(
+    sections: list[dict],
+    declared_rows: list[Any],
+    class_sets: dict[str, set[str]],
+) -> set[str]:
+    """Section ids whose DRAFT element declares ``display:none``.
+
+    A draft element with ``display:none`` is NOT PAINTED in the draft. Comparing
+    its paint properties (padding / position / z-index / background) against a
+    rendered clone is meaningless: neither side's visibility state is controlled
+    by the harness, so a mismatch says nothing about transfer fidelity.
+
+    The worked case is ``sgs/modal``: the draft models a modal as an
+    always-present overlay hidden with ``display:none`` (revealed by script),
+    whereas ``sgs/modal`` renders a TRIGGER plus a native ``<dialog>``, keeping
+    ``position:fixed`` on ``.sgs-modal__dialog`` (style.css:74) and leaving the
+    block root as an inline-flex trigger (style.css:19). Probing the block root
+    therefore compared a trigger against an overlay and reported four
+    "failures" that were state/architecture mismatches, not defects.
+
+    Universal and signal-driven (the draft's own declared ``display:none``) —
+    no block slug, no fixture name (R-31-9).
+    """
+    hidden: set[str] = set()
+    for row in declared_rows:
+        if row.property != "display" or str(row.value).strip().lower() != "none":
+            continue
+        m = _SIMPLE_CLASS_SELECTOR_RE.match(row.selector.strip())
+        if not m:
+            continue
+        cls = row.selector.strip()[1:]
+        for sid, classes in class_sets.items():
+            if cls in classes:
+                hidden.add(sid)
+    return hidden
+
+
 def attribute_cells_to_sections(
     draft_html: str,
     sections: list[dict],
@@ -316,6 +357,8 @@ def attribute_cells_to_sections(
     """
     class_sets = _section_class_sets(draft_html, sections)
     cells_by_section: dict[str, list[CellInput]] = {s["section_id"]: [] for s in sections}
+    section_slugs: dict[str, str] = {s["section_id"]: s["block_slug"] for s in sections}
+    hidden_sections = _draft_hidden_sections(sections, declared_rows, class_sets)
     unattributed = 0
 
     for row in declared_rows:
@@ -330,15 +373,29 @@ def attribute_cells_to_sections(
             continue
 
         sid = matches[0]
+        # A draft element that is display:none is not painted in the draft, so
+        # its paint properties cannot be compared against a rendered clone.
+        # written=False forces UNVERIFIED (never LANDED, never a scored failure)
+        # — honest "not comparable", not a silent drop.
+        comparable = sid not in hidden_sections
+        # Guard 3 (non-default-value) needs the BLOCK's own default for this
+        # property: a draft value that merely equals the default proves nothing
+        # about routing, because the clone would show it even with transfer
+        # completely broken (Spec 31 §7b coincidental-default false-win).
+        # Resolved DB-first; None when unknown, which guard 3 treats as
+        # "cannot verify, skip" — never as "assume non-default and pass".
+        slug_for_cell = section_slugs.get(sid, "")
+        default_for_cell = (
+            expected_default_for(slug_for_cell, row.property) if slug_for_cell else None
+        )
         try:
             cell = CellInput(
                 property=row.property,
                 tier=row.tier,
                 draft_value=row.value,
                 computed_value=None,       # filled in by the live probe (or left None)
-                expected_default=None,     # NOT sourced yet (guard (c) note below) —
-                                           # None is the conservative/never-false-LANDED value
-                written=True,
+                expected_default=default_for_cell,
+                written=comparable,
             )
         except ValueError:
             # Tier failed F2-vocabulary validation (CellInput.__post_init__) —
@@ -646,10 +703,34 @@ def run_fixture(
     expectation = expectation_for(stem)
     expects_text = expectation.expects_text
 
+    # COMPOSITION GATE — a parent-constrained block cannot legally stand alone,
+    # and commonly inherits styling from its parent's stylesheet + block context.
+    # Cloning one as a bare top-level section deploys an orphan, so any missing
+    # parent-provided style is the FIXTURE's invalid composition, not a converter
+    # transfer failure. Report it; never score it. (18 such blocks exist —
+    # accordion-item, tab, the form-field family — so this is corpus-wide.)
+    invalid_composition = [
+        (sec["block_slug"], parent)
+        for sec in sections
+        for is_child, parent in [is_parent_constrained(sec["block_slug"])]
+        if is_child
+    ]
+
     live_url = urls_map.get(stem)
     ambiguous_matches: dict[str, int] = {}
 
-    if live_url is None:
+    if invalid_composition:
+        pairs = ", ".join(f"{child} (requires {parent})" for child, parent in invalid_composition)
+        status = "COMPOSITION-INVALID"
+        warnings.append(
+            f"COMPOSITION-INVALID: {pairs}. This fixture clones a parent-constrained "
+            "block as a standalone top-level section, so parent-provided CSS + block "
+            "context can never apply. Any 'missing' style here is the fixture's "
+            "composition, not a converter defect — cells are reported UNVERIFIED, "
+            "never scored. Fix by nesting the child inside its parent in the fixture."
+        )
+        observations = _skipped_observations(sections, cells_by_section, expects_text)
+    elif live_url is None:
         status = "SKIPPED-NO-LIVE-URL"
         observations = _skipped_observations(sections, cells_by_section, expects_text)
     elif not _playwright_available():

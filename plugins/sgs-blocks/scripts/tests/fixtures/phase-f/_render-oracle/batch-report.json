@@ -12,14 +12,14 @@
     "sgs-media": "SKIPPED-NO-LIVE-URL",
     "mamas-trust-bar-real": "LIVE-PROBED",
     "precedence-collision": "LIVE-PROBED",
-    "sgs-accordion-item": "LIVE-PROBED",
+    "sgs-accordion-item": "COMPOSITION-INVALID",
     "sgs-accordion": "LIVE-PROBED",
     "sgs-card-grid": "LIVE-PROBED",
     "sgs-content-collection": "LIVE-PROBED",
     "sgs-cta-section": "LIVE-PROBED",
     "sgs-feature-grid": "LIVE-PROBED",
-    "sgs-form-field-tiles": "LIVE-PROBED",
-    "sgs-form-step": "LIVE-PROBED",
+    "sgs-form-field-tiles": "COMPOSITION-INVALID",
+    "sgs-form-step": "COMPOSITION-INVALID",
     "sgs-form": "LIVE-PROBED",
     "sgs-gallery": "LIVE-PROBED",
     "sgs-google-reviews": "LIVE-PROBED",
@@ -33,7 +33,7 @@
     "sgs-pricing-table": "LIVE-PROBED",
     "sgs-product-card": "LIVE-PROBED",
     "sgs-quote": "LIVE-PROBED",
-    "sgs-tab": "LIVE-PROBED",
+    "sgs-tab": "COMPOSITION-INVALID",
     "sgs-tabs": "LIVE-PROBED",
     "sgs-team-member": "LIVE-PROBED",
     "sgs-testimonial-slider": "LIVE-PROBED",
@@ -42,23 +42,33 @@
     "sgs-trustpilot-reviews": "LIVE-PROBED"
   },
   "status_counts": {
-    "LIVE-PROBED": 35,
-    "SKIPPED-NO-LIVE-URL": 1
+    "LIVE-PROBED": 31,
+    "SKIPPED-NO-LIVE-URL": 1,
+    "COMPOSITION-INVALID": 4
   },
   "cell_verdict_counts": {
-    "LANDED": 39,
-    "UNVERIFIED": 34,
-    "WRITTEN-not-LANDED": 7,
-    "GUARD-FAIL": 25,
-    "NOT-RENDERED": 1
+    "LANDED": 37,
+    "UNVERIFIED": 36,
+    "WRITTEN-not-LANDED": 2,
+    "GUARD-FAIL": 23,
+    "NOT-RENDERED": 8
   },
   "total_unattributed_cells": 393,
   "warnings": {
     "rt-centred-maxwidth": [
       "AMBIGUOUS SELECTOR: '.wp-block-sgs-container' matched 2 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
     ],
+    "sgs-accordion-item": [
+      "COMPOSITION-INVALID: sgs/accordion-item (requires sgs/accordion). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
+    "sgs-form-field-tiles": [
+      "COMPOSITION-INVALID: sgs/form-field-tiles (requires sgs/form). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
+    "sgs-form-step": [
+      "COMPOSITION-INVALID: sgs/form-step (requires sgs/form). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
     "sgs-tab": [
-      "AMBIGUOUS SELECTOR: '.wp-block-sgs-tab' matched 3 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
+      "COMPOSITION-INVALID: sgs/tab (requires sgs/tabs). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
     ]
   },
   "per_fixture": {
@@ -103,8 +113,8 @@
       "unattributed_cell_count": 5
     },
     "sgs-accordion-item": {
-      "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-accordion-item@Base' (accordion-item): 0 LANDED, 1 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: border-bottom [Base] written '1px solid #e5e0db' but rendered '0px none rgb(58, 46, 38)' (not landed).",
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-accordion-item' (accordion-item) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
       "unattributed_cell_count": 6
     },
     "sgs-accordion": {
@@ -133,13 +143,13 @@
       "unattributed_cell_count": 13
     },
     "sgs-form-field-tiles": {
-      "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-form-field-tiles@Base' (form-field-tiles): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-form-field-tiles' (form-field-tiles) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
       "unattributed_cell_count": 12
     },
     "sgs-form-step": {
-      "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-form-step@Base' (form-step): 2 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-form-step' (form-step) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
       "unattributed_cell_count": 5
     },
     "sgs-form": {
@@ -169,7 +179,7 @@
     },
     "sgs-modal": {
       "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 2 UNVERIFIED, 4 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: display [Base] written 'none' but rendered 'block' (not landed).",
+      "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 6 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
       "unattributed_cell_count": 16
     },
     "sgs-multi-button": {
@@ -208,8 +218,8 @@
       "unattributed_cell_count": 8
     },
     "sgs-tab": {
-      "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-tab@Base' (tab): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+      "oracle_status": "COMPOSITION-INVALID",
+      "plain_summary": "Section 'section-1-tab' (tab) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
       "unattributed_cell_count": 4
     },
     "sgs-tabs": {

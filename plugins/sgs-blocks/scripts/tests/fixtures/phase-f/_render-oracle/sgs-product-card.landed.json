@@ -53,7 +53,7 @@
           "tier": "Base",
           "draft_value": "16px",
           "computed_value": "0px",
-          "expected_default": null,
+          "expected_default": "24",
           "verdict": "WRITTEN-not-LANDED"
         }
       ]
