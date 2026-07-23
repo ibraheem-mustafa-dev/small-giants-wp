@@ -207,6 +207,9 @@
 		}
 	},
 	"attributes": {
+		"textAlign": {
+			"type": "string"
+		},
 		"headline": {
 			"type": "string",
 			"default": "",
