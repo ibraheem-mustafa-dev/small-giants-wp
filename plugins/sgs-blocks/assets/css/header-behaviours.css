@@ -6,8 +6,9 @@
  * consumes it. Defaults to 0px when the property is not yet set (no jump).
  *
  * F2 — Behaviour modifier classes are on <body>, not on the header element,
- * and are INDEPENDENT — sticky / transparent / shrink / contrast-safe can all
- * be active at once (a header can be sticky AND transparent). CSS selectors
+ * and are INDEPENDENT — sticky / transparent / shrink / hide-on-scroll /
+ * contrast-safe can all be active at once (a header can be sticky AND
+ * transparent). CSS selectors
  * descend from body to `header.wp-block-template-part` so no DOM class
  * injection is needed. State classes (is-header-scrolled, is-header-shrunk,
  * is-header-scrolling-down) are also toggled on body by view.js.
@@ -116,26 +117,43 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
 }
 
 /* -------------------------------------------------------------------------
- * F2 — Hide-on-scroll-down (smart reveal) — legacy/dormant; no current
- * inspector control sets sgs-header-behaviour-hide-on-scroll-down. Kept
- * harmless in case a future control targets it.
+ * F2 — Hide-on-scroll-down (smart reveal) — LIVE (FR-37-13, wired to the
+ * "Hide on scroll" Advanced control on sgs/site-header). Class emitted by
+ * Sgs_Header_Behaviours::add_body_classes() when headerHideOnScroll is true;
+ * state toggled by src/header-behaviours/view.js.
  *
  * The header slides off the top when the user scrolls down, slides back in
  * on upward scroll. GPU-composited via transform (no layout thrash).
  * prefers-reduced-motion: transition is stripped so the header simply
  * appears/disappears without animation.
  *
- * ⚠ CONSTRAINT (qc-council MUST-FIX 3, Task 1 / D336 adaptive-nav drawer,
- * verified genuinely dormant — no inspector control wires this class):
- * `header.wp-block-template-part` is the ANCESTOR of `sgs/adaptive-nav`.
- * A native `<dialog>`'s `showModal()` top-layer promotion escapes an
- * ancestor's overflow/clipping but NOT an ancestor's `transform` (or
- * `filter`/`contain`/`will-change`) containing block. If this rule is ever
- * reactivated by a future control, the translated header would trap the
- * adaptive-nav drawer's `<dialog>` relative to itself instead of the
- * viewport, silently defeating the drawer. Do NOT wire an inspector control
- * to this class without first re-testing the drawer against it. Prefer
- * deleting this dormant rule outright over reactivating it.
+ * ⚠ KNOWN RISK, UNVERIFIED FOR THIS COMBINATION (carried forward from the
+ * qc-council MUST-FIX 3 / D336 finding against the now-retired
+ * sgs/adaptive-nav drawer — sgs/adaptive-nav was deleted at D362/FR-37-21;
+ * the current drawer is sgs/nav-drawer, a sibling block rendered inside the
+ * SAME `header.wp-block-template-part` wrapper — verified via
+ * theme/sgs-theme/patterns/framework-header-default.php, which emits
+ * wp:sgs/site-header then wp:sgs/nav-drawer inside the same "header" area
+ * template part):
+ *
+ * `transform: translateY(...)` on `header.wp-block-template-part` makes that
+ * element a containing block for CSS purposes. A native `<dialog>` opened
+ * via `showModal()` is promoted to the top layer, and per D323/D337 (this
+ * repo's own prior research — decisions.md) that promotion is exactly why
+ * `<dialog>` was chosen over the old re-parenting hack: it is documented
+ * there as escaping DOM-position-dependent bugs "by construction". Modern
+ * browsers additionally resolve top-layer elements against the INITIAL
+ * containing block (viewport), not an ancestor's transformed containing
+ * block, which is a deliberate CSS WG fix for exactly this
+ * transform-traps-fixed-content class of bug. On that basis the risk this
+ * comment originally flagged is very likely already resolved by the
+ * `<dialog>` architecture — but that claim has NOT been live-tested for the
+ * specific combination this FR makes reachable for the first time: a header
+ * with "Hide on scroll" ON, scrolled down (header translated off-screen),
+ * WHILE sgs/nav-drawer is open. Verify on a live page (open the drawer after
+ * scrolling down on a header with Hide on scroll enabled; confirm the drawer
+ * still covers the full viewport and isn't clipped/mispositioned) before
+ * shipping that combination to a client.
  * ---------------------------------------------------------------------- */
 
 body.sgs-header-behaviour-hide-on-scroll-down header.wp-block-template-part {

@@ -229,6 +229,22 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$this->assertContains( 'sgs-header-behaviour-shrink', $result );
 		}
 
+		/**
+		 * Hide-on-scroll flag injects correct behaviour classes (FR-37-13).
+		 *
+		 * @return void
+		 */
+		public function test_hide_on_scroll_flag_adds_behaviour_classes(): void {
+			Sgs_Header_Behaviours::set_test_behaviour( array( 'hideOnScroll' => true ) );
+
+			$result = Sgs_Header_Behaviours::add_body_classes( array() );
+
+			$this->assertContains( 'sgs-has-header-behaviour', $result );
+			$this->assertContains( 'sgs-header-behaviour-hide-on-scroll-down', $result );
+			$this->assertNotContains( 'sgs-header-behaviour-sticky', $result );
+			$this->assertNotContains( 'sgs-header-behaviour-shrink', $result );
+		}
+
 		// ------------------------------------------------------------------
 		// add_body_classes — independent axes combine (the whole point of
 		// FR-S9-9: a header can be sticky AND transparent AND shrink).

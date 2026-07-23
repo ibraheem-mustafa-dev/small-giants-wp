@@ -12,9 +12,10 @@
  *      - body.sgs-header-behaviour-shrink → toggles body.is-header-shrunk
  *        (its OWN state class + threshold, independent of transparent, so the
  *        two behaviours can be tuned separately).
- *      - body.sgs-header-behaviour-hide-on-scroll-down (legacy/dormant path,
- *        kept harmless) → toggles body.is-header-scrolling-down when
- *        scrollY > 100 AND direction is down.
+ *      - body.sgs-header-behaviour-hide-on-scroll-down (FR-37-13, LIVE — set
+ *        by the "Hide on scroll" Advanced control on sgs/site-header) →
+ *        toggles body.is-header-scrolling-down when scrollY > 100 AND
+ *        direction is down.
  *   3. When none of transparent / shrink / hide-on-scroll-down flags are on
  *      body, the scroll listener is skipped entirely — zero event overhead on
  *      pages without active behaviours.
@@ -135,8 +136,9 @@
 				}
 			}
 
-			// Hide on scroll down — smart reveal (state on body). Legacy/dormant
-			// path kept harmless — no current UI sets this flag.
+			// Hide on scroll down — smart reveal (state on body). FR-37-13:
+			// LIVE, set by the "Hide on scroll" Advanced control on
+			// sgs/site-header.
 			if ( hideOnScrollDown ) {
 				if ( scrollY > 100 && scrollY > prevScrollY ) {
 					document.body.classList.add( 'is-header-scrolling-down' );

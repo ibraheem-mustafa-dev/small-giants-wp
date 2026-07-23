@@ -73,6 +73,7 @@
 		"headerSticky": { "type": "boolean", "default": false },
 		"headerTransparent": { "type": "boolean", "default": false },
 		"headerShrink": { "type": "boolean", "default": false },
+		"headerHideOnScroll": { "type": "boolean", "default": false },
 		"contrastSafe": {
 			"type": "string",
 			"default": "none",

@@ -178,8 +178,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		orientation: 'vertical',
 	} );
 
-	const { headerSticky, headerTransparent, headerShrink, contrastSafe, style } =
-		attributes;
+	const {
+		headerSticky,
+		headerTransparent,
+		headerShrink,
+		headerHideOnScroll,
+		contrastSafe,
+		style,
+	} = attributes;
 
 	// Check contrast ratio on attribute changes
 	const [ contrastNotice, setContrastNotice ] = useState( null );
@@ -243,6 +249,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							headerSticky: false,
 							headerTransparent: false,
 							headerShrink: false,
+							headerHideOnScroll: false,
 							contrastSafe: 'none',
 						} )
 					}
@@ -313,6 +320,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							help={ __(
 								'Reduces the header height as the visitor scrolls down the page.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Hide on scroll', 'sgs-blocks' ) }
+						hasValue={ () => headerHideOnScroll !== false }
+						onDeselect={ () =>
+							setAttributes( { headerHideOnScroll: false } )
+						}
+					>
+						<ToggleControl
+							label={ __( 'Hide on scroll', 'sgs-blocks' ) }
+							checked={ !! headerHideOnScroll }
+							onChange={ ( value ) =>
+								setAttributes( { headerHideOnScroll: value } )
+							}
+							help={ __(
+								'Header slides off the top of the screen once the visitor scrolls down, and slides back in as soon as they scroll up.',
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
