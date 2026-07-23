@@ -4,13 +4,28 @@
  * Accessible combobox with debounced REST fetch, keyboard navigation, and
  * AbortController-based request cancellation.
  *
- * Supports two display modes set by render.php via data-display:
- *   (none / "inline") — always-visible search bar, unchanged behaviour.
- *   "icon"            — <details>/<summary> disclosure; JS enhances focus
- *                       management and Escape/outside-click to close the panel.
+ * Supports three display modes set by render.php via data-display
+ * (FR-36-20 — ONE shared combobox implementation reused across all three;
+ * only the chrome wiring below differs):
+ *   (none / "inline")     — always-visible search bar, unchanged behaviour.
+ *   "icon"                — <details>/<summary> DISCLOSURE (FR-36-10); JS
+ *                           enhances focus management + Escape/outside-click.
+ *   "full-screen-overlay" — <dialog> DIALOG (FR-36-10) opened/closed through
+ *                           the shared store('sgs/nav') plumbing (FR-36-7) —
+ *                           the side-effect import below registers it, so
+ *                           this block never hand-rolls a second open/close/
+ *                           focus/inert utility (R-31-9).
  *
- * No jQuery. No dependencies.
+ * No jQuery. Only dependency is the shared nav store (FR-36-7 reuse).
  */
+
+// Side-effect import — registers store('sgs/nav') so the full-screen-overlay
+// trigger's data-wp-on--click="actions.toggleDrawer" / data-wp-bind directives
+// resolve even on a page with no other nav block present. The Interactivity
+// runtime merges repeat `sgs/nav` registrations as a no-op (see the store's
+// own header comment) — bundling a second copy here is the documented and
+// safe pattern, not a duplicate utility.
+import '../../shared/nav-interactivity/store.js';
 
 /**
  * Wire one product-search instance.
@@ -25,19 +40,47 @@ function initInstance( root ) {
 	root.dataset.sgsProductSearchReady = '1';
 
 	// Read config from data-attributes set by render.php.
-	const rest          = root.dataset.rest          || '';
-	const noResults     = root.dataset.noResults      || 'No products found';
-	const busy          = root.dataset.busy           || 'Search is busy — please try again in a moment';
-	const countTemplate = root.dataset.countTemplate  || '%d products found';
-	const maxResults    = Number.parseInt( root.dataset.maxResults, 10 ) || 10;
+	const rest = root.dataset.rest || '';
+	const noResults = root.dataset.noResults || 'No products found';
+	const busy =
+		root.dataset.busy || 'Search is busy — please try again in a moment';
+	const countTemplate = root.dataset.countTemplate || '%d products found';
+	const maxResultsDesktop =
+		Number.parseInt( root.dataset.maxResults, 10 ) || 10;
+	const maxResultsMobile =
+		Number.parseInt( root.dataset.maxResultsMobile, 10 ) || 6;
 
-	// Icon-mode detection — set by render.php as data-display="icon".
-	const isIcon  = root.dataset.display === 'icon';
-	const details = isIcon ? root.querySelector( '.sgs-product-search__disclosure' ) : null;
+	// FR-36-20 MUST: ≤10 desktop / 4–8 mobile — the effective cap is read live
+	// at fetch time (not cached at init) so a resize/orientation change is
+	// honoured on the next query. 767px matches the SGS device-tier contract
+	// (mobile max-width:767px — see CLAUDE.md "Responsive breakpoint discipline").
+	const mobileMedia =
+		typeof window.matchMedia === 'function'
+			? window.matchMedia( '(max-width: 767px)' )
+			: null;
+
+	function getEffectiveMaxResults() {
+		return mobileMedia && mobileMedia.matches
+			? maxResultsMobile
+			: maxResultsDesktop;
+	}
+
+	// Display-mode detection — set by render.php as data-display.
+	// icon: <details>/<summary> DISCLOSURE (FR-36-10).
+	// full-screen-overlay: <dialog> DIALOG (FR-36-10), driven by the shared
+	// store('sgs/nav') import above.
+	const isIcon = root.dataset.display === 'icon';
+	const isOverlay = root.dataset.display === 'full-screen-overlay';
+	const details = isIcon
+		? root.querySelector( '.sgs-product-search__disclosure' )
+		: null;
+	const dialog = isOverlay
+		? root.querySelector( '.sgs-product-search__dialog' )
+		: null;
 
 	// DOM refs.
-	const input  = root.querySelector( '.sgs-product-search__input' );
-	const ul     = root.querySelector( '.sgs-product-search__results' );
+	const input = root.querySelector( '.sgs-product-search__input' );
+	const ul = root.querySelector( '.sgs-product-search__results' );
 	const status = root.querySelector( '.sgs-product-search__status' );
 
 	if ( ! input || ! ul || ! status ) {
@@ -46,10 +89,28 @@ function initInstance( root ) {
 
 	const listId = ul.id; // e.g. "sgs-product-search-1-listbox"
 
+	/**
+	 * Whether an element is inside this component. Overlay mode's <dialog>
+	 * is REPARENTED to <body> on first open by the shared store (D323 escape-
+	 * transformed-ancestor fix) — after that, `root.contains()` alone would
+	 * wrongly treat every click/focus inside the (now-detached) dialog as
+	 * "outside", closing the listbox the instant the input gains focus. This
+	 * checks BOTH the original wrapper and the (possibly-moved) dialog.
+	 *
+	 * @param {Node} node The node to test.
+	 * @return {boolean} Whether the node is part of this instance.
+	 */
+	function isInsideComponent( node ) {
+		return (
+			root.contains( node ) ||
+			( dialog !== null && dialog.contains( node ) )
+		);
+	}
+
 	// State.
-	let debounceTimer    = null;
+	let debounceTimer = null;
 	let activeController = null; // AbortController for the in-flight fetch.
-	let activeIndex      = -1;   // Index into visible <li> options.
+	let activeIndex = -1; // Index into visible <li> options.
 
 	// -------------------------------------------------------------------------
 	// Helpers
@@ -104,6 +165,42 @@ function initInstance( root ) {
 		status.textContent = message;
 	}
 
+	/**
+	 * Append a title to a parent node with the MATCHED portion (not the typed
+	 * portion — FR-36-20 MUST) wrapped in a <mark>. Built entirely from DOM
+	 * text nodes — never innerHTML — so it stays XSS-inert exactly like the
+	 * REST response's title field (see class-product-search-rest.php step 8).
+	 *
+	 * @param {HTMLElement} parent The element to append into.
+	 * @param {string}      title  The result's title.
+	 * @param {string}      query  The user's current query.
+	 */
+	function appendHighlightedTitle( parent, title, query ) {
+		const idx = query
+			? title.toLowerCase().indexOf( query.toLowerCase() )
+			: -1;
+
+		if ( idx === -1 ) {
+			parent.appendChild( document.createTextNode( title ) );
+			return;
+		}
+
+		if ( idx > 0 ) {
+			parent.appendChild(
+				document.createTextNode( title.slice( 0, idx ) )
+			);
+		}
+
+		const mark = document.createElement( 'mark' );
+		mark.textContent = title.slice( idx, idx + query.length );
+		parent.appendChild( mark );
+
+		const tail = title.slice( idx + query.length );
+		if ( tail ) {
+			parent.appendChild( document.createTextNode( tail ) );
+		}
+	}
+
 	// -------------------------------------------------------------------------
 	// Icon mode — move focus into the input when the disclosure opens.
 	// The <details> toggle event fires after open state changes.
@@ -113,6 +210,38 @@ function initInstance( root ) {
 			if ( details.open && input ) {
 				input.focus();
 			}
+		} );
+	}
+
+	// -------------------------------------------------------------------------
+	// Overlay mode — the <dialog> is opened/closed by the shared store('sgs/nav')
+	// (FR-36-7 reuse). render.php renders it with the `open` attribute as the
+	// no-JS fallback (a plain in-flow, non-modal form); close it once on load so
+	// the enhanced behaviour is showModal()-only from here on, then watch the
+	// `open` attribute to react to the store's actions.toggleDrawer.
+	// -------------------------------------------------------------------------
+	if ( dialog ) {
+		if ( dialog.open ) {
+			dialog.close();
+		}
+
+		const observer = new window.MutationObserver( () => {
+			if ( dialog.open ) {
+				// Override the store's default focus-first (the × close button,
+				// FR-36-6 chrome-first-in-DOM convention) — a search dialog
+				// should land focus on the input for immediate typing.
+				input.focus();
+			} else {
+				// Dialog just closed (×, Escape, or backdrop-adjacent close) —
+				// reset the combobox so the next open starts clean.
+				closeDropdown();
+				input.value = '';
+				announce( '' );
+			}
+		} );
+		observer.observe( dialog, {
+			attributes: true,
+			attributeFilter: [ 'open' ],
 		} );
 	}
 
@@ -146,9 +275,10 @@ function initInstance( root ) {
 				return;
 			}
 
-			const data    = await response.json();
+			const data = await response.json();
 			const results = Array.isArray( data.results ) ? data.results : [];
-			const capped  = results.slice( 0, maxResults );
+			// FR-36-20 MUST: ≤10 desktop / 4–8 mobile — read live, not cached.
+			const capped = results.slice( 0, getEffectiveMaxResults() );
 
 			if ( ! capped.length ) {
 				closeDropdown();
@@ -162,24 +292,48 @@ function initInstance( root ) {
 			ul.innerHTML = '';
 			capped.forEach( ( result, i ) => {
 				const optId = listId + '-opt-' + i;
-				const li    = document.createElement( 'li' );
+				const li = document.createElement( 'li' );
 				li.setAttribute( 'role', 'option' );
 				li.id = optId;
 				li.dataset.href = result.permalink || '';
 
+				// Product preview — thumbnail (FR-36-20 MUST). The REST response
+				// always includes `thumbnail`; see class-product-search-rest.php.
 				if ( result.thumbnail ) {
-					const img    = document.createElement( 'img' );
-					img.src      = result.thumbnail;
-					img.alt      = '';
-					img.loading  = 'lazy';
-					img.width    = 40;
-					img.height   = 40;
+					const img = document.createElement( 'img' );
+					img.src = result.thumbnail;
+					img.alt = '';
+					img.loading = 'lazy';
+					img.width = 40;
+					img.height = 40;
 					li.appendChild( img );
 				}
 
-				const span        = document.createElement( 'span' );
-				span.textContent  = result.title || '';
-				li.appendChild( span );
+				const info = document.createElement( 'div' );
+				info.className = 'sgs-product-search__result-info';
+
+				const titleEl = document.createElement( 'span' );
+				titleEl.className = 'sgs-product-search__result-title';
+				// Highlight the MATCHED portion, not the typed portion (FR-36-20
+				// MUST) — built from text nodes only, never innerHTML.
+				appendHighlightedTitle( titleEl, result.title || '', q );
+				info.appendChild( titleEl );
+
+				// Price preview (FR-36-20 MUST). NOTE: the current REST response
+				// (class-product-search-rest.php, out of this build's file scope)
+				// deliberately excludes price — "no price / meta / stock /
+				// variation data — ever" is its documented invariant. This reads
+				// `result.price` defensively so the preview activates the moment
+				// that invariant is revisited server-side; it renders nothing
+				// today. Always textContent — never innerHTML.
+				if ( typeof result.price === 'string' && result.price ) {
+					const priceEl = document.createElement( 'span' );
+					priceEl.className = 'sgs-product-search__result-price';
+					priceEl.textContent = result.price;
+					info.appendChild( priceEl );
+				}
+
+				li.appendChild( info );
 
 				ul.appendChild( li );
 			} );
@@ -187,7 +341,6 @@ function initInstance( root ) {
 			ul.hidden = false;
 			input.setAttribute( 'aria-expanded', 'true' );
 			announce( countTemplate.replace( '%d', capped.length ) );
-
 		} catch ( err ) {
 			// Ignore AbortError — this is intentional cancellation.
 			if ( err.name !== 'AbortError' ) {
@@ -282,11 +435,14 @@ function initInstance( root ) {
 	// -------------------------------------------------------------------------
 	// Close on outside click
 	// Inline: close the dropdown.
-	// Icon: also close the disclosure panel when the click is outside the root.
+	// Icon: also close the disclosure panel when the click is outside.
+	// Overlay: the dialog itself closes via the shared store (ESC/×); this
+	// only ever needs to close the internal listbox, using isInsideComponent()
+	// so a click on the reparented dialog is never mistaken for "outside".
 	// -------------------------------------------------------------------------
 
 	document.addEventListener( 'click', ( event ) => {
-		if ( ! root.contains( event.target ) ) {
+		if ( ! isInsideComponent( event.target ) ) {
 			closeDropdown();
 			// In icon mode, also close the <details> disclosure.
 			if ( isIcon && details ) {
@@ -296,12 +452,14 @@ function initInstance( root ) {
 	} );
 
 	// -------------------------------------------------------------------------
-	// Close on blur (delay so option clicks register first)
+	// Close on blur (delay so option clicks register first). Uses
+	// isInsideComponent() so tabbing within the reparented overlay dialog
+	// (e.g. input → submit button) is never mistaken for focus leaving.
 	// -------------------------------------------------------------------------
 
 	input.addEventListener( 'blur', () => {
 		setTimeout( () => {
-			if ( ! root.contains( document.activeElement ) ) {
+			if ( ! isInsideComponent( document.activeElement ) ) {
 				closeDropdown();
 			}
 		}, 150 );

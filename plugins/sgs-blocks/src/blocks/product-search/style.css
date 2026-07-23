@@ -105,6 +105,33 @@
 	border-radius: 4px;
 }
 
+/* Product preview — title (with matched-portion highlight) + price
+   (FR-36-20 MUST). --result-info is a column so a price row can sit under
+   the title without widening the option row. */
+.sgs-product-search__result-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	min-width: 0;
+}
+
+.sgs-product-search__result-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sgs-product-search__result-title mark {
+	background: none;
+	color: inherit;
+	font-weight: 700;
+}
+
+.sgs-product-search__result-price {
+	font-size: 0.875em;
+	color: var( --wp--preset--color--contrast-2, inherit );
+}
+
 /* Status live region — visually hidden, still read by screen readers */
 .sgs-product-search__status {
 	/* Inherits .screen-reader-text from theme; no overrides needed. */
@@ -190,6 +217,106 @@
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-product-search--icon .sgs-product-search__disclosure,
 	.sgs-product-search--icon .sgs-product-search__panel {
+		transition-duration: 0.01ms;
+		animation-duration: 0.01ms;
+	}
+}
+
+/* ==========================================================================
+   Full-screen overlay display mode (.sgs-product-search--overlay)
+   FR-36-20 / FR-36-10: the DIALOG half of the disclosure-vs-dialog swap —
+   opened/closed through the shared store('sgs/nav'). All rules scoped to
+   overlay mode — zero impact on the other two display modes.
+   ========================================================================== */
+
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap {
+	display: inline-flex;
+}
+
+/* Trigger button — a plain <button>, not the <summary> icon-expand uses, so
+   it needs its own copy of the same 44×44 px target + visual treatment. */
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	background: var( --wp--preset--color--primary, #0f7e80 );
+	color: var( --wp--preset--color--base, #fff );
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:hover {
+	opacity: 0.9;
+}
+
+.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #0f7e80 );
+	outline-offset: 2px;
+}
+
+/* No-JS fallback state: render.php emits the dialog with the `open`
+   attribute so it is visible, non-modal, in-flow — the form's real GET
+   submit works with zero JS. view.js closes it once JS is available. */
+.sgs-product-search__dialog {
+	width: min( 480px, 92vw );
+	max-width: 92vw;
+	margin: 10vh auto auto;
+	padding: 1.5rem;
+	border: 1px solid var( --wp--preset--color--border-subtle, #ccc );
+	border-radius: 12px;
+	background: var( --wp--preset--color--base, #fff );
+	box-shadow: 0 12px 48px rgba( 0, 0, 0, 0.2 );
+}
+
+/* Once JS enhances the dialog into a true showModal() surface, the UA
+   promotes it to the top layer — the ::backdrop below only paints while a
+   modal dialog is showModal()-open (a non-modal `open`-attribute dialog,
+   the no-JS fallback state, has no ::backdrop by spec). */
+.sgs-product-search__dialog::backdrop {
+	background: rgba( 0, 0, 0, 0.5 );
+}
+
+.sgs-product-search__dialog .sgs-product-search__close {
+	position: absolute;
+	top: 0.75rem;
+	right: 0.75rem;
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	color: inherit;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.sgs-product-search__dialog .sgs-product-search__close:hover {
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
+}
+
+.sgs-product-search__dialog .sgs-product-search__close:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, #0f7e80 );
+	outline-offset: 2px;
+}
+
+.sgs-product-search__dialog-body {
+	margin-top: 2rem;
+}
+
+/* The listbox anchors to the dialog body rather than floating relative to
+   the (now-reparented) block wrapper. */
+.sgs-product-search__dialog .sgs-product-search__form {
+	position: relative;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-product-search__dialog {
 		transition-duration: 0.01ms;
 		animation-duration: 0.01ms;
 	}

@@ -55,7 +55,7 @@
 	"attributes": {
 		"displayMode": {
 			"type": "string",
-			"default": "inline"
+			"default": "inline-bar"
 		},
 		"placeholder": {
 			"type": "string",
@@ -68,6 +68,10 @@
 		"maxResults": {
 			"type": "integer",
 			"default": 10
+		},
+		"maxResultsMobile": {
+			"type": "integer",
+			"default": 6
 		},
 		"paddingTablet": {
 			"type": "object",

@@ -16,12 +16,20 @@
  * Security: all output is escaped. REST URL + i18n strings are carried on
  * data-attributes so view.js never touches raw PHP output.
  *
- * Display modes:
- *   inline — (default) always-visible search bar, unchanged from v1.0.0.
- *   icon   — collapsed icon button that expands the search panel via a
- *             native <details>/<summary> disclosure element. Works with
- *             JS disabled (native browser behaviour). JS enhances focus
- *             management only.
+ * Display modes (FR-36-20 — ONE shared combobox implementation, $form_html,
+ * reused unmodified across all three; only the wrapping chrome differs):
+ *   inline-bar          — (default) always-visible search bar.
+ *   icon-expand         — collapsed icon button that expands the search
+ *                          panel via a native <details>/<summary> DISCLOSURE
+ *                          element (FR-36-10). Works with JS disabled.
+ *   full-screen-overlay — icon trigger that opens a native <dialog> DIALOG
+ *                          (FR-36-10) via the shared store('sgs/nav')
+ *                          open/close/focus/inert plumbing (FR-36-7); dimmed
+ *                          ::backdrop while open. No-JS fallback: the dialog
+ *                          renders with the `open` attribute (non-modal,
+ *                          inline, no backdrop) so the GET form still works.
+ * Legacy aliases 'inline'/'icon' (pre-FR-36-20 stored values) map onto
+ * 'inline-bar'/'icon-expand' below — no version bump, no deprecated.js.
  *
  * @var array     $attributes Block attributes.
  * @var string    $content    InnerBlocks HTML (unused — dynamic block).
@@ -52,12 +60,25 @@ $button_label = ! empty( $attributes['buttonLabel'] )
 	? $attributes['buttonLabel']
 	: __( 'Search', 'sgs-blocks' );
 
-$max_results = isset( $attributes['maxResults'] ) ? max( 1, min( 20, (int) $attributes['maxResults'] ) ) : 10;
+// FR-36-20 MUST: ≤10 desktop / 4–8 mobile — both caps are clamped server-side
+// so a stored value can never widen past the spec ceiling regardless of what
+// the editor sent.
+$max_results        = isset( $attributes['maxResults'] ) ? max( 1, min( 10, (int) $attributes['maxResults'] ) ) : 10;
+$max_results_mobile = isset( $attributes['maxResultsMobile'] ) ? max( 4, min( 8, (int) $attributes['maxResultsMobile'] ) ) : 6;
 
-// Validate display mode — only 'inline' and 'icon' are accepted.
-$display = in_array( $attributes['displayMode'] ?? 'inline', array( 'inline', 'icon' ), true )
-	? ( $attributes['displayMode'] ?? 'inline' )
-	: 'inline';
+// Validate display mode. FR-36-20: inline-bar | icon-expand | full-screen-overlay.
+// Legacy alias map keeps pre-existing 'inline'/'icon' instances rendering
+// identically to their old shape (no version bump / no deprecated.js, D270 —
+// this is the cheap forward-compat translation instead).
+$sgs_ps_display_aliases = array(
+	'inline' => 'inline-bar',
+	'icon'   => 'icon-expand',
+);
+$display_raw            = (string) ( $attributes['displayMode'] ?? 'inline-bar' );
+$display_raw            = $sgs_ps_display_aliases[ $display_raw ] ?? $display_raw;
+$display                = in_array( $display_raw, array( 'inline-bar', 'icon-expand', 'full-screen-overlay' ), true )
+	? $display_raw
+	: 'inline-bar';
 
 // -------------------------------------------------------------------------
 // Unique IDs for ARIA wiring (stable per request — not per page-load).
@@ -68,6 +89,9 @@ $input_id  = $uid . '-input';
 $list_id   = $uid . '-listbox';
 $status_id = $uid . '-status';
 $label_id  = $uid . '-label';
+// full-screen-overlay only — the <dialog> id doubles as the shared sgs/nav
+// store's drawerRef (FR-36-20: reuse store('sgs/nav'), never a second utility).
+$dialog_id = $uid . '-dialog';
 
 // -------------------------------------------------------------------------
 // NO-INLINE scoped-styling uid (separate from the ARIA uid above — a CLASS,
@@ -162,34 +186,49 @@ $rest_url = esc_url( rest_url( 'sgs/v1/product-search' ) );
 
 // -------------------------------------------------------------------------
 // Wrapper attributes — varies by display mode.
-// Inline: identical to v1.0.0 (class + data attrs only).
-// Icon: adds sgs-product-search--icon class and data-display="icon".
+// inline-bar: identical to v1.0.0 (class + data attrs only).
+// icon-expand: adds sgs-product-search--icon class + data-display="icon"
+// (the <details>/<summary> DISCLOSURE — FR-36-10).
+// full-screen-overlay: adds sgs-product-search--overlay class +
+// data-display="full-screen-overlay" (the <dialog> DIALOG — FR-36-10).
 // -------------------------------------------------------------------------
-if ( 'icon' === $display ) {
+$sgs_ps_common_data = array(
+	'data-sgs-product-search' => '',
+	'data-rest'               => $rest_url,
+	'data-no-results'         => $i18n_no_results,
+	'data-busy'               => $i18n_busy,
+	'data-count-template'     => $i18n_count_template,
+	'data-max-results'        => esc_attr( (string) $max_results ),
+	'data-max-results-mobile' => esc_attr( (string) $max_results_mobile ),
+);
+
+if ( 'icon-expand' === $display ) {
 	$wrapper_attrs = get_block_wrapper_attributes(
-		array(
-			'class'                   => 'sgs-product-search sgs-product-search--icon ' . $sgs_style_uid,
-			'data-sgs-product-search' => '',
-			'data-display'            => 'icon',
-			'data-rest'               => $rest_url,
-			'data-no-results'         => $i18n_no_results,
-			'data-busy'               => $i18n_busy,
-			'data-count-template'     => $i18n_count_template,
-			'data-max-results'        => esc_attr( (string) $max_results ),
+		array_merge(
+			array(
+				'class'        => 'sgs-product-search sgs-product-search--icon ' . $sgs_style_uid,
+				'data-display' => 'icon',
+			),
+			$sgs_ps_common_data
+		)
+	);
+} elseif ( 'full-screen-overlay' === $display ) {
+	$wrapper_attrs = get_block_wrapper_attributes(
+		array_merge(
+			array(
+				'class'        => 'sgs-product-search sgs-product-search--overlay ' . $sgs_style_uid,
+				'data-display' => 'full-screen-overlay',
+			),
+			$sgs_ps_common_data
 		)
 	);
 } else {
-	// Inline mode — wrapper carries the same classes as v1.0.0 plus the
+	// inline-bar mode — wrapper carries the same classes as v1.0.0 plus the
 	// no-inline scoped-styling uid class.
 	$wrapper_attrs = get_block_wrapper_attributes(
-		array(
-			'class'                   => 'sgs-product-search ' . $sgs_style_uid,
-			'data-sgs-product-search' => '',
-			'data-rest'               => $rest_url,
-			'data-no-results'         => $i18n_no_results,
-			'data-busy'               => $i18n_busy,
-			'data-count-template'     => $i18n_count_template,
-			'data-max-results'        => esc_attr( (string) $max_results ),
+		array_merge(
+			array( 'class' => 'sgs-product-search ' . $sgs_style_uid ),
+			$sgs_ps_common_data
 		)
 	);
 }
@@ -284,6 +323,62 @@ ob_start();
 $form_html = ob_get_clean();
 
 // -------------------------------------------------------------------------
+// full-screen-overlay chrome — trigger button + <dialog>, wired through the
+// shared store('sgs/nav') (FR-36-20: reuse the ONE nav open/close/focus/inert
+// utility rather than hand-rolling a second one, R-31-9). The dialog is the
+// DIALOG half of FR-36-10's disclosure-vs-dialog swap; icon-expand below is
+// the DISCLOSURE half — one attribute (displayMode) selects which pattern
+// wraps the SAME $form_html combobox (the spec's "ONE shared combobox
+// implementation reused across all three display modes" differentiator).
+// -------------------------------------------------------------------------
+$overlay_trigger_html = '';
+$overlay_dialog_html  = '';
+
+if ( 'full-screen-overlay' === $display ) {
+	$overlay_context = array(
+		'isOpen'    => false,
+		'drawerRef' => $dialog_id,
+	);
+
+	$overlay_context_attr = function_exists( 'wp_interactivity_data_wp_context' )
+		? wp_interactivity_data_wp_context( $overlay_context )
+		: sprintf( "data-wp-context='%s'", esc_attr( (string) wp_json_encode( $overlay_context ) ) );
+
+	$overlay_trigger_html = sprintf(
+		'<div class="sgs-product-search__overlay-trigger-wrap" data-wp-interactive="sgs/nav" %1$s>' .
+			'<button type="button" class="sgs-product-search__icon-toggle" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%2$s" aria-label="%3$s">' .
+				'<svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' .
+			'</button>' .
+		'</div>',
+		$overlay_context_attr,
+		esc_attr( $dialog_id ),
+		esc_attr( $button_label )
+	);
+
+	// Close chrome — data-sgs-nav-close is wired imperatively by the shared
+	// store on open, exactly like sgs/nav-drawer's × (FR-36-6 pattern reuse).
+	$close_icon = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'x' ) : '&times;';
+	$close_html = sprintf(
+		'<button type="button" class="sgs-product-search__close" data-sgs-nav-close aria-label="%s">%s</button>',
+		esc_attr__( 'Close search', 'sgs-blocks' ),
+		$close_icon
+	);
+
+	// No-JS fallback: the `open` attribute renders the dialog inline
+	// (non-modal, no ::backdrop, no showModal semantics) so the form's real
+	// GET submit works with zero JS — mirrors icon-expand's native <details>
+	// no-JS story. view.js closes it on load, then the shared store re-opens
+	// it as a true showModal() on trigger click.
+	$overlay_dialog_html = sprintf(
+		'<dialog id="%1$s" class="sgs-product-search__dialog" data-sgs-nav-drawer open aria-label="%2$s">%3$s<div class="sgs-product-search__dialog-body">%4$s</div></dialog>',
+		esc_attr( $dialog_id ),
+		esc_attr__( 'Search', 'sgs-blocks' ),
+		$close_html,
+		$form_html
+	);
+}
+
+// -------------------------------------------------------------------------
 // Output — branch by display mode.
 // -------------------------------------------------------------------------
 ?>
@@ -291,7 +386,7 @@ $form_html = ob_get_clean();
 <style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
-<?php if ( 'icon' === $display ) : ?>
+<?php if ( 'icon-expand' === $display ) : ?>
 	<details class="sgs-product-search__disclosure">
 		<summary
 			class="sgs-product-search__icon-toggle"
@@ -318,6 +413,11 @@ $form_html = ob_get_clean();
 			<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $form_html is built entirely from esc_* calls above. ?>
 		</div>
 	</details>
+<?php elseif ( 'full-screen-overlay' === $display ) : ?>
+	<?php
+	echo $overlay_trigger_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from wp_interactivity_data_wp_context() (self-escaping) + esc_* calls above.
+	echo $overlay_dialog_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_* calls + the pre-escaped $form_html/$close_html fragments above.
+	?>
 <?php else : ?>
 	<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $form_html is built entirely from esc_* calls above. ?>
 <?php endif; ?>
