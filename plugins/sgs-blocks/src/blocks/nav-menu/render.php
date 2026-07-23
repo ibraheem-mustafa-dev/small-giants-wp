@@ -248,22 +248,28 @@ $toggle_html = sprintf(
 	$burger_icon // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 );
 
-// ── The <nav> landmark (FR-36-10 / FR-36-11) ────────────────────────────────
-// FIXED 2026-07-23. This block previously emitted NO <nav> element at all: the
-// bar was a bare <ul> inside the wrapper <div>, and `navLabel` was passed to
-// that <div> as a plain `aria-label`. An aria-label on a <div> with no role is
-// IGNORED by assistive tech — so the label existed, named nothing, and the menu
-// was not a landmark. FR-36-10 requires `<nav aria-label>` and FR-36-11 requires
-// unique labels across multiple <nav>s; neither held.
+// ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
+// The landmark ITSELF is the wrapper element: SGS_Container_Wrapper is called
+// below with `'tag' => 'nav'`, so this block's root IS a <nav>. It always has
+// been. This label rides onto it via `extra_attrs` — see the wrapper call.
 //
-// A real <nav> element is used rather than role="navigation" on the wrapper —
-// native semantics are preferred, and it keeps the change inside this block
-// instead of altering the shared SGS_Container_Wrapper (rule 7, shared surface).
+// ⚠ HISTORY, so this is not "fixed" a third time. On 2026-07-23 a change added
+// a SECOND, inner <nav class="sgs-nav-menu__nav"> here and moved the label onto
+// it, on the stated grounds that the block "emitted NO <nav> element at all" and
+// that the wrapper was "a roleless <div>". Both premises were false. They came
+// from `grep -c "<nav" nav-menu/render.php`, which returns 0 because the <nav>
+// is emitted by class-sgs-container-wrapper.php — a different file the grep
+// never read (STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING). Live on the
+// canary that change produced <nav> nested inside <nav> around the SAME links,
+// with the OUTER one unnamed, and axe still reported `landmark-unique`. Reverted
+// 2026-07-23. Before changing the landmark structure again, read the wrapper.
 //
 // The label falls back through: operator `navLabel` → the resolved MENU'S OWN
 // NAME → 'Primary'. Preferring the menu name means two nav instances bound to
 // DIFFERENT menus get distinct landmark names automatically, which is what
-// FR-36-11 (and axe's landmark-unique) actually require.
+// FR-36-11 (and axe's landmark-unique) actually require. This requires
+// `navLabel` to default to '' in block.json — a non-empty default makes the
+// menu-name branch below unreachable dead code (it was, until 2026-07-23).
 $nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
 if ( '' === $nav_label && $ref > 0 && function_exists( 'wp_get_nav_menu_object' ) ) {
 	$nav_menu_obj = wp_get_nav_menu_object( $ref );
@@ -286,8 +292,7 @@ if ( '' === $nav_label ) {
 }
 
 $bar_html = sprintf(
-	'<nav class="sgs-nav-menu__nav" aria-label="%1$s"><ul class="sgs-nav-menu__bar">%2$s</ul></nav>',
-	esc_attr( $nav_label ),
+	'<ul class="sgs-nav-menu__bar">%1$s</ul>',
 	$items_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $items_html built from esc_url/esc_html/esc_attr fragments.
 );
 
@@ -534,7 +539,13 @@ $collapse_point = isset( $attributes['collapsePoint'] ) ? max( 1, absint( $attri
 // navigation region containing nothing. `display:none` removes the whole subtree
 // from the accessibility tree, which is what makes the bar/drawer pair safe (see
 // the naming note in FR-36-11).
-$css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .sgs-nav-menu__nav{display:none;}' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:flex;}}';
+// Below the collapse point the LIST is hidden and the burger takes over. The
+// hide targets the <ul>, NOT the block root — the root is the <nav> landmark
+// (see the wrapper call) and it must stay exposed, because the burger inside it
+// is the control that opens the navigation. A named landmark containing the
+// disclosure button is the W3C APG disclosure-navigation shape; hiding the root
+// would remove the burger from the accessibility tree along with the list.
+$css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .sgs-nav-menu__bar{display:none;}' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:flex;}}';
 $css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:none;}}';
 
 // 4g. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
@@ -568,11 +579,12 @@ echo SGS_Container_Wrapper::render(
 		// its OWN `sgs-container-<hash>` class (different prefix), so pass this
 		// block's `$uid` through extra_classes exactly as the hero reference does.
 		'extra_classes' => array( $uid ),
-		// No aria-label here. It used to carry `navLabel`, but this wrapper is a
-		// roleless <div> and an aria-label on a roleless element is IGNORED by
-		// assistive tech — it named nothing. The label now lives on the real
-		// <nav> landmark this block emits (see the FR-36-10/36-11 fix above).
-		// Leaving it would imply two labels exist and invite them to drift.
+		// `'tag' => 'nav'` above makes THIS element the navigation landmark, so
+		// the accessible name belongs here — on the element that carries the
+		// role. There is exactly one <nav> per instance and exactly one label,
+		// so the two cannot drift. (FR-36-10 / FR-36-11; see the label block
+		// above for why an inner second <nav> was reverted on 2026-07-23.)
+		'extra_attrs'   => array( 'aria-label' => esc_attr( $nav_label ) ),
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

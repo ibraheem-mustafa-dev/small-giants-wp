@@ -459,38 +459,51 @@ it; the semantic HTML is what actually earns the SEO and AI-crawl benefit. Keep 
 Inherited free from FR-36-17, NOT restated as new work: server-rendered, no AJAX, no lazy-load,
 descriptive anchor text.
 
-> **✅ Conformance gap found while writing this — FOUND AND FIXED 2026-07-23 (same session).**
-> `sgs/nav-menu` emitted **zero `<nav>` elements** (negative control: `grep -c "<nav"` on the pre-fix
-> file returned **0**). It rendered `<ul class="sgs-nav-menu__bar">` inside a plain `<div>`, while
-> FR-36-10 requires `<nav aria-label>` and FR-36-11 requires unique labels across multiple `<nav>`s —
-> so the SHIPPED nav block did not meet its own spec.
+> **⛔ RETRACTED 2026-07-23 (same day) — the "conformance gap" recorded here NEVER EXISTED, and the
+> fix written for it was a REGRESSION, now reverted. Do not re-apply it.**
 >
-> **The subtler half:** `navLabel` WAS being passed to that wrapper `<div>` as a plain `aria-label`.
-> An `aria-label` on a roleless element is **ignored by assistive tech**, so the label existed, named
-> nothing, and looked correct to any code-read. Only asking "what does this actually produce?"
-> surfaced it.
+> **What this note used to claim:** that `sgs/nav-menu` emitted *zero* `<nav>` elements and passed
+> `navLabel` to a roleless `<div>`, so the label "named nothing".
 >
-> **Fix:** the bar is now wrapped in a real `<nav class="sgs-nav-menu__nav" aria-label="…">` (native
-> element preferred over `role="navigation"`, and kept inside the block rather than altering the
-> shared `SGS_Container_Wrapper`). The label falls back `navLabel` → **the resolved menu's own name**
-> (`wp_get_nav_menu_object( $ref )->name`) → `'Primary'`, so two nav instances bound to DIFFERENT
-> menus get distinct landmark names automatically — which is what FR-36-11 and axe's `landmark-unique`
-> actually require. The dead wrapper `aria-label` was removed so only one label can exist.
+> **Both premises were false.** The block's root has ALWAYS been a `<nav>`: `render.php` calls
+> `SGS_Container_Wrapper::render( …, array( 'tag' => 'nav', … ) )`, and the pre-existing
+> `'extra_attrs' => array( 'aria-label' => … navLabel … )` put the label ON that `<nav>`. Verified at
+> `git show bb11cd1e^:…/nav-menu/render.php` — lines 516 and 524. It was a correctly-named
+> navigation landmark.
 >
-> **Context:** the 2026-07-23 canary axe run reported `region` and `landmark-unique` on BOTH sites
-> (including the un-deployed control), so this was framework-wide and pre-dated that deploy. It had
-> been logged as "pre-existing, cause unidentified" — this was the cause.
+> **How the false diagnosis was reached:** `grep -c "<nav" nav-menu/render.php` returns 0, because the
+> `<nav>` is emitted by `includes/class-sgs-container-wrapper.php` — a different file the grep never
+> read. This is `STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING`, committed while writing the
+> fix for the previous instance of it.
 >
-> ⚠ **Still owed:** live confirmation. The canary homepage currently renders NO `sgs/nav-menu` (its
-> active header CPT is a generic proof header), so this fix cannot be observed there yet. Re-run
-> `nav-qa/axe-run.mjs` on a page that actually renders the nav, and confirm `region` /
-> `landmark-unique` clear.
+> **What the "fix" actually did, measured live on the canary:** added a SECOND `<nav>` nested inside
+> the existing one around the SAME four links, and DELETED the outer one's `aria-label` — leaving an
+> unnamed outer landmark wrapping a named inner one. Below the collapse point the outer `<nav>`
+> stayed `display:flex` with zero visible links. `axe` still reported `landmark-unique`.
 >
-> **Second regression caught in the same session, before deploy.** The collapse rule hid
-> `.sgs-nav-menu__bar` — the `<ul>`, which is now INSIDE the new `<nav>`. That would have left an
-> EMPTY exposed navigation landmark below the collapse point: a screen-reader user lands in a
-> "Primary" region containing nothing, which is worse than no landmark. The rule now hides
-> `.sgs-nav-menu__nav`, removing the whole subtree from the accessibility tree.
+> **Reverted 2026-07-23** to one `<nav>` per instance carrying one label. Live-verified on
+> `/t1-nav/`: `navCount: 2` (bar + drawer, was 4), `nested: false` on both, links visible at 1440,
+> burger-only at 375, drawer opens with all four links.
+>
+> **The one REAL bug in this area — found by the same live test, now fixed.** `navLabel` defaulted to
+> `'Primary'` in `block.json`, so `$nav_label` was never empty and the `wp_get_nav_menu_object()`
+> menu-name branch was **unreachable dead code**. FR-36-11's promise that two navs bound to different
+> menus are named apart automatically could not hold — every instance was "Primary". The default is
+> now `''`. Live-verified: a bar with an explicit label and a drawer without now render `"Primary"`
+> and `"T1 Verify"` (derived from menu "T1 Verify Menu", trailing "Menu" stripped), and both are
+> simultaneously exposed when the drawer is open — the case that needs distinct names.
+>
+> **Also corrected: the axe attribution.** This note claimed the framework-wide `region` /
+> `landmark-unique` violations were caused by the missing nav landmark. They are not. Negative
+> control 2026-07-23: the canary HOMEPAGE, which renders no `sgs/nav-menu` at all, reports the
+> **identical five violations**. Their real cause is two unnamed `<main>` elements
+> (`landmark-no-duplicate-main` + `landmark-main-is-top-level` fire alongside). `sgs/nav-menu`
+> contributes zero axe violations. The theme-level duplicate `<main>` is a separate, still-open
+> defect — see `parking.md`.
+>
+> ⚠ **Still owed:** `axe` on the OPEN drawer. The `nav-qa/axe-run.mjs --open` run timed out on
+> `locator.click` (harness actionability, not a page defect — the burger opens correctly under a
+> direct click). Reported INCONCLUSIVE, not banked.
 
 ##### Landmark naming for a bar + drawer on the SAME menu — RESOLVED by research (2026-07-23)
 An earlier note here claimed this was "unresolved by construction — the operator must set distinct
@@ -688,7 +701,8 @@ application in SGS — see FR-36-3). Custom/preset UI welcome where it improves 
 | 36-22 logo | `PARTIAL + open defect` | Still reads `get_theme_mod('custom_logo')`, so the logo resolves from a DIFFERENT source than contact/social. §1 flags it; FR-36-22 must resolve it deliberately |
 | **36-26** link lists | `NOT-BUILT` | New this session — see §4 |
 | 36-3/4/5/8/10/17/9a | `NOT-BUILT` | The mega spine — strictly sequential. **36-3's picker is the SAME build as Spec 37 FR-37-7**; schedule it ONCE |
-| 36-11, 36-16 | `GATE` | Live axe/Playwright + Bean's eye. Partial progress 2026-07-23: never-overflow PASS at 375/768/1440 and axe 0-new (control-verified) on the canary |
+| **36-10, 36-11** landmark | `LIVE-VERIFIED 2026-07-23` | One `<nav>` per instance, one label, on `/t1-nav/` (canary, classic menu 98). Distinct names derived per menu — "Primary" / "T1 Verify" — verified with BOTH exposed (drawer open), which is the case FR-36-11 governs. The 2026-07-23 "zero `<nav>`" finding was FALSE and its fix was reverted; the real bug was the unreachable menu-name fallback (`navLabel` default `'Primary'` → `''`). See the retraction note in §4. `sgs/nav-menu` contributes **zero** axe violations — negative control: the nav-free homepage reports the identical 5 |
+| 36-11, 36-16 | `GATE` | Live axe/Playwright + Bean's eye. Partial progress 2026-07-23: never-overflow PASS at 375/768/1440 and axe 0-new (control-verified) on the canary. **Owed:** axe on the OPEN drawer (harness click timeout — INCONCLUSIVE, not banked) |
 
 **⚠ Build-order correction (2026-07-23, Bean-caught).** A progress summary claimed FR-36-15, 36-18
 and 36-25 were "gated on Spec 33 Part 2". **Two of the three were wrong.** The specs say the

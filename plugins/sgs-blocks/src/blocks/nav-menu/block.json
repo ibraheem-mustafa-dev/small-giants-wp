@@ -131,7 +131,7 @@
 		"collapsePoint": { "type": "number", "default": 768 },
 		"drawerRef": { "type": "string", "default": "sgs-nav-drawer" },
 		"featuredItemIds": { "type": "array", "default": [], "items": { "type": "string" } },
-		"navLabel": { "type": "string", "default": "Primary" },
+		"navLabel": { "type": "string", "default": "" },
 
 		"layout": { "type": "string", "default": "flex" },
 		"gap": { "type": "string", "default": "8px" },

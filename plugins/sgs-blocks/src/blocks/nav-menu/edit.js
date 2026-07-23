@@ -348,11 +348,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					<TextControl
 						label={ __( 'Navigation label', 'sgs-blocks' ) }
 						value={ navLabel }
+						placeholder={ __(
+							'Auto — from the menu name',
+							'sgs-blocks'
+						) }
 						onChange={ ( val ) =>
 							setAttributes( { navLabel: val } )
 						}
 						help={ __(
-							'Accessible name for this menu landmark — make it unique if the page has more than one menu (e.g. Primary, Footer).',
+							'Accessible name for this menu landmark. Leave blank to use the chosen menu’s own name, so two menus are named apart automatically. Set it only to override that (e.g. Primary, Footer).',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

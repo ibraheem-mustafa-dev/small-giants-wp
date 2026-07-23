@@ -23,15 +23,32 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
-- **STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING** — NEW 2026-07-23 (D367). An
-  `aria-label` on a bare `<div>`/`<span>` with no role is **IGNORED by assistive tech**. It is not a
-  weak label — it is no label. `sgs/nav-menu` passed its `navLabel` to the wrapper `<div>` for
-  months: the attribute was present, the intent was obvious, and every code-read scored it correct,
-  while the block emitted **zero `<nav>` elements** and had no landmark at all. It was invisible
-  because reviewing asks *"does the markup say the right thing?"* when the question is **"what does
-  this markup PRODUCE?"**. General rule: an ARIA attribute is only meaningful on an element whose
-  role can carry it — before trusting any `aria-*`, name the role it is attached to. Sibling of
+- **STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING** — 2026-07-23 (D367). **The rule stands;
+  its cited instance was RETRACTED 2026-07-23 — see the correction below.** An `aria-label` on a bare
+  `<div>`/`<span>` with no role is **IGNORED by assistive tech**. It is not a weak label — it is no
+  label. General rule: an ARIA attribute is only meaningful on an element whose role can carry it —
+  before trusting any `aria-*`, name the role it is attached to. Sibling of
   STOP-VERIFY-CONTENTS-NOT-FILENAME (a thing that looks right by its name).
+  > ⚠ **The `sgs/nav-menu` example originally cited here was FALSE and is struck.** The claim was
+  > that the block "emitted zero `<nav>` elements" and put `navLabel` on a roleless `<div>`. It did
+  > not: `render.php` has always called the shared wrapper with `'tag' => 'nav'` and passed the label
+  > via `extra_attrs` — a correctly-named landmark (`git show bb11cd1e^:…/nav-menu/render.php:516,524`).
+  > The entry is kept because the PRINCIPLE is real and worth surfacing; only the worked example was
+  > fabricated by an unverified diagnosis. **Never illustrate a STOP with an instance you have not
+  > confirmed in rendered output** — a false example teaches the next session to "fix" working code.
+
+- **STOP-PROVE-THE-THING-IS-MISSING-BEFORE-ADDING-IT** — NEW 2026-07-23. When a diagnosis says
+  "element/attribute/landmark X is absent", the fix ADDS X — so if the diagnosis is wrong you do not
+  get a no-op, you get a **duplicate**, and duplicates of structural elements are their own defect
+  class (nested landmarks, double live-regions, two labels that drift). Proven this session: a
+  "`sgs/nav-menu` has no `<nav>`" finding produced `<nav>` nested inside `<nav>` around the same
+  links, with the outer one's label deleted, shipped as an accessibility fix. The absence check must
+  be made against **rendered output** — `curl` the live page, or `getComputedStyle`/`querySelectorAll`
+  in the DOM — never against one source file, because shared helpers and wrappers emit markup the
+  block's own file never mentions. One `curl … | grep -c '<nav'` would have cost seconds and
+  prevented the whole change. Generalises STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING from
+  "can this pattern match?" to **"am I even looking at the artefact that would contain the answer?"**
+  Sibling of STOP-NEGATIVE-CONTROL (both: establish the baseline before acting on a delta).
 
 - **STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING** — NEW 2026-07-23. A dispatched agent
   verified "zero banned core blocks remain" using `grep "wp:core/"`. **That pattern returns 0 on every
@@ -469,8 +486,20 @@ for real before claiming done?
   carried"). Caught by the independent handoff `/qc` subagent, not by me. The canonical
   DEFINED-entry command is the one to use, every time; a receipt that states a bare number
   without the command is not auditable.
-  All four earned by a failure that actually occurred: a `navLabel` that named nothing for months on a
-  roleless div; an agent's verification grep that could not match a core block at all; a READ-only gate
+  All four earned by a failure that actually occurred: ~~a `navLabel` that named nothing for months on a
+  roleless div~~ **(RETRACTED — see the correction on that entry; the principle stands, the example was
+  false)**; an agent's verification grep that could not match a core block at all; a READ-only gate
   importing a REWRITE tool's track-coordination list and inheriting a 13-file blind spot over the
   patterns that ship to every install; and my OWN reference to an invented variable while fixing the
   first of those.
+- **2026-07-23 (Task-1 live verification / nav landmark revert) re-run:** previous DEFINED entries = **67**
+  (re-measured with this file's own canonical command immediately before writing, per the 2026-07-22
+  receipt-arithmetic rule — never carried forward); this session ADDED 1
+  (`STOP-PROVE-THE-THING-IS-MISSING-BEFORE-ADDING-IT`) and SUBTRACTED **none** → **68**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **68**. 68 >= 67. PASS.
+  ⚠ **One entry was AMENDED, not removed.** `STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING`
+  keeps its slot and its principle; only its worked example was struck, because that example was a
+  false diagnosis that had already caused a regression to ship. Per D101 this is a correction, not a
+  subtraction — the token count is unchanged by it and no defence was lost. The new entry is earned:
+  a fix built on an unproven "X is missing" shipped `<nav>` nested inside `<nav>` to the canary.
