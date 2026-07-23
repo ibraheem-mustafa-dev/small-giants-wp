@@ -586,10 +586,23 @@ wiring (FR-37-11) was confirmed live in the audit, not just declared.
 Each is real feature work, none is a cheap lint fix, and each applies to BOTH row blocks (one
 mechanism covers both). Recorded here so a future session picks them up rather than rediscovering:
 
-- **FR-37-33 — `layoutMode` is implicit, not a first-class control (§3.3).** Neither row declares
-  a `layoutMode` attr; the mode is inferred from the `layout` string (`flex`/`grid`) fixed at
-  template-insert time, with no inspector control to switch a row between cluster and columns. Add
-  the attr + control + wiring. `NOT-BUILT`.
+- **FR-37-33 — row layout control + per-row independent columns.** `✅ BUILT + LIVE-VERIFIED
+  2026-07-23` (commits `89e31fbc` gate fix + `8dd873bd` controls). A "Row layout: Cluster / Columns"
+  `SelectControl` on BOTH row types drives the existing `layout` attr (`flex`↔`grid`) — no new
+  `layoutMode` attr was needed (the shape-freeze-safe choice: reuse `layout`, which the wrapper
+  already reads). When Columns, the per-device count control (`ResponsiveControl` 1-6) shows; when
+  Cluster, Distribution shows. **`site-header-row` gained `columns`/`columnsTablet`/`columnsMobile`
+  attrs** (it had none — footer-row already had them), so header rows can now be columns too.
+  Rendering is unchanged and universal — both rows delegate to `SGS_Container_Wrapper`, which renders
+  the grid + per-tier count. **Bean-directed extension:** every row (all three header AND all three
+  footer) sets its own count + settings INDEPENDENTLY — each is its own block instance, so nothing
+  bleeds between rows. This is the Astra footer-builder model (a bottom strip can be a 3-column row:
+  copyright | social | attribution, stacking on mobile). **Live proof (canary, active footer):** the
+  three footer rows set to top=2 / columns=4 / bottom=3 at desktop, all stacking to 1 column on mobile
+  with no horizontal scroll; header controls + attr writes verified in the editor.
+  > ⚠ **Depended on FR-37-11's gate fix landing first.** The per-tier count only emits because
+  > `89e31fbc` widened `$has_responsive_attr` to include tier counts — without it a row set to Columns
+  > rendered its desktop count but did not stack. See FR-37-11.
 - **FR-37-34 — the row inserter does not promote the common elements (§3.5).** Freeform is
   correctly unlocked (no `allowedBlocks`), but there is zero "steering" — no promoted palette for
   logo/nav/search/cart/account/CTA/contact/social. §3.5's plain-English "the inserter promotes…" is
@@ -982,7 +995,8 @@ and eye are co-authoritative, neither closes alone).
 | Container blocks exist | `BUILT` (2026-07-13, for Spec 17) |
 | Container blocks **conform to a defined end state** | `DONE` — FR-37-9/10 audits RUN 2026-07-22, per-clause with `file:line`; 3 gaps carried as FR-37-33/34/35, none dropped |
 | Row reorder-lock (`templateLock: 'all'`, §3.3a) | `BUILT (code)` |
-| Footer per-device column count (FR-37-11) | `DEPLOYED (unexercised)` — count path wired, wrapper untouched. The COLUMN COUNT + mobile stacking are still unmeasured; needs a footer CPT with a known count rendered live |
+| Footer per-device column count (FR-37-11) | `✅ LIVE-VERIFIED 2026-07-23` — a footer columns row set to 4/desktop renders 4 columns and stacks to 1 on mobile on the active canary footer. Two bugs fixed: (a) `a28a1121` — the tier stacking used `sgs-cols-*` classes on the WRAPPER while container queries (FR-37-35) had moved the grid to `.sgs-container__inner`, so the class was inert; rerouted to a scoped rule at `$grid_sel`. (b) `89e31fbc` — that scoped rule lived inside `if ($has_responsive_attr)`, which did not consider tier counts, so it never emitted; gate widened. Researched (research-check extended: every major builder uses a per-device COUNT, not intrinsic auto-fit — kept the control, fixed the plumbing) |
+| Per-row layout control + independent columns (FR-37-33) | `✅ BUILT + LIVE-VERIFIED 2026-07-23` (`8dd873bd`) — Cluster/Columns switch on both row types; header rows gained column attrs; all 6 rows (3 header + 3 footer) set columns independently. Footer live proof: rows at 2/4/3 desktop, all stack mobile. See FR-37-33 |
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
