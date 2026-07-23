@@ -94,6 +94,7 @@ from typing import Any
 from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
+from converter.services.border_side import border_side_write
 from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import (
     extract_token_or_hex,
@@ -227,6 +228,18 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             ctx, decl, GapOrigin.NO_DESTINATION,
             f"non-device-tier breakpoint {decl.tier!r} for {prop} (Spec 31 §3.A A4)",
         )
+
+    # Per-side border longhand → merged borderWidth box-object (box-object interface
+    # contract §3/§4). A `border-{side}-width` decl accumulates ONE side into the
+    # block's borderWidth object via the SHARED accumulator seam (same as the
+    # padding-side path). Runs BEFORE the property_suffixes chain: border-{side}-width
+    # HAS a property_suffixes row (BorderTopWidth…) that routes to a per-side attr NO
+    # block declares, so the ordinary chain would NO_DESTINATION-gap it. Returns None
+    # (fall through) for any non-border-side prop / non-box-family block. Gated on
+    # box_family, never a name regex (§13.4 FR-31-22.2 AST gate).
+    border_side = border_side_write(decl, ctx)
+    if border_side is not None:
+        return border_side
 
     # Step 2: name resolution (per-block, DB-driven — never prefix concat).
     base_attr = attr_resolve(ctx, "OUTER", prop)

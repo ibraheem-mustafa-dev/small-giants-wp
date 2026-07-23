@@ -31,6 +31,7 @@ from typing import Any
 from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
+from converter.services.border_side import border_side_write
 from converter.services.fold_helpers import _resolve_co_declared_var
 from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import (
@@ -136,6 +137,18 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     box_write = _content_band_box_write(decl, ctx)
     if box_write is not None:
         return box_write
+
+    # Per-side border longhand → merged borderWidth box-object (SHARED accumulator
+    # seam, same as the padding-side path above). A `border-{side}-width` decl on a
+    # CONTENT leaf (e.g. sgs/text's disclaimer — D307 routes border here via the
+    # CONTENT→OUTER fallback) accumulates ONE side into the block's borderWidth
+    # object. Runs before the layer-priority chain: border-{side}-width HAS a
+    # property_suffixes row routing to a per-side attr NO block declares, so the
+    # chain would NO_DESTINATION-gap it. None → fall through unchanged. Gated on
+    # box_family, never a name regex (§13.4 FR-31-22.2 AST gate).
+    border_side = border_side_write(decl, ctx)
+    if border_side is not None:
+        return border_side
 
     # Explicit layer-priority chain (the re-expressed fold ladder): first
     # layer whose attr the OWNING block actually declares wins.
