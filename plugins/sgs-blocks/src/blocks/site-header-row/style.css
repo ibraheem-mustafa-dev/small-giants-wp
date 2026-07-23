@@ -36,3 +36,45 @@
 	min-width: 44px;
 	min-height: 44px;
 }
+
+/*
+ * FR-37-35 — container-query row reflow (§3.6 "container queries for
+ * row-level reflow" + STOP-CONTAINER-TIER-IS-NOT-VIEWPORT).
+ *
+ * flex-wrap (wrapper-owned, block.json default) already lets children drop
+ * onto a new line once they run out of room on their own line — but that is
+ * an EMERGENT side effect of the flexbox algorithm, not an authored layout
+ * change. This adds the authored change: once the row's OWN inline size
+ * (its container — never the viewport) crosses the SGS mobile tier, every
+ * direct child takes the full row width and gets its own line, so the row
+ * deliberately collapses to a single column rather than wrapping into an
+ * ambiguous 2-per-line arrangement that happens to fit.
+ *
+ * container-type:inline-size here is a defensive restatement of the
+ * identical rule the shared wrapper ALREADY emits per-instance
+ * (class-sgs-container-wrapper.php:1555 — unconditional for this block
+ * because render.php passes responsive_model:'object'). Same property,
+ * same value, same element — applied here via the stable plain class
+ * rather than the dynamic per-instance uid, so the @container rule below
+ * does not silently depend on that PHP wiring staying unchanged.
+ *
+ * 767px is SGS_Breakpoints::MOBILE_MAX (includes/class-sgs-breakpoints.php).
+ * It is reused here because it is the SAME numeric bound the wrapper's own
+ * FR-S9-6 mechanism already uses for the @container queries scoped to THIS
+ * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
+ * viewport @media breakpoint for its own sake. The number matches the
+ * viewport mobile tier by design (one SGS "mobile" definition, applied on
+ * two independent axes — container width and viewport width — exactly as
+ * FR-S9-6 already does for this element); this rule itself fires purely
+ * off the row's own measured inline size, never the viewport.
+ */
+.sgs-site-header-row {
+	container-type: inline-size;
+}
+
+@container (max-width: 767px) {
+	.sgs-site-header-row > *,
+	.sgs-site-header-row > .sgs-container__inner > * {
+		flex-basis: 100%;
+	}
+}

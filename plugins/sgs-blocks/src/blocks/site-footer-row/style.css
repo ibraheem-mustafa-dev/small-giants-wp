@@ -24,3 +24,52 @@
 .sgs-site-footer-row .wp-block-site-logo img {
 	flex-shrink: 0;
 }
+
+/*
+ * FR-37-35 — container-query row reflow (§3.6 "container queries for
+ * row-level reflow" + STOP-CONTAINER-TIER-IS-NOT-VIEWPORT).
+ *
+ * Mirrors sgs/site-header-row's identical reflow rule exactly (same
+ * reasoning, same numeric tier — see that file's comment for the full
+ * justification). flex-basis is ignored on a `layout:grid` columns row
+ * (flex-basis only affects flex layout), so this rule is inert-by-
+ * construction on the footer's grid columns row and only reflows the
+ * flex rows (top strip / bottom bar) — no per-layout carve-out needed.
+ *
+ * flex-wrap (wrapper-owned) already lets children drop onto a new line
+ * once they run out of room — an EMERGENT side effect of the flexbox
+ * algorithm, not an authored layout change. This adds the authored
+ * change: once the row's OWN inline size (its container — never the
+ * viewport) crosses the SGS mobile tier, every direct flex child takes
+ * the full row width and gets its own line, so a flex row deliberately
+ * collapses to a single column rather than wrapping into an ambiguous
+ * 2-per-line arrangement that happens to fit.
+ *
+ * container-type:inline-size here is a defensive restatement of the
+ * identical rule the shared wrapper ALREADY emits per-instance
+ * (class-sgs-container-wrapper.php:1555 — unconditional for this block
+ * because render.php passes responsive_model:'object'). Same property,
+ * same value, same element — applied here via the stable plain class
+ * rather than the dynamic per-instance uid, so the @container rule below
+ * does not silently depend on that PHP wiring staying unchanged.
+ *
+ * 767px is SGS_Breakpoints::MOBILE_MAX (includes/class-sgs-breakpoints.php).
+ * It is reused here because it is the SAME numeric bound the wrapper's own
+ * FR-S9-6 mechanism already uses for the @container queries scoped to THIS
+ * exact element (its gap / gridTemplateColumns tiers) — not a copy of the
+ * viewport @media breakpoint for its own sake. The number matches the
+ * viewport mobile tier by design (one SGS "mobile" definition, applied on
+ * two independent axes — container width and viewport width — exactly as
+ * FR-S9-6 already does for this element); this rule itself fires purely
+ * off the row's own measured inline size, never the viewport.
+ */
+.sgs-site-footer-row {
+	container-type: inline-size;
+}
+
+@container (max-width: 767px) {
+	.sgs-site-footer-row > *,
+	.sgs-site-footer-row > .sgs-container__inner > * {
+		flex-basis: 100%;
+	}
+}
