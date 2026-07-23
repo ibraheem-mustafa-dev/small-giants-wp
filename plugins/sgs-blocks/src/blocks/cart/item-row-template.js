@@ -10,17 +10,36 @@
 import { formatMoney } from './store-api';
 
 /**
- * Escape a string for safe HTML text-node insertion (defence-in-depth —
- * WooCommerce already sanitises item names, but the panel is built via
- * `innerHTML` so this guards against a rogue 3rd-party product-title filter).
+ * Escape a string for safe insertion into HTML — including inside a
+ * double- or single-quoted ATTRIBUTE value.
+ *
+ * SECURITY: this deliberately does NOT use the `div.textContent → innerHTML`
+ * round-trip. That idiom looks equivalent but is not: the HTML serialiser
+ * escapes only `&`, `<`, `>` and U+00A0 in a TEXT node, because quotes carry
+ * no special meaning there. Every value below is interpolated into a quoted
+ * attribute, where a surviving `"` closes the attribute early and lets the
+ * rest of the string become new attributes — e.g. a product name of
+ * `Shirt" onerror=alert(1) x="` injects an event handler onto the thumbnail,
+ * and event handlers DO fire from `innerHTML` (unlike `<script>`).
+ *
+ * The threat model is the one this block already assumed: WooCommerce
+ * sanitises product titles, but a third-party title/image filter, or a cart
+ * item key echoed back by an extension, is untrusted input reaching an
+ * `innerHTML` sink.
+ *
+ * `&` is replaced FIRST so the entities introduced afterwards are not
+ * themselves double-escaped.
  *
  * @param {string} str The raw string.
- * @return {string} HTML-escaped string.
+ * @return {string} String safe for both text and quoted-attribute contexts.
  */
 export function escapeHtml( str ) {
-	const div = document.createElement( 'div' );
-	div.textContent = String( str ?? '' );
-	return div.innerHTML;
+	return String( str ?? '' )
+		.replace( /&/g, '&amp;' )
+		.replace( /</g, '&lt;' )
+		.replace( />/g, '&gt;' )
+		.replace( /"/g, '&quot;' )
+		.replace( /'/g, '&#39;' );
 }
 
 /**
