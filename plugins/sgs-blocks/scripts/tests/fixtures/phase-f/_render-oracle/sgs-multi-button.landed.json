@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-multi-button",
+      "section_id": "section-1-multi-button@Base",
       "block_slug": "sgs/multi-button",
       "guards": {
-        "empty": false,
-        "element": false,
+        "empty": true,
+        "element": true,
         "height": true,
         "non_default": true
       },
@@ -20,38 +20,39 @@
           "property": "display",
           "tier": "Base",
           "draft_value": "flex",
-          "computed_value": null,
+          "computed_value": "flex",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "LANDED"
         },
         {
           "property": "flex-wrap",
           "tier": "Base",
           "draft_value": "wrap",
-          "computed_value": null,
+          "computed_value": "wrap",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "LANDED"
         },
         {
           "property": "gap",
           "tier": "Base",
           "draft_value": "12px",
-          "computed_value": null,
+          "computed_value": "12px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "LANDED"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "16px 0",
-          "computed_value": null,
+          "computed_value": "0px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "UNVERIFIED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-multi-button' (multi-button) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 0
+  "plain_summary": "Section 'section-1-multi-button@Base' (multi-button): 3 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 0,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-multi-button/"
 }

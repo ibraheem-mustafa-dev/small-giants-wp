@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-testimonial",
+      "section_id": "section-1-testimonial@Base",
       "block_slug": "sgs/testimonial",
       "guards": {
-        "empty": false,
-        "element": false,
+        "empty": true,
+        "element": true,
         "height": true,
         "non_default": true
       },
@@ -20,38 +20,39 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "white",
-          "computed_value": null,
+          "computed_value": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "border",
           "tier": "Base",
           "draft_value": "1px solid #e5e0db",
-          "computed_value": null,
+          "computed_value": "1px solid rgb(229, 224, 219)",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "border-radius",
           "tier": "Base",
           "draft_value": "12px",
-          "computed_value": null,
+          "computed_value": "12px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "LANDED"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "32px 24px",
-          "computed_value": null,
+          "computed_value": "32px 24px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-testimonial' (testimonial) NOT-RENDERED: the page did not load — 4 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 8
+  "plain_summary": "Section 'section-1-testimonial@Base' (testimonial): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 8,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-testimonial/"
 }

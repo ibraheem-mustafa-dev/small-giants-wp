@@ -6,12 +6,12 @@
   },
   "sections": [
     {
-      "section_id": "section-1-form-step",
+      "section_id": "section-1-form-step@Base",
       "block_slug": "sgs/form-step",
       "guards": {
         "empty": false,
-        "element": false,
-        "height": true,
+        "element": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-form-step",
@@ -20,30 +20,31 @@
           "property": "border",
           "tier": "Base",
           "draft_value": "1px solid #e5e0db",
-          "computed_value": null,
+          "computed_value": "1px solid rgb(229, 224, 219)",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "border-radius",
           "tier": "Base",
           "draft_value": "8px",
-          "computed_value": null,
+          "computed_value": "8px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "32px 24px",
-          "computed_value": null,
+          "computed_value": "32px 24px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-form-step' (form-step) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 5
+  "plain_summary": "Section 'section-1-form-step@Base' (form-step): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 5,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-form-step/"
 }

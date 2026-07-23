@@ -6,12 +6,12 @@
   },
   "sections": [
     {
-      "section_id": "section-1-cta-section",
+      "section_id": "section-1-cta-section@Base",
       "block_slug": "sgs/cta-section",
       "guards": {
         "empty": false,
-        "element": false,
-        "height": true,
+        "element": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-cta-section",
@@ -20,78 +20,92 @@
           "property": "background-color",
           "tier": "Base",
           "draft_value": "#2d1b4e",
-          "computed_value": null,
+          "computed_value": "rgb(245, 208, 80)",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "background-image",
           "tier": "Base",
           "draft_value": "url(\"/media/pattern-dots.svg\")",
-          "computed_value": null,
+          "computed_value": "none",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "background-position",
           "tier": "Base",
           "draft_value": "center right",
-          "computed_value": null,
+          "computed_value": "0% 0%",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "background-repeat",
           "tier": "Base",
           "draft_value": "repeat",
-          "computed_value": null,
+          "computed_value": "repeat",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "background-size",
           "tier": "Base",
           "draft_value": "320px 320px",
-          "computed_value": null,
+          "computed_value": "auto",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "72px 32px",
-          "computed_value": null,
+          "computed_value": "72px 32px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "position",
           "tier": "Base",
           "draft_value": "relative",
-          "computed_value": null,
+          "computed_value": "relative",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
-        },
+          "verdict": "GUARD-FAIL"
+        }
+      ]
+    },
+    {
+      "section_id": "section-1-cta-section@Mobile",
+      "block_slug": "sgs/cta-section",
+      "guards": {
+        "empty": false,
+        "element": true,
+        "height": false,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-cta-section",
+      "cells": [
         {
           "property": "background-size",
           "tier": "Mobile",
           "draft_value": "200px 200px",
-          "computed_value": null,
+          "computed_value": "auto",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Mobile",
           "draft_value": "48px 20px",
-          "computed_value": null,
+          "computed_value": "48px 20px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-cta-section' (cta-section) NOT-RENDERED: the page did not load — 9 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 13
+  "plain_summary": "Section 'section-1-cta-section@Base' (cta-section): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 7 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False. Section 'section-1-cta-section@Mobile' (cta-section): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 13,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-background-url/"
 }

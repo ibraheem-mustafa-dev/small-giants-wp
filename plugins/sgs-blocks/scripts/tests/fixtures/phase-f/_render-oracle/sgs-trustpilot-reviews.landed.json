@@ -6,12 +6,12 @@
   },
   "sections": [
     {
-      "section_id": "section-1-trustpilot-reviews",
+      "section_id": "section-1-trustpilot-reviews@Base",
       "block_slug": "sgs/trustpilot-reviews",
       "guards": {
-        "empty": false,
-        "element": false,
-        "height": true,
+        "empty": true,
+        "element": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-trustpilot-reviews",
@@ -20,22 +20,23 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "white",
-          "computed_value": null,
+          "computed_value": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "48px 24px",
-          "computed_value": null,
+          "computed_value": "0px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-trustpilot-reviews' (trustpilot-reviews) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 7
+  "plain_summary": "Section 'section-1-trustpilot-reviews@Base' (trustpilot-reviews): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 2 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 7,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-trustpilot-reviews/"
 }

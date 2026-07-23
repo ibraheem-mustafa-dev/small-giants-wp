@@ -6,7 +6,7 @@
   },
   "sections": [
     {
-      "section_id": "section-1-tabs",
+      "section_id": "section-1-tabs@Base",
       "block_slug": "sgs/tabs",
       "guards": {
         "empty": false,
@@ -22,12 +22,13 @@
           "draft_value": "48px 24px",
           "computed_value": null,
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-tabs' (tabs) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 12
+  "plain_summary": "Section 'section-1-tabs@Base' (tabs): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 12,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-tabs/"
 }

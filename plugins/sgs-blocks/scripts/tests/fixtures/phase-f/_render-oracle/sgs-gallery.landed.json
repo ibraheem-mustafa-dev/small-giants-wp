@@ -6,12 +6,12 @@
   },
   "sections": [
     {
-      "section_id": "section-1-gallery",
+      "section_id": "section-1-gallery@Base",
       "block_slug": "sgs/gallery",
       "guards": {
-        "empty": false,
-        "element": false,
-        "height": true,
+        "empty": true,
+        "element": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-gallery",
@@ -20,14 +20,15 @@
           "property": "padding",
           "tier": "Base",
           "draft_value": "48px 24px",
-          "computed_value": null,
+          "computed_value": "48px 24px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-gallery' (gallery) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 9
+  "plain_summary": "Section 'section-1-gallery@Base' (gallery): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 9,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-gallery/"
 }

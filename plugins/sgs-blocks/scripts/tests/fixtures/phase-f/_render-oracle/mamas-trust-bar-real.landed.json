@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-trust-bar",
+      "section_id": "section-1-trust-bar@Base",
       "block_slug": "sgs/trust-bar",
       "guards": {
-        "empty": false,
-        "element": false,
+        "empty": true,
+        "element": true,
         "height": true,
         "non_default": true
       },
@@ -20,22 +20,23 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "#f5c2c8",
-          "computed_value": null,
+          "computed_value": "rgb(245, 194, 200) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "22px 20px",
-          "computed_value": null,
+          "computed_value": "22px 20px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-trust-bar' (trust-bar) NOT-RENDERED: the page did not load — 2 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 30
+  "plain_summary": "Section 'section-1-trust-bar@Base' (trust-bar): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 30,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-mamas-trust-bar-real/"
 }

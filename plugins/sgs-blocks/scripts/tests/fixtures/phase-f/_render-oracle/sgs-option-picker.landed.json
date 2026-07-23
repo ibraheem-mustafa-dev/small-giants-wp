@@ -6,7 +6,7 @@
   },
   "sections": [
     {
-      "section_id": "section-1-option-picker",
+      "section_id": "section-1-option-picker@Base",
       "block_slug": "sgs/option-picker",
       "guards": {
         "empty": false,
@@ -22,12 +22,13 @@
           "draft_value": "16px",
           "computed_value": null,
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-option-picker' (option-picker) NOT-RENDERED: the page did not load — 1 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 14
+  "plain_summary": "Section 'section-1-option-picker@Base' (option-picker): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 14,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-option-picker/"
 }

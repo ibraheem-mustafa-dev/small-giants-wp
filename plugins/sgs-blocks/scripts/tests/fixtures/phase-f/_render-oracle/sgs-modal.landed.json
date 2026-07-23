@@ -6,12 +6,12 @@
   },
   "sections": [
     {
-      "section_id": "section-1-modal",
+      "section_id": "section-1-modal@Base",
       "block_slug": "sgs/modal",
       "guards": {
-        "empty": false,
-        "element": false,
-        "height": true,
+        "empty": true,
+        "element": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-modal",
@@ -20,54 +20,55 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "rgba(0,0,0,0.5)",
-          "computed_value": null,
+          "computed_value": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "display",
           "tier": "Base",
           "draft_value": "none",
-          "computed_value": null,
+          "computed_value": "block",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "inset",
           "tier": "Base",
           "draft_value": "0",
-          "computed_value": null,
+          "computed_value": "auto",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "24px",
-          "computed_value": null,
+          "computed_value": "0px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "position",
           "tier": "Base",
           "draft_value": "fixed",
-          "computed_value": null,
+          "computed_value": "static",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "z-index",
           "tier": "Base",
           "draft_value": "9999",
-          "computed_value": null,
+          "computed_value": "auto",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-modal' (modal) NOT-RENDERED: the page did not load — 6 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 16
+  "plain_summary": "Section 'section-1-modal@Base' (modal): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 6 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 16,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-modal/"
 }

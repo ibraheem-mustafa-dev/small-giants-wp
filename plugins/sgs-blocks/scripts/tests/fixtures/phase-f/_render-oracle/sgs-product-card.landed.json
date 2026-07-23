@@ -6,12 +6,12 @@
   },
   "sections": [
     {
-      "section_id": "section-1-product-card",
+      "section_id": "section-1-product-card@Base",
       "block_slug": "sgs/product-card",
       "guards": {
-        "empty": false,
-        "element": false,
-        "height": true,
+        "empty": true,
+        "element": true,
+        "height": false,
         "non_default": true
       },
       "element_selector": ".wp-block-sgs-product-card",
@@ -20,46 +20,47 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "white",
-          "computed_value": null,
+          "computed_value": "rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "border",
           "tier": "Base",
           "draft_value": "1px solid #e5e0db",
-          "computed_value": null,
+          "computed_value": "1px solid rgb(229, 224, 219)",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "border-radius",
           "tier": "Base",
           "draft_value": "16px",
-          "computed_value": null,
+          "computed_value": "16px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "overflow",
           "tier": "Base",
           "draft_value": "hidden",
-          "computed_value": null,
+          "computed_value": "hidden",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "16px",
-          "computed_value": null,
+          "computed_value": "0px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-product-card' (product-card) NOT-RENDERED: the page did not load — 5 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 11
+  "plain_summary": "Section 'section-1-product-card@Base' (product-card): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 5 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 11,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-product-card/"
 }

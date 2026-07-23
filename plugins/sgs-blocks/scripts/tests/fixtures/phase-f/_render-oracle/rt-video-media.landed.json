@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-hero",
+      "section_id": "section-1-hero@Base",
       "block_slug": "sgs/hero",
       "guards": {
         "empty": false,
-        "element": false,
+        "element": true,
         "height": true,
         "non_default": true
       },
@@ -20,30 +20,31 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "#0d0d0d",
-          "computed_value": null,
+          "computed_value": "rgb(13, 13, 13) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "min-height",
           "tier": "Base",
           "draft_value": "560px",
-          "computed_value": null,
+          "computed_value": "560px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "0",
-          "computed_value": null,
+          "computed_value": "0px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-hero' (hero) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 26
+  "plain_summary": "Section 'section-1-hero@Base' (hero): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 26,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-rt-video-media/"
 }

@@ -6,11 +6,11 @@
   },
   "sections": [
     {
-      "section_id": "section-1-hero",
+      "section_id": "section-1-hero@Base",
       "block_slug": "sgs/hero",
       "guards": {
-        "empty": false,
-        "element": false,
+        "empty": true,
+        "element": true,
         "height": true,
         "non_default": true
       },
@@ -20,30 +20,44 @@
           "property": "background",
           "tier": "Base",
           "draft_value": "#f8f4ef",
-          "computed_value": null,
+          "computed_value": "rgb(248, 244, 239) none repeat scroll 0% 0% / auto padding-box border-box",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "UNVERIFIED"
         },
         {
           "property": "padding",
           "tier": "Base",
           "draft_value": "80px 24px",
-          "computed_value": null,
+          "computed_value": "80px 24px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
-        },
+          "verdict": "LANDED"
+        }
+      ]
+    },
+    {
+      "section_id": "section-1-hero@Mobile",
+      "block_slug": "sgs/hero",
+      "guards": {
+        "empty": true,
+        "element": true,
+        "height": false,
+        "non_default": true
+      },
+      "element_selector": ".wp-block-sgs-hero",
+      "cells": [
         {
           "property": "padding",
           "tier": "Mobile",
           "draft_value": "48px 16px",
-          "computed_value": null,
+          "computed_value": "48px 16px",
           "expected_default": null,
-          "verdict": "NOT-RENDERED"
+          "verdict": "GUARD-FAIL"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-hero' (hero) NOT-RENDERED: the page did not load — 3 cell(s) could not be checked.",
-  "oracle_status": "SKIPPED-NO-LIVE-URL",
-  "unattributed_cell_count": 10
+  "plain_summary": "Section 'section-1-hero@Base' (hero): 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. Section 'section-1-hero@Mobile' (hero): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=True, element=True, height=False.",
+  "oracle_status": "LIVE-PROBED",
+  "unattributed_cell_count": 10,
+  "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-hero/"
 }

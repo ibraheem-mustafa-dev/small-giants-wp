@@ -41,13 +41,18 @@ cannot bucket) therefore surface as UNACCOUNTED rather than being hidden; SGS-BE
 drafts transfer via classes, so a draft with inline styles is a Stage-0 lint error,
 not this gate's transfer surface.
 
-WHAT IS DEFERRED — the LANDED leg
-----------------------------------
+THE LANDED LEG — ARMED 2026-07-23 (was deferred)
+-------------------------------------------------
 Checking that a *transferred* attr actually RENDERS correctly on the live clone
-requires the F3 render-oracle RUNTIME, which has not yet landed. The function
-`check_landed()` below is a clearly-documented placeholder that raises
-NotImplementedError. It will be armed when F3-runtime lands. The --report output
-explicitly states this deferral.
+requires the F3 render-oracle RUNTIME. That runtime now exists
+(`oracle/batch_runner.py`) and the fixture corpus is deployed as per-fixture
+canary pages (`oracle/provision_fixture_canaries.py`), so `check_landed()`
+below is IMPLEMENTED: it reads the oracle's per-fixture `.landed.json`
+verdicts and reports them as findings.
+
+It is OPT-IN via `--with-landed`. Left always-on, a stale or never-run oracle
+would resolve every cell to NOT-RENDERED and fail the gate for every session —
+which is precisely why this leg stayed unwired until the canary pages existed.
 
 STOP-14 BASELINE-AGAINST-CURRENT
 ---------------------------------
@@ -780,9 +785,9 @@ def _print_report(summary: dict, baseline: set[str]) -> None:
     print("=" * 70)
     print()
     print(
-        f"  LANDED leg: DEFERRED — F3 render-oracle runtime not yet landed.\n"
-        "  check_landed() raises NotImplementedError until F3 ships.\n"
-        "  Spec ref: Spec 31 §12.2.2.\n"
+        "  LANDED leg: ARMED (2026-07-23) but NOT run in this invocation.\n"
+        "  Pass --with-landed to read the F3 oracle artefacts and (with --check)\n"
+        "  fail on any WRITTEN-not-LANDED cell. Spec ref: Spec 31 §12.2.2.\n"
     )
     print(f"  Total relevant declarations: {total_relevant}")
     print(f"  Total UNACCOUNTED:           {total_unaccounted}")
