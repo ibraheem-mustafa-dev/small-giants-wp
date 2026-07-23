@@ -126,11 +126,13 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No headers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor header layouts selectable as a site header variant.', 'sgs-blocks' ),
-					// FR-S9-11 (2026-07-13, D323): a new Advanced Header opens pre-seeded with
-					// the specialised sgs/site-header block (never-overflow 3-row shell) rather
-					// than a bare canvas. ADD (no prior 'template' key existed). The footer CPT
-					// template is deferred to P3 with sgs/site-footer (that block is not built yet).
-					'template'    => array( array( 'sgs/site-header' ) ),
+					// FR-37-7 (2026-07-24): the registration `template` seed is REMOVED so a new
+					// Advanced Header opens EMPTY, which lets WordPress's native "Choose a pattern"
+					// starter modal fire (it only appears on an empty post). The modal offers the
+					// sgs_header starter patterns (Block Types: core/post-content, Post Types:
+					// sgs_header), and "Start from scratch" is a MINIMAL starter card (the bare
+					// sgs/site-header 3-row shell) rather than this pre-seed. Was FR-S9-11/D323:
+					// `'template' => array( array( 'sgs/site-header' ) )`.
 				)
 			)
 		);

@@ -2,7 +2,8 @@
 /**
  * Title: SGS Framework Header — Minimal
  * Slug: sgs/framework-header-minimal
- * Block Types: core/template-part/header
+ * Block Types: core/post-content
+ * Post Types: sgs_header
  * Categories: sgs-headers
  * Keywords: header, sgs, framework, minimal, compact, landing
  * Viewport Width: 1440
