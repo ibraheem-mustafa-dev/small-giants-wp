@@ -14,119 +14,110 @@ done by sonnet/haiku agents and python scripts you dispatch.
 ## First action
 
 **Smallest first step, under 5 minutes, zero dependencies:**
-`cat .claude/reports/2026-07-22-spec36-completion-audit.md | head -60`
+`python plugins/sgs-blocks/scripts/check-simple-surface-cap.js --help || node plugins/sgs-blocks/scripts/check-simple-surface-cap.js`
 
-That is last session's verified Spec 36 completion map (per-FR status + cost-tier + dependencies +
-suggested parallel batches). It is the raw material for this session's plan — read it before anything else.
+That runs one of the two gates built on 2026-07-23 and tells you immediately whether the tree is
+healthy. Then read the LEDGER.
 
 ## Mandatory READING — before anything else
 
-1. **`.claude/LEDGER.md`** — the single living status (header/footer/nav thread CLOSED; what's next).
-2. **`.claude/STOP-CATALOGUE.md`** — **63 STOP entries** + the pre-flight ritual. **Answer the ritual
-   inline before your first Write/Edit or first agent dispatch.**
-3. **`.claude/reports/2026-07-22-spec36-completion-audit.md`** — the verified Spec 36 completion map.
-4. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** + **`.claude/specs/37-HEADER-FOOTER-BUILDER.md`** —
-   the two governing specs, IN FULL. ⛔ **Specs 17 and 34 are DELETED — never cite them.**
-   Spec 31 remains the standing cloning spec (read in full only if the session touches the converter).
+1. **`.claude/LEDGER.md`** — the single living status.
+2. **`.claude/STOP-CATALOGUE.md`** — the uncapped STOP catalogue + pre-flight ritual. **Answer the
+   ritual inline before your first Write/Edit or first agent dispatch.**
+3. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** §6a (verified progress) + **FR-36-26/a/b/c** (the
+   fully-scoped link-list build) — IN FULL.
+4. **`.claude/specs/37-HEADER-FOOTER-BUILDER.md`** §5 (the three verification tiers) + the **§6
+   ownership note** on "Spec 33 Part 2" — IN FULL.
+   ⛔ Specs 17 and 34 are DELETED — never cite them.
 
 ## Why this matters (motivation — Rule 7)
 
-**Top USP:** a client edits their own header/footer in a findable admin screen and it appears on their
-site. That now WORKS end-to-end on both sites — proven live last session, via the real operator path, with
-the legacy nav fully retired. **The remaining work is breadth, not risk:** turning a proven mechanism into
-a complete, conformant feature set. This session converts a verified map into a parallel execution plan —
-the highest-leverage thing available, because everything after it can run cheaply and concurrently.
+**Top USP:** a client edits their own header and footer in a findable admin screen and it appears on
+their site. That works end-to-end on both sites. 2026-07-23 took Specs 36+37 from 10/59 to 24/59
+requirements complete, deployed to the canary with checksum proof and zero new axe violations.
 
----
+**But most of it has never actually run.** The canary homepage carries no cart and no search block;
+editor notices and `DeviceTabs` are editor-surface only; hide-on-scroll ships off by default; and
+`sgs/nav-menu` is not on that page at all. Task 1 fixes that — it converts a pile of
+`DEPLOYED (unexercised)` into either `LIVE-VERIFIED` or a real bug list. That is the highest-value
+thing available, because everything downstream is currently resting on unobserved work.
 
-## Task 1 — Extend the conformance audit to Spec 37
+## Task 1 — Make the unexercised work RENDER, then verify it (Bean-directed)
 
-**What:** produce the same per-FR verified completion map for Spec 37 that already exists for Spec 36.
-**Why:** you cannot plan or parallelise what you haven't verified. Spec Status lines drift — last session
-found Spec 37 §3.9a/FR-37-6 claiming a client-data leak that had already been fixed, and the Spec 36 audit
-found `sgs_mega_menu` plumbing built but never actually rendered. Trust code, not Status lines.
-**Estimated time:** 20–30 min.
+**What:** use Playwright and/or WP-CLI to CREATE the pages and settings that cause each unverified
+item to render, then check both that it works and that it looks right.
+**Why:** eight units shipped on 2026-07-23 with the visual-diff gate bypassed (honestly, with no
+report fabricated). They are deployed and checksum-verified but unobserved. `DEPLOYED` is not `DONE`.
+**Estimated time:** 45–60 min.
 
-**Orchestration:**
-- Execution: **delegated**
-- Model: `sonnet` via `/delegate` — mechanical verification against code/DB, no novel design
-- Dispatch pattern: single-agent (read-only)
-- Brief: audit every Spec 37 FR against live code + DB exactly as
-  `.claude/reports/2026-07-22-spec36-completion-audit.md` did for Spec 36 — claimed status vs verified
-  status (DONE / PARTIAL / NOT-BUILT / UNVERIFIABLE-NEEDS-LIVE-DOM), evidence `file:line`, gap, cost tier
-  (PYTHON-SCRIPT / HAIKU / SONNET / OPUS), dependencies + parallel-safety. Write to
-  `.claude/reports/<date>-spec37-completion-audit.md`.
-- Context the subagent needs: FR-37-1/2/3/5/25/11 + §3.3a are BUILT + canary-verified; FR-37-6 is PARTIAL
-  (file step done); FR-37-9/10 audits are done with FR-37-33/34/35 carried; **FR-37-21 is DONE**
-  (adaptive-nav + mega-menu deleted, D362) — any FR referencing those blocks is now moot/historical.
-- Depends on: none. **Parallel with:** re-reading the Spec 36 map.
-- **/qc gate after:** yes — spot-check 3 of its verdicts against code yourself before trusting the map.
+**Set up and then verify, one at a time:**
 
-**Acceptance:** every Spec 37 FR has a verified status with `file:line` evidence; any claimed-DONE the code
-doesn't support is flagged. A map you would stake a dispatch plan on.
+| Item | What must exist for it to render | What to check |
+|---|---|---|
+| FR-36-19 mini-cart | A page with `sgs/cart`, `displayMode` set to `flyout`, then again `drawer`; WooCommerce cart non-empty | Flyout is a DISCLOSURE (no focus trap, page usable); drawer is a DIALOG via `store('sgs/nav')`; qty-edit + remove work with no page reload; empty state renders |
+| FR-36-20 search | A page with `sgs/product-search`, each of the 3 `displayMode` values | Overlay = DIALOG with `::backdrop`; icon-expand = DISCLOSURE; matched-portion highlighting; no-JS `<form role="search">` fallback still returns results |
+| FR-36-21 social | A page with `sgs/social-icons`, both `source: manual` and `site-info` | Auto-generated accessible names read "Follow us on X"; `rel` correct; keyboard-reachable with visible focus |
+| FR-36-12 / FR-37-19 notices | Open `sgs/nav-menu` and `sgs/site-header` in the editor (canary creds: `.claude/secrets/sandybrown.env`) | Notices appear; **and the operator can still SAVE** — that is the actual requirement (P1 DP2a) |
+| FR-37-29 `DeviceTabs` | Any block with a responsive control, in the editor | Arrow keys + Home/End move between tiers; targets ≥44px; the canvas actually resizes (the native `deviceType` sync still works) |
+| FR-37-13 hide-on-scroll | A header CPT with the Advanced toggle ON, set active | Header hides on scroll down, returns on scroll up; **then open the drawer while scrolled** — the header's `transform` could break the drawer's positioning (D323 class, untested) |
+| FR-36-10/11 `<nav>` landmark | Any page rendering `sgs/nav-menu` | Exactly ONE `<nav>` exposed at a time; its accessible name is right; below the collapse point the landmark is GONE, not empty; re-run `nav-qa/axe-run.mjs` and confirm `region` + `landmark-unique` clear |
+| FR-37-11 footer columns | A footer CPT with a known column count | Renders that many columns on desktop, stacks to 1 on mobile |
 
-## Task 2 — `/plan` the remaining Spec 36 + 37 work as parallel batches
+- **/qc gate after:** yes. Anything that fails becomes a named bug with evidence, not a retry loop.
+- **Record results in Spec 37 §5 + Spec 36 §6a**, moving each item from `DEPLOYED (unexercised)` to
+  `LIVE-VERIFIED` or to a defect. Do not leave the tier labels stale.
 
-**What:** turn both completion maps into an execution plan: per-FR cost tier, dependency graph, and
-explicit PARALLEL vs SEQUENTIAL grouping.
-**Why:** Bean's directive — classify each remaining task by whether a python script / haiku / sonnet agent
-can do it in whole or part, then run the cheap independent work concurrently instead of serially.
+## Task 2 — FR-36-26c Dispatch A: icon-list presentation layer
+
+**What:** markers + heading + typography on `sgs/icon-list`. **Fully scoped in Spec 36 FR-36-26c —
+read it and build it; do NOT re-design it.**
+**Why:** this block will be used in essentially every footer (Bean, 2026-07-23). The marker system
+is universal — every existing `sgs/icon-list` instance benefits, not just footers.
 **Estimated time:** 30–45 min.
 
-**Orchestration:**
-- Execution: **inline (Opus)** — this is the orchestration judgement that must not be delegated
-- Use `/strategic-plan`; the Spec 36 audit already proposes a starting grouping:
-  - **Batch A (parallel, SONNET, disjoint blocks):** FR-36-19 mini-cart · 36-20 search extend ·
-    36-21 social one-source · 36-23 site-info SHOULDs
-  - **Batch B (parallel, cheap):** FR-36-12 notices (HAIKU) · 36-24 lint gate (PYTHON-SCRIPT) ·
-    36-9 drawer var binding (HAIKU)
-  - **Chain C (sequential — the mega spine):** 36-3 → 36-4 → 36-5 → 36-10 → 36-8 → 36-17 → 36-9a
-    (FR-36-6 "show header" toggle runs parallel to this chain)
-  - **Gate-only, last:** FR-36-16 + 36-11 = live Playwright/axe + Bean's eye
-- Fold Spec 37's remaining FRs into the same structure: FR-37-33/34/35 (§3 gaps), FR-37-14/15 (tri-state +
-  scoped behaviour CSS), FR-37-7/8 (starter picker), FR-37-26..31 (Simple/Advanced surface + a11y).
-- Depends on: Task 1. **Parallel with:** none.
-- **/qc gate after:** no — Task 3's dispatch is the test of the plan.
+- Execution: **delegated**, SONNET (per `/delegate`; it is bounded feature work in one block).
+- Adds `markerType` (icon/emoji/bullet/numbered/none) with a real `<ol>` for `numbered`, `heading` +
+  `headingLevel`, and both typography families via the SHARED `TypographyControls` + 
+  `sgs_typography_css_rule` (R-22-13 — never hand-roll a font-size control).
+- The marker renderer goes in ONE shared helper under `includes/`, never in the block folder
+  (`--webpack-copy-php` only copies paths named in block.json; a sibling file 500s in production).
+- **Dispatch MUST carry:** *"EXECUTE YOURSELF with your OWN tools. Do NOT use the Agent/Task tool to
+  delegate — you are the implementer. Report actual command outputs."*
+- Depends on: none. **NOT parallel-safe with Task 3** (same three files).
+- **/qc gate after:** yes.
 
-**Acceptance:** a written plan where every remaining FR carries a model tier, a dependency, and a
-parallel-batch assignment; nothing is left unclassified; no FR is silently dropped (STOP-29 — map every
-deferral to a named spec STAGE, never "out of scope").
+## Task 3 — FR-36-26c Dispatch B: icon-list data + semantics layer
 
-## Task 3 — Dispatch the first parallel batch
+**What:** the `source` toggle (typed | menu), menu binding, and the FR-36-26a discoverability
+contract. **Also fully scoped in FR-36-26c.**
+**Estimated time:** 30–45 min.
 
-**What:** spawn the Batch A + Batch B agents concurrently and QC their returns.
-**Why:** proves the plan and banks real progress cheaply. These are disjoint blocks — genuinely safe to
-run at once.
-**Estimated time:** 45–60 min wall-clock for the batch.
-
-**Orchestration:**
-- Execution: **delegated**, via `/dispatching-parallel-agents`
-- Model: per the plan's tier (mostly `sonnet`; haiku/python for Batch B)
-- Dispatch pattern: parallel — one agent per FR, disjoint files only
-- **Every implementer dispatch MUST carry:** *"EXECUTE YOURSELF with your OWN tools. Do NOT use the
-  Agent/Task tool to delegate — you are the implementer. Report actual command outputs."*
-  (STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE — this bit twice last session.)
-- Depends on: Task 2. **Parallel with:** n/a (this IS the parallel step).
+- Execution: **delegated**, SONNET. **Depends on Task 2** — same files, strictly sequential.
+- Menu resolution CALLS the existing `SGS_Nav_Menu_Source` static class — reuse, never a second
+  resolver (R-31-9). Heading defaults from the menu's own name; an operator title overrides it
+  **stickily**.
+- Then the FR-36-26a per-type table: conditional `<nav>` (opt-in, default OFF for typed),
+  `aria-labelledby` → the rendered heading, and `aria-current` computed **client-side** (LiteSpeed
+  would cache one page's answer for every page — FR-36-11).
 - **/qc gate after:** yes — `/qc-council` before any commit touching SGS block logic (blub.db 255).
-
-**Acceptance:** each dispatched FR returns with evidence you have independently verified against the repo;
-build green; commits path-scoped. An agent's "done" is a CLAIM until you check it.
 
 ---
 
 ## Dependency graph
 
 ```
-Task 1 — Spec 37 audit (sonnet, read-only)
-   ↓
-Task 2 — /plan (INLINE Opus — orchestration judgement)
-   ↓
-Task 3 — Batch A (4x sonnet, parallel) + Batch B (haiku + python, parallel)
+Task 1 — live verification setup + checks (Playwright/WP-CLI, inline)
+   ↓  (independent of Tasks 2–3; do it FIRST — it may generate bugs that reorder everything)
+Task 2 — FR-36-26c Dispatch A (sonnet)  ── presentation
+   ↓  same files, strictly sequential
+Task 3 — FR-36-26c Dispatch B (sonnet)  ── data + semantics
    ↓  /qc-council gate
 commit (path-scoped, branch re-checked in the SAME command)
-   ↓
-[later sessions] Chain C — the mega spine (sequential) → FR-36-16/11 live gates + Bean's eye
 ```
+
+**Still open, NOT in these tasks:** FR-37-7 the starter picker — the single highest-leverage
+remaining item, and the SAME build as Spec 36 FR-36-3 (schedule it ONCE, never twice).
+`sgs/site-header` sits at 7 default-visible controls against a cap of 3 (FR-37-27 roster work).
 
 ## Methodology guardrails (do not skip)
 

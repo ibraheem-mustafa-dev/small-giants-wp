@@ -268,7 +268,17 @@ $nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
 if ( '' === $nav_label && $ref > 0 && function_exists( 'wp_get_nav_menu_object' ) ) {
 	$nav_menu_obj = wp_get_nav_menu_object( $ref );
 	if ( $nav_menu_obj && ! empty( $nav_menu_obj->name ) ) {
-		$nav_label = (string) $nav_menu_obj->name;
+		// Strip a trailing "menu"/"navigation"/"nav" from the DERIVED name only.
+		// A landmark's role is already announced, so a label ending in one of
+		// those words double-announces — "Main Menu" becomes "Main Menu
+		// navigation" (W3C ARIA APG landmark guidance; Adrian Roselli, "Maybe
+		// Don't Name That Landmark", 2024). Operators name menus "Main Menu" or
+		// "Primary Navigation" constantly, so this WILL fire in practice.
+		// Only the auto-derived value is normalised — an explicit operator
+		// `navLabel` is their choice and is passed through untouched.
+		$derived   = (string) $nav_menu_obj->name;
+		$stripped  = preg_replace( '/\s*\b(menu|navigation|nav)\b\s*$/i', '', $derived );
+		$nav_label = '' !== trim( (string) $stripped ) ? trim( (string) $stripped ) : $derived;
 	}
 }
 if ( '' === $nav_label ) {
@@ -518,8 +528,14 @@ if ( '' !== $burger_size ) {
 // discipline"). Only the switch point itself lives here; any OTHER custom
 // breakpoint goes through sgsCustomCss below.
 $collapse_point = isset( $attributes['collapsePoint'] ) ? max( 1, absint( $attributes['collapsePoint'] ) ) : 768;
-$css           .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .sgs-nav-menu__bar{display:none;}' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:flex;}}';
-$css           .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:none;}}';
+// Hide the <nav> LANDMARK below the collapse point, not just the <ul> inside it.
+// Hiding only `__bar` would leave an EMPTY exposed navigation landmark on mobile
+// — worse than no landmark, because a screen-reader user lands in a "Primary"
+// navigation region containing nothing. `display:none` removes the whole subtree
+// from the accessibility tree, which is what makes the bar/drawer pair safe (see
+// the naming note in FR-36-11).
+$css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .sgs-nav-menu__nav{display:none;}' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:flex;}}';
+$css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:none;}}';
 
 // 4g. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
 // punctuation only) and stripped of any </style> breakout below with the rest.

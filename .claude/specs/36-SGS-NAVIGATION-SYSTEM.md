@@ -484,9 +484,52 @@ descriptive anchor text.
 > ⚠ **Still owed:** live confirmation. The canary homepage currently renders NO `sgs/nav-menu` (its
 > active header CPT is a generic proof header), so this fix cannot be observed there yet. Re-run
 > `nav-qa/axe-run.mjs` on a page that actually renders the nav, and confirm `region` /
-> `landmark-unique` clear. Also unresolved by construction: a bar and a drawer bound to the SAME menu
-> will inherit the SAME default label — the operator must set distinct `navLabel`s, and an
-> informational notice (FR-36-12) is the right long-term home for that prompt.
+> `landmark-unique` clear.
+>
+> **Second regression caught in the same session, before deploy.** The collapse rule hid
+> `.sgs-nav-menu__bar` — the `<ul>`, which is now INSIDE the new `<nav>`. That would have left an
+> EMPTY exposed navigation landmark below the collapse point: a screen-reader user lands in a
+> "Primary" region containing nothing, which is worse than no landmark. The rule now hides
+> `.sgs-nav-menu__nav`, removing the whole subtree from the accessibility tree.
+
+##### Landmark naming for a bar + drawer on the SAME menu — RESOLVED by research (2026-07-23)
+An earlier note here claimed this was "unresolved by construction — the operator must set distinct
+`navLabel`s". **That was wrong.** Primary sources say no differentiation is required:
+
+- The **ACT rule** behind axe's `landmark-unique` has an applicability clause: it applies only to
+  landmarks that **are included in the accessibility tree**. `display:none` prunes an element from
+  that tree, and a **closed `<dialog>` is spec'd to be removed from it** (MDN). Our bar is
+  `display:none` below the collapse point; our drawer is a closed `<dialog>` otherwise — so the two
+  are **never simultaneously exposed** and never form the "set of two" the rule evaluates.
+- **axe-core confirms it behaviourally**, not just in theory: `excludeHidden` defaults to `true`, and
+  Deque state plainly that axe "does not test hidden regions, such as inactive menus or modal
+  windows". A hidden duplicate landmark does not trigger `landmark-unique`.
+- **Adrian Roselli ("Maybe Don't Name That Landmark", 2024):** a `<nav>` needs no accessible name at
+  all until two share the same scope, and naming past ~5–6 landmarks becomes noise rather than help.
+
+**Two rules this DID change in our implementation:**
+1. **Never end a landmark label with "menu"/"navigation"/"nav".** The role is already announced, so
+   "Main Menu" would be read as *"Main Menu navigation"*. Operators name menus exactly that way, so
+   the derived label is now normalised (`Main Menu` → `Main`, `Primary Navigation` → `Primary`), with
+   a guard so a menu named just "Menu" keeps its name rather than becoming empty. An explicit
+   operator `navLabel` is passed through untouched — their choice, not ours to rewrite.
+2. **Prefer `aria-labelledby` → visible text over `aria-label`** where a heading exists (Roselli:
+   `aria-label` carries localisation risk). That is already the FR-36-26a rule for link lists; this
+   block has no visible heading, so `aria-label` remains correct here.
+
+**The genuinely-duplicated case still matters** — a header nav and a footer link-list nav CAN be
+visible simultaneously (FR-36-26a's opt-in `<nav>`). There, distinct names ARE required, and
+`aria-labelledby` pointing at the visible heading is the preferred technique (WCAG ARIA11's own
+worked example). FR-36-26a already specifies exactly that.
+
+##### Mega menus and landmarks (answered 2026-07-23; binds FR-36-4/36-5)
+**A mega-menu panel is NOT its own landmark.** It stays inside the parent `<nav>`. The W3C ARIA APG's
+Disclosure Navigation example wraps the top-level links AND their disclosure panels in ONE navigation
+landmark, and does not nest a second `nav`/`region` inside. Panels are exposed purely through the
+disclosure button's `aria-expanded` plus normal link semantics — which is the same DISCLOSURE
+contract FR-36-10 already mandates (and the same reason `role="menu"`/`menubar` is banned there).
+Over-landmarking makes landmark navigation noisier, not richer. So the naming work above applies to
+the nav as a WHOLE, once — not per panel, and not per column inside a panel.
 
 #### FR-36-26b — Converter routing target (declared NOW; recognition deferred to Part 2)
 **Bean-directed 2026-07-23.** The specialised header/footer converter ("Spec 33 Part 2") is not built
@@ -511,6 +554,69 @@ with `numbered` forcing `<ol>`; the heading is the block's own `heading` ATTRIBU
 
 **Explicitly NOT decided here:** how Part 2 RECOGNISES a footer link-list region in an arbitrary
 draft. That is Part 2's design problem. This entry exists so the MAPPING is not re-litigated then.
+
+#### FR-36-26c — BUILD SCOPE (fully scoped 2026-07-23; dispatchable as-is)
+Everything below is decided. A future session dispatches it without re-designing.
+
+**Data model — new attributes on `sgs/icon-list`.** Shapes are frozen (STOP-D328): declare the
+SHAPE, not just the value, or WP coerces to the default.
+
+| Attr | Type | Default | Notes |
+|---|---|---|---|
+| `heading` | string | `''` | The list title. Blank = render no heading element at all |
+| `headingLevel` | string | `'h3'` | `h2`–`h6` or `p`. **No JSON `enum`** — validate in PHP (`blockjson-enum-coerces-invalid-to-default`: an out-of-enum stored value is silently coerced) |
+| `source` | string | `'typed'` | `typed` \| `menu`. Never a JSON enum, same reason |
+| `menuRef` | integer | `0` | The `nav_menu` term id when `source: menu`. `0` = unset |
+| `markerType` | string | `'icon'` | `icon` \| `emoji` \| `bullet` \| `numbered` \| `none` |
+| `renderLandmark` | boolean | `false` | Emits the `<nav>` wrapper. Set `true` by default ONLY when `source: menu` (FR-36-26a rule 3) |
+| `heading*` typography family | per R-22-13 | — | `headingFontSize`/`Unit`/`Tablet`/`Mobile`, `headingFontWeight`, `headingFontStyle`, `headingLineHeight`/`Unit` |
+| `item*` typography family | per R-22-13 | — | Same suffix set, prefix `item` |
+
+**Typography is NOT hand-rolled.** Use the shared `TypographyControls` component + the
+`sgs_typography_css_rule( $attributes, $prefix, $selector )` helper (R-22-13). Do not write a
+bespoke font-size control — that is the exact divergence the rule exists to stop, and
+`check-control-ux` will flag a responsive family that bypasses `ResponsiveControl`.
+
+**Two dispatches. Sequential — they touch the same three files, so they are NOT parallel-safe.**
+
+**Dispatch A — presentation layer (SONNET).**
+Marker system + heading. Adds `markerType` and the `<ol>` path (`numbered` MUST change the ELEMENT,
+not just CSS — counters reach neither assistive tech nor crawlers), `heading` + `headingLevel`, and
+both typography families with their inspector controls. The marker renderer goes in ONE shared PHP
+helper under `includes/` (e.g. `helpers-list-markers.php`, aggregated by `render-helpers.php`) —
+never inside the block folder, because `--webpack-copy-php` only copies paths named in `block.json`
+and a sibling file would 500 in production (learned on the mini-cart, 2026-07-23).
+*Files:* `icon-list/{block.json,render.php,edit.js,style.css}` + one new `includes/helpers-*.php`.
+
+**Dispatch B — data + semantics layer (SONNET). Depends on A.**
+`source` toggle, menu binding, and the FR-36-26a contract. Menu resolution CALLS the existing
+`SGS_Nav_Menu_Source` static class (`get_menu_blocks`, `blocks_from_classic_menu`) — reuse, never a
+second resolver (R-31-9). Heading default resolves from the menu's own name via
+`wp_get_nav_menu_object( $menuRef )->name`, with an operator-entered `heading` overriding it
+**stickily** — a later menu rename must never silently replace it. Then the per-type table in
+FR-36-26a: conditional `<nav>`, `aria-labelledby` pointing at the rendered heading's id, and
+`aria-current` computed CLIENT-SIDE in `view.js` (reuse `nav-menu/view.js`'s approach — LiteSpeed
+would cache one page's answer for every page, FR-36-11).
+*Files:* the same three, plus a `view.js`.
+
+**Definition of done (each dispatch).**
+- `php -l` + `phpcs --standard=WordPress` clean; `npx eslint` no NEW errors.
+- Prebuild gates pass: `check-dead-controls` (every attr consumed), `check-dead-pattern-attrs`
+  (nothing WP would silently discard), `check-control-ux` (no bespoke per-tier control),
+  `audit-inline-styling` (Spec 32 — zero inline `style=""`).
+- Every new attribute has an inspector control. A client edits blocks only; a setting that needs
+  code is not done.
+- UK English. No version bump, no `deprecated.js` (D270/D293).
+
+**Live verification owed (cannot be closed by a build).** Render one instance of EACH of the three
+FR-36-26a types on a real page and confirm: `numbered` emits `<ol>`; the `<nav>` landmark appears
+ONLY for the menu-bound case; the landmark's accessible name equals the visible heading text; and
+`aria-current` lands on the right item on more than one page (proving it is client-side, not baked).
+Then `nav-qa/axe-run.mjs` clean on that page.
+
+**Out of scope for these two dispatches, recorded so it is not silently absorbed:** the FR-36-26b
+converter recognition step (Part 2's problem — only the ROUTING is declared, not the detection), and
+any change to `sgs/nav-menu`, which keeps the bar/drawer role untouched.
 
 ## 5. Accessibility (governing; primary-source-grounded)
 
