@@ -50,7 +50,10 @@
 					"order": 2,
 					"clusters": [ "text" ],
 					"prefix": "content",
-					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php:286-332, `.sgs-separator__content`). css:font-size/font-weight/font-style/line-height resolve via the default `content`+suffix convention (contentFontSize/contentFontWeight/contentFontStyle/contentLineHeight). css:color resolves to contentTextColour (the text-mode colour, suffix `TextColour`) — contentIconColour is a SEPARATE icon-mode colour attr with no cluster member of its own (this slot renders either an icon OR text, never both) and surfaces as an orphan. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls, also honest orphans. text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps."
+					"attrMap": {
+						"css:color": "contentColour"
+					},
+					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php, `.sgs-separator__content`). css:color resolves to the UNIFIED `contentColour` (2026-07-23: contentIconColour + contentTextColour merged — the slot renders an icon OR text, never both, so one foreground colour serves both modes; the former two mode-split colour attrs both painted color on .sgs-separator__content and collided). Typography (contentFontSize/FontWeight/FontStyle/LineHeight) resolves via the default `content`+suffix convention. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls (honest orphans). text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps."
 				}
 			}
 		},
@@ -195,15 +198,11 @@
 			"type": "number",
 			"default": 24
 		},
-		"contentIconColour": {
+		"contentColour": {
 			"type": "string",
 			"default": ""
 		},
 		"contentText": {
-			"type": "string",
-			"default": ""
-		},
-		"contentTextColour": {
 			"type": "string",
 			"default": ""
 		},

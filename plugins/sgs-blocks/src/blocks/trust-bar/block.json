@@ -126,6 +126,20 @@
 					"order": 5,
 					"clusters": [],
 					"_note": "Per-item fillStyle/fillColour (image-badge and text-only item content) are repeater-row fields, not independent block-level style controls — no badge-item-specific text/fill/layout attrs exist at the block level."
+				},
+				"badge-img": {
+					"label": "Badge image (image-badge variant)",
+					"order": 6,
+					"clusters": [ "fill", "layout" ],
+					"prefix": "badgeImage",
+					"attrMap": {
+						"css:width": "badgeImageSize",
+						"css:height": "badgeImageSize",
+						"css:object-fit": "badgeImageObjectFit",
+						"css:border-radius": "badgeImageBorderRadius",
+						"css:box-shadow": "badgeImageShadow"
+					},
+					"_note": "The <img> in the image-badge variant (render.php:281-297, .sgs-trust-bar__badge-img). Mirrors icon-badge size/border-radius/box-shadow plus an image-specific object-fit; badgeImageSize maps css:width AND css:height (a single square dimension, render.php:284-285). Emitted only when badgeStyle=image-badge."
 				}
 			}
 		},

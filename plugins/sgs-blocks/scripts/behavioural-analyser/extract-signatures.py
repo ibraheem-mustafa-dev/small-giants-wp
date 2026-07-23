@@ -1883,8 +1883,21 @@ def extract_css_property_and_layer() -> dict:
     css_layer_written = 0
     classification_entries: list[dict] = []
     for (slug, attr), real_props in sorted(resolved.items()):
-        css_property = ",".join(sorted(real_props))
+        emission_css_property = ",".join(sorted(real_props))
         manifest_hit = manifest_by_block.get(slug, {}).get(attr)
+        # css_property precedence (2026-07-23, Bean — mirrors the element precedence
+        # below): an EXPLICIT manifest `attrMap` `css:<property>` key is a hand-curated,
+        # authoritative declaration of WHICH property this attr sets. It WINS over the
+        # emission-parse guess, which can grab a neighbouring property from the same
+        # rendered rule — e.g. sgs/nav-menu underlineOffset: the manifest declares
+        # `css:bottom`, but emission scraped `position` from the rule's leading
+        # `position:absolute`. Only the attrMap source carries a css key (prefix-
+        # convention hits are None), so this never touches an attr the author did not
+        # explicitly map, and the emission value stays the fallback everywhere else.
+        manifest_css_property = None
+        if manifest_hit and manifest_hit.get("source") == "attrMap":
+            manifest_css_property = manifest_hit.get("manifest_css_key")
+        css_property = manifest_css_property or emission_css_property
         fields: dict[str, object] = {"css_property": css_property}
         css_property_written += 1
         tier = resolved_tier.get((slug, attr))
@@ -1958,6 +1971,55 @@ def extract_css_property_and_layer() -> dict:
         if state:
             fields["css_state"] = state
         classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
+
+    # Manifest-only attrs (2026-07-23, Bean — declarative-first, R-31-1). An attr the block
+    # DECLARES in its `supports.sgs.elements.<el>.attrMap` but whose paint the emission
+    # parser could NOT trace (e.g. a colour built through a $var + implode() indirection the
+    # parser can't follow — sgs/separator `contentColour`, read into two vars) is absent from
+    # `resolved` and would otherwise be DROPPED (NULL css_property/element), leaving a
+    # manifest-declared attr unrouted. The explicit attrMap `css:<property>` key is an
+    # authoritative human declaration on its own, so SEED the entry from the manifest — a
+    # declared attr is never lost to a parser blind spot. Only the `attrMap` source seeds
+    # (prefix-convention hits are guesses, not declarations); `native:*` attrMap targets are
+    # not real block attrs (excluded by the `attr in known_attrs` gate); unit attrs excluded.
+    _manifest_seeded = 0
+    emitted = {(e["slug"], e["attr"]) for e in classification_entries}
+    for slug, reverse in sorted(manifest_by_block.items()):
+        known_attrs = attrs_by_block.get(slug, set())
+        root_key = root_elem_by_block.get(slug)
+        for attr, hit in sorted(reverse.items()):
+            if (slug, attr) in emitted or (slug, attr) in unit_attrs_excluded:
+                continue
+            if hit.get("source") != "attrMap":
+                continue
+            css_key = hit.get("manifest_css_key")
+            if not css_key or attr not in known_attrs:
+                continue
+            element = hit.get("css_element")
+            is_root_element = (
+                element in (None, "", "root", "self")
+                or (root_key is not None and element == root_key)
+            )
+            fields = {"css_property": css_key}
+            css_layer = (
+                elem_layer_by_block.get(slug, {}).get(element)
+                or hit.get("css_layer")
+                or _classify_css_layer(attr, {css_key}, is_root_element)
+            )
+            if css_layer:
+                fields["css_layer"] = css_layer
+                css_layer_written += 1
+            if element:
+                fields["css_element"] = (
+                    "wrapper" if (root_key is not None and element == root_key) else element
+                )
+            state = hit.get("css_state")
+            if state:
+                fields["css_state"] = state
+            classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
+            emitted.add((slug, attr))
+            css_property_written += 1
+            _manifest_seeded += 1
 
     # Unit attrs (Bean's ruling, 2026-07-21): NEVER enter css_property at all — no
     # entry means the merge/apply layer leaves that column NULL for them (and clears

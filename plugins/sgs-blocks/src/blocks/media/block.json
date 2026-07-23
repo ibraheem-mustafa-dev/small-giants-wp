@@ -40,7 +40,8 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:box-shadow": "boxShadow"
+						"css:box-shadow": "boxShadow",
+						"css:object-fit": "objectFit"
 					}
 				},
 				"caption": {

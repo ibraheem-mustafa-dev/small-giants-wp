@@ -166,9 +166,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		gradientAngle,
 		contentMode,
 		contentIconSize,
-		contentIconColour,
+		contentColour,
 		contentText,
-		contentTextColour,
 	} = attributes;
 
 	const withContent = 'none' !== contentMode;
@@ -471,10 +470,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							<DesignTokenPicker
 								label={ __( 'Icon colour', 'sgs-blocks' ) }
-								value={ contentIconColour }
+								value={ contentColour }
 								onChange={ ( val ) =>
 									setAttributes( {
-										contentIconColour: val ?? '',
+										contentColour: val ?? '',
 									} )
 								}
 							/>
@@ -494,10 +493,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							<DesignTokenPicker
 								label={ __( 'Text colour', 'sgs-blocks' ) }
-								value={ contentTextColour }
+								value={ contentColour }
 								onChange={ ( val ) =>
 									setAttributes( {
-										contentTextColour: val ?? '',
+										contentColour: val ?? '',
 									} )
 								}
 							/>
@@ -589,8 +588,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								aria-hidden="true"
 								style={ {
 									'--sgs-separator-icon-size': `${ contentIconSize }px`,
-									color: contentIconColour
-										? colourVar( contentIconColour )
+									color: contentColour
+										? colourVar( contentColour )
 										: undefined,
 								} }
 							>
@@ -604,8 +603,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ 'text' === contentMode && (
 							<span
 								style={ {
-									color: contentTextColour
-										? colourVar( contentTextColour )
+									color: contentColour
+										? colourVar( contentColour )
 										: undefined,
 								} }
 							>

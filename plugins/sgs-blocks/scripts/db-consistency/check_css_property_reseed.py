@@ -235,4 +235,58 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             key=css_property_reseed_key(slug, f"{prop}:{layer}:{element}:{state}:{tier}", "ambiguous"),
         ))
 
+    # D. undeclared sub-element paint (2026-07-23, Bean — "protect CSS from being dropped
+    # or misrouted"). An attr whose css_property is one that ALWAYS lands on a specific
+    # painted element (colour / border-colour / border-radius / box-shadow / object-fit)
+    # but which resolved css_element IS NULL *and* derived_selector IS NULL is an
+    # UNDECLARED sub-element paint: the seeder's emission parser could not trace the
+    # `.block__child` selector (a $var / implode() indirection in render.php it can't
+    # follow) AND the block's block.json manifest does not declare the element — so the
+    # attr fell into the ROOT routing domain and would misroute (or land nowhere) on a
+    # clone. This is distinct from a legitimate root-scoped NULL (width/padding delivered
+    # via a root custom-property, e.g. brand-strip.fadeWidth / icon.backgroundPadding):
+    # those properties are NOT in the painted-on-a-specific-element set below, so they
+    # never trip this. Fix = declare the element in the block's own
+    # `supports.sgs.elements.<el>.attrMap` (the R-31-1 declarative source, NOT an
+    # attr-classification override), or unify a mode-exclusive duplicate (the way
+    # sgs/separator's contentColour merged contentIconColour + contentTextColour). Then
+    # reseed. Root cause + mechanism: extract-signatures.py::_load_element_manifest_reverse.
+    _PAINTED_ON_ELEMENT_PROPS = (
+        "color",
+        "border-color",
+        "border-top-color",
+        "border-right-color",
+        "border-bottom-color",
+        "border-left-color",
+        "border-radius",
+        "box-shadow",
+        "object-fit",
+    )
+    _painted_placeholders = ",".join("?" for _ in _PAINTED_ON_ELEMENT_PROPS)
+    undeclared = conn.execute(
+        "SELECT block_slug, attr_name, css_property FROM block_attributes "
+        "WHERE css_element IS NULL AND derived_selector IS NULL AND css_state IS NULL "
+        f"AND css_property IN ({_painted_placeholders})",
+        _PAINTED_ON_ELEMENT_PROPS,
+    ).fetchall()
+    for slug, attr, prop in undeclared:
+        child = slug.split("/")[-1]
+        violations.append(Violation(
+            check="css_property_reseed",
+            block=slug,
+            detail=(
+                f"{slug}.{attr}: paints css_property={prop!r} (a property that always lands on a "
+                f"specific element) but resolved css_element=NULL AND derived_selector=NULL — an "
+                f"UNDECLARED sub-element paint. The seeder could not trace the .{child}__<child> "
+                f"selector and the manifest does not declare the element, so it fell to the root "
+                f"routing domain and would misroute on a clone."
+            ),
+            fix=(
+                f"Declare the element in {slug}'s block.json supports.sgs.elements.<el>.attrMap "
+                f'(add "css:{prop}": "{attr}"), NOT an attr-classification override; or unify a '
+                f"mode-exclusive duplicate. Then run /sgs-update. See extract-signatures.py."
+            ),
+            key=css_property_reseed_key(slug, attr, "undeclared-subelement"),
+        ))
+
     return violations

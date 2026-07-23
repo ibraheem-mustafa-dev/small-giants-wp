@@ -294,7 +294,7 @@ if ( 'icon' === $content_mode ) {
 	$icon_dashicon_name   = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['contentIconDashicon'] ?? '' ) );
 	$icon_emoji           = wp_strip_all_tags( trim( $attributes['contentIconEmoji'] ?? '' ) );
 	$icon_size            = absint( $attributes['contentIconSize'] ?? 24 );
-	$icon_colour          = $attributes['contentIconColour'] ?? '';
+	$icon_colour          = $attributes['contentColour'] ?? '';
 
 	$icon_decls = array( '--sgs-separator-icon-size:' . $icon_size . 'px' );
 	if ( '' !== $icon_colour ) {
@@ -316,7 +316,7 @@ if ( 'icon' === $content_mode ) {
 	}
 } elseif ( 'text' === $content_mode ) {
 	$content_text   = $attributes['contentText'] ?? '';
-	$content_colour = $attributes['contentTextColour'] ?? '';
+	$content_colour = $attributes['contentColour'] ?? '';
 
 	if ( function_exists( 'sgs_typography_css_rule' ) ) {
 		$content_typography_css = sgs_typography_css_rule( $attributes, 'content', "{$root_sel} .sgs-separator__content" );

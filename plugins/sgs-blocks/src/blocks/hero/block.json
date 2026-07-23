@@ -182,7 +182,7 @@
 					"clusters": [ "fill", "layout" ],
 					"prefix": "image",
 					"attrMap": {
-						"css:background-color": "mediaBackgroundColour",
+						"css:background-color": "mediaBackground",
 						"css:object-fit": "imageObjectFit",
 						"css:object-position": "imageObjectPosition"
 					},
@@ -493,10 +493,6 @@
 		"imagePaddingMobile": {
 			"type": "object",
 			"default": {}
-		},
-		"mediaBackgroundColour": {
-			"type": "string",
-			"default": ""
 		},
 		"mediaBackground": {
 			"type": "string",

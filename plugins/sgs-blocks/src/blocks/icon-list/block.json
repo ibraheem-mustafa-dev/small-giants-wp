@@ -89,6 +89,7 @@
 					"label": "Item text",
 					"order": 3,
 					"clusters": [ "text" ],
+					"prefix": "item",
 					"attrMap": {
 						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
@@ -96,6 +97,13 @@
 						"css:text-align": "native:typography.textAlign"
 					},
 					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item text — honest gaps."
+				},
+				"heading": {
+					"label": "Heading",
+					"order": 4,
+					"clusters": [ "text" ],
+					"prefix": "heading",
+					"_note": "Optional list heading (render.php, `.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element (2026-07-23) so heading* typography routes to element=heading, DISTINCT from item* text — before this they both fell to NULL element and collided on font-size."
 				}
 			}
 		}

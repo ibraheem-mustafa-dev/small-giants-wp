@@ -216,7 +216,6 @@ $image_padding_tablet_obj = is_array( $attributes['imagePaddingTablet'] ?? null 
 $image_padding_mobile_obj = is_array( $attributes['imagePaddingMobile'] ?? null ) ? $attributes['imagePaddingMobile'] : array();
 
 // mediaPadding — outer padding + background on the .sgs-hero__media wrapper.
-$media_bg_colour           = $attributes['mediaBackgroundColour'] ?? '';
 $media_padding_obj         = is_array( $attributes['mediaPadding'] ?? null ) ? $attributes['mediaPadding'] : array();
 $media_padding_tablet_obj  = is_array( $attributes['mediaPaddingTablet'] ?? null ) ? $attributes['mediaPaddingTablet'] : array();
 $media_padding_mobile_obj  = is_array( $attributes['mediaPaddingMobile'] ?? null ) ? $attributes['mediaPaddingMobile'] : array();
@@ -544,12 +543,10 @@ if ( null !== $media_pad_mob ) {
 }
 
 // mediaBackground — moved here from the inline style="" on the media wrapper
-// (contract §A). mediaBackground (shared per-area schema) takes priority over
-// the legacy mediaBackgroundColour attr when both are set.
+// (contract §A). The shared per-area schema attr; the legacy mediaBackgroundColour
+// attr was removed 2026-07-23 (it duplicated this on css:background-color / element
+// media and collided in the routing DB — mediaBackground is the sole canonical source).
 $media_bg_resolved = $attributes['mediaBackground'] ?? '';
-if ( ! $media_bg_resolved ) {
-	$media_bg_resolved = $media_bg_colour;
-}
 if ( $media_bg_resolved ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__media{background-color:' . sgs_colour_value( $media_bg_resolved ) . '}';
 }
