@@ -2037,3 +2037,16 @@ The three entries below were consolidated (Bean-directed) into `P-DRAFT-TOKEN-EX
 > **Status: PARTIAL** (item 3 done; items 1+2 open) · **Bucket:** Framework / blocks · **Trigger:** a dedicated P2b session.
 
 > **ARCHIVED 2026-07-22 — MOOT.** Both remaining items targeted `sgs/adaptive-nav` / `sgs/mega-menu` / `sgs/mobile-nav`, ALL of which are now DELETED (FR-37-21 / D362, `23a3cf63`; mobile-nav at D337). Nav is owned by Spec 36 (`sgs/nav-menu` + `sgs/nav-drawer`); the drawer drill-down + disclosure-alignment questions, if still wanted, belong to Spec 36 FRs, not to deleted blocks.
+
+
+---
+
+## Track 1c residual sweep — resolved 2026-07-23
+
+> **P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN** — NEW 2026-07-21 (Bean-reported, NOT yet reproduced by Claude). On `sgs/container` (and the shared wrapper), setting the **content band-width** option to **"custom"**: (a) the "custom" choice frequently does NOT select on click — *"sometimes it selects, most of the time clicking custom doesn't select it"*; and (b) even when it does select, **no input box appears** to enter the custom width value. Two-part symptom: a selection/state bug on the control (likely a ToggleGroupControl/SelectControl value not committing) AND a missing conditional-render of the custom-value input. **Live editor repro needed** (Playwright on the canary editor, insert an sgs/container, open the band-width control) before diagnosis — do NOT theorise the cause from edit.js alone (root-cause methodology). Touches the shared wrapper edit.js/render surface → **sensitive, design-gate + live-verify per R-31-13**; NOT a Track-1 (Spec 35) task. **Status: OPEN** · **Bucket:** Framework · **Trigger:** a container/wrapper editor session.
+
+> **RESOLVED 2026-07-23:** not reproduced (Playwright 20/20 selected "custom" + showed the UnitControl input); already fixed at d5416ae8 (2026-06-18), current build live on both sites. Bean's report was almost certainly a stale cached editor JS bundle — hard-refresh resolves.
+
+> **P-NAVMENU-UNDERLINEOFFSET-CSSPROP-MISSEED** — NEW 2026-07-22. `sgs/nav-menu.underlineOffset` carries `css_property='position'` in `block_attributes`. Almost certainly a MIS-SEED — the attr is a text-underline offset (`text-underline-offset`), not CSS `position`. It was the ONLY "consumer" the audit found for `position`, and treating it as real would have wrongly un-excluded that property. Left excluded (correct); the bad seed remains. **Work:** correct the seed via the declarative channel + reseed; check for sibling mis-seeds in the same batch. **Status: OPEN** · **Bucket:** Tooling · **Trigger:** a DB-seed hygiene pass.
+
+> **RESOLVED 2026-07-23 (fc0b62c1):** corrected at SOURCE — the classifier generator now honours the block manifest's `css:bottom` declaration. NOTE the parked hypothesis was WRONG: the correct property is `bottom` (the ::after underline bar's absolute offset, render.php:409), NOT `text-underline-offset`. Fixed as part of the manifest-authoritative-for-css_property change.
