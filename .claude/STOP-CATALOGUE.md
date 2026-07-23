@@ -23,6 +23,46 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING** — NEW 2026-07-23 (D367). An
+  `aria-label` on a bare `<div>`/`<span>` with no role is **IGNORED by assistive tech**. It is not a
+  weak label — it is no label. `sgs/nav-menu` passed its `navLabel` to the wrapper `<div>` for
+  months: the attribute was present, the intent was obvious, and every code-read scored it correct,
+  while the block emitted **zero `<nav>` elements** and had no landmark at all. It was invisible
+  because reviewing asks *"does the markup say the right thing?"* when the question is **"what does
+  this markup PRODUCE?"**. General rule: an ARIA attribute is only meaningful on an element whose
+  role can carry it — before trusting any `aria-*`, name the role it is attached to. Sibling of
+  STOP-VERIFY-CONTENTS-NOT-FILENAME (a thing that looks right by its name).
+
+- **STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING** — NEW 2026-07-23. A dispatched agent
+  verified "zero banned core blocks remain" using `grep "wp:core/"`. **That pattern returns 0 on every
+  file in the repo**, because WordPress core block markup omits the namespace — it is `<!-- wp:group -->`,
+  never `wp:core/group`. Its answer happened to be right; its evidence could not have detected a wrong
+  one. This is the negative-control rule one level down: not "would this pass if the feature were absent?"
+  but **"can this pattern match the thing I am looking for AT ALL?"** Fix that works: when delegating
+  verification to a cheap model, specify the exact PATTERN, not just the instruction to verify — and
+  when receiving any grep-based proof, re-run it yourself with a pattern you know matches.
+
+- **STOP-A-GATE-BORROWING-ANOTHER-TOOLS-EXCLUSION-LIST-INHERITS-ITS-BLIND-SPOT** — NEW 2026-07-23
+  (D366). `check-no-core-blocks.py` (a GATE that only READS) called `driver.zone_of()` from the
+  MIGRATION tool (which REWRITES files), whose list is labelled *"Track A hands-off list (Track C
+  prompt)"*. That list was **parallel-track coordination** — entirely correct for an auto-migrator,
+  meaningless for a gate. Borrowing it silently converted "another track owns this file" into "this
+  file is exempt from the ban", so the gate reported `clean — 41 files` while never looking at 13,
+  including BOTH framework default patterns that ship to every install. The exclusion also used a
+  glob (`*footer-*.php`), so the blind spot self-extended to any future footer pattern. **Rule: a
+  gate owns its own exclusion policy, stated in the gate, as explicit filenames with a reason and a
+  retirement condition — never a glob, and never imported from a tool that answers a different
+  question.** Two tools sharing a list must share the QUESTION, not just the data.
+
+- **STOP-VERIFY-THE-VARIABLE-EXISTS-BEFORE-BUILDING-ON-IT** — NEW 2026-07-23 (D367). While fixing the
+  nav landmark I referenced `$resolved_menu_name` — a variable I had **invented**; it appears nowhere
+  in the file. It read as plausible because a menu name is obviously *available in principle*. This is
+  the same failure I spent the session catching in subagents, committed by me, in code I was writing
+  to fix someone else's unverified claim. **Rule: any identifier you did not just read, grep for it
+  before you build on it** — the cost is one command, the failure mode is a silent runtime null that
+  a green build will not catch. Pairs with the SGS evidence hook's GROUND-TRUTH line: state the file
+  and line the symbol came from.
+
 - **STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR-FIRES-NEVER-AND-SILENTLY** — NEW 2026-07-22 (D359). A
   `pre_render_block` (or any block) filter that gates on `attrs.X === 'value'` fires ONLY when the
   block markup literally carries `X`. WP may resolve that property from registration metadata, but
@@ -418,3 +458,19 @@ for real before claiming done?
   > class also silently truncates any token containing a digit, giving 59; that is the third
   > wrong answer this file has carried.) **On a shared checkout, re-run the command immediately
   > before writing a receipt — never carry a `previous` figure forward from a prior read.**
+- **2026-07-23 (Specs 36+37 breadth wave / D363-D367) re-run:** previous DEFINED entries = **63** (via this file's OWN canonical command, below);
+  this session ADDED 4 (`STOP-AN-ARIA-LABEL-ON-A-ROLELESS-ELEMENT-NAMES-NOTHING`,
+  `STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING`,
+  `STOP-A-GATE-BORROWING-ANOTHER-TOOLS-EXCLUSION-LIST-INHERITS-ITS-BLIND-SPOT`,
+  `STOP-VERIFY-THE-VARIABLE-EXISTS-BEFORE-BUILDING-ON-IT`) and SUBTRACTED none → **67**. 67 >= 63. PASS.
+  ⚠ **Self-correction:** the first version of THIS receipt reported "72 → 76" using the bare
+  every-mention count — the exact method the 2026-07-22 receipt one entry above had just
+  discredited ("Counting every `STOP-…` mention anywhere gives 71 — wrong answer this file has
+  carried"). Caught by the independent handoff `/qc` subagent, not by me. The canonical
+  DEFINED-entry command is the one to use, every time; a receipt that states a bare number
+  without the command is not auditable.
+  All four earned by a failure that actually occurred: a `navLabel` that named nothing for months on a
+  roleless div; an agent's verification grep that could not match a core block at all; a READ-only gate
+  importing a REWRITE tool's track-coordination list and inheriting a 13-file blind spot over the
+  patterns that ship to every install; and my OWN reference to an invented variable while fixing the
+  first of those.

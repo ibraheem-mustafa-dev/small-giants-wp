@@ -15,6 +15,60 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D367 [INCIDENT] — Nav landmark naming resolved by research; an aria-label on a roleless element names nothing (2026-07-23)
+
+`sgs/nav-menu` emitted **zero `<nav>` elements** (negative control: `grep -c "<nav"` on the pre-fix file = 0) while FR-36-10 requires `<nav aria-label>` and FR-36-11 requires unique landmark labels. The subtler half: `navLabel` WAS passed to the wrapper `<div>` as a plain `aria-label` — **ignored by assistive tech on a roleless element**, so the label existed, named nothing, and read as correct in every code review. Only asking what the markup PRODUCES surfaced it. This was the unidentified cause of the `region` + `landmark-unique` axe findings seen on BOTH sites (including the un-deployed control) earlier the same day.
+
+**Fixed:** a real `<nav class="sgs-nav-menu__nav" aria-label="…">` wraps the bar; the dead wrapper label removed so two labels cannot drift.
+
+**Research (Bean-requested) overturned my own recorded caveat.** I had written that a bar + drawer on the same menu was "unresolved by construction — the operator must set distinct navLabels". **Wrong.** The ACT rule behind axe's `landmark-unique` applies ONLY to landmarks *included in the accessibility tree*; `display:none` prunes from it and a closed `<dialog>` is spec'd as removed (MDN). Our bar is `display:none` below the collapse point and the drawer is a closed dialog otherwise — never simultaneously exposed. axe confirms behaviourally (`excludeHidden` defaults true; Deque: axe "does not test hidden regions"). Roselli ("Maybe Don't Name That Landmark", 2024): a `<nav>` needs no name until two share a scope, and naming past ~5–6 landmarks is noise.
+
+**But the research DID change the implementation:** never end a landmark label with menu/navigation/nav — the role is already announced, so "Main Menu" reads as *"Main Menu navigation"*. Operators name menus exactly that way, so the DERIVED label is normalised (`Main Menu`→`Main`, `Primary Navigation`→`Primary`) with a guard so a menu named just "Menu" keeps its name. An explicit operator `navLabel` passes through untouched.
+
+**Two regressions caught before deploy, both mine.** (1) The first fix referenced `$resolved_menu_name` — a variable I INVENTED; it exists nowhere in the file. (2) The collapse rule hid `.sgs-nav-menu__bar` — the `<ul>`, now INSIDE the new `<nav>` — which would have left an EMPTY exposed navigation landmark on mobile (worse than none). Now hides `.sgs-nav-menu__nav`, which is also exactly what makes the bar/drawer pair safe under the applicability clause above.
+
+**Mega menus (answered, binds FR-36-4/36-5):** a mega panel is NOT its own landmark. The W3C APG Disclosure Navigation example wraps top-level links AND panels in ONE `<nav>` and nests no second landmark; panels are exposed via the disclosure button's `aria-expanded` plus normal link semantics. Naming applies to the nav as a whole, once — never per panel or column.
+
+## D366 [INCIDENT] — Core-block gate blind spot closed; core/navigation ban restored (2026-07-23)
+
+Three sequenced fixes for one root cause; any other order broke the build.
+
+**The blind spot.** `check-no-core-blocks.py` had no exclusion policy of its own — it called `driver.zone_of()` from the MIGRATION tool, whose list is labelled *"Track A hands-off list (Track C prompt, 2026-07-15)"*. That list is **parallel-track coordination**: correct for a tool that REWRITES files, meaningless for a gate that only READS them. Borrowing it turned "another track owns this file" into "this file is exempt from the ban" — so the gate reported `clean — 41 files` while never looking at 13, including both framework default patterns that ship to EVERY install. `'*footer-*.php'` is a glob, so the blind spot was self-extending.
+
+**Negative control that proves it mattered:** at HEAD the gate passed `clean` while the excluded `framework-footer-default.php` provably contained `core/group` + `core/site-logo` + `core/heading` at 10 sites. A check that cannot fail when the defect is present.
+
+**The lapsed ban.** `sgs/adaptive-nav` was the ONLY block declaring `replaces: core/navigation`. Deleting it at D362 silently removed the ban framework-wide, and because the map is data-driven nothing noticed. `sgs/nav-menu` now declares it (33 banned core blocks, up from 32).
+
+**Order was load-bearing.** Restoring the ban first would have failed the build on 3 header patterns with no `navigation_pairing.py` — the exact trap that forced the `sgs/separator` revert at `49e6fc4f`. Opening the gate first would have failed on the footer default. So: re-target the 9 legacy patterns → migrate `framework-footer-default.php` → decouple the gate (scanned 41→52) → restore the ban.
+
+**Also fixed:** `sgs/cta-section` `render.php:273` read `$attributes['textAlign']` while `block.json` declared only `supports.typography.textAlign` (which serialises elsewhere) — the block rendered from an attribute WP silently discards on the next editor save. Found by the pre-deploy oldshape audit BLOCKING the canary deploy; declaring the attr took it 2 NEW HIGH → 0.
+
+## D365 [ROUTINE] — FR-36-26 link lists: icon-list owns typed AND menu-bound via a source toggle (2026-07-23)
+
+Bean-directed. Replaces Spec 36 §1's *"footer menus use the native WP core menu"*, which D366's `core/navigation` ban made unbuildable.
+
+**Shape (revised twice in-session, both times by Bean's push):** extend `sgs/icon-list` with a heading, marker set (icon/emoji/bullet/numbered/none), the shared `TypographyControls` family, and a `source` toggle (typed | menu). NOT a new block, NOT a compound wrapper swapping child blocks — swapping InnerBlocks on a toggle is fragile in Gutenberg AND destroys typed content the moment the operator tries menu mode; a `source` attribute keeps both datasets intact (the proven `sgs/product-card` `sourceMode` pattern).
+
+**Why icon-list and not nav-menu (I argued the opposite first and was wrong).** My case was "menu→markup must exist in ONE place" — satisfied by CALLING the shared `SGS_Nav_Menu_Source` static class, already consumed by two files. That is reuse, not duplication. The cost asymmetry then decides it: nav-menu would have to absorb icon-list's entire presentation surface; icon-list needs one resolver call plus a conditional landmark wrapper.
+
+**FR-36-26a discoverability contract** — a11y/SEO/AI-crawl/schema differ by type: `source:menu` → `<nav>` + `aria-labelledby` the visible heading; `source:typed` with urls → `<nav>` opt-in (default OFF); typed without urls → never `<nav>`. `aria-labelledby` pointing at the visible heading makes unique landmark names hold BY CONSTRUCTION. `aria-current` client-side (LiteSpeed). `<nav>` opt-in because landmark bloat is itself an a11y defect. Schema boundary held: schema-FRIENDLY MARKUP only; JSON-LD stays owned by `seo-schema` (FR-36-17).
+
+**FR-36-26b** declares the converter ROUTING target now (Bean: cheap now, expensive to retrofit) while explicitly deferring RECOGNITION to Part 2. **FR-36-26c** is the frozen build scope: two sequential SONNET dispatches, definition of done, and the live checks a build cannot close.
+
+## D364 [INCIDENT] — Spec 33 Part 2 build direction corrected; the label is ownerless (2026-07-23)
+
+**Bean caught a wrong claim of mine.** I stated FR-36-15, FR-36-18 and FR-36-25 were "gated on Spec 33 Part 2". Two of three were wrong and the direction was backwards. Spec 36's own frontmatter: *"33 Part 2 (converter — **built AFTER the nav passes its test gate**)"*; §7 repeats it. **Specs 36+37 complete FIRST; Part 2 CONSUMES them.** FR-36-15 FEEDS Part 2 (its job is documenting the architecture) and is blocked by nothing; FR-36-25 depends on FR-36-21/22/23; only the *branded* Indus header sliver of FR-36-18 genuinely waits. Only TWO items in both specs actually wait on Part 2 — that sliver and FR-37-22.
+
+**Ownership defect found while checking:** "Spec 33 Part 2" has NO owner. Spec 33 is COMPLETE and assigns Part 2 to Spec 37; Spec 37's FR-37-22 calls it "Spec 33 Part 2". Each points at the other — the identical circular pointer that left `sgs_site_info` ownerless until 2026-07-21, and precisely why the gating kept being mis-stated. **Naming one owner is now a recorded prerequisite before any Part 2 work is scheduled.**
+
+## D363 [INCIDENT] — labelCollapse RETAINED; two specs had given opposite instructions (2026-07-23)
+
+Spec 36 instructed twice (FR-36-8, FR-36-23) to *"reuse the BUILT `labelCollapse`"*; Spec 37 §3.8 said it was *"not carried forward as-is"* and §8.2 said it *"should be deleted"*. Two governing specs contradicting each other about one shipped mechanism is the D358 failure — and it was live: an agent dispatched on FR-36-23 would have built on something the other spec had queued for deletion.
+
+**Bean's rule:** keep it if it is a setting the operator can toggle in the block settings; bin it if automatic. **Verified from code that it is a toggle** — `button/edit.js:347` and `business-info/edit.js:88` each drive a `block.json` attribute from a real `SelectControl` defaulting to `'none'`. RETAINED.
+
+Two further reasons recorded so it is not re-litigated: (1) the per-device cascade Spec 37 proposed deferring to is owned by **Spec 35** and is **NOT BUILT** — deleting first would strand the capability, the exact "dormant capability with no control" D338 trap §8.2 was trying to avoid; (2) they are not equivalent — the cascade HIDES an element at a tier, `labelCollapse` KEEPS the element and its link while collapsing the label to icon-only. Amended in BOTH specs in one commit per Spec 37 §1.2's boundary rule. Revisit if Spec 35 ships the cascade.
+
 ## D362 [INCIDENT] — FR-37-21 legacy nav retired (adaptive-nav + mega-menu deleted); repo + canary done, prod deploy gate-skipped (2026-07-22)
 
 **Supersedes D361's "retirement stays gated."** Bean directed: FR-37-21's only gate is FR-36-18 green

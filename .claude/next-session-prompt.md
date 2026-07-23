@@ -33,8 +33,8 @@ healthy. Then read the LEDGER.
 ## Why this matters (motivation — Rule 7)
 
 **Top USP:** a client edits their own header and footer in a findable admin screen and it appears on
-their site. That works end-to-end on both sites. 2026-07-23 took Specs 36+37 from 10/59 to 24/59
-requirements complete, deployed to the canary with checksum proof and zero new axe violations.
+their site. That works end-to-end on both sites. 2026-07-23 moved Specs 36+37 forward substantially — but count the TIERS, not a headline:
+~16 of 64 FRs verified done, **~9 more shipped-but-never-run**, rest unbuilt, deployed to the canary with checksum proof and zero new axe violations.
 
 **But most of it has never actually run.** The canary homepage carries no cart and no search block;
 editor notices and `DeviceTabs` are editor-surface only; hide-on-scroll ships off by default; and

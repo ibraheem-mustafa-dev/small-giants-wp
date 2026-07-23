@@ -32,38 +32,45 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-22, D359–D362 — full detail in `decisions.md`; do not re-narrate here).**
-**The header/footer/nav thread is CLOSED end-to-end.** A client can author a header in *SGS → Advanced
-Headers*, press "Set as active", and it renders live — proven on BOTH sites, via the real operator path.
+**⭐ CURRENT (2026-07-23, D363–D367 — full detail in `decisions.md`; do not re-narrate here).**
+**Specs 36+37 — verified vs merely shipped (tiers kept SEPARATE, deliberately).**
+~16 of 64 FRs are genuinely verified done; **~9 more are `DEPLOYED (unexercised)` — shipped and
+checksum-verified but never actually run**; the rest are unbuilt. The denominator GREW from 60 to
+64 this session because scope was ADDED (FR-36-26/a/b/c).
+*(An earlier draft claimed a single "24/64 complete" — conflating `DEPLOYED (unexercised)` with
+done, the exact completion theatre Spec 37 §5's tier framework exists to prevent. Caught by the
+handoff `/qc` subagent. Counts are approximate BY DESIGN — Spec 37 §5 is organised by area, not
+per FR. For a precise figure, derive it from the per-FR tables; do not quote this line.)*
 
-- **Spec 37 core BUILT + canary-verified (D359):** active-pointer + "Set as active" (FR-37-2/25),
-  direct-render binding w/ CPT-aware resolver + fail-closed validation (FR-37-3), "Active" column
-  (FR-37-5), footer columns as an operator count (FR-37-11, wrapper untouched), `templateLock 'all'`
-  (§3.3a), `parts/header.html` gutted to a shell (FR-37-6 file step). §3 audit done → 3 gaps carried
-  as **FR-37-33/34/35**.
-- **De-client DONE (D360):** repo carries **no client data** (orphan `footer-indus-foods.php` deleted
-  after a 0-ref check on both sites). Spec 37 §3.9a/FR-37-6 stale claims corrected.
-- **FR-37-3 scare → not a bug (D360):** a probe proved the binding CODE was perfect; the "failure" was a
-  **store mismatch** (raw `wp option update` wrote to a different option store than the live domain
-  reads). Defence: `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-RAW-WP-CLI-OPTION`.
-- **FR-36-18 cutover PROVEN + FR-37-21 legacy nav RETIRED (D361/D362):** generic proof header #360 on
-  palestine-lives passed every gate; then **`sgs/adaptive-nav` + `sgs/mega-menu` DELETED**
-  (`f1f86ea0`+`23a3cf63`) — repo + canary + **PRODUCTION** verified, **Bean confirmed the Indus mobile
-  drawer on a real device**. adaptive-nav rollback is now git-only. The cutover/retirement are the
-  MECHANISM + cleanup — the faithful branded Indus header still comes via cloning (Spec 33 Part 2).
-- **Site state (both show GENERIC proof headers):** sandybrown = CPTs #1570/#1571 active;
-  palestine-lives = header #360 active. Restore via the admin **"Clear active"** row action per site.
-- **Debt RESOLVED:** `P-INDUS-OLDSHAPE-67-68` — posts 67/68 are REAL Indus Retail/Wholesale pages (a
-  guardrail caught they are NOT scrap); fixed by block-editor re-save, NOT deleted. Oldshape audit =
-  0 NEW HIGH. (Separate baselined `heritage-strip` debt on 67/68+52/65/66 remains — REGISTER.md P1/P2,
-  non-blocking.)
+- **Deploy proven, not assumed:** 4/4 md5 local↔server; oldshape audit PASS; axe **0 NEW**
+  violations vs palestine-lives as an UN-DEPLOYED control. **LIVE-VERIFIED:** FR-37-12
+  never-overflow (375/768/1440) + FR-37-35 container queries on both real rows.
+- **⚠ THE HONEST GAP — most new work is `DEPLOYED (unexercised)`, not done.** The canary homepage
+  carries no cart, no search, and **no `sgs/nav-menu` at all**; notices + `DeviceTabs` are
+  editor-surface; hide-on-scroll ships off. **Next session's Task 1 is to CREATE the pages/settings
+  that make each render, then check them** (`next-session-prompt.md`).
+- **Shipped:** mini-cart (FR-36-19) · search extends (36-20) · social one-source (36-21) · nav +
+  header/footer notices (36-12, 37-19) · 2 structural gates (36-24, 37-27) · container queries
+  (37-35) · hide-on-scroll (37-13) · shared `DeviceTabs` fixing the switcher on **21 blocks**
+  (37-29) · all 9 legacy patterns + `framework-footer-default` re-targeted to the CPT model (37-8).
+- **Bugs found + fixed:** an **XSS** in the mini-cart escaper (quotes survived into quoted attributes);
+  `sgs/cta-section` rendering an undeclared `textAlign` WP silently discards; `sgs/nav-menu` emitting
+  **zero `<nav>` landmarks** while its `aria-label` sat on a roleless div naming nothing (D367); the
+  core-block gate blind to 13 files incl. both framework defaults (D366); `core/navigation`'s ban
+  silently lapsed when adaptive-nav was deleted at D362 (D366).
+- **Bean corrected me twice (D363/D364):** Spec 33 Part 2 is gated on 36+37, **not** the reverse,
+  and "Part 2" is **ownerless** — each spec points at the other. `labelCollapse` RETAINED.
+- **New scope:** FR-36-26/a/b/c — the icon-list link-list for footers, fully scoped and dispatchable
+  (heading + markers + typography + `source` toggle), with its a11y/SEO/schema contract and its
+  converter ROUTING declared now, recognition deferred to Part 2.
 
-**Your next session (Bean-directed) → see `.claude/next-session-prompt.md` for the orchestration plan.**
-Shape: (1) **conformance audit** of Spec 36 + 37 — the Spec 36 map already exists at
-`.claude/reports/2026-07-22-spec36-completion-audit.md` (per-FR verified status + cost-tier + deps);
-extend it to Spec 37. (2) **Then `/plan`** — classify each remaining FR by python-script / haiku /
-sonnet, map deps + what runs in PARALLEL, then **spawn sonnet agents in batches**;
-**Opus inline = orchestration + QC ONLY (never implements).**
+**Prior session (2026-07-22, D359–D362) — swept** to `decisions.md` + `memory/session-2026-07-22*.md`.
+**Site state unchanged: BOTH sites show GENERIC proof headers** (sandybrown CPTs #1570/#1571;
+palestine-lives #360) — restore via the admin "Clear active" row action per site.
+
+**Your next session → `.claude/next-session-prompt.md`.** Task 1 = make the DEPLOYED-but-
+unexercised work actually RENDER (Playwright/WP-CLI create the pages + settings), then verify
+it. Tasks 2-3 = the two FR-36-26c icon-list dispatches (fully scoped in Spec 36).
 
 ---
 
@@ -71,12 +78,9 @@ sonnet, map deps + what runs in PARALLEL, then **spawn sonnet agents in batches*
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`, HEAD `f8e04016` (2026-07-22; co-active commits land on top — re-check). **This session's commits (pushed):** `0da5ef6a`
-  (FR-37-2/3/5/25 binding) → `87d1f94c` (FR-37-11 footer count) → `9b9a8028` (FR-37-6 header gut) →
-  `9ff24f74` (slug-vs-area fix) → `fc8e2796` (spec verification record). Later session (D360):
-  `47c93db2` (spec de-client correction) → `94ab240f` (orphan pattern delete) → `93b1f8a0`
-  (FR-36-18 cutover proof) → `f1f86ea0`+`23a3cf63` (FR-37-21 legacy nav retirement) →
-  `766b2992`/`703e0daf` (docs). **D-ceiling: D362.**
+- **Branch:** `main`, HEAD `2699211c` (2026-07-23; a co-active Spec-31/35 track commits between handoffs — re-check with `git log -1`).
+  **D-ceiling: D367.** This session: 18 commits, `c63749c8` → `2699211c` (interleaved
+  with a co-active Spec-31/35 track — verify with `git log`, never a cached hash).
   ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
   landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
