@@ -103,6 +103,20 @@ final class Sgs_Active_Layout {
 	}
 
 	/**
+	 * Record that a header/footer was served this request by a path OTHER than
+	 * render_active() — specifically the rules-engine / immutable-default path in
+	 * Sgs_Header_Rules::filter_template_part(). This lets the one-header-per-request
+	 * invariant (P-HEADER-DOUBLE-SLOT-NEST) suppress a duplicate second slot
+	 * regardless of which path served the first header. render_active() sets the
+	 * same flag inline on its own success path. Cleared by reset_request_state().
+	 *
+	 * @param string $area Area token.
+	 */
+	public static function mark_served( string $area ): void {
+		self::$render_served[ $area ] = true;
+	}
+
+	/**
 	 * Render the active layout's blocks for an area, once per request.
 	 *
 	 * This is the whole binding: read the post, run `do_blocks()`. It never

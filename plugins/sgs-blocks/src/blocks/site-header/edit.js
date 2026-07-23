@@ -379,7 +379,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				</ToolsPanel>
 			</InspectorControls>
 
-			<div ref={ refEl } { ...innerBlocksProps } />
+			{ /* Editor canvas renders as <header> to match the frontend banner
+			     landmark (FR-37-13 fix B; P-HEADER-EDITOR-TAG-PARITY). */ }
+			<header ref={ refEl } { ...innerBlocksProps } />
 		</>
 	);
 }

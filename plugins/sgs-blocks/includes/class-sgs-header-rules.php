@@ -227,28 +227,39 @@ final class Sgs_Header_Rules {
 		// default (FR-37-4) rather than rendering an empty header. It also
 		// carries its own per-request re-entrancy guard, which the
 		// $evaluated_this_request static below does NOT cover.
+		// One-header invariant (P-HEADER-DOUBLE-SLOT-NEST — FR-37-13 fix B follow-up,
+		// Bean-signed-off 2026-07-24). A page can resolve the header area more than
+		// once (a duplicated or nested layout). Once ANY header has been emitted this
+		// request — via the active CPT below OR the rules/default path — every further
+		// header slot renders NOTHING. Returning '' short-circuits pre_render_block
+		// with empty output, so the page carries exactly ONE <header> banner landmark.
+		//
+		// This SUPERSEDES the old "hand the second slot back to core" branch (which
+		// returned $pre so core rendered a second, framework-default header). Now that
+		// sgs/site-header is a semantic <header> (FR-37-13), that second one would be a
+		// nested/duplicate banner — a WCAG landmark-unique failure — emitted silently
+		// (the D338 class). One site header is the correct invariant regardless of the
+		// tag; enforcing it structurally here closes the risk by construction. No
+		// current template resolves the header slot twice, so live pages are unaffected.
+		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_HEADER ) ) {
+			return '';
+		}
+
 		$active = Sgs_Active_Layout::render_active( Sgs_Active_Layout::AREA_HEADER );
 		if ( null !== $active ) {
 			return $active;
 		}
 
-		// A page can resolve the header area more than once. If the active CPT
-		// already served this request, hand the second slot back to core rather
-		// than to the rules engine below.
-		//
-		// Without this, the second slot renders a DIFFERENT header: the CPT
-		// branch short-circuits before self::evaluate() on the first pass, so
-		// $evaluated_this_request is still false when the second pass reaches
-		// it. evaluate() then runs for the first time, matches the immutable
-		// default rule (priority 9999, always present), and paints the framework
-		// default header underneath the operator's one. Two unlike headers on
-		// one page, silently — worse than a duplicate, and no error is raised.
-		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_HEADER ) ) {
-			return $pre;
+		$rendered = self::evaluate();
+		if ( null !== $rendered ) {
+			// The rules/default path served a header too; record it so a second
+			// header slot on this request hits the one-header guard above. The CPT
+			// path records the same flag inside Sgs_Active_Layout::render_active().
+			Sgs_Active_Layout::mark_served( Sgs_Active_Layout::AREA_HEADER );
+			return $rendered;
 		}
 
-		$rendered = self::evaluate();
-		return null === $rendered ? $pre : $rendered;
+		return $pre;
 	}
 
 	/**
