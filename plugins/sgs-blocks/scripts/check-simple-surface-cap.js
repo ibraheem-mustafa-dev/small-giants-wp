@@ -447,11 +447,12 @@ function printHuman( results ) {
 		}
 
 		process.stdout.write(
-			`  → default-visible: ${ r.totalDefaultVisible } | cap: ${ r.cap } | ${ r.pass ? 'PASS' : 'FAIL' }\n`
+			`  → default-visible: ${ r.totalDefaultVisible } | default: ${ r.cap } | ${ r.pass ? 'WITHIN' : 'OVER' }
+`
 		);
 		if ( ! r.pass && r.pushingRow ) {
 			process.stdout.write(
-				`  ✗ pushed over the cap by: "${ r.pushingRow.label }" (${ r.pushingRow.kind }${ r.pushingRow.component ? `: <${ r.pushingRow.component }>` : '' }) at line ${ r.pushingRow.line } — this was default-visible row #${ r.cap + 1 }\n`
+				`  ✗ over the default because of: "${ r.pushingRow.label }" (${ r.pushingRow.kind }${ r.pushingRow.component ? `: <${ r.pushingRow.component }>` : '' }) at line ${ r.pushingRow.line } — this was default-visible row #${ r.cap + 1 }\n`
 			);
 		}
 		process.stdout.write( '\n' );
@@ -462,7 +463,8 @@ function printHuman( results ) {
 		process.stdout.write( `[check-simple-surface-cap] OK — ${ results.length } block(s) within cap.\n` );
 	} else {
 		process.stdout.write(
-			`[check-simple-surface-cap] FAIL — ${ failing.length }/${ results.length } block(s) over the Simple-surface cap.\n`
+			`[check-simple-surface-cap] ${ failing.length }/${ results.length } block(s) OVER the Simple-surface default (advisory).
+`
 		);
 	}
 }
@@ -642,6 +644,9 @@ function main() {
 	}
 
 	const asJson = argv.includes( '--json' );
+	// Opt-in enforcement. The <=3 figure is a DEFAULT, not a ceiling (P2 §5,
+	// Bean-confirmed), so this script is WARN-ONLY unless explicitly asked.
+	const strict = argv.includes( '--strict' );
 	// --check is accepted as an alias for CLI symmetry with the sibling
 	// gates (check-dead-controls.js etc.) — this script is a hard gate by
 	// default already, so --check changes nothing about its behaviour.
@@ -672,8 +677,31 @@ function main() {
 		printHuman( results );
 	}
 
+	// WARN-ONLY — always exit 0 unless --strict is passed.
+	//
+	// CORRECTED 2026-07-23 (Bean-caught). This gate originally exited 1 on >3
+	// default-visible controls, making the ≤3 figure a hard CEILING. P2 §5 — the
+	// Bean-confirmed source FR-37-27 cites — says the opposite, twice:
+	//   "the ≤3 lint is the sensible DEFAULT, not a ceiling"        (P2:52)
+	//   "Operator pin/unpin; lint = default not ceiling. Bean-confirmed." (P2:91)
+	// P2 raised "hard cap fights client self-service" as an objection and RESOLVED
+	// it in favour of a default. FR-37-27 mis-transcribed that resolution as "the
+	// lint fails a build that adds a fourth", and this script implemented the
+	// mis-transcription — turning a design guideline into a build blocker.
+	//
+	// This also aligns it with its sibling: FR-37-27 itself notes that
+	// check-element-manifest-conformance.js is WARN-ONLY and always exits 0.
+	//
+	// `--strict` is retained so the cap CAN be enforced deliberately (e.g. in a
+	// focused conformance pass), but never by default and never in prebuild.
 	const anyFail = results.some( ( r ) => ! r.pass );
-	process.exit( anyFail ? 1 : 0 );
+	if ( anyFail && ! strict ) {
+		process.stdout.write(
+			'\n[check-simple-surface-cap] ADVISORY — the <=3 figure is a DEFAULT, not a ceiling ' +
+				'(P2 §5, Bean-confirmed). Exiting 0. Use --strict to enforce it.\n'
+		);
+	}
+	process.exit( anyFail && strict ? 1 : 0 );
 }
 
 main();

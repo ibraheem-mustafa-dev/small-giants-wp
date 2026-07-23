@@ -117,7 +117,7 @@ commit (path-scoped, branch re-checked in the SAME command)
 
 **Still open, NOT in these tasks:** FR-37-7 the starter picker — the single highest-leverage
 remaining item, and the SAME build as Spec 36 FR-36-3 (schedule it ONCE, never twice).
-`sgs/site-header` sits at 7 default-visible controls against a cap of 3 (FR-37-27 roster work).
+`sgs/site-header` shows 7 default-visible controls vs the P2 §5 DEFAULT of 3 — advisory only, NOT a blocker (FR-37-27 roster work).
 
 ## Methodology guardrails (do not skip)
 

@@ -876,7 +876,26 @@ control *somewhere* (Advanced satisfies it) and is **WARN-ONLY, always exits 0**
 the mechanism that reconciles them — it is not a design problem to solve.
 **Status:** `NOT-BUILT` — `check-simple-surface-cap.js` does not exist (verified: 0 files).
 **Done when:** both containers show exactly the Simple controls in the table above by default;
-the lint fails a build that adds a fourth.
+the lint REPORTS a fourth as over the default — advisory, never a build blocker.
+
+> **⚠ CORRECTED 2026-07-23 (Bean-caught). This FR previously said "the lint fails a build that adds
+> a fourth" — a mis-transcription of its own cited source, and it propagated into shipped code.**
+> P2 §5 states the opposite TWICE, and it is the Bean-confirmed resolution of an objection raised
+> against exactly this reading:
+> - P2:52 — *"the ≤3 lint is the sensible **default, not a ceiling**"*
+> - P2:91 — objection *"Hard cap fights client self-service — ≤3 lint = a ceiling a client can't
+>   influence"* → resolution *"Operator pin/unpin; **lint = default not ceiling** (§5). **Bean-confirmed.***"
+> - P2:187 — *"≤3 default; operator-reorderable; **lint = default**"*
+>
+> So ≤3 is a design DEFAULT the lint surfaces, not a cap a build dies on. `check-simple-surface-cap.js`
+> was built to the wrong reading and exited 1; it is now WARN-ONLY (exit 0) with an opt-in `--strict`,
+> matching its sibling `check-element-manifest-conformance.js`, which this FR itself notes is
+> "WARN-ONLY, always exits 0".
+>
+> **Consequence for the current finding:** `sgs/site-header` showing 7 default-visible controls is a
+> NUDGE toward the P2 §5 roster, **not a defect and not a blocker**. Do not "fix" it by hiding
+> controls a client relies on — P2's whole point was that a ceiling a client cannot influence is
+> worse than a surface that is slightly busy.
 
 #### FR-37-28 — Preset controls are permitted
 The inspector may expose composite preset controls (e.g. *Layout: Centred / Split / Minimal*)
@@ -969,7 +988,7 @@ and eye are co-authoritative, neither closes alone).
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
 | hide-on-scroll (FR-37-13) | `DEPLOYED (unexercised)` — dead capability CLOSED: `headerHideOnScroll` attr + Advanced ToolsPanel control + resolver flag + body class. Chain proven by code-read end to end; **ships off by default so nothing has yet run it.** ⚠ Untested interaction: it puts a `transform` on the header, and a transformed ancestor breaks fixed/top-layer positioning — the drawer's body-reparent (D323) very likely covers it, but "likely" is not "observed" |
 | Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
-| Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. **The roster itself does NOT yet conform:** `sgs/site-header` shows **7 default-visible controls against a cap of 3**. The gate is not wired into prebuild (separate decision) |
+| Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
 | Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |
 | Tri-state shape (FR-37-14) | `NOT-BUILT` |
 | Scoped behaviour CSS (FR-37-15) | `NOT-BUILT` |
@@ -989,11 +1008,23 @@ and eye are co-authoritative, neither closes alone).
 
 > ### ⚠ "Spec 33 Part 2" — ownership defect + the CORRECT build direction (recorded 2026-07-23)
 >
-> **The defect.** Nobody owns it. Spec 33 is marked `COMPLETE` and says Part 2 — the header/footer
-> converter — belongs to **Spec 37** (`33:20`, `33:34-36`). This spec's FR-37-22 says the walker is
-> **"Spec 33 Part 2"**. Each points at the other, so the work has no home. This is the identical
-> circular-pointer failure that left `sgs_site_info` ownerless until it was resolved on 2026-07-21 —
-> and it is exactly why the build ORDER below kept being stated backwards.
+> **What it actually is (Bean, 2026-07-23 — this supersedes the "ownerless" framing below).**
+> "Spec 33 Part 2" is **the specialised pipeline that CLONES a draft's header and footer** onto SGS
+> blocks. It is NOT this spec. What Spec 33 hands to **Spec 37** is the *architecture and the BUILD*
+> — the container blocks, the CPT editing home, the binding, the behaviours, and all the blocks that
+> live inside a header or footer. Two distinct pieces of work:
+>
+> | | Owner | State |
+> |---|---|---|
+> | Architecture + building the header/footer + its blocks | **Spec 37** (this spec) + **Spec 36** (the nav + element blocks) | ACTIVE — being built now |
+> | The specialised header/footer CLONING pipeline | **"Spec 33 Part 2"** | NOT STARTED — comes after |
+>
+> **The doc defect that made this confusing.** Spec 33's own text says *"Part 2 (Spec 37) = clone the
+> draft header/footer"* (`33:34-36`), collapsing the two into one label; this spec's FR-37-22 then
+> points back at "Spec 33 Part 2". Read together they look like a circular pointer with no owner —
+> which is how the build ORDER below came to be stated backwards. It is not ownerless: Spec 37 owns
+> the BUILD, and the CLONING pipeline is separate, unstarted work that consumes it. **Spec 33's
+> wording should be corrected when Part 2 is picked up.**
 >
 > **The correct direction (Bean-corrected 2026-07-23, and what the specs actually say).**
 > Spec 36's own frontmatter: *"33 Part 2 (converter — **built AFTER the nav passes its test gate**;
