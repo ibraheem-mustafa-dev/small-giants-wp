@@ -1,89 +1,85 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: "Track 1 — Spec 31 LANDED leg ARMED + the oracle's guards corrected (2026-07-23, 6 commits). The instrument was lying in BOTH directions; it now reports 2 genuine findings instead of 87 phantom ones. Next = settle the 2 open questions on the per-area CSS routing rework and build it — Bean believes it is the LAST task before Spec 31 = 100%, then Spec 35."
-generated: 2026-07-23
+thread: "Track 1c — Declarative CSS routing SHIPPED (2026-07-23, D372-D373, 6 commits). css_layer L1-L4 fully seeded + css_element normalised to 'wrapper' + P3a base-resolver OUTER union + P4 declarative area resolver (qc-council-validated, +213 routes) + product-card cta box-object (last block off the axis pair). ONE outcome pending: the live BoxControl editor check (deploy blocked on the shared dirty tree). Then the Spec-31-to-100 items (phase-f fixtures, check_landed) + Spec 35."
+generated: 2026-07-23 (eve, post-declarative-routing)
 track: 1-converter
 note: "Track 1's prompt lives HERE, not .claude/next-session-prompt.md — that canonical path is contended by Track 2 (Spec 36/37). See the top warning."
 ---
 
-# Track 1 — Next Session Prompt (2026-07-23)
+# Track 1c — Next Session Prompt (2026-07-23 eve)
 
 **Invoke `/autopilot` before anything else.** Then read this end-to-end.
 
 > ⚠ `main` is SHARED with a co-active **Track 2** (Spec 36/37 header/footer/nav). Track 2 owns
 > `LEDGER.md`, `parking.md`, `decisions.md`, `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`,
-> and the D-numbering cadence. **THIS is Track 1's prompt**
-> (`next-session-prompt-track1-converter.md`).
+> and the D-numbering cadence. **THIS is Track 1c's prompt** (`next-session-prompt-track1-converter.md`).
 > Path-scope every commit; re-check `git branch --show-current` in the SAME command as the commit;
 > NEVER `git add -A`.
-> **VERIFY every commit landed via `git log -1`, NOT the hash the commit reported** — Track 2 was
-> committing live during the 2026-07-23 session (`a6040287` landed between two Track 1 commits),
-> and this discipline held across 6 commits with zero collisions.
+> **VERIFY every commit landed via `git log -1`, NOT the hash the commit reported** — Track 2 commits
+> live (this session `bf312016` landed between two Track 1c commits); the git-log-1 discipline held
+> across 6 commits with zero collisions.
 
 ## Plain-English state (where we are)
 
-**Spec 31's LANDED leg is now armed and measuring for the first time.** Last session closed the
-gating dependency (`P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES`) and then spent most of its time
-discovering that the *instrument* was lying in both directions — inventing failures AND hiding real
-ones. It now reports 2 genuine findings instead of 87 phantom ones.
+**The per-area CSS routing rework — the "last task before Spec 31 = 100%" from the PRIOR prompt — is
+DONE and pushed.** It became a broader declarative-routing session (Bean-driven), and the two OPEN
+QUESTIONS the prior prompt raised are both settled:
+- **OPEN QUESTION 1 (`css_element='box'`):** SETTLED — `box` is a CLUSTERING term (the block's own
+  `isWrapper:true` manifest element), NOT a DOM element. Verified: no `__box` node in any renderer.
+- **OPEN QUESTION 2 (DB survey):** DONE — `css_element` is the real disambiguator; `css_layer` is now
+  FULLY seeded (was 6 rows — Bean was right it was worth populating); the base-resolver domain +
+  css_state/css_tier do nearly all the disambiguation.
 
-Shipped last session (6 commits, all pushed, all gates green):
+Shipped this session (6 commits, all pushed, all gates green — 997 tests + coverage + no_slug_literal
++ F6 db-consistency):
 
 | Commit | What landed |
 |---|---|
-| `b4859b71` | 35/36 fixture canary pages deployed + `check_landed()` ARMED (opt-in `--with-landed`) |
-| `96bfeb66` | First real corpus-wide LANDED measurement recorded; stale "DEFERRED" text removed |
-| `f6bacb46` | Guards 1+4 judge against the **golden**, not two false assumptions |
-| `1669a785` | Composition gate + draft-hidden gate + real `expected_default` |
-| `a0a7d6aa` | **The fold gap channels wired — they were built but never connected** |
-| `b46bcfc2` | `body` → `sgs/text` alias removed; area-routing rework design-gated |
+| `50622ed8` | css_layer L1-L4 FULLY seeded declaratively (block.json `layer` field + name-convention fallback + leaf guard, authoritative reseed) + Wave-0 mis-seed fixes (6 hover `css_state`, splitImage tier) |
+| `77bacdda` | **P3a** base-resolver OUTER union (`css_element IN root-set OR css_layer='OUTER'` — 26 wrapper attrs recovered) + **P4** declarative area resolver (replaced the name-build; **+213 routes, −6 wrong, all 3 conflicts fixed**). qc-council-validated. |
+| `77703100` | product-card CTA padding → box-object (last block off the ad-hoc axis pair; every SGS block now box-object) |
+| `a5518437` | css_element normalised to `wrapper` for every isWrapper root (120 attrs / 26 blocks — Bean-directed "make it clear they are wrappers") |
+| `9074d1ae` | spec docs 31 §4 + 32 |
+| `fb93bcae` | handoff docs (D372-D373, LEDGER, was 4 parking entries — now folded into this prompt) |
 
-**Current state:** 997 tests pass; coverage gate **0 UNACCOUNTED**; `no_slug_literal` + `db-consistency`
-clean; oracle corpus = LANDED 37 / UNVERIFIED 36 / **WRITTEN-not-LANDED 2** / GUARD-FAIL 23 /
-COMPOSITION-INVALID 4.
+**Current state:** F6 green after a full `/sgs-update` (pruned the retired `ctaPaddingX/Y`, seeded
+`box_family='ctaPadding'`, applied the normalisation). 997 tests pass.
 
-**The one open task — and Bean thinks it may be the LAST for Spec 31 = 100%:** the per-area CSS
-routing rework, fully designed and **design-gate pending** at
-`.claude/plans/2026-07-23-area-css-routing-declarative-design.md`. Read that doc first; it carries
-the measured evidence, two OPEN QUESTIONS Bean raised, and two explicitly REJECTED approaches.
+## What this session proved (do not re-derive)
 
-## What last session proved (do not re-derive)
-
-- **`attr_for_area_property` name-builds `area + suffix` and never consults the slots table.** A
-  336-combination differential vs a declarative lookup: declarative finds **206 routes the
-  name-build misses**; the 13 "name-build only" wins are **WRONG routes** (all option-picker pill
-  attrs seeded `css_state='hover'`, so a RESTING declaration lands on a HOVER attr — the name-build
-  is blind to `css_state`/`css_tier`); 3 conflicts pick a different attr than the one declared.
-- **`css_layer` is unusable** — 6 of 511 seeded. `css_element` is the real disambiguator (421/511).
-- **NULL `css_element` means ROOT, not "unseeded"** (`scaleHover`, `columns`, `fontSizeTablet`) —
-  Spec 31 §4 already treats `css_element IN ('','root','self')` as the base domain. An AREA resolver
-  only serves NAMED sub-areas, so there is no population the name-build uniquely serves.
-- **The Mama's product-card `__body` padding is dropped**, and it LOOKED faithful only because the
-  block's own hardcoded fallback (`style.css:81`, 20px) equals the draft. `innerPadding` appears
-  ZERO times in page 8's stored content.
-- **`sgs/product-card` has TWO renderers.** `render.php` emits `product-card-body`;
-  `includes/product-card-builtin-render.php:125` emits `sgs-product-card__body` — the latter is what
-  runs. Reading the wrong one cost half a session.
-- **Six leads triaged to zero converter defects**: 1 capability gap (product-card root padding —
-  `spacing.padding:false` is deliberate, the image is edge-to-edge), 1 invalid fixture
-  (parent-constrained accordion-item), 4 semantic mismatches (modal trigger vs overlay).
+- **P4 declarative area resolver is strictly better** — measured differential on the LIVE DB (not the
+  doc's stale 206/13/3): declarative **+213** correct routes the name-build silently missed, **−6**
+  WRONG name-build routes (resting decls landing on `css_state='hover'`/`'selected'` attrs; social-icons
+  `iconColour` matched by NAME onto element='item'), **3 conflicts** all favour declarative (overlay
+  opacity → `backgroundOverlayOpacity`; cart badge → `badgeTextColour`; trust-bar label → `textColour`).
+- **The qc-council caught 2 DATA mis-seeds that would CRASH the resolvers AND were silent bugs today**:
+  6 quote/testimonial hover attrs carried `css_property` with `css_state=NULL` (a resting decl was
+  masquerading onto them) → `css_state='hover'`; `hero.splitImageMobileHeight` is a functional
+  duplicate of `imageHeightMobile` → de-routed. Fix-the-data-before-the-resolver.
+- **css_element normalisation is safe because resolution keys on css_layer, not the element name** —
+  the base resolver's OUTER union finds wrapper attrs by MEANING; 'wrapper' need not be a base-domain
+  element. Oracle golden fixtures intact.
+- **A box-object migration can silently drop the default** — `ctaPaddingX=24`/`ctaPaddingY=14` → a `{}`
+  object default emits NOTHING; it's non-visual ONLY because `sgs_box_object_shorthand({})` returns
+  null and the CTA falls through to `.sgs-button` base `14px 24px` (button/style.css:27). Verify the
+  fall-through before calling any box-object migration non-visual (memory
+  `box-object-migration-verify-default-fallthrough`).
 
 ## First action (≤5 min, zero dependencies)
 
-**Read the design doc** `.claude/plans/2026-07-23-area-css-routing-declarative-design.md` end to end
-— it is the whole task. Then confirm the inherited state is genuinely green before changing anything:
-`cd plugins/sgs-blocks/scripts && python -m pytest converter/ ledger/ oracle/ -q && python ledger/coverage_check.py --check`
-(expect 997 pass + `0 UNACCOUNTED`). If either differs, STOP and reconcile — inherited state is a
-claim, not a fact.
+Confirm the inherited state is genuinely green before touching anything:
+`cd plugins/sgs-blocks/scripts && python -m pytest converter/ ledger/ oracle/ -q && python ledger/coverage_check.py --check && python db-consistency/run.py`
+(expect 997 pass + `0 UNACCOUNTED` + F6 0 violations). If any differs, STOP and reconcile — inherited
+state is a claim, not a fact. Then read the Task 1 deploy recipe below.
 
 ## Mandatory READING (gate — before any converter edit)
 1. `/autopilot` (first).
-2. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** (Bean-locked, ~674 lines).
+2. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** (Bean-locked, ~674 lines). §4 now
+   documents the css_layer seeding + wrapper normalisation + P3a/P4 resolvers (D372-D373).
 3. `.claude/STOP-CATALOGUE.md` — the pre-flight ritual + STOP entries (Track 2's file; read, don't rewrite mid-race).
-4. `.claude/plans/2026-07-23-area-css-routing-declarative-design.md` — **the live task.**
-5. `.claude/plans/2026-07-22-spec31-completion-to-100.md` — the parent plan + its AUDIT CORRECTION section.
-6. For Spec 35 work only: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — **IN FULL** first.
+4. `.claude/plans/2026-07-22-spec31-completion-to-100.md` — the parent plan + its AUDIT CORRECTION section.
+5. For Spec 35 work only: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — **IN FULL** first.
 
 ## Skills to Invoke
 | Skill | When |
@@ -103,7 +99,7 @@ claim, not a fact.
 |------|-----|
 | `/sgs-db` (sgs-db.py) | Block schema/attrs/columns — the authoritative source |
 | `python ~/.claude/hooks/wp-blocks.py` | Block schema/markup before any "missing X" claim |
-| Playwright MCP | Live-page verification, the oracle's live leg |
+| Playwright MCP | Live-page verification, the oracle's live leg + the Task-1 BoxControl check |
 
 ## Agents to Delegate To
 | Agent | When |
@@ -114,68 +110,77 @@ claim, not a fact.
 
 ---
 
-## Task 1 — Settle the two OPEN QUESTIONS, then build the declarative area resolver
-**What:** Replace the fuzzy name-building in `attr_for_area_property` with purely declarative
-routing (`css_property` + `css_element`, base domain, fail loud on tie), deleting the name-build.
-**Why:** Recovers 206 lost routes and removes a wrong-routing class. Bean believes this is the last
-thing between here and Spec 31 = 100%.
-**Estimated time:** DB survey ~30 min (parallel); build ~30 min; live verify ~30 min.
+## Task 1 — Deploy the box-object migration + the live BoxControl check (the ONE pending outcome)
+**What:** The product-card CTA box-object migration (`77703100`) is committed + locally verified but
+its LIVE editor check was NOT done — the deploy was blocked by the shared dirty tree.
+**Why:** The `wp-sgs-developer` agent could not verify the `BoxControl` renders + updates the live
+preview (no running build). This is the last unverified outcome of the migration.
+**Estimated time:** ~15 min once the tree is clean.
 
-**Sub-steps, in dependency order:**
-1. **OPEN QUESTION 1 — what does `css_element='box'` mean?** Bean's hypothesis: it is a CLUSTERING
-   term for the CSS that shapes the containing box, not a DOM element. If so it may be a wildcard /
-   auto-match signal meaning *"both sides are invisible structural layers"* (a draft wrapper with no
-   block identity meeting a block attr whose element is a non-DOM cluster), rather than a match
-   target. **Settle this before building** — it decides whether `box` is a match target, a wildcard,
-   or its own dispatch arm.
-2. **OPEN QUESTION 2 — full DB survey.** Enumerate EVERY column that could differentiate CSS attrs
-   and decide what `css_element` is legitimately matched against. Known: `css_property` (511),
-   `css_element` (421), `css_state`, `css_tier`, `css_layer` (6 — unusable), `role`, `box_family`.
-   Fan out via `/dispatching-parallel-agents`.
-3. **Check the 3 CONFLICT cases individually** (`sgs/cart.badge` colour, `sgs/hero.overlay` opacity,
-   `sgs/trust-bar.label` colour) — read each block's own CSS. Do NOT assume the declared value is right.
-4. **Build** per the design doc §"The proposed shape". `/qc-council` before commit.
-5. **Live verify** — re-run `oracle/batch_runner.py` + computed-parity on the canary **+ Bean's eye**
-   (R-31-11 / R-31-13). Numbers alone do not close.
+**Sub-steps:**
+1. **Unblock the deploy.** The shared worktree had Track 2's UNCOMMITTED work (`icon-list/*`,
+   `render-helpers.php`, `lucide-icons.php`) → `build-deploy.py`'s dirty-tree gate refused, and
+   `--allow-dirty` is BANNED (D336's trigger). Do NOT force it. Either: (a) Track 2 has since committed
+   → tree clean → `build-deploy.py --target sandybrown --blocks-only`; OR (b) deploy from an ISOLATED
+   worktree at `origin/main` HEAD — build in the MAIN checkout (avoid the node_modules-junction hazard,
+   memory `never-junction-node-modules-into-a-worktree`), copy `build/` into the worktree,
+   `build-deploy.py --skip-build`.
+2. **md5sum local↔server** the changed files BEFORE measuring (memory `verify-deploy-by-checksum-not-liveness`).
+3. **Playwright the canary editor:** insert an `sgs/product-card`, open the CTA "Padding" control,
+   confirm the `BoxControl` renders + updates the live preview (login `.claude/secrets/sandybrown.env`).
+**Acceptance:** the BoxControl renders + drives the CTA padding on the live editor; md5 confirms the
+new code shipped.
 
-**Orchestration:** steps 1-2 delegated + parallel (Sonnet); steps 3-5 inline. Depends on: none.
-**/qc gate after:** yes — `/qc-council` before the converter commit.
-**Acceptance:** the 2 remaining WRITTEN-not-LANDED resolve or are explained; no route regresses
-(re-run the 336-combination differential); ledger stays 0 UNACCOUNTED; Bean signs off.
+## Task 2 — Fold-in residuals from the declarative-routing session (were parking; now here per Bean)
+Four items surfaced this session, moved here from parking so the next session picks them up directly:
 
-## Task 2 — Spec 35 conformance audit, then to 100%
-**What:** Same two-phase treatment that worked on Spec 31: conformance-audit the spec against live
-code + the DB, then plan + execute.
-**Why:** Spec 35 governs whether a non-coder client gets a complete editor sidebar per block.
-**Estimated time:** audit ~30 min (parallel); plan ~20 min; build scales with findings.
+1. **P4 cluster-arm — DEFERRED, measure first.** P4 shipped the validated core but DEFERRED the
+   fallback-to-cluster arm (fake wrapper `__body` → block-side `box` cluster). qc-council flagged: the
+   runtime trigger is untraceable from the DB alone (walker/Ctx `area_name` behaviour) + a narrow
+   over-match risk (two nested unresolvable wrappers both writing one cluster attr). The product-card
+   body-padding case it targeted is ALREADY handled by the CONTENT-layer path (css_layer → `innerPadding`
+   = CONTENT). **Only build it if a real draft proves the area resolver is called with an unresolvable
+   area token the CONTENT path doesn't cover — with an "outermost unresolved wrapper only" guard.**
+2. **`attr_for_layer_property` NULL-leak — OPEN.** It uses `css_layer = ? OR css_layer IS NULL`, so a
+   NULL-layer attr matches EVERY layer query. Pre-existing, NOT test-exercised (997 green). Same
+   NULL-permissive class as P3a's base resolver but the LAYER resolver wasn't in the qc-council scope.
+   **Fix:** apply P3a's "prefer exact layer, fall back to NULL only if no exact match" discipline, OR
+   exclude leaf attrs. Verify with a live clone exercising a CONTENT-band composite.
+3. **3 NULL-`css_element` misroutes — OPEN.** Besides the now-fixed product-card cta, a sweep found
+   `sgs/brand-strip.fadeWidth` (width), `sgs/icon.backgroundPadding` (padding), `sgs/separator.contentIconColour`
+   (color — confirmed it targets `.sgs-separator__content`, a silent misroute). Each needs the block's
+   REAL element read from render.php before assigning css_element (NO guessing; ≥2 signals). Pairs with
+   `P-NAVMENU-UNDERLINEOFFSET-CSSPROP-MISSEED` — a DB-seed hygiene pass.
+4. **DEPLOY blocker** = Task 1 above.
 
-**Sub-steps:** read Spec 35 IN FULL → parallel conformance audit (**audit by the DECLARED SEMANTIC —
-`css_property`/`role`/the manifest — never by identifier NAME; require ≥2 signals before recording an
-"absent" verdict**) → `/gap-analysis` → `/strategic-plan` → execute.
-**Known open:** FR-35-5 (`states` axis) + FR-35-6 (`animation` cluster), both APPROVED NOT BUILT;
-rollout waves 2-3; the card-grid resting-state defect; `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS`
-(94 attrs where derived ≠ stored; of 18 hand-traced, **15 stored values were WRONG**; 76 unaudited —
-Bean's standing instruction: finish the audit before overwriting 94 rows on an 18-row sample).
-**Do NOT trust cached Spec 35 figures — derive them:**
-`cd plugins/sgs-blocks/scripts && node check-element-manifest-conformance.js` (count `[OK]`/`[GAP]`/`[ORPHAN]`).
-**Orchestration:** audit delegated + parallel; plan inline; build via `/subagent-driven-development`.
-**Depends on:** Task 1 closing first (Bean's sequence).
+## Task 3 — Spec 31 to 100% (the pre-declarative-routing queue, still open)
+From `plans/2026-07-22-spec31-completion-to-100.md`: (a) `P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES` —
+deploy the phase-f fixture corpus as canary pages + populate `oracle/fixture-canary-urls.json` + apply
+the `check_landed()` patch (the gating dep for declaring Spec 31 100%); (b) the 2 remaining
+WRITTEN-not-LANDED oracle findings; (c) live verify + Bean's eye (R-31-11/R-31-13).
+
+## Task 4 — Spec 35 conformance audit, then to 100%
+Same two-phase treatment that worked on Spec 31: conformance-audit vs live code + DB (**audit by the
+DECLARED SEMANTIC — `css_property`/`role`/the manifest — never by identifier NAME; ≥2 signals before an
+"absent" verdict**) → `/gap-analysis` → `/strategic-plan` → execute. Known open: FR-35-5 (`states`) +
+FR-35-6 (`animation`), both APPROVED NOT BUILT; rollout waves 2-3; card-grid resting-state defect;
+`P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` (finish the 76 unaudited before overwriting 94 rows on an
+18-row sample). Derive figures: `node check-element-manifest-conformance.js`. **Depends on:** Task 3.
 
 ---
 
 ## Dependency graph
 ```
-Task 1.1 + 1.2  (PARALLEL — box semantics + DB survey)
+Task 1 (deploy + live BoxControl check — needs a clean tree)
+Task 2 residuals (independent; measure-first / seed-hygiene — any converter session)
    ↓
-Task 1.3 conflicts (inline)  →  Task 1.4 build (/qc-council gate)
+Task 3 (Spec 31 100%: phase-f fixtures → check_landed → live verify + Bean's eye)
    ↓
-Task 1.5 live verify + Bean's eye  →  SPEC 31 = 100%
-   ↓
-Task 2 (Spec 35: read → parallel audit → plan → execute)
+Task 4 (Spec 35: read → parallel audit → plan → execute)
 ```
 
 ## Structural defences — STOP catalogue (carry forward, never subtract — D101)
-The 6 tokens Track 1 owed were LANDED into `.claude/STOP-CATALOGUE.md` in a prior session
+The 6 tokens Track 1 owed were LANDED into `.claude/STOP-CATALOGUE.md`
 (`STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`, `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`,
 `STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT`, `STOP-VERIFY-THE-DELIVERABLE-EXISTS`,
 `STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START`, `STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT`).
@@ -185,52 +190,46 @@ The most load-bearing for this track, restated because they bit again:
   session's racing commit. Verify via `git log -1` + `git status`, never the reported hash.
 - **STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC** — the pre-commit visual-diff gate blocks any touch of
   a block's render.php/block.json/edit.js; its own message sanctions `--no-verify` for non-visual
-  changes. Use that; never fabricate a PASS report.
+  changes. Use that; never fabricate a PASS report. (Used correctly this session for the cta box-object.)
 - **STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS** — before banking a PASS ask "would this still pass
-  if the feature were absent?" Every guard shipped this session has a paired negative control.
+  if the feature were absent?"
 - **STOP-AUDIT-BY-DECLARED-SEMANTIC-NOT-IDENTIFIER-NAME** — asking "does anything consume X?" by
   searching NAMES misses semantically-named consumers (`scaleHover` consumes `transform`). Require
-  ≥2 signals before recording an "absent" verdict.
+  ≥2 signals before recording an "absent" verdict. (This session: the name-build's 6 wrong routes were
+  exactly this — matched by NAME onto the wrong element/state.)
 - **STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE** (Track 2, D362) — put "EXECUTE YOURSELF with
   your OWN tools; do NOT use the Agent/Task tool to delegate" in every implementer dispatch.
 - **STOP-A-HALF-FINISHED-FIX-IS-WORSE-THAN-NONE** — a repair on ONE side of a two-sided mechanism
   looks done and keeps failing. Treat any "FIX N"/"fixed" comment as a CLAIM to verify end-to-end.
 - **STOP-READ-AN-INSTRUMENT'S-SEMANTICS-BEFORE-CALLING-ITS-OUTPUT-A-BUG** — read what a measurement
-  CLAIMS to measure before calling its output wrong; check a suppression mechanism's KEY before
-  proposing to use it.
+  CLAIMS to measure before calling its output wrong; check a suppression mechanism's KEY before using it.
+- **STOP-A-CHANNEL-THAT-EXISTS-IS-NOT-A-CHANNEL-THAT-IS-WIRED** — grep for the CALL SITES of an
+  injectable callback, not just its definition (2026-07-23).
+- **STOP-READ-THE-RENDERER-THAT-ACTUALLY-RUNS** — `sgs/product-card` has TWO renderers; confirm WHICH
+  file produces the live markup before reasoning about it (2026-07-23, Bean-caught).
+- **STOP-A-COINCIDENTAL-DEFAULT-LOOKS-LIKE-FIDELITY** — a value that matches the block's own default
+  proves nothing about routing (2026-07-23).
+- **STOP-YOUR-FRAMING-BECOMES-THE-COUNCIL'S-BLIND-SPOT** — ask the council what you might be MISSING,
+  not only to choose among your pre-formed options (2026-07-23, Bean-caught — the box-object mechanism).
+- **STOP-VERIFY-A-BOX-OBJECT-MIGRATION-DEFAULT-FALLS-THROUGH** — NEW 2026-07-23. Migrating axis-pair
+  scalars (paddingX/Y with defaults) to a `{}` object default silently DROPS the old defaults (empty
+  object emits nothing). Before calling a box-object migration non-visual (and using `--no-verify`),
+  PROVE the empty-object falls through to an EQUAL base rule. `sgs_box_object_shorthand({})` returns
+  null → the block falls through to its base CSS; verify that base equals the old scalar defaults.
 - **STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT** · **STOP-VERIFY-THE-DELIVERABLE-EXISTS** ·
   **STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START** · **STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT** —
   carried forward verbatim; full text in `STOP-CATALOGUE.md`.
 
-**NEW — ADD to STOP-CATALOGUE.md when Track 2 is idle (4 tokens; re-derive `previous` with the
-canonical command in that file's §D receipt — never carry a figure forward from a prior read):**
-- **STOP-A-CHANNEL-THAT-EXISTS-IS-NOT-A-CHANNEL-THAT-IS-WIRED** — `fold_helpers` BUILT its gap
-  findings (`cross_node_gap_candidate`) and both `assembly.py` call sites omitted `trace=`, so every
-  finding went to `_noop_trace` and vanished. A repo-wide grep for `trace=`/`record_gap=` returned
-  ZERO call sites. The code comment claimed the miss was "gap-tracked" — aspirational, not true.
-  **Grep for the CALL SITES of an injectable callback, not just its definition.** (2026-07-23.)
-- **STOP-READ-THE-RENDERER-THAT-ACTUALLY-RUNS** — `sgs/product-card` has TWO renderers; `render.php`
-  emits `product-card-body` while `includes/product-card-builtin-render.php` emits
-  `sgs-product-card__body`. Half a session was spent concluding "the block doesn't emit this" from
-  the wrong file. **Confirm WHICH file produces the live markup (grep the live HTML string against
-  every candidate) before reasoning about it.** (2026-07-23, Bean-caught.)
-- **STOP-A-COINCIDENTAL-DEFAULT-LOOKS-LIKE-FIDELITY** — the Mama's product-card body renders 20px
-  matching the draft's 20px, while transferring NOTHING (`innerPadding` absent; the block fallback
-  supplies it). Guard 3 exists for exactly this and could not fire because `expected_default` was
-  never sourced. **A value that matches the block's own default proves nothing about routing.**
-  (2026-07-23.)
-- **STOP-YOUR-FRAMING-BECOMES-THE-COUNCIL'S-BLIND-SPOT** — a `/qc-council` was asked to choose among
-  3 pre-formed proposals and sized the fix at ~40 files. Both raters reasoned rigorously INSIDE that
-  frame; neither asked "is there already a mechanism for this?" Bean did, and the box-object
-  mechanism (FR-31-22, `borderWidth` on 8 blocks) made it ~2 functions. **Ask the council what you
-  might be missing, not only to choose among your options.** (2026-07-23, Bean-caught.)
+**ADD to STOP-CATALOGUE.md when Track 2 is idle** (the 4 from the prior prompt + the new box-object one
+above; re-derive the `previous` count with the canonical command in that file's §D receipt — never
+carry a figure forward from a prior read).
 
 ## Pre-flight ritual (answer before first Write/Edit)
 1. On `main`? Next commit path-scoped away from Track 2 (`LEDGER.md`, `parking.md`, `decisions.md`,
-   `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, `site-*`, spec 36/37, `header-*`)?
+   `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, `site-*`, spec 36/37, `header-*`, `icon-list/*`)?
 2. Touching the converter? → Spec 31 read IN FULL, design-gated, `/qc-council` before commit.
-3. About to accept a subagent claim? → re-derive it from the tool. Last session BOTH raters needed
-   correcting (one cited "0 `<hr>`" when there are 8; one cited a stale spec saying 4 blocks vs 8).
+3. About to accept a subagent claim? → re-derive it from the tool. (This session: the wp-sgs-developer
+   agent's "non-visual" claim needed the default-fall-through verified against the base CSS.)
 4. After committing → does `git log -1` show MY message at HEAD + `git status` clean?
 5. Banking a PASS? → would it still pass if the feature were absent?
 6. Recording something as "absent / missing / excluded"? → ≥2 signals, including the declared
@@ -239,11 +238,13 @@ canonical command in that file's §D receipt — never carry a figure forward fr
 
 ## Guardrails
 - **Deploy: `build-deploy.py --target sandybrown` ONLY.** Never hand-roll tar/scp/`rm -rf` (D336).
-  `md5sum` local↔server BEFORE measuring. Canary plugin was verified in sync 2026-07-23.
+  `md5sum` local↔server BEFORE measuring. NEVER `--allow-dirty` on a shared tree (D336's trigger).
+  On a dirty shared tree, deploy from an ISOLATED worktree (copy `build/`, `--skip-build`).
 - Converter changes: `/qc-council` before commit; verify on the REAL draft + the live code path.
 - DB authoritative — never hardcode a count (`/sgs-db`, `/wp-blocks`).
-- Manual DB edits BANNED — dated migration + `/sgs-update` reseed (see
-  `migrations/2026-07-23-remove-body-from-text-slot-aliases.py` for the pattern).
+- Manual DB edits BANNED — dated migration OR the `attr-classification-overrides.json` channel + a
+  `/sgs-update` reseed. (This session: hover `css_state` + splitImage tier fixes went via the override
+  channel; the full `/sgs-update` pruned the retired attrs + seeded box_family.)
 - Every deferral maps to a named spec STAGE, never "out of scope" (STOP-29).
 - Time estimates default LOW; smallest first action < 5 min.
 - Suites before AND after, from `plugins/sgs-blocks/scripts`:
@@ -251,15 +252,14 @@ canonical command in that file's §D receipt — never carry a figure forward fr
   `python ledger/coverage_check.py --report --with-landed` (the LANDED leg) ·
   `python converter/gates/no_slug_literal.py` · `python db-consistency/run.py`
 
-## Open residuals (parked, not blockers)
-- **`P-AREA-ROUTING-NAME-BUILD-IS-FUZZY`** — Task 1; the design doc holds the evidence.
-- `P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE` — the height guard is now `measured=False` for
-  fixture-canary runs (non-comparable environments), so this needs a same-environment render to judge.
+## Open residuals (parked elsewhere, not blockers)
+- `P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE` — the height guard is `measured=False` for fixture-canary
+  runs (non-comparable environments); needs a same-environment render to judge.
 - `P-NAVMENU-UNDERLINEOFFSET-CSSPROP-MISSEED` — `underlineOffset` seeded `css_property='position'`.
-  Same class as product-card's `css_element='box'` question.
+  Pairs with the 3 NULL-element misroutes in Task 2.3 (same seed-hygiene pass).
 - `P-POSTGRID-SCALEHOVER-OUT-OF-B3-SCOPE` — per-item + multi-property; hover scale still drops.
 - `P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN` — an EDITOR control-state bug; needs a live Playwright repro.
-- `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` — Task 2.
+- `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` — Task 4.
 - **Per-side border transfer** — real gap, NOT built. Rides the existing box-object mechanism
   (`borderWidth` is a 4-side family on 8 blocks), so ~2 converter functions, not 40 render.php files.
   Needs Bean's design gate.
