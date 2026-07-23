@@ -38,13 +38,13 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 checksum-verified but never actually run**; the rest are unbuilt. The denominator GREW from 60 to
 64 this session because scope was ADDED (FR-36-26/a/b/c).
 *(An earlier draft claimed a single "24/64 complete" — conflating `DEPLOYED (unexercised)` with
-done, the exact completion theatre Spec 37 §5's tier framework exists to prevent. Caught by the
-handoff `/qc` subagent. Counts are approximate BY DESIGN — Spec 37 §5 is organised by area, not
-per FR. For a precise figure, derive it from the per-FR tables; do not quote this line.)*
+done, the completion theatre Spec 37 §5's tiers exist to prevent; caught by the handoff `/qc`
+subagent. Counts are approximate — Spec 37 §5 is by area, not per FR. Derive precise figures
+from the per-FR tables; do not quote this line.)*
 
-- **Deploy proven, not assumed:** 4/4 md5 local↔server; oldshape audit PASS; axe **0 NEW**
-  violations vs palestine-lives as an UN-DEPLOYED control. **LIVE-VERIFIED:** FR-37-12
-  never-overflow (375/768/1440) + FR-37-35 container queries on both real rows.
+- **Deploy proven, not assumed:** 4/4 md5 local↔server; oldshape audit PASS; axe **0 NEW** vs
+  palestine-lives as an UN-DEPLOYED control. **LIVE-VERIFIED:** FR-37-12 never-overflow
+  (375/768/1440) + FR-37-35 container queries on both rows.
 - **⚠ THE HONEST GAP — most new work is `DEPLOYED (unexercised)`, not done.** The canary homepage
   carries no cart, no search, and **no `sgs/nav-menu` at all**; notices + `DeviceTabs` are
   editor-surface; hide-on-scroll ships off. **Next session's Task 1 is to CREATE the pages/settings
@@ -53,20 +53,20 @@ per FR. For a precise figure, derive it from the per-FR tables; do not quote thi
   header/footer notices (36-12, 37-19) · 2 structural gates (36-24, 37-27) · container queries
   (37-35) · hide-on-scroll (37-13) · shared `DeviceTabs` fixing the switcher on **21 blocks**
   (37-29) · all 9 legacy patterns + `framework-footer-default` re-targeted to the CPT model (37-8).
-- **Bugs found + fixed:** an **XSS** in the mini-cart escaper (quotes survived into quoted attributes);
-  `sgs/cta-section` rendering an undeclared `textAlign` WP silently discards; `sgs/nav-menu` emitting
-  **zero `<nav>` landmarks** while its `aria-label` sat on a roleless div naming nothing (D367); the
-  core-block gate blind to 13 files incl. both framework defaults (D366); `core/navigation`'s ban
-  silently lapsed when adaptive-nav was deleted at D362 (D366).
-- **Bean corrected me twice (D363/D364):** Spec 33 Part 2 is gated on 36+37, **not** the reverse,
-  and "Part 2" is **ownerless** — each spec points at the other. `labelCollapse` RETAINED.
-- **New scope:** FR-36-26/a/b/c — the icon-list link-list for footers, fully scoped and dispatchable
-  (heading + markers + typography + `source` toggle), with its a11y/SEO/schema contract and its
-  converter ROUTING declared now, recognition deferred to Part 2.
+- **Bugs found + fixed (detail: D366/D367):** an **XSS** in the mini-cart escaper; `sgs/cta-section`
+  rendering an undeclared `textAlign`; `sgs/nav-menu` emitting **zero `<nav>` landmarks** while its
+  `aria-label` sat on a roleless div naming nothing; the core-block gate blind to 13 files incl. both
+  framework defaults; `core/navigation`'s ban silently lapsed when adaptive-nav was deleted (D362).
+- **Bean corrected me four times (D363/D364/D368):** Spec 33 Part 2 is gated on 36+37, not the
+  reverse — and it is **NOT ownerless**: Part 2 is the header/footer CLONING pipeline, Spec 37
+  owns the architecture + build. `labelCollapse` RETAINED. And the ≤3 Simple-surface figure is a
+  **DEFAULT, not a ceiling** — a shipped gate enforced the wrong reading and is now advisory.
+- **New scope:** FR-36-26/a/b/c — the icon-list link-list for footers, fully scoped + dispatchable
+  (heading, markers, typography, `source` toggle) with its a11y/SEO/schema contract, and its
+  converter ROUTING declared now (recognition deferred to Part 2).
 
-**Prior session (2026-07-22, D359–D362) — swept** to `decisions.md` + `memory/session-2026-07-22*.md`.
-**Site state unchanged: BOTH sites show GENERIC proof headers** (sandybrown CPTs #1570/#1571;
-palestine-lives #360) — restore via the admin "Clear active" row action per site.
+**Prior session (D359–D362) — swept** to `decisions.md` + `memory/`. **Both sites still show GENERIC
+proof headers** (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
 **Your next session → `.claude/next-session-prompt.md`.** Task 1 = make the DEPLOYED-but-
 unexercised work actually RENDER (Playwright/WP-CLI create the pages + settings), then verify
@@ -79,7 +79,7 @@ it. Tasks 2-3 = the two FR-36-26c icon-list dispatches (fully scoped in Spec 36)
 ### Live status (machine-checkable — verify, don't trust the cache)
 
 - **Branch:** `main`, HEAD `2699211c` (2026-07-23; a co-active Spec-31/35 track commits between handoffs — re-check with `git log -1`).
-  **D-ceiling: D367.** This session: 18 commits, `c63749c8` → `2699211c` (interleaved
+  **D-ceiling: D368.** This session: 18 commits, `c63749c8` → `2699211c` (interleaved
   with a co-active Spec-31/35 track — verify with `git log`, never a cached hash).
   ⚠ **Shared branch** — a co-active Spec-35 track commits between handoffs (`20ea88fe`, `553fa9d5`
   landed mid-session). Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with

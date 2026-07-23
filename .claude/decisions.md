@@ -15,6 +15,27 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D368 [INCIDENT] — Two Bean corrections: the ≤3 Simple-surface figure is a DEFAULT not a ceiling; "Spec 33 Part 2" is not ownerless (2026-07-23)
+
+Both landed AFTER the session's handoff docs were written, so they also correct D364 and the LEDGER.
+
+**(1) The ≤3 Simple-surface figure is a DEFAULT, not a ceiling — and a shipped gate enforced the wrong reading.** Bean: *"We never set a limit to 3 visible controls."* Checked rather than accepted: the figure DOES exist, but P2 §5 states it three times as a default, and it is the Bean-confirmed resolution of an objection raised against exactly the hard-cap reading — P2:52 *"the ≤3 lint is the sensible **default, not a ceiling**"*; P2:91 objection *"Hard cap fights client self-service — ≤3 lint = a ceiling a client can't influence"* → *"Operator pin/unpin; **lint = default not ceiling**. Bean-confirmed."*; P2:187 *"≤3 default … lint = default"*. So Bean was right on substance (no limit), and his only mis-recollection was that no "3" existed at all.
+
+**The drift ran four steps.** FR-37-27 mis-transcribed P2's resolution as *"the lint fails a build that adds a fourth"* — inverting the source it cites. `check-simple-surface-cap.js` was then built to that wrong reading (`process.exit(1)` on >3), turning a design guideline into a build blocker. It was then reported to Bean twice, in two documents, as *"7 controls against your cap of 3"* — a soft default presented as a violated cap. **Sharpest detail: FR-37-27 itself notes the sibling gate `check-element-manifest-conformance.js` is "WARN-ONLY, always exits 0". That line was read while building, used to argue the two gates measure different things, and the gate was still built as a hard fail.**
+
+**Fixed:** the gate is WARN-ONLY (exit 0) with an opt-in `--strict` for a deliberate conformance pass; its OUTPUT was rewritten too (`OVER the Simple-surface default (advisory)`, not `FAIL … over the cap`) because the wording misled as much as the exit code; FR-37-27 carries the correction inline with the P2 citations so the wrong rule cannot be re-derived from the same source. **Consequence:** `sgs/site-header` at 7 default-visible controls is a NUDGE toward the P2 §5 roster, **not a defect** — and the spec now explicitly warns against "fixing" it by hiding controls a client relies on, since a ceiling a client cannot influence is precisely what P2 rejected.
+
+**(2) "Spec 33 Part 2" is NOT ownerless — D364's ownership half is WRONG and is superseded here.** Bean: Part 2 is *the specialised pipeline that CLONES headers and footers*; what Spec 33 hands to **Spec 37** is *the architecture and the BUILD* — the container blocks, the CPT editing home, the binding, the behaviours, and all the blocks that live inside a header or footer. Two distinct pieces of work, not one label with no owner:
+
+| Work | Owner | State |
+|---|---|---|
+| Architecture + building the header/footer + its blocks | **Spec 37** + **Spec 36** | ACTIVE |
+| The specialised header/footer CLONING pipeline | **"Spec 33 Part 2"** | NOT STARTED, consumes the above |
+
+**The real defect** is narrower than D364 claimed: Spec 33's own text says *"Part 2 (Spec 37) = clone the draft header/footer"* (`33:34-36`), collapsing two distinct things into one label. Read against FR-37-22's back-reference it LOOKS circular, which is how the build order came to be stated backwards — but nothing is unowned. Spec 33's wording should be corrected when Part 2 is picked up. **D364's build-DIRECTION half stands unchanged and is still the important part: Specs 36+37 complete first; Part 2 consumes them.**
+
+**Process note.** Both corrections came from Bean after the handoff's own `/qc` had passed, and both were in docs that QC had verified — because QC checked the docs against *this session's work*, not against *P2 and Bean's memory*. An internally-consistent doc set can still be uniformly wrong. Also recorded: an invented `strict` identifier was written before the flag defining it existed — the SECOND invented-identifier slip of the session (after `$resolved_menu_name`), both caught by grepping before running, both mine.
+
 ## D367 [INCIDENT] — Nav landmark naming resolved by research; an aria-label on a roleless element names nothing (2026-07-23)
 
 `sgs/nav-menu` emitted **zero `<nav>` elements** (negative control: `grep -c "<nav"` on the pre-fix file = 0) while FR-36-10 requires `<nav aria-label>` and FR-36-11 requires unique landmark labels. The subtler half: `navLabel` WAS passed to the wrapper `<div>` as a plain `aria-label` — **ignored by assistive tech on a roleless element**, so the label existed, named nothing, and read as correct in every code review. Only asking what the markup PRODUCES surfaced it. This was the unidentified cause of the `region` + `landmark-unique` axe findings seen on BOTH sites (including the un-deployed control) earlier the same day.
@@ -55,7 +76,13 @@ Bean-directed. Replaces Spec 36 §1's *"footer menus use the native WP core menu
 
 **FR-36-26b** declares the converter ROUTING target now (Bean: cheap now, expensive to retrofit) while explicitly deferring RECOGNITION to Part 2. **FR-36-26c** is the frozen build scope: two sequential SONNET dispatches, definition of done, and the live checks a build cannot close.
 
-## D364 [INCIDENT] — Spec 33 Part 2 build direction corrected; the label is ownerless (2026-07-23)
+## D364 [INCIDENT] — Spec 33 Part 2 build direction corrected (2026-07-23)
+
+> **⚠ PARTIALLY SUPERSEDED BY D368 (same day, Bean-corrected).** The BUILD-DIRECTION half below
+> stands and is the important part. The **"ownerless" claim is WRONG** — Part 2 is the specialised
+> header/footer CLONING pipeline; Spec 37 owns the architecture and the BUILD. Two distinct pieces,
+> both owned. See D368 for the corrected table and the narrower real defect (Spec 33's own wording
+> collapses the two labels).
 
 **Bean caught a wrong claim of mine.** I stated FR-36-15, FR-36-18 and FR-36-25 were "gated on Spec 33 Part 2". Two of three were wrong and the direction was backwards. Spec 36's own frontmatter: *"33 Part 2 (converter — **built AFTER the nav passes its test gate**)"*; §7 repeats it. **Specs 36+37 complete FIRST; Part 2 CONSUMES them.** FR-36-15 FEEDS Part 2 (its job is documenting the architecture) and is blocked by nothing; FR-36-25 depends on FR-36-21/22/23; only the *branded* Indus header sliver of FR-36-18 genuinely waits. Only TWO items in both specs actually wait on Part 2 — that sliver and FR-37-22.
 
