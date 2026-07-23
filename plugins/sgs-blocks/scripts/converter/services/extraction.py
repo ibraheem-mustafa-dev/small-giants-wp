@@ -50,7 +50,7 @@ from converter.services.content_select import (
 from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.resolvers.scalar_content import lift_scalar_content
 from converter.resolvers.array_content import lift_array_content
-from converter.resolvers.styling_content import lift_styling_content
+from converter.resolvers.styling_content import lift_styling_content, lift_per_element_state
 from converter.db import db_lookup
 
 # Emit-glue imports (stage 3 §1 walk/emit — design §1).
@@ -909,6 +909,14 @@ def run_mechanism_styling(
     ``build_block_markup`` is irrelevant.
     """
     lifted = lift_styling_content(section_root, rec.slug, css_rules or {})
+    # Per-child (non-root) :hover transform/filter — the 5 stranded per-element
+    # state attrs (post-grid.scaleHover / imageZoomHover ×4). Universal, DB-gated
+    # (Spec 31 §3.A step 4a per-child extension, R-31-9). Disjoint keys from
+    # lift_styling_content (a state-carrying transform attr, not a colour/typo
+    # attr), so merge order is irrelevant; a block declaring no per-child state
+    # attr gets {} (no-op).
+    per_element = lift_per_element_state(section_root, rec.slug, css_rules or {})
+    lifted = {**lifted, **per_element}
     return [ScalarLift(attr=name, value=value) for name, value in lifted.items()]
 
 

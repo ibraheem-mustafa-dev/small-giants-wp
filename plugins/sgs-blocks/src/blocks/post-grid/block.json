@@ -92,7 +92,14 @@
 					"attrMap": {
 						"css:background-color": "cardBgColour"
 					},
-					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:transform": "scaleHover"
+							}
+						}
+					},
+					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto."
 				},
 				"card-image": {
 					"label": "Post image",

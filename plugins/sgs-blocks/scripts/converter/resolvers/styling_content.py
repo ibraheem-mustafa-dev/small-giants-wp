@@ -29,6 +29,7 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
+from converter.services.state_value_lift import _STATE_VALUE_PARSERS
 from converter.db import db_lookup
 
 
@@ -274,6 +275,130 @@ def lift_styling_content(node: Tag, slug: str, css_rules: dict) -> dict:
                 _emit_value(lifted, state_attr, css_property, attr_type, st_raw, catalogue, role)
 
     return {k: v for k, v in lifted.items() if v is not None}
+
+
+# ---------------------------------------------------------------------------
+# Per-element (non-root) state lift — Spec 31 §3.A step 4a per-CHILD extension
+# (R-31-9 universal). Sibling of the base-domain state_value_lift; that module
+# handles a :hover transform/filter on the block's OWN root/self box, this one
+# handles the SAME effect on a NAMED CHILD element (card / image), which the
+# base resolver's `_BASE_ELEMENTS` domain deliberately excludes.
+# ---------------------------------------------------------------------------
+
+def _short_bem_selector(slug: str, css_element: str) -> str:
+    """`.sgs-<short-slug>__<css_element>` — the SGS-BEM element class the draft
+    carries by construction (mirrors behavioural-analyser.derive_selector). Used
+    only when the attr has no stored ``derived_selector`` (these hover-only attrs
+    carry role=NULL/derived_selector=NULL, so synthesis from ``css_element`` is
+    the universal draft-matching path — R-31-1, no slug literal: ``slug`` is a
+    parameter)."""
+    short = slug.replace("sgs/", "", 1)
+    return f".sgs-{short}__{css_element}"
+
+
+def _coerce_state_scalar(parsed: float, attr_type: str) -> "bool | int | float":
+    """Serialise the parsed CSS-function scalar to the destination attr's WP
+    schema type (Spec 31 §3.A.5). Mirrors ``state_value_lift._coerce_for_attr_
+    type`` but keyed off the already-fetched ``attr_type`` string (no ctx / DB
+    round-trip needed here — ``per_element_state_attrs`` returns attr_type in the
+    same row)."""
+    if attr_type == "boolean":
+        return parsed > 0
+    return int(parsed) if float(parsed).is_integer() else parsed
+
+
+def lift_per_element_state(node: Tag, slug: str, css_rules: dict) -> dict:
+    """Lift a :hover/:focus/:active transform/filter declared on a NAMED CHILD
+    element onto its own state attr — the per-child extension of the base-domain
+    ``state_value_lift`` (Spec 31 §3.A step 4a; R-31-9 universal, no per-block
+    branch).
+
+    Lands the 5 stranded per-child state attrs in ONE mechanism:
+    ``sgs/post-grid.scaleHover`` (css_element='card') and ``imageZoomHover``
+    (css_element='image') on card-grid / gallery / team-member / post-grid. The
+    base ``attr_for_state_property`` resolves ONLY css_element IN ('',root,self),
+    so these dropped their hover transform on a clone.
+
+    Selection floor (universal no-op for every non-participant):
+
+    - the block declares ≥1 per-child state attr (``db_lookup.
+      per_element_state_attrs`` non-empty) — else return ``{}``;
+    - the attr's css_property has a semantic parser (transform/filter — the
+      ``_STATE_VALUE_PARSERS`` set shared with ``state_value_lift``); a
+      per-child COLOUR hover is handled by ``lift_styling_content``'s own state
+      loop, not here;
+    - the child element is present in the draft (matched by its
+      ``derived_selector`` if stored, else the synthesised ``.sgs-<short>__<css_
+      element>`` BEM class) — an absent element emits no key (honest gap);
+    - the element carries a ``:<state>`` declaration for the property whose value
+      yields a parseable ``scale(...)``/``grayscale(...)`` token — else no key.
+
+    Disjoint from the base ``state_value_lift`` by construction (that routes
+    css_element IN base; this routes css_element NOT IN base), so no double-emit.
+
+    Reduced-motion note (Spec 35 E5): this only TRANSFERS the value to a block
+    attr; the reduced-motion gate is the block's own render responsibility
+    (verified present on all 5 target blocks — see session report).
+
+    Returns a dict of ``{attr_name: value}`` (possibly empty). No garbage keys.
+    """
+    if not slug.startswith("sgs/"):
+        return {}
+    state_attrs = db_lookup.per_element_state_attrs(slug)
+    if not state_attrs:
+        return {}
+
+    lifted: dict = {}
+    for sa in state_attrs:
+        # PROPERTY GATE — this pass owns transform/filter (semantic-parser set)
+        # only; every other property falls through inert (a per-child colour
+        # hover is lift_styling_content's job). A defensive comma-split tolerates
+        # a stray multi-value css_property (e.g. a pre-regen 'background-color,
+        # transform' seed smell) by picking its parseable member.
+        parseable = [
+            p.strip() for p in sa.css_property.split(",")
+            if p.strip() in _STATE_VALUE_PARSERS
+        ]
+        if not parseable:
+            continue
+
+        # Resolve the child element — stored derived_selector first, else the
+        # synthesised BEM class. Comma-separated selectors: first match wins.
+        selector = sa.derived_selector or _short_bem_selector(slug, sa.css_element)
+        element = None
+        for part in selector.split(","):
+            class_name = part.strip().lstrip(".")
+            if not class_name:
+                continue
+            element = node.find(class_=class_name)
+            if element is not None and isinstance(element, Tag):
+                break
+            element = None
+        if element is None:
+            continue  # absent draft element → emit no key
+
+        # Collect the element's state declarations, keyed by StateSuffix
+        # ('Hover'/'Focus'/'Active'). Match this attr's css_state case-insensitively.
+        state_decls = collect_state_decls_for_element(element, css_rules)
+        sdecls = None
+        for suffix, decls in state_decls.items():
+            if suffix.lower() == sa.css_state.lower():
+                sdecls = decls
+                break
+        if not sdecls:
+            continue
+
+        for prop in parseable:
+            raw = sdecls.get(prop)
+            if not raw:
+                continue
+            parsed = _STATE_VALUE_PARSERS[prop](raw)
+            if parsed is None:
+                continue  # no parseable scale()/grayscale() token → honest gap
+            lifted[sa.attr_name] = _coerce_state_scalar(parsed, sa.attr_type)
+            break  # one value per attr — first parseable property wins
+
+    return lifted
 
 
 # ---------------------------------------------------------------------------

@@ -2903,8 +2903,9 @@
       "slug": "sgs/post-grid",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "background-color,transform",
-        "css_element": "card"
+        "css_property": "transform",
+        "css_element": "card",
+        "css_state": "hover"
       }
     },
     {

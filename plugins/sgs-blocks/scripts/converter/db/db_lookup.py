@@ -886,6 +886,63 @@ def attr_for_state_property(
     return rows[0][0]
 
 
+class PerElementStateAttr(NamedTuple):
+    """A hover/focus/active attr that lives on a NAMED CHILD element (not the
+    block's own root/self), carrying its OWN css_property + css_state — the
+    per-element sibling of the base-domain ``attr_for_state_property`` shape.
+
+    E.g. ``sgs/post-grid.scaleHover`` (css_element='card') and the four
+    ``imageZoomHover`` (css_element='image', on card-grid/gallery/team-member/
+    post-grid): a ``:hover`` transform/filter on a child element that the base
+    resolver's root/self domain (``_BASE_ELEMENTS``) deliberately excludes.
+    """
+    attr_name: str
+    css_property: str
+    css_element: str
+    css_state: str
+    attr_type: str
+    derived_selector: "str | None"
+
+
+def per_element_state_attrs(block_slug: str) -> "list[PerElementStateAttr]":
+    """All of a block's state-carrying attrs whose ``css_element`` is a NAMED
+    CHILD (i.e. NOT in ``_BASE_ELEMENTS`` and not NULL) — the domain the
+    base-resolver ``attr_for_state_property`` explicitly does NOT route (Spec 31
+    §3.A step 4a per-child extension; R-31-9 universal, no per-block branch).
+
+    Returns every such attr regardless of ``css_property``; the CALLER
+    (``styling_content.lift_per_element_state``) keeps this module free of the
+    transform/filter value-grammar constant by filtering on whether a semantic
+    parser exists for the property. An empty list is the universal no-op for
+    every block that declares no per-child state attr.
+
+    R-31-1: DB-only read path, no per-block slug literal. Defensive: an
+    ``OperationalError`` on a pre-seed DB (css_state/css_element columns absent)
+    → ``[]`` (no per-child state routing available yet).
+    """
+    if not block_slug:
+        return []
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
+        rows = conn.execute(
+            "SELECT attr_name, css_property, css_element, css_state, "
+            "COALESCE(attr_type, 'string'), derived_selector "
+            "FROM block_attributes "
+            "WHERE block_slug = ? "
+            "AND css_state IS NOT NULL AND css_state != '' "
+            "AND css_property IS NOT NULL AND css_property != '' "
+            f"AND css_element IS NOT NULL AND css_element NOT IN ({placeholders}) "
+            "ORDER BY rowid",
+            (block_slug, *_BASE_ELEMENTS),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return []
+    finally:
+        conn.close()
+    return [PerElementStateAttr(*r) for r in rows]
+
+
 @functools.lru_cache(maxsize=256)
 def get_block_composition_role(block_slug: str) -> str | None:
     """Return composition_role from block_composition table for a block.
