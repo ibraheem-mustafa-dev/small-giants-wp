@@ -31,7 +31,36 @@ No block or slot string literals anywhere (scanned by gates/no_slug_literal).
 """
 from __future__ import annotations
 
+import logging
 from typing import Any
+
+_LOG = logging.getLogger(__name__)
+
+
+def _fold_trace(stage: str, **kwargs: Any) -> None:
+    """Surface a fold/per-area gap that was previously dropped SILENTLY.
+
+    ``fold_helpers``' ``route_area_css_to_block_attrs`` and ``fold_band_css``
+    both accept an injectable ``trace`` (and ``fold_band_css`` a ``record_gap``)
+    whose default is a NO-OP, documented as "replaced by the orchestrator at
+    wiring time". That wiring was never done: a repo-wide grep for ``trace=`` /
+    ``record_gap=`` against these helpers returns ZERO call sites, so every
+    "no destination for this area property" finding evaporated.
+
+    Concretely: ``fold_helpers`` already builds the finding
+    (``cross_node_gap_candidate`` / ``reason="no_area_attr"``) — the code was
+    there, the channel was not. On the Mama's clone that swallowed the
+    product-card ``__body`` padding, which then LOOKED correct only because the
+    block's own hardcoded fallback happens to match the draft value. The
+    comment at step 3d claiming the miss is "gap-tracked" was aspirational.
+
+    This logs at WARNING so the drop appears in the run's captured output. It
+    is deliberately cause-agnostic: it changes NO routing decision and fixes no
+    lookup — it only makes an existing silent failure visible, which is the
+    prerequisite for diagnosing the rest.
+    """
+    detail = " ".join(f"{k}={v!r}" for k, v in sorted(kwargs.items()))
+    _LOG.warning("[fold-gap] %s %s", stage, detail)
 
 from converter.context import ChildBlock, Recognition, ScalarLift
 from converter.recognition import variant_attrs
@@ -190,7 +219,15 @@ def build_block_markup(
             # RECORDED by the fold (EXCLUDED gaps + trace), never skipped.
             from converter.services.fold_helpers import fold_band_css
             _band_attrs: dict = {}
-            fold_band_css(_inner, rec.slug, _band_attrs, _css_rules)
+            # fold_band_css RETURNS its gaps list and accepts trace/record_gap
+            # callables — all three were discarded here, so a band property with
+            # no destination vanished exactly like the step-3d per-area case
+            # below (Spec 31 §3.A step 8: FLAGGED, never silent-dropped).
+            _band_gaps = fold_band_css(
+                _inner, rec.slug, _band_attrs, _css_rules, trace=_fold_trace,
+            )
+            for _bg in _band_gaps or []:
+                _fold_trace("band_fold_gap", owning_block=rec.slug, gap=_bg)
             for _bk, _bv in _band_attrs.items():
                 attrs.setdefault(_bk, _bv)
 
@@ -229,6 +266,10 @@ def build_block_markup(
             route_area_css_to_block_attrs(
                 _area_child, _area_el, rec.slug, _area_attrs, _css_rules,
                 residual_sink=_area_sink,
+                # Spec 31 §3.A step 8: a property with no destination is FLAGGED,
+                # never silent-dropped. fold_helpers already builds that finding;
+                # without this kwarg it went to _noop_trace and vanished.
+                trace=_fold_trace,
             )
             for _ak, _av in _area_attrs.items():
                 attrs.setdefault(_ak, _av)
