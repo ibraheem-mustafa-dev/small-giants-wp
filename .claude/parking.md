@@ -538,20 +538,6 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 **Status:** OPEN
 
 
-### P-NAV-MENU-NO-NAV-LANDMARK — `sgs/nav-menu` emits zero `<nav>` elements, against its own spec (~40 min)
-**Status:** OPEN
-**Bucket:** framework
-
-**Trigger:** Found 2026-07-23 while specifying FR-36-26a's discoverability contract. Fix before the FR-36-16 / FR-36-11 live a11y gate, since that gate cannot pass while it stands.
-
-**What:** `grep -c "<nav" plugins/sgs-blocks/src/blocks/nav-menu/render.php` returns **0**. The block renders `<ul class="sgs-nav-menu__bar">` inside a plain `<div>`. But FR-36-10 requires `<nav aria-label>` for the disclosure contract, and FR-36-11 requires unique labels across multiple `<nav>` landmarks. **The shipped nav block does not meet its own spec.**
-
-**Evidence it is live, not theoretical:** the 2026-07-23 canary axe run reported `region` (content not contained by landmarks) and `landmark-unique` — and BOTH also appear on palestine-lives, which did not receive that deploy. So it is framework-wide and pre-dates the deploy, not a regression from it. It was initially logged as "pre-existing" with no cause; this is the cause.
-
-**Approach:** wrap the bar in `<nav>` with an accessible name. Prefer `aria-labelledby` pointing at a visible heading where one exists (the FR-36-26a rule — it makes unique landmark names hold by construction); fall back to `aria-label` otherwise. **Do NOT add a landmark per nav instance unconditionally** — a header nav plus a drawer nav plus N footer columns would multiply landmarks, and landmark bloat is itself an a11y defect (FR-36-26a rule 3). Re-run `nav-qa/axe-run.mjs` against both sites afterwards and confirm `region`/`landmark-unique` clear.
-
-**Do not fold into FR-36-26** — that FR covers footer link lists; this is a defect in the navigation block itself and would be lost inside it.
-
 ### P-SPEC35-STATE-RESPONSIVE — Responsive × state combinations in the manifest (~30 min)
 **Status:** DEFERRED
 **Bucket:** framework

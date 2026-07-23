@@ -248,7 +248,38 @@ $toggle_html = sprintf(
 	$burger_icon // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 );
 
-$bar_html = sprintf( '<ul class="sgs-nav-menu__bar">%s</ul>', $items_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $items_html built from esc_url/esc_html/esc_attr fragments.
+// ── The <nav> landmark (FR-36-10 / FR-36-11) ────────────────────────────────
+// FIXED 2026-07-23. This block previously emitted NO <nav> element at all: the
+// bar was a bare <ul> inside the wrapper <div>, and `navLabel` was passed to
+// that <div> as a plain `aria-label`. An aria-label on a <div> with no role is
+// IGNORED by assistive tech — so the label existed, named nothing, and the menu
+// was not a landmark. FR-36-10 requires `<nav aria-label>` and FR-36-11 requires
+// unique labels across multiple <nav>s; neither held.
+//
+// A real <nav> element is used rather than role="navigation" on the wrapper —
+// native semantics are preferred, and it keeps the change inside this block
+// instead of altering the shared SGS_Container_Wrapper (rule 7, shared surface).
+//
+// The label falls back through: operator `navLabel` → the resolved MENU'S OWN
+// NAME → 'Primary'. Preferring the menu name means two nav instances bound to
+// DIFFERENT menus get distinct landmark names automatically, which is what
+// FR-36-11 (and axe's landmark-unique) actually require.
+$nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
+if ( '' === $nav_label && $ref > 0 && function_exists( 'wp_get_nav_menu_object' ) ) {
+	$nav_menu_obj = wp_get_nav_menu_object( $ref );
+	if ( $nav_menu_obj && ! empty( $nav_menu_obj->name ) ) {
+		$nav_label = (string) $nav_menu_obj->name;
+	}
+}
+if ( '' === $nav_label ) {
+	$nav_label = __( 'Primary', 'sgs-blocks' );
+}
+
+$bar_html = sprintf(
+	'<nav class="sgs-nav-menu__nav" aria-label="%1$s"><ul class="sgs-nav-menu__bar">%2$s</ul></nav>',
+	esc_attr( $nav_label ),
+	$items_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $items_html built from esc_url/esc_html/esc_attr fragments.
+);
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
 $css      = '';
@@ -421,7 +452,7 @@ if ( '' !== $featured_bg_hex ) {
  * contrast helper as the resting state so the operator's colour wins whenever
  * it is readable.
  */
-$featured_hover_sel = implode(
+$featured_hover_sel    = implode(
 	',',
 	array(
 		$featured_sel . ':hover',
@@ -521,7 +552,11 @@ echo SGS_Container_Wrapper::render(
 		// its OWN `sgs-container-<hash>` class (different prefix), so pass this
 		// block's `$uid` through extra_classes exactly as the hero reference does.
 		'extra_classes' => array( $uid ),
-		'extra_attrs'   => array( 'aria-label' => esc_attr( $attributes['navLabel'] ?? 'Primary' ) ),
+		// No aria-label here. It used to carry `navLabel`, but this wrapper is a
+		// roleless <div> and an aria-label on a roleless element is IGNORED by
+		// assistive tech — it named nothing. The label now lives on the real
+		// <nav> landmark this block emits (see the FR-36-10/36-11 fix above).
+		// Leaving it would imply two labels exist and invite them to drift.
 	)
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

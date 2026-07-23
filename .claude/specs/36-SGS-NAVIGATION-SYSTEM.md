@@ -459,14 +459,34 @@ it; the semantic HTML is what actually earns the SEO and AI-crawl benefit. Keep 
 Inherited free from FR-36-17, NOT restated as new work: server-rendered, no AJAX, no lazy-load,
 descriptive anchor text.
 
-> **⚠ Conformance gap found while writing this (2026-07-23) — tracked separately, NOT part of this FR.**
-> `sgs/nav-menu` emits **zero `<nav>` elements** (`grep -c "<nav" nav-menu/render.php` → 0; it renders
-> `<ul class="sgs-nav-menu__bar">` inside a plain div). FR-36-10 requires `<nav aria-label>` and
-> FR-36-11 requires unique labels across multiple `<nav>`s, so the SHIPPED nav block does not meet its
-> own spec. This is consistent with the live axe findings on 2026-07-23, where `region` (content not
-> contained by landmarks) and `landmark-unique` appeared on BOTH sites — framework-wide, not a deploy
-> artefact. Fix it against FR-36-10/36-11 on `sgs/nav-menu` itself; do not let it ride along inside
-> this footer-list FR, where it would be lost.
+> **✅ Conformance gap found while writing this — FOUND AND FIXED 2026-07-23 (same session).**
+> `sgs/nav-menu` emitted **zero `<nav>` elements** (negative control: `grep -c "<nav"` on the pre-fix
+> file returned **0**). It rendered `<ul class="sgs-nav-menu__bar">` inside a plain `<div>`, while
+> FR-36-10 requires `<nav aria-label>` and FR-36-11 requires unique labels across multiple `<nav>`s —
+> so the SHIPPED nav block did not meet its own spec.
+>
+> **The subtler half:** `navLabel` WAS being passed to that wrapper `<div>` as a plain `aria-label`.
+> An `aria-label` on a roleless element is **ignored by assistive tech**, so the label existed, named
+> nothing, and looked correct to any code-read. Only asking "what does this actually produce?"
+> surfaced it.
+>
+> **Fix:** the bar is now wrapped in a real `<nav class="sgs-nav-menu__nav" aria-label="…">` (native
+> element preferred over `role="navigation"`, and kept inside the block rather than altering the
+> shared `SGS_Container_Wrapper`). The label falls back `navLabel` → **the resolved menu's own name**
+> (`wp_get_nav_menu_object( $ref )->name`) → `'Primary'`, so two nav instances bound to DIFFERENT
+> menus get distinct landmark names automatically — which is what FR-36-11 and axe's `landmark-unique`
+> actually require. The dead wrapper `aria-label` was removed so only one label can exist.
+>
+> **Context:** the 2026-07-23 canary axe run reported `region` and `landmark-unique` on BOTH sites
+> (including the un-deployed control), so this was framework-wide and pre-dated that deploy. It had
+> been logged as "pre-existing, cause unidentified" — this was the cause.
+>
+> ⚠ **Still owed:** live confirmation. The canary homepage currently renders NO `sgs/nav-menu` (its
+> active header CPT is a generic proof header), so this fix cannot be observed there yet. Re-run
+> `nav-qa/axe-run.mjs` on a page that actually renders the nav, and confirm `region` /
+> `landmark-unique` clear. Also unresolved by construction: a bar and a drawer bound to the SAME menu
+> will inherit the SAME default label — the operator must set distinct `navLabel`s, and an
+> informational notice (FR-36-12) is the right long-term home for that prompt.
 
 #### FR-36-26b — Converter routing target (declared NOW; recognition deferred to Part 2)
 **Bean-directed 2026-07-23.** The specialised header/footer converter ("Spec 33 Part 2") is not built
