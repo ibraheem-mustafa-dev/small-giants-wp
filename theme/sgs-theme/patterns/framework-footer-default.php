@@ -35,39 +35,30 @@
 
 	<!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","gridTemplateColumns":{"desktop":"2fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"48px","mobile":"32px"},"verticalAlign":"top"} -->
 
-		<!-- wp:group {"className":"sgs-site-footer__brand","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group sgs-site-footer__brand">
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
 
-			<!-- wp:site-logo {"width":180,"shouldSyncIcon":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"description","textColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
 
-		</div>
-		<!-- /wp:group -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:group {"className":"sgs-site-footer__links","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group sgs-site-footer__links">
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Quick Links"}} -->
 
-			<!-- wp:heading {"level":2,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-			<h2 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Quick Links</h2>
-			<!-- /wp:heading -->
+			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":"medium","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
 			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
 			<ul class="is-style-no-bullets has-small-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
 			</ul>
 			<!-- /wp:list -->
 
-		</div>
-		<!-- /wp:group -->
+		<!-- /wp:sgs/container -->
 
-		<!-- wp:group {"className":"sgs-site-footer__links","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group sgs-site-footer__links">
+		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"}} -->
 
-			<!-- wp:heading {"level":2,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-			<h2 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Contact</h2>
-			<!-- /wp:heading -->
+			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":"medium","fontWeight":"700","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} /-->
 
@@ -75,14 +66,11 @@
 
 			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","iconColour":"surface","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}}}} -->
-			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--10);margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h3>
-			<!-- /wp:heading -->
+			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontSize":"medium","fontWeight":"700","style":{"spacing":{"margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}}}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","labelColour":"surface","fontSize":"small"} /-->
 
-		</div>
-		<!-- /wp:group -->
+		<!-- /wp:sgs/container -->
 
 	<!-- /wp:sgs/site-footer-row -->
 

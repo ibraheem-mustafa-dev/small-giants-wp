@@ -48,6 +48,9 @@
   "sgs/multi-button": [
     "core/buttons"
   ],
+  "sgs/nav-menu": [
+    "core/navigation"
+  ],
   "sgs/post-grid": [
     "core/latest-posts"
   ],
