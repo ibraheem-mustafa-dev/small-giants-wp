@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "SGS Social Icons",
 	"category": "sgs-content",
-	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, and more. Configurable size, style, and hover colour. Each icon item shape: { platform: string, url: string, label?: string }. The label field is used as the aria-label for accessibility (WCAG 2.2 SC 4.1.2). When label is empty the platform display name is used as the fallback.",
+	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, WhatsApp, and more, plus a custom-SVG platform for anything else. Configurable size, style, theme-vs-brand colour, and hover colour; open-in-new-tab and optional nofollow; a Site-Info source mode renders the SAME list edited once in Appearance > SGS Site Info everywhere the block is placed (header/footer/drawer). Each icon item shape: { platform: string, url: string, label?: string, customIconUrl?: string, customIconId?: number }. The accessible name (aria-label, WCAG 2.2 SC 4.1.2) is auto-generated per platform (e.g. \"Follow us on Instagram\") and always operator-editable via the label field.",
 	"keywords": [
 		"social",
 		"icons",
@@ -35,6 +35,8 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"imageControls": false,
+			"_imageControlsNote": "Deliberate opt-out (FR-36-21). The universal image-controls extension (object-position/max-width/height) targets ONE block-level image; this block's optional custom-SVG upload is a PER-ITEM glyph inside a repeater (mirrors sgs/icon's own imageControls:false). Size is governed by the existing iconSize control instead.",
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
@@ -74,7 +76,7 @@
 							}
 						}
 					},
-					"_note": "Per-item <a class=\"sgs-social-icons__item\"> (render.php:354). Only css:color resolves (default convention icon+Colour=iconColour, render.php --sgs-social-colour custom property). iconSize is a scalar glyph-size control with no cluster member (mirrors sgs/icon-list's iconSize) — an honest orphan, not a gap. No font-size/weight/line-height surface — an icon glyph has no typography."
+					"_note": "Per-item <a class=\"sgs-social-icons__item\"> (render.php, items loop). Only css:color resolves (default convention icon+Colour=iconColour, render.php --sgs-social-colour custom property; colourMode='brand' overrides it per-item via nth-child, FR-36-21). iconSize is a scalar glyph-size control with no cluster member (mirrors sgs/icon-list's iconSize) — an honest orphan, not a gap. No font-size/weight/line-height surface — an icon glyph has no typography."
 				}
 			}
 		}
@@ -99,6 +101,13 @@
 					},
 					"label": {
 						"type": "string"
+					},
+					"customIconUrl": {
+						"type": "string",
+						"role": "url-href"
+					},
+					"customIconId": {
+						"type": "number"
 					}
 				}
 			}
@@ -120,9 +129,22 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"colourMode": {
+			"type": "string",
+			"enum": [ "theme", "brand" ],
+			"default": "theme"
+		},
 		"iconStyle": {
 			"type": "string",
 			"default": "plain"
+		},
+		"openInNewTab": {
+			"type": "boolean",
+			"default": true
+		},
+		"relNofollow": {
+			"type": "boolean",
+			"default": false
 		},
 		"gap": {
 			"type": "string",

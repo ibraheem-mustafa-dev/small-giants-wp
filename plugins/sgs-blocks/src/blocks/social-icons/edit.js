@@ -1,10 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
 	TextControl,
 	RangeControl,
+	ToggleControl,
 	Button,
 	Flex,
 	FlexItem,
@@ -39,14 +40,44 @@ function boxShorthand( box ) {
 const PLATFORMS = [
 	'facebook', 'twitter', 'linkedin', 'instagram', 'youtube',
 	'tiktok', 'github', 'whatsapp', 'email', 'website',
-	'pinterest', 'snapchat', 'telegram', 'discord', 'google',
+	'pinterest', 'snapchat', 'telegram', 'discord', 'google', 'custom',
 ];
+
+const PLATFORM_LABELS = {
+	facebook: 'Facebook', twitter: 'X (Twitter)', linkedin: 'LinkedIn', instagram: 'Instagram',
+	youtube: 'YouTube', tiktok: 'TikTok', github: 'GitHub', whatsapp: 'WhatsApp', email: 'Email',
+	website: 'Website', pinterest: 'Pinterest', snapchat: 'Snapchat', telegram: 'Telegram',
+	discord: 'Discord', google: 'Google', custom: 'Custom',
+};
+
+// Mirrors render.php's sgs_social_icons_default_label() — editor-preview only
+// (the server value is authoritative), so the operator sees the exact default
+// they're overriding when they type into the Accessible label field.
+const PLATFORM_VERBS = {
+	whatsapp: 'Message us on WhatsApp',
+	email: 'Email us',
+	website: 'Visit our website',
+	google: 'Read our reviews on Google',
+	custom: 'Follow us',
+};
+
+function defaultAccessibleLabel( platform ) {
+	if ( PLATFORM_VERBS[ platform ] ) {
+		return PLATFORM_VERBS[ platform ];
+	}
+	return __( 'Follow us on', 'sgs-blocks' ) + ' ' + ( PLATFORM_LABELS[ platform ] || platform );
+}
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Plain', 'sgs-blocks' ), value: 'plain' },
 	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
 	{ label: __( 'Outlined', 'sgs-blocks' ), value: 'outlined' },
 	{ label: __( 'Pill', 'sgs-blocks' ), value: 'pill' },
+];
+
+const COLOUR_MODE_OPTIONS = [
+	{ label: __( 'Theme colour', 'sgs-blocks' ), value: 'theme' },
+	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -56,7 +87,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconSize,
 		iconColour,
 		iconColourHover,
+		colourMode,
 		iconStyle,
+		openInNewTab,
+		relNofollow,
 		gap,
 		style,
 		paddingTablet,
@@ -104,6 +138,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { icons: icons.filter( ( _, i ) => i !== index ) } );
 	};
 
+	// Up/down reorder — a keyboard- and touch-reachable equivalent to drag
+	// (FR-36-21 NICE: "drag-to-reorder if cheap"). True pointer-drag needs a
+	// parallel keyboard path to stay WCAG-reachable anyway, so two buttons
+	// give the same reordering outcome without a drag library dependency.
+	const moveIcon = ( index, direction ) => {
+		const target = index + direction;
+		if ( target < 0 || target >= icons.length ) {
+			return;
+		}
+		const updated = [ ...icons ];
+		[ updated[ index ], updated[ target ] ] = [ updated[ target ], updated[ index ] ];
+		setAttributes( { icons: updated } );
+	};
+
 	return (
 		<>
 			<InspectorControls>
@@ -130,11 +178,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				) : (
 				<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
 					{ icons.map( ( icon, index ) => (
-						<Flex key={ index } style={ { marginBottom: '8px' } }>
+						<Flex key={ index } align="flex-start" style={ { marginBottom: '12px', borderBottom: '1px solid #e0e0e0', paddingBottom: '12px' } }>
 							<FlexItem>
 								<SelectControl
 									value={ icon.platform }
-									options={ PLATFORMS.map( ( p ) => ( { label: p, value: p } ) ) }
+									options={ PLATFORMS.map( ( p ) => ( { label: PLATFORM_LABELS[ p ] || p, value: p } ) ) }
 									onChange={ ( val ) => updateIcon( index, 'platform', val ) }
 									__nextHasNoMarginBottom
 								/>
@@ -149,13 +197,34 @@ export default function Edit( { attributes, setAttributes } ) {
 								<TextControl
 									value={ icon.label || '' }
 									onChange={ ( val ) => updateIcon( index, 'label', val ) }
-									placeholder={ __( 'Accessible label (optional)', 'sgs-blocks' ) }
-									help={ __( 'aria-label for screen readers. Leave empty to use the platform name.', 'sgs-blocks' ) }
+									placeholder={ defaultAccessibleLabel( icon.platform ) }
+									help={ __( 'Accessible name (aria-label), auto-generated. Edit to override — leave empty to keep the auto default shown above.', 'sgs-blocks' ) }
 									__nextHasNoMarginBottom
 								/>
+								{ 'custom' === icon.platform && (
+									<MediaUploadCheck>
+										<MediaUpload
+											onSelect={ ( media ) => {
+												updateIcon( index, 'customIconId', media.id );
+												updateIcon( index, 'customIconUrl', media.url );
+											} }
+											allowedTypes={ [ 'image/svg+xml', 'image' ] }
+											value={ icon.customIconId }
+											render={ ( { open } ) => (
+												<Button variant="secondary" onClick={ open } style={ { marginTop: '4px' } }>
+													{ icon.customIconUrl ? __( 'Replace icon', 'sgs-blocks' ) : __( 'Upload custom icon (SVG)', 'sgs-blocks' ) }
+												</Button>
+											) }
+										/>
+									</MediaUploadCheck>
+								) }
 							</FlexBlock>
 							<FlexItem>
-								<Button icon="trash" isDestructive onClick={ () => removeIcon( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />
+								<Flex direction="column" gap={ 1 }>
+									<Button icon="arrow-up-alt2" onClick={ () => moveIcon( index, -1 ) } disabled={ 0 === index } label={ __( 'Move up', 'sgs-blocks' ) } />
+									<Button icon="arrow-down-alt2" onClick={ () => moveIcon( index, 1 ) } disabled={ index === icons.length - 1 } label={ __( 'Move down', 'sgs-blocks' ) } />
+									<Button icon="trash" isDestructive onClick={ () => removeIcon( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />
+								</Flex>
 							</FlexItem>
 						</Flex>
 					) ) }
@@ -186,15 +255,45 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ gap }
 						onChange={ ( val ) => setAttributes( { gap: val } ) }
 					/>
-					<DesignTokenPicker
-						label={ __( 'Icon colour', 'sgs-blocks' ) }
-						value={ iconColour }
-						onChange={ ( val ) => setAttributes( { iconColour: val } ) }
+					<SelectControl
+						label={ __( 'Icon colour source', 'sgs-blocks' ) }
+						value={ colourMode }
+						options={ COLOUR_MODE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { colourMode: val } ) }
+						help={ 'brand' === colourMode
+							? __( 'Each icon uses its official brand colour (Facebook blue, Instagram pink, etc.) at rest.', 'sgs-blocks' )
+							: __( 'Every icon uses the theme colour below at rest.', 'sgs-blocks' )
+						}
+						__nextHasNoMarginBottom
 					/>
+					{ 'theme' === colourMode && (
+						<DesignTokenPicker
+							label={ __( 'Icon colour', 'sgs-blocks' ) }
+							value={ iconColour }
+							onChange={ ( val ) => setAttributes( { iconColour: val } ) }
+						/>
+					) }
 					<DesignTokenPicker
 						label={ __( 'Hover colour', 'sgs-blocks' ) }
 						value={ iconColourHover }
 						onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Link behaviour', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Open links in a new tab', 'sgs-blocks' ) }
+						checked={ openInNewTab }
+						onChange={ ( val ) => setAttributes( { openInNewTab: val } ) }
+						help={ __( 'On by default. Adds rel="noopener noreferrer" automatically while enabled.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Add rel="nofollow"', 'sgs-blocks' ) }
+						checked={ relNofollow }
+						onChange={ ( val ) => setAttributes( { relNofollow: val } ) }
+						help={ __( 'Tells search engines not to pass ranking credit through these links.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

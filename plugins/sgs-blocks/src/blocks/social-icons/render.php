@@ -38,14 +38,18 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 
-$source_raw         = $attributes['source'] ?? 'manual';
-$source             = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
-$icon_size          = (int) ( $attributes['iconSize'] ?? 24 );
-$icon_colour        = $attributes['iconColour'] ?? 'text-muted';
-$hover_colour_token = $attributes['iconColourHover'] ?? 'primary';
-$style_type_raw     = $attributes['iconStyle'] ?? 'plain';
-$gap_raw            = $attributes['gap'] ?? '20';
-$anchor             = $attributes['anchor'] ?? '';
+$source_raw          = $attributes['source'] ?? 'manual';
+$source              = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
+$icon_size           = (int) ( $attributes['iconSize'] ?? 24 );
+$icon_colour         = $attributes['iconColour'] ?? 'text-muted';
+$hover_colour_token  = $attributes['iconColourHover'] ?? 'primary';
+$colour_mode_raw     = $attributes['colourMode'] ?? 'theme';
+$colour_mode         = in_array( $colour_mode_raw, array( 'theme', 'brand' ), true ) ? $colour_mode_raw : 'theme';
+$style_type_raw      = $attributes['iconStyle'] ?? 'plain';
+$gap_raw             = $attributes['gap'] ?? '20';
+$anchor              = $attributes['anchor'] ?? '';
+$open_in_new_tab     = (bool) ( $attributes['openInNewTab'] ?? true );
+$rel_nofollow        = (bool) ( $attributes['relNofollow'] ?? false );
 
 // ---------------------------------------------------------------------------
 // Icon source resolution. 'manual' (default) keeps the stored `icons` repeater
@@ -56,22 +60,16 @@ $anchor             = $attributes['anchor'] ?? '';
 // ---------------------------------------------------------------------------
 if ( 'site-info' === $source ) {
 	// Same network slugs + same escaping (Sgs_Site_Info::get()/get_esc_url())
-	// as the sgs/business-info 'socials' case — the label here is only the
-	// aria-label fallback text; the actual href is re-escaped via esc_url()
-	// in the render loop below exactly as it is for a manual-mode URL.
-	$site_info_networks = array(
-		'facebook'  => 'Facebook',
-		'instagram' => 'Instagram',
-		'twitter'   => 'X (Twitter)',
-		'linkedin'  => 'LinkedIn',
-		'youtube'   => 'YouTube',
-		'tiktok'    => 'TikTok',
-		'whatsapp'  => 'WhatsApp',
-		'google'    => 'Google',
-	);
+	// as the sgs/business-info 'socials' case. No `label` key is set here — the
+	// items loop below auto-generates the verb+platform accessible name
+	// (sgs_social_icons_default_label()) for every item that has no explicit
+	// label, so Site-Info-sourced icons get the SAME auto-generated names as
+	// a manual-mode icon left blank; the actual href is re-escaped via
+	// esc_url() in the render loop below exactly as it is for a manual URL.
+	$site_info_networks = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google' );
 
 	$icons = array();
-	foreach ( $site_info_networks as $network_slug => $network_label ) {
+	foreach ( $site_info_networks as $network_slug ) {
 		$social_url = (string) Sgs_Site_Info::get( "socials.{$network_slug}", '' );
 		if ( '' === $social_url ) {
 			continue;
@@ -79,7 +77,6 @@ if ( 'site-info' === $source ) {
 		$icons[] = array(
 			'platform' => $network_slug,
 			'url'      => $social_url,
-			'label'    => $network_label,
 		);
 	}
 } else {
@@ -130,6 +127,67 @@ $platform_labels = array(
 	'telegram'  => 'Telegram',
 	'discord'   => 'Discord',
 	'google'    => 'Google',
+	'custom'    => 'this link',
+);
+
+// ---------------------------------------------------------------------------
+// FR-36-21 MUST — accessible name auto-generated (verb + platform), operator-
+// editable via the per-item `label` field. WP core omits this entirely by
+// default (aria-label-less icon links) — this is the citable competitor gap.
+// A per-item `label` value ALWAYS wins (full override, not a template slot);
+// this map only supplies the DEFAULT when the operator leaves it blank.
+// ---------------------------------------------------------------------------
+$platform_verbs = array(
+	'whatsapp' => 'Message us on WhatsApp',
+	'email'    => 'Email us',
+	'website'  => 'Visit our website',
+	'google'   => 'Read our reviews on Google',
+	'custom'   => 'Follow us',
+);
+
+// function_exists() guard: render.php is `require`'d fresh per block INSTANCE
+// (not require_once) — a second sgs/social-icons on the same page (e.g. header
+// + footer, the exact FR-36-21/FR-36-25 one-source scenario this block ships
+// for) would otherwise fatal on "cannot redeclare function".
+if ( ! function_exists( 'sgs_social_icons_default_label' ) ) {
+	/**
+	 * Build the auto-generated default accessible name for a social icon item.
+	 *
+	 * @param string $platform         Platform slug.
+	 * @param array  $platform_labels  Slug => display-name map.
+	 * @param array  $platform_verbs   Slug => full custom verb-phrase map.
+	 * @return string
+	 */
+	function sgs_social_icons_default_label( string $platform, array $platform_labels, array $platform_verbs ): string {
+		if ( isset( $platform_verbs[ $platform ] ) ) {
+			return $platform_verbs[ $platform ];
+		}
+		$display_name = $platform_labels[ $platform ] ?? ucfirst( $platform );
+		/* translators: %s: social platform name, e.g. "Instagram". */
+		return sprintf( __( 'Follow us on %s', 'sgs-blocks' ), $display_name );
+	}
+}
+
+// Brand colours (FR-36-21 MUST — "brand vs monochrome/theme colour"). Official
+// flat brand hex per platform; used only when colourMode='brand'. Hover colour
+// stays a separate, always-theme-token control regardless of colour mode.
+$platform_brand_colours = array(
+	'facebook'  => '#1877F2',
+	'twitter'   => '#000000',
+	'linkedin'  => '#0A66C2',
+	'instagram' => '#E4405F',
+	'youtube'   => '#FF0000',
+	'tiktok'    => '#000000',
+	'github'    => '#181717',
+	'whatsapp'  => '#25D366',
+	'email'     => '#6B7280',
+	'website'   => '#6B7280',
+	'pinterest' => '#E60023',
+	'snapchat'  => '#FFFC00',
+	'telegram'  => '#26A5E4',
+	'discord'   => '#5865F2',
+	'google'    => '#4285F4',
+	'custom'    => '#6B7280',
 );
 
 // ---------------------------------------------------------------------------
@@ -340,24 +398,73 @@ if ( $anchor ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $root_attr_args );
 
-$items_html = '';
+// FR-36-21 MUST — open-in-new-tab default-on (operator togglable) + auto
+// rel="noopener noreferrer" on external links + optional nofollow toggle.
+$rel_tokens = array();
+if ( $open_in_new_tab ) {
+	$rel_tokens[] = 'noopener';
+	$rel_tokens[] = 'noreferrer';
+}
+if ( $rel_nofollow ) {
+	$rel_tokens[] = 'nofollow';
+}
+$rel_attr    = $rel_tokens ? ' rel="' . esc_attr( implode( ' ', $rel_tokens ) ) . '"' : '';
+$target_attr = $open_in_new_tab ? ' target="_blank"' : '';
+
+$items_html   = '';
+$rendered_pos = 0;
 foreach ( $icons as $icon_item ) {
 	if ( empty( $icon_item['url'] ) ) {
 		continue;
 	}
-	$platform  = $icon_item['platform'] ?? 'website';
-	$label_raw = ! empty( $icon_item['label'] ) ? $icon_item['label'] : ( $platform_labels[ $platform ] ?? ucfirst( $platform ) );
-	$icon_name = $platform_icons[ $platform ] ?? 'link';
-	$href      = 'email' === $platform ? 'mailto:' . esc_attr( $icon_item['url'] ) : esc_url( $icon_item['url'] );
-	$icon_svg  = sgs_get_lucide_icon( $icon_name );
+	++$rendered_pos;
+
+	$platform   = $icon_item['platform'] ?? 'website';
+	$label_raw  = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
+	$href       = 'email' === $platform ? 'mailto:' . esc_attr( $icon_item['url'] ) : esc_url( $icon_item['url'] );
+	$custom_url = '';
+	if ( 'custom' === $platform ) {
+		// Prefer resolving fresh from the attachment ID (survives a later media
+		// library edit/regenerate); fall back to the stored URL for a custom SVG
+		// not in the media library (external URL entered directly).
+		$custom_icon_id = absint( $icon_item['customIconId'] ?? 0 );
+		$custom_url     = $custom_icon_id ? (string) wp_get_attachment_url( $custom_icon_id ) : '';
+		if ( '' === $custom_url ) {
+			$custom_url = (string) ( $icon_item['customIconUrl'] ?? '' );
+		}
+	}
+
+	// FR-36-21 MUST — first-class custom-SVG upload. A custom item with no
+	// uploaded glyph yet falls back to the generic 'link' Lucide icon so the
+	// row never renders a blank slot mid-authoring.
+	if ( '' !== $custom_url ) {
+		$glyph_html = sprintf( '<img src="%s" alt="" width="%d" height="%d" />', esc_url( $custom_url ), $icon_size, $icon_size );
+	} else {
+		$icon_name  = $platform_icons[ $platform ] ?? 'link';
+		$glyph_html = sgs_get_lucide_icon( $icon_name );
+	}
+
+	// FR-36-21 MUST — brand vs monochrome/theme colour. Brand mode overrides
+	// ONLY the resting colour per item (nth-child, no inline style, contract
+	// §A); hover colour stays the single theme-token control in both modes.
+	if ( 'brand' === $colour_mode ) {
+		$brand_hex    = $platform_brand_colours[ $platform ] ?? $platform_brand_colours['custom'];
+		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-colour:" . sgs_colour_value( $brand_hex ) . ';}';
+	}
 
 	$items_html .= sprintf(
-		'<a href="%s" class="sgs-social-icons__item" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
+		'<a href="%s" class="sgs-social-icons__item"%s%s aria-label="%s">%s</a>',
 		$href,
+		$target_attr,
+		$rel_attr,
 		esc_attr( $label_raw ),
-		$icon_svg
+		$glyph_html
 	);
 }
+
+// Per-item custom-SVG <img> glyph sizing — mirrors the existing SVG glyph
+// rule so an uploaded image renders at the same operator-chosen iconSize.
+$scoped_css[] = "{$root_sel} .sgs-social-icons__item img{width:{$icon_size}px;height:{$icon_size}px;}";
 ?>
 <?php if ( $scoped_css ) : ?>
 	<?php
