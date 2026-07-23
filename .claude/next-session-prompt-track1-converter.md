@@ -51,8 +51,13 @@ including Track 2's**. That deploy is Task 1's first move.
 **Then Spec 35** (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — the block-inspector-UX
 standard, i.e. what a non-coder client actually sees in the editor sidebar). Bean wants it taken to
 100% the SAME way Spec 31 was: conformance-audit it against live code + the DB FIRST, then plan,
-then execute. Live status per LEDGER Track 1b: **28 of 67 blocks manifested | OK 432 | GAP 1101 |
-ORPHAN 62**; FR-35-5 (`states` axis) + FR-35-6 (`animation` cluster) are APPROVED but NOT BUILT.
+then execute. **Do NOT trust any cached Spec 35 figures — derive them.** The LEDGER Track 1b line
+still reads "28 of 67 | OK 432 | GAP 1101 | ORPHAN 62", which was already stale before this session:
+wave 2 (`42a34700`) took the roster 28 → 45, and a live run on 2026-07-23 measured **OK 998 /
+GAP 2832 / ORPHAN 0**. Re-derive at session start with:
+`cd plugins/sgs-blocks/scripts && node check-element-manifest-conformance.js`
+(count `[OK]` / `[GAP]` / `[ORPHAN]`). FR-35-5 (`states` axis) + FR-35-6 (`animation` cluster) are
+APPROVED but NOT BUILT. Also correct the LEDGER's stale line when Track 1b/2 are idle.
 
 ## First action (≤5 min, zero dependencies)
 
