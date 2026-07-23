@@ -1003,9 +1003,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$responsive_css      = '';
 			$has_responsive_bg   = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
+			// A per-tier COLUMN COUNT (columnsTablet/columnsMobile) also needs the
+			// responsive block to run — that is where the count is emitted as a scoped
+			// per-tier `grid-template-columns` rule at $grid_sel (QB-2 tier-count
+			// fallback). Without this the block was skipped entirely and the count
+			// never stacked: the removed `sgs-cols-*` classes used to carry this WITHOUT
+			// needing the gate, which is exactly why they were reintroduced-as-classes
+			// and then silently missed the grid once container queries moved it to the
+			// __inner (FR-37-11 / FR-37-35). Gated to grid + a real tier count + not the
+			// object-array grid (which drives columns through sgs_emit_responsive_css),
+			// so it fires ONLY when there is genuinely a tier count to emit.
+			$has_tier_column_count = ( $is_section || $is_layout ) && 'grid' === $layout && ! $object_grid
+				&& ( ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) )
+					|| ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) );
 			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $has_responsive_bg || $has_responsive_min_height
 				|| $has_responsive_padding || $has_responsive_margin || $has_band_responsive || $max_width_tablet || $max_width_mobile )
-				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) );
+				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) )
+				|| $has_tier_column_count;
 
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
 			// base padding/margin needs a scoped (non-inline) home, a base outer
