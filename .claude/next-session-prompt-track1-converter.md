@@ -38,9 +38,28 @@ Shipped last session (11 commits, all pushed, all gates green):
 | **B1** (`5a7466cc`) | `::before`/`::after` pseudo-element overlay lift — was a SILENT production drop (the DOM matcher's `':' not in last_part` guard excluded `::` too) |
 | **B3** (`f8a4388e`) | **transform/filter/top/left un-excluded + hover-lift** — `scaleHover` (11 blocks), `imageZoomHover` (4), `grayscaleHover` (4), `positionY`/`positionX`. Every draft hover scale/zoom/grayscale effect had been silently dropped |
 | **C1a** (`51629e37`) | F3 LANDED runtime + multi-fixture batch runner with the §7b false-win guards |
+| **C1b** (`321293a6`) | **UNACCOUNTED leg CLOSED, 14 → 0.** The 14 were NOT converter drops — three ACCOUNTING bugs (see below). Baseline regenerated 14 → 0 through the sign-off gate |
 
-**Current test/gate state:** 761 converter+ledger tests pass, 200 oracle tests pass; coverage gate
-0 NEW UNACCOUNTED (14 baselined); `no_slug_literal` + `db-consistency` clean.
+**Current test/gate state:** 764 converter+ledger tests pass, 200 oracle tests pass, 66 css_router
+tests pass; coverage gate **0 UNACCOUNTED (baseline now empty)**; `no_slug_literal` +
+`db-consistency` clean.
+
+**What C1b found — read this before touching the ledger.** The 14 baselined UNACCOUNTED rows were
+**accounting losses, not converter drops**. Proof: the converter demonstrably transfers them —
+`sgs-hero`'s padding is present in `tests/fixtures/conformance/sgs-hero.golden.json` as
+`style.spacing.padding`. Three bugs, all in the D1 bucketing/join:
+1. **D1 clobber (6 rows)** — the D1 entry key was `f"{block}.{prop}"` with NO tier axis, so a
+   breakpoint rule OVERWROTE the base rule and the base declaration vanished. This made §12.2.1's
+   conservation invariant structurally unsatisfiable for EVERY responsive pair.
+2. **Media format (6 rows)** — D1/D3 store `@media (cond)`; `declare_input` and the D2 re-parse use
+   `(cond)`. The join compared literally.
+3. **Selector list (2 rows)** — css_router keeps `.a, .b { }` as ONE selector string; declare_input
+   splits it, so a list-scoped rule could never match.
+
+⚠ **Bug 1 was a HALF-FINISHED repair** — the join's own docstring says *"FIX 1 (tier/media-blind
+join bug)"*: someone made the JOIN media-aware but never fixed the D1 SOURCE, which still could not
+hold two entries per (block, property). The unfinished half silently ate 6 declarations. **Treat any
+"FIX N" comment as a claim to verify end-to-end, not a completed job.**
 
 **What Spec 31 = 100% still needs — and its hard prerequisite.** The F3 LANDED instrument now
 EXISTS but can prove nothing, because no per-fixture canary pages are deployed.
@@ -120,10 +139,9 @@ or a tracked GAP — **zero UNACCOUNTED, zero WRITTEN-not-LANDED, zero CHEAT**.
    `plugins/sgs-blocks/scripts/oracle/fixture-canary-urls.json`.
 2. **Wire `check_landed()`** — the exact function body is in the `51629e37` commit message. Only
    after step 1, or it fails the F5 gate for everyone.
-3. **Drive the 14 baselined UNACCOUNTED to 0** — each is enumerated in the coverage-gate output
-   (hero `padding`, media `max-width`, feature-grid `grid-template-columns`, trust-bar `font-size`,
-   cta-section `background-size`/`padding`, two `display:none` state selectors). For each: transfer,
-   exclude-with-reason, or keep as a justified tracked GAP. Do NOT bulk-baseline them away.
+3. ~~Drive the 14 baselined UNACCOUNTED to 0~~ — **DONE (C1b, `321293a6`). The UNACCOUNTED leg is
+   CLOSED at 0 with an empty baseline. Do NOT re-open it as a task.** If the count is ever non-zero
+   again, that is a genuine NEW regression, not inherited debt.
 4. **Live verify (C2)** — computed-parity per section on the canary **+ Bean's eye** (R-31-11 /
    R-31-13). Numbers alone do not close; his eye alone does not close.
 5. **Then** mark Spec 31 COMPLETE and record the D-number.
@@ -204,7 +222,24 @@ for this track, restated because they will bite again:
 - **STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE** (Track 2, D362) — put "EXECUTE YOURSELF
   with your OWN tools; do NOT use the Agent/Task tool to delegate" in every implementer dispatch.
 
-**NEW this session — ADD to STOP-CATALOGUE.md when Track 2 is idle (count must go 67 → 68):**
+**NEW — ADD to STOP-CATALOGUE.md when Track 2 is idle (2 tokens; re-derive `previous` with the
+canonical command in that file's §D receipt — do NOT carry a figure forward from a prior read):**
+- **STOP-A-HALF-FINISHED-FIX-IS-WORSE-THAN-NONE** — a repair applied to ONE side of a two-sided
+  mechanism looks done and silently keeps failing. The coverage join carried a `FIX 1
+  (tier/media-blind join bug)` comment: the JOIN was made media-aware, but the D1 SOURCE was never
+  given a tier axis, so it still could not hold two entries per (block, property). The unfinished
+  half silently ate 6 declarations and the `FIX 1` comment made it look handled. **Treat any
+  "FIX N"/"fixed" comment as a CLAIM to verify end-to-end across BOTH sides of the mechanism.**
+  Sibling of STOP-NEGATIVE-CONTROL (a fix with no failing-first test is unverified). (2026-07-23.)
+- **STOP-READ-AN-INSTRUMENT'S-SEMANTICS-BEFORE-CALLING-ITS-OUTPUT-A-BUG** — I read a golden emit,
+  saw the value transferred, and declared the ledger's UNACCOUNTED a "false positive". The module's
+  own docstring says plainly that "bucketed" means *css_router dispositioned it*, NOT *the converter
+  emitted it* — so the report was correct in its own terms and my diagnosis was wrong. **Read what a
+  measurement CLAIMS to measure before calling its output wrong**; and when proposing to suppress a
+  finding, check the suppression mechanism's KEY first (`excluded_properties` is keyed on
+  `css_property` alone, so "exclude just these selectors" was impossible and would have globally
+  disabled `display`/`padding`/`font-size` transfer). (2026-07-23, Bean-caught via "what does
+  excluding them do to the pipeline?".)
 - **STOP-AUDIT-BY-DECLARED-SEMANTIC-NOT-IDENTIFIER-NAME** — asking "does anything consume X?" by
   searching identifier NAMES misses semantically-named consumers (`scaleHover` consumes
   `transform`; `grayscaleHover` consumes `filter`). It wrongly excluded 2 CSS properties and

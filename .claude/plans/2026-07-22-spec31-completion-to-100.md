@@ -40,7 +40,7 @@ live-homepage check (R-31-11/R-31-13). That last gate is the thing that lets us 
 4. Batched live-homepage verification passes per section (computed-parity + Bean's eye).
 5. Spec 31 front-matter + §12.6 updated to reflect true state (card CTA/ALT done; residuals closed).
 
-## Scope boundary — NOT in this plan
+## Out of scope (NOT in this plan)
 
 - **Spec 35** (editor-sidebar / inspector-control completeness) — the NEXT Track-1 front, starts
   only after this closes.
@@ -51,7 +51,7 @@ live-homepage check (R-31-11/R-31-13). That last gate is the thing that lets us 
 
 ---
 
-## Work units + dependency map
+## Phase overview — work units + dependency map
 
 Legend: **T0** = script/DB-seed (cheapest), **T1** = Haiku mechanical, **T2** = Sonnet reasoning.
 `‖` = parallelisable. Model tier is advisory (final pick via /delegate at dispatch).
