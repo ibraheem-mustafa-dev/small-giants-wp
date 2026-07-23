@@ -547,10 +547,26 @@ A single picker component serves `sgs_header`, `sgs_footer` **and** `sgs_mega_me
 creating a new post of any of those types, the first screen is a visual card grid of styles
 with preview-before-apply, plus a persistent "Start from scratch" card. One implementation,
 three consumers.
-**Status:** `NOT-BUILT` — Spec 36 FR-36-3 already assumes this reuse and flags it as unproven
-(0 hits in `src/`).
-**Done when:** creating a post of each of the three types shows the same picker component, and
-choosing a style produces that style's block tree.
+**MECHANISM (design-gated + Bean-signed-off 2026-07-24): use WordPress's NATIVE "Choose a
+pattern" starter modal — no bespoke admin UI (matches FR-36-3's "reuse the platform, zero
+bespoke admin screens" rationale).** The native modal fires on a new post of a CPT when ≥2
+patterns declare `Block Types: core/post-content` **+** `Post Types: <cpt-slug>`, and it renders
+live previews (preview-before-apply is native) with a blank/dismiss path. Delivery = three
+changes, no React component: (1) re-scope the 12 existing header/footer starter patterns from
+`Block Types: core/template-part/*` → `core/post-content` + add `Post Types: sgs_header|sgs_footer`;
+(2) DROP the registration-level `template` seed on the header/footer CPTs (`class-sgs-block-cpts.php`
+— the seed pre-fills content so the empty-post modal never fires) — "Start from scratch" becomes a
+**minimal starter card** (the bare `sgs/site-header`/`sgs/site-footer` shell) rather than WP's blank
+dismiss; (3) author ≥2 `sgs_mega_menu` starters (none exist post-D362) scoped `core/post-content` +
+`Post Types: sgs_mega_menu`. **Verified by a spike FIRST** (flip 2 header patterns + drop the seed on
+the canary, confirm the modal appears with previews) before the full re-scope. Fall back to FR-37-36
+(custom React picker) ONLY if the spike shows the native modal can't meet the done-condition.
+**Status:** `NOT-BUILT` — approach locked (native), spike pending. 0 picker hits in `src/` confirmed
+2026-07-24 (ground-truth map): all 3 CPTs use the native editor + `show_in_rest`; header/footer have
+6 starters each, mega has 0.
+**Done when:** creating a post of each of the three types shows the native pattern modal, and
+choosing a style produces that style's block tree (verified by reading the saved `post_content`, not
+editor state).
 
 #### FR-37-8 — Starter library is git-versioned patterns
 Starters are block patterns under `theme/sgs-theme/patterns/`, not synced `wp_block` posts, so
@@ -559,6 +575,19 @@ they are versioned, reviewable and shippable. Starter patterns declare
 **Status:** `NOT-BUILT` for header/footer starters.
 **Done when:** each starter is a file in the repo; applying one produces its tree; no starter
 depends on database state.
+
+#### FR-37-36 — Custom React starter picker (EXTENSION — non-blocking, own completion rate)
+An optional bespoke React picker modal that supersedes the native "Choose a pattern" modal (FR-37-7)
+with full UX control: a branded card grid, a persistent explicit "Start from scratch" card (vs the
+native blank/dismiss), CPT-appropriate labels (the native modal leans "page"-flavoured), richer
+preview styling, and any curation the native modal can't express. **This is an ENHANCEMENT, not a
+blocker** (Bean-directed 2026-07-24): FR-37-7's native mechanism fully satisfies the picker
+done-condition on its own, so FR-37-36 does NOT gate FR-37-8 / FR-37-31 / FR-37-28 and carries its own
+completion tracking. Build it only after the native picker ships and only if the native modal's UX is
+judged insufficient in practice. **Status:** `NOT-BUILT — deferred extension.` **Done when:** creating
+a post of each of the 3 CPT types shows the custom picker (card grid + preview + explicit scratch card),
+choosing a card writes that starter's block tree to `post_content`, and the native modal is suppressed
+for those CPTs.
 
 ### Container blocks
 
