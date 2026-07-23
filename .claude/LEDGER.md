@@ -32,8 +32,8 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-24, D374–D375 — full detail in `decisions.md`; do not re-narrate here).**
-**Task 1 (footer link-lists) SHIPPED + live-verified. Task 2 (hide-on-scroll) found a real shared bug.**
+**⭐ CURRENT (2026-07-24, D374–D376 — full detail in `decisions.md`; do not re-narrate here).**
+**FR-37-13 hide-on-scroll fix B SHIPPED + live-verified (D376). Footer link-lists SHIPPED (D374).**
 
 - **FR-36-26c icon-list footer link-list — BUILT + LIVE-VERIFIED (D374, `bf312016`+`d08d3149`).** Two
   Sonnet dispatches (presentation → data+semantics), then a **multi-rater pre-commit review that found
@@ -45,20 +45,25 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
   `source`+`markerType` are `ToggleGroupControl`. Live-verified on canary pages 1720/1721: 3 FR-36-26a
   types exact, `numbered`→`<ol>`, `<nav>` only where named, `aria-current` client-side, axe zero
   block-defect (lone contrast hit = Mama's palette, not the block).
-- **Task 2 — hide-on-scroll is BUILT-BUT-DEAD, and so are transparent + shrink (D375).** Live-verified:
-  the attr/control/body-class chain IS built, but `header-behaviours` JS+CSS target
-  `header.wp-block-template-part`, which **no SGS header renders** (it's a `<div>`; 0 `<header>` on the
-  page, negative-control confirmed on both paths). The "chain proven by code-read" note was the R-31-13
-  trap. **Bean approved fix B — render the header AS a semantic `<header>`** (revives all 3 + adds the
-  banner landmark); **design-gate FIRST**, then build. Parking `P-HEADER-BEHAVIOURS-DEAD-SELECTOR`.
+- **FR-37-13 hide-on-scroll fix B — SHIPPED + LIVE-VERIFIED (D376, `43cabf68`+`a89e54e0`).** `sgs/site-header`
+  now renders a semantic `<header>` (was a `<div>`); `header-behaviours` view.js + all **21** CSS selectors
+  retargeted `header.wp-block-template-part`→`header.sgs-site-header`. Root cause (D375) was the engine
+  short-circuiting core's template-part wrapper so the old selector matched nothing. qc-council 3-rater GO;
+  checksum-verified deploy; live on real Chrome (CPT 1655 active): 1 `<header>` banner, scroll-down hides
+  (`translateY(-119px)`), scroll-up returns, shrink CSS responds, axe zero NEW landmark hit (the 2 landmark
+  hits are the pre-existing two-`<main>` defect). **Option B** (Bean design-gated) added a one-header-per-request
+  invariant so a future double-header template can't nest banners; **editor canvas** now `<header>` too.
+  Drawer-while-scrolled (D323) structurally safe (drawer = top-layer `<dialog showModal>`), not observable on
+  fixture 1655 (no drawer block). Active header restored to 1570.
 
-**Latent + open (not this session):** hide-on-scroll fix B (design-gate queued, `P-HEADER-BEHAVIOURS-DEAD-SELECTOR`)
-· Mama's brand-primary `#e68a95` fails contrast as text (`P-MAMAS-PRIMARY-CONTRAST`, theme-source fix) ·
-`minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC proof headers
-(sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
+**Latent + open (not this session):** Mama's brand-primary `#e68a95` fails contrast as text
+(`P-MAMAS-PRIMARY-CONTRAST`, theme-source fix, site-wide — axe still shows 17 colour-contrast hits) ·
+two unnamed `<main>` landmarks = the framework `landmark-unique`/`region` axe hits (separate theme defect,
+NOT the header) · `minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC
+proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
 **Your next session → `.claude/next-session-prompt.md`.** **FR-37-7 starter picker (= Spec 36 FR-36-3) —
-the highest-leverage unbuilt item, design-gate first** · hide-on-scroll fix B (design-gate, then build) ·
+the highest-leverage unbuilt item, design-gate first** (hide-on-scroll fix B now DONE, D376) ·
 Spec 36 Phase 2 (mega CPT).
 
 ---
