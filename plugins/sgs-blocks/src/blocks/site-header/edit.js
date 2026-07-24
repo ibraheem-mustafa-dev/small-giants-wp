@@ -4,7 +4,9 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	store as blockEditorStore,
 } from '@wordpress/block-editor';
+import { useSelect, useDispatch } from '@wordpress/data';
 import {
 	PanelBody,
 	ToggleControl,
@@ -33,15 +35,30 @@ import {
 //   contentWidth — 'normal' | 'wide' | 'full' | literal (content-band cap)
 //   style.spacing.padding — native WP spacing support (top/right/bottom/left)
 //
-// Centred — content band capped to 'normal' (~1200px), default padding.
-//   The header cluster (logo/nav/icons, laid out by the middle row's own
-//   space-between) sits inside a centred, constrained band.
-// Split   — content band uncapped ('full', the block default). Logo pins
-//   left, nav/icons pin right, spread edge-to-edge — matches the middle
-//   row's built-in justifyContent:'space-between'.
-// Minimal — content band capped to 'normal' AND padding reduced to a
-//   slimmer bar height, for a stripped-back header.
+// Each preset ALSO re-aligns the primary (middle) row. The header's
+// horizontal logo/nav alignment lives on the middle row's justifyContent,
+// NOT on the container — so a preset that only set container width/padding
+// couldn't actually re-align (the FR-37-28 depth gap). The Edit component
+// looks up the middle row (rowSlot:'middle') and the preset writes its
+// justifyContent (see PRESET_JUSTIFY) alongside the container attrs.
+//
+// Centred — content band capped to 'normal' (~1200px), default padding,
+//   middle row centred (justifyContent:'center') so the logo/nav cluster
+//   sits as a centred group.
+// Split   — content band uncapped ('full', the block default), middle row
+//   spread edge-to-edge (justifyContent:'space-between'): logo left,
+//   nav/icons right. This is the fresh-insert default.
+// Minimal — content band capped to 'normal', padding reduced to a slimmer
+//   bar height, middle row still edge-to-edge — a stripped-back header.
 const MINIMAL_PADDING = { top: '8px', right: '16px', bottom: '8px', left: '16px' };
+
+// Middle-row justifyContent each preset writes (the alignment half of the
+// preset). '' would render flex-start; these are the three deliberate looks.
+const PRESET_JUSTIFY = {
+	centred: 'center',
+	split: 'space-between',
+	minimal: 'space-between',
+};
 
 function paddingMatches( padding, target ) {
 	if ( ! padding ) {
@@ -57,21 +74,29 @@ function paddingMatches( padding, target ) {
  * Returns '' when the combination doesn't match a known preset exactly
  * (a hand-tuned/custom combination) — no preset button shows selected.
  *
+ * A preset only shows selected when BOTH the container attrs AND the middle
+ * row's alignment match it — so a hand-tuned combination (e.g. the right band
+ * width but a manually re-aligned row) correctly shows no preset selected.
+ *
  * @param {Object} attributes Block attributes.
+ * @param {string} rowJustify The middle row's justifyContent ('' if no middle row).
  * @return {string} 'centred' | 'split' | 'minimal' | ''
  */
-function getActiveLayoutPreset( attributes ) {
+function getActiveLayoutPreset( attributes, rowJustify = '' ) {
 	const { contentWidth = 'full', style } = attributes;
 	const padding = style?.spacing?.padding;
 
-	if ( contentWidth === 'full' && ! padding ) {
+	if ( contentWidth === 'full' && ! padding && rowJustify === 'space-between' ) {
 		return 'split';
 	}
 	if ( contentWidth === 'normal' ) {
-		if ( paddingMatches( padding, MINIMAL_PADDING ) ) {
+		if (
+			paddingMatches( padding, MINIMAL_PADDING ) &&
+			rowJustify === 'space-between'
+		) {
 			return 'minimal';
 		}
-		if ( ! padding ) {
+		if ( ! padding && rowJustify === 'center' ) {
 			return 'centred';
 		}
 	}
@@ -79,21 +104,32 @@ function getActiveLayoutPreset( attributes ) {
 }
 
 /**
- * Apply a layout preset by writing to the block's existing attributes only.
+ * Apply a layout preset by writing to existing attributes only: the
+ * container's contentWidth + style.spacing.padding, AND the middle row's
+ * justifyContent (the alignment half — see PRESET_JUSTIFY). Never a new
+ * stored shape.
  *
- * @param {string}   value         'centred' | 'split' | 'minimal'
- * @param {Object}   attributes    Current block attributes.
- * @param {Function} setAttributes Block editor setAttributes.
+ * @param {string}   value                 'centred' | 'split' | 'minimal'
+ * @param {Object}   attributes            Current block attributes.
+ * @param {Function} setAttributes         Block editor setAttributes.
+ * @param {string}   [middleRowClientId]   clientId of the rowSlot:'middle' row, if any.
+ * @param {Function} [updateBlockAttributes] core/block-editor updateBlockAttributes dispatch.
  */
-function applyLayoutPreset( value, attributes, setAttributes ) {
+function applyLayoutPreset(
+	value,
+	attributes,
+	setAttributes,
+	middleRowClientId,
+	updateBlockAttributes
+) {
 	const { style = {} } = attributes;
 	const { spacing = {}, ...restStyle } = style;
 	const { padding, ...restSpacing } = spacing;
+	const hasRestSpacing = Object.keys( restSpacing ).length > 0;
 
 	if ( value === 'split' ) {
 		// Split has no padding override — clear one if present so the
 		// preset detector reads back 'split' cleanly.
-		const hasRestSpacing = Object.keys( restSpacing ).length > 0;
 		setAttributes( {
 			contentWidth: 'full',
 			style: {
@@ -101,11 +137,7 @@ function applyLayoutPreset( value, attributes, setAttributes ) {
 				...( hasRestSpacing ? { spacing: restSpacing } : {} ),
 			},
 		} );
-		return;
-	}
-
-	if ( value === 'centred' ) {
-		const hasRestSpacing = Object.keys( restSpacing ).length > 0;
+	} else if ( value === 'centred' ) {
 		setAttributes( {
 			contentWidth: 'normal',
 			style: {
@@ -113,10 +145,7 @@ function applyLayoutPreset( value, attributes, setAttributes ) {
 				...( hasRestSpacing ? { spacing: restSpacing } : {} ),
 			},
 		} );
-		return;
-	}
-
-	if ( value === 'minimal' ) {
+	} else if ( value === 'minimal' ) {
 		setAttributes( {
 			contentWidth: 'normal',
 			style: {
@@ -126,6 +155,18 @@ function applyLayoutPreset( value, attributes, setAttributes ) {
 					padding: MINIMAL_PADDING,
 				},
 			},
+		} );
+	} else {
+		return;
+	}
+
+	// Re-align the primary (middle) row to match the preset. This is what
+	// makes Centred actually centre the logo/nav cluster (and Split/Minimal
+	// spread it edge-to-edge) rather than only changing the band width.
+	// No-op if the header has no middle row.
+	if ( middleRowClientId && updateBlockAttributes ) {
+		updateBlockAttributes( middleRowClientId, {
+			justifyContent: PRESET_JUSTIFY[ value ],
 		} );
 	}
 }
@@ -274,9 +315,30 @@ const TEMPLATE = [
 	[ 'sgs/site-header-row', { rowSlot: 'bottom' } ],
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( { className: 'sgs-site-header' } );
 	const refEl = useRef( null );
+
+	// FR-37-28 depth: the header's logo/nav alignment lives on the primary
+	// (middle) row, not the container. Look it up so a layout preset can
+	// re-align it. Re-runs when the middle row's justifyContent changes, so
+	// the active-preset indicator stays honest against manual row edits.
+	const { updateBlockAttributes } = useDispatch( blockEditorStore );
+	const middleRow = useSelect(
+		( select ) => {
+			const inner = select( blockEditorStore ).getBlocks( clientId );
+			return (
+				inner.find(
+					( b ) =>
+						b.name === 'sgs/site-header-row' &&
+						b.attributes?.rowSlot === 'middle'
+				) || null
+			);
+		},
+		[ clientId ]
+	);
+	const middleRowClientId = middleRow?.clientId;
+	const middleRowJustify = middleRow?.attributes?.justifyContent ?? '';
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
@@ -498,27 +560,49 @@ export default function Edit( { attributes, setAttributes } ) {
 				<ToolsPanel
 					label={ __( 'Layout', 'sgs-blocks' ) }
 					resetAll={ () =>
-						applyLayoutPreset( 'split', attributes, setAttributes )
+						applyLayoutPreset(
+							'split',
+							attributes,
+							setAttributes,
+							middleRowClientId,
+							updateBlockAttributes
+						)
 					}
 				>
 					<ToolsPanelItem
 						label={ __( 'Layout preset', 'sgs-blocks' ) }
 						hasValue={ () =>
-							getActiveLayoutPreset( attributes ) !== 'split'
+							getActiveLayoutPreset( attributes, middleRowJustify ) !==
+							'split'
 						}
 						onDeselect={ () =>
-							applyLayoutPreset( 'split', attributes, setAttributes )
+							applyLayoutPreset(
+								'split',
+								attributes,
+								setAttributes,
+								middleRowClientId,
+								updateBlockAttributes
+							)
 						}
 						isShownByDefault
 					>
 						<ToggleGroupControl
 							label={ __( 'Layout preset', 'sgs-blocks' ) }
-							value={ getActiveLayoutPreset( attributes ) }
+							value={ getActiveLayoutPreset(
+								attributes,
+								middleRowJustify
+							) }
 							onChange={ ( value ) =>
-								applyLayoutPreset( value, attributes, setAttributes )
+								applyLayoutPreset(
+									value,
+									attributes,
+									setAttributes,
+									middleRowClientId,
+									updateBlockAttributes
+								)
 							}
 							help={ __(
-								'Sets the header content-band width and padding in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above.',
+								'Sets the header content-band width, padding and logo/nav alignment in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above (or the middle row for alignment).',
 								'sgs-blocks'
 							) }
 							isBlock
