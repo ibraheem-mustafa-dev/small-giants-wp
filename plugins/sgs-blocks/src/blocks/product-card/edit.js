@@ -589,7 +589,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		variantStyle,
 		sourceMode,
@@ -634,6 +634,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaColourBackground,
 		ctaColourText,
 		ctaColourBorder,
+		ctaColourBackgroundHover,
+		ctaColourTextHover,
+		ctaColourBorderHover,
 		ctaBorderStyle,
 		ctaBorderWidth,
 		ctaBorderRadius,
@@ -805,6 +808,48 @@ export default function Edit( { attributes, setAttributes } ) {
 		width: 'full' === ctaWidthType ? '100%' : undefined,
 	};
 
+	/*
+	 * Typed-mode CTA HOVER preview (2026-07-24 residual fix). ctaPreviewStyle
+	 * above covers RESTING state only — an inline style={} object cannot
+	 * express :hover, so a client setting ctaColourBackgroundHover /
+	 * ctaColourTextHover / ctaColourBorderHover never saw it in the editor
+	 * canvas even though render.php emits it via
+	 * sgs_button_element_style_css()'s hover/focus-visible rule (see
+	 * includes/helpers-button-style.php lines 138-174). Mirrors that rule
+	 * EXACTLY: same 3 properties (background-color/color/border-color), same
+	 * "only emit what's set" gating, same :hover + :focus-visible pairing.
+	 * resolvePcColour mirrors sgs_colour_value()'s slug-vs-raw branch (the
+	 * same resolver already used for the resting-state colours above).
+	 *
+	 * Scoped to a PER-INSTANCE uid class derived from clientId (added to the
+	 * typed preview's blockProps className below) so the rule never leaks to
+	 * a sibling sgs/product-card in the same editor canvas — each block
+	 * instance gets its own <style> tag keyed to its own uid.
+	 *
+	 * cta2 (secondary CTA) has no cta2*Hover attrs in block.json (confirmed:
+	 * only ctaColourBackgroundHover/ctaColourTextHover/ctaColourBorderHover
+	 * exist), so no hover preview is added there — inventing one would show
+	 * a hover effect the frontend doesn't have.
+	 */
+	const ctaPreviewUid = `sgs-pc-preview-${ clientId }`;
+	const ctaHoverDecls = [];
+	const ctaBgHoverResolved = resolvePcColour( ctaColourBackgroundHover );
+	const ctaTextHoverResolved = resolvePcColour( ctaColourTextHover );
+	const ctaBorderHoverResolved = resolvePcColour( ctaColourBorderHover );
+	if ( ctaBgHoverResolved ) {
+		ctaHoverDecls.push( `background-color:${ ctaBgHoverResolved };` );
+	}
+	if ( ctaTextHoverResolved ) {
+		ctaHoverDecls.push( `color:${ ctaTextHoverResolved };` );
+	}
+	if ( ctaBorderHoverResolved ) {
+		ctaHoverDecls.push( `border-color:${ ctaBorderHoverResolved };` );
+	}
+	const ctaHoverSelector = `.${ ctaPreviewUid } .sgs-product-card__cta--primary`;
+	const ctaHoverCss = ctaHoverDecls.length
+		? `${ ctaHoverSelector }:hover,${ ctaHoverSelector }:focus-visible{${ ctaHoverDecls.join( '' ) }}`
+		: '';
+
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
 	// it — otherwise the preview shows a double `.product-card` (double
@@ -815,6 +860,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			: {
 					className: [
 						'product-card',
+						ctaPreviewUid,
 						isTrial ? 'trial-card' : '',
 						isFeatured ? 'featured-card' : '',
 						...typedPreviewClasses,
@@ -1674,6 +1720,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			) : (
 				/* Typed built-in mode: WYSIWYG preview from block attributes */
 				<div { ...blockProps }>
+					{ /* CTA hover-state preview — mirrors render.php's scoped
+					     :hover/:focus-visible rule (helpers-button-style.php
+					     sgs_button_element_style_css()), scoped to this
+					     instance's ctaPreviewUid class so it never leaks to a
+					     sibling product-card in the same editor canvas. */ }
+					{ ctaHoverCss && <style>{ ctaHoverCss }</style> }
 					{ /* Image */ }
 					{ image ? (
 						<div style={ { position: 'relative' } }>

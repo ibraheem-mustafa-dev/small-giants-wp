@@ -49,6 +49,18 @@ element→attr mapping exactly. Deliberate omissions confirmed against source (n
 exists; `priceFromLabel` isn't rendered in typed mode; the featured badge has no colour attrs).
 Editor-only; render.php still untouched. Build green, all prebuild gates pass.
 
+## Follow-on 2 (same session) — CTA hover-state parity (last residual closed)
+The final gap — the typed preview showed only the CTA's RESTING state, not its `:hover`/
+`:focus-visible` (`ctaColourBackgroundHover`/`TextHover`/`BorderHover`) — is now closed. Inline
+`style={}` can't express `:hover`, so the preview emits a scoped `<style>` rule
+`.sgs-pc-preview-{clientId} .sgs-product-card__cta--primary:hover,…:focus-visible{…}` keyed to a
+per-instance class derived from the block's `clientId` (no cross-instance leakage), mirroring
+`sgs_button_element_style_css()`'s hover block 1:1 (same 3 properties, same non-empty gating, same
+`:hover,:focus-visible` selector, same `resolvePcColour` slug/raw resolution). Confirmed via
+block.json that these are the ONLY `*Hover` attrs on the block (no cta2/card-level hover — nothing
+invented). Editor-only; render.php + the frontend no-inline surface untouched (`check-no-inline`
+passes, product-card in the verified list).
+
 ## Disclosed limitation
 A live editor screenshot of the fixed preview was not captured this session (the fix is a pure JS
 mirror of the frontend serialisation already proven live). Build green, all prebuild gates pass
