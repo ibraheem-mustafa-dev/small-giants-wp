@@ -32,38 +32,27 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-24, D374–D377 — full detail in `decisions.md`; do not re-narrate here).**
-**FR-37-7 native starter picker SHIPPED for header+footer (D377). FR-37-13 hide-on-scroll fix B SHIPPED (D376). Footer link-lists (D374).**
+**⭐ CURRENT (2026-07-24 — mega-menu FOUNDATION: design→spec→council→validation; NO code shipped yet).**
+Prior shipped (one-line, full detail in `decisions.md`/`memory/session-2026-07-24-*`): FR-37-7 native starter
+picker LIVE for header+footer (D377); FR-37-13 hide-on-scroll fix B (D376); FR-36-26c footer link-lists (D374).
 
-- **FR-37-7 starter picker — BUILT + LIVE-VERIFIED for header + footer (D377, `62ee4acb`→`98e32cd0`).**
-  Design-gated: use WP's NATIVE "Choose a pattern" modal (no bespoke UI; custom React picker = non-blocking
-  extension FR-37-36). Spike-proven, then full build: 14 header/footer patterns re-scoped to
-  `core/post-content`+`Post Types` (12 via /delegate→Haiku), 2 new "Start from scratch" shell cards, CPT
-  `template` seeds dropped, theme 1.5.41→1.5.43 (pattern cache is theme-version-keyed — the spike's initial
-  no-show). Live on real Chrome: new `sgs_header`+`sgs_footer` each open the modal with 8 preview cards,
-  empty canvas; a chosen starter writes its tree to SAVED `post_content` (DB-verified). **Mega deferred to
-  Task 3** (needs its own starter authoring; no modal until ≥2 mega starters). Test drafts trashed.
-
-- **FR-36-26c icon-list footer link-list — BUILT + LIVE-VERIFIED (D374, `bf312016`+`d08d3149`).** Two
-  Sonnet dispatches (presentation → data+semantics), then a **multi-rater pre-commit review that found
-  2 HIGH defects, both fixed pre-ship + live-proven:** (1) a stale/invalid `menuRef` rendered the SITE
-  NAV via `get_menu_blocks()`'s find-ANY fallback → now `blocks_from_ref()` (fail-soft; critical for
-  cloned sites); (2) `renderLandmark`+no-heading = a nameless `<nav>` → now gated on a heading. **A fatal
-  every gate + BOTH reviewers missed** (a top-level fn in render.php → "Cannot redeclare" on 2 instances)
-  was caught only by a **5-instance live render** (R-31-13) → moved to the shared include. Spec 35 Part B:
-  `source`+`markerType` are `ToggleGroupControl`. Live-verified on canary pages 1720/1721: 3 FR-36-26a
-  types exact, `numbered`→`<ol>`, `<nav>` only where named, `aria-current` client-side, axe zero
-  block-defect (lone contrast hit = Mama's palette, not the block).
-- **FR-37-13 hide-on-scroll fix B — SHIPPED + LIVE-VERIFIED (D376, `43cabf68`+`a89e54e0`).** `sgs/site-header`
-  now renders a semantic `<header>` (was a `<div>`); `header-behaviours` view.js + all **21** CSS selectors
-  retargeted `header.wp-block-template-part`→`header.sgs-site-header`. Root cause (D375) was the engine
-  short-circuiting core's template-part wrapper so the old selector matched nothing. qc-council 3-rater GO;
-  checksum-verified deploy; live on real Chrome (CPT 1655 active): 1 `<header>` banner, scroll-down hides
-  (`translateY(-119px)`), scroll-up returns, shrink CSS responds, axe zero NEW landmark hit (the 2 landmark
-  hits are the pre-existing two-`<main>` defect). **Option B** (Bean design-gated) added a one-header-per-request
-  invariant so a future double-header template can't nest banners; **editor canvas** now `<header>` too.
-  Drawer-while-scrolled (D323) structurally safe (drawer = top-layer `<dialog showModal>`), not observable on
-  fixture 1655 (no drawer block). Active header restored to 1570.
+This session ran the full PRE-BUILD gauntlet on the mega foundation — 2 planning docs, no build:
+- **BUILD-SPEC** `plans/2026-07-24-mega-menu-BUILD-SPEC.md` — §0 decisions (D-A..D-G: mega OWNS its own
+  light/dark palette that FOLLOWS the site mode; add a neutral `mono` font); **§0.5 CORE SCOPE + 15 council
+  fix-shapes CF-1..15**; **§0.6 qc-council validation ledger**; §1–§10 = the full-vision follow-on reference.
+- **Strategic plan** `plans/2026-07-24-mega-menu-foundation-strategic-plan.md` (13 units + dep graph; re-scoped — read §0.5).
+- **Model (Bean-settled across the session):** 3 structural VARIATIONS `general|media-cards|brands` +
+  content-preserving TOGGLES (`style` columns/cards/minimal + `headings` + `markerType` + `columnCount`) +
+  an aside component + content-preserving mobile-in-drawer stack (`@container`). Client edits content+settings
+  ONLY (`templateLock:contentOnly` + `role:content`); inspector = element×cluster Spec-35 (hand-built +
+  ADVISORY manifest — the manifest is NOT a UI renderer, verified).
+- **7-persona adversarial council → NO-GO→GO-after-re-scope; Bean chose re-scope.** Convergent must-fixes:
+  over-scope; the `store('sgs/nav')` surgery mis-specified (it's a modal drawer engine); `variant` live-toggle
+  = data-loss; + a FATAL `do_blocks` self-reference DoS with no render-path guard.
+- **Fact-checked the CF claims (Bean-directed) — CF-3 was FALSE:** `store.js:638` exports only
+  `{actions,FOCUSABLE_SELECTOR}`, NOT `getFocusable`/`prefersReducedMotion` (Cynic's claim) — corrected.
+  CF-2/4/6/7 verified against source. **qc-council: all 15 CF validated, none a no-op** (4 carry a build-time
+  decision, §0.6).
 
 **Latent + open (not this session):** Mama's brand-primary `#e68a95` fails contrast as text
 (`P-MAMAS-PRIMARY-CONTRAST`, theme-source fix, site-wide — axe still shows 17 colour-contrast hits) ·
@@ -71,30 +60,27 @@ two unnamed `<main>` landmarks = the framework `landmark-unique`/`region` axe hi
 NOT the header) · `minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC
 proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
-**⭐ Your next session — Spec 36 Phase 2: the mega-menu spine + mega starter authoring (Bean-directed 2026-07-24).**
-The mega spine (FR-36-3/4/5/8/10/17/9a, strictly sequential) is the highest-leverage front. It INCLUDES
-authoring the `sgs_mega_menu` starter patterns, which completes FR-37-7 for the 3rd CPT — the native picker
-mechanism is BUILT + PROVEN (D377), mega just needs ≥2 starters to make its "Choose a pattern" modal fire.
+**⭐ Your next session — BUILD the mega CORE. `BUILD-SPEC §0.5` is the self-contained entry — READ IT FIRST**
+(then `next-session-prompt.md` for the orchestration). Design is DONE, council-hardened, fact-checked,
+qc-validated; this session is a clean build against a pinned spec. Smallest shippable core: `general`/`columns`,
+LIGHT-ONLY, CARET-ONLY, optional static `cta` aside, a SEPARATE `store('sgs/mega')` module (NOT extending the
+drawer store), a `do_blocks` recursion guard.
 
-**Mega starter SOURCES (Bean-supplied — clone these into the `sgs_mega_menu` CPT, save as presets/patterns
-scoped `Block Types: core/post-content` + `Post Types: sgs_mega_menu`, then bump the theme version):**
-- **PRIMARY — 2 Claude Design draft sets (each contains SEVERAL mega formats; focus here first):**
-  - `sites/Mega-menu design/` (extracted; also `.zip`) — the **GENERAL** mega design, the most-common setup.
-    Contains `Mega Menu.dc.html` + `_feature.dc.html` + `support.js`. **The HTML offers a CARD-style ↔
-    LIST-style toggle — the block/preset MUST support toggling between card layout and list layout.**
-  - `sites/Indus Foods Mega Menu Design/` (extracted; also `.zip`) — a **WARMER, more personality-rich**
-    variant (the general one reads clean/clinical). `Indus Foods Mega Menu.dc.html` + `_feature.dc.html`
-    + `image-slot.js` + `support.js` + `uploads/`. `.dc.html` = Claude Design export format.
-- **SECONDARY — my earlier drafts at `.claude/drafts/mega-menu/` (convert a FEW of these too):** `DESIGN.md`
-  + 11 layout HTMLs — `browse-switch-sgs`, `depth-stack`, `info-box-sgs`, `link-columns`(v1/v2/v3),
-  `logo-grid`, `photo-grid`, `split-aside-cta`(+sgs/+sgs-orange). Map to Spec 36's 5 mega layouts
-  (photo-grid / split-with-aside-CTA / logo-grid / info-box / link-columns).
-- **Card/list toggle is a REQUIREMENT** carried from the source HTML — expose it as a block control/variant.
-- Design-gate the mega spine FIRST (shared-mechanism, Rule 7); author drafts through `/ui-ux-pro-max` SGS-BEM
-  + `/frontend-design`. The mega CPT (`sgs_mega_menu`) already exists + uses the native editor.
+**Sequence (BUILD-SPEC §0.5.D):** SPIKE (canary: create `sgs_mega_menu`, confirm Appearance→Menus attach +
+resolver returns) → Wave-0 (git-extract old `mega-menu/view.js` `23a3cf63^` to `.claude/scratch/old-mega-menu/`;
+pin the `general` InnerBlocks template + all 9 manifest attrMaps + apply the `columns→columnCount` rename) →
+U1 (general only; enum-declare media-cards/brands) → U3-spike (`contentOnly`+`role:content` proven) → U2
+(columns FLEX, light, caret, escaping CF-2) → U3 (element×cluster inspector; `variant` insert-time) → U8
+(NEW `store('sgs/mega')`, commit isolated + tag) → EARLY drawer smoke-check on canary → U9 (+recursion guard
+CF-1, trigger=`<button>` CF-15) → U10 (2 `general` patterns + scratch shell) → U11 (theme version bump) →
+U12 (build + deploy + live-a11y QC incl. recursion + escaping tests + Bean's eye) → U13 (docs; fix Spec 36
+§8a's stale "CPT doesn't exist").
 
-Also open (not blockers): FR-37-36 (custom React picker, non-blocking extension) · Mama's brand-pink
-contrast (`P-MAMAS-PRIMARY-CONTRAST`, theme-source) · the two-`<main>` framework landmark defect.
+**DEFERRED to a follow-on (declared, NOT cut):** the 5 effects (KEEP caret), `media-cards`+`brands`
+variations, night/day `dark` set, aside `feature`/`preview` formats, full manifest GAP/ORPHAN-0 conformance.
+
+Also open (not blockers): FR-37-36 (custom React picker) · Mama's `#e68a95` text-contrast
+(`P-MAMAS-PRIMARY-CONTRAST`) · the two-`<main>` framework landmark defect.
 
 ---
 
@@ -102,10 +88,12 @@ contrast (`P-MAMAS-PRIMARY-CONTRAST`, theme-source) · the two-`<main>` framewor
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`, this session's tip `614fa890` (2026-07-24; a co-active Spec-31/35 track commits
-  between handoffs, so real HEAD is likely higher — re-check with `git log -1`).
-  **D-ceiling: D377.** This session (FR-37-13 + FR-37-7): commits `43cabf68`+`a89e54e0` (fix B + Option B),
-  `62ee4acb`→`98e32cd0`→`614fa890` (starter picker), all pushed — verify with `git log`, never a cached hash.
+- **Branch:** `main` (2026-07-24; a co-active Spec-31/35 track commits between handoffs, so real HEAD is
+  likely higher — re-check with `git log -1`). **D-ceiling: D378.** THIS session was DESIGN/SPEC only (no
+  code): the mega-menu BUILD-SPEC + strategic plan + council/fact-check/qc-council pass — committed as the
+  handoff `docs(mega, D378)` commit (path-scoped: the 2 plan docs + LEDGER/next-session-prompt/decisions/parking).
+  Prior shipped D374–D377 (header/footer): `43cabf68`+`a89e54e0`, `62ee4acb`→`98e32cd0`→`614fa890` — verify
+  with `git log`, never a cached hash.
   ⚠ **Shared branch** — a co-active Spec-35/31 track commits between handoffs (its WIP stays uncommitted).
   Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
