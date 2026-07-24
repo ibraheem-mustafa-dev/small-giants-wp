@@ -1001,10 +1001,16 @@ the earlier "inspector = 1:1 attribute view" rule).
 round-trips the underlying attrs unchanged. **Live proof (sandybrown canary, chrome-devtools):**
 the control showed "Split" as the derived active state on a fresh block (Full band); clicking
 "Centred" flipped the Content-band-width control from **Full → Normal** — i.e. it wrote the
-existing `contentWidth` attr, exactly as designed. **Known limitation (§FR-37-28 gap, carried):**
-Centred/Split express the effect via content-band width only; true logo/nav re-alignment is a
-row-level `justifyContent` (on `sgs/site-header-row`), out of this control's scope — a future
-enhancement, not a defect.
+existing `contentWidth` attr, exactly as designed. **Depth (row re-alignment) SHIPPED + LIVE-VERIFIED
+2026-07-25 (commit `8e9aac57`):** the earlier "content-band width only" limitation is CLOSED — each
+preset now also writes the primary (middle) row's existing `justifyContent` (Centred → `center`,
+Split/Minimal → `space-between`) via a `useSelect` lookup of the `rowSlot:'middle'` row +
+`updateBlockAttributes`, and `getActiveLayoutPreset` now also requires the row alignment to match so
+the active indicator stays honest. Still no new stored attribute (reuses the row's existing
+`justifyContent`). **Live proof (sandybrown canary, chrome-devtools + `wp.data`):** clicking Centred
+flipped the middle row `justifyContent` `space-between → center` and the container `contentWidth`
+`full → normal` (read from the block-editor store), the "Centred" radio showed selected (derivation),
+and the logo/nav cluster visibly centred in the canvas.
 **Done when:** at least one preset control exists on the header container and sets its
 attributes such that the converter round-trips them unchanged. ✅ met.
 
