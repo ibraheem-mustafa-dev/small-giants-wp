@@ -127,14 +127,15 @@ Full text in `.claude/STOP-CATALOGUE.md` (Track 2's file). Load-bearing for THIS
 5. Banking a PASS? → would it still pass if the feature were absent? (deploy → md5, not HTTP-200.)
 6. Committing a block-source change? → does the visual-diff gate need a report for that block?
 
-## Open residuals (parked, not blockers)
-- **product-card typed-preview hover states not mirrored** (minor) — the CTA/text preview reproduces
-  resting state only; `:hover` (ctaColour*Hover) not shown (needs a scoped `<style>` the JSX preview
-  lacks). Low priority. In `memory/parked-2026-07-24-track1c.md`.
-- **preset-implications convention dicts → DB** — CLOSED as a deliberate deferral; revisit ONLY when a
-  3rd preset-selector attr beyond cardStyle/effectHover is added (`_PRESET_STATE_BY_ATTR` /
-  `_PRESET_NEUTRAL_FALLBACK_NAME` in sgs-update-v2.py + `_PRESET_STATE` in preset_absence.py).
-- Pre-existing parking (Track 2's parking.md): `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` (Spec 35
-  audit front, 76 unaudited), the nav parking items, etc.
-- **Fold `memory/parked-2026-07-24-track1c.md` into `parking.md`** at the next coordination point
-  (not written there directly this session — Track 2 held the file).
+## Open residuals — Track 1c (only genuinely-deferred, not-next-session work)
+Everything this session raised is RESOLVED (Build #3, the reconcile bug, Task E, and every
+product-card typed-preview defect — CTA padding, text colours, AND hover — all shipped). The ONE
+genuinely-deferred item:
+- **preset-implications convention dicts → DB** — a deliberate deferral: `_PRESET_STATE_BY_ATTR` /
+  `_PRESET_NEUTRAL_FALLBACK_NAME` (sgs-update-v2.py) + `_PRESET_STATE` (preset_absence.py) are
+  per-ATTR-NAME (universal, R-31-1-acceptable). Revisit ONLY when a 3rd preset-selector attr beyond
+  cardStyle/effectHover is added — moving 2 working entries to a DB column now is premature. If it
+  ever earns a `parking.md` entry it goes in as `DEFERRED`, not as done work.
+
+(Pre-existing Track 2 parking — `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS`, nav items — lives in
+Track 2's `parking.md`; not Track 1c's to manage.)
