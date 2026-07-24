@@ -95,6 +95,8 @@ final class Sgs_Header_Footer_Cli_Commands {
 	 *
 	 * @param string[] $args       Positional arguments.
 	 * @param string[] $assoc_args Named arguments (unused).
+	 *
+	 * @subcommand set-active
 	 */
 	public function set_active( array $args, array $assoc_args ): void {
 		unset( $assoc_args );
@@ -136,6 +138,8 @@ final class Sgs_Header_Footer_Cli_Commands {
 	 *
 	 * @param string[] $args       Positional arguments (unused).
 	 * @param string[] $assoc_args Named arguments (unused).
+	 *
+	 * @subcommand clear-active
 	 */
 	public function clear_active( array $args, array $assoc_args ): void {
 		unset( $args, $assoc_args );
@@ -243,6 +247,8 @@ final class Sgs_Header_Footer_Cli_Commands {
 	 *
 	 * @param string[] $args       Positional arguments.
 	 * @param string[] $assoc_args Named arguments (unused).
+	 *
+	 * @subcommand seed-starter
 	 */
 	public function seed_starter( array $args, array $assoc_args ): void {
 		unset( $assoc_args );
