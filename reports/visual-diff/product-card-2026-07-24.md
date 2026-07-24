@@ -39,6 +39,16 @@ object mirroring `sgs_button_element_style_css()` 1:1. Inline style is on the ED
   `ctaPadding:{40,20,40,20}` → `.sgs-product-card__cta--primary` computed `padding: 40px 20px`.
   This fix brings the editor canvas into line with that already-correct frontend.
 
+## Follow-on (same session) — text-colour parity
+The same defect class was then closed for the product-card TEXT elements: the typed-mode preview
+also ignored `titleColour`/`priceColour`/`descColour`/`priceNoteColour` (+ `tagTextColour`/
+`tagBackgroundColour` on the trial tag) — inspector controls with no preview application. The
+preview now applies each via a per-element style object using a generic `resolvePcColour()`
+(renamed from `resolveCtaColour`, same slug-vs-raw resolution), mirroring render.php's
+element→attr mapping exactly. Deliberate omissions confirmed against source (no `pillColour` attr
+exists; `priceFromLabel` isn't rendered in typed mode; the featured badge has no colour attrs).
+Editor-only; render.php still untouched. Build green, all prebuild gates pass.
+
 ## Disclosed limitation
 A live editor screenshot of the fixed preview was not captured this session (the fix is a pure JS
 mirror of the frontend serialisation already proven live). Build green, all prebuild gates pass

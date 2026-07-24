@@ -747,26 +747,39 @@ export default function Edit( { attributes, setAttributes } ) {
 	 * but the editor canvas stay static. Mirrors
 	 * includes/helpers-button-style.php sgs_button_element_style_css() (the
 	 * SAME emitter render.php calls for both typed and bound branches) so the
-	 * two paths stay in lockstep; resolveCtaColour mirrors
+	 * two paths stay in lockstep; resolvePcColour mirrors
 	 * includes/helpers-tokens.php sgs_colour_value()'s slug-vs-raw-value
 	 * branch. Hover/focus-visible declarations are NOT mirrored here — this
 	 * is a static (non-interactive) preview element with no :hover state to
 	 * drive, same as every other control in this typed preview.
+	 *
+	 * Extended 2026-07-24 to the text-colour attrs (titleColour/priceColour/
+	 * descColour/priceNoteColour) — render.php resolves each via the same
+	 * sgs_colour_value() branch and emits it as a scoped CSS custom property
+	 * (--sgs-card-title-colour etc., consumed by style.css); the typed
+	 * preview had inspector controls for these but never applied them, so a
+	 * client changing e.g. "Title colour" saw no change in the editor canvas.
+	 * resolvePcColour is the SAME resolver, renamed generically — the CTA
+	 * usage below is unchanged.
 	 */
-	const resolveCtaColour = ( value ) => {
+	const resolvePcColour = ( value ) => {
 		if ( ! value ) {
 			return undefined;
 		}
 		const v = String( value ).trim();
 		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
 	};
+	const titlePreviewStyle = { color: resolvePcColour( titleColour ) };
+	const pricePreviewStyle = { color: resolvePcColour( priceColour ) };
+	const descPreviewStyle = { color: resolvePcColour( descColour ) };
+	const priceNotePreviewStyle = { color: resolvePcColour( priceNoteColour ) };
 	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
 	const ctaHasPadding =
 		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
 	const ctaPreviewStyle = {
-		backgroundColor: resolveCtaColour( ctaColourBackground ),
-		color: resolveCtaColour( ctaColourText ),
-		borderColor: resolveCtaColour( ctaColourBorder ),
+		backgroundColor: resolvePcColour( ctaColourBackground ),
+		color: resolvePcColour( ctaColourText ),
+		borderColor: resolvePcColour( ctaColourBorder ),
 		borderStyle: ctaBorderStyle || undefined,
 		borderWidth:
 			ctaBorderWidth !== undefined && ctaBorderWidth !== null && '' !== ctaBorderWidth
@@ -1711,9 +1724,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 
 					<div className="sgs-product-card__body">
-						{ /* Tag badge preview */ }
+						{ /* Tag badge preview — tagTextColour/tagBackgroundColour only
+						     style the TRIAL tag in render.php (the scoped rule targets
+						     .sgs-product-card__tag--trial specifically); the featured
+						     badge is a fixed "coloured strip" with no colour attrs of
+						     its own (block.json), so it is deliberately left unstyled
+						     here. */ }
 						{ isTrial && ( attributes.trialTag || '' ) !== '' && (
-							<span className="sgs-product-card__tag sgs-product-card__tag--trial">
+							<span
+								className="sgs-product-card__tag sgs-product-card__tag--trial"
+								style={ {
+									color: resolvePcColour( attributes.tagTextColour ),
+									backgroundColor: resolvePcColour(
+										attributes.tagBackgroundColour
+									),
+								} }
+							>
 								{ attributes.trialTag }
 							</span>
 						) }
@@ -1728,6 +1754,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RichText
 							tagName={ headingTag }
 							className="sgs-product-card__title"
+							style={ titlePreviewStyle }
 							value={ productName || '' }
 							onChange={ ( v ) =>
 								setAttributes( { productName: v } )
@@ -1743,6 +1770,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<RichText
 							tagName="div"
 							className="sgs-product-card__description"
+							style={ descPreviewStyle }
 							value={ description || '' }
 							onChange={ ( v ) =>
 								setAttributes( { description: v } )
@@ -1802,12 +1830,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							( priceNote || '' ) !== '' ) && (
 							<div className="sgs-product-card__price-row">
 								{ ( priceLarge || '' ) !== '' && (
-									<span className="sgs-product-card__price">
+									<span
+										className="sgs-product-card__price"
+										style={ pricePreviewStyle }
+									>
 										{ priceLarge }
 									</span>
 								) }
 								{ ( priceNote || '' ) !== '' && (
-									<span className="sgs-product-card__price-note">
+									<span
+										className="sgs-product-card__price-note"
+										style={ priceNotePreviewStyle }
+									>
 										{ priceNote }
 									</span>
 								) }
