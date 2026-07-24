@@ -716,8 +716,14 @@ the live page, not asserted.
 #### FR-37-13 — The behaviour set
 Four independent header behaviours: **sticky**, **transparent**, **shrink**,
 **hide-on-scroll**. Any combination may be active.
-**Status:** `🔴 BUILT-BUT-DEAD — none of the JS scroll behaviours actually function on an SGS header
-(D375, live-verified 2026-07-23).** Two corrections to the earlier text, both from live verification:
+**Status:** `✅ SHIPPED + LIVE-VERIFIED (D376, 2026-07-24) — fix B landed; all scroll behaviours function.`
+The D375 dead-selector bug is FIXED: `sgs/site-header` now renders a semantic `<header>` and the JS
+(`view.js` `getHeaderEl`) + all 21 `header-behaviours.css` selectors target `header.sgs-site-header`.
+Live on the canary (CPT 1655): scroll-down hides the header (`translateY(-119px)`), scroll-up returns;
+one banner landmark; F1 height-publisher revived; axe zero NEW hit. Plus the Option B one-header-per-request
+guard + editor `<header>` parity. Drawer-while-scrolled (D323) structurally safe (top-layer `<dialog>`),
+not observable on fixture 1655 (no drawer block). The historical BUILT-BUT-DEAD analysis below is retained
+for context. Two corrections from the D375 live verification (now resolved by fix B):
 
 1. **The "no attribute / dormant" note above was STALE.** hide-on-scroll IS wired end to end in code:
    `site-header/block.json:76` `headerHideOnScroll` (boolean) + an Advanced ToolsPanel control in
@@ -1066,15 +1072,15 @@ and eye are co-authoritative, neither closes alone).
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
-| hide-on-scroll + transparent + shrink (FR-37-13) | `🔴 BUILT-BUT-DEAD` (D375, live-verified 2026-07-23) — the attr/control/body-class chain IS built, but `header-behaviours/view.js:42` + `header-behaviours.css:60/108/164` target `header.wp-block-template-part`, which **no SGS header renders** (it's a `<div class="wp-block-sgs-site-header">`), so the scroll listener never wires and the CSS matches nothing. **"Chain proven by code-read" was the R-31-13 trap** — a multi-instance live render (CPT 1655 active) proved `is-header-scrolling-down` never toggles. Approved fix: **Option B — semantic `<header>` element** (revives all 3 + adds the banner landmark), design-gate first. See FR-37-13 above |
+| hide-on-scroll + transparent + shrink (FR-37-13) | `✅ SHIPPED + LIVE-VERIFIED` (D376, 2026-07-24) — fix B landed: `sgs/site-header` renders a semantic `<header>`; view.js + all 21 `header-behaviours.css` selectors retargeted to `header.sgs-site-header`. Live on the canary (CPT 1655): scroll-down hides (`translateY(-119px)`), scroll-up returns; one banner landmark; F1 publisher revived; axe zero NEW hit. Plus Option B one-header guard + editor `<header>`. See FR-37-13 above |
 | Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
 | Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
 | Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |
 | Tri-state shape (FR-37-14) | `NOT-BUILT` |
 | Scoped behaviour CSS (FR-37-15) | `NOT-BUILT` |
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
-| Starter library (FR-37-8) | `PARTIAL → patterns DONE` — all 9 legacy header/footer patterns RE-TARGETED to the CPT model 2026-07-23, plus `framework-header-default.php` and `framework-footer-default.php`. Zero banned core blocks remain; valid `rowSlot` vocabulary throughout. **The picker (FR-37-7) is still NOT-BUILT**, so nothing surfaces them yet |
-| Starter picker (FR-37-7) | `NOT-BUILT` — **the single highest-leverage remaining item.** It is the SAME build as Spec 36 FR-36-3 (that spec assumes this reuse), and it gates FR-37-8's library, FR-37-31's second half and FR-37-28 |
+| Starter library (FR-37-8) | `✅ DONE for header/footer` (D377, 2026-07-24) — 14 header/footer starters + 2 scratch shells scoped `core/post-content` + `Post Types:`, surfaced by the FR-37-7 native picker; applying one writes its tree to `post_content` (live-verified). Mega starters NOT-BUILT (Task 3) |
+| Starter picker (FR-37-7) | `✅ BUILT + LIVE-VERIFIED for header/footer` (D377, 2026-07-24) — WP's NATIVE "Choose a pattern" modal (no bespoke UI); new `sgs_header`/`sgs_footer` each open it with 8 preview cards + a "Start from scratch" card, chosen card writes the block tree to saved `post_content`. Mega deferred to Task 3 (needs ≥2 mega starters). Custom React picker = non-blocking extension FR-37-36 |
 | Rules engine | `BUILT` |
 | Legacy retirement (FR-37-21) | `✅ DONE` repo + canary (D362, `f1f86ea0`+`23a3cf63`) — adaptive-nav + mega-menu deleted; prod deploy in LEDGER |
 

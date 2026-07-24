@@ -71,10 +71,29 @@ two unnamed `<main>` landmarks = the framework `landmark-unique`/`region` axe hi
 NOT the header) · `minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC
 proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
-**Your next session.** **Spec 36 Phase 2 — the mega-menu spine (FR-36-3/4/5/8/10/17/9a, strictly
-sequential)** now the highest-leverage front; it INCLUDES authoring ≥2 `sgs_mega_menu` starters, which
-completes FR-37-7 for the 3rd CPT (the native picker mechanism is built + proven — mega just needs the
-starter patterns). Also open: FR-37-36 (custom React picker, non-blocking extension) · Mama's brand-pink
+**⭐ Your next session — Spec 36 Phase 2: the mega-menu spine + mega starter authoring (Bean-directed 2026-07-24).**
+The mega spine (FR-36-3/4/5/8/10/17/9a, strictly sequential) is the highest-leverage front. It INCLUDES
+authoring the `sgs_mega_menu` starter patterns, which completes FR-37-7 for the 3rd CPT — the native picker
+mechanism is BUILT + PROVEN (D377), mega just needs ≥2 starters to make its "Choose a pattern" modal fire.
+
+**Mega starter SOURCES (Bean-supplied — clone these into the `sgs_mega_menu` CPT, save as presets/patterns
+scoped `Block Types: core/post-content` + `Post Types: sgs_mega_menu`, then bump the theme version):**
+- **PRIMARY — 2 Claude Design draft sets (each contains SEVERAL mega formats; focus here first):**
+  - `sites/Mega-menu design/` (extracted; also `.zip`) — the **GENERAL** mega design, the most-common setup.
+    Contains `Mega Menu.dc.html` + `_feature.dc.html` + `support.js`. **The HTML offers a CARD-style ↔
+    LIST-style toggle — the block/preset MUST support toggling between card layout and list layout.**
+  - `sites/Indus Foods Mega Menu Design/` (extracted; also `.zip`) — a **WARMER, more personality-rich**
+    variant (the general one reads clean/clinical). `Indus Foods Mega Menu.dc.html` + `_feature.dc.html`
+    + `image-slot.js` + `support.js` + `uploads/`. `.dc.html` = Claude Design export format.
+- **SECONDARY — my earlier drafts at `.claude/drafts/mega-menu/` (convert a FEW of these too):** `DESIGN.md`
+  + 11 layout HTMLs — `browse-switch-sgs`, `depth-stack`, `info-box-sgs`, `link-columns`(v1/v2/v3),
+  `logo-grid`, `photo-grid`, `split-aside-cta`(+sgs/+sgs-orange). Map to Spec 36's 5 mega layouts
+  (photo-grid / split-with-aside-CTA / logo-grid / info-box / link-columns).
+- **Card/list toggle is a REQUIREMENT** carried from the source HTML — expose it as a block control/variant.
+- Design-gate the mega spine FIRST (shared-mechanism, Rule 7); author drafts through `/ui-ux-pro-max` SGS-BEM
+  + `/frontend-design`. The mega CPT (`sgs_mega_menu`) already exists + uses the native editor.
+
+Also open (not blockers): FR-37-36 (custom React picker, non-blocking extension) · Mama's brand-pink
 contrast (`P-MAMAS-PRIMARY-CONTRAST`, theme-source) · the two-`<main>` framework landmark defect.
 
 ---
@@ -83,11 +102,11 @@ contrast (`P-MAMAS-PRIMARY-CONTRAST`, theme-source) · the two-`<main>` framewor
 
 ### Live status (machine-checkable — verify, don't trust the cache)
 
-- **Branch:** `main`, this session's tip `d08d3149` (2026-07-24; a co-active Spec-31/35 track commits
+- **Branch:** `main`, this session's tip `614fa890` (2026-07-24; a co-active Spec-31/35 track commits
   between handoffs, so real HEAD is likely higher — re-check with `git log -1`).
-  **D-ceiling: D375.** This session: 2 icon-list commits, `bf312016` (FR-36-26c) → `d08d3149` (the
-  redeclare fatal-fix), both pushed — verify with `git log`, never a cached hash.
-  ⚠ **Shared branch** — a co-active Spec-35/31 track commits between handoffs (D372/D373 landed mid-session).
+  **D-ceiling: D377.** This session (FR-37-13 + FR-37-7): commits `43cabf68`+`a89e54e0` (fix B + Option B),
+  `62ee4acb`→`98e32cd0`→`614fa890` (starter picker), all pushed — verify with `git log`, never a cached hash.
+  ⚠ **Shared branch** — a co-active Spec-35/31 track commits between handoffs (its WIP stays uncommitted).
   Run `git log -1 --format=%h` for the real HEAD; verify D-ceiling with
   `grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1`; re-check the branch in the SAME
   command as any commit (STOP-RECHECK-BRANCH). **Gate note:** both icon-list commits used `--no-verify`
