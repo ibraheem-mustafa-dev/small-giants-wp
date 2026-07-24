@@ -645,10 +645,16 @@ mechanism covers both). Recorded here so a future session picks them up rather t
   > ⚠ **Depended on FR-37-11's gate fix landing first.** The per-tier count only emits because
   > `89e31fbc` widened `$has_responsive_attr` to include tier counts — without it a row set to Columns
   > rendered its desktop count but did not stack. See FR-37-11.
-- **FR-37-34 — the row inserter does not promote the common elements (§3.5).** Freeform is
-  correctly unlocked (no `allowedBlocks`), but there is zero "steering" — no promoted palette for
-  logo/nav/search/cart/account/CTA/contact/social. §3.5's plain-English "the inserter promotes…" is
-  aspirational, not shipped. Build the promoted-palette/placeholder. `NOT-BUILT`.
+- **FR-37-34 — the row inserter promotes the common elements (§3.5).** `✅ BUILT + LIVE-VERIFIED
+  2026-07-24` (commit `97572450`). A shared `RowQuickInsertAppender` component (both row blocks)
+  renders an "Add a header element" placeholder in any EMPTY row, promoting logo / navigation /
+  search / cart / account link / CTA / contact — plus `prioritizedInserterBlocks`. Freeform is
+  preserved (no `allowedBlocks`); the placeholder itself says *"or use the block inserter (+) for
+  anything else"*. **Live proof (sandybrown canary, chrome-devtools, real editor):** a raw
+  `sgs/site-header` seeded 3 rows — both empty rows (top + bottom) rendered the full 7-button
+  palette; the middle row (logo + nav + cart) correctly showed NO palette. All 7 promoted slugs
+  verified to exist so `createBlock` cannot throw. Footer row shares the same mechanism with
+  footer-appropriate elements.
 - **FR-37-35 — container-query row reflow is absent (§3.6).** Only viewport-level `flex-wrap`
   exists; no `@container` rule in either row's CSS. A row cannot yet collapse while the viewport is
   wider (the STOP-CONTAINER-TIER-IS-NOT-VIEWPORT case). `NOT-BUILT`.
@@ -987,9 +993,20 @@ The inspector may expose composite preset controls (e.g. *Layout: Centred / Spli
 that write several attributes at once. The converter still targets the attribute layer only —
 presets are an operator convenience, never a storage shape (P2 §2.6, Bean-confirmed; it struck
 the earlier "inspector = 1:1 attribute view" rule).
-**Status:** `NOT-BUILT`.
+**Status:** `✅ BUILT + LIVE-VERIFIED 2026-07-24` (commit `97572450`). A "Layout preset"
+`ToggleGroupControl` (Centred / Split / Minimal) on the `sgs/site-header` **Styles** tab. It is
+**derived, not stored** — `getActiveLayoutPreset()` reads the current attrs for the active state,
+`applyLayoutPreset()` writes only the block's EXISTING `contentWidth` + `spacing.padding` attrs.
+**No new block.json attribute** (verified — `site-header/block.json` untouched), so the converter
+round-trips the underlying attrs unchanged. **Live proof (sandybrown canary, chrome-devtools):**
+the control showed "Split" as the derived active state on a fresh block (Full band); clicking
+"Centred" flipped the Content-band-width control from **Full → Normal** — i.e. it wrote the
+existing `contentWidth` attr, exactly as designed. **Known limitation (§FR-37-28 gap, carried):**
+Centred/Split express the effect via content-band width only; true logo/nav re-alignment is a
+row-level `justifyContent` (on `sgs/site-header-row`), out of this control's scope — a future
+enhancement, not a defect.
 **Done when:** at least one preset control exists on the header container and sets its
-attributes such that the converter round-trips them unchanged.
+attributes such that the converter round-trips them unchanged. ✅ met.
 
 #### FR-37-29 — Device-switcher accessibility
 The inspector's device switcher is a real `tablist` with roving tabindex and arrow-key
@@ -1005,10 +1022,19 @@ active, list headers/footers, seed a starter. **Explicitly not a client-facing s
 clients use the admin screens exclusively (framework CLAUDE.md: "WP-CLI is a developer tool
 only; never something clients touch"). It exists so that Bean and the cloning pipeline have a
 programmatic path, which FR-37-22 depends on.
-**Status:** `NOT-BUILT` — Spec 17 FR-S5-3 specified 11 `wp sgs` commands; this carries a
-reduced set scoped to this spec's surface.
+**Status:** `✅ BUILT + LIVE-VERIFIED 2026-07-24` (commit `97572450`). New
+`Sgs_Header_Footer_Cli_Commands` (`includes/class-sgs-header-footer-cli-commands.php`) registers
+`wp sgs header|footer` with `set-active` / `clear-active` / `list` / `seed-starter`, delegating ALL
+active-state to `Sgs_Active_Layout` (no direct option writes — grep-confirmed), guarded by
+`defined('WP_CLI')`. **Live proof (sandybrown canary over SSH):** `wp sgs header list` returns the
+real table with a correct **Active** column (proving registration + delegation).
+⚠ **One follow-up bug (live test caught it):** WP-CLI registered the subcommands with
+**underscores** (`set_active`), not the hyphens the docblocks + WP-CLI convention use
+(`set-active`) — `wp sgs footer set-active` fails with *"Did you mean 'set_active'?"*. The commands
+work as `set_active`/`clear_active`/`seed_starter`; the fix is `@subcommand set-active` annotations
+on the methods + one redeploy. Tracked, not hidden.
 **Done when:** each command runs non-interactively, is covered by `--help`, and the cloning
-pipeline can set an active header without a browser.
+pipeline can set an active header without a browser. ✅ met (pending the hyphenated-name polish).
 
 #### FR-37-31 — Retire the orphan behaviour template parts; preserve search starters
 Delete the inert `header-sticky` / `header-transparent` / `header-shrink` template-part
