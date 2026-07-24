@@ -1028,13 +1028,13 @@ programmatic path, which FR-37-22 depends on.
 active-state to `Sgs_Active_Layout` (no direct option writes — grep-confirmed), guarded by
 `defined('WP_CLI')`. **Live proof (sandybrown canary over SSH):** `wp sgs header list` returns the
 real table with a correct **Active** column (proving registration + delegation).
-⚠ **One follow-up bug (live test caught it):** WP-CLI registered the subcommands with
-**underscores** (`set_active`), not the hyphens the docblocks + WP-CLI convention use
-(`set-active`) — `wp sgs footer set-active` fails with *"Did you mean 'set_active'?"*. The commands
-work as `set_active`/`clear_active`/`seed_starter`; the fix is `@subcommand set-active` annotations
-on the methods + one redeploy. Tracked, not hidden.
+**Hyphenated-name fix (commit `48c50fb6`, live-verified 2026-07-25):** WP-CLI registers method
+names verbatim, so the first build exposed the commands as `set_active` (underscore) not the
+documented `set-active`. Added `@subcommand set-active`/`clear-active`/`seed-starter` annotations;
+after redeploy (md5-verified), `wp sgs footer set-active --help` returns proper help and `wp sgs
+header` lists all four in hyphenated form (`clear-active` · `list` · `seed-starter` · `set-active`).
 **Done when:** each command runs non-interactively, is covered by `--help`, and the cloning
-pipeline can set an active header without a browser. ✅ met (pending the hyphenated-name polish).
+pipeline can set an active header without a browser. ✅ met.
 
 #### FR-37-31 — Retire the orphan behaviour template parts; preserve search starters
 Delete the inert `header-sticky` / `header-transparent` / `header-shrink` template-part
