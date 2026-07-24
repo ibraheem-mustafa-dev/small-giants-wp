@@ -772,6 +772,11 @@ added (which would violate R-31-14 anyway). Existing dev instances are re-insert
 recovered in the editor.
 **Status:** `NOT-BUILT` — all four are currently flat (`boolean`/`string`) in
 `site-header/block.json`.
+**⛔ BLOCKED on Spec 35 Part D4 (verified 2026-07-25).** The tri-state's per-tier inheritance is the
+SAME `resolveTier()` cascade Spec 35 D4 owns, and that cascade is NOT BUILT (`resolveTier` grep=0;
+`responsive-visibility.js` still flat booleans). Per D4's "reuse the one cascade" rule, DO NOT build a
+second inheritance mechanism here — this FR consumes the Spec 35 one. Spec 35 D4 + Part M now carry a
+priority note that this blocks Spec 37 Group B. Schedule the Spec 35 cascade first.
 **Done when:** the four attrs plus hide-on-scroll are tri-state objects; an audit of both dev
 sites shows no instance left carrying the old flat shape.
 

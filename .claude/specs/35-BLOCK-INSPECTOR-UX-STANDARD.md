@@ -128,6 +128,17 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     behaviours — do not introduce a second inheritance mechanism.
   - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
     the build.
+  - **⚠ BUILD STATUS: NOT BUILT — and it is on the CRITICAL PATH for Spec 37 Group B (priority;
+    ground-truthed 2026-07-25).** `resolveTier()` exists nowhere in the plugin (`grep -rn resolveTier
+    src/ includes/` = 0), and `src/blocks/extensions/responsive-visibility.js:68-70` is still three
+    INDEPENDENT flat booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no
+    inheritance. Because this cascade and its shared `resolveTier()` are the SAME mechanism that
+    **Spec 37 FR-37-14** (behaviour tri-state — `headerSticky`/`headerTransparent`/`headerShrink`/
+    `headerHideOnScroll` are still flat `boolean`s in `site-header/block.json:73-76`) and **Spec 37
+    §3.8** consume, those Spec 37 Group-B items **cannot be built until this ships**. Build the ONE
+    `resolveTier()` cascade here first (per the "reuse the one cascade" bullet above), then Spec 37
+    FR-37-14 adopts it — do not fork a second mechanism in Spec 37. **Priority: raise this ahead of
+    the other Part-J waves whenever Spec 37 Group B is scheduled.**
 
 ## PART E — Accessibility (WCAG 2.1/2.2 AA)
 
@@ -286,6 +297,15 @@ against it — a standard is not "done" until blocks meet it and a gate enforces
   duotone/aspect-ratio/sticky adoption.
 - **Part K structural gate NOT built** — the enablement data now exists to build it (a lint
   flagging colour-without-alpha, URL-not-LinkControl, preset-only shadow).
+- **Per-device CONTENT cascade (D4) + shared `resolveTier()` — NOT BUILT — PRIORITY, blocks Spec 37
+  Group B** (ground-truthed 2026-07-25: `resolveTier` grep=0; `responsive-visibility.js` still three
+  flat booleans; `site-header` behaviours still flat booleans). Spec 37 **FR-37-14** (behaviour
+  tri-state) and **§3.8** consume this exact mechanism and are blocked until it ships (see Part D4's
+  BUILD STATUS note). This is the one Spec-35 build item currently gating Spec 37 — sequence it
+  ahead of the other Part-J waves when Spec 37 Group B is picked up. FR-37-16 (responsive object
+  shape) is NOT blocked — `ResponsiveControl` already exists; FR-37-18 (inspector conformance) is
+  NOT blocked — Part L is written-complete and `check-element-manifest-conformance.js` is built
+  (the two containers just need adding to the manifested roster).
 
 **Also outstanding across the board:** editor-CANVAS verification — everything to date verified
 by frontend render + REST attribute registration, never by opening the block editor
