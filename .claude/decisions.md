@@ -15,6 +15,17 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D377 [ROUTINE] — FR-37-7 native starter picker SHIPPED + live-verified for header + footer (2026-07-24)
+
+The single highest-leverage unbuilt item. Design-gated (Bean-signed-off): use WordPress's NATIVE "Choose a pattern" starter modal — no bespoke admin UI (matches FR-36-3's "reuse the platform" rationale); custom React picker logged as non-blocking extension FR-37-36. Spike-first, then full build; the custom picker deferred as an extension with its own completion rate (Bean-directed).
+
+- **Mechanism:** the native modal fires on a new CPT post when ≥2 patterns declare `Block Types: core/post-content` + `Post Types: <cpt>`, rendering live previews (preview-before-apply is native) — verified against WP dev docs, not memory.
+- **Spike (`62ee4acb`+`5f8b9946`):** re-scoped 2 header patterns + dropped the `sgs_header` template seed. **Initial no-show root-caused:** `WP_Theme::get_block_patterns()` caches the parsed pattern list keyed on the **theme `style.css` Version**, NOT file mtimes (theme CLAUDE.md documents this) — a version bump (1.5.41→1.5.42) busted it and the modal fired with preview cards; clicking a card inserted the block tree. Approach A proven; no fallback to FR-37-36 needed.
+- **Full build (`98e32cd0`):** 14 header/footer patterns re-scoped (12 via `/delegate`→Haiku, output verified file-by-file); NEW `header-scratch.php`/`footer-scratch.php` = the bare 3-row shell "Start from scratch" cards (replacing the dropped seeds — a native modal's blank path is a Close button, not a card, so the explicit scratch card meets FR-37-7's "persistent Start from scratch card"); dropped the `sgs_footer` seed too; version 1.5.43.
+- **Live-verified (canary, real Chrome):** new `sgs_header` + `sgs_footer` each open "Choose a pattern" with 8 cards (7 starters + scratch), empty canvas (seeds dropped); choosing "Footer — Centred" wrote its `sgs/site-footer` tree to the SAVED `post_content` (DB-read, post 1726, `metadata.patternName: sgs/footer-centred`); scratch card → bare `sgs/site-header` top/middle/bottom rows. Test drafts trashed.
+- **Mega deferred** to Spec 36 Phase 2 (Task 3): the 5 rich mega layouts are design/authoring work that belongs with the mega spine; mega shows no modal until ≥2 mega starters exist. FR-37-7/FR-37-8 marked done for header/footer, mega pending.
+- **Gate note:** empirically validated end-to-end (spike + full live-verify + DB read) rather than a code-review council — the change is theme-pattern metadata + a 5-line CPT registration change (drop seed), not converter/block-render logic; live-verify is the stronger gate here.
+
 ## D376 [ROUTINE] — FR-37-13 fix B SHIPPED + live-verified: sgs/site-header renders semantic `<header>`; all 3 dead scroll behaviours revived; one-header invariant added (2026-07-24)
 
 Resolves the D375 incident. Commits `43cabf68` (fix B) + `a89e54e0` (Option B + editor parity), deployed to sandybrown, checksum-verified local↔server, live-verified on a real Chrome.

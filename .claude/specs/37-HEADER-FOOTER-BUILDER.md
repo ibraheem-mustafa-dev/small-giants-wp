@@ -561,20 +561,33 @@ dismiss; (3) author ≥2 `sgs_mega_menu` starters (none exist post-D362) scoped 
 `Post Types: sgs_mega_menu`. **Verified by a spike FIRST** (flip 2 header patterns + drop the seed on
 the canary, confirm the modal appears with previews) before the full re-scope. Fall back to FR-37-36
 (custom React picker) ONLY if the spike shows the native modal can't meet the done-condition.
-**Status:** `NOT-BUILT` — approach locked (native), spike pending. 0 picker hits in `src/` confirmed
-2026-07-24 (ground-truth map): all 3 CPTs use the native editor + `show_in_rest`; header/footer have
-6 starters each, mega has 0.
+**Status:** `BUILT + LIVE-VERIFIED for sgs_header + sgs_footer (D377, 2026-07-24). Mega deferred to the
+mega spine (Spec 36 Phase 2 / Task 3) — needs its own starter authoring.` Spike proved the mechanism
+(62ee4acb), then the full build (98e32cd0): 14 header/footer patterns re-scoped to
+`Block Types: core/post-content` + `Post Types: sgs_header|sgs_footer` (12 via /delegate→Haiku, verified);
+NEW `header-scratch.php`/`footer-scratch.php` = the bare 3-row shell "Start from scratch" cards (replacing
+the dropped registration `template` seeds); the `sgs_header`+`sgs_footer` CPT `template` seeds removed
+(`class-sgs-block-cpts.php`) so the empty-post modal fires; theme version 1.5.41→1.5.43 (WP caches the
+pattern list against the theme version — the root cause of the spike's initial no-show, now documented).
+**Live-verified on the sandybrown canary (real Chrome):** new `sgs_header` AND `sgs_footer` each open the
+native "Choose a pattern" modal with 8 preview cards (7 starters + scratch), empty canvas; choosing
+"Footer — Centred" wrote its `sgs/site-footer` tree to the SAVED `post_content` (DB-read, post 1726,
+`metadata.patternName: sgs/footer-centred`); the scratch card produced the bare `sgs/site-header` 3-row
+shell. **Mega still shows no modal** until ≥2 `sgs_mega_menu` starters exist (authoring = Task 3).
 **Done when:** creating a post of each of the three types shows the native pattern modal, and
 choosing a style produces that style's block tree (verified by reading the saved `post_content`, not
-editor state).
+editor state). ✅ met for header + footer; mega pending its starters.
 
 #### FR-37-8 — Starter library is git-versioned patterns
 Starters are block patterns under `theme/sgs-theme/patterns/`, not synced `wp_block` posts, so
 they are versioned, reviewable and shippable. Starter patterns declare
 `templateLock: "contentOnly"` where structural edits would break the design.
-**Status:** `NOT-BUILT` for header/footer starters.
+**Status:** `DONE for header/footer (D377, 2026-07-24).` 14 starter patterns + 2 scratch shells are files
+under `theme/sgs-theme/patterns/`, scoped `core/post-content` + `Post Types`, surfaced by the FR-37-7
+native modal; applying one writes its tree to `post_content` (live-verified). No starter depends on DB
+state. Mega starters NOT-BUILT (Task 3).
 **Done when:** each starter is a file in the repo; applying one produces its tree; no starter
-depends on database state.
+depends on database state. ✅ met for header/footer.
 
 #### FR-37-36 — Custom React starter picker (EXTENSION — non-blocking, own completion rate)
 An optional bespoke React picker modal that supersedes the native "Choose a pattern" modal (FR-37-7)

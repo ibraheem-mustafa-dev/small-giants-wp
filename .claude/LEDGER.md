@@ -32,8 +32,17 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-24, D374–D376 — full detail in `decisions.md`; do not re-narrate here).**
-**FR-37-13 hide-on-scroll fix B SHIPPED + live-verified (D376). Footer link-lists SHIPPED (D374).**
+**⭐ CURRENT (2026-07-24, D374–D377 — full detail in `decisions.md`; do not re-narrate here).**
+**FR-37-7 native starter picker SHIPPED for header+footer (D377). FR-37-13 hide-on-scroll fix B SHIPPED (D376). Footer link-lists (D374).**
+
+- **FR-37-7 starter picker — BUILT + LIVE-VERIFIED for header + footer (D377, `62ee4acb`→`98e32cd0`).**
+  Design-gated: use WP's NATIVE "Choose a pattern" modal (no bespoke UI; custom React picker = non-blocking
+  extension FR-37-36). Spike-proven, then full build: 14 header/footer patterns re-scoped to
+  `core/post-content`+`Post Types` (12 via /delegate→Haiku), 2 new "Start from scratch" shell cards, CPT
+  `template` seeds dropped, theme 1.5.41→1.5.43 (pattern cache is theme-version-keyed — the spike's initial
+  no-show). Live on real Chrome: new `sgs_header`+`sgs_footer` each open the modal with 8 preview cards,
+  empty canvas; a chosen starter writes its tree to SAVED `post_content` (DB-verified). **Mega deferred to
+  Task 3** (needs its own starter authoring; no modal until ≥2 mega starters). Test drafts trashed.
 
 - **FR-36-26c icon-list footer link-list — BUILT + LIVE-VERIFIED (D374, `bf312016`+`d08d3149`).** Two
   Sonnet dispatches (presentation → data+semantics), then a **multi-rater pre-commit review that found
@@ -62,9 +71,11 @@ two unnamed `<main>` landmarks = the framework `landmark-unique`/`region` axe hi
 NOT the header) · `minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC
 proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
 
-**Your next session → `.claude/next-session-prompt.md`.** **FR-37-7 starter picker (= Spec 36 FR-36-3) —
-the highest-leverage unbuilt item, design-gate first** (hide-on-scroll fix B now DONE, D376) ·
-Spec 36 Phase 2 (mega CPT).
+**Your next session.** **Spec 36 Phase 2 — the mega-menu spine (FR-36-3/4/5/8/10/17/9a, strictly
+sequential)** now the highest-leverage front; it INCLUDES authoring ≥2 `sgs_mega_menu` starters, which
+completes FR-37-7 for the 3rd CPT (the native picker mechanism is built + proven — mega just needs the
+starter patterns). Also open: FR-37-36 (custom React picker, non-blocking extension) · Mama's brand-pink
+contrast (`P-MAMAS-PRIMARY-CONTRAST`, theme-source) · the two-`<main>` framework landmark defect.
 
 ---
 
