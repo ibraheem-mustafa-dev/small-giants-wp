@@ -1,0 +1,29 @@
+/**
+ * SGS Mega Panel — frontend structural invariants.
+ *
+ * Every per-instance value (colours, max-width, padding, gap, border,
+ * radius, shadow, per-style content-row shape) is emitted into this
+ * instance's own scoped <style> by render.php (Spec 32 no-inline). This
+ * stylesheet carries only the invariants true for EVERY instance regardless
+ * of attribute values: box-sizing safety and the content row's baseline
+ * box model. Positioning the panel as a dropdown/drawer is owned by the
+ * consumer (sgs/nav-menu, U9) — this block is a plain content container.
+ *
+ * @package SGS\Blocks
+ */
+
+.wp-block-sgs-mega-panel,
+.wp-block-sgs-mega-panel *,
+.wp-block-sgs-mega-panel *::before,
+.wp-block-sgs-mega-panel *::after {
+	box-sizing: border-box;
+}
+
+.wp-block-sgs-mega-panel {
+	display: block;
+	width: 100%;
+}
+
+.sgs-mega-panel__content {
+	width: 100%;
+}

@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/mega-group",
+	"version": "0.1.0",
+	"title": "SGS Mega Group",
+	"category": "sgs-content",
+	"description": "One column of a mega panel — a heading plus a list of links. Its colours and shape are painted entirely by the parent mega panel's style variant and colour scheme, so switching the panel restyles every group uniformly. Used inside sgs/mega-panel only.",
+	"keywords": [ "mega", "menu", "group", "column" ],
+	"textdomain": "sgs-blocks",
+	"icon": "columns",
+	"parent": [ "sgs/mega-panel" ],
+	"inserter": false,
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"anchor": false,
+		"align": false,
+		"sgs": {
+			"elements": {
+				"group": {
+					"label": "Group",
+					"layer": "CONTENT",
+					"order": 1,
+					"clusters": [],
+					"isWrapper": true,
+					"_note": "The `.sgs-mega-group` column wrapper. Carries NO styling attributes of its own by design (CF-10, parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme, so every group restyles uniformly when the panel's style or scheme switches. Its content (a heading + an sgs/icon-list) is child-owned (HC2). Honest zero-cluster element."
+				}
+			}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css"
+}

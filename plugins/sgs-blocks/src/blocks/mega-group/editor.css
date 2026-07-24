@@ -1,0 +1,15 @@
+/**
+ * SGS Mega Group — editor canvas structural invariants ONLY.
+ *
+ * Mirrors style.css: the parent sgs/mega-panel's own editor.css paints every
+ * colour/shape/arrangement decision live in the canvas (CF-10). This file
+ * carries only the same one structural invariant as the frontend.
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-mega-group {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}

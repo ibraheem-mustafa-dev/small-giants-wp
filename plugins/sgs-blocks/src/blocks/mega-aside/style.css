@@ -1,0 +1,20 @@
+/**
+ * SGS Mega Aside — frontend structural invariants ONLY.
+ *
+ * Every colour/shape/arrangement decision for this element is painted by the
+ * PARENT sgs/mega-panel's own scoped <style> (keyed on data-mega-style /
+ * data-mega-scheme, targeting `.sgs-mega-aside` as a descendant — CF-10,
+ * parent-paints-child; the aside's width/asideSeparator divider are
+ * mega-panel attrs, not this block's own). This stylesheet carries only the
+ * one structural invariant that is true regardless of which style/scheme
+ * the parent picks: the aside stacks its own media/heading/text/button
+ * vertically.
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-mega-aside {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}

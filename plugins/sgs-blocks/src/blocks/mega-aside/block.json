@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/mega-aside",
+	"version": "0.1.0",
+	"title": "SGS Mega Aside",
+	"category": "sgs-content",
+	"description": "The optional side panel of a mega panel — media, a heading, text and a call-to-action. Its colours and shape are painted entirely by the parent mega panel's style variant and colour scheme, so switching the panel restyles the aside uniformly. Used inside sgs/mega-panel only.",
+	"keywords": [ "mega", "menu", "aside", "cta", "side panel" ],
+	"textdomain": "sgs-blocks",
+	"icon": "align-pull-right",
+	"parent": [ "sgs/mega-panel" ],
+	"inserter": false,
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"anchor": false,
+		"align": false,
+		"sgs": {
+			"elements": {
+				"aside": {
+					"label": "Aside",
+					"layer": "CONTENT",
+					"order": 1,
+					"clusters": [],
+					"isWrapper": true,
+					"_note": "The `.sgs-mega-aside` side-column wrapper. Carries NO styling attributes of its own by design (CF-10, parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme (width via asideWidth, divider via asideSeparator — both mega-panel attrs, not this block's). Its content (media + heading + text + button) is child-owned (HC2). Honest zero-cluster element."
+				}
+			}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css"
+}

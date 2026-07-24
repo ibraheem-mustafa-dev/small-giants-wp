@@ -1,12 +1,17 @@
 /**
  * SGS Nav Menu (sgs/nav-menu) — frontend interactivity.
  *
- * Two responsibilities:
+ * Three responsibilities:
  *  1. Register the shared `store('sgs/nav')` (importing it is what registers
  *     it — see the module doc-block in shared/nav-interactivity/store.js).
  *     This is what makes the burger's `data-wp-on--click="actions.toggleDrawer"`
  *     work.
- *  2. Compute `aria-current="page"` CLIENT-SIDE at mount, comparing
+ *  2. Register the separate `store('sgs/mega')` (importing it is what
+ *     registers it — see the module doc-block in
+ *     shared/nav-interactivity/mega-disclosure.js). This is what makes a
+ *     desktop mega-menu item's disclosure trigger/panel — hover-intent open,
+ *     click/tap toggle, keyboard, single-open — work (U9).
+ *  3. Compute `aria-current="page"` CLIENT-SIDE at mount, comparing
  *     `location.pathname` against each link's `data-sgs-nav-path` (set by
  *     render.php). This canNOT be done server-side: the stack sits behind
  *     LiteSpeed page cache, so a server-baked aria-current would serve a
@@ -14,12 +19,14 @@
  *
  * Every link is already a real, crawlable server-rendered <a href> — this is
  * progressive enhancement only; with zero JS the bar still works, it just
- * has no "you are here" indicator and the burger has no handler.
+ * has no "you are here" indicator and the burger/mega-disclosure has no
+ * handler.
  *
  * @package SGS\Blocks
  */
 
 import '../../shared/nav-interactivity/store';
+import '../../shared/nav-interactivity/mega-disclosure';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,

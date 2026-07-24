@@ -1,0 +1,165 @@
+/**
+ * SGS Mega Panel — editor canvas mirror of render.php's per-style reshape
+ * (CF-9 / §3). This is the "parent paints child" LIVE-CANVAS proof: edit.js
+ * sets the SAME data-mega-style / data-mega-scheme attributes + the colour
+ * custom-property VALUES (accent/soft/panel-bg/panel-border/text/card) on
+ * the block wrapper as render.php computes, and this stylesheet consumes
+ * them with the SAME literal fallbacks, so switching `style` in the
+ * Inspector restyles every sgs/mega-group + sgs/mega-aside child in the
+ * canvas immediately, matching the frontend.
+ *
+ * Colour/box VALUES set by edit.js are editor-canvas-only inline custom
+ * properties — permitted (Spec 32 governs the FRONTEND render.php output,
+ * not the editor canvas; matches sgs/nav-drawer's own editor pattern).
+ *
+ * @package SGS\Blocks
+ */
+
+.wp-block-sgs-mega-panel {
+	display: block;
+	width: 100%;
+	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent, var( --wp--preset--color--accent ) ) 10%, transparent );
+	--sgs-mm-card: rgba( 255, 255, 255, 0.6 );
+	color: var( --sgs-mm-text, var( --wp--preset--color--text ) );
+	background-color: var( --sgs-mm-panel-bg, color-mix( in srgb, var( --wp--preset--color--surface ) 92%, transparent ) );
+	border: 1px solid var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) );
+	border-radius: 20px;
+	box-shadow: 0 30px 80px -30px rgba( 0, 0, 0, 0.28 ), 0 2px 8px -2px rgba( 0, 0, 0, 0.08 );
+	container-type: inline-size;
+}
+
+.wp-block-sgs-mega-panel .sgs-mega-panel__content {
+	width: 100%;
+	gap: var( --sgs-mm-group-gap, 44px );
+}
+
+/* -- columns (default) — flex-wrap + a 200px basis let 1-3 groups share the
+   row evenly and 4+ wrap onto a second row (FIX 1, flexible columns). ---- */
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content {
+	display: flex;
+	flex-wrap: wrap;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-group {
+	flex: 1 1 200px;
+	min-width: 0;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item {
+	display: flex;
+	align-items: flex-start;
+	gap: 13px;
+	padding: 11px 12px;
+	border-radius: 13px;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__icon {
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	background-color: var( --sgs-mm-soft );
+	color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+}
+
+/* -- cards ---------------------------------------------------------------- */
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-panel__content {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	align-content: start;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group {
+	padding: 17px;
+	border-radius: 15px;
+	border: 1px solid var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) );
+	background-color: var( --sgs-mm-card );
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item {
+	display: flex;
+	align-items: flex-start;
+	gap: 13px;
+	padding: 0;
+	border-radius: 0;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+	background-color: var( --sgs-mm-soft );
+	color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group > .sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group .wp-block-sgs-heading {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect( 0 0 0 0 );
+	clip-path: inset( 50% );
+	white-space: nowrap;
+}
+
+/* -- minimal ---------------------------------------------------------------- */
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-panel__content {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px 14px;
+	border-radius: 14px;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__icon {
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	background-color: var( --sgs-mm-soft );
+	color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+}
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group > .sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-group .wp-block-sgs-heading {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect( 0 0 0 0 );
+	clip-path: inset( 50% );
+	white-space: nowrap;
+}
+
+/* -- headings toggle (columns style only — cards/minimal are always off,
+   handled above) ------------------------------------------------------- */
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ].sgs-mega-panel--headings-off .sgs-mega-group > .sgs-heading,
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ].sgs-mega-panel--headings-off .sgs-mega-group .wp-block-sgs-heading {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect( 0 0 0 0 );
+	clip-path: inset( 50% );
+	white-space: nowrap;
+}
+
+/* -- aside slot ------------------------------------------------------------- */
+.wp-block-sgs-mega-panel .sgs-mega-panel__content:has( .sgs-mega-aside ) {
+	display: flex;
+	align-items: stretch;
+}
+.wp-block-sgs-mega-panel .sgs-mega-aside {
+	flex: 0 0 var( --sgs-mm-aside-w, 340px );
+	width: var( --sgs-mm-aside-w, 340px );
+}
+/* Divider gated on the sep-none modifier (FIX 2) — "None" must show no
+   border/gap-fill live in the canvas, matching render.php's own gate. */
+.wp-block-sgs-mega-panel:not( .sgs-mega-panel--aside-sep-none ) .sgs-mega-aside {
+	border-left: var( --sgs-mm-aside-sep-width, 1px ) solid
+		var( --sgs-mm-aside-sep-colour, var( --sgs-mm-panel-border, color-mix( in srgb, var( --wp--preset--color--text ) 12%, transparent ) ) );
+	padding-left: 24px;
+}
+
+/* -- misc editor-only UI note (FIX 6 — no inline style in JSX) ----------- */
+.sgs-mega-panel-editor-note {
+	font-size: 12px;
+	color: #757575;
+	margin: 0 0 12px;
+}

@@ -1,0 +1,125 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/mega-panel",
+	"version": "0.1.0",
+	"title": "SGS Mega Panel",
+	"category": "sgs-interactive",
+	"description": "The content container of an SGS mega menu — lives inside a sgs_mega_menu post. Owns ALL variant + colour-scheme styling for its child sgs/mega-group and sgs/mega-aside blocks (parent-paints-child, CF-10): switching this block's style or colour scheme uniformly reshapes/recolours every group and aside inside it.",
+	"keywords": [ "mega", "menu", "panel", "navigation", "dropdown" ],
+	"textdomain": "sgs-blocks",
+	"icon": "layout",
+	"supports": {
+		"html": false,
+		"align": false,
+		"anchor": false,
+		"sgs": {
+			"containerKind": "section",
+			"containerMirror": false,
+			"elements": {
+				"panel": {
+					"label": "Panel",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [ "fill", "layout" ],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "panelBg",
+						"css:max-width": "maxWidth",
+						"css:padding": "panelPadding",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:gap": "groupGap"
+					},
+					"_note": "The `.sgs-mega-panel` root + its `.sgs-mega-panel__content` row (CF-12 pins groupGap onto this SAME element rather than a separate content element). Block-private (containerMirror:false, D294 deviation — this composite uses no SGS_Container_Wrapper grid/section machinery of its own; it hand-rolls its own flex/grid content-row per `style`, mirroring the wrapper's fill/box capability only). variant/style/colourScheme/accent/headings/bgBlur are variant-selector + arrangement-mode attrs, not css: property mappings, so they are deliberately absent from attrMap — they select WHICH scoped rule applies, per CF-4 (warn-only advisory, not global GAP-0). Column COUNT is no longer a separate attribute (dropped, QC-fix 2026-07-24) — the panel accepts a flexible 1-N sgs/mega-group children (add/remove/reorder), so the number of columns IS the number of groups. group-heading/link/desc/marker are CHILD-OWNED (sgs/heading, sgs/icon-list — HC2) and are declared on THOSE blocks' own manifests, not repeated here, even though this panel's CSS paints their colour/shape uniformly (CF-10)."
+				},
+				"aside": {
+					"label": "Aside slot",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:width": "asideWidth"
+					},
+					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key)."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-mega-panel"
+	},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "general"
+		},
+		"style": {
+			"type": "string",
+			"default": "columns"
+		},
+		"headings": {
+			"type": "boolean",
+			"default": true
+		},
+		"colourScheme": {
+			"type": "string",
+			"default": "light"
+		},
+		"accent": {
+			"type": "string",
+			"default": "accent"
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": { "desktop": "1120px" }
+		},
+		"panelPadding": {
+			"type": "object",
+			"default": { "desktop": "28px" }
+		},
+		"groupGap": {
+			"type": "object",
+			"default": { "desktop": "44px" }
+		},
+		"panelBg": {
+			"type": "string",
+			"default": ""
+		},
+		"bgBlur": {
+			"type": "boolean",
+			"default": false
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
+			"type": "string",
+			"default": "20px"
+		},
+		"asideWidth": {
+			"type": "string",
+			"default": "340px"
+		},
+		"asideSeparator": {
+			"type": "object",
+			"default": { "style": "line" },
+			"properties": {
+				"style": { "type": "string" },
+				"colour": { "type": "string" },
+				"width": { "type": "string" }
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"example": {
+		"attributes": {
+			"variant": "general",
+			"style": "columns"
+		}
+	}
+}

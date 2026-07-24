@@ -58,12 +58,24 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		private array $featured_ids;
 
 		/**
+		 * This block instance's content-addressed uid — folded into each mega
+		 * panel's DOM id so two nav-menu instances bound to the SAME menu (a
+		 * client can do that today) never emit a duplicate id / aria-controls
+		 * target (axe duplicate-id-aria).
+		 *
+		 * @var string
+		 */
+		private string $uid;
+
+		/**
 		 * Constructor.
 		 *
-		 * @param array $featured_ids Featured item identifiers.
+		 * @param array  $featured_ids Featured item identifiers.
+		 * @param string $uid          This block instance's uid (CSS scope + id namespace).
 		 */
-		public function __construct( array $featured_ids ) {
+		public function __construct( array $featured_ids, string $uid = '' ) {
 			$this->featured_ids = array_map( 'strval', $featured_ids );
+			$this->uid          = $uid;
 		}
 
 		/**
@@ -134,6 +146,8 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				'identifier' => $identifier,
 				'url'        => $url,
 				'label'      => $label,
+				'type'       => (string) ( $attrs['type'] ?? '' ),
+				'object_id'  => (int) ( $attrs['id'] ?? 0 ),
 			);
 		}
 
@@ -173,7 +187,72 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $this->featured_ids, true );
 				$li_class    = 'sgs-nav-menu__item' . ( $is_featured ? ' sgs-nav-menu__item--featured' : '' );
-				$html       .= sprintf(
+
+				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
+					$panel_html = function_exists( 'sgs_mega_render_panel_content' )
+						? sgs_mega_render_panel_content( (int) ( $item['object_id'] ?? 0 ) )
+						: null;
+					if ( null !== $panel_html ) {
+						// Instance-scoped id (reviewer finding): fold in $this->uid so
+						// two nav-menus bound to the SAME menu can't collide (axe
+						// duplicate-id-aria). $uid already carries the sgs-nav-menu- prefix.
+						$panel_dom_id = $this->uid . '-mega-' . (int) $item['object_id'];
+						$mega_ctx     = function_exists( 'wp_interactivity_data_wp_context' )
+							? wp_interactivity_data_wp_context(
+								array(
+									'isOpen'      => false,
+									'megaId'      => (string) (int) $item['object_id'],
+									'intentDelay' => 300,
+									'closeGrace'  => 170,
+								)
+							)
+							: sprintf(
+								"data-wp-context='%s'",
+								esc_attr(
+									wp_json_encode(
+										array(
+											'isOpen'      => false,
+											'megaId'      => (string) (int) $item['object_id'],
+											'intentDelay' => 300,
+											'closeGrace'  => 170,
+										)
+									)
+								)
+							);
+						$caret        = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
+						// CF-15: the trigger is a pure disclosure button; a "View all" link
+						// (the item's own destination) lives INSIDE the panel, only when the
+						// menu item carries a real URL.
+						$viewall = ( '#' !== $item['url'] && '' !== $item['url'] )
+							? sprintf(
+								'<a class="sgs-nav-menu__mega-viewall" href="%s">%s</a>',
+								esc_url( $item['url'] ),
+								// translators: %s is the mega-menu item's own label (e.g. "Products").
+								esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), $item['label'] ) )
+							)
+							: '';
+						$html .= sprintf(
+							'<li class="%1$s sgs-nav-menu__item--mega">'
+							. '<div class="sgs-nav-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							. '<button type="button" class="sgs-nav-menu__link sgs-nav-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+							. '<span class="sgs-nav-menu__label">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
+							. '</button>'
+							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s%7$s</div>'
+							. '</div></li>',
+							esc_attr( $li_class ),
+							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
+							esc_attr( $panel_dom_id ),
+							esc_html( $item['label'] ),
+							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+							$viewall, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped via esc_url/esc_html above.
+							$panel_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output; already-safe rendered block HTML.
+						);
+						continue; // Handled this item.
+					}
+					// Panel resolved null (trashed/missing/recursion) — fall through to plain link (FR-36-9a degrade).
+				}
+
+				$html .= sprintf(
 					'<li class="%s"><a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s">%s</a></li>',
 					esc_attr( $li_class ),
 					esc_url( $item['url'] ),
@@ -204,7 +283,7 @@ $uid_sel    = '.' . $uid;
 $ref          = isset( $attributes['ref'] ) ? absint( $attributes['ref'] ) : 0;
 $menu_blocks  = SGS_Nav_Menu_Source::get_menu_blocks( $ref, true );
 $featured_ids = is_array( $attributes['featuredItemIds'] ?? null ) ? $attributes['featuredItemIds'] : array();
-$bar_renderer = new SGS_Nav_Menu_Bar_Renderer( $featured_ids );
+$bar_renderer = new SGS_Nav_Menu_Bar_Renderer( $featured_ids, $uid );
 $flat_items   = $bar_renderer->flatten( $menu_blocks );
 $items_html   = $bar_renderer->render_items( $flat_items );
 
@@ -548,7 +627,29 @@ $collapse_point = isset( $attributes['collapsePoint'] ) ? max( 1, absint( $attri
 $css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .sgs-nav-menu__bar{display:none;}' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:flex;}}';
 $css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:none;}}';
 
-// 4g. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
+// 4g. Mega-menu disclosure — caret rotation + panel positioning (U9). The
+// trigger is a <button>, not an <a>, so it needs a minimal reset to inherit
+// the bar link's look rather than the browser's default button chrome.
+$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger{background:none;border:0;font:inherit;cursor:pointer;}';
+// Caret flips when the disclosure is open (300ms = theme medium; reduced-motion snaps).
+$css .= $uid_sel . ' .sgs-nav-menu__caret{display:inline-flex;transition:transform .3s var(--wp--custom--transition--medium, ease);}';
+$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-menu__caret{transform:rotate(180deg);}';
+$css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu__caret{transition:none;}}';
+// The mega container anchors the positioned panel.
+$css .= $uid_sel . ' .sgs-nav-menu__mega{position:relative;}';
+
+/*
+ * Panel: a positioned dropdown, hidden until the (JS-bound) aria-expanded
+ * flips true. display:none keeps it out of the a11y tree + off-screen when
+ * closed, while the links remain in the server HTML for crawlers (FR-36-17).
+ * No-JS: stays closed (progressive enhancement, FR-36-7). view.js's
+ * reposition writes --sgs-mm-overflow-left/-right.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);right:var(--sgs-mm-overflow-right, auto);z-index:100;display:none;}';
+$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
+$css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:block;}';
+
+// 4h. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
 // punctuation only) and stripped of any </style> breakout below with the rest.
 if ( ! empty( $attributes['sgsCustomCss'] ) ) {
 	$css .= preg_replace( '/<\/?script/i', '', (string) $attributes['sgsCustomCss'] );

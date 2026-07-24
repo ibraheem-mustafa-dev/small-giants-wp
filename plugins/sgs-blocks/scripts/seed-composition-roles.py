@@ -232,6 +232,43 @@ INSERTS: list[dict] = [
         "composition_role": "section-root",
         "accepts_allowed_blocks": None,
     },
+    {
+        # sgs/mega-panel (2026-07-24, mega-menu CORE build, U1-U3) — the
+        # content container of a sgs_mega_menu post. Hosts sgs/mega-group /
+        # sgs/mega-aside InnerBlocks children as a genuine (bespoke flex/grid)
+        # section, block-private (CF-10 "parent paints child" — no
+        # SGS_Container_Wrapper). Mirrors sgs/nav-drawer's row shape
+        # (section-root, no wraps_block) — container_kind is set from
+        # block.json's containerKind:"section" by
+        # sync-container-wrapping-blocks.py --apply.
+        "block_slug": "sgs/mega-panel",
+        "wraps_block": None,
+        "composition_role": "section-root",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/mega-group (2026-07-24, mega-menu CORE build, U1) — one locked
+        # column of a mega panel (heading + icon-list). Carries NO styling
+        # attributes of its own by design (CF-10) — painted entirely by the
+        # parent sgs/mega-panel. Simple InnerBlocks-holding content-block,
+        # like the other catalogue-gap standalone blocks above; no container
+        # wrapper of any kind.
+        "block_slug": "sgs/mega-group",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/mega-aside (2026-07-24, mega-menu CORE build, U1) — the optional
+        # locked side panel of a mega panel (media + heading + text + button).
+        # Same profile as sgs/mega-group: no styling attributes of its own
+        # (CF-10, parent-paints-child), simple InnerBlocks-holding
+        # content-block, no container wrapper.
+        "block_slug": "sgs/mega-aside",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
