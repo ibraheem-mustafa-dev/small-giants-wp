@@ -58,6 +58,7 @@
 			"scalarStylingLift": true,
 			"imageControls": true,
 			"arrayContentLift": true,
+			"presetSelectors": [ "effectHover" ],
 			"elements": {
 				"grid": {
 					"label": "Grid",

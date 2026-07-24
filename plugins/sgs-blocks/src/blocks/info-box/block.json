@@ -55,6 +55,7 @@
 		"sgs": {
 			"imageControls": true,
 			"containerKind": "content",
+			"presetSelectors": [ "cardStyle", "effectHover" ],
 			"boxFamilies": {
 				"padding": [
 					"paddingTablet",

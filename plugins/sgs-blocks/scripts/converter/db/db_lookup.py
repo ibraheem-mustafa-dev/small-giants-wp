@@ -2641,6 +2641,76 @@ def _variant_slots_map(block_slug: str) -> tuple:
     return tuple((v, frozenset(slots)) for v, slots in grouped.items())
 
 
+@functools.lru_cache(maxsize=256)
+def preset_implications_for(block_slug: str) -> tuple:
+    """Return ((preset_attr, enum_value, frozenset(implied_props), is_neutral), ...)
+    for a block, from the `preset_implications` table (Build #3 Option B,
+    AUTO-DERIVE preset-absence transfer, 2026-07-24).
+
+    Populated by `/sgs-update` (`sgs-update-v2.py::_populate_preset_implications`)
+    by parsing the block's OWN style.css against its declared
+    `supports.sgs.presetSelectors` — the per-value CSS→meaning mapping is never
+    hand-authored (R-31-1). Empty tuple when the block declares no preset
+    selectors, or the table/column is absent (pre-seed DB, soft-fail — most
+    blocks have zero rows here and this is a true no-op for them).
+    """
+    if not block_slug:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT preset_attr, enum_value, implied_property, is_neutral "
+            "FROM preset_implications WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        rows = ()
+    finally:
+        conn.close()
+    out = []
+    for preset_attr, enum_value, implied_property, is_neutral in rows:
+        props = frozenset(p for p in (implied_property or "").split(",") if p)
+        out.append((preset_attr, enum_value, props, bool(is_neutral)))
+    return tuple(out)
+
+
+def attrs_for_css_property_state(
+    block_slug: str, css_property: str, css_state: "str | None"
+) -> "tuple[str, ...]":
+    """Attrs `block_slug` declares for `css_property` at `css_state` ('hover'|None).
+
+    Used by the preset-absence resolver's RECONCILIATION step (Component 4
+    step 3): when another attr already claims the same (css_property,
+    css_state) — e.g. `cardShadow` (box-shadow, base) or `scaleHover`
+    (transform, hover) — that attr's WRITE presence is authoritative over a
+    raw-declaration re-scan, so the two mechanisms never disagree or
+    double-paint the same signal.
+    """
+    if not block_slug or not css_property:
+        return ()
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        if css_state is None:
+            rows = conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? AND css_state IS NULL "
+                "ORDER BY rowid",
+                (block_slug, css_property),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? AND css_state = ? "
+                "ORDER BY rowid",
+                (block_slug, css_property, css_state),
+            ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
 def _slot_extracted(value: object) -> bool:
     """True if `value` represents a slot the converter actually extracted.
 

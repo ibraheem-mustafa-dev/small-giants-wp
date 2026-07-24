@@ -39,6 +39,7 @@ from converter.services.root_supports import (
     _ALWAYS_STRIP_SHORTHANDS,
     expand_background_border_shorthand,
 )
+from converter.resolvers.preset_absence import apply_preset_absence
 from converter.db import db_lookup
 
 # SGS DB path — kept as a module attribute for the pre-existing existence
@@ -238,6 +239,20 @@ def _build_css_attrs(
             merged["sgsCustomCss"] = (
                 f"{existing}\n{residual_css}" if existing else residual_css
             )
+
+        # ---- Step 3d: preset-absence transfer (Build #3 Option B, 2026-07-24) ----
+        # cardStyle/effectHover (and any future block declaring
+        # supports.sgs.presetSelectors) get their enum value picked from what
+        # the draft's OWN CSS actually paints (base_decls for a base-state
+        # preset like cardStyle, state_decls['Hover'] for a hover-state preset
+        # like effectHover) instead of staying at the block's hard-coded
+        # default. True no-op for the great majority of blocks (zero
+        # preset_implications rows). Never overwrites a shadow/border/
+        # transform attr another resolver already wrote — see
+        # preset_absence._reconcile_properties.
+        preset_attrs = apply_preset_absence(rec, merged, base_decls, state_decls)
+        if preset_attrs:
+            merged.update(preset_attrs)
 
         return merged
 

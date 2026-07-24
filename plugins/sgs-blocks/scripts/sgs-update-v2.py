@@ -263,6 +263,28 @@ def _index_sgs_block_files(
         """
     )
 
+    # --- preset_implications schema (Build #3 Option B, AUTO-DERIVE, 2026-07-24) ---
+    # Preset-absence transfer: teaches the converter what a block's style-preset
+    # enum values (cardStyle/effectHover) actually PAINT (box-shadow/border/
+    # transform), auto-derived from the block's own style.css — never a hand-
+    # authored per-value dict (R-31-1). Populated per-block below by
+    # _populate_preset_implications. Idempotent (delete-then-insert per
+    # (block_slug, preset_attr), mirrors variant_slots).
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS preset_implications (
+          block_slug        TEXT NOT NULL,
+          preset_attr       TEXT NOT NULL,
+          enum_value        TEXT NOT NULL,
+          implied_property  TEXT NOT NULL DEFAULT '',
+          presence          TEXT NOT NULL DEFAULT 'present',
+          is_neutral        INTEGER NOT NULL DEFAULT 0,
+          created_at        TEXT DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (block_slug, preset_attr, enum_value)
+        )
+        """
+    )
+
     # --- array_item_fields schema (D248, array-resolver) ---
     # Stores the per-item field schema for array-content-lift blocks.
     # Seeded from block.json supports.sgs.arrayItemSchema by the per-block
@@ -487,6 +509,12 @@ def _index_sgs_block_files(
                         "(block_slug, variant_value, unique_slot) VALUES (?, ?, ?)",
                         (slug, v_value, slot),
                     )
+
+        # --- preset_implications AUTO-DERIVE (Build #3 Option B, 2026-07-24) ---
+        # See _populate_preset_implications docstring. No-op for the ~95% of
+        # blocks that declare no supports.sgs.presetSelectors.
+        if not dry_run:
+            _populate_preset_implications(c, slug, block_dir, sgs_supports, set(attrs.keys()))
 
         # --- scalar-content-lift capability (council opt-in gate) ---
         # block.json supports.sgs.scalarContentLift === true → upsert a
@@ -1084,6 +1112,362 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_
 # Step 16, 2026-07-05) — see the retirement banner near
 # _render_consumes_content's definition. has_inner_blocks is now derived
 # fresh at convert-time (converter.services.has_inner), never seeded here.
+
+
+# ---------------------------------------------------------------------------
+# preset_implications AUTO-DERIVE (Build #3 Option B, 2026-07-24)
+#
+# Teaches the converter what a block's style-preset enum values (cardStyle/
+# effectHover) actually PAINT, so the cloning pipeline can pick the preset
+# value matching what the draft's own CSS shows instead of always leaving the
+# block at its hard-coded default (elevated/lift). The per-value mapping is
+# NEVER hand-declared (R-31-1) — it is derived here by reading each block's
+# OWN style.css against a minimal block.json hint
+# (`supports.sgs.presetSelectors`, naming which attrs ARE preset selectors).
+# ---------------------------------------------------------------------------
+
+# Per-ATTR-NAME state axis (universal across any block that declares the
+# attr — NOT a per-block dict, R-31-1 compliant): which pseudo-state the
+# attr's CSS rules target. cardStyle is always a RESTING modifier; effectHover
+# is always a `:hover`-qualified modifier. Used only to filter interactive-
+# pseudo rules in/out of signal accumulation (below) — the class PREFIX
+# itself is now derived directly from render.php (see
+# `_discover_attr_class_prefix`), not from a hand-authored template, since
+# google-reviews proved a fixed "sgs-{block}--{suffix}" template is too rigid
+# (its cardStyle prefix is "sgs-google-reviews--card-", not "sgs-google-reviews--").
+_PRESET_STATE_BY_ATTR: dict[str, "str | None"] = {
+    "cardStyle": None,
+    "effectHover": "hover",
+}
+# Fallback class-naming convention — used ONLY when render.php's own text
+# doesn't match `_discover_attr_class_prefix`'s var->concat derivation (a
+# defensive safety net, not the primary mechanism).
+_PRESET_CLASS_CONVENTIONS: dict[str, tuple[str, "str | None"]] = {
+    "cardStyle": ("--", None),
+    "effectHover": ("--hover-", "hover"),
+}
+# The literal neutral-value NAME each preset attr falls back to seeding when
+# CSS scanning finds no already-neutral (signal-less) value at all — e.g.
+# google-reviews's cardStyle has a legitimate 'flat' option in its
+# SelectControl that paints NO CSS at all (no `--card-flat` rule exists), so
+# it never surfaces as a discovered token. Mirrors effectHover's 'none' (a
+# block emits no hover-modifier class at all when effectHover === 'none').
+_PRESET_NEUTRAL_FALLBACK_NAME: dict[str, str] = {
+    "cardStyle": "flat",
+    "effectHover": "none",
+}
+
+_CSS_LEAF_RULE_RE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+_CSS_VALUE_TOKEN_RE = re.compile(r"[a-z0-9-]+")
+_CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+_CSS_INTERACTIVE_PSEUDO_RE = re.compile(r":(?:hover|focus|active|focus-within|focus-visible)\b")
+# render.php's own `$var = ... $attributes['{attr}'] ...;` assignment line —
+# discovers which local PHP variable an attribute is read into.
+_ATTR_VAR_ASSIGN_RE_CACHE: dict[str, re.Pattern] = {}
+# render.php's OWN literal-string→attr concatenation, e.g.
+# `'sgs-info-box--hover-' . esc_attr( $sgs_hover_effect )`. Used to discover
+# ALL class-prefix families a block's render.php builds off the same block
+# root (cardStyle, effectHover, AND any other modifier attr such as
+# iconPosition's `sgs-info-box--media-{value}`), so a preset attr's own
+# enumeration can exclude sibling attrs' tokens WITHOUT hand-naming them.
+_RENDER_PREFIX_CONCAT_RE = re.compile(
+    r"'(sgs-[a-z0-9-]+--[a-z0-9-]*)'\s*\.\s*"
+    r"(?:esc_attr|sanitize_key|sanitize_html_class)\s*\("
+)
+
+
+def _discover_attr_php_var(render_text: str, attr: str) -> "str | None":
+    """Return the local PHP variable name a block's render.php reads
+    `$attributes['{attr}']` into, e.g. `cardStyle` -> `card_style` for
+    `$card_style = $attributes['cardStyle'] ?? 'bordered';`. Scans line-by-line
+    (every observed assignment is a single-line PHP statement) so it survives
+    both `isset(...) ? ... : ...` and `?? ...` forms, and any sanitiser wrapper
+    on the RHS. Cached per attr name (the regex itself is attr-specific)."""
+    pattern = _ATTR_VAR_ASSIGN_RE_CACHE.get(attr)
+    if pattern is None:
+        pattern = re.compile(
+            r"^\s*\$(\w+)\s*=.*\$attributes\[\s*['\"]" + re.escape(attr) + r"['\"]\s*\]"
+        )
+        _ATTR_VAR_ASSIGN_RE_CACHE[attr] = pattern
+    for line in render_text.splitlines():
+        m = pattern.match(line)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _discover_attr_class_prefix(render_text: str, block_name: str, var_name: str) -> "str | None":
+    """Return the EXACT literal class-prefix string render.php concatenates
+    `$var_name` onto, e.g. `'sgs-google-reviews--card-' . sanitize_key( $card_style )`
+    -> "sgs-google-reviews--card-". This is the PRIMARY, render.php-derived
+    prefix-discovery mechanism (supersedes the fixed
+    `_PRESET_CLASS_CONVENTIONS` template, which assumed every preset attr's
+    class is exactly `sgs-{block}--{value}` — proven too rigid by
+    google-reviews's `sgs-google-reviews--card-{value}` shape). Returns None
+    if no matching concatenation is found (caller falls back to the
+    convention table)."""
+    pattern = re.compile(
+        r"'(sgs-" + re.escape(block_name) + r"--[a-z0-9-]*)'\s*\.\s*"
+        r"(?:esc_attr|sanitize_key|sanitize_html_class)\s*\(\s*\$" + re.escape(var_name) + r"\b"
+    )
+    m = pattern.search(render_text)
+    return m.group(1) if m else None
+
+
+def _discover_class_prefix_family(render_text: str, own_prefix: str) -> list[str]:
+    """Return the sub-prefix strings (e.g. ["hover-", "media-"]) that OTHER
+    class-building concatenations in this block's render.php use off the same
+    root as `own_prefix` — so enumerating `own_prefix`'s own values can
+    exclude tokens that actually belong to a sibling attr sharing the literal
+    substring (R-31-1: derived from render.php's own text, never hand-named)."""
+    all_prefixes = set(_RENDER_PREFIX_CONCAT_RE.findall(render_text))
+    siblings = []
+    for prefix in all_prefixes:
+        if prefix != own_prefix and prefix.startswith(own_prefix) and len(prefix) > len(own_prefix):
+            siblings.append(prefix[len(own_prefix):])
+    return siblings
+
+
+def _extract_leaf_css_rules(css_text: str):
+    """Yield (selector, {prop: value}) for every INNERMOST `{...}` rule in
+    `css_text`, tolerant of @media nesting (a naive non-nesting regex only
+    ever completes a match on the leaf rule — the @media wrapper's own
+    opening brace can never pair with a `}` before hitting the leaf rule's
+    OWN brace first, so the wrapper is transparently skipped).
+
+    CSS comments are stripped FIRST — an inline `/* ... */` comment inside a
+    rule body can itself contain a `;`, which would otherwise fracture the
+    following real declaration's property name (verified live 2026-07-24:
+    team-member's `.sgs-team-member--elevated` rule has exactly this shape,
+    and an unstripped comment silently ate its `box-shadow` declaration)."""
+    css_text = _CSS_COMMENT_RE.sub("", css_text)
+    for m in _CSS_LEAF_RULE_RE.finditer(css_text):
+        selector = m.group(1).strip()
+        body = m.group(2)
+        decls: dict[str, str] = {}
+        for decl in body.split(";"):
+            decl = decl.strip()
+            if not decl or ":" not in decl:
+                continue
+            prop, _, val = decl.partition(":")
+            decls[prop.strip().lower()] = val.strip()
+        yield selector, decls
+
+
+def _classify_preset_decls(decls: dict) -> set:
+    """Which signal properties a rule's declarations meaningfully paint.
+
+    Mirrored EXACTLY by
+    `converter.resolvers.preset_absence._present_properties_from_decls` — the
+    seeding side and the matching side must use the identical semantics or a
+    value could be seeded as "has box-shadow" but never match a draft that
+    genuinely has one (or vice versa).
+    """
+    signals: set = set()
+    box_shadow = str(decls.get("box-shadow", "")).strip().lower()
+    if box_shadow and box_shadow != "none":
+        signals.add("box-shadow")
+    border_shorthand = str(decls.get("border", "")).strip().lower()
+    border_width = str(decls.get("border-width", "")).strip().lower()
+    border_style = str(decls.get("border-style", "")).strip().lower()
+    if (
+        (border_shorthand and not border_shorthand.startswith(("none", "0")))
+        or (border_width and border_width not in ("0", "0px", "none"))
+        or (border_style and border_style not in ("none", ""))
+    ):
+        signals.add("border")
+    transform = str(decls.get("transform", "")).strip().lower()
+    if transform and transform != "none":
+        signals.add("transform")
+    return signals
+
+
+def _enumerate_preset_values(
+    css_text: str,
+    class_prefix: str,
+    exclude_prefixes: "list[str] | None" = None,
+    state: "str | None" = None,
+) -> dict:
+    """Return {value_token: signals_set} for every class `.{class_prefix}{value}`
+    found in `css_text`. Two passes: (1) discover value tokens from any
+    selector containing the prefix; (2) for each token, accumulate signals
+    from EVERY QUALIFYING rule mentioning the exact class (covers `:hover`,
+    `::before`, and descendant-combinator compounds like
+    `.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image`
+    AND `.sgs-google-reviews--card-elevated .sgs-google-reviews__review`).
+
+    `exclude_prefixes` filters out tokens that actually belong to a SIBLING
+    attr sharing the same literal class-prefix substring (see
+    `_discover_class_prefix_family`).
+
+    `state` gates which rules QUALIFY for signal accumulation: `state='hover'`
+    (effectHover) REQUIRES the selector carry an interactive pseudo-class
+    (`:hover`/`:focus`/etc.); `state=None` (cardStyle — resting only) EXCLUDES
+    any selector carrying one. Verified live 2026-07-24: google-reviews'
+    `.sgs-google-reviews--card-elevated .sgs-google-reviews__review:hover`
+    rule shares the exact same class token as its resting rule — without this
+    filter, cardStyle's signal set would wrongly absorb a hover-only
+    box-shadow bump.
+    """
+    dotted_prefix = "." + class_prefix
+    excludes = tuple(exclude_prefixes or ())
+    tokens: set = set()
+    for selector, _decls in _extract_leaf_css_rules(css_text):
+        idx = 0
+        while True:
+            pos = selector.find(dotted_prefix, idx)
+            if pos == -1:
+                break
+            rest = selector[pos + len(dotted_prefix):]
+            m = _CSS_VALUE_TOKEN_RE.match(rest)
+            if m:
+                token = m.group(0)
+                if not any(token.startswith(ex) for ex in excludes):
+                    tokens.add(token)
+            idx = pos + len(dotted_prefix)
+
+    value_signals: dict = {t: set() for t in tokens}
+    for token in tokens:
+        class_token = f"{dotted_prefix}{token}"
+        for selector, decls in _extract_leaf_css_rules(css_text):
+            pos = selector.find(class_token)
+            if pos == -1:
+                continue
+            # Word-boundary: the token must not be immediately followed by
+            # another identifier char, so "elevated" doesn't false-match
+            # inside a longer modifier like "elevated-alt".
+            after = selector[pos + len(class_token): pos + len(class_token) + 1]
+            if after and (after.isalnum() or after == "-"):
+                continue
+            has_interactive_pseudo = bool(_CSS_INTERACTIVE_PSEUDO_RE.search(selector))
+            if state == "hover":
+                if not has_interactive_pseudo:
+                    continue
+            else:
+                if has_interactive_pseudo:
+                    continue
+            value_signals[token] |= _classify_preset_decls(decls)
+    return value_signals
+
+
+def _choose_neutral_value(value_signals: dict) -> "str | None":
+    """Pick the ONE canonical neutral (is_neutral=1) among values with no
+    signal at all. Tie-break: prefer a value literally named 'flat' or 'none'
+    (the plainest, most self-describing neutral term used across the
+    framework's own SelectControl option labels); else alphabetically first
+    (deterministic)."""
+    neutrals = sorted(v for v, sig in value_signals.items() if not sig)
+    if not neutrals:
+        return None
+    for preferred in ("flat", "none"):
+        if preferred in neutrals:
+            return preferred
+    return neutrals[0]
+
+
+def _populate_preset_implications(
+    c, slug: str, block_dir: Path, sgs_supports: dict, declared_attrs: set
+) -> None:
+    """Auto-derive + write preset_implications rows for one block.
+
+    Reads `supports.sgs.presetSelectors` (the minimal declarative hint —
+    Component 2), confirms each attr's class-naming convention is actually
+    present in the block's OWN render.php (the authority — render.php builds
+    the class literally, e.g. `'sgs-info-box--' . esc_attr($cardStyle)`), then
+    scans style.css for that class family's rules and classifies each value's
+    signal properties. Delete-then-insert per (block_slug, preset_attr) —
+    idempotent, mirrors variant_slots.
+    """
+    preset_selectors = (
+        sgs_supports.get("presetSelectors") if isinstance(sgs_supports, dict) else None
+    )
+    if not isinstance(preset_selectors, list) or not preset_selectors:
+        return
+
+    render_path = block_dir / "render.php"
+    style_path = block_dir / "style.css"
+    try:
+        render_text = render_path.read_text(encoding="utf-8") if render_path.exists() else ""
+    except (OSError, UnicodeDecodeError):
+        render_text = ""
+    try:
+        style_text = style_path.read_text(encoding="utf-8") if style_path.exists() else ""
+    except (OSError, UnicodeDecodeError):
+        style_text = ""
+
+    for attr in preset_selectors:
+        if attr not in declared_attrs:
+            print(
+                f"Stage 1 (presetSelectors): WARN {slug}.{attr} declared in "
+                f"supports.sgs.presetSelectors but not in attributes"
+            )
+            continue
+        # PRIMARY: discover the exact class prefix from render.php itself —
+        # find the PHP variable this attr is read into, then the literal
+        # string render.php concatenates that variable onto. Supersedes a
+        # fixed "sgs-{block}--{suffix}" template (proven too rigid by
+        # google-reviews's "sgs-google-reviews--card-{value}" shape).
+        var_name = _discover_attr_php_var(render_text, attr)
+        class_prefix = (
+            _discover_attr_class_prefix(render_text, block_dir.name, var_name)
+            if var_name
+            else None
+        )
+        if class_prefix is None:
+            # FALLBACK: the fixed convention table (safety net only).
+            convention = _PRESET_CLASS_CONVENTIONS.get(attr)
+            if convention is None:
+                print(
+                    f"Stage 1 (presetSelectors): WARN {slug}.{attr} — no PHP "
+                    f"variable/class-concat found in render.php and no known "
+                    f"fallback convention (only cardStyle/effectHover) — "
+                    f"skipped, no rows seeded"
+                )
+                continue
+            suffix, _unused_state = convention
+            class_prefix = f"sgs-{block_dir.name}{suffix}"
+            if class_prefix not in render_text:
+                print(
+                    f"Stage 1 (presetSelectors): WARN {slug}.{attr} — render.php "
+                    f"does not contain the expected class prefix '{class_prefix}' "
+                    f"— convention not confirmed, skipped, no rows seeded"
+                )
+                continue
+        state = _PRESET_STATE_BY_ATTR.get(attr)
+        # A preset attr's own prefix (e.g. "sgs-google-reviews--card-") is
+        # often a literal substring of a SIBLING attr's prefix built off the
+        # same block root (theme-/variant-/star-/cols- etc.) — discover those
+        # sibling sub-prefixes from render.php's own concatenation text and
+        # exclude their tokens so they are never mis-enumerated as THIS
+        # attr's values.
+        sibling_subprefixes = _discover_class_prefix_family(render_text, class_prefix)
+        value_signals = _enumerate_preset_values(
+            style_text, class_prefix, exclude_prefixes=sibling_subprefixes, state=state
+        )
+        fallback_neutral_name = _PRESET_NEUTRAL_FALLBACK_NAME.get(attr)
+        if fallback_neutral_name and not any(not sig for sig in value_signals.values()):
+            # No already-neutral (signal-less) value was discovered from CSS
+            # at all — e.g. a legitimate SelectControl option (google-reviews
+            # cardStyle's 'flat') that paints NO CSS rule whatsoever. Seed it
+            # explicitly so the resolver always has a neutral fallback.
+            value_signals.setdefault(fallback_neutral_name, set())
+        if not value_signals:
+            continue
+        neutral_value = _choose_neutral_value(value_signals)
+        c.execute(
+            "DELETE FROM preset_implications WHERE block_slug = ? AND preset_attr = ?",
+            (slug, attr),
+        )
+        for value, signals in value_signals.items():
+            implied = ",".join(sorted(signals))
+            is_neutral = 1 if (neutral_value is not None and value == neutral_value) else 0
+            presence = "present" if signals else "absent"
+            c.execute(
+                "INSERT OR IGNORE INTO preset_implications "
+                "(block_slug, preset_attr, enum_value, implied_property, presence, is_neutral) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (slug, attr, value, implied, presence, is_neutral),
+            )
 
 
 def _collect_boxfamily_overrides(blocks_dir: Path) -> dict:

@@ -45,6 +45,7 @@
 		"sgs": {
 			"imageControls": true,
 			"scalarContentLift": true,
+			"presetSelectors": [ "cardStyle" ],
 			"elements": {
 				"card": {
 					"label": "Card",

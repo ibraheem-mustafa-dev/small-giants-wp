@@ -18,6 +18,7 @@
 	"supports": {
 		"sgs": {
 			"imageControls": false,
+			"presetSelectors": [ "cardStyle" ],
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
