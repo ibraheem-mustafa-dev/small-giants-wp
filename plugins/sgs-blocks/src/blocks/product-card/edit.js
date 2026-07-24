@@ -634,7 +634,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaColourBackground,
 		ctaColourText,
 		ctaColourBorder,
+		ctaBorderStyle,
+		ctaBorderWidth,
 		ctaBorderRadius,
+		ctaFontWeight,
 		ctaFontSize,
 		ctaPadding,
 		ctaWidthType,
@@ -735,6 +738,59 @@ export default function Edit( { attributes, setAttributes } ) {
 			typedPreviewClasses.push( 'has-border-color', `has-${ attributes.borderColor }-border-color` );
 		}
 	}
+
+	/*
+	 * Typed-mode CTA preview parity (2026-07-24 fix). The typed preview's CTA
+	 * is hand-authored JSX with no scoped <style> mechanism, so the cta* box
+	 * attrs (padding, border, radius, font, width) never reached it — a
+	 * client changing "CTA padding" in the BoxControl saw the frontend update
+	 * but the editor canvas stay static. Mirrors
+	 * includes/helpers-button-style.php sgs_button_element_style_css() (the
+	 * SAME emitter render.php calls for both typed and bound branches) so the
+	 * two paths stay in lockstep; resolveCtaColour mirrors
+	 * includes/helpers-tokens.php sgs_colour_value()'s slug-vs-raw-value
+	 * branch. Hover/focus-visible declarations are NOT mirrored here — this
+	 * is a static (non-interactive) preview element with no :hover state to
+	 * drive, same as every other control in this typed preview.
+	 */
+	const resolveCtaColour = ( value ) => {
+		if ( ! value ) {
+			return undefined;
+		}
+		const v = String( value ).trim();
+		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
+	};
+	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
+	const ctaHasPadding =
+		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
+	const ctaPreviewStyle = {
+		backgroundColor: resolveCtaColour( ctaColourBackground ),
+		color: resolveCtaColour( ctaColourText ),
+		borderColor: resolveCtaColour( ctaColourBorder ),
+		borderStyle: ctaBorderStyle || undefined,
+		borderWidth:
+			ctaBorderWidth !== undefined && ctaBorderWidth !== null && '' !== ctaBorderWidth
+				? `${ ctaBorderWidth }px`
+				: undefined,
+		borderRadius:
+			ctaBorderRadius !== undefined && ctaBorderRadius !== null && '' !== ctaBorderRadius
+				? `${ ctaBorderRadius }px`
+				: undefined,
+		fontWeight: ctaFontWeight || undefined,
+		fontSize:
+			ctaFontSize !== undefined && ctaFontSize !== null && '' !== ctaFontSize
+				? `${ ctaFontSize }px`
+				: undefined,
+		...( ctaHasPadding
+			? {
+					paddingTop: ctaPaddingBox.top || '0',
+					paddingRight: ctaPaddingBox.right || '0',
+					paddingBottom: ctaPaddingBox.bottom || '0',
+					paddingLeft: ctaPaddingBox.left || '0',
+			  }
+			: {} ),
+		width: 'full' === ctaWidthType ? '100%' : undefined,
+	};
 
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
@@ -1758,18 +1814,31 @@ export default function Edit( { attributes, setAttributes } ) {
 							</div>
 						) }
 
-						{ /* CTA row */ }
+						{ /* CTA row — classNames + inline style MIRROR
+						     product-card-builtin-render.php's markup
+						     (`sgs-button sgs-button--{style}` +, for the
+						     primary CTA, the `sgs-product-card__cta--primary`
+						     marker class) so the typed preview picks up the
+						     same base/composite-mirror CSS cascade as the
+						     frontend, on top of which ctaPreviewStyle applies
+						     the per-instance cta* box/colour/typography
+						     overrides render.php emits via
+						     sgs_button_element_style_css(). cta2 has no
+						     equivalent box attrs (block.json declares only
+						     cta2Text/cta2Url/cta2Style), so no inline style
+						     is needed there. */ }
 						<div className="sgs-product-card__cta-row">
 							{ ( ctaText || '' ) !== '' && (
 								<span
-									className={ `btn btn-${ safeCtaStyle }` }
+									className={ `sgs-button sgs-button--${ safeCtaStyle } sgs-product-card__cta--primary` }
+									style={ ctaPreviewStyle }
 								>
 									{ ctaText }
 								</span>
 							) }
 							{ ( cta2Text || '' ) !== '' && (
 								<span
-									className={ `btn btn-${ safeCta2Style }` }
+									className={ `sgs-button sgs-button--${ safeCta2Style }` }
 								>
 									{ cta2Text }
 								</span>
