@@ -623,6 +623,13 @@ body.sgs-gallery-lightbox-open {
 		transform: none;
 	}
 
+	/* Lift effect has higher selector specificity than the generic reset
+	   above, so it needs its own override — otherwise the resting lift
+	   (translateY) survives reduced-motion as a residual transform. */
+	.sgs-gallery--hover-lift .sgs-gallery__item:hover {
+		transform: none;
+	}
+
 	.sgs-gallery--caption-reveal .sgs-gallery__caption {
 		transition: none;
 	}

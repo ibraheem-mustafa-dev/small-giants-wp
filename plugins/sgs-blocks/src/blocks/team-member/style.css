@@ -246,4 +246,11 @@
 	.sgs-team-member__social-link {
 		transition: none;
 	}
+
+	/* Kill residual resting scale/zoom transforms — genuinely zero motion,
+	   matching card-grid/post-grid (no near-zero-transition fallback). */
+	.sgs-team-member.sgs-has-hover-scale:hover,
+	.sgs-team-member.sgs-has-img-zoom:hover .sgs-team-member__photo img {
+		transform: none;
+	}
 }
