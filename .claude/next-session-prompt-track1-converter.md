@@ -1,267 +1,225 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-thread: "Track 1c — Declarative CSS routing SHIPPED (2026-07-23, D372-D373, 6 commits). css_layer L1-L4 fully seeded + css_element normalised to 'wrapper' + P3a base-resolver OUTER union + P4 declarative area resolver (qc-council-validated, +213 routes) + product-card cta box-object (last block off the axis pair). ONE outcome pending: the live BoxControl editor check (deploy blocked on the shared dirty tree). Then the Spec-31-to-100 items (phase-f fixtures, check_landed) + Spec 35."
-generated: 2026-07-23 (eve, post-declarative-routing)
-track: 1-converter
-note: "Track 1's prompt lives HERE, not .claude/next-session-prompt.md — that canonical path is contended by Track 2 (Spec 36/37). See the top warning."
+thread: "Track 1c — Seed root-cause fix + 2 converter builds SHIPPED (2026-07-23/24). Manifest is authoritative + first-class source for css_property (fc0b62c1, recovered ~270 dropped attrs + Check D guard); per-side border box-object (38f7c30a); per-element hover routing (81393004). Build #3 = DESIGN DECISION (info-box preset absence transfer — Bean chose Option B). Remaining: Task A (Option B build), Task B (Spec 31 C2 LANDED = 100%), Task C (deploy + live BoxControl check)."
+generated: 2026-07-24 (post 3-build sequence)
 ---
 
-# Track 1c — Next Session Prompt (2026-07-23 eve)
-
-**Invoke `/autopilot` before anything else.** Then read this end-to-end.
+Invoke `/autopilot` before anything else.** Then read this end-to-end.
 
 > ⚠ `main` is SHARED with a co-active **Track 2** (Spec 36/37 header/footer/nav). Track 2 owns
 > `LEDGER.md`, `parking.md`, `decisions.md`, `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`,
 > and the D-numbering cadence. **THIS is Track 1c's prompt** (`next-session-prompt-track1-converter.md`).
 > Path-scope every commit; re-check `git branch --show-current` in the SAME command as the commit;
-> NEVER `git add -A`.
-> **VERIFY every commit landed via `git log -1`, NOT the hash the commit reported** — Track 2 commits
-> live (this session `bf312016` landed between two Track 1c commits); the git-log-1 discipline held
-> across 6 commits with zero collisions.
+> NEVER `git add -A`. **VERIFY every commit landed via `git log -1`, NOT the hash the commit reported**
+> — Track 2 commits between your commits (this session `614fa890`/`98e32cd0` landed among Track 1c's).
+> The path-scoped-commit hook FIRES on a bare `git commit` — always pass `-- <your paths>`.
 
 ## Plain-English state (where we are)
 
-**The per-area CSS routing rework — the "last task before Spec 31 = 100%" from the PRIOR prompt — is
-DONE and pushed.** It became a broader declarative-routing session (Bean-driven), and the two OPEN
-QUESTIONS the prior prompt raised are both settled:
-- **OPEN QUESTION 1 (`css_element='box'`):** SETTLED — `box` is a CLUSTERING term (the block's own
-  `isWrapper:true` manifest element), NOT a DOM element. Verified: no `__box` node in any renderer.
-- **OPEN QUESTION 2 (DB survey):** DONE — `css_element` is the real disambiguator; `css_layer` is now
-  FULLY seeded (was 6 rows — Bean was right it was worth populating); the base-resolver domain +
-  css_state/css_tier do nearly all the disambiguation.
+Last session (2026-07-23/24) turned a 6-override "misroute patch" into a **root-cause seed fix**
+(Bean-driven), then shipped **2 of 3** approved converter builds. All Track 1c work is committed + pushed
+(`fc0b62c1`→`cd9c0364`, `cd9c0364` IS `origin/main`; the suite stayed green throughout).
 
-Shipped this session (6 commits, all pushed, all gates green — 997 tests + coverage + no_slug_literal
-+ F6 db-consistency):
+**Shipped + pushed:**
+- **`fc0b62c1` — the seed root-cause fix.** The seeder now (a) honours a block's `block.json`
+  manifest `attrMap` `css:<property>` as authoritative for `css_property` (was pure code-scrape,
+  grabbed neighbours — nav-menu `underlineOffset` `position`→`bottom`), and (b) SEEDS manifest-only
+  attrs the emission parser can't trace (recovered ~270 dropped attrs). Fixed 5 residuals at source
+  (trust-bar badge-img, media object-fit, icon-list heading element, separator `contentColour` unify,
+  hero legacy `mediaBackgroundColour` removed). NEW guard: `check_css_property_reseed.py` **Check D**
+  (F6 fails on a colour/border/radius/shadow/object-fit attr with NULL element+derived_selector).
+  Memory: `[[manifest-is-authoritative-and-first-class-source]]`.
+- **`38f7c30a` — Build #1: per-side border-width longhands → `borderWidth` box-object** (shared
+  `services/border_side.py`, box_family-gated, base-only). Spec 31 §13.4 updated.
+- **`81393004` — Build #2: per-element (non-root) hover routing** — `scaleHover`/`imageZoomHover` on
+  named children (post-grid + 3 blocks) now transfer (`styling_content.lift_per_element_state`). Seed
+  smell fixed at declarative source. Spec 31 §3.A step 4a updated.
+- **`bbc3bc51`/`9752ada1`/`cd9c0364` — docs**: Spec 32 borderWidth count, parking (P-POSTGRID resolved).
 
-| Commit | What landed |
-|---|---|
-| `50622ed8` | css_layer L1-L4 FULLY seeded declaratively (block.json `layer` field + name-convention fallback + leaf guard, authoritative reseed) + Wave-0 mis-seed fixes (6 hover `css_state`, splitImage tier) |
-| `77bacdda` | **P3a** base-resolver OUTER union (`css_element IN root-set OR css_layer='OUTER'` — 26 wrapper attrs recovered) + **P4** declarative area resolver (replaced the name-build; **+213 routes, −6 wrong, all 3 conflicts fixed**). qc-council-validated. |
-| `77703100` | product-card CTA padding → box-object (last block off the ad-hoc axis pair; every SGS block now box-object) |
-| `a5518437` | css_element normalised to `wrapper` for every isWrapper root (120 attrs / 26 blocks — Bean-directed "make it clear they are wrappers") |
-| `9074d1ae` | spec docs 31 §4 + 32 |
-| `fb93bcae` | handoff docs (D372-D373, LEDGER, was 4 parking entries — now folded into this prompt) |
-
-**Current state:** F6 green after a full `/sgs-update` (pruned the retired `ctaPaddingX/Y`, seeded
-`box_family='ctaPadding'`, applied the normalisation). 997 tests pass.
+**Build #3 became a DESIGN DECISION (correctly — did not force a carve-out).** Team-member "faithful
+absence transfer" (make info-box `cardStyle:flat` when a draft has no shadow) can't be built cleanly:
+`cardStyle`/`effectHover` are deliberately un-routed preset selectors, "absence" is not representable in
+the Decl stream, and the pattern spans ~8 blocks. Parked `P-INFOBOX-PRESET-ABSENCE-TRANSFER`. **Bean
+chose Option B** (Task A).
 
 ## What this session proved (do not re-derive)
-
-- **P4 declarative area resolver is strictly better** — measured differential on the LIVE DB (not the
-  doc's stale 206/13/3): declarative **+213** correct routes the name-build silently missed, **−6**
-  WRONG name-build routes (resting decls landing on `css_state='hover'`/`'selected'` attrs; social-icons
-  `iconColour` matched by NAME onto element='item'), **3 conflicts** all favour declarative (overlay
-  opacity → `backgroundOverlayOpacity`; cart badge → `badgeTextColour`; trust-bar label → `textColour`).
-- **The qc-council caught 2 DATA mis-seeds that would CRASH the resolvers AND were silent bugs today**:
-  6 quote/testimonial hover attrs carried `css_property` with `css_state=NULL` (a resting decl was
-  masquerading onto them) → `css_state='hover'`; `hero.splitImageMobileHeight` is a functional
-  duplicate of `imageHeightMobile` → de-routed. Fix-the-data-before-the-resolver.
-- **css_element normalisation is safe because resolution keys on css_layer, not the element name** —
-  the base resolver's OUTER union finds wrapper attrs by MEANING; 'wrapper' need not be a base-domain
-  element. Oracle golden fixtures intact.
-- **A box-object migration can silently drop the default** — `ctaPaddingX=24`/`ctaPaddingY=14` → a `{}`
-  object default emits NOTHING; it's non-visual ONLY because `sgs_box_object_shorthand({})` returns
-  null and the CTA falls through to `.sgs-button` base `14px 24px` (button/style.css:27). Verify the
-  fall-through before calling any box-object migration non-visual (memory
-  `box-object-migration-verify-default-fallthrough`).
+- A mis-routed/dropped CSS value is usually the SEED SOURCE dropping a whole CLASS, not a per-attr bug.
+  Fix declaratively at the block manifest + add a structural guard; overrides are code-vs-meaning ONLY.
+- Making the manifest a first-class source recovered ~270 attrs but EXPOSED ~14 pre-existing collisions
+  (icon-list heading/item shared NULL element; hero `mediaBackground`/`mediaBackgroundColour` duplicate) —
+  the gate working. All fixed at source; F6 green.
+- Per-side border rides the existing box-object accumulator (no render.php/DB change). Per-element hover
+  needed a NEW per-child pass (the base state resolver is `_BASE_ELEMENTS`-only by construction).
 
 ## First action (≤5 min, zero dependencies)
-
-Confirm the inherited state is genuinely green before touching anything:
-`cd plugins/sgs-blocks/scripts && python -m pytest converter/ ledger/ oracle/ -q && python ledger/coverage_check.py --check && python db-consistency/run.py`
-(expect 997 pass + `0 UNACCOUNTED` + F6 0 violations). If any differs, STOP and reconcile — inherited
-state is a claim, not a fact. Then read the Task 1 deploy recipe below.
+Confirm inherited state is genuinely green (from `plugins/sgs-blocks/scripts`):
+`python -m pytest converter/ ledger/ oracle/ -q && python ledger/coverage_check.py --check && python db-consistency/run.py && python converter/gates/no_slug_literal.py`
+(expect ~1010 pass + `0 UNACCOUNTED` + F6 0 violations + no_slug clear). Different → STOP + reconcile;
+inherited state is a claim, not a fact (Track 2 may have committed since).
 
 ## Mandatory READING (gate — before any converter edit)
 1. `/autopilot` (first).
-2. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** (Bean-locked, ~674 lines). §4 now
-   documents the css_layer seeding + wrapper normalisation + P3a/P4 resolvers (D372-D373).
+2. `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` — **IN FULL** (Bean-locked). §3.A step 4a + §13.4
+   FR-31-22 now document the 2 shipped builds.
 3. `.claude/STOP-CATALOGUE.md` — the pre-flight ritual + STOP entries (Track 2's file; read, don't rewrite mid-race).
-4. `.claude/plans/2026-07-22-spec31-completion-to-100.md` — the parent plan + its AUDIT CORRECTION section.
-5. For Spec 35 work only: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — **IN FULL** first.
+4. **`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — IN FULL** (Task A touches the block-editor
+   surface + preset semantics; Bean-directed "make builds follow Spec 35").
+5. `.claude/plans/2026-07-22-spec31-completion-to-100.md` — for Task B (only C2 remains).
 
 ## Skills to Invoke
 | Skill | When |
 |-------|------|
-| `/brainstorming` | Design gates before any converter/spec change |
-| `/gap-analysis` | Grade audit output before acting on it |
+| `/brainstorming` | Design gate for Task A (Option B schema) before building |
+| `/gap-analysis` | Grade audit/design output before acting |
 | `/lifecycle` | Before any skill/agent/pipeline change |
-| `/research` | Auto-routes research tier when a decision is unclear |
-| `/strategic-plan` + `/phase-planner` | Plan + break down the Spec 35 completion order |
+| `/research` | Auto-routes when a decision is unclear |
+| `/strategic-plan` + `/phase-planner` | Plan + break down Option B |
 | `/systematic-debugging` | Root-cause gate — proven cause, never inferred |
 | `/qc-council` | Multi-rater before ANY converter/pipeline/SGS-block commit (blub.db 255) |
-| `/dispatching-parallel-agents` | Fan out file-independent audit tasks |
+| `/delegate` | Model routing per build (converter builds route to Sonnet) |
 | `/sgs-db` + `/wp-blocks` | DB authoritative — never hardcode a count |
 
-## Tool bindings — MCP Servers & Tools
+## MCP Servers & Tools
 | Tool | For |
 |------|-----|
-| `/sgs-db` (sgs-db.py) | Block schema/attrs/columns — the authoritative source |
+| `/sgs-db` (sgs-db.py) | Block schema/attrs/columns — authoritative |
 | `python ~/.claude/hooks/wp-blocks.py` | Block schema/markup before any "missing X" claim |
-| Playwright MCP | Live-page verification, the oracle's live leg + the Task-1 BoxControl check |
+| Playwright MCP | Task B live verify (Bean's eye) + Task C live BoxControl check + canary editor |
 
 ## Agents to Delegate To
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Any converter/block build (constrain: no deploy/commit unless told) |
+| `wp-sgs-developer` | Any converter/block build (constrain: EXECUTE yourself, no deploy/commit unless told) |
 | `Explore` / `general-purpose` | Parallel DB survey + spot-checks (docs vs live code/DB) |
 | `feature-dev:code-reviewer` | Cross-check reviewer before every converter commit |
 
 ---
 
-## Task 1 — Deploy the box-object migration + the live BoxControl check (the ONE pending outcome)
-**What:** The product-card CTA box-object migration (`77703100`) is committed + locally verified but
-its LIVE editor check was NOT done — the deploy was blocked by the shared dirty tree.
-**Why:** The `wp-sgs-developer` agent could not verify the `BoxControl` renders + updates the live
-preview (no running build). This is the last unverified outcome of the migration.
-**Estimated time:** ~15 min once the tree is clean.
+## Task A — Build #3 via Option B: preset-absence transfer (Bean chose B)
+**What:** make a cloned preset block (info-box + ~7 others) faithfully reflect the draft's ABSENCE of a
+box-shadow / hover, instead of always inheriting the block.json default (`cardStyle:elevated` +
+`effectHover:lift`) that paints a phantom shadow/hover the draft never had (and double-injects when a
+shadow IS present — the real shadow already routes to `native:shadow`).
+**Why:** real clone-fidelity defect across ~8 blocks (info-box/team-member/google-reviews/
+testimonial-slider/trustpilot-reviews/countdown-timer/post-grid + `effectHover` on
+card-grid/gallery/process-steps/testimonial). Universal, R-31-9.
+**Option B (Bean's choice):** block.json ENUMERATES each preset value's implied CSS (`elevated`→box-shadow
+present, `flat/subtle/bordered/filled`→absent); seed to a new column via `/sgs-update`; a new converter
+pass inspects the cloned element's collected decls and PICKS the preset value by presence/absence — richer
+than A, works even for presets with no backing native support, but MUST reconcile with `native:shadow` to
+avoid double-transfer. Full ground truth in `P-INFOBOX-PRESET-ABSENCE-TRANSFER` (parking) + the Build #3
+report (this session).
+**Estimated time:** ~30–45 min (new declarative schema + DB column + resolver pass + tests).
+**Orchestration:** design-gate FIRST (`/brainstorming` → Bean sign-off on the block.json schema shape) →
+delegate build to `wp-sgs-developer` (Sonnet via `/delegate`; EXECUTE itself, no commit) → `/qc-council`
+→ commit. **Spec 35:** any hover it touches must stay `prefers-reduced-motion`-gated (E5); don't
+add/duplicate controls (`cardStyle`/`effectHover` enums already have controls).
+**Acceptance:** a shadowless draft item → `cardStyle=<neutral>` on the clone (converter test) AND no
+double-inject when a shadow IS present; universal across the ~8 blocks (no slug literal); full suite +
+F6 green; then computed-parity Stage 11.6 on a real clone (R-31-11/13). Clears
+`P-INFOBOX-PRESET-ABSENCE-TRANSFER` + the `P-CLONE-TEAM-MEMBER` residual.
+**Depends on:** none. **/qc gate after:** yes — `/qc-council` (shared-mechanism converter change).
 
-**Sub-steps:**
-1. **Unblock the deploy.** The shared worktree had Track 2's UNCOMMITTED work (`icon-list/*`,
-   `render-helpers.php`, `lucide-icons.php`) → `build-deploy.py`'s dirty-tree gate refused, and
-   `--allow-dirty` is BANNED (D336's trigger). Do NOT force it. Either: (a) Track 2 has since committed
-   → tree clean → `build-deploy.py --target sandybrown --blocks-only`; OR (b) deploy from an ISOLATED
-   worktree at `origin/main` HEAD — build in the MAIN checkout (avoid the node_modules-junction hazard,
-   memory `never-junction-node-modules-into-a-worktree`), copy `build/` into the worktree,
-   `build-deploy.py --skip-build`.
-2. **md5sum local↔server** the changed files BEFORE measuring (memory `verify-deploy-by-checksum-not-liveness`).
-3. **Playwright the canary editor:** insert an `sgs/product-card`, open the CTA "Padding" control,
-   confirm the `BoxControl` renders + updates the live preview (login `.claude/secrets/sandybrown.env`).
-**Acceptance:** the BoxControl renders + drives the CTA padding on the live editor; md5 confirms the
-new code shipped.
+## Task B — Spec 31 → 100% (the C2 LANDED leg — the ONLY remaining gate)
+**What:** deploy the phase-f fixture corpus as canary PAGES, wire `oracle/check_landed()` +
+`oracle/fixture-canary-urls.json`, run the multi-shape LANDED batch, then live-verify + Bean's eye.
+**Why:** A1–A6/B1/B3/C1a/C1b are DONE (UNACCOUNTED 14→0). C2 is the sole open item — a live-verification,
+not more building. This is what lets you DECLARE Spec 31 = 100%.
+**Estimated time:** ~30 min once the tree is clean + deploy works.
+**Orchestration:** inline (Opus) for wiring + the verdict; Playwright for the live leg. **Needs a clean
+tree** (Task C blocker). **Acceptance:** ledger reports zero UNACCOUNTED + zero WRITTEN-not-LANDED across
+the fixture set, live-verified + Bean's eye → Spec 31 formally 100%.
+**Depends on:** a working deploy (Task C).
 
-## Task 2 — Fold-in residuals from the declarative-routing session (were parking; now here per Bean)
-Four items surfaced this session, moved here from parking so the next session picks them up directly:
+## Task C — Deploy the accumulated block changes + live BoxControl check (was Task 1)
+**What:** deploy this session's block changes (separator unify, hero legacy-attr removal,
+trust-bar/media/icon-list manifests, post-grid seed) + the product-card CTA box-object migration to the
+sandybrown canary; then Playwright the canary editor to confirm the CTA `BoxControl` renders + drives the
+live preview (login `.claude/secrets/sandybrown.env`).
+**Why:** the block changes + the ORIGINAL Task-1 BoxControl check are the last unverified LIVE outcomes.
+**BLOCKER (carried):** the shared tree is dirty with Track 2's uncommitted work (`lucide-icons.php` +
+their unpushed `614fa890`). `build-deploy.py`'s dirty-tree gate refuses; `--allow-dirty` is BANNED (D336).
+**Either** wait for Track 2's tree to clear **or** deploy from an ISOLATED worktree at `origin/main` HEAD
+(build in the MAIN checkout — memory `never-junction-node-modules-into-a-worktree` — copy `build/` into
+the worktree, `build-deploy.py --skip-build`). `md5sum` local↔server BEFORE measuring (memory
+`verify-deploy-by-checksum-not-liveness`). **Acceptance:** md5 confirms new code shipped; the CTA
+BoxControl renders + updates the live editor preview. **First action if the tree is clean.**
+**Depends on:** a clean tree.
 
-1. **P4 cluster-arm — DEFERRED, measure first.** P4 shipped the validated core but DEFERRED the
-   fallback-to-cluster arm (fake wrapper `__body` → block-side `box` cluster). qc-council flagged: the
-   runtime trigger is untraceable from the DB alone (walker/Ctx `area_name` behaviour) + a narrow
-   over-match risk (two nested unresolvable wrappers both writing one cluster attr). The product-card
-   body-padding case it targeted is ALREADY handled by the CONTENT-layer path (css_layer → `innerPadding`
-   = CONTENT). **Only build it if a real draft proves the area resolver is called with an unresolvable
-   area token the CONTENT path doesn't cover — with an "outermost unresolved wrapper only" guard.**
-2. **`attr_for_layer_property` NULL-leak — OPEN.** It uses `css_layer = ? OR css_layer IS NULL`, so a
-   NULL-layer attr matches EVERY layer query. Pre-existing, NOT test-exercised (997 green). Same
-   NULL-permissive class as P3a's base resolver but the LAYER resolver wasn't in the qc-council scope.
-   **Fix:** apply P3a's "prefer exact layer, fall back to NULL only if no exact match" discipline, OR
-   exclude leaf attrs. Verify with a live clone exercising a CONTENT-band composite.
-3. **3 NULL-`css_element` misroutes — OPEN.** Besides the now-fixed product-card cta, a sweep found
-   `sgs/brand-strip.fadeWidth` (width), `sgs/icon.backgroundPadding` (padding), `sgs/separator.contentIconColour`
-   (color — confirmed it targets `.sgs-separator__content`, a silent misroute). Each needs the block's
-   REAL element read from render.php before assigning css_element (NO guessing; ≥2 signals). Pairs with
-   `P-NAVMENU-UNDERLINEOFFSET-CSSPROP-MISSEED` — a DB-seed hygiene pass.
-4. **DEPLOY blocker** = Task 1 above.
+## Task D — Per-side border shorthand+longhand collision (follow-up from Build #1)
+**What:** a draft that sets BOTH `border-width` shorthand AND a `border-{side}-width` longhand on one
+element collides on a shared key → a LOUD conservation error (not silent). Resolve by expanding
+`border-width` shorthand to longhands at extraction (like padding), so per-side wins by cascade. Small;
+only if a real draft hits it. **/qc gate after:** yes.
 
-## Task 3 — Spec 31 to 100% (the pre-declarative-routing queue, still open)
-From `plans/2026-07-22-spec31-completion-to-100.md`: (a) `P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES` —
-deploy the phase-f fixture corpus as canary pages + populate `oracle/fixture-canary-urls.json` + apply
-the `check_landed()` patch (the gating dep for declaring Spec 31 100%); (b) the 2 remaining
-WRITTEN-not-LANDED oracle findings; (c) live verify + Bean's eye (R-31-11/R-31-13).
-
-## Task 4 — Spec 35 conformance audit, then to 100%
-Same two-phase treatment that worked on Spec 31: conformance-audit vs live code + DB (**audit by the
-DECLARED SEMANTIC — `css_property`/`role`/the manifest — never by identifier NAME; ≥2 signals before an
-"absent" verdict**) → `/gap-analysis` → `/strategic-plan` → execute. Known open: FR-35-5 (`states`) +
-FR-35-6 (`animation`), both APPROVED NOT BUILT; rollout waves 2-3; card-grid resting-state defect;
-`P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` (finish the 76 unaudited before overwriting 94 rows on an
-18-row sample). Derive figures: `node check-element-manifest-conformance.js`. **Depends on:** Task 3.
+## Task E — Standardise gallery + team-member reduced-motion (Spec 35 E5 follow-up)
+**What:** Build #2 found gallery + team-member use a "near-zero transition" hover (WCAG-compliant but
+leaves the resting scale) vs card-grid/post-grid's strict `transform:none`. Standardise the 2 on
+`transform:none` inside `@media (prefers-reduced-motion: reduce)`. Shared-visual → design-gate + live
+verify (R-31-13). Small.
 
 ---
 
 ## Dependency graph
 ```
-Task 1 (deploy + live BoxControl check — needs a clean tree)
-Task 2 residuals (independent; measure-first / seed-hygiene — any converter session)
+Task C (deploy — unblock the tree; FIRST if clean)
    ↓
-Task 3 (Spec 31 100%: phase-f fixtures → check_landed → live verify + Bean's eye)
-   ↓
-Task 4 (Spec 35: read → parallel audit → plan → execute)
+Task B (Spec 31 100%: C2 LANDED — needs a working deploy)     Task A (Build #3 Option B — independent)
+Task D + Task E (small follow-ups — any converter/visual session)
 ```
 
 ## Structural defences — STOP catalogue (carry forward, never subtract — D101)
-The 6 tokens Track 1 owed were LANDED into `.claude/STOP-CATALOGUE.md`
-(`STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT`, `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`,
-`STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT`, `STOP-VERIFY-THE-DELIVERABLE-EXISTS`,
-`STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START`, `STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT`).
-The most load-bearing for this track, restated because they bit again:
-
-- **STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT** — the hash a `git commit` REPORTS can be the other
-  session's racing commit. Verify via `git log -1` + `git status`, never the reported hash.
-- **STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC** — the pre-commit visual-diff gate blocks any touch of
-  a block's render.php/block.json/edit.js; its own message sanctions `--no-verify` for non-visual
-  changes. Use that; never fabricate a PASS report. (Used correctly this session for the cta box-object.)
-- **STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS** — before banking a PASS ask "would this still pass
-  if the feature were absent?"
-- **STOP-AUDIT-BY-DECLARED-SEMANTIC-NOT-IDENTIFIER-NAME** — asking "does anything consume X?" by
-  searching NAMES misses semantically-named consumers (`scaleHover` consumes `transform`). Require
-  ≥2 signals before recording an "absent" verdict. (This session: the name-build's 6 wrong routes were
-  exactly this — matched by NAME onto the wrong element/state.)
-- **STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE** (Track 2, D362) — put "EXECUTE YOURSELF with
-  your OWN tools; do NOT use the Agent/Task tool to delegate" in every implementer dispatch.
-- **STOP-A-HALF-FINISHED-FIX-IS-WORSE-THAN-NONE** — a repair on ONE side of a two-sided mechanism
-  looks done and keeps failing. Treat any "FIX N"/"fixed" comment as a CLAIM to verify end-to-end.
-- **STOP-READ-AN-INSTRUMENT'S-SEMANTICS-BEFORE-CALLING-ITS-OUTPUT-A-BUG** — read what a measurement
-  CLAIMS to measure before calling its output wrong; check a suppression mechanism's KEY before using it.
-- **STOP-A-CHANNEL-THAT-EXISTS-IS-NOT-A-CHANNEL-THAT-IS-WIRED** — grep for the CALL SITES of an
-  injectable callback, not just its definition (2026-07-23).
-- **STOP-READ-THE-RENDERER-THAT-ACTUALLY-RUNS** — `sgs/product-card` has TWO renderers; confirm WHICH
-  file produces the live markup before reasoning about it (2026-07-23, Bean-caught).
-- **STOP-A-COINCIDENTAL-DEFAULT-LOOKS-LIKE-FIDELITY** — a value that matches the block's own default
-  proves nothing about routing (2026-07-23).
-- **STOP-YOUR-FRAMING-BECOMES-THE-COUNCIL'S-BLIND-SPOT** — ask the council what you might be MISSING,
-  not only to choose among your pre-formed options (2026-07-23, Bean-caught — the box-object mechanism).
-- **STOP-VERIFY-A-BOX-OBJECT-MIGRATION-DEFAULT-FALLS-THROUGH** — NEW 2026-07-23. Migrating axis-pair
-  scalars (paddingX/Y with defaults) to a `{}` object default silently DROPS the old defaults (empty
-  object emits nothing). Before calling a box-object migration non-visual (and using `--no-verify`),
-  PROVE the empty-object falls through to an EQUAL base rule. `sgs_box_object_shorthand({})` returns
-  null → the block falls through to its base CSS; verify that base equals the old scalar defaults.
-- **STOP-RESIDUE-DECLARED-IRREDUCIBLE-USUALLY-ISNT** · **STOP-VERIFY-THE-DELIVERABLE-EXISTS** ·
-  **STOP-PRE-EXISTING-CLAIM-CHECK-SESSION-START** · **STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT** —
-  carried forward verbatim; full text in `STOP-CATALOGUE.md`.
-
-**ADD to STOP-CATALOGUE.md when Track 2 is idle** (the 4 from the prior prompt + the new box-object one
-above; re-derive the `previous` count with the canonical command in that file's §D receipt — never
-carry a figure forward from a prior read).
+Full text in `.claude/STOP-CATALOGUE.md` (Track 2's file). Load-bearing for THIS track, restated:
+- **STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT** — the hash a `git commit` REPORTS can be Track 2's
+  racing commit. Verify via `git log -1` + `git status`, never the reported hash.
+- **STOP-PATH-SCOPE-EVERY-COMMIT** — the path-scoped-commit hook fires on a bare `git commit`; always
+  pass `-- <your paths>`. NEVER `git add -A`. `lucide-icons.php` + spec 36/37 + LEDGER/parking/decisions/
+  STOP-CATALOGUE are Track 2's.
+- **STOP-FIX-THE-SEED-SOURCE-NOT-A-PER-ATTR-OVERRIDE** (NEW 2026-07-23) — a mis-routed/dropped CSS value
+  is usually the SOURCE dropping a class; make the manifest authoritative + a first-class source + add a
+  structural guard. Overrides are code-vs-meaning ONLY. Memory `[[manifest-is-authoritative-and-first-class-source]]`.
+- **STOP-DONT-FORCE-A-CARVE-OUT-TO-LOOK-PRODUCTIVE** (NEW 2026-07-24) — Build #3 correctly returned a
+  DESIGN DECISION, not a build. If the only path is a per-block hardcode (R-31-9) or a bigger new
+  mechanism, STOP + report options for Bean's gate.
+- **STOP-VERIFY-A-BOX-OBJECT-MIGRATION-DEFAULT-FALLS-THROUGH** — migrating axis-pair scalars to a `{}`
+  object default silently drops the old defaults; prove the empty object falls through to an EQUAL base.
+- **STOP-AUDIT-BY-DECLARED-SEMANTIC-NOT-IDENTIFIER-NAME** — ≥2 signals before an "absent/wrong" verdict
+  (this session: fadeWidth/backgroundPadding were FALSE positives; a manifest _note wrongly called
+  contentIconColour an "orphan").
+- **STOP-A-DISPATCHED-AGENT-MUST-EXECUTE-NOT-DELEGATE** — put "EXECUTE YOURSELF; do NOT delegate" in every
+  implementer dispatch.
+- **STOP-NEGATIVE-CONTROL-OR-THE-TEST-IS-VACUOUS** — before banking a PASS ask "would this still pass if
+  the feature were absent?".
 
 ## Pre-flight ritual (answer before first Write/Edit)
 1. On `main`? Next commit path-scoped away from Track 2 (`LEDGER.md`, `parking.md`, `decisions.md`,
-   `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, `site-*`, spec 36/37, `header-*`, `icon-list/*`)?
+   `STOP-CATALOGUE.md`, `.claude/next-session-prompt.md`, `site-*`, spec 36/37, `header-*`, `lucide-icons.php`)?
 2. Touching the converter? → Spec 31 read IN FULL, design-gated, `/qc-council` before commit.
-3. About to accept a subagent claim? → re-derive it from the tool. (This session: the wp-sgs-developer
-   agent's "non-visual" claim needed the default-fall-through verified against the base CSS.)
-4. After committing → does `git log -1` show MY message at HEAD + `git status` clean?
-5. Banking a PASS? → would it still pass if the feature were absent?
-6. Recording something as "absent / missing / excluded"? → ≥2 signals, including the declared
-   semantic, not just the identifier name?
-7. Diagnosing from a file? → is it the file that ACTUALLY runs (build vs src vs a second renderer)?
+3. Touching the block-editor surface / preset semantics (Task A)? → Spec 35 read IN FULL.
+4. About to accept a subagent claim? → re-derive it from the tool (this session an agent's "already
+   handled" seam claim was wrong; re-verified against live code caught it).
+5. After committing → does `git log -1` show MY message at HEAD + `git status` clean of MY work?
+6. Banking a PASS? → would it still pass if the feature were absent?
+7. Recording something "absent/missing"? → ≥2 signals, including the declared semantic, not just the name?
+8. Diagnosing from a file? → is it the file that ACTUALLY runs (build vs src; the classifier json is
+   GENERATED by extract-signatures.py — never hand-edit it, regenerate with `--task-a-only`)?
 
 ## Guardrails
-- **Deploy: `build-deploy.py --target sandybrown` ONLY.** Never hand-roll tar/scp/`rm -rf` (D336).
-  `md5sum` local↔server BEFORE measuring. NEVER `--allow-dirty` on a shared tree (D336's trigger).
-  On a dirty shared tree, deploy from an ISOLATED worktree (copy `build/`, `--skip-build`).
-- Converter changes: `/qc-council` before commit; verify on the REAL draft + the live code path.
+- **Deploy: `build-deploy.py --target sandybrown` ONLY.** Never hand-roll tar/scp/`rm -rf` (D336). NEVER
+  `--allow-dirty` on a shared tree. On a dirty shared tree, deploy from an ISOLATED worktree (copy `build/`,
+  `--skip-build`); build in the MAIN checkout (node_modules-junction hazard).
+- Converter/seed changes: `/qc-council` before commit; verify on the REAL draft + the live code path.
+- Manual DB edits BANNED — dated migration OR the block's own `block.json` manifest / `boxFamilies` /
+  `attrMap` declarative channel + a `/sgs-update` reseed. The classifier json is REGENERATED, never hand-edited.
 - DB authoritative — never hardcode a count (`/sgs-db`, `/wp-blocks`).
-- Manual DB edits BANNED — dated migration OR the `attr-classification-overrides.json` channel + a
-  `/sgs-update` reseed. (This session: hover `css_state` + splitImage tier fixes went via the override
-  channel; the full `/sgs-update` pruned the retired attrs + seeded box_family.)
-- Every deferral maps to a named spec STAGE, never "out of scope" (STOP-29).
 - Time estimates default LOW; smallest first action < 5 min.
 - Suites before AND after, from `plugins/sgs-blocks/scripts`:
   `python -m pytest converter/ ledger/ oracle/ -q` · `python ledger/coverage_check.py --check` ·
-  `python ledger/coverage_check.py --report --with-landed` (the LANDED leg) ·
   `python converter/gates/no_slug_literal.py` · `python db-consistency/run.py`
 
-## Open residuals (parked elsewhere, not blockers)
-- `P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE` — the height guard is `measured=False` for fixture-canary
-  runs (non-comparable environments); needs a same-environment render to judge.
-- `P-NAVMENU-UNDERLINEOFFSET-CSSPROP-MISSEED` — `underlineOffset` seeded `css_property='position'`.
-  Pairs with the 3 NULL-element misroutes in Task 2.3 (same seed-hygiene pass).
-- `P-POSTGRID-SCALEHOVER-OUT-OF-B3-SCOPE` — per-item + multi-property; hover scale still drops.
-- `P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN` — an EDITOR control-state bug; needs a live Playwright repro.
-- `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` — Task 4.
-- **Per-side border transfer** — real gap, NOT built. Rides the existing box-object mechanism
-  (`borderWidth` is a 4-side family on 8 blocks), so ~2 converter functions, not 40 render.php files.
-  Needs Bean's design gate.
-- **Doc drift found, not fixed:** `sgs-draft-vocabulary.md:142` maps the `separator` slot to the
-  RETIRED `sgs/divider` (now `sgs/separator`); `Spec 32:153` says 4 blocks carry `borderWidth`, DB says 8.
+## Open residuals (parked, not blockers)
+- `P-INFOBOX-PRESET-ABSENCE-TRANSFER` — Task A (Bean chose Option B).
+- `P-CLONE-TEAM-MEMBER-ITEM-HEIGHT` — the residual clears when Task A lands (verify via computed-parity).
+- `P-INSPECTOR-CONTROL-TYPE-94-DISAGREEMENTS` — Spec 35 audit front (unchanged; finish the 76 unaudited).
+- Per-side border shorthand+longhand edge → Task D. Gallery/team-member reduced-motion → Task E.
