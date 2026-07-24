@@ -486,6 +486,13 @@ add_filter(
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cli-commands.php';
 	\WP_CLI::add_command( 'sgs', Sgs_Cli_Commands::class );
+
+	// Header/footer LIFECYCLE command set (FR-37-30, Spec 37) — one class,
+	// two area-bound instances registered under separate `sgs header` /
+	// `sgs footer` namespaces alongside the existing `sgs` command tree.
+	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-cli-commands.php';
+	\WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
+	\WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
 }
 
 SGS_Blocks::instance();

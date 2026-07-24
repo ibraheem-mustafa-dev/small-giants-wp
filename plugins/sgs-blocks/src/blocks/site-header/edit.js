@@ -12,11 +12,123 @@ import {
 	Notice,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import {
 	WidthPanel,
 	ResponsiveSpacingPanel,
 } from '../container/components/ContainerWrapperControls';
+
+// FR-37-28 — Layout preset (Centred / Split / Minimal). A preset is a
+// convenience action that WRITES the block's EXISTING layout attributes
+// (contentWidth + the native spacing.padding style attr) to a documented
+// value set — it is never a new stored shape. No preset-name attribute is
+// stored; the active preset (if any) is DERIVED from the current attribute
+// values each render, so a hand-edited combination correctly shows no
+// preset selected rather than lying about which preset produced it.
+//
+// Attrs available on sgs/site-header itself only (no row/nav-menu attrs —
+// those live on sgs/site-header-row and are out of this block's scope):
+//   contentWidth — 'normal' | 'wide' | 'full' | literal (content-band cap)
+//   style.spacing.padding — native WP spacing support (top/right/bottom/left)
+//
+// Centred — content band capped to 'normal' (~1200px), default padding.
+//   The header cluster (logo/nav/icons, laid out by the middle row's own
+//   space-between) sits inside a centred, constrained band.
+// Split   — content band uncapped ('full', the block default). Logo pins
+//   left, nav/icons pin right, spread edge-to-edge — matches the middle
+//   row's built-in justifyContent:'space-between'.
+// Minimal — content band capped to 'normal' AND padding reduced to a
+//   slimmer bar height, for a stripped-back header.
+const MINIMAL_PADDING = { top: '8px', right: '16px', bottom: '8px', left: '16px' };
+
+function paddingMatches( padding, target ) {
+	if ( ! padding ) {
+		return false;
+	}
+	return [ 'top', 'right', 'bottom', 'left' ].every(
+		( side ) => padding[ side ] === target[ side ]
+	);
+}
+
+/**
+ * Derive which layout preset (if any) the CURRENT attribute values match.
+ * Returns '' when the combination doesn't match a known preset exactly
+ * (a hand-tuned/custom combination) — no preset button shows selected.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {string} 'centred' | 'split' | 'minimal' | ''
+ */
+function getActiveLayoutPreset( attributes ) {
+	const { contentWidth = 'full', style } = attributes;
+	const padding = style?.spacing?.padding;
+
+	if ( contentWidth === 'full' && ! padding ) {
+		return 'split';
+	}
+	if ( contentWidth === 'normal' ) {
+		if ( paddingMatches( padding, MINIMAL_PADDING ) ) {
+			return 'minimal';
+		}
+		if ( ! padding ) {
+			return 'centred';
+		}
+	}
+	return '';
+}
+
+/**
+ * Apply a layout preset by writing to the block's existing attributes only.
+ *
+ * @param {string}   value         'centred' | 'split' | 'minimal'
+ * @param {Object}   attributes    Current block attributes.
+ * @param {Function} setAttributes Block editor setAttributes.
+ */
+function applyLayoutPreset( value, attributes, setAttributes ) {
+	const { style = {} } = attributes;
+	const { spacing = {}, ...restStyle } = style;
+	const { padding, ...restSpacing } = spacing;
+
+	if ( value === 'split' ) {
+		// Split has no padding override — clear one if present so the
+		// preset detector reads back 'split' cleanly.
+		const hasRestSpacing = Object.keys( restSpacing ).length > 0;
+		setAttributes( {
+			contentWidth: 'full',
+			style: {
+				...restStyle,
+				...( hasRestSpacing ? { spacing: restSpacing } : {} ),
+			},
+		} );
+		return;
+	}
+
+	if ( value === 'centred' ) {
+		const hasRestSpacing = Object.keys( restSpacing ).length > 0;
+		setAttributes( {
+			contentWidth: 'normal',
+			style: {
+				...restStyle,
+				...( hasRestSpacing ? { spacing: restSpacing } : {} ),
+			},
+		} );
+		return;
+	}
+
+	if ( value === 'minimal' ) {
+		setAttributes( {
+			contentWidth: 'normal',
+			style: {
+				...restStyle,
+				spacing: {
+					...restSpacing,
+					padding: MINIMAL_PADDING,
+				},
+			},
+		} );
+	}
+}
 
 const CONTRAST_SAFE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
@@ -375,6 +487,57 @@ export default function Edit( { attributes, setAttributes } ) {
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
+			</InspectorControls>
+
+			{ /* Styles tab — FR-37-28 layout preset. Simple (default-visible)
+			     control: writes contentWidth + style.spacing.padding, the
+			     block's own existing attrs, never a new stored shape. */ }
+			<InspectorControls group="styles">
+				<ToolsPanel
+					label={ __( 'Layout', 'sgs-blocks' ) }
+					resetAll={ () =>
+						applyLayoutPreset( 'split', attributes, setAttributes )
+					}
+				>
+					<ToolsPanelItem
+						label={ __( 'Layout preset', 'sgs-blocks' ) }
+						hasValue={ () =>
+							getActiveLayoutPreset( attributes ) !== 'split'
+						}
+						onDeselect={ () =>
+							applyLayoutPreset( 'split', attributes, setAttributes )
+						}
+						isShownByDefault
+					>
+						<ToggleGroupControl
+							label={ __( 'Layout preset', 'sgs-blocks' ) }
+							value={ getActiveLayoutPreset( attributes ) }
+							onChange={ ( value ) =>
+								applyLayoutPreset( value, attributes, setAttributes )
+							}
+							help={ __(
+								'Sets the header content-band width and padding in one step. Selecting a preset overwrites those values — fine-tune afterwards in the panels above.',
+								'sgs-blocks'
+							) }
+							isBlock
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						>
+							<ToggleGroupControlOption
+								value="centred"
+								label={ __( 'Centred', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="split"
+								label={ __( 'Split', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="minimal"
+								label={ __( 'Minimal', 'sgs-blocks' ) }
+							/>
+						</ToggleGroupControl>
 					</ToolsPanelItem>
 				</ToolsPanel>
 			</InspectorControls>

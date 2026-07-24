@@ -17,3 +17,16 @@
 	outline: 1px dashed rgba( 0, 0, 0, 0.15 );
 	outline-offset: 2px;
 }
+
+/* Promoted quick-insert placeholder (FR-37-34) — editor-only UI, never
+ * rendered on the frontend. Steers an empty row toward common footer
+ * elements without restricting the full block inserter. */
+.editor-styles-wrapper .sgs-site-footer-row .sgs-row-quick-insert {
+	width: 100%;
+}
+
+.editor-styles-wrapper .sgs-row-quick-insert__buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}

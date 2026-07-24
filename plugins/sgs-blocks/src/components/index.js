@@ -13,6 +13,7 @@ export { default as SpacingControl } from './SpacingControl';
 export { default as StateToggleControl } from './StateToggleControl';
 export { default as AnimationControl } from './AnimationControl';
 export { IconPicker, IconPreview } from './IconPicker';
+export { default as RowQuickInsertAppender } from './RowQuickInsertAppender';
 export {
 	default as TypographyControls,
 	typographyAttrName,

@@ -1018,9 +1018,17 @@ live. **Separately, preserve** the three shipped search-header starters
 (`header-search-bar-above`, `header-search-bar-below`, `header-search-icon`) into the FR-37-8
 starter library, along with their design principle that **header search is opt-in, not default**
 (Spec 17 FR-S1-5).
-**Status:** `NOT-BUILT`.
-**Done when:** zero references to the three behaviour stubs remain; the three search starters
-are selectable from the FR-37-7 picker.
+**Status:** `✅ DONE — verified 2026-07-24.` Both halves are already satisfied and were confirmed
+by grep against the live theme, not asserted: (1) the three behaviour stubs (`header-sticky` /
+`header-transparent` / `header-shrink` parts, patterns and `theme.json` `templateParts` entries)
+do **not** exist anywhere under `theme/sgs-theme/` — `grep -rE "header-(sticky|transparent|shrink)"`
+returns zero references (they were removed in the earlier behaviour-attribute rework / FR-37-21
+sweep, so this FR's delete step is a no-op by construction); (2) the three search starters exist and
+were re-scoped by today's FR-37-8 work to `Block Types: core/post-content` + `Post Types: sgs_header`
+with zero `adaptive-nav` refs, so they surface in the FR-37-7 native picker like every other
+header starter.
+**Done when:** zero references to the three behaviour stubs remain (✅); the three search starters
+are selectable from the FR-37-7 picker (✅ — scoped identically to the live-verified starters).
 
 ### Gate
 
