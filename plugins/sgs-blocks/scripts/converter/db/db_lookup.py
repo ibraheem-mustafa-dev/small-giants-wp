@@ -2685,30 +2685,93 @@ def attrs_for_css_property_state(
     (transform, hover) — that attr's WRITE presence is authoritative over a
     raw-declaration re-scan, so the two mechanisms never disagree or
     double-paint the same signal.
+
+    ELEMENT/TIER SCOPING (qc-council finding, 2026-07-24; hardened same day).
+    An unscoped match conflates the card's OWN signal attr with a per-CHILD
+    attr sharing the same (css_property, css_state) — proven LIVE, not just
+    theoretical: `sgs/card-grid` + `sgs/team-member` both register
+    `imageZoomHover` (css_element='image', transform, hover) alongside
+    `scaleHover` (css_element=NULL, transform, hover); before this fix, a
+    draft where only the per-child image zooms on hover made the card's OWN
+    `effectHover` wrongly resolve to 'zoom'.
+
+    Applying the sibling functions' element/tier predicate (`_BASE_ELEMENTS` +
+    `css_layer='OUTER'`, base/desktop tier — same as
+    `_base_domain_attrs_for_css_property` / `attr_for_state_property`)
+    unconditionally would ALSO exclude `cardShadow` on `sgs/card-grid`
+    (css_element='card-tile') and `sgs/team-member` was only OUTER-tagged for
+    THIS one attr — i.e. today's only two live base-state box-shadow writers
+    are NOT both inside that domain (verified against sgs-framework.db,
+    2026-07-24: `_base_domain_attrs_for_css_property('sgs/card-grid',
+    'box-shadow')` returns `()`, not `('cardShadow',)`). A blanket predicate
+    would therefore silently BREAK the working card-grid reconciliation this
+    same day it hardened the transform/hover case.
+
+    So scoping is applied ONLY once genuine ambiguity is proven (>=2 raw
+    matches) — a single match (today's only live cardShadow cases, seeded
+    without an OUTER/root disambiguator yet) is returned unchanged, and
+    scoping never has a chance to wrongly drop it. When >=2 rows exist, the
+    established element/tier predicate narrows to the block's own root/self/
+    OUTER-layer signal; if that narrowing doesn't yield exactly one attr
+    (still 0 or still >=2 — a genuinely unresolved case), fall back to the
+    raw set rather than guessing, so this function can only ever get MORE
+    correct, never regress a currently-working reconciliation.
     """
     if not block_slug or not css_property:
         return ()
     conn = sqlite3.connect(SGS_DB)
     try:
         if css_state is None:
-            rows = conn.execute(
+            raw_rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? AND css_state IS NULL "
                 "ORDER BY rowid",
                 (block_slug, css_property),
             ).fetchall()
         else:
-            rows = conn.execute(
+            raw_rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? AND css_state = ? "
                 "ORDER BY rowid",
                 (block_slug, css_property, css_state),
             ).fetchall()
+        raw = tuple(r[0] for r in raw_rows)
+        if len(raw) <= 1:
+            # No ambiguity to resolve — return unchanged (preserves every
+            # currently-working single-match reconciliation, incl. cardShadow
+            # on card-tile/wrapper, byte-identical to pre-fix behaviour).
+            return raw
+        placeholders = ",".join("?" for _ in _BASE_ELEMENTS)
+        if css_state is None:
+            scoped_rows = conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? AND css_state IS NULL "
+                f"AND (css_element IS NULL OR css_element IN ({placeholders}) "
+                "OR css_layer = 'OUTER') "
+                "AND (css_tier IS NULL OR css_tier = 'desktop') "
+                "ORDER BY rowid",
+                (block_slug, css_property, *_BASE_ELEMENTS),
+            ).fetchall()
+        else:
+            scoped_rows = conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? AND css_state = ? "
+                f"AND (css_element IS NULL OR css_element IN ({placeholders}) "
+                "OR css_layer = 'OUTER') "
+                "AND (css_tier IS NULL OR css_tier = 'desktop') "
+                "ORDER BY rowid",
+                (block_slug, css_property, css_state, *_BASE_ELEMENTS),
+            ).fetchall()
+        scoped = tuple(r[0] for r in scoped_rows)
+        if len(scoped) == 1:
+            return scoped
+        # Scoping didn't cleanly resolve to exactly one attr (still 0 or
+        # still >=2) — fail safe to the raw set rather than guessing.
+        return raw
     except sqlite3.OperationalError:
         return ()
     finally:
         conn.close()
-    return tuple(r[0] for r in rows)
 
 
 def _slot_extracted(value: object) -> bool:

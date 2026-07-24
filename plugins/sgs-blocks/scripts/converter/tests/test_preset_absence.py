@@ -280,6 +280,24 @@ def test_hover_transform_only_card_grid_picks_zoom_not_lift():
     assert result.get("effectHover") == "zoom", result
 
 
+def test_hover_child_image_zoom_does_not_leak_into_card_effecthover():
+    """Hardening regression (qc-council finding, 2026-07-24). card-grid
+    registers TWO transform/hover attrs: `scaleHover` (the CARD's own
+    effect, css_element=NULL) and `imageZoomHover` (a per-CHILD image-only
+    effect, css_element='image'). Before the `attrs_for_css_property_state`
+    element-scoping fix, the unscoped lookup returned both, and
+    `imageZoomHover` being written alone (no `scaleHover`) was wrongly read
+    as evidence the CARD scales on hover -> effectHover fell to 'zoom'. The
+    card itself has NO hover effect here, so it must resolve to 'none'."""
+    result = apply_preset_absence(
+        _rec("sgs/card-grid"),
+        attrs_so_far={"imageZoomHover": True},  # per-child only, card's own scaleHover absent
+        base_decls={},
+        state_decls={},
+    )
+    assert result.get("effectHover") == "none", result
+
+
 def test_hover_transform_and_shadow_card_grid_picks_lift():
     """Both scaleHover AND shadowHover written -> 'lift' (more specific, 2
     properties) beats 'zoom' (1 property)."""
