@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div ref="{{ setEl }}" onMouseMove="{{ onMove }}" style="height:100%;padding:22px;background:linear-gradient(180deg,var(--soft),transparent);border-left:1px solid var(--border);position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,30%),var(--soft),transparent 70%);opacity:.9;pointer-events:none;"></div>
+  <a href="#" style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;color:var(--ink);">
+    <div style="flex:1;border-radius:15px;border:1px solid var(--border);background:repeating-linear-gradient(-45deg,var(--soft),var(--soft) 10px,transparent 10px,transparent 20px),var(--card);min-height:120px;position:relative;overflow:hidden;">
+      <span style="position:absolute;left:14px;bottom:12px;font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel);padding:5px 9px;border-radius:7px;border:1px solid var(--border);">{{ img }}</span>
+    </div>
+    <div style="margin-top:16px;">
+      <div style="display:inline-block;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:9px;">{{ tag }}</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:19px;letter-spacing:-.02em;line-height:1.12;">{{ title }}</div>
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.4;margin-top:6px;">{{ desc }}</div>
+      <div style="display:inline-flex;align-items:center;gap:7px;margin-top:15px;color:var(--accent);font-weight:600;font-size:14px;">{{ cta }} {{ arrow }}</div>
+    </div>
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:340,&quot;height&quot;:420},&quot;data&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;}}">
+class Component extends DCLogic {
+  setEl = (el) => { this._el = el; };
+  onMove = (e) => {
+    if (!this._el) return;
+    const r = this._el.getBoundingClientRect();
+    this._el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    this._el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  };
+  renderVals() {
+    const d = this.props.data || {};
+    return { setEl: this.setEl, onMove: this.onMove, tag: d.tag, title: d.title, desc: d.desc, cta: d.cta, img: d.img, arrow: d.arrow };
+  }
+}
+</script>
+</body>
+</html>

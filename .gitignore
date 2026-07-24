@@ -126,3 +126,6 @@ plugins/sgs-blocks/scripts/orchestrator/sgs-framework.db
 # Spec 33 extractor runtime artifacts (live-payload backups + pre-deploy working copies)
 sites/*/theme-snapshot-backups/
 sites/*/theme-snapshot.pre-*.json
+
+# Claude Design mega-menu draft ZIPs — extracted folders are committed; the zips stay local (Bean 2026-07-24)
+sites/*.zip
