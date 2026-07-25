@@ -146,5 +146,19 @@ def lift_uniform_grid_item_css(
             attr = None
         if attr is None:
             continue  # no gridItem* destination → child keeps its own CSS
+        try:
+            box_family = db_lookup.box_family_for(container_slug, attr)
+        except Exception:  # noqa: BLE001 — DB unavailable in test env → no-op
+            box_family = None
+        if box_family is not None:
+            # A1 migration (2026-07-26): gridItemPadding/gridItemBorderRadius are
+            # box-object attrs — a flat ScalarLift into a dict-typed attr would
+            # collide at the extraction.py merge. The per-declaration grid.py
+            # resolver path (padding/border-radius fork) already handles these
+            # via per-side/per-corner Writes on the CHILD's own CSS pass, so
+            # skip the uniform-fold here rather than decompose the comparison
+            # per-side — the child path is correct and this is a pure no-op for
+            # box-family attrs (never a name regex; box_family_for-gated).
+            continue
         lifts.append(ScalarLift(attr=attr, value=values.pop()))
     return lifts

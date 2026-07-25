@@ -208,26 +208,63 @@ def test_uniform_grid_item_fold_does_not_overwrite_css_pass_value():
     must NOT be overwritten by the uniform grid-item fold ScalarLift — mirror the frozen
     `_lift_uniform_grid_item_css` setdefault contract (CSS pass / earlier path wins).
     Content lifts still overwrite (they never target gridItem*).
+
+    Uses `gridItemShadow` (still a flat SCALAR gridItem* attr after the A1 box-object
+    migration, 2026-07-26 — gridItemPadding/gridItemBorderRadius became object attrs;
+    box-shadow/background-color/color stayed scalar) so this setdefault-precedence
+    assertion stays valid regardless of the box-family fork in
+    `arrangement.lift_uniform_grid_item_css` / `resolvers/grid.py`.
     """
     from converter.context import Recognition, ScalarLift as _SL
     import converter.services.extraction as _ext
 
-    # A recognised container whose CSS pass sets gridItemPadding='99px'; a fold ScalarLift
-    # then tries to set gridItemPadding='10px'. setdefault => the CSS-pass '99px' wins.
+    # A recognised container whose CSS pass sets gridItemShadow='99px'; a fold ScalarLift
+    # then tries to set gridItemShadow='10px'. setdefault => the CSS-pass '99px' wins.
     rec = Recognition(kind="named", slug=_CONTAINER, container_kind="", delegates_content=1)
     node = _node('<section class="sgs-x"></section>')
 
     _orig_css = _ext._build_css_attrs
     _orig_extract = _ext.extract_content
     try:
-        _ext._build_css_attrs = lambda *a, **k: {"gridItemPadding": "99px"}
-        _ext.extract_content = lambda *a, **k: [_SL(attr="gridItemPadding", value="10px"),
+        _ext._build_css_attrs = lambda *a, **k: {"gridItemShadow": "99px"}
+        _ext.extract_content = lambda *a, **k: [_SL(attr="gridItemShadow", value="10px"),
                                                 _SL(attr="quote", value="hi")]
         markup = _ext.build_block_markup(rec, node, media_map={}, css_rules={}, is_root=True)
     finally:
         _ext._build_css_attrs = _orig_css
         _ext.extract_content = _orig_extract
 
-    assert '"gridItemPadding":"99px"' in markup   # CSS pass won (setdefault)
-    assert '"gridItemPadding":"10px"' not in markup
+    assert '"gridItemShadow":"99px"' in markup   # CSS pass won (setdefault)
+    assert '"gridItemShadow":"10px"' not in markup
     assert '"quote":"hi"' in markup               # content lift still applied
+
+
+def test_uniform_grid_item_fold_skips_box_family_attrs():
+    """A1 migration (2026-07-26): `lift_uniform_grid_item_css` must SKIP any property
+    whose destination attr is box-family-gated (gridItemPadding/gridItemBorderRadius
+    are now {side}/{corner} object attrs) rather than emit a flat ScalarLift that
+    would collide with the object shape at the extraction.py merge. Uses a fake DB
+    lookup so the test doesn't depend on the live sgs-framework.db seed state.
+    """
+    class _FakeDb:
+        @staticmethod
+        def attr_for_layer_property(_slug, _layer, prop):
+            return {"padding": "gridItemPadding", "box-shadow": "gridItemShadow"}.get(prop)
+
+        @staticmethod
+        def box_family_for(_slug, attr):
+            return "gridItemPadding" if attr == "gridItemPadding" else None
+
+    node_html = '<div class="i" style="padding:10px;box-shadow:0 0 1px #000;"></div>'
+    items = [_node(node_html), _node(node_html)]
+
+    _orig_db = arrangement.db_lookup
+    try:
+        arrangement.db_lookup = _FakeDb
+        lifts = arrangement.lift_uniform_grid_item_css(items, css_rules={}, container_slug=_CONTAINER)
+    finally:
+        arrangement.db_lookup = _orig_db
+
+    attrs = {lift.attr for lift in lifts}
+    assert "gridItemPadding" not in attrs   # box-family-gated — skipped, not a flat ScalarLift
+    assert "gridItemShadow" in attrs        # still-scalar prop — folds as before

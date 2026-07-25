@@ -112,6 +112,12 @@
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"gridItemPadding": [
+					"gridItemPadding"
+				],
+				"gridItemBorderRadius": [
+					"gridItemBorderRadius"
 				]
 			},
 			"elements": {
@@ -725,12 +731,12 @@
 			"default": ""
 		},
 		"gridItemBorderRadius": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridItemPadding": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridItemShadow": {
 			"type": "string",

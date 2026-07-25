@@ -28,6 +28,12 @@
 				],
 				"cardPadding": [
 					"cardPadding"
+				],
+				"ctaBorderWidth": [
+					"ctaBorderWidth"
+				],
+				"ctaBorderRadius": [
+					"ctaBorderRadius"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -298,12 +304,12 @@
 			]
 		},
 		"ctaBorderWidth": {
-			"type": "number",
-			"default": 2
+			"type": "object",
+			"default": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }
 		},
 		"ctaBorderRadius": {
-			"type": "number",
-			"default": 10
+			"type": "object",
+			"default": { "topLeft": "10px", "topRight": "10px", "bottomLeft": "10px", "bottomRight": "10px" }
 		},
 		"ctaFontWeight": {
 			"type": "string",

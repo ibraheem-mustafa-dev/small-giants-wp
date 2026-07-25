@@ -37,14 +37,59 @@ from converter.services.tier_suffix import tier_state_suffix
 from converter.services.token_snap import token_snap
 from converter.services.validate import validate
 from converter.services.value_serialise import value_serialise
+from converter.db import db_lookup
 from converter.db.db_lookup import attr_for_property
 
 # CSS gap properties → the single grid gap attr family.
 _GAP_PROPS = frozenset({"gap", "column-gap"})
 # Per-grid-item box CSS routed via the GRID (gridItem*) layer prefix.
+# `padding`/`border-radius` FORK by box_family (A1 migration, 2026-07-26,
+# see below) — box-shadow/background-color/color stay scalar unconditionally.
 _GRID_ITEM_PROPS = frozenset({
     "padding", "box-shadow", "border-radius", "background-color", "color",
 })
+# Longhand border-radius corner properties → gridItemBorderRadius corner keys
+# (A1 migration; only meaningful when box_family_for gates gridItemBorderRadius).
+# A closed, fixed CSS-spec vocabulary (border-{top,bottom}-{left,right}-radius) —
+# NOT a per-block attr lookup. The prop->corner parse itself is inlined at the
+# ONE call site below (box-family-guard requires the box_family reference to
+# be in the SAME enclosing scope as any side/corner-token regex — §3 of the
+# box-object interface contract).
+_GRID_ITEM_RADIUS_LONGHANDS = frozenset({
+    "border-top-left-radius", "border-top-right-radius",
+    "border-bottom-right-radius", "border-bottom-left-radius",
+})
+
+
+def _expand_border_radius_corners(raw: str) -> dict[str, str]:
+    """Expand a ``border-radius`` shorthand value (1-4 space-separated tokens,
+    ignoring any ``/`` elliptical-radius second half) into the 4 CSS corners,
+    per the CSS border-radius shorthand rule:
+        1 value  -> all 4 corners
+        2 values -> (TL+BR), (TR+BL)
+        3 values -> TL, (TR+BL), BR
+        4 values -> TL TR BR BL
+    Returns {} for an unparseable (0 or >4 token) value.
+    """
+    # Only the first (horizontal-radius) half matters for this box-object
+    # migration — elliptical `/` vertical-radius half is out of scope (no
+    # attr shape for it), matching the existing scalar behaviour which
+    # also only ever stored the single shorthand string verbatim.
+    first_half = raw.split("/")[0].strip()
+    tokens = first_half.split()
+    if not 1 <= len(tokens) <= 4:
+        return {}
+    if len(tokens) == 1:
+        tl = tr = br = bl = tokens[0]
+    elif len(tokens) == 2:
+        tl, br = tokens[0], tokens[0]
+        tr, bl = tokens[1], tokens[1]
+    elif len(tokens) == 3:
+        tl, br = tokens[0], tokens[2]
+        tr = bl = tokens[1]
+    else:
+        tl, tr, br, bl = tokens
+    return {"topLeft": tl, "topRight": tr, "bottomRight": br, "bottomLeft": bl}
 
 
 def _parse_repeat_columns(cols_str: str) -> int | None:
@@ -138,7 +183,108 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         )
         return Write(attr=gap_attr, value=value, property=prop, tier=decl.tier)
 
-    # --- per-grid-item box CSS → gridItem* --------------------------------------
+    # --- padding/border-radius FORK by box_family (A1 migration, 2026-07-26) ----
+    # gridItemPadding/gridItemBorderRadius are now box-object attrs on the 4
+    # composite-mirror blocks (container/cta-section/hero/trust-bar). When
+    # box_family_for gates the resolved attr, expand the shorthand into
+    # sides/corners and emit ONE Write per side/corner — the orchestrator's
+    # accumulator (ElementResult.attrs, box_family_for-generic) folds them
+    # into a single merged object attr, no per-block code. box-shadow/
+    # background-color/color (and a block still on the flat scalar shape)
+    # fall through unchanged to the scalar path below. NEVER a name regex —
+    # gated exclusively on db_lookup.box_family_for (§3.A step-3b AST gate).
+    if prop == "padding":
+        base_attr = attr_resolve(ctx, "GRID", prop)
+        if base_attr is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
+            )
+        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        if db_lookup.box_family_for(ctx.block_slug, attr) is not None:
+            # Lazy import — root_supports imports converter.orchestrator, which
+            # imports converter.resolvers (this package); a top-level import here
+            # would be circular (mirrors outer_box.py's identical lazy-import of
+            # the same helper for the same reason).
+            from converter.services.root_supports import _parse_padding_shorthand
+            raw = strip_important(decl.value).strip()
+            parsed = _parse_padding_shorthand(raw)
+            if parsed is None:
+                return gap_writer(
+                    ctx, decl, GapOrigin.NO_DESTINATION,
+                    f"{ctx.block_slug} padding value {raw!r} not parseable as a box shorthand",
+                )
+            writes: list[Write] = [
+                Write(
+                    attr=attr,
+                    value={side: value_serialise("string", None, val.strip())},
+                    property=prop,
+                    tier=decl.tier,
+                )
+                for side, val in parsed.items()
+            ]
+            return writes
+        # box_family_for is None (block still flat, or attr not seeded) —
+        # fall through to the scalar path below unchanged.
+
+    if prop == "border-radius":
+        base_attr = attr_resolve(ctx, "GRID", prop)
+        if base_attr is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
+            )
+        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        if db_lookup.box_family_for(ctx.block_slug, attr) is not None:
+            raw = strip_important(decl.value).strip()
+            corners = _expand_border_radius_corners(raw)
+            writes = []
+            for corner, corner_val in corners.items():
+                value = value_serialise("string", None, corner_val.strip())
+                writes.append(
+                    Write(attr=attr, value={corner: value}, property=prop, tier=decl.tier)
+                )
+            if not writes:
+                return gap_writer(
+                    ctx, decl, GapOrigin.NO_DESTINATION,
+                    f"{ctx.block_slug} border-radius value {raw!r} not parseable as a "
+                    "1-4-value shorthand",
+                )
+            return writes
+        # box_family_for is None — fall through to the scalar path below unchanged.
+
+    # --- longhand border-radius corners (border-top-left-radius etc.) → the
+    # SAME gridItemBorderRadius box-object attr, ONE corner per Write. Only
+    # meaningful when gridItemBorderRadius is box-family-gated for this
+    # block — a block still flat has no per-corner destination, so this
+    # longhand set is an honest NO_DESTINATION gap there (a flat scalar
+    # attr cannot represent a single corner without clobbering the others).
+    if prop in _GRID_ITEM_RADIUS_LONGHANDS:
+        base_attr = attr_resolve(ctx, "GRID", "border-radius")
+        if base_attr is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} has no GRID (gridItem*) attr for border-radius "
+                f"(longhand {prop})",
+            )
+        attr = tier_state_suffix(base_attr, decl, ctx.conn)
+        box_family = db_lookup.box_family_for(ctx.block_slug, attr)
+        if box_family is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug}'s gridItemBorderRadius is not a box-object attr — "
+                f"{prop} longhand has no per-corner destination",
+            )
+        # box_family confirmed non-None above — safe to parse the longhand's
+        # corner token from its CSS-spec-fixed vocabulary.
+        _corner_match = re.match(r"^border-(top|bottom)-(left|right)-radius$", prop)
+        corner = _corner_match.group(1) + _corner_match.group(2).capitalize()
+        value = value_serialise("string", None, strip_important(decl.value).strip())
+        return Write(attr=attr, value={corner: value}, property=prop, tier=decl.tier)
+
+    # --- per-grid-item box CSS → gridItem* (scalar path — box-shadow/
+    # background-color/color always; padding/border-radius only reach here
+    # when box_family_for returned None above, i.e. a block still flat) ----
     if prop in _GRID_ITEM_PROPS:
         base_attr = attr_resolve(ctx, "GRID", prop)
         if base_attr is None:

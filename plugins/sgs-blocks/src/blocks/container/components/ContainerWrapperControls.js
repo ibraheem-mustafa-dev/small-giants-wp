@@ -52,7 +52,9 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	__experimentalUnitControl as UnitControl,
 	TabPanel,
+	BoxControl,
 } from '@wordpress/components';
+import { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';
 import {
 	ResponsiveControl,
 	SpacingControl,
@@ -62,6 +64,17 @@ import {
 // ---------------------------------------------------------------------------
 // Shared option arrays — kept identical to container/edit.js
 // ---------------------------------------------------------------------------
+
+// Units offered in the grid-item BoxControl side inputs — mirrors
+// ResponsiveBoxControl.js's BOX_UNITS (no responsive tiers on these attrs,
+// so the plain WP-native BoxControl/BorderRadiusControl are used directly).
+const GRID_ITEM_BOX_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+	{ value: '%', label: '%', default: 0 },
+	{ value: 'vw', label: 'vw', default: 0 },
+];
 
 const BG_SIZE_OPTIONS = [
 	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
@@ -1106,9 +1119,9 @@ export function ShapeDividersPanel( { attributes, setAttributes } ) {
 export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 	const {
 		layout = 'stack',
-		gridItemPadding = '',
+		gridItemPadding = {},
 		gridItemBackground = '',
-		gridItemBorderRadius = '',
+		gridItemBorderRadius = {},
 		gridItemBorder = '',
 		gridItemShadow = '',
 		gridItemTextColour = '',
@@ -1126,23 +1139,22 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 					'sgs-blocks'
 				) }
 			</p>
-			<SpacingControl
-				freeInput
+			<BoxControl
 				label={ __( 'Padding', 'sgs-blocks' ) }
-				value={ gridItemPadding }
-				onChange={ ( val ) => setAttributes( { gridItemPadding: val } ) }
+				values={ gridItemPadding ?? {} }
+				splitOnAxis={ false }
+				units={ GRID_ITEM_BOX_UNITS }
+				onChange={ ( next ) => setAttributes( { gridItemPadding: next } ) }
 			/>
 			<DesignTokenPicker
 				label={ __( 'Background colour', 'sgs-blocks' ) }
 				value={ gridItemBackground }
 				onChange={ ( val ) => setAttributes( { gridItemBackground: val } ) }
 			/>
-			<TextControl
+			<BorderRadiusControl
 				label={ __( 'Border radius', 'sgs-blocks' ) }
-				value={ gridItemBorderRadius }
-				onChange={ ( val ) => setAttributes( { gridItemBorderRadius: val } ) }
-				help={ __( "CSS border-radius e.g. '8px' or '50%'.", 'sgs-blocks' ) }
-				__nextHasNoMarginBottom
+				values={ gridItemBorderRadius ?? {} }
+				onChange={ ( next ) => setAttributes( { gridItemBorderRadius: next } ) }
 			/>
 			<TextControl
 				label={ __( 'Border', 'sgs-blocks' ) }

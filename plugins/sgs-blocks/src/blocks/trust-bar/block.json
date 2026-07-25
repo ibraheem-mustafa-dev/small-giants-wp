@@ -55,6 +55,12 @@
 					"contentBandPadding",
 					"contentBandPaddingTablet",
 					"contentBandPaddingMobile"
+				],
+				"gridItemPadding": [
+					"gridItemPadding"
+				],
+				"gridItemBorderRadius": [
+					"gridItemBorderRadius"
 				]
 			},
 			"elements": {
@@ -609,16 +615,16 @@
 			"default": false
 		},
 		"gridItemPadding": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridItemBackground": {
 			"type": "string",
 			"default": ""
 		},
 		"gridItemBorderRadius": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridItemBorder": {
 			"type": "string",

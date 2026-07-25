@@ -369,7 +369,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// HTML tag. No block declares a user-facing 'htmlTag' attr any more
 			// (removed 2026-07-05) — callers pass 'tag' in $opts explicitly.
-			$html_tag     = $opt_tag ? $opt_tag : 'section';
+			$html_tag = $opt_tag ? $opt_tag : 'section';
 			// Full landmark + sectioning + grouping range (D344, 2026-07-16): the
 			// ARIA-landmark tags (main/nav/aside/header/footer) + sectioning
 			// (article/section) + grouping (div/figure), plus the pre-existing
@@ -399,9 +399,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$align = $attributes['align'] ?? '';
 
 			// Grid item defaults (SB-1) — section + layout kinds only.
-			$grid_item_padding       = $attributes['gridItemPadding'] ?? '';
+			// gridItemPadding/gridItemBorderRadius are now box-object attrs
+			// (A1 migration, 2026-07-26): { top,right,bottom,left } /
+			// { topLeft,topRight,bottomLeft,bottomRight }. Serialise to CSS
+			// shorthand here so the rest of this method's string-based
+			// consumers ($grid_item_padding !== '' guards, sgs_sanitize_grid_template)
+			// are unchanged. Empty/absent object → '' (identical neutral
+			// behaviour to the old empty-string default).
+			$grid_item_padding       = sgs_serialise_box_sides( $attributes['gridItemPadding'] ?? array() );
 			$grid_item_background    = $attributes['gridItemBackground'] ?? '';
-			$grid_item_border_radius = $attributes['gridItemBorderRadius'] ?? '';
+			$grid_item_border_radius = sgs_serialise_box_corners( $attributes['gridItemBorderRadius'] ?? array() );
 			$grid_item_border        = $attributes['gridItemBorder'] ?? '';
 			$grid_item_shadow        = $attributes['gridItemShadow'] ?? '';
 			$grid_item_text_colour   = $attributes['gridItemTextColour'] ?? '';
@@ -1001,8 +1008,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			// Responsive CSS + uid — section + layout kinds with responsive attrs.
 			// ----------------------------------------------------------------
-			$responsive_css      = '';
-			$has_responsive_bg   = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
+			$responsive_css    = '';
+			$has_responsive_bg = $is_section && ( ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] ) );
 			// A per-tier COLUMN COUNT (columnsTablet/columnsMobile) also needs the
 			// responsive block to run — that is where the count is emitted as a scoped
 			// per-tier `grid-template-columns` rule at $grid_sel (QB-2 tier-count
@@ -1016,7 +1023,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$has_tier_column_count = ( $is_section || $is_layout ) && 'grid' === $layout && ! $object_grid
 				&& ( ( $columns_tablet && '' === trim( (string) $grid_template_tablet ) )
 					|| ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) );
-			$has_responsive_attr = ( $gap_tablet || $gap_mobile || $has_responsive_bg || $has_responsive_min_height
+			$has_responsive_attr   = ( $gap_tablet || $gap_mobile || $has_responsive_bg || $has_responsive_min_height
 				|| $has_responsive_padding || $has_responsive_margin || $has_band_responsive || $max_width_tablet || $max_width_mobile )
 				|| ( ( $is_section || $is_layout ) && ( $grid_template_tablet || $grid_template_mobile || $grid_template_rows_tablet || $grid_template_rows_mobile ) )
 				|| $has_tier_column_count;

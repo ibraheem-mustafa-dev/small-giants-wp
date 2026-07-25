@@ -7,7 +7,12 @@ import {
 	RichText,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { DesignTokenPicker, TypographyControls } from '../../components';
+import {
+	DesignTokenPicker,
+	TypographyControls,
+	ResponsiveBoxControl,
+	ResponsiveBorderRadiusControl,
+} from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
 	PanelBody,
@@ -780,19 +785,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
 	const ctaHasPadding =
 		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
+	// A2 box-object migration (2026-07-26): ctaBorderWidth/ctaBorderRadius are now
+	// {top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight} objects
+	// (mirrors sgs/button). boxShorthand mirrors button/edit.js's canvas-preview
+	// helper (contract §5) so the editor preview matches the frontend
+	// (helpers-button-style.php's sgs_box_object_shorthand()).
+	const boxShorthand = ( box, keys ) => {
+		if ( ! box || 'object' !== typeof box ) return undefined;
+		if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+		return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+	};
 	const ctaPreviewStyle = {
 		backgroundColor: resolvePcColour( ctaColourBackground ),
 		color: resolvePcColour( ctaColourText ),
 		borderColor: resolvePcColour( ctaColourBorder ),
 		borderStyle: ctaBorderStyle || undefined,
-		borderWidth:
-			ctaBorderWidth !== undefined && ctaBorderWidth !== null && '' !== ctaBorderWidth
-				? `${ ctaBorderWidth }px`
-				: undefined,
-		borderRadius:
-			ctaBorderRadius !== undefined && ctaBorderRadius !== null && '' !== ctaBorderRadius
-				? `${ ctaBorderRadius }px`
-				: undefined,
+		borderWidth: boxShorthand( ctaBorderWidth, [ 'top', 'right', 'bottom', 'left' ] ),
+		// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
+		borderRadius: boxShorthand( ctaBorderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] ),
 		fontWeight: ctaFontWeight || undefined,
 		fontSize:
 			ctaFontSize !== undefined && ctaFontSize !== null && '' !== ctaFontSize
@@ -1233,8 +1243,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											ctaColourTextHover: preset.colourTextHover,
 											ctaColourBorderHover: preset.colourBorderHover,
 											ctaBorderStyle: preset.borderStyle,
-											ctaBorderWidth: preset.borderWidthTop,
-											ctaBorderRadius: preset.borderRadiusTL,
+											// A2 box-object migration: presets are uniform
+											// (all sides/corners equal), so a uniform-object
+											// seed from the single preset value preserves
+											// current behaviour exactly.
+											ctaBorderWidth: {
+												top: `${ preset.borderWidthTop }px`,
+												right: `${ preset.borderWidthTop }px`,
+												bottom: `${ preset.borderWidthTop }px`,
+												left: `${ preset.borderWidthTop }px`,
+											},
+											ctaBorderRadius: {
+												topLeft: `${ preset.borderRadiusTL }px`,
+												topRight: `${ preset.borderRadiusTL }px`,
+												bottomLeft: `${ preset.borderRadiusTL }px`,
+												bottomRight: `${ preset.borderRadiusTL }px`,
+											},
 											ctaFontWeight: preset.fontWeight,
 									  }
 									: {} ),
@@ -1357,8 +1381,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									ctaColourBorderHover:
 										preset.colourBorderHover,
 									ctaBorderStyle: preset.borderStyle,
-									ctaBorderWidth: preset.borderWidthTop,
-									ctaBorderRadius: preset.borderRadiusTL,
+									ctaBorderWidth: {
+										top: `${ preset.borderWidthTop }px`,
+										right: `${ preset.borderWidthTop }px`,
+										bottom: `${ preset.borderWidthTop }px`,
+										left: `${ preset.borderWidthTop }px`,
+									},
+									ctaBorderRadius: {
+										topLeft: `${ preset.borderRadiusTL }px`,
+										topRight: `${ preset.borderRadiusTL }px`,
+										bottomLeft: `${ preset.borderRadiusTL }px`,
+										bottomRight: `${ preset.borderRadiusTL }px`,
+									},
 									ctaFontWeight: preset.fontWeight,
 								} );
 							} }
@@ -1384,20 +1418,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 							__nextHasNoMarginBottom
 						/>
-						<NumberControl
-							label={ __( 'Corner radius (px)', 'sgs-blocks' ) }
-							value={ ctaBorderRadius ?? '' }
-							min={ 0 }
-							max={ 100 }
-							onChange={ ( v ) =>
-								setAttributes( {
-									ctaBorderRadius:
-										v === '' || v === undefined
-											? undefined
-											: Number.parseInt( v, 10 ),
-								} )
+						{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
+						   (button/edit.js:596) exactly — ResponsiveBoxControl /
+						   ResponsiveBorderRadiusControl with showResponsive={false}
+						   (single-tier; no ctaBorderWidth/RadiusTablet/Mobile attrs
+						   exist), writing the object straight to the attr. */ }
+						<ResponsiveBoxControl
+							label={ __( 'Border width', 'sgs-blocks' ) }
+							values={ { base: ctaBorderWidth ?? {} } }
+							showResponsive={ false }
+							onChange={ ( _tier, next ) =>
+								setAttributes( { ctaBorderWidth: next } )
 							}
-							__nextHasNoMarginBottom
+						/>
+						<ResponsiveBorderRadiusControl
+							label={ __( 'Corner radius', 'sgs-blocks' ) }
+							values={ { base: ctaBorderRadius ?? {} } }
+							showResponsive={ false }
+							onChange={ ( _tier, next ) =>
+								setAttributes( { ctaBorderRadius: next } )
+							}
 						/>
 						<NumberControl
 							label={ __( 'Font size (px)', 'sgs-blocks' ) }

@@ -78,11 +78,37 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$allowed_borders  = array( 'solid', 'dashed', 'dotted', 'none' );
 		$border_style     = in_array( $border_style_raw, $allowed_borders, true ) ? $border_style_raw : '';
 
-		$border_width_raw = $read( 'BorderWidth' );
-		$border_width     = ( '' !== $border_width_raw && null !== $border_width_raw ) ? absint( $border_width_raw ) : null;
+		// A2 box-object migration (2026-07-26): ctaBorderWidth/ctaBorderRadius are
+		// now {top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight}
+		// objects (mirrors sgs/button). Widen BACKWARD-COMPATIBLY: an array raw
+		// value serialises to CSS shorthand via the shared box-object helpers
+		// (helpers-container.php); any OTHER caller of this shared function still
+		// passing the legacy scalar px NUMBER keeps the original absint() path.
+		// Empty/absent object → '' (matches the pre-migration `null`/'' guard
+		// semantics below — nothing emitted for that property).
+		$border_width_raw       = $read( 'BorderWidth' );
+		$border_width_shorthand = null;
+		$border_width           = null;
+		if ( is_array( $border_width_raw ) ) {
+			$shorthand = function_exists( 'sgs_serialise_box_sides' ) ? sgs_serialise_box_sides( $border_width_raw ) : '';
+			if ( '' !== $shorthand ) {
+				$border_width_shorthand = $shorthand;
+			}
+		} elseif ( '' !== $border_width_raw && null !== $border_width_raw ) {
+			$border_width = absint( $border_width_raw );
+		}
 
-		$border_radius_raw = $read( 'BorderRadius' );
-		$border_radius     = ( '' !== $border_radius_raw && null !== $border_radius_raw ) ? absint( $border_radius_raw ) : null;
+		$border_radius_raw       = $read( 'BorderRadius' );
+		$border_radius_shorthand = null;
+		$border_radius           = null;
+		if ( is_array( $border_radius_raw ) ) {
+			$shorthand = function_exists( 'sgs_serialise_box_corners' ) ? sgs_serialise_box_corners( $border_radius_raw ) : '';
+			if ( '' !== $shorthand ) {
+				$border_radius_shorthand = $shorthand;
+			}
+		} elseif ( '' !== $border_radius_raw && null !== $border_radius_raw ) {
+			$border_radius = absint( $border_radius_raw );
+		}
 
 		$font_size_raw = $read( 'FontSize' );
 		$font_size     = ( '' !== $font_size_raw && null !== $font_size_raw ) ? absint( $font_size_raw ) : null;
@@ -105,10 +131,14 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( '' !== $border_style ) {
 			$base_decls[] = 'border-style:' . $border_style . ';';
 		}
-		if ( null !== $border_width ) {
+		if ( null !== $border_width_shorthand ) {
+			$base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';
+		} elseif ( null !== $border_width ) {
 			$base_decls[] = 'border-width:' . $border_width . 'px;';
 		}
-		if ( null !== $border_radius ) {
+		if ( null !== $border_radius_shorthand ) {
+			$base_decls[] = 'border-radius:' . esc_attr( $border_radius_shorthand ) . ';';
+		} elseif ( null !== $border_radius ) {
 			$base_decls[] = 'border-radius:' . $border_radius . 'px;';
 		}
 		if ( '' !== $font_weight ) {
