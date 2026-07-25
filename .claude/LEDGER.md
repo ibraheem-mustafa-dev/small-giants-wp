@@ -106,28 +106,28 @@ a real render; panel id instance-scoped. Live fixtures kept: panel **1745**, men
   making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real
   editable columns + aside. (Only a live editor caught this — invisible to every server-side gate.)
 - **Aside media capped** (170px object-fit) so an empty/large image doesn't dominate (render.php + editor.css).
-- **✅ CLOSED 2026-07-25 PM — editor-canvas preset preview WORKS.** The prior "iframe ignores editor.css" root
-  cause was WRONG. The real cause: block.json referenced source filenames (`style.css`/`editor.css`) not the
-  compiled ones (`style-index.css`/`index.css`), so the style handle pointed at a non-existent build file and WP
-  silently never enqueued it (see the ⭐ CURRENT block at top). Fixed on all 3 mega blocks + the frontend
-  self-nest bug; verified live (canvas columns=flex, cards=grid, minimal=flex). Commit `b5f2ee02`.
+- **✅ CLOSED 2026-07-25 PM — editor-canvas preset preview WORKS** + the two follow-on findings are now BOTH FIXED
+  (D382). (a) the 4 other blocks with the broken style-handle ref (content-collection/google-reviews/product-card/
+  trustpilot-reviews) were fixed + verified no-regression (commit `c3524de8`); (b) `build-deploy.py` now
+  auto-bumps the CSS epoch (`touch sgs-blocks.php` + clear `uploads/sgs-css/*.css` on every deploy — epoch-bump
+  proven, commit `dbda2976`). All merged to main.
 
-**⭐ Your next session — mega preset rendering is DONE on both surfaces. Remaining mega work + 2 new findings.**
-1. **[NEW finding] 4 blocks with the same broken style-handle ref** — `content-collection`, `google-reviews`,
-   `product-card`, `trustpilot-reviews` (block.json → `style.css`/`editor.css`). Scoped per-block pass: verify
-   each in the editor (does its style-index.css load in the canvas?) before changing — regression risk on shipped
-   blocks. Consider a build gate asserting every `build/blocks/*/block.json` `file:` style target exists.
-   MEMORY `blockjson-style-must-reference-compiled-filenames`.
-2. **[NEW finding] Harden `build-deploy.py` CSS cache-bust** — the `tar` deploy preserves mtimes so
-   `sgs_css_check_deploy` (epoch = version|`filemtime(sgs-blocks.php)`) never fires on a CSS-only change; the
-   CSS-lift serves stale CSS + block `?ver` doesn't bust. Fix: bump the epoch (or `touch sgs-blocks.php`) as a
-   deploy step. Until then: `touch sgs-blocks.php && rm uploads/sgs-css/*.css` + purge after a CSS-only deploy.
-3. **Full-nav Gate 3 (composed):** attach panel 1745 (populate it first — it's empty) to menu 100, put an
-   `sgs/nav-menu` on a page, open on hover/tap/keyboard; the LIVE recursion test (panel embedding a nav bound to
-   its own menu → plain link, no loop). My change didn't touch that path (recursion guard + drawer byte-unchanged)
-   so it's regression-safe, but the composed live test was not re-run this session.
-Then the DEFERRED follow-on (declared, NOT cut, STOP-29): `media-cards`+`brands` variants, the 5 motion effects
-(KEEP caret), night/day `dark` value-set, aside `feature`/`preview`, full manifest conformance, true safe-triangle.
+**⭐ Your next session — Spec 36 mega CORE is DONE (both surfaces, all findings closed). Pick the next Spec-36 front.**
+The mega preset rendering is complete + merged to main. Two candidate fronts — Bean steers:
+1. **(prerequisite for the composed nav test) Basic new header (Spec 37) so the nav+mega can be composed.** Bean
+   flagged the full composed-nav Gate 3 (mega inside a real nav in a header, open on hover/tap/keyboard + the live
+   recursion test) as blocked until a basic version of the new header exists. If the priority is closing Spec 36's
+   nav end-to-end, the basic header is the unlock. Spec 37 = `specs/37-HEADER-FOOTER-BUILDER.md`; live status +
+   the per-row identity design/plan are in the co-active Track-2 next-session prompts already on main.
+2. **DEFERRED mega follow-on (Spec 36 §0.5, declared NOT cut — STOP-29):** `media-cards`+`brands` variants, the 5
+   motion effects (KEEP caret), night/day `dark` value-set, aside `feature`/`preview`, full manifest conformance,
+   the true safe-triangle (CF-13 currently ships the 170ms bridge). Each maps to a named Spec-36 §0.5 stage.
+Recommended: **do the basic header first (unblocks the composed nav Gate 3), then the mega §0.5 follow-on.** The
+composed nav test itself: attach panel 1745 (populate it first — empty) to menu 100, put `sgs/nav-menu` on a page,
+open the mega, run the LIVE recursion test (panel embedding a nav bound to its own menu → plain link, no loop).
+Regression-safe (recursion guard + drawer byte-unchanged this session) but not re-run live.
+**Cheap hardening worth doing (from D382):** a build gate asserting every `build/blocks/*/block.json` `file:`
+style/editorStyle target actually EXISTS in the build dir — would have caught the whole D382 style-handle class.
 
 **⚠ TOOLING FLAG:** `/sgs-wp-engine` is BLOCKED by its freshness gate (skill `db_schema_version: spec-31` vs DB
 `spec-15-p1`) — its DB pointers may be stale. Worked from live DB + code instead this session. A `/lifecycle`
