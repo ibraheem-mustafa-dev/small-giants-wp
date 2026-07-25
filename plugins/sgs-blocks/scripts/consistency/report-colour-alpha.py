@@ -10,9 +10,15 @@ What it does
 ------------
 1. Counts colour-named attributes (name matches /colou?r/i, British or
    American spelling) across every `plugins/sgs-blocks/src/blocks/*/block.json`.
-2. Determines, per block, whether its editor source (any `*.js`/`*.jsx` in
-   the block's src folder) uses `enableAlpha` anywhere (the WP `ColorPicker`/
-   `ColorPalette` prop that turns on the alpha slider).
+2. Determines, per block, whether its colour controls are ALPHA-CAPABLE. In
+   SGS this capability comes from the shared `DesignTokenPicker` component,
+   which sets `enableAlpha = true` BY DEFAULT (component line 57) and which no
+   block opts out of (`grep -r "enableAlpha={false}"` → 0 hits). So a block is
+   alpha-capable if its editor source (any `*.js`/`*.jsx` in the block's src
+   folder) uses `DesignTokenPicker` or `StateToggleControl` (the hover/state
+   colour switch built on the same token model) — OR the literal `enableAlpha`.
+   Grepping ONLY the literal string (the original, wrong signal) reported 60
+   false candidates on blocks that already offer alpha via DesignTokenPicker.
 3. Emits a report:
    - total colour attrs found
    - how many blocks use `enableAlpha` at ALL (any colour control)
@@ -65,13 +71,22 @@ def _iter_block_dirs() -> list[Path]:
     return sorted(p.parent for p in _BLOCKS_DIR.glob("*/block.json"))
 
 
+# Shared editor components that render an alpha-capable colour control.
+# DesignTokenPicker sets enableAlpha=true by default (component line 57) and no
+# block opts out; StateToggleControl (the Normal/Hover colour switch) is built on
+# the same token model. A block using either — or the literal `enableAlpha` — is
+# alpha-capable. (The original signal grepped ONLY `enableAlpha` and so missed
+# the shared-component default, producing 60 false candidates.)
+_ALPHA_CAPABLE_SIGNALS = ("DesignTokenPicker", "StateToggleControl", "enableAlpha")
+
+
 def _block_uses_enable_alpha(block_dir: Path) -> bool:
     for js_path in list(block_dir.glob("*.js")) + list(block_dir.glob("*.jsx")):
         try:
             text = js_path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        if "enableAlpha" in text:
+        if any(sig in text for sig in _ALPHA_CAPABLE_SIGNALS):
             return True
     return False
 
