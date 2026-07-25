@@ -1,5 +1,5 @@
 {
-  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "seed_note": "Re-seeded 2026-07-24 (Spec 31 closing-gate session, FR-31-22 cardPadding re-key) from a FRESH LANDED deploy proof — sandybrown canary page 1601, https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-product-card/, provisioned via the real /sgs-clone pipeline (oracle/provision_fixture_canaries.py). Verified: oracle/batch_runner.py + ledger/coverage_check.py --with-landed report 0 WRITTEN-not-LANDED across the 36-fixture corpus; independent live Playwright computed-style check confirms .sgs-product-card__body padding=16px, root padding=0px, root border-radius=16px. Scoped re-seed — only this golden touched; the other 39 conformance goldens (including the pre-existing 25 stale ones unrelated to this session) are untouched.",
   "golden_id": "sgs-product-card",
   "source": "fixture:sgs-product-card.html",
   "status": "complete",
@@ -7,5 +7,5 @@
   "selector": "section.sgs-product-card",
   "failure_reason": "",
   "primary_block_emitted": "sgs/product-card",
-  "block_markup": "<!-- wp:sgs/product-card {\"image\":\"/products/lactation-cookies.jpg\",\"imageAlt\":\"Lactation Cookies\",\"priceLarge\":\"12.99\",\"productName\":\"Lactation Cookies\",\"style\":{\"border\":{\"color\":\"#e5e0db\",\"radius\":\"16px\",\"style\":\"solid\",\"width\":\"1px\"},\"color\":{\"background\":\"#ffffff\"}}} /-->"
+  "block_markup": "<!-- wp:sgs/product-card {\"cardPadding\":{\"bottom\":\"16px\",\"left\":\"16px\",\"right\":\"16px\",\"top\":\"16px\"},\"image\":\"/products/lactation-cookies.jpg\",\"imageAlt\":\"Lactation Cookies\",\"priceColour\":\"#2d5016\",\"priceFontSize\":18,\"priceFontSizeUnit\":\"px\",\"priceFontWeight\":\"700\",\"priceLarge\":\"12.99\",\"productName\":\"Lactation Cookies\",\"style\":{\"border\":{\"color\":\"#e5e0db\",\"radius\":\"16px\",\"style\":\"solid\",\"width\":\"1px\"},\"color\":{\"background\":\"#ffffff\"}},\"titleColour\":\"#3a2e26\",\"titleFontSize\":16,\"titleFontSizeUnit\":\"px\",\"titleFontWeight\":\"600\"} /-->"
 }

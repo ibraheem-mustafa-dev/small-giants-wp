@@ -314,6 +314,75 @@ def test_gap_consumed_when_blockgap_supported():
 
 
 # ---------------------------------------------------------------------------
+# FR-31-5.1a ROOT-ELEMENT extension — root text-align → native textAlign
+# (2026-07-24 notice-banner conformance fix). A block whose ROOT node carries
+# `text-align` and declares `supports.typography.textAlign` must land it on
+# the top-level `textAlign` attr (render.php then paints `has-text-align-*`).
+# ---------------------------------------------------------------------------
+
+# Mirrors the REAL sgs/notice-banner block_supports row (typography.textAlign
+# True, no explicit `attributes.textAlign` in block.json — WP auto-injects it).
+_TEXTALIGN_SUPPORTS = {
+    "color": {"background": True, "text": True},
+    "typography": {"fontSize": True, "lineHeight": True, "textAlign": True,
+                   "fontStyle": True},
+}
+
+
+def test_root_text_align_lifts_to_native_textalign():
+    """A ROOT-level text-align on a block declaring supports.typography.textAlign
+    must land on the top-level `textAlign` attr — the notice-banner conformance
+    gap (root_supports had no textAlign route at all; only the CONTENT-band
+    fold in fold_helpers.fold_band_css covered a folded band, never the node's
+    own root)."""
+    node = _node('<div class="sgs-notice-banner"></div>')
+    css_rules = {".sgs-notice-banner": {"text-align": "center"}}
+    conn = MagicMock(spec=sqlite3.Connection)
+
+    sp, sa, sb = _patch_supports(_TEXTALIGN_SUPPORTS)
+    with sp, sa, sb:
+        attrs, consumed = lift_root_supports_to_style(
+            node, "sgs/notice-banner", css_rules, conn
+        )
+
+    assert attrs.get("textAlign") == "center", (
+        f"Expected top-level textAlign=='center', got attrs={attrs}"
+    )
+    assert "text-align" in consumed.get("Base", frozenset()), (
+        f"text-align must be marked CONSUMED at Base tier (disjointness from "
+        f"the typography resolver — STOP-43 partition), got consumed={consumed}"
+    )
+
+
+def test_root_text_align_negative_control_no_textalign_support():
+    """A block that does NOT declare supports.typography.textAlign (e.g.
+    sgs/quote, sgs/icon — real DB-verified negative controls, 2026-07-24) must
+    NOT receive a textAlign write from this fold — it must fall through
+    untouched (an honest gap elsewhere), never a wrong/unconditional write."""
+    node = _node('<div class="sgs-quote"></div>')
+    css_rules = {".sgs-quote": {"text-align": "center"}}
+    conn = MagicMock(spec=sqlite3.Connection)
+
+    # color-only supports — no "typography" key at all, matching the real
+    # sgs/quote block_supports_for() row (verified live, 2026-07-24).
+    color_only_supports = {"color": {"background": True, "text": True}}
+    sp, sa, sb = _patch_supports(color_only_supports)
+    with sp, sa, sb:
+        attrs, consumed = lift_root_supports_to_style(
+            node, "sgs/quote", css_rules, conn
+        )
+
+    assert "textAlign" not in attrs, (
+        f"Block without typography.textAlign support must not get textAlign, "
+        f"got attrs={attrs}"
+    )
+    assert "text-align" not in consumed.get("Base", frozenset()), (
+        f"text-align must not be marked consumed for a non-supporting block, "
+        f"got consumed={consumed}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Test 7 — non-SGS slug → early return {}
 # ---------------------------------------------------------------------------
 

@@ -5,11 +5,11 @@
     "module_version": "0.1.0",
     "tinycss2_version": "1.5.1"
   },
-  "row_count": 16,
+  "row_count": 15,
   "by_kind": {
-    "box-css": 16
+    "box-css": 15
   },
-  "plain_summary": "sgs-product-card: 16 total declarations (16 non-shadowed, non-structural); tiers: Base=16. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
+  "plain_summary": "sgs-product-card: 15 total declarations (15 non-shadowed, non-structural); tiers: Base=15. [PREDICTION — confirmed by F5/F4 gate, not by this parser]",
   "rows": [
     {
       "fixture": "sgs-product-card",
@@ -69,14 +69,14 @@
     },
     {
       "fixture": "sgs-product-card",
-      "selector": ".sgs-product-card",
+      "selector": ".sgs-product-card__body",
       "property": "padding",
       "value": "16px",
       "important": false,
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 4,
+      "source_index": 7,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -90,21 +90,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 6,
-      "shadowed": false,
-      "kind": "box-css",
-      "excluded_candidate": false
-    },
-    {
-      "fixture": "sgs-product-card",
-      "selector": ".sgs-product-card__image",
-      "property": "border-radius",
-      "value": "12px",
-      "important": false,
-      "media": null,
-      "media_kind": "none",
-      "tier": "Base",
-      "source_index": 8,
+      "source_index": 5,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -118,7 +104,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 7,
+      "source_index": 6,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -132,7 +118,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 5,
+      "source_index": 4,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -146,7 +132,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 15,
+      "source_index": 14,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -160,7 +146,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 13,
+      "source_index": 12,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -174,7 +160,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 14,
+      "source_index": 13,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -188,7 +174,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 11,
+      "source_index": 10,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -202,7 +188,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 9,
+      "source_index": 8,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -216,7 +202,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 10,
+      "source_index": 9,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false
@@ -230,7 +216,7 @@
       "media": null,
       "media_kind": "none",
       "tier": "Base",
-      "source_index": 12,
+      "source_index": 11,
       "shadowed": false,
       "kind": "box-css",
       "excluded_candidate": false

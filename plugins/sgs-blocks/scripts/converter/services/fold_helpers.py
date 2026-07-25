@@ -332,7 +332,21 @@ def route_area_css_to_block_attrs(
     # AST gate); a no-op for blocks still on flat per-area attrs. The four
     # padding-side props are then skipped in the flat loop below.
     _skip_padding_flat = False
-    _pad_object_base = f"{area[0].lower()}{area[1:]}Padding"
+    # Declarative-first per-area padding-object resolution (manifest-authoritative,
+    # STOP-FIX-THE-SEED-SOURCE): resolve the destination object attr from the
+    # block's DECLARED css_element+css_property mapping, so a block whose padding
+    # attr is NOT named "{area}Padding" (e.g. sgs/product-card's body area →
+    # cardPadding) still routes. The legacy name-convention guess is retained ONLY
+    # as a fallback for areas whose padding attr is not (yet) declaratively mapped
+    # (e.g. hero's GRID_AREA imagePadding, css_element='split-image'). Purely
+    # ADDITIVE + MF-4-safe: it never changes a currently-resolving case — every
+    # working name-guess path is preserved verbatim as the fallback.
+    _pad_object_base = db_lookup.attr_for_area_property(owning_block, area, "padding")
+    if (
+        _pad_object_base is None
+        or db_lookup.box_family_for(owning_block, _pad_object_base) is None
+    ):
+        _pad_object_base = f"{area[0].lower()}{area[1:]}Padding"
     if db_lookup.box_family_for(owning_block, _pad_object_base) is not None:
         _skip_padding_flat = True
         for _tier_sfx, _src in (("", base_decls), ("Tablet", tab), ("Mobile", mob_override)):

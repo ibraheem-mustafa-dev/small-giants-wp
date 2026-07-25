@@ -122,6 +122,13 @@ $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (stri
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
+// WP `typography.textAlign` support (skip-serialised, top-level attribute —
+// NOT nested under style.typography). block.json maps css:text-align to the
+// `body` element (`.sgs-collapsible-text__body`), so it is scoped there, not
+// the root wrapper (contract §B — element manifest is DB-first, R-31-1).
+$text_align_raw = $attributes['textAlign'] ?? '';
+$text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
+
 // ---------------------------------------------------------------------------
 // 3. Scoped CSS assembly.
 // ---------------------------------------------------------------------------
@@ -203,6 +210,12 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 
 if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
+}
+
+// --- text-align (skip-serialised WP support, scoped to the body element per
+// the block.json element manifest — never an inert root class). ---
+if ( '' !== $text_align ) {
+	$scoped_css[] = $typography_selector . '{text-align:' . $text_align . ';}';
 }
 
 // --sgs-collapsible-text-collapsed-lines VALUE — scoped rule (contract §A

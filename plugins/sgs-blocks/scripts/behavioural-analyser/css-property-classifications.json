@@ -2485,6 +2485,15 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "featuredItemIds",
+      "fields": {
+        "css_property": "display,max-width,min-width",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "featuredRadius",
       "fields": {
         "css_property": "border-radius",
@@ -3083,6 +3092,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "cardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -3236,15 +3253,6 @@
       "fields": {
         "css_property": "height",
         "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "innerPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
       }
     },
     {

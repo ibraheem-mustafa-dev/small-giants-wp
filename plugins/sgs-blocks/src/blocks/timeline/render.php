@@ -87,11 +87,21 @@ $style_shadow = isset( $attributes['style']['shadow'] ) ? (string) $attributes['
 // typography tiers).
 $style_typography_raw = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] ) ? $attributes['style']['typography'] : array();
 $style_typography     = array();
-foreach ( array( 'fontSize', 'lineHeight', 'textAlign', 'letterSpacing', 'textTransform', 'fontWeight', 'fontStyle' ) as $typography_key ) {
+foreach ( array( 'fontSize', 'lineHeight', 'letterSpacing', 'textTransform', 'fontWeight', 'fontStyle' ) as $typography_key ) {
 	if ( isset( $style_typography_raw[ $typography_key ] ) && '' !== $style_typography_raw[ $typography_key ] ) {
 		$style_typography[ $typography_key ] = $style_typography_raw[ $typography_key ];
 	}
 }
+
+// `textAlign` is NOT nested under style.typography — WP's typography.textAlign
+// support injects it as a TOP-LEVEL $attributes['textAlign'] string (mirrors
+// sgs/notice-banner + sgs/countdown-timer). It was previously looked for
+// inside $style_typography_raw above, where it can never exist — a dead-read,
+// not merely a dead-write. block.json maps css:text-align to the `title`
+// element (`.sgs-timeline__title`), so it is scoped there, not the root <ol>
+// (DB-first element manifest, R-31-1).
+$text_align_raw = $attributes['textAlign'] ?? '';
+$text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 $base_padding_obj = array();
@@ -265,6 +275,12 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 		if ( ! empty( $typography_scoped_styles['css'] ) ) {
 			$scoped_css[] = $typography_scoped_styles['css'];
 		}
+	}
+
+	// --- text-align — not a style-engine `typography` key (hand-built, mirrors
+	// sgs/countdown-timer + sgs/icon-list), scoped to the title selector. ---
+	if ( '' !== $text_align ) {
+		$scoped_css[] = "{$title_sel}{text-align:{$text_align};}";
 	}
 }
 

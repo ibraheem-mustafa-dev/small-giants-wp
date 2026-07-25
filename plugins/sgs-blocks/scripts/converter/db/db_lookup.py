@@ -714,10 +714,37 @@ def declared_attrs_for_css_property(
                 (block_slug, css_property),
             ).fetchall()
         else:
+            # OUTER-layer element guard (2026-07-24, FR-31-22 cardPadding fix):
+            # a NULL css_layer row is treated as "self/OUTER-default" (docstring
+            # above) so an attr the classifier never explicitly tagged OUTER can
+            # still be found by this query — but ONLY when its css_element is
+            # ALSO root-domain (NULL/''/root/self/'wrapper' — 'wrapper' is the
+            # universal, block-agnostic marker extract-signatures.py writes for
+            # ANY block's own isWrapper root element, see _load_root_element +
+            # its "wrapper" normalisation note). Without this, a genuine LEAF
+            # sub-element attr sharing the same css_property with its css_layer
+            # left NULL (the leaf guard's documented, intentional value — e.g.
+            # sgs/product-card's css_element='cta' ctaPadding, routed entirely
+            # by the separate attr_for_area_property cross-node fold, which
+            # matches on css_element alone and never reads css_layer) is WRONGLY
+            # ALSO visible to an 'OUTER' query for the SAME css_property on the
+            # block's real root attr (cardPadding, css_element='wrapper'),
+            # raising a false AmbiguousLayerAttrError between two attrs that
+            # never actually compete in real dispatch (one resolved via this
+            # OUTER-layer resolver, the other via the unrelated AREA resolver).
+            # CONTENT/GRID/GRID_AREA queries are UNCHANGED (no element filter) —
+            # per the pre-existing design note above, those layers legitimately
+            # own non-root elements and this guard only applies structurally to
+            # OUTER (the block's own root/outer box).
+            _outer_element_clause = (
+                " AND (css_element IS NULL OR css_element IN ('', 'root', 'self', 'wrapper')) "
+                if css_layer == "OUTER" else ""
+            )
             rows = conn.execute(
                 "SELECT attr_name FROM block_attributes "
                 "WHERE block_slug = ? AND css_property = ? "
                 "AND (css_layer = ? OR css_layer IS NULL) "
+                + _outer_element_clause
                 + _base_clause +
                 " ORDER BY rowid",
                 (block_slug, css_property, css_layer),

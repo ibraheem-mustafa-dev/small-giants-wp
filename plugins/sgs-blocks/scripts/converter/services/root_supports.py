@@ -454,6 +454,45 @@ def lift_root_supports_to_style(
         # decls copy (see that function's docstring for why a second copy exists).
         expand_background_border_shorthand(base_decls, slug=slug)
 
+        # ---- FR-31-5.1a native textAlign fold — ROOT-ELEMENT extension ----
+        # (2026-07-24, notice-banner conformance fix). fold_helpers.fold_band_css
+        # already folds an inheritable CONTENT-band text-align onto the owning
+        # block's WP-native textAlign support. That fold never fires for the
+        # node's OWN root-level text-align (a distinct element from the band) —
+        # so a block whose ROOT carries `text-align` (e.g. `.sgs-notice-banner
+        # {text-align:center}`) silently dropped it: the typography resolver's
+        # text-align path (services/typography.py) requires an EXPLICIT
+        # `textAlign` row in `block_attributes` (validate()'s attr-existence
+        # check), which only blocks with a HAND-AUTHORED `attributes.textAlign`
+        # carry (sgs/text, sgs/heading, sgs/label, sgs/cta-section) — a block
+        # that relies on WP's `supports.typography.textAlign:true` auto-inject
+        # (no explicit block.json `attributes.textAlign` entry, e.g.
+        # sgs/notice-banner) has NO matching row, so validate() gaps it.
+        #
+        # Base tier only — WP's native textAlign support is not responsive
+        # (no `textAlignTablet`/`textAlignMobile` companion exists on any
+        # block). Gated purely on `supports.typography.textAlign` via the
+        # already-fetched `supports` dict (R-31-1 — no slug literal, no new
+        # DB read). Marking the property CONSUMED here (before the
+        # `_root_lift_rules` loop / process_element dispatch) makes this
+        # DISJOINT from the typography-resolver path for the SAME node: once
+        # consumed, css_pass._build_css_attrs's STOP-43 partition strips
+        # `text-align` from the Decl list it hands to process_element, so the
+        # typography resolver never sees this declaration at all — exactly
+        # one write, never two. For a block that ALSO carries an explicit
+        # `textAlign` attr row (sgs/cta-section is the one block with both),
+        # this fold now wins by precedence with an IDENTICAL value/attr
+        # (`raw` text-align string → `textAlign`), so the outcome is
+        # unchanged for that block — no regression, no double-emit.
+        _ta_raw = base_decls.get("text-align")
+        if _ta_raw:
+            _typo_supports = supports.get("typography") or {}
+            if _typo_supports.get("textAlign"):
+                _ta_val = strip_important(_ta_raw).strip()
+                if _ta_val:
+                    result_attrs.setdefault("textAlign", _ta_val)
+                    consumed_base.add("text-align")
+
         # Apply root lift rules — convert.py:855-866.
         for css_prop, sup_top, sup_sub, style_path, kind in _root_lift_rules():
             if css_prop not in base_decls:

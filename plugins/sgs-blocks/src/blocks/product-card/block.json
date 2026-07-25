@@ -25,6 +25,9 @@
 			"boxFamilies": {
 				"ctaPadding": [
 					"ctaPadding"
+				],
+				"cardPadding": [
+					"cardPadding"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -51,67 +54,76 @@
 						"css:border-style": "native:__experimentalBorder.style",
 						"css:border-color": "native:__experimentalBorder.color",
 						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "cardMaxWidth",
-						"css:padding": "innerPadding"
+						"css:max-width": "cardMaxWidth"
 					},
-					"_note": "Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven via innerPadding, not native), so css:padding resolves via attrMap not native fallback."
+					"_note": "Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven, not native), so css:max-width resolves via attrMap not native fallback. `css:padding` was RE-KEYED off this element 2026-07-24 (FR-31-22 consistency fix) — the image (`.sgs-product-card__media-wrap`) is full-bleed OUTSIDE the body, so card padding never belonged on the root; it now lives on the `body` element below, matching where render.php actually paints it."
+				},
+				"body": {
+					"label": "Card body",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"isWrapper": false,
+					"attrMap": {
+						"css:padding": "cardPadding"
+					},
+					"_note": "Content-body wrapper (`.sgs-product-card__body` / `.product-card-body`) — image fills the card full-bleed, content is padded (Bean-approved product-card design). Re-keyed 2026-07-24 (FR-31-22 consistency fix) from the `box` (root) element: cardPadding was previously mapped on the ROOT but render.php has always painted it on this body element, so the LANDED computed-parity probe (which measures the root) never found it. Keying attrMap to the element the value ACTUALLY targets fixes the mismatch at its source, per R-31-11 (verify rendered output, not internal metrics)."
 				},
 				"image": {
 					"label": "Product image",
-					"order": 2,
+					"order": 3,
 					"clusters": [ "layout" ],
 					"attrMap": {
 						"css:height": "imageHeight"
 					},
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls). imageHeight resolves via css:height (render.php:129-130 `--sgs-product-card-image-height`, consumed as `height: var(--sgs-product-card-image-height, 220px)` in style.css:53/665/704/938 — Spec 35 vocabulary fix)."
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls). imageHeight resolves via css:height (render.php:129-130 `--sgs-product-card-image-height`, consumed as `height: var(--sgs-product-card-image-height, 220px)` in style.css:53/665/704/938 — Spec 35 vocabulary fix). Full-bleed direct child of the card root, OUTSIDE the padded body — never wrapped in card padding."
 				},
 				"title": {
 					"label": "Title",
-					"order": 3,
+					"order": 4,
 					"clusters": [ "text" ],
 					"prefix": "title"
 				},
 				"price": {
 					"label": "Price",
-					"order": 4,
+					"order": 5,
 					"clusters": [ "text" ],
 					"prefix": "price"
 				},
 				"desc": {
 					"label": "Description",
-					"order": 5,
+					"order": 6,
 					"clusters": [ "text" ],
 					"prefix": "desc"
 				},
 				"priceNote": {
 					"label": "Price note",
-					"order": 6,
+					"order": 7,
 					"clusters": [ "text" ],
 					"prefix": "priceNote"
 				},
 				"priceFromLabel": {
 					"label": "\"From\" label",
-					"order": 7,
+					"order": 8,
 					"clusters": [ "text" ],
 					"prefix": "priceFromLabel",
 					"_note": "No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
 				},
 				"tag": {
 					"label": "Tag (trial/featured badge)",
-					"order": 8,
+					"order": 9,
 					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "tag"
 				},
 				"pill": {
 					"label": "Option-picker pill",
-					"order": 9,
+					"order": 10,
 					"clusters": [ "text" ],
 					"prefix": "pill",
 					"_note": "Targets the real sgs/option-picker pill rendered inside the card (both typed and bound modes) — see render.php sgs_typography_css_rule( $attributes, 'pill', … )."
 				},
 				"cta": {
 					"label": "Call to action",
-					"order": 10,
+					"order": 11,
 					"clusters": [ "text", "fill", "layout" ],
 					"prefix": "cta",
 					"attrMap": {
@@ -325,10 +337,10 @@
 			"default": "",
 			"description": "Override the product image box height (e.g. 180px, 16rem). Empty = use theme default (220px). Sets --sgs-product-card-image-height inline."
 		},
-		"innerPadding": {
-			"type": "string",
-			"default": "",
-			"description": "Inner padding of the card body (ContainerWrapperControls content-kind Spacing panel). A numeric spacing-preset slug (e.g. \"40\") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. \"24px\") is emitted directly. Empty = theme default (20px). Sets --sgs-product-card-inner-padding inline."
+		"cardPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the card's content BODY { top, right, bottom, left } — the product image is full-bleed and sits outside the padded body. Migrated 2026-07-24 (FR-31-22) from the single-value innerPadding scalar to the universal box-object standard — mirrors ctaPadding/tagPadding. Rendered scoped (never inline) via sgs_box_object_shorthand() on the card's own uid selector, targeting .product-card-body/.sgs-product-card__body. Empty = theme default (20px, style.css)."
 		},
 		"contentWidth": {
 			"type": "string",

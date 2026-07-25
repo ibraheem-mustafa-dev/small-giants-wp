@@ -189,7 +189,37 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # A raw `padding` shorthand should have been expanded pre-dispatch (one decl →
     # 4 longhands). If it reaches here, the extraction stage was not wired for this
     # path — gap it honestly, naming the seam (never a half-transfer).
+    #
+    # Box-family self-merge EXCEPTION (2026-07-24, FR-31-22 cardPadding fix): a
+    # bare `padding` shorthand on the block's OWN root, destined for a MERGED
+    # box-object attr (``db_lookup.box_family_for(block, attr) == attr`` — the
+    # SAME self-merge shape the box-family branch further below already handles
+    # for other properties, e.g. sgs/text's borderWidth), is parsed HERE instead
+    # of gapped. The pre-dispatch expansion this stub-gate assumes
+    # (``fold_helpers._expand_box_shorthand``) runs ONLY inside the AREA/cross-
+    # node fold (``route_area_css_to_block_attrs`` — ctaPadding/tagPadding's
+    # path); it never runs for a block's OWN root CSS dispatched through THIS
+    # resolver. A block with NO native ``supports.spacing.padding`` (so
+    # ``root_supports.lift_root_supports_to_style`` never expands it either —
+    # e.g. sgs/product-card, which routes root padding to a custom box-object
+    # attr instead) therefore had NO reachable destination at all for a root
+    # `padding` shorthand — proven live: sgs/product-card's draft root
+    # `padding:16px` silently dropped despite `cardPadding` being correctly
+    # DB-resolved via ``attr_for_layer_property(slug,'OUTER','padding')``.
+    # Gated purely on ``box_family_for`` (R-31-1/R-31-9 — no slug literal, no
+    # per-block branch); falls through to the unconditional stub-gap below for
+    # every other block/attr shape (unchanged behaviour).
     if prop == "padding":
+        _pad_attr = attr_resolve(ctx, "OUTER", prop)
+        if _pad_attr is not None and db_lookup.box_family_for(ctx.block_slug, _pad_attr) == _pad_attr:
+            _pad_tgt = tier_state_suffix(_pad_attr, decl, ctx.conn)
+            if validate(ctx, _pad_tgt, decl.value):
+                from converter.services.root_supports import (
+                    _parse_padding_shorthand as _parse_box_shorthand_value,
+                )
+                _pad_sides = _parse_box_shorthand_value(strip_important(decl.value))
+                if _pad_sides is not None:
+                    return Write(attr=_pad_tgt, value=_pad_sides, property=prop, tier=decl.tier)
         return gap_writer(
             ctx, decl, GapOrigin.UNIMPLEMENTED_STUB,
             "padding shorthand must be expanded to longhands by the pre-dispatch "

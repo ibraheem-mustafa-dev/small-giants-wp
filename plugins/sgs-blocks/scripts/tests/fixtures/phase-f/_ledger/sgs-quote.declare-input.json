@@ -41,7 +41,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__author",
+      "selector": ".sgs-quote__attribution",
       "property": "color",
       "value": "#5c4f46",
       "important": false,
@@ -55,7 +55,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__author",
+      "selector": ".sgs-quote__attribution",
       "property": "font-size",
       "value": "14px",
       "important": false,
@@ -69,7 +69,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__author",
+      "selector": ".sgs-quote__attribution",
       "property": "font-weight",
       "value": "600",
       "important": false,

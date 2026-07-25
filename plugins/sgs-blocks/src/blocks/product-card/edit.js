@@ -7,7 +7,7 @@ import {
 	RichText,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SpacingControl, DesignTokenPicker, TypographyControls } from '../../components';
+import { DesignTokenPicker, TypographyControls } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
 	PanelBody,
@@ -644,6 +644,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaFontSize,
 		ctaPadding,
 		ctaWidthType,
+		cardPadding,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -906,14 +907,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					kind="content"
 				/>
 				<PanelBody
-					title={ __( 'Inner padding', 'sgs-blocks' ) }
+					title={ __( 'Card padding', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SpacingControl
-						label={ __( 'Card body padding', 'sgs-blocks' ) }
-						value={ attributes.innerPadding || '' }
-						onChange={ ( val ) =>
-							setAttributes( { innerPadding: val } )
+					<BoxControl
+						label={ __( 'Card padding', 'sgs-blocks' ) }
+						values={ cardPadding ?? {} }
+						onChange={ ( next ) =>
+							setAttributes( { cardPadding: next } )
 						}
 					/>
 				</PanelBody>

@@ -58,7 +58,6 @@ $variant_style  = $attributes['variantStyle'] ?? 'standard';
 $source_mode    = $attributes['sourceMode'] ?? 'typed';
 $card_max_width = isset( $attributes['cardMaxWidth'] ) ? sanitize_text_field( $attributes['cardMaxWidth'] ) : '';
 $image_height   = isset( $attributes['imageHeight'] ) ? sanitize_text_field( $attributes['imageHeight'] ) : '';
-$inner_padding  = isset( $attributes['innerPadding'] ) ? (string) $attributes['innerPadding'] : '';
 
 // C7 forward: per-instance styling for the in-card option-picker labels
 // (Size/Flavour legends). Forwarded into each render_block('sgs/option-picker')
@@ -260,6 +259,24 @@ if ( function_exists( 'wp_style_engine_get_styles' ) ) {
 			$sgs_card_typo_css .= $sgs_pc_scoped['css'];
 		}
 	}
+}
+
+// Card ROOT padding (FR-31-22 box-object migration, 2026-07-24) — REPLACES the
+// retired single-value innerPadding custom-property mechanism. cardPadding is
+// a {top,right,bottom,left} box-object attr (mirrors ctaPadding/tagPadding),
+// shorthanded via the shared sgs_box_object_shorthand() helper (helpers-box.php,
+// auto-loaded via render-helpers.php) into ONE scoped <style> rule — never an
+// inline `style="padding:…"` declaration (Spec 32). Targets BOTH the bound-mode
+// body class (.product-card-body) and the typed-mode body class
+// (.sgs-product-card__body) — the same attr governs card padding in either
+// render branch. An entirely-empty/un-set cardPadding ({}) → sgs_box_object_
+// shorthand() returns null → NO rule is emitted at all, so style.css's own
+// :where(.product-card) .product-card-body/.sgs-product-card__body{padding:20px}
+// default renders — byte-identical to the pre-migration innerPadding default.
+$sgs_card_padding_obj      = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
+$sgs_card_padding_shorthand = sgs_box_object_shorthand( $sgs_card_padding_obj );
+if ( null !== $sgs_card_padding_shorthand ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{padding:' . $sgs_card_padding_shorthand . ';}';
 }
 
 // Skip-serialised color/border supports also stop WP auto-adding the standard

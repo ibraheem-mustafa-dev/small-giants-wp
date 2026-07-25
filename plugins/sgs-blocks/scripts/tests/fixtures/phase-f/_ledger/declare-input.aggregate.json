@@ -3,12 +3,12 @@
     "module": "ledger.declare_input",
     "module_version": "0.1.0",
     "tinycss2_version": "1.5.1",
-    "generated_at": "2026-07-14T18:57:25.009833+00:00"
+    "generated_at": "2026-07-24T23:32:37.089529+00:00"
   },
   "fixture_count": 36,
-  "grand_total_rows": 500,
+  "grand_total_rows": 499,
   "by_kind_totals": {
-    "box-css": 500
+    "box-css": 499
   },
   "fixtures": {
     "mamas-trust-bar-real": {
@@ -201,11 +201,11 @@
       "plain_summary": "sgs-pricing-table: 18 total declarations (18 non-shadowed, non-structural); tiers: Base=18. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
     },
     "sgs-product-card": {
-      "row_count": 16,
+      "row_count": 15,
       "by_kind": {
-        "box-css": 16
+        "box-css": 15
       },
-      "plain_summary": "sgs-product-card: 16 total declarations (16 non-shadowed, non-structural); tiers: Base=16. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
+      "plain_summary": "sgs-product-card: 15 total declarations (15 non-shadowed, non-structural); tiers: Base=15. [PREDICTION — confirmed by F5/F4 gate, not by this parser]"
     },
     "sgs-quote": {
       "row_count": 10,

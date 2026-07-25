@@ -13,6 +13,15 @@ Real cost of the blind spot: the Mama's clone drops the product-card ``__body``
 padding entirely, and it LOOKED faithful because the block's own hardcoded
 fallback (style.css:81, 20px) happens to equal the draft's value. Nothing
 reported it.
+
+UPDATE 2026-07-24: that specific ``__body`` padding case is now FIXED — the
+per-area padding router resolves its destination DECLARATIVELY (block-declared
+``css_element``+``css_property`` → ``cardPadding``, ``fold_helpers`` box-object
+path), so the draft value now LANDS instead of gapping. These tests therefore
+use product-card ``__title`` ``margin-top`` (a genuine still-open per-area gap:
+the block declares no title-margin attr) as the example, keeping the trace-
+wiring guard alive against the SAME code path. The wiring negative-control
+(``test_assembly_call_sites_pass_a_real_trace``) is unchanged.
 """
 from __future__ import annotations
 
@@ -36,11 +45,11 @@ class TestPerAreaGapIsTraced:
     def test_missing_area_attr_emits_a_finding(self):
         """The load-bearing case: no destination -> a finding, not silence."""
         seen: list[tuple[str, dict]] = []
-        node = _node('<div class="sgs-product-card__body">x</div>')
+        node = _node('<h3 class="sgs-product-card__title">x</h3>')
         attrs: dict = {}
         route_area_css_to_block_attrs(
-            node, "body", "sgs/product-card", attrs,
-            {".sgs-product-card__body": {"padding": "20px"}},
+            node, "title", "sgs/product-card", attrs,
+            {".sgs-product-card__title": {"margin-top": "12px"}},
             trace=lambda stage, **kw: seen.append((stage, kw)),
         )
         assert seen, (
@@ -56,10 +65,10 @@ class TestPerAreaGapIsTraced:
     def test_trace_carries_enough_to_diagnose(self):
         """A finding with no owning block / property / source class is useless."""
         seen: list[dict] = []
-        node = _node('<div class="sgs-product-card__body">x</div>')
+        node = _node('<h3 class="sgs-product-card__title">x</h3>')
         route_area_css_to_block_attrs(
-            node, "body", "sgs/product-card", {},
-            {".sgs-product-card__body": {"padding": "20px"}},
+            node, "title", "sgs/product-card", {},
+            {".sgs-product-card__title": {"margin-top": "12px"}},
             trace=lambda stage, **kw: seen.append(kw),
         )
         assert seen

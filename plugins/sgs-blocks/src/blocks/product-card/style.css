@@ -75,15 +75,26 @@
 }
 
 .product-card .product-card-body {
-	/* Inner padding override (ContainerWrapperControls content-kind Spacing panel).
-	 * render.php emits --sgs-product-card-inner-padding on the card element when the
-	 * operator sets the "Inner padding" control; unset → theme default 20px. */
-	padding: var(--sgs-product-card-inner-padding, 20px);
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	/* A5 (QC): explicit gap instead of relying on child margins for rhythm. */
 	gap: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/*
+ * Card padding default (FR-31-22, 2026-07-24 migration from the single-value
+ * innerPadding custom-property mechanism to the cardPadding box-object
+ * {top,right,bottom,left}). :where() keeps this at specificity 0 — the same
+ * sanctioned F3-exempt overridable-default pattern the CTA padding default
+ * uses above — so a per-instance cardPadding always wins via the scoped
+ * `.{uid} .product-card-body{padding:...}` rule render.php emits (0,2,0),
+ * mirroring ctaPadding/tagPadding. Empty/un-set cardPadding ({}) → no scoped
+ * rule is emitted at all, so this 20px default renders identically to the
+ * pre-migration innerPadding default.
+ */
+:where(.product-card) .product-card-body {
+	padding: 20px;
 }
 
 .product-card h3 {
@@ -942,11 +953,18 @@
 
 /* Body — matches .product-card-body layout (the bound-mode body class). */
 .product-card .sgs-product-card__body {
-	padding: var( --sgs-product-card-inner-padding, 20px );
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	gap: var( --wp--preset--spacing--20, 0.75rem );
+}
+
+/* Card padding default (typed-mode body class) — see the bound-mode
+ * :where(.product-card) .product-card-body rule above for the full FR-31-22
+ * migration rationale; specificity-0 so a per-instance cardPadding (scoped
+ * `.{uid} .sgs-product-card__body{padding:...}` rule, render.php) always wins. */
+:where(.product-card) .sgs-product-card__body {
+	padding: 20px;
 }
 
 /* Tag badges — trial and featured variants.

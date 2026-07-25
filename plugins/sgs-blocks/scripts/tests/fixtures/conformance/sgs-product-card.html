@@ -1,18 +1,26 @@
 <!-- fixture: sgs/product-card — content-kind composite (product display card) -->
+<!-- Corrected 2026-07-24 (FR-31-22 body-padding consistency fix): the root
+     carries border/border-radius/overflow ONLY (no root padding) — the image
+     is a full-bleed direct child, and text/price content is wrapped in a
+     `.sgs-product-card__body` div carrying the real padding. This makes the
+     CONTENT-BODY padding path the thing under test; the generic root-padding
+     path is already proven by the notice-banner fixture. -->
 <style>
 .sgs-product-card {
   background: white;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid #e5e0db;
-  padding: 16px;
 }
-.sgs-product-card__image { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
+.sgs-product-card__image { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+.sgs-product-card__body { padding: 16px; }
 .sgs-product-card__title { font-size: 16px; font-weight: 600; color: #3a2e26; margin-top: 12px; }
 .sgs-product-card__price { font-size: 18px; font-weight: 700; color: #2d5016; }
 </style>
 <section class="sgs-product-card">
   <img class="sgs-product-card__image" src="/products/lactation-cookies.jpg" alt="Lactation Cookies"/>
-  <h3 class="sgs-product-card__title">Lactation Cookies</h3>
-  <span class="sgs-product-card__price">12.99</span>
+  <div class="sgs-product-card__body">
+    <h3 class="sgs-product-card__title">Lactation Cookies</h3>
+    <span class="sgs-product-card__price">12.99</span>
+  </div>
 </section>
