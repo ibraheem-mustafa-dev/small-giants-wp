@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker, ShadowControl, TypographyControls } from '../../components';
+import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
 
@@ -533,17 +533,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { cardBorderColour: val } )
 						}
 					/>
-					<TextControl
+					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
-						value={ cardBorderWidth || '' }
-						onChange={ ( val ) =>
-							setAttributes( { cardBorderWidth: val } )
+						showResponsive={ false }
+						values={ { base: cardBorderWidth || {} } }
+						onChange={ ( _tier, next ) =>
+							setAttributes( { cardBorderWidth: next } )
 						}
-						help={ __(
-							'e.g. 1px. Leave empty for no border.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
 					/>
 					<TextControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }

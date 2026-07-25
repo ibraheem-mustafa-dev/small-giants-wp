@@ -120,6 +120,7 @@ export default function ResponsiveBoxControl( {
 				values={ tierValues.base }
 				sides={ sides }
 				units={ BOX_UNITS }
+				splitOnAxis={ false }
 				onChange={ ( next ) => onChange( 'base', next ) }
 			/>
 		);
@@ -136,6 +137,7 @@ export default function ResponsiveBoxControl( {
 						values={ tierValues[ tier ] }
 						sides={ sides }
 						units={ BOX_UNITS }
+						splitOnAxis={ false }
 						onChange={ ( next ) => onChange( tier, next ) }
 					/>
 				);

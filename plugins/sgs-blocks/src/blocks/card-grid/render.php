@@ -57,7 +57,7 @@ $hover_scale        = $attributes['scaleHover'] ?? '';
 $hover_shadow       = $attributes['shadowHover'] ?? '';
 $card_background    = $attributes['cardBackground'] ?? '';
 $card_border_colour = $attributes['cardBorderColour'] ?? '';
-$card_border_width  = $attributes['cardBorderWidth'] ?? '';
+$card_border_width  = $attributes['cardBorderWidth'] ?? array();
 $card_radius        = $attributes['cardRadius'] ?? '';
 $card_shadow        = $attributes['cardShadow'] ?? '';
 $hover_image_zoom   = ! empty( $attributes['imageZoomHover'] );
@@ -199,8 +199,13 @@ if ( '' !== $card_background ) {
 if ( '' !== $card_border_colour ) {
 	$card_state_vars[] = '--sgs-card-border-color:' . sgs_colour_value( $card_border_colour ) . ';';
 }
-if ( '' !== $card_border_width ) {
-	$card_state_vars[] = '--sgs-card-border-width:' . $sgs_css_length( $card_border_width ) . ';';
+if ( is_array( $card_border_width ) && array_filter( $card_border_width, static fn( $v ) => '' !== (string) $v ) ) {
+	$card_border_width_sides = array();
+	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+		$side_value                = $card_border_width[ $side ] ?? '';
+		$card_border_width_sides[] = '' !== $side_value ? $sgs_css_length( $side_value ) : '0';
+	}
+	$card_state_vars[] = '--sgs-card-border-width:' . implode( ' ', $card_border_width_sides ) . ';';
 }
 if ( '' !== $card_radius ) {
 	$card_state_vars[] = '--sgs-card-radius:' . $sgs_css_length( $card_radius ) . ';';

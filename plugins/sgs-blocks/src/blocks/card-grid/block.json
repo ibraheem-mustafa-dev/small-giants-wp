@@ -252,8 +252,8 @@
 			"default": ""
 		},
 		"cardBorderWidth": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"cardRadius": {
 			"type": "string",
