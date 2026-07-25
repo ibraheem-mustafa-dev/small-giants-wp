@@ -1,18 +1,15 @@
-import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import { InnerBlocks } from '@wordpress/block-editor';
 
 /**
- * Static save — persists this block's own wrapper markup + its InnerBlocks
- * content to post_content (CF-10, parent-paints-child). This block carries
- * NO styling attributes of its own: every colour/shape decision is painted
- * by the parent sgs/mega-panel's scoped CSS via data-mega-style /
- * data-mega-scheme, so the markup here is deliberately bare — a stable BEM
- * class and nothing else.
+ * Dynamic block — render.php emits the `.sgs-mega-group` wrapper (CF-10,
+ * parent-paints-child; the parent sgs/mega-panel's scoped CSS styles this
+ * class). Save persists ONLY the InnerBlocks marker, so nothing block-specific
+ * is stored in post_content — which means a starter pattern (comment
+ * delimiters + children, no wrapper div) validates cleanly, and a future
+ * wrapper change never strands stored content (no deprecations policy, D270).
  *
- * @return {JSX.Element} The saved block markup.
+ * @return {JSX.Element} The InnerBlocks content marker.
  */
 export default function Save() {
-	const blockProps = useBlockProps.save( { className: 'sgs-mega-group' } );
-	const innerBlocksProps = useInnerBlocksProps.save( blockProps );
-
-	return <div { ...innerBlocksProps } />;
+	return <InnerBlocks.Content />;
 }
