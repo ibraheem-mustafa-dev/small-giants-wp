@@ -90,9 +90,21 @@ $root_sel    = '.' . $uid . '.wp-block-sgs-mega-panel';
 $content_sel = $root_sel . ' .sgs-mega-panel__content';
 $group_sel   = $root_sel . ' .sgs-mega-group';
 $aside_sel   = $root_sel . ' .sgs-mega-aside';
-$icon_sel    = $group_sel . ' .sgs-icon-list__icon';
-$item_sel    = $group_sel . ' .sgs-icon-list__item';
 $heading_sel = $group_sel . ' > .sgs-heading, ' . $group_sel . ' .wp-block-sgs-heading';
+
+// Per-`style` SHAPE selectors. These are keyed to `[data-mega-style="…"]` on
+// the ROOT, so they are built by appending a RELATIVE descendant suffix to
+// `$root_sel . '[data-mega-style="…"]'` — NOT by concatenating $content_sel /
+// $group_sel (which already begin with $root_sel; doing so produced the old
+// self-nested `.uid.wp-block[style] .uid.wp-block …` selector that matched
+// nothing, so no preset ever rendered on the frontend — fixed 2026-07-25).
+$style_col   = $root_sel . '[data-mega-style="columns"]';
+$style_crd   = $root_sel . '[data-mega-style="cards"]';
+$style_min   = $root_sel . '[data-mega-style="minimal"]';
+$rel_content = ' .sgs-mega-panel__content';
+$rel_group   = ' .sgs-mega-group';
+$rel_item    = ' .sgs-mega-group .sgs-icon-list__item';
+$rel_icon    = ' .sgs-mega-group .sgs-icon-list__icon';
 
 $css = '';
 
@@ -206,9 +218,21 @@ if ( $bg_blur ) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Content row + per-style reshape (CF-9 — general/columns is FLEXBOX, not
-// grid). Every rule below is keyed to `[data-mega-style="…"]` on the root, so
-// the SAME markup reshapes uniformly when the operator switches `style`.
+// 4. Content row: per-instance gap VALUE + per-`style` SHAPE.
+//
+// DUAL DELIVERY (why the shape is emitted BOTH here and in style.css):
+// - FRONTEND — the block `style` (style.css) handle is NOT loaded on the
+// front end; the ONLY front-end CSS vehicle is this render.php `<style>`,
+// which the SGS CSS registry lifts + consolidates (see
+// includes/class-sgs-css-registry.php). So the SHAPE MUST be emitted here,
+// instance-scoped.
+// - EDITOR — render.php never runs in the editor, and WP 7.0's iframe canvas
+// ignores editor.css; only style.css reaches the canvas. So style.css
+// carries the SAME shape as GENERIC rules for the editor preview.
+// The two are kept deliberately in step (a preset's geometry lives in both).
+// CF-9: general/columns is FLEXBOX, not grid. Selectors are built from
+// `$style_col/_crd/_min . $rel_*` (single-rooted) — never $content_sel/$group_sel
+// (which already carry $root_sel; that double-prefix was the self-nest bug).
 // ---------------------------------------------------------------------------
 
 if ( function_exists( 'sgs_emit_responsive_css' ) ) {
@@ -225,27 +249,23 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 	);
 }
 
-// -- columns (default general reshape) --------------------------------------
-// The panel now accepts a FLEXIBLE 1-N sgs/mega-group children (QC-fix
-// 2026-07-24, dropped the fixed 2-group contentOnly lock + the columnCount
-// attribute) — the number of columns IS the number of groups an operator has
-// added. flex-wrap + a 200px basis let 1-3 groups share the row evenly and
-// 4+ wrap onto a second row rather than being crushed to nothing.
-$css .= $root_sel . '[data-mega-style="columns"] ' . $content_sel . '{display:flex;flex-wrap:wrap;}';
-$css .= $root_sel . '[data-mega-style="columns"] ' . $group_sel . '{flex:1 1 200px;min-width:0;}';
-$css .= $root_sel . '[data-mega-style="columns"] ' . $item_sel . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
-$css .= $root_sel . '[data-mega-style="columns"] ' . $icon_sel . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+// -- columns (default general reshape): flex-wrap + a 200px basis let 1-3
+// groups share the row evenly and 4+ wrap onto a second row. -----------------
+$css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
+$css .= $style_col . $rel_group . '{flex:1 1 200px;min-width:0;}';
+$css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
+$css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
 
-// -- cards --------------------------------------------------------------------
-$css .= $root_sel . '[data-mega-style="cards"] ' . $content_sel . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
-$css .= $root_sel . '[data-mega-style="cards"] ' . $group_sel . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);background-color:var(--sgs-mm-card);}';
-$css .= $root_sel . '[data-mega-style="cards"] ' . $item_sel . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
-$css .= $root_sel . '[data-mega-style="cards"] ' . $icon_sel . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+// -- cards ---------------------------------------------------------------
+$css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
+$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);background-color:var(--sgs-mm-card);}';
+$css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
+$css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
 
-// -- minimal --------------------------------------------------------------------
-$css .= $root_sel . '[data-mega-style="minimal"] ' . $content_sel . '{display:flex;flex-direction:column;gap:2px;}';
-$css .= $root_sel . '[data-mega-style="minimal"] ' . $item_sel . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
-$css .= $root_sel . '[data-mega-style="minimal"] ' . $icon_sel . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+// -- minimal -------------------------------------------------------------
+$css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
+$css .= $style_min . $rel_item . '{display:flex;align-items:center;justify-content:space-between;padding:15px 14px;border-radius:14px;}';
+$css .= $style_min . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
 
 // -- group heading visibility (headings toggle + the cards/minimal invariant:
 // both styles hide the group heading unconditionally per §3; columns respects
@@ -267,7 +287,11 @@ if ( ! $show_headings ) {
 // siblings inside the SAME content row).
 // ---------------------------------------------------------------------------
 
-$css .= $content_sel . ':has(' . $aside_sel . '){display:flex;align-items:stretch;}';
+// The aside-present `display:flex` on the content row is INVARIANT shape and
+// lives in style.css (`.sgs-mega-panel__content:has(.sgs-mega-aside)`); the old
+// rule here was self-nested (`:has()` argument carried $root_sel) and inert.
+// Only the per-INSTANCE aside WIDTH is emitted here (targets the aside directly
+// on the frontend, where it is the content row's direct child).
 $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';width:' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';}';
 // Cap the aside media so a tall image never dominates the fixed-width aside
 // column — a modest banner, object-fit cover, matching the editor cap.
@@ -285,14 +309,17 @@ if ( 'line' === $sep_style_val ) {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Mobile-in-drawer stack (§3 — content-preserving; groups + aside all
-// KEEP their content, just reflow to a single column). @container covers the
-// panel embedded in a narrow ancestor (e.g. the mobile drawer); the @media
-// fallback covers the same reflow purely by viewport width.
+// 6. Mobile-in-drawer stack (§3 — content-preserving; groups + aside all KEEP
+// their content, just reflow to a single column). Emitted here (frontend
+// vehicle) AND mirrored in style.css (editor canvas). @container covers the
+// panel inside a narrow ancestor (mobile drawer); the @media fallback covers
+// the same reflow by viewport width. Cards is a GRID (collapses via
+// grid-template-columns); the flex styles collapse via flex-direction.
 // ---------------------------------------------------------------------------
 
 $stack_rules = $content_sel . '{flex-direction:column;}'
-	. $group_sel . '{flex:none;}'
+	. $style_crd . $rel_content . '{grid-template-columns:1fr;}'
+	. $group_sel . '{flex:none;width:100%;}'
 	. $aside_sel . '{flex:none;width:100%;}';
 
 $css .= '@container (max-width: 640px){' . $stack_rules . '}';
