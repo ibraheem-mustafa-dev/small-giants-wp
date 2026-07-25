@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/mega-panel",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"title": "SGS Mega Panel",
 	"category": "sgs-interactive",
 	"description": "The content container of an SGS mega menu — lives inside a sgs_mega_menu post. Owns ALL variant + colour-scheme styling for its child sgs/mega-group and sgs/mega-aside blocks (parent-paints-child, CF-10): switching this block's style or colour scheme uniformly reshapes/recolours every group and aside inside it.",
