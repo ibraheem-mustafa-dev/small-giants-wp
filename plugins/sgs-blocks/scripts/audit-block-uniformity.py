@@ -49,8 +49,15 @@ SUPPORTS_COLOR_EXEMPT = {
     #   nav-drawer — toggleCloseColour → the × close control.
     # Both emit scoped <style> per Spec 32 (never inline), so there is no
     # hand-rolled has-* injection here for supports.color to replace.
+    #   mega-panel — colourScheme (a scheme SELECTOR enum, not a colour value) +
+    #                borderColour (a BORDER colour → supports.border.color, NOT
+    #                supports.color). Neither is a wrapper background/text colour,
+    #                so the "colour"-substring heuristic is a false positive here
+    #                (same shape as nav-menu/nav-drawer). Exempt cross-track to
+    #                unblock the shared commit gate — 2026-07-25.
     "sgs/nav-menu",
     "sgs/nav-drawer",
+    "sgs/mega-panel",
 }
 
 issues = {"viewScript": [], "source_html": [], "typo_dup": [], "supports_color_missing": []}
