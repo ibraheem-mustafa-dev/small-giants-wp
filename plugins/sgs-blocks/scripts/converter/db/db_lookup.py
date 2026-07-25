@@ -4255,27 +4255,54 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     # ---- Path 2: element-only classes — slot fallback ----
     # Walk in sorted order (deterministic) through parsed classes and try to
     # resolve each BEM element/block segment against slot_synonyms.
+    #
+    # SELF-NEST GUARD (P-QUOTE-PATH2-SELF-NESTING, 2026-07-25): a block can
+    # NEVER recognise its OWN unrecognised child element as a fresh copy of
+    # itself. Every block's short slug is registered as an element-scope slot
+    # pointing at itself (`_slot_alias_to_standalone` runs `_put(slot_name,
+    # standalone)` before the alias loop), so a miss on the element name used
+    # to fall through to the block-segment lookup and self-resolve — e.g.
+    # `sgs-quote__<unknown>` → 'sgs/quote' → a quote nested inside a quote.
+    # Confirmed latent for heading/label/media/button/icon/tab/testimonial/
+    # option-picker/accordion-item/quote. The fix is UNIVERSAL + name-free
+    # (R-31-1/R-31-9): any match resolving to the element's OWN parent block
+    # (`sgs/<bem.block>`) is refused, so the node falls through to None and
+    # the walker keeps its content as pass-through inside the parent
+    # (FR-31-4.1 / FR-31-11) instead of emitting a phantom self-copy. This is
+    # a refinement of the RECOGNITION resolver, NOT a 4th walker branch —
+    # R-31-3's three-exception contract is untouched.
     for cls, bem in sorted(parsed, key=lambda x: x[0]):
+        self_slug = f"sgs/{bem.block}" if bem.block is not None else None
         # Try the element name first (most specific)
         if bem.element is not None:
             standalone = slot_alias_map.get(bem.element.lower())
-            if standalone:
+            if standalone and standalone != self_slug:
                 _trace("bem_resolve_slot_fallback",
                        class_=cls,
                        slot=bem.element,
                        slug=standalone)
                 return standalone
+            if standalone and standalone == self_slug:
+                _trace("bem_resolve_self_nest_skipped",
+                       class_=cls,
+                       slot=bem.element,
+                       blocked_slug=standalone)
         # Try the block segment (e.g. sgs-product-card__badge → 'product-card'
         # is block, 'badge' is element — already tried above; but the block
         # itself might also be a known slot alias in edge cases)
         if bem.block is not None:
             standalone = slot_alias_map.get(bem.block.lower())
-            if standalone:
+            if standalone and standalone != self_slug:
                 _trace("bem_resolve_slot_fallback",
                        class_=cls,
                        slot=bem.block,
                        slug=standalone)
                 return standalone
+            if standalone and standalone == self_slug:
+                _trace("bem_resolve_self_nest_skipped",
+                       class_=cls,
+                       slot=bem.block,
+                       blocked_slug=standalone)
 
     # ---- Path 2b: compound-element prefix strip (e.g. card-tag → tag) ----
     # A BEM element is frequently a `<head>-<tail>` compound where `head` names
@@ -4308,9 +4335,20 @@ def _resolve_slug_from_bem_tuple(classes_tuple: tuple[str, ...]) -> str | None:
     for cls, bem in sorted(parsed, key=lambda x: x[0]):
         if bem.element is None or "-" not in bem.element:
             continue
+        self_slug = f"sgs/{bem.block}" if bem.block is not None else None
         head, _, tail = bem.element.lower().partition("-")
         if head in slot_alias_map and tail in slot_alias_map:
             standalone = slot_alias_map[tail]
+            # SELF-NEST GUARD (see Path 2 above): a peeled compound tail that
+            # resolves to the element's own parent block is a self-nest — refuse
+            # it and fall through to None (pass-through), never emit a self-copy.
+            if standalone == self_slug:
+                _trace("bem_resolve_self_nest_skipped",
+                       class_=cls,
+                       head=head,
+                       tail=tail,
+                       blocked_slug=standalone)
+                continue
             _trace("bem_resolve_prefix_strip",
                    class_=cls,
                    head=head,
