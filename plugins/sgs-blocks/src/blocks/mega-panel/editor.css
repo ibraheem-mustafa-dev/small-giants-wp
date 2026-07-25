@@ -33,13 +33,21 @@
 	gap: var( --sgs-mm-group-gap, 44px );
 }
 
+/* EDITOR-CANVAS NOTE: WordPress wraps every InnerBlock in its own
+   `.block-editor-block-list__block` div, so inside the editor the flex/grid
+   ITEMS are those wrappers — NOT `.sgs-mega-group`/`.sgs-mega-aside` directly
+   (the frontend render.php wraps the rendered children directly, so it targets
+   the BEM classes). Layout-defining `display` also has to beat WordPress's own
+   block-list layout rule, so `display` carries `!important` HERE (editor-only
+   stylesheet — never the frontend). Both facts verified live 2026-07-25. */
+
 /* -- columns (default) — flex-wrap + a 200px basis let 1-3 groups share the
    row evenly and 4+ wrap onto a second row (FIX 1, flexible columns). ---- */
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content {
-	display: flex;
+	display: flex !important;
 	flex-wrap: wrap;
 }
-.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-group {
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content > * {
 	flex: 1 1 200px;
 	min-width: 0;
 }
@@ -60,7 +68,7 @@
 
 /* -- cards ---------------------------------------------------------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-panel__content {
-	display: grid;
+	display: grid !important;
 	grid-template-columns: 1fr 1fr;
 	gap: 12px;
 	align-content: start;
@@ -98,7 +106,7 @@
 
 /* -- minimal ---------------------------------------------------------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-mega-panel__content {
-	display: flex;
+	display: flex !important;
 	flex-direction: column;
 	gap: 2px;
 }
@@ -140,14 +148,27 @@
 	white-space: nowrap;
 }
 
-/* -- aside slot ------------------------------------------------------------- */
+/* -- aside slot — the aside's block-list WRAPPER is the flex item in the
+   editor, so the fixed column width goes on `> *:has(.sgs-mega-aside)` (this
+   also overrides the columns `> *{flex:1}` above by higher specificity). ---- */
 .wp-block-sgs-mega-panel .sgs-mega-panel__content:has( .sgs-mega-aside ) {
-	display: flex;
+	display: flex !important;
+	flex-wrap: nowrap;
 	align-items: stretch;
 }
-.wp-block-sgs-mega-panel .sgs-mega-aside {
+.wp-block-sgs-mega-panel .sgs-mega-panel__content > *:has( .sgs-mega-aside ) {
 	flex: 0 0 var( --sgs-mm-aside-w, 340px );
 	width: var( --sgs-mm-aside-w, 340px );
+}
+/* Cap an empty/placeholder aside media so it never dominates the panel — a
+   modest banner, not a full-height block (the aside's own width already bounds
+   it; this bounds the height for an unset image). */
+.wp-block-sgs-mega-panel .sgs-mega-aside .sgs-media__img,
+.wp-block-sgs-mega-panel .sgs-mega-aside img {
+	max-height: 170px;
+	object-fit: cover;
+	width: 100%;
+	border-radius: 12px;
 }
 /* Divider gated on the sep-none modifier (FIX 2) — "None" must show no
    border/gap-fill live in the canvas, matching render.php's own gate. */

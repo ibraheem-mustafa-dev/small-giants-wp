@@ -269,6 +269,9 @@ if ( ! $show_headings ) {
 
 $css .= $content_sel . ':has(' . $aside_sel . '){display:flex;align-items:stretch;}';
 $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';width:' . ( '' !== $aside_width ? $aside_width : '340px' ) . ';}';
+// Cap the aside media so a tall image never dominates the fixed-width aside
+// column — a modest banner, object-fit cover, matching the editor cap.
+$css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:cover;width:100%;border-radius:12px;}';
 
 $sep_style_val = isset( $aside_separator['style'] ) && in_array( $aside_separator['style'], array( 'none', 'line' ), true )
 	? (string) $aside_separator['style']
