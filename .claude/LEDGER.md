@@ -37,9 +37,10 @@ The mega CORE shipped this session (commit `19bafc9e`, pushed; deployed to sandy
 3 new blocks + a separate disclosure store + nav wiring + 3 starter patterns. Full narrative below.
 
 **What shipped (commit `19bafc9e`):**
-- **3 new blocks:** `sgs/mega-panel` (dynamic; owns ALL variant/scheme CSS), `sgs/mega-group` (static column),
-  `sgs/mega-aside` (static side panel). **CF-10 = "parent paints child":** children carry ZERO styling attrs;
-  the panel's scoped CSS restyles them uniformly on `style`/`colourScheme` switch (live in canvas + frontend).
+- **3 new blocks:** `sgs/mega-panel` (dynamic; owns ALL variant/scheme CSS), `sgs/mega-group` + `sgs/mega-aside`
+  (columns/aside — made DYNAMIC this session, see below). **CF-10 = "parent paints child":** children carry ZERO
+  styling attrs; the panel's scoped CSS restyles them uniformly on `style`/`colourScheme` switch — **works on the
+  FRONTEND (render.php); the EDITOR-CANVAS preview of the presets is an OPEN gap (see "Your next session").**
 - **`store('sgs/mega')`** (`src/shared/nav-interactivity/mega-disclosure.js`) — SEPARATE from the drawer store
   (CF-3, drawer byte-untouched), with a 300ms hover-intent + 170ms close-grace bridge (CF-13).
 - **U9 nav wiring:** a classic menu item targeting a `sgs_mega_menu` post → `<button aria-expanded>` disclosure
@@ -62,17 +63,32 @@ duplicate-id fix. **Automated live QC on sandybrown ALL PASS:** nav renders the 
 panel/button-aria-expanded present, no role=menu); multi-instance no-fatal (D374); CF-2 injection neutralised on
 a real render; panel id instance-scoped. Live fixtures kept: panel **1745**, menu **100**, item **1746**.
 
-**⭐ Your next session — INTERACTIVE Gate 2/3 (needs Bean's eye + a browser).** The automated proof is done;
-what's owed needs the block editor + Playwright + Bean looking (R-31-13):
-1. **Picker fires:** create a new `sgs_mega_menu` post → the native "Choose a pattern" modal shows the 3 mega
-   starters (theme 1.5.44 already bumped the pattern cache).
-2. **CF-6 headline LIVE-VERIFY (the block's whole point):** in the panel, a non-coder can ADD/REMOVE/REORDER a
-   column AND edit an icon-list link's text+URL (prove `templateLock:false`+`allowedBlocks` delivers it).
-3. **A real page:** put an `sgs/nav-menu` (bound to a menu with a POPULATED mega panel — panel 1745 is empty;
-   populate from a starter via the editor) on a canary page; open the mega on hover/tap/keyboard.
-4. **axe** on the OPEN panel (0 block-defect); **drawer no-regression** (store('sgs/nav') untouched, but verify);
-   reduced-motion; the live recursion test (a panel embedding a nav bound to its own menu → plain link, no loop).
-5. **Bean's eye** on the rendered panel + the 3 layouts.
+**INTERACTIVE Gate 2 done live in the editor this session (commits `bcc8a367`/`e5f70680`/`62361a1e`/`eb3f200c`):**
+- **Picker LIVE-VERIFIED** — the native "Choose a pattern" modal fires for a new `sgs_mega_menu` post with all 3
+  starters (screenshots in `reports/visual-diff/mega-*.png`).
+- **BUG found + fixed live:** inserting a starter showed "Block contains unexpected or invalid content" —
+  `sgs/mega-group`/`mega-aside` were STATIC (save emitted a `<div>` the comment-only pattern lacked). FIXED by
+  making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real
+  editable columns + aside. (Only a live editor caught this — invisible to every server-side gate.)
+- **Aside media capped** (170px object-fit) so an empty/large image doesn't dominate (render.php + editor.css).
+- **⚠ OPEN — the editor-canvas preset preview does NOT work.** Switching Columns/Cards/Minimal IN THE EDITOR
+  shows no visual change. Root cause PROVEN via live iframe evals: **WP 7.0's iframed editor canvas is not
+  applying this block's `editor.css`; only `style.css` reaches the canvas.** Proven fix (NOT yet landed): move
+  the preset rules into `style.css`, NO `!important` (a no-`!important` rule injected into the canvas applies —
+  beats WP by specificity; `!important` in style.css would break the frontend mobile-stack), + also fix the
+  render.php mobile stack to collapse the cards GRID to 1 column. The `!important` in editor.css (`e5f70680`) +
+  the 0.1.1 version bump were aimed at this + are harmless-but-INERT until the style.css move.
+
+**⭐ Your next session — TASK 1 = land the editor-preview fix (diagnosis done, ~20 min), then finish Gate 3.**
+1. **Editor-preview refactor (the proven fix above):** move the mega-panel preset layout rules from `editor.css`
+   → `style.css` (generic selectors, `.sgs-mega-panel__content > *` for wrapper-aware flex, **no `!important`**);
+   fix the render.php mobile stack for the cards grid; revert the now-inert editor.css `!important`; rebuild +
+   redeploy + live-verify in the editor that Columns/Cards/Minimal now visibly change (bump the block version or
+   clear the CSS cache — a static `?ver` serves stale CSS). Then Bean's eye on the 3 presets.
+2. **Gate 3 on a real page:** populate a mega panel from a starter, attach to a menu, put an `sgs/nav-menu` on a
+   canary page; open the mega on hover/tap/keyboard; **axe** on the OPEN panel (0 block-defect); **drawer
+   no-regression**; reduced-motion; the live recursion test (a panel embedding a nav bound to its own menu →
+   plain link, no loop). Bean's eye (R-31-13).
 Then the DEFERRED follow-on (declared, NOT cut, STOP-29): `media-cards`+`brands` variants, the 5 motion effects
 (KEEP caret), night/day `dark` value-set, aside `feature`/`preview`, full manifest conformance, true safe-triangle.
 
