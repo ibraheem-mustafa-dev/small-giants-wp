@@ -174,9 +174,3 @@ D380; Track 2 owns the cadence) · `converter/services/layer_detect.py` (L1–L4
 
 Canary creds (always available): `.claude/secrets/sandybrown.env`. Deploy: the ONE path
 `build-deploy.py --target sandybrown --blocks-only` from an ISOLATED worktree. SSH alias `ssh hd`.
-
-## Deferred (Spec-31, deploy-gated — NOT Spec-35 work, do not re-open unless asked)
-- sgs-quote conformance-golden re-seed (bundled with the 25 pre-existing stale goldens) — needs a
-  fresh landed-deploy proof, then `tests/seed_conformance_goldens.py`.
-- `P-QUOTE-PATH2-SELF-NESTING` (universal walker self-nesting footgun) + `P-OLDSHAPE-AUDIT-TEXTALIGN`
-  (audit NATIVE set missing textAlign) — both logged in `parking.md`, design-gated / 1-line fixes.

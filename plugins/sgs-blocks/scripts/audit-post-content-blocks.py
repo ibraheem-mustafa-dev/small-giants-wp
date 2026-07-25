@@ -61,6 +61,8 @@ BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 NATIVE = {
     'align', 'className', 'style', 'backgroundColor', 'textColor', 'gradient',
     'fontSize', 'fontFamily', 'borderColor', 'lock', 'metadata', 'anchor', 'layout',
+    'textAlign',  # WP-native typography.textAlign support (2026-07-25) — else blocks
+                  # declaring supports.typography.textAlign false-flag once content sets it.
 }
 # SGS universal extensions injected server-side.
 EXT_PREFIXES = ('sgsHideOn', 'sgsAnim')

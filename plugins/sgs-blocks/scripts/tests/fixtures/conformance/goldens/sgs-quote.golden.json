@@ -1,5 +1,5 @@
 {
-  "seed_note": "Seeded 2026-07-05 (D278) from the LANDED-verified engine state  -  deployed to canary page 8 that day, computed-parity content 90% / CSS 67-69-76, A2 ledger green. Never re-seed from emit alone; re-seed only WITH a fresh LANDED proof (a real deploy + computed-parity run, not just a local emit) and cite that proof in the commit message.",
+  "seed_note": "Re-seeded 2026-07-25 (Spec 31 last residual close, commit 9babcfd5 fix + this session) — scoped re-seed of sgs-quote ONLY (not a full 40-golden reseed; the other 25 stale goldens are untouched and remain a separate pending task). LANDED proof: page f3-oracle-sgs-quote (WP id 1602) re-provisioned through the current converter on sandybrown and live-Playwright-probed — exactly 1 .wp-block-sgs-quote, body renders as child wp:sgs/text (no nested quote), attribution renders as the quote block's own footer.wp-block-sgs-quote__attribution with correct text. oracle/batch_runner.py LANDED leg: sgs-quote = 1 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, no ambiguous-selector warning (the corpus-wide AMBIGUOUS SELECTOR warning present in this run belongs to rt-centred-maxwidth, not sgs-quote). This golden captures that emit shape.",
   "golden_id": "sgs-quote",
   "source": "fixture:sgs-quote.html",
   "status": "complete",
@@ -7,5 +7,5 @@
   "selector": "section.sgs-quote",
   "failure_reason": "",
   "primary_block_emitted": "sgs/quote",
-  "block_markup": "<!-- wp:sgs/quote {\"style\":{\"color\":{\"background\":\"#f8f4ef\"}}} -->\n<!-- wp:sgs/text {\"fontSize\":22,\"fontSizeUnit\":\"px\",\"fontStyle\":\"italic\",\"lineHeight\":1.5,\"lineHeightUnit\":\"unitless\",\"style\":{\"spacing\":{\"margin\":{\"bottom\":\"16px\",\"left\":\"0\",\"right\":\"0\",\"top\":\"0\"}}},\"text\":\"Amazing product \\u2014 my baby absolutely loves it!\",\"textColour\":\"#3a2e26\"} /--><!-- wp:sgs/text {\"fontSize\":14,\"fontSizeUnit\":\"px\",\"fontWeight\":\"600\",\"text\":\"\\u2014 Jane Doe, Happy Customer\",\"textColour\":\"#5c4f46\"} /-->\n<!-- /wp:sgs/quote -->"
+  "block_markup": "<!-- wp:sgs/quote {\"attribution\":\"\\u2014 Jane Doe, Happy Customer\",\"attributionColour\":\"#5c4f46\",\"attributionFontSize\":14,\"attributionFontSizeUnit\":\"px\",\"attributionFontWeight\":\"600\",\"style\":{\"color\":{\"background\":\"#f8f4ef\"},\"spacing\":{\"padding\":{\"bottom\":\"48px\",\"left\":\"24px\",\"right\":\"24px\",\"top\":\"48px\"}}}} -->\n<!-- wp:sgs/text {\"fontSize\":22,\"fontSizeUnit\":\"px\",\"fontStyle\":\"italic\",\"lineHeight\":1.5,\"lineHeightUnit\":\"unitless\",\"style\":{\"spacing\":{\"margin\":{\"bottom\":\"16px\",\"left\":\"0\",\"right\":\"0\",\"top\":\"0\"}}},\"text\":\"Amazing product \\u2014 my baby absolutely loves it!\",\"textColour\":\"#3a2e26\"} /-->\n<!-- /wp:sgs/quote -->"
 }
