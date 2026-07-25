@@ -830,20 +830,24 @@ pipeline.
   lands, the new block's canonical slug is **`sgs/nav-menu`** — `sgs/nav` is ONLY the Interactivity store
   namespace, NEVER a block name (do NOT "add block name `sgs/nav`"). **Route the menu-source detection off the
   DB/registry, not a hardcoded PHP const** (R-31-1 DB-first), else the fallback resolution breaks and drifts.
-- **`show_in_nav_menus` (fact-check):** do NOT assert it works from `class-product-templates-cpt.php:70` — that
-  file sets `show_in_nav_menus` to **FALSE** (a CPT excluded from menus), so the citation is WRONG. The WP
-  mechanism is core-sound but must be **SPIKED, not asserted**: before the mega Phase, register a test CPT with
-  `show_in_nav_menus:true` and confirm it appears in Appearance → Menus. Correct/remove the wrong citation.
-- **`templateLock:"contentOnly"` (fact-check):** a **FIRST APPLICATION in SGS** (currently UNBUILT, 0 hits) —
-  flag it as such (same honesty flag as `ResponsiveTriStateControl`), not "reuse".
+- **`show_in_nav_menus` — PROVEN 2026-07-25 (D379), no longer a spike-owed.** `Sgs_Mega_Menu_CPT::register_post_type`
+  (`class-sgs-mega-menu-cpt.php:138`) sets `show_in_nav_menus => true`; the D379 SPIKE confirmed LIVE on sandybrown
+  that a `sgs_mega_menu` post attaches in Appearance → Menus and `resolve_panel_for_menu_item` returns it
+  (`item#1746 → POST#1745 publish`). The old `class-product-templates-cpt.php:70` (FALSE) citation is retired.
+- **`templateLock` — CORRECTED 2026-07-25 (D379): the panel uses `templateLock:false` + `allowedBlocks`, NOT
+  `contentOnly`.** contentOnly HID child settings (a client could not edit the icon-list link lists — a blocking
+  defect caught by a QC council). The panel now lets the client add/remove/reorder 1-3 mega-group/mega-aside
+  columns; each child block is internally `templateLock:'all'` (fixed shape, editable settings). See D379 / FR-36-3.
 - **`sgs/cart` badge → add `role="status"`** (FR-36-19).
 - **Hide-on-scroll engine is BUILT-but-dormant** (`header-behaviours.css:118` + `view.js`; NO
   `headerHideOnScroll` attr) — wiring it (one attr + one resolver flag in
   `class-sgs-header-behaviours.php:196` + one toggle) is a **Spec-17 header task**, NOT a new state machine.
   Cross-reference; don't rebuild.
-- **Existing nav blocks (salvage targets):** `sgs/adaptive-nav` + `sgs/mega-menu` (RETIRE, reference-only);
-  `sgs/nav-menu` (registered slug — a from-scratch same-slug rebuild, D270 re-clone not migrate). `sgs/nav-drawer`
-  + the `sgs_mega_menu` CPT do NOT exist yet (build-new).
+- **Existing nav blocks:** `sgs/adaptive-nav` + `sgs/mega-menu` (RETIRED, deleted — reference via git only);
+  `sgs/nav-menu` + `sgs/nav-drawer` BUILT (Phase 1). **`sgs_mega_menu` CPT BUILT** (`class-sgs-mega-menu-cpt.php`,
+  registered + `show_in_nav_menus`) and **the mega CORE — `sgs/mega-panel`/`mega-group`/`mega-aside` +
+  `store('sgs/mega')` + the nav wiring — BUILT + DEPLOYED (D379, commit `19bafc9e`, 2026-07-25).** This "do NOT
+  exist yet" line is retired.
 - **DB drift to clean via `/sgs-update` at build:** the stale `block_composition` rows (`sgs/mobile-nav`,
   `sgs/mobile-nav-toggle`) + banned `core/navigation` in `site-header-row`'s allowed-list.
 - **⚠ LEDGER correction:** the LEDGER's P2.5 line says "wp_navigation menu data locked" — STALE vs §12(f)

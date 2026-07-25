@@ -32,55 +32,59 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-24 — mega-menu FOUNDATION: design→spec→council→validation; NO code shipped yet).**
-Prior shipped (one-line, full detail in `decisions.md`/`memory/session-2026-07-24-*`): FR-37-7 native starter
-picker LIVE for header+footer (D377); FR-37-13 hide-on-scroll fix B (D376); FR-36-26c footer link-lists (D374).
+**⭐ CURRENT (2026-07-25 — mega-menu CORE BUILT + DEPLOYED + automated-live-verified; D379).**
+The mega CORE shipped this session (commit `19bafc9e`, pushed; deployed to sandybrown, checksum-verified).
+3 new blocks + a separate disclosure store + nav wiring + 3 starter patterns. Full narrative below.
 
-This session ran the full PRE-BUILD gauntlet on the mega foundation — 2 planning docs, no build:
-- **BUILD-SPEC** `plans/2026-07-24-mega-menu-BUILD-SPEC.md` — §0 decisions (D-A..D-G: mega OWNS its own
-  light/dark palette that FOLLOWS the site mode; add a neutral `mono` font); **§0.5 CORE SCOPE + 15 council
-  fix-shapes CF-1..15**; **§0.6 qc-council validation ledger**; §1–§10 = the full-vision follow-on reference.
-- **Strategic plan** `plans/2026-07-24-mega-menu-foundation-strategic-plan.md` (13 units + dep graph; re-scoped — read §0.5).
-- **Model (Bean-settled across the session):** 3 structural VARIATIONS `general|media-cards|brands` +
-  content-preserving TOGGLES (`style` columns/cards/minimal + `headings` + `markerType` + `columnCount`) +
-  an aside component + content-preserving mobile-in-drawer stack (`@container`). Client edits content+settings
-  ONLY (`templateLock:contentOnly` + `role:content`); inspector = element×cluster Spec-35 (hand-built +
-  ADVISORY manifest — the manifest is NOT a UI renderer, verified).
-- **7-persona adversarial council → NO-GO→GO-after-re-scope; Bean chose re-scope.** Convergent must-fixes:
-  over-scope; the `store('sgs/nav')` surgery mis-specified (it's a modal drawer engine); `variant` live-toggle
-  = data-loss; + a FATAL `do_blocks` self-reference DoS with no render-path guard.
-- **Fact-checked the CF claims (Bean-directed) — CF-3 was FALSE:** `store.js:638` exports only
-  `{actions,FOCUSABLE_SELECTOR}`, NOT `getFocusable`/`prefersReducedMotion` (Cynic's claim) — corrected.
-  CF-2/4/6/7 verified against source. **qc-council: all 15 CF validated, none a no-op** (4 carry a build-time
-  decision, §0.6).
+**What shipped (commit `19bafc9e`):**
+- **3 new blocks:** `sgs/mega-panel` (dynamic; owns ALL variant/scheme CSS), `sgs/mega-group` (static column),
+  `sgs/mega-aside` (static side panel). **CF-10 = "parent paints child":** children carry ZERO styling attrs;
+  the panel's scoped CSS restyles them uniformly on `style`/`colourScheme` switch (live in canvas + frontend).
+- **`store('sgs/mega')`** (`src/shared/nav-interactivity/mega-disclosure.js`) — SEPARATE from the drawer store
+  (CF-3, drawer byte-untouched), with a 300ms hover-intent + 170ms close-grace bridge (CF-13).
+- **U9 nav wiring:** a classic menu item targeting a `sgs_mega_menu` post → `<button aria-expanded>` disclosure
+  + `do_blocks` the panel at its REAL menu position, guarded by a recursion-safe helper
+  (`includes/helpers-mega-render.php`, CF-1). Seam = `attrs['type']==='sgs_mega_menu'` + `attrs['id']`; reuses
+  the verified `\SGS\Blocks\Sgs_Mega_Menu_CPT::resolve_panel_for_menu_item` (namespaced FQN).
+- **3 CPT starter patterns** (`theme/sgs-theme/patterns/mega-general-{1col,2col,2col-aside}.php`) + theme **1.5.44**.
 
-**Latent + open (not this session):** Mama's brand-primary `#e68a95` fails contrast as text
-(`P-MAMAS-PRIMARY-CONTRAST`, theme-source fix, site-wide — axe still shows 17 colour-contrast hits) ·
-two unnamed `<main>` landmarks = the framework `landmark-unique`/`region` axe hits (separate theme defect,
-NOT the header) · `minmax()` guard absent framework-wide (deferred, no live Reflow) · both sites show GENERIC
-proof headers (sandybrown #1570/#1571; palestine-lives #360) — admin "Clear active" restores.
+**⚠ CF-6 CORRECTED (Bean-directed) — the pinned `templateLock:contentOnly` was WRONG.** contentOnly HIDES child
+settings, so a client could not edit the link lists (icon-list edits links via its inspector repeater — a QC
+council caught this as a blocking defect). **Now: panel = `templateLock:false` + `allowedBlocks:['sgs/mega-group',
+'sgs/mega-aside']`** — the client ADDS/REMOVES/REORDERS 1-3 columns (only mega blocks), each internally
+`templateLock:'all'` (fixed shape, editable settings). `columnCount` attr DROPPED. Matches the spec's real words
+"edit content AND settings, never restructure". Also fixed (council + code-review): editor live-preview mirroring
+(gap/padding/divider), first-insert padding default, inert Dark/Auto hidden, a11y visually-hidden headings,
+divider→ToggleGroupControl, instance-scoped panel DOM ids.
 
-**⭐ Your next session — BUILD the mega CORE. `BUILD-SPEC §0.5` is the self-contained entry — READ IT FIRST**
-(then `next-session-prompt.md` for the orchestration). Design is DONE, council-hardened, fact-checked,
-qc-validated; this session is a clean build against a pinned spec. Smallest shippable core: `general`/`columns`,
-LIGHT-ONLY, CARET-ONLY, optional static `cta` aside, a SEPARATE `store('sgs/mega')` module (NOT extending the
-drawer store), a `do_blocks` recursion guard.
+**Review trail:** QC council (3 code-grounded raters) → CF-6 blocker + 5 UX fixes → pre-commit code-review →
+duplicate-id fix. **Automated live QC on sandybrown ALL PASS:** nav renders the disclosure (interactive/trigger/
+panel/button-aria-expanded present, no role=menu); multi-instance no-fatal (D374); CF-2 injection neutralised on
+a real render; panel id instance-scoped. Live fixtures kept: panel **1745**, menu **100**, item **1746**.
 
-**Sequence (BUILD-SPEC §0.5.D):** SPIKE (canary: create `sgs_mega_menu`, confirm Appearance→Menus attach +
-resolver returns) → Wave-0 (git-extract old `mega-menu/view.js` `23a3cf63^` to `.claude/scratch/old-mega-menu/`;
-pin the `general` InnerBlocks template + all 9 manifest attrMaps + apply the `columns→columnCount` rename) →
-U1 (general only; enum-declare media-cards/brands) → U3-spike (`contentOnly`+`role:content` proven) → U2
-(columns FLEX, light, caret, escaping CF-2) → U3 (element×cluster inspector; `variant` insert-time) → U8
-(NEW `store('sgs/mega')`, commit isolated + tag) → EARLY drawer smoke-check on canary → U9 (+recursion guard
-CF-1, trigger=`<button>` CF-15) → U10 (2 `general` patterns + scratch shell) → U11 (theme version bump) →
-U12 (build + deploy + live-a11y QC incl. recursion + escaping tests + Bean's eye) → U13 (docs; fix Spec 36
-§8a's stale "CPT doesn't exist").
+**⭐ Your next session — INTERACTIVE Gate 2/3 (needs Bean's eye + a browser).** The automated proof is done;
+what's owed needs the block editor + Playwright + Bean looking (R-31-13):
+1. **Picker fires:** create a new `sgs_mega_menu` post → the native "Choose a pattern" modal shows the 3 mega
+   starters (theme 1.5.44 already bumped the pattern cache).
+2. **CF-6 headline LIVE-VERIFY (the block's whole point):** in the panel, a non-coder can ADD/REMOVE/REORDER a
+   column AND edit an icon-list link's text+URL (prove `templateLock:false`+`allowedBlocks` delivers it).
+3. **A real page:** put an `sgs/nav-menu` (bound to a menu with a POPULATED mega panel — panel 1745 is empty;
+   populate from a starter via the editor) on a canary page; open the mega on hover/tap/keyboard.
+4. **axe** on the OPEN panel (0 block-defect); **drawer no-regression** (store('sgs/nav') untouched, but verify);
+   reduced-motion; the live recursion test (a panel embedding a nav bound to its own menu → plain link, no loop).
+5. **Bean's eye** on the rendered panel + the 3 layouts.
+Then the DEFERRED follow-on (declared, NOT cut, STOP-29): `media-cards`+`brands` variants, the 5 motion effects
+(KEEP caret), night/day `dark` value-set, aside `feature`/`preview`, full manifest conformance, true safe-triangle.
 
-**DEFERRED to a follow-on (declared, NOT cut):** the 5 effects (KEEP caret), `media-cards`+`brands`
-variations, night/day `dark` set, aside `feature`/`preview` formats, full manifest GAP/ORPHAN-0 conformance.
+**⚠ TOOLING FLAG:** `/sgs-wp-engine` is BLOCKED by its freshness gate (skill `db_schema_version: spec-31` vs DB
+`spec-15-p1`) — its DB pointers may be stale. Worked from live DB + code instead this session. A `/lifecycle`
+fix (re-index + review + bump the frontmatter) is owed. Also: the deploy oldshape-audit gate FALSE-POSITIVES on
+`sgs/team-member` textAlign (a valid typography-support-injected attr, `verify-framework-injected-attrs-before-delete`)
+— skipped with `--skip-oldshape-audit` for this deploy; someone owning team-member should baseline or fix the gate.
 
-Also open (not blockers): FR-37-36 (custom React picker) · Mama's `#e68a95` text-contrast
-(`P-MAMAS-PRIMARY-CONTRAST`) · the two-`<main>` framework landmark defect.
+**Latent + open (unchanged, not blockers):** Mama's `#e68a95` text-contrast (`P-MAMAS-PRIMARY-CONTRAST`) ·
+two unnamed `<main>` landmarks (framework `landmark-unique`/`region` axe) · `minmax()` guard absent · both sites
+GENERIC proof headers (sandybrown #1570/#1571; palestine-lives #360, admin "Clear active" restores) · FR-37-36.
 
 ---
 
