@@ -736,109 +736,9 @@ def run_mechanism_b(
         if id(child) in exclude_ids:
             continue  # consumed as a NESTED unit by the universal walk (FR-31-2.6)
         columns_seen += 1
-
-        cclasses: list[str] = child.get("class", []) or []
-        csgs: list[str] = [c for c in cclasses if isinstance(c, str) and c.startswith("sgs-")]
-
-        # Extract BEM __element token (same as composite path above).
-        element = None
-        for cls in csgs:
-            bem = db_lookup.parse_sgs_bem(cls)
-            if bem and bem.element:
-                element = bem.element
-                break
-
-        # G1: parent-scoped child-token pre-check (convert.py:4460-4477).
-        # Takes precedence over global alias lookup.
-        child_slug: str | None = None
-        if rec.slug and element:
-            child_slug = db_lookup.child_block_for_parent_token(rec.slug, element)
-        via_parent_token = child_slug is not None
-
-        # G-resolve: global BEM → slug fallback (convert.py:4444).
-        if child_slug is None and csgs:
-            child_slug = db_lookup.resolve_slug_from_bem(csgs)
-
-        # G-atomic: a BARE content tag (a <p> body paragraph, an <h4>, …) carries no
-        # parent-scoped token and no sgs class, so G1 + global-BEM both miss — but it is
-        # real CONTENT, not a gap. Fall back to recognise(), which resolves an atomic tag
-        # to its block (p->sgs/text, h2->sgs/heading, img->sgs/media — §2.6 / Spec 31
-        # §3.B.0 universal element extraction: the same tag becomes a child block by
-        # context) or an sgs-element to its scalar slot. UNIVERSAL (R-31-9): every
-        # InnerBlocks parent (quote, info-box, notice-banner, accordion, …) lands its
-        # bare content children instead of dropping them (the brand-quote body drop —
-        # Layer A, diagnosed 2026-07-01). Only a genuine unrecognised node still gaps.
-        if child_slug is None:
-            fb = recognise(child)
-            if fb.slug is not None and fb.kind != "unrecognised":
-                child_slug = fb.slug
-
-        # NESTED-ATTR pre-empt (FR-31-2.6 completion, 2026-07-05 quote-
-        # attribution fix): a generic child resolved via slot-alias / atomic
-        # recognition (NEVER a G1 parent-scoped dedicated child-block route —
-        # that stays authoritative and is never second-guessed here) may still
-        # be THIS composite's OWN nested scalar content, keyed by an EXACT
-        # attr-name match against its BEM __element token — independent of
-        # which block-family prefix the draft author used (e.g. a draft's
-        # `sgs-brand__attribution` inside a promoted sgs/quote still carries
-        # the 'attribution' token even though its family prefix is 'brand',
-        # not 'quote'). Deliberately uses `nested_attr_named` (EXACT attr-name
-        # equality only), NEVER `content_attr_for_element`'s looser
-        # canonical_slot/alias match — the D279 QC regression guard proved
-        # alias-based cross-family resolution is unsafe (it hijacked
-        # `sgs-accordion__heading`, element token 'heading' aliasing
-        # accordion-item's `title` via canonical_slot, into a scalar lift,
-        # silently dropping the child heading BLOCK the golden fixture
-        # expects). A dedicated child block (G1 hit) is a stronger, more
-        # specific signal than this and is never overridden.
-        nested_hit = (
-            db_lookup.nested_attr_named(rec.slug, element)
-            if (not via_parent_token and element)
-            else None
-        )
-        if nested_hit is not None:
-            nested_attr, nested_role, nested_attr_type = nested_hit
-            if nested_attr not in nested_filled and nested_attr_type == "string":
-                nested_value = extract_field_value(child, nested_role, media_map or {})
-                if nested_value:
-                    results.append(ScalarLift(attr=nested_attr, value=nested_value))
-                    nested_filled.add(nested_attr)
-                    continue  # conserved on the nested side (FR-31-2.6 mutual exclusion)
-
-        if child_slug is None:
-            # No resolution → ContentGap (convert.py:4517-4527 emits a wrapper container;
-            # here the new engine gaps instead of emitting an anonymous container).
-            results.append(ContentGap(
-                _label(child),
-                "generic child has no resolvable slug (G1, global BEM, and atomic-tag "
-                "recognition all missed)",
-            ))
-            continue
-
-        # G3: validate child_slug against the parent's accepted block list.
-        # Bean-mandated validation (per task spec). convert.py:4460-4477 has no equivalent
-        # — this is a new-engine strengthening of the resolution fidelity.
-        if allowed is None:
-            # NULL → permissive; no restriction declared. Log a trace (never silent).
-            _LOG.debug(
-                "Mechanism B generic G3: parent %r has NULL accepts_allowed_blocks —"
-                " child %r admitted without validation (permissive)",
-                rec.slug, child_slug,
-            )
-        elif child_slug not in allowed:
-            # Non-None allow-list and child is NOT in it → loud ContentGap, never silent.
-            results.append(ContentGap(
-                _label(child),
-                f"G3 validation failed: child slug {child_slug!r} is not in parent"
-                f" {rec.slug!r} accepts_allowed_blocks={allowed!r}",
-            ))
-            continue
-
-        # Emit ChildBlock. _child_content_for_node picks TEXT or inner markup per block type.
-        content = _child_content_for_node(
-            child, child_slug, css_rules=css_rules, media_map=media_map
-        )
-        results.append(ChildBlock(slug=child_slug, content=content))
+        results.extend(_route_generic_child(
+            child, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+        ))
 
     # Generic path conservation: every Tag child → ≥1 result.
     if len(results) < columns_seen:
@@ -847,6 +747,124 @@ def run_mechanism_b(
             f" {len(results)} results — at least one child was silently dropped"
         )
     return results
+
+
+def _route_generic_child(
+    child: Any,
+    rec: Recognition,
+    allowed: Any,
+    exclude_ids: frozenset[int],
+    nested_filled: set[str],
+    css_rules: dict | None,
+    media_map: dict | None,
+) -> list:
+    """Route ONE child of a GENERIC (non-class-section) InnerBlocks composite
+    (accordion / tabs / form / quote …) and return its content results.
+
+    Called per direct child AND recursively for the grandchildren of a
+    transparent slug-None wrapper. TRANSPARENT-WRAPPER DISSOLVE (Bean-directed
+    2026-07-25): an `__inner`/`__body`/`__content` shell is NOT content — it must
+    DISSOLVE: its CSS folds up (the composite band-fold) and its children recurse
+    INTO this composite as direct children. Previously the generic path gapped an
+    unresolved wrapper as one opaque column and `continue`d — silently dropping
+    everything inside it (the sgs/tab `__inner > __content` text drop). The
+    composite-interior branch (run_mechanism_b, is_class_section_block) already
+    descends a slug-None wrapper's grandchildren; this brings the GENERIC path to
+    parity, made recursive so a nested chain (`__inner > __body > __text`) fully
+    dissolves. Universal (R-31-9): every generic InnerBlocks parent.
+    """
+    out: list = []
+    cclasses: list[str] = child.get("class", []) or []
+    csgs: list[str] = [c for c in cclasses if isinstance(c, str) and c.startswith("sgs-")]
+
+    # Extract BEM __element token.
+    element = None
+    for cls in csgs:
+        bem = db_lookup.parse_sgs_bem(cls)
+        if bem and bem.element:
+            element = bem.element
+            break
+
+    # G1: parent-scoped child-token pre-check. Takes precedence over global alias.
+    child_slug: str | None = None
+    if rec.slug and element:
+        child_slug = db_lookup.child_block_for_parent_token(rec.slug, element)
+    via_parent_token = child_slug is not None
+
+    # G-resolve: global BEM → slug fallback.
+    if child_slug is None and csgs:
+        child_slug = db_lookup.resolve_slug_from_bem(csgs)
+
+    # G-atomic: a bare content tag (<p>, <h4>, <img>) or an sgs-element scalar
+    # slot — real CONTENT, not a gap. recognise() resolves the atomic tag to its
+    # block (p->sgs/text, h2->sgs/heading, …). UNIVERSAL (R-31-9).
+    if child_slug is None:
+        fb = recognise(child)
+        if fb.slug is not None and fb.kind != "unrecognised":
+            child_slug = fb.slug
+
+    # NESTED-ATTR pre-empt (FR-31-2.6): a generic child resolved via slot-alias /
+    # atomic recognition may still be THIS composite's OWN nested scalar content,
+    # keyed by EXACT attr-name match on the BEM __element token (never the looser
+    # canonical_slot/alias match — the D279 regression guard). A G1 parent-scoped
+    # route stays authoritative and is never second-guessed.
+    nested_hit = (
+        db_lookup.nested_attr_named(rec.slug, element)
+        if (not via_parent_token and element)
+        else None
+    )
+    if nested_hit is not None:
+        nested_attr, nested_role, nested_attr_type = nested_hit
+        if nested_attr not in nested_filled and nested_attr_type == "string":
+            nested_value = extract_field_value(child, nested_role, media_map or {})
+            if nested_value:
+                out.append(ScalarLift(attr=nested_attr, value=nested_value))
+                nested_filled.add(nested_attr)
+                return out  # conserved on the nested side (FR-31-2.6 mutual exclusion)
+
+    if child_slug is None:
+        # TRANSPARENT WRAPPER DISSOLVE (Bean 2026-07-25). The wrapper is not
+        # content itself — its CSS folds up via the composite band-fold, and its
+        # children recurse in here as direct children of the composite. Only a
+        # genuine leaf with no routable descendants still gaps (never silent).
+        for gc in child.children:
+            if not isinstance(gc, Tag) or id(gc) in exclude_ids:
+                continue
+            out.extend(_route_generic_child(
+                gc, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+            ))
+        if out:
+            return out
+        out.append(ContentGap(
+            _label(child),
+            "generic child has no resolvable slug and dissolved to no content "
+            "(G1, global BEM, atomic-tag recognition, and wrapper descent all missed)",
+        ))
+        return out
+
+    # G3: validate child_slug against the parent's accepted block list.
+    if allowed is None:
+        # NULL → permissive; no restriction declared. Log a trace (never silent).
+        _LOG.debug(
+            "Mechanism B generic G3: parent %r has NULL accepts_allowed_blocks —"
+            " child %r admitted without validation (permissive)",
+            rec.slug, child_slug,
+        )
+    elif child_slug not in allowed:
+        # Non-None allow-list and child is NOT in it → loud ContentGap, never silent.
+        out.append(ContentGap(
+            _label(child),
+            f"G3 validation failed: child slug {child_slug!r} is not in parent"
+            f" {rec.slug!r} accepts_allowed_blocks={allowed!r}",
+        ))
+        return out
+
+    # Emit ChildBlock. _child_content_for_node picks TEXT or inner markup per block type.
+    content = _child_content_for_node(
+        child, child_slug, css_rules=css_rules, media_map=media_map
+    )
+    out.append(ChildBlock(slug=child_slug, content=content))
+    return out
 
 
 # ---------------------------------------------------------------------------
