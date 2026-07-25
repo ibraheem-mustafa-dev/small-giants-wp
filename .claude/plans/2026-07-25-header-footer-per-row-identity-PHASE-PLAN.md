@@ -1,0 +1,210 @@
+---
+doc_type: plan
+topic: header-footer-per-row-identity
+date: 2026-07-25
+status: READY (design-gate approved 2026-07-25, Option 1); not yet started
+design: .claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md
+review: risk + hidden-decisions discharged by the 6-persona adversarial council (2026-07-25) — see design doc §2 must-fixes; no separate research pre-gate needed (council resolved the unknowns)
+---
+
+# Phase Plan — Header/Footer Per-Row Identity (Option 1: keep the shared engine)
+
+**USP:** each header/footer row becomes its own independently-behaving strip — a real
+competitive edge over Kadence/Astra for a non-coder — built on the engine that already works,
+so it ships in days with zero drift risk.
+
+**Plan label:** `[PLAN: sonnet]` — settled design (council-hardened), implementation-heavy, clear
+requirements. Architectural sub-decisions (the sticky mini-design) are the only `inline` steps.
+
+**Docscore:** self-assessed B+ (all steps have Action/Files/Outcome/Test/On-Fail; the design it
+executes was council-gated). Not routed to the docscore subagent — proportionate to small scope.
+
+**Aggregate cost estimate:** small — P1 ≈ one build+deploy cycle; P2 ≈ one more. Deal-winners are
+independent and cheap.
+
+**Phase success criteria (done when):**
+- [ ] A header top row and a footer bottom row each carry their OWN transparent + hide-on-scroll,
+      set independently, live-verified on the canary at 375/768/1440 (P1).
+- [ ] Per-row shrink works, including hide-a-chosen-element with the DB-role guardrail (P2).
+- [ ] The sticky mini-design is written + signed off before any per-row sticky ships.
+- [ ] The operator-simplicity test has been run + recorded against the current header.
+
+**Entry context (read before starting):**
+- `.claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md` — the approved design + the 9 must-fixes (load-bearing)
+- `plugins/sgs-blocks/src/blocks/site-header-row/` + `site-footer-row/` (block.json + edit.js + render.php) — where per-row attrs land
+- `plugins/sgs-blocks/includes/class-sgs-header-behaviours.php` + `assets/css/header-behaviours.css` + `src/header-behaviours/view.js` (⚠ note: `src/header-behaviours/`, NOT `src/blocks/` — webpack entry is hardcoded to this path; a wrong path silently serves stale `src/` on the live site) — the behaviour layer to extend from header-level to per-row
+- `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §Behaviours (FR-37-13/14) — current header-level behaviour mechanism
+
+**References:**
+- Design doc §2 (must-fixes 1–9) — the council's binding constraints
+- Deploy: `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only` from an ISOLATED worktree (shared-tree churn)
+- Global rules: no inline style (Spec 32), device tiers 768/1024, DB-first (no hardcoded dicts), no version bumps/deprecations
+
+**Tooling Index:**
+| Type | Name | Used in |
+|------|------|---------|
+| cli | npm run build / build-deploy.py | P1-S4, P2-S3, deploy gates |
+| mcp | chrome-devtools (or wp-sgs-developer agent) | live-verify gates |
+| skill | /qc-council | before each deploy on the behaviour surface |
+| db | sgs-db.py (roles/slots) | P2-S2 guardrail |
+
+---
+
+## PHASE 1 — Per-row transparent + hide-on-scroll (ships to canary first)
+
+Step P1-S1 — Declare per-row behaviour attributes
+  Model:   sonnet
+  Action:  Add `rowTransparent` + `rowHideOnScroll` (device-tier object shape `{desktop,tablet,mobile}`, matching the row's existing attrs) to `site-header-row/block.json` and `site-footer-row/block.json`. No flat suffixed attrs (must-fix 7).
+  Files:   src/blocks/site-header-row/block.json, src/blocks/site-footer-row/block.json
+  Inputs:  design §1, must-fix 7
+  Outcome: both row blocks declare the two attrs; `npm run build` passes the dead-attr + shape gates.
+  **Per-tier boolean semantic (define it — QC caught this was unspecified):** a null tier
+  INHERITS the tier above (mobile ← tablet ← desktop); an explicit `false` means "off here".
+  Default desktop = false (off).
+  Exec:    SEQUENTIAL
+  Marker:  SESSION-START
+  Time:    10 min
+  Tooling: Edit, npm run build
+  On-Fail: revert block.json; WP silently discards undeclared attrs, so a build-green but non-emitting attr = check the gate output.
+  Cold-Entry: the two block.json files + design §1
+  Test:
+    Happy: build passes; attrs present in the compiled block metadata.
+    Edge: mobile tier unset → resolves to the tablet value, or desktop if tablet also unset (the inheritance rule above).
+    Fail: undeclared-attr gate — if it fires, the attr name/shape is wrong.
+    Integration: standalone (no render yet).
+
+Step P1-S2 — Emit per-row behaviour hooks (render + scoped CSS/JS), keyed on the row uid class
+  Model:   sonnet
+  Action:  In `site-header-row/render.php` (+ footer-row), emit the row's uid class + a data-attr the behaviour JS reads (render.php already computes `$uid` + reads `$attributes` — no need to touch `class-sgs-header-behaviours.php`). **⚠ This is NOT a selector extension (QC re-scope): today `view.js` reads ONE flag-set off `document.body` and toggles one body state-class. Per-row needs a NEW parallel path — scan the DOM for N rows each carrying their own data-attr, and toggle a state class on EACH row independently.** Add the matching per-row rules to `header-behaviours.css`. Do NOT touch the shared wrapper.
+  Files:   src/blocks/site-header-row/render.php, src/blocks/site-footer-row/render.php, assets/css/header-behaviours.css, src/header-behaviours/view.js
+  Inputs:  P1-S1 attrs; must-fix 1 (note: sticky excluded from P1, so no conflict yet)
+  Outcome: a row with rowHideOnScroll=on emits the class + JS wires an independent per-row scroll state; a sibling row without it is unaffected.
+  Exec:    SEQUENTIAL
+  Deps:    P1-S1
+  Time:    45 min (a new per-row iteration path in view.js, not a one-line tweak)
+  Tooling: Edit
+  On-Fail: the behaviour JS targets a class no row emits → nothing happens silently (the D375 dead-selector trap). Verify the emitted class matches the JS selector on the live DOM.
+  Test:
+    Happy: scroll the canary → the row with hide-on-scroll translates away; a sibling row without it stays.
+    Edge: two rows, one hide-on-scroll one not → independent.
+    Fail: class mismatch → row doesn't react (check live DOM, not the emit).
+    Integration: existing header-level behaviours still work (don't regress the D376 ship).
+
+Step P1-S3 — Per-row inspector controls
+  Model:   sonnet
+  Action:  Add the two controls to `site-header-row/edit.js` (+ footer-row) inspector, device-tier, in an Advanced ToolsPanel (keep the Simple surface ≤3 per FR-37-27). No inline style.
+  Files:   src/blocks/site-header-row/edit.js, src/blocks/site-footer-row/edit.js
+  Inputs:  P1-S1
+  Outcome: operator can toggle transparent/hide-on-scroll per row in the editor.
+  Exec:    SEQUENTIAL
+  Deps:    P1-S1
+  Time:    20 min
+  Tooling: Edit
+  On-Fail: control with no backing attr → dead-control gate fires.
+  Test:
+    Happy: toggle in editor → attr writes (read saved post_content).
+    Edge: device-tier switch writes to the right tier.
+    Fail: dead-control gate.
+    Integration: doesn't duplicate a header-level control (HC2).
+
+QA Gate — P1 build + deploy + LIVE verify
+  Model:   inline
+  Exec:    SEQUENTIAL
+  Deps:    P1-S1..S3
+  Check:   `/qc-council` on the behaviour surface → build → deploy to sandybrown from an ISOLATED worktree → chrome-devtools (or wp-sgs-developer): scroll the canary, confirm per-row transparent + hide-on-scroll behave INDEPENDENTLY per row; confirm header-level behaviours (D376) NOT regressed; md5 the changed files local↔server.
+  Pass:    two rows behave independently on the live page; existing behaviours intact; md5 match.
+  Fail:    roll back via the .bak rotation; diagnose on the live DOM, not the emit.
+  Marker:  QA
+
+---
+
+## PHASE 2 — Per-row shrink + shrink-hides-element + footer parity
+
+Step P2-S1 — Per-row shrink (padding/height)
+  Model:   sonnet
+  Action:  Add `rowShrink` (device-tier) + emit the shrink CSS (row padding/height reduce on the scrolled state), transition `transform`/`opacity` only (never filter/box-shadow — motion-perf rule). Reuse the header height-publisher.
+  Files:   site-header-row/{block.json,render.php,edit.js}, site-footer-row/ same, header-behaviours.css, view.js
+  Inputs:  design §1, must-fix 6 (no hover), must-fix 8 (height var)
+  Outcome: a row visibly shrinks on scroll, eased not jumpy.
+  Exec:    SEQUENTIAL
+  Time:    30 min
+  Tooling: Edit
+  On-Fail: abrupt jump = missing transition; re-check header-behaviours.css.
+  Test: Happy: scroll → row height reduces smoothly. Edge: shrink + transparent compose. Fail: no transition = jump. Integration: doesn't break never-overflow.
+
+Step P2-S2 — Shrink-hides-a-chosen-element (stable id + DB-role guardrail)
+  Model:   inline (architectural — the reference + guardrail model)
+  Action:  Add a stable per-child id (set at insert, stored in the child's own attrs) — NEVER clientId (must-fix 3). The shrink control offers a picker of the row's children EXCLUDING any whose DB role is logo/nav/cart (must-fix 4, no hardcoded list). **⚠ FIRST verify (QC caught this): the `roles`/`slots` tables were built for the CLONING pipeline (BEM-class → block-slug). Confirm via `/sgs-db` that a slug→role REVERSE lookup actually works before coding the filter; if it doesn't, use `block_capabilities` or add the lookup — do NOT fall back to a hardcoded 3-name list (R-31-1).** Orphaned reference (element deleted) = shrink acts as nothing chosen, no error. Add an always-visible "reset shrink" action. Server-side backstop re-checks the role on render.
+  Files:   site-header-row/{block.json,edit.js,render.php}, includes/ helper for the role check
+  Inputs:  must-fix 3 + 4; DB roles/slots tables
+  Outcome: operator picks a non-critical element to hide on shrink; logo/nav/cart never offered; deleting the element doesn't error.
+  Exec:    SEQUENTIAL
+  Deps:    P2-S1
+  Time:    45 min
+  Tooling: Edit, sgs-db.py (role lookup)
+  On-Fail: if the picker offers logo/nav/cart → the role query is wrong; if clientId leaks in → copy/paste breaks it.
+  Test: Happy: pick phone number → hides on shrink. Edge: delete the chosen element → no error, shrink ignores it. Fail: attempt to hide cart → not in the list AND server backstop refuses. Integration: DB-first, no hardcoded dict.
+
+Step P2-S3 — Footer parity verify
+  Model:   sonnet
+  Action:  Confirm footer rows inherit the same behaviours (same block mechanism); live-verify a footer bottom row.
+  Files:   (verification; footer-row already shares the mechanism)
+  Outcome: footer per-row behaviours work identically.
+  Exec:    SEQUENTIAL
+  Deps:    P2-S1,S2
+  Time:    15 min
+  Test: Happy: footer bottom row shrinks independently. Edge: footer has no sticky-to-bottom oddity. Fail: mechanism diverges. Integration: header+footer share one code path.
+
+QA Gate — P2 build + deploy + LIVE verify (as P1 gate) — Marker: QA
+
+---
+
+## SIDE TRACK A — Sticky mini-design (BLOCKING for any per-row sticky; do NOT ship sticky without it)
+
+Step SA-1 — Design the per-row sticky model
+  Model:   inline (architectural)
+  Action:  Resolve must-fix 1 (sticky ↔ hide-on-scroll: a transformed ancestor breaks position:sticky — make them mutually exclusive per row in v1, OR lift the sticky row out of the transform) + must-fix 2 (multiple sticky rows = auto-offset chain via the height-publisher + named z-index scale) + must-fix 8 (scroll-padding-top — NOTE per QC this is ALREADY live at `header-behaviours.css:26-28` via `--sgs-header-height`; SA-1 CONFIRMS it holds under multiple dynamically-sized sticky rows, it does not build it from scratch). Write it into the design doc + a new FR in Spec 37. Get Bean sign-off.
+  Files:   design doc, .claude/specs/37-HEADER-FOOTER-BUILDER.md
+  Outcome: a written, signed-off sticky model. THEN it becomes a normal build step.
+  Marker:  HANDOFF (needs Bean sign-off before build)
+
+---
+
+## SIDE TRACK B — Deal-winners (sequence AHEAD of / alongside the plumbing — council's steer)
+
+- **B1 — Operator-simplicity test (run FIRST, cheap).** Can a non-coder set up a header in a few
+  minutes without opening Advanced? Run against TODAY's header (7 controls vs ≤3). Record pass/fail.
+  A fail is a finding (trim the Simple surface), not a reason to re-run. `[SESSION-START]`, ~30 min.
+- **B2 — "Preview scroll behaviour" button.** A control that opens the live frontend pre-scrolled +
+  at mobile width, so the client SEES sticky/shrunk/hidden/mobile before publishing. Biggest
+  ticket-prevention. Independent of P1/P2.
+- **B3 — Preset library.** Ready-made styled header/footer designs in the existing native picker
+  (the mechanism already works). High-ROI, low cost. Independent.
+
+---
+
+## Key Judgement Calls
+
+### Primary decisions
+
+- **Decision:** Sticky ↔ hide-on-scroll on the same row.
+  - **Options:** [A] mutually exclusive per row (v1) / [B] lift the sticky row out of the transformed ancestor / [C] defer per-row sticky entirely.
+  - **Recommendation:** A for v1 (simplest, safe), revisit B if a client needs both.
+  - **Why:** a transformed ancestor provably breaks `position:sticky` (codebase already documents it for the drawer); mutual exclusion sidesteps it with zero risk.
+  - **Cost of wrong choice:** a sticky row silently stops sticking when hide-on-scroll is also on — the D338 "looks right, renders wrong" trap.
+  - **Who decides:** Bean (in SA-1 sign-off).
+
+- **Decision:** Order — plumbing (P1/P2) vs deal-winners (B1–B3) first.
+  - **Options:** [A] B1 (simplicity test) first, then P1 / [B] P1 first / [C] parallel.
+  - **Recommendation:** B1 first (it's ~30 min and tells us if the current control surface already needs trimming before we add more), then P1.
+  - **Why:** council converged that client-facing wins outrank internal plumbing; B1 is the cheapest and most informative.
+  - **Cost of wrong choice:** build per-row controls onto an already-overloaded surface.
+  - **Who decides:** Bean.
+
+### Pre-emptive decisions (discharged by the adversarial council, not a separate reviewer pass)
+
+- Reference the shrink-hidden element by stable id, not clientId — **decided** (must-fix 3).
+- Guardrail via DB role lookup, not a hardcoded logo/nav/cart list — **decided** (must-fix 4).
+- Per-row hover NOT built in v1 — **decided** (must-fix 6).
+- Effect set CLOSED for v1 (transparent/hide-on-scroll/shrink/sticky) — **decided** (must-fix 5).
+- Wrapper stays; if a capability is missing, add it to the wrapper, don't fork — **decided** (design §4).
