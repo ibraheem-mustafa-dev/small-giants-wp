@@ -32,9 +32,37 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-25 — mega-menu CORE BUILT + DEPLOYED + automated-live-verified; D379).**
-The mega CORE shipped this session (commit `19bafc9e`, pushed; deployed to sandybrown, checksum-verified).
-3 new blocks + a separate disclosure store + nav wiring + 3 starter patterns. Full narrative below.
+**⭐ CURRENT (2026-07-25 PM — mega preset layouts RENDER on BOTH surfaces; editor-preview gap CLOSED + a deeper frontend bug found & fixed. Commit `b5f2ee02` pushed, deployed to sandybrown, checksum + measurement + screenshot verified).**
+The "editor preview doesn't reshape" task turned out to be TWO stacked bugs, and the frontend was ALSO
+silently broken (never caught — no populated page existed):
+1. **Self-nested selectors (frontend).** render.php built per-`style` selectors by prepending `$root_sel` to
+   `$content_sel`/`$group_sel` (which already start with `$root_sel`) → `.uid.wp-block[style] .uid.wp-block
+   .content` (a panel inside itself) → matched nothing → columns/cards/minimal never rendered on the front end.
+2. **Broken style-handle filename (editor + frontend).** block.json referenced the SOURCE names
+   (`style.css`/`editor.css`); the build emits `style-index.css`/`index.css`. WP registered a style handle
+   pointing at a non-existent build file and SILENTLY never enqueued it → the block `style` handle loaded
+   NOWHERE (masked on the frontend by the render.php CSS-lift; fatal for the editor canvas). The prior D379
+   "WP 7.0 iframe ignores editorStyle" diagnosis was WRONG — see MEMORY `blockjson-style-must-reference-compiled-filenames`.
+**Fix (6 files, mega-* only): render.php single-rooted per-`style` shape + cards mobile grid→1col; style.css
+generic shape for the editor iframe (aside `:has()` sets only align-items so it can't clobber the Cards grid —
+code-review catch); editor.css emptied; block.json ×3 (mega-panel/group/aside) → compiled filenames.**
+**Verified live on sandybrown:** frontend `getComputedStyle`+rect — columns side-by-side, cards 2-col grid,
+both collapse to 1 col on mobile; editor canvas — columns=flex, cards=grid(2col), minimal=flex; axe scoped to
+the panel = 0 NEW defects (only the pre-existing `#e68a95` `P-MAMAS-PRIMARY-CONTRAST` theme-colour, 12 nodes);
+drawer/recursion/reduced-motion = no-regression by construction (no shared code touched). Test fixtures left on
+canary: page **1762** (`mega-gate3-presets`, all 3 presets), panel **1745** (empty SPIKE).
+
+**TWO NEW FINDINGS (not fixed — flagged):**
+- **4 other blocks carry the SAME broken style-handle ref:** `content-collection`, `google-reviews`,
+  `product-card`, `trustpilot-reviews` (block.json → `style.css`/`editor.css`). They mask it via render.php
+  styling; a scoped per-block pass is owed (verify each before changing — regression risk on shipped blocks).
+  A build gate could assert every `build/blocks/*/block.json` `file:` style target exists.
+- **Deploy tooling gap:** `build-deploy.py`'s `tar` deploy PRESERVES mtimes, so `sgs_css_check_deploy`
+  (epoch = `SGS_BLOCKS_VERSION`|`filemtime(sgs-blocks.php)`) never fires on a CSS-only change → the SGS CSS-lift
+  cache serves stale CSS + block-style `?ver` doesn't bust. Had to `touch sgs-blocks.php` + `rm uploads/sgs-css/*`
+  manually. Worth hardening the deploy to bump the epoch (or touch the main file) on every deploy.
+
+**Mega CORE (shipped last session, commit `19bafc9e`) — still the base. Full narrative below.**
 
 **Also 2026-07-25 (D381, PR #24 → main) — converter self-nest guard + transparent-wrapper dissolve.**
 Closed `P-QUOTE-PATH2-SELF-NESTING`: a block could clone a phantom copy of itself around an unrecognised
@@ -78,24 +106,26 @@ a real render; panel id instance-scoped. Live fixtures kept: panel **1745**, men
   making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real
   editable columns + aside. (Only a live editor caught this — invisible to every server-side gate.)
 - **Aside media capped** (170px object-fit) so an empty/large image doesn't dominate (render.php + editor.css).
-- **⚠ OPEN — the editor-canvas preset preview does NOT work.** Switching Columns/Cards/Minimal IN THE EDITOR
-  shows no visual change. Root cause PROVEN via live iframe evals: **WP 7.0's iframed editor canvas is not
-  applying this block's `editor.css`; only `style.css` reaches the canvas.** Proven fix (NOT yet landed): move
-  the preset rules into `style.css`, NO `!important` (a no-`!important` rule injected into the canvas applies —
-  beats WP by specificity; `!important` in style.css would break the frontend mobile-stack), + also fix the
-  render.php mobile stack to collapse the cards GRID to 1 column. The `!important` in editor.css (`e5f70680`) +
-  the 0.1.1 version bump were aimed at this + are harmless-but-INERT until the style.css move.
+- **✅ CLOSED 2026-07-25 PM — editor-canvas preset preview WORKS.** The prior "iframe ignores editor.css" root
+  cause was WRONG. The real cause: block.json referenced source filenames (`style.css`/`editor.css`) not the
+  compiled ones (`style-index.css`/`index.css`), so the style handle pointed at a non-existent build file and WP
+  silently never enqueued it (see the ⭐ CURRENT block at top). Fixed on all 3 mega blocks + the frontend
+  self-nest bug; verified live (canvas columns=flex, cards=grid, minimal=flex). Commit `b5f2ee02`.
 
-**⭐ Your next session — TASK 1 = land the editor-preview fix (diagnosis done, ~20 min), then finish Gate 3.**
-1. **Editor-preview refactor (the proven fix above):** move the mega-panel preset layout rules from `editor.css`
-   → `style.css` (generic selectors, `.sgs-mega-panel__content > *` for wrapper-aware flex, **no `!important`**);
-   fix the render.php mobile stack for the cards grid; revert the now-inert editor.css `!important`; rebuild +
-   redeploy + live-verify in the editor that Columns/Cards/Minimal now visibly change (bump the block version or
-   clear the CSS cache — a static `?ver` serves stale CSS). Then Bean's eye on the 3 presets.
-2. **Gate 3 on a real page:** populate a mega panel from a starter, attach to a menu, put an `sgs/nav-menu` on a
-   canary page; open the mega on hover/tap/keyboard; **axe** on the OPEN panel (0 block-defect); **drawer
-   no-regression**; reduced-motion; the live recursion test (a panel embedding a nav bound to its own menu →
-   plain link, no loop). Bean's eye (R-31-13).
+**⭐ Your next session — mega preset rendering is DONE on both surfaces. Remaining mega work + 2 new findings.**
+1. **[NEW finding] 4 blocks with the same broken style-handle ref** — `content-collection`, `google-reviews`,
+   `product-card`, `trustpilot-reviews` (block.json → `style.css`/`editor.css`). Scoped per-block pass: verify
+   each in the editor (does its style-index.css load in the canvas?) before changing — regression risk on shipped
+   blocks. Consider a build gate asserting every `build/blocks/*/block.json` `file:` style target exists.
+   MEMORY `blockjson-style-must-reference-compiled-filenames`.
+2. **[NEW finding] Harden `build-deploy.py` CSS cache-bust** — the `tar` deploy preserves mtimes so
+   `sgs_css_check_deploy` (epoch = version|`filemtime(sgs-blocks.php)`) never fires on a CSS-only change; the
+   CSS-lift serves stale CSS + block `?ver` doesn't bust. Fix: bump the epoch (or `touch sgs-blocks.php`) as a
+   deploy step. Until then: `touch sgs-blocks.php && rm uploads/sgs-css/*.css` + purge after a CSS-only deploy.
+3. **Full-nav Gate 3 (composed):** attach panel 1745 (populate it first — it's empty) to menu 100, put an
+   `sgs/nav-menu` on a page, open on hover/tap/keyboard; the LIVE recursion test (panel embedding a nav bound to
+   its own menu → plain link, no loop). My change didn't touch that path (recursion guard + drawer byte-unchanged)
+   so it's regression-safe, but the composed live test was not re-run this session.
 Then the DEFERRED follow-on (declared, NOT cut, STOP-29): `media-cards`+`brands` variants, the 5 motion effects
 (KEEP caret), night/day `dark` value-set, aside `feature`/`preview`, full manifest conformance, true safe-triangle.
 
