@@ -4,7 +4,7 @@ spec_id: 35
 spec_version: 1.0
 title: Spec 35 — cluster + element vocabulary rework
 date: 2026-07-20
-status: BUILT + rolled out (verified live 2026-07-25); FR-35-1..6 all shipped, ~89% roster coverage. Remaining = per-block gap-closing.
+status: BUILT + rolled out (verified live 2026-07-25 s2); FR-35-1..6 all shipped; ROLLOUT COMPLETE — 74/74 in-scope blocks manifested (4 skipped = Track-2 site-*). Coverage validator wired into prebuild (was orphaned); nativeSupportsPath map completed (+112 OK). Remaining = per-block GAP-closing (2805 gaps — the Spec 32 no-inline wave programme, deploy-gated), NOT a Spec-35 vocabulary task.
 supersedes: none
 extends: .claude/plans/spec-35-compound-control-sets-design.md
 ---
