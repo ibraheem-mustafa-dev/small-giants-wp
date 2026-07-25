@@ -31,7 +31,33 @@
                 "clickEffects",
                 "hover",
                 "parallax"
-            ]
+            ],
+            "elements": {
+                "label": {
+                    "label": "Field label",
+                    "order": 1,
+                    "clusters": [],
+                    "_note": "Renders as <label class=\"sgs-form-field__label\"> — no per-instance colour/font-size/weight attribute exists on this block; the label is styled entirely by shared framework CSS across the form-field siblings. clusters: [] is a genuine gap, not hidden."
+                },
+                "input": {
+                    "label": "Number input",
+                    "order": 2,
+                    "clusters": [],
+                    "_note": "Renders as <input type=\"number\" class=\"sgs-form-field__input\"> — border/background/typography come entirely from shared framework CSS; min/max/step are HTML numeric constraints, not style attributes. No per-instance style attribute exists. clusters: [] is a genuine gap."
+                },
+                "help": {
+                    "label": "Help text",
+                    "order": 3,
+                    "clusters": [],
+                    "_note": "helpText itself is field-behaviour content, not a style property (Bean's non-cluster rule) — the rendered <p class=\"sgs-form-field__help\"> also carries no per-instance style attribute of its own. clusters: []. The conformance checker's orphan scanner reports helpText as an ORPHAN here (element-key-as-fallback-prefix convention coincidentally matches help+Text); this is a known false-positive of the checker, not evidence of an unaccounted style control."
+                },
+                "error": {
+                    "label": "Error message",
+                    "order": 4,
+                    "clusters": [],
+                    "_note": "Populated by client-side validation JS, not a block attribute; the <span class=\"sgs-form-field__error\"> has no per-instance style attribute. clusters: []."
+                }
+            }
         }
     },
     "attributes": {

@@ -30,7 +30,9 @@
                 "clickEffects",
                 "hover",
                 "parallax"
-            ]
+            ],
+            "_note": "Non-visual field — render.php emits only a bare <input type=\"hidden\"> with no visible UI, no label, no help text, no error span (confirmed by reading render.php in full). There is nothing a client could conceptually style, so this block declares an EMPTY elements manifest rather than fabricating a styleable element. An empty object still satisfies the conformance linter's 'has a manifest' check (it is not skipped) while asserting nothing false.",
+            "elements": {}
         }
     },
     "attributes": {

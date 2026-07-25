@@ -131,6 +131,24 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     if state_write is not None:
         return state_write
 
+    # FILL-width is not a content-width CAP (2026-07-25, surfaced by the modal
+    # `__panel` dissolve). The standard centred-box idiom is `max-width:Npx;
+    # width:100%` — `max-width` caps, `width:100%` just fills the available space.
+    # Both `width` and `max-width` route to `contentWidth` (`_WIDTH_PROPS`), so a
+    # fill `width` collides with the real `max-width` cap (orchestrator COLLISION:
+    # two writes to `contentWidth`). Absorb a percentage/auto `width` as an
+    # EXCLUDED gap (never silent — TOTALITY) so `max-width` alone owns the cap. An
+    # explicit LENGTH `width` (e.g. `width:720px`, no max-width) still caps —
+    # unchanged.
+    if prop == "width":
+        _wv = strip_important(decl.value).strip().lower()
+        if _wv == "auto" or _wv.endswith("%"):
+            return gap_writer(
+                ctx, decl, GapOrigin.EXCLUDED,
+                f"width {decl.value!r} is a fill default, not a content-width cap "
+                f"(max-width owns the cap; §3.A CONTENT band)",
+            )
+
     # Box-object contract (§3/§4): a padding-side decl accumulates into the
     # owner's merged contentBandPadding{Tier} object attr when box_family
     # gates it, BEFORE the legacy flat-attr layer-priority chain runs.

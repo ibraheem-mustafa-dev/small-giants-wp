@@ -36,6 +36,13 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 The mega CORE shipped this session (commit `19bafc9e`, pushed; deployed to sandybrown, checksum-verified).
 3 new blocks + a separate disclosure store + nav wiring + 3 starter patterns. Full narrative below.
 
+**Also 2026-07-25 (D381, PR #24 → main) — converter self-nest guard + transparent-wrapper dissolve.**
+Closed `P-QUOTE-PATH2-SELF-NESTING`: a block could clone a phantom copy of itself around an unrecognised
+child (10 blocks latent). Fix also uncovered + fixed a **silent content-drop** in tabs/feature-grid/form-step/
+modal (their `__inner`/`__body`/`__content` wrappers now DISSOLVE instead of being dropped). 566 converter
+unit tests + 14 new regression tests green. **Residual (deploy-gated):** 4 fossil conformance goldens need a
+LANDED-proof re-seed — folds into the pending `P-ORACLE` stale-golden reseed (parking, Status PARTIAL).
+
 **What shipped (commit `19bafc9e`):**
 - **3 new blocks:** `sgs/mega-panel` (dynamic; owns ALL variant/scheme CSS), `sgs/mega-group` + `sgs/mega-aside`
   (columns/aside — made DYNAMIC this session, see below). **CF-10 = "parent paints child":** children carry ZERO

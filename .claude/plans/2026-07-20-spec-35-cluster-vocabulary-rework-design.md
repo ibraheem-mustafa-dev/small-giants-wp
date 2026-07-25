@@ -4,7 +4,7 @@ spec_id: 35
 spec_version: 1.0
 title: Spec 35 — cluster + element vocabulary rework
 date: 2026-07-20
-status: APPROVED (Bean, 2026-07-20) — not yet built
+status: BUILT + rolled out (verified live 2026-07-25); FR-35-1..6 all shipped, ~89% roster coverage. Remaining = per-block gap-closing.
 supersedes: none
 extends: .claude/plans/spec-35-compound-control-sets-design.md
 ---
@@ -111,7 +111,7 @@ manifest has full roster coverage.
 
 ---
 
-## FR-35-2 — Property axis: five clusters
+## FR-35-2 — Property axis: six clusters (text/fill/layout/position/motion/animation)
 
 > **REVISED 2026-07-20 (Bean).** This section originally specified SIX clusters, splitting
 > `layout` into `layout` ("size this box") and `flow` ("arrange these children"). That split
@@ -144,7 +144,7 @@ both, and `canonical_slot` carries the element signal that disambiguates them. D
 second cluster was encoding in the property vocabulary something the element structure
 already expressed.
 
-### `layout` cluster: 26 members, two scopes
+### `layout` cluster: 28 members, two scopes (margin-top and margin-bottom are standalone BOX members in addition to the merged margin, per the shipped cluster-member-sets.json)
 
 | Scope | n | Members | `appliesToLayers` |
 |---|---|---|---|
@@ -253,7 +253,7 @@ the structural defence against the gap this document exists to close recurring.
 
 ## FR-35-5 — The `states` axis
 
-**Status:** designed 2026-07-21, not yet built.
+**Status:** BUILT + rolled out to ~16 blocks (verified live 2026-07-25). The card-grid resting-state defect it targeted is CLOSED.
 
 ### Problem
 
@@ -381,7 +381,7 @@ more; retro-fitting `states` across a finished roster costs more than carrying i
 
 ## FR-35-6 — The `animation` cluster (JS-driven motion)
 
-**Status:** designed 2026-07-21, not yet built.
+**Status:** BUILT + rolled out (verified live 2026-07-25); 6 anim:* rows in the registry, checker resolves them, coverage validator covers them.
 
 ### Problem
 

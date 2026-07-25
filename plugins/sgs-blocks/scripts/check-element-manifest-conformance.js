@@ -433,7 +433,29 @@ function findOrphans( elementKeys, elements, blockJson, claimedAttrs, roleMap ) 
 	const isClaimed = ( attrName ) => {
 		if ( claimedAttrs.has( attrName ) ) return true;
 		const base = baseAttrName( attrName );
-		return base !== attrName && claimedAttrs.has( base );
+		if ( base !== attrName && claimedAttrs.has( base ) ) return true;
+		// A `*Unit` selector is not an independent style property — it is the
+		// unit companion of a VALUE attribute. It is claimed whenever its value
+		// family is claimed. The Unit-stripped stem may be a PREFIX of the
+		// claimed attr rather than an exact match (e.g. `attributionMarginUnit`
+		// is the unit for `attributionMarginTop`/`…Tablet`/`…Mobile` — the value
+		// carries a per-side `Top` infix the stem lacks), so match any claimed
+		// attr that continues the stem at a PascalCase boundary. Discriminating,
+		// not blanket: a `*Unit` whose value family is itself unclaimed (an
+		// unaddressed control, e.g. icon-list `itemFontSizeUnit`) stays an orphan.
+		if ( attrName.endsWith( 'Unit' ) ) {
+			const stem = attrName.slice( 0, -'Unit'.length );
+			for ( const claimed of claimedAttrs ) {
+				if ( claimed === stem ) return true;
+				if (
+					claimed.startsWith( stem ) &&
+					/[A-Z]/.test( claimed.charAt( stem.length ) )
+				) {
+					return true;
+				}
+			}
+		}
+		return false;
 	};
 
 	for ( const elementKey of elementKeys ) {

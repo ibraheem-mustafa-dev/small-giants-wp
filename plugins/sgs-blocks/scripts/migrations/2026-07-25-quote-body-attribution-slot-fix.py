@@ -40,13 +40,17 @@ ROOT CAUSE (proven via reproduce on tests/fixtures/conformance/sgs-quote.html):
 
 FIX (seed-source only — R-31-1, no converter/walker code touched):
 
-  (a) Add "body" to the existing generic `text` slot's aliases (scope=
-      element, standalone_block=sgs/text). This is a universal vocabulary
-      extension (matches existing generic aliases like "copy"/"description"
-      /"message") — it makes the body element resolve via Path 2's FIRST
-      (element-name) check, so it never reaches the dangerous block-segment
-      fallback at all. Fixes body → child sgs/text for ANY block with a
-      generic "body" text column, not just sgs/quote.
+  (a) [SUPERSEDED 2026-07-25 by Bean's correction — now REMOVES "body"]
+      The original (a) added "body" as a generic `text` slot alias. Bean
+      corrected it: "body" frequently names the whole CONTENT GROUP of a
+      block (product-card's `__body` wraps everything bar the image), NOT a
+      single text leaf, so a universal body→sgs/text alias would flatten a
+      content wrapper to one text block. The universal Path-2 SELF-NEST GUARD
+      (converter/db/db_lookup.py, added same day) + the FR-31-4.1 content-leaf
+      rule now resolve the quote body correctly WITHOUT any alias: the
+      text-only `sgs-quote__body` leaf becomes a sgs/text child. This step is
+      now an idempotent REMOVAL of "body" from the text aliases so a reseed
+      reproduces the correct alias-free state.
 
   (b) Add a NEW element-scope slot `attribution` (aliases=["author"],
       standalone_block=NULL). NULL standalone_block means
@@ -98,22 +102,31 @@ def main() -> None:
     try:
         c = conn.cursor()
 
-        # ---- (a) add "body" to the generic `text` slot's aliases ----
+        # ---- (a) ensure "body" is NOT a `text` slot alias (Bean, 2026-07-25) ----
+        # SUPERSEDED: the original (a) ADDED "body" as a generic text alias.
+        # Bean corrected this — "body" frequently names the whole CONTENT GROUP
+        # of a block (e.g. product-card's `__body` wraps everything bar the
+        # image), NOT a single text leaf, so a universal body→sgs/text alias
+        # would flatten a content wrapper to one text block. The quote body now
+        # resolves via the universal Path-2 self-nest guard + FR-31-4.1
+        # content-leaf rule (a text-only `sgs-quote__body` leaf becomes a
+        # sgs/text child) — NO alias required. This step now REMOVES "body"
+        # idempotently so a reseed reproduces the correct (alias-free) state.
         row = c.execute(
             "SELECT aliases FROM slots WHERE slot_name='text' AND scope='element'"
         ).fetchone()
         if row is None:
             raise RuntimeError("slots row slot_name='text' scope='element' not found")
         aliases = json.loads(row[0]) if row[0] else []
-        if "body" not in aliases:
-            aliases.append("body")
+        if "body" in aliases:
+            aliases = [a for a in aliases if a != "body"]
             c.execute(
                 "UPDATE slots SET aliases=? WHERE slot_name='text' AND scope='element'",
                 (json.dumps(aliases),),
             )
-            print("[slots] text.aliases += 'body'")
+            print("[slots] text.aliases -= 'body' (reverted; body is a content-group name, not a text leaf)")
         else:
-            print("[slots] text.aliases already has 'body' — no-op")
+            print("[slots] text.aliases has no 'body' — no-op")
 
         # ---- (b) new `attribution` element-scope slot (standalone_block NULL) ----
         exists = c.execute(
