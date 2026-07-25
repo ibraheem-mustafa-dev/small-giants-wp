@@ -31,7 +31,27 @@
                 "clickEffects",
                 "hover",
                 "parallax"
-            ]
+            ],
+            "elements": {
+                "heading": {
+                    "label": "Review heading",
+                    "order": 1,
+                    "clusters": [],
+                    "_note": "Renders as <h3 class=\"sgs-form-review__heading\"> — no per-instance colour/font-size/weight attribute exists on this block; the heading is styled entirely by shared framework CSS. clusters: [] is a genuine gap, not hidden."
+                },
+                "intro": {
+                    "label": "Intro text",
+                    "order": 2,
+                    "clusters": [],
+                    "_note": "Renders as <p class=\"sgs-form-review__intro\">, a fixed hard-coded string (not a block attribute), styled entirely by shared framework CSS. clusters: [] is a genuine gap."
+                },
+                "list": {
+                    "label": "Review summary list",
+                    "order": 3,
+                    "clusters": [],
+                    "_note": "Renders as an empty <dl class=\"sgs-form-review__list\"> — populated client-side by view.js with the submitted field rows. No per-instance style attribute exists on this block for the list or its rows; styling is shared framework CSS. clusters: [] is a genuine gap."
+                }
+            }
         }
     },
     "attributes": {
