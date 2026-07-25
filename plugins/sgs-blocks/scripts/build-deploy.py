@@ -304,6 +304,17 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
                      "mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.bak; fi")
         parts.append("mkdir -p $WP/plugins")
         parts.append("mv plugins/sgs-blocks $WP/plugins/")
+        # Bust the CSS-lift cache. `tar` PRESERVES mtimes on extraction, so
+        # sgs-blocks.php keeps its ORIGINAL (pre-deploy) mtime after the move
+        # above — sgs_css_check_deploy() (class-sgs-css-registry.php) keys its
+        # epoch-bump signature on SGS_BLOCKS_VERSION + that file's mtime, so a
+        # CSS-only change (no version bump) would silently never trip it and
+        # every block's lifted <style> + ?ver= would keep serving the OLD CSS
+        # after a deploy that "succeeded". touch forces the signature to
+        # change on every deploy; the rm clears the stale lifted files so
+        # they regenerate fresh on next render rather than serving until GC.
+        parts.append("touch $WP/plugins/sgs-blocks/sgs-blocks.php")
+        parts.append("rm -f $WP/uploads/sgs-css/sgs-*.css")
     if theme:
         parts.append("rm -rf $WP/themes/sgs-theme.bak")
         parts.append("if [ -d $WP/themes/sgs-theme ]; then "
