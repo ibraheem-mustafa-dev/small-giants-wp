@@ -271,6 +271,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<RowScrollBehaviourControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
+					clientId={ clientId }
 				/>
 			</InspectorControls>
 

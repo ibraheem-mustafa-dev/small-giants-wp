@@ -15,6 +15,7 @@
 		"html": false,
 		"reusable": false,
 		"sgs": {
+			"headerEssential": true,
 			"containerKind": "layout",
 			"elements": {
 				"wrapper": {

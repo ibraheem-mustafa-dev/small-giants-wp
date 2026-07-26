@@ -260,6 +260,31 @@ body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
 	transform: translateY( -100% );
 }
 
+/* Shrink-on-scroll (Phase 2) — the row's vertical padding reduces once the
+ * visitor scrolls, mirroring the header-LEVEL shrink rule above (which also
+ * transitions padding-block, lines 102-117). The motion-perf rule's real
+ * prohibition is `filter` / `box-shadow` — both repaint every frame; a
+ * padding-block transition on a single header/footer strip is the same cost
+ * the shipped header-level shrink already pays.
+ *
+ * Keyed on `.is-row-shrink-active` (added by view.js ONLY on a device tier
+ * where THIS row's shrink is ON) — never on the data-attr's mere presence, so
+ * a row set "shrink on desktop only" keeps its full padding on mobile/tablet.
+ * Specificity (0,3,0) beats the wrapper's own uid-scoped padding rule, so no
+ * !important is needed.
+ *
+ * The chosen "hide on shrink" child is handled per-instance: render.php emits
+ * `.{uid}.is-row-shrunk #{anchor}{display:none}` into the row's own scoped
+ * <style>, after re-validating the target server-side. */
+.sgs-row-behaviour.is-row-shrink-active {
+	transition: background-color 200ms ease, transform 200ms ease,
+		padding-block 200ms ease;
+}
+
+.sgs-row-behaviour.is-row-shrink-active.is-row-shrunk {
+	padding-block: var( --wp--preset--spacing--10, 0.5rem );
+}
+
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-row-behaviour {
 		transition: none;

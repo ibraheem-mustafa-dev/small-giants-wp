@@ -154,13 +154,32 @@ if ( '' !== $sfr_preset_bg_slug ) {
 $sfr_extra_attrs          = array( 'id' => $uid );
 $sfr_transparent_on_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array() );
 $sfr_hide_on_scroll_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array() );
-if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers ) ) {
+// Phase 2 — per-row shrink. Same tier resolver, own data-attr + state class.
+$sfr_shrink_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array() );
+if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers ) || ! empty( $sfr_shrink_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
 	if ( ! empty( $sfr_transparent_on_tiers ) ) {
 		$sfr_extra_attrs['data-sgs-row-transparent'] = implode( ' ', $sfr_transparent_on_tiers );
 	}
 	if ( ! empty( $sfr_hide_on_scroll_tiers ) ) {
 		$sfr_extra_attrs['data-sgs-row-hide-on-scroll'] = implode( ' ', $sfr_hide_on_scroll_tiers );
+	}
+	if ( ! empty( $sfr_shrink_tiers ) ) {
+		$sfr_extra_attrs['data-sgs-row-shrink'] = implode( ' ', $sfr_shrink_tiers );
+	}
+}
+
+// Phase 2 — "shrink hides a chosen element". SERVER-SIDE BACKSTOP, identical to
+// sgs/site-header-row: the helper re-validates the stored target against this
+// row's real children and refuses any block flagged supports.sgs.headerEssential.
+// An orphaned target (child deleted) resolves to '' — hides nothing, no error.
+if ( ! empty( $sfr_shrink_tiers ) ) {
+	$sfr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
+	if ( '' !== $sfr_hide_target ) {
+		$sfr_extra_attrs['data-sgs-row-shrink-hide'] = $sfr_hide_target;
+		// display:none also removes the element from the tab order while
+		// hidden (a11y) — a visually-hidden-but-focusable element is a trap.
+		$css .= $root_sel . '.is-row-shrunk #' . $sfr_hide_target . '{display:none;}';
 	}
 }
 

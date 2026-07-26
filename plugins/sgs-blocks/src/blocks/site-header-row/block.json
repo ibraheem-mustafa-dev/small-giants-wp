@@ -99,6 +99,14 @@
 		"rowHideOnScroll": {
 			"type": "object",
 			"default": {}
+		},
+		"rowShrink": {
+			"type": "object",
+			"default": {}
+		},
+		"rowShrinkHideTarget": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

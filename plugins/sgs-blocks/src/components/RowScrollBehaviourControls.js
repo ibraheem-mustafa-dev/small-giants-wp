@@ -17,18 +17,106 @@
  */
 import { __ } from '@wordpress/i18n';
 import {
+	Button,
+	Notice,
 	PanelBody,
+	SelectControl,
 	ToggleControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { store as blockEditorStore } from '@wordpress/block-editor';
+import { store as blocksStore } from '@wordpress/blocks';
 import ResponsiveOverride from './ResponsiveOverride';
+
+/**
+ * Derive a stable, DOM-safe anchor id for a child that has none yet.
+ *
+ * The shrink-hide reference is the child's own `anchor` attribute — it survives
+ * copy/paste, unlike the editor's internal clientId (must-fix 3). We only mint
+ * one when the operator actually picks that child, so nothing else changes.
+ *
+ * @param {string} clientId The child's clientId (used purely as entropy, never stored).
+ * @return {string} An anchor id.
+ */
+function mintAnchor( clientId ) {
+	return 'sgs-row-el-' + String( clientId ).replace( /[^a-zA-Z0-9]/g, '' ).slice( 0, 8 );
+}
 
 export default function RowScrollBehaviourControls( {
 	attributes,
 	setAttributes,
+	clientId,
 } ) {
-	const { rowTransparent, rowHideOnScroll } = attributes;
+	const { rowTransparent, rowHideOnScroll, rowShrink, rowShrinkHideTarget } =
+		attributes;
+
+	const { updateBlockAttributes } = useDispatch( blockEditorStore );
+
+	// Candidate children for "hide on shrink". Essential header furniture —
+	// logo, primary navigation, cart — is EXCLUDED via the declarative
+	// `supports.sgs.headerEssential` flag read straight off the block type
+	// (must-fix 4: no hardcoded block-name list here; protecting a new critical
+	// block later is a one-line block.json change). A server-side backstop in
+	// render.php re-checks the same flag.
+	const hideCandidates = useSelect(
+		( select ) => {
+			const children =
+				select( blockEditorStore ).getBlock( clientId )?.innerBlocks ||
+				[];
+			const { getBlockType } = select( blocksStore );
+			return children
+				.filter( ( child ) => {
+					const supports = getBlockType( child.name )?.supports;
+					// Essential furniture is never offered (must-fix 4)...
+					if ( supports?.sgs?.headerEssential ) {
+						return false;
+					}
+					// ...and neither is a block that cannot HOLD the
+					// reference. The stable id is the child's own `anchor`
+					// attribute, and WordPress silently discards an attribute
+					// the block type doesn't declare — so a child without
+					// `supports.anchor` would appear to be configured, then
+					// lose the id on save and hide nothing, with no error.
+					// 11 of the plugin's blocks lack anchor support today
+					// (sgs/product-search among them, a promoted header
+					// element), so this is a live case, not a hypothetical.
+					return !! supports?.anchor;
+				} )
+				.map( ( child ) => ( {
+					clientId: child.clientId,
+					anchor: child.attributes?.anchor || '',
+					label:
+						getBlockType( child.name )?.title ||
+						child.name,
+				} ) );
+		},
+		[ clientId ]
+	);
+
+	// The stored target may point at a child that has since been deleted. That
+	// is not an error (must-fix 3) — the picker simply shows "nothing chosen"
+	// and render.php hides nothing.
+	const selectedCandidate = hideCandidates.find(
+		( c ) => c.anchor && c.anchor === rowShrinkHideTarget
+	);
+
+	const onPickHideTarget = ( value ) => {
+		if ( ! value ) {
+			setAttributes( { rowShrinkHideTarget: '' } );
+			return;
+		}
+		const candidate = hideCandidates.find( ( c ) => c.clientId === value );
+		if ( ! candidate ) {
+			return;
+		}
+		const anchor = candidate.anchor || mintAnchor( candidate.clientId );
+		if ( ! candidate.anchor ) {
+			updateBlockAttributes( candidate.clientId, { anchor } );
+		}
+		setAttributes( { rowShrinkHideTarget: anchor } );
+	};
 
 	return (
 		<PanelBody
@@ -41,6 +129,8 @@ export default function RowScrollBehaviourControls( {
 					setAttributes( {
 						rowTransparent: {},
 						rowHideOnScroll: {},
+						rowShrink: {},
+						rowShrinkHideTarget: '',
 					} )
 				}
 			>
@@ -117,6 +207,81 @@ export default function RowScrollBehaviourControls( {
 							/>
 						) }
 					</ResponsiveOverride>
+				</ToolsPanelItem>
+
+				<ToolsPanelItem
+					label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
+					hasValue={ () =>
+						( !! rowShrink &&
+							Object.keys( rowShrink ).length > 0 ) ||
+						!! rowShrinkHideTarget
+					}
+					onDeselect={ () =>
+						setAttributes( {
+							rowShrink: {},
+							rowShrinkHideTarget: '',
+						} )
+					}
+					isShownByDefault
+				>
+					<ResponsiveOverride
+						label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
+						value={ rowShrink }
+						onChange={ ( obj ) =>
+							setAttributes( { rowShrink: obj } )
+						}
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<ToggleControl
+								label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
+								checked={ !! ( inherited ? effectiveValue : ownValue ) }
+								onChange={ ( value ) => setOwnValue( value ) }
+								help={ __(
+									'This row becomes shorter once the visitor scrolls, freeing up screen space. Independent of any other row.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
+
+					<SelectControl
+						label={ __( 'Also hide an element when shrunk', 'sgs-blocks' ) }
+						value={ selectedCandidate?.clientId || '' }
+						options={ [
+							{
+								label: __( '— nothing —', 'sgs-blocks' ),
+								value: '',
+							},
+							...hideCandidates.map( ( candidate ) => ( {
+								label: candidate.label,
+								value: candidate.clientId,
+							} ) ),
+						] }
+						onChange={ onPickHideTarget }
+						help={ __(
+							'Pick one element in this row to disappear while the row is shrunk. The logo, main navigation and cart are never offered — a visitor always needs those.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					{ !! rowShrinkHideTarget && ! selectedCandidate && (
+						<Notice status="warning" isDismissible={ false }>
+							{ __(
+								'The element this row was hiding is no longer here — it was probably deleted or moved. Nothing is hidden on shrink. Pick another element, or reset.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+					<Button
+						variant="secondary"
+						size="small"
+						onClick={ () =>
+							setAttributes( { rowShrinkHideTarget: '' } )
+						}
+					>
+						{ __( 'Reset shrink target', 'sgs-blocks' ) }
+					</Button>
 				</ToolsPanelItem>
 			</ToolsPanel>
 		</PanelBody>

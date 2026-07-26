@@ -150,13 +150,35 @@ if ( '' !== $shr_preset_bg_slug ) {
 $shr_extra_attrs          = array( 'id' => $uid );
 $shr_transparent_on_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array() );
 $shr_hide_on_scroll_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array() );
-if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) ) {
+// Phase 2 — per-row shrink. Same tier resolver, own data-attr + state class.
+$shr_shrink_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array() );
+if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) || ! empty( $shr_shrink_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
 	if ( ! empty( $shr_transparent_on_tiers ) ) {
 		$shr_extra_attrs['data-sgs-row-transparent'] = implode( ' ', $shr_transparent_on_tiers );
 	}
 	if ( ! empty( $shr_hide_on_scroll_tiers ) ) {
 		$shr_extra_attrs['data-sgs-row-hide-on-scroll'] = implode( ' ', $shr_hide_on_scroll_tiers );
+	}
+	if ( ! empty( $shr_shrink_tiers ) ) {
+		$shr_extra_attrs['data-sgs-row-shrink'] = implode( ' ', $shr_shrink_tiers );
+	}
+}
+
+// Phase 2 — "shrink hides a chosen element". SERVER-SIDE BACKSTOP: the helper
+// re-validates the stored target against this row's real children and refuses
+// any block flagged supports.sgs.headerEssential (logo / nav / cart), so a
+// hand-edited attribute cannot hide critical header furniture. An orphaned
+// target (child deleted) resolves to '' — shrink hides nothing, no error.
+if ( ! empty( $shr_shrink_tiers ) ) {
+	$shr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
+	if ( '' !== $shr_hide_target ) {
+		$shr_extra_attrs['data-sgs-row-shrink-hide'] = $shr_hide_target;
+		// Scoped to THIS row's uid + the shrunk state, targeting the chosen
+		// child by its stable anchor id. display:none also removes it from the
+		// tab order while hidden (a11y) — a visually-hidden-but-focusable
+		// element in a shrunk header is a keyboard trap.
+		$css .= $root_sel . '.is-row-shrunk #' . $shr_hide_target . '{display:none;}';
 	}
 }
 

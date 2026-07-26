@@ -215,7 +215,8 @@
 	 * data-sgs-row-hide-on-scroll attrs list the tiers where that behaviour is
 	 * ON (emitted by sgs/site-header-row + sgs/site-footer-row render.php via
 	 * sgs_resolve_tier_booleans()). Toggles `is-row-scrolled` /
-	 * `is-row-hidden` on the ROW element itself, independently per row.
+	 * `is-row-hidden` / `is-row-shrunk` (Phase 2) on the ROW element itself,
+	 * independently per row.
 	 */
 	function initRowBehaviours() {
 		const rows = document.querySelectorAll( '.sgs-row-behaviour' );
@@ -232,6 +233,7 @@
 				hideOnScrollTiers: parseTierList(
 					row.dataset.sgsRowHideOnScroll
 				),
+				shrinkTiers: parseTierList( row.dataset.sgsRowShrink ),
 			};
 		} );
 
@@ -271,6 +273,21 @@
 					}
 				} else {
 					row.el.classList.remove( 'is-row-hidden' );
+				}
+
+				// Shrink (Phase 2) — own state classes per row, same
+				// tier-gating discipline as transparent: the resting
+				// (shrinkable) CSS is keyed on `is-row-shrink-active`, added
+				// ONLY on a tier where this row's shrink is ON, so a row set
+				// "shrink on desktop only" does not shrink on mobile.
+				// `is-row-shrunk` additionally drives the chosen child's
+				// display:none rule emitted by render.php.
+				if ( row.shrinkTiers.indexOf( tier ) !== -1 ) {
+					row.el.classList.add( 'is-row-shrink-active' );
+					row.el.classList.toggle( 'is-row-shrunk', scrollY > 50 );
+				} else {
+					row.el.classList.remove( 'is-row-shrink-active' );
+					row.el.classList.remove( 'is-row-shrunk' );
 				}
 			} );
 

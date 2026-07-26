@@ -31,6 +31,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"headerEssential": true,
 			"imageControls": true,
 			"boxFamilies": {
 				"padding": [
