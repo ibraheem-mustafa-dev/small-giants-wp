@@ -4,14 +4,18 @@ topic: per-row-sticky
 date: 2026-07-26
 status: APPROVED (Bean, 2026-07-26) — SA-1 discharged; unblocks the sticky build. All four
   decisions settled + researched. Ready for a fresh build session.
-governs: Spec 37 §Behaviours — adds per-row sticky; amends the F1 scroll-padding mechanism
+governs: Spec 37 §Behaviours — sticky stays HEADER-level (per-row sticky was considered and
+  REJECTED, see D1); adds collapse-when-pinned; amends the F1 scroll-padding mechanism
 inputs:
   - .claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md §2 must-fixes 1, 2, 8
   - workspace/memory/research/2026-07-26-bottom-bar-floating-ui-vs-footer.md (extended research, 4 researchers)
   - Bean decision 2026-07-26: "pinned to the screen" belongs to the floating layer
 ---
 
-# Per-row sticky — mini-design
+# Sticky mini-design
+
+*(Filename says "per-row-sticky" for historical reasons. The approved outcome is that per-row
+sticky is NOT built — sticky stays header-level. See D1.)*
 
 ## 0. Plain English
 
@@ -21,7 +25,8 @@ give the footer the same power.
 
 ## 1. Scope — settled, not open
 
-**Per-row sticky applies to HEADER rows only.**
+**Sticky applies to the HEADER only — and as a header-level state, not a per-row attribute.**
+(The per-row form was considered and rejected on the short-parent trap — see D1.)
 
 Footer rows get no sticky option. Bean's decision (2026-07-26): "pinned to the screen" is what
 he meant by sticky, and today's research placed that squarely in the floating-UI layer. A strip
@@ -40,7 +45,10 @@ ships a sticky header) and is what this document specifies.
 
 ## 2. Decisions
 
-### D1 — **SUPERSEDED by Bean's counter-proposal (2026-07-26) — under verification**
+### D1 — **SETTLED (Bean, 2026-07-26; research-verified). Sticky is HEADER-level; rows collapse**
+
+*My original "mutually exclusive" proposal was rejected by Bean and is retained at the bottom of
+this section for audit only. The approved shape is below.*
 
 Bean rejected "mutually exclusive" and proposed the better shape: **the hide-on-scroll effect
 applies only to the rows that are NOT sticky, and the sticky row simply becomes the pinned
@@ -112,9 +120,7 @@ Two narrow conflicts survive Bean's model regardless:
 - the shipped HEADER-level hide-on-scroll, which transforms the whole header and would kill
   sticky on every row inside it.
 
-Original analysis retained below.
-
-#### Original D1 analysis (superseded) — sticky and hide-on-scroll cannot both be on
+#### ⛔ Original D1 analysis — REJECTED, retained for audit only. Do not build from this.
 
 `position: sticky` is broken by a `transform` on ANY ancestor — a transformed element becomes
 the containing block, so the sticky element pins to it rather than the viewport. Hide-on-scroll
@@ -141,14 +147,29 @@ because of a setting on a different block.
 rule. B is a large structural change for a combination nobody has asked for. Revisit B only if a
 client genuinely needs both on one header.
 
-### D2 — **RESEARCHED 2026-07-26. No pure-CSS solution exists; the shape below is settled**
+### D2 — ⛔ **DO NOT BUILD FOR THIS WORK. Premise removed by D1; retained as banked research only**
+
+**Read this before anything below it.** D2 answers "how do multiple sticky ROWS chain so they pin
+beneath one another". Under the approved D1 model **there is exactly ONE sticky element — the
+header** — so there are no rows to chain and this mechanism has no consumer. Building it would be
+dead machinery.
+
+It is retained, unedited, because the research is genuinely valuable for **Spec 18 Floating UI**,
+which DOES need bottom-edge stacking (a cookie banner, a chat widget, back-to-top and a CTA bar
+all competing for the same edge, with no cross-vendor convention). Treat everything below as a
+reference for that future work, **not** as an instruction for the header sticky build.
+
+If you believe you need an offset chain for the header, re-read D1 first — you have probably
+reintroduced per-row `position: sticky`, which fails on the short-parent trap.
+
+#### Banked research (for Spec 18, not for this build)
 
 There is **no pure-CSS way** to chain dynamic-height sticky elements in 2026. Anchor positioning
 is built for popovers anchored to one element, `calc-size()` is Chrome-only and solves a different
 problem, and CSS has no `:stuck` selector. Hardcoded `top` values desync the instant a logo is
 swapped or text wraps. So: CSS custom properties, written by JS, consumed by CSS.
 
-**Implementation shape (build from this):**
+**Implementation shape (for Spec 18 when it needs bottom-edge stacking — NOT for this build):**
 - Each row publishes its OWN height to one custom property; each sticky row reads
   `top: calc(var(--row1-h) + var(--row2-h))` — composable, and each row only needs to know its
   predecessors.
