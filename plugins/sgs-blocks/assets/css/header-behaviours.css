@@ -255,9 +255,54 @@ body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
 	background: var( --wp--preset--color--surface, #ffffff );
 }
 
-/* Hide-on-scroll-down — row slides off independently of any other row. */
+/* Hide-on-scroll-down — row slides off independently of any other row.
+ *
+ * This is the NOT-PINNED path and it must stay byte-identical (FR-37-40
+ * regression test). When the header IS pinned the collapse rules below take
+ * over instead — see the block comment there for why translate is wrong in
+ * that case. */
 .sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-hidden {
 	transform: translateY( -100% );
+}
+
+/* Collapse-when-pinned (FR-37-40) — while the header is PINNED, a hidden row
+ * leaves the flow entirely (height → 0) instead of translating.
+ *
+ * Why not translate when pinned: `transform` never reclaims an element's space
+ * (MDN: "Whatever space the element takes up before you transform it, it will
+ * still take up after"). A pinned header whose top row translates away would
+ * therefore keep its full height with an empty gap where the row used to be,
+ * for exactly that row's height — the header would not visibly shrink at all.
+ * Collapsing removes the space, so the header genuinely shrinks to the rows
+ * that remain, and its existing ResizeObserver re-publishes the new height,
+ * which feeds the scroll-padding gate automatically.
+ *
+ * `is-row-collapse-mode` is added by view.js ONLY while the header is measured
+ * as actually pinned AND the row is inside that header — never on a footer row
+ * (footer rows get no sticky, D390) and never on a non-pinned page.
+ *
+ * ⛔ There is deliberately NO height value here. A browser cannot animate from
+ * `height: auto`, so view.js measures the row's real height, writes it as the
+ * animation's start value, and drives it to 0 — the same reason the shrink
+ * value is emitted per instance (FR-37-38). A fixed height in this shared
+ * stylesheet could not know the row it is collapsing, which is precisely the
+ * class of defect `check-shared-css-state-rules.js` exists to catch. The `0`
+ * values below are exempt by construction: a collapse to nothing can never
+ * grow a row, whatever its resting size. */
+.sgs-row-behaviour.is-row-collapse-mode {
+	overflow: hidden;
+	transition: background-color 200ms ease, transform 200ms ease,
+		block-size 200ms ease, padding-top 200ms ease,
+		padding-bottom 200ms ease;
+}
+
+/* Higher specificity (0,4,0) than the translate rule above (0,3,0) so the
+ * collapse path wins deterministically rather than by source order. */
+.sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-collapse-mode.is-row-hidden {
+	transform: none;
+	padding-top: 0;
+	padding-bottom: 0;
+	border-block-width: 0;
 }
 
 /* Shrink-on-scroll (Phase 2) — TRANSITION ONLY. There is deliberately NO
@@ -306,7 +351,8 @@ body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
  * the behaviour. */
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-row-behaviour,
-	.sgs-row-behaviour.is-row-shrink-active {
+	.sgs-row-behaviour.is-row-shrink-active,
+	.sgs-row-behaviour.is-row-collapse-mode {
 		transition: none;
 	}
 }

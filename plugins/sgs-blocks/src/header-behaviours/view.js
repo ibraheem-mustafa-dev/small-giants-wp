@@ -30,6 +30,12 @@
  *      of the header-level body-class path. Device tier is resolved via
  *      matchMedia at the project's 768/1024 breakpoints and re-evaluated on
  *      resize, so a row can be transparent on desktop only, for example.
+ *   5. COLLAPSE-WHEN-PINNED (FR-37-40): while the header is measured as
+ *      actually pinned, a header row hiding on scroll COLLAPSES to height 0
+ *      instead of translating, so the header genuinely shrinks with no gap.
+ *      When the header is not pinned the shipped translateY path is used
+ *      unchanged — that byte-identical fallback is the regression test.
+ *      Footer rows never collapse (footer rows get no sticky, D390).
  *
  * State classes for #2/#3 are toggled on document.body; CSS descends from
  * body. State classes for #4 are toggled on the ROW element itself; CSS
@@ -108,6 +114,90 @@
 	function isHeaderPinned( header ) {
 		const position = window.getComputedStyle( header ).position;
 		return position === 'sticky' || position === 'fixed';
+	}
+
+	/**
+	 * Find an ancestor that SILENTLY breaks `position: sticky` on the header.
+	 *
+	 * Any ancestor with `overflow` other than `visible`, or with
+	 * `transform`/`perspective`/`filter` set, becomes the sticky element's
+	 * containing block or scroll container — the header then pins to THAT
+	 * instead of the viewport, or stops pinning altogether. There is no error
+	 * and no visual tell until a visitor scrolls, which is why this is worth
+	 * detecting rather than leaving to chance (FR-37-40 silent-failure guard).
+	 *
+	 * This also bounds what isHeaderPinned() can honestly claim: a header
+	 * broken this way still COMPUTES `position: sticky`, so the measurement is
+	 * accurate but misleading. We warn rather than changing the published
+	 * value — an `overflow` ancestor may still be the page's own scroll
+	 * container, in which case sticky works fine, and silently zeroing the
+	 * height on an inferred cause would be a fix for an unproven diagnosis.
+	 *
+	 * @param {HTMLElement} header
+	 * @return {{el: HTMLElement, property: string, value: string}|null} The
+	 *     first breaking ancestor found, or null when none breaks sticky.
+	 */
+	function findStickyBreakingAncestor( header ) {
+		let node = header.parentElement;
+		while ( node && node !== document.documentElement ) {
+			const cs = window.getComputedStyle( node );
+			if ( 'none' !== cs.transform ) {
+				return { el: node, property: 'transform', value: cs.transform };
+			}
+			if ( 'none' !== cs.perspective ) {
+				return {
+					el: node,
+					property: 'perspective',
+					value: cs.perspective,
+				};
+			}
+			if ( 'none' !== cs.filter ) {
+				return { el: node, property: 'filter', value: cs.filter };
+			}
+			for ( const prop of [ 'overflow', 'overflowX', 'overflowY' ] ) {
+				if ( cs[ prop ] && 'visible' !== cs[ prop ] ) {
+					return { el: node, property: prop, value: cs[ prop ] };
+				}
+			}
+			node = node.parentElement;
+		}
+		return null;
+	}
+
+	/**
+	 * Warn (console only, once) when the operator has asked for a sticky
+	 * header that an ancestor silently prevents from pinning.
+	 *
+	 * Advisory, never a gate — consistent with the project rule that
+	 * operator-facing feedback is informational (FR-37-40 / D4). It runs only
+	 * when sticky was actually requested, so a non-sticky site stays silent.
+	 *
+	 * @param {HTMLElement} header
+	 */
+	function warnIfStickyIsSilentlyBroken( header ) {
+		if (
+			! document.body.classList.contains( 'sgs-header-behaviour-sticky' )
+		) {
+			return;
+		}
+		const breaker = findStickyBreakingAncestor( header );
+		if ( ! breaker ) {
+			return;
+		}
+		// eslint-disable-next-line no-console
+		console.warn(
+			'[SGS] This header is set to stick, but an ancestor element prevents it: ' +
+				'<' +
+				breaker.el.tagName.toLowerCase() +
+				( breaker.el.className
+					? ' class="' + breaker.el.className + '"'
+					: '' ) +
+				'> has ' +
+				breaker.property +
+				': ' +
+				breaker.value +
+				'. Remove that property from the ancestor, or the header will not pin.'
+		);
 	}
 
 	/**
@@ -297,6 +387,8 @@
 			return;
 		}
 
+		const headerEl = getHeaderEl();
+
 		const rowData = Array.prototype.map.call( rows, function ( row ) {
 			return {
 				el: row,
@@ -307,8 +399,128 @@
 					row.dataset.sgsRowHideOnScroll
 				),
 				shrinkTiers: parseTierList( row.dataset.sgsRowShrink ),
+				// Collapse bookkeeping (FR-37-40). `collapsed` is null until
+				// the first collapse decision, so the very first tick does not
+				// write an inline height onto a row that is already correct.
+				collapsed: null,
+				collapseTimer: null,
 			};
 		} );
+
+		/**
+		 * Is this row eligible to COLLAPSE rather than translate?
+		 *
+		 * True only while the header is MEASURED as pinned AND this row lives
+		 * inside that header. Footer rows are never eligible (footer rows get
+		 * no sticky — D390), and neither is any row on a page whose header is
+		 * not pinned, which is what keeps the shipped translate path
+		 * byte-identical (the FR-37-40 regression test).
+		 *
+		 * @param {Object} row
+		 * @return {boolean} True when the collapse path applies.
+		 */
+		function rowCollapsesWhenHidden( row ) {
+			return (
+				!! headerEl &&
+				headerEl.contains( row.el ) &&
+				isHeaderPinned( headerEl )
+			);
+		}
+
+		/**
+		 * Read the transition duration the stylesheet actually declares, in ms.
+		 *
+		 * Never hardcoded: `prefers-reduced-motion` strips the transition, in
+		 * which case this returns 0 and the inline height is cleared on the
+		 * next frame instead of waiting for a `transitionend` that will never
+		 * fire. Same fail-safe discipline as the drawer's exit animation
+		 * (STOP-DIALOG-CLOSE-KILLS-THE-EXIT-ANIMATION).
+		 *
+		 * @param {HTMLElement} el
+		 * @return {number} Duration in milliseconds; 0 when there is none.
+		 */
+		function transitionMs( el ) {
+			const raw = window
+				.getComputedStyle( el )
+				.transitionDuration.split( ',' )[ 0 ]
+				.trim();
+			if ( raw.endsWith( 'ms' ) ) {
+				return parseFloat( raw ) || 0;
+			}
+			return ( parseFloat( raw ) || 0 ) * 1000;
+		}
+
+		/**
+		 * Drive a row between its natural height and zero.
+		 *
+		 * A browser cannot animate from `height: auto`, so the row's REAL
+		 * height is measured and written as the animation's start value before
+		 * the target is applied. The inline height is transient — it exists
+		 * only for the duration of the transition and is cleared afterwards so
+		 * the row returns to `auto` and keeps reflowing with its content (a
+		 * left-behind fixed height would freeze the row at whatever size it
+		 * had when a font swapped or the viewport changed).
+		 *
+		 * @param {Object}  row      Row bookkeeping object.
+		 * @param {boolean} collapse True to collapse, false to restore.
+		 */
+		function setRowCollapsed( row, collapse ) {
+			const el = row.el;
+			if ( row.collapsed === collapse ) {
+				return;
+			}
+			row.collapsed = collapse;
+			window.clearTimeout( row.collapseTimer );
+
+			if ( collapse ) {
+				// Measure BEFORE the class lands — afterwards the padding is
+				// already zeroed and the reading would be short.
+				el.style.blockSize = el.getBoundingClientRect().height + 'px';
+				// Force a style flush so the browser has a start value to
+				// animate FROM; without it both writes coalesce into one frame
+				// and the row snaps.
+				void el.offsetHeight;
+				el.classList.add( 'is-row-hidden' );
+				el.style.blockSize = '0px';
+			} else {
+				el.classList.remove( 'is-row-hidden' );
+				// The padding comes back with the class, so measuring now
+				// would still read 0. Let the row lay itself out at its
+				// natural size, capture that, then animate to it from 0.
+				el.style.blockSize = '';
+				const natural = el.getBoundingClientRect().height;
+				el.style.blockSize = '0px';
+				void el.offsetHeight;
+				el.style.blockSize = natural + 'px';
+			}
+
+			// Hand the row back to `auto` once the animation has finished.
+			row.collapseTimer = window.setTimeout(
+				function () {
+					if ( ! row.collapsed ) {
+						el.style.blockSize = '';
+					}
+				},
+				transitionMs( el ) + 50
+			);
+		}
+
+		/**
+		 * Remove every trace of the collapse path from a row.
+		 *
+		 * Called when a row stops being collapse-eligible — the header was
+		 * unpinned, or the row's hide-on-scroll turned off at this tier. The
+		 * inline height MUST go, or the row would stay frozen at a pixel size
+		 * while the CSS-only translate path takes back over.
+		 *
+		 * @param {Object} row
+		 */
+		function clearCollapse( row ) {
+			window.clearTimeout( row.collapseTimer );
+			row.collapsed = null;
+			row.el.style.blockSize = '';
+			row.el.classList.remove( 'is-row-collapse-mode' );
+		}
 
 		let rafScheduled = false;
 		let prevScrollY = window.scrollY;
@@ -338,13 +550,43 @@
 				}
 
 				// Hide on scroll down — smart reveal, own state class per row.
+				//
+				// TWO PATHS, chosen per tick (FR-37-40):
+				//   • header NOT pinned → the shipped translateY path,
+				//     untouched. No inline height is ever written, so this
+				//     renders byte-identically to before this feature.
+				//   • header IS pinned  → collapse to height 0 instead, so the
+				//     header genuinely shrinks. `transform` never reclaims
+				//     space, so translating here would leave a gap exactly the
+				//     size of the hidden row.
+				// The choice is re-made every tick because pinning can change
+				// under the visitor (a breakpoint, or the operator toggling
+				// sticky in the editor preview).
 				if ( row.hideOnScrollTiers.indexOf( tier ) !== -1 ) {
-					if ( scrollingDown ) {
-						row.el.classList.add( 'is-row-hidden' );
-					} else if ( scrollingUp ) {
-						row.el.classList.remove( 'is-row-hidden' );
+					if ( rowCollapsesWhenHidden( row ) ) {
+						row.el.classList.add( 'is-row-collapse-mode' );
+						if ( scrollingDown ) {
+							setRowCollapsed( row, true );
+						} else if ( scrollingUp ) {
+							setRowCollapsed( row, false );
+						}
+					} else {
+						// Leaving collapse mode: drop the inline height first,
+						// or the row stays frozen at a pixel size while the
+						// translate path takes over.
+						if ( null !== row.collapsed ) {
+							clearCollapse( row );
+						}
+						if ( scrollingDown ) {
+							row.el.classList.add( 'is-row-hidden' );
+						} else if ( scrollingUp ) {
+							row.el.classList.remove( 'is-row-hidden' );
+						}
 					}
 				} else {
+					if ( null !== row.collapsed ) {
+						clearCollapse( row );
+					}
 					row.el.classList.remove( 'is-row-hidden' );
 				}
 
@@ -400,6 +642,10 @@
 
 			// F2 — scroll behaviour state; only active when a relevant flag exists.
 			initScrollBehaviours( getActiveBehaviours() );
+
+			// FR-37-40 silent-failure guard — advisory console warning only,
+			// never a gate, and silent unless sticky was actually requested.
+			warnIfStickyIsSilentlyBroken( header );
 		}
 
 		// Per-row (Phase 1) — independent of header presence; also serves
