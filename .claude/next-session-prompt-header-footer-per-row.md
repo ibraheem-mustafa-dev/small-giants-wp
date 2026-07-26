@@ -112,7 +112,29 @@ focus**. The fix belongs entirely in the JS that decides the value.
   at 375/768/1440 — not from the emit.
 - Time: ~20 min
 
-## Task 2 — Collapse-when-pinned
+## Task 2 — ✅ DONE + LIVE-VERIFIED 2026-07-26 (`494e5d50`, D392). DO NOT REBUILD.
+
+Evidence: `reports/visual-diff/row-collapse-when-pinned-2026-07-26.md`. Both files md5-matched
+local↔server. Gap = **0.00 unrounded** at desktop/tablet/mobile; non-pinned path verified
+byte-identical (`matrix(1,0,0,1,0,-24.7159)`, no inline height written); the header
+re-publishes its shrunken height (92→68px) on its own, so Task 1's gate composes for free.
+
+**The one open question the design had not settled, now decided (Bean, 2026-07-26):** a browser
+cannot animate from `height: auto`, so the script MEASURES the row's height, writes it as the
+animation start value, drives it to 0, and CLEARS the inline height afterwards. The clear-out
+delay reads the COMPUTED transition duration — do not hardcode it, or reduced-motion hangs on a
+`transitionend` that never fires. Rejected: instant snap (visible downgrade), grid wrapper
+(markup change to a shipped block → editor risk, cf. D388).
+
+**Collapse wins by SPECIFICITY (0,4,0 vs the translate rule's 0,3,0), not source order.** If you
+ever reorder `header-behaviours.css`, that must stay true.
+
+**Still not verified:** `prefers-reduced-motion` — the harness cannot emulate the media query.
+Correct by construction, but that is reasoning, not measurement. Worth a real check on a machine
+with the OS setting on. Also noted: a collapsed row's contents stay focusable — parity with the
+shipped translate path, not a new defect, so fixing it is a decision about the EXISTING behaviour.
+
+### Original brief (retained — this is what was built)
 
 **What:** when the header is pinned, a row with hide-on-scroll COLLAPSES (height → 0) instead of
 translating. When the header is NOT pinned it keeps today's `translateY(-100%)`. Bean chose this
@@ -132,7 +154,23 @@ live-verified `translateY` behaviour. That is the regression test, not an aspira
   and height identical to pre-change values at all three tiers.
 - Time: ~40 min
 
-## Task 3 — Advisory warnings + silent-failure guards
+## Task 3 — ✅ DONE 2026-07-26 (`494e5d50`, D392), with two items deliberately NOT built.
+
+**BUILT — the sticky-breaking-ancestor guard.** Verified live on the SHIPPED script with a
+negative control: silent on a healthy page; names `<div class="wp-site-blocks">` when that
+ancestor is given a `transform`. Advisory `console.warn` only, never a gate, and silent unless
+sticky was actually requested. It also bounds Task 1's `isHeaderPinned()` — a header broken this
+way still COMPUTES `sticky`, so the measurement is honest but misleading. It warns rather than
+zeroing the published height, because an `overflow` ancestor may still be the page's own scroll
+container and acting would be a fix for an unproven cause.
+
+**NOT BUILT, deliberately — do not add these back without a new model.** The multi-sticky warning
+and the "a row cannot be both retained-when-pinned and hidden-on-scroll" rule were BOTH specified
+against the per-row sticky model that D389 rejected. Under a single header-level sticky element
+there is no second sticky row to warn about and no per-row conflict to enforce — building either
+would mean inventing a condition that cannot occur.
+
+### Original brief (retained)
 
 - The multi-sticky warning is **advisory only, never a gate** (Bean, 2026-07-26). A fully sticky
   header is legitimate — *especially paired with shrink* — just uncommon. Wording must be neutral

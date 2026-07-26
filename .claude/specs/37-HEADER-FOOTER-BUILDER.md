@@ -1153,8 +1153,38 @@ unaffected; and — proven — pointing the target at the logo makes the server 
 `data-sgs-row-shrink-hide` and no hide rule, while still emitting `data-sgs-row-shrink`.
 
 #### FR-37-40 — Sticky model: HEADER-level, rows collapse
-`APPROVED (design), NOT BUILT` — design gate `plans/2026-07-26-per-row-sticky-mini-design.md`,
+`✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` scroll-padding gate / D391; `494e5d50`
+collapse + guard / D392). Design gate `plans/2026-07-26-per-row-sticky-mini-design.md`,
 Bean-signed 2026-07-26 (D389). Supersedes any per-row sticky idea.
+**Collapse-when-pinned:** while the header is measured as pinned, a header row hiding on scroll
+collapses to height 0; when it is NOT pinned the shipped `translateY(-100%)` path runs unchanged
+(the regression constraint — verified: `matrix(1,0,0,1,0,-24.7159)`, row at full height, no inline
+height written). "No gap" measured UNROUNDED at desktop/tablet/mobile: `(header drop) − (row
+height removed)` = **0.00** at every tier. The existing ResizeObserver re-publishes the shrunken
+header height on its own (92→68px live), so the D391 scroll-padding gate composes for free.
+**Binding rule — a browser cannot animate from `height: auto`.** The script MEASURES the row's
+real height, writes it as the animation's start value, drives it to 0, and CLEARS the inline
+height afterwards so the row returns to `auto` (a left-behind fixed height would freeze the row
+when a font swaps or the viewport changes). The clear-out delay reads the COMPUTED transition
+duration — never a hardcoded number — so `prefers-reduced-motion`, which strips the transition,
+clears on the next tick instead of awaiting a `transitionend` that never fires. Bean chose this
+over an instant snap (visible downgrade) and over a grid wrapper (markup change to a shipped
+block → editor risk, cf. D388).
+**Collapse must win by SPECIFICITY, not source order** — the collapse selector is (0,4,0) against
+the translate rule's (0,3,0). Verified by `transform: none` throughout the pinned path.
+**Silent-failure guard (advisory, never a gate):** an ancestor with `overflow` other than
+`visible`, or `transform`/`perspective`/`filter`, silently stops sticky pinning to the viewport.
+`findStickyBreakingAncestor()` detects it and warns, naming the element. This bounds what
+`isHeaderPinned()` can claim — a header broken this way still COMPUTES `sticky`, so the
+measurement is accurate but misleading. It warns rather than zeroing the published height,
+because an `overflow` ancestor may still be the page's own scroll container.
+**NOT built, deliberately:** the D4 multi-sticky warning and the sticky↔hide-on-scroll mutual
+exclusion. Both were specified against the per-row sticky model D389 rejected; under a single
+header-level sticky element neither condition can occur. Do not add them back without a new
+model.
+**NOT live-verified:** `prefers-reduced-motion` (the harness cannot emulate the media query —
+correct by construction, but that is reasoning, not measurement). Also noted: a collapsed row's
+contents remain focusable, which is parity with the shipped translate path, not a new defect.
 **Per-row `position: sticky` is REJECTED**, on evidence: a sticky element pins only while its
 containing block is in view, so a row sticky inside a ~250px `<header>` unpins the moment scroll
 passes the header height (short-parent trap) — the nav would vanish. Separately, `transform` never
@@ -1239,7 +1269,7 @@ live-verified at 375/768/1440. The scroll-padding criteria are met — evidence
 | Per-row shrink, proportional (FR-37-38) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`d54c316d`) — 48px→24px, left/right held, unpadded row 0→0 at 1440/768/mobile. First ship GREW an unpadded row (absolute value in a shared stylesheet); now `calc(own padding / 2)` per instance + gated by `check-shared-css-state-rules.js`. 44px floor measured and deliberately NOT built |
 | Shrink-hides-element + headerEssential guardrail (FR-37-39) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` — chosen child `display:none` while shrunk, sibling row unaffected; guardrail proven SERVER-SIDE (target pointed at the logo → no hide attr, no rule) and declarative via `supports.sgs.headerEssential`, not a hardcoded list |
 | Footer parity for per-row behaviours (FR-37-37/38) | `✅ LIVE-VERIFIED 2026-07-26` — measured on the ACTIVE footer **CPT 1654** (not the obvious 1571; check `sgs_active_footer_cpt_id`): top row 60px→30px, siblings unaffected |
-| Sticky model — HEADER-level, rows collapse (FR-37-40) | `PARTIAL` — per-row `position:sticky` REJECTED on the short-parent trap (D389); offset chain explicitly not to be built; footer rows get no sticky (→ Spec 18). **Scroll-padding sub-item `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7`, D391)** — the publisher is now gated on MEASURED pinning and publishes an explicit `0px` otherwise; negative-control-verified at desktop/tablet/mobile. **Still NOT built: collapse-when-pinned** (a hidden row must collapse to height 0 while the header is pinned, and stay byte-identical `translateY` when it is not) + the advisory multi-sticky warning |
+| Sticky model — HEADER-level, rows collapse (FR-37-40) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` D391 + `494e5d50` D392) — per-row `position:sticky` REJECTED on the short-parent trap (D389); offset chain deliberately not built; footer rows get no sticky (→ Spec 18). Scroll-padding publisher gated on MEASURED pinning, explicit `0px` otherwise, negative-control-verified. Collapse-when-pinned: gap = **0.00** unrounded at desktop/tablet/mobile; non-pinned path byte-identical `translateY(-100%)` with no inline height; header re-publishes its shrunken height (92→68px) for free. Sticky-breaking-ancestor guard warns, advisory only. D4 multi-sticky warning + sticky↔hide-on-scroll exclusion deliberately NOT built (both specified against the rejected per-row model). Not live-verified: `prefers-reduced-motion` |
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
