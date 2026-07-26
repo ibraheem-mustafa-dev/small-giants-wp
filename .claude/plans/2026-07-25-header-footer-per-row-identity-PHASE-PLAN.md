@@ -32,7 +32,27 @@ independent and cheap.
       a desktop-only transparent row is `is-row-transparent-active` at desktop, NOT at mobile.
       D376 header-level path intact (`--sgs-header-height`=252px still published). 5/5 deploy files
       md5-matched local↔server. Proof Header reverted to clean afterward (0 behaviour rows).
-- [ ] Per-row shrink works, including hide-a-chosen-element with the DB-role guardrail (P2).
+- [~] **P2 PARTIAL — shipped + live-verified 2026-07-26 (commit `59de5434`), one open decision.**
+      - **P2-S2 shrink-hides-a-chosen-element: DONE + LIVE-PROVEN.** Chosen child `display:none`
+        while its row is shrunk; sibling row unaffected; resets on scroll-up. Guardrail proven
+        SERVER-SIDE: with `rowShrinkHideTarget` pointed at the logo, the server emitted no
+        `data-sgs-row-shrink-hide` and no hide rule at all while still emitting
+        `data-sgs-row-shrink="desktop"`. Guardrail is declarative (`supports.sgs.headerEssential`
+        on responsive-logo / nav-menu / cart, verified live in the block registry), NOT a
+        hardcoded list. Picker also excludes children lacking `supports.anchor` (11 blocks incl.
+        sgs/product-search — WP would silently discard the id). 6/6 deploy files md5-matched.
+      - **P2-S1 shrink itself: MECHANISM LIVE, EFFECT WRONG — do not ship to a client.** The
+        state class + tier-gating work (`is-row-shrink-active` at desktop only, `is-row-shrunk`
+        past 50px, reset on scroll-up, sibling row untouched). But the rule sets an ABSOLUTE
+        shrunk `padding-block` (`--wp--preset--spacing--10`), so on a row whose own padding is
+        unset the row measured 0px at rest → **4px when "shrunk"**: it GREW. Shrink must never
+        increase. Root cause: the shrunk value cannot be expressed relative to the resting value
+        because the shared wrapper emits the row's padding as a literal, not as a custom
+        property. Fixing it properly = adding that capability to `SGS_Container_Wrapper` (the
+        design doc's sanctioned route, §4) and therefore a shared-mechanism DESIGN GATE needing
+        Bean's approval before build. Decision pending.
+- [ ] **P2-S3 footer parity — NOT verified.** Footer rows share the identical code path (same
+      attrs, same resolver, same view.js/CSS), but no footer row was live-verified this session.
 - [ ] The sticky mini-design is written + signed off before any per-row sticky ships.
 - [x] The operator-simplicity test (proxy arm) has been run + recorded against the current header
       — 2026-07-26, verdict FAIL, `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md`.
