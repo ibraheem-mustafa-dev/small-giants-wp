@@ -1,14 +1,15 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.3"
+spec_version: "1.4"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-07-18
+last_verified: 2026-07-26
 status_history:
+  - 2026-07-26: v1.4 — no-inline rollout RE-VERIFIED complete (D385). An 11-condition DONE audit (`.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`) confirmed 0 inline-via-render / 0 supports lacking skip-serialization / 0 box-family violations / 0 dead controls across accessible blocks; the `check-element-manifest-conformance.js` GAP count is semantic noise, NOT a work-remaining signal (100%-DONE exemplars carry 23–151 GAPs). Closed the 5 genuine residuals: product-card stale-F3 dead-code, feature-grid device-tier breakpoints, + content-collection/pricing-table/form false-flags via a new element-aware F3-gate exemption (E13, `check-hardcoded-render-defaults.js`: wrapper-root gridTemplateColumns/gap literals on BEM `__sub-elements` are exempt). F3 baseline now = `sgs/mega-menu` (Track 2) only.
   - 2026-07-18: v1.3 — FR-32-4 amended to FORBID inline `--var` (`style="--sgs-…:…"`); per-instance override values MUST emit as a scoped `.{uid}.{block}{--var:…}` rule via the collector, aligning FR-32-4 with the already-newer §6.1(e) + Spec 31 FR-31-22.3. Also tightened FR-32-1 done-when + §8 acceptance row (count ANY `style` content, not just property declarations) and §5/§6 flow-diagram (scoped, not inline `--var`). Closes footprint GOTCHA E (permissive outlier) + GOTCHA F (`[style*="--var"]` selector break). D345. Opens the framework-wide inline-zero rollout (`plans/2026-07-17-phase-inline-zero-rollout.md`).
   - 2026-07-07: v1.0 — initial spec. Restores + generalises the pre-D283 token/class design (Spec 11 Decision 24) as a framework-wide contract; supersedes the D283 preset-as-seed inline-attr model for styling.
   - 2026-07-09: v1.1 — added §6.1 Geometry token families / box-object contract (named-object `{top,right,bottom,left}`/corner shape, keep-support-serialise-scoped correction, the 10-merge/10-scalar family roster, FR-32-10). Reconciles the geometry (spacing/border) sibling to §6's colour/typography preset mechanism, per `plans/2026-07-09-no-inline-styling-design-gate.md` + `plans/2026-07-09-box-object-interface-contract.md`.
