@@ -1,11 +1,56 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-07-26 (D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
+last_updated: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INSTANCE + P-ROW-COLLAPSE-RESIDUALS; FR-37-40 is COMPLETE so nothing from the sticky build is left unparked. Prior same day: D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+
+## 2026-07-26 (D391) — the theme carries a SECOND copy of the scroll-padding defect the plugin just fixed
+
+> **P-THEME-SCROLL-PADDING-SECOND-INSTANCE** — NEW 2026-07-26. FR-37-40 Task 1 fixed the plugin's
+> unconditional `--sgs-header-height` publish (D391), but the same defect class lives theme-side and
+> was deliberately left alone (the task's brief scoped the work to `view.js`). Two findings in
+> `theme/sgs-theme/assets/css/utilities.css`:
+> 1. **`:root { --sgs-header-height: 80px }` (`:21`) makes the plugin's `0px` fallback unreachable.**
+>    Specificity decides which rule paints: the plugin's `:root { scroll-padding-top: var(...) }`
+>    (0,1,0) beats the theme's `html { scroll-padding-top: var(...) }` (`:26`, 0,0,1) — but because
+>    the theme DEFINES the custom property, `var( --sgs-header-height, 0px )` never falls back. With
+>    JavaScript running this is invisible (the JS publishes an inline value that outranks both
+>    stylesheets), so it ONLY bites with JS off — where every page then reserves 80px regardless of
+>    whether the header is pinned.
+> 2. **`body.admin-bar html` (`:29`, and its `@media` twin at `:34`) can NEVER match** — `html` is
+>    not a descendant of `body`. That admin-bar-aware `calc()` has never applied, on any page, since
+>    it was written.
+> **Do NOT blind-fix #1 to `0px`.** There is a real trade-off: with JS disabled AND a sticky header,
+> 80px is a crude but working guard against WCAG 2.4.11 obscuring, whereas 0px is correct for every
+> non-sticky page. A cause-agnostic option is a CSS-only conditional default (`0` at `:root`, the
+> fallback height only under `body.sgs-header-behaviour-sticky`), which is right in both cases —
+> but it belongs to whoever owns the theme's utilities layer, with its own verification.
+> **Status: OPEN** · **Bucket:** framework · **Trigger:** any theme-side scroll/anchor work, or the
+> next `/doc-audit` of the behaviour layer. Evidence:
+> `reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md`.
+
+## 2026-07-26 (D392) — collapse-when-pinned: two residuals, neither a blocker
+
+> **P-ROW-COLLAPSE-RESIDUALS** — NEW 2026-07-26. FR-37-40 is COMPLETE and live-verified; these are
+> the two things the verification could NOT close, recorded rather than glossed:
+> 1. **`prefers-reduced-motion` was not live-verified.** The harness cannot emulate the media query
+>    with the tools available. The path is correct by construction — `transitionMs()` reads the
+>    COMPUTED transition duration, the CSS sets `transition: none` under reduced motion, so the
+>    duration reads 0 and the transient inline height clears on the next tick instead of awaiting a
+>    `transitionend` that never fires — but that is reasoning, not measurement. Needs one check on a
+>    machine with the OS setting enabled: collapse + restore, and confirm no inline `block-size` is
+>    left on the row afterwards.
+> 2. **A collapsed row's contents remain keyboard-focusable** at height 0 with `overflow: hidden`.
+>    This is **PARITY**, not a regression — the shipped `translateY(-100%)` path has the same
+>    property (off-screen but still in the tab order), and it predates this work. So the decision is
+>    about the EXISTING hide-on-scroll behaviour, not about collapse: should a hidden header row be
+>    removed from the tab order (`inert`) while hidden? Doing it for the collapse path only would
+>    make the two paths behave differently, which is worse than the current consistent state.
+> **Status: OPEN** · **Bucket:** framework · **Trigger:** any accessibility pass on the header
+> behaviour layer. Evidence: `reports/visual-diff/row-collapse-when-pinned-2026-07-26.md`.
 
 ## 2026-07-26 — Extend Spec 18 Floating UI for persistent bottom bars (research-backed, not started)
 

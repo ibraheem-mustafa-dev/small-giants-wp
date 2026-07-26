@@ -2,7 +2,11 @@
 doc_type: design-gate
 topic: header-footer-per-row-identity
 date: 2026-07-25
-status: APPROVED-DIRECTION (Bean chose Option 1, 2026-07-25) — pending strategic-plan
+status: EXECUTED 2026-07-26 — Option 1 (keep the shared engine) built in full. Phases 1+2 shipped
+  (D386–D388) and the sticky work closed via the mini-design (D389) + build (D391/D392). Must-fixes
+  1 and 2 were STRUCK rather than built (their premise died when per-row sticky was rejected);
+  must-fix 8 turned out to be a live bug and is fixed. Historical from here — canonical record of
+  what shipped = Spec 37 FR-37-37/38/39/40.
 governs: amends Spec 37 §3 (behaviours) + §7 (constraints); records the block-private decision
 review: 6-persona adversarial council (cynic / competitor / spec-lawyer / ship-PM / support-realist / code-grounded) run 2026-07-25 — verdict NO-GO as briefed, GO-WITH-CHANGES on this re-scope
 ---
@@ -64,14 +68,28 @@ and must not be a naive toggle.
 
 ## 2. Must-fixes baked in (from the council — build these into the FRs)
 
-1. **Sticky ↔ hide-on-scroll conflict (real, live).** Hide-on-scroll puts a `transform` on the
-   header ancestor, which breaks `position:sticky` on descendant rows (the codebase already
-   documents this for the drawer). **v1 rule:** sticky and hide-on-scroll are **mutually
-   exclusive on the same row** — or the sticky row is lifted out of the transformed ancestor.
-   Decide in the sticky mini-design; state it as a rule, not left to CSS luck.
-2. **Multiple sticky rows.** If more than one row is sticky, an **automatic offset chain** — each
-   sticky row sits below the live height of the ones above it (reuse the existing header
-   height-publisher), never a manual pixel offset — plus a named z-index scale.
+1. ~~**Sticky ↔ hide-on-scroll conflict (real, live).**~~ **RESOLVED 2026-07-26 by REMOVING the
+   conflict, not arbitrating it (D389/D392).** The mini-design rejected per-row `position:sticky`
+   outright (short-parent trap: a row sticky inside a ~250px `<header>` unpins once scroll passes
+   the header's height). With sticky HEADER-level and exactly one sticky element, there is no
+   per-row sticky↔hide-on-scroll collision to make mutually exclusive — **so the "mutually
+   exclusive" rule was struck, not built.** The combination is now the FEATURE: the header pins
+   and the row COLLAPSES out of flow (height→0), because `transform` never reclaims space and
+   translating would leave a gap the size of the hidden row. Shipped + live-verified (gap 0.00 at
+   all three tiers). Canonical: Spec 37 FR-37-40.
+   > ⚠ **Note on this must-fix's premise:** it said a transformed *ancestor* breaks sticky on
+   > descendant rows. True — but research also established that a transformed **SIBLING** is
+   > structurally irrelevant (containing-block computation walks ancestors only; CSSWG
+   > w3c/csswg-drafts#3186). The real killer was the short-parent trap, which this must-fix did
+   > not anticipate. What DID survive as a live guard: an ancestor with `overflow` other than
+   > `visible`, or `transform`/`perspective`/`filter`, silently stops sticky — now detected and
+   > warned about by `findStickyBreakingAncestor()` (advisory, never a gate).
+2. ~~**Multiple sticky rows** → automatic offset chain + named z-index scale.~~ **STRUCK
+   2026-07-26 — DO NOT BUILD (D389/D392).** Its premise died with must-fix 1: under a single
+   header-level sticky element there are no sticky rows to chain, so the mechanism would be dead
+   machinery. The research behind it (custom properties written by ResizeObserver, `borderBoxSize`
+   not `contentRect`, write to `:root` never the observed element) is banked in the mini-design §D2
+   for **Spec 18 Floating UI**, which genuinely needs bottom-edge stacking.
 3. **"Hide a chosen element on shrink" — reference safely.** The chosen element is referenced by
    a **stable per-child id set at insert time**, never the editor's internal clientId (which
    changes on copy/paste). If the element is later deleted, shrink acts as if nothing was chosen —
@@ -87,9 +105,17 @@ and must not be a naive toggle.
    is a `transform` that breaks a sticky row. Revisit only if a real need appears.
 7. **Device-tier shape.** All new per-row attributes use the same device-tier object shape the
    rows already use (768 / 1024). No new flat suffixed attributes.
-8. **Sticky headers must not cover in-page anchors.** Publish the live header height as a CSS
-   variable and apply `scroll-padding-top` site-wide, so a sticky bar never hides the target of an
-   in-page link.
+8. **Sticky headers must not cover in-page anchors.** ✅ **BUILT + LIVE-VERIFIED 2026-07-26
+   (D391).** The publisher and the site-wide `scroll-padding-top` both already existed — but this
+   must-fix turned out to describe a **LIVE BUG**, not a thing to add: both ran *unconditionally*,
+   so a NON-sticky header reserved its full height (93px desktop / **252px mobile**) at the top of
+   every programmatic scroll — anchors, fragment nav on load, find-in-page, every
+   `scrollIntoView()`, keyboard focus scrolling and scroll-snap. **The publisher is now gated on
+   the MEASURED computed position and publishes an explicit `0px` otherwise** (`var(--x, 0px)`
+   fires its fallback only while the property is UNDEFINED, so the zero has to be written).
+   W3C technique **C43** confirms `scroll-padding` is a *sufficient* technique for WCAG
+   2.4.11/2.4.12 **including keyboard Tab focus** — so the CSS was correct and was left unchanged;
+   the fix is JS-only.
 9. **Clone-reproducibility.** The cloning converter must be able to detect + map per-row effects
    from a scraped draft — folded into the (deferred) header/footer cloning work, not built now.
 

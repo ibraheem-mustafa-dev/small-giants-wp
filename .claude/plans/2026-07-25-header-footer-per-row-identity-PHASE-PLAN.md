@@ -2,7 +2,12 @@
 doc_type: plan
 topic: header-footer-per-row-identity
 date: 2026-07-25
-status: READY (design-gate approved 2026-07-25, Option 1); not yet started
+status: COMPLETE 2026-07-26 — Phase 1 (D386-ancestor commits `a3a200aa`), Phase 2 (`59de5434` +
+  `d54c316d` + `36461b85`), and SIDE TRACK A (`5716f7b7` D391 + `494e5d50` D392) all shipped and
+  live-verified. Only SIDE TRACK B remains, and it is independent deal-winner work, not plumbing:
+  B1 RUN (verdict FAIL, findings parked as `P-HEADER-SIMPLICITY-FINDINGS`), B2 partly addressed by
+  the "Show me the shrunk size" editor toggle, B3 preset library NOT started (highest client-facing
+  ROI of anything left here). Canonical record of what shipped = Spec 37 FR-37-37/38/39/40.
 design: .claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md
 review: risk + hidden-decisions discharged by the 6-persona adversarial council (2026-07-25) — see design doc §2 must-fixes; no separate research pre-gate needed (council resolved the unknowns)
 ---
@@ -99,7 +104,22 @@ independent and cheap.
       (`useState is not defined`, then a TDZ `Cannot access 'f' before initialization`)
       while webpack + dead-controls + the new gate were ALL green. Only opening the real
       editor found them. Treat "build green" as zero evidence for editor-surface changes.
-- [ ] The sticky mini-design is written + signed off before any per-row sticky ships.
+- [x] **The sticky mini-design is written + signed off before any per-row sticky ships — and the
+      build it gated is now COMPLETE (2026-07-26, D391 `5716f7b7` + D392 `494e5d50`).**
+      The design (`plans/2026-07-26-per-row-sticky-mini-design.md`) answered the question by
+      **rejecting per-row sticky outright** on the short-parent trap: a row made `position:sticky`
+      inside a ~250px `<header>` unpins the moment scroll passes the header's height. So no
+      per-row sticky ever shipped, and the criterion above is satisfied in the strongest sense.
+      **What shipped instead:** sticky stays HEADER-level, and a row that should disappear while
+      the header is pinned COLLAPSES out of flow (height→0) rather than translating — measured
+      gap **0.00 unrounded** at all three tiers, with the non-pinned path byte-identical
+      `translateY(-100%)` and no inline height ever written. Plus the D3 scroll-padding defect
+      fixed (publisher gated on MEASURED pinning, explicit `0px` otherwise) and a
+      sticky-breaking-ancestor guard. Evidence:
+      `reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md` +
+      `reports/visual-diff/row-collapse-when-pinned-2026-07-26.md`.
+      **The D2 multi-row offset chain was deliberately NOT built** — under one sticky element
+      there is nothing to chain; the research is banked for Spec 18.
 - [x] The operator-simplicity test (proxy arm) has been run + recorded against the current header
       — 2026-07-26, verdict FAIL, `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md`.
       Blind-tester arm still pending.
@@ -234,9 +254,18 @@ QA Gate — P2 build + deploy + LIVE verify (as P1 gate) — Marker: QA
 
 ---
 
-## SIDE TRACK A — Sticky mini-design (BLOCKING for any per-row sticky; do NOT ship sticky without it)
+## SIDE TRACK A — ✅ CLOSED 2026-07-26. Design signed off (D389) AND the build shipped (D391/D392).
 
-Step SA-1 — Design the per-row sticky model
+**Outcome, so nobody re-runs this:** SA-1 concluded that per-row `position: sticky` must NOT be
+built (short-parent trap). Sticky stays HEADER-level; rows COLLAPSE instead. Must-fix 1 is
+therefore resolved by removing the conflict rather than arbitrating it — with one sticky element
+there is no per-row sticky↔hide-on-scroll collision to make mutually exclusive. Must-fix 2's
+offset chain is explicitly NOT to be built (nothing to chain); its research is banked for Spec 18.
+Must-fix 8's scroll-padding turned out to be a LIVE BUG, not just a thing to confirm — it was
+applied unconditionally, reserving the full header height on non-sticky pages — and is now fixed.
+Canonical record: **Spec 37 FR-37-40**. This step is historical.
+
+Step SA-1 — Design the per-row sticky model `[DONE — see the outcome above]`
   Model:   inline (architectural)
   Action:  Resolve must-fix 1 (sticky ↔ hide-on-scroll: a transformed ancestor breaks position:sticky — make them mutually exclusive per row in v1, OR lift the sticky row out of the transform) + must-fix 2 (multiple sticky rows = auto-offset chain via the height-publisher + named z-index scale) + must-fix 8 (scroll-padding-top — NOTE per QC this is ALREADY live at `header-behaviours.css:26-28` via `--sgs-header-height`; SA-1 CONFIRMS it holds under multiple dynamically-sized sticky rows, it does not build it from scratch). Write it into the design doc + a new FR in Spec 37. Get Bean sign-off.
   Files:   design doc, .claude/specs/37-HEADER-FOOTER-BUILDER.md

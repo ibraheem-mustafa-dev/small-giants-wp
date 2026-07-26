@@ -2,8 +2,12 @@
 doc_type: design-gate
 topic: per-row-sticky
 date: 2026-07-26
-status: APPROVED (Bean, 2026-07-26) — SA-1 discharged; unblocks the sticky build. All four
-  decisions settled + researched. Ready for a fresh build session.
+status: BUILT + LIVE-VERIFIED 2026-07-26 (D391 `5716f7b7` scroll-padding gate; D392 `494e5d50`
+  collapse + guard). SA-1 discharged and the build it unblocked is COMPLETE — every done-when in
+  §4 is met or explicitly struck with a reason. Historical from here: this doc is the REASONING,
+  Spec 37 FR-37-40 is the canonical record of what shipped. Evidence:
+  reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md +
+  reports/visual-diff/row-collapse-when-pinned-2026-07-26.md
 governs: Spec 37 §Behaviours — sticky stays HEADER-level (per-row sticky was considered and
   REJECTED, see D1); adds collapse-when-pinned; amends the F1 scroll-padding mechanism
 inputs:
@@ -296,21 +300,53 @@ with the project's rule that operator-facing a11y/UX feedback is informational, 
 > chain an acceptance criterion at the same time D1 removed the thing it would chain. A builder
 > treating this section as the spec would have built exactly what is now forbidden. Corrected.
 
-- [ ] With the header set sticky, it stays pinned while the page scrolls, at each device tier
+> **ALL MET 2026-07-26.** Evidence per line below. Two criteria were struck rather than met —
+> both with a recorded reason, neither silently dropped.
+
+- [x] With the header set sticky, it stays pinned while the page scrolls, at each device tier
       where it is enabled — live-verified at 375 / 768 / 1440 on the canary, not from the emit.
-- [ ] **Only ONE element is ever `position: sticky`** (the header). No row emits `position: sticky`.
-      Grep the built CSS to confirm — this is the guard against the deleted offset-chain returning.
-- [ ] With the header pinned, a row marked to disappear renders at height 0 and the header's total
+      → computed `position: sticky` at desktop 1382 / tablet 978 / mobile 405.
+- [x] **Only ONE element is ever `position: sticky`** (the header). No row emits `position: sticky`.
+      → no row rule sets `position` at all; the collapse path uses `block-size`, and the row's
+      computed `transform` stays `none` while pinned. The offset chain was never built.
+- [x] With the header pinned, a row marked to disappear renders at height 0 and the header's total
       height drops by exactly that row's height — **no gap** (the `transform` failure mode).
-- [ ] With the header NOT pinned, that same row renders byte-identical to today's shipped
+      → measured UNROUNDED: `(header drop) − (row removed)` = **0.00** at all three tiers
+      (93.17→67.59 / 92.34→67.63 / 251.52→229.01). Cross-checked: the rows' summed height equals
+      the header's own.
+- [x] With the header NOT pinned, that same row renders byte-identical to today's shipped
       `translateY(-100%)` behaviour at all three tiers. This is the regression test.
-- [ ] With NOTHING pinned, `scroll-padding-top` computes to `0px` and an anchor link lands flush.
-      (Fails today — this is the D3 regression test.)
-- [ ] With the header pinned, an anchor link lands directly below the pinned height — not below
-      the full unpinned header height.
-- [ ] A keyboard-focused element is never entirely hidden behind the pinned header (WCAG 2.4.11;
+      → `matrix(1, 0, 0, 1, 0, -24.7159)` = `translateY(-100%)` of the row's own height, row at
+      full height, **no inline height ever written** on that path.
+- [x] With NOTHING pinned, `scroll-padding-top` computes to `0px` and an anchor link lands flush.
+      → `0px` at every tier; anchor landed at viewport top **0**. Negative control included
+      (hand-setting the property moves it to 93px, so the pass is the gate acting).
+- [x] With the header pinned, an anchor link lands directly below the pinned height — not below
+      the full unpinned header height. → landed at **93** against a 93px pinned header.
+- [x] A keyboard-focused element is never entirely hidden behind the pinned header (WCAG 2.4.11;
       W3C technique C43 is the sufficient technique, F110 the failure to avoid).
-- [ ] The multi-sticky warning is advisory only — it never blocks saving or publishing.
+      → focused link measured 433–477 against a pinned header bottom of 92: neither entirely nor
+      partially obscured, in both pinned and unpinned states.
+- [~] ~~The multi-sticky warning is advisory only — it never blocks saving or publishing.~~
+      **STRUCK — the warning was NOT built, deliberately (D392).** It was specified against the
+      per-row sticky model D1 rejected; under a single header-level sticky element there is no
+      "second sticky row" to warn about, so building it would mean inventing a condition that
+      cannot occur. The same reasoning strikes D1's "a row cannot be both retained-when-pinned
+      and hidden-on-scroll" guard. **What WAS built instead** is the other guard D1 asked for:
+      a sticky-breaking-ancestor detector (`overflow` other than `visible`, or
+      `transform`/`perspective`/`filter`), advisory `console.warn` only, verified live on the
+      shipped script with a negative control.
+
+**Carried out of this design, unresolved:**
+- `prefers-reduced-motion` was NOT live-verified — the harness cannot emulate the media query.
+  Correct by construction (the clear-out delay reads the COMPUTED transition duration, which is
+  0 under reduced motion), but that is reasoning, not measurement.
+- A collapsed row's contents remain focusable at height 0. This is **parity** with the shipped
+  `translateY` path, not a new defect — so it is a decision about the existing behaviour.
+- The theme carries a second copy of the D3 defect: `theme/sgs-theme/assets/css/utilities.css:21`
+  declares its own `:root { --sgs-header-height: 80px }`, so the plugin rule's `0px` fallback can
+  never fire and a JS-disabled page reserves 80px unconditionally. Its `body.admin-bar html`
+  selector (`:29`) can never match either. Parked, not fixed.
 
 ## 5. Effort
 

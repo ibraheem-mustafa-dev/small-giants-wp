@@ -23,6 +23,47 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-MEASURE-THE-STATE-NOT-THE-FLAG-THAT-REQUESTS-IT** — NEW 2026-07-26 (D391). When gating
+  behaviour on *"is X currently true?"*, read the **computed/effective state**, never the flag,
+  class or attribute that *asks* for X. The two diverge the moment any other setting can override
+  the first, and the flag keeps reading `true` while nothing is happening. Proven live:
+  `header-behaviours.css` sets `position: sticky !important` for the sticky flag (`:39`) and
+  `position: absolute !important` for transparent (`:52`) — **equal specificity, both
+  `!important`, transparent later in source order** — so a header carrying BOTH classes computes
+  `absolute` and scrolls away. A gate reading `body.sgs-header-behaviour-sticky` would have
+  reserved 93px of anchor dead-space for a header that is not pinned; `getComputedStyle().position`
+  gets it right and also catches a header pinned by a theme/client rule the class never knew about.
+  **Corollary — two `!important` declarations at equal specificity are resolved by SOURCE ORDER**;
+  never assume the one you care about wins, and when you author the winner prefer higher
+  specificity over position (the collapse rule was deliberately made (0,4,0) against the translate
+  rule's (0,3,0) for exactly this reason). **Second corollary — every measured gate still has a
+  blind spot; name it and, when cheap, ship a detector rather than pretending the measurement is
+  total.** Here: a sticky header whose ancestor carries `overflow` other than `visible`, or
+  `transform`/`perspective`/`filter`, still COMPUTES `sticky` while pinning to that ancestor — so
+  D392 added `findStickyBreakingAncestor()`, which WARNS rather than changing the published value
+  (an `overflow` ancestor may still be the page's own scroll container, so acting would be a fix
+  for an unproven cause). Sibling of STOP-A-FILTER-GATE-ON-THE-WRONG-ATTR (a gate reading an attr
+  the markup never carries) and STOP-VERIFY-CONTENTS-NOT-FILENAME. Memory
+  `measure-the-state-dont-read-the-flag-that-requests-it`.
+
+- **STOP-A-CRITERION-WRITTEN-AGAINST-A-REJECTED-MODEL-MUST-BE-STRUCK-NOT-BUILT** — NEW 2026-07-26
+  (D392). When a decision REJECTS a model, its acceptance criteria, guardrails and must-fixes do
+  not become smaller — many of them become **meaningless**, and a builder who treats the criteria
+  list as the spec will construct machinery for conditions that can no longer occur. Proven twice
+  in one doc: the sticky mini-design rejected per-row `position:sticky` (D389), which silently
+  voided both its own "the multi-sticky warning is advisory only" done-when and its "a row cannot
+  be both retained-when-pinned and hidden-on-scroll" guard — under a single header-level sticky
+  element there is no second sticky row and no per-row conflict. **Building either would have
+  shipped a warning for an impossible state.** Sharper still: that §4 done-when list had ALREADY
+  been rewritten once, explicitly because it had survived the D1/D2 revisions unchanged — and the
+  multi-sticky criterion still slipped through the rewrite. **Rule: after a model is rejected,
+  walk EVERY criterion, guardrail and must-fix and classify each as still-required / void /
+  changed — then record the void ones as struck WITH the reason, never delete them silently and
+  never build them.** A struck criterion with its reasoning is what stops the next session
+  "finishing the job". Sibling of
+  STOP-A-SPEC-DESCRIBING-A-SUPERSEDED-MODEL-ACTIVELY-MISDIRECTS-THE-BUILD and memory
+  `a-revision-must-sweep-every-section-it-invalidates`.
+
 - **STOP-NO-TOP-LEVEL-FUNCTION-IN-PER-RENDER-PHP** — NEW 2026-07-23 (D374). A reusable function
   declared at the top level of a dynamic block's `render.php` fatals the WHOLE page ("Cannot
   redeclare") the moment TWO instances of that block appear — WordPress runs the render_callback
@@ -523,3 +564,17 @@ for real before claiming done?
   → **69**. 69 >= 68. PASS. Earned: a top-level function in a per-render render.php fataled a 5-instance
   page live, and every build gate + both pre-commit code reviewers missed it (only a multi-instance
   live render caught it).
+- **2026-07-26 (Spec 37 FR-37-40 sticky build / D391-D392) re-run:** previous DEFINED entries = **69**
+  (re-measured with this file's own canonical command immediately before writing, per the 2026-07-22
+  receipt-arithmetic rule — never carried forward); this session ADDED 2
+  (`STOP-MEASURE-THE-STATE-NOT-THE-FLAG-THAT-REQUESTS-IT`,
+  `STOP-A-CRITERION-WRITTEN-AGAINST-A-REJECTED-MODEL-MUST-BE-STRUCK-NOT-BUILT`) and SUBTRACTED
+  **none** → **71**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **71**. 71 >= 69. PASS. Both earned by something that actually happened: a gate reading the
+  sticky body class would have reserved 93px of dead space for a header computing `absolute`
+  (sticky and transparent both set `position` with `!important` at equal specificity, transparent
+  later), caught only by measuring the computed value on a live page; and two acceptance criteria
+  in the mini-design's OWN §4 — a list already rewritten once for exactly this reason — survived
+  the rejection of the model they were written for, and would have shipped a warning for a state
+  that can no longer occur.

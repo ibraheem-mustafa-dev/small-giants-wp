@@ -1,12 +1,37 @@
-# Next Session — Spec 37 Header/Footer: the STICKY build
+# Next Session — Spec 37 Header/Footer: ⛔ THE STICKY BUILD IS FINISHED. Pick a new front.
 
 Invoke `/autopilot` before anything else. Then read this file end-to-end.
 
 *Unique next-session-prompt for the Spec 37 per-row work. Not the shared LEDGER — concurrent
 sessions own that. Overwrite this file each time this track hands off.*
 
-You are the SGS framework builder continuing **Spec 37**. The per-row work (Phase 1 + Phase 2) is
-DONE and live-verified. Your job is the **sticky build**, whose design gate is now APPROVED.
+> **⛔ READ THIS BEFORE ANYTHING ELSE. This file's Tasks 1–3 are DONE (2026-07-26, D391
+> `5716f7b7` + D392 `494e5d50`). FR-37-40 is COMPLETE and live-verified. Do NOT rebuild them.**
+> The per-row track (Phase 1 + Phase 2 + Side Track A) is closed end to end. Each task section
+> below now opens with what shipped and the binding rules to carry forward; the original briefs
+> are retained underneath as history, NOT as instructions.
+>
+> **What is actually left on this track — Side Track B, the deal-winners (client-facing, not
+> plumbing):**
+> 1. **B3 preset library** — ready-made styled header/footer designs in the existing native
+>    picker. NOT started. Highest client-facing ROI of anything remaining here, and the picker
+>    mechanism already works (D377).
+> 2. **B2 preview-scroll button** — partly addressed already by the shipped "Show me the shrunk
+>    size" editor toggle; decide whether the rest is still wanted.
+> 3. **B1 simplicity test** — RUN, verdict FAIL, findings parked as `P-HEADER-SIMPLICITY-FINDINGS`
+>    (the blind-tester arm still needs a real non-coder, i.e. Bean).
+>
+> **Two residuals parked, neither blocking:** `P-THEME-SCROLL-PADDING-SECOND-INSTANCE` (the theme
+> carries its own copy of the defect Task 1 fixed — do NOT blind-fix it to `0px`, there is a real
+> JS-off trade-off documented in the entry) and `P-ROW-COLLAPSE-RESIDUALS` (`prefers-reduced-motion`
+> not live-verified; a collapsed row's contents stay focusable, which is PARITY with the shipped
+> translate path, not a new defect).
+>
+> **If you are starting a genuinely new Spec 37 front, this file is stale scaffolding** — the
+> canonical record of what exists is **Spec 37 FR-37-37/38/39/40**, and live status is `LEDGER.md`.
+
+You are the SGS framework builder continuing **Spec 37**. The per-row work (Phase 1, Phase 2 and
+the sticky build) is DONE and live-verified.
 
 ## State recap (plain English)
 
@@ -28,11 +53,26 @@ DONE and live-verified. Your job is the **sticky build**, whose design gate is n
     absolute-value-in-a-shared-stylesheet bug cannot return. Nothing scanned `assets/css/` before.
   - **44px touch-target floor deliberately NOT built** — measured: halving a row's padding left all
     5 interactive children byte-identical in size. Padding sits outside children. Don't re-add it.
-- **Sticky mini-design (SA-1) APPROVED** by Bean 2026-07-26 (`bdc33f19`). The blocking gate is
-  discharged. **That is what you build** — specified as **FR-37-40**.
-- **Decisions logged: D386–D390** (`bcf24227`). D386 the shrink grow-bug + its gate, D387 the
-  declarative guardrail, D388 the two editor crashes, D389 the approved sticky model, D390
-  bottom bars → Spec 18. Read D386 and D389 before touching this surface.
+- **Sticky build DONE + live-verified** (D391 `5716f7b7`, D392 `494e5d50`). SA-1 was approved
+  (`bdc33f19`) and the build it gated is complete — **FR-37-40 is BUILT, not pending.**
+  - Per-row `position: sticky` was **REJECTED** (short-parent trap). Sticky stays HEADER-level and
+    a row that should disappear while pinned **COLLAPSES** (height→0) rather than translating —
+    `transform` never reclaims space, so translating leaves a gap the size of the hidden row.
+    Measured gap **0.00 unrounded** at desktop/tablet/mobile.
+  - The non-pinned path is **byte-identical** shipped `translateY(-100%)`, with **no inline height
+    ever written**. That was the binding regression constraint; it is verified, not assumed.
+  - **The scroll-padding defect is fixed.** The publisher is gated on the **MEASURED** computed
+    position — never the `sgs-header-behaviour-sticky` class, because sticky and transparent both
+    set `position` with `!important` at equal specificity (transparent later), so a header with
+    both computes `absolute` and the class lies. It had been reserving 93px desktop / **252px
+    mobile** on every non-sticky page.
+  - **The D2 offset chain was NOT built** (nothing to chain), and the D4 multi-sticky warning plus
+    the sticky↔hide-on-scroll exclusion were **struck** — both were specified against the rejected
+    per-row model, so neither condition can occur.
+- **Decisions logged: D386–D392.** D386 the shrink grow-bug + its gate, D387 the declarative
+  guardrail, D388 the two editor crashes, D389 the approved sticky model, D390 bottom bars →
+  Spec 18, **D391 the measured-pinning gate, D392 collapse-when-pinned + the ancestor guard.**
+  Read D388, D391 and D392 before touching this surface.
 - **Spec 18 §1.1 now claims persistent bottom bars** (D390) — do not route them to a footer
   row. Parked as `P-FLOATING-UI-BOTTOM-BARS`.
 

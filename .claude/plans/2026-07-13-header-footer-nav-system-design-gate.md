@@ -106,7 +106,7 @@ Base layout = **Cluster** (`display:flex; flex-wrap:wrap; gap` + `min-width:0` o
 
 ## 10. Sticky / transparent / scroll
 
-- Per-**row-combination** sticky (Blocksy: All / Main / Top+Main / …), via the existing SGS body-class behaviour layer (`class-sgs-header-behaviours.php`) + the `--sgs-header-height` ResizeObserver + scroll-padding-top anchor fix (WCAG 2.4.11) — all **preserved**.
+- ~~Per-**row-combination** sticky (Blocksy: All / Main / Top+Main / …)~~ — **SUPERSEDED 2026-07-26 (D389/D392). Per-row sticky was REJECTED and is BUILT the other way; do not implement this line.** A row made `position:sticky` inside a ~250px `<header>` unpins the moment scroll passes the header's height (short-parent trap). Sticky is HEADER-level; a row that should disappear while pinned COLLAPSES out of flow instead. Canonical: Spec 37 FR-37-40. The rest of this bullet still holds: the body-class behaviour layer (`class-sgs-header-behaviours.php`) + the `--sgs-header-height` ResizeObserver + the scroll-padding-top anchor fix (WCAG 2.4.11) are **preserved** — though the publisher is now gated on MEASURED pinning and publishes an explicit `0px` otherwise (D391).
 - **Transparent-at-rest → solid-on-scroll** as a **no-code toggle** (beat Elementor, which requires hand-written CSS). Material's 3 scroll behaviours (pinned / enter-always / exit-until-collapsed) as the options.
 - State→token, never hardcoded inline (Material's discipline + Spec 32).
 
