@@ -5,16 +5,16 @@
  * Categories: sgs-headers
  * Block Types: core/post-content
  * Post Types: sgs_header
- * Description: Full header with contact top bar (phone, email, socials), logo, navigation, and mobile drawer. Contact info auto-populates from Settings > Business Details. Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with the standard nav-menu + nav-drawer pair (Spec 36).
+ * Description: Full header with contact top bar (phone, email, socials), logo, navigation, and mobile drawer. Contact info auto-populates from Settings > Business Details. Sticky on scroll, with the contact bar hiding on scroll down to reclaim space (navigation stays visible). Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with the standard nav-menu + nav-drawer pair (Spec 36).
  *
  * @package SGS\Theme
  */
 
 ?>
 
-<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface"} -->
+<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface","headerSticky":true} -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"space-between","backgroundColor":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"space-between","backgroundColor":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}},"rowHideOnScroll":{"desktop":true,"tablet":true,"mobile":true}} -->
 <!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":"medium"} /-->
 <!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","fontSize":"medium"} /-->
 <!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface"} /-->

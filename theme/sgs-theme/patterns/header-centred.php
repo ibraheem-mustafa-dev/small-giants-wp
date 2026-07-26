@@ -8,16 +8,16 @@
  * Keywords: header, sgs, framework, centred, centered, logo, balanced, elegant
  * Viewport Width: 1440
  * Inserter: true
- * Description: Logo centred above navigation, navigation centred below. Elegant and balanced — suits hospitality, wellness, and lifestyle brands. Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with the standard nav-menu + nav-drawer pair (Spec 36).
+ * Description: Logo centred above navigation, navigation centred below. Elegant and balanced — suits hospitality, wellness, and lifestyle brands. Sticky on scroll, with the logo row compacting slightly for a refined feel. Starter template for the sgs_header CPT (Spec 37 FR-37-8) — built on sgs/site-header with the standard nav-menu + nav-drawer pair (Spec 36).
  *
  * @package SGS\Theme
  */
 
 ?>
 
-<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface"} -->
+<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface","headerSticky":true} -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--20)"}}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--20)"}},"rowShrink":{"desktop":true,"tablet":true,"mobile":true}} -->
 <!-- wp:sgs/responsive-logo {"width":220,"linkToHome":true} /-->
 <!-- /wp:sgs/site-header-row -->
 

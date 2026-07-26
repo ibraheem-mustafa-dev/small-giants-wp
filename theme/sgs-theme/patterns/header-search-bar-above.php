@@ -8,7 +8,7 @@
  * Keywords: header, search, shop, product, woocommerce, bar
  * Viewport Width: 1440
  * Inserter: true
- * Description: SGS header with a full product-search bar in its own row above the logo/menu row. Best for shops where search is a primary action. Includes cart.
+ * Description: SGS header with a full product-search bar in its own row above the logo/menu row. Best for shops where search is a primary action. The search row compacts slightly as the visitor scrolls, keeping it visible without dominating the header. Includes cart.
  *
  * @package SGS\Theme
  */
@@ -16,7 +16,7 @@
 ?>
 
 <!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface","headerSticky":true,"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
-<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"center","backgroundColor":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":"20px"}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"center","backgroundColor":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":true,"tablet":true,"mobile":true}} -->
 <!-- wp:sgs/product-search {"displayMode":"inline","placeholder":"Search products…"} /-->
 <!-- /wp:sgs/site-header-row -->
 
