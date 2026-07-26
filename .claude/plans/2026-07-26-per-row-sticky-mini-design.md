@@ -50,6 +50,10 @@ ships a sticky header) and is what this document specifies.
 *My original "mutually exclusive" proposal was rejected by Bean and is retained at the bottom of
 this section for audit only. The approved shape is below.*
 
+*(The next two paragraphs record Bean's proposal AS PROPOSED, before verification — they still
+say "the sticky row". Research then showed a ROW cannot be the sticky element (short-parent
+trap); the corrected, approved shape is under "RECOMMENDED SHAPE" below. Read both.)*
+
 Bean rejected "mutually exclusive" and proposed the better shape: **the hide-on-scroll effect
 applies only to the rows that are NOT sticky, and the sticky row simply becomes the pinned
 header once those rows have slid away.** The top utility strip disappears; the logo/nav row
@@ -113,12 +117,6 @@ must be byte-identical after this change — that is the regression test, not an
 - no ancestor of the header may have `overflow` other than `visible`, or `transform` /
   `perspective` / `filter` — any of these silently kills sticky;
 - a single row still cannot be both "retained when pinned" and "hidden on scroll".
-
-Two narrow conflicts survive Bean's model regardless:
-- a SINGLE row set both sticky and hide-on-scroll (self-contradictory — it cannot both pin and
-  slide away);
-- the shipped HEADER-level hide-on-scroll, which transforms the whole header and would kill
-  sticky on every row inside it.
 
 #### ⛔ Original D1 analysis — REJECTED, retained for audit only. Do not build from this.
 
@@ -314,7 +312,18 @@ with the project's rule that operator-facing a11y/UX feedback is informational, 
 
 ## 5. Effort
 
-Small. D3 is the only part that touches shipped behaviour and it is a bug fix. D1 and D4 are
-editor-side warnings reusing the pattern already built this session. D2 is the only genuinely
-new mechanism, and it extends the existing height publisher rather than introducing one.
+Small. Three pieces, in build order:
+
+1. **D3 scroll-padding fix** — a bug fix to shipped behaviour, and worth shipping on its own
+   (it is a live WCAG defect independent of sticky). ~20 min.
+2. **D1 collapse-when-pinned** — the ONLY genuinely new mechanism in this work: switch a row
+   from `translateY` to height-collapse while the header is pinned, gated on the sticky body
+   class, with the non-pinned path byte-identical to today. ~40 min.
+3. **D4 advisory warning + D1's silent-failure guards** — editor-side, reusing the Notice
+   pattern already built. ~20 min.
+
+**D2 contributes NOTHING to this estimate — it is not built** (its premise was removed by D1;
+see its DO-NOT-BUILD banner). If your estimate grows because you are costing an offset chain,
+you have mis-scoped the work.
+
 Estimate ~1 build+deploy cycle, in line with P1 and P2.
