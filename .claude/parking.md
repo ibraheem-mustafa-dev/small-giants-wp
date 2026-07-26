@@ -1,11 +1,40 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
+last_updated: 2026-07-26 (D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+
+## 2026-07-26 — Extend Spec 18 Floating UI for persistent bottom bars (research-backed, not started)
+
+> **P-FLOATING-UI-BOTTOM-BARS** — NEW 2026-07-26. Extended research (4 researchers,
+> `workspace/memory/research/2026-07-26-bottom-bar-floating-ui-vs-footer.md`; decision **D390**)
+> concluded that persistent bottom **CTA / cart / sale bars** belong in the **Spec 18 Floating UI**
+> layer, NOT as sticky footer rows. Spec 18 is shipped but currently holds only back-to-top +
+> reading-progress, so this is an EXTENSION of an existing system, not a new one.
+> Load-bearing points for whoever picks this up:
+> 1. **Build the shared bottom stacking container FIRST** — one `position:fixed; bottom:0;
+>    display:flex; flex-direction:column-reverse` wrapper that every bottom-anchored element mounts
+>    into, instead of per-component z-index. SGS already ships ONE floating bottom element
+>    (back-to-top); adding a second independently-coded one reproduces the industry-wide collision
+>    mess (no vendor has a convention — every one prescribes hand-written `!important` offsets).
+> 2. **A cart bar and a sale bar are different classes.** Authorities split by PURPOSE: navigation
+>    or ONE transactional action is legitimate persistent chrome; promotional bars must be small +
+>    dismissible (Google's interstitial guidance). Material has no persistent promotional bottom
+>    component at all.
+> 3. **Implementation:** `position:fixed` + `env(safe-area-inset-bottom)`. `dvh` is NOT the iOS fix
+>    (it solves content-height drift, not bar occlusion) — conflating them is a common error.
+>    Anchor positioning is too new to be load-bearing; `popover` fights persistence; `interestfor`
+>    is not ready.
+> 4. **WCAG 2.4.11** names sticky footers as the failure mode (technique F110); the mitigation is
+>    `scroll-padding` sized to the bar — SGS has the TOP-edge equivalent but no bottom one.
+> **Honest gaps in the research:** no measured case of a bottom bar REDUCING conversion was found
+> despite hunting for one; there is no official Google percentage for "small fraction of the
+> screen" (15–25% is inferred), so any threshold SGS adopts is our design rule, not a citation.
+> **Status: DEFERRED** · **Bucket:** framework · **Trigger:** needs its own design gate before any
+> build; not a blocker for the Spec-37 sticky work.
 
 ## 2026-07-26 — FR-37-26 operator-simplicity test FAILED (proxy arm); 3 findings for a header-simplicity pass
 
