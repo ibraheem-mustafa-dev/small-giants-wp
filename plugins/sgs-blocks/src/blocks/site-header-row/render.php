@@ -142,6 +142,24 @@ if ( '' !== $shr_preset_bg_slug ) {
 	$classes[] = 'has-' . $shr_preset_bg_slug . '-background-color';
 }
 
+// ── Per-row scroll behaviours (Phase 1, FR-37-per-row) ──────────────────────
+// Independent of the header-LEVEL body-class behaviour path (D376, unchanged).
+// This is a NEW parallel path: view.js scans `.sgs-row-behaviour` rows and
+// toggles per-row state classes based on the tiers listed in these data-attrs.
+// A behaviour off in every tier emits NOTHING (no attr at all).
+$shr_extra_attrs          = array( 'id' => $uid );
+$shr_transparent_on_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array() );
+$shr_hide_on_scroll_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array() );
+if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) ) {
+	$classes[] = 'sgs-row-behaviour';
+	if ( ! empty( $shr_transparent_on_tiers ) ) {
+		$shr_extra_attrs['data-sgs-row-transparent'] = implode( ' ', $shr_transparent_on_tiers );
+	}
+	if ( ! empty( $shr_hide_on_scroll_tiers ) ) {
+		$shr_extra_attrs['data-sgs-row-hide-on-scroll'] = implode( ' ', $shr_hide_on_scroll_tiers );
+	}
+}
+
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css built from pre-sanitised values only (wp_style_engine_get_styles()).
 	printf( '<style id="%s">%s</style>', esc_attr( $uid . '-style' ), wp_strip_all_tags( $css ) );
@@ -156,7 +174,7 @@ echo SGS_Container_Wrapper::render(
 	array(
 		'tag'              => 'div',
 		'extra_classes'    => $classes,
-		'extra_attrs'      => array( 'id' => $uid ),
+		'extra_attrs'      => $shr_extra_attrs,
 		// FR-S9-6: gap is stored as the {desktop,tablet,mobile} object model; the
 		// shared wrapper emits its responsive CSS via sgs_emit_responsive_css().
 		'responsive_model' => 'object',

@@ -571,3 +571,35 @@ if ( ! function_exists( 'sgs_canonicalise_responsive_attrs' ) ) {
 		return $out;
 	}
 }
+
+if ( ! function_exists( 'sgs_resolve_tier_booleans' ) ) {
+	/**
+	 * Resolve a `{desktop,tablet,mobile}` BOOLEAN object into the list of tiers
+	 * where the effective value is TRUE, applying inherit-upward semantics
+	 * (mobile inherits tablet inherits desktop; an explicit `false` at a tier
+	 * means "off here", NOT "unset" — Phase-1 per-row behaviour must-fix 7).
+	 *
+	 * Used by sgs/site-header-row + sgs/site-footer-row to emit
+	 * `data-sgs-row-*` attrs listing only the tiers where a behaviour is ON
+	 * (an all-off object emits nothing at all).
+	 *
+	 * @param mixed $raw The stored attribute value (expected `{desktop,tablet,mobile}` of booleans).
+	 * @return string[] Tier keys (subset of desktop/tablet/mobile) where the effective value is true, in tier order.
+	 */
+	function sgs_resolve_tier_booleans( $raw ) {
+		$obj = is_array( $raw ) ? $raw : array();
+
+		$effective            = array();
+		$effective['desktop'] = array_key_exists( 'desktop', $obj ) ? (bool) $obj['desktop'] : false;
+		$effective['tablet']  = array_key_exists( 'tablet', $obj ) ? (bool) $obj['tablet'] : $effective['desktop'];
+		$effective['mobile']  = array_key_exists( 'mobile', $obj ) ? (bool) $obj['mobile'] : $effective['tablet'];
+
+		$on = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			if ( $effective[ $tier ] ) {
+				$on[] = $tier;
+			}
+		}
+		return $on;
+	}
+}

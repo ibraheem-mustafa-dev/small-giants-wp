@@ -12,6 +12,7 @@ import {
 	SpacingControl,
 	ResponsiveBoxControls,
 	RowQuickInsertAppender,
+	RowScrollBehaviourControls,
 } from '../../components';
 
 // Promoted common header elements (Spec 37 §3.5 / FR-37-34). Steering, not
@@ -264,6 +265,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 				<ResponsiveBoxControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<RowScrollBehaviourControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

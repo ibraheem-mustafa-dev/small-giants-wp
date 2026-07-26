@@ -215,3 +215,53 @@ body.sgs-header-behaviour-transparent:not( .sgs-header-behaviour-contrast-force-
 body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
 	background: var( --wp--preset--color--surface, #ffffff ) !important;
 }
+
+/* -------------------------------------------------------------------------
+ * PER-ROW behaviours (Phase 1, header-footer-per-row-identity design gate).
+ *
+ * A NEW parallel mechanism, additive to the header-LEVEL body-class rules
+ * above — does NOT touch the shared wrapper (SGS_Container_Wrapper) or any
+ * `body.sgs-header-behaviour-*` / `header.sgs-site-header` selector. Each row
+ * that carries `.sgs-row-behaviour` (emitted by sgs/site-header-row +
+ * sgs/site-footer-row render.php) gets its OWN independent transparent /
+ * hide-on-scroll state, toggled by src/header-behaviours/view.js
+ * (initRowBehaviours). State classes (is-row-scrolled, is-row-hidden) are
+ * applied to the ROW element itself, never to body or the header ancestor.
+ *
+ * Transitions use transform + background-color ONLY (motion-perf rule — never
+ * filter or box-shadow, both repaint every frame; background-color is a cheap
+ * paint on a small header/footer strip, matching the header-level rule).
+ * ---------------------------------------------------------------------- */
+
+.sgs-row-behaviour {
+	transition: background-color 200ms ease, transform 200ms ease;
+	will-change: transform;
+}
+
+/* Transparent-until-scrolled — row starts see-through, becomes the theme
+ * surface colour once scrolled. Resting/scrolled pair mirrors the
+ * header-level rule above but scoped to the row, not body/header.
+ *
+ * Keyed on `.is-row-transparent-active` (added by view.js ONLY on a device
+ * tier where THIS row's transparent behaviour is ON) — NOT on the data-attr's
+ * mere presence — so a row set "transparent on desktop only" stays solid on
+ * mobile/tablet (a presence-only selector would make it transparent on every
+ * tier permanently). */
+.sgs-row-behaviour.is-row-transparent-active {
+	background: transparent;
+}
+
+.sgs-row-behaviour.is-row-transparent-active.is-row-scrolled {
+	background: var( --wp--preset--color--surface, #ffffff );
+}
+
+/* Hide-on-scroll-down — row slides off independently of any other row. */
+.sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-hidden {
+	transform: translateY( -100% );
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-row-behaviour {
+		transition: none;
+	}
+}

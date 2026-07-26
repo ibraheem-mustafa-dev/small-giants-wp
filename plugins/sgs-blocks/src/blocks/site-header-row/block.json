@@ -91,6 +91,14 @@
 		"margin": {
 			"type": "object",
 			"default": {}
+		},
+		"rowTransparent": {
+			"type": "object",
+			"default": {}
+		},
+		"rowHideOnScroll": {
+			"type": "object",
+			"default": {}
 		}
 	},
 	"render": "file:./render.php",
