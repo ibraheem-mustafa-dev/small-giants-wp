@@ -33,14 +33,6 @@
       "value": "1fr",
       "attr": "gridTemplateColumns",
       "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
-      "block": "sgs/product-card",
-      "file": "src\\blocks\\product-card\\style.css",
-      "property": "padding",
-      "value": "4px 10px",
-      "attr": "innerPadding",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
     }
   ]
 }

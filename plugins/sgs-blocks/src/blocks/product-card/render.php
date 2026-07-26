@@ -191,7 +191,7 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_c
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag, .' . $sgs_card_uid . ' .trial-tag' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
 
 // ── Native styling supports (color + border) → scoped, NOT inline ────────
 // block.json declares supports.color + supports.__experimentalBorder with

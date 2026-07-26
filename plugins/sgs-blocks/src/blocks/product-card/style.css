@@ -188,22 +188,12 @@
 		);
 }
 
-.product-card .trial-tag {
-	display: inline-flex;
-	align-items: center;
-	background: var(--wp--preset--color--accent, #f5d050);
-	color: var(--wp--preset--color--text, #3a2e26);
-	font-size: var(--sgs-product-card-tag-font-size, 11px);
-	font-weight: var(--sgs-product-card-trial-tag-font-weight, 700);
-	padding: 4px 10px;
-	/* F3 (2026-07-10): sanctioned overridable-default — this badge is unrelated
-	   to the option-picker pill radius attrs; var() avoids a bare literal. */
-	border-radius: var(--sgs-product-card-tag-radius, 6px);
-	letter-spacing: 0.5px;
-	text-transform: uppercase;
-	/* A5 (QC): margin removed — flex gap on .product-card-body handles rhythm. */
-	margin: 0;
-}
+/* NOTE (2026-07-26, F3 drain): the legacy `.product-card .trial-tag` rule was
+   deleted — it matched NO emitted element (the live trial badge is
+   `.sgs-product-card__tag--trial`, already var-driven at the `__tag` rule below
+   with the `tagPadding` box-object). Its `padding:4px 10px` was the sole
+   product-card F3 baseline entry; removing the dead rule drains it. Provably
+   inert: dead selector. */
 
 /* CTA buttons — sgs-button convention (shared base class with sgs/button so the
    framework's global .sgs-button structural rule applies uniformly; the
