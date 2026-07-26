@@ -3,35 +3,11 @@
   "baselineSeededAt": "2026-06-09T21:27:06.524Z",
   "accepted": [
     {
-      "block": "sgs/content-collection",
-      "file": "src\\blocks\\content-collection\\style.css",
-      "property": "grid-template-columns",
-      "value": "1fr",
-      "attr": "gridTemplateColumns",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
-      "block": "sgs/form",
-      "file": "src\\blocks\\form\\style.css",
-      "property": "gap",
-      "value": "0.5rem",
-      "attr": "gap",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
       "block": "sgs/mega-menu",
       "file": "src\\blocks\\mega-menu\\style.css",
       "property": "max-width",
       "value": "min(900px, calc(100vw - 2rem))",
       "attr": "panelWidth, panelMaxWidth",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
-    },
-    {
-      "block": "sgs/pricing-table",
-      "file": "src\\blocks\\pricing-table\\style.css",
-      "property": "grid-template-columns",
-      "value": "1fr",
-      "attr": "gridTemplateColumns",
       "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
     }
   ]

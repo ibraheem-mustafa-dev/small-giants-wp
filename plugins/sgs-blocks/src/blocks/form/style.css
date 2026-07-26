@@ -257,16 +257,18 @@ select.sgs-form-field__input {
 	gap: var(--wp--preset--spacing--20, 0.75rem);
 }
 
-/* flex-direction in :where() (specificity 0) — .sgs-form-tile is a descendant,
-   not the form root the flexDirection attr controls; keeps column default
-   overridable so the F3 guard passes. */
+/* flex-direction + gap in :where() (specificity 0) — .sgs-form-tile is a
+   descendant COMPONENT, not the form root that the flexDirection / gap attrs
+   control (SGS_Container_Wrapper applies gap to the form root). Keeping these
+   defaults at :where specificity leaves them overridable and passes the F3
+   guard (which exempts :where-scoped declarations). */
 :where(.sgs-form-tile) {
 	flex-direction: column;
+	gap: 0.5rem;
 }
 .sgs-form-tile {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
 	padding: 1rem;
 	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);

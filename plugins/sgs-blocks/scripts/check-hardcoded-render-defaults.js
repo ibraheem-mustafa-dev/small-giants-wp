@@ -326,6 +326,69 @@ function isBemSubElementMismatch( attrName, bemElements ) {
 }
 
 // ---------------------------------------------------------------------------
+// E13 — WRAPPER-ROOT LAYOUT-ATTR GOVERNANCE
+//
+// `gridTemplateColumns`/`gap` (+ their Tablet/Mobile tiers) are LAYOUT attrs that
+// SGS_Container_Wrapper reads from $attributes and applies to the block's OUTER
+// ROOT element (class-scoped on the wrapper) — never to a BEM sub-element. So a
+// hardcoded `grid-template-columns:`/`gap:` literal on any NON-ROOT selector
+// (a `__sub-element` OR a `.sgs-<slug>-<component>` descendant like
+// `.sgs-form-tile`) is a DIFFERENT element than the attr governs, and is a
+// legitimate structural/component default — NOT a dead-by-override hardcode.
+//
+// Without this, E1's NAME heuristic false-flags them: the attr name
+// `gridTemplateColumns` literally contains "grid", so it name-matches a
+// `.__grid` sub-element even though the wrapper applies it to the root; and a
+// hyphenated descendant (`.sgs-form-tile`, no `__`) is mis-read as the root.
+//
+// Gated on the block actually delegating to SGS_Container_Wrapper (render.php),
+// mirroring E11's governance philosophy: authoritative element-ownership beats
+// the attr-name/element heuristic. Native non-wrapper blocks are unaffected.
+// ---------------------------------------------------------------------------
+
+// The layout attrs SGS_Container_Wrapper applies to the OUTER ROOT element.
+const WRAPPER_ROOT_ATTR_RE  = /^(gridTemplateColumns|gap)(Tablet|Mobile)?$/;
+// The CSS properties those attrs own.
+const WRAPPER_ROOT_PROPS    = new Set( [ 'grid-template-columns', 'gap' ] );
+
+/**
+ * E13: true when a wrapper-root layout attr (gridTemplateColumns/gap) is
+ * hardcoded on a BEM `__sub-element` selector in a block that delegates to
+ * SGS_Container_Wrapper — i.e. EXEMPT (the wrapper applies the attr to the
+ * ROOT element, so a literal on a `__` descendant is a different element).
+ *
+ * ROBUST-BY-CONSTRUCTION: we do NOT try to derive the block's root class (the
+ * root class is not reliably `sgs-<folder>` — some blocks pass a divergent
+ * `extra_classes` to the wrapper, e.g. form-field-tiles → `sgs-form-tiles`).
+ * Instead we exempt ONLY when EVERY comma-member of the selector targets a BEM
+ * `__` sub-element. A root member (no `__`) in a comma-group blocks the
+ * exemption, so a genuine ROOT hardcode can never be silently exempted. A
+ * hyphenated descendant with no `__` (e.g. `.sgs-form-tile`) is intentionally
+ * NOT covered — those are handled with `:where()` or an explicit baseline.
+ */
+function isWrapperRootAttrMismatch( attrName, property, selector, usesWrapper ) {
+	if ( ! usesWrapper ) {
+		return false; // only wrapper-delegating blocks route these to the root
+	}
+	if ( ! WRAPPER_ROOT_ATTR_RE.test( attrName ) || ! WRAPPER_ROOT_PROPS.has( property ) ) {
+		return false;
+	}
+	const members = selector.split( ',' ).map( s => s.trim() ).filter( Boolean );
+	if ( members.length === 0 ) {
+		return false;
+	}
+	// Exempt only if EVERY member's LAST class token is a BEM `__` sub-element.
+	return members.every( ( m ) => {
+		const classes = m.match( /\.[a-zA-Z0-9_-]+/g );
+		if ( ! classes || classes.length === 0 ) {
+			return false; // no class (e.g. bare element / :where wrapper) — do not exempt here
+		}
+		const last = classes[ classes.length - 1 ];
+		return /__/.test( last ); // last-targeted class is a BEM sub-element
+	} );
+}
+
+// ---------------------------------------------------------------------------
 // E6 — NARROW THE `size` SUFFIX
 //
 // Attrs ending in `size` (iconSize, starSize, badgeSize, pillSize, etc.) map
@@ -1199,7 +1262,7 @@ function captureFullValue( lines, startLine, colonPos ) {
  *                               for prefixed-helper attrs (authoritative
  *                               element-ownership, replaces E1/E6 for them).
  */
-function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov ) {
+function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper ) {
 	const findings = [];
 	const lines    = src.split( '\n' );
 
@@ -1355,6 +1418,12 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 					nonExemptAttrs.push( attrName );
 				}
 				continue;
+			}
+
+			// E13: wrapper-root layout attr (gridTemplateColumns/gap) hardcoded on a
+			// non-root selector — the wrapper applies it to the ROOT, not here.
+			if ( isWrapperRootAttrMismatch( attrName, property, currentSelector, usesWrapper ) ) {
+				continue; // this attr is exempt for this selector
 			}
 
 			// E1: sub-element selector mismatch — attr doesn't map to this element.
@@ -1589,6 +1658,10 @@ function checkBlock( blockDir ) {
 	// ── E11: prefixed-helper selector governance (attr → governed tokens) ────
 	const helperGov = collectHelperGovernance( renderPhpSrc );
 
+	// E13: does this block delegate its outer wrapper to SGS_Container_Wrapper?
+	// If so, gridTemplateColumns/gap are applied to the ROOT, not sub-elements.
+	const usesWrapper = /SGS_Container_Wrapper/.test( renderPhpSrc );
+
 	// --- style.css ---------------------------------------------------------
 	const styleCssPath = path.join( blockDir, 'style.css' );
 	if ( fs.existsSync( styleCssPath ) ) {
@@ -1597,7 +1670,8 @@ function checkBlock( blockDir ) {
 			effectiveTargetProps,
 			attrs,
 			cssToAttrs,
-			helperGov
+			helperGov,
+			usesWrapper
 		);
 		for ( const f of cssFindings ) {
 			const owningAttrs = f.attrs.join( ', ' );
