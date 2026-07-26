@@ -208,7 +208,7 @@ Plus a **named z-index scale** so the rows stack predictably against the drawer,
 and anything in the floating layer. Values stay in the WP admin-bar-safe range (< 99999), which
 the existing behaviour CSS already respects.
 
-### D3 — Fix the scroll-padding mechanism (RECOMMENDED: gate it AND scope it to pinned rows)
+### D3 — Fix the scroll-padding mechanism (gate it on whether the header is ACTUALLY pinned)
 
 **This is a live bug, not a new requirement.** Verified 2026-07-26 in source:
 
@@ -220,8 +220,10 @@ the existing behaviour CSS already respects.
 
 So **today**, on a page whose header is not pinned, an in-page anchor link lands the full header
 height too far down (252px on the canary) — reserving space for a header that scrolls away.
-Per-row sticky makes it wrong in the other direction too: if only the middle row pins, reserving
-the WHOLE header's height over-reserves by the height of the rows that scrolled away.
+And once collapse-when-pinned ships (D1) it goes wrong in the other direction too: the pinned
+header is SHORTER than its resting height, because the collapsed rows no longer occupy space —
+so reserving the resting height over-reserves by exactly the collapsed rows' height. The value
+must track the header's LIVE height while pinned, which the existing ResizeObserver already sees.
 
 **RESEARCHED 2026-07-26 — mechanism confirmed correct, and one of my own claims corrected.**
 
