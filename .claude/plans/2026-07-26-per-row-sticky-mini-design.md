@@ -39,7 +39,79 @@ ships a sticky header) and is what this document specifies.
 
 ## 2. Decisions
 
-### D1 — Sticky and hide-on-scroll cannot both be on (RECOMMENDED: mutually exclusive)
+### D1 — **SUPERSEDED by Bean's counter-proposal (2026-07-26) — under verification**
+
+Bean rejected "mutually exclusive" and proposed the better shape: **the hide-on-scroll effect
+applies only to the rows that are NOT sticky, and the sticky row simply becomes the pinned
+header once those rows have slid away.** The top utility strip disappears; the logo/nav row
+stays. That is the pattern real sites actually ship, and it makes the combination the FEATURE
+rather than a forbidden state.
+
+Critically, it also sidesteps the transform problem by construction: nothing transforms the
+ancestor. Each non-sticky row transforms ITSELF (which is already how the shipped per-row
+hide-on-scroll works), leaving the sticky row untransformed and free to pin.
+
+#### VERIFIED 2026-07-26 (research) — the intent is right, the naive implementation fails
+
+**Good news:** a transformed SIBLING is structurally irrelevant. Containing-block computation
+only walks the ANCESTOR chain (MDN `position`; CSSWG issue w3c/csswg-drafts#3186 confirms the
+transform-breaks-sticky bug is ancestor-only). Row 1 transforming itself cannot affect Row 2.
+
+**Two traps kill the naive version:**
+
+1. **Short-parent trap (fatal).** A sticky element only pins while its containing block is in
+   view, and stops at that block's bottom edge. A row sticky inside a ~250px `<header>` unpins
+   the moment scroll passes 250px — the nav would vanish instead of staying pinned. This is the
+   classic "sticky doesn't work" complaint.
+2. **Transition-gap trap (cosmetic but real).** `transform` never removes an element from flow
+   (MDN: *"Whatever space the element takes up before you transform it, it will still take up
+   after"*). So while Row 1 slides away it still occupies its height, and for exactly that scroll
+   distance a gap shows above Row 2. Documented as a recurring production bug in Shopify and
+   GeneratePress support threads with this exact symptom.
+
+**What production themes actually do:** Astra and the Shopify Dawn family both use a JS scroll
+listener toggling a class + `position: fixed` with a placeholder, precisely to avoid these two
+traps. Nobody ships this as bare `position: sticky` on a sub-row.
+
+#### RECOMMENDED SHAPE (replaces per-row sticky as an attribute)
+
+Bean's own phrasing — *"it just starts the sticky header once the scroll effect occurs"* —
+already describes the shape that works, and it is simpler than a per-row sticky attribute:
+
+- **Sticky stays a HEADER-level state.** It is already shipped (`body.sgs-header-behaviour-sticky`
+  → `position: sticky` on `header.sgs-site-header`) and it works precisely because the header's
+  containing block is `<body>`, which is tall. No short-parent trap.
+- **Rows carry "collapse when pinned" instead of "be sticky".** A row marked to disappear
+  COLLAPSES out of flow (height → 0) rather than translating. The header then genuinely shrinks
+  to just the retained rows, with **no gap**, because the collapsed row no longer occupies space.
+- The header's existing ResizeObserver sees the height change and re-publishes it, which feeds
+  D3's scroll-padding automatically. Everything composes.
+
+**Trade-off to accept:** collapsing height is a layout animation, not a GPU-composited one. On a
+single header strip that is the same cost the shipped shrink effect already pays (it transitions
+`padding-block`), so it is consistent with the motion-perf rule — which bans `filter` and
+`box-shadow`, not layout properties on small elements.
+
+**Open sub-decision for Bean:** the shipped per-row hide-on-scroll uses `translateY` and is
+live-verified. Does it (a) switch to collapse whenever the header is pinned, or (b) stay
+translate-only, with collapse introduced as a distinct behaviour? (a) is fewer concepts for the
+operator; (b) does not touch shipped, verified behaviour. Recommend (a), gated behind the sticky
+state so the non-sticky case renders exactly as it does today.
+
+**Two conditions to enforce regardless** (silent-failure guards, worth a build-time check):
+- no ancestor of the header may have `overflow` other than `visible`, or `transform` /
+  `perspective` / `filter` — any of these silently kills sticky;
+- a single row still cannot be both "retained when pinned" and "hidden on scroll".
+
+Two narrow conflicts survive Bean's model regardless:
+- a SINGLE row set both sticky and hide-on-scroll (self-contradictory — it cannot both pin and
+  slide away);
+- the shipped HEADER-level hide-on-scroll, which transforms the whole header and would kill
+  sticky on every row inside it.
+
+Original analysis retained below.
+
+#### Original D1 analysis (superseded) — sticky and hide-on-scroll cannot both be on
 
 `position: sticky` is broken by a `transform` on ANY ancestor — a transformed element becomes
 the containing block, so the sticky element pins to it rather than the viewport. Hide-on-scroll
@@ -66,7 +138,42 @@ because of a setting on a different block.
 rule. B is a large structural change for a combination nobody has asked for. Revisit B only if a
 client genuinely needs both on one header.
 
-### D2 — Multiple sticky rows chain automatically (RECOMMENDED: offset chain, no manual pixels)
+### D2 — **RESEARCHED 2026-07-26. No pure-CSS solution exists; the shape below is settled**
+
+There is **no pure-CSS way** to chain dynamic-height sticky elements in 2026. Anchor positioning
+is built for popovers anchored to one element, `calc-size()` is Chrome-only and solves a different
+problem, and CSS has no `:stuck` selector. Hardcoded `top` values desync the instant a logo is
+swapped or text wraps. So: CSS custom properties, written by JS, consumed by CSS.
+
+**Implementation shape (build from this):**
+- Each row publishes its OWN height to one custom property; each sticky row reads
+  `top: calc(var(--row1-h) + var(--row2-h))` — composable, and each row only needs to know its
+  predecessors.
+- **Observe `borderBoxSize`, not `contentRect`** — `contentRect` excludes padding/border, which
+  is exactly the space the next row must clear.
+- **Write to `:root`, never to the observed element.** Writing to the observed element from
+  inside its own callback is the documented cause of "ResizeObserver loop completed with
+  undelivered notifications". Defer the write to `requestAnimationFrame` with a pending flag.
+- **Gate `position: sticky` behind the operator's toggle** (an attribute/class), so a non-sticky
+  row stays in normal flow and contributes nothing to the chain.
+- A row that shrinks WHILE pinned re-drives its own variable automatically — the shrink effect
+  and the offset chain compose with no extra plumbing. (This was the interaction I expected to
+  be hardest; it falls out for free.)
+
+**z-index:** descending top-to-bottom (row 1 highest). During the transient overlap of a fast
+scroll or subpixel rounding, the row meant to sit visually on top must win the paint order.
+Box-shadows go on each row's LOWER edge; a top-edge shadow renders underneath the row above and
+is invisible. No formally published named scale exists — a local descending scale scoped to the
+header is the norm.
+
+**Defend against:** subpixel gaps (round UP, and give rows a solid background so a 1px gap shows
+colour, not page content); a row reporting height 0 mid-transition (`display:none` collapses the
+chain — write the last known value or use `visibility:hidden`); and web-font swap changing text
+wrap after first paint (observe the OUTER row container, not an inner element).
+
+Original analysis retained below.
+
+#### Original D2 analysis — offset chain, no manual pixels
 
 If two rows are sticky, the second must pin BELOW the first, not on top of it.
 
@@ -94,16 +201,49 @@ height too far down (252px on the canary) — reserving space for a header that 
 Per-row sticky makes it wrong in the other direction too: if only the middle row pins, reserving
 the WHOLE header's height over-reserves by the height of the rows that scrolled away.
 
-**Recommendation:** publish a second variable — the summed height of the rows that are ACTUALLY
-pinned at the current device tier (0 when nothing is pinned) — and drive `scroll-padding-top`
-from that instead. The existing `--sgs-header-height` stays as-is for any other consumer.
+**RESEARCHED 2026-07-26 — mechanism confirmed correct, and one of my own claims corrected.**
 
-This is also the WCAG 2.4.11 mitigation. The criterion ("a focused component must not be
-entirely hidden by author content") names sticky headers and footers as the typical culprits,
-and the prescribed fix is exactly this scroll-padding. Getting it right is an accessibility
-requirement, not a nicety.
+- **`scroll-padding-top` on `:root` IS the right mechanism** (Baseline since April 2021). Keep
+  the CSS line exactly as it is — it is cause-agnostic. **The fix belongs entirely in the JS that
+  decides the value.**
+- **Correction to my earlier note:** I suggested scroll-padding might only fix anchor jumps while
+  leaving keyboard Tab focus obscured. That is wrong. **W3C technique C43 ("Using CSS
+  scroll-padding to un-obscure content") is a listed SUFFICIENT technique for 2.4.11 and 2.4.12**,
+  and its own worked example is a Tab-focused form field behind a fixed banner. It covers keyboard
+  focus, provided the value is right at the moment focus lands.
+- **The precise bug shape:** `var(--sgs-header-height, 0px)` — that fallback fires only when the
+  property is UNDEFINED. It does nothing when the property is defined but should be zero. So the
+  observer must **explicitly publish `0px`**, and must be gated on *"is anything actually pinned"*,
+  not on *"does the header have a height"*.
+- **`scroll-margin-top` is the wrong tool here** — it would have to be annotated onto every anchor
+  target individually and cannot express "whatever is currently pinned".
 
-### D4 — How many rows may be sticky? (RECOMMENDED: no hard cap, warn past one)
+**The blast radius is wider than anchor links.** A stale non-zero value also skews: fragment
+navigation on page load, browser find-in-page, every `element.scrollIntoView()` call anywhere in
+the codebase, keyboard focus scrolling, and scroll-snap (scroll-padding is defined in the Scroll
+Snap module). It does NOT affect ordinary scrollbar dragging. So today's unconditional 252px is
+dead space injected into all of those, not just anchor clicks.
+
+**Also verify at build time** (both silently break the fix): that `html` really is the scrolling
+element (a `body{overflow}` reset moves it, and a `:root`-only rule then does nothing), and that
+no nested scroll container sits between the target and the viewport.
+
+**Known interaction with a shipped feature:** `scroll-behavior: smooth` plus a row shrinking
+mid-scroll can land the jump stale, because the target position is computed at scroll start.
+Shrink now ships, so this combination is reachable — recompute, or use `auto` for anchor jumps
+if it proves visible.
+
+### D4 — How many rows may be sticky? — **SETTLED (Bean, 2026-07-26): advisory warning only**
+
+Bean's decision: the warning is **purely advisory**, never a gate. A fully sticky header is
+legitimate in some contexts — **especially when paired with the shrink effect**, where the whole
+header pins and compacts rather than eating a fixed slab of screen. It is simply not the common
+case, so the warning exists to make the operator think, not to stop them.
+
+Wording must therefore be neutral ("this uses more of the screen on mobile"), NOT corrective
+("you should not do this").
+
+Original analysis retained below.
 
 Authorities are consistent that persistent chrome should not stack: NN/g warns the "overall
 chrome may add up wasting too much space"; Apple and Material both treat bottom/top chrome as a
