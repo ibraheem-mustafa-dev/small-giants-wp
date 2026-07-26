@@ -4,26 +4,15 @@
   "keys": [
     "brand-strip::tileBorderWidth",
     "brand-strip::tilePadding",
-    "card-grid::cardBorderWidth",
-    "container::gridItemBorderRadius",
-    "container::gridItemPadding",
-    "cta-section::gridItemBorderRadius",
-    "cta-section::gridItemPadding",
-    "hero::gridItemBorderRadius",
-    "hero::gridItemPadding",
     "icon::backgroundPadding",
     "label::borderRadius",
     "mega-panel::borderRadius",
     "option-picker::pillBorderRadius",
     "option-picker::pillSelectedBorderRadius",
-    "product-card::ctaBorderRadius",
-    "product-card::ctaBorderWidth",
     "product-card::pickerPillBorderRadius",
     "product-card::pickerPillSelectedBorderRadius",
     "product-card::tagBorderRadius",
     "trust-bar::badgeImageBorderRadius",
-    "trust-bar::gridItemBorderRadius",
-    "trust-bar::gridItemPadding",
     "trust-bar::iconCircleBorderRadius"
   ]
 }
