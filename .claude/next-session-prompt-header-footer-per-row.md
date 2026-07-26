@@ -1,132 +1,118 @@
-# Next Session — Spec 37 Header/Footer Per-Row Identity (BUILD)
+# Next Session — Spec 37 Header/Footer Per-Row Identity (PHASE 2)
+
+Invoke `/autopilot` before anything else. Then read this file end-to-end.
 
 *Unique next-session-prompt for the Spec 37 per-row work. Not the shared LEDGER — concurrent
 sessions own that. Overwrite this file each time this track hands off.*
 
-You are the SGS framework builder continuing Spec 37: making each header/footer ROW an
-independently-styled, independently-behaving strip, built ON TOP of the shared layout engine
-(`SGS_Container_Wrapper`) — never by removing it.
+You are the SGS framework builder continuing **Spec 37 Phase 2**: per-row SHRINK on scroll +
+shrink-hides-a-chosen-element (with a DB-role guardrail) + footer parity — built ON TOP of the
+shared layout engine (`SGS_Container_Wrapper`), never by removing it.
 
 ## State recap (plain English)
-The block-private idea (giving header/footer their own private copy of the layout engine) was
-**considered and REJECTED** on 2026-07-25 after a 6-persona `/adversarial-council` returned 6/6
-NO-GO: the premise was false (it doesn't fix the attr-shape issue — that's orthogonal to the
-engine), the per-row features are already live WITH the engine, and it's weeks of invisible-plumbing
-drift risk. **Bean chose Option 1: keep the engine.** The design + an executable, QC'd phase plan are
-written and on `main`. Nothing per-row is built yet. The first move is a cheap usability test, not code.
+- **Phase 1 is DONE + LIVE-VERIFIED (2026-07-26).** Each header/footer row now carries its OWN
+  `rowTransparent` + `rowHideOnScroll` (device-tier object, inherit-upward semantic), independent of
+  the header-LEVEL D376 body-class path. Commit `a3a200aa` (code) + `60db8556` (docs). Proven on the
+  sandybrown canary: at desktop the top row HIDES on scroll while the logo row goes transparent→solid
+  — each row does ONLY its own behaviour; the code-review tier-gating fix (desktop-only transparent
+  stays solid on mobile) verified; D376 header-level path intact; 5/5 deploy files md5-matched. The
+  canary Proof Header (CPT 1570) was reverted to clean afterward.
+- **The block-private idea stays REJECTED** (6/6 adversarial council, 2026-07-25). Keep the shared
+  engine; if a per-row effect needs a capability the engine lacks, ADD it to the engine, never fork.
+- **FR-37-26 operator-simplicity test = FAIL (recorded).** Sticky + phone pass; drawer content is NOT
+  settable from the header editor. Parked as `P-HEADER-SIMPLICITY-FINDINGS`; blind-tester arm still owed.
 
-## ⛔ MANDATORY READING GATE (read IN FULL before any edit — carry-forward defence)
-1. `.claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md` — the approved design + the **9 council must-fixes** (LOAD-BEARING).
-2. `.claude/plans/2026-07-25-header-footer-per-row-identity-PHASE-PLAN.md` — the executable, QC-fixed plan (step-by-step).
-3. `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §Behaviours — the current header-LEVEL behaviour mechanism you extend to per-row.
-4. `.claude/STOP-CATALOGUE.md` — the uncapped STOP catalogue + pre-flight ritual (read before acting).
+## Phase 2 GUARDRAIL ARCHITECTURE — already grounded + DECIDED (do not re-derive):
+The DB has **NO existing block-slug → role/criticality lookup** (verified 2026-07-26: `slots` only has
+a `logo` row; `roles` classifies role-names not blocks; `block_capabilities` holds functional
+capabilities). So the "never hide logo/nav/cart" guardrail is built declaratively:
+- **Add `supports.sgs.headerEssential: true`** to `sgs/responsive-logo`, `sgs/nav-menu`, `sgs/cart`
+  block.json (all 3 exist + already have rich `supports.sgs`). The element picker reads
+  `wp.blocks.getBlockType(child.name)?.supports?.sgs?.headerEssential` client-side (native, no REST,
+  no hardcoded list — R-31-1 satisfied; protecting a new critical block later = one flag).
+- **Server-side backstop** re-checks the target child's block type isn't `headerEssential` (via
+  `WP_Block_Type_Registry`) before emitting the hide. Defence-in-depth: picker greys out AND server refuses.
+- **Seed** it into `block_capabilities` via `/sgs-update` (cloning-awareness + optional server read).
+- Default = hideable; only the flag protects. Orphaned target (child deleted) = no error (selector matches nothing).
 
-## ⛔ STOP entries (do NOT violate — carried forward + this session's additions)
-- **STOP — do NOT re-open block-private.** Keep `SGS_Container_Wrapper`. If a per-row effect needs a
-  capability the engine lacks, ADD it to the engine (composite-mirror route), never fork it. Rejected 6/6 on 2026-07-25.
-- **STOP — a design that "escapes" a problem is a hypothesis.** Prove it SOLVES the problem before building (memory `verify-the-escape-actually-solves-the-problem`).
-- **STOP — behaviour JS/CSS keys on a class no row emits = silent dead selector (D375).** Verify per-row behaviour on the LIVE DOM, not the emit.
-- **STOP — `view.js` lives at `src/header-behaviours/`, NOT `src/blocks/header-behaviours/`.** Wrong path silently serves stale `src/` on the live site (webpack entry footgun).
-- **STOP — shared tree is busy (concurrent sessions).** `git branch --show-current` in the SAME command as any commit; commit to `main` via an ISOLATED worktree (detach-before-remove to free `main`); never `git checkout main` on the shared tree.
+## ⛔ MANDATORY READING GATE (read IN FULL before any edit)
+1. `.claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md` — approved design + the 9 must-fixes.
+2. `.claude/plans/2026-07-25-header-footer-per-row-identity-PHASE-PLAN.md` — Phase 2 steps P2-S1/S2/S3 (Phase 1 rows now ticked DONE).
+3. `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §Behaviours — the mechanism you extend.
+4. `.claude/STOP-CATALOGUE.md` — the uncapped STOP catalogue + pre-flight ritual.
+
+## Phase 2 tasks (build on the Phase-1 pattern — mirror it)
+The Phase-1 mechanism is your template: a per-row attr → `sgs_resolve_tier_booleans()` (in
+`includes/helpers-responsive.php`) → `data-sgs-row-*` attr + `sgs-row-behaviour` marker class →
+`initRowBehaviours()` in `src/header-behaviours/view.js` toggles a per-row state class with matchMedia
+tier-gating (768/1024) → `assets/css/header-behaviours.css` keys the rule on `.sgs-row-behaviour` +
+the state class (NOT attribute presence — that was the P1 tier-gating bug; gate via a JS-added
+`is-row-*-active` class, see the transparent fix).
+
+- **P2-S1 — per-row `rowShrink`** (device-tier object, same resolver + emit + tier-gating). On scroll
+  at an active tier, JS toggles `is-row-shrunk` on the row; CSS reduces the row's `padding-block`.
+  **Transition `padding-block`** (a size change — mirror the EXISTING header-level shrink at
+  `header-behaviours.css:102-117`, which transitions `padding-block`; the motion-perf rule's real
+  prohibition is `filter`/`box-shadow`, NOT a padding transition — the plan's "transform/opacity only"
+  wording is imprecise for shrink). Reuse the header height-publisher. ~30 min, sonnet-delegatable.
+- **P2-S2 — shrink-hides-a-chosen-element** (the architectural one). Row attr `rowShrinkHideTarget`
+  (string) = a STABLE per-child id set at insert (store on the child's own attrs — e.g. its `anchor` —
+  NEVER clientId, which changes on copy/paste). The row's edit.js exposes a picker of the row's
+  children EXCLUDING any `headerEssential` (the guardrail above). On the shrunk state, CSS hides the
+  chosen child. Server backstop re-checks. Always-visible "reset shrink target" action. Seed the
+  `headerEssential` capability via `/sgs-update`.
+- **P2-S3 — footer parity verify** — footer rows share the mechanism; live-verify a footer row.
+
+## ⛔ STOP entries (carried forward + this session's additions)
+- **Keep `SGS_Container_Wrapper`.** Never re-open block-private (6/6 council). Add capabilities to the engine.
+- **CSS tier-gating via a JS-added state class, NOT `[data-attr]` presence** — the P1 code-review bug:
+  a presence-only selector applies on every tier. Gate the resting state on an `is-row-*-active` class
+  the JS adds ONLY on active tiers (see the transparent fix in `header-behaviours.css` + `view.js`).
+- **Verify per-row behaviour on the LIVE DOM, not the emit** (D375 dead-selector). Use chrome-devtools
+  `getComputedStyle`/`classList` at 375/768/1440; smooth-scroll pages need `behavior:'instant'` + a real
+  ~300ms wait (a 2-frame wait reads mid-animation — bit me this session).
+- **`view.js` lives at `src/header-behaviours/`, NOT `src/blocks/`** (webpack entry footgun).
+- **`sgs_resolve_tier_booleans({desktop:true})` resolves to ALL tiers** (inherit-upward). "Desktop only"
+  needs explicit `{desktop:true, tablet:false, mobile:false}`. Correct + intended (must-fix 7).
+- **Shared-tree git:** `git branch --show-current` in the SAME command as the commit; commit to `main`
+  via path-scoped paths; a co-active session is often committing concurrently.
+- **Deploy:** the full `npm run build` prebuild is BLOCKED by a pre-existing `sgs-quote` ledger drift
+  (`declare_input.py --check`; parking `P-CONFORMANCE-GOLDEN-DRIFT` — NOT yours, do not blind-reseed).
+  Route around it: `npx wp-scripts build --experimental-modules --webpack-copy-php` (PowerShell), then
+  deploy from an ISOLATED worktree with a copied `build/` + `--skip-build`:
+  `git worktree add --detach /c/tmp/<name> <sha>` → `cp -r plugins/sgs-blocks/build <wt>/plugins/sgs-blocks/`
+  → `python plugins/sgs-blocks/scripts/build-deploy.py --skip-build --blocks-only --target sandybrown`.
+  Then **md5 the changed files local↔server** (the HTTP-200 leg proves nothing — STOP-VERIFY-DEPLOY-BY-CHECKSUM).
+- **Visual-diff gate blocks any block render.php/block.json/edit.js touch.** For additive/opt-in changes
+  whose default render is byte-identical, write an HONEST report at `reports/visual-diff/<block>-<date>.md`
+  (don't claim a visual PASS you didn't run) + `git commit --no-verify` (sanctioned by the gate's own message).
+- **No inline `style=""`** (Spec 32); device tiers 768/1024; DB-first (no hardcoded dicts); no version bumps / no `deprecated.js`.
 
 ## Skills to Invoke
 | Skill | When |
 |---|---|
-| `/brainstorming` | ALWAYS — the sticky mini-design (Task 4) is a design decision |
-| `/gap-analysis` | ALWAYS — grade any output before delivery |
-| `/lifecycle` | ALWAYS — before any skill/agent/pipeline change |
-| `/research` | ALWAYS — auto-routes the right research tier |
-| `/strategic-plan` | ALWAYS — plan order before writing code |
-| `/qc-council` | before every deploy on the behaviour surface (blub.db 255) |
+| `/brainstorming` | the stable-id + guardrail is a design decision — think it through first |
+| `/sgs-db` | confirm the seed landed; the guardrail DB grounding is done (see above) |
 | `/sgs-wp-engine` + `/wp-block-development` | block build |
-| `/sgs-db` | DB role lookup for the shrink guardrail (Task 3) |
+| `/qc-council` (or the feature-dev `code-reviewer` agent) | before every deploy on the behaviour/guardrail surface (blub.db 255) |
+| `/gap-analysis` | grade output before delivery |
 
-## MCP Servers & Tools
-| Tool | For |
+## MCP / Agents
+| Tool/Agent | For |
 |---|---|
-| chrome-devtools (or Playwright) | live-page DOM verify of per-row behaviour on the canary |
-| github | PR/branch ops if a feature branch is used |
+| chrome-devtools (Playwright's browser is often locked by a co-active session — use chrome-devtools) | live-page DOM verify on the canary; set attrs via `wp.data.dispatch('core/block-editor').updateBlockAttributes` + `savePost()` |
+| `wp-sgs-developer` | the block build (P2-S1/S2) — give it a self-contained brief pinning the guardrail architecture above |
+| `feature-dev:code-reviewer` | review the build before deploy (it caught the P1 tier-gating bug) |
 
-## Agents to Delegate To
-| Agent | When |
-|---|---|
-| `wp-sgs-developer` | the block build (Tasks 2, 3) — SSH/WP-CLI/Playwright |
-| `code-reviewer` (feature-dev) | review the per-row JS iteration path before deploy |
-
-## WordPress tooling (this IS a WP/SGS project)
-- Build: `cd plugins/sgs-blocks && npm run build`. Deploy: `build-deploy.py --target sandybrown --blocks-only` **from an isolated worktree** (`git merge origin/main` first; verify with a per-feature marker + md5, never the generic HTTP-200 leg).
-- SSH: `ssh hd`. Canary creds (gitignored, always available): `.claude/secrets/sandybrown.env`. WP 7.0.2.
-- Rules: no inline `style=""` (Spec 32); device tiers 768/1024; DB-first (no hardcoded dicts); no version bumps / no `deprecated.js`; transition `transform`/`opacity` only.
+## WordPress tooling
+- Build: `cd plugins/sgs-blocks && npx wp-scripts build --experimental-modules --webpack-copy-php` (PowerShell — nvm shim broken in Git Bash).
+- SSH `ssh hd`; canary creds (gitignored, always available) `.claude/secrets/sandybrown.env`; WP 7.0.2; active header CPT = 1570 ("Proof Header"), rows are `sgs/site-header-row` (locked but attr-editable via `wp.data`).
 - `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` for DB.
 
----
-
-## Task 1 — Operator-simplicity test (do FIRST)
-**What:** run the FR-37-26 test — can a non-coder set up a header in a few minutes without opening Advanced? Against TODAY's header (it shows 7 controls vs the ≤3 target).
-**Why:** the council's top steer — client-facing simplicity outranks internal plumbing; tells us if the current surface needs trimming BEFORE adding per-row controls. Measurable: pass/fail recorded.
-**Estimated time:** 30 min.
-**Orchestration:** inline (main thread) + Playwright to drive the editor. Model: opus (inline).
-- Depends on: none. Parallel with: none.
-- /qc gate after: no — the recorded result IS the output.
-**Acceptance:** a written pass/fail with the timing + which controls confused. A fail is a finding (trim the Simple surface), not a reason to re-run.
-
-## Task 2 — Phase 1: per-row transparent + hide-on-scroll
-**What:** add `rowTransparent` + `rowHideOnScroll` (device-tier object shape) to `site-header-row`/`site-footer-row`; emit the row uid class hook; extend `header-behaviours.css` + `src/header-behaviours/view.js` with a NEW per-row iteration path (scan N rows, toggle state per row); per-row inspector controls in an Advanced ToolsPanel. Ships to canary first.
-**Why:** the visible headline win — each row behaves independently. Live-verified at 375/768/1440.
-**Estimated time:** ~90 min (plan steps P1-S1..S3; S2 is a new JS iteration path, not a tweak).
-**Orchestration:** delegated. Model: sonnet via `wp-sgs-developer`. Dispatch: single-agent.
-- Brief: implement plan Phase 1 exactly; the behaviour layer is body-class today — build a parallel per-row path, do NOT touch the shared wrapper.
-- Context the subagent needs: the `view.js` path footgun (STOP above); render.php already computes `$uid`; per-tier boolean semantic = null inherits the tier above, explicit false = off (plan P1-S1).
-- Depends on: Task 1 (do the simplicity test first; may trim the Simple surface). Parallel with: none.
-- /qc gate after: yes — `/qc-council` on the behaviour surface, then deploy + chrome-devtools live-verify independence + no regression of the D376 header-level behaviours + md5.
-**Acceptance:** a header top row and a footer bottom row each carry their OWN transparent + hide-on-scroll, verified INDEPENDENT on the live canary; existing header-level behaviours intact.
-
-## Task 3 — Phase 2: per-row shrink + shrink-hides-element + footer parity
-**What:** per-row `rowShrink` (padding/height); shrink-hides-a-chosen-element via a STABLE per-child id (never clientId) with a DB-role guardrail (never logo/nav/cart); footer parity verify.
-**Why:** completes the per-row effect set (minus sticky) + footer.
-**Estimated time:** ~90 min (plan P2-S1..S3).
-**Orchestration:** delegated. Model: sonnet via `wp-sgs-developer`; the guardrail sub-step is architectural (inline judgement).
-- Brief: implement plan Phase 2; FIRST verify via `/sgs-db` that a slug→role REVERSE lookup exists before coding the guardrail filter (the roles/slots tables were built for cloning BEM→slug) — if not, use `block_capabilities`, never a hardcoded 3-name list (R-31-1).
-- Context: stable-id-not-clientId; orphaned reference = no error; always-visible "reset shrink".
-- Depends on: Task 2. Parallel with: none.
-- /qc gate after: yes — `/qc-council` + deploy + live-verify.
-**Acceptance:** shrink works; the picker never offers logo/nav/cart (verified via the DB role, not a hardcoded list); deleting the chosen element doesn't error; footer behaves identically.
-
-## Task 4 — Sticky mini-design (GATED — needs Bean sign-off before build)
-**What:** design the per-row sticky model — resolve the sticky↔hide-on-scroll transform conflict (mutually exclusive per row in v1, OR lift the sticky row out of the transform), the multi-sticky auto-offset chain (via the existing height-publisher), and confirm the ALREADY-LIVE `scroll-padding-top` holds under multiple dynamically-sized sticky rows. Write it into the design doc + a new Spec 37 FR.
-**Why:** per-row sticky is the one hazardous effect; a naive toggle silently breaks (transformed ancestor breaks `position:sticky`). Must be designed, not built blind.
-**Estimated time:** ~45 min design + Bean sign-off.
-**Orchestration:** inline (architectural) via `/brainstorming`. Model: opus (inline).
-- Depends on: none (can run anytime). Parallel with: Task 2/3. **Do NOT ship any `rowSticky` attr before this signs off.**
-- /qc gate after: n/a (design). Bean sign-off is the gate.
-**Acceptance:** a written, Bean-signed-off sticky model in the design doc + Spec 37. THEN it becomes a normal build task.
-
-## Task 5 — Deal-winners (independent, high-ROI)
-**What:** B2 = a "Preview scroll behaviour" button (opens the live frontend pre-scrolled + at mobile width, so the client SEES the result before publishing); B3 = a preset LIBRARY (ready-made styled header/footer designs in the existing native picker).
-**Why:** council converged these win deals more than plumbing; B2 is the biggest ticket-prevention.
-**Estimated time:** B2 ~60 min, B3 ~90 min.
-**Orchestration:** delegated, parallel. Model: sonnet via `wp-sgs-developer` (one agent each).
-- Depends on: none. Parallel with: each other + Task 2/3.
-- /qc gate after: yes — live-verify on the canary.
-**Acceptance:** B2 — clicking the button shows the scrolled/mobile state live; B3 — ≥3 full header/footer presets selectable from the picker, applying one writes its tree to `post_content`.
-
-## Dependency graph
-```
-Task 1 (inline, opus — simplicity test) ──▶ Task 2 (sonnet, per-row transparent+hide) ──▶ Task 3 (sonnet, shrink+footer)
-                                             │  /qc-council + deploy gate after each
-Task 4 (inline, opus — sticky mini-design + Bean sign-off) ── parallel, GATES any per-row sticky
-Task 5 B2 + B3 (sonnet, parallel) ── independent, high-ROI
-```
-
-## Methodology guardrails (do not skip)
-- **Deploy before measure** — any live-URL change needs build + deploy + OPcache reset BEFORE any browser/pixel test; else you're measuring stale output.
-- **Verify on the LIVE DOM, not the emit** — per-row behaviour especially (D375 dead-selector class).
-- **Outcome vs completion** — code shipped ≠ outcome hit; the acceptance line is the bar.
-- **`/qc-council` before every commit** touching the behaviour surface (blub.db 255).
-- **Shared-tree git** — branch-check in the commit command; commit to `main` via isolated worktree (detach-before-remove).
-- **No block-private** — keep the wrapper; add capabilities to it, never fork (6/6 council).
-
 ## Open threads (not blockers)
-- `MEMORY.md` is ~22KB (limit 24.4KB) — compact it under 17.1KB in a maintenance pass (one line/entry, detail in topic files).
-- Leftover locked temp worktree dirs under `C:/tmp/` — `git worktree prune` when the locks clear.
-- FR-37-16 (attr-shape flat→object) — decoupled, optional, low priority. Not part of this work.
+- **FR-37-26 blind-tester arm** (a real non-coder, screen-recorded) — the authoritative half; Bean to schedule.
+- **`P-HEADER-SIMPLICITY-FINDINGS`** (parking) — drawer-content path + one-click header selection + Settings-tab ordering.
+- **Task 4 — sticky mini-design** (GATED: needs Bean sign-off before any `rowSticky` ships).
+- **Task 5 — deal-winners** (B2 preview-scroll button, B3 preset library) — independent, high-ROI, parallelisable.
+- `MEMORY.md` ~22KB (cap 24.4KB) — compact under 17KB in a maintenance pass.
+- Leftover locked temp worktree dir `C:/tmp/sgs-p1-deploy` — `git worktree prune` / remove when the Windows lock clears.
