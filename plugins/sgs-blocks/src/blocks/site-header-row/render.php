@@ -171,6 +171,16 @@ if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers 
 // hand-edited attribute cannot hide critical header furniture. An orphaned
 // target (child deleted) resolves to '' — shrink hides nothing, no error.
 if ( ! empty( $shr_shrink_tiers ) ) {
+	// The shrunk size itself — PROPORTIONAL to this row's own resting padding
+	// (`calc(<own value> / 2)` per tier), so it can never exceed it. Emitted
+	// per instance because a shared stylesheet cannot know the resting value;
+	// an absolute rule there is what made an unpadded row GROW on 2026-07-26.
+	// A row with no padding emits nothing and simply does not resize.
+	$css .= sgs_row_shrink_css(
+		$root_sel . '.is-row-shrunk',
+		isset( $attributes['padding'] ) ? $attributes['padding'] : array()
+	);
+
 	$shr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
 	if ( '' !== $shr_hide_target ) {
 		$shr_extra_attrs['data-sgs-row-shrink-hide'] = $shr_hide_target;

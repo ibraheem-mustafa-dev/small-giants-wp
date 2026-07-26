@@ -25,6 +25,88 @@
 
 defined( 'ABSPATH' ) || exit;
 
+if ( ! function_exists( 'sgs_row_shrink_css' ) ) {
+	/**
+	 * Build the per-instance "shrunk" vertical-padding CSS for one row.
+	 *
+	 * Shared by sgs/site-header-row and sgs/site-footer-row so the two twins can
+	 * never drift, and so a third block wanting proportional shrink calls this
+	 * rather than copying it.
+	 *
+	 * WHY THIS IS PER-INSTANCE AND NOT A SHARED STYLESHEET RULE: shrink must be
+	 * PROPORTIONAL to the row's own resting padding. A fixed value in
+	 * assets/css/header-behaviours.css wins on specificity over the wrapper's
+	 * padding rule and therefore forces every row to the same size — which on a
+	 * row with no padding meant 0px at rest and 4px "shrunk" (it grew). Emitting
+	 * `calc(<this row's own value> / 2)` makes growth impossible by construction.
+	 *
+	 * Notes on the shared responsive engine (verified against
+	 * includes/helpers-responsive.php before writing this):
+	 *  - TWO SCALAR SPECS, never `box => true`. A box spec expands across all four
+	 *    sides (sgs_responsive_atoms_from_spec:347-365) — that would halve
+	 *    padding-left/right too and jolt the row horizontally on scroll.
+	 *  - The engine does the tier cascade + tier-diff + @media wrapping itself
+	 *    (sgs_emit_responsive_css:450-495), so an absent tier correctly inherits
+	 *    the tier above instead of reading as zero.
+	 *  - A `transform` SHORT-CIRCUITS the engine's unit handling
+	 *    (sgs_responsive_format_atom_value:379-390) — `unit_default` is ignored
+	 *    and the raw value never reaches sgs_responsive_sanitise_css_value(). So
+	 *    the transform below must do BOTH itself: append the unit to a bare
+	 *    number (a stored `24` would otherwise become the invalid, silently
+	 *    dropped `calc(24 / 2)`) and sanitise before interpolating.
+	 *
+	 * @param string $selector Fully-formed, already-safe CSS selector for the shrunk state.
+	 * @param mixed  $padding  The row's `padding` attribute ({desktop:{top,…},…}).
+	 * @return string CSS text (no <style> wrapper); '' when the row has no vertical padding to reduce.
+	 */
+	function sgs_row_shrink_css( $selector, $padding ) {
+		if ( ! is_array( $padding ) || ! function_exists( 'sgs_emit_responsive_css' ) ) {
+			return '';
+		}
+
+		// Halve the row's OWN value in CSS rather than in PHP: the stored value
+		// may legitimately be '2rem', '5%' or 'clamp(0.5rem,2vw,1.5rem)', none of
+		// which can be halved by string arithmetic.
+		$halve = static function ( $raw ) {
+			if ( is_numeric( $raw ) ) {
+				$raw = (string) ( 0 + $raw ) . 'px';
+			}
+			$clean = sgs_responsive_sanitise_css_value( (string) $raw );
+			return '' === $clean ? null : 'calc(' . $clean . ' / 2)';
+		};
+
+		// Pull one side across the three tiers, leaving an absent tier as null so
+		// the engine's own cascade fills it from the tier above.
+		$side_across_tiers = static function ( $side ) use ( $padding ) {
+			$out = array();
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+				$tier_val     = isset( $padding[ $tier ] ) && is_array( $padding[ $tier ] ) ? $padding[ $tier ] : array();
+				$out[ $tier ] = array_key_exists( $side, $tier_val ) ? $tier_val[ $side ] : null;
+			}
+			return $out;
+		};
+
+		$specs = array();
+		foreach ( array( 'top', 'bottom' ) as $side ) {
+			$values = $side_across_tiers( $side );
+			if ( null === $values['desktop'] && null === $values['tablet'] && null === $values['mobile'] ) {
+				continue;
+			}
+			$specs[] = array(
+				'value'     => $values,
+				'css'       => 'padding-' . $side,
+				'transform' => $halve,
+			);
+		}
+
+		if ( empty( $specs ) ) {
+			return '';
+		}
+
+		return sgs_emit_responsive_css( $selector, $specs, array( 'container' => false ) );
+	}
+}
+
 if ( ! function_exists( 'sgs_block_is_header_essential' ) ) {
 	/**
 	 * Is this block type flagged as essential header furniture?

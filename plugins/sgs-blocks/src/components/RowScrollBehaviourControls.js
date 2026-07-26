@@ -49,8 +49,32 @@ export default function RowScrollBehaviourControls( {
 	setAttributes,
 	clientId,
 } ) {
-	const { rowTransparent, rowHideOnScroll, rowShrink, rowShrinkHideTarget } =
-		attributes;
+	const {
+		rowTransparent,
+		rowHideOnScroll,
+		rowShrink,
+		rowShrinkHideTarget,
+		padding,
+	} = attributes;
+
+	// Shrink reduces this row's OWN vertical padding by half, so a row with no
+	// padding has nothing to reclaim and visibly does nothing. That is correct
+	// behaviour (it must never grow), but silent — so say so rather than leave
+	// the operator wondering. Deliberately NOT hidden or disabled: a control
+	// that vanishes because a different, unrelated setting is empty is
+	// undiscoverable, and the project's standing rule is to degrade to MORE
+	// information, never less.
+	const shrinkIsOn =
+		!! rowShrink && Object.values( rowShrink ).some( Boolean );
+	const hasVerticalPadding =
+		!! padding &&
+		typeof padding === 'object' &&
+		Object.values( padding ).some(
+			( tier ) =>
+				!! tier &&
+				typeof tier === 'object' &&
+				( !! tier.top || !! tier.bottom )
+		);
 
 	const { updateBlockAttributes } = useDispatch( blockEditorStore );
 
@@ -244,6 +268,15 @@ export default function RowScrollBehaviourControls( {
 							/>
 						) }
 					</ResponsiveOverride>
+
+					{ shrinkIsOn && ! hasVerticalPadding && (
+						<Notice status="warning" isDismissible={ false }>
+							{ __(
+								'Shrink on scroll needs some empty space around the row (padding) to shrink from. Right now this row has none, so switching this on won’t visibly do anything yet.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
 
 					<SelectControl
 						label={ __( 'Also hide an element when shrunk', 'sgs-blocks' ) }

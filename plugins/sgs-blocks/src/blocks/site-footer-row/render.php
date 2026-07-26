@@ -174,6 +174,14 @@ if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers 
 // row's real children and refuses any block flagged supports.sgs.headerEssential.
 // An orphaned target (child deleted) resolves to '' — hides nothing, no error.
 if ( ! empty( $sfr_shrink_tiers ) ) {
+	// Proportional shrunk size from this row's OWN resting padding — identical
+	// mechanism to sgs/site-header-row, via the one shared helper so the twins
+	// cannot drift. A row with no padding emits nothing and does not resize.
+	$css .= sgs_row_shrink_css(
+		$root_sel . '.is-row-shrunk',
+		isset( $attributes['padding'] ) ? $attributes['padding'] : array()
+	);
+
 	$sfr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
 	if ( '' !== $sfr_hide_target ) {
 		$sfr_extra_attrs['data-sgs-row-shrink-hide'] = $sfr_hide_target;
