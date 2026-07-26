@@ -77,23 +77,36 @@ blocks; `feature-dev:code-reviewer` pass.
 
 Option comparison (shared-engine custom property vs per-row derivation) was settled by a
 5-persona adversarial council. Three of the brief's own claims were false and are recorded
-as such: the shared-engine path reaches only **2 of 29** wrapper-using blocks (only
-`site-header-row` and `site-footer-row` pass `responsive_model => 'object'`);
+as such: the shared-engine path reaches only **2 of the 29** blocks that call
+`SGS_Container_Wrapper::render()` (only `site-header-row` and `site-footer-row` pass
+`responsive_model => 'object'`; note 47 block render.php files *mention* the class, 29 call
+`::render` — 29 is the right denominator, and the numerator 2 is the load-bearing figure);
 `sgs_emit_responsive_css()` is a public shared helper already called directly from
 `mega-panel/render.php:182` and `nav-drawer/render.php:140`; and `calc()` was never
 exclusive to the shared-engine option.
 
-## Still outstanding (NOT fixed here, recorded honestly)
+## Outstanding at time of writing — ALL SUBSEQUENTLY CLOSED (updated 2026-07-26)
 
-- **Live verification on the canary has not been run for this fix.** The required
-  assertion: computed `padding-top`/`padding-bottom` when shrunk ≤ resting, at 375/768/1440,
-  on a row WITH padding and a row WITHOUT.
-- **No 44px floor.** A row whose interactive children are floored at `min-height:44px`
-  (WCAG touch target) may shrink with no visible change.
-- **Shrink on a non-sticky row is invisible** — the row has scrolled away by the time the
-  state fires, and it reflows content below. No warning or gate exists.
-- **No editor preview** — `header-behaviours.css` is not enqueued in the admin, so the
-  operator sees nothing until they publish and scroll.
-- **`assets/css/` is not covered by any gate.** `check-hardcoded-render-defaults.js` walks
-  `src/blocks/*` only, so the hardcoded literal that caused this defect sat in an unscanned
-  file and nothing prevents its return except the ⛔ comment now in its place.
+This section listed five open items when the report was written. Every one was closed later the
+same session; the entries are kept with their resolution so the record is not misleading.
+
+- ~~Live verification not yet run~~ → **DONE.** Canary at 1440/768/mobile: padded row 48px →
+  **24px** (exactly half), left/right held at 30px, unpadded row **0 → 0**. Assertion used was
+  `shrunk ≤ resting`, the check that did not exist when the defect shipped.
+- ~~No 44px floor~~ → **MEASURED, AND DELIBERATELY NOT BUILT.** With the row halved 48→24px, all
+  5 interactive children were byte-identical in size (`anyTargetChanged: false`); nav items held
+  44px. A row's padding sits OUTSIDE its children, so halving it cannot shorten one. A floor
+  would have defended against an impossible failure. **Do not re-add it.**
+- ~~Shrink on a non-sticky row is invisible, no warning~~ → **DONE.** An advisory warning now
+  fires when a scroll effect is enabled on a row inside an unpinned header. Verified live across
+  5 state combinations.
+- ~~No editor preview~~ → **DONE.** The row preview now shows its own padding (it previously
+  showed none), plus a "Show me the shrunk size" toggle. Verified live: canvas 48 → 24 → 48px
+  across off/on/off, siblings unaffected.
+- ~~`assets/css/` covered by no gate~~ → **DONE.** `scripts/check-shared-css-state-rules.js` now
+  runs in `prebuild`, flagging a fixed size literal on a state-only selector when nothing sets
+  that property's resting value. Proven by regression injection: clean 0/exit 0 → bad rule
+  reinserted, caught at the right line/exit 1 → restored, `git diff` empty.
+
+**Genuinely still open:** nothing from this change set. The next work is the sticky build
+(`.claude/plans/2026-07-26-per-row-sticky-mini-design.md`, approved).

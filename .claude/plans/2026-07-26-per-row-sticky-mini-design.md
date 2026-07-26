@@ -269,18 +269,27 @@ with the project's rule that operator-facing a11y/UX feedback is informational, 
 
 ## 4. Done-when (binary)
 
-- [ ] A header row set sticky stays pinned while the page scrolls, at each device tier where it
-      is enabled, live-verified at 375 / 768 / 1440.
-- [ ] Two sticky rows chain: the lower pins beneath the upper, with no overlap, at every tier —
-      verified by measuring the second row's `top` equals the first row's rendered height.
-- [ ] Turning on hide-on-scroll for a row that is sticky (or for a header containing sticky rows)
-      is prevented in the editor and explained, with no silent CSS failure.
-- [ ] With NO sticky row, `scroll-padding-top` computes to 0 and an anchor link lands flush.
-      (Fails today — this is the regression test for D3.)
-- [ ] With one sticky row, an anchor link lands directly below that row — not below the whole
-      header.
-- [ ] A keyboard-focused element is never entirely hidden behind a pinned row (WCAG 2.4.11,
-      technique F110).
+> **REWRITTEN 2026-07-26 after the handoff QC gate.** The original criteria below were written
+> against the SUPERSEDED per-row-sticky model and survived the D1/D2 revisions unchanged — they
+> still said "a header ROW set sticky" and "two sticky rows chain", i.e. they made the D2 offset
+> chain an acceptance criterion at the same time D1 removed the thing it would chain. A builder
+> treating this section as the spec would have built exactly what is now forbidden. Corrected.
+
+- [ ] With the header set sticky, it stays pinned while the page scrolls, at each device tier
+      where it is enabled — live-verified at 375 / 768 / 1440 on the canary, not from the emit.
+- [ ] **Only ONE element is ever `position: sticky`** (the header). No row emits `position: sticky`.
+      Grep the built CSS to confirm — this is the guard against the deleted offset-chain returning.
+- [ ] With the header pinned, a row marked to disappear renders at height 0 and the header's total
+      height drops by exactly that row's height — **no gap** (the `transform` failure mode).
+- [ ] With the header NOT pinned, that same row renders byte-identical to today's shipped
+      `translateY(-100%)` behaviour at all three tiers. This is the regression test.
+- [ ] With NOTHING pinned, `scroll-padding-top` computes to `0px` and an anchor link lands flush.
+      (Fails today — this is the D3 regression test.)
+- [ ] With the header pinned, an anchor link lands directly below the pinned height — not below
+      the full unpinned header height.
+- [ ] A keyboard-focused element is never entirely hidden behind the pinned header (WCAG 2.4.11;
+      W3C technique C43 is the sufficient technique, F110 the failure to avoid).
+- [ ] The multi-sticky warning is advisory only — it never blocks saving or publishing.
 
 ## 5. Effort
 
