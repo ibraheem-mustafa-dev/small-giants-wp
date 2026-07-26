@@ -39,6 +39,52 @@ workflows. The `sgs/back-to-top` and `sgs/reading-progress` blocks were removed 
 retirement of any block MUST have a shipping replacement in the same PR or the retirement
 is blocked.
 
+### 1.1 Scope claim — persistent bottom bars belong HERE, not in the footer (added 2026-07-26, D390)
+
+Nothing below is built yet; this records WHERE the work belongs so a future session does not route
+it into the header/footer builder.
+
+**Persistent bottom CTA / cart / sale bars are Spec 18 territory, not `sgs/site-footer-row`.**
+Settled by extended research (`workspace/memory/research/2026-07-26-bottom-bar-floating-ui-vs-footer.md`)
+and recorded as D390. Spec 37 §7 and FR-37-40 point here.
+
+Why:
+1. **State, not scroll.** These bars are driven by what a footer row cannot reach — basket
+   contents, whether a sale is live, session state. This spec's own founding rationale already
+   says it: *"site-wide, not per-page, so they belong in the Customiser rather than the block
+   editor."*
+2. **No builder in the market ships a per-row sticky footer.** Kadence sticks the whole footer as a
+   unit and routes bottom bars to a separate Hooked-Elements feature; Elementor uses Popup-Builder
+   info bars explicitly separate from the footer; WooCommerce sticky add-to-cart is near-universally
+   a dedicated plugin.
+3. **Purpose changes the rules.** Authorities treat persistent bottom chrome as legitimate for
+   navigation or ONE transactional action, but promotional bars must be small and dismissible
+   (Google's intrusive-interstitial guidance). Material has no persistent promotional bottom
+   component at all. **A cart bar and a sale bar are therefore different classes**, not one feature
+   with different text.
+
+**Build the shared bottom stacking container BEFORE adding a second bottom-anchored element.**
+This spec already ships ONE (back-to-top). Cookie banners, chat widgets, back-to-top buttons and
+CTA bars all default to the same corner, and there is no cross-vendor convention — every vendor's
+own docs prescribe hand-written `!important` offsets. The technique is a single
+`position:fixed; bottom:0; display:flex; flex-direction:column-reverse` wrapper that every element
+mounts into, not per-component z-index.
+
+**Implementation notes carried from the research:** `position:fixed` +
+`env(safe-area-inset-bottom)` is the load-bearing pair; `dvh` solves content-height drift, NOT bar
+occlusion (conflating them is a common error); anchor positioning is too new to be load-bearing;
+`popover`'s light-dismiss fights persistence; `interestfor` is not ready. **WCAG 2.4.11** names
+sticky footers as the failure mode (technique F110) — the mitigation is `scroll-padding` sized to
+the bar, and this framework currently has the TOP-edge equivalent but no bottom one.
+
+**Honest gaps:** no measured case of a bottom bar REDUCING conversion was found despite looking for
+one (publication bias suspected), and there is no official Google percentage for "small fraction of
+the screen" — the circulating 15–25% is inferred, so any threshold adopted here is our design rule,
+not a citation.
+
+**Status:** DEFERRED — needs its own design gate before any build. Parked as
+`P-FLOATING-UI-BOTTOM-BARS`.
+
 ## 2. Admin surface
 
 Accessible at: *Appearance → Customise → SGS Floating UI*

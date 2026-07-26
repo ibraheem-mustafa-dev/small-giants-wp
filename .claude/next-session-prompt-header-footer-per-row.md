@@ -29,7 +29,12 @@ DONE and live-verified. Your job is the **sticky build**, whose design gate is n
   - **44px touch-target floor deliberately NOT built** — measured: halving a row's padding left all
     5 interactive children byte-identical in size. Padding sits outside children. Don't re-add it.
 - **Sticky mini-design (SA-1) APPROVED** by Bean 2026-07-26 (`bdc33f19`). The blocking gate is
-  discharged. **That is what you build.**
+  discharged. **That is what you build** — specified as **FR-37-40**.
+- **Decisions logged: D386–D390** (`bcf24227`). D386 the shrink grow-bug + its gate, D387 the
+  declarative guardrail, D388 the two editor crashes, D389 the approved sticky model, D390
+  bottom bars → Spec 18. Read D386 and D389 before touching this surface.
+- **Spec 18 §1.1 now claims persistent bottom bars** (D390) — do not route them to a footer
+  row. Parked as `P-FLOATING-UI-BOTTOM-BARS`.
 
 ## ⛔ MANDATORY READING GATE (read IN FULL before any edit)
 
@@ -39,7 +44,10 @@ DONE and live-verified. Your job is the **sticky build**, whose design gate is n
    9 must-fixes.
 3. `.claude/plans/2026-07-25-header-footer-per-row-identity-PHASE-PLAN.md` — P1/P2 status, what
    shipped, and what was deliberately NOT built (with the measurements).
-4. `.claude/specs/37-HEADER-FOOTER-BUILDER.md` §Behaviours — the mechanism you extend.
+4. `.claude/specs/37-HEADER-FOOTER-BUILDER.md` — **FR-37-37/38/39 are the shipped per-row
+   behaviours (retrospective, added at the 2026-07-26 handoff) and FR-37-40 is the approved
+   sticky model you are building.** §7 constraint 2 records why block-private was rejected.
+   The spec is now the canonical record; the plan docs are the reasoning behind it.
 5. `.claude/STOP-CATALOGUE.md` — the uncapped STOP catalogue + pre-flight ritual.
 6. `~/.openclaw/workspace/memory/research/2026-07-26-sticky-rows-and-scroll-padding.md` — the CSS
    mechanics behind every decision below. Read before arguing with any of them.

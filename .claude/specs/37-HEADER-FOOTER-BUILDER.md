@@ -1088,6 +1088,103 @@ and eye are co-authoritative, neither closes alone).
 
 ---
 
+### Per-row scroll behaviours (added 2026-07-26 — D386–D389)
+
+> These four FRs record work that SHIPPED before it was specified. The design gate
+> (`plans/2026-07-25-header-footer-per-row-identity-design-gate.md`) called for them at execution
+> time and they were not written; the omission was caught at the 2026-07-26 handoff. FR-37-37/38/39
+> are retrospective records of live-verified behaviour; FR-37-40 is forward-looking and APPROVED but
+> NOT built.
+
+#### FR-37-37 — Per-row transparent + hide-on-scroll
+`✅ BUILT + LIVE-VERIFIED 2026-07-26` (`a3a200aa`). Each `sgs/site-header-row` and
+`sgs/site-footer-row` carries its OWN `rowTransparent` + `rowHideOnScroll`, as
+`{desktop,tablet,mobile}` boolean objects with **inherit-upward** semantics (mobile ← tablet ←
+desktop; an explicit `false` means "off here"), resolved by `sgs_resolve_tier_booleans()`
+(`includes/helpers-responsive.php`). Independent of the header-LEVEL body-class path (D376), which
+is untouched. render.php emits a `sgs-row-behaviour` class + `data-sgs-row-*` attrs listing only
+the tiers where a behaviour is ON; `src/header-behaviours/view.js` (`initRowBehaviours`) scans
+those rows and toggles per-row state classes.
+**Binding rule — tier-gating is via a JS-added state class, never `[data-attr]` presence.** A
+presence-only selector applies at every tier; that shipped as a bug in review and was fixed. The
+resting state is keyed on `is-row-transparent-active`, added only on an active tier.
+**Done when (met):** at desktop the top row hides on scroll while the logo row goes
+transparent→solid — each row doing ONLY its own behaviour, both resetting on scroll-up; a
+desktop-only transparent row is NOT transparent at mobile; D376 header-level path intact.
+
+#### FR-37-38 — Per-row shrink, proportional by construction
+`✅ BUILT + LIVE-VERIFIED 2026-07-26` (`59de5434`, corrected by `d54c316d`). `rowShrink`
+(device-tier object, same resolver) reduces the row's own vertical padding on scroll.
+**The shrunk value MUST be emitted per instance as `calc(<that row's own padding> / 2)`**, via
+`sgs_row_shrink_css()` (`includes/helpers-row-behaviour.php`) calling the shared
+`sgs_emit_responsive_css()` engine. Ratio 0.5 (Bean-decided).
+**Binding rule — never an absolute value in a shared stylesheet.** The first ship put
+`padding-block: var(--wp--preset--spacing--10)` in `assets/css/header-behaviours.css`; at (0,3,0)
+that out-specifies each row's own `.sgs-container-<uid>` rule (0,1,0) and forced every row to the
+same size — an unpadded row measured 0px at rest and **4px shrunk: it GREW**. A shared stylesheet
+cannot know the resting value it is meant to reduce. Enforced by `check-shared-css-state-rules.js`
+in `prebuild` (D386).
+Two SCALAR specs (`padding-top`/`padding-bottom`), never `box => true` — a box spec expands to all
+four sides and would jolt the row horizontally. The transform appends the unit itself, because a
+`transform` short-circuits the engine's unit handling.
+**Done when (met):** computed padding when shrunk ≤ resting at 375/768/1440, on a row WITH padding
+and one WITHOUT. Live: 48px→24px, left/right held at 30px, unpadded row 0→0.
+**Deliberately NOT built:** a 44px touch-target floor. Measured — halving a row's padding left all
+5 interactive children byte-identical in size, because padding sits OUTSIDE children and they carry
+their own minimums. Do not add it.
+
+#### FR-37-39 — Shrink hides a chosen element, with a declarative guardrail
+`✅ BUILT + LIVE-VERIFIED 2026-07-26` (`59de5434`). A row may nominate ONE child to hide while it
+is shrunk, referenced by the child's own `anchor` attribute — a **stable id that survives
+copy/paste**, never the editor's `clientId`.
+**The guardrail is declarative, not a hardcoded list (R-31-1).** The framework has no block-slug →
+role/criticality lookup (verified: `slots` holds one `logo` row; `roles` classifies role-names not
+blocks). So `supports.sgs.headerEssential: true` is declared on `sgs/responsive-logo`,
+`sgs/nav-menu` and `sgs/cart`. The editor picker reads it via `wp.blocks.getBlockType()`;
+`sgs_resolve_row_shrink_hide_target()` re-checks it server-side against `WP_Block_Type_Registry`.
+Protecting a new critical block later is one block.json flag.
+The picker ALSO excludes children lacking `supports.anchor` — WP silently discards an undeclared
+attr, so such a child would look configured and hide nothing (11 of 81 blocks, incl.
+`sgs/product-search`, a promoted header element).
+An orphaned target (child deleted) is a silent no-op plus an operator warning; a reset action is
+always visible.
+**Done when (met):** the chosen child computes `display:none` while shrunk and the sibling row is
+unaffected; and — proven — pointing the target at the logo makes the server emit NO
+`data-sgs-row-shrink-hide` and no hide rule, while still emitting `data-sgs-row-shrink`.
+
+#### FR-37-40 — Sticky model: HEADER-level, rows collapse
+`APPROVED (design), NOT BUILT` — design gate `plans/2026-07-26-per-row-sticky-mini-design.md`,
+Bean-signed 2026-07-26 (D389). Supersedes any per-row sticky idea.
+**Per-row `position: sticky` is REJECTED**, on evidence: a sticky element pins only while its
+containing block is in view, so a row sticky inside a ~250px `<header>` unpins the moment scroll
+passes the header height (short-parent trap) — the nav would vanish. Separately, `transform` never
+reclaims flow space, so a slid-away row still occupies its height and leaves a visible gap.
+**Approved model:** sticky stays HEADER-level (already shipped; the header's containing block is
+`<body>`, so no trap), and a row that should disappear **COLLAPSES (height → 0)** rather than
+translating — the header genuinely shrinks with no gap, and its existing ResizeObserver
+re-publishes the height. When the header is NOT pinned, the shipped `translateY(-100%)` behaviour
+is unchanged and must stay byte-identical (the regression test).
+**The multi-row offset chain is explicitly NOT to be built** — under a single sticky element there
+is nothing to chain.
+**Footer rows get NO sticky.** A strip pinned to the viewport bottom is a **Spec 18 Floating UI**
+element (D390): it is driven by state a footer row cannot reach, and must coordinate with the
+cookie banner / chat widget / back-to-top already competing for that edge.
+The multi-sticky warning is **advisory only, never a gate** — a fully sticky header is legitimate,
+especially paired with shrink.
+**Blocking sub-item — a LIVE defect this FR must fix:** `:root { scroll-padding-top: var(
+--sgs-header-height, 0px) }` is applied unconditionally and the height publisher always runs, gated
+on nothing. So a NON-sticky header already reserves its full height (252px on canary) for in-page
+anchors — and the blast radius includes fragment navigation, find-in-page, every
+`element.scrollIntoView()`, keyboard focus scrolling and scroll-snap. `var(--x, 0px)` fires its
+fallback only when the property is UNDEFINED, never when it is defined-but-zero, so the observer
+must publish `0px` explicitly, gated on *is anything actually pinned*. W3C technique **C43**
+confirms `scroll-padding` is a sufficient technique for WCAG 2.4.11/2.4.12 **including keyboard Tab
+focus** — it is not an anchor-jump-only fix.
+**Done when:** the binary criteria in §4 of the mini-design, each live-verified at 375/768/1440.
+
+
+---
+
 ## 5. Build status summary
 
 > **Updated 2026-07-23.** Nine further FRs landed and were deployed to the canary. Three
@@ -1123,6 +1220,11 @@ and eye are co-authoritative, neither closes alone).
 | Row reorder-lock (`templateLock: 'all'`, §3.3a) | `BUILT (code)` |
 | Footer per-device column count (FR-37-11) | `✅ LIVE-VERIFIED 2026-07-23` — a footer columns row set to 4/desktop renders 4 columns and stacks to 1 on mobile on the active canary footer. Two bugs fixed: (a) `a28a1121` — the tier stacking used `sgs-cols-*` classes on the WRAPPER while container queries (FR-37-35) had moved the grid to `.sgs-container__inner`, so the class was inert; rerouted to a scoped rule at `$grid_sel`. (b) `89e31fbc` — that scoped rule lived inside `if ($has_responsive_attr)`, which did not consider tier counts, so it never emitted; gate widened. Researched (research-check extended: every major builder uses a per-device COUNT, not intrinsic auto-fit — kept the control, fixed the plumbing) |
 | Per-row layout control + independent columns (FR-37-33) | `✅ BUILT + LIVE-VERIFIED 2026-07-23` (`8dd873bd`) — Cluster/Columns switch on both row types; header rows gained column attrs; all 6 rows (3 header + 3 footer) set columns independently. Footer live proof: rows at 2/4/3 desktop, all stack mobile. See FR-37-33 |
+| Per-row transparent + hide-on-scroll (FR-37-37) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`a3a200aa`) — each row behaves independently at its own tiers; desktop-only transparent stays solid at mobile; D376 header-level path intact |
+| Per-row shrink, proportional (FR-37-38) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`d54c316d`) — 48px→24px, left/right held, unpadded row 0→0 at 1440/768/mobile. First ship GREW an unpadded row (absolute value in a shared stylesheet); now `calc(own padding / 2)` per instance + gated by `check-shared-css-state-rules.js`. 44px floor measured and deliberately NOT built |
+| Shrink-hides-element + headerEssential guardrail (FR-37-39) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` — chosen child `display:none` while shrunk, sibling row unaffected; guardrail proven SERVER-SIDE (target pointed at the logo → no hide attr, no rule) and declarative via `supports.sgs.headerEssential`, not a hardcoded list |
+| Footer parity for per-row behaviours (FR-37-37/38) | `✅ LIVE-VERIFIED 2026-07-26` — measured on the ACTIVE footer **CPT 1654** (not the obvious 1571; check `sgs_active_footer_cpt_id`): top row 60px→30px, siblings unaffected |
+| Sticky model — HEADER-level, rows collapse (FR-37-40) | `APPROVED (design), NOT BUILT` (D389) — per-row `position:sticky` REJECTED on the short-parent trap; offset chain explicitly not to be built; footer rows get no sticky (→ Spec 18). **Carries a LIVE defect to fix: `scroll-padding-top` is unconditional, so a non-sticky header already reserves 252px for in-page anchors** |
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
@@ -1197,7 +1299,14 @@ and eye are co-authoritative, neither closes alone).
 
 1. **No inline `style=""`** on any block in this spec (Spec 32).
 2. **Composite-mirror (R-31-9 / D294)** — both containers are `containerKind: section`, so they
-   keep `SGS_Container_Wrapper`; no per-block CSS that diverges from it.
+   keep `SGS_Container_Wrapper`; no per-block CSS that diverges from it. **Block-private
+   rendering for header/footer was formally considered and REJECTED 2026-07-25** (6/6
+   adversarial council; design gate
+   `plans/2026-07-25-header-footer-per-row-identity-design-gate.md` §0). The premise — that a
+   private copy would escape an attribute-shape inconsistency — was false: that inconsistency
+   lives in the block's own settings, not the shared engine, so a fork would copy the mess
+   into more files. If a per-row effect ever needs a capability the engine lacks, ADD it to
+   the engine. Do not re-open without new evidence.
 3. **No hardcoded client data** — Site Info or global styles, never literals (R-31-1).
 4. **WCAG 2.1 AA** on default output; 44px targets; visible focus.
 5. **DB-first** — no hardcoded lookup dicts; the block/attr registry is authoritative.
