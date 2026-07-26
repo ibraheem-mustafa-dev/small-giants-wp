@@ -64,8 +64,41 @@ independent and cheap.
         invisible and reflows content (no warning/gate); no editor preview
         (`header-behaviours.css` is not enqueued in admin); `assets/css/` is covered by no gate,
         so only a ⛔ comment guards the deleted rule's return.
-- [ ] **P2-S3 footer parity — NOT verified.** Footer rows share the identical code path (same
-      attrs, same resolver, same view.js/CSS), but no footer row was live-verified this session.
+- [x] **P2-S3 footer parity — VERIFIED LIVE 2026-07-26.** Measured on the ACTIVE footer
+      (CPT **1654**; note the obvious-looking "Proof Footer" 1571 is NOT active —
+      `sgs_active_footer_cpt_id`=1654, and testing 1571 first produced a false negative):
+      top row **60px → 30px** on scroll, left/right held at 20px, sibling `columns` and
+      `bottom` rows completely unaffected.
+- [x] **P2 follow-ups (the five items recorded as NOT done) — ALL CLOSED 2026-07-26**
+      (`36461b85` + `786c1525` + `d1788d61`; report
+      `reports/visual-diff/row-behaviour-guardrails-2026-07-26.md`):
+      1. **Gate BUILT** — `scripts/check-shared-css-state-rules.js`, appended to `prebuild`.
+         Nothing scanned `assets/css/` before (`check-hardcoded-render-defaults.js` walks
+         `src/blocks/*` only), which is why the literal that caused the defect sat unscanned.
+         Flags a SIZE property set to a fixed literal on a state-only selector when nothing
+         in the same file sets that property's RESTING value on the base selector. Does NOT
+         fire on the legitimate both-ends `body.sgs-header-behaviour-shrink` pattern; strips
+         comments. Proven by regression injection, re-run independently: clean 0/exit 0 →
+         bad rule reinserted, caught at the right line/exit 1 → restored, `git diff` empty.
+         Baseline starts EMPTY, requires a `reason` per entry.
+      2. **44px floor — NOT BUILT, deliberately.** Measured live: row 48→24px, all 5
+         interactive children byte-identical in size, nav items held 44px. A row's padding
+         sits OUTSIDE its children so halving it cannot change a child's height; children
+         carry their own minimums (`nav-menu/style.css:43,83`). A floor would defend against
+         an impossible failure.
+      3. Footer parity — see above.
+      4. **Non-sticky warning BUILT** — a scroll effect on a row inside an unpinned header
+         fires as the row leaves the screen and only nudges page content. Reads
+         `headerSticky` from the `sgs/site-header` ancestor. Tri-state: `true`=no warning,
+         `false`=warn, `null` (footer row)=no warning. All 5 states verified live.
+      5. **Editor preview BUILT** — the row preview now shows its own padding (it showed
+         none before), plus a "Show me the shrunk size" toggle using the same 0.5 ratio.
+         Verified live: canvas 48→24→48px across off/on/off, siblings unaffected.
+         NOT the full B2 preview-scroll feature, which remains separate.
+      **⚠ The first deploy of this batch KILLED the block editor** — two crashes
+      (`useState is not defined`, then a TDZ `Cannot access 'f' before initialization`)
+      while webpack + dead-controls + the new gate were ALL green. Only opening the real
+      editor found them. Treat "build green" as zero evidence for editor-surface changes.
 - [ ] The sticky mini-design is written + signed off before any per-row sticky ships.
 - [x] The operator-simplicity test (proxy arm) has been run + recorded against the current header
       — 2026-07-26, verdict FAIL, `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md`.

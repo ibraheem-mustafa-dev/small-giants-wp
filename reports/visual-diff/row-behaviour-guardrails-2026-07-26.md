@@ -75,11 +75,40 @@ literally nothing"; B2 remains the richer, separate win.
 `npx wp-scripts build` green; `check-dead-controls.js` 0 net-new across 81 blocks;
 `check-shared-css-state-rules.js` 0 findings.
 
-## Still outstanding
+## Live editor verification — DONE, and it caught two crashes the gates did not
 
-- The editor Notices and the preview toggle have **not yet been observed in a live editor**
-  at the time of writing — build-green only. (Live editor confirmation follows the deploy;
-  if it is not recorded in the LEDGER/plan, treat it as unverified.)
+The first deploy of this change set **killed the block editor**: every
+`sgs/site-header-row` rendered "This block has encountered an error and cannot be
+previewed". Two separate defects, fixed in `786c1525` and `d1788d61`:
+
+1. `ReferenceError: useState is not defined` — the import was lost to a race between a
+   scripted edit and a concurrent tool edit on the same file. The footer twin kept its
+   copy; the header did not.
+2. `ReferenceError: Cannot access 'f' before initialization` — a temporal dead zone.
+   `scrollEffectWastedOnUnpinnedHeader` read `headerIsSticky` 27 lines above the `const`
+   declaring it, which takes down the whole block render for any configured row.
+
+**`npx wp-scripts build`, `check-dead-controls.js` and the new
+`check-shared-css-state-rules.js` were ALL green through both.** Nothing but opening the
+real editor would have found them — the standing lesson, re-earned.
+
+After the fix, verified on the canary (header CPT 1570):
+
+| State | Expected | Observed |
+|---|---|---|
+| shrink on, header NOT sticky, padding set | non-sticky warning only | ✅ |
+| shrink on, header NOT sticky, no padding | BOTH warnings | ✅ |
+| shrink on, header sticky, no padding | padding warning only | ✅ |
+| shrink on, header sticky, padding set | no warnings | ✅ |
+| shrink off | no warnings | ✅ |
+
+"Show me the shrunk size" toggle in the editor canvas: **48px → 24px → 48px** across
+off/on/off, with the other two rows unaffected — matching the front-end behaviour exactly.
+
+Canary reverted; published `post_content` confirmed clean; the stray autosave that would
+have shown a false "newer autosave" banner to the next session was deleted.
+
+## Still outstanding
 - Footer rows get no "non-sticky" warning by design. A footer row is reached by scrolling,
   so a scroll-linked shrink there is near-permanently in its shrunk state — arguably its
   own usability question, not covered here.
