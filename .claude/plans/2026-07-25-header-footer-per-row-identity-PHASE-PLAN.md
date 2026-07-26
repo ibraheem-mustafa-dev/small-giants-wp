@@ -23,11 +23,20 @@ executes was council-gated). Not routed to the docscore subagent — proportiona
 independent and cheap.
 
 **Phase success criteria (done when):**
-- [ ] A header top row and a footer bottom row each carry their OWN transparent + hide-on-scroll,
-      set independently, live-verified on the canary at 375/768/1440 (P1).
+- [x] **P1 SHIPPED + LIVE-VERIFIED 2026-07-26 (commit a3a200aa).** Each header/footer row carries its
+      OWN `rowTransparent` + `rowHideOnScroll` (device-tier, inherit-upward), independent of the
+      header-level D376 path. Live-verified on the sandybrown canary (active Proof Header 1570,
+      chrome-devtools): at desktop, the top row HIDES on scroll (translateY, `is-row-hidden`) while
+      the logo row goes transparent→solid (`is-row-transparent-active`+`is-row-scrolled`) — each row
+      does ONLY its own behaviour, both reset on scroll-up. Code-review tier-gating fix verified:
+      a desktop-only transparent row is `is-row-transparent-active` at desktop, NOT at mobile.
+      D376 header-level path intact (`--sgs-header-height`=252px still published). 5/5 deploy files
+      md5-matched local↔server. Proof Header reverted to clean afterward (0 behaviour rows).
 - [ ] Per-row shrink works, including hide-a-chosen-element with the DB-role guardrail (P2).
 - [ ] The sticky mini-design is written + signed off before any per-row sticky ships.
-- [ ] The operator-simplicity test has been run + recorded against the current header.
+- [x] The operator-simplicity test (proxy arm) has been run + recorded against the current header
+      — 2026-07-26, verdict FAIL, `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md`.
+      Blind-tester arm still pending.
 
 **Entry context (read before starting):**
 - `.claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md` — the approved design + the 9 must-fixes (load-bearing)

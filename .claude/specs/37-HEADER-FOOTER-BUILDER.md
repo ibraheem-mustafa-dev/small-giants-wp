@@ -939,9 +939,18 @@ previously-active post still exists and can be re-activated.
 A defined pass/fail usability test, not a subjective judgement: **a non-coder sets sticky +
 phone number + drawer content in under 3 minutes without opening Advanced.** Floor: Bean plus
 one blind tester, screen-recorded (P1 DP5, P2 §8).
-**Status:** `NOT-BUILT`.
+**Status:** `PROXY-ARM RUN 2026-07-26 → FAIL (recorded)`. The automated proxy arm (Claude driving
+the canary editor) has been run and recorded: `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md`.
+Result: **FAIL** — sticky ✅ and phone ✅ (one-click "Contact details" → Business Phone, click-to-call
+wired to Site Info) both pass; **drawer content ❌** is not settable in the header editor (the Nav
+Menu "Mobile drawer" panel exposes only a jargon "DRAWER ID" field; drawer content lives in a
+separate `sgs/nav-drawer` block absent from the header CPT). Also: selecting the header block needs
+List View (canvas click reports "No block selected"), and the Settings tab shows ~7 default-visible
+controls vs the FR-37-27 roster's 2 (a nudge, not a defect — per the 2026-07-23 correction).
+The **blind-tester arm (a real non-coder, screen-recorded) remains outstanding** and is the
+authoritative half.
 **Done when:** the test has been run and recorded, with the result — pass or fail — written
-down. A fail is a finding, not a reason to re-run until it passes.
+down. A fail is a finding, not a reason to re-run until it passes. ✅ proxy arm met; blind-tester arm pending.
 
 #### FR-37-27 — Simple vs Advanced control placement
 The Simple surface ships **≤3 controls by default**. Operator pin/unpin exists but is

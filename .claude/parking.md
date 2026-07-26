@@ -7,6 +7,28 @@ last_updated: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
 
+## 2026-07-26 — FR-37-26 operator-simplicity test FAILED (proxy arm); 3 findings for a header-simplicity pass
+
+> **P-HEADER-SIMPLICITY-FINDINGS** — NEW 2026-07-26. The FR-37-26 operator-simplicity test was run
+> (automated proxy arm, sandybrown canary, active "Proof Header" CPT 1570) and **FAILED** — recorded
+> at `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md` + FR-37-26 status.
+> Sticky ✅ and phone ✅ (one-click "Contact details" → click-to-call Business Phone) both pass;
+> the FAIL is on **drawer content** + two friction findings:
+> 1. **Drawer content is not settable from the header editor** (biggest gap). The Nav Menu "Mobile
+>    drawer" panel exposes only a jargon **"DRAWER ID"** field (`sgs-nav-drawer`); the drawer's
+>    content lives in a separate `sgs/nav-drawer` block absent from the header CPT. A non-coder
+>    cannot set what the mobile drawer shows. Needs a discoverable, plain-English path.
+> 2. **Selecting the header block is a hidden blocker** — clicking the header in the canvas reports
+>    "No block selected"; it only selects via List View. Canvas-click should select it.
+> 3. **The header Settings tab shows ~7 default-visible controls vs the FR-37-27 roster's 2** —
+>    Transparent/Shrink/Contrast + Width/Content-band/Spacing are all default-visible. Per the
+>    2026-07-23 correction, ≤3 is a NUDGE, not a ceiling — reconsider ordering (move to Advanced),
+>    do NOT hide controls a client relies on.
+> Also outstanding: the **blind-tester arm** (a real non-coder, screen-recorded) — the authoritative
+> half of FR-37-26 — has not been run.
+> **Status: OPEN** · **Bucket:** Design/UX · **Trigger:** a dedicated header-simplicity pass; NOT a
+> blocker for the Spec-37 per-row build (which adds its controls to Advanced panels, per the plan).
+
 ## 2026-07-26 (D383/D384) — two pre-existing findings surfaced during the box-object + container work
 
 > **P-ARCHIVE-PRODUCT-WC-VALIDATION** — NEW 2026-07-26 (D384). The `archive-product` theme template shows editor "Block validation failed" on 4 `sgs/container` instances + the whole `woocommerce/product-filters` subtree (13 core WC blocks: active/price/attribute×2/status/rating + children). NOT caused by the D384 stale-wrapper fix — REST-confirmed the stale `wp-block-group` wrappers ARE removed there; the invalidity is a DIFFERENT cause: the stored WC-filter markup doesn't match the installed WooCommerce version's block save output (WC-core version drift), and the 4 containers wrap those + `wp:html` blocks. **Frontend `/shop/` renders correctly** (dynamic blocks; render.php regenerates regardless of editor validity) — so this is editor-cosmetic, not a live break. Fix options: editor "Attempt Block Recovery" (creates a DB `wp_template` override, NOT a clean committed-file fix) OR hand-match WC's current filter-block markup (WC-internal). Needs a dedicated WooCommerce-reconciliation dig — deliberately not blind-fixed. **Status: OPEN** · **Bucket:** framework · **Trigger:** a session owning the WC shop layer (Spec 30) picks it up; verify against the installed WC version first.
