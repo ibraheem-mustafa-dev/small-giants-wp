@@ -4,7 +4,10 @@
  * Responsibilities:
  *   1. Publishes `--sgs-header-height` CSS custom property on :root and body
  *      via ResizeObserver so sticky headers don't obscure anchor targets
- *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS). UNCHANGED.
+ *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS).
+ *      GATED (FR-37-40, 2026-07-26): the published value is the header's
+ *      height ONLY while the header is actually PINNED; otherwise an explicit
+ *      `0px`. See isHeaderPinned() for why this is measured, not inferred.
  *   2. Reads the INDEPENDENT flag SET from body class (not a single slug —
  *      several flags can be present at once):
  *      - body.sgs-header-behaviour-transparent → toggles body.is-header-scrolled
@@ -83,26 +86,96 @@
 	}
 
 	/**
+	 * Is the header ACTUALLY pinned to the viewport right now?
+	 *
+	 * MEASURED from the computed `position`, never inferred from the
+	 * `sgs-header-behaviour-sticky` body class. The class states intent; the
+	 * computed value states reality, and the two diverge:
+	 * header-behaviours.css sets `position: sticky !important` for the sticky
+	 * flag (line ~39) and `position: absolute !important` for the transparent
+	 * flag (line ~52) — equal specificity, both `!important`, transparent
+	 * later in source order. A header set BOTH sticky and transparent
+	 * therefore computes `absolute` and scrolls away, while still carrying the
+	 * sticky class. Measuring also picks up a theme/CPT rule that pins the
+	 * header by some other route.
+	 *
+	 * `fixed` counts as pinned for the same reason `sticky` does: the element
+	 * occupies the top of the viewport when an anchor target lands.
+	 *
+	 * @param {HTMLElement} header
+	 * @return {boolean} True when the header occupies the viewport top.
+	 */
+	function isHeaderPinned( header ) {
+		const position = window.getComputedStyle( header ).position;
+		return position === 'sticky' || position === 'fixed';
+	}
+
+	/**
 	 * Wire up ResizeObserver for F1 (header-height publisher).
+	 *
+	 * ⚠ The published value is GATED on isHeaderPinned(). Publishing the height
+	 * unconditionally (what shipped before FR-37-40) injected the full header
+	 * height as dead space into EVERY scroll-into-view on pages whose header
+	 * is not pinned — in-page anchor links, fragment navigation on load,
+	 * find-in-page, `element.scrollIntoView()`, keyboard focus scrolling and
+	 * scroll-snap all consume `:root { scroll-padding-top }`.
+	 *
+	 * The zero MUST be published EXPLICITLY. The CSS fallback in
+	 * `var( --sgs-header-height, 0px )` fires only while the property is
+	 * UNDEFINED — it does nothing once the property is defined, so simply
+	 * skipping the write would leave a stale non-zero value in place.
 	 *
 	 * @param {HTMLElement} header
 	 */
 	function initHeightPublisher( header ) {
+		// Last MEASURED border-box height, independent of the pinned gate, so
+		// a pinned/unpinned flip can republish without waiting for a resize.
+		let measuredHeight = header.getBoundingClientRect().height;
+
+		function publishGated() {
+			publishHeight( isHeaderPinned( header ) ? measuredHeight : 0 );
+		}
+
 		if ( typeof ResizeObserver === 'undefined' ) {
-			// Graceful degradation: publish once from getBoundingClientRect.
-			publishHeight( header.getBoundingClientRect().height );
+			// Graceful degradation: publish once, still gated.
+			publishGated();
 			return;
 		}
+
 		const ro = new ResizeObserver( function ( entries ) {
 			for ( const entry of entries ) {
-				const h =
+				measuredHeight =
 					entry.borderBoxSize && entry.borderBoxSize[ 0 ]
 						? entry.borderBoxSize[ 0 ].blockSize
 						: entry.contentRect.height;
-				publishHeight( h );
 			}
+			publishGated();
 		} );
 		ro.observe( header );
+
+		// A viewport resize can cross a breakpoint that changes the header's
+		// `position` without changing its border-box height, so the observer
+		// alone is not sufficient. rAF-coalesced; the getComputedStyle read
+		// sits after layout, so it forces no extra reflow.
+		let rafScheduled = false;
+		window.addEventListener(
+			'resize',
+			function () {
+				if ( ! rafScheduled ) {
+					rafScheduled = true;
+					window.requestAnimationFrame( function () {
+						rafScheduled = false;
+						measuredHeight = header.getBoundingClientRect().height;
+						publishGated();
+					} );
+				}
+			},
+			{ passive: true }
+		);
+
+		// Initial publish — the observer fires on observe(), but publish now so
+		// a fragment navigation on load reads a correct value immediately.
+		publishGated();
 	}
 
 	/**
@@ -320,7 +393,9 @@
 	function boot() {
 		const header = getHeaderEl();
 		if ( header ) {
-			// F1 — always publish header height for scroll-padding-top.
+			// F1 — publish header height for scroll-padding-top, GATED on the
+			// header actually being pinned (FR-37-40). Publishes an explicit
+			// `0px` when it is not; see initHeightPublisher().
 			initHeightPublisher( header );
 
 			// F2 — scroll behaviour state; only active when a relevant flag exists.
