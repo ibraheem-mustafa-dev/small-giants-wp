@@ -15,34 +15,26 @@ You are the SGS framework builder continuing **Spec 37**. The plumbing is done. 
 
 **The whole per-row programme is CLOSED and live-verified.** Phase 1 (per-row transparent +
 hide-on-scroll), Phase 2 (per-row shrink + shrink-hides-an-element + footer parity) and Side Track A
-(the sticky build) all shipped. FR-37-37, FR-37-38, FR-37-39 and FR-37-40 are **BUILT**. Do not
-rebuild any of them — the canonical record of what exists is **Spec 37**, and the live status is
-`LEDGER.md`.
+(the sticky build) all shipped. **FR-37-37/38/39/40 are BUILT — do not rebuild any of them.** The
+canonical record is Spec 37; live status is `LEDGER.md`.
 
-What that means concretely: each header and footer row now behaves independently (its own
-transparent / hide-on-scroll / shrink, per device tier, inheriting upward), a chosen child can be
-hidden when a row shrinks (guarded so the logo, nav and cart can never be the target), and the
-header can be sticky — where a row that should disappear now **collapses to nothing** so the header
-genuinely shrinks, rather than sliding away and leaving a hole.
+Concretely: each header/footer row behaves independently (own transparent / hide-on-scroll / shrink,
+per device tier, inheriting upward); a chosen child can be hidden when a row shrinks (the logo, nav
+and cart can never be the target); and the header can be sticky — where a row that should disappear
+now **collapses to nothing**, so the header genuinely shrinks instead of leaving a hole.
 
-**Two decisions from the last session that bind future work:**
-1. **Per-row `position: sticky` is REJECTED, permanently** (D389). A row made sticky inside a ~250px
-   `<header>` unpins the moment scroll passes the header's height — the short-parent trap. Sticky is
-   HEADER-level. The multi-row offset chain is **explicitly not to be built**; there is one sticky
-   element, so there is nothing to chain.
-2. **The `--sgs-header-height` publisher is gated on MEASURED pinning** (D391), never on the sticky
-   body class. Sticky and transparent both set `position` with `!important` at equal specificity, so
-   a header carrying both computes `absolute` and scrolls away while still wearing the sticky class.
-   If you need "is the header pinned", reuse `isHeaderPinned()` — do not re-derive it.
+**Two decisions that bind future work:**
+1. **Per-row `position: sticky` is REJECTED, permanently** (D389) — a row sticky inside a ~250px
+   `<header>` unpins once scroll passes the header's height (short-parent trap). Sticky is
+   HEADER-level; the multi-row offset chain is **explicitly not to be built** (nothing to chain).
+2. **The `--sgs-header-height` publisher is gated on MEASURED pinning** (D391), never the sticky body
+   class — sticky and transparent both set `position` `!important` at equal specificity, so a header
+   with both computes `absolute` while still wearing the class. Reuse `isHeaderPinned()`.
 
-**Decisions logged D386–D392.** Read **D388** (two editor-killing crashes past all-green gates),
-**D391** and **D392** before touching this surface.
-
-**Open, parked, NOT blocking:** `P-THEME-SCROLL-PADDING-SECOND-INSTANCE` (the theme carries its own
-copy of the scroll-padding defect — read the entry before "fixing" it, there is a real JS-off
-trade-off), `P-ROW-COLLAPSE-RESIDUALS` (reduced-motion not live-verified; collapsed-row focusability
-is parity, not a regression), `P-HEADER-SIMPLICITY-FINDINGS` (the FR-37-26 simplicity test FAILED —
-findings feed Task 1 below).
+**Read D388, D391, D392 before touching this surface.** Open + parked, none blocking:
+`P-THEME-SCROLL-PADDING-SECOND-INSTANCE` (the theme has its own copy of the scroll-padding defect —
+read the entry before "fixing" it, there is a real JS-off trade-off), `P-ROW-COLLAPSE-RESIDUALS`,
+`P-HEADER-SIMPLICITY-FINDINGS` (feeds Task 2).
 
 ---
 
@@ -147,69 +139,49 @@ Task 1 (delegated, sonnet — patterns)  ||  Task 2 (inline, Opus — inspector)
 
 ---
 
-## Anti-pattern STOP catalogue — ALL carried forward + 4 added this session
+## Anti-pattern STOP catalogue — track-specific only; the general ones live in STOP-CATALOGUE.md
 
-- **Keep `SGS_Container_Wrapper`.** Never re-open block-private for header/footer (6/6 council,
-  Spec 37 §7 constraint 2). Add capabilities to the engine, never fork it.
-- **CSS tier-gating via a JS-added state class, NOT `[data-attr]` presence** — a presence-only
-  selector applies at every tier. Gate on an `is-row-*-active` class the JS adds only on active tiers.
-- **Verify per-row behaviour on the LIVE DOM, not the emit** (D375 dead-selector). Smooth-scroll
-  pages need `behavior:'instant'` + a real ~300ms wait; a 2-frame wait reads mid-animation.
-- **`view.js` lives at `src/header-behaviours/`, NOT `src/blocks/`** (webpack entry footgun).
-- **`sgs_resolve_tier_booleans({desktop:true})` resolves to ALL tiers** (inherit-upward). "Desktop
-  only" needs explicit `{desktop:true, tablet:false, mobile:false}`.
-- **Shared-tree git:** `git branch --show-current` in the SAME command as the commit; commit with
-  explicit `-- <paths>`; a co-active session is often committing concurrently.
-- **Deploy:** the full `npm run build` prebuild can be blocked by a co-active track's drift. Route
-  around it with `npx wp-scripts build --experimental-modules --webpack-copy-php` (PowerShell), then
-  deploy from an ISOLATED worktree with a copied `build/` + `--skip-build`. **Then md5 the changed
-  files local↔server** — the HTTP-200 verify leg proves nothing.
-- **Visual-diff gate blocks any block render.php/block.json/edit.js touch.** For additive changes
-  whose default render is byte-identical, write an HONEST report at `reports/visual-diff/` +
-  `git commit --no-verify` (the gate's own sanctioned bypass). Never fabricate a PASS.
-- **No inline `style=""`** (Spec 32); device tiers 768/1024; DB-first (no hardcoded dicts); no
-  version bumps / no `deprecated.js` — **except the theme `style.css` Version, which is required and
-  is not a block version** (patterns will not register without bumping it).
-- **Build-green is ZERO evidence for an editor-surface change.** Two editor-killing crashes shipped
-  past webpack + dead-controls + a brand-new gate in ONE session: a lost `useState` import, then a
-  TDZ (`const` read above its declaration). A crashed block renders a tidy "This block has
-  encountered an error" placeholder that is easy to skim past. After ANY `edit.js` / shared
-  `src/components` change: deploy, OPEN the editor, read the console.
-- **After a scripted multi-file edit, grep EVERY file to confirm it landed.** A python script
-  reporting success is not proof the file on disk changed — that is how the `useState` import was
-  lost while the footer twin kept its copy. (Re-earned this session: an off-by-one in a scripted
-  LEDGER trim was caught only by an inline assertion.)
-- **Verify WHICH config is ACTIVE before measuring.** Testing "Proof Footer" (1571) gave a false
-  negative; the active footer is CPT **1654** (`wp option get sgs_active_footer_cpt_id`), the active
-  header CPT **1570**. Check the option, never infer from the name.
-- **An absolute value in a SHARED stylesheet cannot know the resting value it modifies.** That was
-  the shrink grow-bug. Gated by `check-shared-css-state-rules.js`; never baseline one of its findings
-  without a recorded reason. (`0` is exempt by construction — a collapse to nothing cannot grow.)
+> **⚠ D101 justification for a REDUCED count (15 in the previous prompt -> 11 here). No defence was
+> lost.** Eight entries were verbatim duplicates of canonical ones in `.claude/STOP-CATALOGUE.md` —
+> `STOP-MEASURE-THE-STATE-NOT-THE-FLAG-THAT-REQUESTS-IT`, `STOP-A-CRITERION-WRITTEN-AGAINST-A-
+> REJECTED-MODEL-MUST-BE-STRUCK-NOT-BUILT`, `STOP-VERIFY-DEPLOY-BY-CHECKSUM`,
+> `STOP-RECHECK-BRANCH-BEFORE-COMMIT`, `STOP-PATH-SCOPED-COMMIT`,
+> `STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC`, `STOP-NODE-NPM-VIA-POWERSHELL`, `STOP-21` — verified by
+> name against the catalogue before cutting, not assumed. That file is **reading item 2, mandatory and
+> read IN FULL**, it is the uncapped canonical home (71 entries), and the D101 count-check runs THERE
+> per the project's LEDGER-mode rule. Duplicating it made this prompt 278 lines for 3 tasks and buried
+> the track-specific knowledge below — the only thing this file can add that no other doc holds.
+
+**These are NOT in the catalogue. They are this track's hard-won specifics:**
+
+- **Keep `SGS_Container_Wrapper`.** Never re-open block-private for header/footer (6/6 council, Spec 37
+  §7 constraint 2). Add capabilities to the engine, never fork it.
+- **CSS tier-gating via a JS-added state class, NOT `[data-attr]` presence** — a presence-only selector
+  applies at every tier. Gate on the `is-row-*-active` class the JS adds only on active tiers.
+- **`view.js` lives at `src/header-behaviours/`, NOT `src/blocks/`** — the webpack entry is hardcoded;
+  a wrong path silently serves stale `src/` on the live site.
+- **`sgs_resolve_tier_booleans({desktop:true})` resolves to ALL tiers** (inherit-upward). "Desktop only"
+  needs explicit `{desktop:true, tablet:false, mobile:false}`.
+- **The collapse path must win by SPECIFICITY, not source order** — its selector is (0,4,0) against the
+  translate rule's (0,3,0). If you reorder `header-behaviours.css`, that must stay true.
+- **`prefers-reduced-motion` resets must repeat the FULL selector** of whatever set the transition; a
+  lower-specificity reset silently loses. And the collapse's reduced-motion path is **NOT
+  live-verified** (`P-ROW-COLLAPSE-RESIDUALS`) — do not quote it as measured.
+- **An absolute value in a SHARED stylesheet cannot know the resting value it modifies** (D386, the
+  shrink grow-bug). Gated by `check-shared-css-state-rules.js`; never baseline one of its findings
+  without a recorded reason. `0` is exempt by construction — a collapse to nothing cannot grow.
+- **Build-green is ZERO evidence for an editor-surface change.** Two editor-killing crashes shipped past
+  webpack + dead-controls + a brand-new gate in ONE session (a lost `useState` import, then a TDZ). The
+  crash renders as a tidy placeholder that skims past. After ANY `edit.js` / shared `src/components`
+  change: deploy, OPEN the editor, read the console.
+- **After a scripted multi-file edit, grep EVERY file to confirm it landed.** A script reporting success
+  is not proof the file on disk changed — that is how the `useState` import was lost while the footer
+  twin kept its copy.
 - **Fact-check your OWN brief before a council decides on it.** Three load-bearing claims in my own
-  decision brief were false and all favoured my recommendation. Grep-verify before dispatch; always
-  seat a code-grounded falsifier.
-- **`prefers-reduced-motion` resets must repeat the FULL selector** of whatever set the transition.
-  A lower-specificity reset silently loses.
-- **NEW — measure the STATE, never the flag that requests it.** A gate on "is X true?" must read the
-  computed value. Sticky and transparent both set `position` with `!important` at equal specificity,
-  transparent later in source order, so a header with both computes `absolute` while still carrying
-  the sticky class. **Corollary:** two `!important` rules at equal specificity are resolved by SOURCE
-  ORDER — when you author the winner, prefer higher specificity over position. **Second corollary:**
-  every measured gate still has a blind spot (an ancestor's `overflow`/`transform` silently kills
-  sticky while `position` still computes `sticky`) — name it, and ship a detector rather than
-  pretending the measurement is total.
-- **NEW — a criterion written against a REJECTED model must be STRUCK, not built.** When a decision
-  rejects a model, many of its acceptance criteria and guardrails become *meaningless*, and a builder
-  treating the list as the spec will construct machinery for impossible conditions. Two criteria in
-  the sticky design survived the rejection of the model they were written for — in a §4 list that had
-  already been rewritten once for exactly this reason. Walk EVERY criterion after a rejection and
-  classify it still-required / void / changed; record the void ones as struck **with the reason**.
-- **NEW — the collapse path must win by SPECIFICITY, not source order.** The collapse rule is (0,4,0)
-  against the translate rule's (0,3,0). If you reorder `header-behaviours.css`, that must stay true.
-- **NEW — `prefers-reduced-motion` on the collapse is NOT live-verified.** The harness cannot emulate
-  the media query. Correct by construction, but do not quote it as measured.
-
----
+  decision brief were false and all favoured my recommendation. Always seat a code-grounded falsifier.
+- **The full `npm run build` prebuild can be blocked by a co-active track's drift.** Route around it:
+  `npx wp-scripts build --experimental-modules --webpack-copy-php` (PowerShell), then deploy from an
+  ISOLATED worktree with a copied `build/` + `--skip-build`.
 
 ## Pre-flight self-attestation ritual — answer inline before the first Write/Edit
 
@@ -234,10 +206,10 @@ Task 1 (delegated, sonnet — patterns)  ||  Task 2 (inline, Opus — inspector)
 | `/brainstorming` | MANDATORY — any architectural or design decision |
 | `/gap-analysis` | MANDATORY — grade output before delivery |
 | `/lifecycle` | MANDATORY — before any skill/agent/pipeline change |
-| `/research` | MANDATORY — auto-routes to the right tier (`--tier extended` for multi-angle) |
-| `/strategic-plan` | MANDATORY — plan implementation order before writing code |
+| `/research` | MANDATORY — auto-routes tier (`--tier extended` = multi-angle) |
+| `/strategic-plan` | MANDATORY — plan order before writing code |
 | `/sgs-wp-engine` + `/wp-block-development` | the block + pattern build |
-| `/wp-block-themes` | pattern registration, theme.json, the `style.css` Version bump |
+| `/wp-block-themes` | pattern registration, theme.json, `style.css` Version bump |
 | `/qc-council` | before every deploy on the behaviour surface (blub.db 255) |
 | `/qc-inline` | per-file inline checks |
 | `/sgs-db` | DB ground truth before any "missing X" claim |
@@ -247,32 +219,34 @@ Task 1 (delegated, sonnet — patterns)  ||  Task 2 (inline, Opus — inspector)
 
 | Tool | For |
 |---|---|
-| chrome-devtools | live DOM **and editor console** verification. **Its profile can be locked by a co-active session — Playwright is the working fallback and was used all of 2026-07-26.** |
 | playwright | live DOM, editor automation via `wp.data.dispatch`, multi-viewport measurement |
-| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | DB queries |
-| `ssh hd` | canary shell; `wp option get sgs_active_header_cpt_id` / `..._footer_...` before measuring |
+| chrome-devtools | same, **but its profile is often locked by a co-active session — Playwright was the working fallback all of 2026-07-26** |
+| `sgs-db.py` | DB queries (`~/.claude/skills/sgs-wp-engine/scripts/`) |
+| `ssh hd` | canary shell; `wp option get sgs_active_header_cpt_id` before measuring |
 
 ### Agents to Delegate To
 
 | Agent | When |
 |---|---|
-| `wp-sgs-developer` | Task 1 (the preset patterns) — self-contained brief; tell it to EXECUTE, not delegate onward |
-| `feature-dev:code-reviewer` | before every deploy — it caught the P1 tier-gating bug AND the reduced-motion specificity bug |
+| `wp-sgs-developer` | Task 1 — self-contained brief; tell it to EXECUTE, not delegate onward |
+| `feature-dev:code-reviewer` | before every deploy — caught the P1 tier-gating AND reduced-motion bugs |
 | `test-and-explain` | plain-English confirmation for Bean after the build |
 
 ---
 
 ## Guardrails
 
-- Canary `sandybrown-nightingale-600381.hostingersite.com`; creds (gitignored, always available)
-  `.claude/secrets/sandybrown.env`; WP 7.0.2; **active header CPT 1570, active footer CPT 1654**.
-- Editor edits go through `wp.data.dispatch('core/block-editor').updateBlockAttributes` +
-  `savePost()` — **never** WP-CLI on `post_content` (a PreToolUse hook blocks it). Note clientIds
-  regenerate per editor session; re-resolve blocks by name, not a cached id.
-- Revert the canary to clean after testing and confirm it on the frontend. Check for a stray
-  `-autosave-v1` revision — it shows the next session a false "newer autosave" banner.
-- Everything is on `main` and pushed. The uncommitted tree belongs to the co-active track — do not
-  commit `lucide-icons.php`, `.claude/next-session-prompt.md`, `reports/inline-styling-audit-*`, or
+- Canary `sandybrown-nightingale-600381.hostingersite.com`; creds `.claude/secrets/sandybrown.env`
+  (gitignored, always available); WP 7.0.2; **active header CPT 1570, active footer CPT 1654 — check
+  the option, never infer from a name** (testing the obvious-looking "Proof Footer" 1571 gave a false
+  negative).
+- Editor edits go through `wp.data.dispatch('core/block-editor').updateBlockAttributes` + `savePost()`
+  — **never** WP-CLI on `post_content` (a PreToolUse hook blocks it). clientIds regenerate per editor
+  session; re-resolve blocks by name, not a cached id.
+- Revert the canary to clean afterwards and confirm on the frontend; check for a stray `-autosave-v1`
+  revision (it shows the next session a false "newer autosave" banner).
+- All on `main` and pushed. The uncommitted tree is the co-active track's — do not commit
+  `lucide-icons.php`, `.claude/next-session-prompt.md`, `reports/inline-styling-audit-*`,
   `.claude/memory/session-2026-07-2*.md`.
-- **Methodology (do not skip):** deploy before you measure; root cause before instance fix; outcome
-  ≠ code shipped; verify the LIVE rendered output, not internal metrics.
+- **Methodology:** deploy before you measure; root cause before instance fix; outcome ≠ code shipped;
+  verify the LIVE rendered output, not internal metrics.
