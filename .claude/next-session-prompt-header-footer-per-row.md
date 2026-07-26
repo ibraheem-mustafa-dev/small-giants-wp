@@ -63,7 +63,28 @@ the single most common "sticky doesn't work" cause). Instead, a row that should 
 to the retained rows with **no gap**. `transform` cannot be used for this — it never reclaims the
 element's space, which leaves a visible gap for exactly the scroll distance of that row's height.
 
-## Task 1 — Fix the scroll-padding bug (do FIRST; worth shipping alone)
+## Task 1 — ✅ DONE + LIVE-VERIFIED 2026-07-26 (`5716f7b7`, D391). DO NOT REBUILD.
+
+Shipped exactly as specified below, JS-only, `header-behaviours.css` untouched. Evidence:
+`reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md` (canary md5-matched
+local↔server; negative control included; desktop/tablet/mobile; anchor lands flush at 0
+unpinned and at the pinned height when pinned; WCAG 2.4.11 focus never obscured either way).
+
+**The one thing to carry forward:** the gate MEASURES `getComputedStyle(header).position ∈
+{sticky, fixed}` — it does NOT read `body.sgs-header-behaviour-sticky`. That is load-bearing,
+not a style preference: `header-behaviours.css` sets `position:sticky!important` (`:39`) and
+`position:absolute!important` for transparent (`:52`) at equal specificity with transparent
+LATER, so a header carrying both classes computes `absolute` and scrolls away. Task 2 needs
+the same "is the header actually pinned" signal — **reuse `isHeaderPinned()`, do not
+re-derive it from the body class.**
+
+**Found, NOT fixed, needs a decision:** `theme/sgs-theme/assets/css/utilities.css:21`
+declares its own `:root { --sgs-header-height: 80px }`, so the plugin rule's `0px` fallback
+can never fire and a JS-disabled page reserves 80px unconditionally — the same defect class,
+theme-side. Also `body.admin-bar html` (`:29`) can never match (`html` is not a descendant of
+`body`), so that admin-bar calc has never applied. Out of Task 1's stated scope.
+
+### Original brief (retained — this is what was built)
 
 **What:** a live accessibility defect, independent of the rest.
 `:root { scroll-padding-top: var(--sgs-header-height, 0px) }` is applied unconditionally and

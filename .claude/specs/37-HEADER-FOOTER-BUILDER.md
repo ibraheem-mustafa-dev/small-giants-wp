@@ -1171,16 +1171,31 @@ element (D390): it is driven by state a footer row cannot reach, and must coordi
 cookie banner / chat widget / back-to-top already competing for that edge.
 The multi-sticky warning is **advisory only, never a gate** — a fully sticky header is legitimate,
 especially paired with shrink.
-**Blocking sub-item — a LIVE defect this FR must fix:** `:root { scroll-padding-top: var(
---sgs-header-height, 0px) }` is applied unconditionally and the height publisher always runs, gated
-on nothing. So a NON-sticky header already reserves its full height (252px on canary) for in-page
-anchors — and the blast radius includes fragment navigation, find-in-page, every
+**Blocking sub-item — `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7`, D391).** The scroll-padding
+defect is FIXED; do not rebuild it. It was: `:root { scroll-padding-top: var(--sgs-header-height,
+0px) }` applied unconditionally while the height publisher always ran, gated on nothing, so a
+NON-sticky header reserved its full height (93px desktop / 252px mobile on canary) for in-page
+anchors — blast radius including fragment navigation, find-in-page, every
 `element.scrollIntoView()`, keyboard focus scrolling and scroll-snap. `var(--x, 0px)` fires its
 fallback only when the property is UNDEFINED, never when it is defined-but-zero, so the observer
-must publish `0px` explicitly, gated on *is anything actually pinned*. W3C technique **C43**
-confirms `scroll-padding` is a sufficient technique for WCAG 2.4.11/2.4.12 **including keyboard Tab
-focus** — it is not an anchor-jump-only fix.
-**Done when:** the binary criteria in §4 of the mini-design, each live-verified at 375/768/1440.
+publishes `0px` **explicitly**. W3C technique **C43** confirms `scroll-padding` is a sufficient
+technique for WCAG 2.4.11/2.4.12 **including keyboard Tab focus** — it is not an anchor-jump-only
+fix, so the CSS line is correct and was left unchanged; the fix is JS-only, in
+`src/header-behaviours/view.js`.
+**Binding rule — the pinned gate MEASURES `getComputedStyle(header).position`, never the
+`sgs-header-behaviour-sticky` body class.** `header-behaviours.css` sets `position:sticky!important`
+for sticky (`:39`) and `position:absolute!important` for transparent (`:52`) at equal specificity
+with transparent later in source order, so a header carrying BOTH classes computes `absolute` and
+scrolls away. A class-based gate publishes a non-zero height for a header that is not pinned. Proven
+live. An rAF-coalesced `resize` listener is also required: crossing a breakpoint can change
+`position` without changing the border-box height, so the ResizeObserver alone is insufficient.
+**Known second instance, NOT fixed:** `theme/sgs-theme/assets/css/utilities.css:21` declares its own
+`:root { --sgs-header-height: 80px }`, so the plugin rule's `0px` fallback can never fire and a
+JS-disabled page reserves 80px unconditionally; `body.admin-bar html` (`:29`) can never match
+(`html` is not a descendant of `body`). Both are theme-side and untouched.
+**Done when (remaining):** the collapse-when-pinned criteria in §4 of the mini-design, each
+live-verified at 375/768/1440. The scroll-padding criteria are met — evidence
+`reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md`.
 
 
 ---
@@ -1224,7 +1239,7 @@ focus** — it is not an anchor-jump-only fix.
 | Per-row shrink, proportional (FR-37-38) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`d54c316d`) — 48px→24px, left/right held, unpadded row 0→0 at 1440/768/mobile. First ship GREW an unpadded row (absolute value in a shared stylesheet); now `calc(own padding / 2)` per instance + gated by `check-shared-css-state-rules.js`. 44px floor measured and deliberately NOT built |
 | Shrink-hides-element + headerEssential guardrail (FR-37-39) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` — chosen child `display:none` while shrunk, sibling row unaffected; guardrail proven SERVER-SIDE (target pointed at the logo → no hide attr, no rule) and declarative via `supports.sgs.headerEssential`, not a hardcoded list |
 | Footer parity for per-row behaviours (FR-37-37/38) | `✅ LIVE-VERIFIED 2026-07-26` — measured on the ACTIVE footer **CPT 1654** (not the obvious 1571; check `sgs_active_footer_cpt_id`): top row 60px→30px, siblings unaffected |
-| Sticky model — HEADER-level, rows collapse (FR-37-40) | `APPROVED (design), NOT BUILT` (D389) — per-row `position:sticky` REJECTED on the short-parent trap; offset chain explicitly not to be built; footer rows get no sticky (→ Spec 18). **Carries a LIVE defect to fix: `scroll-padding-top` is unconditional, so a non-sticky header already reserves 252px for in-page anchors** |
+| Sticky model — HEADER-level, rows collapse (FR-37-40) | `PARTIAL` — per-row `position:sticky` REJECTED on the short-parent trap (D389); offset chain explicitly not to be built; footer rows get no sticky (→ Spec 18). **Scroll-padding sub-item `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7`, D391)** — the publisher is now gated on MEASURED pinning and publishes an explicit `0px` otherwise; negative-control-verified at desktop/tablet/mobile. **Still NOT built: collapse-when-pinned** (a hidden row must collapse to height 0 while the header is pinned, and stay byte-identical `translateY` when it is not) + the advisory multi-sticky warning |
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
