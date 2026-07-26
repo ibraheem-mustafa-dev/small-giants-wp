@@ -365,11 +365,15 @@ class TestHarnessSmoke:
     """Sanity checks on the harness machinery itself (not the converter logic)."""
 
     def test_fixture_dir_exists(self) -> None:
-        """Fixture directory must exist and contain at least 29 composites + 2 extras."""
+        """Fixture directory must exist and contain at least 28 composites + 2 extras.
+
+        Was 29 composites; sgs-mobile-nav was removed with the block deletion
+        (D337, 7c60b8ff) — count decremented 31 -> 30 to match.
+        """
         assert _FIXTURE_DIR.is_dir(), f"Fixture dir not found: {_FIXTURE_DIR}"
         html_files = list(_FIXTURE_DIR.glob("*.html"))
-        assert len(html_files) >= 31, (
-            f"Expected at least 31 fixture files (29 composites + precedence-collision + "
+        assert len(html_files) >= 30, (
+            f"Expected at least 30 fixture files (28 composites + precedence-collision + "
             f"mamas-trust-bar-real), found {len(html_files)}"
         )
 
