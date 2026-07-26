@@ -2,7 +2,8 @@
 doc_type: design-gate
 topic: per-row-sticky
 date: 2026-07-26
-status: DRAFT — awaiting Bean sign-off (Side Track A / SA-1, blocking for any per-row sticky)
+status: APPROVED (Bean, 2026-07-26) — SA-1 discharged; unblocks the sticky build. All four
+  decisions settled + researched. Ready for a fresh build session.
 governs: Spec 37 §Behaviours — adds per-row sticky; amends the F1 scroll-padding mechanism
 inputs:
   - .claude/plans/2026-07-25-header-footer-per-row-identity-design-gate.md §2 must-fixes 1, 2, 8
@@ -92,11 +93,13 @@ single header strip that is the same cost the shipped shrink effect already pays
 `padding-block`), so it is consistent with the motion-perf rule — which bans `filter` and
 `box-shadow`, not layout properties on small elements.
 
-**Open sub-decision for Bean:** the shipped per-row hide-on-scroll uses `translateY` and is
-live-verified. Does it (a) switch to collapse whenever the header is pinned, or (b) stay
-translate-only, with collapse introduced as a distinct behaviour? (a) is fewer concepts for the
-operator; (b) does not touch shipped, verified behaviour. Recommend (a), gated behind the sticky
-state so the non-sticky case renders exactly as it does today.
+**Sub-decision — SETTLED (Bean, 2026-07-26): option (a).** The shipped per-row hide-on-scroll
+SWITCHES to collapse whenever the header is pinned, and stays `translateY` when it is not. One
+behaviour that adapts, rather than two options the client has to choose between.
+
+**Binding constraint on the build:** the non-pinned case must render EXACTLY as it does today.
+`translateY(-100%)` on a `.sgs-row-behaviour` row with no sticky header is live-verified and
+must be byte-identical after this change — that is the regression test, not an aspiration.
 
 **Two conditions to enforce regardless** (silent-failure guards, worth a build-time check):
 - no ancestor of the header may have `overflow` other than `visible`, or `transform` /
