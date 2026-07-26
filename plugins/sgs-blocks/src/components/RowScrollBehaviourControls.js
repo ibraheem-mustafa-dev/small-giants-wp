@@ -48,6 +48,8 @@ export default function RowScrollBehaviourControls( {
 	attributes,
 	setAttributes,
 	clientId,
+	previewShrunk = false,
+	setPreviewShrunk,
 } ) {
 	const {
 		rowTransparent,
@@ -66,6 +68,12 @@ export default function RowScrollBehaviourControls( {
 	// information, never less.
 	const shrinkIsOn =
 		!! rowShrink && Object.values( rowShrink ).some( Boolean );
+	const hideOnScrollIsOn =
+		!! rowHideOnScroll && Object.values( rowHideOnScroll ).some( Boolean );
+	// Only warn when we KNOW the ancestor header is not pinned (false), never
+	// when there is no header ancestor to ask about (null → footer row).
+	const scrollEffectWastedOnUnpinnedHeader =
+		false === headerIsSticky && ( shrinkIsOn || hideOnScrollIsOn );
 	const hasVerticalPadding =
 		!! padding &&
 		typeof padding === 'object' &&
@@ -84,6 +92,30 @@ export default function RowScrollBehaviourControls( {
 	// (must-fix 4: no hardcoded block-name list here; protecting a new critical
 	// block later is a one-line block.json change). A server-side backstop in
 	// render.php re-checks the same flag.
+	// Is this row inside a header that is PINNED to the top of the screen?
+	// Scroll-linked effects (shrink / hide-on-scroll) only make sense on a
+	// header the visitor can still see once they have scrolled — on a header
+	// that scrolls away with the page, the effect fires just as the row leaves
+	// the screen and its only lasting result is nudging the page content.
+	// `null` = there is no sgs/site-header ancestor at all (a FOOTER row), so
+	// the question does not apply and no warning is shown.
+	const headerIsSticky = useSelect(
+		( select ) => {
+			const { getBlockParentsByBlockName, getBlockAttributes } =
+				select( blockEditorStore );
+			const parents = getBlockParentsByBlockName(
+				clientId,
+				'sgs/site-header'
+			);
+			if ( ! parents?.length ) {
+				return null;
+			}
+			return !! getBlockAttributes( parents[ parents.length - 1 ] )
+				?.headerSticky;
+		},
+		[ clientId ]
+	);
+
 	const hideCandidates = useSelect(
 		( select ) => {
 			const children =
@@ -147,6 +179,14 @@ export default function RowScrollBehaviourControls( {
 			title={ __( 'Row behaviour (Advanced)', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			{ scrollEffectWastedOnUnpinnedHeader && (
+				<Notice status="warning" isDismissible={ false }>
+					{ __(
+						'This header isn’t pinned to the top of the screen, so it scrolls away with the page. Scroll effects on this row will barely be seen, and shrinking will nudge the page content as it happens. Turn on “Sticky header” to make them worthwhile.',
+						'sgs-blocks'
+					) }
+				</Notice>
+			) }
 			<ToolsPanel
 				label={ __( 'Row scroll behaviour', 'sgs-blocks' ) }
 				resetAll={ () =>
@@ -268,6 +308,22 @@ export default function RowScrollBehaviourControls( {
 							/>
 						) }
 					</ResponsiveOverride>
+
+					{ shrinkIsOn && hasVerticalPadding && !! setPreviewShrunk && (
+						<ToggleControl
+							label={ __(
+								'Show me the shrunk size',
+								'sgs-blocks'
+							) }
+							checked={ previewShrunk }
+							onChange={ setPreviewShrunk }
+							help={ __(
+								'Previews this row at its scrolled size right here in the editor, so you don’t have to publish and scroll to see it. Affects this preview only — it changes nothing on your live site.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 
 					{ shrinkIsOn && ! hasVerticalPadding && (
 						<Notice status="warning" isDismissible={ false }>

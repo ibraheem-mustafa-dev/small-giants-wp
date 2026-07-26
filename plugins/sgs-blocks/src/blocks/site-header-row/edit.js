@@ -107,6 +107,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const isGrid = 'grid' === layout;
 
+	// Editor-preview only: "Show me the shrunk size" (Row behaviour panel).
+	// Local UI state — never persisted, never rendered on the front end.
+	const [ previewShrunk, setPreviewShrunk ] = useState( false );
+
+	// The editor preview previously ignored the row's padding entirely, so an
+	// operator could not see their own spacing OR what shrink would do to it.
+	// Mirror the desktop tier here (the tier the editor canvas represents), and
+	// halve top/bottom while previewing — the same 0.5 ratio render.php emits.
+	const previewPad = ( attributes.padding && attributes.padding.desktop ) || {};
+	const halved = ( value ) =>
+		value ? `calc(${ value } / 2)` : value;
+	const paddingPreview = {
+		...( previewPad.top
+			? {
+					paddingTop: previewShrunk
+						? halved( previewPad.top )
+						: previewPad.top,
+			  }
+			: {} ),
+		...( previewPad.bottom
+			? {
+					paddingBottom: previewShrunk
+						? halved( previewPad.bottom )
+						: previewPad.bottom,
+			  }
+			: {} ),
+		...( previewPad.left ? { paddingLeft: previewPad.left } : {} ),
+		...( previewPad.right ? { paddingRight: previewPad.right } : {} ),
+	};
+
 	// Empty-row detection drives the promoted quick-insert placeholder — once
 	// the operator adds any block (promoted or otherwise), this reverts to
 	// the normal (unrestricted) appender behaviour.
@@ -150,7 +180,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: `sgs-site-header-row${
 			rowSlot ? ` sgs-site-header-row--${ rowSlot }` : ''
 		}`,
-		style: previewStyle,
+		style: { ...previewStyle, ...paddingPreview },
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
@@ -272,6 +302,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					clientId={ clientId }
+					previewShrunk={ previewShrunk }
+					setPreviewShrunk={ setPreviewShrunk }
 				/>
 			</InspectorControls>
 
