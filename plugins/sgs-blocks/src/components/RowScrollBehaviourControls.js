@@ -59,6 +59,33 @@ export default function RowScrollBehaviourControls( {
 		padding,
 	} = attributes;
 
+	// Is this row inside a header that is PINNED to the top of the screen?
+	// Scroll-linked effects (shrink / hide-on-scroll) only make sense on a
+	// header the visitor can still see once they have scrolled — on a header
+	// that scrolls away with the page, the effect fires just as the row leaves
+	// the screen and its only lasting result is nudging the page content.
+	// `null` = there is no sgs/site-header ancestor at all (a FOOTER row), so
+	// the question does not apply and no warning is shown.
+	// MUST be declared BEFORE the derived flags below that read it — a `const`
+	// referenced above its declaration is a temporal-dead-zone crash that takes
+	// the whole block editor down ("Cannot access 'x' before initialization").
+	const headerIsSticky = useSelect(
+		( select ) => {
+			const { getBlockParentsByBlockName, getBlockAttributes } =
+				select( blockEditorStore );
+			const parents = getBlockParentsByBlockName(
+				clientId,
+				'sgs/site-header'
+			);
+			if ( ! parents?.length ) {
+				return null;
+			}
+			return !! getBlockAttributes( parents[ parents.length - 1 ] )
+				?.headerSticky;
+		},
+		[ clientId ]
+	);
+
 	// Shrink reduces this row's OWN vertical padding by half, so a row with no
 	// padding has nothing to reclaim and visibly does nothing. That is correct
 	// behaviour (it must never grow), but silent — so say so rather than leave
@@ -92,30 +119,6 @@ export default function RowScrollBehaviourControls( {
 	// (must-fix 4: no hardcoded block-name list here; protecting a new critical
 	// block later is a one-line block.json change). A server-side backstop in
 	// render.php re-checks the same flag.
-	// Is this row inside a header that is PINNED to the top of the screen?
-	// Scroll-linked effects (shrink / hide-on-scroll) only make sense on a
-	// header the visitor can still see once they have scrolled — on a header
-	// that scrolls away with the page, the effect fires just as the row leaves
-	// the screen and its only lasting result is nudging the page content.
-	// `null` = there is no sgs/site-header ancestor at all (a FOOTER row), so
-	// the question does not apply and no warning is shown.
-	const headerIsSticky = useSelect(
-		( select ) => {
-			const { getBlockParentsByBlockName, getBlockAttributes } =
-				select( blockEditorStore );
-			const parents = getBlockParentsByBlockName(
-				clientId,
-				'sgs/site-header'
-			);
-			if ( ! parents?.length ) {
-				return null;
-			}
-			return !! getBlockAttributes( parents[ parents.length - 1 ] )
-				?.headerSticky;
-		},
-		[ clientId ]
-	);
-
 	const hideCandidates = useSelect(
 		( select ) => {
 			const children =
