@@ -7,6 +7,18 @@ generated: 2026-07-26 (post box-object A1+A2 + sgs/container validation fix)
 
 Invoke `/autopilot` before anything else.** Then read this file end-to-end.
 
+> 🛑 **STOP — 2026-07-26 CORRECTION: the "2805 GAP no-inline wave" front below is a PHANTOM.**
+> An 11-condition DONE audit (`reports/2026-07-26-spec32-11-condition-done-audit.md`) proved the
+> GAP count is SEMANTIC NOISE, not work: even 100%-DONE exemplars carry 23–151 gaps (object-fit
+> on a button etc.). The Spec-32 no-inline programme is **effectively COMPLETE** — 0 inline-via-
+> render sites, 0 enabled supports lacking skip-serialization, 0 box-family violations, 0 dead
+> controls across accessible blocks. **The REAL remaining backlog is 5 block-fixes:** F3 hardcode
+> drain on `content-collection`/`form`/`pricing-table`/`product-card` + a device-tier breakpoint
+> fix on `feature-grid` (1024/768→1023/767). Do NOT scope a wave off the GAP count — use the audit
+> report as the backlog. (A separate Spec-35 inspector-quality layer has 12 real WARN findings —
+> different track, logged in the same report.) Everything from "## THE FRONT" downward is
+> SUPERSEDED by this banner.
+
 > ⚠ `main` is a SHARED worktree with co-active tracks (Spec 36/37 header/footer/nav = Track 2;
 > Spec 31 converter completion = Track 1c). **Path-scope every commit (`git commit -- <paths>`, the
 > hook blocks a bare commit); re-check `git branch --show-current` in the SAME command; NEVER `git
