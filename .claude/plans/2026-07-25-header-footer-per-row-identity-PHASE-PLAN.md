@@ -41,16 +41,29 @@ independent and cheap.
         on responsive-logo / nav-menu / cart, verified live in the block registry), NOT a
         hardcoded list. Picker also excludes children lacking `supports.anchor` (11 blocks incl.
         sgs/product-search — WP would silently discard the id). 6/6 deploy files md5-matched.
-      - **P2-S1 shrink itself: MECHANISM LIVE, EFFECT WRONG — do not ship to a client.** The
-        state class + tier-gating work (`is-row-shrink-active` at desktop only, `is-row-shrunk`
-        past 50px, reset on scroll-up, sibling row untouched). But the rule sets an ABSOLUTE
-        shrunk `padding-block` (`--wp--preset--spacing--10`), so on a row whose own padding is
-        unset the row measured 0px at rest → **4px when "shrunk"**: it GREW. Shrink must never
-        increase. Root cause: the shrunk value cannot be expressed relative to the resting value
-        because the shared wrapper emits the row's padding as a literal, not as a custom
-        property. Fixing it properly = adding that capability to `SGS_Container_Wrapper` (the
-        design doc's sanctioned route, §4) and therefore a shared-mechanism DESIGN GATE needing
-        Bean's approval before build. Decision pending.
+      - **P2-S1 shrink: FIXED + LIVE-PROVEN (commit `d54c316d`).** The first ship set an
+        ABSOLUTE shrunk `padding-block` in the shared stylesheet; at (0,3,0) it out-specified
+        each row's own `.sgs-container-<uid>` rule (0,1,0), forcing every row to the same size
+        — an unpadded row measured 0px at rest → **4px "shrunk"**: it GREW.
+        **Fix:** the absolute rule is DELETED; the shrunk value is emitted PER INSTANCE as
+        `calc(<that row's own padding> / 2)` per tier by the new shared `sgs_row_shrink_css()`
+        (`includes/helpers-row-behaviour.php`), which calls the existing public
+        `sgs_emit_responsive_css()` engine — the same helper `mega-panel`/`nav-drawer` already
+        call directly. Proportional by construction, so growth is impossible. Ratio 0.5
+        (Bean-decided; it was previously an undeclared number).
+        **Live-proven on the canary at 1440 / 768 / mobile:** padded row 48px → **24px**
+        (exactly half) with left/right held at 30px (no horizontal jolt); unpadded row
+        **0 → 0** (was 0 → 4px). Assertion used = computed padding shrunk ≤ resting, the check
+        that did not exist when the defect shipped. 4/4 deploy files md5-matched. Canary reverted.
+        **Option 1 (shared-wrapper custom property) was REJECTED** by a 5-persona adversarial
+        council: only **2 of 29** wrapper-using blocks pass `responsive_model => 'object'`, so
+        its "every block benefits" claim was false (verified). Do not re-open without new evidence.
+        **Operator UX:** shrink toggle stays visible + enabled; a warning `Notice` fires when
+        shrink is on and the row has no padding. NOT hidden/disabled (undiscoverable).
+        **Recorded as NOT done:** no 44px touch-target floor; shrink on a NON-STICKY row is
+        invisible and reflows content (no warning/gate); no editor preview
+        (`header-behaviours.css` is not enqueued in admin); `assets/css/` is covered by no gate,
+        so only a ⛔ comment guards the deleted rule's return.
 - [ ] **P2-S3 footer parity — NOT verified.** Footer rows share the identical code path (same
       attrs, same resolver, same view.js/CSS), but no footer row was live-verified this session.
 - [ ] The sticky mini-design is written + signed off before any per-row sticky ships.
