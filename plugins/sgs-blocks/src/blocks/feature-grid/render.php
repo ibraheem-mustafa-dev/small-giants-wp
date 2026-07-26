@@ -133,8 +133,9 @@ if ( $use_auto_flex ) {
 } else {
 	/*
 	 * Fixed columns by count (no explicit template): explicit grid with breakpoint
-	 * overrides. Desktop (>1024px): $columns_desktop. Tablet (769–1024px):
-	 * $columns_tablet. Mobile (≤768px): $columns_mobile.
+	 * overrides on the SGS device tiers (contract §B2: 767/1023). Desktop (≥1024px):
+	 * $columns_desktop. Tablet (768–1023px): $columns_tablet. Mobile (≤767px):
+	 * $columns_mobile.
 	 */
 	$css = ".$uid.sgs-feature-grid {
 	display: grid;
@@ -143,13 +144,13 @@ if ( $use_auto_flex ) {
 	align-items: $align_items;
 	justify-items: $justify_items;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
 	.$uid.sgs-feature-grid {
 		grid-template-columns: repeat($columns_tablet, 1fr);
 		gap: $gap_tablet_css;
 	}
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.$uid.sgs-feature-grid {
 		grid-template-columns: repeat($columns_mobile, 1fr);
 		gap: $gap_mobile_css;
