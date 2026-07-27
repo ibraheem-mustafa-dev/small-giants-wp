@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "SGS Mega Aside",
 	"category": "sgs-content",
-	"description": "The optional side panel of a mega panel — media, a heading, text and a call-to-action. Its colours and shape are painted entirely by the parent mega panel's style variant and colour scheme, so switching the panel restyles the aside uniformly. Used inside sgs/mega-panel only.",
+	"description": "The optional side panel of a mega panel — media, a tag, a heading, text and a call-to-action. Its LAYOUT/GRID position (width, divider) is painted by the parent mega panel's style variant and colour scheme (CF-10, parent-paints-child); its own FILL (background, padding, corner radius, border) and content arrangement (asideFormat) are this block's own. Used inside sgs/mega-panel only.",
 	"keywords": [ "mega", "menu", "aside", "cta", "side panel" ],
 	"textdomain": "sgs-blocks",
 	"icon": "align-pull-right",
@@ -22,15 +22,51 @@
 					"label": "Aside",
 					"layer": "CONTENT",
 					"order": 1,
-					"clusters": [],
+					"clusters": [ "fill", "layout" ],
 					"isWrapper": true,
-					"_note": "The `.sgs-mega-aside` side-column wrapper. Carries NO styling attributes of its own by design (CF-10, parent-paints-child): the parent sgs/mega-panel's scoped CSS paints this element per data-mega-style / data-mega-scheme (width via asideWidth, divider via asideSeparator — both mega-panel attrs, not this block's). Its content (media + heading + text + button) is child-owned (HC2). Honest zero-cluster element."
+					"attrMap": {
+						"css:background-color": "asideBg",
+						"css:padding": "asidePadding",
+						"css:border-radius": "asideRadius",
+						"css:border-color": "asideBorderColour",
+						"css:border-width": "asideBorderWidth"
+					},
+					"_note": "The `.sgs-mega-aside` side-column wrapper. GRID POSITION (width, divider) stays parent-owned (CF-10: mega-panel's asideWidth/asideSeparator paint this element per data-mega-style/data-mega-scheme) — never duplicated here. FILL (background/padding/radius/border) is THIS block's own attrs, resolved against the panel's inherited --sgs-mm-* custom properties as safe fallbacks so an unset value still looks correct inside any panel scheme. `asideFormat` (feature|preview|cta) is a content-arrangement mode attr, not a css: property mapping (CF-4 pattern, mirrors mega-panel's variant/style), so it is deliberately absent from attrMap. Its content (media + tag + heading + text + button) is child-owned (HC2) — no typography/colour duplicate control lives on THIS block for any of those elements."
 				}
 			}
+		}
+	},
+	"attributes": {
+		"asideFormat": {
+			"type": "string",
+			"default": "feature"
+		},
+		"asideBg": {
+			"type": "string",
+			"default": ""
+		},
+		"asidePadding": {
+			"type": "object",
+			"default": {
+				"desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" }
+			}
+		},
+		"asideRadius": {
+			"type": "string",
+			"default": ""
+		},
+		"asideBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"asideBorderWidth": {
+			"type": "string",
+			"default": "0px"
 		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
 	"render": "file:./render.php"
 }

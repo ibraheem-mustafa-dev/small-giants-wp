@@ -2,19 +2,35 @@
 /**
  * Server-side render for sgs/mega-aside — the optional side panel of a mega.
  *
- * A dumb wrapper (CF-10, parent-paints-child): it emits ONLY the
- * `.sgs-mega-aside` element carrying its InnerBlocks (media + heading + text +
- * button). It has NO styling attributes of its own — the parent
- * sgs/mega-panel paints the aside's width + separator via its own scoped CSS,
- * keyed on this class.
+ * GROUND-TRUTH: verified against .claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md
+ * §8 (aside formats) + the live mega-panel/render.php pattern (uid, sgs_colour_value,
+ * sgs_css_length_sanitise, sgs_emit_responsive_css) this file mirrors.
  *
- * Dynamic (not static) so that `save` persists only the InnerBlocks marker —
- * the starter patterns store comment delimiters + children with no wrapper
- * div, which then validate cleanly, and a future wrapper change never strands
- * stored content (no deprecations, D270).
+ * Renders the `.sgs-mega-aside` element carrying its InnerBlocks (media + tag +
+ * heading + text + button — always all five children present; `asideFormat`
+ * only changes which are VISIBLE and how they're arranged, never the template).
  *
- * @var string   $content Rendered InnerBlocks (media + heading + text + button).
- * @var array    $attributes Block attributes (none of its own).
+ * OWNERSHIP SPLIT (CF-10, parent-paints-child): the parent sgs/mega-panel paints
+ * this element's GRID POSITION — width + divider — via its own scoped CSS keyed
+ * on `.sgs-mega-aside`. This block owns its own FILL (background/padding/radius/
+ * border) and its content ARRANGEMENT (asideFormat), resolved against the
+ * panel's inherited --sgs-mm-* custom properties as safe fallbacks.
+ *
+ * NO-INLINE (Spec 32): every attribute value is emitted into this instance's
+ * own scoped `<style>` tag, keyed to a content-addressed uid selector, never an
+ * inline `style="…"` attribute.
+ *
+ * SECURITY (CF-2, binding): every colour/token attr resolves via
+ * `sgs_colour_value()`; every free dimensional attr resolves via the shared
+ * `sgs_css_length_sanitise()` regex sanitiser; `asideFormat` is a PHP-validated
+ * enum (block.json deliberately declares NO JSON `enum` — an out-of-enum JSON
+ * enum silently coerces the stored value to the block.json default,
+ * `blockjson-enum-coerces-invalid-to-default`); nothing raw is ever
+ * concatenated into the scoped `<style>`. `wp_strip_all_tags()` guards the one
+ * remaining `</style>`-breakout vector as a defence-in-depth backstop.
+ *
+ * @var array    $attributes Block attributes.
+ * @var string   $content Rendered InnerBlocks (media + label + heading + text + button).
  * @var \WP_Block $block   Block instance.
  *
  * @package SGS\Blocks
@@ -22,12 +38,116 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$sgs_mega_aside_wrapper = get_block_wrapper_attributes( array( 'class' => 'sgs-mega-aside' ) );
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-// $content is do_blocks() output for the child blocks — already-safe rendered
-// block HTML; get_block_wrapper_attributes() escapes the wrapper.
+// ---------------------------------------------------------------------------
+// 0. Sanitise every attribute.
+// ---------------------------------------------------------------------------
+
+$allowed_formats = array( 'feature', 'preview', 'cta' );
+$aside_format    = isset( $attributes['asideFormat'] ) && in_array( $attributes['asideFormat'], $allowed_formats, true )
+	? (string) $attributes['asideFormat']
+	: 'feature';
+
+$aside_bg_raw            = isset( $attributes['asideBg'] ) ? (string) $attributes['asideBg'] : '';
+$aside_border_colour_raw = isset( $attributes['asideBorderColour'] ) ? (string) $attributes['asideBorderColour'] : '';
+$aside_radius            = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideRadius'] ?? '' ) : '';
+$aside_border_width      = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['asideBorderWidth'] ?? '0px' ) : '0px';
+$aside_padding_obj       = is_array( $attributes['asidePadding'] ?? null ) ? $attributes['asidePadding'] : array();
+
+// ---------------------------------------------------------------------------
+// 1. Content-addressed uid + selectors (STOP-NO-KSORT: $attributes hashed
+// verbatim, never reordered).
+// ---------------------------------------------------------------------------
+
+$uid      = 'sgs-mega-aside-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-mega-aside';
+
+$css = '';
+
+// ---------------------------------------------------------------------------
+// 2. Fill: background / border / radius. Every colour resolves against the
+// panel's inherited custom properties as a safe fallback so an unset value
+// still looks correct inside any panel scheme (light-only today, dark-ready
+// once the panel's dark value set ships — the var() fallback chain needs no
+// change when that lands).
+// ---------------------------------------------------------------------------
+
+$aside_bg_value = '' !== $aside_bg_raw ? sgs_colour_value( $aside_bg_raw ) : '';
+if ( '' !== $aside_bg_value ) {
+	$css .= $root_sel . '{background-color:' . $aside_bg_value . ';}';
+}
+
+if ( '' !== $aside_radius ) {
+	$css .= $root_sel . '{border-radius:' . $aside_radius . ';}';
+}
+
+// Border only paints when a non-zero width is set (an empty/0 width means
+// "no border", matching the block's honest-absence contract).
+$border_width_px = (float) $aside_border_width;
+if ( $border_width_px > 0 ) {
+	$aside_border_colour_value = '' !== $aside_border_colour_raw
+		? sgs_colour_value( $aside_border_colour_raw )
+		: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
+	$css                      .= $root_sel . '{border:' . $aside_border_width . ' solid ' . $aside_border_colour_value . ';}';
+}
+
+if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {
+	$css .= sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value'        => $aside_padding_obj,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		),
+		array( 'container' => true )
+	);
+}
+
+// ---------------------------------------------------------------------------
+// 3. Format arrangement (structural — depends only on the enum, not on a
+// resolved instance VALUE, so this mirrors the same rule shape declared
+// statically in style.css/editor.css; emitted here too for guaranteed
+// frontend delivery, matching mega-panel's own dual-delivery pattern).
+// ---------------------------------------------------------------------------
+
+if ( 'cta' === $aside_format ) {
+	// Compact "brands" style: pill + description + CTA. Media + heading hidden.
+	$css .= $root_sel . ' > .wp-block-sgs-media,' . $root_sel . ' > .wp-block-sgs-heading{display:none;}';
+} elseif ( 'preview' === $aside_format ) {
+	// Hover-reactive: only the heading (title) + text (description) are
+	// visible; view.js swaps their content on hover/focus of a sibling link
+	// and restores the authored default (the "sensible resting state") when
+	// nothing is hovered.
+	$css .= $root_sel . ' > .wp-block-sgs-media,' . $root_sel . ' > .wp-block-sgs-label,' . $root_sel . ' > .wp-block-sgs-button{display:none;}';
+}
+// 'feature' (default) shows all five children — no hide rule needed.
+
+// ---------------------------------------------------------------------------
+// 4. Wrapper attributes + output. wp_strip_all_tags (NOT esc_html) blocks a
+// </style> breakout while leaving CSS combinators intact; every value
+// reaching $css is pre-sanitised (sgs_colour_value / sgs_css_length_sanitise /
+// sgs_emit_responsive_css / the enum whitelist above already rejects anything
+// outside its allowed value set).
+// ---------------------------------------------------------------------------
+
+$wrapper_args       = array(
+	'class'             => 'sgs-mega-aside ' . $uid,
+	'data-aside-format' => $aside_format,
+);
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $css pre-sanitised (sgs_colour_value / sgs_css_length_sanitise / sgs_emit_responsive_css / enum whitelist), wp_strip_all_tags guards </style>; $wrapper_attributes from get_block_wrapper_attributes(); $content is trusted WP InnerBlocks output.
+if ( '' !== $css ) {
+	printf( '<style>%s</style>', wp_strip_all_tags( $css ) );
+}
+
 printf(
 	'<div %1$s>%2$s</div>',
-	$sgs_mega_aside_wrapper, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() self-escapes.
-	$content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks render output, already-safe block HTML.
+	$wrapper_attributes,
+	$content
 );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

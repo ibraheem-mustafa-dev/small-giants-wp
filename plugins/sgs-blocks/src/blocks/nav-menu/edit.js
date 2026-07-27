@@ -21,12 +21,15 @@ import {
 	SelectControl,
 	CheckboxControl,
 	TextControl,
+	ToggleControl,
 	ButtonGroup,
 	Button,
 	Notice,
 	__experimentalUnitControl as UnitControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -123,6 +126,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		burgerBg,
 		burgerHoverColour,
 		burgerSize,
+		indicatorStyle,
+		indicatorColour,
+		itemMagnetEnabled,
 	} = attributes;
 
 	// Classic menus (Appearance → Menus, `nav_menu` terms) are the PRIMARY source
@@ -606,6 +612,63 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix="item"
 						attributes={ attributes }
 						setAttributes={ setAttributes }
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Effects', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleGroupControl
+						label={ __( 'Sliding indicator', 'sgs-blocks' ) }
+						value={ indicatorStyle }
+						isBlock
+						onChange={ ( val ) =>
+							setAttributes( { indicatorStyle: val } )
+						}
+						help={ __(
+							'A pill that slides beneath the hovered/current item — additional to the hover style above, not a replacement for it.',
+							'sgs-blocks'
+						) }
+					>
+						<ToggleGroupControlOption
+							value="none"
+							label={ __( 'Off', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="pill"
+							label={ __( 'On', 'sgs-blocks' ) }
+						/>
+					</ToggleGroupControl>
+
+					{ 'pill' === indicatorStyle && (
+						<DesignTokenPicker
+							label={ __( 'Indicator colour', 'sgs-blocks' ) }
+							value={ indicatorColour }
+							onChange={ ( val ) =>
+								setAttributes( { indicatorColour: val } )
+							}
+							linked
+							enableAlpha
+							clearable
+							help={ __(
+								'Leave empty to use the theme accent colour.',
+								'sgs-blocks'
+							) }
+						/>
+					) }
+
+					<ToggleControl
+						label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
+						checked={ !! itemMagnetEnabled }
+						onChange={ ( val ) =>
+							setAttributes( { itemMagnetEnabled: val } )
+						}
+						help={ __(
+							'Nudges each item label a few pixels toward the cursor on hover. Off automatically when the visitor is using touch, and when reduced motion is requested.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

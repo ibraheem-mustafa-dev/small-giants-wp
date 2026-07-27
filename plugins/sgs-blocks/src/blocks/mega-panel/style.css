@@ -57,6 +57,23 @@
 	--sgs-mm-card: rgba( 255, 255, 255, 0.6 );
 }
 
+/* -- dark scheme (§4) — editor-canvas preview of the SAME two-rule cascade
+   render.php emits on the frontend (CF-7: forced `dark`, or `auto` bound to
+   an EXPLICIT site-wide `data-theme="dark"` switcher only — deliberately NO
+   bare `prefers-color-scheme` fallback, so "no switcher + OS dark" stays
+   light in both the canvas and the frontend). ------------------------------ */
+.wp-block-sgs-mega-panel[ data-mega-scheme='dark' ],
+:root[ data-theme='dark' ] .wp-block-sgs-mega-panel[ data-mega-scheme='auto' ] {
+	--sgs-mm-text: #f3f2ee;
+	--sgs-mm-muted: #9a9992;
+	--sgs-mm-soft: color-mix( in srgb, var( --sgs-mm-accent, var( --wp--preset--color--accent ) ) 16%, transparent );
+	--sgs-mm-panel-bg: rgba( 20, 20, 25, 0.82 );
+	--sgs-mm-card: rgba( 255, 255, 255, 0.04 );
+	--sgs-mm-panel-border: rgba( 255, 255, 255, 0.11 );
+	color: var( --sgs-mm-text );
+	background-color: var( --sgs-mm-panel-bg );
+}
+
 .sgs-mega-panel__content {
 	width: 100%;
 	gap: var( --sgs-mm-group-gap, 44px );
@@ -71,6 +88,135 @@
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content > * {
 	flex: 1 1 200px;
 	min-width: 0;
+}
+
+/* -- card hover-lift (§6) — the `cards` style's `.sgs-mega-group` tile only;
+   `sgs/card-grid` (media-cards/brands) owns its own native hover system, so
+   it is left untouched here to avoid a competing/overlapping mechanism.
+   Transitions ONLY transform + opacity, never box-shadow/filter (measured
+   frame-drop cause on this project); the lift shadow is a same-box
+   `::after` faded via opacity, not a box-shadow transition. --------------- */
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group {
+	position: relative;
+	transition: transform 0.2s ease;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: 0 20px 40px -12px rgba( 0, 0, 0, 0.28 );
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	pointer-events: none;
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
+	transform: translateY( -3px );
+	border-color: var( --sgs-mm-accent, var( --wp--preset--color--accent ) );
+}
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover::after,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within::after {
+	opacity: 1;
+}
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group,
+	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group::after {
+		transition: none;
+	}
+	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,
+	.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within {
+		transform: none;
+	}
+}
+
+/* -- media-cards / brands: a `sgs/card-grid` child sitting as a flat sibling
+   in the content row (not wrapped in `.sgs-mega-group`) gets the SAME
+   flex-basis as a group under the `columns` style — universal per-style
+   rule, not a per-variant carve-out. In the editor this targets WP's own
+   block-list wrapper (`> *`) the same way the aside rule below does. ------ */
+.wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-mega-panel__content > *:has( .wp-block-sgs-card-grid ) {
+	flex: 1 1 200px;
+	min-width: 0;
+}
+
+/* -- brands eyebrow (§3) — a small mono micro-label above the content row;
+   spans the full row (documented deviation, see block.json `brandsEyebrow`
+   note). ------------------------------------------------------------------ */
+.wp-block-sgs-mega-panel .sgs-mega-panel__eyebrow {
+	display: block;
+	font-family: var( --wp--preset--font-family--mono, monospace );
+	font-size: 11px;
+	font-weight: 500;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var( --sgs-mm-muted, var( --wp--preset--color--text-muted ) );
+	margin: 0 0 16px;
+}
+
+/* -- staggered reveal (§6 U4) — CONSUMER side of `shared/effects/stagger.js`'s
+   frozen CSS contract (see that file's doc-block). view.js writes ONLY the
+   `--sgs-stagger-*` custom-property VALUES; every declaration here defaults
+   (via the `var(…, fallback)` 2nd arg) to the fully-visible end state, so a
+   page where view.js never runs (JS-off, or the effect throws) renders
+   exactly as if the reveal had already finished — content is NEVER hidden
+   by CSS alone (rule: degrade-to-more-content-never-less). ---------------- */
+.wp-block-sgs-mega-panel[ data-stagger ] {
+	opacity: var( --sgs-stagger-panel-opacity, 1 );
+	transform: translateY( var( --sgs-stagger-panel-y, 0 ) )
+		scale( var( --sgs-stagger-panel-scale, 1 ) );
+	transition: opacity 340ms cubic-bezier( 0.16, 0.84, 0.32, 1 ),
+		transform 340ms cubic-bezier( 0.16, 0.84, 0.32, 1 );
+}
+.wp-block-sgs-mega-panel[ data-stagger ] .sgs-mega-panel__content > * {
+	opacity: var( --sgs-stagger-opacity, 1 );
+	transform: translate( var( --sgs-stagger-x, 0 ), var( --sgs-stagger-y, 0 ) );
+	transition: opacity var( --sgs-stagger-duration, 460ms )
+			cubic-bezier( 0.16, 0.84, 0.32, 1 ) var( --sgs-stagger-delay, 0ms ),
+		transform var( --sgs-stagger-duration, 460ms )
+			cubic-bezier( 0.16, 0.84, 0.32, 1 ) var( --sgs-stagger-delay, 0ms );
+}
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-mega-panel[ data-stagger ],
+	.wp-block-sgs-mega-panel[ data-stagger ] .sgs-mega-panel__content > * {
+		transition: none !important;
+	}
+}
+
+/* -- cursor spotlight (§6 U6) — CONSUMER side of `shared/effects/spotlight.js`'s
+   frozen CSS contract. view.js applies the `data-spotlight` attribute (JS-only
+   — no PHP-side attribute needed) to `.sgs-mega-aside` when present, then
+   writes ONLY `--mx`/`--my`. `--sgs-spotlight-colour` reuses the panel's own
+   "soft" role token (§4) so the glow follows whichever accent the operator
+   picked. Aside content gets `position:relative;z-index:1` so it paints
+   ABOVE the absolutely-positioned glow layer. --------------------------- */
+.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] {
+	position: relative;
+}
+.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	opacity: 0.9;
+	pointer-events: none;
+	background: radial-gradient(
+		260px circle at var( --mx, 50% ) var( --my, 30% ),
+		var( --sgs-spotlight-colour, var( --sgs-mm-soft, var( --wp--preset--color--accent ) ) ),
+		transparent 70%
+	);
+}
+.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ] > * {
+	position: relative;
+	z-index: 1;
+}
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before {
+		background: radial-gradient(
+			260px circle at 50% 30%,
+			var( --sgs-spotlight-colour, var( --sgs-mm-soft, var( --wp--preset--color--accent ) ) ),
+			transparent 70%
+		);
+	}
 }
 .wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item {
 	display: flex;

@@ -55,9 +55,20 @@ SUPPORTS_COLOR_EXEMPT = {
     #                so the "colour"-substring heuristic is a false positive here
     #                (same shape as nav-menu/nav-drawer). Exempt cross-track to
     #                unblock the shared commit gate — 2026-07-25.
+    #   mega-aside — asideBorderColour is the ONLY attr the "colour" substring
+    #                matches, and it is a BORDER colour on the aside's own
+    #                wrapper → supports.border.color, NOT supports.color.
+    #                Identical shape to mega-panel's borderColour above.
+    #                (asideBg IS a wrapper background, but it never matches this
+    #                heuristic — it is attribute-driven into the block's scoped
+    #                <style> per Spec 32, exactly as mega-panel's panelBg is.
+    #                Declaring supports.color here would auto-inline styles that
+    #                Spec 32 forbids AND diverge this block from its three
+    #                siblings.) — 2026-07-27.
     "sgs/nav-menu",
     "sgs/nav-drawer",
     "sgs/mega-panel",
+    "sgs/mega-aside",
 }
 
 issues = {"viewScript": [], "source_html": [], "typo_dup": [], "supports_color_missing": []}

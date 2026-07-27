@@ -11,6 +11,14 @@
  * and the icon-list markup they render). One switch of `style` or
  * `colourScheme` re-shapes/re-colours every child uniformly.
  *
+ * VARIANTS (§0.5/§1): `general` uses the parent-paints-child model above.
+ * `media-cards`/`brands` instead host a `sgs/card-grid` child (media-cards:
+ * a single grid; brands: a logo-tile grid + a `sgs/mega-aside` CTA column) —
+ * `sgs/card-grid` owns its OWN full styling/hover system, so it is composed
+ * normally rather than parent-painted; this block only extends the
+ * `columns`-style flex-basis rule to cover it (§4 below) and, for `brands`,
+ * renders a small `brandsEyebrow` text attribute above the content row.
+ *
  * WRAPPER NOTE (D294 deviation, standalone): this block does NOT call
  * `SGS_Container_Wrapper` / `sgs/container`. It is `containerMirror:false`
  * (block.json) — it hand-rolls its own flex/grid content-row per `style`,
@@ -80,6 +88,12 @@ $max_width_obj     = is_array( $attributes['maxWidth'] ?? null ) ? $attributes['
 $panel_padding_obj = is_array( $attributes['panelPadding'] ?? null ) ? $attributes['panelPadding'] : array();
 $group_gap_obj     = is_array( $attributes['groupGap'] ?? null ) ? $attributes['groupGap'] : array( 'desktop' => '44px' );
 
+// brands-variant eyebrow (§3) + the stagger opt-in (§6 U4). Both are plain
+// scalar attrs on THIS block (no InnerBlocks role:content concerns — CF-6
+// only governs templateLock:contentOnly child attrs).
+$brands_eyebrow  = isset( $attributes['brandsEyebrow'] ) ? (string) $attributes['brandsEyebrow'] : '';
+$stagger_on_open = ! empty( $attributes['staggerOnOpen'] );
+
 // ---------------------------------------------------------------------------
 // 1. Content-addressed uid + selectors (STOP-NO-KSORT: $attributes hashed
 // verbatim, never reordered).
@@ -101,19 +115,20 @@ $heading_sel = $group_sel . ' > .sgs-heading, ' . $group_sel . ' .wp-block-sgs-h
 $style_col   = $root_sel . '[data-mega-style="columns"]';
 $style_crd   = $root_sel . '[data-mega-style="cards"]';
 $style_min   = $root_sel . '[data-mega-style="minimal"]';
-$rel_content = ' .sgs-mega-panel__content';
-$rel_group   = ' .sgs-mega-group';
-$rel_item    = ' .sgs-mega-group .sgs-icon-list__item';
-$rel_icon    = ' .sgs-mega-group .sgs-icon-list__icon';
+$rel_content   = ' .sgs-mega-panel__content';
+$rel_group     = ' .sgs-mega-group';
+$rel_item      = ' .sgs-mega-group .sgs-icon-list__item';
+$rel_icon      = ' .sgs-mega-group .sgs-icon-list__icon';
+// `media-cards`/`brands` content: a `sgs/card-grid` child sitting as a flat
+// sibling in the same content row (never wrapped in `.sgs-mega-group`).
+$rel_card_grid = ' .wp-block-sgs-card-grid';
 
 $css = '';
 
 // ---------------------------------------------------------------------------
-// 2. Colour custom-property sets (§4). CORE ships LIGHT only; the dark
-// selector cascade is declared (structurally present, matching the theme's
-// own dark-mode convention) but its VALUE SET is deferred — an explicit
-// `colourScheme="dark"`/"auto" instance still renders the light values until
-// the dark set ships (STOP-29 deferral, not a silent drop).
+// 2. Colour custom-property sets (§4) — light (below) + dark cascade (CF-7,
+// further down). `colourScheme="dark"`/`"auto"` render the real §4 dark
+// value set, not a placeholder.
 // ---------------------------------------------------------------------------
 
 $accent_value = sgs_colour_value( $accent_slug );
@@ -164,13 +179,34 @@ $css .= $root_sel . '{'
 	. 'background-color:var(--sgs-mm-panel-bg);'
 	. '}';
 
-// Dark scheme cascade (§4 selector shape) — deferred value set (STOP-29): the
-// forced-dark and auto-dark selectors are declared so the SHAPE is proven
-// live now and the dark colour set can land later without a selector
-// rewrite; their rule bodies are intentionally empty until that follow-on.
-$css .= $root_sel . '[data-mega-scheme="dark"]{/* deferred — dark value set follows the CORE build (§4 dark column) */}';
-$css .= ':root[data-theme="dark"] ' . $root_sel . '[data-mega-scheme="auto"]{/* deferred — dark value set follows the CORE build */}';
-$css .= '@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="dark"]) ' . $root_sel . '[data-mega-scheme="auto"]{/* deferred — dark value set follows the CORE build */}}';
+// Dark scheme cascade (§4). `accent` is deliberately NOT redeclared in the
+// dark props — §4 says the picked accent is "reuse verbatim" in both
+// schemes, so it stays whatever the base rule above already set.
+//
+// CF-7 (binding — this OVERRIDES §4's own illustrative CSS block, which
+// showed a bare `@media (prefers-color-scheme: dark)` fallback for "no site
+// switcher present"): `colourScheme:auto` must render LIGHT when there is
+// no site-wide dark switcher, even if the visitor's OS prefers dark — it
+// must NEVER silently follow prefers-color-scheme for this one component on
+// an otherwise-light site. A bare `@media` rule with no `[data-theme]` gate
+// cannot express that (it fires purely off the OS signal), so — unlike a
+// naive 3-rule cascade — only TWO rules are emitted: forced `dark`, and
+// `auto` bound to an EXPLICIT `:root[data-theme="dark"]` site switcher. No
+// "auto follows OS with no switcher" rule exists; the qc-council table
+// itself validates this ("CF-7 ... no prefers-color-scheme-only dark").
+$dark_props = '--sgs-mm-text:#f3f2ee;'
+	. '--sgs-mm-muted:#9a9992;'
+	. '--sgs-mm-soft:color-mix(in srgb, var(--sgs-mm-accent) 16%, transparent);'
+	. '--sgs-mm-panel-bg:rgba(20,20,25,.82);'
+	. '--sgs-mm-card:rgba(255,255,255,.04);'
+	. '--sgs-mm-panel-border:rgba(255,255,255,.11);'
+	. 'color:var(--sgs-mm-text);'
+	. 'background-color:var(--sgs-mm-panel-bg);';
+
+// Forced per-panel dark (operator explicitly picked `dark` regardless of site mode).
+$css .= $root_sel . '[data-mega-scheme="dark"]{' . $dark_props . '}';
+// `auto` following an EXPLICIT site-wide dark switcher only.
+$css .= ':root[data-theme="dark"] ' . $root_sel . '[data-mega-scheme="auto"]{' . $dark_props . '}';
 
 // ---------------------------------------------------------------------------
 // 3. Panel shell (§3): max-width / padding (responsive object model, also
@@ -250,17 +286,41 @@ if ( function_exists( 'sgs_emit_responsive_css' ) ) {
 }
 
 // -- columns (default general reshape): flex-wrap + a 200px basis let 1-3
-// groups share the row evenly and 4+ wrap onto a second row. -----------------
+// groups share the row evenly and 4+ wrap onto a second row. This also
+// covers a `media-cards`/`brands` panel's `sgs/card-grid` child (it is a
+// FLAT sibling of the same content row, not wrapped in a `.sgs-mega-group`),
+// so the same flex-basis rule is extended to it — universal per-style rule,
+// not a per-variant carve-out. -----------------------------------------------
 $css .= $style_col . $rel_content . '{display:flex;flex-wrap:wrap;}';
-$css .= $style_col . $rel_group . '{flex:1 1 200px;min-width:0;}';
+$css .= $style_col . $rel_group . ',' . $style_col . $rel_card_grid . '{flex:1 1 200px;min-width:0;}';
 $css .= $style_col . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:11px 12px;border-radius:13px;}';
 $css .= $style_col . $rel_icon . '{width:34px;height:34px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
 
-// -- cards ---------------------------------------------------------------
+// -- cards -----------------------------------------------------------------
 $css .= $style_crd . $rel_content . '{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}';
 $css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;border:1px solid var(--sgs-mm-panel-border);background-color:var(--sgs-mm-card);}';
 $css .= $style_crd . $rel_item . '{display:flex;align-items:flex-start;gap:13px;padding:0;border-radius:0;}';
 $css .= $style_crd . $rel_icon . '{width:36px;height:36px;border-radius:10px;background-color:var(--sgs-mm-soft);color:var(--sgs-mm-accent);}';
+
+// -- card hover-lift (§6 last row). Scoped to THIS style's `.sgs-mega-group`
+// tile only — `sgs/card-grid` (used by media-cards/brands) already owns a
+// complete native hover system of its own (effectHover/backgroundColourHover/
+// shadowHover/scaleHover), so painting a second, competing hover-lift onto
+// it here would be an overlapping fix (prove-the-cause-before-fix rule) —
+// left untouched. Transitions ONLY `transform` + `opacity`, never
+// `box-shadow`/`filter` (measured frame-drop cause on this project); the
+// lift shadow is a same-box `::after` whose OPACITY fades in, not a
+// box-shadow transition. `border-color` changes with NO transition (an
+// instant colour swap, not part of the animated property set). ------------
+$css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
+$css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
+$css .= $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:translateY(-3px);border-color:var(--sgs-mm-accent);}';
+$css .= $style_crd . $rel_group . ':hover::after,' . $style_crd . $rel_group . ':focus-within::after{opacity:1;}';
+$css .= '@media (prefers-reduced-motion: reduce){'
+	. $style_crd . $rel_group . '{transition:none;}'
+	. $style_crd . $rel_group . '::after{transition:none;}'
+	. $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:none;}'
+	. '}';
 
 // -- minimal -------------------------------------------------------------
 $css .= $style_min . $rel_content . '{display:flex;flex-direction:column;gap:2px;}';
@@ -326,7 +386,27 @@ $css .= '@container (max-width: 640px){' . $stack_rules . '}';
 $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 
 // ---------------------------------------------------------------------------
-// 7. Wrapper attributes + output. wp_strip_all_tags (NOT esc_html) blocks a
+// 7. Brands eyebrow (§3) — a small mono micro-label rendered above the
+// content row. Spans the FULL row (not just the left column) — a documented
+// deviation; see the `brandsEyebrow` attribute note in block.json for why
+// (no wrapper block is available in scope to isolate it to the logo-grid
+// column alone).
+// ---------------------------------------------------------------------------
+
+$eyebrow_sel = $root_sel . ' > .sgs-mega-panel__eyebrow';
+$css        .= $eyebrow_sel . '{'
+	. 'display:block;'
+	. 'font-family:var(--wp--preset--font-family--mono, monospace);'
+	. 'font-size:11px;'
+	. 'font-weight:500;'
+	. 'letter-spacing:.14em;'
+	. 'text-transform:uppercase;'
+	. 'color:var(--sgs-mm-muted);'
+	. 'margin:0 0 16px;'
+	. '}';
+
+// ---------------------------------------------------------------------------
+// 8. Wrapper attributes + output. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators intact; every value
 // reaching $css is pre-sanitised (sgs_colour_value / sgs_css_length_sanitise
 // / sgs_emit_responsive_css / hand-built literals with no unsanitised
@@ -334,24 +414,36 @@ $css .= '@media (max-width: 1023px){' . $stack_rules . '}';
 // their allowed value sets).
 // ---------------------------------------------------------------------------
 
-$wrapper_args       = array(
+$wrapper_args = array(
 	'class'             => 'sgs-mega-panel ' . $uid,
 	'data-mega-style'   => $style,
 	'data-mega-scheme'  => $colour_scheme,
-	// Structurally present now (media-cards/brands CSS is deferred, §0.5) so
-	// the follow-on variant build lands without a wrapper-attribute rewrite.
 	'data-mega-variant' => $variant,
 );
+if ( $stagger_on_open ) {
+	// Presence-only attribute the shared stagger effect module (§6 U4, view.js)
+	// watches for — an opt-in per panel, never forced on.
+	$wrapper_args['data-stagger'] = 'true';
+}
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $css pre-sanitised (sgs_colour_value / sgs_css_length_sanitise / sgs_emit_responsive_css / enum whitelists), wp_strip_all_tags guards </style>; $wrapper_attributes from get_block_wrapper_attributes(); $content is trusted WP InnerBlocks output.
+// Eyebrow markup — brands variant only, and only when the operator has set
+// text (rule 12: never render an empty semantic element). esc_html() per
+// CF-2 (a free text attr rendered outside a child SGS block).
+$eyebrow_html = '';
+if ( 'brands' === $variant && '' !== trim( $brands_eyebrow ) ) {
+	$eyebrow_html = '<p class="sgs-mega-panel__eyebrow">' . esc_html( $brands_eyebrow ) . '</p>';
+}
+
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $css pre-sanitised (sgs_colour_value / sgs_css_length_sanitise / sgs_emit_responsive_css / enum whitelists), wp_strip_all_tags guards </style>; $wrapper_attributes from get_block_wrapper_attributes(); $eyebrow_html built from esc_html() above; $content is trusted WP InnerBlocks output.
 if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) );
 }
 
 printf(
-	'<div %1$s><div class="sgs-mega-panel__content">%2$s</div></div>',
+	'<div %1$s>%2$s<div class="sgs-mega-panel__content">%3$s</div></div>',
 	$wrapper_attributes,
+	$eyebrow_html,
 	$content
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

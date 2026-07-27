@@ -1,9 +1,11 @@
 /**
  * SGS Mega Aside — editor canvas structural invariants ONLY.
  *
- * Mirrors style.css: the parent sgs/mega-panel's own editor.css paints every
- * colour/shape/arrangement decision live in the canvas (CF-10). This file
- * carries only the same one structural invariant as the frontend.
+ * GROUND-TRUTH: mirrors style.css (verified against the same source above).
+ *
+ * Mirrors style.css: the parent sgs/mega-panel's own editor.css paints the
+ * GRID POSITION (width/divider) live in the canvas (CF-10). This file carries
+ * the same structural invariants + `asideFormat` arrangement as the frontend.
  *
  * @package SGS\Blocks
  */
@@ -12,4 +14,24 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
+	gap: 16px;
+}
+
+.sgs-mega-aside > .wp-block-sgs-media img,
+.sgs-mega-aside > .wp-block-sgs-media video {
+	max-height: 170px;
+	object-fit: cover;
+	width: 100%;
+	border-radius: 12px;
+}
+
+.sgs-mega-aside[data-aside-format="cta"] > .wp-block-sgs-media,
+.sgs-mega-aside[data-aside-format="cta"] > .wp-block-sgs-heading {
+	display: none;
+}
+
+.sgs-mega-aside[data-aside-format="preview"] > .wp-block-sgs-media,
+.sgs-mega-aside[data-aside-format="preview"] > .wp-block-sgs-label,
+.sgs-mega-aside[data-aside-format="preview"] > .wp-block-sgs-button {
+	display: none;
 }

@@ -1,14 +1,18 @@
 /**
  * SGS Mega Aside — frontend structural invariants ONLY.
  *
- * Every colour/shape/arrangement decision for this element is painted by the
- * PARENT sgs/mega-panel's own scoped <style> (keyed on data-mega-style /
- * data-mega-scheme, targeting `.sgs-mega-aside` as a descendant — CF-10,
- * parent-paints-child; the aside's width/asideSeparator divider are
- * mega-panel attrs, not this block's own). This stylesheet carries only the
- * one structural invariant that is true regardless of which style/scheme
- * the parent picks: the aside stacks its own media/heading/text/button
- * vertically.
+ * GROUND-TRUTH: verified against .claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md
+ * §8 (aside formats) + render.php's own per-instance <style> (which emits the
+ * same format-hide rules for guaranteed frontend delivery, mirroring
+ * mega-panel's dual-delivery pattern).
+ *
+ * GRID POSITION (width/divider) is painted by the PARENT sgs/mega-panel's own
+ * scoped <style> (keyed on data-mega-style/data-mega-scheme, targeting
+ * `.sgs-mega-aside` as a descendant — CF-10, parent-paints-child). This
+ * stylesheet carries the structural invariants that are true regardless of
+ * which style/scheme the parent picks, plus the `asideFormat` arrangement
+ * (depends only on the enum, never a resolved instance VALUE, so it's safe to
+ * declare statically here rather than per-instance).
  *
  * @package SGS\Blocks
  */
@@ -17,4 +21,31 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
+	gap: 16px;
+}
+
+.sgs-mega-aside > .wp-block-sgs-media img,
+.sgs-mega-aside > .wp-block-sgs-media video {
+	max-height: 170px;
+	object-fit: cover;
+	width: 100%;
+	border-radius: 12px;
+}
+
+/* cta format: compact pill + description + CTA — media + heading hidden. */
+.sgs-mega-aside[data-aside-format="cta"] > .wp-block-sgs-media,
+.sgs-mega-aside[data-aside-format="cta"] > .wp-block-sgs-heading {
+	display: none;
+}
+
+/*
+ * preview format: only the heading (title) and text (description) show —
+ * view.js swaps their content on hover/focus of a sibling link and restores
+ * the authored default (the sensible resting state) when nothing is
+ * hovered. Media/tag/button hidden — the format is text-only by spec.
+ */
+.sgs-mega-aside[data-aside-format="preview"] > .wp-block-sgs-media,
+.sgs-mega-aside[data-aside-format="preview"] > .wp-block-sgs-label,
+.sgs-mega-aside[data-aside-format="preview"] > .wp-block-sgs-button {
+	display: none;
 }

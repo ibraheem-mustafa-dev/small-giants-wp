@@ -19,10 +19,16 @@
  *
  * Handles: hover-intent open (300ms, non-touch) / tap (touch) / keyboard
  * throughout; a bar+panel hover BRIDGE with a 170ms close-grace + cancel-on-
- * re-enter (CF-13 — the deterministic core; a true geometric safe-triangle is a
- * declared DEFERRED enhancement, FR-36-4); edge-overflow reposition via CSS-var
- * VALUES only (no inline `style=""` declaration, Spec 32); single-open;
- * ESC + focus-return; WCAG 1.4.13 (dismissible/hoverable/persistent).
+ * re-enter (CF-13 — the deterministic fallback core) PLUS a geometric safe
+ * triangle (FR-36-4) layered in front of it: while the pointer is tracking
+ * into the currently-open panel, hover-open on any OTHER trigger is deferred
+ * rather than firing early just because the pointer's screen path happened to
+ * cross that trigger's bounding box on the way. The triangle is additive —
+ * whenever its geometry is unavailable (no panel open, no pointer samples yet)
+ * behaviour falls straight through to the unchanged 170ms bridge; edge-overflow
+ * reposition via CSS-var VALUES only (no inline `style=""` declaration,
+ * Spec 32); single-open; ESC + focus-return; WCAG 1.4.13
+ * (dismissible/hoverable/persistent).
  *
  * Markup contract (emitted by sgs/nav-menu render.php at U9), decoupled from BEM:
  *   - the disclosure ROOT carries `data-wp-interactive="sgs/mega"` + a context
@@ -112,6 +118,150 @@ function rootFor( ref ) {
 }
 
 /**
+ * Safe-triangle state (FR-36-4). Kept at module scope, mirroring the
+ * `timers` Map above — none of it is reactive state, so it does not belong
+ * on the Interactivity context.
+ *
+ * `activePanelRect` is a snapshot of the currently-open panel's bounding box,
+ * refreshed by `repositionPanel()` every time a disclosure opens (reusing
+ * that existing measurement rather than taking a second one). `triangleLast`/
+ * `triangleCurrent` are the two most recent pointer samples, rAF-throttled so
+ * a fast-moving mouse cannot spam this module with dozens of samples a
+ * second.
+ */
+let activePanelRect = null;
+let triangleLast = null;
+let triangleCurrent = null;
+let triangleRaf = null;
+let triangleMoveHandler = null;
+
+/** How often a suppressed hover-open re-polls the triangle geometry. */
+const TRIANGLE_RECHECK_MS = 60;
+
+/**
+ * rAF-throttled `mousemove` sampler — keeps only the last two points.
+ *
+ * @param {MouseEvent} event The document-level mousemove event.
+ */
+function onTriangleMove( event ) {
+	if ( triangleRaf !== null ) {
+		return;
+	}
+	const point = { x: event.clientX, y: event.clientY };
+	triangleRaf = window.requestAnimationFrame( () => {
+		triangleRaf = null;
+		triangleLast = triangleCurrent;
+		triangleCurrent = point;
+	} );
+}
+
+/**
+ * Attach/detach the document-level pointer sampler, gated strictly on
+ * whether ANY disclosure is open. Idempotent — safe to call after every
+ * `state.openMegaId` mutation so the listener never outlives an open panel
+ * (a leaked document-level `mousemove` would be a defect, not a feature).
+ */
+function syncTriangleWatcher() {
+	if ( state.openMegaId && ! triangleMoveHandler ) {
+		triangleMoveHandler = onTriangleMove;
+		document.addEventListener( 'mousemove', triangleMoveHandler, {
+			passive: true,
+		} );
+	} else if ( ! state.openMegaId && triangleMoveHandler ) {
+		document.removeEventListener( 'mousemove', triangleMoveHandler );
+		triangleMoveHandler = null;
+		if ( triangleRaf !== null ) {
+			window.cancelAnimationFrame( triangleRaf );
+			triangleRaf = null;
+		}
+		triangleLast = null;
+		triangleCurrent = null;
+		activePanelRect = null;
+	}
+}
+
+/**
+ * Signed area helper for the point-in-triangle test below.
+ *
+ * @param {{x:number,y:number}} p1 First point.
+ * @param {{x:number,y:number}} p2 Second point.
+ * @param {{x:number,y:number}} p3 Third point.
+ */
+function triangleSign( p1, p2, p3 ) {
+	return (
+		( p1.x - p3.x ) * ( p2.y - p3.y ) - ( p2.x - p3.x ) * ( p1.y - p3.y )
+	);
+}
+
+/**
+ * True when point `pt` falls inside triangle `a`-`b`-`c`.
+ *
+ * @param {{x:number,y:number}} pt The point to test.
+ * @param {{x:number,y:number}} a  Triangle vertex one.
+ * @param {{x:number,y:number}} b  Triangle vertex two.
+ * @param {{x:number,y:number}} c  Triangle vertex three.
+ */
+function pointInTriangle( pt, a, b, c ) {
+	const d1 = triangleSign( pt, a, b );
+	const d2 = triangleSign( pt, b, c );
+	const d3 = triangleSign( pt, c, a );
+	const hasNeg = d1 < 0 || d2 < 0 || d3 < 0;
+	const hasPos = d1 > 0 || d2 > 0 || d3 > 0;
+	return ! ( hasNeg && hasPos );
+}
+
+/**
+ * True when the pointer's last two samples are heading INTO the currently-
+ * open OTHER panel — i.e. the trajectory from `triangleLast` to
+ * `triangleCurrent` falls inside the triangle formed with that panel's two
+ * top corners (the edge nearest the trigger bar, since panels are anchored
+ * below it). False whenever any input is unavailable, which is exactly the
+ * "geometry cannot be computed" fallback case — the caller then behaves
+ * identically to the pre-existing 170ms bridge.
+ *
+ * @param {Object} ctx The calling disclosure's Interactivity context.
+ */
+function isHeadingIntoOpenPanel( ctx ) {
+	if ( ! state.openMegaId || state.openMegaId === ctx.megaId ) {
+		return false;
+	}
+	if ( ! activePanelRect || ! triangleLast || ! triangleCurrent ) {
+		return false;
+	}
+	const topLeft = { x: activePanelRect.left, y: activePanelRect.top };
+	const topRight = { x: activePanelRect.right, y: activePanelRect.top };
+	return pointInTriangle( triangleCurrent, triangleLast, topLeft, topRight );
+}
+
+/**
+ * Schedule (or re-poll) an intent-delayed open, gated by the safe triangle.
+ * Reuses the SAME `rec.open` timer record the pre-existing bridge already
+ * used — never a third timer channel. When the geometry says the pointer is
+ * heading into another already-open panel, the open is deferred and re-
+ * checked every `TRIANGLE_RECHECK_MS`; the moment that stops being true (or
+ * no panel is open / no samples exist yet) this opens on the very next tick,
+ * so the worst case beyond the declared `delay` is one short poll interval.
+ *
+ * @param {Object}      ctx   The disclosure's Interactivity context.
+ * @param {HTMLElement} root  The disclosure root.
+ * @param {number}      delay Milliseconds until the next check/open.
+ */
+function scheduleIntentOpen( ctx, root, delay ) {
+	const rec = timersFor( ctx.megaId );
+	rec.open = window.setTimeout( () => {
+		rec.open = null;
+		if ( isHeadingIntoOpenPanel( ctx ) ) {
+			scheduleIntentOpen( ctx, root, TRIANGLE_RECHECK_MS );
+			return;
+		}
+		ctx.isOpen = true;
+		state.openMegaId = ctx.megaId;
+		syncTriangleWatcher();
+		repositionPanel( root );
+	}, delay );
+}
+
+/**
  * Reposition a panel that overflows the right viewport edge — expressed purely
  * as CSS custom-property VALUES (`--sgs-mm-overflow-left/-right`), never a
  * direct `.style.left/.style.right` assignment (Spec 32 no-inline). style.css
@@ -128,6 +278,10 @@ function repositionPanel( root ) {
 	panel.style.removeProperty( '--sgs-mm-overflow-right' );
 	window.requestAnimationFrame( () => {
 		const rect = panel.getBoundingClientRect();
+		// Safe-triangle (FR-36-4): reuse this existing measurement as the
+		// snapshot other triggers check their pointer trajectory against —
+		// no second layout read.
+		activePanelRect = rect;
 		if ( rect.right - window.innerWidth > 0 ) {
 			panel.style.setProperty( '--sgs-mm-overflow-left', 'auto' );
 			panel.style.setProperty( '--sgs-mm-overflow-right', '0' );
@@ -169,6 +323,7 @@ const { state } = store( 'sgs/mega', {
 			const { ref } = getElement();
 			ctx.isOpen = true;
 			state.openMegaId = ctx.megaId;
+			syncTriangleWatcher();
 			repositionPanel( rootFor( ref ) );
 		},
 
@@ -178,6 +333,7 @@ const { state } = store( 'sgs/mega', {
 			ctx.isOpen = false;
 			if ( state.openMegaId === ctx.megaId ) {
 				state.openMegaId = null;
+				syncTriangleWatcher();
 			}
 		},
 
@@ -195,10 +351,12 @@ const { state } = store( 'sgs/mega', {
 				ctx.isOpen = false;
 				if ( state.openMegaId === ctx.megaId ) {
 					state.openMegaId = null;
+					syncTriangleWatcher();
 				}
 			} else {
 				ctx.isOpen = true;
 				state.openMegaId = ctx.megaId;
+				syncTriangleWatcher();
 				repositionPanel( root );
 				focusFirstInPanel( root );
 			}
@@ -206,7 +364,10 @@ const { state } = store( 'sgs/mega', {
 
 		/**
 		 * Pointer entered the bridge (trigger OR panel). Cancel any pending
-		 * close, and on a hover-capable device schedule an intent-delayed open.
+		 * close, and on a hover-capable device schedule an intent-delayed open —
+		 * gated by the safe triangle (FR-36-4): if another panel is already
+		 * open AND the pointer is currently tracking into it, the open is
+		 * deferred and re-polled rather than firing early.
 		 */
 		enterBridge() {
 			const ctx = getContext();
@@ -217,14 +378,8 @@ const { state } = store( 'sgs/mega', {
 			const { ref } = getElement();
 			const root = rootFor( ref );
 			clearOpenTimer( ctx.megaId );
-			const rec = timersFor( ctx.megaId );
 			const delay = Number.isFinite( ctx.intentDelay ) ? ctx.intentDelay : 300;
-			rec.open = window.setTimeout( () => {
-				rec.open = null;
-				ctx.isOpen = true;
-				state.openMegaId = ctx.megaId;
-				repositionPanel( root );
-			}, delay );
+			scheduleIntentOpen( ctx, root, delay );
 		},
 
 		/**
@@ -246,6 +401,7 @@ const { state } = store( 'sgs/mega', {
 				ctx.isOpen = false;
 				if ( state.openMegaId === ctx.megaId ) {
 					state.openMegaId = null;
+					syncTriangleWatcher();
 				}
 			}, grace );
 		},
@@ -263,6 +419,7 @@ const { state } = store( 'sgs/mega', {
 				clearCloseTimer( ctx.megaId );
 				ctx.isOpen = ! ctx.isOpen;
 				state.openMegaId = ctx.isOpen ? ctx.megaId : null;
+				syncTriangleWatcher();
 				if ( ctx.isOpen ) {
 					repositionPanel( root );
 					focusFirstInPanel( root );
@@ -275,6 +432,7 @@ const { state } = store( 'sgs/mega', {
 				if ( ! ctx.isOpen ) {
 					ctx.isOpen = true;
 					state.openMegaId = ctx.megaId;
+					syncTriangleWatcher();
 					repositionPanel( root );
 				}
 				focusFirstInPanel( root );
@@ -285,6 +443,7 @@ const { state } = store( 'sgs/mega', {
 				event.preventDefault();
 				ctx.isOpen = false;
 				state.openMegaId = null;
+				syncTriangleWatcher();
 			}
 		},
 
@@ -302,6 +461,7 @@ const { state } = store( 'sgs/mega', {
 				event.preventDefault();
 				ctx.isOpen = false;
 				state.openMegaId = null;
+				syncTriangleWatcher();
 				focusTrigger( root );
 				return;
 			}
@@ -317,6 +477,7 @@ const { state } = store( 'sgs/mega', {
 				if ( ( ! event.shiftKey && isLast ) || ( event.shiftKey && isFirst ) ) {
 					ctx.isOpen = false;
 					state.openMegaId = null;
+					syncTriangleWatcher();
 					// Let focus continue naturally to the next/previous element
 					// outside the panel; only sync the disclosure state.
 				}
@@ -324,14 +485,16 @@ const { state } = store( 'sgs/mega', {
 		},
 	},
 	callbacks: {
-		/** Single-open: if another disclosure opened, close this one. */
+		/**
+		 * Single-open: closes this disclosure whenever its own `isOpen`
+		 * disagrees with the shared `state.openMegaId` — originally just
+		 * "another disclosure opened", now also covers "nothing is open any
+		 * more" (`state.openMegaId === null`), which is exactly the state the
+		 * `pageshow`/bfcache reset below produces.
+		 */
 		watchOpenState() {
 			const ctx = getContext();
-			if (
-				state.openMegaId &&
-				state.openMegaId !== ctx.megaId &&
-				ctx.isOpen
-			) {
+			if ( ctx.isOpen && state.openMegaId !== ctx.megaId ) {
 				ctx.isOpen = false;
 				clearOpenTimer( ctx.megaId );
 				clearCloseTimer( ctx.megaId );
@@ -339,3 +502,43 @@ const { state } = store( 'sgs/mega', {
 		},
 	},
 } );
+
+/**
+ * bfcache (`pageshow`) reset — registered ONCE at module scope, never per
+ * disclosure instance (a page can host several nav instances; N duplicate
+ * listeners would be a leak).
+ *
+ * The back/forward cache restores the JS heap EXACTLY as it was frozen
+ * (web.dev bfcache docs; real breakage recorded in Hyvä's Magento docs), so a
+ * mega panel left open when the visitor navigated away would come back open
+ * on Back/Forward — nothing errors, it just looks broken. A normal load
+ * fires `pageshow` with `event.persisted === false`, so this is a strict
+ * no-op on every ordinary page load.
+ *
+ * Reuses the SAME teardown primitives every other close path already uses
+ * (`clearOpenTimer`/`clearCloseTimer`/`syncTriangleWatcher`) rather than a
+ * second, parallel cleanup routine. Resetting `state.openMegaId` to null then
+ * lets the existing `watchOpenState` callback above close each disclosure's
+ * own `ctx.isOpen` on its next reactive tick — exactly the mechanism it
+ * already uses when a different disclosure takes over as the open one.
+ */
+if ( typeof window !== 'undefined' ) {
+	window.addEventListener( 'pageshow', ( event ) => {
+		if ( ! event.persisted ) {
+			return;
+		}
+		timers.forEach( ( rec, megaId ) => {
+			clearOpenTimer( megaId );
+			clearCloseTimer( megaId );
+		} );
+		if ( triangleRaf !== null ) {
+			window.cancelAnimationFrame( triangleRaf );
+			triangleRaf = null;
+		}
+		triangleLast = null;
+		triangleCurrent = null;
+		activePanelRect = null;
+		state.openMegaId = null;
+		syncTriangleWatcher();
+	} );
+}

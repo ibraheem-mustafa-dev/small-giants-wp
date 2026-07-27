@@ -110,12 +110,23 @@
 				"colour": { "type": "string" },
 				"width": { "type": "string" }
 			}
+		},
+		"brandsEyebrow": {
+			"type": "string",
+			"default": "",
+			"_note": "brands-variant only — a small mono eyebrow label rendered above the logo grid (§3). Deliberately a scalar panel attribute rather than a child block: the brands variant's content (sgs/card-grid + sgs/mega-aside) has no wrapper block available to host a heading ABOVE just the grid (mega-group is locked to heading+icon-list, out of scope to modify), so the panel renders this text itself, spanning the full content row rather than just the left column — a documented deviation from §3's 'left flex:1: eyebrow + grid' framing."
+		},
+		"staggerOnOpen": {
+			"type": "boolean",
+			"default": false,
+			"_note": "Opt-in staggered-reveal on panel open (§6 U4) — maps to the `data-stagger` attribute the shared stagger effect module watches for. Off by default; the disclosure module (owned separately) is what actually toggles the panel open/closed."
 		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
 			"variant": "general",

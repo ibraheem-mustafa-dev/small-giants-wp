@@ -23,10 +23,70 @@
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	position: relative;
 }
 
+/*
+ * Sliding nav indicator (Mega-Menu Build Spec §6 row 2, opt-in via
+ * `indicatorStyle: 'pill'`). Structural shape/motion only. The fill colour
+ * is attribute-driven (render.php's scoped <style>) with a token-based
+ * default here so an unset `indicatorColour` still renders a sensible
+ * accent, never an invisible pill.
+ *
+ * DELIBERATE, TIGHTLY-SCOPED EXCEPTION to project rule 1 ("transition ONLY
+ * transform and opacity"): this element transitions `width` alongside
+ * `transform: translateX()`. An earlier version used `scaleX()` from a 1px
+ * base to avoid animating width at all — that broke visibly: `border-radius`
+ * is resolved BEFORE the transform is applied, so scaling a 1px box up to
+ * ~120px wide stretched its 8px corners 120× horizontally, producing a
+ * smeared lozenge with flattened ends instead of a pill (confirmed at both a
+ * narrow and a wide nav item — this is not a hypothetical, it visibly failed
+ * at every width). Rule 1 exists to stop layout thrash PROPAGATING across
+ * many elements when something wide/central changes size — that is not what
+ * happens here: `.sgs-nav-menu__indicator` is `position: absolute` and
+ * `pointer-events: none`, i.e. OUT OF NORMAL FLOW, so animating its width
+ * cannot reflow or repaint any sibling. The cost is one out-of-flow
+ * element's own box recalculated per frame; the benefit is a correctly
+ * proportioned, non-distorted pill at every width. Do NOT "fix" this back to
+ * scaleX() without solving the border-radius distortion some other way.
+ */
+.sgs-nav-menu__indicator {
+	background-color: var(--wp--preset--color--accent, currentColor);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	height: 100%;
+	left: 0;
+	opacity: var(--sgs-nav-indicator-opacity, 0);
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	transform: translateX(var(--sgs-nav-indicator-x, 0));
+	transition: transform 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
+		width 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
+		opacity 0.25s cubic-bezier(0.16, 0.84, 0.32, 1);
+	width: var(--sgs-nav-indicator-w, 0px);
+	z-index: 0;
+}
+
+/*
+ * Magnet label (Mega-Menu Build Spec §6 row 4, opt-in via
+ * `itemMagnetEnabled`). `--magnet-x` defaults to 0 (no displacement) so a
+ * bar with the effect off — or with JS unavailable — renders the label
+ * exactly where it would sit without this rule at all.
+ */
+[data-magnet] .sgs-nav-menu__magnet-target {
+	display: inline-block;
+	transform: translateX(var(--magnet-x, 0px));
+	transition: transform 0.2s ease-out;
+}
+
+/* Link text + item content must paint ABOVE the indicator pill — the pill
+ * is `position:absolute` so, without this, it would paint over every link's
+ * text regardless of DOM order (positioned elements paint above in-flow
+ * content by default). */
 .sgs-nav-menu__item {
 	display: block;
+	position: relative;
+	z-index: 1;
 }
 
 /*
@@ -104,7 +164,9 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-nav-menu__burger,
-	.sgs-nav-menu__link {
+	.sgs-nav-menu__link,
+	.sgs-nav-menu__indicator,
+	[data-magnet] .sgs-nav-menu__magnet-target {
 		transition-duration: 0.01ms !important;
 	}
 }

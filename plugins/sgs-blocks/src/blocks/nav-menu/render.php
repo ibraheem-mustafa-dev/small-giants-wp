@@ -235,7 +235,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							'<li class="%1$s sgs-nav-menu__item--mega">'
 							. '<div class="sgs-nav-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '<button type="button" class="sgs-nav-menu__link sgs-nav-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
-							. '<span class="sgs-nav-menu__label">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
+							. '<span class="sgs-nav-menu__label sgs-nav-menu__magnet-target">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
 							. '</button>'
 							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s%7$s</div>'
 							. '</div></li>',
@@ -253,7 +253,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				}
 
 				$html .= sprintf(
-					'<li class="%s"><a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s">%s</a></li>',
+					'<li class="%s"><a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span></a></li>',
 					esc_attr( $li_class ),
 					esc_url( $item['url'] ),
 					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -370,9 +370,34 @@ if ( '' === $nav_label ) {
 	$nav_label = __( 'Primary', 'sgs-blocks' );
 }
 
+/*
+ * Sliding indicator / magnet-label opt-in flags (Mega-Menu Build Spec §6
+ * rows 2 & 4) — bare data-attribute PRESENCE is view.js's init signal; both
+ * default OFF, so an existing nav renders byte-identical until an operator
+ * opts in via the Effects panel.
+ *
+ * `indicatorStyle` is PHP-validated, NOT a JSON `enum` (block.json
+ * deliberately declares none) — an out-of-enum JSON enum silently coerces
+ * the stored value back to the block.json default with no error/warning,
+ * which bites hardest via a programmatic writer (the cloning pipeline,
+ * pattern files) that sets the attribute directly rather than through this
+ * block's inspector control. Mirrors `mega-panel/render.php`'s
+ * `$allowed_variants`/`$allowed_styles` pattern.
+ */
+$allowed_indicator_styles = array( 'none', 'pill' );
+$indicator_style          = isset( $attributes['indicatorStyle'] ) && in_array( $attributes['indicatorStyle'], $allowed_indicator_styles, true )
+	? (string) $attributes['indicatorStyle']
+	: 'none';
+$indicator_colour  = isset( $attributes['indicatorColour'] ) ? (string) $attributes['indicatorColour'] : '';
+$magnet_enabled    = ! empty( $attributes['itemMagnetEnabled'] );
+$bar_data_attrs    = '';
+$bar_data_attrs   .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
+$bar_data_attrs   .= $magnet_enabled ? ' data-magnet' : '';
+
 $bar_html = sprintf(
-	'<ul class="sgs-nav-menu__bar">%1$s</ul>',
-	$items_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $items_html built from esc_url/esc_html/esc_attr fragments.
+	'<ul class="sgs-nav-menu__bar"%2$s>%1$s</ul>',
+	$items_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $items_html built from esc_url/esc_html/esc_attr fragments.
+	$bar_data_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from two fixed literal strings above, no user input.
 );
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
@@ -648,6 +673,16 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega{position:relative;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);right:var(--sgs-mm-overflow-right, auto);z-index:100;display:none;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:block;}';
+
+/*
+ * 4h-i. Sliding indicator colour override (Mega-Menu Build Spec §6 row 2).
+ * The pill's shape/motion (position/transform/opacity/transition) is
+ * STRUCTURAL and lives in style.css — only the operator-chosen fill (or its
+ * token default) is attribute-driven, so it belongs in the scoped <style>.
+ */
+if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
+	$css .= $uid_sel . ' .sgs-nav-menu__indicator{background-color:' . sgs_colour_value( $indicator_colour ) . ';}';
+}
 
 // 4h. Free-text custom CSS escape hatch — sanitised (letters/digits/basic CSS
 // punctuation only) and stripped of any </style> breakout below with the rest.

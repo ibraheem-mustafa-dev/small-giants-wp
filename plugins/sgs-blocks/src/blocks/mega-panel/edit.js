@@ -40,6 +40,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
+	TextControl,
 	ToggleControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
@@ -56,8 +57,77 @@ import { colourVar } from '../../utils';
  *  point only; the panel is NOT locked to this shape (FIX 1). */
 const GENERAL_TEMPLATE = [ [ 'sgs/mega-group' ], [ 'sgs/mega-group' ] ];
 
-/** Only these two blocks may ever live inside a mega panel. */
-const ALLOWED_BLOCKS = [ 'sgs/mega-group', 'sgs/mega-aside' ];
+/**
+ * media-cards variant (§1/§3) — a single `sgs/card-grid`, pre-configured to
+ * the draft's exact geometry (4-col, 14px gap, 18px card radius, 16:10
+ * media). `sgs/card-grid` owns its OWN full styling system (colour, hover,
+ * typography) — the mega panel does NOT repaint it (unlike mega-group/
+ * mega-aside, which are deliberately dumb parent-painted wrappers); this is
+ * normal WP composition, the same as any other composite's InnerBlocks
+ * child bringing its own inspector.
+ */
+const MEDIA_CARDS_TEMPLATE = [
+	[
+		'sgs/card-grid',
+		{
+			variant: 'card',
+			columns: 4,
+			columnsTablet: 2,
+			columnsMobile: 1,
+			gap: '14',
+			cardRadius: '18px',
+			aspectRatio: '16/10',
+		},
+	],
+];
+
+/**
+ * brands variant (§1/§3) — a `sgs/card-grid` used as a logo-tile grid
+ * (media-only items, no title/subtitle needed) alongside a `sgs/mega-aside`
+ * (pill/desc/CTA; asideWidth + asideSeparator attrs on THIS block already
+ * give the 300px + 3px-accent-divider split — no new mega-panel CSS
+ * required for that half). The eyebrow above the grid is the panel's own
+ * `brandsEyebrow` attribute (see block.json note) rather than a child block.
+ */
+const BRANDS_TEMPLATE = [
+	[
+		'sgs/card-grid',
+		{
+			variant: 'card',
+			columns: 4,
+			columnsTablet: 3,
+			columnsMobile: 2,
+			gap: '10',
+			cardRadius: '12px',
+			aspectRatio: '3/2',
+		},
+	],
+	[ 'sgs/mega-aside' ],
+];
+
+/**
+ * Which child blocks + starting template a variant gets. `variant` is
+ * insert-time only (CF-5) — chosen by which starter pattern inserted this
+ * block; there is no live control here that switches it.
+ *
+ * @param {string} variant `general` | `media-cards` | `brands`.
+ * @return {{allowedBlocks: string[], template: Array}} Config for useInnerBlocksProps.
+ */
+function innerBlocksConfigForVariant( variant ) {
+	if ( 'media-cards' === variant ) {
+		return { allowedBlocks: [ 'sgs/card-grid' ], template: MEDIA_CARDS_TEMPLATE };
+	}
+	if ( 'brands' === variant ) {
+		return {
+			allowedBlocks: [ 'sgs/card-grid', 'sgs/mega-aside' ],
+			template: BRANDS_TEMPLATE,
+		};
+	}
+	return {
+		allowedBlocks: [ 'sgs/mega-group', 'sgs/mega-aside' ],
+		template: GENERAL_TEMPLATE,
+	};
+}
 
 /**
  * Build a CSS padding shorthand from a { top, right, bottom, left } box
@@ -80,6 +150,7 @@ function paddingFromBox( box ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		variant,
 		style,
 		headings,
 		colourScheme,
@@ -93,7 +164,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderRadius,
 		asideWidth,
 		asideSeparator,
+		brandsEyebrow,
+		staggerOnOpen,
 	} = attributes;
+
+	const resolvedVariant = variant || 'general';
+	const { allowedBlocks, template } = innerBlocksConfigForVariant( resolvedVariant );
 
 	const sepStyle = asideSeparator?.style || 'line';
 
@@ -138,15 +214,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: shellStyle,
 		'data-mega-style': style,
 		'data-mega-scheme': colourScheme,
-		'data-mega-variant': 'general',
+		'data-mega-variant': resolvedVariant,
+		...( staggerOnOpen ? { 'data-stagger': 'true' } : {} ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-mega-panel__content' },
 		{
-			template: GENERAL_TEMPLATE,
+			template,
 			templateLock: false,
-			allowedBlocks: ALLOWED_BLOCKS,
+			allowedBlocks,
 		}
 	);
 
@@ -267,15 +344,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ToggleGroupControl
 						label={ __( 'Colour scheme', 'sgs-blocks' ) }
 						help={ __(
-							'Dark scheme arrives in a later update.',
+							'Auto follows the site-wide dark/light switcher (renders light when the site has no switcher, even on a device set to dark). Light/Dark force this panel one way regardless of the site.',
 							'sgs-blocks'
 						) }
-						value="light"
-						onChange={ () => setAttributes( { colourScheme: 'light' } ) }
+						value={ colourScheme || 'light' }
+						onChange={ ( value ) => setAttributes( { colourScheme: value || 'light' } ) }
 						isBlock
 						__nextHasNoMarginBottom
 					>
 						<ToggleGroupControlOption value="light" label={ __( 'Light', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="dark" label={ __( 'Dark', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="auto" label={ __( 'Auto', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 
 					<DesignTokenPicker
@@ -283,6 +362,35 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ accent }
 						onChange={ ( value ) => setAttributes( { accent: value || 'accent' } ) }
 						linked
+					/>
+				</PanelBody>
+
+				{ 'brands' === resolvedVariant && (
+					<PanelBody title={ __( 'Brands', 'sgs-blocks' ) } initialOpen={ false }>
+						<TextControl
+							label={ __( 'Eyebrow label', 'sgs-blocks' ) }
+							help={ __(
+								'A small label shown above the logo grid (e.g. "Our Partners").',
+								'sgs-blocks'
+							) }
+							value={ brandsEyebrow || '' }
+							onChange={ ( value ) => setAttributes( { brandsEyebrow: value } ) }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				<PanelBody title={ __( 'Motion', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Stagger items on open', 'sgs-blocks' ) }
+						help={ __(
+							'Reveals each item with a short staggered fade/slide when the panel opens. Respects reduced-motion.',
+							'sgs-blocks'
+						) }
+						checked={ !! staggerOnOpen }
+						onChange={ ( value ) => setAttributes( { staggerOnOpen: value } ) }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
@@ -342,6 +450,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ 'brands' === resolvedVariant && brandsEyebrow && (
+					<p className="sgs-mega-panel__eyebrow">{ brandsEyebrow }</p>
+				) }
 				<div { ...innerBlocksProps } />
 			</div>
 		</>

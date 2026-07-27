@@ -178,6 +178,13 @@
 		"burgerHoverColour": { "type": "string", "default": "" },
 		"burgerSize": { "type": "string", "default": "44px" },
 
+		"indicatorStyle": {
+			"type": "string",
+			"default": "none"
+		},
+		"indicatorColour": { "type": "string", "default": "" },
+		"itemMagnetEnabled": { "type": "boolean", "default": false },
+
 		"sgsCustomCss": { "type": "string", "default": "" }
 	},
 	"render": "file:./render.php",
