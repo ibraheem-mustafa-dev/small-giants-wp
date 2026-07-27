@@ -100,6 +100,39 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
   (300–500ms) · the transform/opacity-only ban still correct for 2026 (animated `backdrop-filter` still spikes
   GPU in current Chrome) · 170ms close-grace has NO evidence base but is now backstopped by the real triangle.
 
+**⭐ ALSO CURRENT (2026-07-27, Track 2b — separate session, co-active with the mega work above.)**
+
+- **A defect that silently corrupted 15 of 16 header/footer STARTER PATTERNS is FIXED (D393, `ae9b1db4`).**
+  `templateLock:'all'` makes WP re-apply a container's OWN template on EVERY mount — not only when empty
+  (core: `shouldApplyTemplate = length===0 || lock==='all' || lock==='contentOnly'`) — and
+  `synchronizeBlocksWithTemplate` then matches rows by **ARRAY POSITION + name only**; `rowSlot` is never
+  consulted. It **DESTROYED content**, not just added it (header-search-bar-below lost its search bar;
+  footer-centred lost its copyright line) and produced duplicate `rowSlot` values §3.3a called impossible.
+  Fix = pass the template only into a genuinely EMPTY container; the lock is unchanged. Measured 15/16
+  corrupt → **0/16**, raw-insert seeding intact, and the row-reorder lock still REFUSES a real
+  `moveBlockToPosition` (behavioural, not inferred). **It fired on every re-open too** — the inherited
+  "re-opening is safe" result was a property of the FIXTURE (CPT 1570 is already template-shaped), not the
+  mechanism, so an insert-only patch would not have held.
+- **⚠ D377's picker verification is RETRO-INVALIDATED.** It banked the starter picker as live-verified
+  because the saved post carried the right `metadata.patternName` — it did, while the tree BENEATH it had
+  been rewritten. **A pattern verified by its METADATA is not verified by its CHILDREN.** Anything else
+  banked on metadata-only evidence deserves a second look.
+- **A second, unrelated latent fatal surfaced and is FIXED (D394, `46749091`).** `sgs/responsive-logo`
+  called two shared helpers with NO `require_once` — the ONLY such render.php of 81 (swept). ORDER-DEPENDENT:
+  fine when a sibling block loaded the helper first, **HTTP 500 rendered alone** (6/6 isolated renders). It
+  hid because the canary's active header has no logo — but **the immutable default header (FR-37-4) does**,
+  so clearing the active header could have white-screened a site. Pre-existing; surfaced, not caused.
+- **FR-37-41 preview-before-active BUILT (D395, `20ec422c`) — closes residual B2.** "Preview on site" row
+  action renders an unpublished layout on the real homepage for a capable, nonce-bearing user. Overrides
+  `get_active_id()` (NOT `render_active()`) so the BEHAVIOUR resolver previews too — proven: previewing 1655
+  emits `sgs-header-behaviour-hide-on-scroll-down` while active 1570 emits none. 4 negative controls incl.
+  anonymous-with-a-valid-URL and a cross-post replayed nonce. No write path. **Bean DROPPED the no-login
+  shareable preview link** (test site or the client has an account) — a decision, not a deferral.
+- **Track prompt: `next-session-prompt-spec37.md`** (this track owns that file; `next-session-prompt.md` is
+  the co-active track's). Detail: `decisions.md` D393–D395 + Spec 37 §3.3a / FR-37-41 / §5.
+- ⚠ **This file is 30KB, over the 24,576-byte cap** — both tracks appended today. A sweep of the older
+  CURRENT blocks to pointers is owed at the next handoff by whichever track gets there first.
+
 **Prior CURRENT (2026-07-26) - swept to a pointer 2026-07-27 to hold this file under its 24,576-byte cap.**
 Two tracks closed that day, both DONE with no live front: **Track 2b** (Spec 37 per-row header/footer,
 FR-37-40 - per-row `position:sticky` REJECTED as a short-parent trap; sticky stays HEADER-level, a hidden row
@@ -132,7 +165,10 @@ GENERIC proof headers (sandybrown #1570/#1571; palestine-lives #360, admin "Clea
 
 - **Branch:** `main` (2026-07-26; a co-active Spec-31/35 track commits between handoffs, so real HEAD is
   likely higher — re-check with `git log -1`).
-  **D-ceiling: D392** (verify with the grep below, never this line). This session (Track 2b) shipped
+  **D-ceiling: D397** (verify with the grep below, never this line — it moved from D395 to D397 mid-handoff
+  as the co-active track committed). Track 2b on 2026-07-27 shipped
+  `ae9b1db4` (D393 starter corruption) + `46749091` (D394 responsive-logo fatal) + `20ec422c` (D395 /
+  FR-37-41 preview-before-active) + docs `36c8fd3f` / `5edc39cc` / `53bb40b7`. Prior (2026-07-26) Track 2b
   FR-37-40: `5716f7b7` (scroll-padding gate, D391) + `494e5d50` (collapse-when-pinned + ancestor guard,
   D392) + docs `4ba0cbbd` / `a2d6af96` / `e698ec7a`. Prior same-day Track-1b: `3e98861b` `6adc932f`
   `33272bd3` `23d27246` (D385). Verify with `git log`, never a cached hash.
@@ -233,9 +269,12 @@ unmerged/paused — check its branch state before touching its files.
 - **Track 1c — Spec 31 converter completion** (prompt: `next-session-prompt-track1-converter.md`). 2026-07-22 completion wave shipped (11 commits): `::before/::after` overlay lift, transform/filter/top/left un-excluded + hover-lift (Bean-caught: hover scale/zoom/grayscale on 15+ blocks was silently dropping), F3 LANDED runtime + batch runner, **UNACCOUNTED 14->0** (they were ACCOUNTING bugs in the D1 bucket/join, not converter drops). 2026-07-23 (D372/D373): declarative CSS-routing shipped — `css_layer` L1-L4 seeded, `css_element` normalised, +213 routes, product-card cta -> box-object (every block now box-object). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`; detail: decisions D372/D373.
 - **Track 2 — Header/Footer/Nav FULL REBUILD** (2026-07-17). Roadmap: `plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md` (6 phases). **P1 CLOSED (D344)** — verdict: BUILD, full clean rebuild, rich-but-simple, tiered tri-state, informational-only a11y (DP2a), converter-emittable by construction (DP6); decision doc `plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`. **P2 (builder design-gate) CLOSED + signed off.** **P2.5 → Spec 36 signed off v2.1.** **Spec 36 Phase 1 CLOSED 2026-07-20** (see the summary at the top). **Next: Spec 36 Phase 2** — mega CPT + Indus + rich desktop/mobile modes.
 
+- **Track 2b — Spec 37 header/footer — REOPENED + closed again 2026-07-27 (D393–D395): starter-corruption
+  fix, a latent `responsive-logo` fatal, and FR-37-41 preview-before-active (residual B2). See "ALSO CURRENT"
+  above; track prompt `next-session-prompt-spec37.md`.** Per-row phases below remain closed (D386–D392).
 - **Track 2b — Spec 37 header/footer PER-ROW identity — ✅ ALL PHASES CLOSED 2026-07-26 (D386–D392).** (prompt: `next-session-prompt-spec37.md`; design: `plans/2026-07-26-per-row-sticky-mini-design.md`, now historical — canonical record = **Spec 37 FR-37-37/38/39/40**.) Each row carries its own transparent / hide-on-scroll / shrink (device-tier, inherit-upward). **Shrink shipped a GROW bug and was fixed (D386):** an absolute `padding-block` in the shared stylesheet out-specified each row's own padding rule, so an unpadded row went 0px→4px; now emitted per instance as `calc(own padding / 2)` via `sgs_emit_responsive_css()` — proportional by construction. New prebuild gate `check-shared-css-state-rules.js` (nothing scanned `assets/css/` before). Hide-a-chosen-element ships with a DECLARATIVE `supports.sgs.headerEssential` guardrail, proven server-side (D387). Footer parity verified on the ACTIVE footer **CPT 1654** (not the obvious 1571). 44px floor measured and deliberately NOT built. **D388 [INCIDENT]: two editor-killing crashes shipped past ALL-GREEN gates** — only opening the real editor caught them.
   **Sticky build COMPLETE (D391 `5716f7b7` + D392 `494e5d50`), FR-37-40 done.** Per-row `position:sticky` was REJECTED (short-parent trap, D389); sticky stays HEADER-level and a row that should disappear while pinned **COLLAPSES** (height→0) — gap measured **0.00 unrounded** at desktop/tablet/mobile, non-pinned path byte-identical `translateY(-100%)` with no inline height written. The D2 offset chain was NOT built (nothing to chain). **The scroll-padding defect is FIXED:** the publisher is gated on MEASURED computed position (not the sticky body class — sticky+transparent both set `position` with `!important` at equal specificity, so the class lies) and publishes an explicit `0px` otherwise; it had been reserving 93px desktop / **252px mobile** on every non-sticky page. Plus a sticky-breaking-ancestor guard (advisory `console.warn`). Evidence: `reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md` + `row-collapse-when-pinned-2026-07-26.md`.
-  **NEXT for this track = SIDE TRACK B deal-winners, not plumbing** — B3 preset library (NOT started; highest client-facing ROI left here), B2 preview-scroll button (partly addressed by the shipped "Show me the shrunk size" editor toggle). B1 simplicity test RUN, verdict FAIL → `P-HEADER-SIMPLICITY-FINDINGS`. **Deliberately NOT built + recorded:** the D4 multi-sticky warning and the sticky↔hide-on-scroll exclusion (both specified against the rejected per-row model — neither condition can occur). **Not live-verified:** `prefers-reduced-motion` on the collapse. **Open:** `P-THEME-SCROLL-PADDING-SECOND-INSTANCE`.
+  **NEXT for this track = SIDE TRACK B deal-winners, not plumbing** — B3 preset library (NOT started; highest client-facing ROI left here). ~~B2 preview-scroll button (partly addressed by the shipped "Show me the shrunk size" editor toggle)~~ **— B2 is CLOSED 2026-07-27 by FR-37-41 (D395, `20ec422c`); the "partly addressed" framing was optimistic (that toggle covers shrink ONLY, while sticky/hide-on-scroll/transparent are scroll-triggered and unpreviewable in a canvas).** B1 simplicity test RUN, verdict FAIL → `P-HEADER-SIMPLICITY-FINDINGS`. **Deliberately NOT built + recorded:** the D4 multi-sticky warning and the sticky↔hide-on-scroll exclusion (both specified against the rejected per-row model — neither condition can occur). **Not live-verified:** `prefers-reduced-motion` on the collapse. **Open:** `P-THEME-SCROLL-PADDING-SECOND-INSTANCE`.
 
 
 ## Standing programmes (parallel / deferred — not the active front)
