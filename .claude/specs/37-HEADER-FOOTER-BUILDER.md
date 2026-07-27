@@ -972,6 +972,21 @@ List View (canvas click reports "No block selected"), and the Settings tab shows
 controls vs the FR-37-27 roster's 2 (a nudge, not a defect — per the 2026-07-23 correction).
 The **blind-tester arm (a real non-coder, screen-recorded) remains outstanding** and is the
 authoritative half.
+
+> **Finding 1 (drawer content) — the reachable half is now BUILT 2026-07-27; the FAIL verdict STANDS.**
+> `sgs/nav-menu` gained a conditional warning notice + a one-click fix (Spec 36 **FR-36-9a clause 2**,
+> amended in the same commit per §1.2's both-specs-same-commit boundary rule — the drawer is Spec 36's,
+> the header CPT the notice fires inside is this spec's). It covers both the *dangling* `drawerRef` the
+> clause named and the **no-drawer-at-all** case this test actually hit: *"Add the mobile menu"* inserts
+> an `sgs/nav-drawer` as a root-level SIBLING of the header and selects it, so the operator lands on its
+> content. Full mechanism + binding details: Spec 36 FR-36-9a. The "Mobile drawer" panel was also
+> reworded out of the jargon the test flagged (*"DRAWER ID"* → *"Panel this burger opens"*, with a
+> plain-English lead-in saying where drawer content is edited).
+> **This does NOT convert the verdict.** The test has not been re-run, and its authoritative arm is the
+> blind tester. What changed is that the raw-insert path no longer ships a burger that opens nothing.
+> Findings 2 (canvas-click does not select the header) and 3 (Settings-tab ordering — a NUDGE, not a
+> defect) are untouched. `P-HEADER-SIMPLICITY-FINDINGS` stays OPEN.
+
 **Done when:** the test has been run and recorded, with the result — pass or fail — written
 down. A fail is a finding, not a reason to re-run until it passes. ✅ proxy arm met; blind-tester arm pending.
 

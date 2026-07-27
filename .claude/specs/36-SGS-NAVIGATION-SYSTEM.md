@@ -296,6 +296,30 @@ an admin Notice listing referencing items; (4) deleting a menu item leaves no or
 independent, reusable CPT); (5) §8 includes an integrity sweep. These are **error states**, distinct from
 FR-36-12's informational a11y notices.
 
+**Clause (2) — `✅ BUILT 2026-07-27` (`sgs/nav-menu` edit.js), and WIDENED past what this clause named.**
+Cross-spec change: Spec 37 FR-37-26 amended in the SAME commit per Spec 37 §1.2's both-specs-same-commit
+boundary rule (the drawer is this spec's; the header CPT the notice fires inside is Spec 37's).
+The clause anticipated only a *dangling* ref — a `drawerRef` pointing at a drawer that does not exist. The
+live gap found by the FR-37-26 operator-simplicity test was the **NO-drawer-at-all** case: every header
+STARTER pattern ships an `sgs/nav-drawer` as a sibling of `sgs/site-header`, but a header assembled by
+inserting the blocks by hand has none, so the burger opens nothing — silently, with nothing for a non-coder
+to diagnose (parking `P-HEADER-SIMPLICITY-FINDINGS` finding 1). Both cases now warn, with different
+plain-English copy and different one-click fixes: **no drawer** → *"Add the mobile menu"* inserts an
+`sgs/nav-drawer` seeded with a `sgs/nav-menu` on the same menu, **as a root-level SIBLING** of whatever
+top-level block the menu sits in, and selects it so the operator lands on its content; **dangling ref** →
+*"Open “X” instead"* re-points `drawerRef` at the drawer that does exist.
+**Binding details, all mirrored from the render path rather than assumed:** a blank `drawerRef` resolves to
+`sgs-nav-drawer` on BOTH sides (`nav-menu/render.php:295-297`, `nav-drawer/render.php:61-65`), so the editor
+compares *effective* refs — a blank-vs-default pair is a MATCH, not a mismatch. A `sgs/nav-menu` **inside** a
+drawer renders a vertical list, not a burger, and is suppressed from the notice entirely. The fix action is
+gated on `sgs/nav-drawer` being registered (`createBlock` throws on an unregistered slug).
+**The drawer cannot instead be seeded from `sgs/site-header`'s TEMPLATE** — its root is a `<dialog>` that
+promotes to the top layer, it must be a sibling, and the container is `templateLock:'all'` around exactly
+three rows (D393). A notice on the nav block is the only mechanism that reaches the raw-insert path.
+**Informational, never a gate** (Spec 37 FR-37-19 / P1 DP2a): an operator can always save a header with no
+drawer. A hard save-gate was considered and REJECTED — a client blocked from saving with no trail is the
+failure that policy exists to prevent.
+
 ## 4. Utility pieces (best-version; EXTEND existing blocks)
 
 > The nav composes with five utility pieces. Each EXTENDS an existing block — with an HONEST built-vs-to-build

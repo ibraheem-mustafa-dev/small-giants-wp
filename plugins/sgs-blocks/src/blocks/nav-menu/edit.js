@@ -13,9 +13,14 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useSelect, useDispatch } from '@wordpress/data';
+import {
+	useBlockProps,
+	InspectorControls,
+	store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
-import { parse } from '@wordpress/blocks';
+import { parse, createBlock, store as blocksStore } from '@wordpress/blocks';
 import {
 	PanelBody,
 	SelectControl,
@@ -94,7 +99,7 @@ function flattenMenuItems( blocks ) {
 	return items;
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		ref,
 		collapsePoint,
@@ -237,12 +242,158 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { featuredItemIds: next } );
 	};
 
+	// ── FR-36-9a(2) — the burger must open something. ───────────────────────
+	//
+	// This menu collapses to a burger below `collapsePoint` and opens
+	// sgs/nav-drawer BY ID (render.php:295-317 → the drawer's <dialog> id,
+	// nav-drawer/render.php:236). Every header STARTER pattern ships a drawer
+	// as a SIBLING of sgs/site-header — but a header built by inserting the
+	// blocks by hand has none, so the burger opens nothing, silently, and a
+	// non-coder cannot diagnose it. That is the only hard FAIL in the FR-37-26
+	// operator-simplicity test (parking P-HEADER-SIMPLICITY-FINDINGS finding 1).
+	//
+	// The drawer CANNOT be seeded from sgs/site-header's own TEMPLATE: its root
+	// is a <dialog> that promotes to the top layer, it must be a sibling of the
+	// header, and the container is templateLock:'all' around exactly three rows
+	// (header-scratch.php:32-35 records the same reasoning for the patterns).
+	// A notice on this block is the only thing that reaches the raw-insert path.
+	//
+	// Informational + fixable, NEVER a save/publish gate (FR-37-19 / P1 DP2a).
+	//
+	// Both sides fall back to 'sgs-nav-drawer' when the attribute is blank
+	// (nav-menu/render.php:295-297, nav-drawer/render.php:61-65) — mirror that
+	// here or a blank-vs-default pair would look mismatched when it is not.
+	const effectiveDrawerRef = ( drawerRef || '' ).trim() || 'sgs-nav-drawer';
+
+	const drawerState = useSelect(
+		( select ) => {
+			const be = select( blockEditorStore );
+
+			// A nav-menu INSIDE a drawer renders a vertical list, not a burger.
+			// It has no drawer of its own to open, so it must never warn.
+			if (
+				be.getBlockParentsByBlockName( clientId, 'sgs/nav-drawer' )
+					.length > 0
+			) {
+				return { suppress: true };
+			}
+
+			const drawerIds = be.getBlocksByName
+				? be.getBlocksByName( 'sgs/nav-drawer' )
+				: [];
+			const refs = drawerIds.map( ( id ) => {
+				const attrs = be.getBlockAttributes( id ) || {};
+				return ( attrs.drawerRef || '' ).trim() || 'sgs-nav-drawer';
+			} );
+
+			// A new drawer goes at the ROOT, immediately after whichever
+			// top-level block this menu sits inside (the header) — a sibling,
+			// never a child.
+			const parents = be.getBlockParents( clientId );
+			const outermost = parents.length ? parents[ 0 ] : clientId;
+
+			return {
+				suppress: false,
+				total: refs.length,
+				matches: refs.includes( effectiveDrawerRef ),
+				firstRef: refs[ 0 ] || '',
+				insertIndex: be.getBlockIndex( outermost ) + 1,
+				// createBlock throws on an unregistered slug — never offer a
+				// fix action that cannot run.
+				canCreate: !! select( blocksStore ).getBlockType(
+					'sgs/nav-drawer'
+				),
+			};
+		},
+		[ clientId, effectiveDrawerRef ]
+	);
+
+	const { insertBlock } = useDispatch( blockEditorStore );
+
+	const addDrawer = () => {
+		insertBlock(
+			createBlock(
+				'sgs/nav-drawer',
+				{ drawerRef: effectiveDrawerRef },
+				// Seed the same menu the bar uses, matching header-scratch.php
+				// — the drawer opens with real links rather than empty.
+				[ createBlock( 'sgs/nav-menu', { ref: ref || 0 } ) ]
+			),
+			drawerState.insertIndex,
+			undefined, // root level
+			true // select it, so the operator lands on its content
+		);
+	};
+
+	const showDrawerNotice =
+		! drawerState.suppress && ! drawerState.matches;
+
 	const blockProps = useBlockProps();
 
 	return (
 		<>
 			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
 			<InspectorControls>
+				{ showDrawerNotice && (
+					<Notice
+						status="warning"
+						isDismissible={ false }
+						style={ { marginBottom: '16px' } }
+					>
+						{ 0 === drawerState.total ? (
+							<>
+								<p style={ { margin: '0 0 8px' } }>
+									{ __(
+										'On a phone this menu becomes a burger button — but there is no mobile menu panel for it to open, so tapping it will do nothing.',
+										'sgs-blocks'
+									) }
+								</p>
+								{ drawerState.canCreate && (
+									<Button
+										variant="primary"
+										size="small"
+										onClick={ addDrawer }
+									>
+										{ __(
+											'Add the mobile menu',
+											'sgs-blocks'
+										) }
+									</Button>
+								) }
+							</>
+						) : (
+							<>
+								<p style={ { margin: '0 0 8px' } }>
+									{ sprintf(
+										/* translators: 1: drawer id this menu points at. 2: the drawer id that actually exists. */
+										__(
+											'This burger is set to open a mobile menu panel named “%1$s”, but no panel with that name is here. The panel that does exist is named “%2$s”.',
+											'sgs-blocks'
+										),
+										effectiveDrawerRef,
+										drawerState.firstRef
+									) }
+								</p>
+								<Button
+									variant="primary"
+									size="small"
+									onClick={ () =>
+										setAttributes( {
+											drawerRef: drawerState.firstRef,
+										} )
+									}
+								>
+									{ sprintf(
+										/* translators: %s: the drawer id that actually exists. */
+										__( 'Open “%s” instead', 'sgs-blocks' ),
+										drawerState.firstRef
+									) }
+								</Button>
+							</>
+						) }
+					</Notice>
+				) }
+
 				{ resolvedItems.length > LINK_COUNT_THRESHOLD && (
 					<Notice status="info" isDismissible={ true } style={ { marginBottom: '16px' } }>
 						{ sprintf(
@@ -369,15 +520,21 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Mobile drawer', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Mobile menu', 'sgs-blocks' ) } initialOpen={ false }>
+					<p style={ { marginTop: 0 } }>
+						{ __(
+							'On a phone this menu becomes a burger button that opens a full-screen mobile menu panel. To change what visitors see in it, select that panel and edit its contents like any other block.',
+							'sgs-blocks'
+						) }
+					</p>
 					<TextControl
-						label={ __( 'Drawer id', 'sgs-blocks' ) }
+						label={ __( 'Panel this burger opens', 'sgs-blocks' ) }
 						value={ drawerRef }
 						onChange={ ( val ) =>
 							setAttributes( { drawerRef: val } )
 						}
 						help={ __(
-							'The id of the sgs/nav-drawer block the burger opens. Leave as the default unless the page has more than one drawer.',
+							'Only change this if the page has more than one mobile menu panel — it must match the name set on the panel you want to open.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
