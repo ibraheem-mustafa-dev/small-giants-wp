@@ -434,6 +434,43 @@ points here. Neither ever silently drops a STOP.
   gated by more than one hook layer (path-scope gate + secret-scan + visual-diff); check ALL of
   them before assuming a bare `git commit` will land, and read each gate's own bypass guidance.
 
+- **STOP-A-GREEN-BUILD-IS-NOT-EVIDENCE-AN-EFFECT-FIRES (2026-07-27)** — THREE separate
+  "built but inert" bugs shipped past `php -l`, `eslint` AND every prebuild gate in one
+  session: (1) a `MutationObserver` watching a `hidden` attribute the panel NEVER carries,
+  so the stagger animation could never run; (2) an indicator using `scaleX()` on a 1px box
+  with `border-radius`, stretching the corners ~120x into a smeared lozenge; (3) two new
+  theme patterns added with NO theme version bump, so WP served its CACHED pattern list and
+  both new block variants were uninsertable. Every one was syntactically perfect and did
+  nothing. **Rule: for any effect/animation/registration, name the OBSERVABLE SIGNAL and
+  verify it on a live page. "The code exists" and "the gates are green" are worth zero
+  here.** All three were caught only by tracing each side of the contract to the file that
+  emits it — never by reading one file.
+- **STOP-NEW-PATTERN-FILES-NEED-A-THEME-VERSION-BUMP (2026-07-27)** — WordPress caches the
+  pattern-file list against the theme's `style.css` `Version:` header. Adding a
+  `theme/sgs-theme/patterns/*.php` WITHOUT bumping it means the pattern never appears in the
+  editor on any cached install — the feature ships, deploys, and is unreachable. Precedent:
+  theme 1.5.44 was bumped for the 3 earlier mega patterns; 1.5.46->1.5.47 for the 2 new
+  ones. **Verify by querying the live `wp/v2/block-patterns/patterns` REST endpoint after
+  deploy — do not assume registration.**
+- **STOP-BLOCK-JSON-ASSET-TARGET-MUST-EXIST-IN-BUILD (2026-07-27)** — a `block.json`
+  `file:` reference pointing at a file the build never produced makes WP silently enqueue
+  NOTHING: no error, no warning, no failing gate. `sgs/table-of-contents` rendered COMPLETELY
+  UNSTYLED because `index.js` never imported `style.css`, so `style-index.css` was never
+  compiled. 5th instance of the D382 class (4 swept July, this one missed).
+  **NOW STRUCTURALLY ENFORCED** by `scripts/check-block-asset-targets.js` wired into
+  `postbuild` (NOT prebuild — prebuild runs `clean:build`, which deletes `build/`, so the
+  gate could only ever false-fail there). Negative-control verified: it genuinely fails on a
+  corrupted reference and recovers on restore.
+- **STOP-VERIFY-A-DOC-IS-LYING-BEFORE-YOU-FIX-IT (2026-07-27)** — I identified 3 project
+  docs as carrying false claims and queued corrections. Verifying each against primary
+  source BEFORE editing proved 2 right and **1 WRONG — my own claim**. Spec 36 FR-36-5 makes
+  a product-REPLACEMENT claim about Kadence Pro and confines its ACCESSIBILITY claims to Max
+  Mega Menu (which research supports); it never claimed what I accused it of. **I would have
+  edited a CORRECT document into being wrong.** Rule: a doc you believe is lying is a
+  HYPOTHESIS, exactly like a subagent's finding or a council's fix-shape. Verify against the
+  primary source (the commit, the code, the DB) before editing. Applies with full force to
+  your OWN diagnostic claims — this is the `prove-the-cause-before-fix` rule turned inward.
+
 ### Standing architectural STOPs (always-on, not D-numbered)
 - **Composite-mirror (R-31-9 / D294)** — no per-block CSS hack that diverges from the
   shared wrapper's computed behaviour; content-KIND box+width composites go block-private,
