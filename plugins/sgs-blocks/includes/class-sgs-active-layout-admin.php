@@ -158,6 +158,20 @@ final class Sgs_Active_Layout_Admin {
 			return $actions;
 		}
 
+		// Preview-before-active (B2). Offered for any editable status INCLUDING
+		// draft/pending — previewing before publishing is the point — because
+		// otherwise the only way to see a header on a real page is to press
+		// "Set as active", i.e. publish it to every visitor first. Opens the
+		// site home so the scroll behaviours (sticky / hide-on-scroll /
+		// transparent) are actually observable; an editor canvas cannot show them.
+		if ( ! in_array( $post->post_status, array( 'trash', 'auto-draft' ), true ) ) {
+			$actions['sgs_preview_layout'] = sprintf(
+				'<a href="%s" target="_blank" rel="noopener">%s</a>',
+				\esc_url( Sgs_Active_Layout::preview_url( $area, (int) $post->ID ) ),
+				\esc_html__( 'Preview on site', 'sgs-blocks' )
+			);
+		}
+
 		if ( Sgs_Active_Layout::get_stored_id( $area ) === (int) $post->ID ) {
 			$actions['sgs_clear_active'] = sprintf(
 				'<a href="%s">%s</a>',

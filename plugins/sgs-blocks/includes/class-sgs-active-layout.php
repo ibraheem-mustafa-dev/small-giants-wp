@@ -74,6 +74,19 @@ final class Sgs_Active_Layout {
 	private static $render_served = array();
 
 	/**
+	 * Per-request memo of the resolved preview target, keyed by area.
+	 *
+	 * {@see self::get_preview_id()} runs a capability check and a nonce
+	 * verification, and it is called once per consumer (the render path and the
+	 * behaviour resolver both reach it via get_active_id()). Memoising keeps
+	 * that work to once per area per request. An unset key means "not yet
+	 * resolved"; 0 means "resolved, and there is no valid preview".
+	 *
+	 * @var array<string,int>
+	 */
+	private static $preview_id = array();
+
+	/**
 	 * Reset the per-request render state. Exposed for testing; in production
 	 * the static state resets naturally because PHP processes terminate at the
 	 * end of each request.
@@ -81,6 +94,7 @@ final class Sgs_Active_Layout {
 	public static function reset_request_state(): void {
 		self::$render_attempted = array();
 		self::$render_served    = array();
+		self::$preview_id       = array();
 	}
 
 	/**
@@ -228,6 +242,130 @@ final class Sgs_Active_Layout {
 	}
 
 	/**
+	 * Query var used by the preview-before-active route, per area.
+	 *
+	 * @param string $area Area token.
+	 * @return string
+	 */
+	public static function preview_query_var( string $area ): string {
+		return 'sgs_preview_' . $area;
+	}
+
+	/**
+	 * Nonce action for a preview link, scoped to BOTH the area and the post id
+	 * so a nonce minted for one header cannot be replayed against another.
+	 *
+	 * @param string $area    Area token.
+	 * @param int    $post_id Post id being previewed.
+	 * @return string
+	 */
+	public static function preview_nonce_action( string $area, int $post_id ): string {
+		return 'sgs_preview_layout_' . $area . '_' . $post_id;
+	}
+
+	/**
+	 * Build the front-end preview URL for a layout post.
+	 *
+	 * Points at the site HOME (Bean-chosen 2026-07-27): the header must be seen
+	 * against real scrolling content, because sticky / hide-on-scroll /
+	 * transparent are scroll-triggered and cannot be shown in a static editor
+	 * canvas — which is the gap this route exists to close.
+	 *
+	 * @param string $area    Area token.
+	 * @param int    $post_id Post id to preview.
+	 * @return string
+	 */
+	public static function preview_url( string $area, int $post_id ): string {
+		return \wp_nonce_url(
+			\add_query_arg(
+				array( self::preview_query_var( $area ) => $post_id ),
+				\home_url( '/' )
+			),
+			self::preview_nonce_action( $area, $post_id )
+		);
+	}
+
+	/**
+	 * Resolve a valid preview target for THIS request, or 0.
+	 *
+	 * Preview-before-active (B2). Both CPTs are registered `'public' => false`
+	 * (`class-sgs-block-cpts.php:98`), so a layout post has no frontend URL of
+	 * its own; without this route the only way an operator could see their
+	 * header on a real page was to press "Set as active" — i.e. publish it to
+	 * every visitor before ever looking at it.
+	 *
+	 * Fails closed to 0 unless EVERY condition holds, so the caller simply
+	 * carries on to the real active pointer:
+	 *   - the per-area query var is present and a positive int
+	 *   - the current user can `edit_theme_options` (the same bar as
+	 *     "Set as active" — an unpublished layout must never leak to a visitor)
+	 *   - the nonce verifies against an action scoped to this area AND this id
+	 *   - the post exists and is of the expected type
+	 *
+	 * THE ONE DELIBERATE DEVIATION from {@see self::get_active_id()}: a draft or
+	 * pending post is ACCEPTED here. Previewing before publishing is the entire
+	 * point of the feature; requiring 'publish' would make it useless. `trash`
+	 * and `auto-draft` are still rejected.
+	 *
+	 * @param string $area Area token.
+	 * @return int Post id to preview, or 0.
+	 */
+	public static function get_preview_id( string $area ): int {
+		if ( isset( self::$preview_id[ $area ] ) ) {
+			return self::$preview_id[ $area ];
+		}
+		self::$preview_id[ $area ] = 0;
+
+		$expected_type = self::post_type( $area );
+		if ( '' === $expected_type || ! function_exists( 'get_post' ) ) {
+			return 0;
+		}
+
+		$var = self::preview_query_var( $area );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the nonce IS verified below; this read only obtains the id the nonce is scoped to.
+		if ( ! isset( $_GET[ $var ] ) ) {
+			return 0;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- as above.
+		$post_id = \absint( \wp_unslash( $_GET[ $var ] ) );
+		if ( $post_id <= 0 ) {
+			return 0;
+		}
+
+		if ( ! \current_user_can( 'edit_theme_options' ) ) {
+			return 0;
+		}
+
+		$nonce = isset( $_GET['_wpnonce'] )
+			? \sanitize_text_field( \wp_unslash( $_GET['_wpnonce'] ) )
+			: '';
+		if ( '' === $nonce || ! \wp_verify_nonce( $nonce, self::preview_nonce_action( $area, $post_id ) ) ) {
+			return 0;
+		}
+
+		$post = \get_post( $post_id );
+		if ( ! $post instanceof \WP_Post || $expected_type !== $post->post_type ) {
+			return 0;
+		}
+		if ( in_array( $post->post_status, array( 'trash', 'auto-draft' ), true ) ) {
+			return 0;
+		}
+
+		// A preview response must never be stored by a page cache and then served
+		// to an anonymous visitor — that would leak an unpublished layout to the
+		// public and defeat the capability check above.
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+		if ( function_exists( 'nocache_headers' ) && ! headers_sent() ) {
+			\nocache_headers();
+		}
+
+		self::$preview_id[ $area ] = $post_id;
+		return $post_id;
+	}
+
+	/**
 	 * Return the active post id ONLY when it still resolves to a usable post.
 	 *
 	 * FR-37-3 clause (c). Fails closed on every one of these, so the caller
@@ -243,6 +381,23 @@ final class Sgs_Active_Layout {
 	 * @return int Usable post id, or 0.
 	 */
 	public static function get_active_id( string $area ): int {
+		// Preview-before-active (B2) resolves FIRST and only for this request.
+		//
+		// Deliberately overridden HERE rather than in render_active(), because
+		// this is the single point every consumer funnels through:
+		// Sgs_Header_Rules::filter_template_part() -> render_active() ->
+		// get_active_content() -> here, AND the BEHAVIOUR resolver
+		// SGS_Nav_Menu_Source::get_header_content() (class-sgs-nav-menu-source.php:419)
+		// -> get_active_content() -> here. Overriding only the render path would
+		// preview the markup while sticky / hide-on-scroll / transparent still
+		// resolved from the LIVE header — and those scroll behaviours are exactly
+		// what an editor canvas cannot show, i.e. the whole reason this exists.
+		// One override point, both surfaces, no second mechanism (R-31-9).
+		$preview_id = self::get_preview_id( $area );
+		if ( $preview_id > 0 ) {
+			return $preview_id;
+		}
+
 		$post_id = self::get_stored_id( $area );
 		if ( 0 === $post_id ) {
 			return 0;
