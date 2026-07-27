@@ -629,13 +629,13 @@ last_updated: 2026-07-27 (verified cull pass — 8 entries archived to memory/pa
 
 
 > **[RESTORED 2026-07-11 — css_router.py is LIVE (used by sgs-clone-orchestrator + converter/resolvers/grid.py), so these edge cases are still valid; wrongly swept by a slug-parse bug.]**
-**P-P1Bx-COMMA-MEDIA-INNER** — P1.B.x's `_scope_media_rule()` only scopes the first part of comma-grouped inner selectors. `@media (...) { .sgs-hero, .sgs-cta { ... } }` produces `.page-id-144 .sgs-hero, .sgs-cta { ... }` — `.sgs-cta` left unscoped. Low-frequency edge case. **Trigger:** next css_router maintenance pass.
-**Status:** OPEN
-**P-P1Bx-NESTED-SUPPORTS** — Nested `@supports` inside `@media` produces invalid CSS. Recurse the scope-injection OR pass through unchanged. Low-frequency. **Trigger:** next css_router maintenance pass.
-**Status:** OPEN
+<!-- P-P1Bx-COMMA-MEDIA-INNER — RESOLVED by f19742e2 (top-level-comma-aware _split_selector_list; every selector now scoped). Archived 2026-07-27 to memory/parking-archive.md. -->
 
-**P-P2II-CSS-VALUE-RE-TIGHTEN** — `_CSS_VALUE_RE = re.compile(r"^[^;{}<>\"]*$")` in `stage_attribute_promotion.py` permits single quotes, backticks, parentheses. Defence-in-depth (esc_attr() in PHP is real guard) but worth tightening. **Trigger:** next P2.ii maintenance pass.
-**Status:** OPEN
+<!-- P-P1Bx-NESTED-SUPPORTS — RESOLVED by f19742e2 (_scope_css_block recurses into nested at-rules instead of prefixing their prelude). Archived 2026-07-27 to memory/parking-archive.md. -->
+
+
+<!-- P-P2II-CSS-VALUE-RE-TIGHTEN — RESOLVED by f19742e2 via _is_safe_css_value() — 7 vectors newly blocked; parens + single quotes deliberately KEPT because the parked fix-shape would have rejected var()/calc()/clamp() and the module's own 'Fraunces', serif fixture. Archived 2026-07-27 to memory/parking-archive.md. -->
+
 
 
 ### P-SPEC35-STATE-RESPONSIVE — Responsive × state combinations in the manifest (~30 min)
@@ -667,6 +667,10 @@ last_updated: 2026-07-27 (verified cull pass — 8 entries archived to memory/pa
 **What:** Both rows were reclassified in the hand-curated golden master (D354) but still exist in `setting-types.json` and `setting-registry-css.json`, which are upstream Phase-1 artefacts. No live inconsistency today because the golden master is not regenerated from them — but a regeneration would silently revert the reclassification.
 
 **Approach:** Either reclassify upstream to match, or add a regeneration guard that fails on a known-reclassified key.
+
+**✅ THE GUARD IS BUILT (2026-07-27, `f19742e2`) — this entry is now PARTIAL, and its own numbers were wrong.** `plugins/sgs-blocks/scripts/consistency/check-reclassified-keys.py` derives the protected-key list FROM the golden master's own `bean_rulings_*` metadata (no hardcoded dict, R-31-1), matches on the JSON `"setting_key": "…"` value form so a key merely named in a prose note is not miscounted, and is wired into `run-consistency-gates.py` as INFORMATIONAL 4/4. Negative-controlled: it FAILS on the real artefacts and PASSES on cleaned copies, so it is not vacuous. `--check` exits 1 for a future regeneration workflow to gate on; default is report-only, deliberately, because the drift is pre-existing and accepted — a blocking gate on a known-failing state trains people to ignore gates.
+**Measured, and it corrects this entry:** there are **4** at-risk rulings across **8** references, not the 2 keys named above — `css:stroke`, `css:background-image`, `css:background-position`, `css:font-family`. And **`css:percentage` is not a Bean ruling at all** (it appears only in a prose `notes` field about being absorbed into max-width), so half this entry's stated subject was never in scope.
+**Status:** PARTIAL (guard built + wired; the upstream artefacts themselves are still un-reclassified — option (a) remains open, and is now safe to defer because the tripwire will catch a regeneration attempt) · **Bucket:** tooling
 
 ### P-SPEC35-PARTIAL-BOX-MEMBERS — No vocabulary for a partially-modelled box member (~40 min)
 **Status:** OPEN

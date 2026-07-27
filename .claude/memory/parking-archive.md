@@ -7,6 +7,15 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-07-27 — three css_router / value-gate entries — RESOLVED by commit `f19742e2`
+
+> **P-P1Bx-COMMA-MEDIA-INNER** — `_scope_media_rule()` only scoped the first part of comma-grouped inner selectors: `@media (...) { .sgs-hero, .sgs-cta { ... } }` produced `.page-id-144 .sgs-hero, .sgs-cta { ... }`, leaving `.sgs-cta` unscoped. The entry called it a "low-frequency edge case"; in fact an unscoped rule LEAKS onto every other page, so the impact was wider than parked.
+> **P-P1Bx-NESTED-SUPPORTS** — a nested `@supports` inside `@media` produced invalid CSS.
+> **Status: RESOLVED 2026-07-27 (`f19742e2`).** Both fixed by extracting `_split_selector_list()` (splits on TOP-LEVEL commas only — paren/bracket depth + quote aware, so `:is(.b, .c)` survives) and `_scope_css_block()` (recurses into nested at-rules rather than prefixing their prelude). **A THIRD bug neither entry recorded was found and fixed in the same pass: `@font-face` was also receiving a bogus selector prefix** (`.page-id-144 @font-face`). Each defect was proven by re-running the OLD algorithm on the same inputs before fixing; 9 regression tests added incl. a brace-balance check and a no-bare-`.sgs-cta` negative control. `test_css_router.py` 75 passed. · **Bucket:** Pipeline
+
+> **P-P2II-CSS-VALUE-RE-TIGHTEN** — `_CSS_VALUE_RE = re.compile(r"^[^;{}<>\"]*$")` in `stage_attribute_promotion.py` permitted single quotes, backticks and parentheses; defence-in-depth (the PHP `esc_attr()` is the real guard) but worth tightening.
+> **Status: RESOLVED 2026-07-27 (`f19742e2`) — but deliberately NOT as the entry proposed.** The entry suggested banning parentheses; that would reject `var()`, `calc()`, `clamp()`, `rgb(0 0 0 / 50%)` — most modern CSS values — so parens were KEPT. Single quotes were kept too: the module's own test fixture is `'Fraunces', serif` and double quotes are already banned, making it the only available quoting form. What was actually added (7 vectors verified to have passed the ORIGINAL regex): newline/CR (could smuggle a second declaration past the `;` ban), backtick, backslash (the `\3c script` escape vector), plus `/*`, `*/`, `javascript:`, `expression(` via a case-insensitive substring denylist. Extracted to a testable `_is_safe_css_value()`; 12 new assertions. **Lesson worth keeping: the parked fix-shape was partly wrong — following it verbatim would have broken legitimate CSS.** · **Bucket:** Pipeline
+
 ## 2026-07-27 — six entries closed by a parallel-agent verification sweep (all findings re-checked by hand)
 
 > **Method note.** These were closed by a 4-branch parallel verification pass over the remaining parking entries, with every load-bearing agent claim independently re-verified against live source before archiving (subagents are known to keep report STRUCTURE while inventing FACTS). One agent claim WAS wrong and was rejected — see the P-DECISIONS-BACKTAG correction left in `parking.md`.
