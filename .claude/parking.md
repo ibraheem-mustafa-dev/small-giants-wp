@@ -6,6 +6,37 @@ last_updated: 2026-07-27 (THREE verified cull passes this session — 34 entries
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
 
+## ⛔ LIVE-BROWSER-GATED — do NOT re-audit these statically (index, 2026-07-27)
+
+> **Why this exists.** Three verified cull passes ran on 2026-07-27. The entries below were each
+> examined and could NOT be closed, for one reason only: **their central claim is about rendered or
+> interactive behaviour, so no amount of file-reading can settle it.** Their code-side halves have
+> been checked where one exists. A future static audit will burn effort and reach "UNVERIFIED" again.
+>
+> **What they actually need:** one QA session with a browser (Playwright MCP + a deployed canary),
+> and for the visual-judgement ones, **Bean's eye — which is co-authoritative, not optional (R-31-13)**.
+> Batch them; they share a setup cost.
+>
+> | Entry | What only a browser can settle |
+> |---|---|
+> | `P-PAGE8-DISCREPANCY-REGISTER` | 15 visual defects vs the draft; **precondition: re-clone page 8 first** (its baseline pre-dates D305) |
+> | `P-PAGE8-QC-BATCH-9` | Bean's 9 reported defects on live page 8 |
+> | `P-PRODUCT-PAGE-REDESIGN` | "Trustpilot block stupidly large", "content width really tight" |
+> | `P-ARCHIVE-PRODUCT-WC-VALIDATION` | the editor's "Block validation failed" state (frontend renders fine) |
+> | `P-NAV-STYLES-TAB-BLANKS-UNREPRODUCED` | a sidebar blanking on the Styles tab — **NOT REPRODUCED; do not act on a cause** |
+> | `P-INDUS-BRANDSTRIP-OVERFLOW-9PX` | a 9px horizontal overflow measurement |
+> | `P-MULTIBUTTON-768-WRAP` | whether CTAs still wrap at 768px (button was rebuilt since — may be fixed) |
+> | `P-RAWSVG-FILLED-VS-OUTLINE` | the LANDED half (control is BUILT + verified in source) |
+> | `P-PRODUCT-CARD-BOUND-CTA-LANDED` | needs a real WooCommerce-bound card to exercise |
+> | `P-ROW-COLLAPSE-RESIDUALS` | `prefers-reduced-motion` — needs the OS setting enabled |
+> | `P-MAMAS-PRIMARY-CONTRAST` | **token maths already DONE** (`#e68a95` on `#fbf3dc` = 2.25:1, computed 2026-07-27) — only the site-wide remediation call is left |
+> | `P-P3-ADMIN-POLISH` | 44px targets, emoji indicators, chip-input (its WC two-column refactor IS statically confirmed open) |
+> | `P-HEADER-SIMPLICITY-FINDINGS` | the blind-tester arm — a real non-coder, screen-recorded |
+>
+> **Do not add an entry here just because it is hard.** The test is narrow: *is the claim about
+> rendered/interactive output?* If it can be settled by reading code, the DB, or git, it belongs in a
+> normal static pass.
+
 
 ## 2026-07-26 (D391) — the theme carries a SECOND copy of the scroll-padding defect the plugin just fixed
 
