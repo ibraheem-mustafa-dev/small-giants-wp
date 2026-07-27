@@ -49,41 +49,67 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
   → corners stretched ~120× (now animates `width`, scoped out-of-flow exception); (3) 2 new patterns with NO
   theme version bump → WP caches the pattern list, so both variants would have been **uninsertable**
   (1.5.46→1.5.47; **verified live: 5 mega patterns register, was 3**).
-- **NEW FINDINGS — recorded, NOT fixed (all pre-existing, out of this sweep's scope):**
-  - **`sgs/table-of-contents` renders UNSTYLED on the front end.** `index.js` never imports `style.css`, so
-    webpack emits no `style-index.css`, so `block.json`'s `file:./style-index.css` points at nothing and WP
-    enqueues nothing. Proven with a negative control (mega-panel imports it, builds fine). **5th instance of
-    the D382 class.** The LEDGER's own suggested build gate (assert every `block.json` asset target exists in
-    `build/`) found this on its FIRST ad-hoc run — strong argument to make it permanent.
-  - 36 blocks use `viewScriptModule`; only 9 declare `supports.interactivity`. NOT called a bug — needs its
-    own investigation of whether client-side-navigation compat matters here.
-  - `sgs/nav-menu`'s `hoverStyle` carries a JSON `enum` (pre-existing; banned pattern — WP silently coerces
-    out-of-enum values). Deliberately left alone: shipped, live-verified code.
-- **DOC CORRECTIONS OWED (verified stale, not yet written):**
-  - **Spec 36 §6a "mega-panel presets" row is FALSE.** It blames WP 7.0's iframed editor canvas for ignoring
-    `editor.css`. `git show b5f2ee02` (D382) shows the real causes were self-nested CSS selectors + wrong
-    stylesheet filenames in `block.json`, both fixed. Its prescribed fix addresses a cause that never existed.
-  - **BUILD-SPEC §4 contradicts binding CF-7.** §4's illustrative cascade includes a bare
-    `@media (prefers-color-scheme: dark)` that would make `auto` go dark with no site switcher; CF-7 forbids
-    exactly that. §0.5 supersedes §1–§10, so CF-7 wins and the build followed CF-7 — but §4 should be amended.
-  - ~~Spec 36 FR-36-5 overstates the competitor claim re Kadence.~~ **RETRACTED 2026-07-27 — MY claim was
-    wrong, the spec is correct.** A `/qc-inline` pass before editing read FR-36-5 verbatim: it makes a
-    PRODUCT-REPLACEMENT claim about Kadence ("replaces … Kadence Pro mega menu") and confines its
-    ACCESSIBILITY claims to Max Mega Menu ("documented WCAG failures + mobile-toggle issues") — which the
-    research independently SUPPORTS. It never claims we beat Kadence on a11y. **No edit made; the doc was
-    right and I would have "corrected" it into being wrong.** Lesson: verify a doc is lying before fixing it,
-    exactly as you would verify a subagent's finding.
+- **FOLLOW-ON FIXES - ALL RESOLVED 2026-07-27 (commit `9f8a6437`):**
+  - **`sgs/table-of-contents` rendered COMPLETELY UNSTYLED - FIXED.** `index.js` imported neither `style.css`
+    nor `editor.css`, so webpack compiled neither, so `block.json`'s `file:./style-index.css` +
+    `file:./index.css` pointed at non-existent files and WP silently enqueued NOTHING. 5th instance of the
+    D382 class. Now builds 2,386 B + 2,953 B.
+  - **NEW PERMANENT GATE `scripts/check-block-asset-targets.js` - BUILT + WIRED.** Resolves every `file:`
+    reference (string OR array) in every compiled `block.json` against real build output. 81 blocks, 0
+    failures. **Negative control independently re-run: it genuinely fails (exit 1) on a corrupted reference
+    and returns to 0 on restore - not a vacuous gate.** Wired to **`postbuild`, NOT `prebuild`** - `prebuild`
+    runs `clean:build` which deletes `build/`, so the gate could only ever false-fail there. (The dispatch
+    said prebuild; the agent worked out it was wrong and explained why. Verified: `prebuild` does contain
+    `clean:build`.)
+  - **`hoverStyle` JSON `enum` - REMOVED,** PHP `in_array(..., true)` validation added mirroring
+    `indicatorStyle`. The value reaches the scoped `<style>`, so this is also a security boundary. All 3
+    valid values behave identically to before.
+  - **`supports.interactivity` (36 viewScriptModule vs 9 declaring) - INVESTIGATED, SETTLED, DO NOT
+    RE-INVESTIGATE.** Verdict: **harmless inconsistency today; a real but DORMANT gap.** Evidence from WP core
+    source (`WP_Block::render()`): the flag's ONLY runtime effect is electing a "root interactive block" whose
+    HTML gets passed to `wp_interactivity_process_directives()`. Safe here because **(a)** render.php already
+    writes the correct literal initial value beside every directive (`aria-expanded="false"` next to
+    `data-wp-bind--aria-expanded` - verified in source AND in the live served HTML), so the pre-hydration
+    paint is right; **(b)** ZERO blocks use `data-wp-each`, the one directive needing SSR/CSR expansion to
+    avoid an empty first paint; **(c)** the client runtime hydrates from `viewScriptModule` and is NOT gated
+    by this PHP flag; **(d)** `clientNavigation` is consumed only by `@wordpress/interactivity-router`, and
+    the repo has ZERO router usage. Origin: an incomplete 2026-03-10 "QA remediation batch 1" pass, not an
+    architectural choice. **Action: add it opportunistically next time nav-menu/nav-drawer are touched for
+    something else - never as a standalone task. RE-OPEN ONLY IF the framework adopts Interactivity-Router
+    client-side navigation**, at which point every block missing it silently breaks that feature, with no
+    error surfaced.
+  - **NOTE: the canary is now BEHIND `main`** - it was deployed before the ToC + hoverStyle fixes. Redeploy
+    before the next verification pass or you measure stale code.
+- **DOC CORRECTIONS - DONE 2026-07-27 (`9f8a6437`), verified by `/qc-inline` BEFORE editing:**
+  - **Spec 36 6a "mega-panel presets" row was FALSE ON THREE COUNTS - CORRECTED.** It claimed the frontend
+    "works by construction" (it was broken too), blamed WP 7.0's iframed editor canvas for ignoring
+    `editor.css`, and prescribed a "PROVEN FIX (not yet landed)". `git show b5f2ee02` (D382) proves the real
+    causes were (1) self-nested selectors that broke BOTH surfaces and (2) `block.json` naming SOURCE
+    filenames so WP enqueued nothing anywhere. Row replaced with the verified causes + an explicit retraction
+    so nobody re-applies the phantom fix.
+  - **BUILD-SPEC 4's 4th dark-cascade rule CONTRADICTED binding CF-7 - REMOVED** with a do-not-reinstate
+    note. It would have let `auto` follow the visitor's OS preference with no site switcher; CF-7 forbids
+    exactly that, and 0.5 supersedes 1-10 on conflict. It was never built.
+  - **RETRACTED - MY OWN CLAIM WAS WRONG, no edit made.** I recorded that Spec 36 FR-36-5 overstates a
+    Kadence Pro accessibility claim. Verifying BEFORE editing proved otherwise: FR-36-5 makes a product
+    REPLACEMENT claim about Kadence and confines its ACCESSIBILITY claims to Max Mega Menu, which the
+    research independently supports. **The doc was right; I would have corrected it into being wrong.**
+    Lesson: verify a doc is lying before you fix it - the same discipline applied to subagent findings.
 - **Standards re-validated 2026-07-27 (no pinned spec value needed changing):** safe-triangle still current
   (floating-ui ships `safePolygon`; PrimeVue #8448 open since Feb 2026) · 300ms hover-open backed by Baymard
   (300–500ms) · the transform/opacity-only ban still correct for 2026 (animated `backdrop-filter` still spikes
   GPU in current Chrome) · 170ms close-grace has NO evidence base but is now backstopped by the real triangle.
 
-**Prior CURRENT (2026-07-26 — TWO tracks closed the same day; both DONE, neither has a live front.)**
-
-- **Track 2b — Spec 37 per-row header/footer: CLOSED. FR-37-40 shipped (D391 `5716f7b7` + D392 `494e5d50`, docs `4ba0cbbd`/`a2d6af96`/`e698ec7a`).** Per-row `position:sticky` was REJECTED (short-parent trap); sticky stays HEADER-level and a hidden row COLLAPSES (height→0) — gap **0.00 unrounded** at all 3 tiers, non-pinned path byte-identical `translateY(-100%)`. The unconditional `scroll-padding-top` defect is FIXED (publisher gated on MEASURED computed position; it had reserved 93px desktop / **252px mobile** on every non-sticky page). Full detail in "Active tracks" below. **Next = Side Track B deal-winners, B3 preset library first.**
-- **Track 1b — Spec-32 no-inline rollout: CLOSED (D385, `3e98861b` `6adc932f` `33272bd3` `23d27246`).** The "2805-GAP Wave B" front was a PHANTOM (GAP count = semantic noise); the real 5-fix backlog landed.
-- **⚠ This handoff swept the LEDGER back under cap** (38.7KB → lean) by trimming the 2026-07-25 Track-2 mega narrative to a pointer — its full detail is `decisions.md` **D382** + `memory/session-2026-07-2*.md`, both verified present before trimming.
-- Track 1b detail (11-condition DONE audit, the 5-fix backlog, the E13 gate exemption, D383/D384 box-object A1+A2) is in `decisions.md` D383-D385 + `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`. **2 pre-existing findings still parked (NOT ours):** `P-CONFORMANCE-GOLDEN-DRIFT` (27 stale goldens - blind re-seed forbidden) + `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
+**Prior CURRENT (2026-07-26) - swept to a pointer 2026-07-27 to hold this file under its 24,576-byte cap.**
+Two tracks closed that day, both DONE with no live front: **Track 2b** (Spec 37 per-row header/footer,
+FR-37-40 - per-row `position:sticky` REJECTED as a short-parent trap; sticky stays HEADER-level, a hidden row
+COLLAPSES to height 0, gap 0.00 unrounded at all 3 tiers; the unconditional `scroll-padding-top` defect fixed
+by gating the publisher on MEASURED computed position - it had reserved 93px desktop / 252px mobile on every
+non-sticky page) and **Track 1b** (Spec-32 no-inline rollout - the "2805-GAP Wave B" front was a PHANTOM;
+GAP count is semantic noise, and the real 5-fix backlog landed). Full detail: `decisions.md` D385-D392 +
+`.claude/reports/2026-07-26-spec32-11-condition-done-audit.md` + the Active-tracks entries below (both
+verified present before trimming). Still parked, NOT ours: `P-CONFORMANCE-GOLDEN-DRIFT` (27 stale goldens -
+blind re-seed forbidden) + `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
 
 **Prior sessions, swept to pointers 2026-07-26 (this handoff) — the LEDGER was 38.7KB against a 24.5KB cap and its own note flagged this trim as owed:**
 - **Track 2 mega-menu (2026-07-25, `b5f2ee02` + `c3524de8` + `dbda2976`) — COMPLETE on both surfaces, all findings closed.** Two stacked bugs: render.php self-nested its per-`style` selectors (so columns/cards/minimal never rendered on the FRONT end either), and block.json named the SOURCE stylesheet filenames so WP silently enqueued nothing — the earlier "WP 7.0 iframe ignores editorStyle" diagnosis was WRONG. Both fixed; the same block.json bug was swept from 4 other blocks; `build-deploy.py` now auto-bumps the CSS epoch. **Full detail: `decisions.md` D382 + `memory/session-2026-07-2*.md` (both verified present before this trim).**
