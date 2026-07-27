@@ -27,7 +27,54 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
 
 **Prior sessions (swept 2026-07-21, verbatim):** the Spec 35 inspector-UX rollout (2026-07-19/20) and the 2026-07-17 orientation block now live in `memory/session-2026-07-21-ledger-sweep.md`. Track 1b's live status is in **Active tracks** below.
 
-**⭐ CURRENT (2026-07-26 — TWO tracks closed the same day; both are DONE, neither has a live front.)**
+**⭐ CURRENT (2026-07-27 — mega DEFERRED follow-on shipped + deployed to canary; motion UNPROVEN.)**
+
+- **Track 2 mega — the 5 DEFERRED items are BUILT, committed `db2b96d3`, pushed, deployed to sandybrown.**
+  Bean un-deferred them this session (menu presented → "all five"). Shipped: media-cards + brands variants
+  (+2 starter patterns) · dark value set · 5 motion effects (NEW `src/shared/effects/`, ONE shared rAF loop,
+  framework-reusable) · mega-aside's real control surface (was ZERO attributes) · TRUE safe-triangle + bfcache reset.
+- **⚠ MOTION IS NOT LIVE-VERIFIED. Do not treat it as done.** Canary panel **1745 is EMPTY**, so there is
+  nothing for the stagger to reveal and no open panel to axe. Visual-diff reports are committed as
+  **`verdict: INCOMPLETE` / `first_paint_capture_passed: false`** — deliberately NOT fabricated as PASS.
+  The visual-diff commit gate was BYPASSED with the reason stated in full in `db2b96d3`'s message (circular
+  dependency: gate needs a report → report needs live render → deploy needs a commit). **Bean's R-31-13
+  sign-off NOT obtained.**
+- **⭐ NEXT (unchanged, now gating): Gate 3 composed-nav.** Populate panel 1745, attach to menu 100, put
+  `sgs/nav-menu` on a page. That single fixture unblocks ALL the owed verification at once: stagger firing,
+  axe on an open panel, the indicator pill shape, dark scheme, both new variants rendering, the live
+  recursion test.
+- **THREE "built but inert" bugs caught pre-commit — every one passed `php -l`, eslint AND all prebuild gates:**
+  (1) stagger observed a `hidden` attr the panel never carries → could never fire (now observes the trigger's
+  `aria-expanded`; validated against live served DOM); (2) indicator used `scaleX` on a radius-bearing 1px box
+  → corners stretched ~120× (now animates `width`, scoped out-of-flow exception); (3) 2 new patterns with NO
+  theme version bump → WP caches the pattern list, so both variants would have been **uninsertable**
+  (1.5.46→1.5.47; **verified live: 5 mega patterns register, was 3**).
+- **NEW FINDINGS — recorded, NOT fixed (all pre-existing, out of this sweep's scope):**
+  - **`sgs/table-of-contents` renders UNSTYLED on the front end.** `index.js` never imports `style.css`, so
+    webpack emits no `style-index.css`, so `block.json`'s `file:./style-index.css` points at nothing and WP
+    enqueues nothing. Proven with a negative control (mega-panel imports it, builds fine). **5th instance of
+    the D382 class.** The LEDGER's own suggested build gate (assert every `block.json` asset target exists in
+    `build/`) found this on its FIRST ad-hoc run — strong argument to make it permanent.
+  - 36 blocks use `viewScriptModule`; only 9 declare `supports.interactivity`. NOT called a bug — needs its
+    own investigation of whether client-side-navigation compat matters here.
+  - `sgs/nav-menu`'s `hoverStyle` carries a JSON `enum` (pre-existing; banned pattern — WP silently coerces
+    out-of-enum values). Deliberately left alone: shipped, live-verified code.
+- **DOC CORRECTIONS OWED (verified stale, not yet written):**
+  - **Spec 36 §6a "mega-panel presets" row is FALSE.** It blames WP 7.0's iframed editor canvas for ignoring
+    `editor.css`. `git show b5f2ee02` (D382) shows the real causes were self-nested CSS selectors + wrong
+    stylesheet filenames in `block.json`, both fixed. Its prescribed fix addresses a cause that never existed.
+  - **BUILD-SPEC §4 contradicts binding CF-7.** §4's illustrative cascade includes a bare
+    `@media (prefers-color-scheme: dark)` that would make `auto` go dark with no site switcher; CF-7 forbids
+    exactly that. §0.5 supersedes §1–§10, so CF-7 wins and the build followed CF-7 — but §4 should be amended.
+  - **Spec 36 FR-36-5 overstates the competitor claim.** Research found documented a11y failures for Max Mega
+    Menu (keyboard works, screen reader does not) and JetMenu (Tab moves, Enter doesn't activate), but **zero
+    evidence either way for Kadence Pro**. Absence of evidence, not a clean bill of health.
+- **Standards re-validated 2026-07-27 (no pinned spec value needed changing):** safe-triangle still current
+  (floating-ui ships `safePolygon`; PrimeVue #8448 open since Feb 2026) · 300ms hover-open backed by Baymard
+  (300–500ms) · the transform/opacity-only ban still correct for 2026 (animated `backdrop-filter` still spikes
+  GPU in current Chrome) · 170ms close-grace has NO evidence base but is now backstopped by the real triangle.
+
+**Prior CURRENT (2026-07-26 — TWO tracks closed the same day; both DONE, neither has a live front.)**
 
 - **Track 2b — Spec 37 per-row header/footer: CLOSED. FR-37-40 shipped (D391 `5716f7b7` + D392 `494e5d50`, docs `4ba0cbbd`/`a2d6af96`/`e698ec7a`).** Per-row `position:sticky` was REJECTED (short-parent trap); sticky stays HEADER-level and a hidden row COLLAPSES (height→0) — gap **0.00 unrounded** at all 3 tiers, non-pinned path byte-identical `translateY(-100%)`. The unconditional `scroll-padding-top` defect is FIXED (publisher gated on MEASURED computed position; it had reserved 93px desktop / **252px mobile** on every non-sticky page). Full detail in "Active tracks" below. **Next = Side Track B deal-winners, B3 preset library first.**
 - **Track 1b — Spec-32 no-inline rollout: CLOSED (D385, `3e98861b` `6adc932f` `33272bd3` `23d27246`).** The "2805-GAP Wave B" front was a PHANTOM (GAP count = semantic noise); the real 5-fix backlog landed.
