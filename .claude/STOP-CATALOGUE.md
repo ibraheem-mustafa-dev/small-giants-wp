@@ -415,6 +415,21 @@ points here. Neither ever silently drops a STOP.
   says a finding is "pre-existing" (not caused by this session), verify against the session-start
   baseline — a Front-2 subagent claimed 5 variant findings pre-existing and was wrong (this
   session's data caused them).
+- **STOP-TEMPLATELOCK-ALL-REAPPLIES-THE-TEMPLATE** — NEW 2026-07-27 (Track-2b, D393). A block
+  passing BOTH a `template` and `templateLock: 'all'`/`'contentOnly'` re-applies that template on
+  EVERY mount, not only when empty — WP core: `shouldApplyTemplate = currentInnerBlocks.length
+  === 0 || templateLock === 'all' || templateLock === 'contentOnly'`. `synchronizeBlocksWithTemplate`
+  then matches by **array position + block name only**; any identifying attribute (`rowSlot`…) is
+  ignored. This silently overwrote 15/16 header/footer starter patterns and DESTROYED content.
+  Pass the template only when the container is genuinely empty; the lock is unaffected
+  (`if (!template) return blocks;`). Never assume a template merely seeds an empty block.
+- **STOP-A-MATCHING-MD5-PROVES-CONSISTENCY-NOT-CORRECTNESS** — NEW 2026-07-27 (Track-2b, D394).
+  A local↔server checksum match only proves the two files agree — it does NOT prove the file is
+  the one you built. PowerShell `Copy-Item -Recurse` into an EXISTING directory NESTS it
+  (`build\build`) instead of replacing, so a deploy shipped the stale tree while md5 "verified"
+  clean at every step (both sides were the old file). This nearly got mis-read as "the fix
+  didn't work / wrong root cause". Verify deployed CONTENT — `grep` for the changed line, check
+  the line count — not just that two hashes agree. Extends STOP-VERIFY-DEPLOY-BY-CHECKSUM.
 - **STOP-CHECK-BOTH-HOOK-LAYERS-BEFORE-COMMIT** — NEW 2026-07-22 (Track-1). A commit can be
   gated by more than one hook layer (path-scope gate + secret-scan + visual-diff); check ALL of
   them before assuming a bare `git commit` will land, and read each gate's own bypass guidance.

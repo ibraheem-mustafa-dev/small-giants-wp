@@ -250,10 +250,33 @@ The mechanism already exists and is nearly correct:
   both row blocks set `templateLock: false` at their own level (`site-header-row/edit.js:48`,
   `site-footer-row/edit.js:76`). Locking the container therefore locks only the three rows —
   §3.5's freeform model inside a row is untouched.
-- **No `rowSlot` enum or uniqueness guard is needed.** With the container locked, a fourth row
-  or a duplicate `top` cannot be inserted through the UI at all. Adding a schema-level validator
-  would be a second guard overlapping a working one — forbidden by
-  `~/.claude/rules/prove-the-cause-before-fix.md`.
+- **⛔ `templateLock: 'all'` ALSO re-applies the template — the template must be passed ONLY when
+  the container is empty (D393, 2026-07-27).** The bullet above solved the reorder lock and
+  introduced a worse defect, because `'all'` does two jobs, not one. Verified against WP 7.0.2
+  source (`wp-includes/js/dist/block-editor.js`, `useInnerBlockTemplateSync`):
+  `shouldApplyTemplate = currentInnerBlocks.length === 0 || templateLock === 'all' ||
+  templateLock === 'contentOnly'` — so a locked block re-applies its template even when it
+  already has children, and `synchronizeBlocksWithTemplate` (`wp-includes/js/dist/blocks.js`)
+  then matches rows by **array position + block name only** (`blocks[index]`); `rowSlot` is
+  never consulted. Measured on the canary: **7/8 header and 8/8 footer starters were corrupted**
+  at insert, and it DESTROYED content (header-search-bar-below lost its search bar;
+  footer-centred lost its copyright line). Fix: `template: isEmpty ? TEMPLATE : undefined`,
+  latched on first render — `templateLock` stays `'all'`, and withholding the template is a
+  true no-op in core (`synchronizeBlocksWithTemplate` opens `if (!template) return blocks;`).
+  Re-application after seeding is separately gated by core's `hasTemplateChanged` ref, verified
+  empirically (children added to the template's *empty* rows survive later edits + re-renders).
+- **⚠ The "no uniqueness guard is needed" reasoning below was FALSIFIED by the same defect.**
+  It is retained rather than deleted because its *conclusion* still stands on the corrected
+  mechanism, but its *premise* was wrong and must not be re-cited as evidence.
+- ~~**No `rowSlot` enum or uniqueness guard is needed.** With the container locked, a fourth row
+  or a duplicate `top` cannot be inserted through the UI at all.~~ **FALSE as written:** the
+  corruption above produced trees with **two rows both carrying `rowSlot: 'middle'`** — exactly
+  the duplicate this clause asserted was structurally impossible. The lock governs *operator*
+  insertion; it never governed what the template sync itself writes. With D393's fix the
+  duplicate can no longer occur, so no validator is added — but on the corrected grounds that
+  the sync no longer rewrites a populated container, NOT because "the UI makes it impossible".
+  Adding a schema-level validator would still be a second guard overlapping a working one —
+  forbidden by `~/.claude/rules/prove-the-cause-before-fix.md`.
 
 **What the converter gets:** a deterministic target — `sgs/site-header > sgs/site-header-row`
 with `rowSlot` ∈ {`top`,`middle`,`bottom`}, and the footer equivalent with `columns` in place of
