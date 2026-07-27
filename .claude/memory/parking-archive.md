@@ -7,6 +7,36 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-07-27 — P-CORE-STYLE-MAP-DB-MIGRATION — SUPERSEDED (D274, frozen engine deleted)
+
+> **P-CORE-STYLE-MAP-DB-MIGRATION** — Migrate `_CORE_BLOCK_STYLE_MAP` to a DB-driven lookup (~1.5 hrs). The 26-entry module-level dict in `convert.py` mapping CSS properties to WP core-block `style.*` paths was data-not-logic and violated the DB-first rule (blub.db 260). Proposed a `core_block_style_paths` table + `db_lookup.core_block_style_path_for()`.
+> **Status: SUPERSEDED 2026-07-27.** The dict no longer exists. Verified: `git log -S'_CORE_BLOCK_STYLE_MAP'` shows it deleted at `c8690345` ("the frozen engine DIES — converter/ is the only path", D274); a repo-wide grep for `_CORE_BLOCK_STYLE_MAP` / `core_block_style_path` returns zero hits outside a stale comment at `sgs-clone-orchestrator.py:1523`, and no `core_block_style_paths` table exists (nor is one needed). There is no hardcoded dict left to migrate — the entry's whole subject was deleted with `convert.py`. · **Bucket:** Pipeline
+
+## 2026-07-27 — three deprecation-validation entries — SUPERSEDED (D270, deprecations banned plugin-wide)
+
+> **Common cause:** D270 (2026-07-04) deleted every `deprecated.js` plugin-wide and BANNED the pattern (the framework is pre-production; no live content to migrate). All three entries below existed solely to live-validate a `deprecated.js` migration path. The migration code no longer exists, and in two cases neither does the source block. **Verified 2026-07-27:** `find plugins/sgs-blocks/src -name deprecated.js` = **0 files**; `src/blocks/certification-bar`, `src/blocks/trust-badges`, `src/blocks/svg-background` all **absent**.
+
+> **P-TRUST-BAR-MERGE-VALIDATION** — NEW 2026-05-29, updated 2026-05-31. Validate `trust-bar/deprecated.js` v3 (rename alias `sgs/trust-badges` → `sgs/trust-bar`) + v2 (cross-block `sgs/certification-bar` → `sgs/trust-bar`) against a live post. **Status: SUPERSEDED 2026-07-27** — both the deprecation file and both source blocks are deleted; there is no migration to validate. Bucket: Testing / QA.
+
+> **P-SVG-BACKGROUND-MIGRATION-VALIDATION** — NEW 2026-05-28. Validate `container/deprecated.js` v2 (cross-block `sgs/svg-background` → `sgs/container` `bgSvg*`) against a live post — the entry itself noted no such post ever existed, as the block was never deployed to production. **Status: SUPERSEDED 2026-07-27** — deprecation file and source block both deleted; nothing to migrate, nothing to validate. Bucket: Testing / QA.
+
+> **P-MEDIA-VIDEO-VALIDATION** — NEW 2026-05-29. Validate `sgs/media`'s image+video extension (D97) on a live page, incl. step (4) backwards-compat "via mediaType default + deprecated.js v1 migrate" and step (5) `/sgs-update --stage 1` to seed the 12 new video attrs + resolve the ghost `sgs/media.videoUrl` row. **Status: RESOLVED/SUPERSEDED 2026-07-27** — (a) step 5 is DONE: `block_attributes` carries 52 rows for `sgs/media` including all 12 video attrs (`videoUrl`, `videoSource`, `videoPoster`, `videoPosterId`, `videoId`, `videoMimeType`, `videoAutoplay`, `videoControls`, `videoLoop`, `videoMuted`, `videoPlaysInline`, `videoLazyLoad`) — the ghost row is resolved; (b) step 4 is void — no `deprecated.js` exists (D270); (c) the video path has since been rebuilt and live-tested well past this entry's scope — the branded video player shipped at **D269** (2026-07-04, `view.js` themed player, YouTube/Vimeo untouched, SSR `<video controls>` no-JS fallback) with a `/qc` PASS on sandybrown. Bucket: Testing / QA.
+
+## 2026-07-27 — P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES — RESOLVED (D380)
+
+> **P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES** — NEW 2026-07-22. The F3 LANDED runtime + multi-fixture batch runner SHIPPED (`51629e37`, unit C1a), but `ledger/coverage_check.py::check_landed()` was **deliberately NOT wired**: with no per-fixture canary URLs configured it returned `NOT-RENDERED` for all 36 fixtures and would FAIL the F5 gate for every session. This was the gating dependency for declaring Spec 31 100%. **Status: RESOLVED 2026-07-25** — C2 done: 35 canary fixtures deployed + re-provisioned through the current converter; live LANDED batch (375/768/1440) = **0 WRITTEN-not-LANDED + 0 UNACCOUNTED**; `check_landed()` wired (`b4859b71`/`9babcfd5`). Spec 31 C2 gate MET (D380). · **Bucket:** Pipeline
+> **Archive verification 2026-07-27:** `ledger/coverage_check.py:386 def check_landed(...)` present; `scripts/oracle/fixture-canary-urls.json` present.
+
+## 2026-07-27 — P-HEADER-BEHAVIOURS-DEAD-SELECTOR / P-HEADER-DOUBLE-SLOT-NEST / P-HEADER-EDITOR-TAG-PARITY — RESOLVED (D376)
+
+> **P-HEADER-BEHAVIOURS-DEAD-SELECTOR — ✅ RESOLVED 2026-07-24 (D376, `43cabf68`+`a89e54e0`).** Fix B shipped + LIVE-VERIFIED on the sandybrown canary (real Chrome, CPT 1655 active): sgs/site-header renders `<header>`; view.js + all 21 header-behaviours.css selectors retargeted to `header.sgs-site-header`; scroll-down hides (translateY −119px) + scroll-up returns; shrink CSS responds; 1 banner landmark; axe zero NEW hit. qc-council 3-rater GO, checksum-verified deploy. Drawer-while-scrolled structurally safe (top-layer `<dialog showModal>`), not observable on fixture 1655 (no drawer block).
+
+> **P-HEADER-DOUBLE-SLOT-NEST — ✅ RESOLVED 2026-07-24 (D376, `a89e54e0`).** Option B shipped (Bean design-gated): `filter_template_part` enforces one header per request (has_served guard at top returns `''`; default path marks served via `Sgs_Active_Layout::mark_served()`). Homepage regression-verified: still exactly one `<header>`.
+
+> **P-HEADER-EDITOR-TAG-PARITY — ✅ RESOLVED 2026-07-24 (D376, `a89e54e0`).** `site-header/edit.js` canvas root now `<header>`, matching the frontend.
+
+> **Archive verification 2026-07-27 (all three, against live source):** `assets/css/header-behaviours.css` — 22/22 `sgs-site-header` selectors are `header.sgs-site-header`; `src/header-behaviours/view.js:61` queries `header.sgs-site-header`; `src/blocks/site-header/render.php:11-22` documents + emits the `<header>` tag; `src/blocks/site-header/edit.js:631` canvas root is `<header>`; `includes/class-sgs-active-layout.php:101/115` `has_served()`/`mark_served()` present and consumed by `class-sgs-header-rules.php:244` + `class-sgs-footer-rules.php:294`.
+
 ## 2026-07-16 — P-CALL-BUTTON-CONTRAST — CLOSED/DROPPED (Bean: non-issue)
 
 > **P-CALL-BUTTON-CONTRAST — CLOSED/DROPPED 2026-07-16, do not reopen.** Bean: *"button

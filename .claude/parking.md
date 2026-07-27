@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INSTANCE + P-ROW-COLLAPSE-RESIDUALS; FR-37-40 is COMPLETE so nothing from the sticky build is left unparked. Prior same day: D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
+last_updated: 2026-07-27 (verified cull pass — 8 entries archived to memory/parking-archive.md after checking each claim against live code, not against its own prose: P-HEADER-BEHAVIOURS-DEAD-SELECTOR + P-HEADER-DOUBLE-SLOT-NEST + P-HEADER-EDITOR-TAG-PARITY (D376, re-verified in source), P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES (D380), P-CORE-STYLE-MAP-DB-MIGRATION (subject deleted with convert.py at c8690345/D274), P-TRUST-BAR-MERGE-VALIDATION + P-MEDIA-VIDEO-VALIDATION + P-SVG-BACKGROUND-MIGRATION-VALIDATION (all three superseded by D270 — zero deprecated.js in repo, source blocks deleted, media video attrs confirmed seeded). Corrected 2 stale instructions in place (P-PHASE8-9 named the retired slot_synonyms table; P-PHASE8-6's Approach named the BANNED core/navigation, contradicting its own What). Flagged 2 orphaned FR anchors (P-S17-D FR-S5-2, P-S17-G FR-S7-2 — Spec 17 was deleted at 9dbe94fd and the repoint missed this file; orphaned, NOT complete). Prior: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INSTANCE + P-ROW-COLLAPSE-RESIDUALS; FR-37-40 is COMPLETE so nothing from the sticky build is left unparked. Prior same day: D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
@@ -119,13 +119,9 @@ last_updated: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INST
 
 > **P-MEGA-GATE3-LIVE** — NEW 2026-07-25 (D379). The mega CORE passed AUTOMATED live QC (disclosure renders, multi-instance no-fatal, CF-2 injection neutralised, instance-scoped id) + interactive Gate 2 (picker fires, starter inserts + edits). **Owed for Gate 3:** on a real canary page — populate a mega panel from a starter, attach to a menu, put an `sgs/nav-menu` on a page; open the mega on hover/tap/keyboard; **axe** on the OPEN panel (0 block-defect); **drawer no-regression** (`store('sgs/nav')` untouched but verify); reduced-motion; the **live recursion test** (a panel embedding a nav bound to its own menu → plain link, no loop); Bean's eye (R-31-13). Also: the frontend presets are proven in CODE, not yet visually confirmed on a page. **Status: OPEN** · **Bucket:** Framework · **Trigger:** after P-MEGA-EDITOR-PRESET-PREVIEW lands. Canonical: Spec 36 §6a + §8 FR-36-16.
 
-## 2026-07-23 — header scroll behaviours are BUILT-BUT-DEAD (approved fix B, design-gated); Mama's brand-primary fails contrast as text
+## 2026-07-23 — Mama's brand-primary fails contrast as text
 
-> **P-HEADER-BEHAVIOURS-DEAD-SELECTOR — ✅ RESOLVED 2026-07-24 (D376, `43cabf68`+`a89e54e0`; → parking-archive at next /handoff).** Fix B shipped + LIVE-VERIFIED on the sandybrown canary (real Chrome, CPT 1655 active): sgs/site-header renders `<header>`; view.js + all 21 header-behaviours.css selectors retargeted to `header.sgs-site-header`; scroll-down hides (translateY −119px) + scroll-up returns; shrink CSS responds; 1 banner landmark; axe zero NEW hit. qc-council 3-rater GO, checksum-verified deploy. Drawer-while-scrolled structurally safe (top-layer `<dialog showModal>`), not observable on fixture 1655 (no drawer block).
-
-> **P-HEADER-DOUBLE-SLOT-NEST — ✅ RESOLVED 2026-07-24 (D376, `a89e54e0`; → parking-archive at next /handoff).** Option B shipped (Bean design-gated): `filter_template_part` enforces one header per request (has_served guard at top returns `''`; default path marks served via `Sgs_Active_Layout::mark_served()`). Homepage regression-verified: still exactly one `<header>`.
-
-> **P-HEADER-EDITOR-TAG-PARITY — ✅ RESOLVED 2026-07-24 (D376, `a89e54e0`; → parking-archive at next /handoff).** `site-header/edit.js` canvas root now `<header>`, matching the frontend.
+<!-- P-HEADER-BEHAVIOURS-DEAD-SELECTOR, P-HEADER-DOUBLE-SLOT-NEST, P-HEADER-EDITOR-TAG-PARITY — RESOLVED 2026-07-24 (D376); archived 2026-07-27 to memory/parking-archive.md, live-source re-verified at archive time. -->
 
 > **P-MAMAS-PRIMARY-CONTRAST** — NEW 2026-07-23 (surfaced by the D374 icon-list axe run). The Mama's Munches theme primary token `#e68a95` (a mid-luminance brand pink) measures **2.24:1 on the cream `#fbf3dc` background** — below WCAG for both text (needs 4.5:1) and large/heading text (needs 3:1). It is the theme's `--wp--preset--color--primary`, applied to any link/heading using it; the icon-list axe hit was inherited, not a block defect (the block sets no inline colour). **Fix at the DRAFT/theme source, never a per-block carve-out** (`fix-a11y-at-draft-source-not-the-clone`, `brand-accent-is-a-ground-never-an-indicator` — a mid-luminance accent fails as text on a light ground; flip the element's ground to accent, or darken the text token). Applies to every use of the token, so audit site-wide, not just the icon-list. **Status: OPEN** · **Bucket:** Design · **Trigger:** a Mama's palette/theme-snapshot pass; NOT a blocker for the icon-list build (which passed its own a11y gates).
 
@@ -167,9 +163,9 @@ last_updated: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INST
 
 > **P-CHECK-VARIANTS-ENUM-SILENT-CONTINUE** — NEW 2026-07-22 (Front-2 reviewer Minor). `plugins/sgs-blocks/scripts/cheat-gate/check_variants.py` silently `continue`s on a missing/malformed `enum_values` for a `variant_attr` block: a block whose variant enum is broken passes the gate with **0 violations** even though `detect_variant` cannot discriminate it — a check that quietly passes when the feature is absent (the `negative-control-or-the-test-is-vacuous` class). **Work:** fail-loud (or REPORT) on a `variant_attr` block with missing/malformed `enum_values`, instead of `continue`. **Status: OPEN** · **Bucket:** Tooling · **Trigger:** a converter/cheat-gate session.
 
-## 2026-07-22 (Spec 31 completion wave — units B1/B3/C1a) — 4 residuals
+## 2026-07-22 (Spec 31 completion wave — units B1/B3/C1a) — 3 residuals
 
-> **P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES** — NEW 2026-07-22. The F3 LANDED runtime + multi-fixture batch runner SHIPPED (`51629e37`, unit C1a), but `ledger/coverage_check.py::check_landed()` is **deliberately NOT wired yet**: with no per-fixture canary URLs configured, it returns `NOT-RENDERED` for all 36 fixtures and would FAIL the F5 gate for every session (including Track 2). **This is the gating dependency for declaring Spec 31 100%** — the instrument exists but can prove nothing without live pages. **Work:** deploy the phase-f fixture corpus as canary pages, populate `oracle/fixture-canary-urls.json`, then apply the `check_landed()` patch (the exact function body is in the C1a agent report + the commit message). **Status: RESOLVED 2026-07-25** — C2 done: 35 canary fixtures deployed + re-provisioned through the current converter; live LANDED batch (375/768/1440) = **0 WRITTEN-not-LANDED + 0 UNACCOUNTED**; `check_landed()` wired (`b4859b71`/`9babcfd5`). Spec 31 C2 gate MET (D380). `/handoff` to archive this entry. · **Bucket:** Pipeline
+<!-- P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES — RESOLVED 2026-07-25 (D380); archived 2026-07-27 to memory/parking-archive.md, live-source re-verified at archive time. -->
 
 > **P-QUOTE-PATH2-SELF-NESTING** — NEW 2026-07-25 (surfaced fixing the quote clone); **CODE RESOLVED 2026-07-25 (commit `a5c1fb40`, branch `fix/path2-self-nest-guard`); residual = golden re-seed only.** `db_lookup._resolve_slug_from_bem_tuple`'s Path-2 "block segment" fallback resolved an UNRECOGNISED child element of a block to the block's OWN slug (every block's short slug is an element-scope slot pointing at itself), so any such block could SELF-NEST an unrecognised child (`sgs-quote__<unknown>` → nested sgs/quote). Latent for heading/label/media/button/icon/tab/testimonial/option-picker/accordion-item/quote.
 > **SHIPPED (3 universal defences, R-31-1/R-31-9, R-31-3 intact — recognition-resolver + generic-composite-path refinements, NOT a 4th walker branch):** (1) recognition self-nest guard — any Path-2 match resolving to the element's own parent block is refused → pass-through (FR-31-11); cross-block fallback + bare-root unchanged. (2) **transparent-wrapper dissolve** (`extraction._route_generic_child`) — a slug-None `__inner`/`__body`/`__content` shell in a GENERIC InnerBlocks composite (tabs/accordion/form/modal) now DISSOLVES (CSS folds up, children recurse in) instead of being gapped-and-dropped; this fixed a SILENT CONTENT-DROP class affecting sgs/tab (body), feature-grid (cards), form-step (body), modal (panel). (3) `content_band` fill-width fix — `width:100%`/auto is a fill default, not a content-width cap (only `max-width` caps); was colliding on `contentWidth`. Also removed the wrong global `body`→text slot alias (body names a content GROUP — 4 wrapper blocks vs 1 leaf); quote fixture `__body`→`<p>__text`. Verified: 566 converter unit tests + 14 new regression tests (`converter/tests/test_self_nest_guard.py`) green.
@@ -608,30 +604,7 @@ last_updated: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INST
 > **Trigger:** Method-2 converter work.
 
 
-## 2026-05-29 — sgs/trust-bar merge + rename follow-ups
-
-> **P-TRUST-BAR-MERGE-VALIDATION** — NEW 2026-05-29, updated 2026-05-31 (block renamed from trust-badges → trust-bar). `trust-bar/deprecated.js` v3 handles rename alias `sgs/trust-badges` → `sgs/trust-bar`; v2 handles cross-block migration of `sgs/certification-bar` → `sgs/trust-bar`. Not yet validated against a live post containing a `sgs/certification-bar` block. Validation procedure: (1) create a test page on dev with a `sgs/certification-bar` block (text-only variant with 3 label badges); (2) deploy updated plugin; (3) open the page in the block editor and confirm the block auto-migrates to `sgs/trust-bar` with `badgeStyle: 'text-only'` and all labels intact; (4) confirm the frontend renders the pill badge shape correctly; (5) test an image-badge migration from a cert-bar `image-and-text` instance; (6) run `/sgs-update` to populate trust-bar attrs in block_attributes DB. ~20 min.
-> **Status:** OPEN
-> **Bucket:** Testing / QA
-> **Trigger:** Next deploy of sgs-blocks to dev site (palestine-lives.org).
-
----
-
-## 2026-05-29 — sgs/media video extension follow-ups
-
-> **P-MEDIA-VIDEO-VALIDATION** — NEW 2026-05-29. `sgs/media` extended to image+video (D97). Not yet validated on a live page. Validation procedure: (1) create a test page on dev with one sgs/media block set to mediaType=video + a YouTube URL, one with a direct MP4 URL, one with videoSource=internal selecting a WP library video; (2) deploy updated plugin; (3) confirm each renders correctly on the frontend; (4) confirm an existing image-only post still renders identically (backwards-compat via mediaType default + deprecated.js v1 migrate); (5) run `/sgs-update --stage 1` to populate the 12 new video attrs in block_attributes and resolve the ghost `sgs/media.videoUrl` row. ~20 min validation run.
-> **Status:** OPEN
-> **Bucket:** Testing / QA
-> **Trigger:** Next deploy of sgs-blocks to dev site (palestine-lives.org). Run `/sgs-update --stage 1` immediately after deploy.
-
----
-
-## 2026-05-28 — sgs/svg-background retirement follow-ups
-
-> **P-SVG-BACKGROUND-MIGRATION-VALIDATION** — NEW 2026-05-28. `container/deprecated.js` v2 entry handles cross-block migration of `sgs/svg-background` → `sgs/container` with `bgSvg*` attrs. Not yet validated against a live post containing a `sgs/svg-background` block — no such post exists on dev/staging as the block was never deployed to production. Validation procedure: (1) create a test page on dev with a `sgs/svg-background` block containing SVG markup + animation settings; (2) redeploy the updated plugin; (3) open the page in the block editor and confirm the block auto-migrates to `sgs/container` with correct `bgSvg*` attrs populated; (4) confirm the SVG renders on the frontend with the correct animation class.
-> **Status:** OPEN
-> **Bucket:** Testing / QA
-> **Trigger:** Next deploy of sgs-blocks to dev site (palestine-lives.org). ~15 min validation run.
+<!-- P-TRUST-BAR-MERGE-VALIDATION, P-MEDIA-VIDEO-VALIDATION, P-SVG-BACKGROUND-MIGRATION-VALIDATION — all three SUPERSEDED by D270 (deprecations banned + every deprecated.js deleted plugin-wide); archived 2026-07-27 to memory/parking-archive.md with the verification (0 deprecated.js in repo; certification-bar/trust-badges/svg-background source blocks all deleted; sgs/media's 12 video attrs confirmed seeded in block_attributes). -->
 
 ---
 
@@ -738,24 +711,7 @@ last_updated: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INST
 Captured 2026-05-17 from /qc-inline finding 4 (LOW).
 
 
-### P-CORE-STYLE-MAP-DB-MIGRATION — Migrate `_CORE_BLOCK_STYLE_MAP` to DB-driven lookup (~1.5 hrs)
-**Status:** OPEN
-
-
-**What:** The new `_lift_core_block_style()` helper in `convert.py` (commit landing 2026-05-19) uses a 26-entry module-level dict `_CORE_BLOCK_STYLE_MAP` mapping CSS properties to WP core-block `style.*` paths. This is data, not logic — should live in the canonical sgs-framework.db, not inline.
-
-**Why DB-first:** Binding rule blub.db row 260 (2026-05-17) — hardcoded lookup dicts must check DB first. The existing `property_suffixes` (117 rows) covers the SGS-flat-attr mapping (`color → colour`, `font-size → fontSize`, etc.). Core-block style paths (`color → ["color","text"]`, `font-size → ["typography","fontSize"]`) are a parallel but distinct mapping. Either: (a) add a new column to property_suffixes (`core_block_style_path`, JSON-encoded), OR (b) add a new sibling table `core_block_style_paths` (css_property, style_path JSON, kind, image_only bool).
-
-**Trigger:** Next converter iteration touching core-block lift OR a `/sgs-update` refresh that should propagate to both maps OR rater feedback on subsequent commits flags the duplicate.
-
-**Approach:**
-1. Schema migration adding `core_block_style_paths` table (CSV-seeded for idempotency)
-2. New `db_lookup.core_block_style_path_for(css_prop)` returning `(path, kind, image_only)`
-3. Replace module-level `_CORE_BLOCK_STYLE_MAP` with lazy DB call (lru_cache on first use)
-4. Mark Bean's row-260 lesson satisfied
-
-Captured: 2026-05-19 by QC rater 2 (Haiku DB-schema lens).
-
+<!-- P-CORE-STYLE-MAP-DB-MIGRATION — SUPERSEDED: `_CORE_BLOCK_STYLE_MAP` was deleted with convert.py at `c8690345` (D274, frozen engine dies); zero repo hits remain, no core_block_style_paths table needed. Archived 2026-07-27 to memory/parking-archive.md. -->
 
 ### P-PHASE8-9 — Slot-synonym expansion: tile / feature / module synonyms
 **Status:** OPEN
@@ -765,7 +721,7 @@ Captured: 2026-05-19 by QC rater 2 (Haiku DB-schema lens).
 
 **Trigger:** Next client onboarding hits one of these element names AND surfaces as an unmatched gap in `pipeline-state/<run>/leftover-buckets.json`, OR Phase 8 closure work touches a section with these names.
 
-**Approach:** INSERT rows into `slot_synonyms` (sgs-framework.db) with `canonical_slot` = one of the names, `standalone_block` = `sgs/info-box`. Mirror as aliases on the existing `card` row if structurally equivalent. ~5 min per synonym.
+**Approach:** INSERT rows into **`slots`** (sgs-framework.db) with `slot_name` = one of the names, `scope='element'`, `standalone_block='sgs/info-box'`. Mirror as aliases on the existing `card` row if structurally equivalent. ~5 min per synonym. **⚠ Approach corrected 2026-07-27:** the original text named `slot_synonyms.canonical_slot`, but `slot_synonyms` was RETIRED and replaced by `slots` + `roles` (D99) — following it verbatim would write to a table that no longer exists. **Verified state 2026-07-27:** `card` → `sgs/info-box` and `panel` → `sgs/info-box` are SEEDED (the `a2d58a3d` note is correct); `feature` exists with `standalone_block` NULL; `tile`, `module`, `item` are ABSENT. So the remaining work is: set `feature`'s standalone_block, and add `tile` + `module` (+ `item` if wanted).
 
 ### P-PHASE8-6 — Section-internal nav mapping
 **Status:** OPEN
@@ -775,7 +731,7 @@ Captured: 2026-05-19 by QC rater 2 (Haiku DB-schema lens).
 
 **Trigger:** Phase 8 work hits a section with nested nav, OR a new client mockup needs section-internal navigation.
 
-**Approach:** add `<nav>` to ATOMIC_TAG_MAP routing to `core/navigation` with a child-link lifting helper. ~30 lines.
+**Approach:** route nested `<nav>` to **`sgs/nav-menu`** with a child-link lifting helper. ~30 lines. **⚠ Approach corrected 2026-07-27:** the original text said "routing to `core/navigation`", contradicting its own What (core blocks are BANNED) — following it verbatim would emit a banned block that the core-block prebuild gate rejects.
 
 
 ### P-MM-2 — Decide on sgs/section-heading block
@@ -854,6 +810,8 @@ _21 entries._
 **Status:** OPEN
 
 
+**⚠ ORPHANED REFERENCE (flagged 2026-07-27, NOT closed):** `FR-S5-2` exists in **no live spec**. Spec 17 (`17-HEADER-FOOTER-ARCHITECTURE.md`) was DELETED at `9dbe94fd` ("new Header/Footer Builder spec; DELETE Spec 17; repoint 15 live docs") — that repoint did not reach parking.md. Verify the variation picker still exists at all before doing this work; if it does, re-anchor this entry to the successor requirement in Spec 37, and if it does not, archive the entry. This is an unverified anchor, **not** evidence the work is done.
+
 **What:** FR-S5-2's variation picker is a dropdown + Activate button. Operator can't see what the variation will do until they activate. The Site Editor's Styles panel has live preview; the SGS picker does not.
 
 **Fix shape:** Either (a) replicate Site Editor's preview mechanism via iframe, OR (b) replace the dedicated picker with a deep-link into the Site Editor Styles panel. Option (b) is the v1.1 default — option (a) is a v2 idea.
@@ -889,6 +847,8 @@ _21 entries._
 **Status:** DEFERRED
 
 **Trigger:** Before the first data-destructive migration is added. Build rollback capability then, not speculatively now.
+
+**⚠ ORPHANED REFERENCE (flagged 2026-07-27, NOT closed):** `FR-S7-2` exists in **no live spec** (Spec 17 deleted at `9dbe94fd`; the repoint missed parking.md). The framework it describes **does** exist — verified 2026-07-27: `plugins/sgs-blocks/includes/migrations/` holds `0001-baseline.php` + `0002-spec-17-foundation.php` — so the work is still real and still one-way; only the FR anchor is dead. Re-anchor to Spec 37 when picked up. **Not** evidence of completion.
 
 **What:** FR-S7-2's migration framework is one-way. If a future migration breaks something and the framework is rolled back, attribute data may be in an unrecoverable state. Top WP plugins (WooCommerce, Yoast) ship down-migration support.
 
