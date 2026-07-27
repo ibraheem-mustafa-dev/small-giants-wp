@@ -1291,8 +1291,12 @@ pointers unchanged (1570/1654) and the previewed post still `draft` afterwards �
 **Done when:** an operator can view an unpublished header on a real page without activating it,
 the behaviours resolve from the previewed post, and an unauthenticated request never sees it. ✅ met.
 
-**Not built (deliberate):** a shareable client-facing preview link for someone without an account —
-that needs an expiring-token model, not a nonce, and is a separate decision.
+**⛔ DROPPED, not deferred (Bean, 2026-07-27):** a shareable preview link for someone **without a
+login**. Not needed — a client who should see a work-in-progress either has an account, or is shown
+it on a test site. **Do not re-open this as an "obvious gap"**: it would require an expiring-token
+model instead of a nonce (a nonce is bound to a logged-in user), which means a second access path,
+a token lifetime, and a URL that grants site content to whoever holds it. The capability + nonce
+model above stays the whole story. This is a decision, not an unbuilt requirement.
 
 ---
 
