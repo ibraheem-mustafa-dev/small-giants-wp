@@ -286,7 +286,11 @@ $schema_html = '';
 if ( $schema_enabled && $schema_item_name ) {
 	$schema_html = sprintf(
 		'<script type="application/ld+json">%s</script>',
-		wp_json_encode(
+		// One shared encoder (FR-30-9): was JSON_UNESCAPED_SLASHES with no
+		// JSON_HEX_TAG, so unescaped slashes removed PHP's default `\/` guard and a
+		// `</script>` in $schema_item_name could close this tag. Sgs_Schema adds
+		// JSON_HEX_TAG.
+		\SGS\Blocks\Sgs_Schema::encode_jsonld(
 			array(
 				'@context'        => 'https://schema.org',
 				'@type'           => 'Product',
@@ -298,8 +302,7 @@ if ( $schema_enabled && $schema_item_name ) {
 					'worstRating' => 1,
 					'reviewCount' => $schema_review_count,
 				),
-			),
-			JSON_UNESCAPED_SLASHES
+			)
 		)
 	);
 }

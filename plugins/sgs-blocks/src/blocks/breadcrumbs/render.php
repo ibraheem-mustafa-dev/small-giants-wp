@@ -386,5 +386,9 @@ printf(
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	esc_attr__( 'Breadcrumbs', 'sgs-blocks' ),
 	$items_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	wp_json_encode( $schema, JSON_UNESCAPED_SLASHES )
+	// One shared encoder (FR-30-9): JSON_UNESCAPED_SLASHES alone disables PHP's
+	// default `\/` escaping, which was the only thing stopping a `</script>` in a
+	// crumb title from closing this tag. Sgs_Schema adds JSON_HEX_TAG.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
+	\SGS\Blocks\Sgs_Schema::encode_jsonld( $schema )
 );

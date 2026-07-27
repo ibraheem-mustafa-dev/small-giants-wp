@@ -12,6 +12,9 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+// Own-deps: the shared XSS-safe JSON-LD encoder (FR-30-9). require_once is idempotent.
+require_once __DIR__ . '/class-sgs-schema.php';
+
 add_filter( 'render_block_sgs/testimonial', __NAMESPACE__ . '\\add_review_schema', 10, 2 );
 
 /**
@@ -81,7 +84,22 @@ function add_review_schema( string $block_content, array $block ): string {
 		$schema['datePublished'] = $date;
 	}
 
-	$json_ld = wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	/*
+	 * Encode via the ONE shared encoder (FR-30-9), never wp_json_encode directly.
+	 *
+	 * This previously passed only JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE —
+	 * no JSON_HEX_TAG — so a `</script>` reaching any field would close this tag
+	 * early and everything after it would parse as HTML. Most fields here are run
+	 * through wp_strip_all_tags() above, which neutralises a literal tag, but two
+	 * were NOT: `reviewSource` (trim() only, → publisher.name) and `reviewDate`
+	 * (used verbatim, → datePublished). Sgs_Schema applies JSON_HEX_TAG, so the
+	 * output is safe by construction for EVERY field rather than depending on each
+	 * one having remembered to strip tags.
+	 */
+	$json_ld = Sgs_Schema::encode_jsonld( $schema );
+	if ( false === $json_ld ) {
+		return $block_content;
+	}
 
 	return $block_content . sprintf(
 		"\n" . '<script type="application/ld+json">%s</script>',

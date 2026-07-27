@@ -30,6 +30,10 @@ defined( 'ABSPATH' ) || exit;
 // Own dependencies (shared-helper-must-require-its-own-deps): the product
 // query builder + the ItemList schema builder both live here.
 require_once __DIR__ . '/class-card-grid-products.php';
+// The shared XSS-safe JSON-LD encoder (FR-30-9). require_once is idempotent, and
+// this file is required from several entry points (sgs-blocks.php, configurator-head,
+// class-card-grid-products), so it must not rely on another file having loaded it.
+require_once __DIR__ . '/class-sgs-schema.php';
 
 /**
  * Class Product_Item_List
@@ -89,10 +93,26 @@ final class Product_Item_List {
 			return;
 		}
 
-		\printf(
-			'<script type="application/ld+json">%s</script>' . "\n",
-			\wp_json_encode( $schema ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode output is safe; JSON encoding is the escape mechanism for JSON-LD.
-		);
+		/*
+		 * Emit via the ONE shared encoder (FR-30-9), never wp_json_encode directly.
+		 *
+		 * HARDENING, not a live-hole fix — the distinction was MEASURED, not assumed.
+		 * This previously called \wp_json_encode( $schema ) with ZERO flags. Zero
+		 * flags means PHP's DEFAULT slash-escaping applies, so a product name
+		 * containing `</script>` encoded as `<\/script>` and could NOT close this
+		 * tag. It was safe, but only INCIDENTALLY: the protection came from a
+		 * default nobody chose, and the phpcs:ignore that used to sit here asserted
+		 * the wrong reason for it ("JSON encoding is the escape mechanism"), which
+		 * would have justified adding JSON_UNESCAPED_SLASHES later and silently
+		 * removing the only thing holding the tag closed.
+		 *
+		 * Sgs_Schema DOES set JSON_UNESCAPED_SLASHES (readable URLs) but pairs it
+		 * with JSON_HEX_TAG, which escapes `<` and `>` outright — so the guarantee
+		 * becomes explicit and intentional instead of accidental. Net safety is
+		 * unchanged-or-better, and the emitter now obeys the one-encoder rule.
+		 */
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema::script_tag() HEX flags, not HTML.
+		echo Sgs_Schema::script_tag( $schema );
 	}
 
 	/**

@@ -561,7 +561,12 @@ if ( $show_schema && ! empty( $reviews ) ) {
 		'review'          => $schema_reviews,
 	);
 
-	$schema_html = '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
+	// One shared encoder (FR-30-9): JSON_UNESCAPED_SLASHES disabled PHP's default
+	// `\/` guard with no JSON_HEX_TAG to replace it, so a `</script>` in a synced
+	// review body or author name could close this tag — and these values arrive from
+	// a THIRD-PARTY feed (Trustpilot), not an operator field. Sgs_Schema adds
+	// JSON_HEX_TAG. script_tag() also returns '' on encode failure.
+	$schema_html = \SGS\Blocks\Sgs_Schema::script_tag( $schema );
 }
 
 // ───────────────────────────────────────────────────────────────────────────

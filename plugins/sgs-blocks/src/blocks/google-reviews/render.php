@@ -372,8 +372,12 @@ $schema = array(
 	),
 );
 
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode output is safe for script context.
-echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) . '</script>';
+// One shared encoder (FR-30-9). Previously JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+// with no JSON_HEX_TAG: unescaped slashes removed PHP's default `\/` guard, so a
+// `</script>` in any schema value could close this tag. PRETTY_PRINT is dropped: it
+// only added whitespace to machine-read output.
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
+echo \SGS\Blocks\Sgs_Schema::script_tag( $schema );
 
 // ───────────────────────────────────────────────────────────────────────────
 // Build interior HTML

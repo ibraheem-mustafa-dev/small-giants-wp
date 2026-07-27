@@ -395,7 +395,11 @@ $schema_html = '';
 if ( ! empty( $schema_items ) ) {
 	$schema_html = sprintf(
 		'<script type="application/ld+json">%s</script>',
-		wp_json_encode( $schema_items, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+		// One shared encoder (FR-30-9): JSON_UNESCAPED_SLASHES disabled PHP's default
+		// `\/` guard with no JSON_HEX_TAG to replace it, so a `</script>` in any
+		// testimonial quote or attribution could close this tag. Sgs_Schema adds
+		// JSON_HEX_TAG.
+		\SGS\Blocks\Sgs_Schema::encode_jsonld( $schema_items )
 	);
 }
 
