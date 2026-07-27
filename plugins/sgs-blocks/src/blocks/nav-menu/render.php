@@ -451,7 +451,18 @@ $hover_targets = array(
 );
 $hover_sel     = implode( ',', $hover_targets );
 
-$hover_style       = isset( $attributes['hoverStyle'] ) ? (string) $attributes['hoverStyle'] : 'pill';
+/*
+ * hoverStyle is PHP-validated, NOT a JSON `enum` (block.json deliberately
+ * declares none) — an out-of-enum JSON enum silently coerces the stored value
+ * back to the block.json default with no error/warning, which bites hardest via
+ * a programmatic writer (the cloning pipeline, pattern files) that sets the
+ * attribute directly rather than through this block's inspector control. Mirrors
+ * the indicatorStyle pattern (lines 387-390).
+ */
+$allowed_hover_styles = array( 'pill', 'underline', 'text' );
+$hover_style          = isset( $attributes['hoverStyle'] ) && in_array( $attributes['hoverStyle'], $allowed_hover_styles, true )
+	? (string) $attributes['hoverStyle']
+	: 'pill';
 $item_bg_hover     = isset( $attributes['itemBgHover'] ) ? sanitize_html_class( $attributes['itemBgHover'] ) : '';
 $item_bg_hover_hex = '' !== $item_bg_hover ? sgs_resolve_palette_hex( $item_bg_hover, '' ) : '';
 $item_fg_hover     = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';

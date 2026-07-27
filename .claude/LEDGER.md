@@ -66,9 +66,13 @@ P2.5 → **`specs/36-SGS-NAVIGATION-SYSTEM.md` v2.1**. As of 2026-07-21 the head
   - **BUILD-SPEC §4 contradicts binding CF-7.** §4's illustrative cascade includes a bare
     `@media (prefers-color-scheme: dark)` that would make `auto` go dark with no site switcher; CF-7 forbids
     exactly that. §0.5 supersedes §1–§10, so CF-7 wins and the build followed CF-7 — but §4 should be amended.
-  - **Spec 36 FR-36-5 overstates the competitor claim.** Research found documented a11y failures for Max Mega
-    Menu (keyboard works, screen reader does not) and JetMenu (Tab moves, Enter doesn't activate), but **zero
-    evidence either way for Kadence Pro**. Absence of evidence, not a clean bill of health.
+  - ~~Spec 36 FR-36-5 overstates the competitor claim re Kadence.~~ **RETRACTED 2026-07-27 — MY claim was
+    wrong, the spec is correct.** A `/qc-inline` pass before editing read FR-36-5 verbatim: it makes a
+    PRODUCT-REPLACEMENT claim about Kadence ("replaces … Kadence Pro mega menu") and confines its
+    ACCESSIBILITY claims to Max Mega Menu ("documented WCAG failures + mobile-toggle issues") — which the
+    research independently SUPPORTS. It never claims we beat Kadence on a11y. **No edit made; the doc was
+    right and I would have "corrected" it into being wrong.** Lesson: verify a doc is lying before fixing it,
+    exactly as you would verify a subagent's finding.
 - **Standards re-validated 2026-07-27 (no pinned spec value needed changing):** safe-triangle still current
   (floating-ui ships `safePolygon`; PrimeVue #8448 open since Feb 2026) · 300ms hover-open backed by Baymard
   (300–500ms) · the transform/opacity-only ban still correct for 2026 (animated `backdrop-filter` still spikes

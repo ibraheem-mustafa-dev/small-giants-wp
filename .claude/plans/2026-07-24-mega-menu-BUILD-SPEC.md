@@ -310,10 +310,13 @@ cascade (matches the theme's own dark-mode convention so a site switcher unifies
 .wp-block-sgs-mega-panel[data-mega-scheme="dark"] { /* DARK props */ }
 /* auto → follow a SITE switcher */
 :root[data-theme="dark"] .wp-block-sgs-mega-panel[data-mega-scheme="auto"] { /* DARK props */ }
-/* auto → device default when no site switcher */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) .wp-block-sgs-mega-panel[data-mega-scheme="auto"] { /* DARK props */ }
-}
+/* ⛔ REMOVED 2026-07-27 — this 4th rule CONTRADICTED binding CF-7 and was NEVER BUILT.
+   It would make `auto` go dark from the visitor's OS preference when no site
+   switcher is present. CF-7 (§0.5.B) forbids exactly that: "it must NEVER
+   silently inherit the visitor's OS prefers-color-scheme for this one component
+   on an otherwise-light site." §0.5 supersedes §1–§10 on conflict, so CF-7 wins.
+   The shipped implementation (mega-panel/render.php) emits only the THREE rules
+   above. Do not reinstate this block. */
 ```
 Forced `light` = the default light props (no dark selector matches). The mega SUPPLIES all values; it only
 READS `[data-theme]`/`prefers-color-scheme`, so it works whether or not the theme dark-mode is enabled.

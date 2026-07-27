@@ -148,8 +148,7 @@
 		"itemRadiusHover": { "type": "number" },
 		"hoverStyle": {
 			"type": "string",
-			"default": "pill",
-			"enum": [ "pill", "underline", "text" ]
+			"default": "pill"
 		},
 		"underlineColour": { "type": "string", "default": "" },
 		"underlineColourHover": { "type": "string", "default": "" },
