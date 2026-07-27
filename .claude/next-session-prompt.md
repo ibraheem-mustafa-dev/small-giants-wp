@@ -204,8 +204,10 @@ Below = the verification-phase subset + this session's NEW gates (12/21/22/23 fr
 - `P-MAMAS-PRIMARY-CONTRAST` · two unnamed `<main>` landmarks (framework axe, NOT nav-menu — negative
   control proved the nav-free homepage reports the identical 5) · both sites generic proof headers.
 - `decisions.md` is 2,697 lines vs a 600 cap — parked as `P-DOC-SIZE-AND-DOCSCORE-RESIDUALS`. Its docscore
-  "US spelling" + "TODO stub" hits are **documented FALSE POSITIVES** (`Organization` is the Schema.org
-  type name — anglicising breaks emitted JSON-LD). Do NOT "fix" them.
+  "US spelling" + placeholder-marker hits are **documented FALSE POSITIVES** (`Organization` is the
+  Schema.org type name — anglicising breaks emitted JSON-LD; the markers are historical narrative inside
+  an append-only log). Do NOT "fix" them — that is the `lean-beats-structural-theatre` failure mode:
+  making a doc worse to raise its score.
 - Blub dashboard DOWN (port 5050) — lessons pending upload (CC-memory + workspace layers are written).
 
 ## Skills to Invoke
@@ -233,6 +235,21 @@ Below = the verification-phase subset + this session's NEW gates (12/21/22/23 fr
 | `hostinger` | Cache purge / WP version checks |
 | `sgs-db.py` | Mega CPT + block attrs/variants — the DB is authoritative |
 | `nav-qa/*.mjs` | `axe-run` · `crawl-assert` · `palette-contrast-sweep` |
+
+## Tool bindings (exact commands — do not improvise these)
+| Operation | Command |
+|---|---|
+| Build | `cd plugins/sgs-blocks && npx wp-scripts build --experimental-modules --webpack-copy-php` (NOT `npm run build` — the shared prebuild is RED on a co-active track's finding) |
+| Deploy (canary) | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --skip-build` — the ONE path. Add `--allow-dirty` only when the co-active track has uncommitted files. NEVER hand-roll tar/scp (D336). |
+| Verify a deploy | `md5sum <local>` vs `ssh hd "md5sum <server path>"` — `[verify] HTTP 200` passes on ANY working page |
+| OPcache reset | write `<?php opcache_reset();` to webroot → `curl` it → `rm` it (the CLI pool is separate) |
+| SSH | `ssh hd` (alias) · webroot `domains/sandybrown-nightingale-600381.hostingersite.com/public_html` |
+| Canary credentials | `.claude/secrets/sandybrown.env` — gitignored, ALWAYS available, no need to ask |
+| DB ground truth | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` · `python ~/.claude/hooks/wp-blocks.py dump` |
+| a11y / crawl sweeps | `node plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs` · `crawl-assert.mjs` |
+| Asset-target gate | `node plugins/sgs-blocks/scripts/check-block-asset-targets.js --check` (runs in postbuild) |
+| D-ceiling | `grep -oE 'D[0-9]{1,4}' .claude/decisions.md \| sort -V \| tail -1` |
+| Confirm a commit landed | `git log -1 --format='%h %s'` — a "succeeded" commit can be silently gate-blocked |
 
 ## Agents to Delegate To
 | Agent | When |
