@@ -49,6 +49,7 @@ _BOX_FAMILY_GUARD = _SCRIPTS_DIR / "check-box-family-guard.py"
 _BOX_FLAT = _HERE / "check-box-flat.py"
 _MANIFEST_CONFORMANCE = _SCRIPTS_DIR / "check-element-manifest-conformance.js"
 _COLOUR_ALPHA = _HERE / "report-colour-alpha.py"
+_RECLASSIFIED_KEYS = _HERE / "check-reclassified-keys.py"
 
 
 def _print_header(label: str) -> None:
@@ -136,8 +137,13 @@ def main() -> int:
     print(_extract_manifest_summary(output))
     print(f"[run-consistency-gates] exit code: {exit_code} (informational — not propagated)")
 
-    _print_header("INFORMATIONAL 3/3 — report-colour-alpha.py")
+    _print_header("INFORMATIONAL 3/4 — report-colour-alpha.py")
     exit_code, output = _run_python(_COLOUR_ALPHA)
+    print(output.rstrip())
+    print(f"[run-consistency-gates] exit code: {exit_code} (informational — not propagated)")
+
+    _print_header("INFORMATIONAL 4/4 — check-reclassified-keys.py (regeneration tripwire)")
+    exit_code, output = _run_python(_RECLASSIFIED_KEYS)
     print(output.rstrip())
     print(f"[run-consistency-gates] exit code: {exit_code} (informational — not propagated)")
 

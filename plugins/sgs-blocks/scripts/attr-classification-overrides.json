@@ -1279,7 +1279,7 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillBorderRadius",
       "fields": {
-        "role": "typography",
+        "role": "visual",
         "derived_selector": ".sgs-product-card__pill"
       }
     },
@@ -1287,7 +1287,7 @@
       "slug": "sgs/product-card",
       "attr": "pickerPillSelectedBorderRadius",
       "fields": {
-        "role": "typography",
+        "role": "visual",
         "derived_selector": ".sgs-product-card__pill--active"
       }
     },

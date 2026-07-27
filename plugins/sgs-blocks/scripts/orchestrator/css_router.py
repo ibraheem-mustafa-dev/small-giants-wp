@@ -734,6 +734,97 @@ def write_d3_to_db(d3_entries: list[dict], sgs_db_path: Path) -> int:
 # Variation CSS file writer helpers
 # ---------------------------------------------------------------------------
 
+def _split_selector_list(selector: str) -> list[str]:
+    """Split a selector list on TOP-LEVEL commas only.
+
+    A naive ``selector.split(",")`` corrupts functional pseudo-classes, whose
+    arguments legitimately contain commas: ``.a:is(.b, .c)`` would become
+    ``.a:is(.b`` + ``.c)``.  So track paren/bracket depth and quoted strings and
+    only break on a comma at depth 0.
+
+    Returns the stripped parts, dropping empties (a trailing comma is tolerated).
+    """
+    parts: list[str] = []
+    buf: list[str] = []
+    depth = 0
+    quote: str | None = None
+
+    for ch in selector:
+        if quote is not None:
+            buf.append(ch)
+            if ch == quote:
+                quote = None
+            continue
+        if ch in "\"'":
+            quote = ch
+            buf.append(ch)
+            continue
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            parts.append("".join(buf))
+            buf = []
+            continue
+        buf.append(ch)
+
+    parts.append("".join(buf))
+    return [p.strip() for p in parts if p.strip()]
+
+
+def _scope_selector_list(selector: str, scope_prefix: str) -> str:
+    """Prefix EVERY selector in a comma-separated list, not just the first."""
+    return ", ".join(
+        f"{scope_prefix}{part}" for part in _split_selector_list(selector)
+    )
+
+
+def _scope_css_block(inner: str, scope_prefix: str) -> list[str]:
+    """Scope every style rule in a block of CSS text.
+
+    Walks by brace depth and, for each top-level ``prelude { body }`` pair:
+
+    - **style rule** → prefix each selector in the prelude's selector list.
+    - **nested at-rule** (prelude starts with ``@``, e.g. ``@supports`` inside an
+      ``@media``) → leave the prelude ALONE and recurse into its body. Prefixing
+      an at-rule prelude produces invalid CSS (``.page-id-144 @supports (...)``).
+      If recursion finds no nested rules the at-rule body is declarations rather
+      than rules (``@font-face``), so it passes through untouched.
+
+    Returns one string per top-level rule; empty when nothing parsed.
+    """
+    out: list[str] = []
+    depth = 0
+    buf_start = 0
+    prelude = ""
+    body_start = 0
+
+    for i, ch in enumerate(inner):
+        if ch == "{":
+            if depth == 0:
+                prelude = inner[buf_start:i].strip()
+                body_start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                body = inner[body_start:i + 1]  # includes the braces
+                if prelude.startswith("@"):
+                    nested = _scope_css_block(body[1:-1].strip(), scope_prefix)
+                    if nested:
+                        out.append(f"{prelude} {{ {' '.join(nested)} }}")
+                    else:
+                        # Declaration-bodied at-rule — pass through unchanged.
+                        out.append(f"{prelude} {body.strip()}")
+                else:
+                    scoped_sel = _scope_selector_list(prelude, scope_prefix)
+                    out.append(f"{scoped_sel} {body.strip()}")
+                buf_start = i + 1
+
+    return out
+
+
 def _scope_media_rule(rule: str, scope_prefix: str) -> str:
     """Inject scope_prefix before each inner selector inside a @media block.
 
@@ -778,26 +869,10 @@ def _scope_media_rule(rule: str, scope_prefix: str) -> str:
 
     # Now scope each inner rule.  Inner text looks like:
     #   ".sgs-hero { grid-template-columns: 1fr 1fr } .sgs-hero__content { padding: 28px }"
-    # We walk by brace depth to split into individual inner rules.
-    scoped_inner_parts: list[str] = []
-    inner_depth = 0
-    buf_start = 0
-    for i, ch in enumerate(inner):
-        if ch == "{":
-            if inner_depth == 0:
-                # Everything from buf_start to i is the selector.
-                inner_selector = inner[buf_start:i].strip()
-                buf_start = i  # include `{` in the body slice
-            inner_depth += 1
-        elif ch == "}":
-            inner_depth -= 1
-            if inner_depth == 0:
-                # Full inner rule: selector + { body }
-                body = inner[buf_start:i + 1]  # includes `{` and `}`
-                scoped_sel = f"{scope_prefix}{inner_selector}"
-                # body starts with `{`, so: "<scoped-sel> <body>"
-                scoped_inner_parts.append(f"{scoped_sel} {body.strip()}")
-                buf_start = i + 1
+    # _scope_css_block walks by brace depth, scopes EVERY selector in a
+    # comma-separated list, and recurses into nested at-rules (@supports) rather
+    # than prefixing their prelude.
+    scoped_inner_parts = _scope_css_block(inner, scope_prefix)
 
     if not scoped_inner_parts:
         # Could not parse inner rules — return original rule unchanged to avoid data loss.

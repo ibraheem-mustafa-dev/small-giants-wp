@@ -56,8 +56,47 @@ _UIMAX_DB = Path(os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-u
 _BLOCK_SLUG_RE = re.compile(r"^[a-z][a-z0-9_-]*/[a-z][a-z0-9_-]*$")
 _ATTR_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_.]*$")
 _CSS_PROP_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9.\-_]*$")
-# Allowed CSS value characters — no semicolons, no braces, no script injection
-_CSS_VALUE_RE = re.compile(r"^[^;{}<>\"]*$")
+# Allowed CSS value characters — no semicolons, no braces, no script injection.
+#
+# Tightened (parking P-P2II-CSS-VALUE-RE-TIGHTEN). Added to the original
+# `;{}<>"` ban:
+#   `           backtick — no legitimate CSS-value use, breaks JS template contexts
+#   \           CSS escape sequences, the obfuscation vector (`\3c script`)
+#   \n \r       a newline could smuggle a second declaration past the `;` ban
+#   \t \f \v    other control whitespace, no legitimate use in a scalar value
+#
+# DELIBERATELY still allowed, because CSS values genuinely need them:
+#   ( )         var() / calc() / clamp() / rgb() — banning these was suggested in
+#               the parking entry but would reject most modern CSS values.
+#   '           font families: the module's own test fixture is `'Fraunces', serif`,
+#               and double quotes are already banned, so this is the only quoting
+#               form available.
+#   /           `rgb(0 0 0 / 50%)` and the font shorthand. `/*` is caught by the
+#               substring denylist below rather than by banning the character.
+_CSS_VALUE_RE = re.compile(r"^[^;{}<>\"`\\\n\r\t\f\v]*$")
+
+# Substring vectors a character class cannot express. Checked case-insensitively.
+_CSS_VALUE_DENY = (
+    "/*",           # comment-open — style-context breakout
+    "*/",           # comment-close
+    "javascript:",  # scheme injection inside url()
+    "expression(",  # legacy IE dynamic expressions
+    "<!--",         # HTML comment smuggling
+)
+
+
+def _is_safe_css_value(value: str) -> bool:
+    """Defence-in-depth gate for an operator-supplied CSS default value.
+
+    This is NOT the only guard — `esc_attr()` in the emitted PHP is the real
+    boundary defence. This exists to reject an obviously-hostile or malformed
+    value at the interactive prompt, before it is written into a block.json
+    default and a render.php inline-style branch.
+    """
+    if not _CSS_VALUE_RE.match(value):
+        return False
+    lowered = value.lower()
+    return not any(bad in lowered for bad in _CSS_VALUE_DENY)
 
 # ---------------------------------------------------------------------------
 # DB helpers
@@ -699,7 +738,7 @@ def cmd_promote(args: argparse.Namespace) -> None:
     default_val = input(f"  default_value [{value_seen}]: ").strip() or value_seen
 
     # Validate default value for injection safety
-    if not _CSS_VALUE_RE.match(default_val):
+    if not _is_safe_css_value(default_val):
         print(f"ERROR: default_value contains unsafe characters: {default_val!r}")
         sys.exit(1)
 

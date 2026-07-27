@@ -368,6 +368,58 @@ class TestCssValueRe:
             assert not sap._CSS_VALUE_RE.match(s), f"Should be UNSAFE: {s}"
 
 
+class TestIsSafeCssValue:
+    """Tightened value gate (parking P-P2II-CSS-VALUE-RE-TIGHTEN)."""
+
+    def test_real_css_values_still_accepted(self):
+        """The tightening must not reject values real CSS needs.
+
+        Parentheses and single quotes are deliberately still allowed — banning
+        them (as the parking entry suggested) would reject most modern values.
+        """
+        safe = [
+            "10px",
+            "#FFFFFF",
+            "var(--primary)",
+            "var(--gap, 8px)",
+            "calc(100% - 8px)",
+            "clamp(1rem, 2vw, 2rem)",
+            "rgb(0 0 0 / 50%)",
+            "1.55",
+            "'Fraunces', serif",
+            "center",
+            "0 auto",
+            "translateY(-2px)",
+        ]
+        for s in safe:
+            assert sap._is_safe_css_value(s), f"Should be safe: {s!r}"
+
+    def test_newly_blocked_vectors(self):
+        """Each of these passed the ORIGINAL regex and is now rejected."""
+        unsafe = [
+            "10px\ncolor: red",      # newline smuggles a second declaration
+            "10px\r\ncolor: red",
+            "red`",                   # backtick
+            "\\3c script",            # CSS escape obfuscation
+            "red /* x */",            # comment-open breakout
+            "*/ color: red",          # comment-close breakout
+            "url(javascript:alert(1))",
+            "expression(alert(1))",
+            "<!-- x",
+        ]
+        for s in unsafe:
+            assert not sap._is_safe_css_value(s), f"Should be UNSAFE: {s!r}"
+
+    def test_originally_blocked_still_blocked(self):
+        """No regression on the characters the first version already caught."""
+        for s in ["10px; color: red", "{background: url('evil')}", "<script>", 'a"b']:
+            assert not sap._is_safe_css_value(s), f"Should be UNSAFE: {s!r}"
+
+    def test_denylist_is_case_insensitive(self):
+        assert not sap._is_safe_css_value("url(JavaScript:alert(1))")
+        assert not sap._is_safe_css_value("EXPRESSION(alert(1))")
+
+
 # ---------------------------------------------------------------------------
 # DB marking helpers (mock DB)
 # ---------------------------------------------------------------------------

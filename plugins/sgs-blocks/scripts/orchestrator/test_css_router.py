@@ -19,6 +19,7 @@ Run with: cd plugins/sgs-blocks && python -m pytest scripts/orchestrator/test_cs
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -596,6 +597,109 @@ class TestMediaBlockInnerSelectorScoping:
         assert result["stats"]["d2_count"] >= 1
         d2_texts = " ".join(result["d2"])
         assert "@media" in d2_texts
+
+
+# ---------------------------------------------------------------------------
+# Test P1Bx — comma-grouped inner selectors + nested at-rules inside @media
+# (parking P-P1Bx-COMMA-MEDIA-INNER + P-P1Bx-NESTED-SUPPORTS)
+# ---------------------------------------------------------------------------
+
+class TestMediaInnerCommaAndNestedAtRules:
+    """Every selector in an @media inner list is scoped; nested at-rules stay valid."""
+
+    def test_comma_grouped_inner_selectors_all_scoped(self):
+        """EVERY part of a comma-separated inner selector list gets the scope.
+
+        Regression: the old brace-depth walk prefixed the selector list as ONE
+        string, so `.sgs-hero, .sgs-cta` became
+        `.page-id-144 .sgs-hero, .sgs-cta` — leaving `.sgs-cta` global, where it
+        leaked onto every other page.
+        """
+        rule = "@media (max-width: 767px) { .sgs-hero, .sgs-cta { padding: 8px } }"
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert ".page-id-144 .sgs-hero" in scoped, scoped
+        assert ".page-id-144 .sgs-cta" in scoped, (
+            f"second selector left unscoped: {scoped!r}"
+        )
+        # Negative control: no bare, unscoped `.sgs-cta` may survive anywhere.
+        assert not re.search(r"(?<!\.page-id-144 )\.sgs-cta", scoped), scoped
+
+    def test_functional_pseudo_class_commas_not_split(self):
+        """A comma INSIDE :is()/:not() is an argument separator, not a list break."""
+        rule = "@media (max-width: 767px) { .sgs-nav:is(.a, .b) { gap: 4px } }"
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert ".page-id-144 .sgs-nav:is(.a, .b)" in scoped, scoped
+        # The selector must not have been torn in half at the inner comma.
+        assert ".page-id-144 .b)" not in scoped, scoped
+
+    def test_nested_supports_prelude_not_prefixed(self):
+        """A nested @supports keeps its prelude and gets its INNER rules scoped.
+
+        Regression: the prelude was treated as a selector, emitting the invalid
+        `.page-id-144 @supports (display: grid) { ... }`.
+        """
+        rule = (
+            "@media (min-width: 768px) { "
+            "@supports (display: grid) { .sgs-hero { display: grid } } "
+            "}"
+        )
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert ".page-id-144 @supports" not in scoped, (
+            f"at-rule prelude was prefixed, producing invalid CSS: {scoped!r}"
+        )
+        assert "@supports (display: grid)" in scoped, scoped
+        assert ".page-id-144 .sgs-hero" in scoped, (
+            f"inner rule of the nested at-rule was not scoped: {scoped!r}"
+        )
+
+    def test_declaration_bodied_at_rule_passes_through(self):
+        """@font-face holds declarations, not rules — it must pass through intact."""
+        rule = (
+            "@media screen { "
+            "@font-face { font-family: X; src: url(x.woff2) } "
+            ".sgs-hero { display: grid } "
+            "}"
+        )
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert "@font-face" in scoped, scoped
+        assert ".page-id-144 @font-face" not in scoped, scoped
+        assert "font-family: X" in scoped, scoped
+        assert ".page-id-144 .sgs-hero" in scoped, scoped
+
+    def test_brace_balance_preserved(self):
+        """Whatever we emit must stay brace-balanced (no data loss / corruption)."""
+        rule = (
+            "@media (min-width: 768px) { "
+            ".a, .b { color: red } "
+            "@supports (gap: 1px) { .c, .d { gap: 1px } } "
+            "}"
+        )
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert scoped.count("{") == scoped.count("}"), scoped
+        for sel in (".a", ".b", ".c", ".d"):
+            assert f".page-id-144 {sel}" in scoped, f"{sel} unscoped in {scoped!r}"
+
+
+class TestSplitSelectorList:
+    """Unit coverage for the top-level-comma splitter."""
+
+    def test_plain_list(self):
+        assert css_router._split_selector_list(".a, .b , .c") == [".a", ".b", ".c"]
+
+    def test_commas_inside_parens_are_not_breaks(self):
+        assert css_router._split_selector_list(".a:is(.b, .c), .d") == [
+            ".a:is(.b, .c)",
+            ".d",
+        ]
+
+    def test_commas_inside_attribute_string_are_not_breaks(self):
+        assert css_router._split_selector_list('[data-x="p,q"], .e') == [
+            '[data-x="p,q"]',
+            ".e",
+        ]
+
+    def test_trailing_comma_tolerated(self):
+        assert css_router._split_selector_list(".a, .b,") == [".a", ".b"]
 
 
 # ---------------------------------------------------------------------------
