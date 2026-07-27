@@ -7,6 +7,22 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-07-27 — P-MEGA-CLIENT-REGISTER-UNLOCKED — RESOLVED (Bean ruling 2026-07-21)
+
+> **P-MEGA-CLIENT-REGISTER-UNLOCKED** — NEW 2026-07-21. The client-facing mega-panel STARTER set had no locked design register. Two exist and are both built: **A — Editorial Broadsheet** (dark inverted ground, radius 0, italic serif display; used by `link-columns-v3`, `photo-grid`, `split-aside-cta`) and **B — SGS Modern** (orange ground, 12–14px radius, Inter + JetBrains Mono; used by `browse-switch-sgs`, `info-box-sgs`, approved by Bean for SGS's own site). Five starter panels can only ship ONE language. Asked directly 2026-07-21; Bean answered "neither — do it to fit Indus Foods", which solved the logo-grid build (Register C, bespoke per-client) but sidestepped the starter-set decision.
+> **Status: RESOLVED 2026-07-21 — Bean ruling.** Bean settled it by DISSOLVING the choice rather than picking a register: *"Should take on the client's theme styles to start so it fits their brand. If their default fonts, colours, padding etc are like A, B or something else then it'll look like that."* Starter panels are **token-driven** — a panel declares its own `--primary`/`--surface`/`--text` and those are repointed at the CLIENT's tokens at build time, so the panel speaks whichever register that client's brand already speaks. There is no single starter language to choose. **Feasibility evidenced, not assumed:** 10 of 11 drafts carry ZERO raw colours outside their `:root` block, and client snapshots already supply same-named slugs (`primary`, `primary-dark`, `accent`, `surface`, `text-inverse`). · **Bucket:** Framework
+> **Archive note 2026-07-27:** resolved by a design ruling rather than by code, so the archive check is that the ruling is recorded verbatim above — it is. No code claim to re-verify.
+
+## 2026-07-27 — P-OLDSHAPE-AUDIT-TEXTALIGN — RESOLVED
+
+> **P-OLDSHAPE-AUDIT-TEXTALIGN** — NEW 2026-07-25. `scripts/audit-post-content-blocks.py`'s `NATIVE` set was missing `textAlign`, so any block using WP-native `typography.textAlign` showed a false "undeclared-attr" finding once stored content set it (affected info-box/notice-banner/team-member on sandybrown). **Status: RESOLVED 2026-07-25.** · **Bucket:** Framework / tooling
+> **Archive verification 2026-07-27:** `plugins/sgs-blocks/scripts/audit-post-content-blocks.py:64` carries `'textAlign',` inside the `NATIVE` set with the explanatory comment. Fix present.
+
+## 2026-07-27 — P-MINWIDTH-CROSSDEVICE-TIER — RESOLVED (residual re-homed, not dropped)
+
+> **P-MINWIDTH-CROSSDEVICE-TIER** — **RESOLVED in code (D259) + LANDED page 8 (trust-bar 375=2/768=4/1440=4, Bean-confirmed); commit was BLOCKED by Gate A + held from push.** Rebuilt `collect_css_decls_for_element` as a device-tier CASCADE (Spec 31 FR-31-5.2): sample the CSS cascade at Desktop 1440/Tablet 800/Mobile 375, Desktop→base, Tablet/Mobile→suffixed, min/max symmetric, inverts mobile-first into SGS desktop-base; non-device thresholds → non-silent F-ii log.
+> **Archive verification 2026-07-27 — both halves checked:** (1) **the code shipped and is on `main`** — `converter/services/styling_helpers.py:553 collect_css_decls_for_element(...)` exists and its docstring describes exactly this cascade ("the EFFECTIVE `{prop: val}` at DESKTOP… a mobile-first draft's base CSS is the mobile value, so returning it raw would land the mobile layout on the desktop base attr"), so the "held from push" blocker is gone. (2) **the Gate-A golden residual is REAL and re-homed, not dropped** — `pytest test_converter_conformance.py` reproduces **27 failed / 23 passed**, which is the same 27 failures already tracked by the live entry **P-CONFORMANCE-GOLDEN-DRIFT** (and overlapping P-ORACLE's stale-golden reseed). Archiving this entry does NOT lose that work; it is one task tracked in one place instead of three. · **Bucket:** Pipeline / converter
+
 ## 2026-07-27 — P-CORE-STYLE-MAP-DB-MIGRATION — SUPERSEDED (D274, frozen engine deleted)
 
 > **P-CORE-STYLE-MAP-DB-MIGRATION** — Migrate `_CORE_BLOCK_STYLE_MAP` to a DB-driven lookup (~1.5 hrs). The 26-entry module-level dict in `convert.py` mapping CSS properties to WP core-block `style.*` paths was data-not-logic and violated the DB-first rule (blub.db 260). Proposed a `core_block_style_paths` table + `db_lookup.core_block_style_path_for()`.
