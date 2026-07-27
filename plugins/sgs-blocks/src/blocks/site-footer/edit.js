@@ -4,7 +4,9 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	store as blockEditorStore,
 } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
 import { PanelBody, Notice } from '@wordpress/components';
 import {
 	WidthPanel,
@@ -183,13 +185,46 @@ const TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( { className: 'sgs-site-footer' } );
 	const refEl = useRef( null );
 
+	// ⛔ Seed the three rows ONLY into a genuinely EMPTY container.
+	//
+	// WP core re-applies a block's template on EVERY mount when templateLock is
+	// 'all' or 'contentOnly' — NOT only when the block is empty. Verified against
+	// WP 7.0.2 source, wp-includes/js/dist/block-editor.js (useInnerBlockTemplateSync):
+	//     shouldApplyTemplate = currentInnerBlocks.length === 0
+	//         || templateLock === 'all' || templateLock === 'contentOnly'
+	// and synchronizeBlocksWithTemplate (wp-includes/js/dist/blocks.js) then matches
+	// existing rows by ARRAY POSITION alone — `blocks[index]` with a name-only
+	// compare. `rowSlot` is never consulted, so row 1 is treated as "the top row"
+	// whatever it actually is.
+	//
+	// Passing TEMPLATE unconditionally therefore overwrote every inserted starter
+	// pattern: measured on the canary, 8/8 footer starters were corrupted (the
+	// framework default included) — and it DESTROYED content, not just added it:
+	// footer-centred's bottom row lost its copyright line, replaced by this
+	// TEMPLATE's three empty link columns. It also fired on every re-open, so an
+	// insert-only patch would not have held.
+	//
+	// Withholding the template is a true no-op in core — synchronizeBlocksWithTemplate
+	// opens with `if (!template) return blocks;` — so the row LOCK below is
+	// untouched: templateLock still governs add / remove / reorder.
+	//
+	// Latched on first render so the template's identity never changes mid-life.
+	const innerBlockCount = useSelect(
+		( select ) => select( blockEditorStore ).getBlocks( clientId ).length,
+		[ clientId ]
+	);
+	const seedTemplateRef = useRef( null );
+	if ( seedTemplateRef.current === null ) {
+		seedTemplateRef.current = innerBlockCount === 0;
+	}
+
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
-		template: TEMPLATE,
+		template: seedTemplateRef.current ? TEMPLATE : undefined,
 		// Fixed rows: operators can't add, remove, or reorder rows, but can fully
 		// edit the elements inside each row (the rows set their own
 		// templateLock:false). Note: 'insert' only blocks add/remove — it still
