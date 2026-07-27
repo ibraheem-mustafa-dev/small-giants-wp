@@ -1251,6 +1251,49 @@ live-verified at 375/768/1440. The scroll-padding criteria are met — evidence
 `reports/visual-diff/scroll-padding-pinned-gate-2026-07-26.md`.
 
 
+#### FR-37-41 — Preview a layout on the real site before making it active (B2)
+`✅ BUILT + LIVE-VERIFIED 2026-07-27` (`20ec422c`; design-gated + Bean-signed-off same day per
+constraint §7.7 / project rule 7). Closes residual B2.
+
+**The problem.** Both CPTs register `'public' => false` (`class-sgs-block-cpts.php:98`), so a
+layout post has **no frontend URL of its own**. The only way an operator could see their header on
+a real page was to press **Set as active** — i.e. publish it to every visitor before ever looking
+at it. The shipped "Show me the shrunk size" editor toggle covers **shrink only**; sticky,
+hide-on-scroll and transparent are all scroll-triggered and cannot be shown in a static canvas.
+
+**Mechanism — one override point, deliberately.** `Sgs_Active_Layout::get_preview_id()` is
+consulted as the first line of `get_active_id()`, because that is where **every** consumer
+converges: the render path (`Sgs_Header_Rules::filter_template_part()` → `render_active()` →
+`get_active_content()`) **and** the behaviour resolver
+(`SGS_Nav_Menu_Source::get_header_content()`, `class-sgs-nav-menu-source.php:419` →
+`get_active_content()`). Overriding only the render path would have previewed the markup while
+sticky/hide-on-scroll/transparent still resolved from the LIVE header — failing to preview
+precisely the things the feature exists for. One override, both surfaces, no second mechanism
+(R-31-9). **Live-proven:** previewing header 1655 emits
+`sgs-header-behaviour-hide-on-scroll-down` while the active header 1570 emits no behaviour class.
+
+**Fails closed to 0** unless all hold: per-area query var present + positive;
+`current_user_can('edit_theme_options')` (same bar as Set-as-active); nonce valid against an
+action scoped to BOTH area and post id; post exists and is the right type. **One deliberate
+deviation from `get_active_id()`: draft/pending are ACCEPTED** — previewing before publishing is
+the point; `trash`/`auto-draft` still rejected.
+
+**Bounded:** `get_stored_id()` untouched (the list table still reports what is genuinely live, so
+preview never lies); **no write path exists** — per-request query state only, so it cannot persist
+or half-activate; `render_active()`'s fail-closed behaviour inherited unchanged; sets
+`DONOTCACHEPAGE` + `nocache_headers()`.
+
+**Live evidence (canary, 2026-07-27) — four negative controls, not one:** valid link renders the
+DRAFT header over the real homepage ✅; **no nonce** → live header ✅; **bad nonce** → live header
+✅; **a nonce minted for post 1570 replayed against 1831** → live header ✅ (proves per-post
+scoping); **anonymous request with the VALID url** → draft NOT leaked, live header served ✅. Active
+pointers unchanged (1570/1654) and the previewed post still `draft` afterwards — nothing persisted.
+**Done when:** an operator can view an unpublished header on a real page without activating it,
+the behaviours resolve from the previewed post, and an unauthenticated request never sees it. ✅ met.
+
+**Not built (deliberate):** a shareable client-facing preview link for someone without an account —
+that needs an expiring-token model, not a nonce, and is a separate decision.
+
 ---
 
 ## 5. Build status summary
