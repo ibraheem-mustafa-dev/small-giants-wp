@@ -19,6 +19,29 @@ from impressions.
 open panel.** Nothing is inferred from CSS classes. Sites that could not be
 opened are listed as UNCONFIRMED, not guessed.
 
+> ## ⚠ KNOWN GAP — MOBILE WAS NEVER MEASURED (Bean-caught, 2026-07-28)
+>
+> **Every measurement in this report is 1440×900 ONLY.** Nobody checked whether the
+> reference sites KEEP their distinctive panel on smaller screens or collapse to a
+> full-screen sheet. That is not a detail — **it decides the shape of the `variant`
+> attribute**, so it must be answered BEFORE anything is built:
+>
+> - If the panels **keep** their character on mobile → `variant` is a single value that
+>   persists across every device; geometry is just responsive values inside it.
+> - If they **collapse** to full-screen on mobile → `header-attached` and
+>   `trigger-anchored` are **desktop PRESENTATIONS**, not device-spanning variants.
+>   Then either `variant` itself must be per-device (`{desktop,tablet,mobile}`), or each
+>   variant declares its own mobile fallback — and shipping a flat `variant` string
+>   first would bake in the wrong shape.
+>
+> One promising possibility to test explicitly: lamalama's desktop header is a 438px
+> centred pill and its panel derives that exact width. **If the header itself goes
+> full-width at 375px, then `header-attached` already handles mobile correctly with no
+> extra attribute at all** — the cleanest answer available, and it would be free.
+>
+> **This is Task 1 of the next session.** Append findings HERE rather than starting a
+> new report.
+
 ## 1. Measured sites
 
 | Site | Panel rect | Anchoring | Backdrop | Dismiss | Native `<dialog>`? |

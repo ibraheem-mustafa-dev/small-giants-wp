@@ -240,6 +240,14 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
   `store('sgs/nav')`. ⛔ Beware STOP-DIALOG-DISPLAY-GATE (D338) when adding per-device geometry.
 - **Naming rule (binding): descriptive names, never studio names.** This ships to a restaurant, a law
   firm and a charity. Provenance belongs in the block.json `_note`.
+- **⚠ OPEN QUESTION, must be answered BEFORE the build (Bean-caught 2026-07-28): does each variant
+  PERSIST on mobile?** All reference geometry was measured at 1440×900 only. If the compact panels
+  collapse to full-screen on small screens, then `header-attached` / `trigger-anchored` are desktop
+  PRESENTATIONS rather than device-spanning variants, and `variant` needs a per-device dimension (or
+  a declared per-variant mobile fallback) — a flat `variant` string would be the wrong shape. Test
+  lamalama + lusion at 375 and 768 first. Note the cheapest possible outcome: lamalama's panel
+  derives its width from a 438px pill header, so **if that header goes full-width on mobile,
+  `header-attached` already handles mobile correctly with no extra attribute.**
 - **Lateral (unresolved):** `sgs/modal` already implements the centred-card model AND hand-rolls its
   own `showModal()` while the drawer delegates to `store('sgs/nav')` — **two `<dialog>` engines and
   two geometry vocabularies for one primitive.** A shared dialog-geometry primitive would also serve

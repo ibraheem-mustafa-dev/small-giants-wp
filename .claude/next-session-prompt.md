@@ -79,12 +79,50 @@ build, and it is one build away from covering desktop as well as mobile.
 
 ---
 
-## Task 1 — Design-gate the variant + geometry model
+## Task 1 — DO THE REFERENCE SITES KEEP THEIR VARIANT ON MOBILE? (Bean-caught gap — do this FIRST)
+
+**What:** measure lamalama.com and lusion.co at **375px and 768px**, not just desktop, and find out
+whether each keeps its distinctive panel shape or collapses to a full-screen sheet.
+**Why:** **ALL prior research was measured at 1440×900 ONLY.** Nobody checked the other end. This is
+not a detail — it decides the shape of the attribute you are about to build:
+- If the panels KEEP their character on mobile → `variant` is a single value that persists across
+  every device, and geometry is just responsive values inside it. Simple.
+- If they COLLAPSE to full-screen on mobile → `header-attached` and `trigger-anchored` are
+  **desktop presentations**, not device-spanning variants. Then either `variant` itself must be
+  per-device (`{desktop,tablet,mobile}`), or every variant declares its own mobile fallback — and
+  building a flat `variant` string first would bake in the wrong shape.
+
+**Estimated time:** 20 min. **Depends on:** none. **Parallel with:** none — it gates Task 2.
+
+Method (reuse the Round-2/3 probe set that already worked):
+1. Load each site at 375×812 and 768×1024 in your OWN isolated Playwright browser.
+2. Open the real burger. **If it will not open, report UNCONFIRMED — never infer from CSS classes.**
+3. Measure `getBoundingClientRect()` on the panel and classify: still compact/anchored, or
+   full-viewport?
+4. Re-run the mechanics probe at each width: native `<dialog>` or div? backdrop + its
+   `pointer-events`? any `[inert]`? scroll locked? does an outside click close it?
+5. Compare against the desktop numbers already recorded in the research report
+   (lamalama 438×436 @ top:16 = its header pill's exact width; lusion 310×264 @ top:108, right-inset 72).
+6. **Also check the reverse:** does the HEADER itself change shape on mobile? lamalama's desktop
+   header is a 438px centred pill — if it goes full-width at 375px, then `header-attached` deriving
+   its width from the header ALREADY handles mobile correctly with no extra attribute, which would
+   be the cleanest possible answer.
+
+**Orchestration:** inline (main thread) with an isolated Playwright browser. Cheap and fast — do not
+delegate a 20-minute measurement.
+**/qc gate after:** no — it is measurement, not code.
+**Acceptance:** a written verdict per site per breakpoint, each backed by a measured rect from a
+panel actually observed OPEN. Then a one-line answer to the only question that matters: **does
+`variant` need a per-device dimension, yes or no?** APPEND the findings to
+`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md` (do not start a new report).
+
+## Task 2 — Design-gate the variant + geometry model
 
 **What:** decide, with Bean, the exact attribute shape before writing any code.
 **Why:** `sgs/nav-drawer` is a shared mechanism with 16 stored instances; project rule 7 requires a
 design gate before building shared-mechanism changes.
-**Estimated time:** 20 min.
+**Estimated time:** 20 min. **Depends on:** Task 1 — its verdict decides whether `variant` is flat
+or per-device, so do NOT design-gate before it lands.
 
 Bring to Bean: the 4 variants (`full-screen` default · `header-attached` · `trigger-anchored` ·
 `side-panel`), how `header-attached` derives width from the header, whether geometry becomes a
@@ -95,11 +133,11 @@ the shared dialog-geometry primitive with `sgs/modal` is in scope.
 **Depends on:** none. **Parallel with:** none. **/qc gate after:** no — a decision, not code.
 **Acceptance:** Bean has signed off a written attribute shape. Nothing is built before this.
 
-## Task 2 — Build the variant + responsive geometry model
+## Task 3 — Build the variant + responsive geometry model
 
 **What:** implement the agreed variants on `sgs/nav-drawer`.
 **Why:** the only way the burger works properly on desktop.
-**Estimated time:** 60 min. **Depends on:** Task 1. **Parallel with:** none.
+**Estimated time:** 60 min. **Depends on:** Tasks 1 + 2. **Parallel with:** none.
 
 Pinned by prior research — do not re-litigate:
 - `variant` declared via `supports.sgs.variants` + `blocks.variant_attr`/`variant_slots` (the
@@ -114,7 +152,7 @@ Pinned by prior research — do not re-litigate:
 
 **Orchestration:** delegated. Model **sonnet** via `/delegate` (MCP-capable tier — the live editor
 verification needs a browser). Dispatch pattern: single agent, `wp-sgs-developer`.
-**Brief:** implement the Bean-approved shape; back-compatible defaults so the 16 zero-attribute
+**Brief:** implement the Bean-approved shape (flat or per-device per Task 1's verdict); back-compatible defaults so the 16 zero-attribute
 stored instances are untouched; live-verify in a real editor.
 **Context it will not have:** the 4 traps in §8 of the research report — especially
 **STOP-DIALOG-DISPLAY-GATE (D338)**: any per-device geometry setting `display` on the base
@@ -124,23 +162,23 @@ drawer permanently open, in-flow, on every page.
 **Acceptance:** each variant renders its measured geometry on the canary AND unset renders
 byte-identical to today. Not "code shipped".
 
-## Task 3 — Backdrop-click-to-close in `store('sgs/nav')`
+## Task 4 — Backdrop-click-to-close in `store('sgs/nav')`
 
 **What:** clicking outside a non-full-screen panel closes it.
 **Why:** `showModal()` makes the visible page `inert`; on a partial-width desktop panel with no
 click-away dismissal that reads as a broken site.
-**Estimated time:** 15 min. **Depends on:** Task 2. **Parallel with:** none.
+**Estimated time:** 15 min. **Depends on:** Task 3. **Parallel with:** none.
 
 **Orchestration:** inline. **/qc gate after:** `/qc-inline`.
 **Acceptance:** verified live on a partial-width variant; ESC and the × still work; the full-screen
 variant is unaffected.
 
-## Task 4 — Live verification + Bean's eye (R-31-13)
+## Task 5 — Live verification + Bean's eye (R-31-13)
 
 **What:** the pre-registered exit gate for this surface.
-**Estimated time:** 30 min. **Depends on:** Tasks 2 + 3.
+**Estimated time:** 30 min. **Depends on:** Tasks 3 + 4.
 
-- axe = 0 on EACH variant, **openness-guarded** (an unguarded scoped run is vacuous — see ritual Q24).
+- axe = 0 on EACH variant AT EACH BREAKPOINT it supports, **openness-guarded** (an unguarded scoped run is vacuous — see ritual Q24).
 - Keyboard: containment per each variant's declared contract; ESC closes; focus returns to the burger.
 - `prefers-reduced-motion`: full end state instantly, nothing left hidden.
 - JS-off: links present and crawlable (FR-36-17).
@@ -151,7 +189,7 @@ variant is unaffected.
 a working harness exists — see the research report). **/qc gate after:** `/qc-inline`.
 **Acceptance:** every check has a recorded result. "Cannot tell" is a FAIL — extend the measurement.
 
-## Task 5 (only if 1–4 land) — the shared dialog-geometry primitive
+## Task 6 (only if 1–5 land) — the shared dialog-geometry primitive
 `sgs/modal` already implements the centred-card model and hand-rolls its own `showModal()`. Unifying
 would also serve the cart flyout (FR-36-19) and search overlay (FR-36-20). **Must carry a
 modal/non-modal flag** or it conflicts with `sgs/mega-panel`'s DISCLOSURE contract (FR-36-10). Scope
@@ -159,15 +197,17 @@ deliberately — do not absorb silently.
 
 ## Dependency graph
 ```
-Task 1 (inline, Opus — design gate, Bean sign-off REQUIRED)
+Task 1 (inline — MEASURE the reference sites at 375 + 768)
+  ↓  its verdict decides whether `variant` is flat or per-device
+Task 2 (inline, Opus — design gate, Bean sign-off REQUIRED)
   ↓
-Task 2 (delegated, sonnet via /delegate) → /qc-council
+Task 3 (delegated, sonnet via /delegate) → /qc-council
   ↓
-Task 3 (inline) → /qc-inline
+Task 4 (inline) → /qc-inline
   ↓
-Task 4 (inline — live verify + Bean's eye)
+Task 5 (inline — live verify + Bean's eye)
   ↓
-Task 5 (optional)
+Task 6 (optional)
   ↓
 Commit + push (verify with git log -1)
 ```
@@ -276,7 +316,7 @@ dropped. Below = this surface's subset + the NEW gates (24–27) from 2026-07-28
 | `/lifecycle` | ALWAYS — before any skill/agent change |
 | `/research` | ALWAYS — but the drawer research is DONE; only for a genuinely new question |
 | `/strategic-plan` | ALWAYS — the 5 tasks above are the sequence |
-| `/delegate` | Pick the model for Task 2 before dispatching |
+| `/delegate` | Pick the model for Task 3 before dispatching |
 | `/sgs-wp-engine` | Any SGS block/theme work |
 | `/wp-block-development` | Core WP block-API questions (variants, `supports`) |
 | `/qc-council` · `/qc-inline` | Multi-rater before block commits · inline acceptance |
@@ -312,7 +352,7 @@ dropped. Below = this surface's subset + the NEW gates (24–27) from 2026-07-28
 ## Agents to Delegate To
 | Agent | When |
 |---|---|
-| `wp-sgs-developer` | Task 2 build (add "EXECUTE YOURSELF, do NOT delegate", D362) |
+| `wp-sgs-developer` | Task 3 build (add "EXECUTE YOURSELF, do NOT delegate", D362) |
 | `design-reviewer` | Compare each built variant against the measured reference geometry |
 | `code-reviewer` / `general-purpose` | Pre-commit multi-rater; verifying agents' "done" claims |
 | `test-and-explain` | Plain-English confirmation for Bean that each variant works |
