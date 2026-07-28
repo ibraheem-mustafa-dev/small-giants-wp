@@ -286,8 +286,22 @@ unmerged/paused — check its branch state before touching its files.
   P-PRICING-TABLE-CURRENCY-MOJIBAKE + P-CONTAINER-PATTERN-PREVIEW-VALIDATION-ERRORS (both
   pre-existing, surfaced by the D388 pass). Spec 35 Part M corrected (was stale BOTH directions).
   Bean decisions: CLEAN reshape (no fallback); fresh header-behaviour inventory (T1.4a)
-  mandatory before the FR-37-14 reshape; both design gates (T0.2 cascade + T2.2b wrapper shadow)
-  WRITTEN and AWAITING BEAN SIGN-OFF — they gate the critical path.
+  mandatory before the FR-37-14 reshape.
+  **LATER SAME DAY — both gates APPROVED (D400) and the follow-through SHIPPED (`fe20df4e` →
+  `b9c5f6d1`, all canary-deployed + D388-verified):** T2.2b wrapper preset-or-raw shadows +
+  container/hero/trust-bar on ShadowControl · **T1.1 canonical `resolveTier()` BUILT — JS + PHP +
+  shared 16-case golden fixtures, 16/16 both runtimes, independently re-run** (cascade approved
+  for behaviours + values + §3.8 header content; **Bean-carved exclusion: general block
+  visibility does NOT inherit** — sgsHideOn* stay independent; specs 35 D4 + 37 §3.8 amended) ·
+  form successRedirect → searchOnly page-picker · google-reviews/trustpilot config URLs =
+  registered audit exemptions (baseline mechanism, reasons recorded) · testimonial hover +
+  trust-bar icon-circle/badge shadows → full ShadowControl · editor-canvas shadow preview gap
+  CLOSED on hero/trust-bar/cta-section (shared `resolveShadowPreview()` in utils/tokens.js).
+  Audit: flagged 45→40; raw-url 6 remaining = the part-2 roster ONLY. T2c also closed same day:
+  pricing-table £ mojibake (byte-level root fix) + 20 patterns re-authored (container validation
+  errors 14→0) + Icon Grid re-tokened readable (theme 1.5.51). **NEXT for this track: T1.2/T1.3
+  (ResponsiveTriStateControl + scoped emission) → T1.4a inventory → T1.4 FR-37-14 reshape — the
+  Spec 37 Group B unblock; then part-2 link batch (6 blocks) + gate promotion (T5.1).**
   Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit:
   `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 - **Track 1c — Spec 31 converter completion** (prompt: `next-session-prompt-track1-converter.md`). 2026-07-22 completion wave shipped (11 commits): `::before/::after` overlay lift, transform/filter/top/left un-excluded + hover-lift (Bean-caught: hover scale/zoom/grayscale on 15+ blocks was silently dropping), F3 LANDED runtime + batch runner, **UNACCOUNTED 14->0** (they were ACCOUNTING bugs in the D1 bucket/join, not converter drops). 2026-07-23 (D372/D373): declarative CSS-routing shipped — `css_layer` L1-L4 seeded, `css_element` normalised, +213 routes, product-card cta -> box-object (every block now box-object). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`; detail: decisions D372/D373.
