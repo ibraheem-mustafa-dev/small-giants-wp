@@ -1,0 +1,262 @@
+{
+  "_doc": "POC content plan for the sgs/nav-drawer variant exit gate (Spec 36 FR-36-6 Task 5). Consumed by build-poc-fixtures.py. Every label and every line of copy here was HARVESTED LIVE from the reference site's open drawer on 2026-07-29 and is recorded in labels-<site>.json in .claude/reports/2026-07-28-drawer-code-extraction/. Nothing here is invented: the design gate's §6 rule is that POC fixtures are exact clones INCLUDING content, so a visual difference between our variant and the reference is attributable to the BLOCK, never to content drift. Genericising this copy is a named PRE-PRODUCTION step (P-DRAWER-VARIANT-CONTENT-GENERICISE), never a POC step.",
+  "_navMenuAttrs_note": "Authoring block markup directly does NOT apply a registerBlockVariation's seeded child attributes — those only fire when an operator inserts the variation from the inserter. So each variant's nav-menu attrs are restated here to match variations.js exactly (verified against that file 2026-07-29).",
+  "_known_fidelity_limits": [
+    "sgs/social-icons has no Vimeo or Dribbble platform slug (render.php $platform_icons). buck uses Vimeo, dogstudio uses Dribbble — both mapped to platform 'website' with a label override. This is a real framework gap vs the references, recorded not hidden.",
+    "dogstudio's decorative index numbers (01-05) beside each link are out of scope by the design gate's own out-of-scope list.",
+    "lamalama's 'What we do' has a collapsed submenu (Branding/Websites/E-commerce/Marketing) at height:0 — excluded, as it is not part of the default open state.",
+    "Two harvested values are dynamic, not fixed strings (studionamma's live city+clock, lamalama's rotating tagline); the mechanism was recorded in the harvest and a stable snapshot is used here."
+  ],
+  "variants": [
+    {
+      "name": "floating-capped-card",
+      "title": "Floating capped card",
+      "reference": "lamalama.com",
+      "menuLabels": [
+        { "text": "Work" },
+        { "text": "What we do" },
+        { "text": "About us" },
+        { "text": "Careers" },
+        { "text": "Contact" }
+      ],
+      "drawerAttrs": {
+        "anchor": { "desktop": "trigger" },
+        "panelSize": { "desktop": "438px" },
+        "surfaceOpacity": 0.85,
+        "surfaceBlur": "4px",
+        "closeStyle": "text-swap",
+        "drawerAlign": "left",
+        "drawerBg": "surface",
+        "variantPreset": "floating-capped-card"
+      },
+      "navMenuAttrs": { "gap": "4px" },
+      "children": [
+        { "block": "sgs/button", "attrs": { "label": "Our pitchdeck" } },
+        { "block": "sgs/button", "attrs": { "label": "Schedule a call" } },
+        { "block": "sgs/button", "attrs": { "label": "Start a project" } }
+      ]
+    },
+    {
+      "name": "anchored-card-stack",
+      "title": "Anchored card stack",
+      "reference": "lusion.co",
+      "menuLabels": [
+        { "text": "Home" },
+        { "text": "About us" },
+        { "text": "Projects" },
+        { "text": "Contact" }
+      ],
+      "drawerAttrs": {
+        "anchor": { "desktop": "trigger", "tablet": "full-screen" },
+        "panelSize": { "desktop": "310px" },
+        "closeStyle": "text-swap",
+        "drawerAlign": "left",
+        "variantPreset": "anchored-card-stack"
+      },
+      "navMenuAttrs": { "gap": "4px" },
+      "children": [
+        { "block": "sgs/text", "attrs": { "text": "Subscribe to our newsletter" } },
+        { "block": "sgs/button", "attrs": { "label": "Labs" } }
+      ]
+    },
+    {
+      "name": "editorial-ghost-list",
+      "title": "Editorial ghost list",
+      "reference": "dogstudio.co",
+      "menuLabels": [
+        { "text": "The Studio" },
+        { "text": "Our Cases" },
+        { "text": "Careers" },
+        { "text": "Our Values" },
+        { "text": "Contact" }
+      ],
+      "drawerAttrs": {
+        "surfaceOpacity": 0.55,
+        "closeStyle": "separate-x",
+        "drawerAlign": "left",
+        "variantPreset": "editorial-ghost-list"
+      },
+      "navMenuAttrs": {
+        "gap": "4px",
+        "itemFontSize": 45,
+        "itemFontWeight": "200",
+        "itemFontSizeMobile": 32
+      },
+      "children": [
+        { "block": "sgs/text", "attrs": { "text": "Watch our Showreel" } },
+        {
+          "block": "sgs/social-icons",
+          "attrs": {
+            "icons": [
+              { "platform": "facebook", "url": "#", "label": "Facebook" },
+              { "platform": "instagram", "url": "#", "label": "Instagram" },
+              { "platform": "website", "url": "#", "label": "Dribbble" },
+              { "platform": "twitter", "url": "#", "label": "Twitter" },
+              { "platform": "email", "url": "#", "label": "Newsletter" }
+            ]
+          }
+        },
+        { "block": "sgs/text", "attrs": { "text": "We Make Good Shit" } }
+      ]
+    },
+    {
+      "name": "centred-statement",
+      "title": "Centred statement",
+      "reference": "fantasy.co",
+      "menuLabels": [
+        { "text": "Work" },
+        { "text": "Services" },
+        { "text": "Impact" }
+      ],
+      "drawerAttrs": {
+        "drawerBg": "footer-bg",
+        "drawerAlign": "center",
+        "closeStyle": "separate-x",
+        "variantPreset": "centred-statement"
+      },
+      "navMenuAttrs": { "gap": "4px", "itemFontSize": 56, "itemFontSizeMobile": 36 },
+      "children": [
+        {
+          "block": "sgs/icon-list",
+          "attrs": {
+            "items": [
+              { "iconSource": "lucide", "iconName": "arrow-right", "text": "Contact" },
+              { "iconSource": "lucide", "iconName": "arrow-right", "text": "Latest" },
+              { "iconSource": "lucide", "iconName": "arrow-right", "text": "Careers" }
+            ]
+          }
+        },
+        {
+          "block": "sgs/text",
+          "attrs": { "text": "Ready to launch an intelligent experience?" }
+        },
+        { "block": "sgs/button", "attrs": { "label": "Let's talk" } }
+      ]
+    },
+    {
+      "name": "solid-brand-light",
+      "title": "Solid brand panel",
+      "reference": "buck.co",
+      "menuLabels": [
+        { "text": "Work" },
+        { "text": "About" },
+        { "text": "Contact" },
+        { "text": "Careers" },
+        { "text": "Games" },
+        { "text": "Goods" }
+      ],
+      "drawerAttrs": {
+        "drawerBg": "primary",
+        "drawerAlign": "right",
+        "closeStyle": "separate-x",
+        "variantPreset": "solid-brand-light"
+      },
+      "navMenuAttrs": { "gap": "4px", "itemFontWeight": "100" },
+      "children": [
+        { "block": "sgs/text", "attrs": { "text": "© 2026 BUCK" } },
+        {
+          "block": "sgs/social-icons",
+          "attrs": {
+            "icons": [
+              { "platform": "linkedin", "url": "#", "label": "LinkedIn" },
+              { "platform": "instagram", "url": "#", "label": "Instagram" },
+              { "platform": "website", "url": "#", "label": "Vimeo" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "two-column-editorial",
+      "title": "Two-column editorial",
+      "reference": "studionamma.com",
+      "menuLabels": [
+        { "text": "Home" },
+        { "text": "Work" },
+        { "text": "Services" },
+        { "text": "Approach" },
+        { "text": "Studio" },
+        { "text": "Plans" },
+        { "text": "News" }
+      ],
+      "drawerAttrs": {
+        "drawerBg": "surface",
+        "closeStyle": "text-swap",
+        "variantPreset": "two-column-editorial"
+      },
+      "navMenuAttrs": {
+        "gap": "4px",
+        "itemFontSize": 64,
+        "listColumns": { "desktop": 2, "mobile": 1 },
+        "itemFontSizeMobile": 40
+      },
+      "children": [
+        { "block": "sgs/button", "attrs": { "label": "Let's talk!" } },
+        {
+          "block": "sgs/text",
+          "attrs": { "text": "We craft bold design & clean Webflow." }
+        }
+      ]
+    },
+    {
+      "name": "split-zone-serif",
+      "title": "Split zone serif",
+      "reference": "wearecollins.com",
+      "menuLabels": [
+        { "text": "Case Studies" },
+        { "text": "Programs" },
+        { "text": "Arts & Culture" }
+      ],
+      "drawerAttrs": {
+        "drawerBg": "footer-bg",
+        "drawerAlign": "left",
+        "closeStyle": "separate-x",
+        "variantPreset": "split-zone-serif"
+      },
+      "navMenuAttrs": { "gap": "4px" },
+      "children": [
+        { "block": "sgs/button", "attrs": { "label": "Work with us" } },
+        {
+          "block": "sgs/icon-list",
+          "attrs": {
+            "items": [
+              { "iconSource": "lucide", "iconName": "arrow-right", "text": "Team" },
+              { "iconSource": "lucide", "iconName": "arrow-right", "text": "Careers" },
+              { "iconSource": "lucide", "iconName": "arrow-right", "text": "Press" }
+            ]
+          }
+        },
+        { "block": "sgs/text", "attrs": { "text": "Keep up to date" } },
+        {
+          "block": "sgs/social-icons",
+          "attrs": {
+            "icons": [
+              { "platform": "twitter", "url": "#", "label": "X (Twitter)" },
+              { "platform": "linkedin", "url": "#", "label": "LinkedIn" },
+              { "platform": "instagram", "url": "#", "label": "Instagram" }
+            ]
+          }
+        },
+        {
+          "block": "sgs/card-grid",
+          "attrs": {
+            "items": [
+              { "badge": "Story", "title": "Woods Hole Film Festival x COLLINS", "link": "#" },
+              { "badge": "Story", "title": "The M.A.D School x COLLINS", "link": "#" },
+              { "badge": "Story", "title": "Documenting the greats", "link": "#" }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "multiInstance": {
+    "_why": "D374 — two instances of the SAME block on one page catch per-render collisions (shared ids, redeclared top-level functions) that a single instance can never surface. Distinct drawerRefs are assigned by the builder, because both blocks default to drawerRef 'sgs-nav-drawer'.",
+    "variants": [ "floating-capped-card", "centred-statement" ],
+    "menuLabels": [
+      { "text": "Work" },
+      { "text": "About" },
+      { "text": "Contact" }
+    ]
+  }
+}

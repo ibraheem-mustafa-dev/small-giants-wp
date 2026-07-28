@@ -1,0 +1,93 @@
+[
+  {
+    "variant": "floating-capped-card",
+    "reference": "lamalama.com",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "floating-capped-card-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": true,
+      "file": "floating-capped-card-reference-1440.png"
+    }
+  },
+  {
+    "variant": "anchored-card-stack",
+    "reference": "lusion.co",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "anchored-card-stack-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": true,
+      "file": "anchored-card-stack-reference-1440.png"
+    }
+  },
+  {
+    "variant": "editorial-ghost-list",
+    "reference": "dogstudio.co",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "editorial-ghost-list-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": true,
+      "file": "editorial-ghost-list-reference-1440.png"
+    }
+  },
+  {
+    "variant": "centred-statement",
+    "reference": "fantasy.co",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "centred-statement-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": true,
+      "file": "centred-statement-reference-1440.png"
+    }
+  },
+  {
+    "variant": "solid-brand-light",
+    "reference": "buck.co",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "solid-brand-light-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": false,
+      "why": "no clickable trigger — tried button:has-text(\"Menu\"): 0 matches | [aria-label*=\"menu\" i]: 0 matches | header button: 0 matches"
+    }
+  },
+  {
+    "variant": "two-column-editorial",
+    "reference": "studionamma.com",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "two-column-editorial-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": true,
+      "file": "two-column-editorial-reference-1440.png"
+    }
+  },
+  {
+    "variant": "split-zone-serif",
+    "reference": "wearecollins.com",
+    "width": 1440,
+    "ours": {
+      "ok": true,
+      "file": "split-zone-serif-ours-1440.png"
+    },
+    "referenceShot": {
+      "ok": true,
+      "file": "split-zone-serif-reference-1440.png"
+    }
+  }
+]

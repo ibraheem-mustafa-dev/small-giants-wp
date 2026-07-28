@@ -1,0 +1,32 @@
+{
+  "site": "dogstudio.co",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "The Studio", "css_uppercase": false},
+      {"text": "Our Cases", "css_uppercase": false},
+      {"text": "Careers", "css_uppercase": false},
+      {"text": "Our Values", "css_uppercase": false},
+      {"text": "Contact", "css_uppercase": false}
+    ],
+    "secondary_blocks": [
+      {"kind": "decorative-index", "position_in_panel": "left of each primary link", "exact_text": "01 / 02 / 03 / 04 / 05", "note": "2-digit index prefix per row, in DOM order matching the 5 links above"},
+      {"kind": "other", "position_in_panel": "bottom-left", "exact_text": "Watch our Showreel", "note": "link with a red chevron icon"},
+      {"kind": "header-tagline", "position_in_panel": "bottom-right, above social row", "exact_text": "We Make Good Shit", "note": "large serif brand statement, not navigational"},
+      {"kind": "social-links", "position_in_panel": "bottom-right, below tagline", "exact_text": "Facebook / Instagram / Dribbble / Twitter / Newsletter", "note": "inline text-separated row; confirmed via full textContent (a duplicate mobile-abbreviated set 'Fb / Ins / Dri / Tw' also exists in the DOM elsewhere but is not part of this visible desktop row)"}
+    ],
+    "counts": {"primary": 5, "secondary_blocks": 4}
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": [
+      {"change": "dropped", "kind": "decorative-index", "exact_text": "01 / 02 / 03 / 04 / 05", "note": "index numbers not present next to the links in the mobile screenshot"},
+      {"change": "dropped", "kind": "header-tagline", "exact_text": "We Make Good Shit", "note": "element confirmed present in DOM but collapses to 1x1px at 400px — proven not merely off-screen"},
+      {"change": "moved", "kind": "social-links", "exact_text": "Facebook / Instagram / Dribbble / Twitter / Newsletter", "note": "text labels are dropped in favour of icon-only circular buttons at the same position (bottom of panel); underlying links/hrefs are unchanged, only the visible label disappears"}
+    ]
+  },
+  "notes": "Trigger = button with accessible name 'Toggle menu' in the header (distinct 'Toggle sound' button sits alongside it — do not confuse the two). Close = separate X glyph, top-right. Logo currently reads 'DOGSTUDIO / DEPT.' (two lines) rather than the single-line 'Dogstudio' recorded in the prior CSS-extraction pass — noted as a header-chrome observation only, not part of the drawer panel content itself."
+}

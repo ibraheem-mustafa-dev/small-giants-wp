@@ -1,0 +1,33 @@
+{
+  "site": "wearecollins.com",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "Case Studies", "css_uppercase": false},
+      {"text": "Programs", "css_uppercase": false},
+      {"text": "Arts & Culture", "css_uppercase": false}
+    ],
+    "secondary_blocks": [
+      {"kind": "contact/CTA", "position_in_panel": "left column, below nav, pill button", "exact_text": "Work with us"},
+      {"kind": "tertiary-link-row", "position_in_panel": "left column, same row as the CTA pill", "exact_text": "Team / Careers / Press"},
+      {"kind": "newsletter-form", "position_in_panel": "left column, lower", "exact_text": "Keep up to date", "note": "label text; input placeholder 'Your email' with a mail icon, no separate submit button text"},
+      {"kind": "social-links", "position_in_panel": "bottom-right of left column", "exact_text": "X (Twitter) / LinkedIn / Instagram"},
+      {"kind": "promo-card", "position_in_panel": "right column, card 1 of 3", "exact_text": "Story / Woods Hole Film Festival x COLLINS", "note": "'Story' is a small label above the headline; card has a thumbnail image + arrow icon"},
+      {"kind": "promo-card", "position_in_panel": "right column, card 2 of 3", "exact_text": "Story / The M.A.D School x COLLINS"},
+      {"kind": "promo-card", "position_in_panel": "right column, card 3 of 3", "exact_text": "Story / Documenting the greats"}
+    ],
+    "counts": {"primary": 3, "secondary_blocks": 7}
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": [
+      {"change": "dropped", "kind": "tertiary-link-row", "exact_text": "Team / Careers / Press", "note": "confirmed in DOM but 0x0 bounding rect at 400px — proven not merely scrolled off"},
+      {"change": "dropped", "kind": "newsletter-form", "exact_text": "Keep up to date", "note": "element is entirely ABSENT from the DOM at 400px (not just hidden) — the harder of the two drop mechanisms seen across all 7 sites"},
+      {"change": "retained", "kind": "social-links", "exact_text": "X (Twitter) / LinkedIn / Instagram", "note": "confirmed still present and visible (74x21px) at 400px, just repositioned lower in the single-column stack; listed here to make explicit it does NOT drop, unlike the two items above"}
+    ]
+  },
+  "notes": "Trigger = button with accessible name 'open menu' at both widths, close = 'X' icon top-right. All content directly legible from screenshots at both widths with no scripted extraction needed; the exact text above was read straight off the rendered panel and cross-checked with a DOM presence/visibility probe for the 3 mobile-delta items. Richest secondary-content archetype of the 7 sites (most distinct block KINDS in one panel: CTA pill + tertiary links + newsletter + socials + a 3-card promo rail)."
+}

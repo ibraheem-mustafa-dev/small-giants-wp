@@ -1,0 +1,31 @@
+{
+  "site": "lamalama.com",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "Work", "css_uppercase": false},
+      {"text": "What we do", "css_uppercase": false},
+      {"text": "About us", "css_uppercase": false},
+      {"text": "Careers", "css_uppercase": false},
+      {"text": "Contact", "css_uppercase": false}
+    ],
+    "secondary_blocks": [
+      {"kind": "header-tagline", "position_in_panel": "top header bar", "exact_text": "LET'S DO DAMAGE", "note": "rotating/rotational headline in the panel's persistent header row next to the minimise control; not fixed copy — the 2026-07-28 CSS-extraction pass captured a different value ('YOU MADE IT') at the same slot, so this is dynamic content, not a stable label"},
+      {"kind": "decorative-icon", "position_in_panel": "inline, right edge of 'What we do' row", "exact_text": "(no text — spinner/asterisk glyph icon)"},
+      {"kind": "decorative-icon", "position_in_panel": "inline, right edge of 'Careers' row", "exact_text": "(no text — spinner/asterisk glyph icon)"},
+      {"kind": "contact/CTA", "position_in_panel": "bottom, full-width outlined button", "exact_text": "Our pitchdeck", "note": "source text sentence-case; rendered as 'OUR PITCHDECK' via CSS text-transform:uppercase (css_uppercase:true)"},
+      {"kind": "contact/CTA", "position_in_panel": "bottom, 2-up button row", "exact_text": "Schedule a call", "note": "source sentence-case; rendered uppercase via CSS (css_uppercase:true)"},
+      {"kind": "contact/CTA", "position_in_panel": "bottom, 2-up button row", "exact_text": "Start a project", "note": "source sentence-case; rendered uppercase via CSS (css_uppercase:true)"}
+    ],
+    "counts": {"primary": 5, "secondary_blocks": 6},
+    "notes_extra": "A collapsed submenu exists under 'What we do' (js-dropdown-items, height:0/overflow:hidden by default) containing 4 child links: Branding, Websites, E-commerce, Marketing. These are NOT visible in the default open state (proven via computed height:0px on the ancestor), so excluded from primary_links/counts per the harvesting rule (record only what is actually visible in the OPEN panel). Flagged here for completeness since they are real DOM content, just not part of the default panel surface."
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": []
+  },
+  "notes": "Trigger = button.js-menu-toggle-button; a sibling absolutely-positioned div (.js-menu-toggle) intercepts normal Playwright clicks, so the toggle had to be invoked via element.click() in page.evaluate() rather than a locator click. Panel content (5 primary links + pitchdeck + 2 CTA buttons) is IDENTICAL at 400px mobile vs desktop — confirmed via DOM query at both widths, no drops/adds/moves. The rotating header tagline text differed between passes ('LET'S DO DAMAGE' this session, 'YOU MADE IT' in the prior CSS-extraction session) — that field is dynamic and not suitable as a fixed fixture value."
+}

@@ -1,0 +1,40 @@
+{
+  "site": "studionamma.com",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "Home", "css_uppercase": false, "note": "rendered as 'HOME' but this is the literal source text (no CSS text-transform involved) — the site authors it fully capitalised, per the studionamma-desktop.json note"},
+      {"text": "Work", "css_uppercase": false},
+      {"text": "Services", "css_uppercase": false},
+      {"text": "Approach", "css_uppercase": false},
+      {"text": "Studio", "css_uppercase": false},
+      {"text": "Plans", "css_uppercase": false},
+      {"text": "News", "css_uppercase": false}
+    ],
+    "secondary_blocks": [
+      {"kind": "decorative-spacer", "position_in_panel": "column 2, row 1 (same row as 'Home')", "exact_text": "_", "note": "a single underscore glyph in a link-styled element occupying column 2's first row slot opposite 'Home' — purely a layout spacer, not real nav content"},
+      {"kind": "other", "position_in_panel": "top header bar (persists from main header, stays visible when drawer opens)", "exact_text": "Studio Namma"},
+      {"kind": "other", "position_in_panel": "top header bar", "exact_text": "Dark mode"},
+      {"kind": "other", "position_in_panel": "top header bar", "exact_text": "Close", "note": "text-swap from 'Menu' in the same slot"},
+      {"kind": "contact/CTA", "position_in_panel": "top header bar, far right", "exact_text": "Let's talk!"},
+      {"kind": "header-tagline", "position_in_panel": "bottom-left", "exact_text": "We craft bold design & clean Webflow.", "note": "sits beside a small blue dot indicator"},
+      {"kind": "other", "position_in_panel": "bottom-right", "exact_text": "PARIS, FRANCE + live HH:MM:SS clock", "note": "a live location/time widget — value observed as 'HONG KONG, CHINA' + '07:08:15' on first load and 'PARIS, FRANCE' + '01:08:27' seconds later on the same session; confirmed DYNAMIC/rotating, not a fixed fixture value. Record structurally as '[CITY], [COUNTRY]' + running clock, not this specific city."}
+    ],
+    "counts": {"primary": 7, "secondary_blocks": 7}
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": [
+      {"change": "dropped", "kind": "other", "exact_text": "Dark mode", "note": "text label confirmed present in DOM but not visible at 400px (replaced by an icon-only toggle in the header)"},
+      {"change": "dropped", "kind": "header-tagline", "exact_text": "We craft bold design & clean Webflow.", "note": "confirmed 0x0 bounding rect at 400px"},
+      {"change": "dropped", "kind": "contact/CTA", "exact_text": "Let's talk!", "note": "the header-bar version disappears, but see 'added' below — an unstyled variant re-enters as an 8th list item"},
+      {"change": "added", "kind": "primary-link (visually)", "exact_text": "Let's talk", "note": "a link sharing the same CSS class as the 7 primary nav links (.nav-menu_link) is hidden at desktop width (0x0) but becomes the 8th visible row in the single-column mobile list, styled identically to Home/Work/etc."},
+      {"change": "added", "kind": "other", "exact_text": "(no text — small thumbnail preview images, one beside Home, Services, Studio and News)", "note": "not present on desktop; decorative preview thumbnails inline before 4 of the 8 mobile rows"},
+      {"change": "moved", "kind": "structural", "exact_text": "n/a", "note": "layout collapses from a 2-column grid (desktop) to a single vertical column (mobile) — all 7 desktop links plus the newly-visible 'Let's talk' render as one continuous stack"}
+    ]
+  },
+  "notes": "GOTCHA (confirmed, matches prior session's note): the real trigger is a bare <div class=\"text-mono difference\"> whose only distinguishing feature is its exact text 'Menu' (case-insensitive match needed — actual DOM text is 'Menu', not 'MENU'). It is NOT the first element matching '.link_first' (that element is the logo and fires an unrelated rotating-preview widget instead). Selected here by textContent match, not by class, exactly as flagged. A cookie-consent banner also covers the bottom-left of the panel on first load and had to be dismissed before the tagline could be verified."
+}

@@ -48,6 +48,43 @@ The Wave-0 draft of this README said `.sgs-nav-menu__toggle` for the burger —
 that class never existed; `axe-run.mjs` correctly exited 2 with
 `matched 0 elements` rather than silently passing on a whole-page fallback.
 
+### Two selector traps on a real page (measured live 2026-07-29)
+
+**1. `.sgs-nav-menu__burger` matches THREE elements on a drawer fixture page.**
+The theme's site header renders one (hidden above its own collapse point), the
+page content renders one, and the nav-menu *inside* the drawer renders a third.
+A bare `--open ".sgs-nav-menu__burger"` resolves `.first()` to the header's,
+which at 1440px is `0x0` and not clickable — the run dies on a 30s click
+timeout that looks like a broken drawer but is a selector bug. Scope to the
+page content:
+
+```bash
+--open ".entry-content > nav.sgs-nav-menu .sgs-nav-menu__burger"
+```
+
+All three also carry the same `aria-controls="sgs-nav-drawer"` when drawers use
+the default `drawerRef` — so give each drawer a unique `drawerRef` whenever a
+page holds more than one.
+
+**2. The drawer REPARENTS to `<body>` when it opens (the D323 fix — it has to
+escape a transformed/filtered ancestor).** So a content-scoped
+`--scope ".entry-content > dialog.sgs-nav-drawer"` matches before the open and
+**0 elements after it**. Scope the drawer by itself:
+
+```bash
+--scope "dialog.sgs-nav-drawer"
+```
+
+Working end-to-end example against a desktop-anchored variant at 1440:
+
+```bash
+node scripts/nav-qa/axe-run.mjs <page-url> \
+  --open ".entry-content > nav.sgs-nav-menu .sgs-nav-menu__burger" \
+  --scope "dialog.sgs-nav-drawer" --viewport 1440
+# → openness guard PASS — open and interactive: 438x342, 6 focusable element(s)
+# → 0 violations.
+```
+
 ## 1. `axe-run.mjs` — accessibility gate
 
 **Covers:** FR-36-16 *"axe = 0 on the OPEN drawer AND an OPEN desktop
@@ -75,6 +112,37 @@ node scripts/nav-qa/axe-run.mjs <url> --open <sel> --scope <sel> --json
 **Bad args / navigation failure:** exit code `2` with a loud stderr message
 (e.g. `--open selector "..." matched 0 elements` — this catches a typo'd
 selector rather than silently passing on a whole-page fallback).
+**VACUOUS:** exit code `3` — see the openness guard below.
+
+### Openness guard (added 2026-07-29 — read this before trusting any scoped result)
+
+A `<dialog>` sits in the DOM whether it is open or closed, and axe skips
+hidden subtrees by default. So until 2026-07-29 a scoped run on a **closed**
+drawer returned `0 violations` exactly like an open one. **Every scoped
+drawer/mega result recorded before that date proves nothing** — re-run it.
+
+The guard measures the scope's rendered state before axe runs and requires
+all of: a `<dialog>` carries the `open` property · a non-zero box · not
+`display:none` / `visibility:hidden` / `opacity:0` / `[hidden]` /
+`aria-hidden="true"` · **at least one visible focusable element** (a panel you
+cannot Tab into is not open). Failing any of these prints `VACUOUS` with the
+specific reasons and exits `3` — never a passing `0`.
+
+It arms automatically when the run implies an opened surface (`--open` given,
+or the scope resolves to a `<dialog>`).
+
+| Flag | Effect |
+|---|---|
+| `--require-open` | Arm the guard for ANY scope (e.g. a disclosure `<div>` panel that is not a `<dialog>` and was opened by something other than `--open`). |
+| `--allow-closed` | Deliberately disarm. The result is stamped `guard: SKIPPED … UNGUARDED` in both text and `--json` output so it can never be mistaken for a guarded pass. |
+
+Every run now prints an `openness guard <STATUS>` line, so a bare
+`0 violations` can always be traced to whether the surface was really open.
+
+Verified live 2026-07-29 on `/t1-nav/` (drawer test page) at 375px:
+closed + `--allow-closed` → `0 violations`, exit 0 (the old, vacuous pass);
+closed + guard → `VACUOUS`, exit 3; opened via `.sgs-nav-menu__burger` →
+`guard PASS — 375x1200, 5 focusable element(s)`, `0 violations`, exit 0.
 
 ## 2. `elementfrompoint-sweep.mjs` — occlusion sweep
 

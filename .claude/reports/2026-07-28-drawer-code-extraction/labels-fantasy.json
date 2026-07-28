@@ -1,0 +1,27 @@
+{
+  "site": "fantasy.co",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "Work", "css_uppercase": false},
+      {"text": "Services", "css_uppercase": false},
+      {"text": "Impact", "css_uppercase": false}
+    ],
+    "secondary_blocks": [
+      {"kind": "tertiary-link-row", "position_in_panel": "centre, below primary 3 items", "exact_text": "Contact / Latest / Careers"},
+      {"kind": "contact/CTA", "position_in_panel": "bottom-left", "exact_text": "Ready to launch an intelligent experience? Let's talk", "note": "inline sentence CTA; 'Let's talk' is the underlined link portion"},
+      {"kind": "promo-card", "position_in_panel": "bottom-right", "exact_text": "HOW FANTASY SHIPPED LIV GOLF IN 72 DAYS", "note": "dark case-study promo card with a small golf-flag thumbnail image"}
+    ],
+    "counts": {"primary": 3, "secondary_blocks": 3}
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": [
+      {"change": "dropped", "kind": "contact/CTA", "exact_text": "Ready to launch an intelligent experience? Let's talk", "note": "confirmed in DOM but 0x0 bounding rect at 400px — not visible, not merely below the fold"}
+    ]
+  },
+  "notes": "A cookie-consent banner ('We value your privacy') covers the bottom of the panel on first load and had to be dismissed (Reject All) before the CTA line and promo card could be verified. Trigger = button with accessible name 'Menu' (desktop) / an unlabelled icon-only button next to the logo (mobile, 400px — no accessible name, located by DOM position in the header). Close = dark rounded-square X button, top-right, both widths. Body scroll is NOT hard-locked while the panel is open (confirmed as expected per the known gotcha, not a failure)."
+}

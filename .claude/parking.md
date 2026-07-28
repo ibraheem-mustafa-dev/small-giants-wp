@@ -163,20 +163,9 @@ The header/footer setup pipeline's opening step mechanically extracts a draft's 
 
 **Remaining (Phase 5-6):** (a) FR-33-12 orchestrator fail-closed freshness gate (run the extractor before any block clone); (b) FR-33-5 Pass B advisory derivation + FR-33-6 dark-theme safety; (c) FR-33-13 header/footer namespace reserve, and re-point `P-DRAFT-CSSVAR-COLOUR-RESOLUTION` at the new `build_draft_root_token_map()` service instead of re-parsing `:root`; (d) migrate the transitional component CSS (buttons/hero-CTA/focus-ring) out of the Mama's snapshot into theme/block CSS proper; (e) roll out the extractor to the other 5 client snapshots, each behind its own reclone + parity check; (f) Part 2 = the actual header/footer clone (Spec 17 successor).
 
+
+**⚠ One listed item is ALREADY SHIPPED (verified 2026-07-29): strike the FR-33-12 fail-closed freshness gate from the remaining list.** It is built and wired live — `_freshness_gate()` is defined at `sgs-clone-orchestrator.py:2183` and called unconditionally from `main()` at `:2398`. The other listed items were not contradicted.
 **Trigger:** the Phase 5-6 continuation session — needs a design-gate + `/qc-council` on the shared theming surface.
-
-### P-F5-RESIDUALS — F3-RUNTIME LANDED-leg arming status
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-21 (D239)
-
-Two residuals remain from F5. (1) The batch runner + LANDED verdict engine are built; the canary
-fixture blocker that kept `check_landed()` unarmed was resolved at D380 (35 canary fixtures
-deployed, wired at `coverage_check.py:386`) — re-check whether it is now actually armed before
-treating this as open. (2) css_router D1 media-axis is RESOLVED (UNACCOUNTED went 14→0).
-
-**Verify:** possibly already complete — item (1)'s sole blocker was resolved at D380; confirm
-`check_landed()` is armed and running before re-opening work here.
-
-**Trigger:** Next pipeline-gates session.
 
 ### P-FR-31-2.1A-CLOSURE — converter role-seeding still derives role from the attr NAME, not the declaration
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-16
@@ -481,6 +470,8 @@ identity, or (b) a new `slots.standalone_block_default_attrs` JSON column.
 
 The core empty-slide bug (a stale composition flag causing the converter to emit child blocks the typed render.php ignores) is fixed and live-verified; quote/author/star-rating now lift correctly via a universal scalar-lift mechanism. Re-scoped 2026-07-27: of the remaining unrouted typed fields, only `__summary`/`__org`/`__date` are genuinely unwired for content-lift (styling-role only); the avatar/logo/work-image fields already carry a live generic image-content-lift role, so they may not need separate work — pending a live render check.
 
+
+**⚠ Residual is NARROWER than stated (re-measured 2026-07-29):** `reviewDate` is now wired (`role='text-content'` in `block_attributes`). Only `summaryPhrase` and `orgName` remain unwired (both `role=NULL`).
 **Trigger:** the cloning Stage-2 routing wave; also the broader FR-22-20 variant-detection generalisation past hero+testimonial.
 
 ### P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL — nav-drawer/trust-bar variant discrimination must be BEM-structural, not styling-attr-based
@@ -571,19 +562,6 @@ boolean-from-modifier mechanism the array resolver does not have. Low value (sel
 
 *57 open entries.*
 
-### P-17 — Shared universal icon picker component
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-08
-
-Every SGS block with an icon control hardcodes its own ~8-item dropdown, while the framework
-already supports Lucide (1,963 icons) + emoji families + future third-party sets. Deferred as a
-standalone build — not blocking any active path. Full component spec (interface shape, icon-set
-registry, per-block migration path) was too large for a parking entry and has been extracted
-verbatim to `plans/2026-07-29-icon-picker-component-design.md` (filed as a plan, not a spec —
-it has had no design gate).
-
-**Trigger:** Standalone session — before bucket-2 (new blocks get IconPicker from day one) or after
-(existing blocks get the upgrade once).
-
 ### P-19 — Migrate remaining blocks off the saved-defaults system
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-08
 
@@ -671,13 +649,6 @@ The security leak, customer-facing deleted-product message, double-query, and do
 
 **Trigger:** each item is its own small deferred round; the widthMode item specifically needs a Bean design-gate before any work.
 
-### P-FP-H-BRIDGE-RETIRE — typed-mode transition bridge for pre-FP-H product-card clones has no forcing function
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-06-10
-
-The transition bridge (an `echo $content` compatibility path for pre-FP-H page-144 clones) has nothing making its continued use observable. Add an `E_USER_NOTICE` trigger on the old path so it's visible when it fires, and retire it per the documented checklist once page-144 re-clones with `productName` set.
-
-**Trigger:** the next product-card session that touches this path, or once page-144 is re-cloned.
-
 ### P-HEADER-FOOTER-SITE-SUFFIX-NAMING-CONVENTION — Stage-9 drift rule for header/footer naming
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-24
 
@@ -754,13 +725,6 @@ The cutover MECHANISM is proven (a generic proof header on the new blocks passes
 
 **Trigger:** after `P-SPEC37-PER-SITE-DECLIENT` closes, and once Spec 33 Part 2 (header/footer cloning) exists.
 
-### P-NAV-INSTANCE-CONFIG-DUPLICATION — header-bar nav and drawer nav are configured as two independent block instances
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-20
-
-Every colour/radius/hover setting must be configured twice to keep the header bar and the drawer's nav consistent, because they are two separate block instances with separate attribute sets; today they only match because both sit on defaults. Nothing in the editor signals that a second copy exists. Needs a design call before building: (a) the drawer instance inherits the header's styling unless explicitly overridden (highest blast radius — no other SGS block does cross-instance inheritance), (b) a shared style preset both reference, or (c) accept duplication and add an inspector notice pointing at the other instance.
-
-**Trigger:** next nav session, or the first client who styles one and reports the other diverging.
-
 ### P-NAV-ITEM-SEPARATORS — nav-menu has no divider/separator capability between items
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-20
 
@@ -781,13 +745,6 @@ Bean reported the Styles column blanking the settings sidebar with no way back. 
 Surfaced when a shop-filter toggle was given `btn btn-primary` classes that matched nothing outside a product card, worked around with raw design tokens instead. True fix needs the button definitions extracted to an unscoped theme utility (or a genuine global `.btn` component) so any element can reuse the primary button look. Low priority — token-level reuse already gives an accessible result today.
 
 **Trigger:** a framework button-componentisation pass.
-
-### P-OPTIONPICKER-DUP-KEY — duplicate option-picker labels silently drop the second one
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-06
-
-If two pack-size labels sanitise to the same key (e.g. "Large" vs "large "), the option-picker silently drops the second via first-occurrence-wins dedup. Low severity; consider a duplicate-key editor notice.
-
-**Trigger:** an option-picker polish pass.
 
 ### P-P3-ADMIN-POLISH — Spec 28 admin-UI non-blocking polish residuals
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-09
@@ -843,6 +800,8 @@ different behaviour); (2) variation-sets logic reading a product's declared vari
 content-impact map from the `sgs_product` CPT — a new Spec 24 requirement, write it into the spec
 first; (3) Spec 24 dual-mode (typed clone InnerBlocks / bound CPT block-bindings).
 
+
+**Verify:** likely STALE (flagged 2026-07-29). All three sub-tasks appear to have shipped separately under different names since this was parked on 2026-05-31 — the pill selector as `sgs/option-picker`, variation-sets as `read_variation_sets()` reading `_sgs_variation_sets` (`includes/class-product-bindings.php:244-338`), and Typed/Bound dual-mode per the block's own CLAUDE.md. Re-read against current code before doing any work here.
 **Trigger:** Plan next session, after the atomic pill block exists and Spec 24 is amended.
 
 ### P-PRODUCT-CARD-NAMED-PICKERS — product-card: named + multiple option-pickers per card
@@ -868,25 +827,6 @@ The original trigger ("revisit when adding sgs/heading") has fired: `sgs/heading
 is deployed, so this is actionable now rather than waiting.
 
 **Trigger:** Next `sgs/label` or `sgs/heading` touch.
-
-### P-S17-B — Header/footer pattern-version detection (superseded mechanism)
-**Status:** OPEN · **Bucket:** framework · **Parked:** unknown
-
-Original ask (a `_sgs_pattern_version` meta on `wp_template_part` records, for re-clone version
-detection) is superseded: Spec 37 retired FR-S7-4 — headers/footers are now CPTs with native
-revisions, so do not build the proposed meta key.
-
-**Trigger:** When Spec 33 Part 2 (header/footer clone) lands.
-
-### P-S17-D — Live preview on header/footer variation picker (orphaned anchor)
-**Status:** OPEN · **Bucket:** framework · **Parked:** unknown
-
-Original spec anchor (FR-S5-2) exists in no live spec — Spec 17 was deleted and the repoint missed
-this entry. Verify the variation picker still exists at all before doing this work; if it does,
-re-anchor to Spec 37's successor requirement.
-
-**Trigger:** First operator complaint or usability test flagging the missing preview, once
-re-anchored.
 
 ### P-S17-E — Public browseable pattern-library marketing page
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** unknown
@@ -955,13 +895,6 @@ The framework carries no client data any more (the client-named pattern file was
 Two of the three original clauses (layoutMode as a first-class inspector control; row-inserter promotion of common elements) are already built and live-verified — strike them. The third, FR-37-35 (container-query row reflow), is genuinely unresolved but the SPEC ITSELF disagrees with its own summary table about whether it's built. Settle that contradiction with one live check and fix the losing line before scoping any actual build work.
 
 **Trigger:** the next session touching Spec 37 §3 — check the live behaviour first, then correct whichever spec line is wrong.
-
-### P-TESTIMONIAL-LIFT-DATA-DURABILITY — 2 of 3 testimonial content-lift roles have no durable seed source
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-06-12
-
-`quote`'s role/selector is durably seeded in the recognition fingerprints file, but `reviewerName` and `ratingStars` were set only by a direct SQL update into the local DB and have zero durable source anywhere — a full from-scratch DB rebuild would silently lose both and regress the testimonial content lift. Needs a committed home (a fingerprints-file entry or a seed-script row) for these two specifically.
-
-**Trigger:** before any full DB rebuild, or the next cloning wave.
 
 ### P-THEME-SCROLL-PADDING-SECOND-INSTANCE — the theme carries its own copy of the scroll-padding defect the plugin already fixed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
@@ -1058,6 +991,39 @@ measure-and-write pattern shipped at D404 is the template. Pure geometry, no ani
 
 **Trigger:** next nav-drawer session working on the `trigger` variant specifically, or when a
 client build surfaces a visible misalignment on a real header layout.
+
+### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+`nav-menu`'s in-drawer `listColumns` grid uses `grid-auto-flow: row`, so a 7-item menu lays out
+ACROSS the columns instead of down them. Measured live on fixture page 1922 at 1440: menu order is
+Home · Work · Services · Approach · Studio · Plans · News, but column 1 reads Home · Services ·
+Studio · News and column 2 reads Work · Approach · Plans. Keyboard and screen-reader order are
+correct (they follow the DOM) — it is the VISUAL reading order that diverges, and the reference
+design (studionamma) splits sequentially 4+3.
+
+Fix shape: `grid-auto-flow: column` plus an explicit row count derived from the item count in
+`nav-menu/render.php`. That changes rendering semantics of a shared block, so it needs Bean's
+sign-off (project rule 7) rather than an inline change. Recommended: change it — a menu whose
+visual order differs from its real order is a usability defect as well as a fidelity gap.
+
+**Trigger:** Bean's decision on finding F1 of
+`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
+
+### P-NAV-DRAWER-DUPLICATE-DEFAULT-REF — two default drawers on one page share a DOM id
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+`sgs/nav-drawer` and `sgs/nav-menu` both default `drawerRef` to `sgs-nav-drawer`, so two drawers
+left on defaults render duplicate element ids and two burgers whose `aria-controls` point at the
+same id. Measured 2026-07-29: behaviour is NOT broken — each burger still opened its own panel
+(proven by their differing link sets) — and a whole-page axe 4.11 run at 1440 reported 0
+violations. So this is an HTML-validity wrinkle that no current gate flags, not a live defect.
+
+Candidate fix: derive the default ref from the block's uid when more than one drawer is present,
+or surface an editor notice. Low severity; do not spend a session on it alone.
+
+**Trigger:** next nav-drawer session, or the first time a real client build puts two drawers on one
+page.
 
 ### P-PRODUCT-PAGE-REDESIGN — product page design does not line up with the cloned draft
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-14
@@ -1187,6 +1153,8 @@ A synthetic fixture exercising CSS cases the real Mama's draft doesn't (full-ble
 
 The `[INCIDENT]`/`[ROUTINE]` tagging convention was established and applied to recent entries; a bounded number of older headings remain untagged. Current count (re-verified 2026-07-27): only 10 headings — D216, D229-D237 — need a read-to-classify judgment; the file's 44 other headings are already tagged. New entries get tagged going forward via handoff, so the untagged set only shrinks.
 
+
+**⚠ Its own count is WRONG (re-measured 2026-07-29): ~124 headings are untagged, not 10.** `decisions.md` has 201 `## ` headings and 77 carry `[INCIDENT]`/`[ROUTINE]`. The task is real but roughly twelve times the size this entry recorded — re-scope before starting.
 **Trigger:** a low-priority doc-hygiene session — small and bounded now, not the large task it once was.
 
 ### P-DEPLOY-VERIFY-NOT-CHANGE-SPECIFIC / P-CANARY-SHARED-DEPLOY-RACE — deploy verify can pass on a deploy that never persisted
@@ -1257,6 +1225,8 @@ offer `{baseAttr}+Hover` candidate mappings for human/agent review — never dec
 FR-35-5 is approved but not built (D354), and only one block declares a `states` key today —
 nowhere near the scale that would justify this.
 
+
+**⚠ Its own count is WRONG (re-measured 2026-07-29): 16 block.json files carry a `states` key, not one.** Whether those 16 are the same mechanism this entry means (vs FR-35-5's suffix-shaped attrs) needs disambiguating — but on the entry's own stated terms the at-scale trigger has likely fired.
 **Trigger:** After FR-35-5 ships and the roster starts declaring `states` at scale.
 
 ### P-SPEC35-UPSTREAM-REGISTRY-DRIFT — Upstream Phase-1 artefacts still un-reclassified

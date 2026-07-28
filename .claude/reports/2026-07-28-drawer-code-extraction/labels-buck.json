@@ -1,0 +1,30 @@
+{
+  "site": "buck.co",
+  "harvested": "2026-07-29",
+  "desktop": {
+    "opened": true,
+    "reason_if_not": null,
+    "primary_links": [
+      {"text": "Work", "css_uppercase": true},
+      {"text": "About", "css_uppercase": true},
+      {"text": "Contact", "css_uppercase": true},
+      {"text": "Careers", "css_uppercase": true},
+      {"text": "Games", "css_uppercase": true},
+      {"text": "Goods", "css_uppercase": true}
+    ],
+    "secondary_blocks": [
+      {"kind": "footer-text", "position_in_panel": "bottom-left", "exact_text": "© 2026 BUCK"},
+      {"kind": "social-links", "position_in_panel": "bottom-right", "exact_text": "LinkedIn / Instagram / Vimeo / Privacy Policy"}
+    ],
+    "counts": {"primary": 6, "secondary_blocks": 2}
+  },
+  "mobile": {
+    "opened": true,
+    "reason_if_not": null,
+    "mobile_deltas": [
+      {"change": "added", "kind": "other", "exact_text": "(no text — magnifying-glass search icon, above the nav list)", "note": "not present on the desktop panel"},
+      {"change": "moved", "kind": "social-links", "exact_text": "LinkedIn / Instagram / Vimeo / Privacy Policy", "note": "reflows from a single inline row (desktop) to a vertically stacked column (mobile); same 4 items, same text, only the layout changes"}
+    ]
+  },
+  "notes": "GOTCHA: no element's accessible/visible text contains the word 'menu' at any width — the trigger is an unlabelled icon-only button (the last child in the header's nav-link group at desktop; the sole header button at mobile). Located both times by DOM position (last button in the header container), not by text search. Panel background colour is currently solid pale green (desktop) / pale pink (mobile) rather than the brand-brown recorded in the prior CSS-extraction pass — the panel evidently cycles through a brand-colour rotation; content/labels are unaffected. Confirmed opaque full-viewport panel, no blur/scrim, all 6 primary links use Title Case source text rendered uppercase via CSS."
+}
