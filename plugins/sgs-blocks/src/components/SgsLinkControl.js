@@ -30,10 +30,14 @@ import { LinkControl } from '@wordpress/block-editor';
 import { BaseControl } from '@wordpress/components';
 
 /**
- * Rel-token settings surfaced as LinkControl's extra checkbox toggles
- * (rendered alongside its built-in "Open in new tab" toggle).
+ * LinkControl's `settings` prop REPLACES its default settings array — it does
+ * not merge — and the default array is where the "Open in new tab" toggle
+ * lives. So the toggle must be re-declared here explicitly, or it vanishes
+ * from every consumer (caught live by the D388 editor pass, 2026-07-28:
+ * four migrated blocks shipped with no new-tab toggle at all).
  */
-const REL_SETTINGS = [
+const LINK_SETTINGS = [
+	{ id: 'opensInNewTab', title: __( 'Open in new tab', 'sgs-blocks' ) },
 	{ id: 'nofollow', title: __( 'Mark as nofollow', 'sgs-blocks' ) },
 	{ id: 'sponsored', title: __( 'Mark as sponsored', 'sgs-blocks' ) },
 ];
@@ -113,7 +117,7 @@ export default function SgsLinkControl( { label, help, value, onChange } ) {
 			<LinkControl
 				searchInputPlaceholder={ __( 'Search or paste a URL', 'sgs-blocks' ) }
 				value={ linkValue }
-				settings={ REL_SETTINGS }
+				settings={ LINK_SETTINGS }
 				onChange={ handleChange }
 				forceIsEditingLink={ ! linkValue.url }
 			/>
