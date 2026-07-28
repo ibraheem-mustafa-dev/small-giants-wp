@@ -21,15 +21,24 @@
 	position: fixed;
 	inset: 0;
 	width: 100vw;
-	height: 100dvh;
 	max-width: 100vw;
-	max-height: 100dvh;
 	margin: 0;
 	padding: 0;
 	border: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	-webkit-overflow-scrolling: touch;
+}
+
+/* Height defaults live in :where() (specificity 0) so the `panelSize`
+   attr's per-tier emitted rules (render.php) always win — the F3 gate's
+   sanctioned overridable-default shape (fix option 3). Rendered output is
+   byte-identical when panelSize is unset. Added 2026-07-28 to unbreak
+   main's prebuild after D403 introduced `panelSize` without clearing this
+   pre-existing literal. */
+:where(.wp-block-sgs-nav-drawer) {
+	height: 100dvh;
+	max-height: 100dvh;
 }
 
 /* Opaque fallback so the modal is never see-through if a drawerBg slug ever
