@@ -278,25 +278,50 @@ function repositionPanel( root ) {
 	panel.style.removeProperty( '--sgs-mm-overflow-right' );
 	panel.style.removeProperty( '--sgs-mm-tx' );
 	window.requestAnimationFrame( () => {
+		/*
+		 * Centre the panel on the BAR, clamped to the viewport (2026-07-28,
+		 * Bean-caught fix). The CSS `left:50% / translateX(-50%)` default
+		 * CANNOT do this: every `.sgs-nav-menu__item` is position:relative
+		 * (style.css — required so links paint above the indicator pill), so
+		 * the wrap's containing block is the ~100px MENU ITEM, the centred
+		 * rect always overflows, and the old edge-pin glued the panel to the
+		 * item's own left/right edge — visibly off-centre on both live
+		 * screenshots. The panel can only ever OPEN with JS (the store flips
+		 * aria-expanded), so JS owns the geometry: centre on the bar, clamp
+		 * with the draft's 28px gutters, and express the result purely as
+		 * CSS-var VALUES relative to the wrap's offsetParent (Spec 32 —
+		 * never a direct style.left write).
+		 */
 		const rect = panel.getBoundingClientRect();
 		// Safe-triangle (FR-36-4): reuse this existing measurement as the
 		// snapshot other triggers check their pointer trajectory against —
 		// no second layout read.
 		activePanelRect = rect;
-		// The wrap is CENTRED on the bar by default (left:50% +
-		// translateX(-50%), 2026-07-28 anchor fix). When the centred rect
-		// overflows a viewport edge, pin to the bar's near edge instead —
-		// `--sgs-mm-tx: 0px` neutralises the centring translate so the
-		// left/right pin is exact. Right overflow wins if both would fire
-		// (a panel wider than the viewport is already width-clamped in CSS).
-		if ( rect.right - window.innerWidth > 0 ) {
-			panel.style.setProperty( '--sgs-mm-overflow-left', 'auto' );
-			panel.style.setProperty( '--sgs-mm-overflow-right', '0' );
-			panel.style.setProperty( '--sgs-mm-tx', '0px' );
-		} else if ( rect.left < 0 ) {
-			panel.style.setProperty( '--sgs-mm-overflow-left', '0' );
-			panel.style.setProperty( '--sgs-mm-tx', '0px' );
+		const parent = panel.offsetParent;
+		if ( ! parent ) {
+			return;
 		}
+		const parentRect = parent.getBoundingClientRect();
+		const gutter = 28;
+		const width = rect.width;
+		/*
+		 * Centre on the VIEWPORT, not the bar (Bean's eye, round 2): the bar
+		 * shrink-wraps its items and sits wherever the header row puts it, so
+		 * bar-centred still produced lopsided side-space (28px vs 292px,
+		 * measured, mirrored between the header nav and a page nav). The
+		 * drafts centre their 1120px band on the header CONTAINER — visually
+		 * the viewport — giving symmetric space; the width clamp
+		 * (min(1120px, 100vw − 2×28px)) guarantees the panel still spans
+		 * beneath every trigger on the bar.
+		 */
+		const desired = Math.max( ( window.innerWidth - width ) / 2, gutter );
+		panel.style.setProperty( '--sgs-mm-tx', '0px' );
+		panel.style.setProperty(
+			'--sgs-mm-overflow-left',
+			`${ ( desired - parentRect.left ).toFixed( 2 ) }px`
+		);
+		// Re-snapshot for the safe-triangle now the panel has moved.
+		activePanelRect = panel.getBoundingClientRect();
 	} );
 }
 

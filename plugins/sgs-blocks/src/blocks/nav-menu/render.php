@@ -223,7 +223,19 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 						// CF-15: the trigger is a pure disclosure button; a "View all" link
 						// (the item's own destination) lives INSIDE the panel, only when the
 						// menu item carries a real URL.
-						$viewall = ( '#' !== $item['url'] && '' !== $item['url'] )
+						//
+						// SUPPRESSED when the panel already contains an sgs/button
+						// (Bean, 2026-07-28): the raw link rendered as a bare line
+						// hanging above the panel chrome ("Why does the view-all
+						// appear OUTSIDE the mega menu?") — when the panel ships its
+						// own CTA (every aside starter does), THAT button is the
+						// destination affordance and the extra link is visual noise.
+						// A panel with no button of its own (e.g. the plain 1col/2col
+						// starters) still gets the crawlable fallback link, rendered
+						// AFTER the panel so it reads as part of it, not a stray line
+						// above.
+						$panel_has_cta = false !== strpos( $panel_html, 'wp-block-sgs-button' );
+						$viewall       = ( ! $panel_has_cta && '#' !== $item['url'] && '' !== $item['url'] )
 							? sprintf(
 								'<a class="sgs-nav-menu__mega-viewall" href="%s">%s</a>',
 								esc_url( $item['url'] ),
@@ -237,7 +249,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							. '<button type="button" class="sgs-nav-menu__link sgs-nav-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 							. '<span class="sgs-nav-menu__label sgs-nav-menu__magnet-target">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
 							. '</button>'
-							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s%7$s</div>'
+							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%7$s%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
@@ -711,6 +723,20 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-na
  * pushes the following items down like an accordion.
  */
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:static;transform:none;width:100%;}';
+
+/*
+ * In-drawer width discipline (Bean, 2026-07-28): a vertical drawer menu must
+ * FILL the space available, never shrink-wrap to its longest label. Measured
+ * before this rule: the whole vertical list hugged to ~95px (the drawer body
+ * is align-items:flex-start, and the nav root + bar + items all sized to
+ * content), so the in-drawer mega panel inherited a 95px column and its text
+ * clipped. Items stretch full-width (standard drawer pattern, bigger touch
+ * targets); label alignment stays the natural reading edge (left) — a
+ * left/centre/right alignment control is the drawer's own surface, not
+ * per-instance CSS here.
+ */
+$css .= '.sgs-nav-drawer ' . $uid_sel . '{width:100%;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar{width:100%;align-items:stretch;}';
 
 /*
  * Stacking escape for an IN-CONTENT nav (2026-07-28, Gate-3 finding). The
