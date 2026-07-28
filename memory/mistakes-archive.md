@@ -38,3 +38,10 @@
 ## How to add a lesson
 
 Use `/capture-lesson`. It appends the keyword-stub format here automatically and writes full body to feedback_*.md + blub.db.
+
+<!-- archived 2026-07-28 to hold the active set at 30 -->
+### [2026-05-27] /qc-council 4-rater cross-family triangulation catches bugs same-family tests miss
+- **Pattern key:** `qc-council-cross-family-triangulation-finds-bugs`
+- **Feedback file:** `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_qc_council_cross_family_triangulation_finds_bugs.md`
+- **Evidence:** Spec 22 Phase 1.4 walker — 129+ same-family tests PASSED, /qc-council 4-rater (Sonnet + Haiku + Gemini Flash + main-thread inline) then surfaced 5 real bugs (D1 CSS-loss in walk_passthrough, D2 ImportError on documented `flush_essence_matches` API, D3 emit_atomic emitting wrong attr names post-γ-rebuild for sgs/heading/sgs/media/sgs/quote/sgs/icon-list, D4 dead Spec 16 D1 sidecar code, D5 chrome-skip dropping SGS-classed `<header>`). All 5 fixed in-flight before Phase 1.4b commit (`da3de993`).
+- **Rule:** Run /qc-council BEFORE every converter/walker/SGS-block/DB-routing commit (blub.db 255 binding rule). Cross-family diversity (Anthropic Sonnet + Google Gemini + main-thread inline) is the single biggest quality lever.
