@@ -76,7 +76,15 @@
 		},
 		"panelPadding": {
 			"type": "object",
-			"default": { "desktop": "28px" }
+			"_note": "BOX-object shape (top/right/bottom/left per tier) — NOT a scalar. render.php emits this through sgs_emit_responsive_css() with 'box' => true, which reads the four sides; the previous scalar default ({desktop:'28px'}) produced NO padding at all, so the panel rendered flush to its own border and both group headings touched the top/left edge (Bean's eye, 2026-07-28). Classic STOP-D328: the declared SHAPE must match what the consumer expects, or the value is silently dropped. Matches sgs/mega-aside's asidePadding shape exactly.",
+			"default": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			}
 		},
 		"groupGap": {
 			"type": "object",

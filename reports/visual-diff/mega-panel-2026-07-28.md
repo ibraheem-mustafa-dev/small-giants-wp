@@ -80,3 +80,31 @@ first_paint_capture_passed: true
    content clipping). Full-width items, labels at the natural left edge.
 
 verdict: PASS (round-2 fixes measured; R-31-13 sign-off pending on the new trio)
+
+## Round 3 — Bean's eye, four draft-fidelity defects (all measured before + after)
+
+Geometry from round 2 SIGNED OFF by Bean ("The 3 screenshots all look good") —
+R-31-13 met for centring, view-all removal and drawer width.
+
+| # | Finding (Bean) | Measured BEFORE | Root cause | Measured AFTER |
+|---|---|---|---|---|
+| 1 | "no border/outline ... even though the Indus draft has one" | border WAS present: `1px solid rgba(58,46,38,0.12)` | not absent — 12% alpha is below the perceptual floor on a light panel | `0.22` alpha, reads as the draft's hairline |
+| 2 | headings "look like general h2 tags", draft's are label-like | `H2, 36px, weight 700, Fraunces serif, no transform` | BUILD-SPEC §3's eyebrow spec was **never built** — the only rule targeting `$heading_sel` was the headings-OFF hidden case | `11px / 500 / uppercase / 1.54px tracking / ui-monospace / muted / mb 16px` = the drafts' exact values |
+| 3 | "both headings touch the top ... and the left side of the panel" | `padding: 0px` (aside had 24px) | **STOP-D328 shape bug**: `panelPadding` default was the SCALAR `{desktop:'28px'}` but render.php emits it with `box => true`, which reads four sides → silently dropped | `padding: 24px`; group x 161→185, y 222→246 |
+| 4 | separator "barely visible" + aside same colour as panel | aside `background: rgba(0,0,0,0)` (identical to panel), separator 1px @ 12% | aside never adopted the `--sgs-mm-card` role the drafts give it; separator inherited the same invisible alpha | bg `rgba(255,255,255,.6)`, radius 12px, separator `2px` accent @45% |
+
+**1b — the "View all" fallback (Bean ruling, supersedes my round-2 fix).**
+Round 2 suppressed it when a CTA exists but left the no-CTA fallback rendering
+AFTER the panel — still OUTSIDE the panel's border, and in the header nav it
+was overlapped by the trigger's hover underline. Bean: *"this 'accessible'
+fallback should not ever be outside of the mega menu. It's not accessible that
+way anyway."* Correct now: `sgs/mega-panel` exposes an
+`sgs_mega_panel_footer_html` slot; `sgs/nav-menu` registers it immediately
+before that panel's `do_blocks()` and removes it straight after (so it cannot
+leak into the next mega item), and the CTA test reads the panel's STORED
+`post_content` for a `wp:sgs/button` marker — checkable BEFORE render, unlike
+the rendered-HTML test it replaces. Live: `viewallOutsidePanel: false`,
+`viewallInsidePanel: false` (this fixture's panel HAS a CTA, so it is correctly
+suppressed entirely); the aside button reads "View all Brands".
+
+verdict: PASS (round-3 measured; Bean's eye on the round-3 crop pending)

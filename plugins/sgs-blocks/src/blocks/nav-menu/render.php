@@ -189,9 +189,51 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				$li_class    = 'sgs-nav-menu__item' . ( $is_featured ? ' sgs-nav-menu__item--featured' : '' );
 
 				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
+					$panel_post_id = (int) ( $item['object_id'] ?? 0 );
+
+					/*
+					 * Does the panel ship its own CTA? Checked against the STORED
+					 * post_content (a `wp:sgs/button` marker) rather than the
+					 * rendered HTML, because the answer decides whether to register
+					 * the footer filter BEFORE do_blocks() runs — checking rendered
+					 * output would be a chicken-and-egg (the panel is already built
+					 * by then). A block comment is the same source of truth the
+					 * editor writes, so this cannot drift from what renders.
+					 */
+					$panel_post    = $panel_post_id ? get_post( $panel_post_id ) : null;
+					$panel_has_cta = $panel_post instanceof WP_Post
+						&& false !== strpos( (string) $panel_post->post_content, 'wp:sgs/button' );
+
+					// Build the fallback link BEFORE rendering so it can be handed
+					// to sgs/mega-panel's footer slot (Bean 2026-07-28: it must
+					// render INSIDE the panel, never as a sibling).
+					$viewall_for_panel = '';
+					if ( ! $panel_has_cta && '#' !== $item['url'] && '' !== $item['url'] ) {
+						$viewall_for_panel = sprintf(
+							'<a class="sgs-nav-menu__mega-viewall" href="%s">%s</a>',
+							esc_url( $item['url'] ),
+							// translators: %s is the mega-menu item's own label (e.g. "Products").
+							esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), $item['label'] ) )
+						);
+					}
+
+					$viewall_filter = null;
+					if ( '' !== $viewall_for_panel ) {
+						$viewall_filter = static function ( $html, $id ) use ( $viewall_for_panel, $panel_post_id ) {
+							return (int) $id === $panel_post_id ? $viewall_for_panel : $html;
+						};
+						add_filter( 'sgs_mega_panel_footer_html', $viewall_filter, 10, 2 );
+					}
+
 					$panel_html = function_exists( 'sgs_mega_render_panel_content' )
-						? sgs_mega_render_panel_content( (int) ( $item['object_id'] ?? 0 ) )
+						? sgs_mega_render_panel_content( $panel_post_id )
 						: null;
+
+					// Remove immediately — the slot must never leak into the NEXT
+					// mega item's panel on the same bar.
+					if ( null !== $viewall_filter ) {
+						remove_filter( 'sgs_mega_panel_footer_html', $viewall_filter, 10 );
+					}
 					if ( null !== $panel_html ) {
 						// Instance-scoped id (reviewer finding): fold in $this->uid so
 						// two nav-menus bound to the SAME menu can't collide (axe
@@ -219,45 +261,21 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 									)
 								)
 							);
-						$caret        = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
-						// CF-15: the trigger is a pure disclosure button; a "View all" link
-						// (the item's own destination) lives INSIDE the panel, only when the
-						// menu item carries a real URL.
-						//
-						// SUPPRESSED when the panel already contains an sgs/button
-						// (Bean, 2026-07-28): the raw link rendered as a bare line
-						// hanging above the panel chrome ("Why does the view-all
-						// appear OUTSIDE the mega menu?") — when the panel ships its
-						// own CTA (every aside starter does), THAT button is the
-						// destination affordance and the extra link is visual noise.
-						// A panel with no button of its own (e.g. the plain 1col/2col
-						// starters) still gets the crawlable fallback link, rendered
-						// AFTER the panel so it reads as part of it, not a stray line
-						// above.
-						$panel_has_cta = false !== strpos( $panel_html, 'wp-block-sgs-button' );
-						$viewall       = ( ! $panel_has_cta && '#' !== $item['url'] && '' !== $item['url'] )
-							? sprintf(
-								'<a class="sgs-nav-menu__mega-viewall" href="%s">%s</a>',
-								esc_url( $item['url'] ),
-								// translators: %s is the mega-menu item's own label (e.g. "Products").
-								esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), $item['label'] ) )
-							)
-							: '';
+						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-menu__item--mega">'
 							. '<div class="sgs-nav-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '<button type="button" class="sgs-nav-menu__link sgs-nav-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 							. '<span class="sgs-nav-menu__label sgs-nav-menu__magnet-target">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
 							. '</button>'
-							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%7$s%6$s</div>'
+							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
 							esc_attr( $panel_dom_id ),
 							esc_html( $item['label'] ),
 							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
-							$viewall, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-escaped via esc_url/esc_html above.
-							$panel_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output; already-safe rendered block HTML.
+							$panel_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output; already-safe rendered block HTML. The "View all" fallback (when the panel has no CTA of its own) is INSIDE this string, injected via sgs_mega_panel_footer_html.
 						);
 						continue; // Handled this item.
 					}
@@ -752,7 +770,11 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar{width:100%;align-it
  * live by injection: 400ms diagonal hover survives with it, closes without.
  */
 $css .= '.entry-content:has(' . $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"]){z-index:2;}';
-$css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:block;}';
+// The "View all X" fallback now renders INSIDE the panel (sgs/mega-panel's
+// footer slot), so it is styled as a panel footer row rather than a bare
+// line: separated from the content above, aligned with the panel's own
+// padding box, and never sitting under the trigger's hover underline.
+$css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:inline-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;}';
 
 /*
  * 4h-i. Sliding indicator colour override (Mega-Menu Build Spec §6 row 2).

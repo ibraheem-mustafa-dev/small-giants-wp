@@ -141,9 +141,15 @@ $panel_bg_value = '' !== $panel_bg_raw
 
 // borderColour: attr value resolves via sgs_colour_value; empty falls back to
 // a token-derived translucent border (matches the theme's light default).
+// 12% of the text colour measured as effectively INVISIBLE against a light
+// panel on the canary (Bean's eye 2026-07-28: "there is no border/outline
+// around the mega menu ... even though the Indus draft has one"). The border
+// was present the whole time, just below the perceptual floor. The drafts
+// paint a real hairline (`border:1px solid var(--border)`), so the default
+// steps up to a readable weight; an operator `borderColour` still overrides.
 $panel_border_value = '' !== $border_colour_raw
 	? sgs_colour_value( $border_colour_raw )
-	: 'color-mix(in srgb, var(--wp--preset--color--text, #1A202C) 12%, transparent)';
+	: 'color-mix(in srgb, var(--wp--preset--color--text, #1A202C) 22%, transparent)';
 
 // The "soft" role (§4) is always DERIVED from the resolved accent — never an
 // independent attribute — so the marker chip background stays in lockstep
@@ -357,6 +363,43 @@ $css .= $aside_sel . '{flex:0 0 ' . ( '' !== $aside_width ? $aside_width : '340p
 // column — a modest banner, object-fit cover, matching the editor cap.
 $css .= $aside_sel . ' .sgs-media__img,' . $aside_sel . ' img{max-height:170px;object-fit:cover;width:100%;border-radius:12px;}';
 
+/*
+ * Group-heading EYEBROW (BUILD-SPEC §3 columns: "group heading shown
+ * (eyebrow, mono 11px .14em uppercase muted, margin-bottom 16px)").
+ *
+ * This was specified but NEVER BUILT — the only rule that ever targeted
+ * $heading_sel was the headings-OFF visually-hidden case, so a group heading
+ * rendered with the theme's plain <h> styling (measured live: 36px, weight
+ * 700, Fraunces serif, brand pink — Bean's eye 2026-07-28: "the 2 headings in
+ * the drafts were closer to label blocks ... it looks like you've set their
+ * appearance to match general h2 tags").
+ *
+ * Draft values, both files, identical: `font-family:'Geist Mono',monospace;
+ * font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+ * color:var(--muted); margin-bottom:16px`.
+ *
+ * Parent-paints-child is the sanctioned mechanism for the mega presets (the
+ * same one the columns/cards/minimal layouts already use) — NOT an HC2
+ * violation, because the panel owns the PRESET appearance of its fixed
+ * template slots. Specificity: the id-scoped $heading_sel (1,2,0) beats
+ * sgs/heading's own #uid rule (1,0,0), so the preset wins by construction;
+ * `cards`/`minimal` still hide the heading entirely via the rule at §-headings.
+ *
+ * D-B (a theme `mono` font slug) is NOT yet built, so this uses a system
+ * monospace stack rather than forcing a theme change; swap to
+ * var(--wp--preset--font-family--mono) when D-B lands.
+ */
+$css .= $root_sel . '[data-mega-style="columns"]:not(.sgs-mega-panel--headings-off) ' . $heading_sel . '{'
+	. 'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;'
+	. 'font-size:11px;'
+	. 'font-weight:500;'
+	. 'letter-spacing:.14em;'
+	. 'text-transform:uppercase;'
+	. 'color:var(--sgs-mm-muted);'
+	. 'margin:0 0 16px;'
+	. 'line-height:1.2;'
+	. '}';
+
 $sep_style_val = isset( $aside_separator['style'] ) && in_array( $aside_separator['style'], array( 'none', 'line' ), true )
 	? (string) $aside_separator['style']
 	: 'line';
@@ -364,9 +407,30 @@ if ( 'line' === $sep_style_val ) {
 	$sep_width_val  = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $aside_separator['width'] ?? '1px' ) : '1px';
 	$sep_width_val  = '' !== $sep_width_val ? $sep_width_val : '1px';
 	$sep_colour_raw = isset( $aside_separator['colour'] ) ? (string) $aside_separator['colour'] : '';
-	$sep_colour_val = '' !== $sep_colour_raw ? sgs_colour_value( $sep_colour_raw ) : 'var(--sgs-mm-panel-border)';
+	// A 1px separator at the panel-border alpha measured invisible next to an
+	// aside that shared the panel's background exactly (Bean's eye 2026-07-28:
+	// "the side panel on the draft had a clear separator line (ours is barely
+	// visible) and also the colour of the side panel was different"). Default
+	// steps to a 2px accent-tinted rule; an operator asideSeparator.colour /
+	// .width still overrides both.
+	$sep_width_val  = '1px' === $sep_width_val && ! isset( $aside_separator['width'] ) ? '2px' : $sep_width_val;
+	$sep_colour_val = '' !== $sep_colour_raw
+		? sgs_colour_value( $sep_colour_raw )
+		: 'color-mix(in srgb, var(--sgs-mm-accent) 45%, transparent)';
 	$css           .= $aside_sel . '{border-left:' . $sep_width_val . ' solid ' . $sep_colour_val . ';padding-left:24px;}';
 }
+
+/*
+ * Aside SURFACE (§3 / draft): the drafts render the aside as a visually
+ * DISTINCT inset card (`background: … var(--card)` + its own radius), not a
+ * bare column sharing the panel's fill. Ours measured
+ * `background-color: rgba(0,0,0,0)` — i.e. identical to the panel — which is
+ * the other half of the same finding. `--sgs-mm-card` is already the panel's
+ * declared card role (§4), so the aside simply adopts it. Emitted as a
+ * DEFAULT only: sgs/mega-aside's own `asideBg` is block-private and renders
+ * at higher specificity, so an operator-set background still wins.
+ */
+$css .= $aside_sel . ':not([style*="background"]){background-color:var(--sgs-mm-card);border-radius:12px;}';
 
 // ---------------------------------------------------------------------------
 // 6. Mobile-in-drawer stack (§3 — content-preserving; groups + aside all KEEP
@@ -440,10 +504,26 @@ if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) );
 }
 
+/*
+ * Panel-footer slot (2026-07-28, Bean ruling). `sgs/nav-menu` needs the mega
+ * item's own destination link ("View all X") to live INSIDE the panel — see
+ * CF-15 — and its previous position as a SIBLING of this block rendered it
+ * outside the panel's border, where it read as a stray line and was overlapped
+ * by the trigger's hover underline. A filter is used rather than string
+ * surgery on this block's output so the insertion point is explicit and
+ * cannot drift. Consumers must pass ALREADY-ESCAPED markup (nav-menu builds
+ * it with esc_url/esc_html).
+ *
+ * @param string $footer_html Escaped markup appended inside the panel, after the content row.
+ * @param int    $panel_id    This panel post's ID.
+ */
+$footer_html = (string) apply_filters( 'sgs_mega_panel_footer_html', '', get_the_ID() );
+
 printf(
-	'<div %1$s>%2$s<div class="sgs-mega-panel__content">%3$s</div></div>',
+	'<div %1$s>%2$s<div class="sgs-mega-panel__content">%3$s</div>%4$s</div>',
 	$wrapper_attributes,
 	$eyebrow_html,
-	$content
+	$content,
+	$footer_html
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
