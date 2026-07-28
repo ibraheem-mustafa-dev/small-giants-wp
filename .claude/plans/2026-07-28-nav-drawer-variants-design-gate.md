@@ -9,6 +9,14 @@ evidence: .claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md (Tas
   .claude/reports/2026-07-28-drawer-code-extraction/ (15 per-site JSON + DIFF-ANALYSIS.md)
 ---
 
+> **BUILT (2026-07-28, same day as approval, D403).** Shipped at `faa14924` — 7 nav-drawer
+> `variantPreset` variations + `nav-menu.listColumns`. `variantPreset` enum + F6 baseline
+> landed at `64f5080e` to unblock main's prebuild. **One residual left OPEN, tracked at
+> `.claude/parking.md` → `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS`:** 6 of 7 variants have
+> EMPTY structural discriminator signatures, so `detect_variant` cannot yet tell them apart from
+> extracted CSS — owned by Track 2 / Spec 36, not this gate. This annotation is additive; the
+> approved shape below is unchanged.
+
 # Approved shape — build from THIS, not from the superseded 4-variant geometry taxonomy
 
 **Bean's binding variant principle:** a variant is a complete-clone preset — it sets DEFAULTS

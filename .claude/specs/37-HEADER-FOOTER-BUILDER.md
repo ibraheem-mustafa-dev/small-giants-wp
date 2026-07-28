@@ -831,23 +831,42 @@ the new hide-on-scroll attribute.
 production data to protect; per D270/D293 no deprecations and no read-time legacy fallback are
 added (which would violate R-31-14 anyway). Existing dev instances are re-inserted or
 recovered in the editor.
-**Status:** `NOT-BUILT` — all four are currently flat (`boolean`/`string`) in
-`site-header/block.json`.
-**⛔ BLOCKED on Spec 35 Part D4 (verified 2026-07-25).** The tri-state's per-tier inheritance is the
-SAME `resolveTier()` cascade Spec 35 D4 owns, and that cascade is NOT BUILT (`resolveTier` grep=0;
-`responsive-visibility.js` still flat booleans). Per D4's "reuse the one cascade" rule, DO NOT build a
-second inheritance mechanism here — this FR consumes the Spec 35 one. Spec 35 D4 + Part M now carry a
-priority note that this blocks Spec 37 Group B. Schedule the Spec 35 cascade first.
+**Status:** `BUILT` (`e4bd72ef` + `eb255f06`, 2026-07-28, T1.4). `headerSticky`/`headerTransparent`/
+`headerShrink`/`headerHideOnScroll` reshaped from `boolean`/`string` to tri-state objects
+(clean reshape, no migration/fallback per D270/D293/R-31-14; default `{}` resolves to the prior
+DEFAULT_OFF, so at-rest render is unchanged). `ResponsiveTriStateControl` in `edit.js` (simple
+toggle + "Customise per device" reveal). Server-side: per-tier resolution emitted as `#uid`-scoped
+per-tier `@media` via `sgs_emit_tier_rules()`, with a single-writer merge pass
+(`sgs_merge_tri_state_declarations()`, added in `eb255f06` after a QC round found a same-selector
+`!important` collision between behaviours) so off-at-every-tier behaviours emit nothing and a
+narrow tier can genuinely cancel a wide one. `site-header-row`/`site-footer-row` migrated onto the
+same canonical `sgs_resolve_on_tiers()` resolver (semantics verified identical);
+`sgs_resolve_tier_booleans()` **DELETED** (0 consumers). 6 theme pattern seeds updated
+`boolean → {"desktop":"on"}` (D328). Both dev sites live-verified at 3 viewports incl.
+explicit-off + coexistence cases.
+**Was previously BLOCKED on Spec 35 Part D4** (the shared `resolveTier()` cascade) — that
+blocker is CLEARED: Spec 35 T1.1 shipped the canonical `resolveTier()`/`sgs_resolve_tier()` in
+both runtimes (`b9c5f6d1`, 16/16 golden fixture both runtimes) ahead of this FR, per the "reuse
+the one cascade" rule — no second inheritance mechanism was built here.
 **Done when:** the four attrs plus hide-on-scroll are tri-state objects; an audit of both dev
-sites shows no instance left carrying the old flat shape.
+sites shows no instance left carrying the old flat shape. — **MET** for the four behaviour attrs;
+hide-on-scroll is covered by `headerHideOnScroll` in the same reshape.
 
 #### FR-37-15 — Behaviours emit scoped CSS, not body classes
 Behaviour styling is emitted as scoped `#uid` rules (including `@media` tiers), per Spec 32.
 The body-class mechanism is retired or reduced to a JS-state signal only.
-**Status:** `NOT-BUILT` — currently body-class driven
-(`class-sgs-header-behaviours.php:23-30`).
+**Status:** `PARTIAL` (was `NOT-BUILT`; upgraded by the FR-37-14 build, `e4bd72ef`+`eb255f06`,
+2026-07-28). `headerSticky`/`headerTransparent`/`headerShrink`/`headerHideOnScroll` now emit
+`#uid`-scoped per-tier `@media` CSS via `sgs_emit_tier_rules()` — the body-class mechanism for
+these four is retired (`class-sgs-header-behaviours.php` docblock, line 3: "Sticky / transparent /
+shrink / hide-on-scroll are RESOLVED AND EMITTED ELSEWHERE… per-instance scoped CSS"; scroll-state
+classes in `view.js` stay tier-agnostic JS-state signals only, per the FR-37-15 intent). `contrastSafe`
+is **explicitly untouched by T1.4** (kept as an enum shape, D402 gate) and still drives real
+styling via body classes (`header-behaviours.css:69-98`,
+`.sgs-header-behaviour-contrast-{scrim,shadow,force-solid}`) — this one attribute remains
+body-class-driven CSS, not scoped `#uid` CSS.
 **Done when:** no header behaviour renders an inline `style=""` declaration, and the emitted
-CSS is scoped to the block uid.
+CSS is scoped to the block uid. — met for the four tri-state behaviours; open for `contrastSafe`.
 
 ### Data model and controls
 
@@ -1425,13 +1444,13 @@ by hand-editing the value and confirming NO shape shows as active.
 | Sticky model — HEADER-level, rows collapse (FR-37-40) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` D391 + `494e5d50` D392) — per-row `position:sticky` REJECTED on the short-parent trap (D389); offset chain deliberately not built; footer rows get no sticky (→ Spec 18). Scroll-padding publisher gated on MEASURED pinning, explicit `0px` otherwise, negative-control-verified. Collapse-when-pinned: gap = **0.00** unrounded at desktop/tablet/mobile; non-pinned path byte-identical `translateY(-100%)` with no inline height; header re-publishes its shrunken height (92→68px) for free. Sticky-breaking-ancestor guard warns, advisory only. D4 multi-sticky warning + sticky↔hide-on-scroll exclusion deliberately NOT built (both specified against the rejected per-row model). Not live-verified: `prefers-reduced-motion` |
 | Never-overflow (FR-37-12) | `✅ LIVE-VERIFIED 2026-07-23` — `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
-| sticky / transparent / shrink | `BUILT` (flat, pre-tri-state) |
+| sticky / transparent / shrink | `BUILT` — reshaped tri-state 2026-07-28, see FR-37-14 row below (superseded the earlier flat shape) |
 | hide-on-scroll + transparent + shrink (FR-37-13) | `✅ SHIPPED + LIVE-VERIFIED` (D376, 2026-07-24) — fix B landed: `sgs/site-header` renders a semantic `<header>`; view.js + all 21 `header-behaviours.css` selectors retargeted to `header.sgs-site-header`. Live on the canary (CPT 1655): scroll-down hides (`translateY(-119px)`), scroll-up returns; one banner landmark; F1 publisher revived; axe zero NEW hit. Plus Option B one-header guard + editor `<header>`. See FR-37-13 above |
 | Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
 | Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
 | Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |
-| Tri-state shape (FR-37-14) | `NOT-BUILT` |
-| Scoped behaviour CSS (FR-37-15) | `NOT-BUILT` |
+| Tri-state shape (FR-37-14) | `✅ BUILT + LIVE-VERIFIED 2026-07-28` (`e4bd72ef`+`eb255f06`) — all 4 behaviour attrs reshaped to tri-state objects on the canonical `resolveTier()` cascade; single-writer merged `@media` emission; rows unified onto `sgs_resolve_on_tiers()`; `sgs_resolve_tier_booleans()` DELETED |
+| Scoped behaviour CSS (FR-37-15) | `PARTIAL` (upgraded 2026-07-28) — sticky/transparent/shrink/hide-on-scroll now `#uid`-scoped per-tier CSS via `sgs_emit_tier_rules()`; `contrastSafe` still body-class-driven (deliberately untouched by T1.4) |
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
 | Starter library (FR-37-8) | `✅ DONE for header/footer` (D377, 2026-07-24) — 14 header/footer starters + 2 scratch shells scoped `core/post-content` + `Post Types:`, surfaced by the FR-37-7 native picker; applying one writes its tree to `post_content` (live-verified). Mega starters NOT-BUILT (Task 3) |
 | Starter picker (FR-37-7) | `✅ BUILT + LIVE-VERIFIED for header/footer` (D377, 2026-07-24; **re-verified properly 2026-07-27, D393**) — WP's NATIVE "Choose a pattern" modal (no bespoke UI); new `sgs_header`/`sgs_footer` each open it with 8 preview cards + a "Start from scratch" card. ⚠ **D377's evidence was INVALID and is superseded:** it banked "chosen card writes the block tree to `post_content`" on the saved post carrying the right `metadata.patternName` — it did, while the tree BENEATH it had been overwritten by the container's own template (D393). The claim is now true, but only since `ae9b1db4`; the 2026-07-24 verification checked metadata, not children. Mega deferred to Task 3 (needs ≥2 mega starters). Custom React picker = non-blocking extension FR-37-36 |

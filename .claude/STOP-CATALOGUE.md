@@ -292,6 +292,51 @@ points here. Neither ever silently drops a STOP.
   text contrast, or read an unsettled transition value; Grep can render `/*` as `\*`.
   Verify the probe before the conclusion. (`~/.claude/rules/measurement-vs-eye.md`.)
 
+- **STOP-RENDER-INJECTORS-MUST-ANCHOR-PAST-THE-LEADING-SCOPED-STYLE** — NEW 2026-07-28
+  (Spec 35 build-surface close-out). A `render_block` injector that assumes "the first tag in
+  the markup is the block root" and writes its payload there will land it INSIDE the Spec-32
+  leading scoped `<style>` block whenever one is present — and the p99 lift pass then STRIPS
+  that whole `<style>` block on its way to `uploads/sgs-css/`, erasing the injection AND the
+  evidence it ever ran (no error, no console warning — the feature is just quietly dead).
+  Proven live across FOUR injectors this session (hover-effects, animation, parallax,
+  image-controls) — each had to be fixed to anchor past the leading `<style>` before writing.
+  The same bug had a second, subtler cost: chasing it down exposed that the earlier-claimed
+  D346 "inline-zero win" was PARTLY VACUOUS — some of the inline CSS-variable writes it
+  declared "moved to scoped rules" had in fact been silently deleted by this exact mechanism,
+  so the feature they drove was inert, not merely relocated. Never trust "the injector ran" as
+  evidence the payload survived to the page — verify the COMPUTED value on the live rendered
+  element, not the presence of injector code. Sibling of STOP-MEASURE-THE-STATE-NOT-THE-FLAG
+  and STOP-GREEN-BUILD-IS-NOT-EVIDENCE. Memory: the injector-vars-route-through-scoped-rules fix
+  at `helpers-scoped-instance-vars.php` is the corrected pattern to copy for any NEW injector.
+
+- **STOP-A-SHARED-WRAPPER-READING-A-GENERIC-ATTR-NAME-COLLIDES-WITH-BLOCK-VOCABULARY** — NEW
+  2026-07-28 (Spec 35 build-surface close-out, post-grid squish). `SGS_Container_Wrapper` reads
+  a GENERIC attribute name (`layout`) off whatever block calls it to decide whether to apply
+  grid CSS. `sgs/post-grid` also owns an attribute literally named `layout` — but for its OWN
+  vocabulary (a query/display-mode enum, nothing to do with CSS grid). The wrapper had no way to
+  tell the two apart, read post-grid's `layout` value as a grid instruction, and double-gridded
+  the block (its own grid CSS stacked with the wrapper's, producing the visible squish). This
+  was found ONLY after ruling out the more visible defensive `auto-fit`/`minmax` layer as a red
+  herring — the attr-name collision was the REAL cause underneath it. **Rule: before a shared
+  wrapper/helper reads ANY attribute off a consuming block by a generic name, check whether that
+  block already owns a key of the same name for its OWN purpose; strip/rename block-vocabulary
+  keys before delegating to the wrapper, never let the wrapper guess from a bare name.** Sibling
+  of STOP-A-GATE-BORROWING-ANOTHER-TOOLS-EXCLUSION-LIST-INHERITS-ITS-BLIND-SPOT (same shape: a
+  shared mechanism silently inherits meaning from a namespace it doesn't own).
+
+- **STOP-CHAINED-SHELL-COMMANDS-MASK-A-FAILED-STAGE** — NEW 2026-07-28 (near-miss at commit
+  `07c67642`). An `&&`-chained build-then-push shell command reports overall exit 0 as long as
+  the LAST stage in the chain succeeds — a failed intermediate build stage can be swallowed if a
+  later stage (e.g. the git push) still runs and exits clean, or if the chain's final command
+  masks an earlier non-zero code. This was caught as a near-miss, not a shipped defect: the build
+  had actually failed but the push still proceeded, discovered only by re-checking the individual
+  stage output rather than trusting the chain's aggregate exit code. **Rule: guard each stage's
+  exit code EXPLICITLY** (`cmd1 && echo "stage1 OK" || exit 1`, or separate commands with an
+  inline check between them) rather than relying on a long `&&` chain's overall result — this is
+  especially load-bearing on a deploy/build/push sequence where a masked failure ships stale or
+  broken code while looking green. Sibling of STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT (the
+  git-side twin: a green local step is not proof of the remote state either).
+
 ---
 
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
@@ -709,3 +754,19 @@ for real before claiming done?
   in the mini-design's OWN §4 — a list already rewritten once for exactly this reason — survived
   the rejection of the model they were written for, and would have shipped a warning for a state
   that can no longer occur.
+- **2026-07-28 (Spec 35 build-surface close-out / T3/T4 wave + injection-class arc) re-run:**
+  previous DEFINED entries = **82** (re-measured with this file's OWN canonical command
+  immediately before writing — never carried forward). This session ADDED 3
+  (`STOP-RENDER-INJECTORS-MUST-ANCHOR-PAST-THE-LEADING-SCOPED-STYLE`,
+  `STOP-A-SHARED-WRAPPER-READING-A-GENERIC-ATTR-NAME-COLLIDES-WITH-BLOCK-VOCABULARY`,
+  `STOP-CHAINED-SHELL-COMMANDS-MASK-A-FAILED-STAGE`) and SUBTRACTED **none** → **85**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **85**. 85 >= 82. PASS. All three earned by something that actually happened today: four
+  `render_block` injectors (hover-effects/animation/parallax/image-controls) landed payloads
+  inside the Spec-32 leading scoped `<style>` block, which the p99 lift then stripped — erasing
+  both the injection and the evidence, and exposing that an earlier "inline-zero win" claim
+  (D346) was partly vacuous because the same mechanism had silently deleted inline var writes;
+  `SGS_Container_Wrapper` reading the generic attr name `layout` collided with `sgs/post-grid`'s
+  own `layout` vocabulary and double-gridded the block; and an `&&`-chained build-then-push
+  command's overall exit 0 masked a failed intermediate build stage at commit `07c67642`, caught
+  only by re-checking the individual stage output rather than the chain's aggregate result.

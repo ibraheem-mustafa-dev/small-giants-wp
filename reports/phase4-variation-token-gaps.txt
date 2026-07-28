@@ -1,8 +1,8 @@
-# Stage 4 Style Variation Sync — 2026-07-21 17:34:49 UTC
+# Stage 4 Style Variation Sync — 2026-07-28 21:13:40 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 3 | Inserted: 0 | Skipped: 126 | Conflicts: 115
+Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 126 | Conflicts: 115
 
 ## Per-client results
 
@@ -38,6 +38,10 @@ Inserted: 0 | Skipped: 5 | Conflicts: 14
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1a4139') → inserted as helping-doctors-color-footer-bg
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-heading
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-body
+
+### Indus Foods Mega Menu Design
+
+_(theme-snapshot.json not found)_
 
 ### indus-foods
 
@@ -83,6 +87,10 @@ Inserted: 0 | Skipped: 20 | Conflicts: 22
 - CONFLICT: spacing-60 (framework='2rem', client='3rem') → inserted as mamas-munches-spacing-60
 - CONFLICT: spacing-70 (framework='3rem', client='5rem') → inserted as mamas-munches-spacing-70
 - CONFLICT: spacing-80 (framework='4rem', client='8rem') → inserted as mamas-munches-spacing-80
+
+### Mega-menu design
+
+_(theme-snapshot.json not found)_
 
 ### sgs-construction
 

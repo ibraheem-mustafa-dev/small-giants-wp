@@ -135,15 +135,16 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     Approved contract: `plans/2026-07-28-resolveTier-cascade-design-gate.md` (D400).
   - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
     the build.
-  - **⚠ BUILD STATUS: NOT BUILT as the canonical shared mechanism — and it is on the CRITICAL PATH
-    for Spec 37 Group B (priority; re-ground-truthed 2026-07-28).** The canonical name
-    `resolveTier()` exists nowhere, BUT a functionally equivalent cascade DOES exist under other
-    names and must be unified, not duplicated: JS `resolveResponsiveTier(obj,tier)`
-    (`src/utils/responsive.js:69`, mobile→tablet→desktop fallthrough, returns `{value,inherited}`),
-    PHP `sgs_resolve_tier_booleans()` (`includes/helpers-responsive.php:589`, boolean-only), and the
-    tri-state UI `src/components/ResponsiveOverride.js` — adopted only by `site-header-row` +
-    `site-footer-row`. What is missing: the canonical name, a GENERIC (non-boolean) PHP resolver, a
-    golden JS↔PHP agreement test, and framework-wide adoption.
+  - **✅ BUILD STATUS: BUILT + LIVE-PROVEN (2026-07-28, same day as the D400 approval).** The
+    canonical `resolveTier()` shipped in JS (`src/utils/responsive.js`, with `resolveResponsiveTier`
+    now a thin alias) + PHP (`sgs_resolve_tier()`, `helpers-responsive.php`) with ONE shared 16-case
+    golden fixture set passing 16/16 in BOTH runtimes (`b9c5f6d1`); the scoped per-tier emission
+    helper (`sgs_emit_tier_rules`, 9/9 goldens) + `ResponsiveTriStateControl` followed (`ac0c30eb`);
+    FR-37-14's site-header reshape consumed it and was proven live at 3 viewports incl. explicit-off
+    override + sticky+transparent coexistence (`e4bd72ef`→`eb255f06`); rows unified onto the same
+    vocabulary (legacy `sgs_resolve_tier_booleans` DELETED). Per D400/D405, general block VISIBILITY
+    remains EXCLUDED (see the amended scope note above) — the §3.8 header-CONTENT cascade feature
+    is a separate, still-open consumer owned by Spec 37.
     `src/blocks/extensions/responsive-visibility.js:68-70` is still three
     INDEPENDENT flat booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no
     inheritance. Because this cascade and its shared `resolveTier()` are the SAME mechanism that
@@ -228,18 +229,18 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`) | DONE (Wave 1.1) |
 | Normal/Hover state | `StateToggleControl` EXISTS (2026-07-18) | roll out to stateful blocks |
 | Extension opt-out | `hideExtensions` EXISTS (2026-07-18) | — |
-| **Shadow builder** | `ShadowControl` **BUILT** (X/Y/blur/spread/colour+alpha/inset + theme presets; `src/components/ShadowControl.js`; first-render crash FIXED in-file) — 3 consumers (brand-strip, card-grid, team-member) | **ROLL OUT** to the ~9 blocks with hand-rolled shadow attrs |
-| **Link/CTA** | `SgsLinkControl` **BUILT** (`src/components/SgsLinkControl.js`, stable `LinkControl`, `{url,opensInNewTab,rel}` + auto-noopener; PHP `sgs_link_attributes()`) — 1 consumer (brand-strip); 13 blocks still raw URL TextControls | **ROLL OUT** (migration batch in flight 2026-07-28) |
-| **Bulk media/gallery** | **MISSING** (`MediaPicker` single) | **BUILD** `MediaGalleryPicker` (`multiple="add"`+`gallery`) |
-| **Focal point / image size / aspect-ratio** | **partial** (`imageControls`) | **EXTEND** `imageControls` to size+aspect+object-fit+focal |
-| **Gradient / bg overlay** | **MISSING** | adopt `GradientPicker` + pseudo-element overlay |
-| **Spacing token control** | raw units | adopt `SpacingSizesControl` where tokens apply |
-| ToolsPanel disclosure | only `site-header` | adopt for control-dense panels |
-| **Client-safe editing** | **unused** | adopt `templateLock:"contentOnly"` in patterns |
-| **Dynamic content** | check for bespoke | build new on **Block Bindings** |
-| **Reduced-motion gate** | verify on animation ext | ensure every animation gated |
-| **Whole-card link** | **MISSING** | build overlay-`<a>` block-link pattern (extend `sgsBlockLink`) |
-| Native duotone/aspectRatio/sticky | verify not hand-rolled | prefer native supports |
+| **Shadow builder** | `ShadowControl` **BUILT + ROLLED OUT** (X/Y/blur/spread/colour+alpha/inset + theme presets; `src/components/ShadowControl.js`) — consumers now incl. testimonial `shadowHover`, trust-bar `iconCircleShadow`/`badgeImageShadow` (`b9c5f6d1`, 2026-07-28) | DONE (Wave 1) |
+| **Link/CTA** | `SgsLinkControl` **BUILT + ROLLED OUT** (`src/components/SgsLinkControl.js`) — card-grid, media (4 fields), product-card (3 CTAs), trust-bar item links migrated (`ac0c30eb`, 2026-07-28); raw-url-link WARNs 40→0 (2 reasoned EXC exemptions remain) | DONE (Wave 1) |
+| **Bulk media/gallery** | **BUILT** — `MediaGalleryPicker` extracted from `gallery/edit.js`, both call sites swapped (`07c67642`, 2026-07-28) | DONE (Wave 2) |
+| **Focal point / image size / aspect-ratio** | **BUILT** — FocalPointPicker `{x,y}`, object-fit via scoped var; image-size dropdown ruled NOT-FORCIBLE at extension level (no universal attachment ID, documented) (`07c67642`) | DONE (Wave 2) |
+| **Gradient / bg overlay** | **BUILT** — `GradientOverlayControl`, one shared `BackgroundPanel` covers container/cta-section/hero (`07c67642`) | DONE (Wave 2) |
+| **Spacing token control** | raw units | still open — not part of the 2026-07-28 waves; not gated by Part K |
+| ToolsPanel disclosure | **BUILT + ROLLED OUT** — 23 panels converted across 19 blocks, 8 skip-reasoned in-code (`07c67642`+`f5fac495`) | DONE (Wave 2) |
+| **Client-safe editing** | `templateLock:"contentOnly"` resolved **PER-CLIENT OPT-IN ONLY** (D402 design gate, Part G) | Not a framework rollout — deliberate, not a gap |
+| **Dynamic content** | check for bespoke | still open — not part of the 2026-07-28 waves |
+| **Reduced-motion gate** | verify on animation ext | still open (1 known gap, unchanged) |
+| **Whole-card link** | **BUILT** — stretched-link overlay (sibling overlay + aria-label + focus ring; nested-`<a>` impossible by construction) replaces the old whole-block `sgsBlockLink` wrap; team-member + info-box dead attrs deleted (`07c67642`) | DONE (Wave 2) |
+| Native duotone/aspectRatio/sticky | duotone + aspectRatio **ADOPTED native** on media/gallery (D402 verdict table, `ac0c30eb`); shadow/minHeight/sticky/gallery-lightbox **KEPT SGS** (deliberate) | DONE (Wave 3) |
 
 ## PART J — Prioritised upgrade roadmap (sequenced)
 
@@ -282,10 +283,13 @@ on every MediaUpload · [ ] no native-supports panel duplicated · [ ] native su
 + ARIA-label where needed · [ ] keyboard + contrast + `aria-describedby` a11y pass · [ ] client patterns
 use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 
-## PART M — Implementation status (living; updated 2026-07-22)
+## PART M — Implementation status (living; updated 2026-07-28)
 
-**The STANDARD (Parts A–L) is COMPLETE as a written spec (v2.0).** What follows tracks BUILD
-against it — a standard is not "done" until blocks meet it and a gate enforces it (Part K).
+**The STANDARD (Parts A–L) is COMPLETE as a written spec (v2.0). The BUILD SURFACE against it is
+now ALSO COMPLETE (`07c67642` → `64f5080e`, late 2026-07-28, ~18 delegate-routed packages across
+waves A+B + the Bean-eye/QC fix chain — see the dated completion block below). Spec 35 has no
+remaining build items; the standard is both written AND enforced (Part K gate promoted
+fail-closed, `51ff7c27`).**
 
 **Measurement & enablement layer (makes Part L enforceable) — SUBSTANTIALLY BUILT:**
 - **Element-manifest conformance linter** (`plugins/sgs-blocks/scripts/check-element-manifest-
@@ -311,46 +315,57 @@ against it — a standard is not "done" until blocks meet it and a gate enforces
   2026-07-23** — not reproduced (Playwright 20/20); already fixed at `d5416ae8`; Bean's report was a
   stale cached editor bundle. Parking entry archived (`memory/parking-archive.md`).
 
-**Roadmap (Part J) — BUILD status (re-ground-truthed 2026-07-28; full close-out plan approved
-by Bean — see `~/.claude/plans/please-read-through-all-hashed-wreath.md`):**
-- **Exists:** `ResponsiveControl`/`ResponsiveBoxControl` (47 files), `TypographyControls` (22),
-  `DesignTokenPicker` (**alpha+clearable BUILT, Wave 1.1 DONE**), `StateToggleControl`,
-  `hideExtensions`, `ShadowControl` (**BUILT**, 3 consumers), `SgsLinkControl` (**BUILT**,
-  1 consumer), `ResponsiveOverride` tri-state UI (2 row blocks), Block Bindings (2 registered
-  sources), reduced-motion gating broad (82 files, 1 known gap).
-- **Wave 1 remaining = ROLLOUT, not build:** `SgsLinkControl` migration (13 blocks raw URL;
-  batch in flight 2026-07-28), `ShadowControl` swap-in (9 blocks; batch in flight),
-  `templateLock:"contentOnly"` (zero uses — now a DESIGN GATE per Bean 2026-07-28, D377/D378
-  precedent must be designed around, not ignored).
-- **Wave 2 / 3 NOT started:** `MediaGalleryPicker` (extract from `gallery/edit.js:311`),
-  extended `imageControls` (has 1 of 4 features), overlay-anchor whole-card link (current
-  universal `sgsBlockLink` wraps the WHOLE block in `<a>` — nested-`<a>` risk; team-member
-  carries unreachable render-only blockLink attrs), ToolsPanel rollout (~2 blocks + 1 shared
-  component), shared GradientPicker overlay (designed in `setting-registry.json:969-991`),
-  decorative-image toggle + universal ARIA-label control, native supports adoption (zero
-  duotone/aspectRatio/minHeight/sticky/shadow — now a DESIGN GATE vs Spec 32 no-inline).
-- **Part K structural gate: script BUILT, promotion NOT done** —
-  `scripts/audit-inspector-conformance.js` implements all 6 rules (colour-no-alpha,
-  raw-url-link, media-upload-no-check, preset-only-shadow, animation-no-reduced-motion,
-  dense-panel-candidate) but is WARN-ONLY and NOT in the prebuild chain; baseline empty;
-  12 WARNs at 2026-07-28 (10 raw-url, 1 MediaUploadCheck, 1 reduced-motion). Promote to
-  fail-closed once WARNs = 0.
-- **Per-device CONTENT cascade (D4) + canonical shared `resolveTier()` — NOT BUILT — PRIORITY,
-  blocks Spec 37 Group B** (re-ground-truthed 2026-07-28: canonical name absent, but see the D4
-  BUILD STATUS note — `resolveResponsiveTier`/`sgs_resolve_tier_booleans`/`ResponsiveOverride`
-  already implement the cascade for 2 row blocks and must be UNIFIED under the canonical contract,
-  not duplicated; `responsive-visibility.js` still three
-  flat booleans; `site-header` behaviours still flat booleans). Spec 37 **FR-37-14** (behaviour
-  tri-state) and **§3.8** consume this exact mechanism and are blocked until it ships (see Part D4's
-  BUILD STATUS note). This is the one Spec-35 build item currently gating Spec 37 — sequence it
-  ahead of the other Part-J waves when Spec 37 Group B is picked up. FR-37-16 (responsive object
-  shape) is NOT blocked — `ResponsiveControl` already exists; FR-37-18 (inspector conformance) is
-  NOT blocked — Part L is written-complete and `check-element-manifest-conformance.js` is built
-  (the two containers just need adding to the manifested roster).
+**Roadmap (Part J) — BUILD status: COMPLETE (2026-07-28, `07c67642` → `64f5080e`).** All three
+waves shipped same day; the plan referenced in earlier revisions
+(`~/.claude/plans/please-read-through-all-hashed-wreath.md`) executed in full:
+- **Wave 1 (rollout) — DONE.** `SgsLinkControl` migrated across all raw-URL fields (card-grid
+  item links, media 4-field, product-card 3 CTAs, trust-bar item links, brand-strip — `ac0c30eb`);
+  raw-url-link WARNs 40→0 (2 reasoned config-URL exemptions remain, tagged EXC). `ShadowControl`
+  rolled out (testimonial `shadowHover`, trust-bar `iconCircleShadow`/`badgeImageShadow` —
+  `b9c5f6d1`). `templateLock:"contentOnly"` resolved as **PER-CLIENT OPT-IN ONLY** (D402 design
+  gate, Part G table) — not a framework-pattern rollout; not a gap.
+- **Wave 2 — DONE (`07c67642`).** `MediaGalleryPicker` extracted from `gallery/edit.js` (both
+  call sites swapped). `imageControls` extended: FocalPointPicker `{x,y}`, object-fit via scoped
+  var, image-size dropdown ruled **NOT-FORCIBLE at extension level** (no universal attachment ID —
+  documented, not a gap). Whole-card link rebuilt as a **stretched-link overlay** (sibling overlay
+  + aria-label + focus ring; nested-`<a>` impossible by construction — replaces the old
+  whole-block-wrap risk; team-member + info-box dead `blockLink` attrs deleted,
+  `.sgs-block-link-wrapper` now 0 occurrences repo-wide). ToolsPanel rollout: 23 panels converted
+  across 19 blocks, 8 skip-reasoned in-code (mode wizards/repeaters/variant-gated — product-card
+  ×3, card-grid, testimonial-rating, trustpilot-repeater, hero-image wizard). Shared
+  `GradientOverlayControl` built (one `BackgroundPanel` covers container/cta-section/hero).
+  Decorative-image toggle + button aria-label chain fixed.
+- **Wave 3 (native-adopt) — DONE per the D402 per-support verdict table** (`ac0c30eb`, Part G):
+  duotone + aspectRatio **ADOPTED native** on media/gallery (skip-serialised + scoped;
+  `dimensions.aspectRatio` verdict evidenced from core source — core inlines unconditionally,
+  hence skip-serialise); shadow/minHeight/sticky/gallery-lightbox **KEPT SGS** (deliberate, not a
+  gap — SGS exceeds the native equivalent in each case).
+- **Part K structural gate: PROMOTED fail-closed (`51ff7c27`).** `audit-inspector-conformance.js`
+  gained `--check` mode (exits 1 on any non-exempt WARN; missing roster also fails) and is wired
+  as the final prebuild step. Promotion condition was measured, not asserted: 0 WARN-severity
+  findings after the Wave-1 link/shadow migrations. Negative-control proven live: an injected
+  raw-url `TextControl` killed `npm run build` (exit 1) with remediation guidance, then reverted
+  clean.
+- **Per-device CONTENT cascade (D4) + canonical shared `resolveTier()` — BUILT (`b9c5f6d1`,
+  T1.1, then `ac0c30eb`/`e4bd72ef`/`eb255f06`, T1.2–T1.4).** Canonical `resolveTier()` now exists
+  in both runtimes (JS `src/utils/responsive.js`, PHP `sgs_resolve_tier()`), one shared 16-case
+  golden fixture, 16/16 both runtimes; `resolveResponsiveTier` is now a thin alias (no fork).
+  `ResponsiveTriStateControl` + `sgs_emit_tier_rules()`/`emitTierRules()` (single-writer scoped
+  per-tier `@media` emission, 9/9 golden both runtimes) consume it. Spec 37 **FR-37-14** (behaviour
+  tri-state) is built and live-proven on this exact mechanism — **Spec 37 Group B is UNBLOCKED**.
+  `responsive-visibility.js`'s three independent flat booleans are **deliberately excluded** from
+  this cascade (D400 scope amendment, Bean-ruled 2026-07-28 — general block visibility keeps its
+  own per-device toggles; see Part D4 above). `sgs_resolve_tier_booleans()` (the old boolean-only
+  PHP resolver) was **DELETED** — 0 consumers once the rows migrated onto the canonical resolver.
 
 **Also outstanding across the board:** editor-CANVAS verification — everything to date verified
 by frontend render + REST attribute registration, never by opening the block editor
 (`ShadowControl` precedent: crashed on first live render despite 180 passing unit tests, R-31-13).
+**OPEN (parked, none blocking Spec 35):** `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` (Track 2, not
+this spec) · `P-NO-INLINE-GATE-COVERAGE-GAPS` (gate canary page for var-driven features; see the
+Spec 32 amendment below) · `sgs-758` lifted-CSS MIME error (one-off, unchased) ·
+`HeaderBehavioursTest.php` needs a composer/PHPUnit env to execute · Shrink+Hide legacy-transition
+overlap on pre-animation-timeline browsers (documented, not speculatively fixed).
 
 ## Sources
 

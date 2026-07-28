@@ -7,8 +7,16 @@ project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-07-26
+last_verified: 2026-07-28
 status_history:
+  - 2026-07-28: §6.2(a) amended — the injection-class discovery (`f7da5f33`→`a367836b`): four
+    `render_block` injectors wrote past the p99 lift's leading-`<style>` assumption, silently
+    stripping their own output AND their inline `--var` writes (partly voiding the D346
+    inline-zero claim on hover/animation/parallax/image-controls). Fixed via a new shared helper
+    (`helpers-scoped-instance-vars.php`); all injectors + the last render-level writer
+    (team-member) now route through scoped rules, live-proven. Parked gate-coverage gap:
+    `P-NO-INLINE-GATE-COVERAGE-GAPS` (no canary page exercises these instances; 3 non-injector
+    inline writers un-triaged).
   - 2026-07-26: v1.4 — no-inline rollout RE-VERIFIED complete (D385). An 11-condition DONE audit (`.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`) confirmed 0 inline-via-render / 0 supports lacking skip-serialization / 0 box-family violations / 0 dead controls across accessible blocks; the `check-element-manifest-conformance.js` GAP count is semantic noise, NOT a work-remaining signal (100%-DONE exemplars carry 23–151 GAPs). Closed the 5 genuine residuals: product-card stale-F3 dead-code, feature-grid device-tier breakpoints, + content-collection/pricing-table/form false-flags via a new element-aware F3-gate exemption (E13, `check-hardcoded-render-defaults.js`: wrapper-root gridTemplateColumns/gap literals on BEM `__sub-elements` are exempt). F3 baseline now = `sgs/mega-menu` (Track 2) only.
   - 2026-07-18: v1.3 — FR-32-4 amended to FORBID inline `--var` (`style="--sgs-…:…"`); per-instance override values MUST emit as a scoped `.{uid}.{block}{--var:…}` rule via the collector, aligning FR-32-4 with the already-newer §6.1(e) + Spec 31 FR-31-22.3. Also tightened FR-32-1 done-when + §8 acceptance row (count ANY `style` content, not just property declarations) and §5/§6 flow-diagram (scoped, not inline `--var`). Closes footprint GOTCHA E (permissive outlier) + GOTCHA F (`[style*="--var"]` selector break). D345. Opens the framework-wide inline-zero rollout (`plans/2026-07-17-phase-inline-zero-rollout.md`).
   - 2026-07-07: v1.0 — initial spec. Restores + generalises the pre-D283 token/class design (Spec 11 Decision 24) as a framework-wide contract; supersedes the D283 preset-as-seed inline-attr model for styling.
@@ -192,6 +200,36 @@ Consistent with FR-32-4: a per-instance override on a box-object property is a C
 ### (a) The collector — `includes/class-sgs-css-registry.php` (BUILT + LANDED 2026-07-12)
 Implemented as a **single `render_block` chokepoint**, NOT ~60 per-block emit-site edits: a late (`priority 99`) `render_block` filter lifts every `<style>` tag out of each `sgs/*` block's rendered HTML into a per-request buffer (`sgs_collect_css`, deduped by content hash, insertion order preserved for D303 residual-last). This captures all 6 emit shapes the `/qc-council` found — including the container wrapper's prepended tag and `custom-css.php`'s appended residual — **without touching either file**, and is inherently universal (R-31-9). Chosen over the emit-site audit because it dissolves the 6-shapes risk entirely.
 - **Editor split (CRITICAL, live-verified):** the lift filter + the head buffer are gated to a genuine front-end render via `sgs_is_frontend_render()` = `! is_admin() && ! wp_is_serving_rest_request()` (WP 6.5+; the naive `! is_admin()` is WRONG — false during REST — which would strip the ServerSideRender editor previews' `<style>` into a buffer that never emits → unstyled canvas). Proven live: the block-renderer REST route (`context=edit`) keeps the block's `<style>` inline; the frontend consolidates.
+
+> **⚠ Amendment, 2026-07-28 (`f7da5f33` → `a367836b`) — the injection-class discovery + fix.**
+> The p99 lift above assumes every `render_block` filter that writes into a block's markup
+> appends AFTER the leading scoped `<style>` tag. Several `render_block` injectors
+> (`hover-effects.php`, `animation-attributes.php`, `parallax.php`, `image-controls.php`) instead
+> assumed **first-tag-is-root** and inserted their class/attribute/overlay output INSIDE that
+> leading `<style>` string — which the p99 lift then silently **stripped along with the style
+> tag**, erasing both the injected markup and the evidence it ever ran. Found live via QC
+> (`f7da5f33`: the stretched-link overlay never fired on wrapper-styled blocks) and fixed by
+> skip-offsetting past the leading `style`/`script` tags before inserting.
+> Fixing the offset **resurrected** a second, deeper bug (`9702cf4a`): the same four injectors'
+> inline `style="--var:…"` per-instance writes had been silently vanishing into the stripped
+> `<style>` tag since the no-inline migrations — meaning (a) the D346 "inline-zero win" was
+> **partly vacuous** (the live gate had nothing to catch because the violating markup was already
+> being deleted before it could be inspected), and (b) those var-driven features (hover-effects,
+> parallax strength, image-controls object-fit) were **functionally dead** on every migrated
+> block. Completed properly with a new shared helper, `includes/helpers-scoped-instance-vars.php`
+> (reuse-or-mint a scope class + append a scoped `.{class}{--var:…}` rule to the collector, same
+> pattern as §6.1(e)), consumed by all three var-writing injectors; `parallax.js` swapped
+> `el.style` reads for `getComputedStyle` (cascade-aware). The last render-level inline writer,
+> `team-member` (block-private per D294, no wrapper), was migrated onto its own scoped rule in
+> `a367836b` — a roster sweep of all 8 `sgs_transition_vars()` consumers found the other 7 already
+> correct. Live-proven on the canary: root `style` attribute null, computed var still present via
+> the lifted CSS.
+> **Parked, not silently dropped — `P-NO-INLINE-GATE-COVERAGE-GAPS`:** (1) the live no-inline
+> gate's `CANARY_URLS` never exercised a hover/animation-attributed instance, so this whole defect
+> class passed the gate **vacuously** for the life of the D346 migration — fix is a permanent
+> seeded gate-canary page (not yet built). (2) three **non-injector** inline writers
+> (container-wrapper, post-grid-rest, shape-dividers) were flagged in the sweep but not yet
+> triaged/fixed.
 
 ### (b) Head placement + output modes (operator-selectable; BUILT + LANDED 2026-07-12)
 Delivery is a **single output buffer** (`template_redirect`) that places the consolidated CSS into the `<head>` (right before `</head>`, so it follows the block `style.css` links → per-instance overrides win by source order) on EVERY front-end render. Placing it every render makes the output **self-consistent under full-page caching** — the cached HTML always carries the matching link/style — so there is **NO pointer, NO cold/warm transition, and NO cache-freeze** (an earlier generate-then-serve design was **reproduced failing live under the LiteSpeed page cache 2026-07-12** — it froze the cold inline response — and replaced by this unified buffer). Two modes, chosen on **SGS → CSS Output** (`sgs_css_output_mode` option, default `file`; still `apply_filters`-able):

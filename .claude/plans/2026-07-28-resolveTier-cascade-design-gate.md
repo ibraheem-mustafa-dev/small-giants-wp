@@ -2,8 +2,16 @@
 
 ```
 doc_type: design-gate
-status: APPROVED (Bean, 2026-07-28, D400) — behaviours + responsive values + §3.8 header
-        content; general block VISIBILITY EXCLUDED (see §5). Build = T1.1 next session.
+status: BUILT+PROVEN (2026-07-28, same day as approval) — T1.1 canonical resolveTier core
+        16/16 both runtimes; T1.3 scoped-emission goldens 9/9 (of the extended 25/25 set,
+        both runtimes); FR-37-14 site-header behaviour tri-state reshape LIVE at 1440/900/375
+        viewports incl. explicit-off override + sticky+transparent coexistence; general block
+        VISIBILITY EXCLUSION (§5) honoured as designed — sgsHideOn* attrs untouched, no
+        reshape attempted. Was: APPROVED (Bean, 2026-07-28, D400) — behaviours + responsive
+        values + §3.8 header content; build was scheduled for "T1.1 next session" but shipped
+        the same session instead. Commits: `b9c5f6d1` (T1.1), `ac0c30eb` (T1.2/T1.3),
+        `e4bd72ef`→`eb255f06` (T1.4 FR-37-14). See `.claude/LEDGER.md` Track 1b for the full
+        narrative.
 consumers: Spec 37 FR-37-14 (behaviour tri-state), Spec 37 §3.8 (content cascade),
            Spec 35 D4 (responsive-visibility), Spec 36 FR-36-24 (per-tier settings guard),
            Spec 37 FR-37-16 (responsive value shape — already half-built as resolveResponsiveTier)

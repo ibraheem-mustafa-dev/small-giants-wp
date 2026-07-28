@@ -15,6 +15,42 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D405 [INCIDENT] — Spec 35 build surface COMPLETE; the injection-class discovery: D346's inline-zero was partly VACUOUS and var-features silently dead (2026-07-28)
+
+**Completion (waves A+B + fix chain, `07c67642`→`64f5080e`, all canary-deployed + live-verified):**
+T3/T4 shipped (MediaGalleryPicker · GradientOverlayControl · stretched-link overlay + `sgsBlockLinkLabel` ·
+decorative-image toggle + button aria-chain fix · imageControls focal/{x,y}+object-fit · native duotone
+media+gallery + native aspectRatio on media, skip-serialised+scoped, core-source-evidenced · ToolsPanel 23
+converted / 8 skip-reasoned in-code). Bean-eye defects fixed + live-PASSED: pricing dual markers (badge
+wins over ribbon) · inert billing toggle (**author-origin `display` beats UA `[hidden]` BY CASCADE ORIGIN,
+regardless of specificity** — the purest measure-the-state case yet; explicit `[hidden]` overrides) ·
+post-grid squish (two layers: defensive auto-fit/minmax + the REAL cause — **the wrapper generically read
+post-grid's own `layout` vocabulary as a container-grid instruction and double-gridded the block**; the
+wrapper no longer sees the key. LESSON: strip block-vocabulary keys before delegating to a shared wrapper).
+
+**THE INJECTION CLASS (load-bearing incident):** every render_block injector that assumed
+first-tag-is-root (hover-effects, animation-attributes, parallax, image-controls) wrote its payload INSIDE
+the Spec-32 leading scoped `<style>`, which the p99 CSS-lift then STRIPPED — erasing the injection AND the
+evidence. Consequences: (1) the stretched-link overlay never rendered (QC-caught); (2) **the D346
+"inline-zero win" was partly an accident of this bug** — the injectors' inline `style="--var"` writes were
+being silently deleted, so the gate passed while hover/animation/parallax var-features were functionally
+DEAD on wrapper-styled blocks. Completion: all four injectors anchor past leading style/script
+(device-visibility already had the fix); per-instance vars now route via
+`helpers-scoped-instance-vars.php` scoped rules (+ parallax.js `el.style`→`getComputedStyle` knock-on);
+the last render-level writer (team-member, block-private) migrated; **live-proven** (root `style` attr
+null, computed var still 300ms via lifted CSS; only legitimate RUNTIME JS vars remain — html/body
+measurements, `--mx/--my` spotlight, `--sgs-anim-easing` observer). Gate-coverage gap parked
+(P-NO-INLINE-GATE-COVERAGE-GAPS — CANARY_URLS never exercised var-driven instances; the pass was vacuous).
+
+**Cross-track unbreaks (2):** nav-drawer `100dvh`→`:where()` (D403's `panelSize` made an old literal an F3
+violation) · `variantPreset` enum transcribed from variations.js + **CONSCIOUS F6 baseline** of the
+6-of-7-empty-discriminator finding (Track 2 design surface — P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS
+carries the de-baseline condition; detect_variant is blind on drawer variants until closed).
+
+**Process lesson (near-miss `07c67642`):** an `&&`-chained shell pipeline's overall exit 0 masked a FAILED
+build while the push still ran; every subsequent pipeline carried an explicit `$LASTEXITCODE` guard
+between build and deploy — twice more it correctly refused to deploy. Full-day record: LEDGER Track 1b.
+
 ## D404 [ROUTINE] — Drawer variants BUILT + 9 council findings fixed pre-commit + Task-4 backdrop-close shipped; POC exact-content rule locked (2026-07-28)
 
 Commits `faa14924` (build) + `cab1b916` (docs/extraction) + `69dfbaf9` (Task 4), all pushed. Executes D403's approved shape. Build delegated (Sonnet, wp-sgs-developer); **pre-commit multi-rater council deliberately cross-model** (2 Opus raters + 1 Haiku conformance sweep — the generator was Sonnet): **9 confirmed findings fixed before commit**, headline ones: `surfaceOpacity:0` on 2 variations rendered an INVISIBLE panel (the extraction's "no solid fill — painted by a separate layered element" transcribed as zero; the WCAG foreground was being computed against a colour never painted); the editor shell faded the WHOLE subtree (`opacity`) while render.php fades only the fill (`color-mix`) — preview divergence at every translucent value; the FR-31-20 declaration was INERT (no `variantAttr`, no `isActive`, a slot map leaving 6/7 variants zero discriminating rows — fixed with a `variantPreset` attr consumed as a render class, resolving all three at once); desktop-only compact anchors CASCADED to phones via `sgs_resolve_tier` (anchored-card-stack now sets `tablet:'full-screen'` explicitly); 45–64px seeded type had no `itemFontSizeMobile`; "Panel transparency" label meant its own opposite; the panelSize sanitiser DESTROYED `calc()/clamp()` (swapped to the shared `sgs_responsive_sanitise_css_value`); the `header` anchor's offset was wrong in 2 of 3 header states (theme's unconditional `--sgs-header-height:80px` masks reality — the store now MEASURES the header's real bottom at open and writes `--sgs-drawer-header-offset` as a custom-property VALUE, the sgs/modal `--sgs-modal-scroll-y` pattern). Conformance 11/11. Default drawers verified property-identical live (page 1648) — visually identical, NOT byte-identical (uid hash + one untargeted class token changed; recorded honestly in `reports/visual-diff/nav-drawer-variants-2026-07-28.md`).

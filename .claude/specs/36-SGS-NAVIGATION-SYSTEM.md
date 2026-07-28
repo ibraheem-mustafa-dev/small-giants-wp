@@ -357,11 +357,14 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   2026-07-23 — do not re-litigate:** Spec 37 §3.8 previously said `labelCollapse` was "not carried forward as-is",
   directly contradicting this instruction and FR-36-23's. Bean's rule (keep an operator TOGGLE, bin an AUTOMATIC
   behaviour) settled it; code confirms it is a toggle (`button/edit.js:347`, `business-info/edit.js:88` — a
-  `SelectControl` defaulting to `'none'`), and the per-device cascade Spec 37 would have deferred to is Spec 35's
-  and is NOT BUILT. **`labelCollapse` is RETAINED**; Spec 37 §3.8 + §8.2 were amended in the same commit. Note the
-  two mechanisms are not interchangeable: the cascade HIDES an element at a tier, `labelCollapse` KEEPS the element
-  and its link while collapsing its label to icon-only. The `ResponsiveTriStateControl`
-  (on/off/inherit tri-state, P2 §4.1) is **DESIGNED-not-built** — an *optional upgrade*, NOT a blocker;
+  `SelectControl` defaulting to `'none'`), and the per-device cascade Spec 37 would have deferred to is Spec 35's.
+  *(Status corrected 2026-07-28, D400/D405: the cascade MECHANISM — canonical `resolveTier()` + tri-state control +
+  scoped emission — is now BUILT and live-proven, `b9c5f6d1`/`ac0c30eb`/`eb255f06`; the §3.8 header-CONTENT-hiding
+  FEATURE that would consume it remains open, and per D363's revisit condition `labelCollapse` should be re-tested
+  against it whenever that feature ships.)* **`labelCollapse` is RETAINED**; Spec 37 §3.8 + §8.2 were amended in the
+  same commit. Note the two mechanisms are not interchangeable: the cascade HIDES an element at a tier,
+  `labelCollapse` KEEPS the element and its link while collapsing its label to icon-only. The
+  `ResponsiveTriStateControl` (on/off/inherit tri-state, P2 §4.1) is **BUILT (2026-07-28, `ac0c30eb`)** — adopt it,
   never invent a parallel control (R-31-9). Full per-device model + ownership split: FR-36-24.
 
 ### FR-36-24 — Per-device content + settings (beside FR-36-8; Spectra-standard)

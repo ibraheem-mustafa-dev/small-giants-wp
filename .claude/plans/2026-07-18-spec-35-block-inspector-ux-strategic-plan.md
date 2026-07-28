@@ -8,6 +8,14 @@ status: DRAFT — awaiting Bean sign-off on Phase 0 (first slice)
 owner: framework
 ---
 
+> **STATUS UPDATE (2026-07-28, additive — the DRAFT status above is superseded, body below
+> untouched).** Spec 35's build surface is now COMPLETE — the full close-out ran as
+> `~/.claude/plans/please-read-through-all-hashed-wreath.md` (approved + executed same day) and
+> closed every remaining track including the `resolveTier()` cascade this plan's own Phase 0
+> anticipated. Canonical live status: `.claude/LEDGER.md` Track 1b ("SPEC 35 BUILD SURFACE
+> COMPLETE"). This macro-shape document is now historical context for HOW Spec 35 was scoped,
+> not a live plan — do not resume it as if Phase 0 is still pending sign-off.
+
 # Spec 35 — strategic plan (macro shape)
 
 ## Plain-English summary (read this first)

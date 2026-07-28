@@ -1,7 +1,9 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-07-27 (THREE verified cull passes this session — 34 entries archived in total, every removal checked against live code/git rather than its own prose; 31 stale claims corrected in place. Live entries: 150 (was 164 at session start, 181 before the first pass). Pass 3 used 4 parallel read-only verification agents over the 101 never-rechecked entries, with every load-bearing agent claim re-verified by hand before action — one agent claim was checked and REJECTED (it reported ~100 decision records as missing because it grepped for '## D<n>' headings while decisions-archive.md uses DATE-based headings). Recurring rot patterns found: entries citing the DELETED convert.py/converter_v2 tree, DELETED blocks (mobile-nav/adaptive-nav/mega-menu/announcement-bar), the RETIRED slot_synonyms table, DELETED Spec 17/22 FR IDs, the PURGED pixel-diff gate, and the BANNED deprecated.js pattern. Prior: 2026-07-27 (verified cull pass — 8 entries archived to memory/parking-archive.md after checking each claim against live code, not against its own prose: P-HEADER-BEHAVIOURS-DEAD-SELECTOR + P-HEADER-DOUBLE-SLOT-NEST + P-HEADER-EDITOR-TAG-PARITY (D376, re-verified in source), P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES (D380), P-CORE-STYLE-MAP-DB-MIGRATION (subject deleted with convert.py at c8690345/D274), P-TRUST-BAR-MERGE-VALIDATION + P-MEDIA-VIDEO-VALIDATION + P-SVG-BACKGROUND-MIGRATION-VALIDATION (all three superseded by D270 — zero deprecated.js in repo, source blocks deleted, media video attrs confirmed seeded). Corrected 2 stale instructions in place (P-PHASE8-9 named the retired slot_synonyms table; P-PHASE8-6's Approach named the BANNED core/navigation, contradicting its own What). Flagged 2 orphaned FR anchors (P-S17-D FR-S5-2, P-S17-G FR-S7-2 — Spec 17 was deleted at 9dbe94fd and the repoint missed this file; orphaned, NOT complete). Prior: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INSTANCE + P-ROW-COLLAPSE-RESIDUALS; FR-37-40 is COMPLETE so nothing from the sticky build is left unparked. Prior same day: D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
+last_updated: 2026-07-28 (Spec 35 close-out consistency sweep — added explicit **Trigger:** lines
+to P-DRAWER-BURGER-MORPH-SYNC + P-DRAWER-TRIGGER-ANCHOR-JS, both DEFERRED with no trigger stated;
+every other 2026-07-28 entry already carried Status+Bucket+Trigger. Prior: 2026-07-27 (THREE verified cull passes this session — 34 entries archived in total, every removal checked against live code/git rather than its own prose; 31 stale claims corrected in place. Live entries: 150 (was 164 at session start, 181 before the first pass). Pass 3 used 4 parallel read-only verification agents over the 101 never-rechecked entries, with every load-bearing agent claim re-verified by hand before action — one agent claim was checked and REJECTED (it reported ~100 decision records as missing because it grepped for '## D<n>' headings while decisions-archive.md uses DATE-based headings). Recurring rot patterns found: entries citing the DELETED convert.py/converter_v2 tree, DELETED blocks (mobile-nav/adaptive-nav/mega-menu/announcement-bar), the RETIRED slot_synonyms table, DELETED Spec 17/22 FR IDs, the PURGED pixel-diff gate, and the BANNED deprecated.js pattern. Prior: 2026-07-27 (verified cull pass — 8 entries archived to memory/parking-archive.md after checking each claim against live code, not against its own prose: P-HEADER-BEHAVIOURS-DEAD-SELECTOR + P-HEADER-DOUBLE-SLOT-NEST + P-HEADER-EDITOR-TAG-PARITY (D376, re-verified in source), P-ORACLE-CHECKLANDED-NEEDS-CANARY-FIXTURES (D380), P-CORE-STYLE-MAP-DB-MIGRATION (subject deleted with convert.py at c8690345/D274), P-TRUST-BAR-MERGE-VALIDATION + P-MEDIA-VIDEO-VALIDATION + P-SVG-BACKGROUND-MIGRATION-VALIDATION (all three superseded by D270 — zero deprecated.js in repo, source blocks deleted, media video attrs confirmed seeded). Corrected 2 stale instructions in place (P-PHASE8-9 named the retired slot_synonyms table; P-PHASE8-6's Approach named the BANNED core/navigation, contradicting its own What). Flagged 2 orphaned FR anchors (P-S17-D FR-S5-2, P-S17-G FR-S7-2 — Spec 17 was deleted at 9dbe94fd and the repoint missed this file; orphaned, NOT complete). Prior: 2026-07-26 (D391/D392 — added P-THEME-SCROLL-PADDING-SECOND-INSTANCE + P-ROW-COLLAPSE-RESIDUALS; FR-37-40 is COMPLETE so nothing from the sticky build is left unparked. Prior same day: D390 — added P-FLOATING-UI-BOTTOM-BARS; P-HEADER-SIMPLICITY-FINDINGS remains OPEN. Prior: 2026-06-13 (D222 — added P-CONVERTER-DE-LITERALISATION programme entry; no D222/D221/D220 work created resolvable parking entries — those shipped to main without pre-existing parked slots; Spec 30 COMPLETE but its follow-on parking entries (P-JSONLD-HEX-FLAG-GUARD, P-ORG-SCHEMA-SETTINGS-UI, P-VAT-ZERO-RATED-PRECISION) remain OPEN/DEFERRED)
 ---
 
 > **STANDARD PRACTICE (Bean-locked 2026-06-02):** this doc holds ONLY parked work — entries with `**Status:** OPEN | PARTIAL | BLOCKED | DEFERRED`. The MOMENT a task is **CLOSED / RESOLVED / DROPPED / SUPERSEDED**, MOVE it (verbatim, with completion date) to `memory/parking-archive.md` — do NOT leave it here. Enforce this every `/handoff` (Gate 4.5). Keeps parking concise + purposeful; prevents the balloon that hit 1,400+ lines.
@@ -45,12 +47,16 @@ last_updated: 2026-07-27 (THREE verified cull passes this session — 34 entries
 morph (the HEADER burger animating into × when the drawer opens) needs state-wiring between two
 independent block instances via `store('sgs/nav')`. NOT a GSAP/animation-library job (Bean asked,
 2026-07-28) — the motion is cheap CSS on the button spans; the missing piece is cross-block state.
-Documented in the shipped code comments + design doc.
+Documented in the shipped code comments + design doc. **Trigger:** next nav-drawer/Spec-36
+session that touches `store('sgs/nav')` — piggyback the cross-block wiring rather than opening
+a dedicated session for it.
 
 **P-DRAWER-TRIGGER-ANCHOR-JS** — **Status:** DEFERRED — **Bucket:** framework. The `trigger`
 anchor is a CSS top-right-corner approximation; the proper version measures the burger's real rect
 at open time and pins the panel to it (the `--sgs-drawer-header-offset` measure-and-write pattern
-shipped in D404 is the template). Pure geometry, no animation.
+shipped in D404 is the template). Pure geometry, no animation. **Trigger:** next nav-drawer
+session working on the `trigger` variant specifically, or when a client build surfaces a visible
+misalignment on a real header layout.
 
 **P-DRAWER-VARIANT-CONTENT-GENERICISE** — **Status:** DEFERRED (BLOCKS PRODUCTION, not POC) —
 **Bucket:** content. Design-gate doc §6: POC fixtures + seeded variation copy are EXACT clones of
@@ -274,6 +280,17 @@ memory/parking-archive.md. -->
 > `.is-header-scrolled` background declaration exists per tier and wins, live-verify the flip at
 > 1440. **Status: OPEN** · **Bucket:** Blocks · **Trigger:** next header/Spec-37 session (same
 > files as the Site Editor panel fix — cheap to fold in).
+
+> **P-MEGA-BLOCKS-MISSING-FROM-CONTAINER-ROSTER** — NEW 2026-07-28 (cross-track; OWNED BY
+> TRACK 2 / Spec 36). `/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py`) WARNS:
+> detection finds `sgs/mega-panel` (section-kind) + `sgs/mega-aside` + `sgs/mega-group`
+> (content-kind) as container-wrapping blocks, but they are absent from the script's expected
+> ground-truth roster — the sync fails closed before `--apply` (correct behaviour; diffs emitted
+> to `pipeline-state/container-inheritance-sync/2026-07-28/`). Declaring them in the expected
+> roster is a Track-2 design statement (composite-mirror scope, D152 lineage), not a mechanical
+> edit. **To close (Track 2):** confirm each mega block's KIND, add to the script's expected
+> roster, re-run Stage 11 clean. **Status: OPEN** · **Bucket:** Pipeline · **Trigger:** next
+> Spec-36 session or the next full `/sgs-update`.
 
 > **P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS** — NEW 2026-07-28 (cross-track; OWNED BY TRACK 2 /
 > Spec 36). D403 (`faa14924`) shipped 7 nav-drawer `variantPreset` variations with a
