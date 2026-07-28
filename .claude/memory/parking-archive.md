@@ -7,6 +7,91 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-07-29 (sixth pass) — eight closed after a full 151-entry live-code verification; the pass's real value was four FALSE CLAIMS found in entries that stay OPEN
+
+**Method.** Every one of the 151 entries was verified against live code, the DB, or a runnable
+gate by four parallel agents, under one rule: a DONE verdict requires POSITIVE evidence from the
+code — never the entry's own prose, never a `decisions.md` claim that something shipped, and never
+the absence of evidence. "I couldn't find the problem" mapped to UNVERIFIABLE, not DONE. Every
+verdict below was then re-verified by hand before the entry was moved.
+
+**Result, and it is worth recording: the register was overwhelmingly HONEST.** Of 151 entries only
+8 closed. Three of the four batches returned ZERO archivable entries — every checkable claim held
+up against live code exactly as written. The earlier assumption that a long parking file must be
+full of already-done work was wrong; it was full of real work buried in narrative, which is what
+the 2026-07-29 normalise fixed.
+
+### Closed — ALREADY-DONE (verified in live code)
+
+> **P-17** — every SGS block with an icon control hardcodes its own ~8-item dropdown; build a shared universal `<IconPicker>` (Lucide + emoji + future third-party sets).
+> **Status: ALREADY-DONE — verified 2026-07-29.** The component exists and is adopted framework-wide: `plugins/sgs-blocks/src/components/IconPicker/` holds 6 files (`IconPicker.js`, `IconGrid.js`, `IconPreview.js`, `icon-data.js`, `index.js`, `editor.css`), and a grep for `IconPicker` across `src/blocks/*/edit.js` returns **12 blocks** (accordion, button, counter, form-field-tiles, icon, icon-list, notice-banner, pricing-table, process-steps, separator, timeline, trust-bar). The entry's premise — "every block hardcodes its own dropdown" — is now false. · **Bucket:** framework
+> **Consequence recorded:** earlier the same day this entry's body was extracted to `plans/2026-07-29-icon-picker-component-design.md` on the assumption the component was unbuilt. That plan described already-shipped code, so it was deleted rather than left at a live path — a design doc for shipped code is the same drift class the 2026-07-28 fat-cut purged.
+
+> **P-NAV-INSTANCE-CONFIG-DUPLICATION** — a nav-menu inside a drawer is a separate block instance from the header's, so its settings duplicate confusingly; options were (a) share config, (b) hide one, (c) accept it and add an inspector notice pointing at the other instance.
+> **Status: ALREADY-DONE — verified 2026-07-29.** Option (c) shipped. `src/blocks/nav-menu/edit.js:715-729`, the "Nav container" panel: *"Leave anything blank to inherit from the header or menu panel around it. The menu inside your menu panel is a separate copy: select it there to style the panel on its own."* · **Bucket:** framework
+
+> **P-OPTIONPICKER-DUP-KEY** — duplicate option keys silently break selection; proposed a duplicate-key editor notice.
+> **Status: ALREADY-DONE — verified 2026-07-29.** `src/blocks/option-picker/edit.js:82` defines `hasDuplicateKeys()`, `:264` computes it, and `:373` renders a non-dismissible warning `<Notice>`: *"Duplicate option keys detected. Each option must have a unique key."* · **Bucket:** framework
+
+> **P-F5-RESIDUALS** — two residuals on the F5 coverage-conservation gate: the LANDED leg was armed-but-not-wired, and a css_router D1 media-axis item.
+> **Status: ALREADY-DONE — verified 2026-07-29.** `scripts/ledger/coverage_check.py:44` and `:387` both read "ARMED 2026-07-23", and **36** `*.landed.json` fixtures exist (the entry cited 35). The media-axis item was already marked resolved in the entry's own text. · **Bucket:** pipeline
+
+> **P-TESTIMONIAL-LIFT-DATA-DURABILITY** — two attrs were classified by a one-off manual SQL update with no durable seed source, so a DB rebuild would lose them.
+> **Status: ALREADY-DONE — verified 2026-07-29.** Both now have version-controlled seed sources: `scripts/attr-classification-overrides.json` carries a `sgs/testimonial.reviewerName` row, and `scripts/migrations/2026-06-21-register-rating-role.py` is a committed idempotent migration registering the `rating` role. · **Bucket:** pipeline
+
+### Closed — MOOT (the premise evaporated)
+
+> **P-FP-H-BRIDGE-RETIRE** — the product-card FP-H typed-mode transition bridge has no forcing function; add an `E_USER_NOTICE` so legacy clones surface before it is removed.
+> **Status: MOOT — verified 2026-07-29.** There is no bridge left to warn about. `src/blocks/product-card/render.php:10` and `:363-365` state *"the FP-H transition bridge retired 2026-07-04… the block has no InnerBlocks slot"*, and a grep for the passthrough echo on that file returns **0** occurrences. The entry asks for a warning on a code path that was fully deleted, not merely left silent. · **Bucket:** pipeline
+
+> **P-S17-D** — add a live preview to the WP Browse-styles variation picker.
+> **Status: MOOT — verified 2026-07-29.** That picker is deliberately dead UI. `theme/sgs-theme/functions.php:833-845` filters the variations list empty, with the reason stated in-code: Phase 5a (2026-05-22) retired per-client style variations, each site now ships a single theme.json snapshot, so *"the Browse-styles picker in the Site Editor is dead UI"*. There is no live picker to add a preview to. · **Bucket:** framework
+
+> **P-S17-B** — a `_sgs_pattern_version` post-meta key so pattern updates could be versioned per instance.
+> **Status: MOOT — verified 2026-07-29.** Its trigger (Spec 33 Part 2) HAS fired — `specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md:10` records Part 2 emitting `sgs/site-header`/`sgs/site-footer` — and the firing confirms the entry is moot rather than actionable: headers/footers are now CPTs with native WP revisions, so the proposed meta key is not needed. A grep for `_sgs_pattern_version` across `plugins/` and `theme/` returns **0** files. Do not build the retired mechanism. · **Bucket:** framework
+
+### The four FALSE CLAIMS found — these entries STAY OPEN, corrected in place
+
+A register that misleads a future session is worse than one that is merely long. All four were
+re-verified by hand and the corrections written into the entries themselves.
+
+1. **`P-DECISIONS-BACKTAG` understated its own scale by roughly 12x.** It recorded ~10 headings
+   left to back-tag. Measured: `decisions.md` has **201** `## ` headings and **77** carry
+   `[INCIDENT]`/`[ROUTINE]` — about **124** untagged. Re-scope before starting.
+2. **`P-SPEC35-STATE-AUTOSUGGEST` said "only one block" carries a `states` key. Measured: 16**
+   `block.json` files do. On the entry's own stated terms its at-scale trigger has likely fired.
+3. **`P-TESTIMONIAL-CONVERTER-FR2220`'s residual is narrower than stated.** It names three unwired
+   fields; `reviewDate` now has `role='text-content'` in `block_attributes`. Only `summaryPhrase`
+   and `orgName` remain.
+4. **`P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` lists an already-shipped item as remaining.** The
+   FR-33-12 fail-closed freshness gate is built and wired live — `_freshness_gate()` is defined at
+   `sgs-clone-orchestrator.py:2183` and called unconditionally from `main()` at `:2398`.
+
+Plus one flagged for a fresh read rather than corrected: **`P-PRODUCT-CARD-FULL-DUAL-MODE`**
+(parked 2026-05-31) names three unbuilt features that all appear to have shipped separately under
+different names — `sgs/option-picker`, `read_variation_sets()` in
+`includes/class-product-bindings.php:244-338`, and Typed/Bound dual-mode. Marked `**Verify:**` in
+place; it needs a proper read against current code before any work is done on it.
+
+### Why the other ~140 stayed OPEN, and why that is a result
+
+A parked task can be correct to defer — the failure mode is not knowing which. The overwhelming
+majority were re-confirmed accurate against live code this pass: the described bug is still at the
+named `file:line`, or the named file/attr/mechanism genuinely does not exist yet. A large group is
+**UNVERIFIABLE by construction** — they need a live browser measurement on the canary (contrast,
+overflow, scroll-state flip, editor-selection behaviour), which no static read can settle; those
+are correctly parked, not neglected. Several carry triggers that have now **FIRED** and are
+therefore actionable rather than archivable — notably `P-S16-1` (its blocking block, sgs/heading,
+has shipped) and `P-S17-E` (44 pattern files, past its stated "20+" threshold).
+
+**Two process notes from the pass itself, both caught by checking rather than trusting.** One agent
+reported two entries as absent from `parking.md` entirely; both were verified present and
+legitimately open — a subagent's negative finding is a hypothesis like any other. And one agent ran
+`seed_conformance_goldens.py --check`, which despite the flag name **actually re-seeds**: it
+rewrote 28 golden files before being reverted. The working tree was independently confirmed clean
+afterwards. That script's `--check` is not a dry run — a trap worth knowing about.
+
+
 ## 2026-07-27 (fifth pass) — two closed; the rest PROVEN correctly-parked rather than neglected
 
 > **P-S17-C** — a Spec 17 council finding: v1 assumes one pattern per page section, which breaks for real mockups with 5+ levels of container>row>column>component nesting. Proposed a pattern-composition registry with depth limit + recursion guard + inserter UX.

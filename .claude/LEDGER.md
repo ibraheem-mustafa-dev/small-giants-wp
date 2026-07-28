@@ -263,8 +263,23 @@ partially-completed programme accreted forever. One layout, one `**Status:**` sy
 variants were why any regex gate silently passed ~68% of entries), six real buckets, every entry
 dated. **Slug conservation caught real losses:** the delegated batches dropped 18 slugs, 5 of them
 cited from live docs — and one agent listed three slugs in its own manifest that it never wrote.
-All recovered by hand. P-17's IconPicker spec extracted to
-`plans/2026-07-29-icon-picker-component-design.md` (a plan, not a spec — it has had no design gate).
+All recovered by hand.
+
+**Then a full staleness CULL (2026-07-29): all 151 entries verified against LIVE code** by four
+parallel agents, under one rule — a DONE verdict needs positive evidence from the code, never the
+entry's own prose and never the absence of evidence. **Only 8 closed** (5 already-done, 3 moot);
+three of four batches returned ZERO archivable entries. **The register was overwhelmingly honest** —
+the long file was real work buried in narrative, not phantom work. The pass's actual value was
+**four FALSE CLAIMS in entries that stay open**, now corrected in place: `P-DECISIONS-BACKTAG`
+understated its scale ~12x (≈124 untagged headings, not 10) · `P-SPEC35-STATE-AUTOSUGGEST` said one
+block carries a `states` key when 16 do · `P-TESTIMONIAL-CONVERTER-FR2220`'s residual is narrower
+(`reviewDate` is wired) · `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` listed the already-shipped
+FR-33-12 freshness gate as remaining. Full record + why the other ~140 stayed open:
+`memory/parking-archive.md` (sixth pass). **P-17 closed as ALREADY-DONE — the shared `IconPicker`
+component exists (`src/components/IconPicker/`, 6 files) and is adopted in 12 blocks**, so the
+design doc extracted from it earlier that day was deleted rather than left at a live path.
+⚠ **`seed_conformance_goldens.py --check` is NOT a dry run — it re-seeds.** It rewrote 28 goldens
+during the pass before being reverted; tree independently confirmed clean.
 
 **Skills repaired for LEDGER mode** (10 files): `/handoff` (single hoisted `## LEDGER MODE` block;
 Gate 4a copies LEDGER not the archived root handoff; Gates 6/6.5 no longer recreate the deleted
@@ -280,27 +295,14 @@ doc references. With the file readable, that pass is now cheap.
 
 ---
 
-## Sweep record — 2026-07-28 docs fat-cut
+## Sweep record — 2026-07-28 docs fat-cut (condensed 2026-07-29)
 
-Swept narrative → `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md` (Gate-3 close detail,
-drawer-variant build detail, Spec 35 close-out, prior-session pointer blocks, setup-simplification
-history). Everything above is either a current front, a standing constraint, or a pointer.
-
-**Doc-system changes this session** (each verbatim-archived, nothing deleted from git history):
-
-| Change | Where it went / why |
-|---|---|
-| `docs-registry.yaml` DISSOLVED + `scripts/doc-walk-audit.py` deleted | A fourth roster listing deleted Specs 17/34 as live, duplicate Spec 33, missing 35/36/37 — while its own grep pattern matched nothing. Credentials → `dev-setup.md`; pipeline run-artefact inventory → Spec 31 Appendix C. Consumers rewired: `/handoff` Gate 4.5, `/autopilot` Stage-0 step 6 (both skill trees), `/doc-audit`, `tooling-map-drift-check.py`. |
-| `cloning-pipeline-flow.md` + `-stages.md` ARCHIVED | 86KB of hand-maintained code-mirror, 3 weeks behind the code, self-disclaiming. Replaced by ONE stage-index table in Spec 31 Appendix D. → `memory/archived-2026-07-28-*` |
-| `.claude/CLAUDE.md` manifest → pointer-only | Its cached spec roster cited a deleted spec and omitted three live ones. Now points at `specs/README.md` and caches nothing. |
-| `specs/README.md` → THE roster | Spec 37 row added; 36 + 35 statuses corrected; DEAD-never-cite list moved here; 02-REFERENCE annotated gitignored; every link resolution-tested. |
-| Spec 29 folded → Spec 31 §13.6; Spec 06 → `specs/archive/` | 8 and 3 live refs respectively, zero code refs. |
-| Specs 32 + 35 KEPT SEPARATE, cross-labelled | Bean reversed the proposed fold: 202 live code citations (incl. the fail-closed `check-no-inline.py` gate) made it a waste. 32 = styling/token emission; 35 = inspector-UX. Read together for block work. |
-| `plan.md` tombstone + both per-track next-session prompts ARCHIVED | LEDGER-only (Bean). Track state lives in this file's per-track sections; co-active-track etiquette is now a STOP entry. |
-| `go-live-checklist.md` → `specs/` | Spec 30 FR-30-13 owns it; it failed all three keep-at-root tests. |
-| `decisions.md` swept + indexed · `plans/` root swept | Routine/superseded entries and executed plans moved verbatim to their archives; live-only at root. |
-
-**Rotate-hook ground truth (checked, not assumed):** `ledger-rotate.py` IS wired as the sole project
-Stop hook (`.claude/settings.json`), HAS been firing (709-line `.ledger-rotate.log`, 49 auto
-snapshots, 10 on 2026-07-28 alone, last recorded `size=38799`). It warns + snapshots and **never
-edits this file by design** — the missing leg was always the manual sweep, done here.
+`.claude/` root cut 18 files to 10. One spec roster (`specs/README.md`); the doc registry dissolved
+(it listed deleted specs as live and omitted the newest three) with its credentials rehomed to
+`dev-setup.md` and its run-artefact inventory to Spec 31 Appendix C; the two hand-maintained
+pipeline code-mirrors archived and replaced by Spec 31 Appendix D; the `plan.md` tombstone and both
+per-track next-session prompts retired to LEDGER-only; Specs 29 and 06 folded/archived; Specs 32
+and 35 deliberately KEPT SEPARATE and cross-labelled (202 live code citations made the proposed
+fold a net loss); `decisions.md` swept 877KB→714KB and indexed; `plans/` root 37→14.
+**Full detail: `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md` + the commits
+`b922290a`…`9d44d929`.**
