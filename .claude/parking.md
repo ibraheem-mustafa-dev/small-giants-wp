@@ -119,10 +119,16 @@ last_updated: 2026-07-27 (THREE verified cull passes this session — 34 entries
 > at `reports/fr-37-26-simplicity-test/2026-07-26-operator-simplicity-test.md` + FR-37-26 status.
 > Sticky ✅ and phone ✅ (one-click "Contact details" → click-to-call Business Phone) both pass;
 > the FAIL is on **drawer content** + two friction findings:
-> 1. **Drawer content is not settable from the header editor** (biggest gap). The Nav Menu "Mobile
->    drawer" panel exposes only a jargon **"DRAWER ID"** field (`sgs-nav-drawer`); the drawer's
->    content lives in a separate `sgs/nav-drawer` block absent from the header CPT. A non-coder
->    cannot set what the mobile drawer shows. Needs a discoverable, plain-English path.
+> 1. ~~**Drawer content is not settable from the header editor** (biggest gap).~~ **ADDRESSED
+>    2026-07-28 (D398, `6ddb9f48`) — the finding is closed, the ENTRY stays OPEN for findings 2+3.**
+>    `sgs/nav-menu` now shows a plain-English warning + a one-click fix when the burger has no panel
+>    to open (Spec 36 FR-36-9a clause 2, widened to cover the no-drawer-at-all case): *"Add the
+>    mobile menu"* inserts an `sgs/nav-drawer` as a root-level SIBLING of the header and SELECTS it,
+>    so the operator lands on its content. The jargon was reworded too — *"DRAWER ID"* → *"Panel this
+>    burger opens"*, with a lead-in saying where drawer content is edited. Live-verified with four
+>    controls incl. a starter-built header showing NO notice.
+>    ⚠ **This does NOT convert FR-37-26's verdict.** The test has not been re-run, and its
+>    authoritative arm is the blind tester — see the outstanding note at the foot of this entry.
 > 2. **Selecting the header block is a hidden blocker** — clicking the header in the canvas reports
 >    "No block selected"; it only selects via List View. Canvas-click should select it.
 > 3. **The header Settings tab shows ~7 default-visible controls vs the FR-37-27 roster's 2** —
