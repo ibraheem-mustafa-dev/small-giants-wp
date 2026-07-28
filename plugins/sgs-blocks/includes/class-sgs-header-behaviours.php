@@ -1,39 +1,36 @@
 <?php
 /**
- * Header Behaviours — body_class injector and asset enqueuer (F4, FR-S9-9).
+ * Header Behaviours — body_class injector (contrastSafe only) + asset enqueuer.
  *
- * Hooks into `body_class` to append SGS header behaviour classes to <body>.
- * CSS and JS then target `body.sgs-header-behaviour-{flag} header.sgs-site-header`
- * — no DOM rewriting needed at all. (The selector was `header.wp-block-template-part`
- * until FR-37-13 fix B / D375: sgs/site-header renders <header class="sgs-site-header">
- * itself, so the behaviours key on its own class rather than a core template-part
- * wrapper that the SGS header engine short-circuits and never emits.)
+ * ⚠ SCOPE NARROWED (Spec 35 T1.4 / FR-37-14, 2026-07-28). Sticky / transparent /
+ * shrink / hide-on-scroll are RETIRED from this class's body-class path — they
+ * reshaped from flat booleans to tri-state `{desktop,tablet,mobile}` objects,
+ * which a SITE-WIDE body class cannot express ("on for desktop, off for
+ * mobile"). Their resolution now lives in `sgs/site-header/render.php`, scoped
+ * per-instance via `sgs_emit_tier_rules()` (Spec 35 D4) — see that file's
+ * "Header-level tri-state behaviours" block. This class now does exactly one
+ * job: resolve + emit the `contrastSafe` body class, which STAYS flat/scalar
+ * per the T1.4 roster decision (a contrast mode rarely needs to differ by
+ * device, and Bean's roster explicitly excluded it from the reshape).
  *
- * SOURCE (FR-S9-9 + FR-37-13): the active header's `sgs/site-header` block
- * attrs (headerSticky / headerTransparent / headerShrink / headerHideOnScroll
- * / contrastSafe), resolved via {@see resolve_active_header_behaviour()}. The
- * behaviour is site-wide: whatever the header template part carries applies
- * to every page that renders it. The OLD single-slug rule `behaviour` field
- * read is DROPPED — it was dormant (Sgs_Header_Rules::add_rule() never
- * stored a `behaviour` field, so no header behaviour was ever active via
- * that path).
+ * CONTRAST AUTO-UPGRADE SIMPLIFICATION (documented, not silent): the
+ * transparent→scrim WCAG safety net below reads headerTransparent's DESKTOP
+ * tier only (`sgs_resolve_tier(..., 'desktop', 'off')`), because contrastSafe
+ * itself is not tiered — there is no per-tier contrast decision to upgrade
+ * separately. A header transparent on mobile only but not desktop will NOT
+ * trigger the auto-upgrade from this resolver (a known simplification specific
+ * to this one-signal-into-a-flat-value coupling, not a general per-tier gap —
+ * the actual transparent CSS itself IS fully tiered, in render.php).
  *
- * Independent flags: a header can be sticky AND transparent AND shrink AND
- * hide-on-scroll at the same time — each axis emits its own body class.
+ * SOURCE: the active header's `sgs/site-header` block attrs, resolved via
+ * {@see resolve_active_header_behaviour()}. The behaviour is site-wide:
+ * whatever the header template part carries applies to every page that
+ * renders it.
  *
  * Body classes emitted:
  *   - sgs-has-header                          always present (stable cloning-pipeline hook).
- *   - sgs-has-header-behaviour                 present when ANY flag below is active.
- *   - sgs-header-behaviour-sticky               headerSticky attr is true.
- *   - sgs-header-behaviour-transparent          headerTransparent attr is true.
- *   - sgs-header-behaviour-shrink                headerShrink attr is true.
- *   - sgs-header-behaviour-hide-on-scroll-down  headerHideOnScroll attr is true (FR-37-13).
+ *   - sgs-has-header-behaviour                 present when contrastSafe !== 'none'.
  *   - sgs-header-behaviour-contrast-{mode}      contrastSafe attr !== 'none' (scrim|shadow|force-solid).
- *
- * State classes toggled by view.js (on body, not on header element):
- *   - is-header-scrolled          (transparent flag)
- *   - is-header-shrunk            (shrink flag, independent threshold)
- *   - is-header-scrolling-down    (hide-on-scroll flag, independent threshold)
  *
  * Naming convention: SGS-prefixed BEM per blub.db row 236. The
  * `sgs-header-behaviour-*` prefix is reserved for THIS plugin layer — it does
@@ -48,6 +45,20 @@
 namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
+
+// sgs_resolve_tier() — needed for the contrastSafe auto-upgrade's desktop-tier
+// read of headerTransparent (Spec 35 T1.4). Guarded require; helpers-responsive.php
+// itself guards every function with function_exists().
+if ( ! function_exists( 'sgs_resolve_tier' ) && defined( 'SGS_BLOCKS_PATH' ) ) {
+	$sgs_hb_breakpoints_file = SGS_BLOCKS_PATH . 'includes/class-sgs-breakpoints.php';
+	$sgs_hb_responsive_file  = SGS_BLOCKS_PATH . 'includes/helpers-responsive.php';
+	if ( file_exists( $sgs_hb_breakpoints_file ) ) {
+		require_once $sgs_hb_breakpoints_file;
+	}
+	if ( file_exists( $sgs_hb_responsive_file ) ) {
+		require_once $sgs_hb_responsive_file;
+	}
+}
 
 /**
  * Class Sgs_Header_Behaviours
@@ -66,7 +77,7 @@ final class Sgs_Header_Behaviours {
 	 * resolved this request; reset naturally between requests (PHP process
 	 * lifecycle) and explicitly via reset_request_cache() for tests.
 	 *
-	 * @var array{sticky:bool,transparent:bool,shrink:bool,hideOnScroll:bool,contrast:string}|null
+	 * @var array{contrast:string}|null
 	 */
 	private static $cached_behaviour = null;
 
@@ -76,7 +87,7 @@ final class Sgs_Header_Behaviours {
 	 * tests can exercise add_body_classes() without a real WP template-part
 	 * post/registry. Cleared via reset_request_cache().
 	 *
-	 * @var array{sticky:bool,transparent:bool,shrink:bool,hideOnScroll:bool,contrast:string}|null
+	 * @var array{contrast:string}|null
 	 */
 	private static $test_behaviour_override = null;
 
@@ -92,6 +103,11 @@ final class Sgs_Header_Behaviours {
 	 * Test-only: inject a fixed resolved-behaviour array, bypassing template
 	 * parsing entirely. Pass null to clear the override.
 	 *
+	 * Accepts (and ignores) the now-retired sticky/transparent/shrink/
+	 * hideOnScroll keys for backward compatibility with existing test call
+	 * sites — only `contrast` is stored/consumed since those four behaviours
+	 * moved off this class's body-class path (Spec 35 T1.4).
+	 *
 	 * @param array{sticky?:bool,transparent?:bool,shrink?:bool,hideOnScroll?:bool,contrast?:string}|null $behaviour Override, or null to clear.
 	 * @return void
 	 */
@@ -101,11 +117,7 @@ final class Sgs_Header_Behaviours {
 			return;
 		}
 		self::$test_behaviour_override = array(
-			'sticky'       => ! empty( $behaviour['sticky'] ),
-			'transparent'  => ! empty( $behaviour['transparent'] ),
-			'shrink'       => ! empty( $behaviour['shrink'] ),
-			'hideOnScroll' => ! empty( $behaviour['hideOnScroll'] ),
-			'contrast'     => isset( $behaviour['contrast'] ) && in_array( $behaviour['contrast'], self::VALID_CONTRAST_MODES, true )
+			'contrast' => isset( $behaviour['contrast'] ) && in_array( $behaviour['contrast'], self::VALID_CONTRAST_MODES, true )
 				? $behaviour['contrast']
 				: 'none',
 		);
@@ -146,7 +158,7 @@ final class Sgs_Header_Behaviours {
 	 *
 	 * Cached per-request (static) — body_class only needs to resolve once.
 	 *
-	 * @return array{sticky:bool,transparent:bool,shrink:bool,hideOnScroll:bool,contrast:string}
+	 * @return array{contrast:string}
 	 */
 	public static function resolve_active_header_behaviour(): array {
 		if ( null !== self::$test_behaviour_override ) {
@@ -158,11 +170,7 @@ final class Sgs_Header_Behaviours {
 		}
 
 		$result = array(
-			'sticky'       => false,
-			'transparent'  => false,
-			'shrink'       => false,
-			'hideOnScroll' => false,
-			'contrast'     => 'none',
+			'contrast' => 'none',
 		);
 
 		if ( ! class_exists( '\\SGS_Nav_Menu_Source' ) ) {
@@ -199,14 +207,6 @@ final class Sgs_Header_Behaviours {
 
 		$attrs = isset( $header_block['attrs'] ) && is_array( $header_block['attrs'] ) ? $header_block['attrs'] : array();
 
-		// Literal string keys — required so the dead-control guard resolves
-		// these as consumed (scripts/check-dead-controls.js scans includes/
-		// PHP for literal attribute-name substrings).
-		$result['sticky']       = ! empty( $attrs['headerSticky'] );
-		$result['transparent']  = ! empty( $attrs['headerTransparent'] );
-		$result['shrink']       = ! empty( $attrs['headerShrink'] );
-		$result['hideOnScroll'] = ! empty( $attrs['headerHideOnScroll'] );
-
 		$contrast_raw       = isset( $attrs['contrastSafe'] ) ? (string) $attrs['contrastSafe'] : 'none';
 		$result['contrast'] = in_array( $contrast_raw, self::VALID_CONTRAST_MODES, true ) ? $contrast_raw : 'none';
 
@@ -221,7 +221,17 @@ final class Sgs_Header_Behaviours {
 		// still explicitly select 'None'/'Text shadow'/'Force solid' in the
 		// inspector to override it (that stored value is read as-is above and
 		// this branch only fires when contrastSafe is still 'none').
-		if ( true === $result['transparent'] && 'none' === $result['contrast'] ) {
+		//
+		// SIMPLIFICATION (documented, Spec 35 T1.4): headerTransparent is now a
+		// tri-state {desktop,tablet,mobile} object; contrastSafe stays flat, so
+		// there is one auto-upgrade decision, not three. It reads the DESKTOP
+		// tier only via the canonical sgs_resolve_tier() cascade — literal
+		// string key 'headerTransparent' kept so the dead-control guard
+		// (scripts/check-dead-controls.js) still resolves it as consumed.
+		$sh_transparent_desktop = function_exists( 'sgs_resolve_tier' )
+			? sgs_resolve_tier( isset( $attrs['headerTransparent'] ) ? $attrs['headerTransparent'] : array(), 'desktop', 'off' )
+			: array( 'value' => 'off' );
+		if ( 'on' === $sh_transparent_desktop['value'] && 'none' === $result['contrast'] ) {
 			$result['contrast'] = 'scrim';
 		}
 
@@ -232,10 +242,11 @@ final class Sgs_Header_Behaviours {
 	/**
 	 * Append SGS header behaviour classes to the <body> element.
 	 *
-	 * Always emits the stable `sgs-has-header` hook class. Resolves the active
-	 * header's behaviour flags and emits one independent body class per active
-	 * flag, so a header can be sticky AND transparent AND shrink AND
-	 * hide-on-scroll simultaneously.
+	 * Always emits the stable `sgs-has-header` hook class, plus the
+	 * `sgs-header-behaviour-contrast-{mode}` class when contrastSafe !== 'none'.
+	 * Sticky / transparent / shrink / hide-on-scroll are RESOLVED AND EMITTED
+	 * ELSEWHERE (sgs/site-header/render.php, per-instance scoped CSS) — see the
+	 * class docblock.
 	 *
 	 * @param string[] $classes Existing body classes from WordPress.
 	 * @return string[]
@@ -247,26 +258,6 @@ final class Sgs_Header_Behaviours {
 
 		$behaviour = self::resolve_active_header_behaviour();
 		$any_flag  = false;
-
-		if ( ! empty( $behaviour['sticky'] ) ) {
-			$classes[] = 'sgs-header-behaviour-sticky';
-			$any_flag  = true;
-		}
-
-		if ( ! empty( $behaviour['transparent'] ) ) {
-			$classes[] = 'sgs-header-behaviour-transparent';
-			$any_flag  = true;
-		}
-
-		if ( ! empty( $behaviour['shrink'] ) ) {
-			$classes[] = 'sgs-header-behaviour-shrink';
-			$any_flag  = true;
-		}
-
-		if ( ! empty( $behaviour['hideOnScroll'] ) ) {
-			$classes[] = 'sgs-header-behaviour-hide-on-scroll-down';
-			$any_flag  = true;
-		}
 
 		$contrast = isset( $behaviour['contrast'] ) ? (string) $behaviour['contrast'] : 'none';
 		if ( 'none' !== $contrast && in_array( $contrast, self::VALID_CONTRAST_MODES, true ) ) {

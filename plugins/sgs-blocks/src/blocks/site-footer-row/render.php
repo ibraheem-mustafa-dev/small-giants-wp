@@ -152,10 +152,13 @@ if ( '' !== $sfr_preset_bg_slug ) {
 // A behaviour off in every tier emits NOTHING (no attr at all). Mirrors
 // sgs/site-header-row exactly.
 $sfr_extra_attrs          = array( 'id' => $uid );
-$sfr_transparent_on_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array() );
-$sfr_hide_on_scroll_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array() );
+// sgs_resolve_tier_booleans() was RETIRED at Spec 35 T1.4 (2026-07-28) — see the
+// identical note in sgs/site-header-row/render.php. sgs_resolve_on_tiers() is a
+// drop-in replacement (on_marker=true, default=false); stored shape unchanged.
+$sfr_transparent_on_tiers = sgs_resolve_on_tiers( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array(), true, false );
+$sfr_hide_on_scroll_tiers = sgs_resolve_on_tiers( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array(), true, false );
 // Phase 2 — per-row shrink. Same tier resolver, own data-attr + state class.
-$sfr_shrink_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array() );
+$sfr_shrink_tiers = sgs_resolve_on_tiers( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array(), true, false );
 if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers ) || ! empty( $sfr_shrink_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
 	if ( ! empty( $sfr_transparent_on_tiers ) ) {

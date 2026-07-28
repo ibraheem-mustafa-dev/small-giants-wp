@@ -27,19 +27,32 @@
  */
 import { __ } from '@wordpress/i18n';
 import { LinkControl } from '@wordpress/block-editor';
-import { BaseControl } from '@wordpress/components';
+import { BaseControl, ToggleControl } from '@wordpress/components';
 
 /**
- * LinkControl's `settings` prop REPLACES its default settings array — it does
- * not merge — and the default array is where the "Open in new tab" toggle
- * lives. So the toggle must be re-declared here explicitly, or it vanishes
- * from every consumer (caught live by the D388 editor pass, 2026-07-28:
- * four migrated blocks shipped with no new-tab toggle at all).
+ * Core `LinkControl` STAGES every settings-drawer toggle (its own
+ * `internalControlValue` state, built by `createSetInternalSettingValueHandler`
+ * in `@wordpress/block-editor/src/components/link-control/index.js`) and only
+ * folds it into `onChange` from `submitUrlValue()` — fired by the "Submit"
+ * button (`handleSubmit`) or Enter in the URL field. There is no blur/close
+ * handler that commits the staged state, so a toggle flipped without also
+ * pressing Submit is silently discarded (root-caused 2026-07-28, QC-confirmed
+ * across card-grid/media/trust-bar — the checkbox visually flips, `onChange`
+ * never fires). SGS renders these blocks' `SgsLinkControl` inline inside an
+ * Inspector `PanelBody`, not a Popover the user explicitly "submits" — so a
+ * toggle-then-navigate-away is the ordinary editing flow here, not an edge
+ * case.
+ *
+ * Fix: render the toggles OURSELVES, driven directly by `value`/`onChange`,
+ * and never hand them to `LinkControl`'s `settings` prop (which is where the
+ * staging lives). `LinkControl` is used ONLY for the URL search/submit UI —
+ * `settings` is always `[]`, so it never seeds `internalControlValue` for
+ * these keys and never intercepts them.
  */
-const LINK_SETTINGS = [
-	{ id: 'opensInNewTab', title: __( 'Open in new tab', 'sgs-blocks' ) },
-	{ id: 'nofollow', title: __( 'Mark as nofollow', 'sgs-blocks' ) },
-	{ id: 'sponsored', title: __( 'Mark as sponsored', 'sgs-blocks' ) },
+const LINK_TOGGLES = [
+	{ key: 'opensInNewTab', label: __( 'Open in new tab', 'sgs-blocks' ) },
+	{ key: 'nofollow', label: __( 'Mark as nofollow', 'sgs-blocks' ) },
+	{ key: 'sponsored', label: __( 'Mark as sponsored', 'sgs-blocks' ) },
 ];
 
 /**
@@ -127,15 +140,37 @@ export default function SgsLinkControl( { label, help, value, onChange, searchOn
 		} );
 	};
 
+	// Toggles commit immediately — they call handleChange directly with the
+	// CURRENT linkValue plus the one flag that changed, bypassing LinkControl
+	// entirely (never touching its staged `internalControlValue`). See the
+	// LINK_TOGGLES comment above for why this must not go through
+	// LinkControl's own `settings` prop.
+	const handleToggle = ( key ) => ( checked ) => {
+		handleChange( { ...linkValue, [ key ]: checked } );
+	};
+
 	return (
 		<BaseControl label={ label } help={ help } __nextHasNoMarginBottom>
 			<LinkControl
 				searchInputPlaceholder={ __( 'Search or paste a URL', 'sgs-blocks' ) }
 				value={ linkValue }
-				settings={ searchOnly ? [] : LINK_SETTINGS }
+				settings={ [] }
 				onChange={ handleChange }
 				forceIsEditingLink={ ! linkValue.url }
 			/>
+			{ ! searchOnly && linkValue.url && (
+				<div className="sgs-link-control__toggles">
+					{ LINK_TOGGLES.map( ( { key, label: toggleLabel } ) => (
+						<ToggleControl
+							key={ key }
+							label={ toggleLabel }
+							checked={ !! linkValue[ key ] }
+							onChange={ handleToggle( key ) }
+							__nextHasNoMarginBottom
+						/>
+					) ) }
+				</div>
+			) }
 		</BaseControl>
 	);
 }

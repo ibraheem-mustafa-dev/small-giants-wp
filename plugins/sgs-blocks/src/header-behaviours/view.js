@@ -8,20 +8,26 @@
  *      GATED (FR-37-40, 2026-07-26): the published value is the header's
  *      height ONLY while the header is actually PINNED; otherwise an explicit
  *      `0px`. See isHeaderPinned() for why this is measured, not inferred.
- *   2. Reads the INDEPENDENT flag SET from body class (not a single slug —
- *      several flags can be present at once):
- *      - body.sgs-header-behaviour-transparent → toggles body.is-header-scrolled
- *        when scrollY > 50.
- *      - body.sgs-header-behaviour-shrink → toggles body.is-header-shrunk
- *        (its OWN state class + threshold, independent of transparent, so the
- *        two behaviours can be tuned separately).
- *      - body.sgs-header-behaviour-hide-on-scroll-down (FR-37-13, LIVE — set
- *        by the "Hide on scroll" Advanced control on sgs/site-header) →
- *        toggles body.is-header-scrolling-down when scrollY > 100 AND
- *        direction is down.
- *   3. When none of transparent / shrink / hide-on-scroll-down flags are on
- *      body, the scroll listener is skipped entirely — zero event overhead on
- *      pages without active behaviours.
+ *   2. Toggles scroll-STATE classes on the HEADER ELEMENT itself (NOT body —
+ *      changed at Spec 35 T1.4 / FR-37-14, 2026-07-28, when the four header
+ *      behaviours reshaped to tri-state {desktop,tablet,mobile} objects):
+ *      is-header-scrolled / is-header-shrunk / is-header-scrolling-down.
+ *      GATING moved server-side: sgs/site-header/render.php resolves each
+ *      behaviour PER TIER via sgs_resolve_tier()/sgs_emit_tier_rules() and
+ *      emits the CSS that gives these classes any visual effect ONLY inside
+ *      the @media block for the tiers where that behaviour is ON — so this
+ *      script can toggle all three classes UNCONDITIONALLY on scroll and let
+ *      the per-instance scoped CSS decide whether anything happens at the
+ *      current viewport width. This mirrors the per-row mechanism's OUTCOME
+ *      (tier-correct behaviour) via a different, simpler ROUTE (CSS @media
+ *      gating instead of JS matchMedia + data-attr scanning), because a
+ *      header behaviour's "resting" state (sticky's position, transparent's
+ *      position/background, shrink's transition setup) is fully static per
+ *      tier and needs no runtime JS decision — only the SCROLL trigger does.
+ *   3. The scroll listener is skipped entirely when the header carries no
+ *      `data-sgs-header-scroll-behaviours` attr (emitted server-side only
+ *      when at least one of transparent/shrink/hide-on-scroll resolves ON at
+ *      ANY tier) — zero event overhead on headers without active behaviours.
  *   4. PER-ROW (Phase 1, additive, does NOT replace #2/#3 above): scans every
  *      `.sgs-row-behaviour` element (emitted by sgs/site-header-row +
  *      sgs/site-footer-row render.php when rowTransparent/rowHideOnScroll is
@@ -59,25 +65,6 @@
 	 */
 	function getHeaderEl() {
 		return document.querySelector( 'header.sgs-site-header' );
-	}
-
-	/**
-	 * Read the active behaviour flag SET from body class. Independent flags —
-	 * more than one may be true at once (e.g. sticky AND transparent).
-	 *
-	 * @return {{transparent: boolean, shrink: boolean, hideOnScrollDown: boolean}}
-	 */
-	function getActiveBehaviours() {
-		const classes = document.body.className;
-		return {
-			transparent: / sgs-header-behaviour-transparent(?: |$)/.test(
-				' ' + classes
-			),
-			shrink: / sgs-header-behaviour-shrink(?: |$)/.test( ' ' + classes ),
-			hideOnScrollDown: / sgs-header-behaviour-hide-on-scroll-down(?: |$)/.test(
-				' ' + classes
-			),
-		};
 	}
 
 	/**
@@ -175,9 +162,7 @@
 	 * @param {HTMLElement} header
 	 */
 	function warnIfStickyIsSilentlyBroken( header ) {
-		if (
-			! document.body.classList.contains( 'sgs-header-behaviour-sticky' )
-		) {
+		if ( header.dataset.sgsHeaderSticky !== '1' ) {
 			return;
 		}
 		const breaker = findStickyBreakingAncestor( header );
@@ -269,18 +254,20 @@
 	}
 
 	/**
-	 * Wire up the scroll listener for F2 behaviour state classes. Transparent
-	 * and shrink each get their OWN state class (is-header-scrolled /
-	 * is-header-shrunk) so the two axes can be tuned independently — a header
-	 * can be transparent-only, shrink-only, or both at once. State is toggled
-	 * on document.body, not on the header element.
+	 * Wire up the scroll listener for F2 behaviour state classes, toggled on
+	 * the HEADER ELEMENT (not body — Spec 35 T1.4). All three classes are
+	 * toggled UNCONDITIONALLY on every tick; the per-instance scoped CSS
+	 * (site-header/render.php, sgs_emit_tier_rules()) decides per @media tier
+	 * whether any of them has a visible effect, so this function needs no
+	 * per-behaviour or per-tier branching — it just reflects scroll state.
+	 * Skipped entirely when the header carries no
+	 * `data-sgs-header-scroll-behaviours` attr (no tier of any behaviour is
+	 * active), matching the previous getActiveBehaviours() perf gate.
 	 *
-	 * @param {{transparent: boolean, shrink: boolean, hideOnScrollDown: boolean}} behaviours Active flag set.
+	 * @param {HTMLElement} header
 	 */
-	function initScrollBehaviours( behaviours ) {
-		const { transparent, shrink, hideOnScrollDown } = behaviours;
-
-		if ( ! transparent && ! shrink && ! hideOnScrollDown ) {
+	function initScrollBehaviours( header ) {
+		if ( header.dataset.sgsHeaderScrollBehaviours !== '1' ) {
 			return;
 		}
 
@@ -291,33 +278,17 @@
 			rafScheduled = false;
 			const scrollY = window.scrollY;
 
-			// Transparent → opaque transition (own state class on body).
-			if ( transparent ) {
-				if ( scrollY > 50 ) {
-					document.body.classList.add( 'is-header-scrolled' );
-				} else {
-					document.body.classList.remove( 'is-header-scrolled' );
-				}
-			}
+			// Transparent → opaque transition.
+			header.classList.toggle( 'is-header-scrolled', scrollY > 50 );
 
-			// Shrink — own state class + threshold, independent of transparent.
-			if ( shrink ) {
-				if ( scrollY > 50 ) {
-					document.body.classList.add( 'is-header-shrunk' );
-				} else {
-					document.body.classList.remove( 'is-header-shrunk' );
-				}
-			}
+			// Shrink — same threshold, own state class, independent CSS rule.
+			header.classList.toggle( 'is-header-shrunk', scrollY > 50 );
 
-			// Hide on scroll down — smart reveal (state on body). FR-37-13:
-			// LIVE, set by the "Hide on scroll" Advanced control on
-			// sgs/site-header.
-			if ( hideOnScrollDown ) {
-				if ( scrollY > 100 && scrollY > prevScrollY ) {
-					document.body.classList.add( 'is-header-scrolling-down' );
-				} else if ( scrollY <= prevScrollY ) {
-					document.body.classList.remove( 'is-header-scrolling-down' );
-				}
+			// Hide on scroll down — smart reveal (FR-37-13).
+			if ( scrollY > 100 && scrollY > prevScrollY ) {
+				header.classList.add( 'is-header-scrolling-down' );
+			} else if ( scrollY <= prevScrollY ) {
+				header.classList.remove( 'is-header-scrolling-down' );
 			}
 
 			prevScrollY = scrollY;
@@ -377,7 +348,7 @@
 	 * behaviours). Each row's data-sgs-row-transparent /
 	 * data-sgs-row-hide-on-scroll attrs list the tiers where that behaviour is
 	 * ON (emitted by sgs/site-header-row + sgs/site-footer-row render.php via
-	 * sgs_resolve_tier_booleans()). Toggles `is-row-scrolled` /
+	 * sgs_resolve_on_tiers(), Spec 35 T1.4). Toggles `is-row-scrolled` /
 	 * `is-row-hidden` / `is-row-shrunk` (Phase 2) on the ROW element itself,
 	 * independently per row.
 	 */
@@ -641,7 +612,7 @@
 			initHeightPublisher( header );
 
 			// F2 — scroll behaviour state; only active when a relevant flag exists.
-			initScrollBehaviours( getActiveBehaviours() );
+			initScrollBehaviours( header );
 
 			// FR-37-40 silent-failure guard — advisory console warning only,
 			// never a gate, and silent unless sticky was actually requested.

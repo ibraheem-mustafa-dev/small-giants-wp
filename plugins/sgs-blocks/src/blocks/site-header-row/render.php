@@ -148,10 +148,16 @@ if ( '' !== $shr_preset_bg_slug ) {
 // toggles per-row state classes based on the tiers listed in these data-attrs.
 // A behaviour off in every tier emits NOTHING (no attr at all).
 $shr_extra_attrs          = array( 'id' => $uid );
-$shr_transparent_on_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array() );
-$shr_hide_on_scroll_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array() );
+// sgs_resolve_tier_booleans() was RETIRED at Spec 35 T1.4 (2026-07-28) — its
+// boolean-absence-as-inherit semantics are identical to the canonical
+// sgs_resolve_tier() cascade, so sgs_resolve_on_tiers() (helpers-responsive.php)
+// is a drop-in replacement (on_marker=true, default=false) with zero stored-shape
+// change here (rowTransparent/rowHideOnScroll/rowShrink stay {desktop,tablet,mobile}
+// booleans).
+$shr_transparent_on_tiers = sgs_resolve_on_tiers( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array(), true, false );
+$shr_hide_on_scroll_tiers = sgs_resolve_on_tiers( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array(), true, false );
 // Phase 2 — per-row shrink. Same tier resolver, own data-attr + state class.
-$shr_shrink_tiers = sgs_resolve_tier_booleans( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array() );
+$shr_shrink_tiers = sgs_resolve_on_tiers( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array(), true, false );
 if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) || ! empty( $shr_shrink_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
 	if ( ! empty( $shr_transparent_on_tiers ) ) {

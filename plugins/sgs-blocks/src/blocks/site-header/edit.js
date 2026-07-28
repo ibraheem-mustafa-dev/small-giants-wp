@@ -9,7 +9,6 @@ import {
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
 	PanelBody,
-	ToggleControl,
 	SelectControl,
 	Notice,
 	__experimentalToolsPanel as ToolsPanel,
@@ -21,6 +20,7 @@ import {
 	WidthPanel,
 	ResponsiveSpacingPanel,
 } from '../container/components/ContainerWrapperControls';
+import { ResponsiveTriStateControl } from '../../components';
 
 // FR-37-28 — Layout preset (Centred / Split / Minimal). A preset is a
 // convenience action that WRITES the block's EXISTING layout attributes
@@ -452,33 +452,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label={ __( 'Header behaviour', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							headerSticky: false,
-							headerTransparent: false,
-							headerShrink: false,
-							headerHideOnScroll: false,
+							headerSticky: {},
+							headerTransparent: {},
+							headerShrink: {},
+							headerHideOnScroll: {},
 							contrastSafe: 'none',
 						} )
 					}
 				>
 					<ToolsPanelItem
 						label={ __( 'Sticky on scroll', 'sgs-blocks' ) }
-						hasValue={ () => headerSticky !== false }
+						hasValue={ () =>
+							Object.keys( headerSticky || {} ).length > 0
+						}
 						onDeselect={ () =>
-							setAttributes( { headerSticky: false } )
+							setAttributes( { headerSticky: {} } )
 						}
 						isShownByDefault
 					>
-						<ToggleControl
+						<ResponsiveTriStateControl
 							label={ __( 'Sticky on scroll', 'sgs-blocks' ) }
-							checked={ !! headerSticky }
-							onChange={ ( value ) =>
-								setAttributes( { headerSticky: value } )
-							}
 							help={ __(
 								'Pins the header to the top of the viewport while the visitor scrolls.',
 								'sgs-blocks'
 							) }
-							__nextHasNoMarginBottom
+							value={ headerSticky }
+							onChange={ ( value ) =>
+								setAttributes( { headerSticky: value } )
+							}
+							defaultValue="off"
 						/>
 					</ToolsPanelItem>
 
@@ -487,69 +489,75 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'Transparent until scrolled',
 							'sgs-blocks'
 						) }
-						hasValue={ () => headerTransparent !== false }
+						hasValue={ () =>
+							Object.keys( headerTransparent || {} ).length > 0
+						}
 						onDeselect={ () =>
-							setAttributes( { headerTransparent: false } )
+							setAttributes( { headerTransparent: {} } )
 						}
 						isShownByDefault
 					>
-						<ToggleControl
+						<ResponsiveTriStateControl
 							label={ __(
 								'Transparent until scrolled',
 								'sgs-blocks'
 							) }
-							checked={ !! headerTransparent }
-							onChange={ ( value ) =>
-								setAttributes( { headerTransparent: value } )
-							}
 							help={ __(
 								'Header starts see-through over a hero image, then becomes solid once the visitor scrolls. A contrast-safe scrim is applied automatically over the hero so text stays readable — change it below if you need a different look.',
 								'sgs-blocks'
 							) }
-							__nextHasNoMarginBottom
+							value={ headerTransparent }
+							onChange={ ( value ) =>
+								setAttributes( { headerTransparent: value } )
+							}
+							defaultValue="off"
 						/>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
-						hasValue={ () => headerShrink !== false }
+						hasValue={ () =>
+							Object.keys( headerShrink || {} ).length > 0
+						}
 						onDeselect={ () =>
-							setAttributes( { headerShrink: false } )
+							setAttributes( { headerShrink: {} } )
 						}
 						isShownByDefault
 					>
-						<ToggleControl
+						<ResponsiveTriStateControl
 							label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
-							checked={ !! headerShrink }
-							onChange={ ( value ) =>
-								setAttributes( { headerShrink: value } )
-							}
 							help={ __(
 								'Reduces the header height as the visitor scrolls down the page.',
 								'sgs-blocks'
 							) }
-							__nextHasNoMarginBottom
+							value={ headerShrink }
+							onChange={ ( value ) =>
+								setAttributes( { headerShrink: value } )
+							}
+							defaultValue="off"
 						/>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Hide on scroll', 'sgs-blocks' ) }
-						hasValue={ () => headerHideOnScroll !== false }
+						hasValue={ () =>
+							Object.keys( headerHideOnScroll || {} ).length > 0
+						}
 						onDeselect={ () =>
-							setAttributes( { headerHideOnScroll: false } )
+							setAttributes( { headerHideOnScroll: {} } )
 						}
 					>
-						<ToggleControl
+						<ResponsiveTriStateControl
 							label={ __( 'Hide on scroll', 'sgs-blocks' ) }
-							checked={ !! headerHideOnScroll }
-							onChange={ ( value ) =>
-								setAttributes( { headerHideOnScroll: value } )
-							}
 							help={ __(
 								'Header slides off the top of the screen once the visitor scrolls down, and slides back in as soon as they scroll up.',
 								'sgs-blocks'
 							) }
-							__nextHasNoMarginBottom
+							value={ headerHideOnScroll }
+							onChange={ ( value ) =>
+								setAttributes( { headerHideOnScroll: value } )
+							}
+							defaultValue="off"
 						/>
 					</ToolsPanelItem>
 

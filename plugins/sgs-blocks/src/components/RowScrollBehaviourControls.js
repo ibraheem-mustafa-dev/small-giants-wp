@@ -29,6 +29,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as blocksStore } from '@wordpress/blocks';
 import ResponsiveOverride from './ResponsiveOverride';
+import { resolveTier } from '../utils/responsive';
 
 /**
  * Derive a stable, DOM-safe anchor id for a child that has none yet.
@@ -69,6 +70,14 @@ export default function RowScrollBehaviourControls( {
 	// MUST be declared BEFORE the derived flags below that read it — a `const`
 	// referenced above its declaration is a temporal-dead-zone crash that takes
 	// the whole block editor down ("Cannot access 'x' before initialization").
+	//
+	// headerSticky reshaped to a tri-state {desktop,tablet,mobile} object at
+	// Spec 35 T1.4 (2026-07-28) — `!! headerSticky` would now ALWAYS be true
+	// (its default `{}` is a truthy object), so this reads the DESKTOP tier's
+	// resolved on/off state via the canonical resolveTier() cascade instead.
+	// This is an editor-only advisory (never a gate), evaluated at the
+	// DESKTOP tier as a simplification consistent with how contrastSafe's
+	// auto-upgrade reads sticky's/transparent's desktop tier server-side.
 	const headerIsSticky = useSelect(
 		( select ) => {
 			const { getBlockParentsByBlockName, getBlockAttributes } =
@@ -80,8 +89,10 @@ export default function RowScrollBehaviourControls( {
 			if ( ! parents?.length ) {
 				return null;
 			}
-			return !! getBlockAttributes( parents[ parents.length - 1 ] )
-				?.headerSticky;
+			const headerSticky = getBlockAttributes(
+				parents[ parents.length - 1 ]
+			)?.headerSticky;
+			return resolveTier( headerSticky, 'desktop', 'off' ).value === 'on';
 		},
 		[ clientId ]
 	);

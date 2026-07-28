@@ -721,34 +721,32 @@ if ( ! function_exists( 'sgs_emit_tier_rules' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_resolve_tier_booleans' ) ) {
+if ( ! function_exists( 'sgs_resolve_on_tiers' ) ) {
 	/**
-	 * Resolve a `{desktop,tablet,mobile}` BOOLEAN object into the list of tiers
-	 * where the effective value is TRUE, applying inherit-upward semantics
-	 * (mobile inherits tablet inherits desktop; an explicit `false` at a tier
-	 * means "off here", NOT "unset" — Phase-1 per-row behaviour must-fix 7).
+	 * Resolve a `{desktop,tablet,mobile}` responsive object into the list of
+	 * tiers where the effective value equals $on_marker, via the canonical
+	 * sgs_resolve_tier() cascade (Spec 35 T1.1/T1.4 — one cascade, no forks).
 	 *
-	 * ⚠ Legacy function. New code should use sgs_resolve_tier() for canonical
-	 * tier resolution (supports tri-state enums, scalars, and null-markers).
+	 * Generalises the retired `sgs_resolve_tier_booleans()` (removed Spec 35
+	 * T1.4, 2026-07-28): that function's boolean-absence-as-inherit semantics
+	 * are IDENTICAL to sgs_resolve_tier()'s null/absent-key-as-inherit rule —
+	 * an explicit `false` at a tier still means "off here", not "unset",
+	 * because sgs_resolve_tier() only treats `'inherit'`/`null`/missing as
+	 * inherit, never a concrete `false`. Verified equivalent for the row
+	 * blocks' boolean-object shape (`$on_marker = true, $default = false`);
+	 * the SAME call also serves the tri-state string-enum shape used by
+	 * header-level behaviours (`$on_marker = 'on', $default = 'off'`).
 	 *
-	 * Used by sgs/site-header-row + sgs/site-footer-row to emit
-	 * `data-sgs-row-*` attrs listing only the tiers where a behaviour is ON
-	 * (an all-off object emits nothing at all).
-	 *
-	 * @param mixed $raw The stored attribute value (expected `{desktop,tablet,mobile}` of booleans).
-	 * @return string[] Tier keys (subset of desktop/tablet/mobile) where the effective value is true, in tier order.
+	 * @param mixed $raw The stored `{desktop,tablet,mobile}` attribute value.
+	 * @param mixed $on_marker The per-tier value that counts as "on" (true for row booleans, 'on' for tri-state enums).
+	 * @param mixed $default Value used when desktop inherits/is missing (§6b guard) — false for booleans, 'off' for tri-state.
+	 * @return string[] Tier keys (subset of desktop/tablet/mobile) where the resolved value === $on_marker, in tier order.
 	 */
-	function sgs_resolve_tier_booleans( $raw ) {
-		$obj = is_array( $raw ) ? $raw : array();
-
-		$effective            = array();
-		$effective['desktop'] = array_key_exists( 'desktop', $obj ) ? (bool) $obj['desktop'] : false;
-		$effective['tablet']  = array_key_exists( 'tablet', $obj ) ? (bool) $obj['tablet'] : $effective['desktop'];
-		$effective['mobile']  = array_key_exists( 'mobile', $obj ) ? (bool) $obj['mobile'] : $effective['tablet'];
-
+	function sgs_resolve_on_tiers( $raw, $on_marker, $default ) {
 		$on = array();
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-			if ( $effective[ $tier ] ) {
+			$resolved = sgs_resolve_tier( $raw, $tier, $default );
+			if ( $resolved['value'] === $on_marker ) {
 				$on[] = $tier;
 			}
 		}

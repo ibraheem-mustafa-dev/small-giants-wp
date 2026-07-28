@@ -12,16 +12,19 @@
  * resolve_active_header_behaviour(). Since exercising that resolver for real
  * needs a live wp_template_part post + parse_blocks(), these tests instead use
  * the test-only injection hook Sgs_Header_Behaviours::set_test_behaviour() to
- * assert add_body_classes()'s CONTRACT: given a resolved flag set, it emits
- * the correct independent body classes.
+ * assert add_body_classes()'s CONTRACT: given a resolved contrast mode, it
+ * emits the correct body class.
+ *
+ * SCOPE NARROWED (Spec 35 T1.4, 2026-07-28): sticky / transparent / shrink /
+ * hide-on-scroll body classes are RETIRED from this class (they reshaped to
+ * tri-state objects resolved per-instance in site-header/render.php instead —
+ * see that class's docblock). This suite now covers CONTRAST only, plus the
+ * always-on sgs-has-header hook class.
  *
  * Covers:
  *   - add_body_classes always appends sgs-has-header
- *   - add_body_classes appends sgs-has-header-behaviour + the correct
- *     independent sgs-header-behaviour-{flag} class(es) for each active flag
- *   - two or more flags active at once (e.g. sticky + transparent) both land
- *   - contrast modes emit sgs-header-behaviour-contrast-{mode}
- *   - no active flags → only sgs-has-header
+ *   - contrast modes emit sgs-header-behaviour-contrast-{mode} + sgs-has-header-behaviour
+ *   - contrast === 'none' → only sgs-has-header
  *   - add_body_classes preserves existing classes unchanged
  *   - enqueue_assets does not enqueue in admin context
  *
@@ -152,10 +155,7 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 		public function test_no_flags_adds_only_sgs_has_header(): void {
 			Sgs_Header_Behaviours::set_test_behaviour(
 				array(
-					'sticky'      => false,
-					'transparent' => false,
-					'shrink'      => false,
-					'contrast'    => 'none',
+					'contrast' => 'none',
 				)
 			);
 
@@ -180,122 +180,10 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 		}
 
 		// ------------------------------------------------------------------
-		// add_body_classes — single independent flags
-		// ------------------------------------------------------------------
-
-		/**
-		 * Sticky flag injects sgs-has-header-behaviour and sgs-header-behaviour-sticky.
-		 *
-		 * @return void
-		 */
-		public function test_sticky_flag_adds_behaviour_classes(): void {
-			Sgs_Header_Behaviours::set_test_behaviour( array( 'sticky' => true ) );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header', $result );
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
-			$this->assertNotContains( 'sgs-header-behaviour-transparent', $result );
-			$this->assertNotContains( 'sgs-header-behaviour-shrink', $result );
-		}
-
-		/**
-		 * Transparent flag injects correct behaviour classes.
-		 *
-		 * @return void
-		 */
-		public function test_transparent_flag_adds_behaviour_classes(): void {
-			Sgs_Header_Behaviours::set_test_behaviour( array( 'transparent' => true ) );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
-			$this->assertNotContains( 'sgs-header-behaviour-sticky', $result );
-		}
-
-		/**
-		 * Shrink flag injects correct behaviour classes.
-		 *
-		 * @return void
-		 */
-		public function test_shrink_flag_adds_behaviour_classes(): void {
-			Sgs_Header_Behaviours::set_test_behaviour( array( 'shrink' => true ) );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-shrink', $result );
-		}
-
-		/**
-		 * Hide-on-scroll flag injects correct behaviour classes (FR-37-13).
-		 *
-		 * @return void
-		 */
-		public function test_hide_on_scroll_flag_adds_behaviour_classes(): void {
-			Sgs_Header_Behaviours::set_test_behaviour( array( 'hideOnScroll' => true ) );
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-			$this->assertContains( 'sgs-header-behaviour-hide-on-scroll-down', $result );
-			$this->assertNotContains( 'sgs-header-behaviour-sticky', $result );
-			$this->assertNotContains( 'sgs-header-behaviour-shrink', $result );
-		}
-
-		// ------------------------------------------------------------------
-		// add_body_classes — independent axes combine (the whole point of
-		// FR-S9-9: a header can be sticky AND transparent AND shrink).
-		// ------------------------------------------------------------------
-
-		/**
-		 * Sticky + transparent together both land as independent classes.
-		 *
-		 * @return void
-		 */
-		public function test_sticky_and_transparent_both_land(): void {
-			Sgs_Header_Behaviours::set_test_behaviour(
-				array(
-					'sticky'      => true,
-					'transparent' => true,
-				)
-			);
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
-			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-		}
-
-		/**
-		 * All three toggles + a contrast mode together — every flag lands.
-		 *
-		 * @return void
-		 */
-		public function test_all_flags_and_contrast_land(): void {
-			Sgs_Header_Behaviours::set_test_behaviour(
-				array(
-					'sticky'      => true,
-					'transparent' => true,
-					'shrink'      => true,
-					'contrast'    => 'scrim',
-				)
-			);
-
-			$result = Sgs_Header_Behaviours::add_body_classes( array() );
-
-			$this->assertContains( 'sgs-header-behaviour-sticky', $result );
-			$this->assertContains( 'sgs-header-behaviour-transparent', $result );
-			$this->assertContains( 'sgs-header-behaviour-shrink', $result );
-			$this->assertContains( 'sgs-header-behaviour-contrast-scrim', $result );
-			$this->assertContains( 'sgs-has-header-behaviour', $result );
-		}
-
-		// ------------------------------------------------------------------
 		// add_body_classes — contrast-safe modes
+		// (sticky / transparent / shrink / hide-on-scroll RETIRED from this
+		// class at Spec 35 T1.4 — see class docblock. Their per-tier CSS is
+		// now asserted against sgs/site-header/render.php, not body classes.)
 		// ------------------------------------------------------------------
 
 		/**

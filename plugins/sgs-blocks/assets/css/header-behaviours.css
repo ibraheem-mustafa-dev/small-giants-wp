@@ -1,17 +1,25 @@
 /**
- * Header Behaviours CSS (F1 + F2, FR-S9-9).
+ * Header Behaviours CSS (F1 + contrast-safe + per-row).
  *
  * F1 — WCAG 2.4.11: ensures anchor-link focus targets land below any sticky
  * header. The JS ResizeObserver publishes --sgs-header-height; this rule
  * consumes it. Defaults to 0px when the property is not yet set (no jump).
  *
- * F2 — Behaviour modifier classes are on <body>, not on the header element,
- * and are INDEPENDENT — sticky / transparent / shrink / hide-on-scroll /
- * contrast-safe can all be active at once (a header can be sticky AND
- * transparent). CSS selectors
- * descend from body to `header.sgs-site-header` so no DOM class
- * injection is needed. State classes (is-header-scrolled, is-header-shrunk,
- * is-header-scrolling-down) are also toggled on body by view.js.
+ * ⚠ SCOPE NARROWED (Spec 35 T1.4 / FR-37-14, 2026-07-28). Sticky / transparent
+ * / shrink / hide-on-scroll are RETIRED from this shared, body-class-keyed
+ * stylesheet — they reshaped to tri-state {desktop,tablet,mobile} objects,
+ * which a site-wide body class cannot express. Their CSS is now emitted
+ * PER-INSTANCE (per header block, scoped to its own uid) inside
+ * `sgs/site-header/render.php`, gated per device tier via
+ * `sgs_emit_tier_rules()` (Spec 35 D4) — see that file's "Header-level
+ * tri-state behaviours" block for the full mechanism. State classes
+ * (is-header-scrolled, is-header-shrunk, is-header-scrolling-down) are
+ * toggled by view.js on the HEADER ELEMENT itself (not body).
+ *
+ * What remains here: F1 (scroll-padding-top), the contrastSafe body-class
+ * rules (contrastSafe stays flat/scalar — untouched by T1.4), and the
+ * per-row behaviour rules (rowTransparent/rowHideOnScroll/rowShrink — a
+ * SEPARATE, already-tiered mechanism, unaffected by this reshape).
  *
  * All z-index values use the WP admin-bar safe range (< 99999) while staying
  * above typical theme content layers (100).
@@ -28,148 +36,22 @@
 }
 
 /* -------------------------------------------------------------------------
- * F2 — Sticky behaviour
+ * Sticky / transparent / shrink / hide-on-scroll body-class rules RETIRED
+ * here at Spec 35 T1.4 (2026-07-28) — see the file docblock above. Their CSS
+ * (including the shrink @supports scroll-timeline pair and the hide-on-scroll
+ * transform) is now emitted per-instance in sgs/site-header/render.php.
  *
- * The header pins to the top of the viewport. Pairs naturally with the
- * --sgs-header-height publisher to keep scroll-padding-top accurate. Pure
- * CSS — no JS state needed.
+ * ⚠ KNOWN RISK CARRIED FORWARD (unchanged by this migration — the mechanism
+ * that risk describes, `transform: translateY(...)` on the header element,
+ * still exists, just emitted per-instance instead of via this shared
+ * stylesheet): a native `<dialog>` (sgs/nav-drawer) opened while
+ * `header.sgs-site-header` carries a translateY transform (hide-on-scroll,
+ * scrolled down) is very likely unaffected — per D323/D337 a `<dialog>` in
+ * the top layer resolves against the INITIAL containing block (viewport),
+ * not an ancestor's transformed containing block — but this has NOT been
+ * live-tested for that specific combination. Verify on a live page before
+ * shipping "Hide on scroll" + nav-drawer together to a client.
  * ---------------------------------------------------------------------- */
-
-body.sgs-header-behaviour-sticky header.sgs-site-header {
-	position: sticky !important;
-	top: 0 !important;
-	z-index: 100;
-}
-
-/* -------------------------------------------------------------------------
- * F2 — Transparent-at-rest → solid-on-scroll behaviour
- *
- * The header sits absolutely above the hero / banner content. On scroll it
- * transitions to the theme surface colour.
- * ---------------------------------------------------------------------- */
-
-body.sgs-header-behaviour-transparent header.sgs-site-header {
-	position: absolute !important;
-	top: 0 !important;
-	left: 0;
-	right: 0;
-	background: transparent;
-	z-index: 100;
-}
-
-body.sgs-header-behaviour-transparent.is-header-scrolled header.sgs-site-header {
-	background: var( --wp--preset--color--surface, #ffffff );
-}
-
-/* -------------------------------------------------------------------------
- * F2 — Shrink-on-scroll behaviour
- *
- * Reduces header padding-block as the visitor scrolls. Its OWN state
- * (is-header-shrunk) and threshold, independent of the transparent axis, so
- * shrink can be combined with sticky/transparent or used alone.
- *
- * Prefers scroll-driven CSS animation (`animation-timeline: scroll()`) where
- * supported — no JS-side height writing, avoids racing the ResizeObserver
- * height publisher. Falls back to a class-driven transition (is-header-shrunk,
- * toggled by view.js) in browsers without scroll-timeline support.
- * ---------------------------------------------------------------------- */
-
-@supports ( animation-timeline: scroll() ) {
-	body.sgs-header-behaviour-shrink header.sgs-site-header {
-		animation-name: sgs-header-shrink;
-		animation-duration: 1ms; /* driven by scroll progress, not wall-clock time */
-		animation-fill-mode: both;
-		animation-timeline: scroll( root block );
-		animation-range: 0 200px;
-	}
-
-	@keyframes sgs-header-shrink {
-		from {
-			padding-block: var( --wp--preset--spacing--30, 1.5rem );
-		}
-		to {
-			padding-block: var( --wp--preset--spacing--10, 0.5rem );
-		}
-	}
-
-	@media ( prefers-reduced-motion: reduce ) {
-		body.sgs-header-behaviour-shrink header.sgs-site-header {
-			animation: none;
-		}
-	}
-}
-
-@supports not ( animation-timeline: scroll() ) {
-	body.sgs-header-behaviour-shrink header.sgs-site-header {
-		padding-block: var( --wp--preset--spacing--30, 1.5rem );
-		transition: padding-block 200ms ease;
-	}
-
-	body.sgs-header-behaviour-shrink.is-header-shrunk header.sgs-site-header {
-		padding-block: var( --wp--preset--spacing--10, 0.5rem );
-	}
-
-	@media ( prefers-reduced-motion: reduce ) {
-		body.sgs-header-behaviour-shrink header.sgs-site-header {
-			transition: none;
-		}
-	}
-}
-
-/* -------------------------------------------------------------------------
- * F2 — Hide-on-scroll-down (smart reveal) — LIVE (FR-37-13, wired to the
- * "Hide on scroll" Advanced control on sgs/site-header). Class emitted by
- * Sgs_Header_Behaviours::add_body_classes() when headerHideOnScroll is true;
- * state toggled by src/header-behaviours/view.js.
- *
- * The header slides off the top when the user scrolls down, slides back in
- * on upward scroll. GPU-composited via transform (no layout thrash).
- * prefers-reduced-motion: transition is stripped so the header simply
- * appears/disappears without animation.
- *
- * ⚠ KNOWN RISK, UNVERIFIED FOR THIS COMBINATION (carried forward from the
- * qc-council MUST-FIX 3 / D336 finding against the now-retired
- * sgs/adaptive-nav drawer — sgs/adaptive-nav was deleted at D362/FR-37-21;
- * the current drawer is sgs/nav-drawer, a sibling block rendered inside the
- * SAME `header.sgs-site-header` wrapper — verified via
- * theme/sgs-theme/patterns/framework-header-default.php, which emits
- * wp:sgs/site-header then wp:sgs/nav-drawer inside the same "header" area
- * template part):
- *
- * `transform: translateY(...)` on `header.sgs-site-header` makes that
- * element a containing block for CSS purposes. A native `<dialog>` opened
- * via `showModal()` is promoted to the top layer, and per D323/D337 (this
- * repo's own prior research — decisions.md) that promotion is exactly why
- * `<dialog>` was chosen over the old re-parenting hack: it is documented
- * there as escaping DOM-position-dependent bugs "by construction". Modern
- * browsers additionally resolve top-layer elements against the INITIAL
- * containing block (viewport), not an ancestor's transformed containing
- * block, which is a deliberate CSS WG fix for exactly this
- * transform-traps-fixed-content class of bug. On that basis the risk this
- * comment originally flagged is very likely already resolved by the
- * `<dialog>` architecture — but that claim has NOT been live-tested for the
- * specific combination this FR makes reachable for the first time: a header
- * with "Hide on scroll" ON, scrolled down (header translated off-screen),
- * WHILE sgs/nav-drawer is open. Verify on a live page (open the drawer after
- * scrolling down on a header with Hide on scroll enabled; confirm the drawer
- * still covers the full viewport and isn't clipped/mispositioned) before
- * shipping that combination to a client.
- * ---------------------------------------------------------------------- */
-
-body.sgs-header-behaviour-hide-on-scroll-down header.sgs-site-header {
-	transition: transform 200ms ease;
-	will-change: transform;
-}
-
-body.sgs-header-behaviour-hide-on-scroll-down.is-header-scrolling-down header.sgs-site-header {
-	transform: translateY( -100% );
-}
-
-@media ( prefers-reduced-motion: reduce ) {
-	body.sgs-header-behaviour-hide-on-scroll-down header.sgs-site-header {
-		transition: none;
-	}
-}
 
 /* -------------------------------------------------------------------------
  * F2 — Contrast-safe fallback for the transparent-over-hero case.
@@ -208,9 +90,10 @@ body.sgs-header-behaviour-contrast-shadow header.sgs-site-header button {
 	text-shadow: 0 1px 3px rgba( 0, 0, 0, 0.6 );
 }
 
-body.sgs-header-behaviour-transparent:not( .sgs-header-behaviour-contrast-force-solid ) header.sgs-site-header {
-	background: transparent;
-}
+/* The transparent-resting `background:transparent` rule that used to live
+ * here (keyed on the now-retired `body.sgs-header-behaviour-transparent`
+ * class) is GONE — sgs/site-header/render.php now emits it per-instance,
+ * per-tier, as part of the tri-state transparent behaviour's "on" CSS. */
 
 body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
 	background: var( --wp--preset--color--surface, #ffffff ) !important;
@@ -219,9 +102,9 @@ body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
 /* -------------------------------------------------------------------------
  * PER-ROW behaviours (Phase 1, header-footer-per-row-identity design gate).
  *
- * A NEW parallel mechanism, additive to the header-LEVEL body-class rules
- * above — does NOT touch the shared wrapper (SGS_Container_Wrapper) or any
- * `body.sgs-header-behaviour-*` / `header.sgs-site-header` selector. Each row
+ * A parallel mechanism, additive to the header-LEVEL per-instance rules
+ * emitted by site-header/render.php — does NOT touch the shared wrapper
+ * (SGS_Container_Wrapper) or any header-level uid selector. Each row
  * that carries `.sgs-row-behaviour` (emitted by sgs/site-header-row +
  * sgs/site-footer-row render.php) gets its OWN independent transparent /
  * hide-on-scroll state, toggled by src/header-behaviours/view.js
