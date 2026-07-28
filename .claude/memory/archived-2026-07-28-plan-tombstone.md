@@ -1,3 +1,7 @@
+> **ARCHIVED 2026-07-28** - tombstone at a live path (`.claude/plan.md`). It was 58 days stale and
+> self-contradictory (cited Spec 22 as canonical while declaring it DEAD). Live status is single-sourced
+> to `.claude/LEDGER.md`. Historical reference only - do not update, do not cite.
+
 ---
 doc_type: master-plan
 project: small-giants-wp

@@ -1,3 +1,7 @@
+> **ARCHIVED 2026-07-28** - per-track next-session prompt (Spec 37 header/footer track), retired by
+> Bean's LEDGER-only decision: track state now lives in `.claude/LEDGER.md`'s per-track sections, and
+> co-active-track etiquette in `.claude/STOP-CATALOGUE.md`. Verbatim as it stood; do not update.
+
 # Next Session — Spec 37 Header/Footer Builder: the client-facing deal-winners
 
 Invoke `/autopilot` before anything else. Then read this file end-to-end.

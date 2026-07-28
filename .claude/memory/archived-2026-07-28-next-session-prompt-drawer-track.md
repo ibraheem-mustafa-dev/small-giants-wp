@@ -1,3 +1,7 @@
+> **ARCHIVED 2026-07-28** - per-track next-session prompt (Spec 36 drawer/mega track), retired by
+> Bean's LEDGER-only decision: track state now lives in `.claude/LEDGER.md`'s per-track sections, and
+> co-active-track etiquette in `.claude/STOP-CATALOGUE.md`. Verbatim as it stood; do not update.
+
 Invoke /autopilot before doing anything else.
 
 > **⚠ THIS FILE IS A POINTER, NOT THE TRUTH.** This project is LEDGER-mode: `.claude/LEDGER.md`

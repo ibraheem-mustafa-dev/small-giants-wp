@@ -23,6 +23,19 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE** — NEW 2026-07-28 (docs fat-cut).
+  Two or more sessions commit to `main` in the SAME worktree at the same time. The rules, all
+  earned by real incidents: (1) **commit by EXACT PATH, never `git add -A`** — a blanket add
+  sweeps the other track's uncommitted work into your commit; (2) **an uncommitted change you did
+  not make is NOT yours to commit, revert, or "clean up"** — the LEDGER names which files the
+  co-active track is holding, and a `git checkout --` on one destroys unpushed work with no
+  recovery path; (3) **re-check `git branch --show-current` in the SAME command as the commit**
+  (STOP-RECHECK-BRANCH); (4) **`git log -1` before trusting any cached HEAD/D-ceiling** — the
+  other track moves both between your reads; (5) **the LEDGER wins on any disagreement about
+  live state.** Per-track next-session prompts were RETIRED 2026-07-28 for exactly this reason:
+  each track kept a private "truth" file, one went stale, and a session nearly spent itself
+  rebuilding working code from it. Track state now lives in the LEDGER's per-track sections only.
+
 - **STOP-MEASURE-THE-STATE-NOT-THE-FLAG-THAT-REQUESTS-IT** — NEW 2026-07-26 (D391). When gating
   behaviour on *"is X currently true?"*, read the **computed/effective state**, never the flag,
   class or attribute that *asks* for X. The two diverge the moment any other setting can override
@@ -770,3 +783,9 @@ for real before claiming done?
   own `layout` vocabulary and double-gridded the block; and an `&&`-chained build-then-push
   command's overall exit 0 masked a failed intermediate build stage at commit `07c67642`, caught
   only by re-checking the individual stage output rather than the chain's aggregate result.
+- **2026-07-28 (docs fat-cut / truth sweep) re-run:** previous unique `STOP-*` = **85**; ADDED 1
+  (`STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE`), SUBTRACTED **none** → **86**. Same
+  command as above → **86**. 86 >= 85. PASS. Earned + rehomed: the per-track next-session prompts
+  that carried this etiquette were retired this session (a private per-track "truth" file went
+  stale on 2026-07-27 and nearly cost a session rebuilding working code), so the defence moves
+  HERE rather than dying with them — the D101 rule is carry-forward, never subtract.
