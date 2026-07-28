@@ -27,14 +27,31 @@ All 3 default plans render `Â£9` / `Â£90` / `Â£29` / `Â£290` / `Â£99` 
 - `reports/visual-diff/pricing-table-3plans-2026-07-28.png` — all 3 default plans rendered, confirms the currency mojibake.
 - `reports/visual-diff/pricing-table-persisted-2026-07-28.png` — plan 1 CTA link persisted after reload.
 
+## Re-verify after 7f4f399a (2026-07-28, same session, later pass)
+
+Fix commit 7f4f399a deployed to sandybrown canary.
+
+1. Hard-reloaded draft page 1849 — 0 console errors.
+2. Located plan 1's CTA link ("Edit link" on the existing `example.com/pricing-plan1` chip), clicked it, expanded "Advanced" — **"Open in new tab" now renders** alongside nofollow/sponsored.
+3. Toggled it ON via the checkbox — 0 console errors.
+4. Clicked "Apply" — 0 console errors.
+5. Read plan 1's attributes from the `core/block-editor` data store: `{ ctaTarget: "_blank", ctaRel: "noopener", ctaUrl: "https://example.com/pricing-plan1" }` — confirms `ctaRel` correctly gained `noopener`.
+6. Saved draft, hard-reloaded the editor — 0 console errors.
+7. Re-read the data store post-reload: **identical values persisted** — `ctaTarget: "_blank"`, `ctaRel: "noopener"`, `ctaUrl: "https://example.com/pricing-plan1"`.
+8. Screenshot captured: `reports/visual-diff/pricing-table-reverify-newtab-2026-07-28.png`.
+
+Console errors observed during re-verify: **none**.
+
+Note: the pre-existing currency mojibake (`Â£9` etc.) remains unfixed — still out of scope for this re-verify, flagged separately above.
+
 ## Verdict
 
-verdict: PARTIAL
+verdict: PASS
 
 - 3 default plans render: PASS
 - CTA link set + persisted: PASS
 - No crash / no block-caused console errors: PASS
-- New-tab toggle: FAIL (shared SgsLinkControl bug — control absent from UI, see sgs/icon report)
-- Pre-existing currency-encoding defect observed (not in scope, not fixed)
+- New-tab toggle: PASS (control renders, toggles, persists with `ctaTarget=_blank` + `ctaRel=noopener`, re-verified after 7f4f399a)
+- Pre-existing currency-encoding defect still present (out of scope, not fixed, not gating this verdict)
 
-first_paint_capture_passed: true (screenshot captured; PASS reserved for full-pass blocks, not asserted here since new-tab sub-check failed)
+first_paint_capture_passed: true

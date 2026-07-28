@@ -24,14 +24,29 @@
 
 `reports/visual-diff/social-icons-canvas-2026-07-28.png` — canvas + inspector showing the applied link and the panel list (confirming no "Link behaviour" heading present).
 
+## Re-verify after 7f4f399a (2026-07-28, same session, later pass)
+
+Fix commit 7f4f399a deployed to sandybrown canary.
+
+1. Hard-reloaded draft page 1849 — 0 console errors.
+2. Selected the block, expanded "Social Links", clicked "Edit link" on the existing `example.com/social-test` item, expanded "Advanced" — **"Open in new tab" now renders**.
+3. **Honest note:** the checkbox was already checked (`checked: true`) at this point — its stored value read `opensInNewTab: true` from the data store even before any toggle action in this re-verify pass. To prove the control is genuinely interactive (not just displaying a frozen `true`), I toggled it OFF (confirmed `checked: false`) then back ON (confirmed `checked: true`) — both toggles fired with 0 console errors, demonstrating the checkbox is live and controllable, ending in the required ON state.
+4. Clicked "Apply" — 0 console errors.
+5. Read the item's attributes from the `core/block-editor` data store: `{ platform: "website", url: "https://example.com/social-test", opensInNewTab: true, rel: "noopener" }`.
+6. Saved draft, hard-reloaded the editor — 0 console errors.
+7. Re-read the data store post-reload: **identical values persisted**, confirmed both via the data store and a screenshot showing the checked "Open in new tab" box in the live UI.
+8. Screenshot captured: `reports/visual-diff/social-icons-reverify-newtab-2026-07-28.png`.
+
+Console errors observed during re-verify: **none**.
+
 ## Verdict
 
-verdict: PARTIAL
+verdict: PASS
 
 - Block renders, no crash: PASS
 - "Link behaviour" panel absence confirmed: PASS
 - URL set + persisted: PASS
 - No console errors: PASS
-- New-tab toggle: FAIL (shared SgsLinkControl bug, see sgs/icon report — same root cause, not block-specific)
+- New-tab toggle: PASS (control renders, demonstrated interactive via off→on toggle, persists with `opensInNewTab=true` + `rel=noopener`, re-verified after 7f4f399a)
 
-first_paint_capture_passed: true (screenshot captured; PASS reserved for full-pass blocks, not asserted here since new-tab sub-check failed)
+first_paint_capture_passed: true

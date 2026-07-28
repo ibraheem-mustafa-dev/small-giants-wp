@@ -233,10 +233,22 @@ unmerged/paused — check its branch state before touching its files.
   gates Bean ordered kept in scope (native-supports-vs-Spec-32; templateLock contentOnly).
   **Approved plan (Bean, 2026-07-28): `~/.claude/plans/please-read-through-all-hashed-wreath.md`**
   — 5 tracks, 5 waves; critical path T0.2→T1.1→(T1.2∥T1.3)→T1.4a→T1.4 unblocks Spec 37 FR-37-14.
-  Wave 1 IN FLIGHT 2026-07-28: link + shadow migration batches dispatched; Spec 35 Part M
-  corrected (was stale in both directions — ShadowControl/SgsLinkControl/DesignTokenPicker-alpha
-  are BUILT; band-width bug was already resolved). Bean decisions: CLEAN reshape (no fallback);
-  fresh header-behaviour inventory (T1.4a) mandatory before the FR-37-14 reshape.
+  **Wave 1 LANDED 2026-07-28** (`64999cd2` + `7f4f399a`, deployed to sandybrown, fully-gated
+  build GREEN, D388 editor pass COMPLETE — all 6 changed blocks PASS on canary page 1849 with
+  per-block reports at `reports/visual-diff/*-2026-07-28-d388.md`): SgsLinkControl on
+  icon/pricing-table/social-icons/team-member (+2 extras: product-card MediaUploadCheck,
+  process-steps reduced-motion); cta-section on ShadowControl; icon-list no-inline fix (closed a
+  live check-no-inline canary regression); sgs-quote F2 goldens re-seeded (closed the parked
+  P-QUOTE-PATH2 residual). **D388 earned its keep: the editor pass caught a universal
+  SgsLinkControl bug** (WP LinkControl's `settings` prop REPLACES defaults — the Open-in-new-tab
+  toggle was missing from every consumer; fixed at the shared component, redeployed,
+  re-verified). Audit WARNs now: raw-url-link 8 (2 = config-URL exemption candidates in-scope
+  blocks; 6 = part-2 blocks), preset-only-shadow 7, media-check 0, reduced-motion 0. New parked:
+  P-PRICING-TABLE-CURRENCY-MOJIBAKE + P-CONTAINER-PATTERN-PREVIEW-VALIDATION-ERRORS (both
+  pre-existing, surfaced by the D388 pass). Spec 35 Part M corrected (was stale BOTH directions).
+  Bean decisions: CLEAN reshape (no fallback); fresh header-behaviour inventory (T1.4a)
+  mandatory before the FR-37-14 reshape; both design gates (T0.2 cascade + T2.2b wrapper shadow)
+  WRITTEN and AWAITING BEAN SIGN-OFF — they gate the critical path.
   Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit:
   `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 - **Track 1c — Spec 31 converter completion** (prompt: `next-session-prompt-track1-converter.md`). 2026-07-22 completion wave shipped (11 commits): `::before/::after` overlay lift, transform/filter/top/left un-excluded + hover-lift (Bean-caught: hover scale/zoom/grayscale on 15+ blocks was silently dropping), F3 LANDED runtime + batch runner, **UNACCOUNTED 14->0** (they were ACCOUNTING bugs in the D1 bucket/join, not converter drops). 2026-07-23 (D372/D373): declarative CSS-routing shipped — `css_layer` L1-L4 seeded, `css_element` normalised, +213 routes, product-card cta -> box-object (every block now box-object). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`; detail: decisions D372/D373.

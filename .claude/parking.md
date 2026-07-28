@@ -202,6 +202,28 @@ subagent invention — recorded in the session summary. Archived 2026-07-28 to
 memory/parking-archive.md. -->
 
 
+> **P-PRICING-TABLE-CURRENCY-MOJIBAKE** — NEW 2026-07-28 (surfaced by the Spec 35 wave-1 D388
+> editor pass, canary page 1849; PRE-EXISTING, not caused by wave 1). `sgs/pricing-table`'s three
+> default plans render `Â£9`/`Â£90` instead of `£9` — classic UTF-8 double-encoding, most likely
+> the `£` literal in the block.json defaults or edit.js plan template being re-encoded somewhere
+> in the save path. Visible on every fresh insert, so every client sees it on first use. **To
+> close:** find where the default plan prices are declared, store the price as a plain number +
+> separate currency field OR ensure the file/transport encoding survives, verify a fresh insert
+> renders `£` in canvas AND frontend. **Status: OPEN** · **Bucket:** Blocks · **Trigger:** next
+> pricing-table or Spec-35 wave session.
+
+> **P-CONTAINER-PATTERN-PREVIEW-VALIDATION-ERRORS** — NEW 2026-07-28 (same D388 pass;
+> PRE-EXISTING). The block inserter's pattern previews for "Features — Icon Grid" / "Services —
+> Feature Grid" throw `Block validation: Block validation failed for sgs/container` (8-14×
+> per inserter open) and show "Block contains unexpected or invalid content" IN THE PREVIEW.
+> Confirmed unrelated to wave-1 blocks (fires before any were touched; always cites
+> sgs/container). Likely the stored pattern markup carries an older container save shape than
+> the current save.js emits (no-deprecations policy D270 makes this class visible). **To close:**
+> open each failing pattern's source in theme patterns/, re-author the container markup to the
+> current shape, verify inserter previews render clean with zero validation errors. **Status:
+> OPEN** · **Bucket:** Blocks · **Trigger:** next patterns or container session; worth fixing
+> before any client demo (broken-looking previews in the inserter).
+
 > **P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES** — NEW 2026-07-21. **Investigation result that REVERSES a standing assumption — read before "fixing" `role`.** The handoff treated `role` as fuzzy/name-derived and therefore suspect. Measured on the 290 rows where `role` AND `css_property` are both populated: **exactly 2 genuine disagreements (0.7%)**, both `sgs/option-picker` `pillBorderRadius`/`pillSelectedBorderRadius` (`role='typography'`, truly `border-radius` — the known `pill*` name-collision; **css_property is correct, role is wrong, cheap 2-row fix**). Everything else agrees. **`role` is ~99% accurate wherever it can be checked.** Caveat that must travel with that number: coverage is only 290 of `role`'s 977 populated rows (30%), so this is 99% on the measurable third, not a clean bill of health.
 >
 > **The structural finding: they answer DIFFERENT questions and neither replaces the other.** `role` = **what the value IS** (a colour → the client needs a colour picker). `css_property`+element/state/tier = **how it is DELIVERED** (which property, where, when). Proof: `sgs/cta-section shadow`, `sgs/card-grid cardShadow`, `sgs/team-member cardShadow` all carry `role='color'` + `css_property='box-shadow'` — NOT disagreements, but the *same value-type-vs-delivery-property distinction Bean caught on `sgs/tabs tabIndicatorColour`*. **Consequence: the `tabIndicatorColour` override added this session is arguably the wrong SHAPE** — `role` already encodes value-type for free on all three sibling cases; we hand-wrote into `css_property` a semantic it structurally cannot carry. Revisit before adding more overrides of that kind. **`canonical_slot` / `derived_selector` are NOT replaceable at all** — they answer recognition ("which block does this BEM node resolve to"), a third axis the derived data cannot address. The 687 `role`-only attrs are mostly content/URL/enum/identity fields with no CSS property **by nature**, so the derived set can grow but will never reach `role`'s surface. **Do NOT pursue replacement — it would delete a working semantic axis to install a mechanical one.** **UPDATE 2026-07-22:** the `sgs/option-picker` `pillBorderRadius`/`pillSelectedBorderRadius` `role='typography'`→`visual` fix SHIPPED at source in Front 1 (`7a6a7586`). **RESIDUAL (open work, not just a finding):** `sgs/product-card`'s `pickerPillBorderRadius`/`pickerPillSelectedBorderRadius` carry the SAME wrong `role: typography` (the same `pill*` name-collision) in `attr-classification-overrides.json` — same one-line `visual` fix, left for Bean's call (Front-1 cleanup subagent finding). **Status: OPEN** (option-picker fixed; product-card pickerPill\* residual + the standing role-is-perpendicular finding to honour) · **Bucket:** Pipeline · **Trigger:** the pickerPill\* fix is a cheap 2-row edit any converter session; the finding gates any future proposal to "fix" or retire `role`.
