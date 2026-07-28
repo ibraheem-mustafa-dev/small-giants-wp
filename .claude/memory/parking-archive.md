@@ -2209,3 +2209,23 @@ The three entries below were consolidated (Bean-directed) into `P-DRAFT-TOKEN-EX
 > DECLARATION breakout was REAL and wider than shadows; fixed at the choke point with one shared
 > `sgs_css_value_has_breakout()` consumed by the token helpers' raw-passthrough branches
 > (`helpers-tokens.php`, +44/-3). **Completion date: 2026-07-28.**
+
+> **P-PRICING-TABLE-CURRENCY-MOJIBAKE** — NEW + RESOLVED 2026-07-28 (same day). Fresh pricing-table
+> inserts rendered `Â£9` instead of `£9`. Root cause (byte-proven): six double-encoded UTF-8
+> sequences (0xC3 0x82 0xC2 0xA3) stored literally in pricing-table/block.json's default plans —
+> a source-file bug pre-dating the Spec 35 wave-1 commit; edit.js literals were already correct.
+> Fixed in place at `1a7bbc02`; whole-repo byte-scan found no other affected block. Live-verified
+> on the canary: fresh insert renders £9/£29/£99 (screenshot
+> reports/visual-diff/pricing-table-mojibake-fix-2026-07-28.png); pre-fix stored instances retain
+> mojibake by design (no-migration policy, pre-production). **Completion date: 2026-07-28.**
+
+> **P-CONTAINER-PATTERN-PREVIEW-VALIDATION-ERRORS** — NEW + RESOLVED 2026-07-28 (same day). Block
+> inserter previews for "Features — Icon Grid" / "Services — Feature Grid" threw 8-14×
+> `Block validation failed for sgs/container` + "unexpected or invalid content". Root cause:
+> sgs/container's save() is bare `InnerBlocks.Content` (save.js:7-9) — WP regenerates save content
+> without any static wrapper HTML, so hand-authored `<div>` wrappers in stored pattern markup can
+> never re-validate, and the failure cascades up the container tree (8+6 instances = the observed
+> counts). Fix at `1a7bbc02`: 20 of 28 theme patterns re-authored wrapper-free (no deprecations per
+> D270; editor-saved templates proved the wrapper-free shape current); theme Version 1.5.48→1.5.49
+> to bust the pattern cache. Live-verified: 12 patterns preview clean, container validation console
+> errors 14→0, "Features — Icon Grid" inserts cleanly. **Completion date: 2026-07-28.**

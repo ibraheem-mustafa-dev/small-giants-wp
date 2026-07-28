@@ -202,27 +202,28 @@ subagent invention — recorded in the session summary. Archived 2026-07-28 to
 memory/parking-archive.md. -->
 
 
-> **P-PRICING-TABLE-CURRENCY-MOJIBAKE** — NEW 2026-07-28 (surfaced by the Spec 35 wave-1 D388
-> editor pass, canary page 1849; PRE-EXISTING, not caused by wave 1). `sgs/pricing-table`'s three
-> default plans render `Â£9`/`Â£90` instead of `£9` — classic UTF-8 double-encoding, most likely
-> the `£` literal in the block.json defaults or edit.js plan template being re-encoded somewhere
-> in the save path. Visible on every fresh insert, so every client sees it on first use. **To
-> close:** find where the default plan prices are declared, store the price as a plain number +
-> separate currency field OR ensure the file/transport encoding survives, verify a fresh insert
-> renders `£` in canvas AND frontend. **Status: OPEN** · **Bucket:** Blocks · **Trigger:** next
-> pricing-table or Spec-35 wave session.
+<!-- P-PRICING-TABLE-CURRENCY-MOJIBAKE — RESOLVED same day (2026-07-28) at `1a7bbc02`: source-file
+byte bug (six double-encoded 0xC3 0x82 0xC2 0xA3 sequences in pricing-table/block.json defaults,
+pre-dating wave 1), fixed in place; whole-repo byte-scan clean. Live-verified: fresh canary insert
+renders £9/£29/£99 correctly (screenshot pricing-table-mojibake-fix-2026-07-28.png); old stored
+instances keep mojibake by design (no migration, pre-production). Archived 2026-07-28 to
+memory/parking-archive.md. -->
 
-> **P-CONTAINER-PATTERN-PREVIEW-VALIDATION-ERRORS** — NEW 2026-07-28 (same D388 pass;
-> PRE-EXISTING). The block inserter's pattern previews for "Features — Icon Grid" / "Services —
-> Feature Grid" throw `Block validation: Block validation failed for sgs/container` (8-14×
-> per inserter open) and show "Block contains unexpected or invalid content" IN THE PREVIEW.
-> Confirmed unrelated to wave-1 blocks (fires before any were touched; always cites
-> sgs/container). Likely the stored pattern markup carries an older container save shape than
-> the current save.js emits (no-deprecations policy D270 makes this class visible). **To close:**
-> open each failing pattern's source in theme patterns/, re-author the container markup to the
-> current shape, verify inserter previews render clean with zero validation errors. **Status:
-> OPEN** · **Bucket:** Blocks · **Trigger:** next patterns or container session; worth fixing
-> before any client demo (broken-looking previews in the inserter).
+<!-- P-CONTAINER-PATTERN-PREVIEW-VALIDATION-ERRORS — RESOLVED same day (2026-07-28) at `1a7bbc02`:
+sgs/container saves only InnerBlocks.Content, so hand-authored <div> wrappers in stored pattern
+markup could never re-validate; 20 of 28 theme patterns re-authored wrapper-free (NO deprecations,
+D270); theme 1.5.49 bumped for the pattern cache. Live-verified: 12 patterns preview clean, container
+validation console errors 14→0, pattern inserts cleanly. Archived 2026-07-28 to
+memory/parking-archive.md. -->
+
+> **P-ICON-GRID-PATTERN-LOW-CONTRAST** — NEW 2026-07-28 (surfaced during the T2c live verify).
+> The "Features — Icon Grid" pattern renders its numbered feature items ("01/02/03/04") in
+> cream-on-cream — hard to read, likely a token pairing that fails on the light ground (WCAG
+> 4.5:1 baseline at risk). Pre-existing design issue in the pattern, unrelated to the validation
+> fix. **To close:** measure the actual contrast of the item text vs its background on the canary,
+> fix the pattern's colour tokens (brand-accent-is-a-ground rule), re-check ≥4.5:1. **Status:
+> OPEN** · **Bucket:** Design · **Trigger:** next patterns/design session, or the B3 preset
+> authoring wave (same files).
 
 > **P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES** — NEW 2026-07-21. **Investigation result that REVERSES a standing assumption — read before "fixing" `role`.** The handoff treated `role` as fuzzy/name-derived and therefore suspect. Measured on the 290 rows where `role` AND `css_property` are both populated: **exactly 2 genuine disagreements (0.7%)**, both `sgs/option-picker` `pillBorderRadius`/`pillSelectedBorderRadius` (`role='typography'`, truly `border-radius` — the known `pill*` name-collision; **css_property is correct, role is wrong, cheap 2-row fix**). Everything else agrees. **`role` is ~99% accurate wherever it can be checked.** Caveat that must travel with that number: coverage is only 290 of `role`'s 977 populated rows (30%), so this is 99% on the measurable third, not a clean bill of health.
 >
