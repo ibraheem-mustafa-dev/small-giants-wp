@@ -207,6 +207,50 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
+## Sweep record — 2026-07-29 parking normalise + enforcement
+
+**The doc rules are now machine-enforced, not asserted.** `.claude/hooks/handoff-preflight.py`
+(6 checks: LEDGER byte cap · D101 STOP carry-forward · parking Status conformance · parking
+archive-on-resolve · tombstones at live paths · dangling links). `--check` gates `/handoff`;
+`--self-test` proves each check can still fail. Built because five rules were documented as
+"enforced every /handoff" and enforced nowhere — which is why the LEDGER reached 38,799 bytes
+against a prose-only cap, and why a 2026-05-09 `CONVERSATION-HANDOFF.md` sat at the repo root
+being copied to OpenClaw every session under a passing gate (now archived).
+
+- **The negative control earned its keep on first run:** it caught that the STOP-count regex was
+  compiled without `re.M`, so it anchored to the start of the *string* and counted 0 on any real
+  file — the check would have reported "no defence dropped" forever while measuring nothing.
+- **`docscore.py` fixed twice, both caught by testing not assumption:** the size check now covers
+  `LEDGER.md` via a `SIZE_CAPS` table; the D101 carry-forward audit now sees `STOP-CATALOGUE.md`
+  (it was gated on `doc_type`, but that file declares `doc_type: reference` and frontmatter beats
+  the filename map — and its counter only recognised markdown *table* rows while the catalogue uses
+  bullets). Proven by injecting a real 5-STOP drop; both gates caught it.
+
+**`parking.md` normalised: 296,456 → 124,641 bytes, 151 entries.** Verbatim pre-normalise copy at
+`memory/archived-2026-07-28-parking-pre-normalise.md`. The bloat was never closed entries (there
+were none) — it was **shipped history trapped inside still-open entries**. The convention moves a
+CLOSED *entry* to the archive but never addressed a closed *clause* inside an OPEN one, so every
+partially-completed programme accreted forever. One layout, one `**Status:**` syntax (the two
+variants were why any regex gate silently passed ~68% of entries), six real buckets, every entry
+dated. **Slug conservation caught real losses:** the delegated batches dropped 18 slugs, 5 of them
+cited from live docs — and one agent listed three slugs in its own manifest that it never wrote.
+All recovered by hand. P-17's IconPicker spec extracted to
+`plans/2026-07-29-icon-picker-component-design.md` (a plan, not a spec — it has had no design gate).
+
+**Skills repaired for LEDGER mode** (10 files): `/handoff` (single hoisted `## LEDGER MODE` block;
+Gate 4a copies LEDGER not the archived root handoff; Gates 6/6.5 no longer recreate the deleted
+`next-session-prompt.md`; `HANDOFF_GATE_OFF` now requires a recorded `QC-BYPASSED:` reason),
+autopilot SKILL + `living-docs-protocol.md` (which still routed phase-change → `state.md` and would
+have recreated it), the three doc templates that re-seed archived filenames into new projects,
+`/where-am-i`, `/mark-step-done`, the handoff rubric (it demanded a field `/handoff` forbids), and
+`/doc-audit`. Autopilot Stage 0 also lightened: it no longer swallows a 58KB correction ledger and a
+195KB spec before intent is classified.
+
+**Follow-up, deliberately NOT done:** the staleness review of the ~96 parking entries that no live
+doc references. With the file readable, that pass is now cheap.
+
+---
+
 ## Sweep record — 2026-07-28 docs fat-cut
 
 Swept narrative → `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md` (Gate-3 close detail,
