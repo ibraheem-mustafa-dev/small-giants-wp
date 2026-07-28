@@ -164,8 +164,19 @@ function inject_image_controls( string $block_content, array $block ): string {
 		$sgs_root_offset = $sgs_close_pos + strlen( $sgs_close_tag );
 	}
 
-	// --- Inject class sgs-has-image-controls into the ROOT tag. ---
-	$class_to_add = 'sgs-has-image-controls';
+	require_once __DIR__ . '/helpers-scoped-instance-vars.php';
+
+	// --- Inject classes into the ROOT tag: the fixed utility class, plus (when
+	// there are CSS vars to emit) the scoping class the <style> rule below is
+	// keyed to. Resolved BEFORE mutation so the uid-pattern search sees only
+	// the block's own existing classes. ---
+	$sgs_scope_class = '';
+	$add_classes     = array( 'sgs-has-image-controls' );
+	if ( ! empty( $css_vars ) ) {
+		$sgs_scope_class = sgs_scope_class_for_root( sgs_extract_root_opening_tag( substr( $block_content, $sgs_root_offset ) ), 'sgs-imgctl' );
+		$add_classes[]   = $sgs_scope_class;
+	}
+	$classes_str = implode( ' ', $add_classes );
 
 	$sgs_head = substr( $block_content, 0, $sgs_root_offset );
 	$sgs_root = substr( $block_content, $sgs_root_offset );
@@ -174,7 +185,7 @@ function inject_image_controls( string $block_content, array $block ): string {
 	if ( preg_match( '/^(<\w+\b[^>]*\bclass=["\'])/', $sgs_root ) ) {
 		$sgs_root = preg_replace(
 			'/^(<\w+\b[^>]*\bclass=["\'])/',
-			'$1' . $class_to_add . ' ',
+			'$1' . $classes_str . ' ',
 			$sgs_root,
 			1
 		);
@@ -182,36 +193,21 @@ function inject_image_controls( string $block_content, array $block ): string {
 		// No class attribute yet — add one.
 		$sgs_root = preg_replace(
 			'/^(<\w+)(\b)/',
-			'$1 class="' . $class_to_add . '"$2',
+			'$1 class="' . $classes_str . '"$2',
 			$sgs_root,
 			1
 		);
 	}
 	$block_content = $sgs_head . $sgs_root;
 
-	// --- Inject CSS custom properties into inline style (ROOT tag only). ---
-	if ( ! empty( $css_vars ) ) {
-		$css_str = implode( ';', $css_vars );
-
-		$sgs_head = substr( $block_content, 0, $sgs_root_offset );
-		$sgs_root = substr( $block_content, $sgs_root_offset );
-
-		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $sgs_root ) ) {
-			$sgs_root = preg_replace(
-				'/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/',
-				'$1style="$2;' . esc_attr( $css_str ) . '"',
-				$sgs_root,
-				1
-			);
-		} else {
-			$sgs_root = preg_replace(
-				'/^(<\w+)(\b)/',
-				'$1 style="' . esc_attr( $css_str ) . '"$2',
-				$sgs_root,
-				1
-			);
-		}
-		$block_content = $sgs_head . $sgs_root;
+	// --- Emit CSS custom properties as a scoped <style> rule (Spec 32
+	// no-inline contract, FR-32-11) — NEVER a style="" attribute. Same
+	// mechanism as hover-effects.php / parallax.php: appended as the block's
+	// own <style> tag, lifted to the consolidated <head> stylesheet on the
+	// front end (class-sgs-css-registry.php, render_block p99), left inline
+	// for the editor's ServerSideRender REST preview.
+	if ( ! empty( $css_vars ) && $sgs_scope_class ) {
+		$block_content = sgs_append_scoped_var_style( $block_content, $sgs_scope_class, $css_vars );
 	}
 
 	return $block_content;

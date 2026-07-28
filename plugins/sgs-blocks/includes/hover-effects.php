@@ -162,6 +162,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	}
 
 	require_once __DIR__ . '/render-helpers.php';
+	require_once __DIR__ . '/helpers-scoped-instance-vars.php';
 
 	// --- Locate the block's actual ROOT element. ---
 	// The no-inline styling contract (Spec 32, D293-D296) has every composite
@@ -250,9 +251,21 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$css_vars[] = '--sgs-ripple-duration:' . absint( $click_ripple_duration ) . 'ms';
 	}
 
+	// --- Resolve the scoping class for the scoped <style> rule below (Spec 32
+	// no-inline contract) BEFORE any classes are injected into the root tag,
+	// so the uid-pattern search sees only the block's OWN classes. ---
+	$sgs_scope_class = '';
+	if ( $css_vars ) {
+		$sgs_root_tag_html = sgs_extract_root_opening_tag( substr( $block_content, $sgs_root_offset ) );
+		$sgs_scope_class   = sgs_scope_class_for_root( $sgs_root_tag_html, 'sgs-hover' );
+	}
+
 	// --- Build extra classes. ---
 	$add_classes = array();
 
+	if ( $sgs_scope_class ) {
+		$add_classes[] = $sgs_scope_class;
+	}
 	if ( $has_hover ) {
 		$add_classes[] = 'sgs-has-hover';
 	}
@@ -312,29 +325,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$block_content = $sgs_head . $sgs_root;
 	}
 
-	// --- Inject CSS custom properties into inline style (ROOT tag only). ---
-	if ( $css_vars ) {
-		$css_str  = implode( ';', $css_vars );
-		$sgs_head = substr( $block_content, 0, $sgs_root_offset );
-		$sgs_root = substr( $block_content, $sgs_root_offset );
-		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $sgs_root ) ) {
-			$sgs_root = preg_replace(
-				'/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/',
-				'$1style="$2;' . esc_attr( $css_str ) . '"',
-				$sgs_root,
-				1
-			);
-		} else {
-			$sgs_root = preg_replace(
-				'/^(<\w+)(\b)/',
-				'$1 style="' . esc_attr( $css_str ) . '"$2',
-				$sgs_root,
-				1
-			);
-		}
-		$block_content = $sgs_head . $sgs_root;
-	}
-
 	// --- Inject the block-link overlay as the block root's LAST CHILD. ---
 	// Stretched-link pattern: the overlay is a SIBLING of the content, never
 	// a wrapper, so a link/button already inside the block (e.g. card-grid
@@ -381,6 +371,21 @@ function inject_hover_effects( string $block_content, array $block ): string {
 				$block_content = substr( $block_content, 0, $sgs_root_offset ) . $sgs_root;
 			}
 		}
+	}
+
+	// --- Emit CSS custom properties as a scoped <style> rule (Spec 32
+	// no-inline contract, FR-32-11) — NEVER a style="" attribute. The rule is
+	// keyed to $sgs_scope_class (added to the root's class list above), and
+	// appended LAST (after the overlay insertion) as the block's own <style>
+	// tag: on the front end the Spec-32 CSS collector
+	// (class-sgs-css-registry.php, render_block p99) lifts it into the
+	// consolidated <head> stylesheet; in the editor (ServerSideRender REST,
+	// no wp_footer flush) it stays inline and renders as-authored — the same
+	// shape every migrated block's render.php already uses. Appending after
+	// the overlay step means the overlay's root-close-tag lookup never has to
+	// reason about a trailing <style> tag being present.
+	if ( $css_vars && $sgs_scope_class ) {
+		$block_content = sgs_append_scoped_var_style( $block_content, $sgs_scope_class, $css_vars );
 	}
 
 	return $block_content;

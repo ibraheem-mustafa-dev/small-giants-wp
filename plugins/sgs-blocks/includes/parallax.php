@@ -77,8 +77,14 @@ function inject_parallax_attributes( string $block_content, array $block ): stri
 		$sgs_root_offset = $sgs_close_pos + strlen( $sgs_close_tag );
 	}
 
+	require_once __DIR__ . '/helpers-scoped-instance-vars.php';
+
 	$sgs_head = substr( $block_content, 0, $sgs_root_offset );
 	$sgs_root = substr( $block_content, $sgs_root_offset );
+
+	// Resolve the scoping class BEFORE any classes are added, so the
+	// uid-pattern search sees only the block's own existing classes.
+	$sgs_scope_class = sgs_scope_class_for_root( sgs_extract_root_opening_tag( $sgs_root ), 'sgs-parallax' );
 
 	// Use WP_HTML_Tag_Processor for safe, standards-compliant manipulation,
 	// scoped to the substring starting at the real root tag.
@@ -89,23 +95,24 @@ function inject_parallax_attributes( string $block_content, array $block ): stri
 		return $block_content;
 	}
 
-	// Add CSS class (add_class handles duplicates safely).
+	// Add CSS classes (add_class handles duplicates safely).
 	$processor->add_class( $css_class );
-
-	// Merge --sgs-parallax-strength into existing inline style.
-	$existing_style = $processor->get_attribute( 'style' ) ?? '';
-	$parallax_var   = '--sgs-parallax-strength:' . $strength . ';';
-
-	if ( $existing_style ) {
-		$new_style = rtrim( $existing_style, '; ' ) . ';' . $parallax_var;
-	} else {
-		$new_style = $parallax_var;
-	}
-
-	$processor->set_attribute( 'style', $new_style );
+	$processor->add_class( $sgs_scope_class );
 
 	// Add data attribute for the JS fallback to target.
 	$processor->set_attribute( 'data-sgs-parallax', $type );
 
-	return $sgs_head . $processor->get_updated_html();
+	$block_content = $sgs_head . $processor->get_updated_html();
+
+	// --- Emit --sgs-parallax-strength as a scoped <style> rule (Spec 32
+	// no-inline contract, FR-32-11) — NEVER a style="" attribute. Same
+	// mechanism as hover-effects.php / image-controls.php: appended as the
+	// block's own <style> tag, lifted to the consolidated <head> stylesheet
+	// on the front end (class-sgs-css-registry.php, render_block p99), left
+	// inline for the editor's ServerSideRender REST preview.
+	return sgs_append_scoped_var_style(
+		$block_content,
+		$sgs_scope_class,
+		array( '--sgs-parallax-strength:' . $strength )
+	);
 }

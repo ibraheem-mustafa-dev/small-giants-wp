@@ -84,6 +84,11 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 // Conditional visibility — server-side block suppression by rules (login, date, etc).
 require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 
+// Shared helper — scoped-<style> per-instance CSS var injection (Spec 32
+// no-inline contract). Required before hover-effects.php / parallax.php /
+// image-controls.php, which all depend on it.
+require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
+
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 

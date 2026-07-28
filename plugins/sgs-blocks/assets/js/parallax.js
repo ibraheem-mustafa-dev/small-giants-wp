@@ -46,8 +46,12 @@
 
 		blocks.forEach( function ( el ) {
 			var type     = el.dataset.sgsParallax;
+			// Read the CASCADED value, not the inline style — the strength var is
+			// now emitted via a scoped <style> rule (Spec 32 no-inline contract,
+			// FR-32-11), not an inline style="" attribute, so el.style would
+			// always read empty here.
 			var strength = parseInt(
-				el.style.getPropertyValue( '--sgs-parallax-strength' ) || '30',
+				getComputedStyle( el ).getPropertyValue( '--sgs-parallax-strength' ) || '30',
 				10
 			);
 			var rect = el.getBoundingClientRect();
