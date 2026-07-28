@@ -2229,3 +2229,11 @@ The three entries below were consolidated (Bean-directed) into `P-DRAFT-TOKEN-EX
 > D270; editor-saved templates proved the wrapper-free shape current); theme Version 1.5.48→1.5.49
 > to bust the pattern cache. Live-verified: 12 patterns preview clean, container validation console
 > errors 14→0, "Features — Icon Grid" inserts cleanly. **Completion date: 2026-07-28.**
+
+> **P-ICON-GRID-PATTERN-LOW-CONTRAST** — NEW + RESOLVED 2026-07-28 (same day, Bean-directed).
+> "Features — Icon Grid" rendered its numbered items cream-on-cream on the canary. Cause: the
+> pattern was authored as a dark band (primary-dark bg with surface/accent-light/text-inverse
+> foregrounds) — correct on the default dark-teal palette, broken on light client palettes where
+> primary-dark resolves light. Fix at `2b711a55`: re-tokened to guaranteed-readable pairings per
+> Bean (surface bg / text headings / primary numbers / text-muted body); theme 1.5.49→1.5.50 for
+> the pattern cache. **Completion date: 2026-07-28.**

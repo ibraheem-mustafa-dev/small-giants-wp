@@ -216,14 +216,12 @@ D270); theme 1.5.49 bumped for the pattern cache. Live-verified: 12 patterns pre
 validation console errors 14→0, pattern inserts cleanly. Archived 2026-07-28 to
 memory/parking-archive.md. -->
 
-> **P-ICON-GRID-PATTERN-LOW-CONTRAST** — NEW 2026-07-28 (surfaced during the T2c live verify).
-> The "Features — Icon Grid" pattern renders its numbered feature items ("01/02/03/04") in
-> cream-on-cream — hard to read, likely a token pairing that fails on the light ground (WCAG
-> 4.5:1 baseline at risk). Pre-existing design issue in the pattern, unrelated to the validation
-> fix. **To close:** measure the actual contrast of the item text vs its background on the canary,
-> fix the pattern's colour tokens (brand-accent-is-a-ground rule), re-check ≥4.5:1. **Status:
-> OPEN** · **Bucket:** Design · **Trigger:** next patterns/design session, or the B3 preset
-> authoring wave (same files).
+<!-- P-ICON-GRID-PATTERN-LOW-CONTRAST — RESOLVED same day (2026-07-28) at `2b711a55`, Bean-directed:
+the pattern was authored as a dark band (primary-dark bg + surface/accent-light/text-inverse
+foregrounds) — cream-on-cream wherever a client palette resolves primary-dark light. Re-tokened
+to guaranteed pairings (surface bg / text headings / primary numbers / text-muted body); theme
+1.5.50. Live check at the next canary look. Archived 2026-07-28 to memory/parking-archive.md. -->
+
 
 > **P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES** — NEW 2026-07-21. **Investigation result that REVERSES a standing assumption — read before "fixing" `role`.** The handoff treated `role` as fuzzy/name-derived and therefore suspect. Measured on the 290 rows where `role` AND `css_property` are both populated: **exactly 2 genuine disagreements (0.7%)**, both `sgs/option-picker` `pillBorderRadius`/`pillSelectedBorderRadius` (`role='typography'`, truly `border-radius` — the known `pill*` name-collision; **css_property is correct, role is wrong, cheap 2-row fix**). Everything else agrees. **`role` is ~99% accurate wherever it can be checked.** Caveat that must travel with that number: coverage is only 290 of `role`'s 977 populated rows (30%), so this is 99% on the measurable third, not a clean bill of health.
 >
