@@ -39,20 +39,29 @@ opened are listed as UNCONFIRMED, not guessed.
 > full-width at 375px, then `header-attached` already handles mobile correctly with no
 > extra attribute at all** — the cleanest answer available, and it would be free.
 >
-> **SCOPE (Bean-corrected, twice): ALL EIGHT measured sites, not just the two compact
-> ones.** Every variant traces to a real site, so every site needs the mobile pass —
-> including the six full-screen ones. They are NOT "obviously the same on mobile"; that
-> is an assumption, and mobile is the case our block already implements, so any
-> variation among them is directly relevant. Look specifically for variation WITHIN the
-> full-screen family that may deserve capturing rather than flattening: submenu model
-> (accordion vs drill-down vs flat), animation direction/duration, whether the close
-> affordance moves, whether the panel scrolls, whether imagery is dropped.
+> **⚠ SCOPE + METHOD, Bean-corrected THREE times. The categorisation in this report is
+> WRONG and must be redone.** Six completely different designs (dogstudio, fantasy, buck,
+> resn, studionamma, wearecollins) were collapsed into ONE `full-screen` bucket purely
+> because they share one measurement: the panel fills the viewport. For those six that is
+> the axis on which they are IDENTICAL, so it carries no information about what actually
+> differentiates them. Bean had already named dogstudio and resn as distinct looks worth
+> shipping as separate variants — the bucketing erased exactly that.
 >
-> **⚠ And note `side-panel` has NO reference site at all.** Three of the four proposed
-> variants trace to measured sites; `side-panel` exists only because `edge: left/right`
-> is half-built in our own code (`style.css:332-346`, hardcoded `width: min(88vw,
-> 360px)`, self-labelled "Phase 2+; declared, not gate-tested"). Either find a real
-> reference or tell Bean it is a variant with no evidence base.
+> **The DESKTOP MEASUREMENTS below stand.** The CATEGORY assignments do not.
+>
+> Next session re-categorises all 8 sites across **3 devices — desktop (natural default,
+> set nothing), 800px tablet, 400px mobile** — on EVERY axis, not just size: geometry,
+> layout inside the panel, submenu model, motion, close affordance, backdrop, what content
+> is dropped on smaller screens, and mechanics. Deliverable is a per-site category, an
+> 8×3 matrix, the yes/no on whether `variant` needs a per-device dimension, and **a
+> recommendation for the optimal `sgs/nav-drawer` setup across all 8 examples and all 3
+> devices.**
+>
+> **⚠ And note `side-panel` has NO reference site at all.** Three of the four previously
+> proposed variants trace to measured sites; `side-panel` exists only because
+> `edge: left/right` is half-built in our own code (`style.css:332-346`, hardcoded
+> `width: min(88vw, 360px)`, self-labelled "Phase 2+; declared, not gate-tested"). Either
+> find a real reference or tell Bean it is a variant with no evidence base.
 >
 > **This is Task 1 of the next session.** Append findings HERE rather than starting a
 > new report.
@@ -118,7 +127,18 @@ Corollary: the lamalama LOOK depends on the header being a compact centred
 pill. That is `sgs/site-header`'s job (it already declares `color` +
 `__experimentalBorder` supports), not the drawer's.
 
-## 3. Proposed variant taxonomy — axis is WHAT IT ATTACHES TO
+## 3. Proposed variant taxonomy — ⚠ SUPERSEDED, DO NOT BUILD FROM THIS
+
+> **This table is the collapsed categorisation Bean rejected.** It buckets six
+> distinct designs (dogstudio, fantasy, buck, resn, studionamma, wearecollins) into a
+> single `full-screen` row on geometry alone — the one axis on which those six are
+> identical. It is kept only so the reasoning is visible and not silently rewritten.
+> **The replacement comes from Task 1 of the next session** (8 sites × 3 devices,
+> categorised on every axis, plus a recommended block setup). The `attaches to` idea
+> below is still a USEFUL axis — it is just not the ONLY one, and it is not sufficient
+> to separate the six.
+
+Axis used below: what the panel attaches to.
 
 | Variant | Attaches to | Width behaviour | Reference |
 |---|---|---|---|

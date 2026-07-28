@@ -27,18 +27,22 @@ Invoke /autopilot before doing anything else.
 
 ---
 
-# Next session — build the nav-drawer DESKTOP VARIANTS (research is DONE; do not redo it)
+# Next session — categorise the drawer designs properly, then build the variants
 
 You are the engineer for Spec 36's drawer. **Gate 3 is CLOSED — the mega menu is proven live.**
-The research for this session's work is COMPLETE and measured. Your job is to BUILD from it.
+Desktop geometry is already measured for 8 reference sites. **What is NOT done is a proper
+CATEGORISATION** — the previous pass bucketed six different designs into one `full-screen` slot on
+geometry alone. Task 1 fixes that across 3 devices and produces the recommended block setup; Tasks
+2-6 build it.
 
 ## State recap (plain English — no assumed pretext)
 
 A "burger menu" is the three-line button that opens a menu panel. Ours (`sgs/nav-drawer`) was built
 phone-first: it opens a panel filling the whole screen. Bean wants the burger usable on **any**
 device including desktop — and on desktop a full-screen takeover is only one of the looks real sites
-use. Last session measured ~30 real websites to establish what the alternatives actually are, and
-wrote it up. **None of that needs rediscovering.**
+use. Last session measured ~30 real websites to establish what the alternatives are, and wrote it
+up — **the desktop MEASUREMENTS stand and do not need redoing.** What does need doing is
+categorising those designs properly, on more than size, and across all three device widths.
 
 Last session also closed Gate 3 (the mega menu verifiably works on a real page), fixed two
 root-cause defects, applied four rounds of Bean's visual feedback, fixed a security hole, and cut the
@@ -56,8 +60,9 @@ conflict). Then read the LEDGER's ⭐CURRENT blocks.
 1. **`.claude/LEDGER.md`** ⭐ CURRENT + ⭐ ALSO CURRENT — the single source of live status. FIRST.
 2. **`.claude/STOP-CATALOGUE.md`** — the uncapped STOP catalogue (**81 entries**) + pre-flight ritual §C.
 3. **`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md`** — IN FULL. This is the
-   brief for the whole session: measured geometry, the corrected taxonomy, the a11y findings, the
-   code audit of what is structurally blocking, and 4 named traps. **Do not re-run the research.**
+   brief for the whole session: measured desktop geometry, the a11y findings, the code audit of
+   what is structurally blocking, and 4 named traps. **Do not re-run the desktop measurements** —
+   but DO re-categorise, per Task 1.
 4. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** IN FULL (governing spec) — esp. **FR-36-6** (drawer
    + its new DESKTOP VARIANTS block), FR-36-8 (Burger Menu preset), FR-36-10 (disclosure vs dialog —
    the a11y contract), FR-36-14 (control completeness + the `hideExtensions` rule), §6a, §8.
@@ -79,72 +84,79 @@ build, and it is one build away from covering desktop as well as mobile.
 
 ---
 
-## Task 1 — MEASURE ALL 8 REFERENCE SITES ON MOBILE + TABLET (Bean-caught gap — do this FIRST)
+## Task 1 — PROPERLY CATEGORISE ALL 8 DRAWERS ACROSS ALL 3 DEVICES (Bean-directed — do this FIRST)
 
-**What:** re-measure **every site the variants are based on** at **375px and 768px**, not just
-desktop, and find out whether each keeps its distinctive panel or becomes something else.
-**Why:** **ALL prior research was measured at 1440×900 ONLY.** Every variant traces to a real site,
-so the question applies to ALL of them — not just the two compact ones. This decides the shape of
-the attribute you are about to build:
-- If panels KEEP their character on mobile → `variant` is a single value that persists across every
-  device, and geometry is just responsive values inside it. Simple.
-- If they COLLAPSE → `header-attached` and `trigger-anchored` are **desktop presentations**, not
-  device-spanning variants. Then either `variant` itself must be per-device
-  (`{desktop,tablet,mobile}`), or every variant declares its own mobile fallback — and shipping a
-  flat `variant` string first would bake in the wrong shape on a block with 16 stored instances.
+**What:** open every one of the 8 reference drawers at **desktop (leave the viewport at its natural
+default — do not set a width), 800px tablet, and 400px mobile**, categorise each one PROPERLY, and
+then say what the optimal `sgs/nav-drawer` setup should be across all 8 examples and all 3 devices.
 
-**Estimated time:** 40 min. **Depends on:** none. **Parallel with:** none — it gates Task 2.
+**Why — read this before starting, it is the whole point of the task.** The previous pass
+**collapsed six completely different designs into a single `full-screen` bucket** purely because
+they shared ONE measurement: the panel fills the viewport. That is one dimension, and for those six
+it is the dimension on which they are IDENTICAL — so it carries no information about what actually
+makes them different. Bean had already named dogstudio and resn as distinct looks worth shipping as
+separate variants; bucketing by geometry erased exactly that distinction. **Do not repeat it.**
+Geometry is ONE axis among several, and for full-viewport panels it is the least informative one.
 
-### The 8 sites — ALL of them, grouped by the variant each one feeds
+**Estimated time:** 45 min. **Depends on:** none. **Parallel with:** none — it gates Task 2.
 
-| Variant it feeds | Site | Desktop measurement already on record |
+### The 8 sites (every variant traces to one of these)
+`lamalama.com` · `lusion.co` · `dogstudio.co` · `fantasy.co` · `buck.co` · `resn.co.nz`
+(burger only via its own `#!/menu` hash route) · `studionamma.com` · `wearecollins.com`
+
+### The 3 device widths
+| Device | Viewport | Note |
 |---|---|---|
-| `header-attached` | **lamalama.com** | 438×436 @ top:16 — **exactly its 438×50 header pill's width + edges** |
-| `trigger-anchored` | **lusion.co** | 310×264 @ top:108, right-inset 72, no backdrop, explicit-close-only |
-| `full-screen` | **dogstudio.co** | 1440×900 |
-| `full-screen` | **fantasy.co** | 1440×900, scrollable |
-| `full-screen` | **buck.co** | 1440×900 |
-| `full-screen` | **resn.co.nz** | 1434×900 — burger only reachable via its own `#!/menu` hash route |
-| `full-screen` | **studionamma.com** | full viewport, opaque light-grey |
-| `full-screen` | **wearecollins.com** | full viewport, opaque near-black |
+| Desktop | **leave at the natural default** — set nothing | matches how the earlier rounds measured |
+| Tablet | **800px** | deliberately just above our 768 collapse point, to be safe |
+| Mobile | **400px** | deliberately just above 375, to be safe |
 
-**Do NOT skip the six full-screen sites.** They are not "obviously the same on mobile" — that is an
-assumption, and mobile is the case our block ALREADY implements, so any variation among them is
-directly relevant. Specifically look for **variation WITHIN the full-screen family** that we may
-want to capture as sub-behaviour rather than flatten into one variant: submenu model
-(accordion vs drill-down vs flat list), animation direction/duration, whether the close moves,
-whether the panel scrolls, whether imagery/promos are dropped on small screens.
+### Categorise on EVERY axis — not just size
+For each site × each device, capture:
+1. **Geometry** — panel rect, anchoring (viewport / header / trigger / edge), inset, radius.
+2. **Layout INSIDE the panel** — single column, multi-column, grid, centred stack, split with
+   imagery? How are the links arranged and at what scale?
+3. **Submenu model** — none, accordion, drill-down, or columns revealed in place?
+4. **Motion** — direction, duration, easing, stagger; does it differ per device?
+5. **Close affordance** — ×, the burger morphing, ESC, outside-click; does its POSITION move?
+6. **Backdrop** — dim, blur, opaque, none; does it block pointer events?
+7. **Content differences** — is anything DROPPED on smaller screens (imagery, promos, secondary
+   links, social)? Bean's standing rule is `degrade-to-more-content-never-less`, so note any site
+   that violates it and any that handles it well.
+8. **Mechanics** — native `<dialog>` or div? any `[inert]`? focus trap? scroll locked?
 
-### Method (reuse the Round-2/3 probe set that already worked)
-1. Load each site at **375×812** and **768×1024** in your OWN isolated Playwright browser.
-2. Open the real burger. **If it will not open, report UNCONFIRMED — never infer from CSS classes.**
-   (resn needs its `#!/menu` route; pentagram never opened at all last time.)
-3. Measure `getBoundingClientRect()` on the panel and classify: still compact/anchored, or
-   full-viewport?
-4. Re-run the mechanics probe at each width: native `<dialog>` or div? backdrop + its
-   `pointer-events`? any `[inert]`? scroll locked? does an outside click close it?
-5. Compare each against its desktop row in the table above.
-6. **Also check the reverse — the HEADER, not just the panel.** lamalama's desktop header is a 438px
-   centred pill; **if it goes full-width at 375px, then `header-attached` deriving its width from the
-   header ALREADY handles mobile correctly with no extra attribute at all** — the cheapest possible
-   outcome, and worth testing first.
+### Deliverables (in this order)
+1. **A category per site** — a real descriptive character, not a size bucket. If two sites genuinely
+   share a category, say so and justify it on more than geometry. If six sites are six different
+   things, say that.
+2. **A matrix**: 8 sites × 3 devices, showing what each one DOES at each width, and whether its
+   character PERSISTS across devices or changes.
+3. **The answer that gates the build:** does `variant` need a per-device dimension
+   (`{desktop,tablet,mobile}`), or is one value enough because each variant's character holds at
+   every width?
+4. **⭐ THE OPTIMAL SETUP for `sgs/nav-drawer`** — Bean's explicit ask. Across all 8 examples and all
+   3 devices, what should the block actually offer? How many variants, named descriptively (never
+   studio names)? What is configurable per variant vs fixed? What is responsive vs constant? Where
+   does our `<dialog showModal>` give us something all 8 references lack (none of them has `inert`
+   or a focus trap)? Recommend, with reasoning, and flag anything that is a genuine judgement call
+   for Bean rather than a finding.
 
 ### ⚠ Also flag: `side-panel` has NO reference site
-Three of the four proposed variants trace to measured sites. **`side-panel` traces to nothing** — it
-exists only because `edge: left/right` is half-built in our own code (`style.css:332-346`, hardcoded
-`width: min(88vw, 360px)`, labelled "Phase 2+; declared, not gate-tested"). Either find a real
-reference for it during this pass, or tell Bean it is a variant with no evidence base and let him
-decide whether it ships.
+Three of the four previously-proposed variants trace to measured sites. **`side-panel` traces to
+nothing** — it exists only because `edge: left/right` is half-built in our own code
+(`nav-drawer/style.css:332-346`, hardcoded `width: min(88vw, 360px)`, self-labelled "Phase 2+;
+declared, not gate-tested"). Either find a real reference during this pass, or tell Bean it is a
+variant with no evidence base and let him decide whether it ships.
 
-**Orchestration:** delegated — 8 sites × 2 breakpoints is more than an inline measurement.
-Model **sonnet** via `/delegate` (needs a browser). Reuse the same researcher persona and probe set
-from rounds 2–3; it already has the method and the desktop baselines.
-**/qc gate after:** no — it is measurement, not code. But apply the same honesty rules: only report
-geometry from a panel actually observed OPEN, name every site, and report the real tally.
-**Acceptance:** a verdict per site per breakpoint, each backed by a measured rect. Then a one-line
-answer to the question that actually gates the build: **does `variant` need a per-device dimension,
-yes or no?** Plus a note on whether the full-screen family is genuinely one variant or several.
-APPEND to `.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md` — do not start a new report.
+**Orchestration:** delegated. Model **sonnet** via `/delegate` (needs a browser). Reuse the
+researcher persona + probe set from rounds 2–3 — it already has the method and the desktop
+baselines. **8 sites × 3 widths is the scope; do not sample.**
+**/qc gate after:** no — measurement + recommendation, not code. Apply the honesty rules: only
+report what was observed on a panel actually OPEN, mark anything unopenable UNCONFIRMED, name every
+site, and report the real tally rather than a tidy one.
+**Acceptance:** the matrix is complete (or gaps are explicitly marked UNCONFIRMED with reasons), and
+deliverable 4 exists as a concrete recommendation Bean can approve or push back on. APPEND to
+`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md` — do not start a new report.
 
 ## Task 2 — Design-gate the variant + geometry model
 
