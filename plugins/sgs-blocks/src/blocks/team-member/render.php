@@ -20,12 +20,13 @@
  * spacing/__experimentalBorder) all declare `__experimentalSkipSerialization`
  * in block.json so get_block_wrapper_attributes() never auto-inlines them.
  *
- * Hover transition/scale/shadow custom properties (--sgs-*) stay on the root
- * as VAR-ONLY inline style (no real CSS property declarations) — the static
- * hover rules in style.css read them; this mirrors WP core's own `layout`
- * gap-value custom-property pattern and is exempt from the no-inline
- * prohibition (contract: "Overrides = CSS custom-property VALUES, never
- * inline declarations").
+ * Hover transition/scale/shadow custom properties (--sgs-*) are emitted into
+ * the block's OWN scoped `.{uid}` <style> rule, NOT as an inline style
+ * attribute on the root (post-D345 contract, class-sgs-container-wrapper.php
+ * ~L1081-1082: even VAR-ONLY custom-property values route through the scoped
+ * rule now — "VAR-ONLY is allowed inline" was the pre-D345 belief and no
+ * longer holds). The static hover rules in style.css read these vars via
+ * var(), unaffected by which channel emits the declaration.
  *
  * Social links are driven by the socialLinks scalar attribute (array of
  * {platform, url} objects) — NOT InnerBlocks. This block is a pure typed leaf:
@@ -223,9 +224,11 @@ if ( $hover_overlay ) {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Wrapper inline styles — VAR-ONLY (transition duration/easing + hover
-// scale/shadow custom properties). No real CSS property is declared here;
-// the static rules in style.css read these vars.
+// 6. Root custom-property VALUES (transition duration/easing + hover
+// scale/shadow/card-shadow). No real CSS property is declared here; the
+// static rules in style.css read these vars. Collected now, emitted into the
+// scoped `.{uid}` <style> rule at step 12 below (post-D345 contract — see
+// file header) once $root_sel exists, NOT as an inline style attribute.
 // ---------------------------------------------------------------------------
 $sgs_wrapper_styles = sgs_transition_vars( $attributes );
 
@@ -425,6 +428,15 @@ $root_sel = '.' . $uid . '.wp-block-sgs-team-member';
 // ---------------------------------------------------------------------------
 $scoped_css = array();
 
+// Per-instance CSS custom-property VALUES (transition/hover/card-shadow,
+// collected at step 6 above) → a scoped `.uid{…}` rule in the block's own
+// <style>, NOT an inline `style="--var:…"` attribute on the root (post-D345
+// contract — see file header). Declared first so the values are present for
+// the style.css rules that consume them via var().
+if ( ! empty( $sgs_wrapper_styles ) ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $sgs_wrapper_styles ) . '}';
+}
+
 // --- Base border-width/style/color + radius + spacing + colour + typography
 // supports — skip-serialised, emitted scoped via the stable core style
 // engine (exactly how WP core outputs `layout` support). ---
@@ -601,9 +613,9 @@ $root_attr_args = array(
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
 }
-if ( ! empty( $sgs_wrapper_styles ) ) {
-	$root_attr_args['style'] = implode( ';', $sgs_wrapper_styles ) . ';';
-}
+// No inline `style` attribute: the --sgs-* custom-property VALUES collected
+// at step 6 are emitted into the scoped `.{uid}` rule at step 12 instead
+// (post-D345 contract — see file header).
 $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 
 // ---------------------------------------------------------------------------
