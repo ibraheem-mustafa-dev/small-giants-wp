@@ -478,6 +478,20 @@ points here. Neither ever silently drops a STOP.
   declare `hideExtensions` deliberately — inheriting all four is a decision, not a default. And an
   extension panel rendering is NOT evidence its attributes are registered.**
 
+- **STOP-A-SCHEMA-AUDIT-READING-ONLY-BLOCKJSON-CANNOT-SEE-EXTENSION-ATTRS (2026-07-28)** — the
+  oldshape-audit deploy gate flagged 2 NEW HIGH "undeclared-attr → WP deletes it on save" findings
+  (`sgsBlockLink`/`sgsBlockLinkLabel` on page 1849's card-grid) and ABORTED a deploy. Both were
+  FALSE POSITIVES: those attrs are registered by the universal block-link extension via the
+  `blocks.registerBlockType` JS filter, so they exist in the editor schema and are NOT discarded on
+  save — but the audit reads only block.json, which is structurally blind to filter-registered
+  attributes. The gate firing was still evidence about the DATA (STOP-A-GATE-FIRING-IS-EVIDENCE):
+  the finding was explained against the extension source (`extensions/hover-effects.js`) BEFORE
+  baselining, and the baseline entry carries the register reference (precedent: the baselined
+  `sgs/icon-list sgsHoverScalePreset`, same class). **Rule: before treating an "undeclared attr"
+  audit finding as stranded content, grep the extensions for a filter that registers it — and any
+  schema audit that reads only block.json must either model extension-registered attrs or document
+  the blind spot in its own output.** Structural fix parked (`P-OLDSHAPE-AUDIT-EXTENSION-ATTRS`).
+
 - **STOP-A-GREEN-BUILD-IS-NOT-EVIDENCE-AN-EFFECT-FIRES (2026-07-27)** — THREE separate
   "built but inert" bugs shipped past `php -l`, `eslint` AND every prebuild gate in one
   session: (1) a `MutationObserver` watching a `hidden` attribute the panel NEVER carries,
@@ -672,6 +686,15 @@ for real before claiming done?
   box; a scalar-vs-box shape mismatch that silently dropped a whole padding value while the sibling
   block with the correct shape rendered fine; and four universal extensions attaching unconditionally
   to a navigation menu, one of whose panels was writing to attributes that were never registered.
+- **2026-07-28 (drawer desktop variants / D403-D404) re-run:** previous DEFINED entries = **81**
+  (re-measured with this file's OWN canonical command immediately before writing — never carried
+  forward). This session ADDED 1
+  (`STOP-A-SCHEMA-AUDIT-READING-ONLY-BLOCKJSON-CANNOT-SEE-EXTENSION-ATTRS`) and SUBTRACTED
+  **none** → **82**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **82**. 82 >= 81. PASS. Earned: the oldshape-audit gate aborted a real deploy on two
+  extension-registered attrs it structurally cannot see; the finding was explained against the
+  extension source before baselining rather than bypassed.
 - **2026-07-26 (Spec 37 FR-37-40 sticky build / D391-D392) re-run:** previous DEFINED entries = **69**
   (re-measured with this file's own canonical command immediately before writing, per the 2026-07-22
   receipt-arithmetic rule — never carried forward); this session ADDED 2

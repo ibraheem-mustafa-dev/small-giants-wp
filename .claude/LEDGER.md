@@ -111,11 +111,32 @@ rollout and the 2026-07-17 orientation block are in the same sweep file.
   Default instances render property-identical (verified on page 1648). **§6 POC rule (Bean,
   binding): POC fixtures are EXACT clones INCLUDING content** (per-fixture classic menus with the
   reference's real labels) so differences are attributable to the block, never content; genericise
-  pre-production. **NEXT: commit → Task 4 backdrop-click-to-close in `store('sgs/nav')` → Task 5
-  live gate (openness-guarded axe per variant per width, ESC/focus-return, listColumns canvas
-  visibility, 7 exact-content fixtures, Bean's eye).** Known simplifications recorded in the
-  design doc: burger-morph is a static ×-reading icon (true cross-block morph = follow-on);
-  trigger anchor is CSS corner approximation.
+  pre-production (a named pre-production step, not optional). **SHIPPED + PUSHED: `faa14924` (build,
+  all gates incl. visual-diff report) · `cab1b916` (docs + extraction data) · `69dfbaf9` (Task 4
+  backdrop-click-to-close in `store('sgs/nav')` — live-verified: centred 420px panel closes on
+  backdrop click / stays open on inside click / ESC returns focus to the burger; full-screen
+  unaffected by construction, × still closes; QA page 1879 created via REST + deleted).**
+  Deploy-gate note: 2 oldshape-audit HIGHs on page 1849 (card-grid `sgsBlockLink*`) were traced to a
+  FALSE-POSITIVE class — extension-registered attrs (JS `blocks.registerBlockType` filter) are
+  invisible to the block.json-only audit — and baselined WITH the register reference (same class as
+  the old `sgsHoverScalePreset` entry). Structural fix parked (`P-OLDSHAPE-AUDIT-EXTENSION-ATTRS`).
+  **⭐ NEXT = TASK 5, the pre-registered exit gate (nothing else before it):**
+  (1) build the 7 EXACT-CONTENT POC fixtures — one canary page per variant, each with its OWN
+  classic menu carrying the reference's real labels + the reference's actual secondary copy
+  (labels/copy from `2026-07-28-drawer-code-extraction/*.json` html_outlines; re-read the live site
+  where truncated); (2) the live sweep per variant per width (375/768/1440 + non-default
+  collapsePoint): openness-GUARDED axe (assert open + focusables>0 or report VACUOUS), keyboard/
+  ESC/focus-return, reduced-motion full end state, JS-off crawl, a 2+-instance page (D374),
+  `listColumns` editor-canvas visibility (unresolved — SSR + lifted-CSS interplay), the header
+  anchor on a real pinned/unpinned header; (3) side-by-side same-content pairs vs the reference
+  for **Bean's eye (R-31-13 — co-authoritative, numbers alone don't close)**. Follow-ons parked,
+  not lost: burger-morph TRUE cross-block sync (`P-DRAWER-BURGER-MORPH-SYNC`) · JS-measured
+  trigger-anchor position (`P-DRAWER-TRIGGER-ANCHOR-JS`) · genericise variant content
+  pre-production (`P-DRAWER-VARIANT-CONTENT-GENERICISE`). Neither follow-on is GSAP — the stack
+  is vanilla JS + CSS transform/opacity only. **Cross-track note:** `8644f4a3` (co-active track,
+  courtesy fix, verified) moved nav-drawer's base height/max-height literals into `:where()` —
+  the new `panelSize` attr had made them an F3 violation failing main's prebuild; rendered output
+  byte-identical when unset, design untouched.
 
 **Prior (2026-07-27, Track 2 mega) — SUPERSEDED by the Gate-3 close above; collapsed to a pointer
 2026-07-28. Full block archived VERBATIM in `memory/session-2026-07-27-4.md` (verified present:

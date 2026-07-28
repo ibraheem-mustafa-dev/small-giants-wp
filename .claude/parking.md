@@ -38,6 +38,34 @@ last_updated: 2026-07-27 (THREE verified cull passes this session — 34 entries
 > normal static pass.
 
 
+## 2026-07-28 (D403/D404) — drawer desktop variants: four follow-ons parked at ship
+
+**P-DRAWER-BURGER-MORPH-SYNC** — **Status:** DEFERRED — **Bucket:** framework. `closeStyle:
+'burger-morph'` currently draws a static ×-reading icon on the drawer's own close chrome; a TRUE
+morph (the HEADER burger animating into × when the drawer opens) needs state-wiring between two
+independent block instances via `store('sgs/nav')`. NOT a GSAP/animation-library job (Bean asked,
+2026-07-28) — the motion is cheap CSS on the button spans; the missing piece is cross-block state.
+Documented in the shipped code comments + design doc.
+
+**P-DRAWER-TRIGGER-ANCHOR-JS** — **Status:** DEFERRED — **Bucket:** framework. The `trigger`
+anchor is a CSS top-right-corner approximation; the proper version measures the burger's real rect
+at open time and pins the panel to it (the `--sgs-drawer-header-offset` measure-and-write pattern
+shipped in D404 is the template). Pure geometry, no animation.
+
+**P-DRAWER-VARIANT-CONTENT-GENERICISE** — **Status:** DEFERRED (BLOCKS PRODUCTION, not POC) —
+**Bucket:** content. Design-gate doc §6: POC fixtures + seeded variation copy are EXACT clones of
+the reference sites INCLUDING content so visual differences are attributable to the block. Before
+any client/production use, the seeded copy must be genericised and any reference-site wording
+stripped. A named pre-production step — do not lose it.
+
+**P-OLDSHAPE-AUDIT-EXTENSION-ATTRS** — **Status:** OPEN — **Bucket:** tooling.
+`audit-post-content-blocks.py` reads only block.json, so attrs registered by the universal
+extensions (JS `blocks.registerBlockType` filter — `sgsBlockLink*`, `sgsHoverScalePreset`…) raise
+false NEW HIGH "stranded content" findings and abort deploys (happened 2026-07-28, page 1849).
+Fix: teach the audit the extension-registered attr list (parse `src/blocks/extensions/*.js` or
+maintain a declared allowlist WITH provenance), then remove the 2 D404 baseline entries. STOP entry
+`STOP-A-SCHEMA-AUDIT-READING-ONLY-BLOCKJSON-CANNOT-SEE-EXTENSION-ATTRS` records the class.
+
 ## 2026-07-26 (D391) — the theme carries a SECOND copy of the scroll-padding defect the plugin just fixed
 
 > **P-THEME-SCROLL-PADDING-SECOND-INSTANCE** — NEW 2026-07-26. FR-37-40 Task 1 fixed the plugin's
