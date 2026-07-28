@@ -79,42 +79,72 @@ build, and it is one build away from covering desktop as well as mobile.
 
 ---
 
-## Task 1 — DO THE REFERENCE SITES KEEP THEIR VARIANT ON MOBILE? (Bean-caught gap — do this FIRST)
+## Task 1 — MEASURE ALL 8 REFERENCE SITES ON MOBILE + TABLET (Bean-caught gap — do this FIRST)
 
-**What:** measure lamalama.com and lusion.co at **375px and 768px**, not just desktop, and find out
-whether each keeps its distinctive panel shape or collapses to a full-screen sheet.
-**Why:** **ALL prior research was measured at 1440×900 ONLY.** Nobody checked the other end. This is
-not a detail — it decides the shape of the attribute you are about to build:
-- If the panels KEEP their character on mobile → `variant` is a single value that persists across
-  every device, and geometry is just responsive values inside it. Simple.
-- If they COLLAPSE to full-screen on mobile → `header-attached` and `trigger-anchored` are
-  **desktop presentations**, not device-spanning variants. Then either `variant` itself must be
-  per-device (`{desktop,tablet,mobile}`), or every variant declares its own mobile fallback — and
-  building a flat `variant` string first would bake in the wrong shape.
+**What:** re-measure **every site the variants are based on** at **375px and 768px**, not just
+desktop, and find out whether each keeps its distinctive panel or becomes something else.
+**Why:** **ALL prior research was measured at 1440×900 ONLY.** Every variant traces to a real site,
+so the question applies to ALL of them — not just the two compact ones. This decides the shape of
+the attribute you are about to build:
+- If panels KEEP their character on mobile → `variant` is a single value that persists across every
+  device, and geometry is just responsive values inside it. Simple.
+- If they COLLAPSE → `header-attached` and `trigger-anchored` are **desktop presentations**, not
+  device-spanning variants. Then either `variant` itself must be per-device
+  (`{desktop,tablet,mobile}`), or every variant declares its own mobile fallback — and shipping a
+  flat `variant` string first would bake in the wrong shape on a block with 16 stored instances.
 
-**Estimated time:** 20 min. **Depends on:** none. **Parallel with:** none — it gates Task 2.
+**Estimated time:** 40 min. **Depends on:** none. **Parallel with:** none — it gates Task 2.
 
-Method (reuse the Round-2/3 probe set that already worked):
-1. Load each site at 375×812 and 768×1024 in your OWN isolated Playwright browser.
+### The 8 sites — ALL of them, grouped by the variant each one feeds
+
+| Variant it feeds | Site | Desktop measurement already on record |
+|---|---|---|
+| `header-attached` | **lamalama.com** | 438×436 @ top:16 — **exactly its 438×50 header pill's width + edges** |
+| `trigger-anchored` | **lusion.co** | 310×264 @ top:108, right-inset 72, no backdrop, explicit-close-only |
+| `full-screen` | **dogstudio.co** | 1440×900 |
+| `full-screen` | **fantasy.co** | 1440×900, scrollable |
+| `full-screen` | **buck.co** | 1440×900 |
+| `full-screen` | **resn.co.nz** | 1434×900 — burger only reachable via its own `#!/menu` hash route |
+| `full-screen` | **studionamma.com** | full viewport, opaque light-grey |
+| `full-screen` | **wearecollins.com** | full viewport, opaque near-black |
+
+**Do NOT skip the six full-screen sites.** They are not "obviously the same on mobile" — that is an
+assumption, and mobile is the case our block ALREADY implements, so any variation among them is
+directly relevant. Specifically look for **variation WITHIN the full-screen family** that we may
+want to capture as sub-behaviour rather than flatten into one variant: submenu model
+(accordion vs drill-down vs flat list), animation direction/duration, whether the close moves,
+whether the panel scrolls, whether imagery/promos are dropped on small screens.
+
+### Method (reuse the Round-2/3 probe set that already worked)
+1. Load each site at **375×812** and **768×1024** in your OWN isolated Playwright browser.
 2. Open the real burger. **If it will not open, report UNCONFIRMED — never infer from CSS classes.**
+   (resn needs its `#!/menu` route; pentagram never opened at all last time.)
 3. Measure `getBoundingClientRect()` on the panel and classify: still compact/anchored, or
    full-viewport?
 4. Re-run the mechanics probe at each width: native `<dialog>` or div? backdrop + its
    `pointer-events`? any `[inert]`? scroll locked? does an outside click close it?
-5. Compare against the desktop numbers already recorded in the research report
-   (lamalama 438×436 @ top:16 = its header pill's exact width; lusion 310×264 @ top:108, right-inset 72).
-6. **Also check the reverse:** does the HEADER itself change shape on mobile? lamalama's desktop
-   header is a 438px centred pill — if it goes full-width at 375px, then `header-attached` deriving
-   its width from the header ALREADY handles mobile correctly with no extra attribute, which would
-   be the cleanest possible answer.
+5. Compare each against its desktop row in the table above.
+6. **Also check the reverse — the HEADER, not just the panel.** lamalama's desktop header is a 438px
+   centred pill; **if it goes full-width at 375px, then `header-attached` deriving its width from the
+   header ALREADY handles mobile correctly with no extra attribute at all** — the cheapest possible
+   outcome, and worth testing first.
 
-**Orchestration:** inline (main thread) with an isolated Playwright browser. Cheap and fast — do not
-delegate a 20-minute measurement.
-**/qc gate after:** no — it is measurement, not code.
-**Acceptance:** a written verdict per site per breakpoint, each backed by a measured rect from a
-panel actually observed OPEN. Then a one-line answer to the only question that matters: **does
-`variant` need a per-device dimension, yes or no?** APPEND the findings to
-`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md` (do not start a new report).
+### ⚠ Also flag: `side-panel` has NO reference site
+Three of the four proposed variants trace to measured sites. **`side-panel` traces to nothing** — it
+exists only because `edge: left/right` is half-built in our own code (`style.css:332-346`, hardcoded
+`width: min(88vw, 360px)`, labelled "Phase 2+; declared, not gate-tested"). Either find a real
+reference for it during this pass, or tell Bean it is a variant with no evidence base and let him
+decide whether it ships.
+
+**Orchestration:** delegated — 8 sites × 2 breakpoints is more than an inline measurement.
+Model **sonnet** via `/delegate` (needs a browser). Reuse the same researcher persona and probe set
+from rounds 2–3; it already has the method and the desktop baselines.
+**/qc gate after:** no — it is measurement, not code. But apply the same honesty rules: only report
+geometry from a panel actually observed OPEN, name every site, and report the real tally.
+**Acceptance:** a verdict per site per breakpoint, each backed by a measured rect. Then a one-line
+answer to the question that actually gates the build: **does `variant` need a per-device dimension,
+yes or no?** Plus a note on whether the full-screen family is genuinely one variant or several.
+APPEND to `.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md` — do not start a new report.
 
 ## Task 2 — Design-gate the variant + geometry model
 

@@ -39,6 +39,21 @@ opened are listed as UNCONFIRMED, not guessed.
 > full-width at 375px, then `header-attached` already handles mobile correctly with no
 > extra attribute at all** — the cleanest answer available, and it would be free.
 >
+> **SCOPE (Bean-corrected, twice): ALL EIGHT measured sites, not just the two compact
+> ones.** Every variant traces to a real site, so every site needs the mobile pass —
+> including the six full-screen ones. They are NOT "obviously the same on mobile"; that
+> is an assumption, and mobile is the case our block already implements, so any
+> variation among them is directly relevant. Look specifically for variation WITHIN the
+> full-screen family that may deserve capturing rather than flattening: submenu model
+> (accordion vs drill-down vs flat), animation direction/duration, whether the close
+> affordance moves, whether the panel scrolls, whether imagery is dropped.
+>
+> **⚠ And note `side-panel` has NO reference site at all.** Three of the four proposed
+> variants trace to measured sites; `side-panel` exists only because `edge: left/right`
+> is half-built in our own code (`style.css:332-346`, hardcoded `width: min(88vw,
+> 360px)`, self-labelled "Phase 2+; declared, not gate-tested"). Either find a real
+> reference or tell Bean it is a variant with no evidence base.
+>
 > **This is Task 1 of the next session.** Append findings HERE rather than starting a
 > new report.
 

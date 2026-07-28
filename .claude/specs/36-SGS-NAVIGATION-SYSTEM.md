@@ -244,10 +244,18 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
   PERSIST on mobile?** All reference geometry was measured at 1440×900 only. If the compact panels
   collapse to full-screen on small screens, then `header-attached` / `trigger-anchored` are desktop
   PRESENTATIONS rather than device-spanning variants, and `variant` needs a per-device dimension (or
-  a declared per-variant mobile fallback) — a flat `variant` string would be the wrong shape. Test
-  lamalama + lusion at 375 and 768 first. Note the cheapest possible outcome: lamalama's panel
-  derives its width from a 438px pill header, so **if that header goes full-width on mobile,
-  `header-attached` already handles mobile correctly with no extra attribute.**
+  a declared per-variant mobile fallback) — a flat `variant` string would be the wrong shape.
+  **Scope is ALL EIGHT measured sites** (lamalama · lusion · dogstudio · fantasy · buck · resn ·
+  studionamma · wearecollins), not just the two compact ones: every variant traces to a real site,
+  and the six full-screen references are NOT assumed identical on mobile — mobile is the case this
+  block already implements, so variation among them (submenu model, animation, close placement,
+  scrolling) may deserve capturing rather than flattening. Cheapest outcome to test first:
+  lamalama's panel derives its width from a 438px pill header, so **if that header goes full-width
+  on mobile, `header-attached` already handles mobile correctly with no extra attribute.**
+- **⚠ `side-panel` has NO reference site.** The other three variants trace to measured sites; this
+  one exists only because `edge: left/right` is half-built here (`nav-drawer/style.css:332-346`
+  hardcodes `width: min(88vw, 360px)` and self-labels "Phase 2+; declared, not gate-tested"). Find a
+  real reference or treat it as a variant with no evidence base — Bean's call whether it ships.
 - **Lateral (unresolved):** `sgs/modal` already implements the centred-card model AND hand-rolls its
   own `showModal()` while the drawer delegates to `store('sgs/nav')` — **two `<dialog>` engines and
   two geometry vocabularies for one primitive.** A shared dialog-geometry primitive would also serve
