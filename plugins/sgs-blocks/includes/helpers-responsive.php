@@ -657,6 +657,70 @@ if ( ! function_exists( 'sgs_resolve_tier' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_emit_tier_rules' ) ) {
+	/**
+	 * Emit scoped per-tier CSS rules (base + tablet + mobile) for a tri-state
+	 * ('inherit'|'on'|'off') responsive behaviour attribute, resolved via
+	 * sgs_resolve_tier(). A tier's rule is emitted ONLY when its resolved
+	 * state differs from the tier immediately above it (minimal output) —
+	 * an all-inherit value emits a single base rule and nothing else, and a
+	 * tier whose resolved CSS text is empty emits no rule at all (even if the
+	 * state differs from the tier above).
+	 *
+	 * Rules are scoped to the caller-supplied selector ($uid_selector) — e.g.
+	 * '#sgs-abc123' or '.sgs-header--abc123' — NEVER a body class (Spec 35
+	 * design gate §4, 2026-07-28). Breakpoints come from SGS_Breakpoints
+	 * (768/1024 device-tier standard, emitted as max-width 1023px/767px) —
+	 * never hardcoded here.
+	 *
+	 * ⚠ D386: this helper emits whatever CSS text the caller passes in
+	 * $css_on/$css_off verbatim. Callers MUST NOT pass declarations
+	 * containing absolute/per-instance sizes destined for a SHARED,
+	 * state-only stylesheet — a value that varies per block instance must be
+	 * scoped to that instance's own selector (this helper's whole purpose),
+	 * never baked into shared CSS text reused across instances.
+	 *
+	 * @param string $uid_selector Fully-formed, already-safe CSS selector (caller-owned uid scope).
+	 * @param mixed  $value        Tri-state responsive object `{desktop,tablet,mobile}` (or non-object/junk — D328 defence via sgs_resolve_tier()).
+	 * @param string $css_on       CSS declarations (no selector/braces) to emit when the resolved state is 'on'.
+	 * @param string $css_off      CSS declarations to emit when the resolved state is 'off'. Default '' (nothing emitted for 'off').
+	 * @param string $default      State used when desktop inherits/is missing (§6b guard). Default 'off' (DEFAULT_OFF).
+	 * @return string CSS text (no <style> wrapper); '' when nothing resolves to non-empty declarations.
+	 */
+	function sgs_emit_tier_rules( $uid_selector, $value, $css_on, $css_off = '', $default = 'off' ) {
+		$css_for_state = function ( $state ) use ( $css_on, $css_off ) {
+			return 'on' === $state ? $css_on : $css_off;
+		};
+
+		$desktop = sgs_resolve_tier( $value, 'desktop', $default );
+		$tablet  = sgs_resolve_tier( $value, 'tablet', $default );
+		$mobile  = sgs_resolve_tier( $value, 'mobile', $default );
+
+		$css = '';
+
+		$desktop_css = $css_for_state( $desktop['value'] );
+		if ( '' !== $desktop_css ) {
+			$css .= $uid_selector . '{' . $desktop_css . '}';
+		}
+
+		if ( $tablet['value'] !== $desktop['value'] ) {
+			$tablet_css = $css_for_state( $tablet['value'] );
+			if ( '' !== $tablet_css ) {
+				$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $uid_selector . '{' . $tablet_css . '}}';
+			}
+		}
+
+		if ( $mobile['value'] !== $tablet['value'] ) {
+			$mobile_css = $css_for_state( $mobile['value'] );
+			if ( '' !== $mobile_css ) {
+				$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $uid_selector . '{' . $mobile_css . '}}';
+			}
+		}
+
+		return $css;
+	}
+}
+
 if ( ! function_exists( 'sgs_resolve_tier_booleans' ) ) {
 	/**
 	 * Resolve a `{desktop,tablet,mobile}` BOOLEAN object into the list of tiers

@@ -13,6 +13,7 @@ import {
 	TypographyControls,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	SgsLinkControl,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -574,14 +575,13 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 					/>
 					{ ( ctaBehaviour || 'learn-more' ) ===
 					'learn-more' ? (
-						<TextControl
+						<SgsLinkControl
 							label={ __( 'Button link', 'sgs-blocks' ) }
-							value={ attributes.ctaUrl || '' }
-							onChange={ ( v ) =>
-								setAttributes( { ctaUrl: v } )
+							value={ { url: attributes.ctaUrl || '' } }
+							onChange={ ( url ) =>
+								setAttributes( { ctaUrl: url } )
 							}
-							type="url"
-							__nextHasNoMarginBottom
+							searchOnly
 						/>
 					) : (
 						<Notice status="info" isDismissible={ false }>
@@ -1206,12 +1206,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
 								__nextHasNoMarginBottom
 							/>
-							<TextControl
+							<SgsLinkControl
 								label={ __( 'Primary button URL', 'sgs-blocks' ) }
-								value={ ctaUrl || '' }
-								onChange={ ( v ) => setAttributes( { ctaUrl: v } ) }
-								type="url"
-								__nextHasNoMarginBottom
+								value={ { url: ctaUrl || '' } }
+								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
+								searchOnly
 							/>
 						</>
 					) }
@@ -1312,17 +1311,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					{ ( cta2Text || '' ) !== '' && (
 						<>
-							<TextControl
+							<SgsLinkControl
 								label={ __(
 									'Secondary button URL',
 									'sgs-blocks'
 								) }
-								value={ cta2Url || '' }
-								onChange={ ( v ) =>
-									setAttributes( { cta2Url: v } )
+								value={ { url: cta2Url || '' } }
+								onChange={ ( url ) =>
+									setAttributes( { cta2Url: url } )
 								}
-								type="url"
-								__nextHasNoMarginBottom
+								searchOnly
 							/>
 							<SelectControl
 								label={ __(

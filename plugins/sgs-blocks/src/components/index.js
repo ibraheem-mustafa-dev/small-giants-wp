@@ -1,12 +1,16 @@
 export { default as ResponsiveControl } from './ResponsiveControl';
 export { default as ResponsiveOverride } from './ResponsiveOverride';
+export { default as ResponsiveTriStateControl } from './ResponsiveTriStateControl';
 export { default as DeviceTabs } from './DeviceTabs';
 export {
 	default as ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 } from './ResponsiveBoxControl';
 export { default as ResponsiveBoxControls } from './ResponsiveBoxControls';
-export { default as DesignTokenPicker, resolveColorToken } from './DesignTokenPicker';
+export {
+	default as DesignTokenPicker,
+	resolveColorToken,
+} from './DesignTokenPicker';
 export { default as SgsLinkControl } from './SgsLinkControl';
 export { default as ShadowControl } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';

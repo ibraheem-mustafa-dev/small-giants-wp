@@ -18,7 +18,7 @@ import {
 	Notice,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveBorderRadiusControl } from '../../components';
+import { ResponsiveControl, ResponsiveBorderRadiusControl, SgsLinkControl } from '../../components';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -316,28 +316,22 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					{ isImage && (
-						<>
-							<TextControl
-								label={ __( 'Link URL', 'sgs-blocks' ) }
-								help={ __( 'Wrap the image in a link. Leave empty for no link.', 'sgs-blocks' ) }
-								type="url"
-								value={ attributes.linkUrl || '' }
-								onChange={ ( value ) => setAttributes( { linkUrl: value } ) }
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __( 'Open link in new tab', 'sgs-blocks' ) }
-								checked={ !! attributes.linkOpensNewTab }
-								onChange={ ( value ) => setAttributes( { linkOpensNewTab: value } ) }
-							/>
-							<TextControl
-								label={ __( 'Link rel', 'sgs-blocks' ) }
-								help={ __( 'Optional rel attribute, e.g. "nofollow sponsored". "noopener" is added automatically for new-tab links.', 'sgs-blocks' ) }
-								value={ attributes.linkRel || '' }
-								onChange={ ( value ) => setAttributes( { linkRel: value } ) }
-								__nextHasNoMarginBottom
-							/>
-						</>
+						<SgsLinkControl
+							label={ __( 'Link', 'sgs-blocks' ) }
+							help={ __( 'Search your site or paste a URL to wrap the image in a link. Leave empty for no link.', 'sgs-blocks' ) }
+							value={ {
+								url: attributes.linkUrl || '',
+								opensInNewTab: !! attributes.linkOpensNewTab,
+								rel: attributes.linkRel || '',
+							} }
+							onChange={ ( next ) => {
+								setAttributes( {
+									linkUrl: next.url || '',
+									linkOpensNewTab: !! next.opensInNewTab,
+									linkRel: next.rel || '',
+								} );
+							} }
+						/>
 					) }
 				</PanelBody>
 			) }

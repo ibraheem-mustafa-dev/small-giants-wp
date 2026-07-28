@@ -175,6 +175,12 @@
 					"link": {
 						"type": "string"
 					},
+					"linkTarget": {
+						"type": "string"
+					},
+					"linkRel": {
+						"type": "string"
+					},
 					"badgeVariant": {
 						"type": "string"
 					}

@@ -15,6 +15,32 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D402 [ROUTINE] — Spec 35 T0.4 + T0.5 design gates CLOSED (Bean-approved same session); T1.4 roster + row-migration decisions (2026-07-28)
+
+**T0.4 native-supports-vs-Spec-32 — verdict table replaces "adopt these" in Part G.**
+ADOPT (2, via the Spec-32 skip-serialisation + scoped-emission pattern, inside the T3.5
+imageControls wave): `filter.duotone` (nothing hand-rolled exists — free client value on image
+blocks) + `dimensions.aspectRatio` (replaces 4 inconsistent per-block attrs). KEEP-SGS (4,
+recorded so the roadmap stops nagging): `shadow` (ShadowControl + sgs_shadow_value now EXCEEDS
+the native preset picker), `dimensions.minHeight` (per-breakpoint attr families beat native's
+single value; adopting = duplicate-panel anti-pattern), `position.sticky` (collides with the
+D400 behaviour cascade), gallery `lightbox` (bespoke has more features; native considered only
+for sgs/media in T3.5). Nothing adopts a support without the scoped-serialisation pattern.
+
+**T0.5 templateLock:"contentOnly" — NOT for framework patterns; per-client opt-in only.**
+contentOnly hides children's inspector settings — directly contradicting the "every customisable
+property is in the inspector" standard and re-running the D377/D378 rejection; D393 showed
+template re-application has teeth. Available as a build-time lock for a specific client with a
+real layout-breakage problem. Roadmap item closes with reasoning; revisit on the first genuine
+client incident.
+
+**T1.4 gates settled same session (from the T1.4a inventory, Bean-confirmed):** reshape roster =
+the FOUR header booleans → tri-state objects; `contrastSafe` (4-value enum) and Burger-Menu
+breakpoint (named-preset enum) KEEP their shapes (tri-state would be a category error). Header
+ROWS migrate off `sgs_resolve_tier_booleans` onto canonical `resolveTier()` DURING T1.4 (Bean:
+fold in — one pass, one cascade, no lingering divergence). Inventory:
+`reports/2026-07-28-header-behaviour-surface-inventory.md`.
+
 ## D401 [INCIDENT] — Gate 3 closed + a whole eye-pass chain: the panel was a 101px sliver painted under the footer; nav inspector 13 panels → 8; drawer variant research (2026-07-28)
 
 Commits `447af400` · `d58d0d0d` · `ceac2c8d` · `71bbc8dd` · `21144dd4` · `4bdfdc85` · `43d3e2d2`. Track 2 (Spec 36 mega/nav). **Gate 3 CLOSED — the mega menu is proven, not theoretically built.** Fixture: panel **1745** populated via the editor, menu **100** (Home · Brands[mega] · Recipes · Contact — mega at position 2, proving real-position render), page **1842**. Whole owed verification bank closed with guarded, non-vacuous checks: **6/6 motion effects PROVEN firing** by their own `setProperty` signals (stagger 0/28/56ms · indicator translate+width with radius intact · magnet ±px · caret 180° · spotlight `--mx/--my` tracking · card hover-lift −3px + `::after` fade) · **axe 0 on the OPEN drawer** (closes the 2026-07-23 INCONCLUSIVE) · **axe 0 on the OPEN mega** · keyboard no-trap + ESC focus-return · reduced-motion full-end-state at 120ms · JS-off rich crawl · **CF-1 recursion run LIVE**.

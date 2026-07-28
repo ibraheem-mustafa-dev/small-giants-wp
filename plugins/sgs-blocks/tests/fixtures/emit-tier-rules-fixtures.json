@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Case 1: all-inherit — single base rule only",
+    "uidSelector": "#sgs-uid1",
+    "value": { "desktop": "on", "tablet": "inherit", "mobile": "inherit" },
+    "cssOn": "color:red;",
+    "cssOff": "color:blue;",
+    "default": "off",
+    "expect": "#sgs-uid1{color:red;}"
+  },
+  {
+    "name": "Case 2: tablet-override — mobile inherits tablet, no mobile rule",
+    "uidSelector": "#sgs-uid1",
+    "value": { "desktop": "on", "tablet": "off", "mobile": "inherit" },
+    "cssOn": "color:red;",
+    "cssOff": "color:blue;",
+    "default": "off",
+    "expect": "#sgs-uid1{color:red;}@media (max-width:1023px){#sgs-uid1{color:blue;}}"
+  },
+  {
+    "name": "Case 3: mobile-override — tablet inherits desktop, no tablet rule",
+    "uidSelector": "#sgs-uid1",
+    "value": { "desktop": "on", "tablet": "inherit", "mobile": "off" },
+    "cssOn": "color:red;",
+    "cssOff": "color:blue;",
+    "default": "off",
+    "expect": "#sgs-uid1{color:red;}@media (max-width:767px){#sgs-uid1{color:blue;}}"
+  },
+  {
+    "name": "Case 4: both-override — tablet AND mobile each have their own value",
+    "uidSelector": ".sgs-header--uid2",
+    "value": { "desktop": "on", "tablet": "off", "mobile": "on" },
+    "cssOn": "color:red;",
+    "cssOff": "color:blue;",
+    "default": "off",
+    "expect": ".sgs-header--uid2{color:red;}@media (max-width:1023px){.sgs-header--uid2{color:blue;}}@media (max-width:767px){.sgs-header--uid2{color:red;}}"
+  },
+  {
+    "name": "Case 5: desktop-off + mobile-on — tablet inherits desktop (no tablet rule), mobile overrides",
+    "uidSelector": "#sgs-uid1",
+    "value": { "desktop": "off", "tablet": "inherit", "mobile": "on" },
+    "cssOn": "color:red;",
+    "cssOff": "color:blue;",
+    "default": "off",
+    "expect": "#sgs-uid1{color:blue;}@media (max-width:767px){#sgs-uid1{color:red;}}"
+  },
+  {
+    "name": "Case 6: empty/junk value (string) — D328 defence, all tiers resolve to default",
+    "uidSelector": "#sgs-uid1",
+    "value": "garbage-not-an-object",
+    "cssOn": "color:red;",
+    "cssOff": "color:blue;",
+    "default": "off",
+    "expect": "#sgs-uid1{color:blue;}"
+  },
+  {
+    "name": "Case 7: empty/junk value (string) with default='on' — default is respected end to end",
+    "uidSelector": "#sgs-uid1",
+    "value": "garbage-not-an-object",
+    "cssOn": "color:green;",
+    "cssOff": "color:blue;",
+    "default": "on",
+    "expect": "#sgs-uid1{color:green;}"
+  },
+  {
+    "name": "Case 8: cssOff empty string — desktop-off state emits NOTHING (no useless empty rule)",
+    "uidSelector": "#sgs-uid1",
+    "value": { "desktop": "off", "tablet": "inherit", "mobile": "inherit" },
+    "cssOn": "display:block;",
+    "cssOff": "",
+    "default": "off",
+    "expect": ""
+  },
+  {
+    "name": "Case 9: cssOff empty string + mobile-on override — base rule omitted, only the mobile media rule emits",
+    "uidSelector": "#sgs-uid1",
+    "value": { "desktop": "off", "tablet": "inherit", "mobile": "on" },
+    "cssOn": "display:block;",
+    "cssOff": "",
+    "default": "off",
+    "expect": "@media (max-width:767px){#sgs-uid1{display:block;}}"
+  }
+]

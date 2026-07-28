@@ -206,6 +206,12 @@
 						"type": "string",
 						"role": "url-href"
 					},
+					"linkTarget": {
+						"type": "string"
+					},
+					"linkRel": {
+						"type": "string"
+					},
 					"pending": {
 						"type": "boolean"
 					},

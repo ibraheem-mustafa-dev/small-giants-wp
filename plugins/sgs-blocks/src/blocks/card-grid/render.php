@@ -488,9 +488,18 @@ if ( $stagger_delay ) {
 // Build the interior HTML (card items).
 ob_start();
 foreach ( $items as $index => $item ) :
-	$has_link   = ! empty( $item['link'] );
+	// Task 2.1) resolved via sgs_link_attributes() — link/linkTarget/linkRel
+	// are the existing per-item storage keys, mapped to the shared
+	// SgsLinkControl object shape { url, opensInNewTab, rel } at render time.
+	$link_attr  = sgs_link_attributes(
+		array(
+			'url'           => $item['link'] ?? '',
+			'opensInNewTab' => isset( $item['linkTarget'] ) && '_blank' === $item['linkTarget'],
+			'rel'           => $item['linkRel'] ?? '',
+		)
+	);
+	$has_link   = '' !== $link_attr;
 	$item_tag   = $has_link ? 'a' : 'div';
-	$link_attr  = $has_link ? ' href="' . esc_url( $item['link'] ) . '"' : '';
 	$item_style = $stagger_delay ? ' style="--sgs-item-index:' . absint( $index ) . '"' : '';
 
 	// Unified media slot (added 2026-05-05). When only the legacy

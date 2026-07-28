@@ -314,6 +314,19 @@ foreach ( $items as $item ) {
 	$is_pending = ! empty( $item['pending'] );
 	$item_label = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
 	$item_url   = isset( $item['url'] ) ? (string) $item['url'] : '';
+	// Task 2.1) resolved via sgs_link_attributes() — url/linkTarget/linkRel are
+	// the existing per-item storage keys, mapped to the shared SgsLinkControl
+	// object shape { url, opensInNewTab, rel } at render time. Existing items
+	// with no stored linkTarget default to opensInNewTab=true + rel="noreferrer"
+	// to preserve the block's prior hardcoded target="_blank" rel="noopener
+	// noreferrer" behaviour.
+	$item_link_attrs = sgs_link_attributes(
+		array(
+			'url'           => $item_url,
+			'opensInNewTab' => isset( $item['linkTarget'] ) ? '_blank' === $item['linkTarget'] : true,
+			'rel'           => isset( $item['linkRel'] ) && '' !== $item['linkRel'] ? $item['linkRel'] : 'noreferrer',
+		)
+	);
 	$item_attrs = '';
 
 	if ( 'icon-circle' === $badge_style && $is_pending ) {
@@ -374,8 +387,8 @@ foreach ( $items as $item ) {
 
 		if ( $item_url ) {
 			$items_html .= sprintf(
-				'<a href="%s" class="sgs-trust-bar__badge"%s target="_blank" rel="noopener noreferrer">%s</a>',
-				esc_url( $item_url ),
+				'<a%s class="sgs-trust-bar__badge"%s>%s</a>',
+				$item_link_attrs,
 				$item_attrs,
 				$inner_html
 			);
@@ -409,8 +422,8 @@ foreach ( $items as $item ) {
 
 		if ( $item_url ) {
 			$items_html .= sprintf(
-				'<a href="%s" class="sgs-trust-bar__badge"%s target="_blank" rel="noopener noreferrer">%s</a>',
-				esc_url( $item_url ),
+				'<a%s class="sgs-trust-bar__badge"%s>%s</a>',
+				$item_link_attrs,
 				$item_attrs,
 				$badge_content
 			);

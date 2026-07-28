@@ -32,23 +32,76 @@
  *   <ResponsiveControl label="Columns">
  *     { ( breakpoint ) => <RangeControl ... /> }
  *   </ResponsiveControl>
+ *
+ * ── Optional inherit-indicator + reset (Spec 35 T1.2, P2 §4.2) ────────────
+ * Four new props are all OPTIONAL and back-compatible — a caller that omits
+ * them (every consumer as of this build) gets byte-identical output; the
+ * `children` render-prop signature is UNCHANGED (still called with just
+ * `breakpoint`), so no existing caller needs to change:
+ *
+ *   <ResponsiveControl
+ *       label={ __( 'Inner spacing', 'sgs-blocks' ) }
+ *       value={ drawerGap }                     // {desktop, tablet:null|val, mobile:null|val}
+ *       isInherited={ ( tier ) => drawerGap[ tier ] == null }
+ *       resolvedValue={ ( tier ) => resolveTier( drawerGap, tier, '' ).value }
+ *       onReset={ ( tier ) => onChange( { ...drawerGap, [ tier ]: null } ) }
+ *   >
+ *       { ( breakpoint ) => <UnitControl value={ drawerGap[ breakpoint ] ?? '' } … /> }
+ *   </ResponsiveControl>
+ *
+ * When supplied, `isInherited`/`resolvedValue` drive a visible ghost-text hint
+ * ("Inheriting from Desktop: 28px", WCAG 1.4.1/4.1.2 — never a bare
+ * `placeholder` attribute) rendered after `children`, and `onReset` renders a
+ * >=44px "Reset to inherited value" button on a non-desktop tier that carries
+ * an explicit value. Putting the resolved value INSIDE the input's own
+ * placeholder is the caller's job (it already has the same `value`/
+ * `resolveTier` in closure, as the usage example shows) — this component only
+ * owns the auxiliary hint + reset UI, exactly as it already owns nothing about
+ * the input itself.
  */
 import { useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { Button } from '@wordpress/components';
 import { desktop, tablet, mobile } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import DeviceTabs from './DeviceTabs';
 
 const BREAKPOINTS = [
-	{ key: 'desktop', device: 'Desktop', icon: desktop, label: __( 'Desktop', 'sgs-blocks' ) },
-	{ key: 'tablet', device: 'Tablet', icon: tablet, label: __( 'Tablet', 'sgs-blocks' ) },
-	{ key: 'mobile', device: 'Mobile', icon: mobile, label: __( 'Mobile', 'sgs-blocks' ) },
+	{
+		key: 'desktop',
+		device: 'Desktop',
+		icon: desktop,
+		label: __( 'Desktop', 'sgs-blocks' ),
+	},
+	{
+		key: 'tablet',
+		device: 'Tablet',
+		icon: tablet,
+		label: __( 'Tablet', 'sgs-blocks' ),
+	},
+	{
+		key: 'mobile',
+		device: 'Mobile',
+		icon: mobile,
+		label: __( 'Mobile', 'sgs-blocks' ),
+	},
 ];
 
 // WP's native device-type names → our breakpoint keys.
-const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+const DEVICE_TO_KEY = {
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
+};
 
-export default function ResponsiveControl( { children, label } ) {
+export default function ResponsiveControl( {
+	children,
+	label,
+	value,
+	isInherited,
+	resolvedValue,
+	onReset,
+} ) {
 	// WP-native device preview (the canvas-resizing top-bar toggle). null when
 	// the post-editor store isn't present (site editor / widgets context).
 	const nativeDevice = useSelect( ( select ) => {
@@ -76,6 +129,24 @@ export default function ResponsiveControl( { children, label } ) {
 		}
 	};
 
+	// Optional inherit-indicator + reset (P2 §4.2, Spec 35 T1.2). Every prop
+	// here is optional; a caller that doesn't pass them (all current callers)
+	// gets `hasInheritAPI === false` and none of this renders — byte-identical
+	// to the pre-extension output.
+	const hasInheritAPI = typeof isInherited === 'function';
+	const tierIsInherited =
+		hasInheritAPI && breakpoint !== 'desktop' && isInherited( breakpoint );
+	const tierResolved =
+		hasInheritAPI && typeof resolvedValue === 'function'
+			? resolvedValue( breakpoint )
+			: undefined;
+	const canReset =
+		hasInheritAPI &&
+		typeof onReset === 'function' &&
+		breakpoint !== 'desktop' &&
+		! tierIsInherited &&
+		value !== undefined;
+
 	return (
 		<div className="sgs-responsive-control">
 			<div className="sgs-responsive-control__header">
@@ -97,6 +168,31 @@ export default function ResponsiveControl( { children, label } ) {
 				/>
 			</div>
 			{ children( breakpoint ) }
+			{ tierIsInherited && (
+				<p className="sgs-responsive-control__inherited-hint">
+					{ sprintf(
+						/* translators: 1: source device tier, 2: the resolved value. */
+						__( 'Inheriting from %1$s: %2$s', 'sgs-blocks' ),
+						__( 'Desktop', 'sgs-blocks' ),
+						tierResolved ?? ''
+					) }
+				</p>
+			) }
+			{ canReset && (
+				<Button
+					variant="tertiary"
+					size="small"
+					onClick={ () => onReset( breakpoint ) }
+					aria-label={ sprintf(
+						/* translators: %s: control label. */
+						__( 'Reset %s to inherited value', 'sgs-blocks' ),
+						label || __( 'Responsive', 'sgs-blocks' )
+					) }
+					style={ { minHeight: '44px', marginTop: '4px' } }
+				>
+					{ __( 'Reset to inherited value', 'sgs-blocks' ) }
+				</Button>
+			) }
 		</div>
 	);
 }

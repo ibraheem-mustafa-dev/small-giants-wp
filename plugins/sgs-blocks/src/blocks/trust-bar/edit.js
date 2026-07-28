@@ -9,7 +9,7 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
@@ -199,12 +199,22 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 				placeholder={ __( 'BRC Certified', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
 			/>
-			<TextControl
-				label={ __( 'Link URL (optional)', 'sgs-blocks' ) }
-				value={ item.url || '' }
-				onChange={ ( val ) => update( 'url', val ) }
-				type="url"
-				__nextHasNoMarginBottom
+			<SgsLinkControl
+				label={ __( 'Link (optional)', 'sgs-blocks' ) }
+				help={ __( 'Search your site or paste a URL to make this badge clickable.', 'sgs-blocks' ) }
+				value={ {
+					url: item.url || '',
+					opensInNewTab: item.linkTarget ? item.linkTarget === '_blank' : true,
+					rel: item.linkRel || '',
+				} }
+				onChange={ ( next ) => {
+					onChange( {
+						...item,
+						url: next.url || '',
+						linkTarget: next.opensInNewTab ? '_blank' : '_self',
+						linkRel: next.rel || '',
+					} );
+				} }
 			/>
 			<Button variant="secondary" isDestructive onClick={ onRemove } size="small" style={ { marginTop: '8px' } }>
 				{ __( 'Remove badge', 'sgs-blocks' ) }

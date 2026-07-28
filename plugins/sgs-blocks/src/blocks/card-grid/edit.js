@@ -18,7 +18,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, ShadowControl, TypographyControls, ResponsiveBoxControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
 
@@ -141,12 +141,25 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 				onChange={ ( val ) => update( 'badgeVariant', val ) }
 				__nextHasNoMarginBottom
 			/>
-			<TextControl
-				label={ __( 'Link URL', 'sgs-blocks' ) }
-				value={ item.link || '' }
-				onChange={ ( val ) => update( 'link', val ) }
-				type="url"
-				__nextHasNoMarginBottom
+			<SgsLinkControl
+				label={ __( 'Link', 'sgs-blocks' ) }
+				help={ __(
+					'Search your site or paste a URL to make this card clickable.',
+					'sgs-blocks'
+				) }
+				value={ {
+					url: item.link || '',
+					opensInNewTab: item.linkTarget === '_blank',
+					rel: item.linkRel || '',
+				} }
+				onChange={ ( next ) => {
+					onChange( {
+						...item,
+						link: next.url || '',
+						linkTarget: next.opensInNewTab ? '_blank' : '_self',
+						linkRel: next.rel || '',
+					} );
+				} }
 			/>
 			<Button
 				variant="secondary"

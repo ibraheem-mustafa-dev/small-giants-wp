@@ -137,6 +137,74 @@ export function resolveResponsiveTier( obj = {}, tier = 'desktop' ) {
 	return resolveTier( normalized, tier, '' );
 }
 
+/**
+ * Emit scoped per-tier CSS rules (base + tablet + mobile) for a tri-state
+ * ('inherit'|'on'|'off') responsive behaviour attribute, resolved via
+ * resolveTier(). A tier's rule is emitted ONLY when its resolved state
+ * differs from the tier immediately above it (minimal output) — an
+ * all-inherit value emits a single base rule and nothing else, and a tier
+ * whose resolved CSS text is empty emits no rule at all (even if the state
+ * differs from the tier above).
+ *
+ * Identical semantics/output string to `sgs_emit_tier_rules()`
+ * (includes/helpers-responsive.php) — this is the editor-preview mirror so
+ * frontend render and editor preview never disagree (Spec 35 design gate
+ * §4, 2026-07-28). Rules are scoped to the caller-supplied uidSelector —
+ * e.g. '#sgs-abc123' or '.sgs-header--abc123' — NEVER a body class.
+ * Breakpoints come from SGS_BREAKPOINTS (768/1024 device-tier standard,
+ * emitted as max-width 1023px/767px) — never hardcoded here.
+ *
+ * ⚠ D386: this helper emits whatever CSS text the caller passes in
+ * cssOn/cssOff verbatim. Callers MUST NOT pass declarations containing
+ * absolute/per-instance sizes destined for a SHARED, state-only stylesheet —
+ * a value that varies per block instance must be scoped to that instance's
+ * own selector (this helper's whole purpose), never baked into shared CSS
+ * text reused across instances.
+ *
+ * @param {string} uidSelector  Fully-formed, already-safe CSS selector (caller-owned uid scope).
+ * @param {*}      value        Tri-state responsive object `{desktop,tablet,mobile}` (or non-object/junk — D328 defence via resolveTier()).
+ * @param {string} cssOn        CSS declarations (no selector/braces) to emit when the resolved state is 'on'.
+ * @param {string} cssOff       CSS declarations to emit when the resolved state is 'off'. Default '' (nothing emitted for 'off').
+ * @param {string} defaultValue State used when desktop inherits/is missing (§6b guard). Default 'off' (DEFAULT_OFF).
+ * @return {string} CSS text (no <style> wrapper); '' when nothing resolves to non-empty declarations.
+ */
+export function emitTierRules(
+	uidSelector,
+	value,
+	cssOn,
+	cssOff = '',
+	defaultValue = 'off'
+) {
+	const cssForState = ( state ) => ( state === 'on' ? cssOn : cssOff );
+
+	const desktop = resolveTier( value, 'desktop', defaultValue );
+	const tablet = resolveTier( value, 'tablet', defaultValue );
+	const mobile = resolveTier( value, 'mobile', defaultValue );
+
+	let css = '';
+
+	const desktopCss = cssForState( desktop.value );
+	if ( desktopCss !== '' ) {
+		css += `${ uidSelector }{${ desktopCss }}`;
+	}
+
+	if ( tablet.value !== desktop.value ) {
+		const tabletCss = cssForState( tablet.value );
+		if ( tabletCss !== '' ) {
+			css += `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px){${ uidSelector }{${ tabletCss }}}`;
+		}
+	}
+
+	if ( mobile.value !== tablet.value ) {
+		const mobileCss = cssForState( mobile.value );
+		if ( mobileCss !== '' ) {
+			css += `@media (max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }px){${ uidSelector }{${ mobileCss }}}`;
+		}
+	}
+
+	return css;
+}
+
 export function responsiveClasses( attributes ) {
 	const classes = [];
 

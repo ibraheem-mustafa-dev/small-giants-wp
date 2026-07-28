@@ -176,10 +176,22 @@ animation with no reduced-motion gate · raw-px spacing instead of the token sca
 
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
+**⚠ Part G AMENDED by D402 (T0.4/T0.5 design gates, Bean-approved 2026-07-28) — the blanket
+"adopt native" guidance is replaced by a per-support VERDICT table. Nothing adopts a support
+without the Spec-32 skip-serialisation + scoped-emission pattern.**
+
+| Support | VERDICT (D402) | Reasoning |
+|---|---|---|
+| `filter.duotone` | **ADOPT** (T3.5 imageControls wave) | Nothing hand-rolled exists; free client value on image blocks |
+| `dimensions.aspectRatio` | **ADOPT** (T3.5) | Replaces 4 inconsistent per-block attrs |
+| `shadow` | **KEEP SGS** | ShadowControl + `sgs_shadow_value()` exceeds the native preset picker |
+| `dimensions.minHeight` | **KEEP SGS** | Per-breakpoint attr families beat native's single value; adopting = Part-F duplicate panel |
+| `position.sticky` | **KEEP SGS** | Collides with the D400 behaviour cascade |
+| `lightbox` | **KEEP SGS** (gallery) | Bespoke has more features; native considered only for `sgs/media` in T3.5 |
+| `templateLock:"contentOnly"` | **PER-CLIENT OPT-IN ONLY** | Hides children's inspector settings (contradicts the inspector standard; D377/D378 rejection stands; D393 template-reapply risk). Build-time lock for a specific client with a real breakage problem — never framework patterns |
+
 | Native mechanism | Use instead of | Priority |
 |---|---|---|
-| `templateLock:"contentOnly"` (patterns) | training clients / bespoke lock | **HIGH** — client-safe editing, free |
-| Block supports: `dimensions.aspectRatio`/`minHeight`, `background`, `position.sticky`, `shadow`, `filter.duotone`, `layout` | bespoke panels/CSS for these | **HIGH** — free inspector UI + CSS |
 | theme.json v3 `styles.blocks.<name>.css` + `appearanceTools` | per-block bespoke CSS plumbing | **HIGH** — fits per-client `theme-snapshot.json` |
 | **Block Bindings API** (`register_block_bindings_source`) | any bespoke dynamic-content attr system | **HIGH** — WP's own direction |
 | `LinkControl` | raw URL text fields | **HIGH** — internal search + rel + new-tab free |
