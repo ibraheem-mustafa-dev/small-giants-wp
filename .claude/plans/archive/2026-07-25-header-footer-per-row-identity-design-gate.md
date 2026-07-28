@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: EXECUTED 2026-07-26.
+
 ---
 doc_type: design-gate
 topic: header-footer-per-row-identity

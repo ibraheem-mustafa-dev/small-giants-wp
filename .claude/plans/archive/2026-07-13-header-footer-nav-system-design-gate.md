@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — superseded by the 2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md and the P1 'full clean rebuild' verdict (D344) — this doc's narrower 'container-only + P0 in-progress' scope was overtaken by the full-rebuild decision.
+
 ---
 doc_type: design-gate
 project: small-giants-wp

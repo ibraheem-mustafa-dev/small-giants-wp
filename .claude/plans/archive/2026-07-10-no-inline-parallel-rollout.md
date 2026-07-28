@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — LEDGER: 'No-inline styling roster — effectively COMPLETE (11-condition DONE audit, 2026-07-26)' — this rollout phase-plan's scope has landed; real remaining = 5 named block-fixes tracked elsewhere.
+
 ---
 doc_type: phase-plan
 project: small-giants-wp

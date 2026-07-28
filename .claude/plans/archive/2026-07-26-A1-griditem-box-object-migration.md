@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — decisions.md D-record: 'A1: gridItemPadding/gridItemBorderRadius ... migrated flat-scalar -> 4-side/4-corner object ... Deployed sandybrown (md5-verified) ... all 5 blocks live-verified' — this plan is cited as the shipped spec.
+
 # A1 — grid-item box-object migration (BUILD SPEC, council-validated)
 
 **Date:** 2026-07-26 · **Track 1** (Spec 32 no-inline / box-object contract) · **Status:** ready to build

@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — LEDGER: 'P1 CLOSED (D344)' citing this doc as the decision record (in-file status still says DRAFT/awaiting council — LEDGER is authoritative and confirms closure).
+
 ---
 doc_type: architecture-decision
 project: small-giants-wp

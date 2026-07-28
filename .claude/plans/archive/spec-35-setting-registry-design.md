@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — decisions.md D349: setting-registry.json shipped, drafted -> Bean-reviewed -> qc-council-validated (24 corrections folded).
+
 ---
 doc_type: reference
 title: Spec 35 Phase 2 — optimal-control registry DESIGN SPINE (schema + governing dimensions)

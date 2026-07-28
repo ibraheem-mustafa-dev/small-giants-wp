@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — dated realignment brief, superseded by the subsequent P1/P2/P2.5 -> Spec 36 sequence.
+
 ---
 doc_type: handoff
 project: small-giants-wp

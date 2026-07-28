@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: BUILT+PROVEN (2026-07-28).
+
 # Design gate — canonical `resolveTier()` cascade (Spec 35 D4 / Spec 37 FR-37-14 / P2 §6a)
 
 ```

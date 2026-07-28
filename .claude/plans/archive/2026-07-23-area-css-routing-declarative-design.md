@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — LEDGER (D372/D373): 'declarative CSS-routing shipped — css_layer L1-L4 seeded, css_element normalised, +213 routes, product-card cta -> box-object (every block now box-object)' — matches this design's proposal exactly, even though the in-file status field was never updated from 'design-gate-pending'.
+
 ---
 doc_type: design
 plan_id: area-css-routing-declarative

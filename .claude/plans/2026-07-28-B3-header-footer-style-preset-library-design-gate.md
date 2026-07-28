@@ -32,7 +32,7 @@ There is no dark header, no bold high-contrast header, no editorial header, no d
 
 **So B3 is an AUTHORING job, not a mechanism job.** That is much cheaper and much lower-risk than
 building a control, and it is what the parent design gate predicted: *"the picker mechanism already
-works; high-ROI, low cost"* (`2026-07-25-header-footer-per-row-identity-design-gate.md` §3.C).
+works; high-ROI, low cost"* (`plans/archive/2026-07-25-header-footer-per-row-identity-design-gate.md` §3.C, archived 2026-07-28).
 
 ---
 

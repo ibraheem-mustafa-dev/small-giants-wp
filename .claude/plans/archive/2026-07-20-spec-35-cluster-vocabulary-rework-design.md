@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: BUILT + rolled out (verified live 2026-07-25); FR-35-1..6 all shipped; ROLLOUT COMPLETE.
+
 ---
 doc_type: design
 spec_id: 35

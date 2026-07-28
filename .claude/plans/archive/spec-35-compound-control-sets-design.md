@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: HARDENED 2026-07-19 — all design-level grading gaps closed; Direction LOCKED.
+
 ---
 doc_type: design
 title: Spec 35 Task 2 — element-first inspector organisation (the control-clusters within each element)

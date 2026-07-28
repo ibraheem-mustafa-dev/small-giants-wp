@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — LEDGER: 'Spec 36 Phase 1 CLOSED 2026-07-20' (in-file status still says DRAFT/pending approval — LEDGER is authoritative and confirms closure).
+
 ---
 doc_type: plan
 project: small-giants-wp

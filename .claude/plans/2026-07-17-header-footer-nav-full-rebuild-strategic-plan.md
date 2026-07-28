@@ -4,9 +4,9 @@ project: small-giants-wp
 title: Header / Footer / Nav — full architecture + builder rebuild (strategic roadmap)
 date: 2026-07-17
 status: VALIDATED — Gate 0 PASSED 2026-07-17 (gap-analysis B ≈3.9 + cold reviewer B 3.67; both GO). 3 fixes applied: P1 model-lock now conditional on build-verdict; R5 (prod-regression/rollback) + R6 (shared-worktree) added. Awaiting Bean sign-off to launch P1 research.
-supersedes_framing_in: .claude/plans/2026-07-16-header-footer-nav-builder-REALIGN-brief.md (this is the build plan the REALIGN brief said to write next)
+supersedes_framing_in: .claude/plans/archive/2026-07-16-header-footer-nav-builder-REALIGN-brief.md (this is the build plan the REALIGN brief said to write next; archived 2026-07-28)
 grounded_in:
-  - .claude/plans/2026-07-16-header-footer-nav-builder-REALIGN-brief.md (goals A/B/C/D + mandatory research gate)
+  - .claude/plans/archive/2026-07-16-header-footer-nav-builder-REALIGN-brief.md (goals A/B/C/D + mandatory research gate; archived 2026-07-28)
   - .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md §S9 (FR-S9-1..11)
   - .claude/specs/34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md
   - .claude/specs/33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md (Part 2 = header/footer clone)

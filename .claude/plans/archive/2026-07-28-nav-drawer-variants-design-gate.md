@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: BUILT (2026-07-28, D403) — shipped at faa14924, one residual PARKED (parked residuals do not keep a plan live).
+
 ---
 doc_type: plan
 project: small-giants-wp

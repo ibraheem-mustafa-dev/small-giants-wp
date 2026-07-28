@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — Spec 34 was DELETED 2026-07-19 (folded into Spec 36); this build plan is dead.
+
 # Phase — Spec 34 build: adaptive-nav disclosure drawer (same-session, subagent-executed)
 
 **USP:** kills the whole "drawer lands at random widths" bug class by construction, gives

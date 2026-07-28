@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: BUILT + LIVE-VERIFIED 2026-07-26 (D391/D392).
+
 ---
 doc_type: design-gate
 topic: per-row-sticky

@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — LEDGER: 'No-inline styling roster — effectively COMPLETE (11-condition DONE audit, 2026-07-26)'.
+
 ---
 doc_type: phase-plan
 project: small-giants-wp

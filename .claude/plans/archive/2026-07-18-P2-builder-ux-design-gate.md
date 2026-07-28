@@ -1,3 +1,5 @@
+> ARCHIVED 2026-07-28 — in-file status: SIGNED OFF + CLOSED 2026-07-18.
+
 ---
 doc_type: builder-ux-design-gate
 project: small-giants-wp
