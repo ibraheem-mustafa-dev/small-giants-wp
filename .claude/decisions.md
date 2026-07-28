@@ -15,6 +15,32 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D400 [INCIDENT] — resolveTier cascade APPROVED with a Bean-carved visibility exclusion; T2.2b wrapper shadow APPROVED + shipped (2026-07-28)
+
+**Cascade gate (Spec 35 T0.2) APPROVED by Bean** for BEHAVIOURS (sticky/transparent/shrink/
+hide-on-scroll tri-state per tier) and RESPONSIVE VALUES (scalar/null family): one canonical
+`resolveTier(value, tier, default)` implemented identically in JS (`src/utils/responsive.js`) and
+PHP (`sgs_resolve_tier()`, `helpers-responsive.php`), locked together by ONE shared golden-fixture
+JSON both test suites consume (16-case matrix incl. §6b `desktop:'inherit'`→DEFAULT_OFF and
+malformed-value coercion). Contract doc: `plans/2026-07-28-resolveTier-cascade-design-gate.md`.
+
+**Bean-carved EXCLUSION (the load-bearing part): block VISIBILITY does NOT inherit.** Bean's
+reasoning, accepted as the rule: the dominant use of per-device hiding is a device-SPECIFIC block
+— you hide it on desktop because it exists FOR mobile/tablet; under inheritance a desktop-hide
+would cascade everywhere and the block could never render, defeating the setting. So
+`sgsHideOnMobile/Tablet/Desktop` KEEP today's three independent per-device switches — no reshape,
+no tri-state, no `sgsHide` object. This REVERSES the D4/D358 plan to reshape responsive-visibility
+onto the cascade. **Scope split Bean confirmed same day:** Spec 37 §3.8's header/footer CONTENT
+curation KEEPS its down-cascade (trim-as-screens-shrink is the right model for header items);
+general block visibility is independent. Spec 35 D4 + Spec 37 §3.8 amended accordingly (same-work
+rule). Sequencing unchanged: T0.2 contract → T1.1 build next session → T1.4a fresh
+header-behaviour inventory (Bean-mandated; the roster has outgrown the 4 booleans) → FR-37-14.
+
+**T2.2b APPROVED + landed the same session:** `SGS_Container_Wrapper` now routes `shadow` +
+`gridItemShadow` through `sgs_shadow_value()` (preset slugs byte-identical to before; raw
+ShadowControl CSS passes through; breakout-guarded post-ceac2c8d) — unblocking container/hero/
+trust-bar's ShadowControl swap and the preset-only-shadow WARN class.
+
 ## D399 [INCIDENT] — Gate 3 closed: mega proven live; the panel was a 101px sliver painted UNDER the footer — two z-order/anchor root causes, both draft-grounded fixes (2026-07-28)
 
 **Gate-3 fixture built** (panel **1745** populated via the editor, menu **100** = Home·Brands(mega)·Recipes·Contact, page **1842** `/gate3-mega-nav/`) and the ENTIRE owed verification bank closed with guarded, non-vacuous checks: **all 6 motion effects PROVEN firing** (stagger delays 0/28/56ms · indicator translate+width, radius intact · magnet ±px tracking · caret 180° · spotlight `--mx/--my` tracking · card hover-lift −3px + ::after fade) · **axe 0 on the OPEN drawer** (closing the 2026-07-23 INCONCLUSIVE; guard = height 0→780 + 14 focusables, because a scoped axe on a HIDDEN surface passes identically — proven against `nav-qa/axe-run.mjs` run without `--open`, which "passes" on a closed drawer; that harness needs an openness guard before its result means anything) · **axe 0 on the OPEN mega** · keyboard no-trap + ESC/focus-return · reduced-motion full-end-state at 120ms · JS-off rich crawl · **CF-1 recursion run LIVE** (a panel embedding a nav on its own menu → plain link, no fatal; fixture restored). Real visual-diff reports replace the three INCOMPLETE ones (`reports/visual-diff/{mega-panel,nav-menu,mega-aside}-2026-07-28.md`).

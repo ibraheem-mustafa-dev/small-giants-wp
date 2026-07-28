@@ -2,7 +2,8 @@
 
 ```
 doc_type: design-gate
-status: AWAITING BEAN SIGN-OFF (T0.2 of the Spec 35 full close-out plan, 2026-07-28)
+status: APPROVED (Bean, 2026-07-28, D400) — behaviours + responsive values + §3.8 header
+        content; general block VISIBILITY EXCLUDED (see §5). Build = T1.1 next session.
 consumers: Spec 37 FR-37-14 (behaviour tri-state), Spec 37 §3.8 (content cascade),
            Spec 35 D4 (responsive-visibility), Spec 36 FR-36-24 (per-tier settings guard),
            Spec 37 FR-37-16 (responsive value shape — already half-built as resolveResponsiveTier)
@@ -97,16 +98,25 @@ pattern), one rule per tier inside that tier's `@media`, breakpoints from `SGS_B
 state-only stylesheet. Editor preview computes the same resolution via the JS resolver (that is
 what the golden test protects).
 
-### 5. Visibility (D4) semantics ride the same resolver
+### 5. Visibility is EXCLUDED from the cascade (Bean ruling, 2026-07-28)
 
-`sgsHideOnMobile/Tablet/Desktop` (3 flat booleans) reshape into ONE tri-state object attr
-`sgsHide` `{ desktop:'on'|'off', tablet:…, mobile:… }` (clean reshape; grep patterns/templates
-for seeded old attrs — WP discards undeclared attrs silently). Resolution through
-`resolveTier` gives the spec'd behaviour by construction: hiding at a tier flows to tiers below
-(they inherit), never above; an explicitly edited tier stops inheriting. Render stays
-**HIDE never REMOVE** — `display:none` media queries via `device-visibility.php`, content in the
-DOM. All three current consumers (`responsive-visibility.js` save-classes, `device-visibility.php`
-render, `utils/responsive.js:89` `responsiveClasses`) collapse onto the one resolver.
+**Block visibility does NOT inherit.** Bean's reasoning (accepted as the design rule): the
+dominant use of per-device hiding is a block that exists FOR one device class — you hide it on
+desktop precisely because it is a mobile/tablet-only block. Under inheritance, hiding on desktop
+would cascade to every tier and the block could never render anywhere by default — the setting
+would defeat its own purpose. So `sgsHideOnMobile`/`Tablet`/`Desktop` **stay three independent
+per-device switches with today's semantics — no reshape, no inheritance, no tri-state.** The
+cascade applies to BEHAVIOURS (sticky/transparent/shrink/hide-on-scroll) and RESPONSIVE VALUES
+(the scalar/null family) only. Render behaviour for visibility is unchanged: HIDE never REMOVE
+(`display:none` media queries via `device-visibility.php`, content stays in the DOM).
+
+**Spec amendments this ruling requires (do in the same commit as the T1 build, §1.2 rule):**
+- Spec 35 Part D4 currently says hiding cascades downward and that the visibility extension
+  reshapes onto `resolveTier` — AMEND: content-cascade language is superseded by this ruling for
+  block visibility; the extension keeps its flat per-device model.
+- Spec 37 §3.8 (per-device content cascade for header/footer, Bean-locked 2026-07-21) carries the
+  same downward-hide model for header CONTENT — ⚠ OPEN QUESTION for Bean (asked 2026-07-28):
+  does the exclusion apply there too, or does header-content curation keep its own down-cascade?
 
 ### 6. FR-36-24 compatibility
 

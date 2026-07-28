@@ -59,6 +59,7 @@ import {
 	ResponsiveControl,
 	SpacingControl,
 	DesignTokenPicker,
+	ShadowControl,
 } from '../../../components';
 
 // ---------------------------------------------------------------------------
@@ -1163,12 +1164,10 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 				help={ __( "CSS border shorthand e.g. '1px solid #ccc'.", 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
 			/>
-			<SelectControl
+			<ShadowControl
 				label={ __( 'Shadow', 'sgs-blocks' ) }
 				value={ gridItemShadow }
-				options={ SHADOW_OPTIONS }
 				onChange={ ( val ) => setAttributes( { gridItemShadow: val } ) }
-				__nextHasNoMarginBottom
 			/>
 			<DesignTokenPicker
 				label={ __( 'Text colour', 'sgs-blocks' ) }

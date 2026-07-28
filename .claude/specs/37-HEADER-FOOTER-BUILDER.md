@@ -357,6 +357,13 @@ mechanisms:
 - Once a lower tier is explicitly edited, it **stops inheriting** and holds its own value.
 - The same inherit / explicit-on / explicit-off distinction as FR-37-14's tri-state, applied
   to **content presence** rather than to a setting.
+- **Scope boundary (D400, Bean re-confirmed 2026-07-28):** this down-cascade governs
+  header/footer CONTENT curation ONLY. General block visibility
+  (`sgsHideOnMobile/Tablet/Desktop`, the universal extension) is EXCLUDED from inheritance and
+  keeps three independent per-device switches — a device-specific block is hidden on desktop
+  precisely because it exists for mobile/tablet, so a cascading desktop-hide would defeat the
+  setting. The shared `resolveTier()` cascade contract itself was APPROVED at D400
+  (`plans/2026-07-28-resolveTier-cascade-design-gate.md`) — FR-37-14 consumes it as specified.
 
 **Retired in favour of this (Bean, 2026-07-21):** the `move-to-drawer` mechanism (FR-S9-8) —
 relocating a header element into the drawer at small widths — is **dropped as too complex**

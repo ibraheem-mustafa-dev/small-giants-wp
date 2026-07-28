@@ -24,6 +24,7 @@ import {
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
+	ShadowControl,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 // No-inline migration (2026-07-09): hero no longer uses the default
@@ -40,7 +41,6 @@ import {
 	BackgroundPanel,
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
-	SHADOW_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
@@ -1200,13 +1200,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
+				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
+					CSS string built by ShadowControl), resolved by sgs_shadow_value()
+					(Spec 35 T2.2b). */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						value={ attributes.shadow || '' }
-						options={ SHADOW_OPTIONS }
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
-						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

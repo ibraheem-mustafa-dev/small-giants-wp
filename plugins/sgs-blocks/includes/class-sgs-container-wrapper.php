@@ -555,7 +555,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			}
 
 			if ( $shadow ) {
-				$base_outer_decls[] = 'box-shadow:var(--wp--preset--shadow--' . esc_attr( $shadow ) . ')';
+				// T2.2b (Bean-approved 2026-07-28): route through sgs_shadow_value()
+				// so BOTH preset slugs (wrapped in the preset var, byte-identical to
+				// the old behaviour) AND raw box-shadow strings from ShadowControl
+				// render. The old hardcoded preset wrap mangled raw CSS into an
+				// invalid var() and shadows silently vanished.
+				$shadow_value = sgs_shadow_value( $shadow );
+				if ( '' !== $shadow_value ) {
+					$base_outer_decls[] = 'box-shadow:' . $shadow_value;
+				}
 			}
 
 			// Background image — section kind only. The base tier scopes to .$uid;
@@ -656,7 +664,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$gi[]        = '--sgs-gi-border:' . esc_attr( trim( $safe_border ) );
 				}
 				if ( '' !== $grid_item_shadow ) {
-					$gi[] = '--sgs-gi-shadow:var(--wp--preset--shadow--' . esc_attr( $grid_item_shadow ) . ')';
+					// T2.2b: same preset-or-raw routing as the outer shadow above.
+					$gi_shadow_value = sgs_shadow_value( $grid_item_shadow );
+					if ( '' !== $gi_shadow_value ) {
+						$gi[] = '--sgs-gi-shadow:' . $gi_shadow_value;
+					}
 				}
 				if ( '' !== $grid_item_text_colour ) {
 					$gi[] = '--sgs-gi-color:' . esc_attr( sgs_colour_value( $grid_item_text_colour ) );

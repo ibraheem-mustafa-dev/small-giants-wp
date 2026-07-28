@@ -119,13 +119,20 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
   - **`inherit` resolves at render, never copies down at save.** Copying a parent's value into a
     child tier at save time makes an inherited value indistinguishable from an explicit
     override, so a later desktop edit can no longer cascade.
-  - **Why it lives here and not in Spec 37.** It reshapes
-    `sgsHideOnMobile`/`Tablet`/`Desktop` — a universal extension applied to every block
-    (`src/blocks/extensions/responsive-visibility.js`), currently three independent flat toggles
-    with no inheritance. Changing it from inside a header/footer spec would alter the meaning of
-    every existing use across the framework, which R-31-9 and the composite-mirror rule forbid.
-  - **Reuse the one cascade.** Resolve via the same `resolveTier()` shape P1 DP1 defines for
-    behaviours — do not introduce a second inheritance mechanism.
+  - **⚠ SCOPE AMENDED (D400, Bean-ruled 2026-07-28): general block VISIBILITY is EXCLUDED from
+    this cascade.** `sgsHideOnMobile`/`Tablet`/`Desktop`
+    (`src/blocks/extensions/responsive-visibility.js`) KEEP their three independent per-device
+    toggles — no reshape, no inheritance. Bean's reasoning (the rule): per-device hiding's
+    dominant use is a device-SPECIFIC block — hidden on desktop precisely because it exists for
+    mobile/tablet; inheritance would make a desktop-hide cascade everywhere and the block could
+    never render. The earlier plan to reshape the visibility extension onto the cascade (D358
+    re-homing) is REVERSED on this point. **D4's down-cascade model now applies ONLY to
+    header/footer CONTENT curation (Spec 37 §3.8's item-level trimming — Bean re-confirmed its
+    down-cascade 2026-07-28)** and the cascade mechanism itself applies to BEHAVIOURS and
+    RESPONSIVE VALUES (FR-37-14 / FR-37-16 families).
+  - **Reuse the one cascade (for behaviours/values/§3.8 content).** Resolve via the same
+    `resolveTier()` shape P1 DP1 defines — do not introduce a second inheritance mechanism.
+    Approved contract: `plans/2026-07-28-resolveTier-cascade-design-gate.md` (D400).
   - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
     the build.
   - **⚠ BUILD STATUS: NOT BUILT as the canonical shared mechanism — and it is on the CRITICAL PATH

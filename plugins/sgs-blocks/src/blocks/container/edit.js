@@ -8,8 +8,7 @@ import {
   PanelBody,
   SelectControl,
 } from "@wordpress/components";
-import { shadowVar } from "../../utils";
-import { ResponsiveControl, ResponsiveBoxControl, DesignTokenPicker } from "../../components";
+import { ResponsiveControl, ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from "../../components";
 import {
   LayoutPanel,
   WidthPanel,
@@ -17,7 +16,6 @@ import {
   ShapeDividersPanel,
   GridItemDefaultsPanel,
   MIN_HEIGHT_OPTIONS,
-  SHADOW_OPTIONS,
 } from "./components/ContainerWrapperControls";
 
 /**
@@ -58,6 +56,23 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Figure", "sgs-blocks" ), value: "figure" },
 ];
 
+/**
+ * Resolve the `shadow` attribute to a CSS box-shadow value for the editor
+ * preview. Mirrors sgs_shadow_value() (includes/helpers-tokens.php): a raw
+ * CSS shadow string (built by ShadowControl) passes through unchanged; a
+ * bare theme slug (legacy sm/md/lg/glow) is wrapped in the preset var().
+ *
+ * @param {string} value Stored `shadow` attribute value.
+ * @return {string|undefined} CSS box-shadow value, or undefined when empty.
+ */
+function resolveShadowPreview( value ) {
+  if ( ! value ) {
+    return undefined;
+  }
+  const isRaw = /^var\(|^inset|^rgb|^0 |^\d/.test( value );
+  return isRaw ? value : `var(--wp--preset--shadow--${ value })`;
+}
+
 const TEMPLATE_MODE_OPTIONS = [
   { label: __("Free (no restrictions)", "sgs-blocks"), value: "free" },
   { label: __("Grid section", "sgs-blocks"), value: "grid-section" },
@@ -89,7 +104,7 @@ export default function Edit({ attributes, setAttributes }) {
   const style = {
     gap: gapCssValue( gap ),
     minHeight: minHeight || undefined,
-    ...(shadow && { boxShadow: shadowVar( shadow ) }),
+    ...(shadow && { boxShadow: resolveShadowPreview( shadow ) }),
     ...(hasBgImage && !hasBgVideo && {
       backgroundImage: `url(${backgroundImage.url})`,
       backgroundSize: attributes.backgroundSize || "cover",
@@ -319,14 +334,14 @@ export default function Edit({ attributes, setAttributes }) {
         {/* Background (image/video/overlay/svg/animation tabs). */}
         <BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-        {/* Shadow. */}
+        {/* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
+          CSS string built by ShadowControl), resolved by sgs_shadow_value()
+          (Spec 35 T2.2b). */}
         <PanelBody title={ __( "Shadow", "sgs-blocks" ) } initialOpen={ false }>
-          <SelectControl
+          <ShadowControl
             label={ __( "Shadow", "sgs-blocks" ) }
             value={ shadow || "" }
-            options={ SHADOW_OPTIONS }
             onChange={ ( val ) => setAttributes( { shadow: val } ) }
-            __nextHasNoMarginBottom
           />
         </PanelBody>
 

@@ -9,7 +9,7 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
@@ -28,7 +28,6 @@ import {
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
 	MIN_HEIGHT_OPTIONS,
-	SHADOW_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 
 /**
@@ -410,14 +409,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ /* ── Background (image/video/svg/overlay) ──────────────────── */ }
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				{ /* ── Shadow ─────────────────────────────────────────────────── */ }
+				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
+					box-shadow CSS string built by ShadowControl), resolved by
+					sgs_shadow_value() (Spec 35 T2.2b). ────────────────────────── */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						value={ attributes.shadow || '' }
-						options={ SHADOW_OPTIONS }
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
-						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
