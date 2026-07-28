@@ -141,7 +141,8 @@
 		},
 		"variantPreset": {
 			"type": "string",
-			"default": ""
+			"default": "",
+			"enum": [ "", "floating-capped-card", "anchored-card-stack", "editorial-ghost-list", "centred-statement", "solid-brand-light", "two-column-editorial", "split-zone-serif" ]
 		},
 		"sgsCustomCss": {
 			"type": "string",

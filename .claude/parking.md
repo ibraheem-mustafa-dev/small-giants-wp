@@ -275,6 +275,22 @@ memory/parking-archive.md. -->
 > 1440. **Status: OPEN** · **Bucket:** Blocks · **Trigger:** next header/Spec-37 session (same
 > files as the Site Editor panel fix — cheap to fold in).
 
+> **P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS** — NEW 2026-07-28 (cross-track; OWNED BY TRACK 2 /
+> Spec 36). D403 (`faa14924`) shipped 7 nav-drawer `variantPreset` variations with a
+> `supports.sgs.variants` map whose set-difference leaves **6 of 7 variants with an EMPTY
+> discriminator signature** — `detect_variant` cannot tell anchored-card-stack /
+> centred-statement / editorial-ghost-list / solid-brand-light / two-column-editorial /
+> split-zone-serif apart from extracted CSS. This is exactly the
+> [[P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL]] class (F6 Check #3, the universal ambiguity
+> rule built FROM the trust-bar case). The Spec-35 close-out session (1) added the missing
+> `variantPreset` enum (transcribed from variations.js — that half was mechanical) and
+> (2) CONSCIOUSLY BASELINED this finding (`db-consistency-baseline.json`,
+> key `vc:sgs/nav-drawer:anchored-card-stack|…`) to unblock main's prebuild — NOT a fix. **To
+> close (Track 2):** give each variant structural/styling discriminators per the F6 fix text
+> (only ONE variant may keep the empty fallback), then remove the baseline key. **Status:
+> OPEN** · **Bucket:** Blocks · **Trigger:** next nav/Spec-36 session — before any drawer-variant
+> cloning is attempted (detect_variant is blind until then).
+
 > **P-NO-INLINE-GATE-COVERAGE-GAPS** — NEW 2026-07-28 (surfaced closing Spec 35). Two structural
 > gaps in the inline-zero enforcement, both proven live: (1) **`check-no-inline.py`'s CANARY_URLS
 > never exercise hover/animation-attributed instances** — the team-member inline-var class passed
