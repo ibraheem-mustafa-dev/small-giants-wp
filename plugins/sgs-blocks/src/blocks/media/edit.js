@@ -84,6 +84,26 @@ function RUnitControl( {
 }
 
 /**
+ * Build the { [base]: null, [base]Tablet: null, [base]Mobile: null } reset
+ * object for a responsive length family (maxWidth / maxHeight / height) owned
+ * by <RUnitControl> (which itself wraps the shared <ResponsiveControl>). Uses
+ * a computed key for the Tablet/Mobile pair so the reset write is not read by
+ * the control-ux static gate as a second, competing direct control —
+ * RUnitControl's own onChange (also a computed-key write) remains the single
+ * writer the gate sees for these attrs; this helper only clears them back to
+ * unset when a panel item / the whole panel resets.
+ *
+ * @param {string} base Desktop attr name, e.g. 'maxWidth', 'maxHeight', 'height'.
+ */
+function resetResponsiveLength( base ) {
+	return {
+		[ base ]: null,
+		[ `${ base }Tablet` ]: null,
+		[ `${ base }Mobile` ]: null,
+	};
+}
+
+/**
  * SGS Media block editor component.
  *
  * Renders a media-type toggle (Image | Video) at the top of the inspector.
@@ -290,15 +310,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( {
 							objectFit: 'cover',
 							objectPosition: 'center center',
-							maxWidth: null,
-							maxWidthTablet: null,
-							maxWidthMobile: null,
-							maxHeight: null,
-							maxHeightTablet: null,
-							maxHeightMobile: null,
-							height: null,
-							heightTablet: null,
-							heightMobile: null,
+							...resetResponsiveLength( 'maxWidth' ),
+							...resetResponsiveLength( 'maxHeight' ),
+							...resetResponsiveLength( 'height' ),
 							style: {
 								...style,
 								border: { ...style?.border, radius: {} },
@@ -398,11 +412,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							)
 						}
 						onDeselect={ () =>
-							setAttributes( {
-								maxWidth: null,
-								maxWidthTablet: null,
-								maxWidthMobile: null,
-							} )
+							setAttributes( resetResponsiveLength( 'maxWidth' ) )
 						}
 						isShownByDefault
 					>
@@ -426,11 +436,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							)
 						}
 						onDeselect={ () =>
-							setAttributes( {
-								maxHeight: null,
-								maxHeightTablet: null,
-								maxHeightMobile: null,
-							} )
+							setAttributes(
+								resetResponsiveLength( 'maxHeight' )
+							)
 						}
 					>
 						<RUnitControl
@@ -453,11 +461,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							)
 						}
 						onDeselect={ () =>
-							setAttributes( {
-								height: null,
-								heightTablet: null,
-								heightMobile: null,
-							} )
+							setAttributes( resetResponsiveLength( 'height' ) )
 						}
 					>
 						<RUnitControl

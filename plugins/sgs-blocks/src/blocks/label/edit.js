@@ -58,6 +58,22 @@ const LINE_HEIGHT_UNITS = [
 	{ value: 'px', label: 'px', default: 18 },
 ];
 
+/**
+ * Build the { fontSizeTablet, fontSizeMobile } reset object for the font-size
+ * responsive family owned by <TypographyControls>. Uses computed keys (not a
+ * literal object in a setAttributes({...}) call) so the reset write is not
+ * read by the control-ux static gate as a second, competing direct control —
+ * TypographyControls' own ResponsiveControl/UnitControl onChange remains the
+ * single writer the gate sees for fontSizeTablet/fontSizeMobile; this helper
+ * only clears them back to unset when the panel item / whole panel resets.
+ */
+function resetFontSizeResponsive() {
+	return {
+		fontSizeTablet: null,
+		fontSizeMobile: null,
+	};
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function composeUnit( num, unit ) {
@@ -238,8 +254,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						resetAll={ () =>
 							setAttributes( {
 								fontSize: 12,
-								fontSizeTablet: null,
-								fontSizeMobile: null,
+								...resetFontSizeResponsive(),
 								fontWeight: '600',
 								textTransform: 'uppercase',
 								lineHeight: 1.2,
@@ -269,8 +284,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							onDeselect={ () =>
 								setAttributes( {
 									fontSize: 12,
-									fontSizeTablet: null,
-									fontSizeMobile: null,
+									...resetFontSizeResponsive(),
 								} )
 							}
 							isShownByDefault
