@@ -299,9 +299,33 @@ unmerged/paused — check its branch state before touching its files.
   CLOSED on hero/trust-bar/cta-section (shared `resolveShadowPreview()` in utils/tokens.js).
   Audit: flagged 45→40; raw-url 6 remaining = the part-2 roster ONLY. T2c also closed same day:
   pricing-table £ mojibake (byte-level root fix) + 20 patterns re-authored (container validation
-  errors 14→0) + Icon Grid re-tokened readable (theme 1.5.51). **NEXT for this track: T1.2/T1.3
-  (ResponsiveTriStateControl + scoped emission) → T1.4a inventory → T1.4 FR-37-14 reshape — the
-  Spec 37 Group B unblock; then part-2 link batch (6 blocks) + gate promotion (T5.1).**
+  errors 14→0) + Icon Grid re-tokened readable (theme 1.5.51).
+  **CHAIN CLOSED (late 2026-07-28, `ac0c30eb` → `e4bd72ef` → `eb255f06` → T5.1): the full
+  /delegate orchestration Bean commissioned is COMPLETE.** T1.2 ResponsiveTriStateControl + T1.3
+  scoped emission (goldens 25/25 both runtimes) → T1.4a inventory (roster Bean-confirmed;
+  contrastSafe/burger stay enums) → part-2 link batch (raw-url WARNs 0; crash-recovered, work
+  verified on disk) → **T1.4 FR-37-14 SHIPPED + QC-PROVEN LIVE** (tri-state cascade verified at
+  1440/900/375 via real UI incl. explicit-off override + sticky+transparent coexistence; QC round
+  1 found 3 defects → fix round fact-checked: CSS same-selector !important collision CONFIRMED
+  and fixed via `sgs_merge_tri_state_declarations()` single-writer emission; rows unified onto
+  the one string vocabulary + ResponsiveTriStateControl (a latent 'off'-reads-as-on truthiness
+  bug fixed en route); panel-not-mounting DISPROVEN — the QC probe never selected the block in
+  the Site Editor iframe (vacuous-check class; panel renders in BOTH editors when genuinely
+  selected)) → SgsLinkControl staged-settings root cause (core LinkControl stages toggles until
+  URL submit — toggles now rendered by our component, committing immediately; QC-verified via
+  the exact failing reproduction) → **T5.1 GATE PROMOTED: `audit-inspector-conformance.js
+  --check` wired into prebuild FAIL-CLOSED, negative-control proven (injected violation kills
+  `npm run build` exit 1; reverted; clean tree green; missing-roster also fails in check mode).**
+  D402: Part G verdict table (adopt duotone+aspectRatio in T3.5; keep-SGS shadow/minHeight/
+  sticky/lightbox; templateLock per-client only); button stays URLInput deliberately.
+  **Spec 37 Group B is UNBLOCKED — FR-37-14 is BUILT and live-proven.**
+  Open residuals (parked, none blocking): P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING
+  (cosmetic) · P-HERO-TRUSTBAR-SHADOW-NO-EDITOR-PREVIEW was CLOSED earlier same day ·
+  HeaderBehavioursTest.php needs a composer/PHPUnit env to execute · delegate dispatch-log
+  uploads pending (Blub outage) · Shrink+Hide legacy-transition overlap documented unproven.
+  **NEXT for this track: the T3/T4 component wave** (MediaGalleryPicker, GradientPicker overlay,
+  whole-card link design gate, decorative-image + ARIA-label controls, imageControls +
+  duotone/aspectRatio per D402, ToolsPanel rollout) — all dispatchable, none block Spec 37.
   Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit:
   `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 - **Track 1c — Spec 31 converter completion** (prompt: `next-session-prompt-track1-converter.md`). 2026-07-22 completion wave shipped (11 commits): `::before/::after` overlay lift, transform/filter/top/left un-excluded + hover-lift (Bean-caught: hover scale/zoom/grayscale on 15+ blocks was silently dropping), F3 LANDED runtime + batch runner, **UNACCOUNTED 14->0** (they were ACCOUNTING bugs in the D1 bucket/join, not converter drops). 2026-07-23 (D372/D373): declarative CSS-routing shipped — `css_layer` L1-L4 seeded, `css_element` normalised, +213 routes, product-card cta -> box-object (every block now box-object). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`; detail: decisions D372/D373.

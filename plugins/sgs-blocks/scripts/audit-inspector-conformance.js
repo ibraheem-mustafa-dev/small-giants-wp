@@ -439,7 +439,9 @@ function main() {
 	const roster = loadJson( ROSTER_PATH, null );
 	if ( ! roster || ! Array.isArray( roster.blocks ) ) {
 		process.stderr.write( '[audit-inspector-conformance] roster.json missing or invalid — run scripts/consistency/build-roster.py first.\n' );
-		process.exitCode = 0; // WARN-ONLY — never fail the build
+		// In --check (hard-gate) mode a missing roster must FAIL, not pass
+		// vacuously — a gate whose input vanished has verified nothing.
+		process.exitCode = process.argv.includes( '--check' ) ? 1 : 0;
 		return;
 	}
 
@@ -463,7 +465,31 @@ function main() {
 		printHuman( meta, findings, unparseable );
 	}
 
-	// WARN-ONLY (Spec 35 plan Gate 3 promotes this to a hard gate later).
+	// --check = the promoted HARD GATE (Spec 35 T5.1, Gate 3 — promoted
+	// 2026-07-28 once the WARN count reached 0 with all deliberate exemptions
+	// registered in inspector-conformance-baseline.json). Fails the build on
+	// any non-exempt WARN-severity finding. INFO-severity findings (dense-panel
+	// candidates, advisory preset notes) never gate — they are Part-J roadmap
+	// signals, not defects. Without --check the script stays observational.
+	if ( process.argv.includes( '--check' ) ) {
+		const gating = findings.filter(
+			( f ) => 'warn' === f.severity && 'EXCEPTION' !== f.status
+		);
+		if ( gating.length > 0 ) {
+			process.stderr.write(
+				`\n[audit-inspector-conformance --check] FAIL — ${ gating.length } WARN-severity finding(s). ` +
+					'Fix the control (see rules in the header docblock) or register a REASONED exemption in ' +
+					'scripts/inspector-conformance-baseline.json — never silence a finding without a reason.\n'
+			);
+			process.exitCode = 1;
+			return;
+		}
+		process.stdout.write( '\n[audit-inspector-conformance --check] PASS — 0 WARN-severity findings (exemptions + INFO advisories excluded by design).\n' );
+		process.exitCode = 0;
+		return;
+	}
+
+	// Observational mode: always exits 0.
 	process.exitCode = 0;
 }
 
