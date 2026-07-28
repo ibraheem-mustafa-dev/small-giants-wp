@@ -6,7 +6,7 @@
  * and inspector panels covering layout, colours, hover, and carousel options.
  */
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	PanelBody,
@@ -14,11 +14,11 @@ import {
 	RangeControl,
 	ToggleControl,
 	RadioControl,
-	Button,
 	Spinner,
 } from '@wordpress/components';
 import { useRef } from '@wordpress/element';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
+import MediaGalleryPicker from '../../components/MediaGalleryPicker';
 import ResponsiveControl from '../../components/ResponsiveControl';
 import { colourVar } from '../../utils';
 
@@ -218,15 +218,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	/**
-	 * Handle media selection from MediaUpload.
-	 * Maps WordPress media objects to the unified SGS media-slot shape so
-	 * sgs_render_media() can render either an <img> or <video> per item.
+	 * Handle a selection from MediaGalleryPicker.
+	 * MediaGalleryPicker already maps each raw WP media object to the
+	 * unified SGS media-slot shape (via the resolveItem prop, bound below
+	 * to resolveGalleryMedia) so sgs_render_media() can render either an
+	 * <img> or <video> per item — this just persists the mapped array.
 	 *
-	 * @param {Object[]} selectedMedia Array of WP media objects.
+	 * @param {Object[]} mappedItems Array already resolved to the SGS media-slot shape.
 	 */
-	const onSelectImages = ( selectedMedia ) => {
-		const mapped = selectedMedia.map( ( media ) => resolveGalleryMedia( media, imageSize ) );
-		setAttributes( { mediaItems: mapped, images: [] } );
+	const onSelectImages = ( mappedItems ) => {
+		setAttributes( { mediaItems: mappedItems, images: [] } );
 	};
 
 	// Wrapper inline styles — CSS custom properties for layout.
@@ -304,26 +305,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 					) }
 
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ onSelectImages }
-							allowedTypes={ [ 'image', 'video' ] }
-							multiple={ true }
-							gallery={ true }
-							value={ items.map( ( item ) => item.id ).filter( Boolean ) }
-							render={ ( { open } ) => (
-								<Button
-									onClick={ open }
-									variant="secondary"
-									className="sgs-gallery-editor__media-btn"
-								>
-									{ items.length > 0
-										? __( 'Edit gallery', 'sgs-blocks' )
-										: __( 'Add media', 'sgs-blocks' ) }
-								</Button>
-							) }
-						/>
-					</MediaUploadCheck>
+					<MediaGalleryPicker
+						value={ items }
+						onChange={ onSelectImages }
+						resolveItem={ ( media ) => resolveGalleryMedia( media, imageSize ) }
+						allowedTypes={ [ 'image', 'video' ] }
+						addLabel={ __( 'Add media', 'sgs-blocks' ) }
+						editLabel={ __( 'Edit gallery', 'sgs-blocks' ) }
+						buttonVariant="secondary"
+						className="sgs-gallery-editor__media-btn"
+					/>
 
 					{ items.length > 0 && (
 						<p className="sgs-gallery-editor__panel-note" style={ { marginTop: '8px' } }>
@@ -511,24 +502,15 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ items.length === 0 && (
 					<div className="sgs-gallery-editor__placeholder">
 						<p>{ __( 'No media selected. Use the "Images" panel in the sidebar to add photos or videos.', 'sgs-blocks' ) }</p>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ onSelectImages }
-								allowedTypes={ [ 'image', 'video' ] }
-								multiple={ true }
-								gallery={ true }
-								value={ [] }
-								render={ ( { open } ) => (
-									<Button
-										onClick={ open }
-										variant="primary"
-										className="sgs-gallery-editor__media-btn"
-									>
-										{ __( 'Add media', 'sgs-blocks' ) }
-									</Button>
-								) }
-							/>
-						</MediaUploadCheck>
+						<MediaGalleryPicker
+							value={ [] }
+							onChange={ onSelectImages }
+							resolveItem={ ( media ) => resolveGalleryMedia( media, imageSize ) }
+							allowedTypes={ [ 'image', 'video' ] }
+							addLabel={ __( 'Add media', 'sgs-blocks' ) }
+							buttonVariant="primary"
+							className="sgs-gallery-editor__media-btn"
+						/>
 					</div>
 				) }
 

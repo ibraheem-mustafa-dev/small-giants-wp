@@ -7,6 +7,8 @@ import {
 	RangeControl,
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -78,6 +80,17 @@ const EASING_OPTIONS = [
 	{ label: 'ease-in-out', value: 'ease-in-out' },
 	{ label: 'linear', value: 'linear' },
 ];
+
+// Matches block.json boxShadow/boxShadowHover default object (D328 — resets
+// must restore the DECLARED default, not undefined).
+const DEFAULT_BOX_SHADOW = {
+	colour: '',
+	hOffset: 0,
+	vOffset: 0,
+	blur: 0,
+	spread: 0,
+	inset: false,
+};
 
 // UnitControl unit sets.
 const CUSTOM_WIDTH_UNITS = [
@@ -333,47 +346,85 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { icon: val ? val.name : '' } ) }
 					/>
 					{ hasIcon && (
-						<>
-							<SelectControl
+						<ToolsPanel
+							label={ __( 'Icon settings', 'sgs-blocks' ) }
+							resetAll={ () =>
+								setAttributes( {
+									iconPosition: 'after',
+									labelCollapse: 'none',
+									iconSize: null,
+									iconGap: 8,
+									iconColour: '',
+									iconColourHover: '',
+									iconTitle: '',
+								} )
+							}
+						>
+							<ToolsPanelItem
 								label={ __( 'Icon position', 'sgs-blocks' ) }
-								value={ iconPosition }
-								options={ ICON_POSITION_OPTIONS }
-								onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							{ iconPosition !== 'only' && (
+								hasValue={ () => iconPosition !== 'after' }
+								onDeselect={ () => setAttributes( { iconPosition: 'after' } ) }
+								isShownByDefault
+							>
 								<SelectControl
-									label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
-									value={ labelCollapse || 'none' }
-									options={ [
-										{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
-										{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
-										{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
-										{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
-									] }
-									onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
-									help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
+									label={ __( 'Icon position', 'sgs-blocks' ) }
+									value={ iconPosition }
+									options={ ICON_POSITION_OPTIONS }
+									onChange={ ( val ) => setAttributes( { iconPosition: val } ) }
 									__nextHasNoMarginBottom
 								/>
+							</ToolsPanelItem>
+							{ iconPosition !== 'only' && (
+								<ToolsPanelItem
+									label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+									hasValue={ () => ( labelCollapse || 'none' ) !== 'none' }
+									onDeselect={ () => setAttributes( { labelCollapse: 'none' } ) }
+								>
+									<SelectControl
+										label={ __( 'Collapse label to icon', 'sgs-blocks' ) }
+										value={ labelCollapse || 'none' }
+										options={ [
+											{ label: __( 'Never — always show label', 'sgs-blocks' ), value: 'none' },
+											{ label: __( 'On mobile (below 768px)', 'sgs-blocks' ), value: 'mobile' },
+											{ label: __( 'On tablet & mobile (below 1024px)', 'sgs-blocks' ), value: 'tablet' },
+											{ label: __( 'Always — icon only', 'sgs-blocks' ), value: 'all' },
+										] }
+										onChange={ ( val ) => setAttributes( { labelCollapse: val } ) }
+										help={ __( 'Hide the text and show just the icon from the chosen breakpoint down (the button keeps its accessible name). Requires an icon.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
 							) }
-							<RangeControl
-								label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-								value={ iconSize || 16 }
-								onChange={ ( val ) => setAttributes( { iconSize: val } ) }
-								min={ 8 }
-								max={ 100 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-							/>
-							<RangeControl
-								label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
-								value={ iconGap }
-								onChange={ ( val ) => setAttributes( { iconGap: val } ) }
-								min={ 0 }
-								max={ 40 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-							/>
+							<ToolsPanelItem
+								label={ __( 'Icon size', 'sgs-blocks' ) }
+								hasValue={ () => !! iconSize && iconSize !== 16 }
+								onDeselect={ () => setAttributes( { iconSize: null } ) }
+							>
+								<RangeControl
+									label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+									value={ iconSize || 16 }
+									onChange={ ( val ) => setAttributes( { iconSize: val } ) }
+									min={ 8 }
+									max={ 100 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Gap between icon and label', 'sgs-blocks' ) }
+								hasValue={ () => iconGap !== 8 }
+								onDeselect={ () => setAttributes( { iconGap: 8 } ) }
+							>
+								<RangeControl
+									label={ __( 'Gap between icon and label (px)', 'sgs-blocks' ) }
+									value={ iconGap }
+									onChange={ ( val ) => setAttributes( { iconGap: val } ) }
+									min={ 0 }
+									max={ 40 }
+									step={ 1 }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
 							{ /* Element-scoped colour states. Spec 35 keeps every control
 							     for an element INSIDE that element's own panel — the
 							     icon's hover colour is a STATE of the icon's colour, not
@@ -381,39 +432,54 @@ export default function Edit( { attributes, setAttributes } ) {
 							     in a hover panel elsewhere in the sidebar. Swatches stay
 							     visible in both states so a set hover colour is never
 							     hidden (council mitigation 2026-07-18). */ }
-							<StateToggleControl
+							<ToolsPanelItem
 								label={ __( 'Icon colours', 'sgs-blocks' ) }
-								swatches={ [
-									{ label: __( 'Normal', 'sgs-blocks' ), value: iconColour },
-									{ label: __( 'Hover', 'sgs-blocks' ), value: iconColourHover },
-								] }
-							>
-								{ ( state ) =>
-									state === 'normal' ? (
-										<DesignTokenPicker
-											linked
-											label={ __( 'Icon colour', 'sgs-blocks' ) }
-											value={ iconColour }
-											onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
-										/>
-									) : (
-										<DesignTokenPicker
-											linked
-											label={ __( 'Icon colour', 'sgs-blocks' ) }
-											value={ iconColourHover }
-											onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
-										/>
-									)
+								hasValue={ () => !! iconColour || !! iconColourHover }
+								onDeselect={ () =>
+									setAttributes( { iconColour: '', iconColourHover: '' } )
 								}
-							</StateToggleControl>
-							<TextControl
-								label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
-								value={ iconTitle }
-								onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
-								help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-							/>
-						</>
+								isShownByDefault
+							>
+								<StateToggleControl
+									label={ __( 'Icon colours', 'sgs-blocks' ) }
+									swatches={ [
+										{ label: __( 'Normal', 'sgs-blocks' ), value: iconColour },
+										{ label: __( 'Hover', 'sgs-blocks' ), value: iconColourHover },
+									] }
+								>
+									{ ( state ) =>
+										state === 'normal' ? (
+											<DesignTokenPicker
+												linked
+												label={ __( 'Icon colour', 'sgs-blocks' ) }
+												value={ iconColour }
+												onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
+											/>
+										) : (
+											<DesignTokenPicker
+												linked
+												label={ __( 'Icon colour', 'sgs-blocks' ) }
+												value={ iconColourHover }
+												onChange={ ( val ) => setAttributes( { iconColourHover: val ?? '' } ) }
+											/>
+										)
+									}
+								</StateToggleControl>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Icon title', 'sgs-blocks' ) }
+								hasValue={ () => !! iconTitle }
+								onDeselect={ () => setAttributes( { iconTitle: '' } ) }
+							>
+								<TextControl
+									label={ __( 'Icon title (SVG accessible title)', 'sgs-blocks' ) }
+									value={ iconTitle }
+									onChange={ ( val ) => setAttributes( { iconTitle: val } ) }
+									help={ __( 'Used as the SVG <title> for screen readers when icon-only.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+						</ToolsPanel>
 					) }
 				</PanelBody>
 
@@ -532,50 +598,109 @@ export default function Edit( { attributes, setAttributes } ) {
 				   slug so a brand/palette change recolours the button) OR a custom
 				   colour (full picker: spectrum + hex + opacity). */ }
 				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
-						<DesignTokenPicker
-							linked
+					<ToolsPanel
+						label={ __( 'Colours', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								colourText: '',
+								colourTextHover: '',
+								colourBackground: '',
+								colourBackgroundHover: '',
+								colourBorder: '',
+								colourBorderHover: '',
+								textDecorationHover: 'none',
+							} )
+						}
+					>
+						<ToolsPanelItem
 							label={ __( 'Text colour', 'sgs-blocks' ) }
-							value={ colourText }
-							onChange={ ( val ) => setAttributes( { colourText: val ?? '' } ) }
-						/>
-						<DesignTokenPicker
-							linked
+							hasValue={ () => !! colourText }
+							onDeselect={ () => setAttributes( { colourText: '' } ) }
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								linked
+								label={ __( 'Text colour', 'sgs-blocks' ) }
+								value={ colourText }
+								onChange={ ( val ) => setAttributes( { colourText: val ?? '' } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Text colour — hover', 'sgs-blocks' ) }
-							value={ colourTextHover }
-							onChange={ ( val ) => setAttributes( { colourTextHover: val ?? '' } ) }
-						/>
-						<DesignTokenPicker
-							linked
+							hasValue={ () => !! colourTextHover }
+							onDeselect={ () => setAttributes( { colourTextHover: '' } ) }
+						>
+							<DesignTokenPicker
+								linked
+								label={ __( 'Text colour — hover', 'sgs-blocks' ) }
+								value={ colourTextHover }
+								onChange={ ( val ) => setAttributes( { colourTextHover: val ?? '' } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Background colour', 'sgs-blocks' ) }
-							value={ colourBackground }
-							onChange={ ( val ) => setAttributes( { colourBackground: val ?? '' } ) }
-						/>
-						<DesignTokenPicker
-							linked
+							hasValue={ () => !! colourBackground }
+							onDeselect={ () => setAttributes( { colourBackground: '' } ) }
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								linked
+								label={ __( 'Background colour', 'sgs-blocks' ) }
+								value={ colourBackground }
+								onChange={ ( val ) => setAttributes( { colourBackground: val ?? '' } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Background colour — hover', 'sgs-blocks' ) }
-							value={ colourBackgroundHover }
-							onChange={ ( val ) => setAttributes( { colourBackgroundHover: val ?? '' } ) }
-						/>
-						<DesignTokenPicker
-							linked
+							hasValue={ () => !! colourBackgroundHover }
+							onDeselect={ () => setAttributes( { colourBackgroundHover: '' } ) }
+						>
+							<DesignTokenPicker
+								linked
+								label={ __( 'Background colour — hover', 'sgs-blocks' ) }
+								value={ colourBackgroundHover }
+								onChange={ ( val ) => setAttributes( { colourBackgroundHover: val ?? '' } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Border colour', 'sgs-blocks' ) }
-							value={ colourBorder }
-							onChange={ ( val ) => setAttributes( { colourBorder: val ?? '' } ) }
-						/>
-						<DesignTokenPicker
-							linked
+							hasValue={ () => !! colourBorder }
+							onDeselect={ () => setAttributes( { colourBorder: '' } ) }
+						>
+							<DesignTokenPicker
+								linked
+								label={ __( 'Border colour', 'sgs-blocks' ) }
+								value={ colourBorder }
+								onChange={ ( val ) => setAttributes( { colourBorder: val ?? '' } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Border colour — hover', 'sgs-blocks' ) }
-							value={ colourBorderHover }
-							onChange={ ( val ) => setAttributes( { colourBorderHover: val ?? '' } ) }
-						/>
-						<SelectControl
+							hasValue={ () => !! colourBorderHover }
+							onDeselect={ () => setAttributes( { colourBorderHover: '' } ) }
+						>
+							<DesignTokenPicker
+								linked
+								label={ __( 'Border colour — hover', 'sgs-blocks' ) }
+								value={ colourBorderHover }
+								onChange={ ( val ) => setAttributes( { colourBorderHover: val ?? '' } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Underline on hover', 'sgs-blocks' ) }
-							value={ textDecorationHover || 'none' }
-							options={ UNDERLINE_HOVER_OPTIONS }
-							onChange={ ( val ) => setAttributes( { textDecorationHover: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
+							hasValue={ () => ( textDecorationHover || 'none' ) !== 'none' }
+							onDeselect={ () => setAttributes( { textDecorationHover: 'none' } ) }
+						>
+							<SelectControl
+								label={ __( 'Underline on hover', 'sgs-blocks' ) }
+								value={ textDecorationHover || 'none' }
+								options={ UNDERLINE_HOVER_OPTIONS }
+								onChange={ ( val ) => setAttributes( { textDecorationHover: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+				</PanelBody>
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
@@ -683,21 +808,58 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Box shadow — always editable (preset-as-seed) */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-						<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Normal state', 'sgs-blocks' ) }</p>
-						<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val ?? '' } } ) } />
-						<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadow.vOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadow.blur } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadow.spread } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-						<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadow.inset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, inset: val } } ) } __nextHasNoMarginBottom />
-						<p style={ { fontSize: '12px', color: '#555', marginTop: '16px' } }>{ __( 'Hover state', 'sgs-blocks' ) }</p>
-						<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadowHover.colour } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, colour: val ?? '' } } ) } />
-						<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.hOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.vOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadowHover.blur } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadowHover.spread } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
-						<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadowHover.inset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, inset: val } } ) } __nextHasNoMarginBottom />
-					</PanelBody>
+					<ToolsPanel
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								boxShadow: DEFAULT_BOX_SHADOW,
+								boxShadowHover: DEFAULT_BOX_SHADOW,
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Shadow — normal state', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! boxShadow.colour ||
+								boxShadow.hOffset !== 0 ||
+								boxShadow.vOffset !== 0 ||
+								boxShadow.blur !== 0 ||
+								boxShadow.spread !== 0 ||
+								!! boxShadow.inset
+							}
+							onDeselect={ () => setAttributes( { boxShadow: DEFAULT_BOX_SHADOW } ) }
+							isShownByDefault
+						>
+							<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Normal state', 'sgs-blocks' ) }</p>
+							<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadow.colour } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, colour: val ?? '' } } ) } />
+							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadow.hOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadow.vOffset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadow.blur } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadow.spread } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadow.inset } onChange={ ( val ) => setAttributes( { boxShadow: { ...boxShadow, inset: val } } ) } __nextHasNoMarginBottom />
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Shadow — hover state', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! boxShadowHover.colour ||
+								boxShadowHover.hOffset !== 0 ||
+								boxShadowHover.vOffset !== 0 ||
+								boxShadowHover.blur !== 0 ||
+								boxShadowHover.spread !== 0 ||
+								!! boxShadowHover.inset
+							}
+							onDeselect={ () => setAttributes( { boxShadowHover: DEFAULT_BOX_SHADOW } ) }
+						>
+							<p style={ { fontSize: '12px', color: '#555', marginTop: 0 } }>{ __( 'Hover state', 'sgs-blocks' ) }</p>
+							<DesignTokenPicker linked label={ __( 'Shadow colour', 'sgs-blocks' ) } value={ boxShadowHover.colour } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, colour: val ?? '' } } ) } />
+							<RangeControl label={ __( 'Horizontal offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.hOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, hOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Vertical offset (px)', 'sgs-blocks' ) } value={ boxShadowHover.vOffset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, vOffset: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Blur (px)', 'sgs-blocks' ) } value={ boxShadowHover.blur } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, blur: val } } ) } min={ 0 } max={ 100 } __nextHasNoMarginBottom />
+							<RangeControl label={ __( 'Spread (px)', 'sgs-blocks' ) } value={ boxShadowHover.spread } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, spread: val } } ) } min={ -50 } max={ 50 } __nextHasNoMarginBottom />
+							<ToggleControl label={ __( 'Inset', 'sgs-blocks' ) } checked={ boxShadowHover.inset } onChange={ ( val ) => setAttributes( { boxShadowHover: { ...boxShadowHover, inset: val } } ) } __nextHasNoMarginBottom />
+						</ToolsPanelItem>
+					</ToolsPanel>
+				</PanelBody>
 
 			</InspectorControls>
 

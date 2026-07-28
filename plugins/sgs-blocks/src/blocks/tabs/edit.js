@@ -12,6 +12,8 @@ import {
 	RangeControl,
 	TextControl,
 	Button,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
@@ -198,83 +200,179 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Colours', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Tab text colour', 'sgs-blocks' ) }
-						value={ tabTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { tabTextColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Tab background (resting)', 'sgs-blocks' ) }
-						value={ tabBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { tabBgColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Active tab text colour',
-							'sgs-blocks'
-						) }
-						value={ tabActiveTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { tabActiveTextColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Active tab background',
-							'sgs-blocks'
-						) }
-						value={ tabActiveBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { tabActiveBgColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Tab indicator colour (resting)',
-							'sgs-blocks'
-						) }
-						value={ tabIndicatorColour }
-						onChange={ ( val ) =>
-							setAttributes( { tabIndicatorColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Active tab indicator colour',
-							'sgs-blocks'
-						) }
-						value={ tabActiveIndicatorColour }
-						onChange={ ( val ) =>
+					<ToolsPanel
+						label={ __( 'Colours', 'sgs-blocks' ) }
+						resetAll={ () =>
 							setAttributes( {
-								tabActiveIndicatorColour: val,
+								tabTextColour: 'text-muted',
+								tabBgColour: undefined,
+								tabActiveTextColour: 'primary',
+								tabActiveBgColour: undefined,
+								tabIndicatorColour: undefined,
+								tabActiveIndicatorColour: 'primary',
+								tabHoverBgColour: undefined,
+								panelBgColour: undefined,
+								panelBorderColour: 'border-subtle',
 							} )
 						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Tab hover background', 'sgs-blocks' ) }
-						value={ tabHoverBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { tabHoverBgColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Panel background', 'sgs-blocks' ) }
-						value={ panelBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { panelBgColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Panel border colour', 'sgs-blocks' ) }
-						value={ panelBorderColour }
-						onChange={ ( val ) =>
-							setAttributes( { panelBorderColour: val } )
-						}
-					/>
+					>
+						<ToolsPanelItem
+							label={ __( 'Tab text colour', 'sgs-blocks' ) }
+							hasValue={ () => tabTextColour !== 'text-muted' }
+							onDeselect={ () =>
+								setAttributes( { tabTextColour: 'text-muted' } )
+							}
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								label={ __( 'Tab text colour', 'sgs-blocks' ) }
+								value={ tabTextColour }
+								onChange={ ( val ) =>
+									setAttributes( { tabTextColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tab background (resting)', 'sgs-blocks' ) }
+							hasValue={ () => !! tabBgColour }
+							onDeselect={ () =>
+								setAttributes( { tabBgColour: undefined } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Tab background (resting)', 'sgs-blocks' ) }
+								value={ tabBgColour }
+								onChange={ ( val ) =>
+									setAttributes( { tabBgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Active tab text colour', 'sgs-blocks' ) }
+							hasValue={ () => tabActiveTextColour !== 'primary' }
+							onDeselect={ () =>
+								setAttributes( { tabActiveTextColour: 'primary' } )
+							}
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								label={ __(
+									'Active tab text colour',
+									'sgs-blocks'
+								) }
+								value={ tabActiveTextColour }
+								onChange={ ( val ) =>
+									setAttributes( { tabActiveTextColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Active tab background', 'sgs-blocks' ) }
+							hasValue={ () => !! tabActiveBgColour }
+							onDeselect={ () =>
+								setAttributes( { tabActiveBgColour: undefined } )
+							}
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								label={ __(
+									'Active tab background',
+									'sgs-blocks'
+								) }
+								value={ tabActiveBgColour }
+								onChange={ ( val ) =>
+									setAttributes( { tabActiveBgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tab indicator colour (resting)', 'sgs-blocks' ) }
+							hasValue={ () => !! tabIndicatorColour }
+							onDeselect={ () =>
+								setAttributes( { tabIndicatorColour: undefined } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __(
+									'Tab indicator colour (resting)',
+									'sgs-blocks'
+								) }
+								value={ tabIndicatorColour }
+								onChange={ ( val ) =>
+									setAttributes( { tabIndicatorColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Active tab indicator colour', 'sgs-blocks' ) }
+							hasValue={ () =>
+								tabActiveIndicatorColour !== 'primary'
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									tabActiveIndicatorColour: 'primary',
+								} )
+							}
+						>
+							<DesignTokenPicker
+								label={ __(
+									'Active tab indicator colour',
+									'sgs-blocks'
+								) }
+								value={ tabActiveIndicatorColour }
+								onChange={ ( val ) =>
+									setAttributes( {
+										tabActiveIndicatorColour: val,
+									} )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tab hover background', 'sgs-blocks' ) }
+							hasValue={ () => !! tabHoverBgColour }
+							onDeselect={ () =>
+								setAttributes( { tabHoverBgColour: undefined } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Tab hover background', 'sgs-blocks' ) }
+								value={ tabHoverBgColour }
+								onChange={ ( val ) =>
+									setAttributes( { tabHoverBgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Panel background', 'sgs-blocks' ) }
+							hasValue={ () => !! panelBgColour }
+							onDeselect={ () =>
+								setAttributes( { panelBgColour: undefined } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Panel background', 'sgs-blocks' ) }
+								value={ panelBgColour }
+								onChange={ ( val ) =>
+									setAttributes( { panelBgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Panel border colour', 'sgs-blocks' ) }
+							hasValue={ () => panelBorderColour !== 'border-subtle' }
+							onDeselect={ () =>
+								setAttributes( { panelBorderColour: 'border-subtle' } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Panel border colour', 'sgs-blocks' ) }
+								value={ panelBorderColour }
+								onChange={ ( val ) =>
+									setAttributes( { panelBorderColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				<PanelBody

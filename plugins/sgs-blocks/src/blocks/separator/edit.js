@@ -24,6 +24,8 @@ import {
 	ToggleControl,
 	RangeControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -274,116 +276,188 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 				{ /* ---- Line ---- */ }
-				<PanelBody title={ __( 'Line', 'sgs-blocks' ) }>
-					<SelectControl
+				<ToolsPanel
+					label={ __( 'Line', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							lineStyle: 'solid',
+							thickness: 1,
+							thicknessUnit: 'px',
+							thicknessTablet: undefined,
+							thicknessMobile: undefined,
+							colour: '',
+							opacity: 100,
+							gradientEnabled: false,
+							gradientColourStart: '',
+							gradientColourEnd: '',
+							gradientAngle: 90,
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Line style', 'sgs-blocks' ) }
-						value={ lineStyle }
-						options={ LINE_STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { lineStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+						hasValue={ () => lineStyle !== 'solid' }
+						onDeselect={ () => setAttributes( { lineStyle: 'solid' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Line style', 'sgs-blocks' ) }
+							value={ lineStyle }
+							options={ LINE_STYLE_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { lineStyle: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
 
 					{ /* Thickness — ResponsiveControl + UnitControl per breakpoint. */ }
-					<ResponsiveControl
+					<ToolsPanelItem
 						label={ __( 'Thickness', 'sgs-blocks' ) }
+						hasValue={ () =>
+							thickness !== 1 ||
+							thicknessTablet != null ||
+							thicknessMobile != null
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								thickness: 1,
+								thicknessTablet: undefined,
+								thicknessMobile: undefined,
+							} )
+						}
+						isShownByDefault
 					>
-						{ ( breakpoint ) => {
-							const attrKey = thicknessBreakpoints[ breakpoint ];
-							return (
-								<UnitControl
-									label={ __( 'Thickness', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ composeUnit(
-										attributes[ attrKey ],
-										thicknessUnit
-									) }
-									units={ THICKNESS_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit(
-											raw,
+						<ResponsiveControl
+							label={ __( 'Thickness', 'sgs-blocks' ) }
+						>
+							{ ( breakpoint ) => {
+								const attrKey = thicknessBreakpoints[ breakpoint ];
+								return (
+									<UnitControl
+										label={ __( 'Thickness', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={ composeUnit(
+											attributes[ attrKey ],
 											thicknessUnit
-										);
+										) }
+										units={ THICKNESS_UNITS }
+										onChange={ ( raw ) => {
+											const { num, unit } = parseUnit(
+												raw,
+												thicknessUnit
+											);
+											setAttributes( {
+												[ attrKey ]: num,
+												thicknessUnit: unit,
+											} );
+										} }
+										__nextHasNoMarginBottom
+									/>
+								);
+							} }
+						</ResponsiveControl>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Colour', 'sgs-blocks' ) }
+						hasValue={ () => !! colour }
+						onDeselect={ () => setAttributes( { colour: '' } ) }
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Colour', 'sgs-blocks' ) }
+							value={ colour }
+							onChange={ ( val ) =>
+								setAttributes( { colour: val ?? '' } )
+							}
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+						hasValue={ () => opacity !== 100 }
+						onDeselect={ () => setAttributes( { opacity: 100 } ) }
+					>
+						<RangeControl
+							label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+							value={ opacity }
+							onChange={ ( val ) =>
+								setAttributes( { opacity: val } )
+							}
+							min={ 0 }
+							max={ 100 }
+							step={ 1 }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Gradient line', 'sgs-blocks' ) }
+						hasValue={ () =>
+							gradientEnabled !== false ||
+							!! gradientColourStart ||
+							!! gradientColourEnd ||
+							gradientAngle !== 90
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								gradientEnabled: false,
+								gradientColourStart: '',
+								gradientColourEnd: '',
+								gradientAngle: 90,
+							} )
+						}
+					>
+						<ToggleControl
+							label={ __( 'Gradient line', 'sgs-blocks' ) }
+							checked={ gradientEnabled }
+							onChange={ ( val ) =>
+								setAttributes( { gradientEnabled: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						{ gradientEnabled && (
+							<>
+								<DesignTokenPicker
+									label={ __(
+										'Gradient start colour',
+										'sgs-blocks'
+									) }
+									value={ gradientColourStart }
+									onChange={ ( val ) =>
 										setAttributes( {
-											[ attrKey ]: num,
-											thicknessUnit: unit,
-										} );
-									} }
+											gradientColourStart: val ?? '',
+										} )
+									}
+								/>
+								<DesignTokenPicker
+									label={ __(
+										'Gradient end colour',
+										'sgs-blocks'
+									) }
+									value={ gradientColourEnd }
+									onChange={ ( val ) =>
+										setAttributes( {
+											gradientColourEnd: val ?? '',
+										} )
+									}
+								/>
+								<RangeControl
+									label={ __( 'Gradient angle', 'sgs-blocks' ) }
+									value={ gradientAngle }
+									onChange={ ( val ) =>
+										setAttributes( { gradientAngle: val } )
+									}
+									min={ 0 }
+									max={ 360 }
+									step={ 1 }
 									__nextHasNoMarginBottom
 								/>
-							);
-						} }
-					</ResponsiveControl>
-
-					<DesignTokenPicker
-						label={ __( 'Colour', 'sgs-blocks' ) }
-						value={ colour }
-						onChange={ ( val ) =>
-							setAttributes( { colour: val ?? '' } )
-						}
-					/>
-
-					<RangeControl
-						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
-						value={ opacity }
-						onChange={ ( val ) =>
-							setAttributes( { opacity: val } )
-						}
-						min={ 0 }
-						max={ 100 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
-
-					<ToggleControl
-						label={ __( 'Gradient line', 'sgs-blocks' ) }
-						checked={ gradientEnabled }
-						onChange={ ( val ) =>
-							setAttributes( { gradientEnabled: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ gradientEnabled && (
-						<>
-							<DesignTokenPicker
-								label={ __(
-									'Gradient start colour',
-									'sgs-blocks'
-								) }
-								value={ gradientColourStart }
-								onChange={ ( val ) =>
-									setAttributes( {
-										gradientColourStart: val ?? '',
-									} )
-								}
-							/>
-							<DesignTokenPicker
-								label={ __(
-									'Gradient end colour',
-									'sgs-blocks'
-								) }
-								value={ gradientColourEnd }
-								onChange={ ( val ) =>
-									setAttributes( {
-										gradientColourEnd: val ?? '',
-									} )
-								}
-							/>
-							<RangeControl
-								label={ __( 'Gradient angle', 'sgs-blocks' ) }
-								value={ gradientAngle }
-								onChange={ ( val ) =>
-									setAttributes( { gradientAngle: val } )
-								}
-								min={ 0 }
-								max={ 360 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-							/>
-						</>
-					) }
-				</PanelBody>
+							</>
+						) }
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* ---- Size & alignment ---- */ }
 				<PanelBody

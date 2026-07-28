@@ -59,7 +59,13 @@ $height_unit   = isset( $attributes['heightUnit'] ) ? (string) $attributes['heig
 $height_mobile = isset( $attributes['heightMobile'] ) ? (string) $attributes['heightMobile'] : '';
 $height_tablet = isset( $attributes['heightTablet'] ) ? (string) $attributes['heightTablet'] : '';
 
-$aspect_ratio = isset( $attributes['aspectRatio'] ) ? (string) $attributes['aspectRatio'] : '';
+// Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — replaces the old
+// hand-rolled scalar `aspectRatio` attr. Read from style.dimensions.aspectRatio
+// (block.json declares __experimentalSkipSerialization on supports.dimensions so
+// WP's own wp_render_dimensions_support() emits nothing automatically — see the
+// block.json description comment for why that support can't be left to core: it
+// unconditionally inlines onto the wrapper root tag and ignores `selectors`).
+$native_aspect_ratio = isset( $attributes['style']['dimensions']['aspectRatio'] ) ? (string) $attributes['style']['dimensions']['aspectRatio'] : '';
 
 $allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
 $object_fit_raw      = $attributes['objectFit'] ?? 'cover';
@@ -215,11 +221,6 @@ if ( '' !== $object_position && 'center center' !== $object_position
 	$media_base_decls[] = 'object-position:' . esc_attr( $object_position );
 }
 
-// aspect-ratio: allow digits, slash, spaces.
-if ( '' !== $aspect_ratio && preg_match( '/^[\d\s\/]+$/', $aspect_ratio ) ) {
-	$media_base_decls[] = 'aspect-ratio:' . esc_attr( $aspect_ratio );
-}
-
 // opacity.
 if ( 1.0 !== $opacity ) {
 	$media_base_decls[] = 'opacity:' . esc_attr( $opacity );
@@ -251,6 +252,28 @@ if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $native_border 
 	);
 	if ( ! empty( $border_base_out['css'] ) ) {
 		$border_base_css = $border_base_out['css'];
+	}
+}
+
+// Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — same stable
+// core style-engine API as the border group above, scoped to the media
+// element rather than left to core's wp_render_dimensions_support() (which
+// would inline it onto the wrong element — the wrapper — and ignore
+// `selectors`; see block.json + render.php step-1 comments for the full
+// verdict). Digits/slash validated as belt-and-braces defence in depth
+// (wp_style_engine_get_styles() sanitises internally, but this mirrors the
+// validation discipline already used elsewhere in this file).
+$aspect_ratio_css = '';
+if ( '' !== $native_aspect_ratio
+	&& preg_match( '/^[\d\s\/]+$/', $native_aspect_ratio )
+	&& function_exists( 'wp_style_engine_get_styles' )
+) {
+	$aspect_ratio_out = wp_style_engine_get_styles(
+		array( 'dimensions' => array( 'aspectRatio' => $native_aspect_ratio ) ),
+		array( 'selector' => $id_sel )
+	);
+	if ( ! empty( $aspect_ratio_out['css'] ) ) {
+		$aspect_ratio_css = $aspect_ratio_out['css'];
 	}
 }
 
@@ -318,7 +341,7 @@ if ( '' !== $h_mobile ) {
 	$mobile_rules[] = 'height:' . $h_mobile;
 }
 
-$responsive_css  = $media_base_css . $border_base_css . $wrap_base_css;
+$responsive_css  = $media_base_css . $border_base_css . $aspect_ratio_css . $wrap_base_css;
 if ( $base_rules ) {
 	$responsive_css .= $id_sel . '{' . implode( ';', $base_rules ) . '}';
 }
@@ -420,12 +443,26 @@ if ( 'image' === $media_type && '' !== $link_url ) {
 // 11. IMAGE RENDER PATH.
 // ---------------------------------------------------------------------------
 $image_html = '';
+// WCAG 2.1 AA 1.1.1 (Non-text Content) — declared here (not just inside the
+// `'image' === $media_type` branch below) so the naked-mode re-render path
+// further down the file (§14) can read it without a static-analysis
+// "possibly undefined" warning; naked mode only fires when media_type is
+// 'image', so this is always populated by the time that branch runs.
+$image_is_decorative = false;
 if ( 'image' === $media_type ) {
 	$image_id     = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : null;
 	$image_url    = isset( $attributes['imageUrl'] ) ? (string) $attributes['imageUrl'] : '';
 	$image_alt    = isset( $attributes['imageAlt'] ) ? (string) $attributes['imageAlt'] : '';
 	$image_width  = isset( $attributes['imageWidth'] ) ? absint( $attributes['imageWidth'] ) : 0;
 	$image_height = isset( $attributes['imageHeight'] ) ? absint( $attributes['imageHeight'] ) : 0;
+	// WCAG 2.1 AA 1.1.1 (Non-text Content) — a decorative image MUST be hidden
+	// from assistive tech via both empty alt AND aria-hidden, not alt="" alone
+	// (some AT/browser combinations still expose an empty-alt image without
+	// aria-hidden). Spec 35 T3.4.
+	$image_is_decorative = ! empty( $attributes['imageIsDecorative'] );
+	if ( $image_is_decorative ) {
+		$image_alt = '';
+	}
 
 	// Resolve final image URL: imageId wins; fall back to imageUrl.
 	$resolved_url = '';
@@ -470,15 +507,17 @@ if ( 'image' === $media_type ) {
 
 	$img_width_part  = $image_width ? ' width="' . esc_attr( $image_width ) . '"' : '';
 	$img_height_part = $image_height ? ' height="' . esc_attr( $image_height ) . '"' : '';
+	$img_aria_hidden = $image_is_decorative ? ' aria-hidden="true"' : '';
 
 	$image_html = sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s class="sgs-media__img" loading="lazy" decoding="async" />',
+		'<img src="%s" alt="%s"%s%s%s%s%s class="sgs-media__img" loading="lazy" decoding="async" />',
 		esc_url( $resolved_url ),
 		esc_attr( $image_alt ),
 		$img_width_part,
 		$img_height_part,
 		$img_srcset,
-		$img_sizes
+		$img_sizes,
+		$img_aria_hidden
 	);
 }
 
@@ -802,6 +841,9 @@ if ( $naked_mode && '' !== $image_html ) {
 	$image_width_attr  = isset( $attributes['imageWidth'] ) ? absint( $attributes['imageWidth'] ) : 0;
 	$image_height_attr = isset( $attributes['imageHeight'] ) ? absint( $attributes['imageHeight'] ) : 0;
 	$image_alt_attr    = isset( $attributes['imageAlt'] ) ? (string) $attributes['imageAlt'] : '';
+	if ( $image_is_decorative ) {
+		$image_alt_attr = '';
+	}
 
 	// Rebuild the resolved URL (already computed above; carry forward).
 	$naked_resolved_url = '';
@@ -836,9 +878,10 @@ if ( $naked_mode && '' !== $image_html ) {
 
 	$naked_width_part  = $image_width_attr ? ' width="' . esc_attr( $image_width_attr ) . '"' : '';
 	$naked_height_part = $image_height_attr ? ' height="' . esc_attr( $image_height_attr ) . '"' : '';
+	$naked_aria_hidden = $image_is_decorative ? ' aria-hidden="true"' : '';
 
 	$image_html = sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
+		'<img src="%s" alt="%s"%s%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
 		esc_url( $naked_resolved_url ),
 		esc_attr( $image_alt_attr ),
 		$naked_width_part,
@@ -846,6 +889,7 @@ if ( $naked_mode && '' !== $image_html ) {
 		$naked_srcset,
 		$naked_sizes,
 		$id_attr,
+		$naked_aria_hidden,
 		esc_attr( $merged_classes )
 	);
 }

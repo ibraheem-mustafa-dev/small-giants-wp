@@ -11,6 +11,8 @@ import {
 	ToggleControl,
 	TextControl,
 	Button,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -438,177 +440,277 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── STYLES tab — appearance, grouped by block element ── */ }
 			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Tile', 'sgs-blocks' ) } initialOpen={ true }>
-					<SelectControl
+				<ToolsPanel
+					label={ __( 'Tile', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							tileShape: 'square',
+							tilePadding: 10,
+							tileRadius: 16,
+							tileShadow: '',
+							logoGap: 0,
+							tileBackgroundColour: '',
+							tileBorderWidth: 0,
+							tileBorderColour: '',
+							backgroundColourHover: '',
+							borderColourHover: '',
+							textColourHover: '',
+							effectHover: 'none',
+							transitionDuration: '300',
+							transitionEasing: 'ease-in-out',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Tile shape', 'sgs-blocks' ) }
-						help={ __(
-							'Square keeps the rounded card (use corner radius below); Circle makes each tile round; None removes the card so only the logo shows.',
-							'sgs-blocks'
-						) }
-						value={ tileShape || 'square' }
-						options={ [
-							{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
-							{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
-							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-						] }
-						onChange={ ( val ) => setAttributes( { tileShape: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Tile padding (px)', 'sgs-blocks' ) }
-						help={ __(
-							'Space between the logo and the tile edge. Set to 0 so the logo fills the tile edge-to-edge.',
-							'sgs-blocks'
-						) }
-						value={ tilePadding }
-						onChange={ ( val ) =>
-							setAttributes( { tilePadding: val } )
-						}
-						min={ 0 }
-						max={ 60 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Tile corner radius (px)', 'sgs-blocks' ) }
-						value={ tileRadius }
-						onChange={ ( val ) =>
-							setAttributes( { tileRadius: val } )
-						}
-						min={ 0 }
-						max={ 100 }
-						__nextHasNoMarginBottom
-					/>
-					<ShadowControl
+						hasValue={ () => ( tileShape || 'square' ) !== 'square' }
+						onDeselect={ () => setAttributes( { tileShape: 'square' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Tile shape', 'sgs-blocks' ) }
+							help={ __(
+								'Square keeps the rounded card (use corner radius below); Circle makes each tile round; None removes the card so only the logo shows.',
+								'sgs-blocks'
+							) }
+							value={ tileShape || 'square' }
+							options={ [
+								{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
+								{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
+								{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+							] }
+							onChange={ ( val ) => setAttributes( { tileShape: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Tile padding', 'sgs-blocks' ) }
+						hasValue={ () => tilePadding !== 10 }
+						onDeselect={ () => setAttributes( { tilePadding: 10 } ) }
+					>
+						<RangeControl
+							label={ __( 'Tile padding (px)', 'sgs-blocks' ) }
+							help={ __(
+								'Space between the logo and the tile edge. Set to 0 so the logo fills the tile edge-to-edge.',
+								'sgs-blocks'
+							) }
+							value={ tilePadding }
+							onChange={ ( val ) =>
+								setAttributes( { tilePadding: val } )
+							}
+							min={ 0 }
+							max={ 60 }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Tile corner radius', 'sgs-blocks' ) }
+						hasValue={ () => tileRadius !== 16 }
+						onDeselect={ () => setAttributes( { tileRadius: 16 } ) }
+					>
+						<RangeControl
+							label={ __( 'Tile corner radius (px)', 'sgs-blocks' ) }
+							value={ tileRadius }
+							onChange={ ( val ) =>
+								setAttributes( { tileRadius: val } )
+							}
+							min={ 0 }
+							max={ 100 }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
 						label={ __( 'Tile shadow', 'sgs-blocks' ) }
-						value={ tileShadow }
-						onChange={ ( val ) =>
-							setAttributes( { tileShadow: val } )
-						}
-					/>
-					<RangeControl
-						label={ __( 'Gap between logos (px)', 'sgs-blocks' ) }
-						help={ __(
-							'0 uses the theme default spacing.',
-							'sgs-blocks'
-						) }
-						value={ logoGap }
-						onChange={ ( val ) =>
-							setAttributes( { logoGap: val } )
-						}
-						min={ 0 }
-						max={ 200 }
-						__nextHasNoMarginBottom
-					/>
+						hasValue={ () => !! tileShadow }
+						onDeselect={ () => setAttributes( { tileShadow: '' } ) }
+					>
+						<ShadowControl
+							label={ __( 'Tile shadow', 'sgs-blocks' ) }
+							value={ tileShadow }
+							onChange={ ( val ) =>
+								setAttributes( { tileShadow: val } )
+							}
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Gap between logos', 'sgs-blocks' ) }
+						hasValue={ () => logoGap !== 0 }
+						onDeselect={ () => setAttributes( { logoGap: 0 } ) }
+					>
+						<RangeControl
+							label={ __( 'Gap between logos (px)', 'sgs-blocks' ) }
+							help={ __(
+								'0 uses the theme default spacing.',
+								'sgs-blocks'
+							) }
+							value={ logoGap }
+							onChange={ ( val ) =>
+								setAttributes( { logoGap: val } )
+							}
+							min={ 0 }
+							max={ 200 }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
 
 					{ /* Normal ⇆ Hover colours, one panel-level toggle (Kadence
 					   pattern). The persistent swatches keep every state's colour
 					   visible so a hover value is never hidden (council mitigation
-					   2026-07-18). */ }
-					<StateToggleControl
+					   2026-07-18). Bundles 6 attrs as one ToolsPanelItem — the
+					   toggle itself has no single "value", so hasValue checks
+					   whether ANY of the 6 differs from its default. */ }
+					<ToolsPanelItem
 						label={ __( 'Tile colours', 'sgs-blocks' ) }
-						swatches={ [
-							{ label: __( 'Background', 'sgs-blocks' ), value: tileBackgroundColour },
-							{ label: __( 'Hover bg', 'sgs-blocks' ), value: backgroundColourHover },
-							{ label: __( 'Border', 'sgs-blocks' ), value: tileBorderColour },
-							{ label: __( 'Hover border', 'sgs-blocks' ), value: borderColourHover },
-						] }
-					>
-						{ ( state ) =>
-							state === 'normal' ? (
-								<>
-									<DesignTokenPicker
-										label={ __( 'Background colour', 'sgs-blocks' ) }
-										value={ tileBackgroundColour }
-										onChange={ ( val ) =>
-											setAttributes( { tileBackgroundColour: val } )
-										}
-									/>
-									<RangeControl
-										label={ __( 'Border width (px)', 'sgs-blocks' ) }
-										help={ __(
-											'Static border shown on every tile at rest.',
-											'sgs-blocks'
-										) }
-										value={ tileBorderWidth }
-										onChange={ ( val ) =>
-											setAttributes( { tileBorderWidth: val } )
-										}
-										min={ 0 }
-										max={ 10 }
-										__nextHasNoMarginBottom
-									/>
-									<DesignTokenPicker
-										label={ __( 'Border colour', 'sgs-blocks' ) }
-										value={ tileBorderColour }
-										onChange={ ( val ) =>
-											setAttributes( { tileBorderColour: val } )
-										}
-									/>
-								</>
-							) : (
-								<>
-									<DesignTokenPicker
-										label={ __( 'Hover background colour', 'sgs-blocks' ) }
-										value={ backgroundColourHover }
-										onChange={ ( val ) =>
-											setAttributes( { backgroundColourHover: val } )
-										}
-									/>
-									<DesignTokenPicker
-										label={ __( 'Hover border colour', 'sgs-blocks' ) }
-										value={ borderColourHover }
-										onChange={ ( val ) =>
-											setAttributes( { borderColourHover: val } )
-										}
-									/>
-									<DesignTokenPicker
-										label={ __( 'Hover text colour', 'sgs-blocks' ) }
-										value={ textColourHover }
-										onChange={ ( val ) =>
-											setAttributes( { textColourHover: val } )
-										}
-									/>
-								</>
-							)
+						hasValue={ () =>
+							!! tileBackgroundColour ||
+							tileBorderWidth !== 0 ||
+							!! tileBorderColour ||
+							!! backgroundColourHover ||
+							!! borderColourHover ||
+							!! textColourHover
 						}
-					</StateToggleControl>
+						onDeselect={ () =>
+							setAttributes( {
+								tileBackgroundColour: '',
+								tileBorderWidth: 0,
+								tileBorderColour: '',
+								backgroundColourHover: '',
+								borderColourHover: '',
+								textColourHover: '',
+							} )
+						}
+						isShownByDefault
+					>
+						<StateToggleControl
+							label={ __( 'Tile colours', 'sgs-blocks' ) }
+							swatches={ [
+								{ label: __( 'Background', 'sgs-blocks' ), value: tileBackgroundColour },
+								{ label: __( 'Hover bg', 'sgs-blocks' ), value: backgroundColourHover },
+								{ label: __( 'Border', 'sgs-blocks' ), value: tileBorderColour },
+								{ label: __( 'Hover border', 'sgs-blocks' ), value: borderColourHover },
+							] }
+						>
+							{ ( state ) =>
+								state === 'normal' ? (
+									<>
+										<DesignTokenPicker
+											label={ __( 'Background colour', 'sgs-blocks' ) }
+											value={ tileBackgroundColour }
+											onChange={ ( val ) =>
+												setAttributes( { tileBackgroundColour: val } )
+											}
+										/>
+										<RangeControl
+											label={ __( 'Border width (px)', 'sgs-blocks' ) }
+											help={ __(
+												'Static border shown on every tile at rest.',
+												'sgs-blocks'
+											) }
+											value={ tileBorderWidth }
+											onChange={ ( val ) =>
+												setAttributes( { tileBorderWidth: val } )
+											}
+											min={ 0 }
+											max={ 10 }
+											__nextHasNoMarginBottom
+										/>
+										<DesignTokenPicker
+											label={ __( 'Border colour', 'sgs-blocks' ) }
+											value={ tileBorderColour }
+											onChange={ ( val ) =>
+												setAttributes( { tileBorderColour: val } )
+											}
+										/>
+									</>
+								) : (
+									<>
+										<DesignTokenPicker
+											label={ __( 'Hover background colour', 'sgs-blocks' ) }
+											value={ backgroundColourHover }
+											onChange={ ( val ) =>
+												setAttributes( { backgroundColourHover: val } )
+											}
+										/>
+										<DesignTokenPicker
+											label={ __( 'Hover border colour', 'sgs-blocks' ) }
+											value={ borderColourHover }
+											onChange={ ( val ) =>
+												setAttributes( { borderColourHover: val } )
+											}
+										/>
+										<DesignTokenPicker
+											label={ __( 'Hover text colour', 'sgs-blocks' ) }
+											value={ textColourHover }
+											onChange={ ( val ) =>
+												setAttributes( { textColourHover: val } )
+											}
+										/>
+									</>
+								)
+							}
+						</StateToggleControl>
+					</ToolsPanelItem>
 
 					{ /* Hover behaviour — motion + timing (applies on hover
 					   regardless of the state toggle above). */ }
-					<SelectControl
+					<ToolsPanelItem
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { effectHover: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) =>
-							setAttributes( { transitionDuration: val } )
-						}
-						help={ __( 'Speed of the hover colour/greyscale transition. Default: 300.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
+						hasValue={ () => effectHover !== 'none' }
+						onDeselect={ () => setAttributes( { effectHover: 'none' } ) }
+					>
+						<SelectControl
+							label={ __( 'Hover effect', 'sgs-blocks' ) }
+							value={ effectHover }
+							options={ HOVER_EFFECT_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { effectHover: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Transition duration', 'sgs-blocks' ) }
+						hasValue={ () => transitionDuration !== '300' }
+						onDeselect={ () => setAttributes( { transitionDuration: '300' } ) }
+					>
+						<TextControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ transitionDuration }
+							onChange={ ( val ) =>
+								setAttributes( { transitionDuration: val } )
+							}
+							help={ __( 'Speed of the hover colour/greyscale transition. Default: 300.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { transitionEasing: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
+						hasValue={ () => transitionEasing !== 'ease-in-out' }
+						onDeselect={ () => setAttributes( { transitionEasing: 'ease-in-out' } ) }
+					>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							value={ transitionEasing }
+							options={ [
+								{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+								{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+								{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+								{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
+								{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { transitionEasing: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				<PanelBody
 					title={ __( 'Logo image', 'sgs-blocks' ) }

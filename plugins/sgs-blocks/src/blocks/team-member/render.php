@@ -121,8 +121,6 @@ $hover_grayscale   = (bool) ( $attributes['grayscaleHover'] ?? false );
 $hover_overlay     = (bool) ( $attributes['overlayHover'] ?? false );
 $display_mode      = $attributes['displayMode'] ?? 'full';
 $is_compact        = 'compact' === $display_mode;
-$block_link        = $attributes['blockLink'] ?? '';
-$block_link_target = (bool) ( $attributes['blockLinkTarget'] ?? false );
 $social_links      = is_array( $attributes['socialLinks'] ?? null ) ? $attributes['socialLinks'] : array();
 
 // ---------------------------------------------------------------------------
@@ -616,13 +614,10 @@ $sgs_card_html  = '';
 $sgs_card_html .= $scoped_css ? ( '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>' ) : '';
 $sgs_card_html .= '<div ' . $wrapper_attrs . '>' . $sgs_inner_html . '</div>';
 
-// Block link — wraps the entire card in an <a> tag.
-if ( $block_link ) {
-	$sgs_block_target = $block_link_target ? ' target="_blank" rel="noopener noreferrer"' : '';
-	echo '<a href="' . esc_url( $block_link ) . '" class="sgs-block-link-wrapper"' . $sgs_block_target . '>'
-		. $sgs_card_html
-		. '</a>';
-} else {
-	echo $sgs_card_html;
-}
+// Block-link is handled universally by the sgsBlockLink extension
+// (includes/hover-effects.php, render_block filter) — it injects a
+// stretched-link overlay as this root's last child, so no per-block wrap
+// belongs here. This block's own blockLink/blockLinkTarget attrs (which had
+// no edit.js control and were therefore unreachable) were removed.
+echo $sgs_card_html;
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

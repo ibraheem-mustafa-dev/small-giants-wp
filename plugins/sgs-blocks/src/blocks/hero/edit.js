@@ -18,6 +18,8 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -387,191 +389,305 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{/* ── 2. Container / Entire Block ── */}
+				{ /* Converted to ToolsPanel/ToolsPanelItem (Spec 35 T4.1 tail, audit-inspector-conformance
+				     dense-panel-candidate — 14 control-like elements). hasValue/onDeselect check against
+				     the DECLARED block.json defaults (D328): alignment='left', verticalAlignment='center',
+				     textAlign{Desktop,Tablet,Mobile}='', minHeight='' / minHeightTablet='' / minHeightMobile='360px',
+				     contentBackground='', contentPadding{,Tablet,Mobile}={}, gridTemplateColumns{,Tablet,Mobile}='',
+				     splitContentOrderMobile='media-first', splitImageBleed=false. Text/vertical alignment are
+				     isShownByDefault (touched on nearly every hero instance); the rest are opt-in via the "+" menu. */ }
 				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleGroupControl
-						label={ __( 'Text alignment', 'sgs-blocks' ) }
-						value={ alignment }
-						onChange={ ( val ) =>
-							setAttributes( { alignment: val } )
-						}
-						isBlock
-						__nextHasNoMarginBottom
+					<ToolsPanel
+						label={ __( 'Container / Entire Block', 'sgs-blocks' ) }
+						resetAll={ () => {
+							setAttributes( {
+								alignment: 'left',
+								verticalAlignment: 'center',
+								textAlignDesktop: '',
+								textAlignTablet: '',
+								textAlignMobile: '',
+								minHeight: '',
+								minHeightTablet: '',
+								minHeightMobile: '360px',
+								contentBackground: '',
+								contentPadding: {},
+								contentPaddingTablet: {},
+								contentPaddingMobile: {},
+								...( isSplit && {
+									gridTemplateColumns: '',
+									gridTemplateColumnsTablet: '',
+									gridTemplateColumnsMobile: '',
+									splitContentOrderMobile: 'media-first',
+									splitImageBleed: false,
+								} ),
+							} );
+						} }
 					>
-						{ ALIGN_OPTIONS.map( ( opt ) => (
-							<ToggleGroupControlOption
-								key={ opt.value }
-								value={ opt.value }
-								label={ opt.label }
+						<ToolsPanelItem
+							label={ __( 'Text alignment', 'sgs-blocks' ) }
+							hasValue={ () => alignment !== 'left' }
+							onDeselect={ () => setAttributes( { alignment: 'left' } ) }
+							isShownByDefault
+						>
+							<ToggleGroupControl
+								label={ __( 'Text alignment', 'sgs-blocks' ) }
+								value={ alignment }
+								onChange={ ( val ) =>
+									setAttributes( { alignment: val } )
+								}
+								isBlock
+								__nextHasNoMarginBottom
+							>
+								{ ALIGN_OPTIONS.map( ( opt ) => (
+									<ToggleGroupControlOption
+										key={ opt.value }
+										value={ opt.value }
+										label={ opt.label }
+									/>
+								) ) }
+							</ToggleGroupControl>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
+							label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+							hasValue={ () => verticalAlignment !== 'center' }
+							onDeselect={ () => setAttributes( { verticalAlignment: 'center' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+								value={ verticalAlignment }
+								options={ VERTICAL_ALIGN_OPTIONS }
+								onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) }
+								__nextHasNoMarginBottom
 							/>
-						) ) }
-					</ToggleGroupControl>
+						</ToolsPanelItem>
 
-					<SelectControl
-						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
-						value={ verticalAlignment }
-						options={ VERTICAL_ALIGN_OPTIONS }
-						onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) }
-						__nextHasNoMarginBottom
-					/>
-
-					{/* HC2: per-breakpoint text-align on the content column.
-					    Empty = inherit the variant's own alignment. */}
-					<ResponsiveControl
-						label={ __( 'Content text align', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'textAlignDesktop',
-								tablet: 'textAlignTablet',
-								mobile: 'textAlignMobile',
-							};
-							return (
-								<SelectControl
-									value={ attributes[ attrMap[ breakpoint ] ] || '' }
-									options={ TEXT_ALIGN_OPTIONS }
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]: val,
-										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-
-					<ResponsiveControl
-						label={ __( 'Min height', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'minHeight',
-								tablet: 'minHeightTablet',
-								mobile: 'minHeightMobile',
-							};
-							return (
-								<SelectControl
-									value={
-										attributes[
-											attrMap[ breakpoint ]
-										]
-									}
-									options={ [
-										{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
-										{ label: '50vh',  value: '50vh'  },
-										{ label: '75vh',  value: '75vh'  },
-										{ label: '80vh',  value: '80vh'  },
-										{ label: '100vh', value: '100vh' },
-										{ label: '360px', value: '360px' },
-										{ label: '400px', value: '400px' },
-										{ label: '520px', value: '520px' },
-										{ label: '600px', value: '600px' },
-									] }
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]:
-												val,
-										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-
-					{ /* Media background/padding controls live in the "Image" panel's
-					     "Outer padding" section below (mediaBackground/mediaPadding*
-					     box-object attrs) — the legacy mediaBackgroundColour control
-					     was removed (one control per setting); deprecated.js v7
-					     migrates the legacy value. */ }
-
-					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Content area', 'sgs-blocks' ) }</p>
-					<DesignTokenPicker
-						label={ __( 'Content background colour', 'sgs-blocks' ) }
-						value={ contentBackground || '' }
-						onChange={ ( val ) => setAttributes( { contentBackground: val } ) }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Content padding', 'sgs-blocks' ) }
-						values={ {
-							base: contentPadding ?? {},
-							tablet: contentPaddingTablet ?? {},
-							mobile: contentPaddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const attrMap = {
-								base: 'contentPadding',
-								tablet: 'contentPaddingTablet',
-								mobile: 'contentPaddingMobile',
-							};
-							setAttributes( { [ attrMap[ tier ] ]: next } );
-						} }
-					/>
-
-					{ isSplit && (
-						<>
-							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
-							<ResponsiveControl label={ __( 'Column ratio', 'sgs-blocks' ) }>
+						{/* HC2: per-breakpoint text-align on the content column.
+						    Empty = inherit the variant's own alignment. */}
+						<ToolsPanelItem
+							label={ __( 'Content text align', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! textAlignDesktop || !! textAlignTablet || !! textAlignMobile
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									textAlignDesktop: '',
+									textAlignTablet: '',
+									textAlignMobile: '',
+								} )
+							}
+						>
+							<ResponsiveControl
+								label={ __( 'Content text align', 'sgs-blocks' ) }
+							>
 								{ ( breakpoint ) => {
-									const colAttrMap = {
-										desktop: 'gridTemplateColumns',
-										tablet: 'gridTemplateColumnsTablet',
-										mobile: 'gridTemplateColumnsMobile',
+									const attrMap = {
+										desktop: 'textAlignDesktop',
+										tablet: 'textAlignTablet',
+										mobile: 'textAlignMobile',
 									};
-									const colAttr = colAttrMap[ breakpoint ];
-									if ( breakpoint === 'desktop' ) {
-										const isCustom = ! COLUMN_RATIO_PRESETS.some(
-											( p ) => p.value !== 'custom' && p.value === gridTemplateColumns
-										);
-										return (
-											<>
-												<SelectControl
-													label={ __( 'Preset', 'sgs-blocks' ) }
-													value={ isCustom ? 'custom' : gridTemplateColumns }
-													options={ COLUMN_RATIO_PRESETS }
-													onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { gridTemplateColumns: val } ); } } }
-													__nextHasNoMarginBottom
-												/>
-												{ isCustom && (
-													<TextControl
-														label={ __( 'Custom ratio', 'sgs-blocks' ) }
-														help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
-														value={ gridTemplateColumns || '' }
-														onChange={ ( val ) => setAttributes( { gridTemplateColumns: val } ) }
-														__nextHasNoMarginBottom
-													/>
-												) }
-											</>
-										);
-									}
 									return (
-										<TextControl
-											help={ breakpoint === 'tablet'
-												? __( 'Blank = inherit desktop ratio.', 'sgs-blocks' )
-												: __( 'Blank = single column (1fr).', 'sgs-blocks' ) }
-											value={ attributes[ colAttr ] || '' }
-											onChange={ ( val ) => setAttributes( { [ colAttr ]: val } ) }
+										<SelectControl
+											value={ attributes[ attrMap[ breakpoint ] ] || '' }
+											options={ TEXT_ALIGN_OPTIONS }
+											onChange={ ( val ) =>
+												setAttributes( {
+													[ attrMap[ breakpoint ] ]: val,
+												} )
+											}
 											__nextHasNoMarginBottom
 										/>
 									);
 								} }
 							</ResponsiveControl>
-							{ /* Column gap de-duped 2026-07-06 — the split grid gap is
-							     the container gap, controlled by the shared "Gap" control
-							     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
-							     bespoke splitGap* "Column gap" control was a duplicate. */ }
-							<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
-							<ToggleControl
-								label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
-								help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
-								checked={ !! splitImageBleed }
-								onChange={ ( val ) =>
-									setAttributes( { splitImageBleed: val } )
-								}
-								__nextHasNoMarginBottom
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
+							label={ __( 'Min height', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! minHeight ||
+								!! attributes.minHeightTablet ||
+								attributes.minHeightMobile !== '360px'
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									minHeight: '',
+									minHeightTablet: '',
+									minHeightMobile: '360px',
+								} )
+							}
+						>
+							<ResponsiveControl
+								label={ __( 'Min height', 'sgs-blocks' ) }
+							>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'minHeight',
+										tablet: 'minHeightTablet',
+										mobile: 'minHeightMobile',
+									};
+									return (
+										<SelectControl
+											value={
+												attributes[
+													attrMap[ breakpoint ]
+												]
+											}
+											options={ [
+												{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
+												{ label: '50vh',  value: '50vh'  },
+												{ label: '75vh',  value: '75vh'  },
+												{ label: '80vh',  value: '80vh'  },
+												{ label: '100vh', value: '100vh' },
+												{ label: '360px', value: '360px' },
+												{ label: '400px', value: '400px' },
+												{ label: '520px', value: '520px' },
+												{ label: '600px', value: '600px' },
+											] }
+											onChange={ ( val ) =>
+												setAttributes( {
+													[ attrMap[ breakpoint ] ]:
+														val,
+												} )
+											}
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
+						</ToolsPanelItem>
+
+						{ /* Media background/padding controls live in the "Image" panel's
+						     "Outer padding" section below (mediaBackground/mediaPadding*
+						     box-object attrs) — the legacy mediaBackgroundColour control
+						     was removed (one control per setting); deprecated.js v7
+						     migrates the legacy value. */ }
+
+						<ToolsPanelItem
+							label={ __( 'Content area', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! contentBackground ||
+								Object.keys( contentPadding ?? {} ).length > 0 ||
+								Object.keys( contentPaddingTablet ?? {} ).length > 0 ||
+								Object.keys( contentPaddingMobile ?? {} ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									contentBackground: '',
+									contentPadding: {},
+									contentPaddingTablet: {},
+									contentPaddingMobile: {},
+								} )
+							}
+						>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Content area', 'sgs-blocks' ) }</p>
+							<DesignTokenPicker
+								label={ __( 'Content background colour', 'sgs-blocks' ) }
+								value={ contentBackground || '' }
+								onChange={ ( val ) => setAttributes( { contentBackground: val } ) }
 							/>
-						</>
-					) }
+							<ResponsiveBoxControl
+								label={ __( 'Content padding', 'sgs-blocks' ) }
+								values={ {
+									base: contentPadding ?? {},
+									tablet: contentPaddingTablet ?? {},
+									mobile: contentPaddingMobile ?? {},
+								} }
+								onChange={ ( tier, next ) => {
+									const attrMap = {
+										base: 'contentPadding',
+										tablet: 'contentPaddingTablet',
+										mobile: 'contentPaddingMobile',
+									};
+									setAttributes( { [ attrMap[ tier ] ]: next } );
+								} }
+							/>
+						</ToolsPanelItem>
+
+						{ isSplit && (
+							<ToolsPanelItem
+								label={ __( 'Split layout grid', 'sgs-blocks' ) }
+								hasValue={ () =>
+									!! gridTemplateColumns ||
+									!! attributes.gridTemplateColumnsTablet ||
+									!! attributes.gridTemplateColumnsMobile ||
+									splitContentOrderMobile !== 'media-first' ||
+									!! splitImageBleed
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										gridTemplateColumns: '',
+										gridTemplateColumnsTablet: '',
+										gridTemplateColumnsMobile: '',
+										splitContentOrderMobile: 'media-first',
+										splitImageBleed: false,
+									} )
+								}
+							>
+								<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
+								<ResponsiveControl label={ __( 'Column ratio', 'sgs-blocks' ) }>
+									{ ( breakpoint ) => {
+										const colAttrMap = {
+											desktop: 'gridTemplateColumns',
+											tablet: 'gridTemplateColumnsTablet',
+											mobile: 'gridTemplateColumnsMobile',
+										};
+										const colAttr = colAttrMap[ breakpoint ];
+										if ( breakpoint === 'desktop' ) {
+											const isCustom = ! COLUMN_RATIO_PRESETS.some(
+												( p ) => p.value !== 'custom' && p.value === gridTemplateColumns
+											);
+											return (
+												<>
+													<SelectControl
+														label={ __( 'Preset', 'sgs-blocks' ) }
+														value={ isCustom ? 'custom' : gridTemplateColumns }
+														options={ COLUMN_RATIO_PRESETS }
+														onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { gridTemplateColumns: val } ); } } }
+														__nextHasNoMarginBottom
+													/>
+													{ isCustom && (
+														<TextControl
+															label={ __( 'Custom ratio', 'sgs-blocks' ) }
+															help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
+															value={ gridTemplateColumns || '' }
+															onChange={ ( val ) => setAttributes( { gridTemplateColumns: val } ) }
+															__nextHasNoMarginBottom
+														/>
+													) }
+												</>
+											);
+										}
+										return (
+											<TextControl
+												help={ breakpoint === 'tablet'
+													? __( 'Blank = inherit desktop ratio.', 'sgs-blocks' )
+													: __( 'Blank = single column (1fr).', 'sgs-blocks' ) }
+												value={ attributes[ colAttr ] || '' }
+												onChange={ ( val ) => setAttributes( { [ colAttr ]: val } ) }
+												__nextHasNoMarginBottom
+											/>
+										);
+									} }
+								</ResponsiveControl>
+								{ /* Column gap de-duped 2026-07-06 — the split grid gap is
+								     the container gap, controlled by the shared "Gap" control
+								     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
+								     bespoke splitGap* "Column gap" control was a duplicate. */ }
+								<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
+								<ToggleControl
+									label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
+									help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
+									checked={ !! splitImageBleed }
+									onChange={ ( val ) =>
+										setAttributes( { splitImageBleed: val } )
+									}
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+						) }
+					</ToolsPanel>
 				</PanelBody>
 
 				{/* ── 4. Headline (h1) ── */}
@@ -625,6 +741,18 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{/* ── 6. Image (background + split) ── */}
+				{ /* SKIP-REASON (Spec 35 T4.1 tail, audit-inspector-conformance dense-panel-candidate):
+				     this panel is a MODE-WIZARD, not a flat control set. Its content branches on
+				     three mutually-exclusive variant states (!isSplit&&!isVideo&&!isSvgAnimated /
+				     isSplit / the shared "Background effects" tail) into entirely different control
+				     groups (MediaUpload pickers with custom render props, a MediaPicker, conditional
+				     custom-dimension sub-forms). ToolsPanelItem's contract (one hasValue/onDeselect per
+				     independently-resettable "property") doesn't fit a set of controls that only exist
+				     under a specific variant and whose "reset" would mean discarding a media selection —
+				     that's a Remove-image button, not a ToolsPanel reset. Converting would either lie
+				     about resettability or force fake per-control granularity onto conditional groups
+				     that are already gated by variant. Left as PanelBody per the task's mode-wizard
+				     escape hatch. */ }
 				<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
 					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
 						<>

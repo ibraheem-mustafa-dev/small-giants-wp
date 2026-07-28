@@ -10,6 +10,8 @@ import {
 	ToggleControl,
 	Notice,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -233,107 +235,171 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 				<PanelBody title={ __( 'Banner Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Display mode', 'sgs-blocks' ) }
-						help={ __(
-							'Inline sits within the page flow. Announcement bar is fixed to the top or bottom of the viewport.',
-							'sgs-blocks'
-						) }
-						value={ displayMode }
-						options={ DISPLAY_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ isAnnouncement && (
-						<>
+					<ToolsPanel
+						label={ __( 'Banner settings', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								displayMode: 'inline',
+								stickyPosition: 'top',
+								dismissible: false,
+								dismissBehaviour: 'session',
+								variant: 'info',
+								showIcon: true,
+								iconSource: '',
+								iconName: '',
+								iconColour: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Display mode', 'sgs-blocks' ) }
+							hasValue={ () => displayMode !== 'inline' }
+							onDeselect={ () => setAttributes( { displayMode: 'inline' } ) }
+							isShownByDefault
+						>
 							<SelectControl
-								label={ __( 'Position', 'sgs-blocks' ) }
-								value={ stickyPosition }
-								options={ STICKY_POSITION_OPTIONS }
-								onChange={ ( val ) => setAttributes( { stickyPosition: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							<ToggleControl
-								label={ __( 'Dismissible', 'sgs-blocks' ) }
+								label={ __( 'Display mode', 'sgs-blocks' ) }
 								help={ __(
-									'Shows a close button so visitors can hide the bar.',
+									'Inline sits within the page flow. Announcement bar is fixed to the top or bottom of the viewport.',
 									'sgs-blocks'
 								) }
-								checked={ !! dismissible }
-								onChange={ ( val ) => setAttributes( { dismissible: val } ) }
+								value={ displayMode }
+								options={ DISPLAY_MODE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { displayMode: val } ) }
 								__nextHasNoMarginBottom
 							/>
-							{ dismissible && (
-								<SelectControl
-									label={ __( 'Dismiss behaviour', 'sgs-blocks' ) }
-									help={ __(
-										'How long the bar stays hidden after the visitor closes it.',
+						</ToolsPanelItem>
+						{ isAnnouncement && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Position', 'sgs-blocks' ) }
+									hasValue={ () => stickyPosition !== 'top' }
+									onDeselect={ () => setAttributes( { stickyPosition: 'top' } ) }
+								>
+									<SelectControl
+										label={ __( 'Position', 'sgs-blocks' ) }
+										value={ stickyPosition }
+										options={ STICKY_POSITION_OPTIONS }
+										onChange={ ( val ) => setAttributes( { stickyPosition: val } ) }
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Dismissible', 'sgs-blocks' ) }
+									hasValue={ () => dismissible !== false }
+									onDeselect={ () => setAttributes( { dismissible: false } ) }
+								>
+									<ToggleControl
+										label={ __( 'Dismissible', 'sgs-blocks' ) }
+										help={ __(
+											'Shows a close button so visitors can hide the bar.',
+											'sgs-blocks'
+										) }
+										checked={ !! dismissible }
+										onChange={ ( val ) => setAttributes( { dismissible: val } ) }
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
+								{ dismissible && (
+									<ToolsPanelItem
+										label={ __( 'Dismiss behaviour', 'sgs-blocks' ) }
+										hasValue={ () => dismissBehaviour !== 'session' }
+										onDeselect={ () => setAttributes( { dismissBehaviour: 'session' } ) }
+									>
+										<SelectControl
+											label={ __( 'Dismiss behaviour', 'sgs-blocks' ) }
+											help={ __(
+												'How long the bar stays hidden after the visitor closes it.',
+												'sgs-blocks'
+											) }
+											value={ dismissBehaviour }
+											options={ DISMISS_BEHAVIOUR_OPTIONS }
+											onChange={ ( val ) =>
+												setAttributes( { dismissBehaviour: val } )
+											}
+											__nextHasNoMarginBottom
+										/>
+									</ToolsPanelItem>
+								) }
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'Announcement bar is fixed-position on the live site. In the editor it renders inline so you can still edit the content.',
 										'sgs-blocks'
 									) }
-									value={ dismissBehaviour }
-									options={ DISMISS_BEHAVIOUR_OPTIONS }
-									onChange={ ( val ) =>
-										setAttributes( { dismissBehaviour: val } )
-									}
-									__nextHasNoMarginBottom
-								/>
-							) }
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									'Announcement bar is fixed-position on the live site. In the editor it renders inline so you can still edit the content.',
+								</Notice>
+							</>
+						) }
+						<ToolsPanelItem
+							label={ __( 'Variant', 'sgs-blocks' ) }
+							hasValue={ () => variant !== 'info' }
+							onDeselect={ () => setAttributes( { variant: 'info' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Variant', 'sgs-blocks' ) }
+								help={ __(
+									'Sets the colour and a fitting default icon.',
 									'sgs-blocks'
 								) }
-							</Notice>
-						</>
-					) }
-					<SelectControl
-						label={ __( 'Variant', 'sgs-blocks' ) }
-						help={ __(
-							'Sets the colour and a fitting default icon.',
-							'sgs-blocks'
+								value={ variant }
+								options={ VARIANT_OPTIONS }
+								onChange={ ( val ) => setAttributes( { variant: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show icon', 'sgs-blocks' ) }
+							hasValue={ () => showIcon !== true }
+							onDeselect={ () => setAttributes( { showIcon: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show icon', 'sgs-blocks' ) }
+								checked={ !! showIcon }
+								onChange={ ( val ) => setAttributes( { showIcon: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						{ showIcon && (
+							<ToolsPanelItem
+								label={ __( 'Icon', 'sgs-blocks' ) }
+								hasValue={ () =>
+									!! iconSource || !! attributes.iconName || !! iconColour
+								}
+								onDeselect={ () =>
+									setAttributes( { iconSource: '', iconName: '', iconColour: '' } )
+								}
+							>
+								<IconPicker
+									label={ __( 'Icon (overrides the variant default)', 'sgs-blocks' ) }
+									value={ resolved }
+									onChange={ ( { source, name } ) =>
+										setAttributes( { iconSource: source, iconName: name } )
+									}
+								/>
+								{ ! usingDefault && (
+									<ToggleControl
+										label={ __( "Use the variant's default icon", 'sgs-blocks' ) }
+										checked={ false }
+										onChange={ () =>
+											setAttributes( { iconSource: '', iconName: '' } )
+										}
+										help={ __(
+											'Reset to the icon that matches the chosen variant.',
+											'sgs-blocks'
+										) }
+										__nextHasNoMarginBottom
+									/>
+								) }
+								<DesignTokenPicker
+									label={ __( 'Icon colour', 'sgs-blocks' ) }
+									value={ iconColour || '' }
+									onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
+									clearable={ true }
+								/>
+							</ToolsPanelItem>
 						) }
-						value={ variant }
-						options={ VARIANT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { variant: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show icon', 'sgs-blocks' ) }
-						checked={ !! showIcon }
-						onChange={ ( val ) => setAttributes( { showIcon: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ showIcon && (
-						<IconPicker
-							label={ __( 'Icon (overrides the variant default)', 'sgs-blocks' ) }
-							value={ resolved }
-							onChange={ ( { source, name } ) =>
-								setAttributes( { iconSource: source, iconName: name } )
-							}
-						/>
-					) }
-					{ showIcon && ! usingDefault && (
-						<ToggleControl
-							label={ __( "Use the variant's default icon", 'sgs-blocks' ) }
-							checked={ false }
-							onChange={ () =>
-								setAttributes( { iconSource: '', iconName: '' } )
-							}
-							help={ __(
-								'Reset to the icon that matches the chosen variant.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					) }
-					{ showIcon && (
-						<DesignTokenPicker
-							label={ __( 'Icon colour', 'sgs-blocks' ) }
-							value={ iconColour || '' }
-							onChange={ ( val ) => setAttributes( { iconColour: val ?? '' } ) }
-							clearable={ true }
-						/>
-					) }
+					</ToolsPanel>
 				</PanelBody>
 			</InspectorControls>
 

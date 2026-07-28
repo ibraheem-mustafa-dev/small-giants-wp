@@ -44,6 +44,8 @@ import {
 	TextControl,
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -374,146 +376,274 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* ---- Attribution slot ---- */ }
-				<PanelBody
-					title={ __( 'Attribution', 'sgs-blocks' ) }
-					initialOpen={ false }
+				<ToolsPanel
+					label={ __( 'Attribution', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							attributionEnabled: true,
+							attributionTag: 'footer',
+							attributionColour: '',
+							attributionFontStyle: '',
+							attributionFontWeight: '',
+							attributionFontSize: undefined,
+							attributionFontSizeTablet: undefined,
+							attributionFontSizeMobile: undefined,
+							attributionFontSizeUnit: 'px',
+							attributionFontFamily: '',
+							attributionTextDecoration: '',
+							attributionTextTransform: '',
+							attributionLineHeight: undefined,
+							attributionLineHeightUnit: 'em',
+							attributionMarginTop: undefined,
+							attributionMarginTopTablet: undefined,
+							attributionMarginTopMobile: undefined,
+							attributionMarginUnit: 'px',
+						} )
+					}
 				>
-					<ToggleControl
+					<ToolsPanelItem
 						label={ __( 'Show attribution', 'sgs-blocks' ) }
-						checked={ attributionEnabled }
-						onChange={ ( val ) => setAttributes( { attributionEnabled: val } ) }
-						__nextHasNoMarginBottom
-					/>
+						hasValue={ () => attributionEnabled !== true }
+						onDeselect={ () =>
+							setAttributes( { attributionEnabled: true } )
+						}
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Show attribution', 'sgs-blocks' ) }
+							checked={ attributionEnabled }
+							onChange={ ( val ) => setAttributes( { attributionEnabled: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
 					{ attributionEnabled && (
 						<>
-							<SelectControl
+							<ToolsPanelItem
 								label={ __( 'HTML tag', 'sgs-blocks' ) }
-								value={ attributionTag }
-								options={ ATTRIB_TAG_OPTIONS }
-								onChange={ ( val ) => setAttributes( { attributionTag: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							<DesignTokenPicker
+								hasValue={ () => attributionTag !== 'footer' }
+								onDeselect={ () =>
+									setAttributes( { attributionTag: 'footer' } )
+								}
+							>
+								<SelectControl
+									label={ __( 'HTML tag', 'sgs-blocks' ) }
+									value={ attributionTag }
+									options={ ATTRIB_TAG_OPTIONS }
+									onChange={ ( val ) => setAttributes( { attributionTag: val } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Text colour', 'sgs-blocks' ) }
-								value={ attributionColour }
-								onChange={ ( val ) => setAttributes( { attributionColour: val ?? '' } ) }
-							/>
-							<SelectControl
+								hasValue={ () => !! attributionColour }
+								onDeselect={ () =>
+									setAttributes( { attributionColour: '' } )
+								}
+								isShownByDefault
+							>
+								<DesignTokenPicker
+									label={ __( 'Text colour', 'sgs-blocks' ) }
+									value={ attributionColour }
+									onChange={ ( val ) => setAttributes( { attributionColour: val ?? '' } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Font style', 'sgs-blocks' ) }
-								value={ attributionFontStyle }
-								options={ FONT_STYLE_OPTIONS }
-								onChange={ ( val ) => setAttributes( { attributionFontStyle: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							<SelectControl
+								hasValue={ () => !! attributionFontStyle }
+								onDeselect={ () =>
+									setAttributes( { attributionFontStyle: '' } )
+								}
+							>
+								<SelectControl
+									label={ __( 'Font style', 'sgs-blocks' ) }
+									value={ attributionFontStyle }
+									options={ FONT_STYLE_OPTIONS }
+									onChange={ ( val ) => setAttributes( { attributionFontStyle: val } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Font weight', 'sgs-blocks' ) }
-								value={ attributionFontWeight }
-								options={ FONT_WEIGHT_OPTIONS }
-								onChange={ ( val ) => setAttributes( { attributionFontWeight: val } ) }
-								__nextHasNoMarginBottom
-							/>
+								hasValue={ () => !! attributionFontWeight }
+								onDeselect={ () =>
+									setAttributes( { attributionFontWeight: '' } )
+								}
+							>
+								<SelectControl
+									label={ __( 'Font weight', 'sgs-blocks' ) }
+									value={ attributionFontWeight }
+									options={ FONT_WEIGHT_OPTIONS }
+									onChange={ ( val ) => setAttributes( { attributionFontWeight: val } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
 
 							{ /* Attribution font size — ResponsiveControl + UnitControl per breakpoint */ }
-							<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrKey = attributionFontSizeBreakpoints[ breakpoint ];
-									const numVal = attributes[ attrKey ];
-									const unitVal = attributionFontSizeUnit || 'px';
-									return (
-										<UnitControl
-											label={ __( 'Font size', 'sgs-blocks' ) }
-											hideLabelFromVision
-											value={ composeUnit( numVal, unitVal ) }
-											units={ FONT_SIZE_UNITS }
-											onChange={ ( raw ) => {
-												const { num, unit } = parseUnit( raw, unitVal );
-												setAttributes( {
-													[ attrKey ]: num,
-													attributionFontSizeUnit: unit,
-												} );
-											} }
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
-
-							<TextControl
-								label={ __( 'Font family', 'sgs-blocks' ) }
-								value={ attributionFontFamily }
-								onChange={ ( val ) => setAttributes( { attributionFontFamily: val } ) }
-								placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-							/>
-							<SelectControl
-								label={ __( 'Text decoration', 'sgs-blocks' ) }
-								value={ attributionTextDecoration }
-								options={ TEXT_DECORATION_OPTIONS }
-								onChange={ ( val ) => setAttributes( { attributionTextDecoration: val } ) }
-								__nextHasNoMarginBottom
-							/>
-							<SelectControl
-								label={ __( 'Text transform', 'sgs-blocks' ) }
-								value={ attributionTextTransform }
-								options={ TEXT_TRANSFORM_OPTIONS }
-								onChange={ ( val ) => setAttributes( { attributionTextTransform: val } ) }
-								__nextHasNoMarginBottom
-							/>
-
-							{ /* Attribution line height — UnitControl (single, no responsive) */ }
-							<UnitControl
-								label={ __( 'Line height', 'sgs-blocks' ) }
-								value={ composeUnit( attributionLineHeight, attributionLineHeightUnit ) }
-								units={ LINE_HEIGHT_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit( raw, attributionLineHeightUnit || 'em' );
-									setAttributes( { attributionLineHeight: num, attributionLineHeightUnit: unit } );
-								} }
-								__nextHasNoMarginBottom
-							/>
-
-							{ /* Attribution margin-top — ResponsiveControl + UnitControl per breakpoint
-							   (KEPT-SCALAR single-side family, contract §C). */ }
-							<ResponsiveControl label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }>
-								{ ( breakpoint ) => {
-									const attrKey = attributionMarginTopBreakpoints[ breakpoint ];
-									const numVal = attributes[ attrKey ];
-									const unitVal = attributionMarginUnit || 'px';
-									if ( breakpoint === 'desktop' ) {
+							<ToolsPanelItem
+								label={ __( 'Font size', 'sgs-blocks' ) }
+								hasValue={ () =>
+									attributionFontSize != null ||
+									attributionFontSizeTablet != null ||
+									attributionFontSizeMobile != null
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										attributionFontSize: undefined,
+										attributionFontSizeTablet: undefined,
+										attributionFontSizeMobile: undefined,
+									} )
+								}
+								isShownByDefault
+							>
+								<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
+									{ ( breakpoint ) => {
+										const attrKey = attributionFontSizeBreakpoints[ breakpoint ];
+										const numVal = attributes[ attrKey ];
+										const unitVal = attributionFontSizeUnit || 'px';
 										return (
 											<UnitControl
-												label={ __( 'Margin-top', 'sgs-blocks' ) }
+												label={ __( 'Font size', 'sgs-blocks' ) }
 												hideLabelFromVision
 												value={ composeUnit( numVal, unitVal ) }
-												units={ MARGIN_UNITS }
+												units={ FONT_SIZE_UNITS }
 												onChange={ ( raw ) => {
 													const { num, unit } = parseUnit( raw, unitVal );
 													setAttributes( {
-														attributionMarginTop: num,
-														attributionMarginUnit: unit,
+														[ attrKey ]: num,
+														attributionFontSizeUnit: unit,
 													} );
 												} }
 												__nextHasNoMarginBottom
 											/>
 										);
-									}
-									return (
-										<RangeControl
-											label={ breakpoint === 'tablet'
-												? __( 'Margin-top (tablet)', 'sgs-blocks' )
-												: __( 'Margin-top (mobile)', 'sgs-blocks' )
-											}
-											value={ numVal ?? '' }
-											onChange={ ( val ) => setAttributes( { [ attrKey ]: val } ) }
-											min={ 0 } max={ 80 } step={ 1 } allowReset
-											__nextHasNoMarginBottom
-										/>
-									);
-								} }
-							</ResponsiveControl>
+									} }
+								</ResponsiveControl>
+							</ToolsPanelItem>
+
+							<ToolsPanelItem
+								label={ __( 'Font family', 'sgs-blocks' ) }
+								hasValue={ () => !! attributionFontFamily }
+								onDeselect={ () =>
+									setAttributes( { attributionFontFamily: '' } )
+								}
+							>
+								<TextControl
+									label={ __( 'Font family', 'sgs-blocks' ) }
+									value={ attributionFontFamily }
+									onChange={ ( val ) => setAttributes( { attributionFontFamily: val } ) }
+									placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Text decoration', 'sgs-blocks' ) }
+								hasValue={ () => !! attributionTextDecoration }
+								onDeselect={ () =>
+									setAttributes( { attributionTextDecoration: '' } )
+								}
+							>
+								<SelectControl
+									label={ __( 'Text decoration', 'sgs-blocks' ) }
+									value={ attributionTextDecoration }
+									options={ TEXT_DECORATION_OPTIONS }
+									onChange={ ( val ) => setAttributes( { attributionTextDecoration: val } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Text transform', 'sgs-blocks' ) }
+								hasValue={ () => !! attributionTextTransform }
+								onDeselect={ () =>
+									setAttributes( { attributionTextTransform: '' } )
+								}
+							>
+								<SelectControl
+									label={ __( 'Text transform', 'sgs-blocks' ) }
+									value={ attributionTextTransform }
+									options={ TEXT_TRANSFORM_OPTIONS }
+									onChange={ ( val ) => setAttributes( { attributionTextTransform: val } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+
+							{ /* Attribution line height — UnitControl (single, no responsive) */ }
+							<ToolsPanelItem
+								label={ __( 'Line height', 'sgs-blocks' ) }
+								hasValue={ () => attributionLineHeight != null }
+								onDeselect={ () =>
+									setAttributes( { attributionLineHeight: undefined } )
+								}
+							>
+								<UnitControl
+									label={ __( 'Line height', 'sgs-blocks' ) }
+									value={ composeUnit( attributionLineHeight, attributionLineHeightUnit ) }
+									units={ LINE_HEIGHT_UNITS }
+									onChange={ ( raw ) => {
+										const { num, unit } = parseUnit( raw, attributionLineHeightUnit || 'em' );
+										setAttributes( { attributionLineHeight: num, attributionLineHeightUnit: unit } );
+									} }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+
+							{ /* Attribution margin-top — ResponsiveControl + UnitControl per breakpoint
+							   (KEPT-SCALAR single-side family, contract §C). */ }
+							<ToolsPanelItem
+								label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }
+								hasValue={ () =>
+									attributionMarginTop != null ||
+									attributionMarginTopTablet != null ||
+									attributionMarginTopMobile != null
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										attributionMarginTop: undefined,
+										attributionMarginTopTablet: undefined,
+										attributionMarginTopMobile: undefined,
+									} )
+								}
+							>
+								<ResponsiveControl label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }>
+									{ ( breakpoint ) => {
+										const attrKey = attributionMarginTopBreakpoints[ breakpoint ];
+										const numVal = attributes[ attrKey ];
+										const unitVal = attributionMarginUnit || 'px';
+										if ( breakpoint === 'desktop' ) {
+											return (
+												<UnitControl
+													label={ __( 'Margin-top', 'sgs-blocks' ) }
+													hideLabelFromVision
+													value={ composeUnit( numVal, unitVal ) }
+													units={ MARGIN_UNITS }
+													onChange={ ( raw ) => {
+														const { num, unit } = parseUnit( raw, unitVal );
+														setAttributes( {
+															attributionMarginTop: num,
+															attributionMarginUnit: unit,
+														} );
+													} }
+													__nextHasNoMarginBottom
+												/>
+											);
+										}
+										return (
+											<RangeControl
+												label={ breakpoint === 'tablet'
+													? __( 'Margin-top (tablet)', 'sgs-blocks' )
+													: __( 'Margin-top (mobile)', 'sgs-blocks' )
+												}
+												value={ numVal ?? '' }
+												onChange={ ( val ) => setAttributes( { [ attrKey ]: val } ) }
+												min={ 0 } max={ 80 } step={ 1 } allowReset
+												__nextHasNoMarginBottom
+											/>
+										);
+									} }
+								</ResponsiveControl>
+							</ToolsPanelItem>
 						</>
 					) }
-				</PanelBody>
+				</ToolsPanel>
 
 				{ /* ---- Wrapper ---- */ }
 				{ ! inheritStyle && (
@@ -521,81 +651,175 @@ export default function Edit( { attributes, setAttributes } ) {
 						title={ __( 'Wrapper', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						<DesignTokenPicker
-							label={ __( 'Background colour', 'sgs-blocks' ) }
-							value={ backgroundColour }
-							onChange={ ( val ) => setAttributes( { backgroundColour: val ?? '' } ) }
-						/>
-
-						<TextControl
-							label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
-							value={ boxShadow }
-							onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
-							placeholder={ __( '0 4px 12px rgba(0,0,0,0.1)', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-
-						{ /* Box-object interface contract §B/§E: padding/margin base routes
-						   to WP-native style.spacing.* (skip-serialised → scoped, not
-						   inline); tiers are the paddingTablet/paddingMobile +
-						   marginTablet/marginMobile object attrs. */ }
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							values={ {
-								base: style?.spacing?.padding ?? {},
-								tablet: paddingTablet ?? {},
-								mobile: paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-								} else {
-									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+						<ToolsPanel
+							label={ __( 'Wrapper', 'sgs-blocks' ) }
+							resetAll={ () =>
+								setAttributes( {
+									backgroundColour: '',
+									boxShadow: '',
+									style: {
+										...style,
+										spacing: {
+											...style?.spacing,
+											padding: {},
+											margin: {},
+										},
+									},
+									paddingTablet: {},
+									paddingMobile: {},
+									marginTablet: {},
+									marginMobile: {},
+									maxWidth: '',
+									maxWidthTablet: '',
+									maxWidthMobile: '',
+									contentWidth: '',
+								} )
+							}
+						>
+							<ToolsPanelItem
+								label={ __( 'Background colour', 'sgs-blocks' ) }
+								hasValue={ () => !! backgroundColour }
+								onDeselect={ () =>
+									setAttributes( { backgroundColour: '' } )
 								}
-							} }
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Margin', 'sgs-blocks' ) }
-							values={ {
-								base: style?.spacing?.margin ?? {},
-								tablet: marginTablet ?? {},
-								mobile: marginMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-								} else {
-									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
+								isShownByDefault
+							>
+								<DesignTokenPicker
+									label={ __( 'Background colour', 'sgs-blocks' ) }
+									value={ backgroundColour }
+									onChange={ ( val ) => setAttributes( { backgroundColour: val ?? '' } ) }
+								/>
+							</ToolsPanelItem>
 
-						{ /* Width — outer maxWidth (kept-scalar, responsive) + content
-						   band width (kept-scalar). Contract §C. */ }
-						<ResponsiveControl label={ __( 'Outer max-width', 'sgs-blocks' ) }>
-							{ ( breakpoint ) => {
-								const attrKey = maxWidthBreakpoints[ breakpoint ];
-								return (
-									<UnitControl
-										label={ __( 'Max-width', 'sgs-blocks' ) }
-										hideLabelFromVision
-										value={ attributes[ attrKey ] || '' }
-										units={ LENGTH_UNITS }
-										onChange={ ( val ) => setAttributes( { [ attrKey ]: val ?? '' } ) }
-										help={ breakpoint === 'desktop' ? __( 'Leave blank for no cap.', 'sgs-blocks' ) : __( 'Leave blank to inherit desktop.', 'sgs-blocks' ) }
-										__nextHasNoMarginBottom
-									/>
-								);
-							} }
-						</ResponsiveControl>
-						<UnitControl
-							label={ __( 'Content width', 'sgs-blocks' ) }
-							value={ contentWidth || '' }
-							units={ LENGTH_UNITS }
-							onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
-							help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
+							<ToolsPanelItem
+								label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
+								hasValue={ () => !! boxShadow }
+								onDeselect={ () => setAttributes( { boxShadow: '' } ) }
+							>
+								<TextControl
+									label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
+									value={ boxShadow }
+									onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
+									placeholder={ __( '0 4px 12px rgba(0,0,0,0.1)', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+
+							{ /* Box-object interface contract §B/§E: padding/margin base routes
+							   to WP-native style.spacing.* (skip-serialised → scoped, not
+							   inline); tiers are the paddingTablet/paddingMobile +
+							   marginTablet/marginMobile object attrs. */ }
+							<ToolsPanelItem
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								hasValue={ () =>
+									Object.keys( style?.spacing?.padding ?? {} ).length > 0 ||
+									Object.keys( paddingTablet ?? {} ).length > 0 ||
+									Object.keys( paddingMobile ?? {} ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										style: { ...style, spacing: { ...style?.spacing, padding: {} } },
+										paddingTablet: {},
+										paddingMobile: {},
+									} )
+								}
+								isShownByDefault
+							>
+								<ResponsiveBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ {
+										base: style?.spacing?.padding ?? {},
+										tablet: paddingTablet ?? {},
+										mobile: paddingMobile ?? {},
+									} }
+									onChange={ ( tier, next ) => {
+										if ( 'base' === tier ) {
+											setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
+										} else {
+											setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+										}
+									} }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								hasValue={ () =>
+									Object.keys( style?.spacing?.margin ?? {} ).length > 0 ||
+									Object.keys( marginTablet ?? {} ).length > 0 ||
+									Object.keys( marginMobile ?? {} ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										style: { ...style, spacing: { ...style?.spacing, margin: {} } },
+										marginTablet: {},
+										marginMobile: {},
+									} )
+								}
+							>
+								<ResponsiveBoxControl
+									label={ __( 'Margin', 'sgs-blocks' ) }
+									values={ {
+										base: style?.spacing?.margin ?? {},
+										tablet: marginTablet ?? {},
+										mobile: marginMobile ?? {},
+									} }
+									onChange={ ( tier, next ) => {
+										if ( 'base' === tier ) {
+											setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+										} else {
+											setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+										}
+									} }
+								/>
+							</ToolsPanelItem>
+
+							{ /* Width — outer maxWidth (kept-scalar, responsive) + content
+							   band width (kept-scalar). Contract §C. */ }
+							<ToolsPanelItem
+								label={ __( 'Outer max-width', 'sgs-blocks' ) }
+								hasValue={ () =>
+									!! maxWidth || !! maxWidthTablet || !! maxWidthMobile
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										maxWidth: '',
+										maxWidthTablet: '',
+										maxWidthMobile: '',
+									} )
+								}
+							>
+								<ResponsiveControl label={ __( 'Outer max-width', 'sgs-blocks' ) }>
+									{ ( breakpoint ) => {
+										const attrKey = maxWidthBreakpoints[ breakpoint ];
+										return (
+											<UnitControl
+												label={ __( 'Max-width', 'sgs-blocks' ) }
+												hideLabelFromVision
+												value={ attributes[ attrKey ] || '' }
+												units={ LENGTH_UNITS }
+												onChange={ ( val ) => setAttributes( { [ attrKey ]: val ?? '' } ) }
+												help={ breakpoint === 'desktop' ? __( 'Leave blank for no cap.', 'sgs-blocks' ) : __( 'Leave blank to inherit desktop.', 'sgs-blocks' ) }
+												__nextHasNoMarginBottom
+											/>
+										);
+									} }
+								</ResponsiveControl>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Content width', 'sgs-blocks' ) }
+								hasValue={ () => !! contentWidth }
+								onDeselect={ () => setAttributes( { contentWidth: '' } ) }
+							>
+								<UnitControl
+									label={ __( 'Content width', 'sgs-blocks' ) }
+									value={ contentWidth || '' }
+									units={ LENGTH_UNITS }
+									onChange={ ( val ) => setAttributes( { contentWidth: val ?? '' } ) }
+									help={ __( 'Exact CSS length, e.g. 900px or 60rem. Leave blank for full width.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+						</ToolsPanel>
 					</PanelBody>
 				) }
 

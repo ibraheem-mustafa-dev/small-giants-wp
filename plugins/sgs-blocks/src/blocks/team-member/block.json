@@ -212,14 +212,6 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"blockLink": {
-			"type": "string",
-			"default": ""
-		},
-		"blockLinkTarget": {
-			"type": "boolean",
-			"default": false
-		},
 		"sgsAnimation": {
 			"type": "string",
 			"default": "fade-up"

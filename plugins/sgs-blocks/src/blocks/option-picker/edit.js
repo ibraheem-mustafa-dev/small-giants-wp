@@ -26,6 +26,8 @@ import {
 	FlexBlock,
 	Notice,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import {
 	DesignTokenPicker,
@@ -571,83 +573,150 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Colours', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<DesignTokenPicker
-						label={ __( 'Resting pill background', 'sgs-blocks' ) }
-						value={ pillBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { pillBgColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Resting pill text', 'sgs-blocks' ) }
-						value={ pillTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { pillTextColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Resting pill border', 'sgs-blocks' ) }
-						value={ pillBorderColour }
-						onChange={ ( val ) =>
-							setAttributes( { pillBorderColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Selected pill background',
-							'sgs-blocks'
-						) }
-						value={ pillSelectedBgColour }
-						onChange={ ( val ) =>
-							setAttributes( { pillSelectedBgColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Selected pill text', 'sgs-blocks' ) }
-						value={ pillSelectedTextColour }
-						onChange={ ( val ) =>
+					<ToolsPanel
+						label={ __( 'Colours', 'sgs-blocks' ) }
+						resetAll={ () =>
 							setAttributes( {
-								pillSelectedTextColour: val,
+								pillBgColour: '',
+								pillTextColour: '',
+								pillBorderColour: '',
+								pillSelectedBgColour: '',
+								pillSelectedTextColour: '',
+								pillSelectedBorderColour: '',
+								pillSelectedBorderRadius: '',
+								showSelectedTick: true,
 							} )
 						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Selected pill border',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'Independent of the selected fill colour — set this to reproduce a decoupled "pale fill + coloured outline" selected pill. Leave empty to match the fill (previous behaviour).',
-							'sgs-blocks'
-						) }
-						value={ pillSelectedBorderColour }
-						onChange={ ( val ) =>
-							setAttributes( { pillSelectedBorderColour: val } )
-						}
-					/>
-					{ /* CSS-length STRING (see Pill border radius above). */ }
-					<UnitControl
-						label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
-						help={ __( 'Leave blank to match the resting pill radius above. Set 0 for square corners.', 'sgs-blocks' ) }
-						value={ pillSelectedBorderRadius || '' }
-						units={ LENGTH_UNITS }
-						onChange={ ( val ) =>
-							setAttributes( { pillSelectedBorderRadius: val ?? '' } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show selection tick', 'sgs-blocks' ) }
-						help={ __(
-							'Off = no visible checkmark on the selected pill (matches a neutral outline-only selected look).',
-							'sgs-blocks'
-						) }
-						checked={ showSelectedTick }
-						onChange={ ( val ) =>
-							setAttributes( { showSelectedTick: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						<ToolsPanelItem
+							label={ __( 'Resting pill background', 'sgs-blocks' ) }
+							hasValue={ () => !! pillBgColour }
+							onDeselect={ () => setAttributes( { pillBgColour: '' } ) }
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								label={ __( 'Resting pill background', 'sgs-blocks' ) }
+								value={ pillBgColour }
+								onChange={ ( val ) =>
+									setAttributes( { pillBgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Resting pill text', 'sgs-blocks' ) }
+							hasValue={ () => !! pillTextColour }
+							onDeselect={ () => setAttributes( { pillTextColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Resting pill text', 'sgs-blocks' ) }
+								value={ pillTextColour }
+								onChange={ ( val ) =>
+									setAttributes( { pillTextColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Resting pill border', 'sgs-blocks' ) }
+							hasValue={ () => !! pillBorderColour }
+							onDeselect={ () => setAttributes( { pillBorderColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Resting pill border', 'sgs-blocks' ) }
+								value={ pillBorderColour }
+								onChange={ ( val ) =>
+									setAttributes( { pillBorderColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected pill background', 'sgs-blocks' ) }
+							hasValue={ () => !! pillSelectedBgColour }
+							onDeselect={ () => setAttributes( { pillSelectedBgColour: '' } ) }
+							isShownByDefault
+						>
+							<DesignTokenPicker
+								label={ __(
+									'Selected pill background',
+									'sgs-blocks'
+								) }
+								value={ pillSelectedBgColour }
+								onChange={ ( val ) =>
+									setAttributes( { pillSelectedBgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected pill text', 'sgs-blocks' ) }
+							hasValue={ () => !! pillSelectedTextColour }
+							onDeselect={ () => setAttributes( { pillSelectedTextColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Selected pill text', 'sgs-blocks' ) }
+								value={ pillSelectedTextColour }
+								onChange={ ( val ) =>
+									setAttributes( {
+										pillSelectedTextColour: val,
+									} )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected pill border', 'sgs-blocks' ) }
+							hasValue={ () => !! pillSelectedBorderColour }
+							onDeselect={ () => setAttributes( { pillSelectedBorderColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __(
+									'Selected pill border',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Independent of the selected fill colour — set this to reproduce a decoupled "pale fill + coloured outline" selected pill. Leave empty to match the fill (previous behaviour).',
+									'sgs-blocks'
+								) }
+								value={ pillSelectedBorderColour }
+								onChange={ ( val ) =>
+									setAttributes( { pillSelectedBorderColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						{ /* CSS-length STRING (see Pill border radius above). */ }
+						<ToolsPanelItem
+							label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
+							hasValue={ () => !! pillSelectedBorderRadius }
+							onDeselect={ () => setAttributes( { pillSelectedBorderRadius: '' } ) }
+						>
+							<UnitControl
+								label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
+								help={ __( 'Leave blank to match the resting pill radius above. Set 0 for square corners.', 'sgs-blocks' ) }
+								value={ pillSelectedBorderRadius || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) =>
+									setAttributes( { pillSelectedBorderRadius: val ?? '' } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show selection tick', 'sgs-blocks' ) }
+							hasValue={ () => showSelectedTick !== true }
+							onDeselect={ () => setAttributes( { showSelectedTick: true } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show selection tick', 'sgs-blocks' ) }
+								help={ __(
+									'Off = no visible checkmark on the selected pill (matches a neutral outline-only selected look).',
+									'sgs-blocks'
+								) }
+								checked={ showSelectedTick }
+								onChange={ ( val ) =>
+									setAttributes( { showSelectedTick: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				{ /* Width / spacing — hand-rolled (no shared wrapper, contract §B3

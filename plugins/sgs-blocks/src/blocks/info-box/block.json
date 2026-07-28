@@ -191,14 +191,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"blockLink": {
-			"type": "string",
-			"default": ""
-		},
-		"blockLinkTarget": {
-			"type": "boolean",
-			"default": false
-		},
 		"grayscaleHover": {
 			"type": "boolean",
 			"default": false

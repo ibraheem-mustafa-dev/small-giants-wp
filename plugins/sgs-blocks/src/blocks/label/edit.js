@@ -11,6 +11,8 @@ import {
 	TextControl,
 	ToggleControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { DesignTokenPicker, TypographyControls, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
@@ -231,94 +233,180 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /*
-					 * Font size (responsive: desktop/tablet/mobile) via TypographyControls.
-					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
-					 * showWeight=false because label uses its own weight SelectControl below
-					 * (fontWeight options are a restricted subset, not the full weight set).
-					 * showLineHeight=false / showStyle=false because those use UnitControl below.
-					 */ }
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-						showSize={ true }
-						showWeight={ false }
-						showStyle={ false }
-						showLineHeight={ false }
-						showResponsive={ true }
-					/>
+					<ToolsPanel
+						label={ __( 'Typography', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								fontSize: 12,
+								fontSizeTablet: null,
+								fontSizeMobile: null,
+								fontWeight: '600',
+								textTransform: 'uppercase',
+								lineHeight: 1.2,
+								lineHeightUnit: 'em',
+								letterSpacing: 0.08,
+								letterSpacingUnit: 'em',
+								textDecoration: '',
+								fontStyle: '',
+								textAlign: '',
+							} )
+						}
+					>
+						{ /*
+						 * Font size (responsive: desktop/tablet/mobile) via TypographyControls.
+						 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
+						 * showWeight=false because label uses its own weight SelectControl below
+						 * (fontWeight options are a restricted subset, not the full weight set).
+						 * showLineHeight=false / showStyle=false because those use UnitControl below.
+						 */ }
+						<ToolsPanelItem
+							label={ __( 'Font size', 'sgs-blocks' ) }
+							hasValue={ () =>
+								fontSize !== 12 ||
+								!! fontSizeTablet ||
+								!! fontSizeMobile
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									fontSize: 12,
+									fontSizeTablet: null,
+									fontSizeMobile: null,
+								} )
+							}
+							isShownByDefault
+						>
+							<TypographyControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								prefix=""
+								showSize={ true }
+								showWeight={ false }
+								showStyle={ false }
+								showLineHeight={ false }
+								showResponsive={ true }
+							/>
+						</ToolsPanelItem>
 
-					<SelectControl
-						label={ __( 'Font weight', 'sgs-blocks' ) }
-						value={ fontWeight }
-						options={ FONT_WEIGHT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { fontWeight: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Text transform', 'sgs-blocks' ) }
-						value={ textTransform }
-						options={ TEXT_TRANSFORM_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { textTransform: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+						<ToolsPanelItem
+							label={ __( 'Font weight', 'sgs-blocks' ) }
+							hasValue={ () => fontWeight !== '600' }
+							onDeselect={ () => setAttributes( { fontWeight: '600' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Font weight', 'sgs-blocks' ) }
+								value={ fontWeight }
+								options={ FONT_WEIGHT_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { fontWeight: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Text transform', 'sgs-blocks' ) }
+							hasValue={ () => textTransform !== 'uppercase' }
+							onDeselect={ () => setAttributes( { textTransform: 'uppercase' } ) }
+						>
+							<SelectControl
+								label={ __( 'Text transform', 'sgs-blocks' ) }
+								value={ textTransform }
+								options={ TEXT_TRANSFORM_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { textTransform: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 
-					{ /* Line height — UnitControl (number + unit in one input) */ }
-					<UnitControl
-						label={ __( 'Line height', 'sgs-blocks' ) }
-						value={ composeUnit( lineHeight, lineHeightUnit ) }
-						units={ LINE_HEIGHT_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, lineHeightUnit !== undefined ? lineHeightUnit : '' );
-							setAttributes( { lineHeight: num, lineHeightUnit: unit } );
-						} }
-						__nextHasNoMarginBottom
-					/>
+						{ /* Line height — UnitControl (number + unit in one input) */ }
+						<ToolsPanelItem
+							label={ __( 'Line height', 'sgs-blocks' ) }
+							hasValue={ () => lineHeight !== 1.2 || lineHeightUnit !== 'em' }
+							onDeselect={ () =>
+								setAttributes( { lineHeight: 1.2, lineHeightUnit: 'em' } )
+							}
+						>
+							<UnitControl
+								label={ __( 'Line height', 'sgs-blocks' ) }
+								value={ composeUnit( lineHeight, lineHeightUnit ) }
+								units={ LINE_HEIGHT_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit( raw, lineHeightUnit !== undefined ? lineHeightUnit : '' );
+									setAttributes( { lineHeight: num, lineHeightUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 
-					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
-					<UnitControl
-						label={ __( 'Letter spacing', 'sgs-blocks' ) }
-						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
-						units={ LETTER_SPACING_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
-							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
-						} }
-						__nextHasNoMarginBottom
-					/>
+						{ /* Letter spacing — UnitControl (number + unit in one input) */ }
+						<ToolsPanelItem
+							label={ __( 'Letter spacing', 'sgs-blocks' ) }
+							hasValue={ () =>
+								letterSpacing !== 0.08 || letterSpacingUnit !== 'em'
+							}
+							onDeselect={ () =>
+								setAttributes( { letterSpacing: 0.08, letterSpacingUnit: 'em' } )
+							}
+						>
+							<UnitControl
+								label={ __( 'Letter spacing', 'sgs-blocks' ) }
+								value={ composeUnit( letterSpacing, letterSpacingUnit ) }
+								units={ LETTER_SPACING_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
+									setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
+								} }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 
-					<TextControl
-						label={ __( 'Text decoration', 'sgs-blocks' ) }
-						value={ textDecoration }
-						onChange={ ( val ) =>
-							setAttributes( { textDecoration: val } )
-						}
-						placeholder={ __( 'none', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Font style', 'sgs-blocks' ) }
-						value={ fontStyle }
-						options={ FONT_STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { fontStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Text align', 'sgs-blocks' ) }
-						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { textAlign: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+						<ToolsPanelItem
+							label={ __( 'Text decoration', 'sgs-blocks' ) }
+							hasValue={ () => !! textDecoration }
+							onDeselect={ () => setAttributes( { textDecoration: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Text decoration', 'sgs-blocks' ) }
+								value={ textDecoration }
+								onChange={ ( val ) =>
+									setAttributes( { textDecoration: val } )
+								}
+								placeholder={ __( 'none', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Font style', 'sgs-blocks' ) }
+							hasValue={ () => !! fontStyle }
+							onDeselect={ () => setAttributes( { fontStyle: '' } ) }
+						>
+							<SelectControl
+								label={ __( 'Font style', 'sgs-blocks' ) }
+								value={ fontStyle }
+								options={ FONT_STYLE_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { fontStyle: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Text align', 'sgs-blocks' ) }
+							hasValue={ () => !! textAlign }
+							onDeselect={ () => setAttributes( { textAlign: '' } ) }
+						>
+							<SelectControl
+								label={ __( 'Text align', 'sgs-blocks' ) }
+								value={ textAlign }
+								options={ TEXT_ALIGN_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { textAlign: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				<PanelBody

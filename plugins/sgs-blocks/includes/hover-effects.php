@@ -21,7 +21,12 @@
  * - sgsHoverBorderAccent (boolean)
  * - sgsHoverTilt3D (boolean)
  * - sgsFocusRing (boolean) — emits class sgs-has-focus-ring
- * - sgsBlockLink + sgsBlockLinkTarget (wraps output in <a>)
+ * - sgsBlockLink + sgsBlockLinkTarget + sgsBlockLinkLabel (injects an EMPTY
+ *   overlay <a class="sgs-block-link-overlay"> as the block root's LAST
+ *   CHILD — a stretched-link SIBLING of the content, never a wrapper, so a
+ *   link/button already inside the block never nests inside another <a>.
+ *   sgsBlockLinkLabel drives the required aria-label; falls back to the
+ *   href host when empty.)
  *
  * @package SGS\Blocks
  */
@@ -131,6 +136,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
 	$block_link            = $attrs['sgsBlockLink'] ?? '';
 	$block_link_target     = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
+	$block_link_label      = $attrs['sgsBlockLinkLabel'] ?? '';
 	$click_effect          = $attrs['sgsClickEffect'] ?? 'none';
 	$click_ripple_colour   = $attrs['sgsClickRippleColour'] ?? '';
 	$click_ripple_duration = absint( $attrs['sgsClickRippleDuration'] ?? 600 );
@@ -294,17 +300,48 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		}
 	}
 
-	// --- Wrap in block link if set. ---
+	// --- Inject the block-link overlay as the block root's LAST CHILD. ---
+	// Stretched-link pattern: the overlay is a SIBLING of the content, never
+	// a wrapper, so a link/button already inside the block (e.g. card-grid
+	// items, team-member socials) never nests inside a second <a> — invalid
+	// HTML the old whole-block wrap produced. `.sgs-has-block-link` (already
+	// added to the root's class list above) gives the root the positioning
+	// context the overlay needs; extensions.css raises real interactive
+	// descendants above the overlay via z-index.
 	if ( $block_link ) {
-		$target_attr   = $block_link_target
+		$target_attr = $block_link_target
 			? ' target="_blank" rel="noopener noreferrer"'
 			: '';
-		$block_content = sprintf(
-			'<a href="%s" class="sgs-block-link-wrapper"%s>%s</a>',
+
+		// An empty anchor is invisible to screen readers without an
+		// accessible name — aria-label is required, never optional. Prefer
+		// the operator-supplied label; fall back to the link's host so the
+		// overlay is never unlabelled even when the control is left blank.
+		$link_label = $block_link_label;
+		if ( '' === $link_label ) {
+			$link_host  = wp_parse_url( $block_link, PHP_URL_HOST );
+			$link_label = $link_host ? $link_host : $block_link;
+		}
+
+		$overlay_html = sprintf(
+			'<a class="sgs-block-link-overlay" href="%s" aria-label="%s"%s></a>',
 			esc_url( $block_link ),
-			$target_attr,
-			$block_content
+			esc_attr( $link_label ),
+			$target_attr
 		);
+
+		// Locate the root element's own closing tag (the LAST occurrence of
+		// its tag name's closing tag in the markup — always correct for a
+		// single top-level root, since every child closes before it does)
+		// and insert the overlay immediately before it, making it the root's
+		// final child rather than a wrapper around the whole subtree.
+		if ( preg_match( '/^<([a-zA-Z][a-zA-Z0-9-]*)\b/', $block_content, $root_tag_match ) ) {
+			$root_close_tag = '</' . $root_tag_match[1] . '>';
+			$root_close_pos = strrpos( $block_content, $root_close_tag );
+			if ( false !== $root_close_pos ) {
+				$block_content = substr_replace( $block_content, $overlay_html, $root_close_pos, 0 );
+			}
+		}
 	}
 
 	return $block_content;

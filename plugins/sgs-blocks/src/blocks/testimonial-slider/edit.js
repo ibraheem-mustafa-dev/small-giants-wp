@@ -23,6 +23,8 @@ import {
 	ToggleControl,
 	TextControl,
 	Button,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
@@ -170,70 +172,142 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				<PanelBody title={ __( 'Slider Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Default card style', 'sgs-blocks' ) }
-						help={ __( 'Sets the layout variant every card in this slider uses unless it picks its own. Leave as "Per-card" to let each testimonial choose independently.', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
-						help={ __( 'Duration of arrow and dot hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-						] }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Slides visible (desktop)', 'sgs-blocks' ) }
-						value={ slidesVisible }
-						options={ SLIDES_VISIBLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { slidesVisible: parseInt( val, 10 ) } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show arrows', 'sgs-blocks' ) }
-						checked={ showArrows }
-						onChange={ ( val ) => setAttributes( { showArrows: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show dots', 'sgs-blocks' ) }
-						checked={ showDots }
-						onChange={ ( val ) => setAttributes( { showDots: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Autoplay', 'sgs-blocks' ) }
-						checked={ autoplay }
-						onChange={ ( val ) => setAttributes( { autoplay: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ autoplay && (
-						<RangeControl
-							label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
-							value={ autoplaySpeed }
-							onChange={ ( val ) => setAttributes( { autoplaySpeed: val } ) }
-							min={ 2000 }
-							max={ 10000 }
-							step={ 500 }
-							__nextHasNoMarginBottom
-						/>
-					) }
+					<ToolsPanel
+						label={ __( 'Slider Settings', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								cardStyle: '',
+								transitionDuration: '300',
+								transitionEasing: 'ease-in-out',
+								slidesVisible: 3,
+								showArrows: true,
+								showDots: true,
+								autoplay: true,
+								autoplaySpeed: 5000,
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Default card style', 'sgs-blocks' ) }
+							hasValue={ () => !! cardStyle }
+							onDeselect={ () => setAttributes( { cardStyle: '' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Default card style', 'sgs-blocks' ) }
+								help={ __( 'Sets the layout variant every card in this slider uses unless it picks its own. Leave as "Per-card" to let each testimonial choose independently.', 'sgs-blocks' ) }
+								value={ cardStyle }
+								options={ STYLE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							hasValue={ () => transitionDuration !== '300' }
+							onDeselect={ () =>
+								setAttributes( { transitionDuration: '300' } )
+							}
+						>
+							<TextControl
+								label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+								value={ transitionDuration }
+								onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
+								help={ __( 'Duration of arrow and dot hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							hasValue={ () => transitionEasing !== 'ease-in-out' }
+							onDeselect={ () =>
+								setAttributes( { transitionEasing: 'ease-in-out' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Transition easing', 'sgs-blocks' ) }
+								value={ transitionEasing }
+								options={ [
+									{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+									{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+									{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+									{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
+									{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+								] }
+								onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Slides visible (desktop)', 'sgs-blocks' ) }
+							hasValue={ () => slidesVisible !== 3 }
+							onDeselect={ () => setAttributes( { slidesVisible: 3 } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Slides visible (desktop)', 'sgs-blocks' ) }
+								value={ slidesVisible }
+								options={ SLIDES_VISIBLE_OPTIONS }
+								onChange={ ( val ) => setAttributes( { slidesVisible: parseInt( val, 10 ) } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show arrows', 'sgs-blocks' ) }
+							hasValue={ () => showArrows !== true }
+							onDeselect={ () => setAttributes( { showArrows: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show arrows', 'sgs-blocks' ) }
+								checked={ showArrows }
+								onChange={ ( val ) => setAttributes( { showArrows: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show dots', 'sgs-blocks' ) }
+							hasValue={ () => showDots !== true }
+							onDeselect={ () => setAttributes( { showDots: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show dots', 'sgs-blocks' ) }
+								checked={ showDots }
+								onChange={ ( val ) => setAttributes( { showDots: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Autoplay', 'sgs-blocks' ) }
+							hasValue={ () =>
+								autoplay !== true || autoplaySpeed !== 5000
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									autoplay: true,
+									autoplaySpeed: 5000,
+								} )
+							}
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Autoplay', 'sgs-blocks' ) }
+								checked={ autoplay }
+								onChange={ ( val ) => setAttributes( { autoplay: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ autoplay && (
+								<RangeControl
+									label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
+									value={ autoplaySpeed }
+									onChange={ ( val ) => setAttributes( { autoplaySpeed: val } ) }
+									min={ 2000 }
+									max={ 10000 }
+									step={ 500 }
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Hover States', 'sgs-blocks' ) } initialOpen={ false }>

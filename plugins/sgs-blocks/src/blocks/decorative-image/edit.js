@@ -8,6 +8,8 @@ import {
 	RangeControl,
 	ToggleControl,
 	SelectControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { ResponsiveControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -271,130 +273,231 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Responsive Overrides', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ToggleControl
-						label={ __( 'Hide on tablet', 'sgs-blocks' ) }
-						checked={ hideOnTablet }
-						onChange={ ( val ) => setAttributes( { hideOnTablet: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Hide on mobile', 'sgs-blocks' ) }
-						checked={ hideOnMobile }
-						onChange={ ( val ) => setAttributes( { hideOnMobile: val } ) }
-						__nextHasNoMarginBottom
-					/>
+					<ToolsPanel
+						label={ __( 'Responsive overrides', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								hideOnTablet: false,
+								hideOnMobile: false,
+								positionX: 50,
+								positionXTablet: undefined,
+								positionXMobile: undefined,
+								positionY: 50,
+								positionYTablet: undefined,
+								positionYMobile: undefined,
+								width: 200,
+								widthTablet: undefined,
+								widthMobile: undefined,
+								rotation: 0,
+								rotationTablet: undefined,
+								rotationMobile: undefined,
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Hide on tablet', 'sgs-blocks' ) }
+							hasValue={ () => hideOnTablet !== false }
+							onDeselect={ () => setAttributes( { hideOnTablet: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Hide on tablet', 'sgs-blocks' ) }
+								checked={ hideOnTablet }
+								onChange={ ( val ) => setAttributes( { hideOnTablet: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Hide on mobile', 'sgs-blocks' ) }
+							hasValue={ () => hideOnMobile !== false }
+							onDeselect={ () => setAttributes( { hideOnMobile: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Hide on mobile', 'sgs-blocks' ) }
+								checked={ hideOnMobile }
+								onChange={ ( val ) => setAttributes( { hideOnMobile: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Position X (%)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'positionX',
-								tablet:  'positionXTablet',
-								mobile:  'positionXMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							const val  = attributes[ attr ];
-							return (
-								<RangeControl
-									help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-									value={ breakpoint === 'desktop' ? ( val ?? 50 ) : ( val ?? '' ) }
-									onChange={ ( v ) =>
-										setAttributes( {
-											[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-										} )
-									}
-									min={ 0 }
-									max={ 100 }
-									step={ 1 }
-									allowReset={ breakpoint !== 'desktop' }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+						<ToolsPanelItem
+							label={ __( 'Position X (%)', 'sgs-blocks' ) }
+							hasValue={ () =>
+								positionX !== 50 ||
+								positionXTablet !== undefined ||
+								positionXMobile !== undefined
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									positionX: 50,
+									positionXTablet: undefined,
+									positionXMobile: undefined,
+								} )
+							}
+							isShownByDefault
+						>
+							<ResponsiveControl label={ __( 'Position X (%)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'positionX',
+										tablet:  'positionXTablet',
+										mobile:  'positionXMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									const val  = attributes[ attr ];
+									return (
+										<RangeControl
+											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+											value={ breakpoint === 'desktop' ? ( val ?? 50 ) : ( val ?? '' ) }
+											onChange={ ( v ) =>
+												setAttributes( {
+													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
+												} )
+											}
+											min={ 0 }
+											max={ 100 }
+											step={ 1 }
+											allowReset={ breakpoint !== 'desktop' }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
+						</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Position Y (%)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'positionY',
-								tablet:  'positionYTablet',
-								mobile:  'positionYMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							const val  = attributes[ attr ];
-							return (
-								<RangeControl
-									help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-									value={ breakpoint === 'desktop' ? ( val ?? 50 ) : ( val ?? '' ) }
-									onChange={ ( v ) =>
-										setAttributes( {
-											[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-										} )
-									}
-									min={ 0 }
-									max={ 100 }
-									step={ 1 }
-									allowReset={ breakpoint !== 'desktop' }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+						<ToolsPanelItem
+							label={ __( 'Position Y (%)', 'sgs-blocks' ) }
+							hasValue={ () =>
+								positionY !== 50 ||
+								positionYTablet !== undefined ||
+								positionYMobile !== undefined
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									positionY: 50,
+									positionYTablet: undefined,
+									positionYMobile: undefined,
+								} )
+							}
+						>
+							<ResponsiveControl label={ __( 'Position Y (%)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'positionY',
+										tablet:  'positionYTablet',
+										mobile:  'positionYMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									const val  = attributes[ attr ];
+									return (
+										<RangeControl
+											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+											value={ breakpoint === 'desktop' ? ( val ?? 50 ) : ( val ?? '' ) }
+											onChange={ ( v ) =>
+												setAttributes( {
+													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
+												} )
+											}
+											min={ 0 }
+											max={ 100 }
+											step={ 1 }
+											allowReset={ breakpoint !== 'desktop' }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
+						</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Width (px)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'width',
-								tablet:  'widthTablet',
-								mobile:  'widthMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							const val  = attributes[ attr ];
-							return (
-								<RangeControl
-									help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-									value={ breakpoint === 'desktop' ? ( val ?? 200 ) : ( val ?? '' ) }
-									onChange={ ( v ) =>
-										setAttributes( {
-											[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-										} )
-									}
-									min={ 50 }
-									max={ 800 }
-									step={ 10 }
-									allowReset={ breakpoint !== 'desktop' }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+						<ToolsPanelItem
+							label={ __( 'Width (px)', 'sgs-blocks' ) }
+							hasValue={ () =>
+								width !== 200 ||
+								widthTablet !== undefined ||
+								widthMobile !== undefined
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									width: 200,
+									widthTablet: undefined,
+									widthMobile: undefined,
+								} )
+							}
+						>
+							<ResponsiveControl label={ __( 'Width (px)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'width',
+										tablet:  'widthTablet',
+										mobile:  'widthMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									const val  = attributes[ attr ];
+									return (
+										<RangeControl
+											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+											value={ breakpoint === 'desktop' ? ( val ?? 200 ) : ( val ?? '' ) }
+											onChange={ ( v ) =>
+												setAttributes( {
+													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
+												} )
+											}
+											min={ 50 }
+											max={ 800 }
+											step={ 10 }
+											allowReset={ breakpoint !== 'desktop' }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
+						</ToolsPanelItem>
 
-					<ResponsiveControl label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'rotation',
-								tablet:  'rotationTablet',
-								mobile:  'rotationMobile',
-							};
-							const attr = attrMap[ breakpoint ];
-							const val  = attributes[ attr ];
-							return (
-								<RangeControl
-									help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-									value={ breakpoint === 'desktop' ? ( val ?? 0 ) : ( val ?? '' ) }
-									onChange={ ( v ) =>
-										setAttributes( {
-											[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
-										} )
-									}
-									min={ -180 }
-									max={ 180 }
-									step={ 5 }
-									allowReset={ breakpoint !== 'desktop' }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
+						<ToolsPanelItem
+							label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
+							hasValue={ () =>
+								rotation !== 0 ||
+								rotationTablet !== undefined ||
+								rotationMobile !== undefined
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									rotation: 0,
+									rotationTablet: undefined,
+									rotationMobile: undefined,
+								} )
+							}
+						>
+							<ResponsiveControl label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'rotation',
+										tablet:  'rotationTablet',
+										mobile:  'rotationMobile',
+									};
+									const attr = attrMap[ breakpoint ];
+									const val  = attributes[ attr ];
+									return (
+										<RangeControl
+											help={ breakpoint !== 'desktop' ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+											value={ breakpoint === 'desktop' ? ( val ?? 0 ) : ( val ?? '' ) }
+											onChange={ ( v ) =>
+												setAttributes( {
+													[ attr ]: breakpoint === 'desktop' ? v : ( v === '' ? undefined : v ),
+												} )
+											}
+											min={ -180 }
+											max={ 180 }
+											step={ 5 }
+											allowReset={ breakpoint !== 'desktop' }
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 			</InspectorControls>
 

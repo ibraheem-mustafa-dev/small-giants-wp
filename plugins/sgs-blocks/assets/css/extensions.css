@@ -398,19 +398,38 @@
 	}
 }
 
-/* Base style for Block Links wrapper */
-.sgs-block-link-wrapper {
-	display: block;
-	text-decoration: none;
-	color: inherit;
+/*
+ * ===== Block Link Extension — stretched-link overlay pattern =====
+ * includes/hover-effects.php injects an EMPTY `sgs-block-link-overlay` <a>
+ * as the block root's LAST CHILD (a sibling of the content), never a
+ * wrapper — this is what makes nested <a>/<button> elements already inside
+ * the block valid HTML. `.sgs-has-block-link` on the block ROOT (added
+ * server-side alongside the overlay) establishes the positioning context;
+ * the overlay stretches to fill it and sits BELOW real interactive
+ * descendants, which are raised above it via z-index so they stay clickable.
+ */
+.sgs-has-block-link {
 	position: relative;
-	/* Ensures it behaves correctly when wrapping flex/grid items */
-	height: 100%;
 }
 
-.sgs-block-link-wrapper:focus-visible {
+.sgs-block-link-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	/* Empty element — no visible affordance or text; its accessible name
+	   comes from the required aria-label injected server-side. */
+	display: block;
+}
+
+.sgs-block-link-overlay:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary, #076a8e);
 	outline-offset: 2px;
+}
+
+/* Real interactive descendants stay clickable ABOVE the overlay. */
+.sgs-has-block-link :is(a, button):not(.sgs-block-link-overlay) {
+	position: relative;
+	z-index: 2;
 }
 
 /* ===== Focus Ring Extension ===== */
@@ -506,7 +525,8 @@
  * Applied when a block declares supports.sgs.imageControls: true and has
  * one or more image-control attributes set. PHP (image-controls.php) injects
  * the class sgs-has-image-controls and the corresponding CSS custom properties
- * (--sgs-object-position, --sgs-max-width, --sgs-height-desktop, etc.).
+ * (--sgs-object-position, --sgs-object-fit, --sgs-max-width,
+ * --sgs-height-desktop, etc.).
  *
  * The inner-image selectors cover the most common SGS image markup shapes:
  *   - Direct <img> child (decorative-image, info-box media slot)
@@ -516,9 +536,22 @@
 
 .sgs-has-image-controls > img,
 .sgs-has-image-controls .wp-block-image > img,
-.sgs-has-image-controls figure > img {
+.sgs-has-image-controls figure > img,
+.sgs-has-image-controls > video,
+.sgs-has-image-controls .wp-block-image > video,
+.sgs-has-image-controls figure > video {
 	object-position: var(--sgs-object-position, center center);
 	max-width: var(--sgs-max-width, 100%);
+}
+
+/* object-fit — only applied when --sgs-object-fit is present (T3.5). */
+.sgs-has-image-controls[style*="--sgs-object-fit"] > img,
+.sgs-has-image-controls[style*="--sgs-object-fit"] .wp-block-image > img,
+.sgs-has-image-controls[style*="--sgs-object-fit"] figure > img,
+.sgs-has-image-controls[style*="--sgs-object-fit"] > video,
+.sgs-has-image-controls[style*="--sgs-object-fit"] .wp-block-image > video,
+.sgs-has-image-controls[style*="--sgs-object-fit"] figure > video {
+	object-fit: var(--sgs-object-fit, cover);
 }
 
 /* Desktop height (also the base for tablet/mobile fallbacks). */

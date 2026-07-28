@@ -197,9 +197,15 @@ addFilter(
 		const linkAttributes = isExtensionHidden( settings, 'blockLink' )
 			? {}
 			: {
-				// Block link — wraps the whole block in an <a> tag.
+				// Block link — injects an empty stretched-link overlay <a> as
+				// the block root's last child (server-side, includes/hover-
+				// effects.php). Never wraps the block — that would produce
+				// invalid nested <a> whenever the block has its own links.
 				sgsBlockLink:         { type: 'string',  default: '' },
 				sgsBlockLinkTarget:   { type: 'boolean', default: false },
+				// Accessible name for the overlay anchor — required because
+				// an empty anchor has no text content for screen readers.
+				sgsBlockLinkLabel:    { type: 'string',  default: '' },
 			};
 
 		const clickAttributes = isExtensionHidden( settings, 'clickEffects' )
@@ -261,6 +267,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsFocusRing,
 			sgsBlockLink,
 			sgsBlockLinkTarget,
+			sgsBlockLinkLabel,
 			sgsClickEffect,
 			sgsClickRippleColour,
 			sgsClickRippleDuration,
@@ -380,7 +387,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 					>
 						<TextControl
 							label={ __( 'Link URL', 'sgs-blocks' ) }
-							help={ __( 'Wraps the entire block in a link. Leave empty to disable.', 'sgs-blocks' ) }
+							help={ __( 'Makes the whole card clickable. Any link/button already inside the block stays clickable too. Leave empty to disable.', 'sgs-blocks' ) }
 							value={ sgsBlockLink }
 							onChange={ ( val ) => setAttributes( { sgsBlockLink: val || '' } ) }
 							type="url"
@@ -388,11 +395,20 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							__nextHasNoMarginBottom
 						/>
 						{ sgsBlockLink && (
-							<ToggleControl
-								label={ __( 'Open in new tab', 'sgs-blocks' ) }
-								checked={ sgsBlockLinkTarget }
-								onChange={ ( val ) => setAttributes( { sgsBlockLinkTarget: val } ) }
-							/>
+							<>
+								<TextControl
+									label={ __( 'Accessible label for the card link', 'sgs-blocks' ) }
+									help={ __( 'Read by screen readers — the card link has no visible text of its own. Leave empty to fall back to the link’s domain.', 'sgs-blocks' ) }
+									value={ sgsBlockLinkLabel }
+									onChange={ ( val ) => setAttributes( { sgsBlockLinkLabel: val || '' } ) }
+									__nextHasNoMarginBottom
+								/>
+								<ToggleControl
+									label={ __( 'Open in new tab', 'sgs-blocks' ) }
+									checked={ sgsBlockLinkTarget }
+									onChange={ ( val ) => setAttributes( { sgsBlockLinkTarget: val } ) }
+								/>
+							</>
 						) }
 					</PanelBody>
 					) }

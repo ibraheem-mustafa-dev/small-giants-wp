@@ -16,6 +16,8 @@ import {
 	RadioControl,
 	FormTokenField,
 	Spinner,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import DesignTokenPicker from '../../components/DesignTokenPicker';
@@ -504,77 +506,153 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* Panel 3: Content */ }
-				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleControl
+				<ToolsPanel
+					label={ __( 'Content', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							showImage: true,
+							imageSize: 'medium_large',
+							showTitle: true,
+							showExcerpt: true,
+							excerptLength: 20,
+							showDate: true,
+							showAuthor: false,
+							showCategory: true,
+							showReadMore: true,
+							readMoreText: 'Read more',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Show image', 'sgs-blocks' ) }
-						checked={ showImage }
-						onChange={ set( 'showImage' ) }
-						__nextHasNoMarginBottom
-					/>
-					{ showImage && (
-						<SelectControl
-							label={ __( 'Image size', 'sgs-blocks' ) }
-							value={ imageSize }
-							options={ IMAGE_SIZE_OPTIONS }
-							onChange={ set( 'imageSize' ) }
+						hasValue={ () => showImage !== true }
+						onDeselect={ () => setAttributes( { showImage: true } ) }
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Show image', 'sgs-blocks' ) }
+							checked={ showImage }
+							onChange={ set( 'showImage' ) }
 							__nextHasNoMarginBottom
 						/>
-					) }
-					<ToggleControl
+						{ showImage && (
+							<SelectControl
+								label={ __( 'Image size', 'sgs-blocks' ) }
+								value={ imageSize }
+								options={ IMAGE_SIZE_OPTIONS }
+								onChange={ set( 'imageSize' ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Show title', 'sgs-blocks' ) }
-						checked={ showTitle }
-						onChange={ set( 'showTitle' ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
+						hasValue={ () => showTitle !== true }
+						onDeselect={ () => setAttributes( { showTitle: true } ) }
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Show title', 'sgs-blocks' ) }
+							checked={ showTitle }
+							onChange={ set( 'showTitle' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Show excerpt', 'sgs-blocks' ) }
-						checked={ showExcerpt }
-						onChange={ set( 'showExcerpt' ) }
-						__nextHasNoMarginBottom
-					/>
-					{ showExcerpt && (
-						<RangeControl
-							label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
-							value={ excerptLength }
-							onChange={ set( 'excerptLength' ) }
-							min={ 5 }
-							max={ 80 }
+						hasValue={ () =>
+							showExcerpt !== true || excerptLength !== 20
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								showExcerpt: true,
+								excerptLength: 20,
+							} )
+						}
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Show excerpt', 'sgs-blocks' ) }
+							checked={ showExcerpt }
+							onChange={ set( 'showExcerpt' ) }
 							__nextHasNoMarginBottom
 						/>
-					) }
-					<ToggleControl
+						{ showExcerpt && (
+							<RangeControl
+								label={ __( 'Excerpt length (words)', 'sgs-blocks' ) }
+								value={ excerptLength }
+								onChange={ set( 'excerptLength' ) }
+								min={ 5 }
+								max={ 80 }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Show date', 'sgs-blocks' ) }
-						checked={ showDate }
-						onChange={ set( 'showDate' ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show author', 'sgs-blocks' ) }
-						checked={ showAuthor }
-						onChange={ set( 'showAuthor' ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show category', 'sgs-blocks' ) }
-						checked={ showCategory }
-						onChange={ set( 'showCategory' ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show read more', 'sgs-blocks' ) }
-						checked={ showReadMore }
-						onChange={ set( 'showReadMore' ) }
-						__nextHasNoMarginBottom
-					/>
-					{ showReadMore && (
-						<TextControl
-							label={ __( 'Read more text', 'sgs-blocks' ) }
-							value={ readMoreText }
-							onChange={ set( 'readMoreText' ) }
+						hasValue={ () => showDate !== true }
+						onDeselect={ () => setAttributes( { showDate: true } ) }
+					>
+						<ToggleControl
+							label={ __( 'Show date', 'sgs-blocks' ) }
+							checked={ showDate }
+							onChange={ set( 'showDate' ) }
 							__nextHasNoMarginBottom
 						/>
-					) }
-				</PanelBody>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Show author', 'sgs-blocks' ) }
+						hasValue={ () => showAuthor !== false }
+						onDeselect={ () => setAttributes( { showAuthor: false } ) }
+					>
+						<ToggleControl
+							label={ __( 'Show author', 'sgs-blocks' ) }
+							checked={ showAuthor }
+							onChange={ set( 'showAuthor' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Show category', 'sgs-blocks' ) }
+						hasValue={ () => showCategory !== true }
+						onDeselect={ () => setAttributes( { showCategory: true } ) }
+					>
+						<ToggleControl
+							label={ __( 'Show category', 'sgs-blocks' ) }
+							checked={ showCategory }
+							onChange={ set( 'showCategory' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Show read more', 'sgs-blocks' ) }
+						hasValue={ () =>
+							showReadMore !== true ||
+							readMoreText !== 'Read more'
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								showReadMore: true,
+								readMoreText: 'Read more',
+							} )
+						}
+					>
+						<ToggleControl
+							label={ __( 'Show read more', 'sgs-blocks' ) }
+							checked={ showReadMore }
+							onChange={ set( 'showReadMore' ) }
+							__nextHasNoMarginBottom
+						/>
+						{ showReadMore && (
+							<TextControl
+								label={ __( 'Read more text', 'sgs-blocks' ) }
+								value={ readMoreText }
+								onChange={ set( 'readMoreText' ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* Panel 4: Card Style */ }
 				<PanelBody title={ __( 'Card Style', 'sgs-blocks' ) } initialOpen={ false }>
@@ -613,100 +691,247 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* Panel 6: Colours */ }
-				<PanelBody title={ __( 'Colours', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
+				<ToolsPanel
+					label={ __( 'Colours', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							cardBgColour: 'surface',
+							titleColour: 'primary',
+							excerptColour: 'text',
+							metaColour: 'text-muted',
+							categoryBadgeColour: 'text-inverse',
+							categoryBadgeBgColour: 'primary',
+							readMoreColour: 'primary',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Card background', 'sgs-blocks' ) }
-						value={ cardBgColour }
-						onChange={ set( 'cardBgColour' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => cardBgColour !== 'surface' }
+						onDeselect={ () =>
+							setAttributes( { cardBgColour: 'surface' } )
+						}
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Card background', 'sgs-blocks' ) }
+							value={ cardBgColour }
+							onChange={ set( 'cardBgColour' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Title colour', 'sgs-blocks' ) }
-						value={ titleColour }
-						onChange={ set( 'titleColour' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => titleColour !== 'primary' }
+						onDeselect={ () =>
+							setAttributes( { titleColour: 'primary' } )
+						}
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Title colour', 'sgs-blocks' ) }
+							value={ titleColour }
+							onChange={ set( 'titleColour' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Excerpt colour', 'sgs-blocks' ) }
-						value={ excerptColour }
-						onChange={ set( 'excerptColour' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => excerptColour !== 'text' }
+						onDeselect={ () =>
+							setAttributes( { excerptColour: 'text' } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Excerpt colour', 'sgs-blocks' ) }
+							value={ excerptColour }
+							onChange={ set( 'excerptColour' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Meta colour (date / author)', 'sgs-blocks' ) }
-						value={ metaColour }
-						onChange={ set( 'metaColour' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => metaColour !== 'text-muted' }
+						onDeselect={ () =>
+							setAttributes( { metaColour: 'text-muted' } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Meta colour (date / author)', 'sgs-blocks' ) }
+							value={ metaColour }
+							onChange={ set( 'metaColour' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Category badge text colour', 'sgs-blocks' ) }
-						value={ categoryBadgeColour }
-						onChange={ set( 'categoryBadgeColour' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => categoryBadgeColour !== 'text-inverse' }
+						onDeselect={ () =>
+							setAttributes( { categoryBadgeColour: 'text-inverse' } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Category badge text colour', 'sgs-blocks' ) }
+							value={ categoryBadgeColour }
+							onChange={ set( 'categoryBadgeColour' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Category badge background', 'sgs-blocks' ) }
-						value={ categoryBadgeBgColour }
-						onChange={ set( 'categoryBadgeBgColour' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => categoryBadgeBgColour !== 'primary' }
+						onDeselect={ () =>
+							setAttributes( { categoryBadgeBgColour: 'primary' } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Category badge background', 'sgs-blocks' ) }
+							value={ categoryBadgeBgColour }
+							onChange={ set( 'categoryBadgeBgColour' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Read more colour', 'sgs-blocks' ) }
-						value={ readMoreColour }
-						onChange={ set( 'readMoreColour' ) }
-					/>
-				</PanelBody>
+						hasValue={ () => readMoreColour !== 'primary' }
+						onDeselect={ () =>
+							setAttributes( { readMoreColour: 'primary' } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Read more colour', 'sgs-blocks' ) }
+							value={ readMoreColour }
+							onChange={ set( 'readMoreColour' ) }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* Panel 7: Hover Effects */ }
-				<PanelBody title={ __( 'Hover Effects', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
+				<ToolsPanel
+					label={ __( 'Hover Effects', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							backgroundColourHover: undefined,
+							textColourHover: undefined,
+							borderColourHover: undefined,
+							scaleHover: '',
+							shadowHover: '',
+							imageZoomHover: true,
+							transitionDuration: '300',
+							transitionEasing: 'ease',
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Hover background colour', 'sgs-blocks' ) }
-						value={ backgroundColourHover }
-						onChange={ set( 'backgroundColourHover' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => !! backgroundColourHover }
+						onDeselect={ () =>
+							setAttributes( { backgroundColourHover: undefined } )
+						}
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Hover background colour', 'sgs-blocks' ) }
+							value={ backgroundColourHover }
+							onChange={ set( 'backgroundColourHover' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Hover text colour', 'sgs-blocks' ) }
-						value={ textColourHover }
-						onChange={ set( 'textColourHover' ) }
-					/>
-					<DesignTokenPicker
+						hasValue={ () => !! textColourHover }
+						onDeselect={ () =>
+							setAttributes( { textColourHover: undefined } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Hover text colour', 'sgs-blocks' ) }
+							value={ textColourHover }
+							onChange={ set( 'textColourHover' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Hover border colour', 'sgs-blocks' ) }
-						value={ borderColourHover }
-						onChange={ set( 'borderColourHover' ) }
-					/>
-					<RangeControl
+						hasValue={ () => !! borderColourHover }
+						onDeselect={ () =>
+							setAttributes( { borderColourHover: undefined } )
+						}
+					>
+						<DesignTokenPicker
+							label={ __( 'Hover border colour', 'sgs-blocks' ) }
+							value={ borderColourHover }
+							onChange={ set( 'borderColourHover' ) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ parseFloat( scaleHover ) || 1 }
-						onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
-						min={ 1 }
-						max={ 1.1 }
-						step={ 0.01 }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
+						hasValue={ () => !! scaleHover && scaleHover !== '' }
+						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+					>
+						<RangeControl
+							label={ __( 'Hover scale', 'sgs-blocks' ) }
+							value={ parseFloat( scaleHover ) || 1 }
+							onChange={ ( val ) => setAttributes( { scaleHover: String( val ) } ) }
+							min={ 1 }
+							max={ 1.1 }
+							step={ 0.01 }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Hover shadow', 'sgs-blocks' ) }
-						value={ shadowHover }
-						options={ SHADOW_OPTIONS }
-						onChange={ set( 'shadowHover' ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
+						hasValue={ () => !! shadowHover }
+						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+					>
+						<SelectControl
+							label={ __( 'Hover shadow', 'sgs-blocks' ) }
+							value={ shadowHover }
+							options={ SHADOW_OPTIONS }
+							onChange={ set( 'shadowHover' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						checked={ imageZoomHover }
-						onChange={ set( 'imageZoomHover' ) }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
+						hasValue={ () => imageZoomHover !== true }
+						onDeselect={ () =>
+							setAttributes( { imageZoomHover: true } )
+						}
+						isShownByDefault
+					>
+						<ToggleControl
+							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+							checked={ imageZoomHover }
+							onChange={ set( 'imageZoomHover' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ parseInt( transitionDuration, 10 ) || 300 }
-						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
-						min={ 100 }
-						max={ 1000 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
+						hasValue={ () => transitionDuration !== '300' }
+						onDeselect={ () =>
+							setAttributes( { transitionDuration: '300' } )
+						}
+					>
+						<RangeControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ parseInt( transitionDuration, 10 ) || 300 }
+							onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+							min={ 100 }
+							max={ 1000 }
+							step={ 50 }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
 						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ EASING_OPTIONS }
-						onChange={ set( 'transitionEasing' ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
+						hasValue={ () => transitionEasing !== 'ease' }
+						onDeselect={ () =>
+							setAttributes( { transitionEasing: 'ease' } )
+						}
+					>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							value={ transitionEasing }
+							options={ EASING_OPTIONS }
+							onChange={ set( 'transitionEasing' ) }
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 
 				{ /* Panel: Container wrapper (WS-4 mirror) */ }
 				<ContainerWrapperControls

@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "SGS Image Gallery",
 	"category": "sgs-content",
-	"description": "Image gallery with grid, masonry, and carousel layouts plus lightbox viewing.",
+	"description": "Image gallery with grid, masonry, and carousel layouts plus lightbox viewing. supports.filter.duotone (T3.5, D402 ADOPT) targets each .sgs-gallery__img via the selectors.filter.duotone map — WP core renders duotone as a generated class + <style> tag, not an inline style attribute, so no render.php changes are needed.",
 	"keywords": [
 		"gallery",
 		"images",
@@ -41,6 +41,9 @@
 			"color": true,
 			"style": true,
 			"__experimentalSkipSerialization": true
+		},
+		"filter": {
+			"duotone": true
 		},
 		"interactivity": true,
 		"sgs": {
@@ -101,7 +104,10 @@
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-gallery"
+		"root": ".wp-block-sgs-gallery",
+		"filter": {
+			"duotone": ".sgs-gallery__img"
+		}
 	},
 	"attributes": {
 		"mediaItems": {

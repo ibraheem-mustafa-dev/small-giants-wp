@@ -200,7 +200,27 @@ $css .= sgs_merge_tri_state_declarations(
 	),
 	'off'
 );
-$css .= $root_sel . '.is-header-scrolled{background:var(--wp--preset--color--surface,#ffffff);}';
+// SCROLLED-state background for the Transparent behaviour — a distinct STATE
+// selector (root_sel + '.is-header-scrolled'), so this rule never collides
+// with the merged at-rest declarations above (single-writer design intact;
+// this is a separate selector, not a second writer of the same one).
+// Emitted PER TIER, gated to tiers where Transparent genuinely resolves ON
+// (a tier where it's off has no resting transparency to flip away from, and
+// the base rule wins there by default). MUST carry `!important`: root-cause
+// of P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING was that this rule had NO
+// `!important` while sgs_merge_tri_state_declarations() emits every resting
+// declaration (including Transparent's `background:transparent`) WITH
+// `!important` — an `!important` declaration always beats a non-`!important`
+// one regardless of selector specificity or source order, so the extra
+// `.is-header-scrolled` class here never mattered; the missing `!important`
+// did. Token-based (theme surface preset), never hardcoded.
+$css .= sgs_emit_tier_rules(
+	$root_sel . '.is-header-scrolled',
+	$sh_transparent,
+	'background:var(--wp--preset--color--surface,#ffffff) !important;',
+	'',
+	'off'
+);
 
 // Shrink — transition/animation setup per tier, THEN the shrunk padding value
 // itself emitted separately (also per tier) keyed to ".is-header-shrunk" so a

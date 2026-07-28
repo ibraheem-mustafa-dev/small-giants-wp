@@ -62,7 +62,8 @@
 }
 
 /* 16:9 fallback (D9) — supplied as an OVERRIDABLE :where() default so an
-   explicit aspectRatio (emitted inline per-instance from the attr, or any other
+   explicit aspectRatio (emitted per-instance as scoped CSS by render.php from
+   style.dimensions.aspectRatio — the native support, D402 — or any other
    override) always wins. Prevents the embed collapsing when no ratio is set. */
 :where( .wp-block-sgs-media iframe.sgs-media__video ) {
 	aspect-ratio: 16 / 9;

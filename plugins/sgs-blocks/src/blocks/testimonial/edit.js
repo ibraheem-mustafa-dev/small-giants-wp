@@ -24,6 +24,8 @@ import {
 	ToggleControl,
 	BaseControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
@@ -554,119 +556,220 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					title={ __( 'Typography', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
-						label={ __( 'Quote font size', 'sgs-blocks' ) }
-						help={ __(
-							'A token slug (e.g. medium) or a CSS value (e.g. 1.25rem). Leave empty for the variant default.',
-							'sgs-blocks'
-						) }
-						value={ quoteFontSize }
-						onChange={ ( val ) =>
-							setAttributes( { quoteFontSize: val } )
+					<ToolsPanel
+						label={ __( 'Typography', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								quoteFontSize: '',
+								quoteColour: '',
+								quoteFontStyle: '',
+								quoteLineHeight: '',
+								quoteMarginBottom: '',
+								summaryFontSize: '',
+								summaryColour: '',
+								nameColour: '',
+								nameFontWeight: '700',
+								roleColour: '',
+								orgColour: '',
+							} )
 						}
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Quote colour', 'sgs-blocks' ) }
-						value={ quoteColour }
-						onChange={ ( val ) =>
-							setAttributes( { quoteColour: val } )
-						}
-					/>
-					<SelectControl
-						label={ __( 'Quote font style', 'sgs-blocks' ) }
-						value={ quoteFontStyle }
-						options={ [
-							{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-							{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { quoteFontStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Quote line height', 'sgs-blocks' ) }
-						help={ __(
-							'CSS value (e.g. 1.6, 2em). Leave empty for the variant default.',
-							'sgs-blocks'
-						) }
-						value={ quoteLineHeight }
-						onChange={ ( val ) =>
-							setAttributes( { quoteLineHeight: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Quote spacing below', 'sgs-blocks' ) }
-						help={ __(
-							'A spacing slug (e.g. 30) or a CSS value (e.g. 16px, 1.5rem). Leave empty for the theme default.',
-							'sgs-blocks'
-						) }
-						value={ quoteMarginBottom }
-						onChange={ ( val ) =>
-							setAttributes( { quoteMarginBottom: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ showSummary && (
-						<>
+					>
+						<ToolsPanelItem
+							label={ __( 'Quote font size', 'sgs-blocks' ) }
+							hasValue={ () => !! quoteFontSize }
+							onDeselect={ () =>
+								setAttributes( { quoteFontSize: '' } )
+							}
+							isShownByDefault
+						>
 							<TextControl
-								label={ __(
-									'Summary font size',
+								label={ __( 'Quote font size', 'sgs-blocks' ) }
+								help={ __(
+									'A token slug (e.g. medium) or a CSS value (e.g. 1.25rem). Leave empty for the variant default.',
 									'sgs-blocks'
 								) }
-								value={ summaryFontSize }
+								value={ quoteFontSize }
 								onChange={ ( val ) =>
-									setAttributes( { summaryFontSize: val } )
+									setAttributes( { quoteFontSize: val } )
 								}
 								__nextHasNoMarginBottom
 							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Quote colour', 'sgs-blocks' ) }
+							hasValue={ () => !! quoteColour }
+							onDeselect={ () => setAttributes( { quoteColour: '' } ) }
+							isShownByDefault
+						>
 							<DesignTokenPicker
-								label={ __( 'Summary colour', 'sgs-blocks' ) }
-								value={ summaryColour }
+								label={ __( 'Quote colour', 'sgs-blocks' ) }
+								value={ quoteColour }
 								onChange={ ( val ) =>
-									setAttributes( { summaryColour: val } )
+									setAttributes( { quoteColour: val } )
 								}
 							/>
-						</>
-					) }
-					<DesignTokenPicker
-						label={ __( 'Name colour', 'sgs-blocks' ) }
-						value={ nameColour }
-						onChange={ ( val ) =>
-							setAttributes( { nameColour: val } )
-						}
-					/>
-					<SelectControl
-						label={ __( 'Name font weight', 'sgs-blocks' ) }
-						value={ nameFontWeight }
-						options={ [
-							{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-							{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-							{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-							{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-							{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { nameFontWeight: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Role colour', 'sgs-blocks' ) }
-						value={ roleColour }
-						onChange={ ( val ) =>
-							setAttributes( { roleColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Organisation colour', 'sgs-blocks' ) }
-						value={ orgColour }
-						onChange={ ( val ) =>
-							setAttributes( { orgColour: val } )
-						}
-					/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Quote font style', 'sgs-blocks' ) }
+							hasValue={ () => !! quoteFontStyle }
+							onDeselect={ () =>
+								setAttributes( { quoteFontStyle: '' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Quote font style', 'sgs-blocks' ) }
+								value={ quoteFontStyle }
+								options={ [
+									{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
+									{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { quoteFontStyle: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Quote line height', 'sgs-blocks' ) }
+							hasValue={ () => !! quoteLineHeight }
+							onDeselect={ () =>
+								setAttributes( { quoteLineHeight: '' } )
+							}
+						>
+							<TextControl
+								label={ __( 'Quote line height', 'sgs-blocks' ) }
+								help={ __(
+									'CSS value (e.g. 1.6, 2em). Leave empty for the variant default.',
+									'sgs-blocks'
+								) }
+								value={ quoteLineHeight }
+								onChange={ ( val ) =>
+									setAttributes( { quoteLineHeight: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Quote spacing below', 'sgs-blocks' ) }
+							hasValue={ () => !! quoteMarginBottom }
+							onDeselect={ () =>
+								setAttributes( { quoteMarginBottom: '' } )
+							}
+						>
+							<TextControl
+								label={ __( 'Quote spacing below', 'sgs-blocks' ) }
+								help={ __(
+									'A spacing slug (e.g. 30) or a CSS value (e.g. 16px, 1.5rem). Leave empty for the theme default.',
+									'sgs-blocks'
+								) }
+								value={ quoteMarginBottom }
+								onChange={ ( val ) =>
+									setAttributes( { quoteMarginBottom: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						{ showSummary && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Summary font size', 'sgs-blocks' ) }
+									hasValue={ () => !! summaryFontSize }
+									onDeselect={ () =>
+										setAttributes( { summaryFontSize: '' } )
+									}
+								>
+									<TextControl
+										label={ __(
+											'Summary font size',
+											'sgs-blocks'
+										) }
+										value={ summaryFontSize }
+										onChange={ ( val ) =>
+											setAttributes( { summaryFontSize: val } )
+										}
+										__nextHasNoMarginBottom
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Summary colour', 'sgs-blocks' ) }
+									hasValue={ () => !! summaryColour }
+									onDeselect={ () =>
+										setAttributes( { summaryColour: '' } )
+									}
+								>
+									<DesignTokenPicker
+										label={ __( 'Summary colour', 'sgs-blocks' ) }
+										value={ summaryColour }
+										onChange={ ( val ) =>
+											setAttributes( { summaryColour: val } )
+										}
+									/>
+								</ToolsPanelItem>
+							</>
+						) }
+						<ToolsPanelItem
+							label={ __( 'Name colour', 'sgs-blocks' ) }
+							hasValue={ () => !! nameColour }
+							onDeselect={ () => setAttributes( { nameColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Name colour', 'sgs-blocks' ) }
+								value={ nameColour }
+								onChange={ ( val ) =>
+									setAttributes( { nameColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Name font weight', 'sgs-blocks' ) }
+							hasValue={ () => nameFontWeight !== '700' }
+							onDeselect={ () =>
+								setAttributes( { nameFontWeight: '700' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Name font weight', 'sgs-blocks' ) }
+								value={ nameFontWeight }
+								options={ [
+									{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
+									{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
+									{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
+									{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
+									{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { nameFontWeight: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Role colour', 'sgs-blocks' ) }
+							hasValue={ () => !! roleColour }
+							onDeselect={ () => setAttributes( { roleColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Role colour', 'sgs-blocks' ) }
+								value={ roleColour }
+								onChange={ ( val ) =>
+									setAttributes( { roleColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Organisation colour', 'sgs-blocks' ) }
+							hasValue={ () => !! orgColour }
+							onDeselect={ () => setAttributes( { orgColour: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Organisation colour', 'sgs-blocks' ) }
+								value={ orgColour }
+								onChange={ ( val ) =>
+									setAttributes( { orgColour: val } )
+								}
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				{ /* ── Hover states ── */ }
@@ -674,108 +777,186 @@ export default function Edit( { attributes, setAttributes, context } ) {
 					title={ __( 'Hover states', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ [
-							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-							{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-							{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
-							{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { effectHover: val } )
+					<ToolsPanel
+						label={ __( 'Hover states', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								effectHover: 'none',
+								backgroundColourHover: '',
+								textColourHover: '',
+								borderColourHover: '',
+								transitionDuration: '300',
+								transitionEasing: 'ease-in-out',
+								scaleHover: '',
+								shadowHover: '',
+							} )
 						}
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover background', 'sgs-blocks' ) }
-						value={ backgroundColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { backgroundColourHover: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover text', 'sgs-blocks' ) }
-						value={ textColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { textColourHover: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover border', 'sgs-blocks' ) }
-						value={ borderColourHover }
-						onChange={ ( val ) =>
-							setAttributes( { borderColourHover: val } )
-						}
-					/>
-					<TextControl
-						label={ __(
-							'Transition duration (ms)',
-							'sgs-blocks'
-						) }
-						value={ transitionDuration }
-						onChange={ ( val ) =>
-							setAttributes( { transitionDuration: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{
-								label: __( 'Ease in–out', 'sgs-blocks' ),
-								value: 'ease-in-out',
-							},
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { transitionEasing: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-						<SelectControl
+					>
+						<ToolsPanelItem
+							label={ __( 'Hover effect', 'sgs-blocks' ) }
+							hasValue={ () => effectHover !== 'none' }
+							onDeselect={ () =>
+								setAttributes( { effectHover: 'none' } )
+							}
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Hover effect', 'sgs-blocks' ) }
+								value={ effectHover }
+								options={ [
+									{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+									{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
+									{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
+									{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { effectHover: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Hover background', 'sgs-blocks' ) }
+							hasValue={ () => !! backgroundColourHover }
+							onDeselect={ () =>
+								setAttributes( { backgroundColourHover: '' } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Hover background', 'sgs-blocks' ) }
+								value={ backgroundColourHover }
+								onChange={ ( val ) =>
+									setAttributes( { backgroundColourHover: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Hover text', 'sgs-blocks' ) }
+							hasValue={ () => !! textColourHover }
+							onDeselect={ () =>
+								setAttributes( { textColourHover: '' } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Hover text', 'sgs-blocks' ) }
+								value={ textColourHover }
+								onChange={ ( val ) =>
+									setAttributes( { textColourHover: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Hover border', 'sgs-blocks' ) }
+							hasValue={ () => !! borderColourHover }
+							onDeselect={ () =>
+								setAttributes( { borderColourHover: '' } )
+							}
+						>
+							<DesignTokenPicker
+								label={ __( 'Hover border', 'sgs-blocks' ) }
+								value={ borderColourHover }
+								onChange={ ( val ) =>
+									setAttributes( { borderColourHover: val } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							hasValue={ () => transitionDuration !== '300' }
+							onDeselect={ () =>
+								setAttributes( { transitionDuration: '300' } )
+							}
+						>
+							<TextControl
+								label={ __(
+									'Transition duration (ms)',
+									'sgs-blocks'
+								) }
+								value={ transitionDuration }
+								onChange={ ( val ) =>
+									setAttributes( { transitionDuration: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							hasValue={ () => transitionEasing !== 'ease-in-out' }
+							onDeselect={ () =>
+								setAttributes( { transitionEasing: 'ease-in-out' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Transition easing', 'sgs-blocks' ) }
+								value={ transitionEasing }
+								options={ [
+									{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+									{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+									{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+									{
+										label: __( 'Ease in–out', 'sgs-blocks' ),
+										value: 'ease-in-out',
+									},
+									{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { transitionEasing: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Hover scale', 'sgs-blocks' ) }
-							value={ scaleHover }
-							options={ [
-								{ label: __( 'None', 'sgs-blocks' ), value: '' },
-								{
-									label: __( 'Subtle (1.02)', 'sgs-blocks' ),
-									value: '1.02',
-								},
-								{
-									label: __( 'Small (1.03)', 'sgs-blocks' ),
-									value: '1.03',
-								},
-								{
-									label: __( 'Medium (1.05)', 'sgs-blocks' ),
-									value: '1.05',
-								},
-								{
-									label: __( 'Large (1.08)', 'sgs-blocks' ),
-									value: '1.08',
-								},
-							] }
-							onChange={ ( val ) =>
-								setAttributes( { scaleHover: val } )
-							}
-							help={ __(
-								'Grows the card on hover (GPU-composited transform).',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-						<ShadowControl
+							hasValue={ () => !! scaleHover }
+							onDeselect={ () => setAttributes( { scaleHover: '' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								label={ __( 'Hover scale', 'sgs-blocks' ) }
+								value={ scaleHover }
+								options={ [
+									{ label: __( 'None', 'sgs-blocks' ), value: '' },
+									{
+										label: __( 'Subtle (1.02)', 'sgs-blocks' ),
+										value: '1.02',
+									},
+									{
+										label: __( 'Small (1.03)', 'sgs-blocks' ),
+										value: '1.03',
+									},
+									{
+										label: __( 'Medium (1.05)', 'sgs-blocks' ),
+										value: '1.05',
+									},
+									{
+										label: __( 'Large (1.08)', 'sgs-blocks' ),
+										value: '1.08',
+									},
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { scaleHover: val } )
+								}
+								help={ __(
+									'Grows the card on hover (GPU-composited transform).',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
-							value={ shadowHover }
-							onChange={ ( val ) =>
-								setAttributes( { shadowHover: val } )
-							}
-						/>
+							hasValue={ () => !! shadowHover }
+							onDeselect={ () => setAttributes( { shadowHover: '' } ) }
+						>
+							<ShadowControl
+								label={ __( 'Hover shadow', 'sgs-blocks' ) }
+								value={ shadowHover }
+								onChange={ ( val ) =>
+									setAttributes( { shadowHover: val } )
+								}
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				{ /* ── Width / spacing (WS-4 container-mirror, content kind).

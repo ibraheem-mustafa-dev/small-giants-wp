@@ -7,7 +7,9 @@
  * and has non-default image-control attributes set.
  *
  * Handles:
- * - sgsObjectPosition (string CSS value — e.g. "center 20%")
+ * - sgsObjectPosition ({x,y} floats 0-1 — FocalPointPicker shape; resolved to
+ *                      an object-position percentage pair server-side)
+ * - sgsObjectFit      (string — cover/contain/fill/none/scale-down, '' = no override)
  * - sgsMaxWidth       (string CSS value — e.g. "640px" or "80%")
  * - sgsHeightDesktop  (integer, 0 = auto)
  * - sgsHeightTablet   (integer, 0 = inherit from desktop)
@@ -59,7 +61,28 @@ function inject_image_controls( string $block_content, array $block ): string {
 	// Allowed CSS units — validated strictly to prevent injection.
 	$allowed_units = array( 'px', 'vh', 'em', '%' );
 
-	$object_position = sanitize_text_field( $attrs['sgsObjectPosition'] ?? '' );
+	// sgsObjectPosition is a FocalPointPicker {x,y} object (floats 0-1). Resolve
+	// to an "X% Y%" object-position pair server-side. A legacy free-text string
+	// (pre-T3.5 shape) is not round-tripped here — CLEAN RESHAPE policy — but is
+	// handled gracefully (treated as absent) rather than fatally, since WP
+	// silently coerces a shape mismatch against the block.json `type: 'object'`
+	// default back to `{}` on save/load, so a stored legacy string cannot
+	// actually reach this filter once a block re-saves under the new schema.
+	$object_position_raw = $attrs['sgsObjectPosition'] ?? array();
+	$object_position     = '';
+	if ( is_array( $object_position_raw ) && isset( $object_position_raw['x'], $object_position_raw['y'] ) ) {
+		$focal_x = max( 0.0, min( 1.0, (float) $object_position_raw['x'] ) );
+		$focal_y = max( 0.0, min( 1.0, (float) $object_position_raw['y'] ) );
+		// Only emit when it differs from the CSS default (center center / 50% 50%).
+		if ( 0.5 !== $focal_x || 0.5 !== $focal_y ) {
+			$object_position = round( $focal_x * 100, 2 ) . '% ' . round( $focal_y * 100, 2 ) . '%';
+		}
+	}
+
+	$allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
+	$object_fit_raw      = $attrs['sgsObjectFit'] ?? '';
+	$object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : '';
+
 	$max_width       = sanitize_text_field( $attrs['sgsMaxWidth'] ?? '' );
 	$height_desktop  = absint( $attrs['sgsHeightDesktop'] ?? 0 );
 	$height_tablet   = absint( $attrs['sgsHeightTablet'] ?? 0 );
@@ -72,6 +95,7 @@ function inject_image_controls( string $block_content, array $block ): string {
 	// Bail early — nothing to do.
 	if (
 		'' === $object_position &&
+		'' === $object_fit &&
 		'' === $max_width &&
 		0 === $height_desktop &&
 		0 === $height_tablet &&
@@ -80,9 +104,8 @@ function inject_image_controls( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	// Validate object-position: allow printable ASCII minus semicolons and angle brackets.
-	// This covers all valid CSS position values (keywords, %, px, etc.) while preventing injection.
-	if ( '' !== $object_position && ! preg_match( '/^[a-zA-Z0-9%\s.,\-]+$/', $object_position ) ) {
+	// Validate object-position (defence in depth — already numeric-derived above).
+	if ( '' !== $object_position && ! preg_match( '/^[0-9.]+% [0-9.]+%$/', $object_position ) ) {
 		$object_position = '';
 	}
 
@@ -96,6 +119,10 @@ function inject_image_controls( string $block_content, array $block ): string {
 
 	if ( '' !== $object_position ) {
 		$css_vars[] = '--sgs-object-position:' . $object_position;
+	}
+
+	if ( '' !== $object_fit ) {
+		$css_vars[] = '--sgs-object-fit:' . $object_fit;
 	}
 
 	if ( '' !== $max_width ) {

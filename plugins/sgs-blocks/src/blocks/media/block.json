@@ -5,7 +5,7 @@
 	"version": "1.7.0",
 	"title": "SGS Media",
 	"category": "sgs-content",
-	"description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media styling (object-fit, max-width/height + tiers, border-radius, alignment, etc.) is driven entirely by this block's own NATIVE attributes and its Media Styling panel — this block deliberately OPTS OUT of the shared universal image-controls extension (no supports.sgs.imageControls) so there is ONE source of truth the cloning converter writes and the editor edits.",
+	"description": "Content media block — image or video. Use mediaType to choose image (with imageUrl) or video (with videoUrl for external embeds or videoId for WP-library uploads). Media styling (object-fit, max-width/height + tiers, border-radius, alignment, etc.) is driven entirely by this block's own NATIVE attributes and its Media Styling panel — this block deliberately OPTS OUT of the shared universal image-controls extension (no supports.sgs.imageControls) so there is ONE source of truth the cloning converter writes and the editor edits. supports.filter.duotone (T3.5, D402 ADOPT) is a separate native WP support — WP core renders it as a generated class + <style> tag (not an inline style= attribute), so it needs no render.php involvement and satisfies the no-inline contract as-is. supports.dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) replaces the old hand-rolled `aspectRatio` scalar attr + TextControl — UNLIKE duotone, WP core's aspect-ratio support (`wp_render_dimensions_support()` in wp-includes/block-supports/dimensions.php) is a bespoke render_block filter that unconditionally writes an inline `style=\"aspect-ratio:…\"` on the block's ROOT wrapper tag and does NOT consult block.json `selectors` at all — so it both violates the no-inline contract AND targets the wrong element (the <figure> wrapper, not the <img>/<video>). `__experimentalSkipSerialization` on `supports.dimensions` makes WP emit nothing automatically (the render_block filter returns early); render.php then reads `style.dimensions.aspectRatio` itself and emits the CSS via `wp_style_engine_get_styles()` scoped to `.sgs-media__img, .sgs-media__video` — same pattern as the native border group above. The `selectors.dimensions.aspectRatio` entry below is declared for consistency/future-proofing but is currently INERT for this feature (core's aspect-ratio filter never reads it).",
 	"keywords": [
 		"image",
 		"video",
@@ -56,12 +56,27 @@
 		"className": true,
 		"color": false,
 		"html": false,
+		"filter": {
+			"duotone": true
+		},
 		"__experimentalBorder": {
 			"radius": true,
 			"width": true,
 			"style": true,
 			"color": true,
 			"__experimentalSkipSerialization": true
+		},
+		"dimensions": {
+			"aspectRatio": true,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"selectors": {
+		"filter": {
+			"duotone": ".sgs-media__img, .sgs-media__video"
+		},
+		"dimensions": {
+			"aspectRatio": ".sgs-media__img, .sgs-media__video"
 		}
 	},
 	"attributes": {
@@ -164,6 +179,11 @@
 			"default": "",
 			"role": "content"
 		},
+		"imageIsDecorative": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "Spec 35 T3.4 / Part C 'A11y/SEO as controls' + E6 — WCAG 2.1 AA 1.1.1 (Non-text Content): a purely decorative image must be hidden from assistive tech (empty alt + aria-hidden) rather than forcing the operator to leave alt blank and hope. Narrow v1 scope: sgs/media + sgs/decorative-image only."
+		},
 		"imageWidth": {
 			"type": "integer",
 			"default": null
@@ -219,10 +239,6 @@
 		"heightTablet": {
 			"type": "string",
 			"default": null
-		},
-		"aspectRatio": {
-			"type": "string",
-			"default": ""
 		},
 		"objectFit": {
 			"type": "string",

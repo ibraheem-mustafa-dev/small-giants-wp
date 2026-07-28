@@ -7,6 +7,8 @@ import {
 	SelectControl,
 	RangeControl,
 	Button,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { IconPicker, IconPreview } from '../../components';
@@ -65,65 +67,125 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Field Settings', 'sgs-blocks' ) }>
-					<TextControl
-						label={ __( 'Field name', 'sgs-blocks' ) }
-						value={ fieldName }
-						onChange={ ( val ) =>
-							setAttributes( { fieldName: val } )
+					<ToolsPanel
+						label={ __( 'Field settings', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								fieldName: '',
+								label: '',
+								helpText: '',
+								required: false,
+								multiSelect: false,
+								columns: 3,
+								width: 'full',
+							} )
 						}
-						help={ __(
-							'Machine name used in submission data',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Label', 'sgs-blocks' ) }
-						value={ label }
-						onChange={ ( val ) => setAttributes( { label: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Help text', 'sgs-blocks' ) }
-						value={ helpText }
-						onChange={ ( val ) =>
-							setAttributes( { helpText: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Required', 'sgs-blocks' ) }
-						checked={ required }
-						onChange={ ( val ) =>
-							setAttributes( { required: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Allow multiple selection', 'sgs-blocks' ) }
-						checked={ multiSelect }
-						onChange={ ( val ) =>
-							setAttributes( { multiSelect: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Columns', 'sgs-blocks' ) }
-						value={ columns }
-						onChange={ ( val ) =>
-							setAttributes( { columns: val } )
-						}
-						min={ 2 }
-						max={ 4 }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Width', 'sgs-blocks' ) }
-						value={ width }
-						options={ WIDTH_OPTIONS }
-						onChange={ ( val ) => setAttributes( { width: val } ) }
-						__nextHasNoMarginBottom
-					/>
+					>
+						<ToolsPanelItem
+							label={ __( 'Field name', 'sgs-blocks' ) }
+							hasValue={ () => !! fieldName }
+							onDeselect={ () => setAttributes( { fieldName: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Field name', 'sgs-blocks' ) }
+								value={ fieldName }
+								onChange={ ( val ) =>
+									setAttributes( { fieldName: val } )
+								}
+								help={ __(
+									'Machine name used in submission data',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Label', 'sgs-blocks' ) }
+							hasValue={ () => !! label }
+							onDeselect={ () => setAttributes( { label: '' } ) }
+							isShownByDefault
+						>
+							<TextControl
+								label={ __( 'Label', 'sgs-blocks' ) }
+								value={ label }
+								onChange={ ( val ) => setAttributes( { label: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Help text', 'sgs-blocks' ) }
+							hasValue={ () => !! helpText }
+							onDeselect={ () => setAttributes( { helpText: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Help text', 'sgs-blocks' ) }
+								value={ helpText }
+								onChange={ ( val ) =>
+									setAttributes( { helpText: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Required', 'sgs-blocks' ) }
+							hasValue={ () => required !== false }
+							onDeselect={ () => setAttributes( { required: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Required', 'sgs-blocks' ) }
+								checked={ required }
+								onChange={ ( val ) =>
+									setAttributes( { required: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Allow multiple selection', 'sgs-blocks' ) }
+							hasValue={ () => multiSelect !== false }
+							onDeselect={ () => setAttributes( { multiSelect: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Allow multiple selection', 'sgs-blocks' ) }
+								checked={ multiSelect }
+								onChange={ ( val ) =>
+									setAttributes( { multiSelect: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							hasValue={ () => columns !== 3 }
+							onDeselect={ () => setAttributes( { columns: 3 } ) }
+						>
+							<RangeControl
+								label={ __( 'Columns', 'sgs-blocks' ) }
+								value={ columns }
+								onChange={ ( val ) =>
+									setAttributes( { columns: val } )
+								}
+								min={ 2 }
+								max={ 4 }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Width', 'sgs-blocks' ) }
+							hasValue={ () => width !== 'full' }
+							onDeselect={ () => setAttributes( { width: 'full' } ) }
+						>
+							<SelectControl
+								label={ __( 'Width', 'sgs-blocks' ) }
+								value={ width }
+								options={ WIDTH_OPTIONS }
+								onChange={ ( val ) => setAttributes( { width: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				{ /* Container wrapper (WS-4 mirror) */ }

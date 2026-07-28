@@ -23,6 +23,8 @@ import {
 	Button,
 	Notice,
 	__experimentalNumberControl as NumberControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 
 const VARIANT_OPTIONS = [
@@ -195,50 +197,115 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Header', 'sgs-blocks' ) }>
-					<ToggleControl
-						label={ __( 'Show source header', 'sgs-blocks' ) }
-						checked={ showSourceHeader }
-						onChange={ ( value ) => setAttributes( { showSourceHeader: value } ) }
-					/>
-					<ToggleControl
-						label={ __( 'Show Trustpilot logo', 'sgs-blocks' ) }
-						checked={ showTrustpilotLogo }
-						onChange={ ( value ) => setAttributes( { showTrustpilotLogo: value } ) }
-					/>
-					<NumberControl
-						label={ __( 'TrustScore (0-5)', 'sgs-blocks' ) }
-						value={ trustScore }
-						min={ 0 }
-						max={ 5 }
-						step={ 0.1 }
-						onChange={ ( value ) => setAttributes( { trustScore: parseFloat( value ) || 0 } ) }
-						help={ __( 'Leave 0 to auto-derive from reviews average.', 'sgs-blocks' ) }
-					/>
-					<TextControl
-						label={ __( 'Score label override', 'sgs-blocks' ) }
-						value={ trustScoreLabel }
-						onChange={ ( value ) => setAttributes( { trustScoreLabel: value } ) }
-						placeholder={ __( 'Auto: Excellent / Great / Good / Average / Poor / Bad', 'sgs-blocks' ) }
-					/>
-					<NumberControl
-						label={ __( 'Total reviews', 'sgs-blocks' ) }
-						value={ totalReviews }
-						min={ 0 }
-						onChange={ ( value ) => setAttributes( { totalReviews: parseInt( value, 10 ) || 0 } ) }
-						help={ __( 'Leave 0 to auto-derive from the reviews list.', 'sgs-blocks' ) }
-					/>
-					<ToggleControl
-						label={ __( 'Show subtitle', 'sgs-blocks' ) }
-						checked={ showSubtitle }
-						onChange={ ( value ) => setAttributes( { showSubtitle: value } ) }
-					/>
-					{ showSubtitle && (
-						<TextControl
-							label={ __( 'Subtitle text', 'sgs-blocks' ) }
-							value={ subtitleText }
-							onChange={ ( value ) => setAttributes( { subtitleText: value } ) }
-						/>
-					) }
+					<ToolsPanel
+						label={ __( 'Header', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								showSourceHeader: true,
+								showTrustpilotLogo: true,
+								trustScore: 0,
+								trustScoreLabel: '',
+								totalReviews: 0,
+								showSubtitle: false,
+								subtitleText: 'Showing our latest reviews',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Show source header', 'sgs-blocks' ) }
+							hasValue={ () => showSourceHeader !== true }
+							onDeselect={ () =>
+								setAttributes( { showSourceHeader: true } )
+							}
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show source header', 'sgs-blocks' ) }
+								checked={ showSourceHeader }
+								onChange={ ( value ) => setAttributes( { showSourceHeader: value } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show Trustpilot logo', 'sgs-blocks' ) }
+							hasValue={ () => showTrustpilotLogo !== true }
+							onDeselect={ () =>
+								setAttributes( { showTrustpilotLogo: true } )
+							}
+						>
+							<ToggleControl
+								label={ __( 'Show Trustpilot logo', 'sgs-blocks' ) }
+								checked={ showTrustpilotLogo }
+								onChange={ ( value ) => setAttributes( { showTrustpilotLogo: value } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'TrustScore (0-5)', 'sgs-blocks' ) }
+							hasValue={ () => trustScore !== 0 }
+							onDeselect={ () => setAttributes( { trustScore: 0 } ) }
+							isShownByDefault
+						>
+							<NumberControl
+								label={ __( 'TrustScore (0-5)', 'sgs-blocks' ) }
+								value={ trustScore }
+								min={ 0 }
+								max={ 5 }
+								step={ 0.1 }
+								onChange={ ( value ) => setAttributes( { trustScore: parseFloat( value ) || 0 } ) }
+								help={ __( 'Leave 0 to auto-derive from reviews average.', 'sgs-blocks' ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Score label override', 'sgs-blocks' ) }
+							hasValue={ () => !! trustScoreLabel }
+							onDeselect={ () => setAttributes( { trustScoreLabel: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Score label override', 'sgs-blocks' ) }
+								value={ trustScoreLabel }
+								onChange={ ( value ) => setAttributes( { trustScoreLabel: value } ) }
+								placeholder={ __( 'Auto: Excellent / Great / Good / Average / Poor / Bad', 'sgs-blocks' ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Total reviews', 'sgs-blocks' ) }
+							hasValue={ () => totalReviews !== 0 }
+							onDeselect={ () => setAttributes( { totalReviews: 0 } ) }
+						>
+							<NumberControl
+								label={ __( 'Total reviews', 'sgs-blocks' ) }
+								value={ totalReviews }
+								min={ 0 }
+								onChange={ ( value ) => setAttributes( { totalReviews: parseInt( value, 10 ) || 0 } ) }
+								help={ __( 'Leave 0 to auto-derive from the reviews list.', 'sgs-blocks' ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Show subtitle', 'sgs-blocks' ) }
+							hasValue={ () =>
+								showSubtitle !== false ||
+								subtitleText !== 'Showing our latest reviews'
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									showSubtitle: false,
+									subtitleText: 'Showing our latest reviews',
+								} )
+							}
+						>
+							<ToggleControl
+								label={ __( 'Show subtitle', 'sgs-blocks' ) }
+								checked={ showSubtitle }
+								onChange={ ( value ) => setAttributes( { showSubtitle: value } ) }
+							/>
+							{ showSubtitle && (
+								<TextControl
+									label={ __( 'Subtitle text', 'sgs-blocks' ) }
+									value={ subtitleText }
+									onChange={ ( value ) => setAttributes( { subtitleText: value } ) }
+								/>
+							) }
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Card display', 'sgs-blocks' ) }>

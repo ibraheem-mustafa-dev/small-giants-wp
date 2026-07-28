@@ -11,6 +11,12 @@ export {
 	default as DesignTokenPicker,
 	resolveColorToken,
 } from './DesignTokenPicker';
+export { default as MediaGalleryPicker } from './MediaGalleryPicker';
+export {
+	default as GradientOverlayControl,
+	parseLinearGradient,
+	buildGradientCss,
+} from './GradientOverlayControl';
 export { default as SgsLinkControl } from './SgsLinkControl';
 export { default as ShadowControl } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';

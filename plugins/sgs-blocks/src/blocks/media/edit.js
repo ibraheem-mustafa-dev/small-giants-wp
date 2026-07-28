@@ -17,8 +17,14 @@ import {
 	RangeControl,
 	Notice,
 	__experimentalUnitControl as UnitControl,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveBorderRadiusControl, SgsLinkControl } from '../../components';
+import {
+	ResponsiveControl,
+	ResponsiveBorderRadiusControl,
+	SgsLinkControl,
+} from '../../components';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -38,16 +44,36 @@ const SGS_MEDIA_UNITS = [
  * Responsive UnitControl trio — stores a unit-embedded CSS length string per
  * breakpoint (e.g. "440px", "100%"). attrDesktop/Tablet/Mobile are declared as
  * JSX props so the dead-control guard sees them as controlled attrs.
+ * @param root0
+ * @param root0.label
+ * @param root0.attrDesktop
+ * @param root0.attrTablet
+ * @param root0.attrMobile
+ * @param root0.attributes
+ * @param root0.setAttributes
  */
-function RUnitControl( { label, attrDesktop, attrTablet, attrMobile, attributes, setAttributes } ) {
+function RUnitControl( {
+	label,
+	attrDesktop,
+	attrTablet,
+	attrMobile,
+	attributes,
+	setAttributes,
+} ) {
 	return (
 		<ResponsiveControl label={ label }>
 			{ ( bp ) => {
-				const key = { desktop: attrDesktop, tablet: attrTablet, mobile: attrMobile }[ bp ];
+				const key = {
+					desktop: attrDesktop,
+					tablet: attrTablet,
+					mobile: attrMobile,
+				}[ bp ];
 				return (
 					<UnitControl
 						value={ attributes[ key ] || '' }
-						onChange={ ( v ) => setAttributes( { [ key ]: v || null } ) }
+						onChange={ ( v ) =>
+							setAttributes( { [ key ]: v || null } )
+						}
 						units={ SGS_MEDIA_UNITS }
 						__next40pxDefaultSize
 					/>
@@ -66,6 +92,9 @@ function RUnitControl( { label, attrDesktop, attrTablet, attrMobile, attributes,
  *
  * Frontend rendering is handled 100% by render.php; this component provides
  * editor preview + inspector controls only.
+ * @param root0
+ * @param root0.attributes
+ * @param root0.setAttributes
  */
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -78,6 +107,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageId,
 		imageUrl,
 		imageAlt,
+		imageIsDecorative,
 		// Video.
 		videoUrl,
 		videoSource,
@@ -102,34 +132,33 @@ export default function Edit( { attributes, setAttributes } ) {
 	// -------------------------------------------------------------------------
 	const isImage = 'image' === mediaType || ! mediaType;
 	const isVideo = 'video' === mediaType;
-	const isSvg   = 'svg' === mediaType;
+	const isSvg = 'svg' === mediaType;
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
-			imageId:     media.id   || null,
-			imageUrl:    media.url  || '',
-			imageAlt:    media.alt  || '',
-			imageWidth:  media.width  || null,
+			imageId: media.id || null,
+			imageUrl: media.url || '',
+			imageAlt: media.alt || '',
+			imageWidth: media.width || null,
 			imageHeight: media.height || null,
 		} );
 	};
 
 	const onSelectVideo = ( media ) => {
 		setAttributes( {
-			videoId:       media.id       || null,
-			videoUrl:      media.url      || '',
-			videoMimeType: media.mime     || '',
-			videoSource:   'internal',
+			videoId: media.id || null,
+			videoUrl: media.url || '',
+			videoMimeType: media.mime || '',
+			videoSource: 'internal',
 		} );
 	};
 
 	const onSelectPoster = ( media ) => {
 		setAttributes( {
-			videoPosterId: media.id  || null,
-			videoPoster:   media.url || '',
+			videoPosterId: media.id || null,
+			videoPoster: media.url || '',
 		} );
 	};
-
 
 	// -------------------------------------------------------------------------
 	// Inspector controls.
@@ -137,17 +166,26 @@ export default function Edit( { attributes, setAttributes } ) {
 	const inspectorControls = (
 		<InspectorControls>
 			{ /* Media type toggle */ }
-			<PanelBody title={ __( 'Media Type', 'sgs-blocks' ) } initialOpen={ true }>
-				<ButtonGroup aria-label={ __( 'Select media type', 'sgs-blocks' ) }>
+			<PanelBody
+				title={ __( 'Media Type', 'sgs-blocks' ) }
+				initialOpen={ true }
+			>
+				<ButtonGroup
+					aria-label={ __( 'Select media type', 'sgs-blocks' ) }
+				>
 					<Button
 						variant={ isImage ? 'primary' : 'secondary' }
-						onClick={ () => setAttributes( { mediaType: 'image' } ) }
+						onClick={ () =>
+							setAttributes( { mediaType: 'image' } )
+						}
 					>
 						{ __( 'Image', 'sgs-blocks' ) }
 					</Button>
 					<Button
 						variant={ isVideo ? 'primary' : 'secondary' }
-						onClick={ () => setAttributes( { mediaType: 'video' } ) }
+						onClick={ () =>
+							setAttributes( { mediaType: 'video' } )
+						}
 					>
 						{ __( 'Video', 'sgs-blocks' ) }
 					</Button>
@@ -162,7 +200,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* Image controls */ }
 			{ isImage && imageUrl && (
-				<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Image', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<MediaUploadCheck>
 						<MediaUpload
 							onSelect={ onSelectImage }
@@ -178,147 +219,420 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Button
 						variant="link"
 						isDestructive
-						onClick={ () => setAttributes( { imageId: null, imageUrl: '', imageAlt: '' } ) }
+						onClick={ () =>
+							setAttributes( {
+								imageId: null,
+								imageUrl: '',
+								imageAlt: '',
+							} )
+						}
 						style={ { marginTop: '8px', display: 'block' } }
 					>
 						{ __( 'Remove Image', 'sgs-blocks' ) }
 					</Button>
+					{ /* WCAG 2.1 AA 1.1.1 (Non-text Content): decorative toggle is the
+					     structural fix for "leave alt blank" — it makes the choice
+					     explicit and emits both alt="" AND aria-hidden="true", rather
+					     than relying on the operator remembering to leave a field
+					     empty (which screen readers can't distinguish from a missing
+					     description). Informational control, not a gate (a11y-validation-informational rule). */ }
+					<ToggleControl
+						label={ __(
+							'Decorative image (hide from screen readers)',
+							'sgs-blocks'
+						) }
+						help={ __(
+							'Turn on for purely decorative images that add no information — e.g. background flourishes. Screen readers will skip it entirely.',
+							'sgs-blocks'
+						) }
+						checked={ !! imageIsDecorative }
+						onChange={ ( value ) =>
+							setAttributes( { imageIsDecorative: value } )
+						}
+						__nextHasNoMarginBottom
+					/>
 					<TextControl
-						label={ __( 'Alt text (alternative text)', 'sgs-blocks' ) }
-						help={ __( 'Describe the image for screen readers and search engines. Leave empty only if the image is purely decorative.', 'sgs-blocks' ) }
-						value={ imageAlt || '' }
-						onChange={ ( value ) => setAttributes( { imageAlt: value } ) }
+						label={ __(
+							'Alt text (alternative text)',
+							'sgs-blocks'
+						) }
+						help={
+							imageIsDecorative
+								? __(
+										'Disabled — this image is marked decorative and is hidden from screen readers.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Describe the image for screen readers and search engines. Leave empty only if the image is purely decorative.',
+										'sgs-blocks'
+								  )
+						}
+						value={ imageIsDecorative ? '' : imageAlt || '' }
+						onChange={ ( value ) =>
+							setAttributes( { imageAlt: value } )
+						}
+						disabled={ imageIsDecorative }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			) }
 
 			{ /* Media styling — writes the block's NATIVE styling attributes
-			     (single source of truth the cloning converter also writes). */ }
+			     (single source of truth the cloning converter also writes).
+			     ToolsPanel (dense-panel-candidate, Spec 35 wave-B T-item-2):
+			     9 independent optional settings — objectFit / maxWidth / alignment
+			     are the highest-frequency per-instance tweaks so they stay
+			     isShownByDefault; the rest are one click away via "+". */ }
 			{ ( isImage || isVideo ) && (
-				<PanelBody title={ __( 'Media Styling', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+				<ToolsPanel
+					label={ __( 'Media Styling', 'sgs-blocks' ) }
+					resetAll={ () => {
+						setAttributes( {
+							objectFit: 'cover',
+							objectPosition: 'center center',
+							maxWidth: null,
+							maxWidthTablet: null,
+							maxWidthMobile: null,
+							maxHeight: null,
+							maxHeightTablet: null,
+							maxHeightMobile: null,
+							height: null,
+							heightTablet: null,
+							heightMobile: null,
+							style: {
+								...style,
+								border: { ...style?.border, radius: {} },
+							},
+							borderRadiusTablet: {},
+							borderRadiusMobile: {},
+							alignment: 'left',
+							opacity: 1,
+							boxShadow: '',
+						} );
+					} }
+				>
+					<ToolsPanelItem
 						label={ __( 'Object fit', 'sgs-blocks' ) }
-						help={ __( 'How the media fills its box when a fixed height / aspect ratio is set.', 'sgs-blocks' ) }
-						value={ attributes.objectFit || 'cover' }
-						options={ [
-							{ label: __( 'Cover (fill, crop)', 'sgs-blocks' ), value: 'cover' },
-							{ label: __( 'Contain (fit, letterbox)', 'sgs-blocks' ), value: 'contain' },
-							{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
-							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-							{ label: __( 'Scale down', 'sgs-blocks' ), value: 'scale-down' },
-						] }
-						onChange={ ( value ) => setAttributes( { objectFit: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Object position', 'sgs-blocks' ) }
-						help={ __( 'Which part stays visible when cropped, e.g. "center center", "top right", "center 20%".', 'sgs-blocks' ) }
-						value={ attributes.objectPosition || '' }
-						placeholder="center center"
-						onChange={ ( value ) => setAttributes( { objectPosition: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<RUnitControl
-						label={ __( 'Max width', 'sgs-blocks' ) }
-						attrDesktop="maxWidth"
-						attrTablet="maxWidthTablet"
-						attrMobile="maxWidthMobile"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
-					<RUnitControl
-						label={ __( 'Max height', 'sgs-blocks' ) }
-						attrDesktop="maxHeight"
-						attrTablet="maxHeightTablet"
-						attrMobile="maxHeightMobile"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
-					<RUnitControl
-						label={ __( 'Height (fill)', 'sgs-blocks' ) }
-						attrDesktop="height"
-						attrTablet="heightTablet"
-						attrMobile="heightMobile"
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-					/>
-					<TextControl
-						label={ __( 'Aspect ratio', 'sgs-blocks' ) }
-						help={ __( 'e.g. "16 / 9", "4 / 3", "1 / 1". Leave empty for the natural ratio.', 'sgs-blocks' ) }
-						value={ attributes.aspectRatio || '' }
-						placeholder="16 / 9"
-						onChange={ ( value ) => setAttributes( { aspectRatio: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: style?.border?.radius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
+						hasValue={ () =>
+							( attributes.objectFit || 'cover' ) !== 'cover'
+						}
+						onDeselect={ () =>
+							setAttributes( { objectFit: 'cover' } )
+						}
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Object fit', 'sgs-blocks' ) }
+							help={ __(
+								'How the media fills its box when a fixed height / aspect ratio is set.',
+								'sgs-blocks'
+							) }
+							value={ attributes.objectFit || 'cover' }
+							options={ [
+								{
+									label: __(
+										'Cover (fill, crop)',
+										'sgs-blocks'
+									),
+									value: 'cover',
+								},
+								{
+									label: __(
+										'Contain (fit, letterbox)',
+										'sgs-blocks'
+									),
+									value: 'contain',
+								},
+								{
+									label: __( 'Fill (stretch)', 'sgs-blocks' ),
+									value: 'fill',
+								},
+								{
+									label: __( 'None', 'sgs-blocks' ),
+									value: 'none',
+								},
+								{
+									label: __( 'Scale down', 'sgs-blocks' ),
+									value: 'scale-down',
+								},
+							] }
+							onChange={ ( value ) =>
+								setAttributes( { objectFit: value } )
 							}
-						} }
-					/>
-					<SelectControl
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Object position', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! attributes.objectPosition &&
+							'center center' !== attributes.objectPosition
+						}
+						onDeselect={ () =>
+							setAttributes( { objectPosition: 'center center' } )
+						}
+					>
+						<TextControl
+							label={ __( 'Object position', 'sgs-blocks' ) }
+							help={ __(
+								'Which part stays visible when cropped, e.g. "center center", "top right", "center 20%".',
+								'sgs-blocks'
+							) }
+							value={ attributes.objectPosition || '' }
+							placeholder="center center"
+							onChange={ ( value ) =>
+								setAttributes( { objectPosition: value } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! (
+								attributes.maxWidth ||
+								attributes.maxWidthTablet ||
+								attributes.maxWidthMobile
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								maxWidth: null,
+								maxWidthTablet: null,
+								maxWidthMobile: null,
+							} )
+						}
+						isShownByDefault
+					>
+						<RUnitControl
+							label={ __( 'Max width', 'sgs-blocks' ) }
+							attrDesktop="maxWidth"
+							attrTablet="maxWidthTablet"
+							attrMobile="maxWidthMobile"
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Max height', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! (
+								attributes.maxHeight ||
+								attributes.maxHeightTablet ||
+								attributes.maxHeightMobile
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								maxHeight: null,
+								maxHeightTablet: null,
+								maxHeightMobile: null,
+							} )
+						}
+					>
+						<RUnitControl
+							label={ __( 'Max height', 'sgs-blocks' ) }
+							attrDesktop="maxHeight"
+							attrTablet="maxHeightTablet"
+							attrMobile="maxHeightMobile"
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Height (fill)', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! (
+								attributes.height ||
+								attributes.heightTablet ||
+								attributes.heightMobile
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								height: null,
+								heightTablet: null,
+								heightMobile: null,
+							} )
+						}
+					>
+						<RUnitControl
+							label={ __( 'Height (fill)', 'sgs-blocks' ) }
+							attrDesktop="height"
+							attrTablet="heightTablet"
+							attrMobile="heightMobile"
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Border radius', 'sgs-blocks' ) }
+						hasValue={ () =>
+							Object.keys( style?.border?.radius ?? {} ).length >
+								0 ||
+							Object.keys( borderRadiusTablet ?? {} ).length >
+								0 ||
+							Object.keys( borderRadiusMobile ?? {} ).length > 0
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								style: {
+									...style,
+									border: { ...style?.border, radius: {} },
+								},
+								borderRadiusTablet: {},
+								borderRadiusMobile: {},
+							} )
+						}
+					>
+						<ResponsiveBorderRadiusControl
+							label={ __( 'Border radius', 'sgs-blocks' ) }
+							values={ {
+								base: style?.border?.radius ?? {},
+								tablet: borderRadiusTablet ?? {},
+								mobile: borderRadiusMobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								if ( 'base' === tier ) {
+									setAttributes( {
+										style: {
+											...style,
+											border: {
+												...style?.border,
+												radius: next,
+											},
+										},
+									} );
+								} else {
+									setAttributes( {
+										[ `borderRadius${
+											'tablet' === tier
+												? 'Tablet'
+												: 'Mobile'
+										}` ]: next,
+									} );
+								}
+							} }
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
 						label={ __( 'Alignment', 'sgs-blocks' ) }
-						value={ attributes.alignment || 'left' }
-						options={ [
-							{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-							{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-						] }
-						onChange={ ( value ) => setAttributes( { alignment: value } ) }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
+						hasValue={ () =>
+							( attributes.alignment || 'left' ) !== 'left'
+						}
+						onDeselect={ () =>
+							setAttributes( { alignment: 'left' } )
+						}
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Alignment', 'sgs-blocks' ) }
+							value={ attributes.alignment || 'left' }
+							options={ [
+								{
+									label: __( 'Left', 'sgs-blocks' ),
+									value: 'left',
+								},
+								{
+									label: __( 'Centre', 'sgs-blocks' ),
+									value: 'center',
+								},
+								{
+									label: __( 'Right', 'sgs-blocks' ),
+									value: 'right',
+								},
+							] }
+							onChange={ ( value ) =>
+								setAttributes( { alignment: value } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
 						label={ __( 'Opacity', 'sgs-blocks' ) }
-						value={ attributes.opacity ?? 1 }
-						min={ 0 }
-						max={ 1 }
-						step={ 0.05 }
-						onChange={ ( value ) => setAttributes( { opacity: value ?? 1 } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Box shadow (CSS)', 'sgs-blocks' ) }
-						help={ __( 'A raw CSS box-shadow value, e.g. "0 6px 24px rgba(0,0,0,0.15)". Leave empty for none.', 'sgs-blocks' ) }
-						value={ attributes.boxShadow || '' }
-						onChange={ ( value ) => setAttributes( { boxShadow: value } ) }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
+						hasValue={ () => 1 !== ( attributes.opacity ?? 1 ) }
+						onDeselect={ () => setAttributes( { opacity: 1 } ) }
+					>
+						<RangeControl
+							label={ __( 'Opacity', 'sgs-blocks' ) }
+							value={ attributes.opacity ?? 1 }
+							min={ 0 }
+							max={ 1 }
+							step={ 0.05 }
+							onChange={ ( value ) =>
+								setAttributes( { opacity: value ?? 1 } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Box shadow', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.boxShadow }
+						onDeselect={ () => setAttributes( { boxShadow: '' } ) }
+					>
+						<TextControl
+							label={ __( 'Box shadow (CSS)', 'sgs-blocks' ) }
+							help={ __(
+								'A raw CSS box-shadow value, e.g. "0 6px 24px rgba(0,0,0,0.15)". Leave empty for none.',
+								'sgs-blocks'
+							) }
+							value={ attributes.boxShadow || '' }
+							onChange={ ( value ) =>
+								setAttributes( { boxShadow: value } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
 			) }
 
 			{ /* Caption & link — caption applies to image + video; link is image-only. */ }
 			{ ( isImage || isVideo ) && (
-				<PanelBody title={ __( 'Caption & Link', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Caption & Link', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<TextControl
 						label={ __( 'Caption', 'sgs-blocks' ) }
 						value={ attributes.caption || '' }
-						onChange={ ( value ) => setAttributes( { caption: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { caption: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
 						label={ __( 'Caption tag', 'sgs-blocks' ) }
 						value={ attributes.captionTag || 'figcaption' }
 						options={ [
-							{ label: __( 'Figure caption (figcaption)', 'sgs-blocks' ), value: 'figcaption' },
+							{
+								label: __(
+									'Figure caption (figcaption)',
+									'sgs-blocks'
+								),
+								value: 'figcaption',
+							},
 							{ label: __( 'Div', 'sgs-blocks' ), value: 'div' },
 						] }
-						onChange={ ( value ) => setAttributes( { captionTag: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { captionTag: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					{ isImage && (
 						<SgsLinkControl
 							label={ __( 'Link', 'sgs-blocks' ) }
-							help={ __( 'Search your site or paste a URL to wrap the image in a link. Leave empty for no link.', 'sgs-blocks' ) }
+							help={ __(
+								'Search your site or paste a URL to wrap the image in a link. Leave empty for no link.',
+								'sgs-blocks'
+							) }
 							value={ {
 								url: attributes.linkUrl || '',
 								opensInNewTab: !! attributes.linkOpensNewTab,
@@ -338,27 +652,52 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* SVG controls */ }
 			{ isSvg && (
-				<PanelBody title={ __( 'SVG / Animation', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'SVG / Animation', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<p className="components-base-control__help">
-						{ __( 'Paste SVG markup to render it as a foreground content element. Animations use pure CSS — no JavaScript required.', 'sgs-blocks' ) }
+						{ __(
+							'Paste SVG markup to render it as a foreground content element. Animations use pure CSS — no JavaScript required.',
+							'sgs-blocks'
+						) }
 					</p>
 					<TextareaControl
 						label={ __( 'SVG code', 'sgs-blocks' ) }
 						value={ svgContent || '' }
-						onChange={ ( value ) => setAttributes( { svgContent: value } ) }
-						help={ __( 'Paste your <svg>…</svg> markup here.', 'sgs-blocks' ) }
+						onChange={ ( value ) =>
+							setAttributes( { svgContent: value } )
+						}
+						help={ __(
+							'Paste your <svg>…</svg> markup here.',
+							'sgs-blocks'
+						) }
 						rows={ 8 }
 					/>
 					<SelectControl
 						label={ __( 'Animation', 'sgs-blocks' ) }
 						value={ svgAnimation || 'none' }
 						options={ [
-							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-							{ label: __( 'Pulse', 'sgs-blocks' ), value: 'pulse' },
-							{ label: __( 'Float', 'sgs-blocks' ), value: 'float' },
-							{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
+							{
+								label: __( 'None', 'sgs-blocks' ),
+								value: 'none',
+							},
+							{
+								label: __( 'Pulse', 'sgs-blocks' ),
+								value: 'pulse',
+							},
+							{
+								label: __( 'Float', 'sgs-blocks' ),
+								value: 'float',
+							},
+							{
+								label: __( 'Wave', 'sgs-blocks' ),
+								value: 'wave',
+							},
 						] }
-						onChange={ ( value ) => setAttributes( { svgAnimation: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { svgAnimation: value } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					{ svgAnimation && 'none' !== svgAnimation && (
@@ -366,36 +705,77 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Animation speed', 'sgs-blocks' ) }
 							value={ svgAnimationSpeed || 'medium' }
 							options={ [
-								{ label: __( 'Slow', 'sgs-blocks' ), value: 'slow' },
-								{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-								{ label: __( 'Fast', 'sgs-blocks' ), value: 'fast' },
+								{
+									label: __( 'Slow', 'sgs-blocks' ),
+									value: 'slow',
+								},
+								{
+									label: __( 'Medium', 'sgs-blocks' ),
+									value: 'medium',
+								},
+								{
+									label: __( 'Fast', 'sgs-blocks' ),
+									value: 'fast',
+								},
 							] }
-							onChange={ ( value ) => setAttributes( { svgAnimationSpeed: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { svgAnimationSpeed: value } )
+							}
 							__nextHasNoMarginBottom
 						/>
 					) }
 				</PanelBody>
 			) }
 
-			{ /* Video controls */ }
+			{ /* Video controls — SKIP-WITH-REASON (Spec 35 wave-B T-item-2 dense-panel
+			     audit): this outer "Video" panel is a source-picker WORKFLOW, not a
+			     flat list of independent optional settings — videoSource gates which
+			     control shows next (URL field vs media-library button), so ToolsPanel's
+			     "add/remove independent settings" model doesn't fit. Same reason for
+			     the nested "Poster Image" panel below (an image-picker item editor,
+			     like the main Image panel above it). Only the nested "Playback
+			     Options" panel (a genuine flat list of 6 independent toggles) converts
+			     to ToolsPanel — see below. */ }
 			{ isVideo && (
-				<PanelBody title={ __( 'Video', 'sgs-blocks' ) } initialOpen={ true }>
+				<PanelBody
+					title={ __( 'Video', 'sgs-blocks' ) }
+					initialOpen={ true }
+				>
 					<SelectControl
 						label={ __( 'Video Source', 'sgs-blocks' ) }
 						value={ videoSource || 'external' }
 						options={ [
-							{ label: __( 'External URL (YouTube, Vimeo, MP4)', 'sgs-blocks' ), value: 'external' },
-							{ label: __( 'WordPress Media Library', 'sgs-blocks' ), value: 'internal' },
+							{
+								label: __(
+									'External URL (YouTube, Vimeo, MP4)',
+									'sgs-blocks'
+								),
+								value: 'external',
+							},
+							{
+								label: __(
+									'WordPress Media Library',
+									'sgs-blocks'
+								),
+								value: 'internal',
+							},
 						] }
-						onChange={ ( value ) => setAttributes( { videoSource: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { videoSource: value } )
+						}
 					/>
 
-					{ ( 'external' === ( videoSource || 'external' ) ) && (
+					{ 'external' === ( videoSource || 'external' ) && (
 						<TextControl
 							label={ __( 'Video URL', 'sgs-blocks' ) }
-							help={ __( 'YouTube, Vimeo, or direct MP4/WebM URL. Watch URLs are converted to embed URLs automatically.', 'sgs-blocks' ) }
+							help={ __(
+								'YouTube, Vimeo, or direct MP4/WebM URL. Watch URLs are converted to embed URLs automatically.',
+								'sgs-blocks'
+							) }
 							value={ videoUrl || '' }
-							onChange={ ( value ) => setAttributes( { videoUrl: value } ) }
+							onChange={ ( value ) =>
+								setAttributes( { videoUrl: value } )
+							}
 						/>
 					) }
 
@@ -406,10 +786,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								allowedTypes={ [ 'video' ] }
 								value={ attributes.videoId }
 								render={ ( { open } ) => (
-									<Button variant="secondary" onClick={ open }>
+									<Button
+										variant="secondary"
+										onClick={ open }
+									>
 										{ attributes.videoId
-											? __( 'Replace Video', 'sgs-blocks' )
-											: __( 'Select Video', 'sgs-blocks' ) }
+											? __(
+													'Replace Video',
+													'sgs-blocks'
+											  )
+											: __(
+													'Select Video',
+													'sgs-blocks'
+											  ) }
 									</Button>
 								) }
 							/>
@@ -417,9 +806,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 
 					{ /* Poster image */ }
-					<PanelBody title={ __( 'Poster Image', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Poster Image', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<p className="components-base-control__help">
-							{ __( 'Shown before the video plays. Recommended for external embeds.', 'sgs-blocks' ) }
+							{ __(
+								'Shown before the video plays. Recommended for external embeds.',
+								'sgs-blocks'
+							) }
 						</p>
 						<MediaUploadCheck>
 							<MediaUpload
@@ -431,20 +826,41 @@ export default function Edit( { attributes, setAttributes } ) {
 										{ videoPoster && (
 											<img
 												src={ videoPoster }
-												alt={ __( 'Video poster', 'sgs-blocks' ) }
-												style={ { maxWidth: '100%', marginBottom: '8px', display: 'block' } }
+												alt={ __(
+													'Video poster',
+													'sgs-blocks'
+												) }
+												style={ {
+													maxWidth: '100%',
+													marginBottom: '8px',
+													display: 'block',
+												} }
 											/>
 										) }
-										<Button variant="secondary" onClick={ open }>
+										<Button
+											variant="secondary"
+											onClick={ open }
+										>
 											{ videoPoster
-												? __( 'Replace Poster', 'sgs-blocks' )
-												: __( 'Select Poster', 'sgs-blocks' ) }
+												? __(
+														'Replace Poster',
+														'sgs-blocks'
+												  )
+												: __(
+														'Select Poster',
+														'sgs-blocks'
+												  ) }
 										</Button>
 										{ videoPoster && (
 											<Button
 												variant="link"
 												isDestructive
-												onClick={ () => setAttributes( { videoPosterId: null, videoPoster: '' } ) }
+												onClick={ () =>
+													setAttributes( {
+														videoPosterId: null,
+														videoPoster: '',
+													} )
+												}
 												style={ { marginLeft: '8px' } }
 											>
 												{ __( 'Remove', 'sgs-blocks' ) }
@@ -456,43 +872,144 @@ export default function Edit( { attributes, setAttributes } ) {
 						</MediaUploadCheck>
 					</PanelBody>
 
-					{ /* Playback options */ }
-					<PanelBody title={ __( 'Playback Options', 'sgs-blocks' ) } initialOpen={ false }>
-						<ToggleControl
+					{ /* Playback options — ToolsPanel (dense-panel-candidate, Spec 35
+					     wave-B T-item-2): 6 independent booleans, all with a clear
+					     block.json default. Autoplay/Muted/Show-Controls stay
+					     isShownByDefault — the background-video pattern (autoplay +
+					     muted together) and controls-visibility are the settings
+					     operators touch most; Loop/Plays-Inline/Lazy-Load are
+					     usually left at their sensible defaults. */ }
+					<ToolsPanel
+						label={ __( 'Playback Options', 'sgs-blocks' ) }
+						resetAll={ () => {
+							setAttributes( {
+								videoAutoplay: false,
+								videoLoop: false,
+								videoMuted: true,
+								videoControls: true,
+								videoPlaysInline: true,
+								videoLazyLoad: true,
+							} );
+						} }
+					>
+						<ToolsPanelItem
 							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							help={ __( 'Autoplay requires Muted to be enabled on most browsers.', 'sgs-blocks' ) }
-							checked={ !! videoAutoplay }
-							onChange={ ( value ) => setAttributes( { videoAutoplay: value } ) }
-						/>
-						<ToggleControl
+							hasValue={ () => !! videoAutoplay }
+							onDeselect={ () =>
+								setAttributes( { videoAutoplay: false } )
+							}
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Autoplay', 'sgs-blocks' ) }
+								help={ __(
+									'Autoplay requires Muted to be enabled on most browsers.',
+									'sgs-blocks'
+								) }
+								checked={ !! videoAutoplay }
+								onChange={ ( value ) =>
+									setAttributes( { videoAutoplay: value } )
+								}
+							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
 							label={ __( 'Loop', 'sgs-blocks' ) }
-							checked={ !! videoLoop }
-							onChange={ ( value ) => setAttributes( { videoLoop: value } ) }
-						/>
-						<ToggleControl
+							hasValue={ () => !! videoLoop }
+							onDeselect={ () =>
+								setAttributes( { videoLoop: false } )
+							}
+						>
+							<ToggleControl
+								label={ __( 'Loop', 'sgs-blocks' ) }
+								checked={ !! videoLoop }
+								onChange={ ( value ) =>
+									setAttributes( { videoLoop: value } )
+								}
+							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
 							label={ __( 'Muted', 'sgs-blocks' ) }
-							help={ __( 'Required for autoplay. Always on for background videos.', 'sgs-blocks' ) }
-							checked={ videoMuted !== false }
-							onChange={ ( value ) => setAttributes( { videoMuted: value } ) }
-						/>
-						<ToggleControl
+							hasValue={ () => videoMuted === false }
+							onDeselect={ () =>
+								setAttributes( { videoMuted: true } )
+							}
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Muted', 'sgs-blocks' ) }
+								help={ __(
+									'Required for autoplay. Always on for background videos.',
+									'sgs-blocks'
+								) }
+								checked={ videoMuted !== false }
+								onChange={ ( value ) =>
+									setAttributes( { videoMuted: value } )
+								}
+							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
 							label={ __( 'Show Controls', 'sgs-blocks' ) }
-							checked={ videoControls !== false }
-							onChange={ ( value ) => setAttributes( { videoControls: value } ) }
-						/>
-						<ToggleControl
+							hasValue={ () => videoControls === false }
+							onDeselect={ () =>
+								setAttributes( { videoControls: true } )
+							}
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Show Controls', 'sgs-blocks' ) }
+								checked={ videoControls !== false }
+								onChange={ ( value ) =>
+									setAttributes( { videoControls: value } )
+								}
+							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
 							label={ __( 'Plays Inline (iOS)', 'sgs-blocks' ) }
-							help={ __( 'Prevents iOS from opening the video in full screen automatically.', 'sgs-blocks' ) }
-							checked={ videoPlaysInline !== false }
-							onChange={ ( value ) => setAttributes( { videoPlaysInline: value } ) }
-						/>
-						<ToggleControl
+							hasValue={ () => videoPlaysInline === false }
+							onDeselect={ () =>
+								setAttributes( { videoPlaysInline: true } )
+							}
+						>
+							<ToggleControl
+								label={ __(
+									'Plays Inline (iOS)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Prevents iOS from opening the video in full screen automatically.',
+									'sgs-blocks'
+								) }
+								checked={ videoPlaysInline !== false }
+								onChange={ ( value ) =>
+									setAttributes( { videoPlaysInline: value } )
+								}
+							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
 							label={ __( 'Lazy Load', 'sgs-blocks' ) }
-							help={ __( 'Load video only when scrolled into view.', 'sgs-blocks' ) }
-							checked={ videoLazyLoad !== false }
-							onChange={ ( value ) => setAttributes( { videoLazyLoad: value } ) }
-						/>
-					</PanelBody>
+							hasValue={ () => videoLazyLoad === false }
+							onDeselect={ () =>
+								setAttributes( { videoLazyLoad: true } )
+							}
+						>
+							<ToggleControl
+								label={ __( 'Lazy Load', 'sgs-blocks' ) }
+								help={ __(
+									'Load video only when scrolled into view.',
+									'sgs-blocks'
+								) }
+								checked={ videoLazyLoad !== false }
+								onChange={ ( value ) =>
+									setAttributes( { videoLazyLoad: value } )
+								}
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 			) }
 		</InspectorControls>
@@ -527,7 +1044,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		return (
 			<figure { ...blockProps }>
 				{ inspectorControls }
-				<img src={ imageUrl } alt={ imageAlt } className="sgs-media__img" />
+				<img
+					src={ imageUrl }
+					alt={ imageIsDecorative ? '' : imageAlt }
+					aria-hidden={ imageIsDecorative ? 'true' : undefined }
+					className="sgs-media__img"
+				/>
 			</figure>
 		);
 	}
@@ -542,10 +1064,16 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ inspectorControls }
 					<div className="components-placeholder">
 						<div className="components-placeholder__label">
-							{ __( 'SGS Media — SVG / Animation', 'sgs-blocks' ) }
+							{ __(
+								'SGS Media — SVG / Animation',
+								'sgs-blocks'
+							) }
 						</div>
 						<div className="components-placeholder__instructions">
-							{ __( 'Paste your SVG markup in the block settings panel.', 'sgs-blocks' ) }
+							{ __(
+								'Paste your SVG markup in the block settings panel.',
+								'sgs-blocks'
+							) }
 						</div>
 					</div>
 				</div>
@@ -557,9 +1085,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		const svgClass = [
 			'sgs-media__svg',
 			svgAnimation && 'none' !== svgAnimation
-				? `sgs-media__svg--${ svgAnimation } sgs-media__svg--speed-${ svgAnimationSpeed || 'medium' }`
+				? `sgs-media__svg--${ svgAnimation } sgs-media__svg--speed-${
+						svgAnimationSpeed || 'medium'
+				  }`
 				: '',
-		].filter( Boolean ).join( ' ' );
+		]
+			.filter( Boolean )
+			.join( ' ' );
 
 		return (
 			<figure { ...blockProps }>
@@ -604,7 +1136,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ __( 'SGS Media — Video', 'sgs-blocks' ) }
 						</div>
 						<div className="components-placeholder__instructions">
-							{ __( 'Enter a YouTube, Vimeo, or direct MP4 URL in the block settings.', 'sgs-blocks' ) }
+							{ __(
+								'Enter a YouTube, Vimeo, or direct MP4 URL in the block settings.',
+								'sgs-blocks'
+							) }
 						</div>
 					</div>
 				) }
@@ -618,14 +1153,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ inspectorControls }
 			{ videoUrl && (
 				<Notice status="info" isDismissible={ false }>
-					{ __( 'Video URL set. Frontend render handled by server. Preview not available in editor.', 'sgs-blocks' ) }
+					{ __(
+						'Video URL set. Frontend render handled by server. Preview not available in editor.',
+						'sgs-blocks'
+					) }
 					<br />
 					<code>{ videoUrl }</code>
 				</Notice>
 			) }
 			{ ! videoUrl && attributes.videoId && (
 				<Notice status="info" isDismissible={ false }>
-					{ __( 'Internal video selected (WP Media Library). Frontend render handled by server.', 'sgs-blocks' ) }
+					{ __(
+						'Internal video selected (WP Media Library). Frontend render handled by server.',
+						'sgs-blocks'
+					) }
 				</Notice>
 			) }
 		</figure>

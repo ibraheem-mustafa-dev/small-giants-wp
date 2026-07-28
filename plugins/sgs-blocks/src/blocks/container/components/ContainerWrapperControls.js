@@ -60,6 +60,7 @@ import {
 	SpacingControl,
 	DesignTokenPicker,
 	ShadowControl,
+	GradientOverlayControl,
 } from '../../../components';
 
 // ---------------------------------------------------------------------------
@@ -633,12 +634,7 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 		backgroundPosition = 'center center',
 		backgroundRepeat = 'no-repeat',
 		backgroundAttachment = 'scroll',
-		backgroundOverlayColour,
 		backgroundOverlayOpacity = 50,
-		overlayGradient = false,
-		overlayGradientAngle = 180,
-		overlayGradientFrom = '',
-		overlayGradientTo = '',
 		bgVideo,
 		bgVideoMobile,
 		bgParallax = false,
@@ -895,40 +891,10 @@ export function BackgroundPanel( { attributes, setAttributes } ) {
 								<p className="components-base-control__help">
 									{ __( 'Overlay sits on top of the background image or video.', 'sgs-blocks' ) }
 								</p>
-								<ToggleControl
-									label={ __( 'Gradient overlay', 'sgs-blocks' ) }
-									checked={ overlayGradient }
-									onChange={ ( val ) => setAttributes( { overlayGradient: val } ) }
-									__nextHasNoMarginBottom
+								<GradientOverlayControl
+									attributes={ attributes }
+									setAttributes={ setAttributes }
 								/>
-								{ overlayGradient ? (
-									<>
-										<RangeControl
-											label={ __( 'Angle (degrees)', 'sgs-blocks' ) }
-											value={ overlayGradientAngle }
-											onChange={ ( val ) => setAttributes( { overlayGradientAngle: val } ) }
-											min={ 0 }
-											max={ 360 }
-											__nextHasNoMarginBottom
-										/>
-										<DesignTokenPicker
-											label={ __( 'Gradient from', 'sgs-blocks' ) }
-											value={ overlayGradientFrom }
-											onChange={ ( val ) => setAttributes( { overlayGradientFrom: val } ) }
-										/>
-										<DesignTokenPicker
-											label={ __( 'Gradient to (leave empty for transparent)', 'sgs-blocks' ) }
-											value={ overlayGradientTo }
-											onChange={ ( val ) => setAttributes( { overlayGradientTo: val } ) }
-										/>
-									</>
-								) : (
-									<DesignTokenPicker
-										label={ __( 'Overlay colour', 'sgs-blocks' ) }
-										value={ backgroundOverlayColour }
-										onChange={ ( val ) => setAttributes( { backgroundOverlayColour: val } ) }
-									/>
-								) }
 								<RangeControl
 									label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
 									value={ backgroundOverlayOpacity }

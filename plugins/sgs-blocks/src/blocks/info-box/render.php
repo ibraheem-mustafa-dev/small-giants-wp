@@ -42,7 +42,7 @@
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
  *   cardStyle, effectHover, iconPosition, backgroundColourHover, textColourHover,
  *   borderColourHover, scaleHover, shadowHover, grayscaleHover,
- *   transitionDuration, transitionEasing, blockLink, blockLinkTarget,
+ *   transitionDuration, transitionEasing,
  *   sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
  *
  * @since 2026-05-05  FR-22-6 migration — InnerBlocks content model.
@@ -52,6 +52,12 @@
  *                    matches sgs/quote D294); all styling supports skip-serialised;
  *                    padding/margin tiers → object attrs; border/colour/typography/
  *                    shadow → scoped <style> via wp_style_engine_get_styles.
+ * @since 2026-07-28  Block-private blockLink/blockLinkTarget attrs removed
+ *                    (no edit.js control — unreachable, identical dead pattern
+ *                    to sgs/team-member's pre-cleanup blockLink). The universal
+ *                    sgsBlockLink extension (includes/hover-effects.php,
+ *                    render_block filter) already provides the stretched-link
+ *                    overlay capability for this block with zero per-block code.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (all card content).
@@ -85,8 +91,6 @@ $sgs_hover_border   = isset( $attributes['borderColourHover'] ) ? $attributes['b
 $sgs_hover_scale    = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow   = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
 $sgs_hover_gray     = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
-$sgs_block_link     = isset( $attributes['blockLink'] ) ? $attributes['blockLink'] : '';
-$sgs_block_link_tgt = isset( $attributes['blockLinkTarget'] ) ? (bool) $attributes['blockLinkTarget'] : false;
 
 // Width — SGS custom scalars (kept-scalar single-value families, contract §C).
 // Base only — this block never declared maxWidthTablet/contentWidthTablet.
@@ -388,18 +392,12 @@ $sgs_card_html .= '<div ' . $sgs_wrapper_attrs . '>' . $content . '</div>';
 // ---------------------------------------------------------------------------
 // 10. Render. WS-4: CONTENT kind — width/spacing layers only (no bg/overlay/
 // grid — the card's own background/border/shadow ride on the static
-// sgs-info-box--{cardStyle} BEM classes in style.css). The block-link
-// wrapper, if present, wraps the full card output so the anchor encloses the
-// block wrapper (including the WP anchor attr).
+// sgs-info-box--{cardStyle} BEM classes in style.css).
 // ---------------------------------------------------------------------------
 
-if ( $sgs_block_link ) {
-	$sgs_block_target = $sgs_block_link_tgt ? ' target="_blank" rel="noopener noreferrer"' : '';
-	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_block_target is a hardcoded safe string; $sgs_card_html is built entirely from pre-sanitised/escaped parts above.
-	echo '<a href="' . esc_url( $sgs_block_link ) . '" class="sgs-block-link-wrapper"' . $sgs_block_target . '>'
-		. $sgs_card_html
-		. '</a>';
-	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-} else {
-	echo $sgs_card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from pre-sanitised/escaped parts above.
-}
+// Block-link is handled universally by the sgsBlockLink extension
+// (includes/hover-effects.php, render_block filter) — it injects a
+// stretched-link overlay as this root's last child, so no per-block wrap
+// belongs here. This block's own blockLink/blockLinkTarget attrs (which had
+// no edit.js control and were therefore unreachable) were removed.
+echo $sgs_card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from pre-sanitised/escaped parts above.

@@ -31,6 +31,8 @@ import {
 	Notice,
 	Spinner,
 	Button,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
@@ -1401,88 +1403,216 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						>
 							{ __( 'Reset colours to preset', 'sgs-blocks' ) }
 						</Button>
-						<SelectControl
-							label={ __( 'Width', 'sgs-blocks' ) }
-							value={ ctaWidthType || 'fit' }
-							options={ [
-								{
-									value: 'fit',
-									label: __( 'Fit content', 'sgs-blocks' ),
-								},
-								{
-									value: 'full',
-									label: __( 'Full width', 'sgs-blocks' ),
-								},
-							] }
-							onChange={ ( v ) =>
-								setAttributes( { ctaWidthType: v } )
-							}
-							__nextHasNoMarginBottom
-						/>
-						{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
-						   (button/edit.js:596) exactly — ResponsiveBoxControl /
-						   ResponsiveBorderRadiusControl with showResponsive={false}
-						   (single-tier; no ctaBorderWidth/RadiusTablet/Mobile attrs
-						   exist), writing the object straight to the attr. */ }
-						<ResponsiveBoxControl
-							label={ __( 'Border width', 'sgs-blocks' ) }
-							values={ { base: ctaBorderWidth ?? {} } }
-							showResponsive={ false }
-							onChange={ ( _tier, next ) =>
-								setAttributes( { ctaBorderWidth: next } )
-							}
-						/>
-						<ResponsiveBorderRadiusControl
-							label={ __( 'Corner radius', 'sgs-blocks' ) }
-							values={ { base: ctaBorderRadius ?? {} } }
-							showResponsive={ false }
-							onChange={ ( _tier, next ) =>
-								setAttributes( { ctaBorderRadius: next } )
-							}
-						/>
-						<NumberControl
-							label={ __( 'Font size (px)', 'sgs-blocks' ) }
-							value={ ctaFontSize ?? '' }
-							min={ 8 }
-							max={ 48 }
-							onChange={ ( v ) =>
+						<ToolsPanel
+							label={ __( 'CTA Button Style', 'sgs-blocks' ) }
+							resetAll={ () =>
 								setAttributes( {
-									ctaFontSize:
-										v === '' || v === undefined
-											? undefined
-											: Number.parseInt( v, 10 ),
+									ctaWidthType: 'fit',
+									ctaBorderWidth: {
+										top: '2px',
+										right: '2px',
+										bottom: '2px',
+										left: '2px',
+									},
+									ctaBorderRadius: {
+										topLeft: '10px',
+										topRight: '10px',
+										bottomLeft: '10px',
+										bottomRight: '10px',
+									},
+									ctaFontSize: null,
+									ctaPadding: {},
+									ctaColourBackground: '',
+									ctaColourText: '',
+									ctaColourBorder: '',
 								} )
 							}
-							__nextHasNoMarginBottom
-						/>
-						<BoxControl
-							label={ __( 'CTA padding', 'sgs-blocks' ) }
-							values={ ctaPadding ?? {} }
-							onChange={ ( next ) =>
-								setAttributes( { ctaPadding: next } )
-							}
-						/>
-						<DesignTokenPicker
-							label={ __( 'Background colour', 'sgs-blocks' ) }
-							value={ ctaColourBackground }
-							onChange={ ( v ) =>
-								setAttributes( { ctaColourBackground: v } )
-							}
-						/>
-						<DesignTokenPicker
-							label={ __( 'Text colour', 'sgs-blocks' ) }
-							value={ ctaColourText }
-							onChange={ ( v ) =>
-								setAttributes( { ctaColourText: v } )
-							}
-						/>
-						<DesignTokenPicker
-							label={ __( 'Border colour', 'sgs-blocks' ) }
-							value={ ctaColourBorder }
-							onChange={ ( v ) =>
-								setAttributes( { ctaColourBorder: v } )
-							}
-						/>
+						>
+							<ToolsPanelItem
+								label={ __( 'Width', 'sgs-blocks' ) }
+								hasValue={ () => ( ctaWidthType || 'fit' ) !== 'fit' }
+								onDeselect={ () =>
+									setAttributes( { ctaWidthType: 'fit' } )
+								}
+								isShownByDefault
+							>
+								<SelectControl
+									label={ __( 'Width', 'sgs-blocks' ) }
+									value={ ctaWidthType || 'fit' }
+									options={ [
+										{
+											value: 'fit',
+											label: __( 'Fit content', 'sgs-blocks' ),
+										},
+										{
+											value: 'full',
+											label: __( 'Full width', 'sgs-blocks' ),
+										},
+									] }
+									onChange={ ( v ) =>
+										setAttributes( { ctaWidthType: v } )
+									}
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
+							   (button/edit.js:596) exactly — ResponsiveBoxControl /
+							   ResponsiveBorderRadiusControl with showResponsive={false}
+							   (single-tier; no ctaBorderWidth/RadiusTablet/Mobile attrs
+							   exist), writing the object straight to the attr. */ }
+							<ToolsPanelItem
+								label={ __( 'Border width', 'sgs-blocks' ) }
+								hasValue={ () =>
+									JSON.stringify( ctaBorderWidth ?? {} ) !==
+									JSON.stringify( {
+										top: '2px',
+										right: '2px',
+										bottom: '2px',
+										left: '2px',
+									} )
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										ctaBorderWidth: {
+											top: '2px',
+											right: '2px',
+											bottom: '2px',
+											left: '2px',
+										},
+									} )
+								}
+								isShownByDefault
+							>
+								<ResponsiveBoxControl
+									label={ __( 'Border width', 'sgs-blocks' ) }
+									values={ { base: ctaBorderWidth ?? {} } }
+									showResponsive={ false }
+									onChange={ ( _tier, next ) =>
+										setAttributes( { ctaBorderWidth: next } )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Corner radius', 'sgs-blocks' ) }
+								hasValue={ () =>
+									JSON.stringify( ctaBorderRadius ?? {} ) !==
+									JSON.stringify( {
+										topLeft: '10px',
+										topRight: '10px',
+										bottomLeft: '10px',
+										bottomRight: '10px',
+									} )
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										ctaBorderRadius: {
+											topLeft: '10px',
+											topRight: '10px',
+											bottomLeft: '10px',
+											bottomRight: '10px',
+										},
+									} )
+								}
+							>
+								<ResponsiveBorderRadiusControl
+									label={ __( 'Corner radius', 'sgs-blocks' ) }
+									values={ { base: ctaBorderRadius ?? {} } }
+									showResponsive={ false }
+									onChange={ ( _tier, next ) =>
+										setAttributes( { ctaBorderRadius: next } )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Font size (px)', 'sgs-blocks' ) }
+								hasValue={ () =>
+									ctaFontSize !== null &&
+									ctaFontSize !== undefined
+								}
+								onDeselect={ () =>
+									setAttributes( { ctaFontSize: null } )
+								}
+							>
+								<NumberControl
+									label={ __( 'Font size (px)', 'sgs-blocks' ) }
+									value={ ctaFontSize ?? '' }
+									min={ 8 }
+									max={ 48 }
+									onChange={ ( v ) =>
+										setAttributes( {
+											ctaFontSize:
+												v === '' || v === undefined
+													? undefined
+													: Number.parseInt( v, 10 ),
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'CTA padding', 'sgs-blocks' ) }
+								hasValue={ () =>
+									!! ctaPadding &&
+									Object.keys( ctaPadding ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( { ctaPadding: {} } )
+								}
+							>
+								<BoxControl
+									label={ __( 'CTA padding', 'sgs-blocks' ) }
+									values={ ctaPadding ?? {} }
+									onChange={ ( next ) =>
+										setAttributes( { ctaPadding: next } )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Background colour', 'sgs-blocks' ) }
+								hasValue={ () => !! ctaColourBackground }
+								onDeselect={ () =>
+									setAttributes( { ctaColourBackground: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Background colour', 'sgs-blocks' ) }
+									value={ ctaColourBackground }
+									onChange={ ( v ) =>
+										setAttributes( { ctaColourBackground: v } )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Text colour', 'sgs-blocks' ) }
+								hasValue={ () => !! ctaColourText }
+								onDeselect={ () =>
+									setAttributes( { ctaColourText: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Text colour', 'sgs-blocks' ) }
+									value={ ctaColourText }
+									onChange={ ( v ) =>
+										setAttributes( { ctaColourText: v } )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Border colour', 'sgs-blocks' ) }
+								hasValue={ () => !! ctaColourBorder }
+								onDeselect={ () =>
+									setAttributes( { ctaColourBorder: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Border colour', 'sgs-blocks' ) }
+									value={ ctaColourBorder }
+									onChange={ ( v ) =>
+										setAttributes( { ctaColourBorder: v } )
+									}
+								/>
+							</ToolsPanelItem>
+						</ToolsPanel>
 					</PanelBody>
 
 				{ /* ── Card layout panel ── */ }
@@ -1632,103 +1762,222 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 						</p>
-						<TextControl
-							label={ __(
-								'Picker label font size',
-								'sgs-blocks'
-							) }
-							help={ __(
-								'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
-								'sgs-blocks'
-							) }
-							value={ pickerLabelFontSize || '' }
-							onChange={ ( v ) =>
+						<ToolsPanel
+							label={ __( 'Picker style', 'sgs-blocks' ) }
+							resetAll={ () =>
 								setAttributes( {
-									pickerLabelFontSize: v,
+									pickerLabelFontSize: '',
+									pickerLabelColour: '',
+									pickerColourPreset: 'solid',
+									pickerShowSelectedTick: true,
+									pickerPillBgColour: '',
+									pickerPillTextColour: '',
+									pickerPillBorderColour: '',
+									pickerPillBorderRadius: '',
+									pickerPillSelectedBgColour: '',
+									pickerPillSelectedTextColour: '',
+									pickerPillSelectedBorderColour: '',
+									pickerPillSelectedBorderRadius: '',
 								} )
 							}
-							__nextHasNoMarginBottom
-						/>
-						<DesignTokenPicker
-							label={ __(
-								'Picker label colour',
-								'sgs-blocks'
-							) }
-							value={ pickerLabelColour }
-							onChange={ ( v ) =>
-								setAttributes( {
-									pickerLabelColour: v,
-								} )
-							}
-						/>
-						<SelectControl
-							label={ __( 'Picker colour preset', 'sgs-blocks' ) }
-							help={ __(
-								'Solid (default) matches the previous look. Soft = pale-tint fill, outline, no tick.',
-								'sgs-blocks'
-							) }
-							value={ pickerColourPreset }
-							options={ [
-								{ label: __( 'Solid (default)', 'sgs-blocks' ), value: 'solid' },
-								{ label: __( 'Soft', 'sgs-blocks' ), value: 'soft' },
-								{ label: __( '— Framework default —', 'sgs-blocks' ), value: '' },
-							] }
-							onChange={ ( v ) => setAttributes( { pickerColourPreset: v } ) }
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Show selection tick', 'sgs-blocks' ) }
-							checked={ pickerShowSelectedTick }
-							onChange={ ( v ) => setAttributes( { pickerShowSelectedTick: v } ) }
-							__nextHasNoMarginBottom
-						/>
-						<DesignTokenPicker
-							label={ __( 'Resting pill background', 'sgs-blocks' ) }
-							value={ pickerPillBgColour }
-							onChange={ ( v ) => setAttributes( { pickerPillBgColour: v } ) }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Resting pill text', 'sgs-blocks' ) }
-							value={ pickerPillTextColour }
-							onChange={ ( v ) => setAttributes( { pickerPillTextColour: v } ) }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Resting pill border', 'sgs-blocks' ) }
-							value={ pickerPillBorderColour }
-							onChange={ ( v ) => setAttributes( { pickerPillBorderColour: v } ) }
-						/>
-						<UnitControl
-							label={ __( 'Pill border radius', 'sgs-blocks' ) }
-							value={ pickerPillBorderRadius || '' }
-							units={ PICKER_RADIUS_UNITS }
-							onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
-							help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
-						<DesignTokenPicker
-							label={ __( 'Selected pill background', 'sgs-blocks' ) }
-							value={ pickerPillSelectedBgColour }
-							onChange={ ( v ) => setAttributes( { pickerPillSelectedBgColour: v } ) }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Selected pill text', 'sgs-blocks' ) }
-							value={ pickerPillSelectedTextColour }
-							onChange={ ( v ) => setAttributes( { pickerPillSelectedTextColour: v } ) }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Selected pill border', 'sgs-blocks' ) }
-							help={ __( 'Independent of the fill (R2). Leave empty to match the fill.', 'sgs-blocks' ) }
-							value={ pickerPillSelectedBorderColour }
-							onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderColour: v } ) }
-						/>
-						<UnitControl
-							label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
-							value={ pickerPillSelectedBorderRadius || '' }
-							units={ PICKER_RADIUS_UNITS }
-							onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
-							help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-						/>
+						>
+							<ToolsPanelItem
+								label={ __( 'Picker label font size', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerLabelFontSize }
+								onDeselect={ () =>
+									setAttributes( { pickerLabelFontSize: '' } )
+								}
+								isShownByDefault
+							>
+								<TextControl
+									label={ __(
+										'Picker label font size',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'Any CSS size, e.g. 18px or 1.2rem. Leave empty for the default.',
+										'sgs-blocks'
+									) }
+									value={ pickerLabelFontSize || '' }
+									onChange={ ( v ) =>
+										setAttributes( {
+											pickerLabelFontSize: v,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Picker label colour', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerLabelColour }
+								onDeselect={ () =>
+									setAttributes( { pickerLabelColour: '' } )
+								}
+								isShownByDefault
+							>
+								<DesignTokenPicker
+									label={ __(
+										'Picker label colour',
+										'sgs-blocks'
+									) }
+									value={ pickerLabelColour }
+									onChange={ ( v ) =>
+										setAttributes( {
+											pickerLabelColour: v,
+										} )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Picker colour preset', 'sgs-blocks' ) }
+								hasValue={ () => pickerColourPreset !== 'solid' }
+								onDeselect={ () =>
+									setAttributes( { pickerColourPreset: 'solid' } )
+								}
+								isShownByDefault
+							>
+								<SelectControl
+									label={ __( 'Picker colour preset', 'sgs-blocks' ) }
+									help={ __(
+										'Solid (default) matches the previous look. Soft = pale-tint fill, outline, no tick.',
+										'sgs-blocks'
+									) }
+									value={ pickerColourPreset }
+									options={ [
+										{ label: __( 'Solid (default)', 'sgs-blocks' ), value: 'solid' },
+										{ label: __( 'Soft', 'sgs-blocks' ), value: 'soft' },
+										{ label: __( '— Framework default —', 'sgs-blocks' ), value: '' },
+									] }
+									onChange={ ( v ) => setAttributes( { pickerColourPreset: v } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Show selection tick', 'sgs-blocks' ) }
+								hasValue={ () => pickerShowSelectedTick !== true }
+								onDeselect={ () =>
+									setAttributes( { pickerShowSelectedTick: true } )
+								}
+							>
+								<ToggleControl
+									label={ __( 'Show selection tick', 'sgs-blocks' ) }
+									checked={ pickerShowSelectedTick }
+									onChange={ ( v ) => setAttributes( { pickerShowSelectedTick: v } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Resting pill background', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillBgColour }
+								onDeselect={ () =>
+									setAttributes( { pickerPillBgColour: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Resting pill background', 'sgs-blocks' ) }
+									value={ pickerPillBgColour }
+									onChange={ ( v ) => setAttributes( { pickerPillBgColour: v } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Resting pill text', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillTextColour }
+								onDeselect={ () =>
+									setAttributes( { pickerPillTextColour: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Resting pill text', 'sgs-blocks' ) }
+									value={ pickerPillTextColour }
+									onChange={ ( v ) => setAttributes( { pickerPillTextColour: v } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Resting pill border', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillBorderColour }
+								onDeselect={ () =>
+									setAttributes( { pickerPillBorderColour: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Resting pill border', 'sgs-blocks' ) }
+									value={ pickerPillBorderColour }
+									onChange={ ( v ) => setAttributes( { pickerPillBorderColour: v } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Pill border radius', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillBorderRadius }
+								onDeselect={ () =>
+									setAttributes( { pickerPillBorderRadius: '' } )
+								}
+							>
+								<UnitControl
+									label={ __( 'Pill border radius', 'sgs-blocks' ) }
+									value={ pickerPillBorderRadius || '' }
+									units={ PICKER_RADIUS_UNITS }
+									onChange={ ( v ) => setAttributes( { pickerPillBorderRadius: v ?? '' } ) }
+									help={ __( 'CSS length, e.g. 6px. Blank = default; 0 = square.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Selected pill background', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillSelectedBgColour }
+								onDeselect={ () =>
+									setAttributes( { pickerPillSelectedBgColour: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Selected pill background', 'sgs-blocks' ) }
+									value={ pickerPillSelectedBgColour }
+									onChange={ ( v ) => setAttributes( { pickerPillSelectedBgColour: v } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Selected pill text', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillSelectedTextColour }
+								onDeselect={ () =>
+									setAttributes( { pickerPillSelectedTextColour: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Selected pill text', 'sgs-blocks' ) }
+									value={ pickerPillSelectedTextColour }
+									onChange={ ( v ) => setAttributes( { pickerPillSelectedTextColour: v } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Selected pill border', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillSelectedBorderColour }
+								onDeselect={ () =>
+									setAttributes( { pickerPillSelectedBorderColour: '' } )
+								}
+							>
+								<DesignTokenPicker
+									label={ __( 'Selected pill border', 'sgs-blocks' ) }
+									help={ __( 'Independent of the fill (R2). Leave empty to match the fill.', 'sgs-blocks' ) }
+									value={ pickerPillSelectedBorderColour }
+									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderColour: v } ) }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
+								hasValue={ () => !! pickerPillSelectedBorderRadius }
+								onDeselect={ () =>
+									setAttributes( { pickerPillSelectedBorderRadius: '' } )
+								}
+							>
+								<UnitControl
+									label={ __( 'Selected pill border radius', 'sgs-blocks' ) }
+									value={ pickerPillSelectedBorderRadius || '' }
+									units={ PICKER_RADIUS_UNITS }
+									onChange={ ( v ) => setAttributes( { pickerPillSelectedBorderRadius: v ?? '' } ) }
+									help={ __( 'Blank = match resting radius; 0 = square.', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+						</ToolsPanel>
 					</PanelBody>
 
 				{ /* ── Content overrides panel (connected products only) ── */ }

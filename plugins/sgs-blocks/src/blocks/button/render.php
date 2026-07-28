@@ -35,7 +35,14 @@ $download      = ! empty( $attributes['download'] );
 // otherwise <button>, preserving link-vs-button semantics without a setting.
 $tag_name   = $has_url ? 'a' : 'button';
 $is_submit  = ! empty( $attributes['isSubmit'] );
-$aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
+$aria_label        = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
+// Spec 35 T3.4 / Part C — WCAG 2.1 AA 4.1.2 (Name, Role, Value). The inspector
+// control's help text promises "Overrides the visible label for screen
+// readers" with no icon-only qualifier, so an explicit operator override must
+// render on every tag variant, not only when icon_position === 'only'. This
+// fixes a chain break where the aria-label attribute was silently dropped
+// whenever the button had visible text.
+$has_explicit_aria = isset( $attributes['ariaLabel'] ) && '' !== trim( (string) $attributes['ariaLabel'] );
 
 // Icon.
 $icon          = isset( $attributes['icon'] ) ? sanitize_text_field( $attributes['icon'] ) : '';
@@ -910,7 +917,7 @@ $allowed_inner = array_merge(
 // Build the element.
 if ( 'button' === $tag_name ) {
 	$type_attr = $is_submit ? 'submit' : 'button';
-	$aria_str  = 'only' === $icon_position ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
+	$aria_str  = ( $has_explicit_aria || 'only' === $icon_position ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 
 	echo '<button type="' . esc_attr( $type_attr ) . '"' . $aria_str . ' ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $aria_str built with esc_attr(); get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );
@@ -927,7 +934,7 @@ if ( 'button' === $tag_name ) {
 
 	$target_attr   = ( $link_target && '_self' !== $link_target ) ? ' target="' . esc_attr( $link_target ) . '"' : '';
 	$download_attr = $download ? ' download' : '';
-	$aria_str      = 'only' === $icon_position ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
+	$aria_str      = ( $has_explicit_aria || 'only' === $icon_position ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 
 	echo '<a href="' . esc_url( $url ) . '"' . $target_attr . $rel_attr . $download_attr . $aria_str . ' ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target_attr/$rel_attr/$download_attr/$aria_str all built with esc_attr(); get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );
