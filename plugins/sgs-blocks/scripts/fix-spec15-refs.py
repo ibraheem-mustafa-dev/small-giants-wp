@@ -47,8 +47,10 @@ deliberately out of scope — they are historical record, not live pointers:
   * `reports/2026-05-21-*.md` (12 files) — dated audit SNAPSHOTS. Rewriting a snapshot
     falsifies what the audit actually said on the day. Same logic as `archive/`.
   * `tools/recogniser-v2/` (2 files) — the legacy extract.py subprocess, documented as
-    "permanently retired" in BOTH `cloning-pipeline-flow.md:81` and
-    `cloning-pipeline-stages.md:289`. Dead code; its citations mislead nobody.
+    "permanently retired" in BOTH the (now-archived, 2026-07-28)
+    `memory/archived-2026-07-28-cloning-pipeline-flow.md:81` and
+    `memory/archived-2026-07-28-cloning-pipeline-stages.md:289`. Dead code; its
+    citations mislead nobody.
 
 If either is ever revived, add its root above — do not widen the roots speculatively.
 Archives (`specs/archive/`, `plans/archive/`, `memory/`) keep their original citations

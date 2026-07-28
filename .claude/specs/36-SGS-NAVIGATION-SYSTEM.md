@@ -7,7 +7,7 @@ owner: framework
 date: 2026-07-19
 companions:
   - 37-HEADER-FOOTER-BUILDER.md (the header the nav plugs INTO; nav → header dependency only; FR-S9-8 (Spec 37 §3.8) labelCollapse/per-tier visibility is BUILT; formerly 17-HEADER-FOOTER-ARCHITECTURE.md)
-  - .claude/plans/2026-07-18-P2-builder-ux-design-gate.md (LOCKED header/footer builder; ResponsiveTriStateControl is DESIGNED-not-built there)
+  - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md (LOCKED header/footer builder; ResponsiveTriStateControl is DESIGNED-not-built there)
   - 32 (no-inline) · 35 (Part L controls + Part G native mechanisms incl. templateLock:contentOnly + the Responsive-Visibility extension) · 31 §13 + 33 Part 2 (converter — built AFTER the nav passes its test gate; see FR-36-15)
   - seo-schema / seo-technical skills own schema JSON-LD emission
 supersedes:
@@ -216,7 +216,7 @@ scrollbar-bounce compensation — are EXISTING fixes carried forward verbatim.
 
 **⭐ DESKTOP VARIANTS — BUILT + council-fixed + canary-deployed 2026-07-28 session 2 (D403 design
 gate approved by Bean, D404 ship record; commits `faa14924`/`cab1b916`/`69dfbaf9`). The canonical
-shape is `.claude/plans/2026-07-28-nav-drawer-variants-design-gate.md` — read THAT, not the
+shape is `.claude/plans/archive/2026-07-28-nav-drawer-variants-design-gate.md` — read THAT, not the
 research summary below.** What shipped: per-device `anchor` object (`full-screen` default /
 `header` derives width+edges from the header / `trigger` / `centred` — Bean's pause-menu addition,
 no reference among the 8) + `panelSize` (responsive) + surface opacity/blur (NO scrim element —

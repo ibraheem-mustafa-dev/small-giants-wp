@@ -13,6 +13,10 @@ update_triggers:
   - Any change to converter/entry.py's failure contract or the orchestrator's status:'failed' handling (currently a KNOWN GAP — see Stage 4 block)
 ---
 
+ARCHIVED 2026-07-28 — hand-maintained code-mirror, chronically behind the code (last annotated 2026-07-05).
+Superseded by: the code itself + `specs/31-UNIVERSAL-CLONING-PIPELINE.md` (Appendix D stage index).
+Historical reference only — do not update.
+
 # SGS Cloning Pipeline — Per-Stage Annotated Blocks
 
 Overview and stage-index table: `.claude/cloning-pipeline-flow.md`

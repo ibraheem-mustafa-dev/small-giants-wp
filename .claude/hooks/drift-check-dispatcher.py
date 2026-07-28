@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""drift-check-dispatcher.py — single PostToolUse hook that runs 5 lightweight
-drift checks against cloning-pipeline-flow.md + Spec 16 + DB schema.
+"""drift-check-dispatcher.py — single PostToolUse hook that runs 3 lightweight
+drift checks against Spec 16 + DB schema.
 
 POSTURE (mixed, per Bean 2026-05-21):
-  Checks 1/3/4/5: POSTURE A (warn-only, exit 0). systemMessage JSON output.
-  Check 2 (DB schema): POSTURE B (BLOCK, exit 2, stderr). DB drift is silently
+  Checks 1/2: POSTURE A (warn-only, exit 0). systemMessage JSON output.
+  Check DB SCHEMA: POSTURE B (BLOCK, exit 2, stderr). DB drift is silently
     dangerous — a renamed column or row-count divergence can break the
     pipeline without obvious surface. Posture B forces Claude to address it
     before continuing.
@@ -12,14 +12,19 @@ POSTURE (mixed, per Bean 2026-05-21):
 Triggered by Edit/Write/Bash via .claude/settings.json. Internal path-filter
 gates each check — typical fire is one early-exit + zero file reads.
 
-5 checks (file-path-scoped):
-  1. SCRIPT INVENTORY DRIFT  — Edit/Write on *.py under pipeline dirs (A)
-  2. DB SCHEMA DRIFT          — Bash containing 'sgs-update' OR 'sgs-framework.db' (B)
-  3. SKILL DISPATCH DRIFT     — Edit/Write on ~/.claude/skills/*/SKILL.md (A)
-  4. STAGE STATUS NUDGE       — Edit/Write on stage-owning scripts (A)
-  5. SPEC 16 FR/R DRIFT       — Edit/Write on cv2 / orchestrator surface (A)
+3 checks (file-path-scoped):
+  1. DB SCHEMA DRIFT          — Bash containing 'sgs-update' OR 'sgs-framework.db' (B)
+  2. STAGE STATUS NUDGE       — Edit/Write on stage-owning scripts (A)
+  3. SPEC 16 FR/R DRIFT       — Edit/Write on cv2 / orchestrator surface (A)
 
-Captured 2026-05-21.
+Captured 2026-05-21. REMOVED 2026-07-28: the SCRIPT INVENTORY DRIFT and SKILL
+DISPATCH DRIFT checks, which compared code edits against mentions inside the
+hand-maintained `cloning-pipeline-flow.md` mirror — that doc was archived the
+same day for chronic drift (the exact "docs must be manually kept in sync
+with code" failure class these two checks existed to catch). Per-stage truth
+is now the code itself + `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`
+Appendix D (a stage-index table, not a behaviour mirror, so nothing needs a
+drift check against it).
 """
 from __future__ import annotations
 
@@ -35,17 +40,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 # ---------- locate project + truth docs ----------
 PROJECT = Path(__file__).resolve().parents[2]
-FLOW_DOC = PROJECT / ".claude" / "cloning-pipeline-flow.md"
 SPEC_16 = PROJECT / ".claude" / "specs" / "16-DETERMINISTIC-CONVERTER-V2.md"
 SGS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-
-# Pipeline-script roots (relative to project)
-PIPELINE_SCRIPT_DIRS = (
-    "plugins/sgs-blocks/scripts/",
-    "tools/recogniser-v2/",
-    "tools/recogniser/",
-    "scripts/",
-)
 
 # Stage-owning module patterns (for Stage status nudge)
 STAGE_OWNERS = {
@@ -99,29 +95,7 @@ def _read_text(p: Path) -> str:
         return ""
 
 
-# ---------- Check 1 — Script inventory drift ----------
-def check_script_inventory(file_path: str, tool_name: str) -> str | None:
-    if tool_name not in ("Write", "Edit"):
-        return None
-    if not file_path.endswith(".py"):
-        return None
-    rel = file_path.replace(str(PROJECT).replace("\\", "/"), "").lstrip("/\\")
-    if not any(rel.startswith(d) for d in PIPELINE_SCRIPT_DIRS):
-        return None
-    basename = Path(file_path).name
-    flow = _read_text(FLOW_DOC)
-    if not flow:
-        return None
-    if basename not in flow:
-        return (
-            f"[drift-check 1/5 Script inventory] {basename} edited under a pipeline dir but "
-            f"isn't mentioned in cloning-pipeline-flow.md. If new, add an entry to the "
-            f"Script inventory section. If renamed, update both names."
-        )
-    return None
-
-
-# ---------- Check 2 — DB schema drift ----------
+# ---------- Check — DB schema drift ----------
 def check_db_schema(tool_name: str, tool_input: dict) -> str | None:
     if tool_name != "Bash":
         return None
@@ -143,12 +117,12 @@ def check_db_schema(tool_name: str, tool_input: dict) -> str | None:
         con.close()
     except Exception:
         return None
-    # Compare to flow doc / Spec 16 hardcoded counts.
+    # Compare to Spec 16 hardcoded counts.
     # TIGHT pattern: only match "<table> ... (<N> rows|entries|items)" where
     # the parenthesised count is within 40 chars of the table name. Looser
     # regex caused false positives (matched adjacent table's count in 5-line
     # window). Tested 2026-05-21.
-    flow = _read_text(FLOW_DOC) + "\n" + _read_text(SPEC_16)
+    flow = _read_text(SPEC_16)
     mismatches = []
     for tbl, count in rows.items():
         if count is None:
@@ -161,37 +135,14 @@ def check_db_schema(tool_name: str, tool_input: dict) -> str | None:
                 break  # one per table is enough
     if mismatches:
         return (
-            f"[drift-check 2/5 DB schema] Row counts in cloning-pipeline-flow.md / Spec 16 "
+            f"[drift-check 1/3 DB schema] Row counts in Spec 16 "
             f"diverge from sgs-framework.db: " + "; ".join(mismatches) +
             ". Update the doc counts."
         )
     return None
 
 
-# ---------- Check 3 — Skill dispatch drift ----------
-def check_skill_dispatch(file_path: str, tool_name: str) -> str | None:
-    if tool_name not in ("Write", "Edit"):
-        return None
-    fp = file_path.replace("\\", "/")
-    m = re.search(r"\.claude/skills/([^/]+)/SKILL\.md$", fp)
-    if not m:
-        return None
-    skill_name = m.group(1)
-    flow = _read_text(FLOW_DOC)
-    if not flow:
-        return None
-    # Only fire for skills the pipeline could plausibly dispatch
-    if skill_name.startswith(("uimax", "sgs", "wp", "design", "visual", "research")):
-        if f"/{skill_name}" not in flow and skill_name not in flow:
-            return (
-                f"[drift-check 3/5 Skill dispatch] /{skill_name} SKILL.md edited but "
-                f"isn't referenced in cloning-pipeline-flow.md. If the skill is a pipeline "
-                f"dispatch target, add it to the Skill dispatch chain section."
-            )
-    return None
-
-
-# ---------- Check 4 — Stage status nudge ----------
+# ---------- Check — Stage status nudge ----------
 def check_stage_status_nudge(file_path: str, tool_name: str) -> str | None:
     if tool_name not in ("Write", "Edit"):
         return None
@@ -200,13 +151,13 @@ def check_stage_status_nudge(file_path: str, tool_name: str) -> str | None:
         return None
     stage = STAGE_OWNERS[basename]
     return (
-        f"[drift-check 4/5 Stage status nudge] {basename} owns {stage}. After this edit, "
-        f"verify the STATUS line for {stage} in cloning-pipeline-flow.md still matches "
-        f"the new code reality. Reminder only — no automated check."
+        f"[drift-check 2/3 Stage status nudge] {basename} owns {stage}. After this edit, "
+        f"verify the corresponding entry in .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md "
+        f"Appendix D still matches the new code reality. Reminder only — no automated check."
     )
 
 
-# ---------- Check 5 — Spec 16 FR/R drift ----------
+# ---------- Check — Spec 16 FR/R drift ----------
 def check_spec_16_fr_drift(file_path: str, tool_name: str) -> str | None:
     if tool_name not in ("Write", "Edit"):
         return None
@@ -217,7 +168,7 @@ def check_spec_16_fr_drift(file_path: str, tool_name: str) -> str | None:
     # Surface a nudge only — actual symbol-presence check would require reading
     # the file post-edit, which is heavier. Keep the hook cheap.
     return (
-        f"[drift-check 5/5 Spec 16 FR/R nudge] {Path(file_path).name} is in the cv2 / "
+        f"[drift-check 3/3 Spec 16 FR/R nudge] {Path(file_path).name} is in the cv2 / "
         f"orchestrator surface that Spec 16 §3 FR1-FR9 + §2 R1-R5 describe. After this "
         f"edit, verify the corresponding FR/R status entries in "
         f".claude/specs/16-DETERMINISTIC-CONVERTER-V2.md still match. Reminder only."
@@ -237,8 +188,6 @@ def main() -> int:
     # Posture A checks (warn via systemMessage, exit 0)
     warn_messages: list[str] = []
     for check in (
-        lambda: check_script_inventory(file_path, tool_name),
-        lambda: check_skill_dispatch(file_path, tool_name),
         lambda: check_stage_status_nudge(file_path, tool_name),
         lambda: check_spec_16_fr_drift(file_path, tool_name),
     ):
@@ -265,7 +214,7 @@ def main() -> int:
             + db_block_message
             + "\n\nDB schema drift is silently dangerous (renamed column / missing row count "
             "can break the pipeline without an obvious surface). Update the affected counts in "
-            "cloning-pipeline-flow.md DB heat-map AND/OR Spec 16 §12.4/§12.5 before continuing.\n"
+            "Spec 16 §12.4/§12.5 before continuing.\n"
         )
         return 2
 

@@ -74,4 +74,4 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 
 ## Build Phase
 
-This is **Phase 3** — independent of SGS Blocks. Can be built in parallel with Phase 2 (Forms Advanced) once the theme exists. See `specs/06-BUILD-ORDER.md`.
+This is **Phase 3** — independent of SGS Blocks. Can be built in parallel with Phase 2 (Forms Advanced) once the theme exists. (Historical phasing doc `06-BUILD-ORDER.md` is archived; live sequencing lives in `.claude/LEDGER.md`.)

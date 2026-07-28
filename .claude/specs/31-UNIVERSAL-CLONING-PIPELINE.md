@@ -55,7 +55,7 @@ binding_rules: R-31-1, R-31-2, R-31-3, R-31-4, R-31-5, R-31-6, R-31-7, R-31-8, R
 
 ## 1. System map — where CSS transfer happens
 
-The pipeline (`cloning-pipeline-flow.md`) touches CSS transfer at exactly these points. Spec 31 governs all of them as ONE system:
+The pipeline (Appendix D stage index, below) touches CSS transfer at exactly these points. Spec 31 governs all of them as ONE system:
 
 | Stage | Role in CSS transfer | Current state |
 |-------|---------------------|---------------|
@@ -94,7 +94,7 @@ SELECT block_slug, container_kind FROM block_composition
 WHERE wraps_block = 'sgs/container' AND container_kind IS NOT NULL;
 ```
 
-`block_composition.container_kind` (∈ `section`/`layout`/`content`) is the converter's roster axis. It gates **panel/render-layer exposure** (which editor controls + PHP layers the block shows) — it is **NOT** a routing input (Spec 29 §2, §8; D194). A couple of blocks have render-side wrapper nuances — e.g. `sgs/modal` and `sgs/mobile-nav` are excluded from the wrapper-mirror (`containerMirror:false`, Spec 29 §3) — but that render-side axis is **separate** and does not remove a block from the converter roster (`container_kind`). Full roster + KIND meanings: **Spec 29** (canonical).
+`block_composition.container_kind` (∈ `section`/`layout`/`content`) is the converter's roster axis. It gates **panel/render-layer exposure** (which editor controls + PHP layers the block shows) — it is **NOT** a routing input (§2, §8 below; D194). A couple of blocks have render-side wrapper nuances — e.g. `sgs/modal` and `sgs/mobile-nav` are excluded from the wrapper-mirror (`containerMirror:false`, §13.6.1 below) — but that render-side axis is **separate** and does not remove a block from the converter roster (`container_kind`). Full roster + KIND meanings: §13.6.1 below (canonical, folded from the former Spec 29).
 
 **Container-equivalent blocks appear at BOTH levels, treated identically:**
 - **Section-class level** — a top-level page section (`sgs/hero`, or a slug-None `<section>` → `sgs/container`).
@@ -166,7 +166,7 @@ These seven migrating **content + images + layout faithfully on the live page-8 
 
 ### 2.8 What this supersedes
 
-This §2 is the canonical description of the pipeline. The old §2 "four orthogonal axes" (LAYERS/KIND/CHILD-SHAPE/VARIANT, now §2.9), §3 (routing algorithm), and §13 (walker/content-fork) are detailed reference **beneath** this and must not contradict it. The frozen `convert.py`'s separate CSS/content routes are **not** the architecture — the pipeline is one recursive stream (§2.0). Cross-refs: Spec 29 (roster + KINDs + §8 name-free routing), §13.2 (BEM recognition + FR-31-4 default), §13.5 (FR-31-20 variant detection), §13.3 (FR-31-2 content fork), WRAPPER-CSS-ROUTING-DESIGN-GATE (DEC-1..5).
+This §2 is the canonical description of the pipeline. The old §2 "four orthogonal axes" (LAYERS/KIND/CHILD-SHAPE/VARIANT, now §2.9), §3 (routing algorithm), and §13 (walker/content-fork) are detailed reference **beneath** this and must not contradict it. The frozen `convert.py`'s separate CSS/content routes are **not** the architecture — the pipeline is one recursive stream (§2.0). Cross-refs: §13.6.1 (roster + KINDs + §8-equivalent name-free routing, folded from the former Spec 29), §13.2 (BEM recognition + FR-31-4 default), §13.5 (FR-31-20 variant detection), §13.3 (FR-31-2 content fork), WRAPPER-CSS-ROUTING-DESIGN-GATE (DEC-1..5).
 
 ### 2.9 Reference: the four orthogonal axes (detail beneath §2)
 
@@ -187,7 +187,7 @@ Per FR-31-21 + the design-gate doc. A draft wrapper decomposes into at most four
 Rules that bind every layer: the container **NEVER imposes alignment on children** (step 5); any property with no attr destination is **FLAGGED, never silent-dropped** (step 6); `display`/`grid-template-*` are **EXCLUDED from cross-node inline lift** (GAP-3 — inline beats `@media` and collapses grids). **STATUS (D250, 2026-06-30): `grid-template-*` routing UPDATED** — on a section root, properties in `dispatch_table._GRID_LAYOUT_PROPS` now route PRE-LAYER directly to the grid resolver (a section root is simultaneously OUTER for box CSS and GRID for child-track declarations); this resolves the ambiguity where the layer-detector could not distinguish an OUTER `max-width` from a GRID `grid-template-columns` on the same root element.
 
 ### Axis 2 — KIND (which layers a block exposes)
-`block_composition.container_kind` (31 blocks): **section** (all layers + background/overlay/SVG/shape), **layout** (L1–L4 width+grid, no background layer), **content** (L1+L2 width+padding only, no grid, no background). KIND **gates which attrs exist as a destination**; it does NOT change routing logic (Spec 29 §8, D194).
+`block_composition.container_kind` (31 blocks): **section** (all layers + background/overlay/SVG/shape), **layout** (L1–L4 width+grid, no background layer), **content** (L1+L2 width+padding only, no grid, no background). KIND **gates which attrs exist as a destination**; it does NOT change routing logic (§13.6.1 below, D194).
 
 ### Axis 3 — CHILD-SHAPE (where per-item / child CONTENT **and** CSS goes)
 The axis Bean called out explicitly. **⚡ UPDATED 2026-07-04 (FR-31-2.6, CANONICAL):** the CONTENT nested-vs-child shape is decided PER ATTR by the source-derived `block_attributes.emit_shape` (`nested` | `child`), NOT by the block-level `block_composition.has_inner_blocks` flag (RETIRED as the dispatch signal — a block-level flag cannot express a MIXED block; the column + its readers still exist in code, deletion scheduled per §13.3 FR-31-2.6 / EXECUTION Steps 8 + Phase 6). The universal per-attr walk replaces the `has_inner` dispatch + Mechanisms A/B. The three-way table below is retained as an ILLUSTRATION of the block *families* (pure-InnerBlocks / pure-scalar / mixed) — but the routing is now per-attr: each `role=content` attr resolves its identity (`equivalent_block_for`) + its `emit_shape`, so a "Mixed" block is simply one whose attrs carry BOTH `emit_shape` values. **NOTE (D246): this axis governs BOTH the element's CONTENT destination AND where its CSS goes — the SAME per-element dispatch, not separate stages.** The table's column says "CSS destination" but read it as content+CSS destination; the `has_inner_blocks` column below is the RETIRED signal, kept only to show the historical family split:
@@ -477,7 +477,7 @@ A red-team fixture per HIGH gap (a `::before` section, a `<video>` hero media co
 > - **744 tests + all static gates green** at programme close (up from the 580-ish counts cited in earlier D24x/D25x status blocks above — those counts are historical).
 > - **Residuals (open, tracked, not blockers to this closure):** card CTA text/url gap, `packSizes` schema gap, image ALT-text gap — bundled under parking entry `P-GATE-A-CARD-RESIDUALS`.
 >
-> This block supersedes every "frozen engine is production default" / "STOP-28 gates the flag" statement in the D243-D274 status blocks above — those are now read as historical build narrative, not current architecture. See `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` for the traced post-D276 stage-by-stage detail.
+> This block supersedes every "frozen engine is production default" / "STOP-28 gates the flag" statement in the D243-D274 status blocks above — those are now read as historical build narrative, not current architecture. See Appendix D (stage index, below) for the entry-point map; per-stage behavioural truth is the code itself (the two hand-maintained mirror docs this block used to cite were archived 2026-07-28 for chronic drift).
 >
 > ### CURRENT BUILD STATE vs FULL SCOPE (D252, 2026-06-30 — HISTORICAL; superseded by D254 + the D274 block above) — read this for "what's built / what's left"
 > A genuine full-homepage run of the new engine on the Mama's draft (9 top-level sections) is the universality measure:
@@ -660,6 +660,27 @@ This is the **single authoritative content fork** for §3.B (it supersedes §3.B
 - **FR-31-6.1 — parallel-session migration protocol.** When render.php migrations are dispatched across parallel subagents: each agent is confined to its own block directory; an agent that needs a shared helper HALTS and RETURNS rather than editing a shared file (STOP-2 / `subagents-must-not-write-shared-files`); agents have NO git-commit authority (the main session reviews + commits); the legacy-cleanup phase is BLOCKED until every agent has closed. This prevents the `rater-agents-must-never-git-revert-shared-tree` failure class.
 - **R-31-14 correct path (not a fallback hack):** the sanctioned way to give a migrated block backwards-compat is the FULL FR-31-6 roster migration (deprecated.js for the old shape) + a WP-CLI batch sweep of existing posts — never a server-side `if empty($content)` legacy-scalar-render branch in render.php.
 
+### 13.6.1 Container-equivalent roster + KINDs (folded from Spec 29, archived 2026-07-28)
+
+**The model.** `sgs/container` is the canonical wrapper block (background image/video/parallax/ken-burns/SVG/overlay, shape dividers, width/content-width capping, grid/flex layout, responsive gap, min-height, grid-item defaults, shadow). Every composite with a built-in outer wrapper mirrors it via the shared PHP helper `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php` (`SGS_Container_Wrapper::render( $attributes, $block, $inner_html, $kind, $opts )` — pass `$attributes` VERBATIM, no merge/reorder, or the responsive-CSS uid `md5(wp_json_encode($attributes).anchor)` breaks scoped-selector targeting) and the shared editor component `src/blocks/container/components/ContainerWrapperControls.js` (`kind` prop matches `block_composition.container_kind`; its `KIND_PANELS` map decides which sub-panels render). See §13.6 above for what "mirror" does/doesn't mean and the block-private exception (D294).
+
+**The three KINDs** (`block_composition.container_kind`, gates panel exposure + PHP render layers — never routing, per §2 Axis 2 / §13.8 below):
+- **`section`** — full-bleed outer page wrapper; background spans edge-to-edge, `contentWidth` adds the inner centring wrapper. For top-level page sections (hero, CTA strip, trust-bar). Exposes: layout, width, min-height, grid-item defaults, background, shadow, shape dividers.
+- **`layout`** — inner grid/flex arrangement of children, width/contentWidth capping, no background layer. For blocks whose job is arranging children (card-grid, feature-grid, gallery) inside a parent section.
+- **`content`** — self-contained content unit with its own chrome, width cap + inner padding, no grid/background engine. For blocks that are a card/box/unit inside someone else's grid (info-box, quote, team-member).
+
+**Excluded from mirroring** (`supports.sgs.containerMirror: false`) despite structurally wrapping `sgs/container`: `sgs/modal` (outer shell is a `<dialog>`, no background/grid/gap layers) and `sgs/mobile-nav` (off-canvas Popover overlay, container mapping doesn't apply to fixed-position overlays).
+
+**Live roster (DB-authoritative, do not hardcode a count or list here):**
+```bash
+python plugins/sgs-blocks/scripts/sgs-db.py query \
+  "SELECT block_slug, container_kind FROM block_composition WHERE container_kind IS NOT NULL ORDER BY container_kind, block_slug"
+```
+
+**Auto-propagation:** a new `sgs/container` attr propagates to the whole roster via `/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py`), diffing the KIND-scoped attr set and writing missing attrs into roster `block.json` files (report-only pending sign-off; `--apply` writer wired — see FR-31-21.2 above).
+
+**Container-bearing vs styles-directly (D228, 2026-06-16).** The Stage-11 mirror roster (which blocks RECEIVE the sgs/container attr-mirror) is NOT the same test as "renders via `SGS_Container_Wrapper`". A block can use the wrapper for its outer shell yet have its own colour/border/typography supports + no `sgs/container` InnerBlocks — it then styles directly and is excluded from the roster (`sgs/product-card` D204, `sgs/team-member` D228). Roster detection currently keys on `sgs/container` InnerBlocks presence, so wrapper-attr scalar blocks must be hand-curated out; `container_kind` (the converter's composite-mirror source) is a separate axis and both blocks above remain `content` there.
+
 ### 13.7 Data interface (FR-31-8 / FR-31-8.1)
 
 All DB access via the `db_lookup.py` accessor layer + `wp-blocks.py` CLI — **never raw `sqlite3` in pipeline scripts**. Cross-DB authority: `sgs-framework.db` is authoritative for block schema/composition/variants; `uimax` is a recognition oracle for gap-writing only (the walker never queries uimax at runtime — FR-31-9 down-scoped). Performance: `db_lookup` ≤2ms cache-warm.
@@ -682,3 +703,48 @@ walk(node, css_rules, is_top_level):
 ```
 
 **Appendix B — `atomic_tag_map()` resolution** (FR-31-3 exception 1): a reverse-walk of `blocks.replaces` (Tier 1) then `html_tag_to_core_block` (Tier 2 shape fallback) maps a bare HTML tag to its block (`h1→sgs/heading`, `img→sgs/media`, `a→core/button`, `blockquote→sgs/quote`, `p→sgs/text`). Tag is shape, context is meaning (R-31-2).
+
+**Appendix C — pipeline run artefacts** (rehomed from the dissolved `docs-registry.yaml`, 2026-07-28; these are DEBUG artefacts — the rendered-fidelity signal is Spec 20 computed-parity, never these input-side logs).
+
+The orchestrator writes these per run at `pipeline-state/<client>-<page>-<YYYY-MM-DD-HHMMSS>/`. **ALWAYS read `leftover-buckets.json` FIRST** before conjecturing about clone-quality causes.
+
+| Artefact | Owns | Writer (where not the orchestrator) |
+|---|---|---|
+| `leftover-buckets.json` | Stage 9 gap classification — every converter miss bucketed (section, slot, reason). Read FIRST. | `recogniser/leftover-bucket-router.py` |
+| `stage-9.json` | Stage 9 summary — coverage stats, autonomy_chain status, unmatched_sections, operator_review_html_path | |
+| `extract.json` | Stage 4 full extraction — block_markup + per-section extracted_attributes + variation_css + slot resolution | |
+| `extract.patched.json` | Stage 10 — block_markup with image URLs swapped to live WP media URLs; used to PATCH the target page | `orchestrator/upload_and_patch.py` |
+| `trace.jsonl` | Per-stage trace events incl. softfails | |
+| `summary.log` | Stage 9c — one line per stage with event/error/warning counts. ALWAYS written | `orchestrator/surface_pipeline_logs.py` |
+| `errors.log` / `warnings.log` | Stage 9c — trace events with `passed=false` / soft-fails + lint warnings. Only when ≥1 | |
+| `operator-review.html` | Human-readable Stage 9 gap surface | |
+| `slot-list.json` | Stage 3 — per-boundary slot catalogue + canonical_source ratio | |
+| `voter.json` / `match.json` | Stage 1 convention voter / Stage 2 confidence-matrix match + score | |
+| `media-sideload-manifest.json` | Stage 4i — image-sideload manifest | |
+
+---
+
+**Appendix D — stage index.** Per-stage truth is the CODE — this index exists to find the entry point, never to describe behaviour. The two hand-maintained mirrors (`cloning-pipeline-flow.md` / `-stages.md`) were archived 2026-07-28 for chronic drift.
+
+| # | Stage name | Entry function/script | Owning FR / spec section |
+|---|---|---|---|
+| -1 | Draft global-styles extraction | `plugins/sgs-blocks/scripts/theme-extractor/extract.py` (standalone, runs before the orchestrator) | Spec 33, FR-33-12 |
+| 0 | Theme cache | inline in `sgs-clone-orchestrator.py:main()` | — |
+| 0.1 | BEM compliance lint | `stage_0_1_bem_lint()` → `lints/bem-lint.py` | Spec 00 §3.1 |
+| 0.5 | Token-usage lint | `stage_0_5_token_lint()` → `lints/token-lint.py` | Spec 31 §13.4-adjacent |
+| 0.7 | CSS lift (4-destination router) | `stage_0_7_css_lift()` → `orchestrator/css_router.py:route_css()` | Spec 31 §13.1 R-31-1 |
+| 1 | Section boundary detection | `stage_1_boundary()` → `recogniser/per-section-convention-voter.py` | §13.2 |
+| 2 | Block-type match | `stage_2_match()` → `recogniser/confidence-matrix.py:score_candidates()` | §13.2 |
+| 3 | Slot list | `stage_3_slot_list()` → `converter/db/db_lookup.py:block_attrs()` | §13.7 (FR-31-8) |
+| 4 | Extract + convert (per section) | `stage_4_5_6_7_8_extract()` → `converter/entry.py:convert_section()` → `converter/recognition.py:recognise_section()` → `converter/services/assembly.py:build_block_markup()` | §13.2/§13.3 (FR-31-2, FR-31-3, FR-31-4) |
+| 9 | Coverage + gap reporting | `stage_9_report()` → `recogniser/leftover-bucket-router.py` + gap-writer scripts | R-31-6 |
+| Gate | R-31-15 anti-mirror gate | `orchestrator/pipeline-stage-gate.py` → `orchestrator/check_no_mirror.py --enforce --baseline` | R-31-15 |
+| 4i | Media sideload | `orchestrator/media-sideload.py:sideload_batch()` | — |
+| 4j | wp-blocks schema validation | `orchestrator/wp_integration.py:validate_block_markup()` | — |
+| 10 | Per-page deploy | `orchestrator/upload_and_patch.py` | — |
+| 11.6 | Universal computed-parity (sole fidelity signal) | `node plugins/sgs-blocks/scripts/parity/computed-parity.js` | Spec 20 (rule 4a) |
+| — | Autonomy chain / staged-merge tail | `orchestrator/orchestrator_main.py:run()` → `preflight_chain.py`, `staged_merge.py`, `autonomy_gate.py` | — |
+| +REG | Pattern registration | `orchestrator/register_patterns.py:register_run()` | R-31-13 |
+| — | Final acceptance harness | `orchestrator/critical-fix-verification.py:run_harness()` | FR-21 |
+
+Retired stages (11 pixel-diff, 11.5 parity2) are not listed — both were removed 2026-07-04; see Spec 20 for why.

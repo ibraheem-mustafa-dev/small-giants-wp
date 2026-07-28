@@ -2,7 +2,9 @@
 
 Spec files with status tags. One spec per file.
 
-**Last reviewed:** 2026-06-07
+**Last reviewed:** 2026-07-28
+
+This is THE spec roster — the `.claude/CLAUDE.md` manifest points here and caches nothing. Do not create a second roster anywhere.
 
 ## Specification Standards
 
@@ -25,11 +27,11 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 00 | [00-naming-conventions.md](00-naming-conventions.md) | Naming rules + CI linter | shipped |
 | 01 | [01-SGS-THEME.md](01-SGS-THEME.md) | Block theme (theme.json v3, templates, fonts) | shipped |
 | 02 | [02-SGS-BLOCKS.md](02-SGS-BLOCKS.md) | Block specifications + customisation standards (includes Phase 1.5 variation+style registration pattern) | active |
-| 02 | [02-SGS-BLOCKS-REFERENCE.md](02-SGS-BLOCKS-REFERENCE.md) | Auto-generated per-block attribute reference (regen via `/sgs-update`) | active |
+| 02 | [02-SGS-BLOCKS-REFERENCE.md](02-SGS-BLOCKS-REFERENCE.md) | Auto-generated per-block attribute reference (regen via `/sgs-update`). **Gitignored** (`.gitignore:122` — `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` is excluded from git; the file exists locally but is not tracked). Generated locally by the `/sgs-update` regenerator — never hand-edit; fix the generator instead. | active |
 | 03 | [03-SGS-BOOKING.md](03-SGS-BOOKING.md) | Booking plugin | deferred |
 | 04 | [04-SGS-FORMS.md](04-SGS-FORMS.md) | Forms (built into sgs-blocks) | shipped |
 | 05 | [05-SGS-CLIENT-NOTES.md](05-SGS-CLIENT-NOTES.md) | Visual annotation system | deferred |
-| 06 | [06-BUILD-ORDER.md](06-BUILD-ORDER.md) | Dependencies + phasing | shipped |
+| 06 | [06-BUILD-ORDER.md](archive/06-BUILD-ORDER.md) | Dependencies + phasing — ARCHIVED 2026-07-28, historical build phasing; superseded by `.claude/LEDGER.md` for live sequencing. Do not cite. | archived |
 | 07 | [07-SGS-POPUPS.md](07-SGS-POPUPS.md) | Conversion pop-ups plugin | deferred |
 | 08 | [08-SGS-CHATBOT.md](08-SGS-CHATBOT.md) | Live chat + AI chatbot | deferred |
 | 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
@@ -44,16 +46,30 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 | 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + wp_global_styles REST sync) + pipeline style derivation (build deferred) | draft |
 | 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER — SGS product + WooCommerce layer (CPT, collection, cart, dual-mode card, option-picker, configurator) | active |
 | 28 | [28-SGS-SMART-BULK-PRICING.md](28-SGS-SMART-BULK-PRICING.md) | Smart bulk pricing / comparative value-ladder | active |
-| 29 | [29-CONTAINER-EQUIVALENT-BLOCKS.md](29-CONTAINER-EQUIVALENT-BLOCKS.md) | Container-equivalent blocks reference — 3-KIND map, mirror roster, shared helper | active |
+| 29 | ~~29-CONTAINER-EQUIVALENT-BLOCKS.md~~ | **FOLDED into Spec 31 §13.6 and archived 2026-07-28** — container-equivalent blocks reference (3-KIND map, mirror roster, shared helper) is now covered by Spec 31's composite-mirror procedure. | archived → 31 §13.6 |
 | 30 | [30-SGS-WOOCOMMERCE-PAGE-TYPES.md](30-SGS-WOOCOMMERCE-PAGE-TYPES.md) | WC page types — single-product/archive/cart/checkout templates, SGS search + searchable filter, option-picker WC binding, schema | complete (D220) |
 | 31 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | **THE cloning CSS-transfer rebuild blueprint** — DB-driven name-free routing engine; read §0 + §12 first. Foundation (Phase F) COMPLETE; stage-by-stage modular rebuild next. | active |
-| 32 | [32-COMPONENT-STYLING-TOKEN-CONTRACT.md](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) | **Framework-wide styling contract** — semantic BEM classes consume per-client design tokens (settings.custom.{component}Presets → WP CSS vars); NO inline property declarations, overrides via CSS custom-property values only. Restores + generalises Spec 11 D24; supersedes the D283 inline-attr styling model. Button = reference impl. | active |
+| 32 | [32-COMPONENT-STYLING-TOKEN-CONTRACT.md](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) | **Framework-wide styling contract** — semantic BEM classes consume per-client design tokens (settings.custom.{component}Presets → WP CSS vars); NO inline property declarations, overrides via CSS custom-property values only. Restores + generalises Spec 11 D24; supersedes the D283 inline-attr styling model. Button = reference impl. **Sibling note (Bean decision 2026-07-28): stays SEPARATE from Spec 35, not merged — 32 owns styling/token EMISSION, 35 owns inspector-UX. Read together.** | active |
 
 | 33 | [33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md](33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md) | **Draft global-styles / token extractor** — the OPENING step of the cloning pipeline (runs before Stage 0): measures the draft's rendered computed styles → `sites/<client>/theme-snapshot.json`, which the converter's token-snap depends on (FR-33-12 fails closed if stale). Part 1 COMPLETE (13/13 FRs); **Part 2 = draft header/footer → `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, NOT started.** | complete (Part 1) |
 
 | 34 | ~~34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md~~ | **DELETED 2026-07-19 (P2.5 Phase 6 purge)** — nav is fully specified in **Spec 36** (the single canonical nav home). Its drawer a11y contract + `elementFromPoint` sweep methodology (10/10 Mama's / 18/18 Indus) + per-device drawer settings were carried verbatim into Spec 36 FR-36-6/-14/-16 before deletion. | DELETED → 36 |
-| 35 | [35-BLOCK-INSPECTOR-UX-STANDARD.md](35-BLOCK-INSPECTOR-UX-STANDARD.md) | SGS block inspector-UX + block standards (no-inline / dynamic / feature-parity / shrink-to-fit; Part L controls + Part G native mechanisms). | active |
-| 36 | [36-SGS-NAVIGATION-SYSTEM.md](36-SGS-NAVIGATION-SYSTEM.md) | **THE canonical SGS Navigation System** (SIGNED-OFF v2.1, 2026-07-19) — nav bar + mega CPT + off-canvas drawer + utility pieces (cart/search/social/logo/business-info); classic-menu primary; WCAG 2.1 AA; crawlable; converter-emittable. Single home — absorbed Spec 34 + Spec 17 §S9 nav FRs (Spec 17 now deleted, see Spec 37 for its header-side successor) + Spec 02 §23. | active (build next) |
+| 35 | [35-BLOCK-INSPECTOR-UX-STANDARD.md](35-BLOCK-INSPECTOR-UX-STANDARD.md) | SGS block inspector-UX + block standards (no-inline / dynamic / feature-parity / shrink-to-fit; Part L controls + Part G native mechanisms). **BUILD SURFACE COMPLETE (LEDGER, 2026-07-28) — no remaining build items; next front for this branch of work is Spec 37 Group B / the B3 preset library.** **Sibling note (Bean decision 2026-07-28): stays SEPARATE from Spec 32, not merged — 35 owns inspector-UX, 32 owns styling/token emission. Read together.** | shipped |
+| 36 | [36-SGS-NAVIGATION-SYSTEM.md](36-SGS-NAVIGATION-SYSTEM.md) | **THE canonical SGS Navigation System** (SIGNED-OFF v2.1, 2026-07-19) — nav bar + mega CPT + off-canvas drawer + utility pieces (cart/search/social/logo/business-info); classic-menu primary; WCAG 2.1 AA; crawlable; converter-emittable. Single home — absorbed Spec 34 + Spec 17 §S9 nav FRs (Spec 17 now deleted, see Spec 37 for its header-side successor) + Spec 02 §23. **Phase 1 CLOSED 2026-07-20 (LEDGER, Gate-1 evidence green; `sgs/adaptive-nav` DELETED). Next: Phase 2 — mega CPT + Indus + rich desktop/mobile modes.** | active (Phase 2 next) |
+| 37 | [37-HEADER-FOOTER-BUILDER.md](37-HEADER-FOOTER-BUILDER.md) | SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding. Replaces Spec 17 as the canonical header/footer home (Spec 17 deleted in the same commit, coverage matrix `reports/2026-07-21-spec17-to-spec37-coverage.md`). **Track 2b (LEDGER): the per-row programme D386–D392 and the 2026-07-27 reopen D393–D395 are ALL CLOSED; 2026-07-28 closed the drawer gap (`6ddb9f48`). Canonical record = Spec 37 FR-37-37/38/39/40/41 + decisions.md D386–D395 + Spec 36 FR-36-9a.** | active |
+
+## DEAD — never cite
+
+These spec numbers are retired. Each entry verified against this README's own rows and `ls .claude/specs/` at 2026-07-28 — none of these files exist live in `.claude/specs/` (only in `archive/` or `../memory/specs-archive/`, or deleted outright).
+
+- **13** — retired; no live file, no row above (pre-dates this roster's tracked history — not otherwise documented in this pass).
+- **15** — retired; superseded by **31** (the converter) and **00-naming-conventions** (BEM). No live file.
+- **17** (`17-HEADER-FOOTER-ARCHITECTURE.md`) — DELETED 2026-07-21 → **37** (header/footer) + **36** (Site-Info store + nav FRs). Row above already marked DELETED.
+- **21** (`21-PIPELINE-STATE-ARTEFACTS.md`) — archived to `../memory/specs-archive/`, superseded by **20**. Row above already marked archived.
+- **22** (`22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`) — absorbed into **31 §13**, D253. File is at `archive/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (verified present). Row above already marked archived.
+- **34** (`34-ADAPTIVE-NAV-DISCLOSURE-DRAWER.md`) — DELETED 2026-07-19 (P2.5 Phase 6) → **36**. Row above already marked DELETED.
+
+**Not dead — verify before citing as retired:** Spec **29** is mid-move to archived (see its row above — the source file was still live, `status: current`, at the time of this pass; confirm before relying on either state). Spec **06** was archived by this same pass (2026-07-28) — its row above reflects the new `archive/` location.
 
 ## Architecture programme (2026-05-21+) — archived
 
@@ -64,6 +80,7 @@ The 31-decision architecture programme (`.claude/plans/archive/2026-05-21-archit
 | File | Purpose | Status |
 |---|---|---|
 | [common-wp-styling-errors.md](common-wp-styling-errors.md) | Recurring WP styling mistakes catalogue — actively maintained | active |
+| [go-live-checklist.md](go-live-checklist.md) | Pre-launch WooCommerce gate per Spec 30 §FR-30-13 — run once per client before real payments. Moved into `specs/` (confirmed 2026-07-28: `.claude/go-live-checklist.md` no longer exists, `.claude/specs/go-live-checklist.md` is present; link verified resolving). | active |
 | [chrome-devtools-stage-8-integration.md](../plans/strategy/chrome-devtools-stage-8-integration.md) | Stage 8 / Chrome DevTools spec | research |
 | [cloning-skill-salvage-matrix-2026-05-05.md](../plans/archive/cloning-skill-salvage-matrix-2026-05-05.md) | Clone-skill audit matrix (referenced by architecture.md) | archived |
 | [pattern-dedup-classify-mechanics-2026-05-05.md](../plans/archive/pattern-dedup-classify-mechanics-2026-05-05.md) | Pattern dedup mechanics (referenced by architecture.md) | archived |

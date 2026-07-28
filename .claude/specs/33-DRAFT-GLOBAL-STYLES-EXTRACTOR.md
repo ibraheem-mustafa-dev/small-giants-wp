@@ -18,7 +18,7 @@ status_history:
 references:
   - 26-SGS-GLOBAL-STYLES-AND-THEMING.md (the theming MODEL this FEEDS; FR-26-C derived-globals = a FORWARD CONTRACT, inert until Spec 26 Phase 3)
   - 37-HEADER-FOOTER-BUILDER.md (Part 2 sibling — the header/footer converter, built AFTER this; reserves the header/footer token namespace, FR-33-13; formerly 17-HEADER-FOOTER-ARCHITECTURE.md)
-  - .claude/plans/2026-07-13-header-footer-nav-system-design-gate.md (Bean-approved 2026-07-13 — names Part 2's concrete emit target as `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
+  - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md (Bean-approved 2026-07-13 — names Part 2's concrete emit target as `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`, and makes those blocks a consumer of this spec's `theme-snapshot.json` for global-style defaults, §4b)
   - 31-UNIVERSAL-CLONING-PIPELINE.md (the block pipeline; §3.A token-snap ΔE reused; the converter reads the snapshot this generates → bootstrap ordering FR-33-12)
   - ../parking.md P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE (the parked idea this formalises)
   - ../parking.md P-DRAFT-CSSVAR-COLOUR-RESOLUTION + P-DRAFT-CSSVAR-SEED-READD (consume this extractor's token map, FR-33-13)
@@ -38,7 +38,7 @@ absorbed_by: none
 >
 > **Part 2's emit target is now concrete (2026-07-13 header/footer/nav design-gate, Bean-approved):**
 > Part 2 clones a draft's header/footer rows onto the new specialised container blocks
-> `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` (`.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md`)
+> `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` (`.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`)
 > — NOT `core/group`. Those blocks also become a downstream CONSUMER of this spec's output: every
 > element/setting on them defaults its colours/typography/spacing from the `theme-snapshot.json` Part 1
 > generates (the design-gate's §4b "global defaults + Site Info access" requirement), so a client's

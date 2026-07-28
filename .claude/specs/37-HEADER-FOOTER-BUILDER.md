@@ -26,9 +26,9 @@ references:
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
-  - .claude/plans/2026-07-18-P2-builder-ux-design-gate.md
-  - .claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md
-  - .claude/plans/2026-07-13-header-footer-nav-system-design-gate.md
+  - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md
+  - .claude/plans/archive/2026-07-18-P1-architecture-decision-header-footer-nav.md
+  - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md
 absorbs:
   - 17-HEADER-FOOTER-ARCHITECTURE.md    # DELETED 2026-07-21 (§9 coverage gate passed; matrix at reports/2026-07-21-spec17-to-spec37-coverage.md)
 absorbed_by: null
@@ -363,7 +363,7 @@ mechanisms:
   keeps three independent per-device switches — a device-specific block is hidden on desktop
   precisely because it exists for mobile/tablet, so a cascading desktop-hide would defeat the
   setting. The shared `resolveTier()` cascade contract itself was APPROVED at D400
-  (`plans/2026-07-28-resolveTier-cascade-design-gate.md`) — FR-37-14 consumes it as specified.
+  (`plans/archive/2026-07-28-resolveTier-cascade-design-gate.md`) — FR-37-14 consumes it as specified.
 
 **Retired in favour of this (Bean, 2026-07-21):** the `move-to-drawer` mechanism (FR-S9-8) —
 relocating a header element into the drawer at small widths — is **dropped as too complex**
@@ -1198,7 +1198,7 @@ and eye are co-authoritative, neither closes alone).
 ### Per-row scroll behaviours (added 2026-07-26 — D386–D389)
 
 > These four FRs record work that SHIPPED before it was specified. The design gate
-> (`plans/2026-07-25-header-footer-per-row-identity-design-gate.md`) called for them at execution
+> (`plans/archive/2026-07-25-header-footer-per-row-identity-design-gate.md`) called for them at execution
 > time and they were not written; the omission was caught at the 2026-07-26 handoff. FR-37-37/38/39
 > are retrospective records of live-verified behaviour; FR-37-40 is forward-looking and APPROVED but
 > NOT built.
@@ -1261,7 +1261,7 @@ unaffected; and — proven — pointing the target at the logo makes the server 
 
 #### FR-37-40 — Sticky model: HEADER-level, rows collapse
 `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` scroll-padding gate / D391; `494e5d50`
-collapse + guard / D392). Design gate `plans/2026-07-26-per-row-sticky-mini-design.md`,
+collapse + guard / D392). Design gate `plans/archive/2026-07-26-per-row-sticky-mini-design.md`,
 Bean-signed 2026-07-26 (D389). Supersedes any per-row sticky idea.
 **Collapse-when-pinned:** while the header is measured as pinned, a header row hiding on scroll
 collapses to height 0; when it is NOT pinned the shipped `translateY(-100%)` path runs unchanged
@@ -1534,7 +1534,7 @@ by hand-editing the value and confirming NO shape shows as active.
    keep `SGS_Container_Wrapper`; no per-block CSS that diverges from it. **Block-private
    rendering for header/footer was formally considered and REJECTED 2026-07-25** (6/6
    adversarial council; design gate
-   `plans/2026-07-25-header-footer-per-row-identity-design-gate.md` §0). The premise — that a
+   `plans/archive/2026-07-25-header-footer-per-row-identity-design-gate.md` §0). The premise — that a
    private copy would escape an attribute-shape inconsistency — was false: that inconsistency
    lives in the block's own settings, not the shared engine, so a fork would copy the mess
    into more files. If a per-row effect ever needs a capability the engine lacks, ADD it to
@@ -1616,9 +1616,9 @@ model (§3) existed only in a plan and was therefore invisible to every spec-lev
 | Source | What must be covered |
 |---|---|
 | `17-HEADER-FOOTER-ARCHITECTURE.md` | all 39 FRs — ✅ DONE, matrix Part 2 |
-| `2026-07-13-header-footer-nav-system-design-gate.md` | §3 roster, §4/§4b row model + Site Info, §6 drawer a11y, §8 responsive model, §9 never-overflow, §12 QC lanes |
-| `2026-07-18-P1-architecture-decision-header-footer-nav.md` | DP1–DP6 |
-| `2026-07-18-P2-builder-ux-design-gate.md` | the 29-item build roster + §2/§4/§5/§6 decisions |
+| `archive/2026-07-13-header-footer-nav-system-design-gate.md` | §3 roster, §4/§4b row model + Site Info, §6 drawer a11y, §8 responsive model, §9 never-overflow, §12 QC lanes |
+| `archive/2026-07-18-P1-architecture-decision-header-footer-nav.md` | DP1–DP6 |
+| `archive/2026-07-18-P2-builder-ux-design-gate.md` | the 29-item build roster + §2/§4/§5/§6 decisions |
 | `2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md` | phase scope, G1–G6 gates, risk register |
 | `archive/2026-07-13-header-footer-container-design-gate.md` | FR-HF-1…6 |
 

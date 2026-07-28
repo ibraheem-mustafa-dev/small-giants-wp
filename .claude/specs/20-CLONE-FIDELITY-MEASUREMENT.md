@@ -14,9 +14,7 @@ status_history:
   - 2026-07-12 — v1.1.0 (D314). Bean-directed scope broadening: the tool must match tags + classes + elements + content + CSS, universally, with pinpoint accuracy Bean can trust (no page-8 over-fit). Adds FR-20-9 (tag + element-structure as scored dimensions), FR-20-10 (class names captured as INFORMATIONAL context only, never scored — the Rule-1 CONVERT-don't-mirror decision), FR-20-11 (force-load lazy/below-fold content before measuring — a proven Task-1 D314 false-negative guard), and extends FR-20-4 (unmatched surfacing) to all dimensions. Validation basis is the independent hand-built ledger reports/visual-diff/page8-dom-ledger-2026-07-12.md, NOT the tool's own self-report.
   - 2026-07-12 — v1.1.0 BUILT + VALIDATED (D315). computed-parity.js rebuilt to every v1.1.0 FR (qc-council-hardened: sub-visible twins gated by a per-pair invisibility PREDICATE, never blanket-suppressed; code-review fixed 3 unsafe hide-a-gap bugs). fixtures/ + smoke-test.js = 11/11 (FR-20-1/3a/9/10/11 + draft-agnostic). Result on page 8: CSS 88% raw / TAG 79% / content 100%; 82% of misses are the ledger's accepted+out-of-contract dispositions → ~98% dispositioned, matching the D314 ledger; tag divergences reproduce it exactly. The raw number pairs with Bean's eye (FR-20-7 / R-31-13), never closes alone. Bean signed off.
 references:
-  - 31-UNIVERSAL-CLONING-PIPELINE.md (the pipeline this measures; §7b closing gate)
-  - ../cloning-pipeline-stages.md (Stage 11.6)
-  - ../cloning-pipeline-flow.md (Stage 11.6 row)
+  - 31-UNIVERSAL-CLONING-PIPELINE.md (the pipeline this measures; §7b closing gate; Appendix D stage index, Stage 11.6 row)
   - ../../CLAUDE.md (root-cause methodology rule 4a / STOP-42)
   - ../../plugins/sgs-blocks/scripts/parity/computed-parity.js (the tool)
   - ../../plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py (Stage 11.6 wiring)

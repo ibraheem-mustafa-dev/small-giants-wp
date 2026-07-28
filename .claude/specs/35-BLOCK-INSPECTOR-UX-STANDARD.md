@@ -12,6 +12,8 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
             Spec 00 (naming). This spec governs the EDITOR-FACING control surface.
 ```
 
+> **Sibling spec (Bean decision, 2026-07-28): Spec 35 and Spec 32 stay SEPARATE, not merged.** Spec 35 (this doc) owns the block INSPECTOR-UX standard (editor-facing controls). Spec 32 owns the styling/token EMISSION contract (no-inline, scoped CSS, box-object attrs). Both gate every block build — read them together.
+
 ## Why this exists
 
 Every SGS block builds its inspector ad hoc. Clients are non-technical and live in the block
@@ -132,7 +134,7 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     RESPONSIVE VALUES (FR-37-14 / FR-37-16 families).
   - **Reuse the one cascade (for behaviours/values/§3.8 content).** Resolve via the same
     `resolveTier()` shape P1 DP1 defines — do not introduce a second inheritance mechanism.
-    Approved contract: `plans/2026-07-28-resolveTier-cascade-design-gate.md` (D400).
+    Approved contract: `plans/archive/2026-07-28-resolveTier-cascade-design-gate.md` (D400).
   - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
     the build.
   - **✅ BUILD STATUS: BUILT + LIVE-PROVEN (2026-07-28, same day as the D400 approval).** The

@@ -1,6 +1,8 @@
 # SGS Build Order — Current Roadmap
 
-> **Last updated:** 2026-04-30. Replaces the original 4-phase build plan after full completion of phases 1–5. The original is archived at [`../plans/archive/2026-04-30-archived-06-build-order.md`](../plans/archive/2026-04-30-archived-06-build-order.md).
+> **ARCHIVED 2026-07-28 — historical build phasing; live sequencing lives in `.claude/LEDGER.md`. Do not cite.**
+
+> **Last updated:** 2026-04-30. Replaces the original 4-phase build plan after full completion of phases 1–5. The original is archived at [`../../plans/archive/2026-04-30-archived-06-build-order.md`](../../plans/archive/2026-04-30-archived-06-build-order.md).
 
 ## Status snapshot
 

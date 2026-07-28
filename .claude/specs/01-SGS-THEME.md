@@ -371,7 +371,7 @@ Standard footer with:
 
 ## Header/Footer/Nav Block System (2026-07-13)
 
-> Block-level FRs, block roster detail, structure/row model, and per-breakpoint override mechanics are **owned by [Spec 37 — Header/Footer Builder](37-HEADER-FOOTER-BUILDER.md)**; the drawer a11y contract is owned by **Spec 36** (Navigation System). This section documents only the THEME's responsibilities: what lives in the template parts, and what the theme provides as shared defaults. Design-gate: `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` (Bean-approved 2026-07-13).
+> Block-level FRs, block roster detail, structure/row model, and per-breakpoint override mechanics are **owned by [Spec 37 — Header/Footer Builder](37-HEADER-FOOTER-BUILDER.md)**; the drawer a11y contract is owned by **Spec 36** (Navigation System). This section documents only the THEME's responsibilities: what lives in the template parts, and what the theme provides as shared defaults. Design-gate: `.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md` (Bean-approved 2026-07-13).
 
 ### Architecture — still template parts, not a monolithic header block
 

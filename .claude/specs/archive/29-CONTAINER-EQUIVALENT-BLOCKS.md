@@ -15,6 +15,8 @@ cross_refs:
   - plugins/sgs-blocks/src/blocks/container/components/ContainerWrapperControls.js
 ---
 
+ARCHIVED 2026-07-28 — folded into Spec 31 §13.6 (container model + 3-KIND map + mirror roster). Cite Spec 31, never this file.
+
 # Container-Equivalent Blocks — Reference
 
 > **What this doc answers:** "How does the built-in container work across all of these composite blocks, and what are the different purposes and uses for the container-equivalent blocks?"

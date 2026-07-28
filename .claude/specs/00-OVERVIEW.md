@@ -169,4 +169,4 @@ Each component has its own spec document:
 3. [SGS Booking](./03-SGS-BOOKING.md) — Appointment and event booking system
 4. [SGS Forms](./04-SGS-FORMS.md) — Form system (integrated into SGS Blocks)
 5. [SGS Client Notes](./05-SGS-CLIENT-NOTES.md) — Visual annotation and feedback system
-6. [Build Order](./06-BUILD-ORDER.md) — Dependencies, sequence, and phasing
+6. [Build Order](./archive/06-BUILD-ORDER.md) — Dependencies, sequence, and phasing (ARCHIVED 2026-07-28 — historical; live sequencing = `.claude/LEDGER.md`)
