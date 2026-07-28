@@ -461,10 +461,21 @@ if ( $responsive_css ) {
 // -------------------------------------------------------------------------
 // WS-4: emit via shared wrapper helper (kind='layout').
 // Own block classes + CSS vars + data-* ride through opts.
+//
+// ⚠ ATTR-NAME COLLISION (root-caused live 2026-07-28, the "squished single
+// post"): this block's `layout` attr is its OWN vocabulary
+// (grid/list/masonry/carousel) — but the wrapper generically reads
+// $attributes['layout'] as a container-layout instruction and was activating
+// ITS grid engine on the root (3 columns via the same --sgs-columns vars),
+// making .sgs-post-grid__inner a 380px grid ITEM whose own inner grid then
+// laid out inside one wrapper track (double grid). The wrapper must see NO
+// `layout` key: post-grid's grid belongs to __inner alone.
 // -------------------------------------------------------------------------
+$sgs_wrapper_attributes = $attributes;
+unset( $sgs_wrapper_attributes['layout'] );
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 echo SGS_Container_Wrapper::render(
-	$attributes,
+	$sgs_wrapper_attributes,
 	$block,
 	$inner_html,
 	'layout',
