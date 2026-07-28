@@ -438,6 +438,78 @@ $link_sel = $uid_sel . ' .sgs-nav-menu__link';
 // TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
 $css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
+/*
+ * 4a-ii. Nav CONTAINER appearance (2026-07-28 — Bean-directed; the block had
+ * NO fill controls at all, only per-item ones, so a bar could never sit on
+ * its own surface. Audit: `supports` declared spacing only, and the element
+ * manifest's `wrapper` mapped padding/margin/max-width and nothing else).
+ *
+ * Every value is emitted ONLY when the operator has set it, so an untouched
+ * nav is byte-identical to before. `$uid_sel` targets the <nav> root itself
+ * (SGS_Container_Wrapper renders it with 'tag' => 'nav').
+ *
+ * This is also what makes drawer styling self-serve: the drawer holds its
+ * OWN sgs/nav-menu instance with its own uid, so setting a background here
+ * on the drawer's copy styles ONLY the drawer — no per-context plumbing.
+ */
+$nav_bg           = isset( $attributes['navBg'] ) ? (string) $attributes['navBg'] : '';
+$nav_colour       = isset( $attributes['navColour'] ) ? (string) $attributes['navColour'] : '';
+$nav_border_col   = isset( $attributes['navBorderColour'] ) ? (string) $attributes['navBorderColour'] : '';
+$nav_border_w     = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['navBorderWidth'] ?? '0px' ) : '0px';
+$nav_radius       = isset( $attributes['navRadius'] ) && is_numeric( $attributes['navRadius'] ) ? (float) $attributes['navRadius'] : null;
+$nav_bg_hover     = isset( $attributes['navBgHover'] ) ? (string) $attributes['navBgHover'] : '';
+$nav_border_hover = isset( $attributes['navBorderColourHover'] ) ? (string) $attributes['navBorderColourHover'] : '';
+
+$nav_decls = '';
+if ( '' !== $nav_bg ) {
+	$nav_decls .= 'background-color:' . sgs_colour_value( $nav_bg ) . ';';
+}
+if ( '' !== $nav_colour ) {
+	$nav_decls .= 'color:' . sgs_colour_value( $nav_colour ) . ';';
+}
+if ( '' !== $nav_border_col && '' !== $nav_border_w && '0px' !== $nav_border_w ) {
+	$nav_decls .= 'border:' . $nav_border_w . ' solid ' . sgs_colour_value( $nav_border_col ) . ';';
+}
+if ( null !== $nav_radius ) {
+	$nav_decls .= 'border-radius:' . (float) $nav_radius . 'px;';
+}
+if ( '' !== $nav_decls ) {
+	$css .= $uid_sel . '{' . $nav_decls . '}';
+}
+
+$nav_hover_decls = '';
+if ( '' !== $nav_bg_hover ) {
+	$nav_hover_decls .= 'background-color:' . sgs_colour_value( $nav_bg_hover ) . ';';
+}
+if ( '' !== $nav_border_hover && '' !== $nav_border_w && '0px' !== $nav_border_w ) {
+	$nav_hover_decls .= 'border-color:' . sgs_colour_value( $nav_border_hover ) . ';';
+}
+if ( '' !== $nav_hover_decls ) {
+	$css .= $uid_sel . ':hover{' . $nav_hover_decls . '}';
+}
+
+// Item separator — an optional rule BETWEEN items (`:not(:last-child)` so no
+// trailing edge). Neither draft uses one, hence default 0px/unset.
+$sep_col   = isset( $attributes['itemSeparatorColour'] ) ? (string) $attributes['itemSeparatorColour'] : '';
+$sep_width = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $attributes['itemSeparatorWidth'] ?? '0px' ) : '0px';
+if ( '' !== $sep_col && '' !== $sep_width && '0px' !== $sep_width ) {
+	/*
+	 * ADJACENT-SIBLING form (`item + item`), deliberately NOT
+	 * `:not(:last-child)`. The bar also contains the absolutely-positioned
+	 * indicator pill, so the last ITEM is not the last CHILD — a
+	 * `:not(:last-child)` rule therefore drew a divider on the trailing edge
+	 * too. Caught by a negative control that set the value and measured the
+	 * last item (expected 0px, got 1px) rather than by reading the selector.
+	 * `item + item` puts the line only BETWEEN items, whatever else the bar
+	 * happens to contain.
+	 */
+	$css .= $uid_sel . ' .sgs-nav-menu__bar > .sgs-nav-menu__item + .sgs-nav-menu__item{border-left:' . $sep_width . ' solid ' . sgs_colour_value( $sep_col ) . ';}';
+	// Inside a drawer the bar is a COLUMN, so the divider must run along the
+	// top edge instead of the left (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT: the
+	// drawer context is structural, not a viewport tier).
+	$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar > .sgs-nav-menu__item + .sgs-nav-menu__item{border-left:0;border-top:' . $sep_width . ' solid ' . sgs_colour_value( $sep_col ) . ';}';
+}
+
 // 4b. Item colours (resting). Base is `inherit` in style.css; an unset slug
 // leaves the surrounding context's colour untouched (header/footer agnostic).
 // Text and background are SEPARATE properties, each with its own Normal/Hover

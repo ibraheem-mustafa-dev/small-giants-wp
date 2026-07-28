@@ -43,6 +43,7 @@ import {
 	PanelBody,
 	TextControl,
 	ToggleControl,
+	SelectControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	__experimentalUnitControl as UnitControl,
@@ -167,6 +168,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		asideSeparator,
 		brandsEyebrow,
 		staggerOnOpen,
+		viewAllPlacement,
 	} = attributes;
 
 	const resolvedVariant = variant || 'general';
@@ -391,6 +393,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						checked={ !! staggerOnOpen }
 						onChange={ ( value ) => setAttributes( { staggerOnOpen: value } ) }
+						__nextHasNoMarginBottom
+					/>
+
+					<SelectControl
+						label={ __( '"View all" link', 'sgs-blocks' ) }
+						help={ __(
+							'The menu item that opens this panel is a button, so its own page needs a link somewhere inside the panel. Automatic hides it when this panel already has its own button linking there.',
+							'sgs-blocks'
+						) }
+						value={ viewAllPlacement || 'auto' }
+						options={ [
+							{
+								label: __( 'Automatic', 'sgs-blocks' ),
+								value: 'auto',
+							},
+							{
+								label: __( "Don't show", 'sgs-blocks' ),
+								value: 'none',
+							},
+							{
+								label: __( 'Bottom left', 'sgs-blocks' ),
+								value: 'bottom-left',
+							},
+							{
+								label: __( 'Bottom right', 'sgs-blocks' ),
+								value: 'bottom-right',
+							},
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { viewAllPlacement: value || 'auto' } )
+						}
+						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>

@@ -128,6 +128,11 @@
 			"type": "boolean",
 			"default": false,
 			"_note": "Opt-in staggered-reveal on panel open (§6 U4) — maps to the `data-stagger` attribute the shared stagger effect module watches for. Off by default; the disclosure module (owned separately) is what actually toggles the panel open/closed."
+		},
+		"viewAllPlacement": {
+			"type": "string",
+			"default": "auto",
+			"_note": "Where the menu item's own destination link (\"View all X\") sits INSIDE this panel. CF-15 requires that link to exist somewhere reachable — the trigger is a <button>, so without it the item's page is unreachable from the nav and invisible to crawlers — but WHERE it sits is an operator choice, never hard-wired (Bean 2026-07-28). `auto` = show it only when this panel has no CTA button of its own (so a panel whose aside already links there stays clean); `none` = never; `bottom-left`/`bottom-right` = always, in that corner of the panel's footer row. NO JSON enum — PHP-validated (blockjson-enum-coerces-invalid-to-default)."
 		}
 	},
 	"render": "file:./render.php",

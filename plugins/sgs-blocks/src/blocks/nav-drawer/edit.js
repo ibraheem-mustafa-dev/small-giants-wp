@@ -37,9 +37,31 @@ import { close } from '@wordpress/icons';
 import { DesignTokenPicker, ResponsiveControl, ResponsiveBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 
-/** Content template: menu + (optional) logo + (optional) CTA. templateLock:false. */
+/**
+ * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
+ *
+ * The nav-menu seeded here is a SEPARATE block instance from the one in the
+ * header — its own uid, its own scoped styles, its own inspector — so a client
+ * can style the drawer's menu completely independently of the bar. That was
+ * always true but entirely invisible: the seeded copy rendered with identical
+ * defaults, giving no signal it was theirs to change (Bean 2026-07-28).
+ *
+ * Seeding drawer-appropriate values makes the capability discoverable AND
+ * gives a sane vertical starting point: items span the drawer's width with
+ * comfortable touch targets, and a divider between them reads correctly in a
+ * stacked list (render.php flips it from a right border to a bottom border
+ * inside a drawer). Colours stay UNSET so the drawer's own background still
+ * shows through until a client deliberately picks one.
+ */
 const TEMPLATE = [
-	[ 'sgs/nav-menu' ],
+	[
+		'sgs/nav-menu',
+		{
+			gap: '4px',
+			itemSeparatorColour: 'border-subtle',
+			itemSeparatorWidth: '1px',
+		},
+	],
 	[ 'sgs/responsive-logo' ],
 	[ 'sgs/button' ],
 ];

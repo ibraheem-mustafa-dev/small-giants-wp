@@ -30,6 +30,7 @@ import {
 	ButtonGroup,
 	Button,
 	Notice,
+	RangeControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
@@ -108,6 +109,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		featuredItemIds,
 		gap,
 		maxWidth,
+		navBg,
+		navColour,
+		navBorderColour,
+		navBorderWidth,
+		navRadius,
+		navBgHover,
+		navBorderColourHover,
+		itemSeparatorColour,
+		itemSeparatorWidth,
 		itemColour,
 		itemBg,
 		itemColourHover,
@@ -630,6 +640,135 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
+
+				{ /*
+				   Nav CONTAINER appearance. Added 2026-07-28 (Bean-directed):
+				   the block had per-ITEM colours but nothing for the bar
+				   itself, so a client could never give the nav its own
+				   surface. Everything here is unset by default — an
+				   untouched nav renders exactly as before.
+
+				   This panel is ALSO the drawer's styling surface: the
+				   drawer holds its own sgs/nav-menu instance, so selecting
+				   the nav inside the drawer and setting a background here
+				   styles the drawer only.
+				*/ }
+				<PanelBody
+					title={ __( 'Nav container', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p className="components-base-control__help">
+						{ __(
+							'The bar itself — its background, text colour and border. Leave anything blank to inherit from the header or drawer around it. The menu inside your mobile drawer is a separate copy: select it there to style the drawer on its own.',
+							'sgs-blocks'
+						) }
+					</p>
+
+					<StateToggleControl>
+						{ ( state ) =>
+							state === 'hover' ? (
+								<>
+									<DesignTokenPicker
+										label={ __( 'Background', 'sgs-blocks' ) }
+										value={ navBgHover }
+										onChange={ ( value ) =>
+											setAttributes( { navBgHover: value || '' } )
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<DesignTokenPicker
+										label={ __( 'Border colour', 'sgs-blocks' ) }
+										value={ navBorderColourHover }
+										onChange={ ( value ) =>
+											setAttributes( {
+												navBorderColourHover: value || '',
+											} )
+										}
+										linked
+										clearable
+									/>
+								</>
+							) : (
+								<>
+									<DesignTokenPicker
+										label={ __( 'Background', 'sgs-blocks' ) }
+										value={ navBg }
+										onChange={ ( value ) =>
+											setAttributes( { navBg: value || '' } )
+										}
+										linked
+										enableAlpha
+										clearable
+									/>
+									<DesignTokenPicker
+										label={ __( 'Text colour', 'sgs-blocks' ) }
+										value={ navColour }
+										onChange={ ( value ) =>
+											setAttributes( { navColour: value || '' } )
+										}
+										linked
+										clearable
+									/>
+									<DesignTokenPicker
+										label={ __( 'Border colour', 'sgs-blocks' ) }
+										value={ navBorderColour }
+										onChange={ ( value ) =>
+											setAttributes( { navBorderColour: value || '' } )
+										}
+										linked
+										clearable
+									/>
+									<UnitControl
+										label={ __( 'Border width', 'sgs-blocks' ) }
+										value={ navBorderWidth || '0px' }
+										onChange={ ( value ) =>
+											setAttributes( { navBorderWidth: value || '0px' } )
+										}
+										__next40pxDefaultSize
+									/>
+									<RangeControl
+										label={ __( 'Corner radius', 'sgs-blocks' ) }
+										value={ navRadius ?? 0 }
+										onChange={ ( value ) =>
+											setAttributes( {
+												navRadius:
+													value === 0 ? undefined : value,
+											} )
+										}
+										min={ 0 }
+										max={ 60 }
+										__next40pxDefaultSize
+										__nextHasNoMarginBottom
+									/>
+								</>
+							)
+						}
+					</StateToggleControl>
+
+					<DesignTokenPicker
+						label={ __( 'Divider between items', 'sgs-blocks' ) }
+						help={ __(
+							'Draws a line between menu items. Runs down the side on a horizontal bar, and across the bottom inside the drawer.',
+							'sgs-blocks'
+						) }
+						value={ itemSeparatorColour }
+						onChange={ ( value ) =>
+							setAttributes( { itemSeparatorColour: value || '' } )
+						}
+						linked
+						clearable
+					/>
+					<UnitControl
+						label={ __( 'Divider thickness', 'sgs-blocks' ) }
+						value={ itemSeparatorWidth || '0px' }
+						onChange={ ( value ) =>
+							setAttributes( { itemSeparatorWidth: value || '0px' } )
+						}
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
 					<SelectControl

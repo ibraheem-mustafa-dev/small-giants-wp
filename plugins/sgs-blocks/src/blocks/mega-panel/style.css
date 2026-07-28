@@ -364,3 +364,17 @@
 		width: 100%;
 	}
 }
+
+/* -- View-all footer row (CF-15 destination link, placement is an operator
+   choice — `viewAllPlacement`, 2026-07-28). Alignment rides modifier classes
+   rather than an inline style (Spec 32 no-inline). --------------------------- */
+.sgs-mega-panel__footer {
+	display: flex;
+	width: 100%;
+}
+.sgs-mega-panel__footer--start {
+	justify-content: flex-start;
+}
+.sgs-mega-panel__footer--end {
+	justify-content: flex-end;
+}

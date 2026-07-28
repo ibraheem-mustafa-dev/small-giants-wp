@@ -519,6 +519,33 @@ if ( '' !== $css ) {
  */
 $footer_html = (string) apply_filters( 'sgs_mega_panel_footer_html', '', get_the_ID() );
 
+/*
+ * Placement is the OPERATOR's choice, never hard-wired (Bean 2026-07-28:
+ * "that sort of mandatory link should not be hard-wired anywhere and instead
+ * should be chosen, it could also sit in the bottom right or left corner").
+ * `auto` keeps the safe default — render it only when this panel has no CTA
+ * of its own — while `none` suppresses it outright and the two corner values
+ * always show it. PHP-validated, no JSON enum (an out-of-enum stored value
+ * would otherwise be silently coerced).
+ */
+$view_all_placement = isset( $attributes['viewAllPlacement'] )
+	&& in_array( $attributes['viewAllPlacement'], array( 'auto', 'none', 'bottom-left', 'bottom-right' ), true )
+	? (string) $attributes['viewAllPlacement']
+	: 'auto';
+
+if ( 'none' === $view_all_placement ) {
+	$footer_html = '';
+}
+
+if ( '' !== $footer_html ) {
+	// Alignment rides a MODIFIER CLASS, never an inline style (Spec 32
+	// no-inline; style.css owns both variants).
+	$align_class = 'bottom-right' === $view_all_placement
+		? ' sgs-mega-panel__footer--end'
+		: ' sgs-mega-panel__footer--start';
+	$footer_html = '<div class="sgs-mega-panel__footer' . $align_class . '">' . $footer_html . '</div>';
+}
+
 printf(
 	'<div %1$s>%2$s<div class="sgs-mega-panel__content">%3$s</div>%4$s</div>',
 	$wrapper_attributes,
