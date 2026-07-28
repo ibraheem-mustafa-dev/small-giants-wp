@@ -133,7 +133,11 @@ rollout and the 2026-07-17 orientation block are in the same sweep file.
   not lost: burger-morph TRUE cross-block sync (`P-DRAWER-BURGER-MORPH-SYNC`) · JS-measured
   trigger-anchor position (`P-DRAWER-TRIGGER-ANCHOR-JS`) · genericise variant content
   pre-production (`P-DRAWER-VARIANT-CONTENT-GENERICISE`). Neither follow-on is GSAP — the stack
-  is vanilla JS + CSS transform/opacity only. **Cross-track note:** `8644f4a3` (co-active track,
+  is vanilla JS + CSS transform/opacity only. **DB registration DONE (post-handoff sweep):**
+  `/sgs-update --stage 1` run — `blocks.variant_attr='variantPreset'` seeded; `variant_slots` is
+  structurally weak for these value-differentiated variants (1 row — see Spec 36 FR-36-6 note;
+  draft-side detection = Spec 33 Part 2). Spec 36 FR-36-6 + §6a + goals.md amended to the shipped
+  state in the same sweep. **Cross-track note:** `8644f4a3` (co-active track,
   courtesy fix, verified) moved nav-drawer's base height/max-height literals into `:where()` —
   the new `panelSize` attr had made them an F3 violation failing main's prebuild; rendered output
   byte-identical when unset, design untouched.

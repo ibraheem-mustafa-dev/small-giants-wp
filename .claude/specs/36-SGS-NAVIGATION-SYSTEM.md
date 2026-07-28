@@ -214,7 +214,49 @@ FR-S9-5):** focus INTO on open; Tab contained; Escape closes; focus returns to t
 re-derive): D323** — the drawer's body-reparent so it escapes a transformed/filtered ancestor — and **D340** —
 scrollbar-bounce compensation — are EXISTING fixes carried forward verbatim.
 
-**⭐ DESKTOP VARIANTS — researched 2026-07-28, BUILD DEFERRED (Bean-scoped). Do not re-derive this.**
+**⭐ DESKTOP VARIANTS — BUILT + council-fixed + canary-deployed 2026-07-28 session 2 (D403 design
+gate approved by Bean, D404 ship record; commits `faa14924`/`cab1b916`/`69dfbaf9`). The canonical
+shape is `.claude/plans/2026-07-28-nav-drawer-variants-design-gate.md` — read THAT, not the
+research summary below.** What shipped: per-device `anchor` object (`full-screen` default /
+`header` derives width+edges from the header / `trigger` / `centred` — Bean's pause-menu addition,
+no reference among the 8) + `panelSize` (responsive) + surface opacity/blur (NO scrim element —
+8/8 references have none) + `closeStyle` (`separate-x`/`text-swap`/`burger-morph`) +
+`variantPreset` discriminator (`supports.sgs.variantAttr`, `isActive`) + nav-menu `listColumns`
+(in-drawer only) + **7 `registerBlockVariation`s** (complete-clone presets; resn = WebGL,
+reference-only) + **backdrop-click-to-close in `store('sgs/nav')`** (a `::backdrop` click closes a
+partial-width panel; full-screen unaffected by construction). `edge`+`width` RETIRED (zero stored
+instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults.
+- **Bean's two binding design corrections (do not regress):** (1) **the variant axis is the LOOK**
+  — a complete-clone preset of internal make-up (type scale 16–160px across references, columns,
+  alignment, secondary-block roster) that sets DEFAULTS and hardcodes NOTHING; anchoring/geometry
+  are plain per-device ATTRIBUTES, so the earlier "attaches-to" 4-variant taxonomy below is
+  SUPERSEDED as a variant axis (it survives as the `anchor` attribute's values). (2) No
+  "full-screen below collapse point" toggle — incoherent under Burger Menu=Always; per-device
+  `anchor` covers the lusion case (`trigger` desktop + `full-screen` tablet) generically.
+- **The 2026-07-28 open question is ANSWERED (Task-1 append + 15-cell code extraction,
+  `.claude/reports/2026-07-28-drawer-code-extraction/`):** a FLAT variant value holds — 6 of 7
+  confirmed sites keep one character at every width; lamalama's card is fluid-capped BY DERIVING
+  the header's width (verified at 400px: 368×436 = `min(438px, 100vw−32px)`); only lusion swaps
+  compact→takeover below desktop, handled by the per-device `anchor`. **`side-panel` is DROPPED**
+  — zero reference evidence at any width (the half-built `edge:left/right` CSS retired with the
+  attr).
+- **POC content rule (Bean, design doc §6):** POC fixtures are EXACT clones INCLUDING content
+  (per-fixture classic menus with the references' real labels + copy) so differences attribute to
+  the block; genericise = named pre-production step (`P-DRAWER-VARIANT-CONTENT-GENERICISE`).
+- **DB registration (FR-31-20):** seeded via `/sgs-update` stage 1 — `blocks.variant_attr =
+  'variantPreset'`. ⚠ Honest limitation: `variant_slots` set-difference fingerprinting yields
+  only 1 discriminating row across the 7, because these variants differ by attribute VALUES +
+  child rosters, not attribute presence. Authored content carries `variantPreset` directly;
+  DRAFT-side variant detection needs value/roster matching and belongs to Spec 33 Part 2.
+- **OWED — Task 5, the pre-registered exit gate (LEDGER ⭐):** 7 exact-content fixtures,
+  openness-guarded axe per variant per width, ESC/focus-return re-observation, `listColumns`
+  editor-canvas visibility, header anchor on a real pinned/unpinned header, Bean's eye (R-31-13).
+  Follow-ons parked: `P-DRAWER-BURGER-MORPH-SYNC` (true cross-block morph = store state-wiring,
+  NOT a GSAP effect), `P-DRAWER-TRIGGER-ANCHOR-JS` (measure the burger's real rect at open — the
+  `--sgs-drawer-header-offset` pattern).
+
+**Historical research summary (2026-07-28 session 1 — measurements stand; the taxonomy framing is
+superseded per the corrections above). Do not re-derive.**
 Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md` (3 rounds,
 ~30 sites, every geometry measured live on an OPEN panel — nothing inferred from CSS).
 - **ONE block with VARIANTS, not two blocks.** Every production system checked does this (WP core
@@ -240,8 +282,9 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
   `store('sgs/nav')`. ⛔ Beware STOP-DIALOG-DISPLAY-GATE (D338) when adding per-device geometry.
 - **Naming rule (binding): descriptive names, never studio names.** This ships to a restaurant, a law
   firm and a charity. Provenance belongs in the block.json `_note`.
-- **⚠ OPEN QUESTION, must be answered BEFORE the build (Bean-caught 2026-07-28): does each variant
-  PERSIST on mobile?** All reference geometry was measured at 1440×900 only. If the compact panels
+- **~~⚠ OPEN QUESTION~~ — ANSWERED 2026-07-28 session 2 (see the shipped block above): flat value
+  holds; lamalama derives the header's width so mobile is free; lusion = per-device `anchor`.**
+  Original question kept for the reasoning trail: does each variant PERSIST on mobile? All reference geometry was measured at 1440×900 only. If the compact panels
   collapse to full-screen on small screens, then `header-attached` / `trigger-anchored` are desktop
   PRESENTATIONS rather than device-spanning variants, and `variant` needs a per-device dimension (or
   a declared per-variant mobile fallback) — a flat `variant` string would be the wrong shape.
@@ -252,15 +295,16 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
   scrolling) may deserve capturing rather than flattening. Cheapest outcome to test first:
   lamalama's panel derives its width from a 438px pill header, so **if that header goes full-width
   on mobile, `header-attached` already handles mobile correctly with no extra attribute.**
-- **⚠ `side-panel` has NO reference site.** The other three variants trace to measured sites; this
-  one exists only because `edge: left/right` is half-built here (`nav-drawer/style.css:332-346`
-  hardcodes `width: min(88vw, 360px)` and self-labels "Phase 2+; declared, not gate-tested"). Find a
-  real reference or treat it as a variant with no evidence base — Bean's call whether it ships.
-- **Lateral (unresolved):** `sgs/modal` already implements the centred-card model AND hand-rolls its
-  own `showModal()` while the drawer delegates to `store('sgs/nav')` — **two `<dialog>` engines and
-  two geometry vocabularies for one primitive.** A shared dialog-geometry primitive would also serve
-  the cart flyout and search overlay (FR-36-19/-20). Must carry a modal/non-modal flag or it will
-  conflict with `sgs/mega-panel`'s DISCLOSURE contract (FR-36-10).
+- **~~⚠ `side-panel` has NO reference site~~ — RESOLVED 2026-07-28 session 2: DROPPED.** The
+  Task-1 pass confirmed zero of the 8 references uses an edge-anchored partial-width slide-in at
+  ANY width; the half-built `edge:left/right` CSS was retired with the `edge` attr (D404).
+- **Lateral (STILL unresolved after the 2026-07-28 build):** `sgs/modal` hand-rolls its own
+  `showModal()` while the drawer delegates to `store('sgs/nav')` — two `<dialog>` engines remain.
+  The variants build MIRRORED the modal's centred-card geometry model (the `centred` anchor:
+  width + `max-width:calc(100vw−2rem)`) and its backdrop-click idiom, but did NOT unify the
+  engines (the deferred Task 6). A shared dialog-geometry primitive would also serve the cart
+  flyout and search overlay (FR-36-19/-20) and must carry a modal/non-modal flag or it conflicts
+  with `sgs/mega-panel`'s DISCLOSURE contract (FR-36-10).
 
 **Drawer settings surface (carried verbatim from Spec 34 FR-34-5 — the ONLY itemised drawer-styling control list; NOT-BUILT, folds into this build's controls per FR-36-14):** a "Drawer" inspector panel, per-device via the shared `ResponsiveControl` (never a new switcher), all emission through the shared responsive helpers into the scoped `<style>` (zero inline):
 | Setting | Attr | Shape | Default | Notes |
@@ -845,6 +889,7 @@ in the Advanced tab is a Spec 35 Part F anti-pattern present on all 81 blocks �
 | **mega-panel presets** (parent-paints-child) | `FIXED + LIVE-VERIFIED 2026-07-25 (D382, `b5f2ee02`)` | render.php emits distinct Columns/Cards/Minimal layouts per `data-mega-style`. **⛔ THE PREVIOUS TEXT HERE WAS FALSE ON THREE COUNTS — do NOT act on it if you find it quoted elsewhere.** It claimed (a) the FRONTEND worked "by construction", (b) that WP 7.0's iframed editor canvas ignores this block's `editor.css`, and (c) prescribed a "PROVEN FIX (not yet landed): move the preset rules into style.css". **All three were wrong.** `b5f2ee02` proves the two REAL causes, and they broke BOTH surfaces: **(1) SELF-NESTED SELECTORS** — render.php prepended `$root_sel` to `$content_sel`/`$group_sel`, which already begin with `$root_sel`, producing an impossible "panel inside itself" selector that matched nothing, so the FRONTEND was broken too; **(2) BROKEN style-handle FILENAME** — block.json named the SOURCE files (`file:./style.css`, `file:./editor.css`) while the build emits `style-index.css`/`index.css`, so WP registered a handle pointing at a non-existent file and SILENTLY enqueued nothing, reaching neither the frontend nor the canvas. The same block.json bug was swept from 4 other blocks in the same commit. **The iframe/editorStyle diagnosis is RETRACTED** (also retracted in CC memory `feedback_wp_iframe_canvas_ignores_editorstyle_use_style_css.md`); the prescribed style.css move addressed a cause that never existed and was never applied. Corrected 2026-07-27 after `git show b5f2ee02` contradicted this row. |
 | **mega starter patterns** | `LIVE-VERIFIED 2026-07-25` | Inserting a starter was initially broken ("Block contains unexpected or invalid content" — mega-group/aside were STATIC with a save/pattern mismatch); FIXED by making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real editable columns + aside. Aside media capped (170px) so an empty/large image doesn't dominate |
 | 36-8, 36-17, 36-9a (mega) | **`LIVE-VERIFIED 2026-07-28 (D401)`** | **GATE 3 CLOSED.** Fixture: canary panel **1745** populated, menu **100** (mega at position 2), page **1842** `/gate3-mega-nav/`. Every owed item discharged: **axe 0 on the OPEN mega AND the OPEN drawer** · crawl assertion (all 7 panel links + 3 headings + aside copy in the pre-JS HTML) · **live recursion test** (a panel embedding a nav on its own menu → plain link, HTTP 200, no nested panel; fixture restored) · drawer no-regression · keyboard no-trap + ESC/focus-return · reduced-motion full end state at 120ms · **Bean's R-31-13 eye sign-off GIVEN** on the geometry pass. 36-8's collapse control is now the **Burger Menu** preset (see FR-36-8) |
+| **36-6** drawer desktop variants | `BUILT + probe-verified 2026-07-28 (D403/D404)` | Per-device `anchor`/`panelSize`/surface/`closeStyle`/`variantPreset` + 7 variations + nav-menu `listColumns` + backdrop-click-to-close (`store('sgs/nav')`), commits `faa14924`/`69dfbaf9`. Council-fixed (9 findings pre-commit); defaults render property-identical (page 1648); centred/full-screen anchors + backdrop-close verified live; variation insert + `isActive` verified in the real editor. DB seeded (`variant_attr='variantPreset'`; `variant_slots` weak by construction — value-differentiated variants, see FR-36-6 note). **NOT yet passed: Task 5, the pre-registered exit gate** — 7 exact-content fixtures (design doc §6), openness-guarded axe per variant per width, ESC/focus re-observation, `listColumns` canvas visibility, header anchor on pinned/unpinned headers, Bean's eye (R-31-13). Deliberate simplifications recorded: burger-morph static icon; trigger anchor CSS approximation |
 | **36-10, 36-11** landmark | `LIVE-VERIFIED 2026-07-23` | One `<nav>` per instance, one label, on `/t1-nav/` (canary, classic menu 98). Distinct names derived per menu — "Primary" / "T1 Verify" — verified with BOTH exposed (drawer open), which is the case FR-36-11 governs. The 2026-07-23 "zero `<nav>`" finding was FALSE and its fix was reverted; the real bug was the unreachable menu-name fallback (`navLabel` default `'Primary'` → `''`). See the retraction note in §4. `sgs/nav-menu` contributes **zero** axe violations — negative control: the nav-free homepage reports the identical 5 |
 | 36-11, 36-16 | **`GATE — drawer axe CLOSED 2026-07-28`** | The 2026-07-23 INCONCLUSIVE is resolved: **axe 0 on the OPEN drawer** (guard: height 0→780, 14 focusables). ⚠ **METHOD CORRECTION, binding on every future run:** a scoped axe run on a CLOSED surface passes VACUOUSLY — `nav-qa/axe-run.mjs --scope .sgs-nav-drawer` returns "0 violations" with or without `--open`, because axe's `excludeHidden` defaults true. **Any earlier drawer-axe claim made with that harness proves nothing.** Every axe run on a disclosure/dialog surface MUST first assert the surface is open (open/`aria-expanded`, height > 0, focusable count > 0) and report VACUOUS, never PASS, when the guard fails. `axe-run.mjs` still needs that guard wired in — until then, use a guarded harness |
 
