@@ -2237,3 +2237,10 @@ The three entries below were consolidated (Bean-directed) into `P-DRAFT-TOKEN-EX
 > primary-dark resolves light. Fix at `2b711a55`: re-tokened to guaranteed-readable pairings per
 > Bean (surface bg / text headings / primary numbers / text-muted body); theme 1.5.49→1.5.50 for
 > the pattern cache. **Completion date: 2026-07-28.**
+
+
+## P-MEGA-GATE3-LIVE — CLOSED 2026-07-28 (D401)
+
+Archived verbatim from parking.md on completion:
+
+> **P-MEGA-GATE3-LIVE** — NEW 2026-07-25 (D379). The mega CORE passed AUTOMATED live QC (disclosure renders, multi-instance no-fatal, CF-2 injection neutralised, instance-scoped id) + interactive Gate 2 (picker fires, starter inserts + edits). **Owed for Gate 3:** on a real canary page — populate a mega panel from a starter, attach to a menu, put an `sgs/nav-menu` on a page; open the mega on hover/tap/keyboard; **axe** on the OPEN panel (0 block-defect); **drawer no-regression** (`store('sgs/nav')` untouched but verify); reduced-motion; the **live recursion test** (a panel embedding a nav bound to its own menu → plain link, no loop); Bean's eye (R-31-13). Also: the frontend presets are proven in CODE, not yet visually confirmed on a page. **Status: OPEN** · **Bucket:** Framework · **Trigger:** after P-MEGA-EDITOR-PRESET-PREVIEW lands. Canonical: Spec 36 §6a + §8 FR-36-16. **⚠ ITS TRIGGER HAS FIRED (verified 2026-07-27):** this was gated on `P-MEGA-EDITOR-PRESET-PREVIEW` landing — that landed at `b5f2ee02` (D382) and is now archived. `.claude/LEDGER.md:44` independently names this as the current next front and notes panel 1745 is empty and must be populated first. **Unblocked and actionable now, not waiting.**

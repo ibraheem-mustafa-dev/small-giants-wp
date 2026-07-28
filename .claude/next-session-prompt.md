@@ -7,165 +7,196 @@ Invoke /autopilot before doing anything else.
 > earlier, and its own ritual pre-answered "nothing shipped, nothing to verify"). A whole session was
 > nearly spent rebuilding working code. **Verify this brief against `git log` before acting on it.**
 
-> **Co-active tracks share this worktree.** A Spec-35/31 track commits between handoffs. Files under
+> **Co-active tracks share this worktree.** A Spec-35/31/37 track commits between handoffs. Files under
 > `plugins/sgs-blocks/scripts/behavioural-analyser/*`, `db-consistency/*`, `sgs-update-v2.py`,
 > `includes/lucide-icons.php`, `reports/phase4-*.txt`, `.claude/reports/inline-styling-audit-*`,
 > `plugins/sgs-blocks/scripts/tests/fixtures/phase-f/*`, `.claude/mistakes.md`, and
-> `next-session-prompt-spec35*.md` / `next-session-prompt-track1-converter.md` may carry UNCOMMITTED changes
-> that are **not yours**. Path-scope every commit, re-check `git branch --show-current` in the SAME command as
-> the commit, never `git add -A`. **The shared prebuild is RED** on the co-active `sgs/tabs` `tabIndicatorColour`
-> DB↔block.json finding (STOP-24). Build via `npx wp-scripts build --experimental-modules --webpack-copy-php`
-> directly; the SGS visual-diff pre-commit gate blocks any touch to a block's render.php/block.json/edit.js
-> without a passing visual-diff report — its OWN message sanctions `--no-verify` for logic-predominant changes
-> (STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC). Do NOT reseed their DB; do NOT baseline their finding. A bare
+> `next-session-prompt-spec37.md` / `next-session-prompt-spec35*.md` / `next-session-prompt-track1-converter.md`
+> may carry UNCOMMITTED changes that are **not yours**. Path-scope every commit, re-check
+> `git branch --show-current` in the SAME command as the commit, never `git add -A`. **The shared prebuild
+> may be RED** on a co-active finding (STOP-24) — build via
+> `npx wp-scripts build --experimental-modules --webpack-copy-php` directly. The SGS visual-diff pre-commit
+> gate blocks any touch to a block's render.php/block.json/edit.js without a passing visual-diff report; its
+> OWN message sanctions `--no-verify` for logic-predominant changes
+> (STOP-VISUAL-DIFF-GATE-NO-VERIFY-FOR-LOGIC). Do NOT reseed their DB; do NOT baseline their findings. A bare
 > `git commit` (whole index) is gate-blocked on this shared tree — add `[batch-ok:<reason>]` in the command
 > only after verifying `git diff --cached --name-only` is exclusively your paths.
+> **⚠ NEW 2026-07-28: a commit of mine was silently gate-blocked and the subsequent `git push` reported
+> success while pushing the CO-ACTIVE track's commit.** Always confirm with `git log -1 --format='%h %s'`
+> that YOUR message is at HEAD — never trust push output (STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT).
 
 ---
 
-# Next session — Gate 3: PROVE the mega menu works (one fixture unblocks everything)
+# Next session — build the nav-drawer DESKTOP VARIANTS (research is DONE; do not redo it)
 
-You are the engineer-verifier for the SGS mega-menu. **The building is done. The proving is not.**
-Spec 36 Phase 2's core AND its five deferred polish items are all built, committed and deployed to the
-sandybrown canary. What does NOT exist is evidence that any of the motion actually runs on a real page.
+You are the engineer for Spec 36's drawer. **Gate 3 is CLOSED — the mega menu is proven live.**
+The research for this session's work is COMPLETE and measured. Your job is to BUILD from it.
 
 ## State recap (plain English — no assumed pretext)
 
-A "mega menu" is the big rich panel that drops down from a navigation item. Over two sessions we built:
-the panel block and its three layouts, two more layout variants (a logo grid and a media-card grid), a
-dark colour set, five animation effects, a side panel with its own settings, and a smarter hover path so
-the panel does not close when you move the mouse diagonally toward it.
+A "burger menu" is the three-line button that opens a menu panel. Ours (`sgs/nav-drawer`) was built
+phone-first: it opens a panel filling the whole screen. Bean wants the burger usable on **any**
+device including desktop — and on desktop a full-screen takeover is only one of the looks real sites
+use. Last session measured ~30 real websites to establish what the alternatives actually are, and
+wrote it up. **None of that needs rediscovering.**
 
-**Everything above is code-complete and live on the canary. None of the ANIMATION is verified.** The
-reason is mundane: the canary's mega panel (CPT post **1745**) is EMPTY. With no content inside it, there
-is nothing for the reveal animation to reveal, and no open panel for an accessibility scan to inspect.
-
-Three separate bugs last session were "built but inert" — perfect code that silently did nothing, all
-passing `php -l`, eslint and every prebuild gate. That is exactly why a build is not accepted as evidence
-here.
+Last session also closed Gate 3 (the mega menu verifiably works on a real page), fixed two
+root-cause defects, applied four rounds of Bean's visual feedback, fixed a security hole, and cut the
+nav block's inspector from 13 panels to 8. All shipped and pushed.
 
 ## First action (smallest step, <5 min, zero deps)
 ```bash
 cd "c:/Users/Bean/Projects/small-giants-wp" && git log -1 --format='%h %s' && \
   grep -oE 'D[0-9]{1,4}' .claude/decisions.md | sort -V | tail -1 && git branch --show-current
 ```
-Expect branch `main`, **D-ceiling ≥ D397** (a co-active track may push it higher — that is normal, not a
-conflict). Then read the LEDGER's ⭐CURRENT block before anything else.
+Expect branch `main`, **D-ceiling ≥ D401** (a co-active track may push it higher — normal, not a
+conflict). Then read the LEDGER's ⭐CURRENT blocks.
 
 ## Mandatory READING — before any Write/Edit or dispatch
-1. **`.claude/LEDGER.md`** ⭐ CURRENT + ⭐ NEXT — the single source of live status. Read FIRST.
-2. **`.claude/STOP-CATALOGUE.md`** — the uncapped STOP catalogue (87 entries) + pre-flight ritual (§C).
-3. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** IN FULL (governing spec) — esp. FR-36-4/5/10/11/16/17
-   and **§8 the concrete live-QC gate**, which defines what "verified" means for this surface.
-4. **`.claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md`** §0.5 (CORE + CF-1..CF-15), §3 (exact layout
-   values), §4 (dark cascade), §6 (motion timings), §8 (aside formats) — what the built thing is SUPPOSED
-   to do, so you can tell "working" from "wrong".
-5. **`.claude/decisions.md` D396 + D397** — the three inert-bug root causes and the settled findings.
-   D393 (co-active) is also load-bearing: `templateLock:'all'` re-applies templates by ARRAY POSITION.
+1. **`.claude/LEDGER.md`** ⭐ CURRENT + ⭐ ALSO CURRENT — the single source of live status. FIRST.
+2. **`.claude/STOP-CATALOGUE.md`** — the uncapped STOP catalogue (**81 entries**) + pre-flight ritual §C.
+3. **`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md`** — IN FULL. This is the
+   brief for the whole session: measured geometry, the corrected taxonomy, the a11y findings, the
+   code audit of what is structurally blocking, and 4 named traps. **Do not re-run the research.**
+4. **`.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`** IN FULL (governing spec) — esp. **FR-36-6** (drawer
+   + its new DESKTOP VARIANTS block), FR-36-8 (Burger Menu preset), FR-36-10 (disclosure vs dialog —
+   the a11y contract), FR-36-14 (control completeness + the `hideExtensions` rule), §6a, §8.
+5. **`.claude/decisions.md` D401** — last session's record, incl. the two root-cause defects and the
+   vacuous-axe method correction. **D393** is also load-bearing (`templateLock:'all'` re-applies
+   templates by ARRAY POSITION).
+6. **`plugins/sgs-blocks/src/blocks/nav-drawer/{block.json,edit.js,render.php,style.css}`** AND
+   **`plugins/sgs-blocks/src/blocks/modal/{block.json,render.php,style.css,view.js}`** — the modal
+   already implements the centred-card geometry and hand-rolls its own `showModal()`. Read both
+   before deciding where the geometry model lives.
+7. **`.claude/plans/2026-07-24-mega-menu-BUILD-SPEC.md`** §0.5 (CORE + CF-1..CF-15) — the binding
+   council fixes still govern the mega surface you may touch.
 
 ## Why this matters (motivation — Rule 7)
-A block-native, ARIA-compliant, content-preserving mega menu that replaces Max Mega Menu / JetMenu /
-Kadence Pro with zero external dependencies — preserving rich content on mobile where every competitor
-flattens to a link list. It is the headline navigation surface for every client build. **It is one
-fixture away from being demonstrably real rather than theoretically built.**
+A block-native, ARIA-compliant burger menu that works at every breakpoint, with looks matching what
+top studios ship — and **more accessible than the sites it is modelled on** (neither reference site
+has `inert` or a focus trap; ours would). It is the headline navigation surface for every client
+build, and it is one build away from covering desktop as well as mobile.
 
-## The work
+---
 
-### Task 1 — Build the Gate-3 fixture (THE unblocker)
-**What:** put real content in the canary's mega panel and get it onto a page with a nav.
-**Why:** this single fixture unblocks EVERY owed verification at once. Nothing else can proceed without it.
+## Task 1 — Design-gate the variant + geometry model
+
+**What:** decide, with Bean, the exact attribute shape before writing any code.
+**Why:** `sgs/nav-drawer` is a shared mechanism with 16 stored instances; project rule 7 requires a
+design gate before building shared-mechanism changes.
 **Estimated time:** 20 min.
 
-Steps: populate `sgs_mega_menu` post **1745** with real content (insert one of the 5 starter patterns —
-`sgs/mega-general-2col-aside` exercises the most surface); confirm it is attached to menu **100** (item
-**1746** already targets it); place `sgs/nav-menu` on a page bound to menu 100.
+Bring to Bean: the 4 variants (`full-screen` default · `header-attached` · `trigger-anchored` ·
+`side-panel`), how `header-attached` derives width from the header, whether geometry becomes a
+responsive object (`{desktop,tablet,mobile}` — `drawerGap`/`drawerPadding` already are), and whether
+the shared dialog-geometry primitive with `sgs/modal` is in scope.
 
-**Orchestration:** inline (main thread). Editor work — use Playwright with the canary credentials at
-`.claude/secrets/sandybrown.env` (gitignored, always available, no need to ask). **NEVER edit
-`post_content` via WP-CLI** (D270) — a PreToolUse hook blocks it and it corrupts block validation.
-**Acceptance:** loading the page shows a mega trigger; clicking it opens a panel with visible content.
+**Orchestration:** inline (main thread). Use `/brainstorming` design mode.
+**Depends on:** none. **Parallel with:** none. **/qc gate after:** no — a decision, not code.
+**Acceptance:** Bean has signed off a written attribute shape. Nothing is built before this.
 
-### Task 2 — Verify the motion actually fires
-**What:** prove each effect runs, on a real page, in a real browser.
-**Why:** three effects were dead code last session and every gate passed them. "The code exists" is
-worth zero here.
-**Estimated time:** 30 min. **Depends on:** Task 1.
+## Task 2 — Build the variant + responsive geometry model
 
-Per effect, name the observable signal BEFORE looking, then check it:
-- **Stagger** — panel children fade+rise in sequence on open. It is opt-in via `staggerOnOpen`, so turn
-  it ON first or you will "verify" a disabled feature. Its observer watches the TRIGGER's
-  `aria-expanded`, not the panel.
-- **Sliding indicator** — opt-in via `indicatorStyle: 'pill'`. **Check the pill's SHAPE**: it animates
-  `width` now (a deliberate scoped exception); the previous `scaleX` version stretched the corners.
-- **Magnet label** — opt-in via `itemMagnetEnabled`. Label drifts slightly toward the cursor.
-- **Caret flip** — always on; rotates 180° when expanded.
-- **Cursor spotlight** — always on when an aside is present; a soft radial glow follows the pointer.
-- **Card hover-lift** — `cards` style only; lifts 3px, shadow fades in via a pseudo-element.
+**What:** implement the agreed variants on `sgs/nav-drawer`.
+**Why:** the only way the burger works properly on desktop.
+**Estimated time:** 60 min. **Depends on:** Task 1. **Parallel with:** none.
 
-**Orchestration:** inline + Playwright MCP. **Acceptance:** each effect either visibly runs or is proven
-absent with a named reason. A "cannot tell" is a FAIL — extend the measurement, do not round up.
+Pinned by prior research — do not re-litigate:
+- `variant` declared via `supports.sgs.variants` + `blocks.variant_attr`/`variant_slots` (the
+  `sgs/hero` pattern, FR-31-20). Seed with `/sgs-update`.
+- **`header-attached` DERIVES its width from the header. Never hardcode 438px.**
+- No `centre` hack on `edge` — position follows the variant.
+- Add `justify-content` to the drawer body (only `align-items` exists today), or vertical centring is
+  unreachable.
+- Fold `animateFrom` into the variant default (kills the `edge:left` + `animateFrom:right` nonsense),
+  keeping `fade` as an explicit override.
+- Every variant declares its own a11y contract, not just CSS.
 
-### Task 3 — The live a11y + degradation gate (Spec 36 §8)
-**What:** the pre-registered exit gate for this phase.
-**Why:** the accessibility claim is the competitive differentiator; unverified, it is marketing.
-**Estimated time:** 30 min. **Depends on:** Task 1.
+**Orchestration:** delegated. Model **sonnet** via `/delegate` (MCP-capable tier — the live editor
+verification needs a browser). Dispatch pattern: single agent, `wp-sgs-developer`.
+**Brief:** implement the Bean-approved shape; back-compatible defaults so the 16 zero-attribute
+stored instances are untouched; live-verify in a real editor.
+**Context it will not have:** the 4 traps in §8 of the research report — especially
+**STOP-DIALOG-DISPLAY-GATE (D338)**: any per-device geometry setting `display` on the base
+`.wp-block-sgs-nav-drawer` rule beats the UA's `dialog:not([open]){display:none}` and renders the
+drawer permanently open, in-flow, on every page.
+**/qc gate after:** yes — `/qc-council` multi-rater (blub.db 255, SGS-block logic).
+**Acceptance:** each variant renders its measured geometry on the canary AND unset renders
+byte-identical to today. Not "code shipped".
 
-- `axe` = 0 on an **OPEN mega panel** AND on the **open drawer** (the drawer run has been INCONCLUSIVE
-  since 2026-07-23 — a harness click timeout, not a page defect; close it this time).
-- Keyboard: Tab through the panel (NO trap), Escape closes and returns focus to the trigger.
-- `prefers-reduced-motion` emulated: every effect shows its FULL END STATE instantly. Content must never
-  be left hidden or part-faded.
-- JS-off crawl: every panel link AND its rich content present in the pre-JS HTML (FR-36-17).
-- **Drawer no-regression** — the mega uses a SEPARATE `store('sgs/mega')`; prove the drawer is untouched.
-- **Live recursion test** (CF-1): a panel whose content references the menu it hangs off must degrade to
-  a plain link — no fatal, no infinite loop.
+## Task 3 — Backdrop-click-to-close in `store('sgs/nav')`
 
-**Orchestration:** `nav-qa/axe-run.mjs` + Playwright. Delegate the sweep to a subagent ONLY with explicit
-per-check evidence required back. **Acceptance:** every check has a recorded result, not an assumption.
+**What:** clicking outside a non-full-screen panel closes it.
+**Why:** `showModal()` makes the visible page `inert`; on a partial-width desktop panel with no
+click-away dismissal that reads as a broken site.
+**Estimated time:** 15 min. **Depends on:** Task 2. **Parallel with:** none.
 
-### Task 4 — Honest visual-diff reports + Bean's eye (R-31-13)
-**What:** replace the three `verdict: INCOMPLETE` reports with real ones, and get Bean's sign-off.
-**Why:** the reports are currently committed as INCOMPLETE / `first_paint_capture_passed: false` —
-deliberately NOT faked as PASS. Only real evidence may flip them.
-**Estimated time:** 15 min. **Depends on:** Tasks 2 + 3.
+**Orchestration:** inline. **/qc gate after:** `/qc-inline`.
+**Acceptance:** verified live on a partial-width variant; ESC and the × still work; the full-screen
+variant is unaffected.
 
-`reports/visual-diff/{mega-panel,mega-aside,nav-menu}-<DATE>.md`. **NEVER fabricate `verdict: PASS`** —
-that gate is the last thing standing between this work and a client site. Then show Bean a cropped
-before/after pair; script measurement AND Bean's eye are co-authoritative (R-31-13), neither closes alone.
+## Task 4 — Live verification + Bean's eye (R-31-13)
 
-### Task 5 (only if 1–4 pass) — the deferred remainder
-`sgs/icon-list` items have no description field, so the aside's `preview` format can only show a hovered
-link's TITLE, not its description (§8 wants both). Adding the field touches another block — scope it
-deliberately, do not absorb it silently.
+**What:** the pre-registered exit gate for this surface.
+**Estimated time:** 30 min. **Depends on:** Tasks 2 + 3.
+
+- axe = 0 on EACH variant, **openness-guarded** (an unguarded scoped run is vacuous — see ritual Q24).
+- Keyboard: containment per each variant's declared contract; ESC closes; focus returns to the burger.
+- `prefers-reduced-motion`: full end state instantly, nothing left hidden.
+- JS-off: links present and crawlable (FR-36-17).
+- **A 2+-instance-of-the-same-block page** (D374) and a non-default `collapsePoint` sweep.
+- Cropped before/after pair for Bean. **Script measurement AND Bean's eye are co-authoritative.**
+
+**Orchestration:** inline + your OWN isolated Playwright browser (the shared MCP browser may be busy;
+a working harness exists — see the research report). **/qc gate after:** `/qc-inline`.
+**Acceptance:** every check has a recorded result. "Cannot tell" is a FAIL — extend the measurement.
+
+## Task 5 (only if 1–4 land) — the shared dialog-geometry primitive
+`sgs/modal` already implements the centred-card model and hand-rolls its own `showModal()`. Unifying
+would also serve the cart flyout (FR-36-19) and search overlay (FR-36-20). **Must carry a
+modal/non-modal flag** or it conflicts with `sgs/mega-panel`'s DISCLOSURE contract (FR-36-10). Scope
+deliberately — do not absorb silently.
 
 ## Dependency graph
 ```
-Task 1 (fixture, inline) ──┬─ Task 2 (motion verify) ─┐
-                           └─ Task 3 (a11y gate) ─────┴─ Task 4 (reports + Bean's eye) → Task 5 (optional)
+Task 1 (inline, Opus — design gate, Bean sign-off REQUIRED)
+  ↓
+Task 2 (delegated, sonnet via /delegate) → /qc-council
+  ↓
+Task 3 (inline) → /qc-inline
+  ↓
+Task 4 (inline — live verify + Bean's eye)
+  ↓
+Task 5 (optional)
+  ↓
+Commit + push (verify with git log -1)
 ```
 
 ## Pre-flight self-attestation ritual (answer inline before first Write/Edit or dispatch)
-**Full uncapped ritual + ALL STOP defences = `STOP-CATALOGUE.md` §C — carried forward there, never dropped.
-Below = the verification-phase subset + this session's NEW gates (12/21/22/23 from the 2026-07-27 session):**
-1. Read the LEDGER ⭐CURRENT + STOP-CATALOGUE + Spec 36 in full + BUILD-SPEC §0.5/§3/§4/§6/§8?
+**Full uncapped ritual + ALL STOP defences = `STOP-CATALOGUE.md` §C — carried forward there, never
+dropped. Below = this surface's subset + the NEW gates (24–27) from 2026-07-28:**
+1. Read the LEDGER ⭐CURRENT + STOP-CATALOGUE + Spec 36 in full + the drawer research report in full?
 2. **Did last session LAND, and does THIS FILE match reality?** Check `git log -1` + the D-ceiling
-   against the LEDGER. **Do NOT trust a brief that pre-answers this question** — the previous version of
+   against the LEDGER. **Do NOT trust a brief that pre-answers this question** — a previous version of
    this file asserted "nothing shipped" while 4 commits sat in `main`. (STOP-VERIFY-THE-BRIEF.)
 3. Am I about to assert a cause I have NOT tested? (STOP-PROVE-CAUSE-BEFORE-FIX.)
-4. Am I VERIFYING, not building? The build is done — new code this session is a signal something is wrong.
-5. Passing the declared SHAPE (object vs flat; support vs attr)? (STOP-D328.)
-6. Reusing what exists — the 5 starter patterns, `nav-qa/*.mjs`, the canary fixtures? Did I grep?
-7. Am I extending `store('sgs/nav')`? DON'T — the mega is a SEPARATE `store('sgs/mega')` (CF-3).
+4. Am I re-running research that is already DONE and written up? The report IS the brief — new
+   research this session is a signal something is wrong.
+5. Passing the declared SHAPE (object vs flat; support vs attr)? (STOP-D328 — and see Q26.)
+6. Reusing what exists — `sgs/modal`'s geometry, `ResponsiveControl`, `nav-qa/*.mjs`, the canary
+   fixtures? Did I grep?
+7. Am I extending `store('sgs/nav')` correctly, and is the mega's `store('sgs/mega')` untouched? (CF-3.)
 8. Canary before dev-site? Full cache clear + theme-version bump (pattern cache) before measuring?
    Desktop browser for geometry (device emulation cannot reproduce the scrollbar bounce)?
 9. D-ceiling + branch verified in the SAME command as the commit? (STOP-RECHECK-BRANCH.)
-10. Touching another track's files (lucide-icons.php, phase4-*, phase-f fixtures, spec35/converter prompts)? DON'T.
+10. Touching another track's files (lucide-icons.php, phase4-*, phase-f fixtures, spec35/37 prompts)? DON'T.
 11. Would my acceptance test still pass if the feature were absent? (STOP-NEGATIVE-CONTROL.)
 12. Is this pinned CF/finding still true against source? Fact-check before acting (STOP-FACT-CHECK-COUNCIL-FINDINGS).
 13. `role:content` on every editable child attr, verified LIVE (a green build won't catch it)? (CF-6.)
 14. Recursion guard proven by a NAMED self-reference test, not by reading the code? (CF-1.)
 15. Escaping: colour→`sgs_colour_value()`, dims→the nav-menu regex, text/URL→`esc_html`/`esc_url`,
-    no raw attr in `<style>`? (CF-2.)
+    no raw attr in `<style>`? (CF-2.) **And no `;{}` breakout** — route through
+    `sgs_css_value_has_breakout()` (added 2026-07-28).
 16. A 2+-instance-of-the-same-block live page (D374) + no top-level fn in per-render render.php?
 17. Verifying a fix EMITS/RENDERS on the live page, not just that the code exists? (R-31-11/13.)
 18. Every implementer dispatch says "EXECUTE YOURSELF, do NOT delegate" (D362)?
@@ -173,96 +204,125 @@ Below = the verification-phase subset + this session's NEW gates (12/21/22/23 fr
     `wp option update` (D360)?
 20. Proving a thing is MISSING before adding it, against rendered output (D369)? Not deleting on a live
     site without inspecting (D362)?
-21. **[NEW] Have I named the OBSERVABLE SIGNAL for every effect before checking it?** A green build is
+21. **Have I named the OBSERVABLE SIGNAL for every effect before checking it?** A green build is
     zero evidence an effect fires — 3 inert bugs passed every gate on 2026-07-27
     (STOP-A-GREEN-BUILD-IS-NOT-EVIDENCE-AN-EFFECT-FIRES).
-22. **[NEW] Am I about to "fix" a doc I have not verified is actually wrong?** 1 of 3 such claims was MY
-    error last session and would have corrupted a correct spec
-    (STOP-VERIFY-A-DOC-IS-LYING-BEFORE-YOU-FIX-IT).
-23. **[NEW] Did I add a `patterns/*.php` file? Then BUMP `theme/sgs-theme/style.css` `Version:`** — WP
+22. **Am I about to "fix" a doc I have not verified is actually wrong?** 1 of 3 such claims was MY
+    error and would have corrupted a correct spec (STOP-VERIFY-A-DOC-IS-LYING-BEFORE-YOU-FIX-IT).
+23. **Did I add a `patterns/*.php` file? Then BUMP `theme/sgs-theme/style.css` `Version:`** — WP
     caches the pattern list against it and the pattern will never appear
     (STOP-NEW-PATTERN-FILES-NEED-A-THEME-VERSION-BUMP). Verify via the block-patterns REST endpoint.
+24. **[NEW] Is my axe run OPENNESS-GUARDED?** A scoped axe run on a CLOSED drawer/panel returns
+    "0 violations" identically to an open one (`excludeHidden` defaults true), so every prior
+    unguarded drawer-axe claim proved nothing. Assert open + focusable-count > 0 first, and report
+    VACUOUS not PASS when the guard fails
+    (STOP-A-SCOPED-AXE-RUN-ON-A-CLOSED-SURFACE-PASSES-VACUOUSLY).
+25. **[NEW] For any positioning / nth-child CSS: did I MEASURE the rendered box, and do I know which
+    ancestor is actually the containing block?** A rule can be perfectly written and structurally
+    incapable of working — two shipped this way on 2026-07-28
+    (STOP-A-CSS-RULE-THAT-CANNOT-WORK-STILL-LOOKS-CORRECT-IN-SOURCE).
+26. **[NEW] If two sibling blocks differ visibly in one property, did I diff their attribute SHAPES
+    before their CSS?** A scalar where a box object is expected drops the WHOLE value silently
+    (STOP-A-SHAPE-MISMATCH-SILENTLY-DROPS-THE-WHOLE-VALUE).
+27. **[NEW] Does every block I touch declare `hideExtensions` deliberately?** Inheriting all four
+    universal extensions is a decision, not a default — and a panel RENDERING is not evidence its
+    attributes are registered
+    (STOP-A-UNIVERSAL-EXTENSION-ATTACHES-TO-BLOCKS-IT-MAKES-NO-SENSE-ON).
 
 ## Methodology guardrails (do not skip)
 - **A green build / passing gates are NOT evidence an effect fires.** Name the observable signal, check it live.
+- **An unguarded scoped axe run is vacuous.** Assert the surface is OPEN before believing a 0.
 - **Verify a doc is lying before you fix it** — your own diagnostic claim is a hypothesis too.
 - **/qc multi-rater BEFORE every commit** touching SGS block/converter logic (blub.db 255).
-- **Deploy = `build-deploy.py --target sandybrown`** (the ONE path; keeps the `.bak` rollback + oldshape
-  gate + verify). **NEVER hand-roll tar/scp** (D336 took 2 client sites down ~2.5h). Checksum every deploy
-  (`md5sum` local↔server) — `[verify] HTTP 200` passes on ANY working page
-  (STOP-VERIFY-DEPLOY-BY-CHECKSUM); a matching md5 proves CONSISTENCY, never correctness.
-- **`git log -1` after every commit** — a "succeeded" commit can be silently gate-blocked (proven twice).
+- **Deploy = `build-deploy.py --target sandybrown`** (the ONE path; keeps the `.bak` rollback +
+  oldshape gate + verify). **NEVER hand-roll tar/scp** (D336 took 2 client sites down ~2.5h). Verify
+  deployed CONTENT by grepping the changed line — `[verify] HTTP 200` passes on ANY working page, and
+  **a matching md5 proves consistency, never correctness**
+  (STOP-A-MATCHING-MD5-PROVES-CONSISTENCY-NOT-CORRECTNESS).
+- **`git log -1` after every commit** — a "succeeded" commit can be silently gate-blocked, and the
+  push may carry a co-active track's commit instead (happened 2026-07-28).
 - **WP_DEBUG_DISPLAY stays false** on staging. **STOP-29** — never "out of scope" on a spec'd surface;
   map every deferral to a named spec stage.
 - **An agent's "done" is a CLAIM** — verify against the real repo / live state (D362).
 
 ## Known-open, NOT blockers
-- **Canary fixtures:** mega page **1762**, panel **1745** (EMPTY — Task 1 fills it), menu **100**, item
-  **1746**; header CPT **1570**, footer CPT **1654**. Do not assume any are clean.
+- **Canary fixtures:** Gate-3 page **1842** `/gate3-mega-nav/`, mega panel **1745** (populated), menu
+  **100** (Home · Brands[mega] · Recipes · Contact), header CPT **1570** (has NO drawer — the live
+  example of the FR-36-9a notice firing), drawer test page **1648**. Do not assume any are clean.
+- **`nav-qa/axe-run.mjs` needs an openness guard wired in** — until then its scoped result is vacuous.
+- **Plain (non-mega) dropdowns are NOT built** — `nav-menu/render.php` flattens submenu children
+  ("no children this phase"); live-proven. Recorded in Spec 36 §6a against FR-36-4.
+- **The bespoke Custom CSS field** is a Spec 35 Part F anti-pattern on all 81 blocks — framework-wide,
+  deliberately not fixed with the nav cleanup.
+- **`conditional-visibility.js` has no `hideExtensions` slug** — cannot be opted out of by any block.
+- **`sgs/icon-list` has no description field**, so the mega aside's `preview` format can only show a
+  hovered link's TITLE, not its description (§8 wants both).
+- **The LEDGER is 29,368 bytes vs its 24,576 cap** — the oversized blocks belong to the co-active
+  Spec 37 track.
 - `supports.interactivity` (27 blocks) — INVESTIGATED + SETTLED as harmless/dormant (D397). **Do NOT
   re-investigate.** Re-open ONLY if the framework adopts Interactivity-Router client navigation.
-- `P-MAMAS-PRIMARY-CONTRAST` · two unnamed `<main>` landmarks (framework axe, NOT nav-menu — negative
-  control proved the nav-free homepage reports the identical 5) · both sites generic proof headers.
-- `decisions.md` is 2,697 lines vs a 600 cap — parked as `P-DOC-SIZE-AND-DOCSCORE-RESIDUALS`. Its docscore
-  "US spelling" + placeholder-marker hits are **documented FALSE POSITIVES** (`Organization` is the
-  Schema.org type name — anglicising breaks emitted JSON-LD; the markers are historical narrative inside
-  an append-only log). Do NOT "fix" them — that is the `lean-beats-structural-theatre` failure mode:
-  making a doc worse to raise its score.
-- Blub dashboard DOWN (port 5050) — lessons pending upload (CC-memory + workspace layers are written).
+- `P-MAMAS-PRIMARY-CONTRAST` · two unnamed `<main>` landmarks (framework axe, NOT nav-menu — a
+  negative control proved the nav-free homepage reports the identical 5) · both sites generic proof headers.
+- `decisions.md` docscore "US spelling" + placeholder-marker hits are **documented FALSE POSITIVES**
+  (`Organization` is the Schema.org type name; the markers are historical narrative in an append-only
+  log). Do NOT "fix" them — that is the `lean-beats-structural-theatre` failure mode.
+- Blub dashboard DOWN (port 5050) — lessons pending upload (CC-memory + workspace layers written).
 
 ## Skills to Invoke
 | Skill | When |
 |---|---|
-| `/brainstorming` | ALWAYS — but the design is DONE; only for a genuinely new sub-decision |
+| `/brainstorming` | ALWAYS — Task 1 is a genuine design gate |
 | `/gap-analysis` | ALWAYS — grade dispatched agents' output before acting on it |
 | `/lifecycle` | ALWAYS — before any skill/agent change |
-| `/research` | ALWAYS — auto-routes the tier |
-| `/strategic-plan` | ALWAYS — but the plan EXISTS (the 5 tasks above are the sequence) |
+| `/research` | ALWAYS — but the drawer research is DONE; only for a genuinely new question |
+| `/strategic-plan` | ALWAYS — the 5 tasks above are the sequence |
+| `/delegate` | Pick the model for Task 2 before dispatching |
 | `/sgs-wp-engine` | Any SGS block/theme work |
-| `/wp-block-development` | Core WP block-API questions |
-| `/qc-council` | Multi-rater before any SGS-block commit (blub.db 255) |
-| `/qc-inline` | Inline acceptance gate — incl. verifying a doc is wrong BEFORE editing it |
-| `/a11y-audit` · `/visual-qa` | Task 3's accessibility + visual sweeps |
-| `/systematic-debugging` | Root cause before fix, if an effect does not fire |
-| `/sgs-db` · `/wp-blocks` | Mega CPT/block/variant DB ground truth |
+| `/wp-block-development` | Core WP block-API questions (variants, `supports`) |
+| `/qc-council` · `/qc-inline` | Multi-rater before block commits · inline acceptance |
+| `/a11y-audit` · `/visual-qa` | Task 4's sweeps |
+| `/systematic-debugging` | Root cause before fix |
+| `/sgs-db` · `/wp-blocks` | Variant/DB ground truth — seed `variant_slots` via `/sgs-update` |
 | `/wp-sgs-deploy` | Deploy ceremony + gates |
-| `/handoff` | Session close — rewrite THIS file + the LEDGER |
+| `/handoff` | Session close |
 
 ## MCP Servers & Tools
 | Tool | What for |
 |---|---|
-| `playwright` / `chrome-devtools` | Live DOM (R-31-11): fixture build, hover/tap/keyboard, axe, reduced-motion, drawer no-regression |
+| `playwright` / `chrome-devtools` | Live DOM (R-31-11): variant geometry, axe, keyboard, reduced-motion. **Use an isolated browser if the shared one is busy.** |
 | `hostinger` | Cache purge / WP version checks |
-| `sgs-db.py` | Mega CPT + block attrs/variants — the DB is authoritative |
-| `nav-qa/*.mjs` | `axe-run` · `crawl-assert` · `palette-contrast-sweep` |
+| `sgs-db.py` | Variant attrs + `variant_slots` — the DB is authoritative |
+| `nav-qa/*.mjs` | `axe-run` (needs the openness guard) · `crawl-assert` · `elementfrompoint-sweep` |
 
 ## Tool bindings (exact commands — do not improvise these)
 | Operation | Command |
 |---|---|
-| Build | `cd plugins/sgs-blocks && npx wp-scripts build --experimental-modules --webpack-copy-php` (NOT `npm run build` — the shared prebuild is RED on a co-active track's finding) |
-| Deploy (canary) | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --skip-build` — the ONE path. Add `--allow-dirty` only when the co-active track has uncommitted files. NEVER hand-roll tar/scp (D336). |
-| Verify a deploy | `md5sum <local>` vs `ssh hd "md5sum <server path>"` — `[verify] HTTP 200` passes on ANY working page |
+| Build | `cd plugins/sgs-blocks && npx wp-scripts build --experimental-modules --webpack-copy-php` (NOT `npm run build` — shared prebuild may be RED) |
+| Deploy (canary) | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --skip-build --allow-dirty` |
+| Verify a deploy | grep the CHANGED LINE on the server — `[verify] HTTP 200` passes on ANY working page |
 | OPcache reset | write `<?php opcache_reset();` to webroot → `curl` it → `rm` it (the CLI pool is separate) |
-| SSH | `ssh hd` (alias) · webroot `domains/sandybrown-nightingale-600381.hostingersite.com/public_html` |
+| SSH | `ssh hd` · webroot `domains/sandybrown-nightingale-600381.hostingersite.com/public_html` |
 | Canary credentials | `.claude/secrets/sandybrown.env` — gitignored, ALWAYS available, no need to ask |
+| Editor login gotcha | LiteSpeed caches `wp-login.php` — cache-bust the login URL or the POST fails "Cookies are blocked" |
+| Node/npm | Run via PowerShell — the nvm shim is broken in Git Bash |
 | DB ground truth | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` · `python ~/.claude/hooks/wp-blocks.py dump` |
-| a11y / crawl sweeps | `node plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs` · `crawl-assert.mjs` |
-| Asset-target gate | `node plugins/sgs-blocks/scripts/check-block-asset-targets.js --check` (runs in postbuild) |
 | D-ceiling | `grep -oE 'D[0-9]{1,4}' .claude/decisions.md \| sort -V \| tail -1` |
-| Confirm a commit landed | `git log -1 --format='%h %s'` — a "succeeded" commit can be silently gate-blocked |
+| Confirm a commit landed | `git log -1 --format='%h %s'` — never trust push output |
 
 ## Agents to Delegate To
 | Agent | When |
 |---|---|
-| `wp-sgs-developer` | Any code fix Task 2/3 surfaces (add "EXECUTE YOURSELF, do NOT delegate", D362) |
-| `design-reviewer` | Compare the built mega panel against Bean's Claude Design drafts |
-| `code-reviewer` / `general-purpose` | Pre-commit multi-rater review + verifying agents' "done" claims |
-| `test-and-explain` | Plain-English confirmation for Bean that the mega menu works |
+| `wp-sgs-developer` | Task 2 build (add "EXECUTE YOURSELF, do NOT delegate", D362) |
+| `design-reviewer` | Compare each built variant against the measured reference geometry |
+| `code-reviewer` / `general-purpose` | Pre-commit multi-rater; verifying agents' "done" claims |
+| `test-and-explain` | Plain-English confirmation for Bean that each variant works |
 
 ## Guardrails
-- Build via `npx wp-scripts build --experimental-modules --webpack-copy-php` (shared prebuild RED on co-active sgs/tabs).
-- Path-scoped commits only; re-check branch in the same command; `--no-verify` + `[gates-ok:<reason>]` for
-  logic-only changes — **NOT for visual ones** (the gate's exemption is explicit; do not claim it falsely).
-- The mega is a SEPARATE disclosure module — do NOT touch `store('sgs/nav')`'s drawer orchestration.
-- The new `check-block-asset-targets` gate runs in **postbuild**. If it fires, a `block.json` names a file
-  the build never produced — fix the missing `import` in that block's `index.js`, never the gate.
+- Path-scoped commits only; re-check branch in the same command; `--no-verify` +
+  `[gates-ok:<reason>]` for logic-only changes — **NOT for visual ones** (the gate's exemption is
+  explicit; do not claim it falsely).
+- Back-compatible defaults: 16 stored `sgs/nav-drawer` instances carry ZERO attributes. Unset must
+  render byte-identical.
+- Do NOT touch `store('sgs/mega')` — the mega is a separate disclosure module (CF-3).
+- `check-block-asset-targets` runs in **postbuild**. If it fires, a `block.json` names a file the
+  build never produced — fix the missing `import` in that block's `index.js`, never the gate.

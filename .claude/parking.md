@@ -154,7 +154,7 @@ last_updated: 2026-07-27 (THREE verified cull passes this session — 34 entries
 
 <!-- P-MEGA-EDITOR-PRESET-PREVIEW — RESOLVED at `b5f2ee02` (D382) — editor.css is now 24 lines with 0 preset rules, style.css carries 20; the commit records live post-deploy verification. Archived 2026-07-27 to memory/parking-archive.md. -->
 
-> **P-MEGA-GATE3-LIVE** — NEW 2026-07-25 (D379). The mega CORE passed AUTOMATED live QC (disclosure renders, multi-instance no-fatal, CF-2 injection neutralised, instance-scoped id) + interactive Gate 2 (picker fires, starter inserts + edits). **Owed for Gate 3:** on a real canary page — populate a mega panel from a starter, attach to a menu, put an `sgs/nav-menu` on a page; open the mega on hover/tap/keyboard; **axe** on the OPEN panel (0 block-defect); **drawer no-regression** (`store('sgs/nav')` untouched but verify); reduced-motion; the **live recursion test** (a panel embedding a nav bound to its own menu → plain link, no loop); Bean's eye (R-31-13). Also: the frontend presets are proven in CODE, not yet visually confirmed on a page. **Status: OPEN** · **Bucket:** Framework · **Trigger:** after P-MEGA-EDITOR-PRESET-PREVIEW lands. Canonical: Spec 36 §6a + §8 FR-36-16. **⚠ ITS TRIGGER HAS FIRED (verified 2026-07-27):** this was gated on `P-MEGA-EDITOR-PRESET-PREVIEW` landing — that landed at `b5f2ee02` (D382) and is now archived. `.claude/LEDGER.md:44` independently names this as the current next front and notes panel 1745 is empty and must be populated first. **Unblocked and actionable now, not waiting.**
+<!-- P-MEGA-GATE3-LIVE — CLOSED 2026-07-28 (D401). Archived verbatim to memory/parking-archive.md. Every owed item discharged on canary page 1842: fixture built (panel 1745 populated, menu 100, mega at position 2), axe 0 on the OPEN mega AND the OPEN drawer (openness-guarded — an unguarded scoped run is vacuous), drawer no-regression, reduced-motion, live recursion test, crawl assertion, and Bean's R-31-13 eye sign-off on the geometry pass. Two root-cause defects found and fixed en route: a 101px sliver from an <li> anchor, and the open panel painted UNDER the footer at equal z-index. Frontend presets now visually confirmed on a real page. -->
 
 ## 2026-07-23 — Mama's brand-primary fails contrast as text
 
@@ -229,7 +229,13 @@ to guaranteed pairings (surface bg / text headings / primary numbers / text-mute
 > never shows it (computed `boxShadow: none` before and after save/reload) — an operator cannot see
 > the shadow while editing. `sgs/container`'s canvas DOES preview it because its edit.js paints its
 > own preview (`resolveShadowPreview()`, added at `fe20df4e`); hero/trust-bar edit.js never had
-> preview code for wrapper-level shadow (their canvas is JS-built and ignores it). Evidence:
+> preview code for wrapper-level shadow (their canvas is JS-built and ignores it). **Bean context
+> (2026-07-28): almost certainly because DYNAMIC editor previews were deliberately turned OFF for
+> these blocks — the rendering settings produced errors when dynamic previews were on — leaving a
+> hand-built JS preview that never covered wrapper-delegated styles. The fix session should first
+> check whether re-enabling a server-rendered preview (ServerSideRender per the
+> `ssr-fixes-hand-built-preview-drift` memory) is now viable before extending the hand-built
+> preview.** Evidence:
 > `reports/visual-diff/shadow-hero-editor-canvas-2026-07-28.png` (attr set, no shadow) vs
 > `shadow-hero-frontend-2026-07-28.png` (correct). **To close:** apply the same
 > `resolveShadowPreview()` pattern to hero + trust-bar edit.js preview styles (or, better, a shared
