@@ -357,9 +357,38 @@ unmerged/paused — check its branch state before touching its files.
   (cosmetic) · P-HERO-TRUSTBAR-SHADOW-NO-EDITOR-PREVIEW was CLOSED earlier same day ·
   HeaderBehavioursTest.php needs a composer/PHPUnit env to execute · delegate dispatch-log
   uploads pending (Blub outage) · Shrink+Hide legacy-transition overlap documented unproven.
-  **NEXT for this track: the T3/T4 component wave** (MediaGalleryPicker, GradientPicker overlay,
-  whole-card link design gate, decorative-image + ARIA-label controls, imageControls +
-  duotone/aspectRatio per D402, ToolsPanel rollout) — all dispatchable, none block Spec 37.
+  **SPEC 35 BUILD SURFACE COMPLETE (late 2026-07-28, `07c67642` → `64f5080e`, ~18 delegate-routed
+  packages across waves A+B + the Bean-eye/QC fix chain; ALL deployed + live-verified).**
+  T3/T4 shipped: MediaGalleryPicker · GradientOverlayControl (one shared BackgroundPanel covers
+  container/cta/hero) · stretched-link overlay (nested-<a> impossible; team-member + info-box dead
+  attrs deleted; `.sgs-block-link-wrapper` = 0 repo-wide) · decorative-image toggle + button
+  aria-label chain fix · imageControls (FocalPointPicker {x,y}, object-fit; image-size ruled
+  not-forcible at extension level; media deliberately opts out — converter-load-bearing) · native
+  duotone (media+gallery) + native aspectRatio on media (skip-serialised + scoped; core inlines
+  unconditionally — evidenced) · ToolsPanel: 23 panels converted across 19 blocks, 8 skip-reasoned
+  in-code (mode wizards/repeaters/variant-gated). Bean-eye defects all fixed + live-PASSED:
+  pricing dual markers (badge wins) · inert billing toggle (author-origin display beats UA
+  [hidden] BY CASCADE ORIGIN — explicit overrides) · post-grid squish (TWO layers: defensive
+  auto-fit/minmax + the REAL cause, an attr-name collision double-grid — post-grid's `layout`
+  vocabulary read by the wrapper as a grid instruction; wrapper no longer sees the key).
+  **THE INJECTION-CLASS ARC (the day's biggest structural find):** render_block injectors
+  assuming first-tag-is-root landed payloads inside the Spec-32 leading scoped <style>, which the
+  p99 lift then STRIPPED — erasing injection + evidence. Fixed across hover-effects/animation/
+  parallax/image-controls; that resurrection exposed that the D346 "inline-zero win" was partly
+  VACUOUS (the inline var writes had been silently deleted, features dead) — completed properly:
+  injector vars now route via helpers-scoped-instance-vars.php scoped rules; the last render-level
+  writer (team-member, block-private) migrated; live-proven (root style attr null, computed var
+  still 300ms via lifted CSS; only legitimate RUNTIME JS vars remain). Full gate chain green
+  end-to-end including the promoted fail-closed inspector gate. Two cross-track unbreaks shipped
+  (nav-drawer 100dvh :where(); variantPreset enum + CONSCIOUS F6 baseline).
+  **OPEN (parked, none Spec-35):** P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS (Track 2 design — 6/7
+  drawer variants have EMPTY discriminator signatures; F6-baselined to unblock main, de-baseline
+  condition recorded) · P-NO-INLINE-GATE-COVERAGE-GAPS (gate canary page for var-driven features;
+  3 non-injector inline writers to classify) · card-grid/product-card×3/testimonial-rating/
+  trustpilot-repeater/hero-image ToolsPanel skips (by design) · sgs-758 lifted-CSS MIME error
+  (one-off, unchased) · HeaderBehavioursTest needs composer · dispatch logs pending Blub.
+  **Spec 35 has NO remaining build items. Next front for this branch of work = Spec 37 Group B
+  proper (T1.1-T1.4 all shipped + proven) or the B3 preset library (other track's gate).**
   Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit:
   `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 - **Track 1c — Spec 31 converter completion** (prompt: `next-session-prompt-track1-converter.md`). 2026-07-22 completion wave shipped (11 commits): `::before/::after` overlay lift, transform/filter/top/left un-excluded + hover-lift (Bean-caught: hover scale/zoom/grayscale on 15+ blocks was silently dropping), F3 LANDED runtime + batch runner, **UNACCOUNTED 14->0** (they were ACCOUNTING bugs in the D1 bucket/join, not converter drops). 2026-07-23 (D372/D373): declarative CSS-routing shipped — `css_layer` L1-L4 seeded, `css_element` normalised, +213 routes, product-card cta -> box-object (every block now box-object). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`; detail: decisions D372/D373.
