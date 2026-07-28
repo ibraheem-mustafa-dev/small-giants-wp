@@ -485,7 +485,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 ### JavaScript
 - **No jQuery dependency** — vanilla JS only
 - **Script modules** via `viewScriptModule` in block.json (native ES modules, deferred by default)
-- **Intersection Observer** for scroll-triggered animations (no heavy animation libraries)
+- **Intersection Observer** for scroll-triggered animations (no heavy animation libraries **at Tier V — the default tier for all motion. Amended 2026-07-29 (Spec 38 §1, D406): Tier G (GSAP, npm-bundled, conditionally loaded, zero bytes when unused) is the bounded exception for effects vanilla/CSS genuinely cannot reach**)
 - **< 5KB total JS** for a typical page without interactive blocks
 
 ### Images

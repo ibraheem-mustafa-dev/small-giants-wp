@@ -1339,7 +1339,7 @@ Global floating UI elements (Back to Top button, Reading Progress bar) live in `
 - **@wordpress/create-block** — used for scaffolding new blocks
 - **React** — editor UI components (WordPress block editor runs on React)
 - **No external CSS framework** — all styles use design tokens from theme.json
-- **No external JS libraries** — vanilla JS for frontend interactivity
+- **No external JS libraries** — vanilla JS for frontend interactivity. **Amended 2026-07-29 (Spec 38 §1, D406): motion follows the two-tier doctrine — Tier V (vanilla/CSS, this spec's §Animation extension) stays the default and nothing shipped migrates; Tier G (GSAP, npm-bundled, conditionally loaded via the Spec 38 motion registry) is the bounded exception for scroll-scrubbed pinned timelines, SplitText, Flip, Draggable, ScrollSmoother and SVG draw/morph. No CDN ever.**
 
 ### Build Commands
 

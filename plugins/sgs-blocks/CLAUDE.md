@@ -299,7 +299,7 @@ Notifications: N8N webhooks (not wp_mail)
   - **`null` default = inherit** is the canonical pattern (`sgs/button`, `sgs/heading`, `sgs/product-card` `ctaFontSize`). The shared responsive emitter's contract is *"`''` when nothing is set"* (`helpers-responsive.php:67`), so a null default emits no rule and the theme wins.
   - Enforced by **F3b** in `check-hardcoded-render-defaults.js` (D338) — it reads theme.json `styles.elements` and flags a literal block.json `default` that flattens a theme-differentiated property. It fires ONLY on blocks declaring an enum of element keys (`sgs/heading` `level: h1..h6`), so a single-element block never trips it.
 - **WordPress SILENTLY DISCARDS any block attribute the block.json does not declare** — no error, no warning, no failing test, no failing build. **45 found live in shipped patterns (D338); 39 fixed** (19× `"type"` where `sgs/business-info` declares `displayType`; 17× American `"textColor"` where it declares British `"textColour"`). Gate: `python scripts/check-dead-pattern-attrs.py`. **Never blanket-rename `textColor`→`textColour`** — American spelling is CORRECT on core blocks; scope any rename inside `wp:sgs/*` comments only.
-- Frontend JS: vanilla only, no jQuery, no external libraries
+- Frontend JS: vanilla only, no jQuery, no external libraries — **bounded by the two-tier motion doctrine (Spec 38 §1, D406): Tier G (GSAP) is the sanctioned, conditionally-loaded exception for effects vanilla cannot reach; nothing shipped migrates to it, and no CDN ever**
 - Use `viewScriptModule` (ES modules) for frontend interactivity
 - CSS scroll-snap for carousels, Intersection Observer for animations
 - Progressive enhancement: blocks must render meaningful content without JS

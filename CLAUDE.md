@@ -259,7 +259,7 @@ D72 (2026-05-25) retired the ORIGINAL composite `sgs/trust-bar` (counter use-cas
 ## Non-negotiables
 
 - WCAG 2.1 AA baseline (keep 2.2's cheap wins — visible focus; 44px touch targets already beat 2.2's 24px), mobile-first responsive (4.5:1 contrast). Revisit to 2.2 AA per public-sector/EU client.
-- No jQuery — vanilla JS only frontend; `viewScriptModule` (ES modules) for interactive blocks
+- No jQuery — vanilla JS only frontend; `viewScriptModule` (ES modules) for interactive blocks. **Motion is governed by the two-tier doctrine (Spec 38 §1, D406): Tier V (vanilla/CSS) is the default for every effect; Tier G (GSAP, npm-bundled, conditionally loaded — zero bytes on pages using no Tier G effect) is the bounded exception for what vanilla genuinely cannot do. No CDN ever.**
 - All REST endpoints: nonces, capability checks, sanitisation, prepared statements (`$wpdb->prepare()`)
 - Performance budget: <100KB CSS, <50KB JS per page; green Core Web Vitals
 - UK English in all code, comments, user-facing text
