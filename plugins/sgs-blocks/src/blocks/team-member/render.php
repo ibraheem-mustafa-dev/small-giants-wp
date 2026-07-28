@@ -345,12 +345,23 @@ if ( ! $is_compact && ! empty( $social_links ) ) {
 		$platform  = $link['platform'] ?? 'website';
 		$icon_name = $platform_icons[ $platform ] ?? 'link';
 		$label     = $platform_labels[ $platform ] ?? ucfirst( $platform );
-		$href      = 'email' === $platform ? 'mailto:' . esc_attr( $url ) : esc_url( $url );
 		$icon_svg  = sgs_get_lucide_icon( $icon_name );
 
+		// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
+		// Task 2.1) resolved via sgs_link_attributes(). opensInNewTab defaults to
+		// true (matches this block's prior hardcoded target="_blank") when unset.
+		$social_link_url_raw = 'email' === $platform ? 'mailto:' . $url : $url;
+		$social_link_attrs   = sgs_link_attributes(
+			array(
+				'url'           => $social_link_url_raw,
+				'opensInNewTab' => ! isset( $link['opensInNewTab'] ) || (bool) $link['opensInNewTab'],
+				'rel'           => $link['rel'] ?? '',
+			)
+		);
+
 		$items_html .= sprintf(
-			'<a href="%s" class="sgs-team-member__social-link" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
-			$href,
+			'<a%s class="sgs-team-member__social-link" aria-label="%s">%s</a>',
+			$social_link_attrs,
 			esc_attr( $label ),
 			$icon_svg
 		);

@@ -18,3 +18,8 @@
 - fixtures: C:\Users\Bean\Projects\small-giants-wp\plugins\sgs-blocks\scripts\tests\fixtures\phase-f
 - reason: sgs/quote 3-block self-nesting fix: fixture author class renamed sgs-quote__author -> sgs-quote__attribution (canonical BEM per render.php), plus slots vocabulary fix (body alias + attribution slot) and attribution attr canonical_slot/derived_selector reclassification
 - fixtures processed: 36
+
+## 2026-07-28T13:11:26Z
+- fixtures: C:\Users\Bean\Projects\small-giants-wp\plugins\sgs-blocks\scripts\tests\fixtures\phase-f
+- reason: sgs-quote content golden re-seed: Path-2 self-nest guard (a5c1fb40, merged 2026-07-27) changed quote fixture rows - parked residual P-QUOTE-PATH2-SELF-NESTING; regenerated to unblock Spec 35 wave-1 build
+- fixtures processed: 36

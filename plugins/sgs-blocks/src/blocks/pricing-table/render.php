@@ -136,6 +136,16 @@ foreach ( $plans as $plan ) {
 	$plan_features_raw  = (array) ( $plan['features'] ?? array() );
 	$plan_cta_text      = sanitize_text_field( $plan['ctaText'] ?? __( 'Get started', 'sgs-blocks' ) );
 	$plan_cta_url       = esc_url( $plan['ctaUrl'] ?? '' );
+	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
+	// Task 2.1) resolved via sgs_link_attributes() — ctaUrl/ctaTarget/ctaRel
+	// are the existing per-plan storage keys, unchanged.
+	$plan_cta_link_attrs = sgs_link_attributes(
+		array(
+			'url'           => $plan['ctaUrl'] ?? '',
+			'opensInNewTab' => isset( $plan['ctaTarget'] ) && '_blank' === $plan['ctaTarget'],
+			'rel'           => $plan['ctaRel'] ?? '',
+		)
+	);
 	$plan_highlighted   = (bool) ( $plan['highlighted'] ?? false );
 	$plan_icon          = sanitize_key( $plan['iconName'] ?? '' );
 	$plan_ribbon_text   = sanitize_text_field( $plan['ribbonText'] ?? '' );
@@ -300,8 +310,8 @@ foreach ( $plans as $plan ) {
 	if ( $plan_cta_text ) {
 		if ( $plan_cta_url ) {
 			$cta_html = sprintf(
-				'<a href="%s" class="%s">%s</a>',
-				esc_url( $plan_cta_url ),
+				'<a%s class="%s">%s</a>',
+				$plan_cta_link_attrs,
 				esc_attr( $cta_class ),
 				esc_html( $plan_cta_text )
 			);

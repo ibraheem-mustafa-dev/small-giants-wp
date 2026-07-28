@@ -119,7 +119,7 @@ GENERIC proof headers (sandybrown #1570/#1571; palestine-lives #360, admin "Clea
 
 - **Branch:** `main` (2026-07-26; a co-active Spec-31/35 track commits between handoffs, so real HEAD is
   likely higher — re-check with `git log -1`).
-  **D-ceiling: D398** (verify with the grep below, never this line — it moved from D395 to D397 mid-handoff
+  **D-ceiling: D399** (updated 2026-07-28; verify with the grep below, never this line — it moved from D395 to D397 mid-handoff
   as the co-active track committed). **Commit hashes are NOT cached here** — this file said so itself while
   carrying six lines of them. Track 2b's live front is `6ddb9f48` (2026-07-28, FR-36-9a drawer notice);
   everything earlier is reachable via `decisions.md` D381–D398, which names its own commits. Verify with
@@ -223,7 +223,22 @@ unmerged/paused — check its branch state before touching its files.
 ## Active tracks (parallel — SHARED WORKTREE, commit path-scoped only)
 
 - **Track 1 — Indus / product / inline-zero rollout** (the front in `next-session-prompt.md`; co-active). Product queue below.
-- **Track 1b — Spec 35 block-inspector-UX + Spec 32 no-inline — CLOSED 2026-07-26 (D385).** Its track prompt was deleted at close; there is no live Track-1b front. Spec 35 FR-35-1..6 all built + rolled out (74/74 in-scope manifested); box-flat genuine-upgrade set COMPLETE (D383). Spec 32 no-inline COMPLETE + re-verified — the GAP metric is semantic noise, not work-remaining. **Only open residual: an inspector-QUALITY layer (12 WARN in `audit-inspector-conformance.js` — 10 raw-url-link controls that should be `SgsLinkControl`, 1 missing MediaUploadCheck, 1 reduced-motion gap)** — a future Spec-35 session. Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit: `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
+- **Track 1b — Spec 35 block-inspector-UX + Spec 32 no-inline — REOPENED 2026-07-28 as the Spec 35
+  FULL CLOSE-OUT.** The 2026-07-26 close (D385) covered FR-35-1..6 + Spec 32 no-inline only; a full
+  ground-truthing on 2026-07-28 found the close-framing omitted the rest of Spec 35's Part M:
+  the **D4 cascade / canonical `resolveTier()` (the Spec 37 Group-B blocker)**, the Wave-1 rollouts
+  (SgsLinkControl 13 blocks, ShadowControl 9 blocks), Wave 2/3 components (MediaGalleryPicker,
+  imageControls extras, overlay-anchor block link, GradientPicker overlay, a11y controls,
+  ToolsPanel rollout), Part-K gate promotion (audit script is WARN-only, unwired), and two design
+  gates Bean ordered kept in scope (native-supports-vs-Spec-32; templateLock contentOnly).
+  **Approved plan (Bean, 2026-07-28): `~/.claude/plans/please-read-through-all-hashed-wreath.md`**
+  — 5 tracks, 5 waves; critical path T0.2→T1.1→(T1.2∥T1.3)→T1.4a→T1.4 unblocks Spec 37 FR-37-14.
+  Wave 1 IN FLIGHT 2026-07-28: link + shadow migration batches dispatched; Spec 35 Part M
+  corrected (was stale in both directions — ShadowControl/SgsLinkControl/DesignTokenPicker-alpha
+  are BUILT; band-width bug was already resolved). Bean decisions: CLEAN reshape (no fallback);
+  fresh header-behaviour inventory (T1.4a) mandatory before the FR-37-14 reshape.
+  Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit:
+  `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 - **Track 1c — Spec 31 converter completion** (prompt: `next-session-prompt-track1-converter.md`). 2026-07-22 completion wave shipped (11 commits): `::before/::after` overlay lift, transform/filter/top/left un-excluded + hover-lift (Bean-caught: hover scale/zoom/grayscale on 15+ blocks was silently dropping), F3 LANDED runtime + batch runner, **UNACCOUNTED 14->0** (they were ACCOUNTING bugs in the D1 bucket/join, not converter drops). 2026-07-23 (D372/D373): declarative CSS-routing shipped — `css_layer` L1-L4 seeded, `css_element` normalised, +213 routes, product-card cta -> box-object (every block now box-object). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`; detail: decisions D372/D373.
 - **Track 2 — Header/Footer/Nav FULL REBUILD** (2026-07-17). Roadmap: `plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md` (6 phases). **P1 CLOSED (D344)** — verdict: BUILD, full clean rebuild, rich-but-simple, tiered tri-state, informational-only a11y (DP2a), converter-emittable by construction (DP6); decision doc `plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`. **P2 (builder design-gate) CLOSED + signed off.** **P2.5 → Spec 36 signed off v2.1.** **Spec 36 Phase 1 CLOSED 2026-07-20** (see the summary at the top). **Next: Spec 36 Phase 2** — mega CPT + Indus + rich desktop/mobile modes.
 

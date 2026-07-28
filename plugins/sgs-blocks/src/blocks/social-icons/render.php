@@ -48,8 +48,6 @@ $colour_mode         = in_array( $colour_mode_raw, array( 'theme', 'brand' ), tr
 $style_type_raw      = $attributes['iconStyle'] ?? 'plain';
 $gap_raw             = $attributes['gap'] ?? '20';
 $anchor              = $attributes['anchor'] ?? '';
-$open_in_new_tab     = (bool) ( $attributes['openInNewTab'] ?? true );
-$rel_nofollow        = (bool) ( $attributes['relNofollow'] ?? false );
 
 // ---------------------------------------------------------------------------
 // Icon source resolution. 'manual' (default) keeps the stored `icons` repeater
@@ -398,19 +396,6 @@ if ( $anchor ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $root_attr_args );
 
-// FR-36-21 MUST — open-in-new-tab default-on (operator togglable) + auto
-// rel="noopener noreferrer" on external links + optional nofollow toggle.
-$rel_tokens = array();
-if ( $open_in_new_tab ) {
-	$rel_tokens[] = 'noopener';
-	$rel_tokens[] = 'noreferrer';
-}
-if ( $rel_nofollow ) {
-	$rel_tokens[] = 'nofollow';
-}
-$rel_attr    = $rel_tokens ? ' rel="' . esc_attr( implode( ' ', $rel_tokens ) ) . '"' : '';
-$target_attr = $open_in_new_tab ? ' target="_blank"' : '';
-
 $items_html   = '';
 $rendered_pos = 0;
 foreach ( $icons as $icon_item ) {
@@ -419,9 +404,19 @@ foreach ( $icons as $icon_item ) {
 	}
 	++$rendered_pos;
 
-	$platform   = $icon_item['platform'] ?? 'website';
-	$label_raw  = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
-	$href       = 'email' === $platform ? 'mailto:' . esc_attr( $icon_item['url'] ) : esc_url( $icon_item['url'] );
+	$platform      = $icon_item['platform'] ?? 'website';
+	$label_raw     = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
+	$link_url_raw  = 'email' === $platform ? 'mailto:' . $icon_item['url'] : $icon_item['url'];
+	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
+	// Task 2.1) resolved via sgs_link_attributes() — opensInNewTab defaults to
+	// true (matches the block's prior global default) when unset on an item.
+	$link_attrs_str = sgs_link_attributes(
+		array(
+			'url'           => $link_url_raw,
+			'opensInNewTab' => ! isset( $icon_item['opensInNewTab'] ) || (bool) $icon_item['opensInNewTab'],
+			'rel'           => $icon_item['rel'] ?? '',
+		)
+	);
 	$custom_url = '';
 	if ( 'custom' === $platform ) {
 		// Prefer resolving fresh from the attachment ID (survives a later media
@@ -464,10 +459,8 @@ foreach ( $icons as $icon_item ) {
 	}
 
 	$items_html .= sprintf(
-		'<a href="%s" class="sgs-social-icons__item"%s%s aria-label="%s">%s</a>',
-		$href,
-		$target_attr,
-		$rel_attr,
+		'<a%s class="sgs-social-icons__item" aria-label="%s">%s</a>',
+		$link_attrs_str,
 		esc_attr( $label_raw ),
 		$glyph_html
 	);

@@ -37,11 +37,10 @@ import {
 	PanelBody,
 	SelectControl,
 	ToggleControl,
-	TextControl,
 	Button,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl, SgsLinkControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
@@ -105,13 +104,26 @@ function SocialLinkItemEditor( { item, index, onChange, onRemove } ) {
 				onChange={ ( val ) => update( 'platform', val ) }
 				__nextHasNoMarginBottom
 			/>
-			<TextControl
-				label={ __( 'URL', 'sgs-blocks' ) }
-				value={ item.url || '' }
-				onChange={ ( val ) => update( 'url', val ) }
-				type={ item.platform === 'email' ? 'email' : 'url' }
-				placeholder={ item.platform === 'email' ? 'hello@example.com' : 'https://' }
-				__nextHasNoMarginBottom
+			<SgsLinkControl
+				label={ __( 'Link', 'sgs-blocks' ) }
+				help={
+					item.platform === 'email'
+						? __( 'Enter an email address, e.g. hello@example.com.', 'sgs-blocks' )
+						: __( 'Search your site or paste a URL.', 'sgs-blocks' )
+				}
+				value={ {
+					url: item.url || '',
+					opensInNewTab: item.opensInNewTab !== false,
+					rel: item.rel || '',
+				} }
+				onChange={ ( next ) => {
+					onChange( {
+						...item,
+						url: next.url || '',
+						opensInNewTab: next.opensInNewTab,
+						rel: next.rel || '',
+					} );
+				} }
 			/>
 			<Button
 				variant="secondary"
@@ -255,7 +267,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const addSocialLink = () => {
-		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '' } ] } );
+		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
 	};
 
 	const className = [

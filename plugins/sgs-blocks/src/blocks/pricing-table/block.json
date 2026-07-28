@@ -223,6 +223,8 @@
 					],
 					"ctaText": "Get started",
 					"ctaUrl": "",
+					"ctaTarget": "_self",
+					"ctaRel": "",
 					"highlighted": false,
 					"iconName": "",
 					"ribbonText": "",
@@ -259,6 +261,8 @@
 					],
 					"ctaText": "Get started",
 					"ctaUrl": "",
+					"ctaTarget": "_self",
+					"ctaRel": "",
 					"highlighted": true,
 					"iconName": "",
 					"ribbonText": "Most popular",
@@ -299,6 +303,8 @@
 					],
 					"ctaText": "Contact sales",
 					"ctaUrl": "",
+					"ctaTarget": "_self",
+					"ctaRel": "",
 					"highlighted": false,
 					"iconName": "",
 					"ribbonText": "",
@@ -331,6 +337,12 @@
 					"ctaUrl": {
 						"type": "string",
 						"role": "url-href"
+					},
+					"ctaTarget": {
+						"type": "string"
+					},
+					"ctaRel": {
+						"type": "string"
 					},
 					"ribbonText": {
 						"type": "string",

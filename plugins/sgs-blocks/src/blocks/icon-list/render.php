@@ -12,8 +12,9 @@
  * `spacing`/`__experimentalBorder` WP supports declare
  * `__experimentalSkipSerialization` in block.json so
  * get_block_wrapper_attributes() never auto-inlines them. The `--sgs-icon-
- * list-gap` custom property on the root is a VALUE, not a declaration, so it
- * stays on the element per the contract.
+ * list-gap` custom property is emitted into the scoped `<style>` rule too —
+ * post-D345 contract: even custom-property VALUES never ride the inline
+ * style attribute (enforced live by scripts/no-inline/check-no-inline.py).
  *
  * BLOCK-PRIVATE (this is a leaf composite — an arrayContentLift list of
  * icon+text items rendered from a single `items` attribute, not a genuine
@@ -525,9 +526,9 @@ if ( $mobile_decls ) {
 // uid is a CLASS (contract §B3 anchor-bearing rule) — the element's `id`
 // attribute stays free for the anchor. is-style-* / align* classes are
 // merged in automatically by get_block_wrapper_attributes() via the block's
-// className attribute. The ONLY style passed is the `--sgs-icon-list-gap`
-// custom-property VALUE (allowed, not a declaration) — the root carries NO
-// CSS property declarations (contract §A).
+// className attribute. NO style is passed at all — the root carries neither
+// CSS property declarations (contract §A) nor custom-property values (the
+// post-D345 amendment): the gap var lives in the scoped <style> above.
 // ---------------------------------------------------------------------------
 
 // $list_visual_classes carries the LAYOUT classes (list-style/flex/gap in
@@ -549,7 +550,13 @@ if ( '' !== $preset_bg_slug ) {
 	$wrapper_only_classes .= ' has-background has-' . $preset_bg_slug . '-background-color';
 }
 
-$root_style = $gap_slug ? '--sgs-icon-list-gap: var(--wp--preset--spacing--' . $gap_slug . ');' : '';
+// Post-D345 contract (Spec 32 FR-32-1/FR-32-4 as amended; enforced live by
+// scripts/no-inline/check-no-inline.py): even a custom-property VALUE never
+// rides the inline style attribute — the gap var is emitted into the block's
+// own scoped <style> rule instead. $gap_slug is digits-only (sanitised above).
+if ( $gap_slug ) {
+	$scoped_css[] = "{$root_sel}{--sgs-icon-list-gap:var(--wp--preset--spacing--{$gap_slug});}";
+}
 
 // Enqueue Dashicons on the frontend only when a dashicon can actually render
 // (marker types other than icon/emoji never render the icon span at all).
@@ -669,7 +676,6 @@ if ( $needs_wrapper ) {
 		array_merge(
 			array(
 				'class' => $wrapper_only_classes,
-				'style' => $root_style,
 			),
 			$wrapper_extra_attrs
 		)
@@ -693,7 +699,6 @@ if ( $needs_wrapper ) {
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
 			'class' => $list_visual_classes . ' ' . $wrapper_only_classes,
-			'style' => $root_style,
 		)
 	);
 	printf(

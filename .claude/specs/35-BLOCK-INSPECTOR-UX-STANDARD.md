@@ -128,9 +128,16 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     behaviours — do not introduce a second inheritance mechanism.
   - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
     the build.
-  - **⚠ BUILD STATUS: NOT BUILT — and it is on the CRITICAL PATH for Spec 37 Group B (priority;
-    ground-truthed 2026-07-25).** `resolveTier()` exists nowhere in the plugin (`grep -rn resolveTier
-    src/ includes/` = 0), and `src/blocks/extensions/responsive-visibility.js:68-70` is still three
+  - **⚠ BUILD STATUS: NOT BUILT as the canonical shared mechanism — and it is on the CRITICAL PATH
+    for Spec 37 Group B (priority; re-ground-truthed 2026-07-28).** The canonical name
+    `resolveTier()` exists nowhere, BUT a functionally equivalent cascade DOES exist under other
+    names and must be unified, not duplicated: JS `resolveResponsiveTier(obj,tier)`
+    (`src/utils/responsive.js:69`, mobile→tablet→desktop fallthrough, returns `{value,inherited}`),
+    PHP `sgs_resolve_tier_booleans()` (`includes/helpers-responsive.php:589`, boolean-only), and the
+    tri-state UI `src/components/ResponsiveOverride.js` — adopted only by `site-header-row` +
+    `site-footer-row`. What is missing: the canonical name, a GENERIC (non-boolean) PHP resolver, a
+    golden JS↔PHP agreement test, and framework-wide adoption.
+    `src/blocks/extensions/responsive-visibility.js:68-70` is still three
     INDEPENDENT flat booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no
     inheritance. Because this cascade and its shared `resolveTier()` are the SAME mechanism that
     **Spec 37 FR-37-14** (behaviour tri-state — `headerSticky`/`headerTransparent`/`headerShrink`/
@@ -199,11 +206,11 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 |---|---|---|
 | Responsive per-breakpoint | `ResponsiveControl`, `ResponsiveBoxControl` EXIST | audit coverage; use everywhere responsive-worthy |
 | Typography per element | `TypographyControls` EXISTS (R-22-13) | extend to appearance/letter-spacing where missing |
-| Colour | `DesignTokenPicker` EXISTS — **NO `enableAlpha`/clearable audit** | **ADD `enableAlpha` + `clearable`** (framework-wide transparent fix) |
+| Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; verified 2026-07-28, `DesignTokenPicker.js:51-58,:87-94`) | DONE (Wave 1.1) |
 | Normal/Hover state | `StateToggleControl` EXISTS (2026-07-18) | roll out to stateful blocks |
 | Extension opt-out | `hideExtensions` EXISTS (2026-07-18) | — |
-| **Shadow builder** | **MISSING** (3-option selects) | **BUILD** shared `ShadowControl` |
-| **Link/CTA** | **likely raw URL fields** | **AUDIT + migrate to `LinkControl`** wrapper |
+| **Shadow builder** | `ShadowControl` **BUILT** (X/Y/blur/spread/colour+alpha/inset + theme presets; `src/components/ShadowControl.js`; first-render crash FIXED in-file) — 3 consumers (brand-strip, card-grid, team-member) | **ROLL OUT** to the ~9 blocks with hand-rolled shadow attrs |
+| **Link/CTA** | `SgsLinkControl` **BUILT** (`src/components/SgsLinkControl.js`, stable `LinkControl`, `{url,opensInNewTab,rel}` + auto-noopener; PHP `sgs_link_attributes()`) — 1 consumer (brand-strip); 13 blocks still raw URL TextControls | **ROLL OUT** (migration batch in flight 2026-07-28) |
 | **Bulk media/gallery** | **MISSING** (`MediaPicker` single) | **BUILD** `MediaGalleryPicker` (`multiple="add"`+`gallery`) |
 | **Focal point / image size / aspect-ratio** | **partial** (`imageControls`) | **EXTEND** `imageControls` to size+aspect+object-fit+focal |
 | **Gradient / bg overlay** | **MISSING** | adopt `GradientPicker` + pseudo-element overlay |
@@ -281,24 +288,39 @@ against it — a standard is not "done" until blocks meet it and a gate enforces
   axes**, not competing — a control's completeness needs BOTH (what the value IS + how it is
   delivered). `role` measured **~99% accurate** on its measurable overlap; do NOT replace it.
   (parking `P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES`.)
-- **Confirmed Part-B failure live in the wrapper:** `sgs/container` content band-width "custom"
-  frequently won't select and shows no input box — an incomplete control (Part B / Part F).
-  (parking `P-CONTAINER-CUSTOM-BAND-WIDTH-BROKEN`.)
+- ~~Confirmed Part-B failure live in the wrapper: `sgs/container` band-width "custom"~~ **RESOLVED
+  2026-07-23** — not reproduced (Playwright 20/20); already fixed at `d5416ae8`; Bean's report was a
+  stale cached editor bundle. Parking entry archived (`memory/parking-archive.md`).
 
-**Roadmap (Part J) — BUILD status:**
-- **Exists:** `ResponsiveControl`/`ResponsiveBoxControl`, `TypographyControls`,
-  `DesignTokenPicker` (NO alpha audit yet), `StateToggleControl` (2026-07-18),
-  `hideExtensions` (2026-07-18).
-- **Wave 1 NOT started:** `enableAlpha`+clearable on `DesignTokenPicker` (1.1),
-  `LinkControl` migration (1.2), shared `ShadowControl` (1.3), `templateLock:"contentOnly"`
-  in patterns (1.4).
-- **Wave 2 / 3 NOT started:** `MediaGalleryPicker`, extended `imageControls`, whole-card link,
-  ToolsPanel disclosure rollout, reduced-motion gate audit, Block Bindings, native
-  duotone/aspect-ratio/sticky adoption.
-- **Part K structural gate NOT built** — the enablement data now exists to build it (a lint
-  flagging colour-without-alpha, URL-not-LinkControl, preset-only shadow).
-- **Per-device CONTENT cascade (D4) + shared `resolveTier()` — NOT BUILT — PRIORITY, blocks Spec 37
-  Group B** (ground-truthed 2026-07-25: `resolveTier` grep=0; `responsive-visibility.js` still three
+**Roadmap (Part J) — BUILD status (re-ground-truthed 2026-07-28; full close-out plan approved
+by Bean — see `~/.claude/plans/please-read-through-all-hashed-wreath.md`):**
+- **Exists:** `ResponsiveControl`/`ResponsiveBoxControl` (47 files), `TypographyControls` (22),
+  `DesignTokenPicker` (**alpha+clearable BUILT, Wave 1.1 DONE**), `StateToggleControl`,
+  `hideExtensions`, `ShadowControl` (**BUILT**, 3 consumers), `SgsLinkControl` (**BUILT**,
+  1 consumer), `ResponsiveOverride` tri-state UI (2 row blocks), Block Bindings (2 registered
+  sources), reduced-motion gating broad (82 files, 1 known gap).
+- **Wave 1 remaining = ROLLOUT, not build:** `SgsLinkControl` migration (13 blocks raw URL;
+  batch in flight 2026-07-28), `ShadowControl` swap-in (9 blocks; batch in flight),
+  `templateLock:"contentOnly"` (zero uses — now a DESIGN GATE per Bean 2026-07-28, D377/D378
+  precedent must be designed around, not ignored).
+- **Wave 2 / 3 NOT started:** `MediaGalleryPicker` (extract from `gallery/edit.js:311`),
+  extended `imageControls` (has 1 of 4 features), overlay-anchor whole-card link (current
+  universal `sgsBlockLink` wraps the WHOLE block in `<a>` — nested-`<a>` risk; team-member
+  carries unreachable render-only blockLink attrs), ToolsPanel rollout (~2 blocks + 1 shared
+  component), shared GradientPicker overlay (designed in `setting-registry.json:969-991`),
+  decorative-image toggle + universal ARIA-label control, native supports adoption (zero
+  duotone/aspectRatio/minHeight/sticky/shadow — now a DESIGN GATE vs Spec 32 no-inline).
+- **Part K structural gate: script BUILT, promotion NOT done** —
+  `scripts/audit-inspector-conformance.js` implements all 6 rules (colour-no-alpha,
+  raw-url-link, media-upload-no-check, preset-only-shadow, animation-no-reduced-motion,
+  dense-panel-candidate) but is WARN-ONLY and NOT in the prebuild chain; baseline empty;
+  12 WARNs at 2026-07-28 (10 raw-url, 1 MediaUploadCheck, 1 reduced-motion). Promote to
+  fail-closed once WARNs = 0.
+- **Per-device CONTENT cascade (D4) + canonical shared `resolveTier()` — NOT BUILT — PRIORITY,
+  blocks Spec 37 Group B** (re-ground-truthed 2026-07-28: canonical name absent, but see the D4
+  BUILD STATUS note — `resolveResponsiveTier`/`sgs_resolve_tier_booleans`/`ResponsiveOverride`
+  already implement the cascade for 2 row blocks and must be UNIFIED under the canonical contract,
+  not duplicated; `responsive-visibility.js` still three
   flat booleans; `site-header` behaviours still flat booleans). Spec 37 **FR-37-14** (behaviour
   tri-state) and **§3.8** consume this exact mechanism and are blocked until it ships (see Part D4's
   BUILD STATUS note). This is the one Spec-35 build item currently gating Spec 37 — sequence it

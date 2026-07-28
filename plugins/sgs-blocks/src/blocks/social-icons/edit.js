@@ -5,14 +5,13 @@ import {
 	SelectControl,
 	TextControl,
 	RangeControl,
-	ToggleControl,
 	Button,
 	Flex,
 	FlexItem,
 	FlexBlock,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, SgsLinkControl } from '../../components';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
 // sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
@@ -89,8 +88,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColourHover,
 		colourMode,
 		iconStyle,
-		openInNewTab,
-		relNofollow,
 		gap,
 		style,
 		paddingTablet,
@@ -131,7 +128,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const addIcon = () => {
-		setAttributes( { icons: [ ...icons, { platform: 'website', url: '' } ] } );
+		setAttributes( { icons: [ ...icons, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
 	};
 
 	const removeIcon = ( index ) => {
@@ -188,11 +185,23 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							</FlexItem>
 							<FlexBlock>
-								<TextControl
-									value={ icon.url }
-									onChange={ ( val ) => updateIcon( index, 'url', val ) }
-									placeholder="https://…"
-									__nextHasNoMarginBottom
+								<SgsLinkControl
+									label={ __( 'Link', 'sgs-blocks' ) }
+									value={ {
+										url: icon.url || '',
+										opensInNewTab: icon.opensInNewTab !== false,
+										rel: icon.rel || '',
+									} }
+									onChange={ ( next ) => {
+										const updated = [ ...icons ];
+										updated[ index ] = {
+											...updated[ index ],
+											url: next.url || '',
+											opensInNewTab: next.opensInNewTab,
+											rel: next.rel || '',
+										};
+										setAttributes( { icons: updated } );
+									} }
 								/>
 								<TextControl
 									value={ icon.label || '' }
@@ -277,23 +286,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Hover colour', 'sgs-blocks' ) }
 						value={ iconColourHover }
 						onChange={ ( val ) => setAttributes( { iconColourHover: val } ) }
-					/>
-				</PanelBody>
-
-				<PanelBody title={ __( 'Link behaviour', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleControl
-						label={ __( 'Open links in a new tab', 'sgs-blocks' ) }
-						checked={ openInNewTab }
-						onChange={ ( val ) => setAttributes( { openInNewTab: val } ) }
-						help={ __( 'On by default. Adds rel="noopener noreferrer" automatically while enabled.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Add rel="nofollow"', 'sgs-blocks' ) }
-						checked={ relNofollow }
-						onChange={ ( val ) => setAttributes( { relNofollow: val } ) }
-						help={ __( 'Tells search engines not to pass ranking credit through these links.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

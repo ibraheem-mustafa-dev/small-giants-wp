@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"title": "SGS Social Icons",
 	"category": "sgs-content",
-	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, WhatsApp, and more, plus a custom-SVG platform for anything else. Configurable size, style, theme-vs-brand colour, and hover colour; open-in-new-tab and optional nofollow; a Site-Info source mode renders the SAME list edited once in Appearance > SGS Site Info everywhere the block is placed (header/footer/drawer). Each icon item shape: { platform: string, url: string, label?: string, customIconUrl?: string, customIconId?: number }. The accessible name (aria-label, WCAG 2.2 SC 4.1.2) is auto-generated per platform (e.g. \"Follow us on Instagram\") and always operator-editable via the label field.",
+	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, WhatsApp, and more, plus a custom-SVG platform for anything else. Configurable size, style, theme-vs-brand colour, and hover colour; each icon's link (open-in-new-tab, rel) is set per-item via the shared SgsLinkControl; a Site-Info source mode renders the SAME list edited once in Appearance > SGS Site Info everywhere the block is placed (header/footer/drawer). Each icon item shape: { platform: string, url: string, label?: string, customIconUrl?: string, customIconId?: number, opensInNewTab?: boolean, rel?: string }. The accessible name (aria-label, WCAG 2.2 SC 4.1.2) is auto-generated per platform (e.g. \"Follow us on Instagram\") and always operator-editable via the label field.",
 	"keywords": [
 		"social",
 		"icons",
@@ -108,6 +108,12 @@
 					},
 					"customIconId": {
 						"type": "number"
+					},
+					"opensInNewTab": {
+						"type": "boolean"
+					},
+					"rel": {
+						"type": "string"
 					}
 				}
 			}
@@ -137,14 +143,6 @@
 		"iconStyle": {
 			"type": "string",
 			"default": "plain"
-		},
-		"openInNewTab": {
-			"type": "boolean",
-			"default": true
-		},
-		"relNofollow": {
-			"type": "boolean",
-			"default": false
 		},
 		"gap": {
 			"type": "string",

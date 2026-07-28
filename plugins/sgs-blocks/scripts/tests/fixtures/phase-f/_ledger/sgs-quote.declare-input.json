@@ -83,7 +83,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__body",
+      "selector": ".sgs-quote__text",
       "property": "color",
       "value": "#3a2e26",
       "important": false,
@@ -97,7 +97,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__body",
+      "selector": ".sgs-quote__text",
       "property": "font-size",
       "value": "22px",
       "important": false,
@@ -111,7 +111,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__body",
+      "selector": ".sgs-quote__text",
       "property": "font-style",
       "value": "italic",
       "important": false,
@@ -125,7 +125,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__body",
+      "selector": ".sgs-quote__text",
       "property": "line-height",
       "value": "1.5",
       "important": false,
@@ -139,7 +139,7 @@
     },
     {
       "fixture": "sgs-quote",
-      "selector": ".sgs-quote__body",
+      "selector": ".sgs-quote__text",
       "property": "margin",
       "value": "0 0 16px",
       "important": false,

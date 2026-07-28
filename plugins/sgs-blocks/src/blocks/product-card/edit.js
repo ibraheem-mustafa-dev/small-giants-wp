@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	InspectorControls,
 	MediaUpload,
+	MediaUploadCheck,
 	MediaPlaceholder,
 	RichText,
 } from '@wordpress/block-editor';
@@ -529,26 +530,28 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 							) ) }
 						</div>
 					) }
-					<MediaUpload
-						onSelect={ ( media ) =>
-							setAttributes( {
-								image: media.url,
-								imageAlt: media.alt || '',
-							} )
-						}
-						allowedTypes={ [ 'image' ] }
-						render={ ( { open } ) => (
-							<Button
-								variant="secondary"
-								onClick={ open }
-							>
-								{ __(
-									'Choose another image',
-									'sgs-blocks'
-								) }
-							</Button>
-						) }
-					/>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								setAttributes( {
+									image: media.url,
+									imageAlt: media.alt || '',
+								} )
+							}
+							allowedTypes={ [ 'image' ] }
+							render={ ( { open } ) => (
+								<Button
+									variant="secondary"
+									onClick={ open }
+								>
+									{ __(
+										'Choose another image',
+										'sgs-blocks'
+									) }
+								</Button>
+							) }
+						/>
+					</MediaUploadCheck>
 				</>
 			) }
 
@@ -1800,20 +1803,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</Button>
 						</div>
 					) : (
-						<MediaPlaceholder
-							icon="format-image"
-							labels={ {
-								title: __( 'Product image', 'sgs-blocks' ),
-							} }
-							onSelect={ ( media ) =>
-								setAttributes( {
-									image: media.url,
-									imageAlt: media.alt || '',
-								} )
-							}
-							accept="image/*"
-							allowedTypes={ [ 'image' ] }
-						/>
+						<MediaUploadCheck>
+							<MediaPlaceholder
+								icon="format-image"
+								labels={ {
+									title: __( 'Product image', 'sgs-blocks' ),
+								} }
+								onSelect={ ( media ) =>
+									setAttributes( {
+										image: media.url,
+										imageAlt: media.alt || '',
+									} )
+								}
+								accept="image/*"
+								allowedTypes={ [ 'image' ] }
+							/>
+						</MediaUploadCheck>
 					) }
 
 					<div className="sgs-product-card__body">

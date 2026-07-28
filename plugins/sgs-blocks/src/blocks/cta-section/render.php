@@ -104,14 +104,19 @@ $gradient_preset          = in_array( $attributes['gradientPreset'] ?? '', $allo
 	? sanitize_key( $attributes['gradientPreset'] ?? '' )
 	: '';
 
-// Legacy string `shadow` token attr (sm/md/lg/glow) — duplicates the native
-// `shadow` support. This attr is the one that actually drove the visible
-// shadow (via the shared wrapper's extra_styles, which inlines); the native
-// support was a phantom no-op until this migration. No-inline contract (§A):
-// route the resolved box-shadow into cta-section's OWN scoped <style> instead
-// of the wrapper's extra_styles. $cta_helper_attrs nulls `shadow` below (C3
-// double-emit guard) so the wrapper never re-emits it.
-$shadow_token = $sgs_css_keyword( $attributes['shadow'] ?? '' );
+// Legacy string `shadow` attr — either a theme shadow preset slug (sm/md/lg/glow)
+// or a raw box-shadow CSS string built by the shared ShadowControl (Spec 35
+// T2.2). Duplicates the native `shadow` support, which is skip-serialised and
+// unused here. This attr is the one that actually drives the visible shadow
+// (via the shared wrapper's extra_styles, which inlines); the native support
+// was a phantom no-op until this migration. No-inline contract (§A): route
+// the resolved box-shadow into cta-section's OWN scoped <style> instead of
+// the wrapper's extra_styles. $cta_helper_attrs nulls `shadow` below (C3
+// double-emit guard) so the wrapper never re-emits it. sgs_shadow_value()
+// (helpers-tokens.php) resolves either shape and returns a ready-to-use
+// box-shadow VALUE (preset slugs are wrapped in var(--wp--preset--shadow--*),
+// raw strings pass through normalised) — no local keyword sanitiser needed.
+$shadow_value = sgs_shadow_value( $attributes['shadow'] ?? '' );
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/hero/quote convention).
@@ -151,8 +156,8 @@ if ( $has_image_bg ) {
 // now that background-image no longer rides on the inline style attribute.
 $has_bg_image_class = $has_image_bg;
 
-if ( $shadow_token ) {
-	$responsive_css .= $root_sel . '{box-shadow:var(--wp--preset--shadow--' . esc_attr( $shadow_token ) . ')}';
+if ( $shadow_value ) {
+	$responsive_css .= $root_sel . '{box-shadow:' . $shadow_value . '}';
 }
 
 // Build wrapper classes.

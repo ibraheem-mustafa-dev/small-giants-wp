@@ -11,7 +11,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, ResponsiveBoxControl, SgsLinkControl } from '../../components';
 import { colourVar } from '../../utils';
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
@@ -30,11 +30,6 @@ const BG_SHAPES = [
 	{ label: __( 'Rounded square', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 	{ label: __( 'Outline ring', 'sgs-blocks' ), value: 'outline' },
-];
-
-const LINK_TARGET_OPTIONS = [
-	{ label: __( 'Same tab', 'sgs-blocks' ), value: '_self' },
-	{ label: __( 'New tab', 'sgs-blocks' ), value: '_blank' },
 ];
 
 /**
@@ -87,6 +82,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundPadding,
 		linkUrl,
 		linkTarget,
+		linkRel,
 		ariaLabel,
 		iconColourHover,
 		shapeColourHover,
@@ -232,22 +228,25 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
-					<TextControl
-						label={ __( 'Link URL', 'sgs-blocks' ) }
-						value={ linkUrl }
-						onChange={ ( val ) => setAttributes( { linkUrl: val } ) }
-						type="url"
-						__nextHasNoMarginBottom
+					<SgsLinkControl
+						label={ __( 'Link', 'sgs-blocks' ) }
+						help={ __(
+							'Search your site or paste a URL to make this icon clickable.',
+							'sgs-blocks'
+						) }
+						value={ {
+							url: linkUrl,
+							opensInNewTab: linkTarget === '_blank',
+							rel: linkRel,
+						} }
+						onChange={ ( next ) => {
+							setAttributes( {
+								linkUrl: next.url || '',
+								linkTarget: next.opensInNewTab ? '_blank' : '_self',
+								linkRel: next.rel || '',
+							} );
+						} }
 					/>
-					{ linkUrl && (
-						<SelectControl
-							label={ __( 'Open in', 'sgs-blocks' ) }
-							value={ linkTarget }
-							options={ LINK_TARGET_OPTIONS }
-							onChange={ ( val ) => setAttributes( { linkTarget: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					) }
 				</PanelBody>
 
 				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>

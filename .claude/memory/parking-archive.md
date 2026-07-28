@@ -2198,3 +2198,14 @@ The three entries below were consolidated (Bean-directed) into `P-DRAFT-TOKEN-EX
 > **P-POSTGRID-SCALEHOVER-OUT-OF-B3-SCOPE** — NEW 2026-07-22, CONFIRMED 2026-07-23. B3 excluded `sgs/post-grid.scaleHover` (per-ITEM `css_element=card` + multi-property `css_property=background-color,transform`); its hover scale still drops (verified: render.php:178 `--sgs-hover-scale` → style.css:391 `.sgs-post-grid__card:hover`; the base-domain state resolver `attr_for_state_property` rejects it on element AND property AND NULL css_state). **Two coupled fixes:** (a) build per-ELEMENT (non-root) state-lift in `styling_content.py` — UNIVERSAL, also lands the 4 stranded `imageZoomHover` gaps (card-grid/gallery/team-member/post-grid), not a post-grid one-off; (b) prerequisite seed hygiene — `background-color` is a SEED SMELL (scaleHover drives only transform) and `css_state` is NULL; split to `transform` + `css_state=hover` first (both need Bean design-gate, shared styling_content). **Status: OPEN** · **Bucket:** Pipeline · **Trigger:** the next converter state/element-domain work.
 
 > **RESOLVED 2026-07-24 (81393004):** BUILT — universal per-element (non-root) hover routing (`styling_content.lift_per_element_state` + `db_lookup.per_element_state_attrs`) lands post-grid.scaleHover + imageZoomHover ×4 on a clone; seed smell fixed at declarative source (post-grid card.states.hover.attrMap). 1010 tests + gates green.
+
+> **P-SHADOW-VALUE-CSS-BREAKOUT-HARDENING** — NEW + RESOLVED 2026-07-28 (same day). Surfaced during
+> the Spec 35 wave-1 shadow batch as an unproven claim that `sgs_shadow_value()`'s raw-passthrough
+> branch (`esc_attr` only) allowed CSS declaration breakout (`0 0 0 red;}body{...}`) into scoped
+> `<style>` elements. The Spec-35 session reverted a half-finished working-tree version (dead
+> helper + duplicated regex, unproven "verified real" claim) per prove-the-cause; it later emerged
+> the finding was the CO-ACTIVE track's live WIP. **RESOLVED at `ceac2c8d`** (co-active track,
+> 2026-07-28): fact-checked — the "stored XSS" label was WRONG (all paths esc_attr), the CSS
+> DECLARATION breakout was REAL and wider than shadows; fixed at the choke point with one shared
+> `sgs_css_value_has_breakout()` consumed by the token helpers' raw-passthrough branches
+> (`helpers-tokens.php`, +44/-3). **Completion date: 2026-07-28.**

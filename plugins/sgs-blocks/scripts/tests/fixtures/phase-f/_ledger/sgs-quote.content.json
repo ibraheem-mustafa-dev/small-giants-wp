@@ -11,7 +11,7 @@
   "rows": [
     {
       "fixture": "sgs-quote",
-      "selector": "blockquote.sgs-quote__body",
+      "selector": "p.sgs-quote__text",
       "property": "(content:text)",
       "value": "Amazing product — my baby absolutely loves it!",
       "important": false,

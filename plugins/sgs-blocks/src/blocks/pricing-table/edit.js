@@ -14,7 +14,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker } from '../../components';
+import { DesignTokenPicker, IconPicker, SgsLinkControl } from '../../components';
 import { colourVar } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
@@ -177,6 +177,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					features: [ { text: __( 'Feature 1', 'sgs-blocks' ), included: true } ],
 					ctaText: __( 'Get Started', 'sgs-blocks' ),
 					ctaUrl: '',
+					ctaTarget: '_self',
+					ctaRel: '',
 					highlighted: false,
 					iconName: '',
 					ribbonText: '',
@@ -628,21 +630,26 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 										__nextHasNoMarginBottom
 									/>
-									<TextControl
+									<SgsLinkControl
 										label={ __(
-											'CTA URL',
+											'CTA link',
 											'sgs-blocks'
 										) }
-										value={ plan.ctaUrl }
-										onChange={ ( val ) =>
-											updatePlan(
-												planIndex,
-												'ctaUrl',
-												val
-											)
-										}
-										type="url"
-										__nextHasNoMarginBottom
+										value={ {
+											url: plan.ctaUrl,
+											opensInNewTab: plan.ctaTarget === '_blank',
+											rel: plan.ctaRel || '',
+										} }
+										onChange={ ( next ) => {
+											const newPlans = [ ...plans ];
+											newPlans[ planIndex ] = {
+												...newPlans[ planIndex ],
+												ctaUrl: next.url || '',
+												ctaTarget: next.opensInNewTab ? '_blank' : '_self',
+												ctaRel: next.rel || '',
+											};
+											setAttributes( { plans: newPlans } );
+										} }
 									/>
 									<ToggleControl
 										label={ __(

@@ -12,7 +12,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
-import { ResponsiveBoxControl, DesignTokenPicker } from '../../components';
+import { ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
 // ContentBandPanel sub-panels still write to LEGACY FLAT attrs
@@ -28,7 +28,6 @@ import {
 	BackgroundPanel,
 	ShapeDividersPanel,
 	GridItemDefaultsPanel,
-	SHADOW_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 
 // FR-22-6: the content column is now InnerBlocks — heading + body text + buttons.
@@ -252,16 +251,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				{ /* Shadow — legacy string token attr (sm/md/lg/glow); the native `shadow`
-					support is skip-serialised (no-inline contract §A) and unused by render.php,
-					this control is the ONE live shadow mechanism (rendered scoped, not inline). */ }
+				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
+					CSS string built by ShadowControl); the native `shadow` support is
+					skip-serialised (no-inline contract §A) and unused by render.php,
+					this control is the ONE live shadow mechanism (rendered scoped, not
+					inline, via sgs_shadow_value() — Spec 35 T2.2). */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						value={ attributes.shadow || '' }
-						options={ SHADOW_OPTIONS }
 						onChange={ ( val ) => setAttributes( { shadow: val } ) }
-						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
