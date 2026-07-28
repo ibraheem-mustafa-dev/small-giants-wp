@@ -434,6 +434,50 @@ points here. Neither ever silently drops a STOP.
   gated by more than one hook layer (path-scope gate + secret-scan + visual-diff); check ALL of
   them before assuming a bare `git commit` will land, and read each gate's own bypass guidance.
 
+- **STOP-A-SCOPED-AXE-RUN-ON-A-CLOSED-SURFACE-PASSES-VACUOUSLY (2026-07-28)** — `axe.run('.selector')`
+  scoped to a drawer/modal/panel returns **"0 violations" whether or not the surface is OPEN**,
+  because axe's `excludeHidden` defaults true and simply skips hidden content. Proven by negative
+  control: `nav-qa/axe-run.mjs --scope .sgs-nav-drawer` WITHOUT `--open` reported exactly the same
+  "0 violations" as the opened run. **Any past "axe = 0 on the drawer/panel" claim made with that
+  harness proves nothing.** Every axe run on a disclosure/dialog surface must first ASSERT the
+  surface is open (element `open`/`aria-expanded=true`, height > 0, focusable-count > 0) and report
+  **VACUOUS**, never PASS, when the guard fails. Generalises STOP-NEGATIVE-CONTROL to the
+  measurement tool itself: the question is not only "would this pass with the feature absent?" but
+  "is the tool even LOOKING at the thing?" Sibling of STOP-VERIFY-DEPLOY-BY-CHECKSUM.
+
+- **STOP-A-CSS-RULE-THAT-CANNOT-WORK-STILL-LOOKS-CORRECT-IN-SOURCE (2026-07-28)** — a CSS rule can
+  be perfectly written and structurally incapable of ever working, and reading it will never tell
+  you. Two in one session: (1) `left:50%;transform:translateX(-50%)` centring on a mega panel could
+  NEVER centre, because every `.sgs-nav-menu__item` is `position:relative` (needed for the indicator
+  pill), so the wrap's containing block was always the ~100px menu ITEM — the panel shrink-to-fit to
+  101px and the edge-pin fallback then glued it to the item's own edge. (2) An item divider written
+  `:not(:last-child)` painted a TRAILING edge, because the bar also contains the absolutely-positioned
+  indicator, so the last ITEM is not the last CHILD (`item + item` is the immune form). **Both were
+  found by MEASURING the rendered box, never by reading the selector.** Rule: for any positioning or
+  nth-child rule, measure the computed result on the live page — and specifically identify which
+  ancestor is the containing block rather than assuming it is the one you intended.
+
+- **STOP-A-SHAPE-MISMATCH-SILENTLY-DROPS-THE-WHOLE-VALUE (2026-07-28, D401)** — extends STOP-D328
+  from "WP coerces to the default" to "the CONSUMER drops it entirely". `sgs/mega-panel`'s
+  `panelPadding` defaulted to the SCALAR `{desktop:'28px'}` while render.php emits it through
+  `sgs_emit_responsive_css(..., 'box' => true)`, which reads `{top,right,bottom,left}` — so the
+  padding was silently discarded and the panel rendered flush at `padding:0`, headings touching its
+  own border. No error, no failing gate, and the sibling block (`sgs/mega-aside`) had the CORRECT box
+  shape all along, which is precisely why IT had padding and the panel did not. **When two sibling
+  blocks differ visibly in the same property, diff their attribute SHAPES before diffing their CSS.**
+
+- **STOP-A-UNIVERSAL-EXTENSION-ATTACHES-TO-BLOCKS-IT-MAKES-NO-SENSE-ON (2026-07-28, D401)** — the
+  four universal extensions (`hover-effects`, `parallax`, `custom-spacing`, `animation`) attach to
+  EVERY `sgs/*` block unconditionally; the opt-out (`supports.sgs.hideExtensions`) exists and is
+  already used by `sgs/brand-strip`, but a block that never declares it inherits every panel. Result:
+  `sgs/nav-menu` offered a client Block Link (wrap the whole nav in one `<a>`), Element parallax on a
+  sticky bar, Click Effects, and a Hover Effects panel duplicating its own per-element hover controls
+  — **13 inspector panels on a navigation menu.** Worse, the Spacing panel was **silently DEAD**: its
+  fields write `sgsMarginTop/…`, which `custom-spacing.js` never registers when a block declares
+  native spacing, so every value a client set was discarded on save. **Rule: a new block must
+  declare `hideExtensions` deliberately — inheriting all four is a decision, not a default. And an
+  extension panel rendering is NOT evidence its attributes are registered.**
+
 - **STOP-A-GREEN-BUILD-IS-NOT-EVIDENCE-AN-EFFECT-FIRES (2026-07-27)** — THREE separate
   "built but inert" bugs shipped past `php -l`, `eslint` AND every prebuild gate in one
   session: (1) a `MutationObserver` watching a `hidden` attribute the panel NEVER carries,
@@ -616,6 +660,18 @@ for real before claiming done?
   → **69**. 69 >= 68. PASS. Earned: a top-level function in a per-render render.php fataled a 5-instance
   page live, and every build gate + both pre-commit code reviewers missed it (only a multi-instance
   live render caught it).
+- **2026-07-28 (Gate 3 close + eye-pass chain + Spec 35 nav cleanup / D401) re-run:** previous DEFINED
+  entries = **77** (re-measured with this file's OWN canonical command immediately before writing, per
+  the 2026-07-22 receipt-arithmetic rule — never carried forward; the figure had moved from 71 as
+  co-active tracks added entries). This session ADDED 4 and SUBTRACTED **none** → **81**. Command:
+  `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l`
+  → **81**. 81 >= 77. PASS. All four earned by something that actually happened today:
+  a scoped axe run that returned "0 violations" on a CLOSED drawer exactly as it did on an open one
+  (invalidating any earlier drawer-axe claim made with that harness); two CSS rules that were
+  perfectly written and structurally incapable of working, both caught only by measuring the rendered
+  box; a scalar-vs-box shape mismatch that silently dropped a whole padding value while the sibling
+  block with the correct shape rendered fine; and four universal extensions attaching unconditionally
+  to a navigation menu, one of whose panels was writing to attributes that were never registered.
 - **2026-07-26 (Spec 37 FR-37-40 sticky build / D391-D392) re-run:** previous DEFINED entries = **69**
   (re-measured with this file's own canonical command immediately before writing, per the 2026-07-22
   receipt-arithmetic rule — never carried forward); this session ADDED 2

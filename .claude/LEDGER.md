@@ -2,7 +2,7 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-last_updated: 2026-07-26
+last_updated: 2026-07-28
 generated: 2026-07-17 (P4 — collapsed state.md + handoff.md + next-session-prompt.md into this one LEDGER)
 note: "THE single living-status doc. Replaces the old 3-way split (state/handoff/next-session-prompt) that drifted and overwrote each other. Current status is REPLACED here each session, never appended (that is how state.md ballooned to 66KB). History → dated snapshots in memory/session-YYYY-MM-DD.md (the ledger-rotate Stop hook backs this up). Structural defences (STOP catalogue + pre-flight ritual) live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24576 bytes — the rotate hook warns past that)."
 ---
@@ -56,27 +56,66 @@ rollout and the 2026-07-17 orientation block are in the same sweep file.
   `card-grid` still uses `--sgs-card-border-width`/`-color` but emits them in a **scoped `<style>`**
   (`render.php:216-217`), so the selector cannot match — Spec 32's no-inline rule defuses the class.
 
-**⭐ ALSO CURRENT (2026-07-27, Track 2 mega — swept to a pointer 2026-07-28 to hold this file under
-its 24,576-byte cap; the full block is archived VERBATIM in `memory/session-2026-07-27-4.md`,
-confirmed present before trimming).** The 5 DEFERRED mega items shipped (`db2b96d3`) + the follow-on
-fixes and doc corrections (`9f8a6437`). Full detail: **`decisions.md` D396 + D397** (both verified to
-carry it — the three built-but-inert bugs, the new permanent `check-block-asset-targets.js` gate, the
-`sgs/table-of-contents` unstyled fix, the `hoverStyle` enum removal, the SETTLED-do-not-re-investigate
-`supports.interactivity` verdict, the two false doc claims corrected + one of mine retracted, and the
-re-validated motion standards).
-- ⚠ **MOTION IS STILL NOT LIVE-VERIFIED.** Canary panel **1745 is EMPTY**, so there is nothing for the
-  stagger to reveal and no open panel to axe. Reports are committed `verdict: INCOMPLETE` /
-  `first_paint_capture_passed: false` — deliberately NOT fabricated as PASS. **Bean's R-31-13 sign-off
-  NOT obtained.**
-- **⭐ NEXT for that track (unchanged, gating): Gate 3 composed-nav.** Populate panel 1745, attach to
-  menu 100, put `sgs/nav-menu` on a page. That one fixture unblocks ALL the owed verification at once:
-  stagger firing, axe on an open panel, the indicator pill, dark scheme, both new variants, the live
-  recursion test. Also tracked as parking `P-MEGA-GATE3-LIVE` (its trigger has FIRED — actionable now).
-- ✅ **The "canary is BEHIND main" warning is CLEARED (2026-07-28):** `--blocks-only` was deployed
-  from an isolated worktree at `6ddb9f48`, which carries the ToC + `hoverStyle` fixes. Deployed CONTENT
-  verified by grep, not by md5 alone (D394). **The THEME was not redeployed** — bump + deploy it when
-  the B3 patterns land.
+**⭐ ALSO CURRENT (2026-07-28, Track 2 mega/nav — GATE 3 CLOSED. Detail: `decisions.md` D401.)**
 
+- **The mega menu is PROVEN, not theoretically built.** Fixture built (panel **1745** populated,
+  menu **100** = Home · Brands[mega] · Recipes · Contact with the mega at **position 2**, page
+  **1842** `/gate3-mega-nav/`). All **6 motion effects measured firing**; **axe 0 on the OPEN
+  drawer AND the OPEN mega**; keyboard/ESC/focus-return; reduced-motion; JS-off crawl; **CF-1
+  recursion run live**. Real visual-diff reports replaced the three `INCOMPLETE` ones.
+- ⚠ **METHOD: a scoped axe run on a CLOSED surface passes vacuously** — `nav-qa/axe-run.mjs
+  --scope .sgs-nav-drawer` returns "0 violations" with or without `--open`. **Any earlier
+  drawer-axe claim from that harness proves nothing.** All runs here are openness-guarded. New
+  STOP entry.
+- **Two root-cause defects, invisible until something actually OPENED the panel on a real page:**
+  the panel rendered a **101px sliver** (anchored to its `<li>`; the centring CSS could never work
+  because every item is `position:relative` for the indicator), and the open panel was **painted
+  UNDER the footer** (equal `z-index:1`, later DOM context wins) so hit-testing reached the footer
+  and closed it — the "unhoverable mega". Both fixed + measured; the first fix hypothesis was
+  REFUTED by injection before landing.
+- **Bean's eye drove four more rounds, each finding something green gates hid:** off-centre panel ·
+  "View all" rendering outside the panel · drawer menu capped at 95px · an *invisible* 12%-alpha
+  border · a group-heading eyebrow **specified in BUILD-SPEC §3 but never built** · **panel padding
+  0px from a scalar-vs-box shape mismatch** (STOP-D328 class) · aside background identical to the
+  panel · nav had **zero container fill controls**.
+- **Bean rulings applied:** nav border + item divider DROPPED same-day (those patterns are
+  whole-HEADER treatments; `sgs/site-header` already has `color` + `__experimentalBorder`) ·
+  "Collapse point" → **"Burger Menu"** with **Always / Tablet / Mobile / Custom**, no bare px in
+  the UI · device-neutral wording throughout (burgers run on tablet + desktop) · `viewAllPlacement`
+  (auto/none/bottom-left/bottom-right) replaces the hard-wired fallback.
+- **SPEC 35 — nav inspector 13 panels → 8** (`43d3e2d2`; delegated to Sonnet, independently
+  re-verified live). The universal extensions attach to every `sgs/*` block unconditionally; the
+  opt-out `supports.sgs.hideExtensions` **already existed** and `sgs/brand-strip` already used it.
+  **The Spacing panel was silently DEAD on nav-menu** — its fields wrote attrs that are never
+  registered when a block declares native spacing. Negative control: `sgs/card-grid` still shows
+  all four panels, so the shared mechanism is untouched. **Flagged not fixed:** the bespoke Custom
+  CSS field is a Spec 35 Part F anti-pattern on all 81 blocks (framework-wide).
+- **SECURITY (`ceac2c8d`):** an automated review's "stored XSS" label was WRONG (everything already
+  `esc_attr()`s) but the CSS-**declaration** breakout was real — and in **two more places the
+  review never looked at**. Fixed at the choke point (`sgs_css_value_has_breakout()`); 13-case unit
+  run, 7 legitimate values byte-identical, 6 attacks rejected.
+- **⭐ NEXT (Bean-scoped): the nav-drawer DESKTOP VARIANTS.** Research COMPLETE (3 rounds, ~30
+  sites) → **`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md`**. Build DEFERRED
+  to next session. Headlines: **one block with variants, not two** (every production system does
+  this); the axis is **what the panel ATTACHES TO** — `full-screen` / `header-attached` /
+  `trigger-anchored` / `side-panel`; **Bean's correction verified** — lamalama's panel is
+  438×436 and its header pill is 438×50 at *identical edges*, so the header BECOMES the menu and
+  `header-attached` must DERIVE its width, never hardcode 438px; **2 of Bean's 4 named sites
+  measured full-screen** (dogstudio, resn); final tally **2 compact / 6 full-screen of 8 opened**;
+  clustering settled at exactly TWO compact mechanisms but each is **n=1**, so geometry numbers are
+  design anchors, not medians. Neither reference site is a real modal (no `<dialog>`, zero
+  `[inert]`, no focus trap) — our `showModal()` is spec-supported at any size and would be MORE
+  accessible than both. **Lateral:** `sgs/modal` already implements the centred-card model AND
+  hand-rolls its own `showModal()` — two `<dialog>` engines for one primitive.
+
+**Prior (2026-07-27, Track 2 mega) — SUPERSEDED by the Gate-3 close above; collapsed to a pointer
+2026-07-28. Full block archived VERBATIM in `memory/session-2026-07-27-4.md` (verified present:
+3 matching hits before trimming); decisions **D396 + D397** carry the detail.** It shipped the 5
+DEFERRED mega items (`db2b96d3`) + follow-on fixes (`9f8a6437`), and its standing blocker — *"motion
+is NOT live-verified, panel 1745 is EMPTY, Bean's R-31-13 sign-off NOT obtained"* — is now **CLOSED**:
+the fixture was built and all 6 effects measured firing (D401). Parking `P-MEGA-GATE3-LIVE` can be
+archived. The canary-behind-main warning is also cleared (deployed CONTENT verified by grep, D394);
+⚠ the THEME still needs a bump + deploy when the B3 patterns land.
 
 **Prior CURRENT (2026-07-27, Track 2b) — swept to a pointer 2026-07-28. Full detail verified present in
 `decisions.md` D393/D394/D395 (all three read end-to-end before trimming) + Spec 37 §3.3a / FR-37-41 / §5
