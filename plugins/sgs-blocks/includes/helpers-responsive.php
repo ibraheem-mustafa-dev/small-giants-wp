@@ -753,3 +753,110 @@ if ( ! function_exists( 'sgs_resolve_on_tiers' ) ) {
 		return $on;
 	}
 }
+
+if ( ! function_exists( 'sgs_merge_tri_state_declarations' ) ) {
+	/**
+	 * Merge several tri-state ('on'/'off'/'inherit') behaviours that may write
+	 * to the SAME selector into ONE set of declarations per tier, with a
+	 * single writer per CSS property (Spec 35 T1.4 FR-37-14 QC-fix, D400+).
+	 *
+	 * Replaces the earlier per-behaviour independent-emission pattern, where
+	 * each behaviour called `sgs_emit_tier_rules()` on its own and relied on
+	 * `!important` + CSS source order to "win" — provably broken: an unrelated
+	 * behaviour resolved OFF at every tier still emitted an unconditional
+	 * `!important` cancel-declaration on the shared selector, and because it
+	 * was written LATER in the concatenated stylesheet it silently clobbered
+	 * an earlier, genuinely-enabled behaviour's declaration for any property
+	 * both happened to touch (proven live: Transparent={} killed Sticky's
+	 * `position` at every viewport, because Transparent's off-css for
+	 * `position`/`top`/`z-index` was emitted after Sticky's on-css).
+	 *
+	 * This resolves each behaviour's on/off state PER TIER first, then builds
+	 * ONE property=>value map per tier from only the behaviours that are
+	 * genuinely ON there. A behaviour never contributes a declaration when
+	 * it's off — so an off/never-configured behaviour is now inert instead of
+	 * an active canceller. When two behaviours are BOTH on for the same tier
+	 * and both declare the same property, `$behaviours` ARRAY ORDER is the
+	 * documented precedence (first listed wins that property; a later
+	 * behaviour may still contribute its OWN non-colliding properties).
+	 * Narrower tiers still correctly cancel a wider tier's declaration — but
+	 * only for a property that was genuinely active at the wider tier and is
+	 * no longer active at the narrower one (an explicit `revert`), so the
+	 * "narrower tier cancels wider tier" capability is preserved without
+	 * resorting to blind unconditional off-css.
+	 *
+	 * @param string $selector   Base selector (unqualified — used for every tier).
+	 * @param array  $behaviours List of `[ 'raw' => mixed, 'props' => [ prop => value ] ]`,
+	 *                           in PRECEDENCE order (first wins a shared property).
+	 * @param string $default   Value `sgs_resolve_tier()` uses when a tier inherits
+	 *                           with nothing wider set (e.g. 'off').
+	 * @param string $on_marker Per-tier value that counts as "on" (default 'on').
+	 * @return string Concatenated CSS (base rule + tablet/mobile @media rules,
+	 *                whichever actually differ from the wider tier).
+	 */
+	function sgs_merge_tri_state_declarations( $selector, $behaviours, $default = 'off', $on_marker = 'on' ) {
+		$tiers      = array( 'desktop', 'tablet', 'mobile' );
+		$bp_by_tier = array(
+			'desktop' => null,
+			'tablet'  => SGS_Breakpoints::TABLET_MAX,
+			'mobile'  => SGS_Breakpoints::MOBILE_MAX,
+		);
+
+		$active_props_by_tier = array();
+		foreach ( $tiers as $tier ) {
+			$props = array();
+			foreach ( $behaviours as $spec ) {
+				$resolved = sgs_resolve_tier( $spec['raw'], $tier, $default );
+				if ( $on_marker !== $resolved['value'] ) {
+					continue;
+				}
+				foreach ( $spec['props'] as $prop => $value ) {
+					// First-listed behaviour with this tier's ON state wins the
+					// property; a later behaviour may still add its own keys.
+					if ( ! array_key_exists( $prop, $props ) ) {
+						$props[ $prop ] = $value;
+					}
+				}
+			}
+			$active_props_by_tier[ $tier ] = $props;
+		}
+
+		$css        = '';
+		$prev_props = array();
+		foreach ( $tiers as $i => $tier ) {
+			$props = $active_props_by_tier[ $tier ];
+
+			// Skip a tier whose resolved active-property set is identical to
+			// the wider tier's — nothing changed, mirrors sgs_emit_tier_rules()'s
+			// own diff-check (avoids redundant/empty @media blocks).
+			if ( 0 !== $i && $props === $prev_props ) {
+				continue;
+			}
+
+			$decls = '';
+			foreach ( $props as $prop => $value ) {
+				$decls .= $prop . ':' . $value . ' !important;';
+			}
+			// Cancel any property that was active at a WIDER tier but is no
+			// longer active here — the genuine narrow-cancels-wide capability.
+			foreach ( $prev_props as $prop => $value ) {
+				if ( ! array_key_exists( $prop, $props ) ) {
+					$decls .= $prop . ':revert !important;';
+				}
+			}
+
+			if ( '' !== $decls ) {
+				$max_width = $bp_by_tier[ $tier ];
+				if ( null === $max_width ) {
+					$css .= $selector . '{' . $decls . '}';
+				} else {
+					$css .= '@media (max-width:' . $max_width . 'px){' . $selector . '{' . $decls . '}}';
+				}
+			}
+
+			$prev_props = $props;
+		}
+
+		return $css;
+	}
+}

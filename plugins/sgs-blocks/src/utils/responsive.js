@@ -115,6 +115,27 @@ export function resolveTier( value, tier = 'desktop', defaultValue ) {
 }
 
 /**
+ * JS mirror of the PHP `sgs_resolve_on_tiers()` helper
+ * (`includes/helpers-responsive.php`) — resolves a `{desktop,tablet,mobile}`
+ * responsive object into the list of tiers where the effective value equals
+ * `onMarker`, via the same canonical `resolveTier()` cascade. One vocabulary,
+ * one cascade, client and server (Spec 35 T1.4 fold-in, D400+): editor-side
+ * "is this behaviour on anywhere?" checks must use this instead of a raw
+ * `Object.values(obj).some(Boolean)` truthiness scan, which silently breaks
+ * once a tier can hold the string `'off'` (a non-empty string is truthy).
+ *
+ * @param {Object} raw          The stored `{desktop,tablet,mobile}` attribute value.
+ * @param {*}      onMarker     The per-tier value that counts as "on" (e.g. 'on').
+ * @param {*}      defaultValue Value used when desktop inherits/is missing.
+ * @return {string[]} Tier keys (subset of desktop/tablet/mobile) resolved to onMarker.
+ */
+export function resolveOnTiers( raw, onMarker, defaultValue ) {
+	return RESPONSIVE_TIERS.filter(
+		( tier ) => resolveTier( raw, tier, defaultValue ).value === onMarker
+	);
+}
+
+/**
  * Legacy wrapper over resolveTier (scalar/null-marker family).
  *
  * Maintains the original semantics: empty string marks absence and inherits

@@ -26,7 +26,7 @@
 <!-- /wp:sgs/container -->
 <!-- /wp:sgs/site-header-row -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center","backgroundColor":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":true,"tablet":true,"mobile":true}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center","backgroundColor":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":"on"}} -->
 <!-- wp:sgs/product-search {"displayMode":"inline","placeholder":"Search products…"} /-->
 <!-- /wp:sgs/site-header-row -->
 <!-- /wp:sgs/site-header -->

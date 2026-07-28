@@ -148,16 +148,16 @@ if ( '' !== $shr_preset_bg_slug ) {
 // toggles per-row state classes based on the tiers listed in these data-attrs.
 // A behaviour off in every tier emits NOTHING (no attr at all).
 $shr_extra_attrs          = array( 'id' => $uid );
-// sgs_resolve_tier_booleans() was RETIRED at Spec 35 T1.4 (2026-07-28) — its
-// boolean-absence-as-inherit semantics are identical to the canonical
-// sgs_resolve_tier() cascade, so sgs_resolve_on_tiers() (helpers-responsive.php)
-// is a drop-in replacement (on_marker=true, default=false) with zero stored-shape
-// change here (rowTransparent/rowHideOnScroll/rowShrink stay {desktop,tablet,mobile}
-// booleans).
-$shr_transparent_on_tiers = sgs_resolve_on_tiers( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array(), true, false );
-$shr_hide_on_scroll_tiers = sgs_resolve_on_tiers( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array(), true, false );
+// rowTransparent/rowHideOnScroll/rowShrink reshaped from a boolean-object
+// shape to the tri-state STRING enum ('on'/'off'/'inherit') at Spec 35 T1.4
+// fold-in (2026-07-28, D400+) — one cascade, one vocabulary shared with the
+// header-level behaviours (sgs/site-header/render.php) instead of a separate
+// boolean pair for rows. sgs_resolve_on_tiers() is the same canonical
+// resolver for both; only the marker/default pair changes here.
+$shr_transparent_on_tiers = sgs_resolve_on_tiers( isset( $attributes['rowTransparent'] ) ? $attributes['rowTransparent'] : array(), 'on', 'off' );
+$shr_hide_on_scroll_tiers = sgs_resolve_on_tiers( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array(), 'on', 'off' );
 // Phase 2 — per-row shrink. Same tier resolver, own data-attr + state class.
-$shr_shrink_tiers = sgs_resolve_on_tiers( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array(), true, false );
+$shr_shrink_tiers = sgs_resolve_on_tiers( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array(), 'on', 'off' );
 if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) || ! empty( $shr_shrink_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
 	if ( ! empty( $shr_transparent_on_tiers ) ) {

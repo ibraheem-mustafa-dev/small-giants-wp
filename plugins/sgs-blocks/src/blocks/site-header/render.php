@@ -163,25 +163,41 @@ $sh_transparent = isset( $attributes['headerTransparent'] ) ? $attributes['heade
 $sh_shrink      = isset( $attributes['headerShrink'] ) ? $attributes['headerShrink'] : array();
 $sh_hide        = isset( $attributes['headerHideOnScroll'] ) ? $attributes['headerHideOnScroll'] : array();
 
-// Sticky — pure CSS, no JS/state needed at all (view.js already MEASURES the
-// computed `position` for the height publisher, so it adapts automatically).
-$css .= sgs_emit_tier_rules(
+// Sticky + Transparent both write to the SAME base selector's `position` /
+// `top` / `z-index` — QC (2026-07-28) proved that emitting each behaviour's
+// CSS independently (each with its own unconditional `!important` off-decl)
+// let a later-emitted OFF behaviour's cancel-declaration clobber an earlier
+// ON behaviour's declaration via plain CSS source order, at every viewport.
+// Fixed via sgs_merge_tri_state_declarations(): resolves both per tier FIRST
+// and emits ONE set of declarations per tier, single writer per property —
+// an off/never-configured behaviour now contributes nothing at all (no more
+// cancel-decl to clobber anyone), and if both are ever genuinely ON for the
+// same tier, Sticky (listed first) wins position/top/z-index while
+// Transparent still contributes its own non-colliding `background`/`left`/
+// `right` (documented precedence, not an accident of source order).
+$css .= sgs_merge_tri_state_declarations(
 	$root_sel,
-	$sh_sticky,
-	'position:sticky !important;top:0 !important;z-index:100;',
-	'position:revert !important;top:revert !important;z-index:revert !important;',
-	'off'
-);
-
-// Transparent — resting-state CSS. The scrolled-solid override is a plain,
-// non-tiered rule (".is-header-scrolled") because it only ever fires WHERE
-// the resting rule above already applied `position:absolute` — a tier where
-// transparent is off never sees this selector's ancestor context matter.
-$css .= sgs_emit_tier_rules(
-	$root_sel,
-	$sh_transparent,
-	'position:absolute !important;top:0 !important;left:0;right:0;background:transparent;z-index:100;',
-	'position:revert !important;top:revert !important;left:revert !important;right:revert !important;background:revert !important;z-index:revert !important;',
+	array(
+		array(
+			'raw'   => $sh_sticky,
+			'props' => array(
+				'position' => 'sticky',
+				'top'      => '0',
+				'z-index'  => '100',
+			),
+		),
+		array(
+			'raw'   => $sh_transparent,
+			'props' => array(
+				'position'   => 'absolute',
+				'top'        => '0',
+				'left'       => '0',
+				'right'      => '0',
+				'background' => 'transparent',
+				'z-index'    => '100',
+			),
+		),
+	),
 	'off'
 );
 $css .= $root_sel . '.is-header-scrolled{background:var(--wp--preset--color--surface,#ffffff);}';
@@ -190,53 +206,72 @@ $css .= $root_sel . '.is-header-scrolled{background:var(--wp--preset--color--sur
 // itself emitted separately (also per tier) keyed to ".is-header-shrunk" so a
 // tier where shrink is off never sees the reduced padding even if view.js has
 // toggled the class (it toggles unconditionally — CSS is the real gate).
-$sh_shrink_scroll_css = sgs_emit_tier_rules(
-	$root_sel,
-	$sh_shrink,
-	'animation-name:sgs-header-shrink-' . $uid . ';animation-duration:1ms;animation-fill-mode:both;animation-timeline:scroll(root block);animation-range:0 200px;',
-	'animation-name:none;',
-	'off'
-);
-if ( '' !== $sh_shrink_scroll_css ) {
-	$css .= '@supports (animation-timeline: scroll()) {' . $sh_shrink_scroll_css
-		. '@keyframes sgs-header-shrink-' . $uid . '{from{padding-block:var(--wp--preset--spacing--30,1.5rem);}to{padding-block:var(--wp--preset--spacing--10,0.5rem);}}}';
-}
-$sh_shrink_fallback_css = sgs_emit_tier_rules(
-	$root_sel,
-	$sh_shrink,
-	'padding-block:var(--wp--preset--spacing--30,1.5rem);transition:padding-block 200ms ease;',
-	'transition:none;',
-	'off'
-);
-if ( '' !== $sh_shrink_fallback_css ) {
-	$css .= '@supports not (animation-timeline: scroll()) {' . $sh_shrink_fallback_css . '}';
-	// The shrunk VALUE, fallback path only (the scroll-timeline path above
-	// animates padding purely from scroll progress — no class needed). Same
-	// per-tier gate, keyed to the state class so an off tier never shrinks.
-	$css .= sgs_emit_tier_rules(
-		$root_sel . '.is-header-shrunk',
+// Rule (a): a behaviour that is off at EVERY tier contributes nothing at all
+// (no unconditional off-cancel-decl to collide with a sibling behaviour).
+$sh_shrink_any_tier = ! empty( sgs_resolve_on_tiers( $sh_shrink, 'on', 'off' ) );
+$sh_hide_any_tier   = ! empty( sgs_resolve_on_tiers( $sh_hide, 'on', 'off' ) );
+
+if ( $sh_shrink_any_tier ) {
+	$sh_shrink_scroll_css = sgs_emit_tier_rules(
+		$root_sel,
 		$sh_shrink,
-		'padding-block:var(--wp--preset--spacing--10,0.5rem);',
-		'',
+		'animation-name:sgs-header-shrink-' . $uid . ';animation-duration:1ms;animation-fill-mode:both;animation-timeline:scroll(root block);animation-range:0 200px;',
+		'animation-name:none;',
 		'off'
 	);
+	if ( '' !== $sh_shrink_scroll_css ) {
+		$css .= '@supports (animation-timeline: scroll()) {' . $sh_shrink_scroll_css
+			. '@keyframes sgs-header-shrink-' . $uid . '{from{padding-block:var(--wp--preset--spacing--30,1.5rem);}to{padding-block:var(--wp--preset--spacing--10,0.5rem);}}}';
+	}
+
+	// Legacy (no `animation-timeline`) fallback: base padding + its own
+	// transition. NOTE (residual, not QC-proven, out of this fix's scope):
+	// Hide ALSO sets `transition` on this same unqualified base selector
+	// below; on a legacy browser with BOTH Shrink and Hide genuinely active
+	// on the SAME tier, whichever is emitted later still wins the shorthand
+	// for that one property (source order), same class of issue as the
+	// sticky/transparent bug this fix targets but unconfirmed live and out
+	// of scope here — track as a follow-up if a client build ever needs
+	// Shrink + Hide together on a pre-scroll-timeline browser.
+	$sh_shrink_fallback_css = sgs_emit_tier_rules(
+		$root_sel,
+		$sh_shrink,
+		'padding-block:var(--wp--preset--spacing--30,1.5rem);transition:padding-block 200ms ease;',
+		'transition:none;',
+		'off'
+	);
+	if ( '' !== $sh_shrink_fallback_css ) {
+		$css .= '@supports not (animation-timeline: scroll()) {' . $sh_shrink_fallback_css . '}';
+		// The shrunk VALUE, fallback path only (the scroll-timeline path above
+		// animates padding purely from scroll progress — no class needed). Same
+		// per-tier gate, keyed to the state class so an off tier never shrinks.
+		$css .= sgs_emit_tier_rules(
+			$root_sel . '.is-header-shrunk',
+			$sh_shrink,
+			'padding-block:var(--wp--preset--spacing--10,0.5rem);',
+			'',
+			'off'
+		);
+	}
 }
 
 // Hide on scroll — transition setup + the translate value, both per tier.
-$css .= sgs_emit_tier_rules(
-	$root_sel,
-	$sh_hide,
-	'transition:transform 200ms ease;will-change:transform;',
-	'transition:none;',
-	'off'
-);
-$css .= sgs_emit_tier_rules(
-	$root_sel . '.is-header-scrolling-down',
-	$sh_hide,
-	'transform:translateY(-100%);',
-	'transform:revert;',
-	'off'
-);
+if ( $sh_hide_any_tier ) {
+	$css .= sgs_emit_tier_rules(
+		$root_sel,
+		$sh_hide,
+		'transition:transform 200ms ease;will-change:transform;',
+		'transition:none;',
+		'off'
+	);
+	$css .= sgs_emit_tier_rules(
+		$root_sel . '.is-header-scrolling-down',
+		$sh_hide,
+		'transform:translateY(-100%);',
+		'transform:revert;',
+		'off'
+	);
+}
 
 // prefers-reduced-motion: self-contained here (per-instance scoped CSS) rather
 // than relying on the shared stylesheet, since the transition/animation
