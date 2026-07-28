@@ -30,6 +30,7 @@ import {
 	ButtonGroup,
 	Button,
 	Notice,
+	RangeControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
@@ -42,6 +43,7 @@ import {
 	TypographyControls,
 	StateToggleControl,
 	ResponsiveBoxControl,
+	ResponsiveControl,
 } from '../../components';
 
 /**
@@ -139,6 +141,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		featuredItemIds,
 		gap,
 		maxWidth,
+		listColumns,
 		navBg,
 		navColour,
 		navBgHover,
@@ -589,6 +592,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+
+					<ResponsiveControl label={ __( 'Panel columns', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<RangeControl
+								label={ __( 'Panel columns', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __(
+									'How many columns this list uses when it renders inside a menu panel (a horizontal bar always stays one row). 1 is the default.',
+									'sgs-blocks'
+								) }
+								min={ 1 }
+								max={ 4 }
+								value={ listColumns?.[ breakpoint ] || 1 }
+								onChange={ ( value ) =>
+									setAttributes( {
+										listColumns: { ...listColumns, [ breakpoint ]: value || undefined },
+									} )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveControl>
 				</PanelBody>
 			</InspectorControls>
 

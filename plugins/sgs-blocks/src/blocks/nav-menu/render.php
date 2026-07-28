@@ -790,6 +790,43 @@ $css .= '.sgs-nav-drawer ' . $uid_sel . '{width:100%;}';
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar{width:100%;align-items:stretch;}';
 
 /*
+ * listColumns (design gate 2026-07-28) — in-drawer vertical list layout ONLY
+ * (nav-drawer/style.css:52-53 already suppresses this bar's horizontal/burger
+ * mode and stacks it vertically whenever a nav-menu sits inside a drawer; the
+ * HORIZONTAL bar mode is untouched by this attribute entirely). 1 column (the
+ * default, an empty/unset object) leaves the existing flex-column stack from
+ * nav-drawer/style.css unchanged — byte-identical. >=2 columns switches the
+ * bar to a CSS grid (studionamma's 2-column desktop -> 1-column mobile merge).
+ * The extra `.wp-block-sgs-nav-menu` qualifier gives this rule certain
+ * precedence over nav-drawer/style.css's `display:flex` rule at any tier
+ * this attribute is actually set (both are 3-selector-part rules; source
+ * order alone should not be relied on across two different stylesheets).
+ */
+if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['listColumns'] ?? null ) && ! empty( $attributes['listColumns'] ) ) {
+	$drawer_bar_sel = '.sgs-nav-drawer ' . $uid_sel . '.wp-block-sgs-nav-menu .sgs-nav-menu__bar';
+	$css           .= sgs_emit_responsive_css(
+		$drawer_bar_sel,
+		array(
+			array(
+				'value'     => $attributes['listColumns'],
+				'css'       => 'display',
+				'transform' => static function () {
+					return 'grid';
+				},
+			),
+			array(
+				'value'     => $attributes['listColumns'],
+				'css'       => 'grid-template-columns',
+				'transform' => static function ( $raw ) {
+					$n = max( 1, absint( $raw ) );
+					return 'repeat(' . $n . ', minmax(0, 1fr))';
+				},
+			),
+		)
+	);
+}
+
+/*
  * Stacking escape for an IN-CONTENT nav (2026-07-28, Gate-3 finding). The
  * page-content container (`.entry-content`) and the site-footer rows each
  * carry `z-index:1`; at equal z the LATER context paints on top, so an open

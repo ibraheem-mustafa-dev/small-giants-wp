@@ -483,6 +483,31 @@ function openDrawerFor( ctx, trigger ) {
 	reparentToBody( drawer, scrim );
 	lockScroll();
 
+	/*
+	 * Fix 7 (multi-rater pre-commit review, D-pending): the `header` anchor's
+	 * top offset must track the header's REAL rendered bottom edge, not the
+	 * theme's static --sgs-header-height (which utilities.css sets to an
+	 * unconditional 80px, or 0 when the header is unpinned/hidden). Measure it
+	 * once per open — after reparentToBody so the drawer's own geometry can't
+	 * skew the header's rect — and write the measured px value as a custom-
+	 * property VALUE on the dialog (same pattern as sgs/modal's
+	 * --sgs-modal-scroll-y; the no-inline contract permits a JS-set custom-
+	 * property value, never a property declaration). render.php's `header`
+	 * anchor reads it first, falling back to --sgs-header-height then 0.
+	 */
+	const headerEl = document.querySelector(
+		'.wp-block-sgs-site-header, header.wp-block-template-part, body > header'
+	);
+	const headerRect = headerEl ? headerEl.getBoundingClientRect() : null;
+	if ( headerRect && headerRect.bottom > 0 ) {
+		drawer.style.setProperty(
+			'--sgs-drawer-header-offset',
+			`${ Math.max( 0, Math.round( headerRect.bottom ) ) }px`
+		);
+	} else {
+		drawer.style.removeProperty( '--sgs-drawer-header-offset' );
+	}
+
 	if ( typeof drawer.showModal === 'function' ) {
 		// FR-36-6 default: full-screen modal in the top layer — survives a
 		// transformed header ancestor; native inert background + native ESC +

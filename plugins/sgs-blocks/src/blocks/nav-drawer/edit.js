@@ -18,7 +18,7 @@
  * @package SGS\Blocks
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
@@ -87,12 +87,23 @@ function paddingFromBox( box ) {
 	return `${ top || '0' } ${ right || '0' } ${ bottom || '0' } ${ left || '0' }`;
 }
 
+/** Anchor → per-anchor default animation label shown at Automatic. */
+const ANCHOR_ANIM_LABEL = {
+	'full-screen': __( 'fade + drop', 'sgs-blocks' ),
+	header: __( 'expand down', 'sgs-blocks' ),
+	trigger: __( 'scale from corner', 'sgs-blocks' ),
+	centred: __( 'scale up (modal)', 'sgs-blocks' ),
+};
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		drawerRef,
-		edge,
+		anchor,
+		panelSize,
+		surfaceOpacity,
+		surfaceBlur,
+		closeStyle,
 		animateFrom,
-		width,
 		drawerBg,
 		toggleCloseColour,
 		drawerAlign,
@@ -101,13 +112,32 @@ export default function Edit( { attributes, setAttributes } ) {
 		submenuModel,
 	} = attributes;
 
-	const isPartial = edge !== 'full-screen';
+	// Desktop-tier anchor drives BOTH the editor preview shell shape and the
+	// "Automatic" animation hint below — the same resolution render.php's
+	// sgs_resolve_tier() performs server-side, kept in sync here so what an
+	// operator sees while editing matches what ships.
+	const anchorDesktop = anchor?.desktop || 'full-screen';
+	const isCompact = anchorDesktop === 'trigger' || anchorDesktop === 'centred';
 
 	// Editor-only preview styling (reflects the same attrs render.php reads;
 	// inline style here is editor canvas only — the no-inline contract governs
-	// the FRONTEND render.php output, not the editor).
+	// the FRONTEND render.php output, not the editor). Fix 4 (multi-rater
+	// pre-commit review): NEVER set element `opacity` — that would fade the
+	// InnerBlocks content too, unlike render.php's color-mix() which only
+	// affects the panel's own fill. Mirror render.php's color-mix() approach
+	// instead so the preview matches what ships; guard for an empty drawerBg
+	// (colourVar() already returns undefined for '') so a color-mix() string
+	// is never built around an undefined colour.
+	const compactWidthFallback =
+		anchorDesktop === 'centred' ? '480px' : '360px';
 	const shellStyle = {
-		backgroundColor: colourVar( drawerBg ),
+		backgroundColor:
+			surfaceOpacity < 1 && drawerBg
+				? `color-mix(in srgb, ${ colourVar( drawerBg ) } ${ Math.round( surfaceOpacity * 100 ) }%, transparent)`
+				: colourVar( drawerBg ),
+		backdropFilter: surfaceBlur ? `blur( ${ surfaceBlur } )` : undefined,
+		maxWidth: isCompact ? panelSize?.desktop || compactWidthFallback : undefined,
+		marginInline: isCompact ? 'auto' : undefined,
 	};
 	const bodyStyle = {
 		alignItems: ALIGN_ITEMS[ drawerAlign ] || 'flex-start',
@@ -145,53 +175,89 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
-					<SelectControl
-						label={ __( 'Edge', 'sgs-blocks' ) }
-						help={ __(
-							'Full-screen is the default. Left / right / top partial panels are a later-phase option.',
-							'sgs-blocks'
+					<ResponsiveControl label={ __( 'Panel position', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<ToggleGroupControl
+								hideLabelFromVision
+								label={ __( 'Panel position', 'sgs-blocks' ) }
+								help={ __(
+									'Full screen is the default everywhere. Header, corner and centred are desktop-style variants — set a different position per device, e.g. a corner panel on desktop that becomes full screen on mobile.',
+									'sgs-blocks'
+								) }
+								value={ anchor?.[ breakpoint ] || 'full-screen' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										anchor: { ...anchor, [ breakpoint ]: value || 'full-screen' },
+									} )
+								}
+								isBlock
+								__nextHasNoMarginBottom
+							>
+								<ToggleGroupControlOption value="full-screen" label={ __( 'Full screen', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="header" label={ __( 'Below header', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="trigger" label={ __( 'Corner panel', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="centred" label={ __( 'Centred card', 'sgs-blocks' ) } />
+							</ToggleGroupControl>
 						) }
-						value={ edge }
-						options={ [
-							{ label: __( 'Full screen', 'sgs-blocks' ), value: 'full-screen' },
-							{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-							{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-							{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
-						] }
-						onChange={ ( value ) => setAttributes( { edge: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					</ResponsiveControl>
+
+					{ ( anchor?.desktop === 'trigger' || anchor?.desktop === 'centred' ||
+						anchor?.tablet === 'trigger' || anchor?.tablet === 'centred' ||
+						anchor?.mobile === 'trigger' || anchor?.mobile === 'centred' ) && (
+						<ResponsiveControl label={ __( 'Panel size', 'sgs-blocks' ) }>
+							{ ( breakpoint ) => (
+								<UnitControl
+									label={ __( 'Panel size', 'sgs-blocks' ) }
+									hideLabelFromVision
+									help={ __( 'Maximum width of a corner or centred panel at this device.', 'sgs-blocks' ) }
+									value={ panelSize?.[ breakpoint ] || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											panelSize: { ...panelSize, [ breakpoint ]: value || undefined },
+										} )
+									}
+									__next40pxDefaultSize
+									__nextHasNoMarginBottom
+								/>
+							) }
+						</ResponsiveControl>
+					) }
 
 					<SelectControl
 						label={ __( 'Open animation', 'sgs-blocks' ) }
-						help={ __(
-							'Which direction the drawer slides in from. Automatic uses a subtle fade-and-drop. Visitors who ask their device to reduce motion never see any movement, whichever you choose.',
-							'sgs-blocks'
+						help={ sprintf(
+							/* translators: %s: the automatic animation for the current desktop panel position. */
+							__(
+								'Automatic matches the panel position (currently: %s). Visitors who ask their device to reduce motion never see any movement, whichever you choose.',
+								'sgs-blocks'
+							),
+							ANCHOR_ANIM_LABEL[ anchorDesktop ] || ANCHOR_ANIM_LABEL[ 'full-screen' ]
 						) }
 						value={ animateFrom }
 						options={ [
 							{ label: __( 'Automatic', 'sgs-blocks' ), value: 'auto' },
 							{ label: __( 'Fade only (no movement)', 'sgs-blocks' ), value: 'fade' },
-							{ label: __( 'Slide in from the right', 'sgs-blocks' ), value: 'right' },
-							{ label: __( 'Slide in from the left', 'sgs-blocks' ), value: 'left' },
-							{ label: __( 'Slide down from the top', 'sgs-blocks' ), value: 'top' },
-							{ label: __( 'Slide up from the bottom', 'sgs-blocks' ), value: 'bottom' },
 						] }
 						onChange={ ( value ) => setAttributes( { animateFrom: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 
-					{ isPartial && (
-						<UnitControl
-							label={ __( 'Panel width / height', 'sgs-blocks' ) }
-							help={ __( 'Applies to partial (non-full-screen) edges.', 'sgs-blocks' ) }
-							value={ width || '' }
-							onChange={ ( value ) => setAttributes( { width: value || '' } ) }
-							__next40pxDefaultSize
-						/>
-					) }
+					<ToggleGroupControl
+						label={ __( 'Close button style', 'sgs-blocks' ) }
+						help={ __(
+							'How the always-present close control is drawn. The close button itself can never be deleted.',
+							'sgs-blocks'
+						) }
+						value={ closeStyle }
+						onChange={ ( value ) => setAttributes( { closeStyle: value || 'separate-x' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+					>
+						<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 
 					<ToggleGroupControl
 						label={ __( 'Submenu behaviour', 'sgs-blocks' ) }
@@ -225,6 +291,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						clearable
 					/>
 
+					{ /* Surface — opacity + blur on the panel itself. No separate scrim:
+					     the panel's own fill/blur IS the occlusion (8/8 reference sites
+					     skip a dedicated backdrop div). Defaults (opaque, no blur) are
+					     unchanged from before this control existed. */ }
+					<UnitControl
+						label={ __( 'Panel opacity', 'sgs-blocks' ) }
+						help={ __( '100 = solid (default). Lower it to let the page show through. Needs a background colour set.', 'sgs-blocks' ) }
+						value={ `${ Math.round( ( surfaceOpacity ?? 1 ) * 100 ) }%` }
+						onChange={ ( value ) => {
+							const num = parseFloat( value );
+							setAttributes( {
+								surfaceOpacity: Number.isFinite( num ) ? Math.max( 0, Math.min( 100, num ) ) / 100 : 1,
+							} );
+						} }
+						units={ [ { value: '%', label: '%' } ] }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+					<UnitControl
+						label={ __( 'Background blur', 'sgs-blocks' ) }
+						help={ __( 'Blurs whatever sits behind the drawer. Leave empty for none (default).', 'sgs-blocks' ) }
+						value={ surfaceBlur || '' }
+						onChange={ ( value ) => setAttributes( { surfaceBlur: value || '' } ) }
+						units={ [ { value: 'px', label: 'px' } ] }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+
 					{ /* Layout */ }
 					<ToggleGroupControl
 						label={ __( 'Content alignment', 'sgs-blocks' ) }
@@ -250,6 +344,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									} )
 								}
 								__next40pxDefaultSize
+								__nextHasNoMarginBottom
 							/>
 						) }
 					</ResponsiveControl>

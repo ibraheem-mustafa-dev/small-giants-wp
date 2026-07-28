@@ -138,6 +138,7 @@
 		"layout": { "type": "string", "default": "flex" },
 		"gap": { "type": "string", "default": "8px" },
 		"maxWidth": { "type": "string", "default": "" },
+		"listColumns": { "type": "object", "default": {} },
 		"paddingTablet": { "type": "object", "default": {} },
 		"paddingMobile": { "type": "object", "default": {} },
 

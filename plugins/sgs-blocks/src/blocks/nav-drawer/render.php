@@ -56,7 +56,18 @@ $sgs_nd_css_length = static function ( $value ) {
 	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
 };
 
-$anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) ? (string) $block->parsed_block['attrs']['anchor'] : '';
+// ── Legacy HTML-anchor salt (WP core's `supports.anchor` feature) for the uid
+// hash below. Vestigial: block.json declares `supports.anchor:false`, so WP
+// never populates this key for the CORE feature — but block.json now ALSO
+// declares a genuine object-typed `anchor` ATTRIBUTE (Task 1, geometry
+// selector) that occupies the SAME 'anchor' key in parsed attrs, so this must
+// guard with is_string() or an array-to-string cast notice fires on every
+// render that sets a per-device anchor. $attributes is already hashed whole
+// via wp_json_encode() below, so the new attribute's contribution to uid
+// stability does not depend on this line at all.
+$anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) && is_string( $block->parsed_block['attrs']['anchor'] )
+	? (string) $block->parsed_block['attrs']['anchor']
+	: '';
 
 // ── drawerRef — the <dialog> id the burger's aria-controls / store context
 // resolves. Defaults to 'sgs-nav-drawer' (matching sgs/nav-menu's own drawerRef
@@ -76,12 +87,65 @@ $root_sel  = '.' . $uid . '.wp-block-sgs-nav-drawer';
 $body_sel  = $root_sel . ' .sgs-nav-drawer__body';
 $close_sel = $root_sel . ' .sgs-nav-drawer__close';
 
-// ── Geometry (Phase 1 = full-screen only; partial edges declared, not gate-tested).
-$allowed_edges = array( 'full-screen', 'left', 'right', 'top' );
-$edge          = in_array( $attributes['edge'] ?? 'full-screen', $allowed_edges, true )
-	? (string) $attributes['edge']
-	: 'full-screen';
-$width         = $sgs_nd_css_length( $attributes['width'] ?? '' );
+// ── Geometry — desktop-variant anchors (design gate 2026-07-28, supersedes the
+// retired `edge`/`width` scalars; zero stored instances carried either, so this
+// is a clean cut, not a migration). `anchor` is a per-device object
+// { desktop, tablet, mobile } of full-screen|header|trigger|centred, resolved
+// via the shared sgs_resolve_tier() cascade (identical semantics to every
+// other §S9 responsive-object attribute — 'inherit'/null/absent = inherit
+// upward, desktop falls back to 'full-screen'). `panelSize` is the matching
+// per-device LENGTH object, consulted only by the trigger/centred anchors.
+$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' );
+
+/**
+ * Geometry declarations (position/inset/width/height/max-* ONLY — never
+ * `display`, per STOP-DIALOG-DISPLAY-GATE/D338) for one resolved anchor value
+ * at one tier. `header` derives its top offset from the published
+ * `--sgs-header-height` custom property (never a hardcoded px) and spans full
+ * width beneath it; `trigger` approximates a top-right corner-anchored panel
+ * (the honest limitation: without JS-measuring the actual burger's position,
+ * a CSS-only anchor cannot track an arbitrary trigger location — documented,
+ * not silently assumed); `centred` is the modal-card geometry `sgs/modal`
+ * already uses (margin:auto within a fixed inset).
+ *
+ * @param string $anchor_value Resolved anchor keyword for this tier.
+ * @param string $panel_size   Resolved, pre-sanitised panelSize length for this tier (may be '').
+ * @return string CSS declarations (no selector/braces).
+ */
+$sgs_nd_geometry_for_anchor = function ( $anchor_value, $panel_size ) {
+	switch ( $anchor_value ) {
+		case 'header':
+			// The real header bottom edge (Fix 7, multi-rater pre-commit review):
+			// the theme's utilities.css sets --sgs-header-height:80px UNCONDITIONALLY
+			// (a static token, not the header's live rendered height), so the drawer
+			// sat at a constant 80px — or 0 when the header is unpinned/hidden —
+			// instead of tracking the header's actual bottom. store.js measures the
+			// real getBoundingClientRect().bottom at open time and writes
+			// --sgs-drawer-header-offset onto the dialog; that measured value takes
+			// precedence, falling back to the static --sgs-header-height (then 0)
+			// when JS hasn't run (no-JS / first paint).
+			return 'position:fixed;top:var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px));right:0;bottom:auto;left:0;margin:0;width:100%;height:auto;max-width:100vw;max-height:calc(100dvh - var(--sgs-drawer-header-offset, var(--sgs-header-height, 0px)));';
+		case 'trigger':
+			$cap = '' !== $panel_size ? $panel_size : '360px';
+			return 'position:fixed;top:16px;right:16px;bottom:auto;left:auto;margin:0;width:min(' . $cap . ', calc(100vw - 32px));height:auto;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
+		case 'centred':
+			$cap = '' !== $panel_size ? $panel_size : '480px';
+			return 'position:fixed;inset:0;margin:auto;width:min(' . $cap . ', calc(100vw - 32px));height:fit-content;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);';
+		case 'full-screen':
+		default:
+			// Identical to style.css's base rule — deliberately, so the
+			// zero-attribute (default) case never needs this closure called
+			// at all (guarded below) and an explicit 'full-screen' pick at a
+			// non-desktop tier still reads correctly against a differing
+			// desktop tier.
+			return 'position:fixed;inset:0;margin:0;width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;';
+	}
+};
+
+$anchor_attr_raw      = $attributes['anchor'] ?? array();
+$panel_size_attr_raw  = $attributes['panelSize'] ?? array();
+$sgs_nd_anchor_is_set = is_array( $anchor_attr_raw ) && ! empty( $anchor_attr_raw );
+$sgs_nd_panel_is_set  = is_array( $panel_size_attr_raw ) && ! empty( $panel_size_attr_raw );
 
 // ── Content alignment → align-items on the drawer body. 'left'/'center'/'right'
 // map to flex-start/center/flex-end (CSS keyword — US spelling is the syntax).
@@ -170,14 +234,70 @@ if ( '' !== $close_colour_slug ) {
 	$css .= $close_sel . '{color:' . sgs_colour_value( $close_colour_slug ) . ';}';
 }
 
-// Partial-width geometry (Phase 2+ — declared, not gate-tested this phase). A
-// non-full-screen edge with an explicit width caps the panel; full-screen (the
-// default) emits nothing extra (style.css handles the full-bleed geometry).
-if ( 'full-screen' !== $edge && '' !== $width ) {
-	if ( 'left' === $edge || 'right' === $edge ) {
-		$css .= $root_sel . '{width:' . $width . ';max-width:100vw;}';
-	} elseif ( 'top' === $edge ) {
-		$css .= $root_sel . '{height:' . $width . ';max-height:100dvh;}';
+// ── Anchor geometry (desktop variants). Guard on "is either attribute
+// actually set" so the zero-attribute default renders BYTE-IDENTICAL to the
+// pre-Task-1 output — style.css's base rule already IS the full-screen
+// geometry, so emitting it again here for the untouched default would be a
+// redundant (harmless but non-identical) duplicate rule.
+if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
+	$sgs_nd_anchor_desktop = sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value'];
+	$sgs_nd_anchor_tablet  = sgs_resolve_tier( $anchor_attr_raw, 'tablet', 'full-screen' )['value'];
+	$sgs_nd_anchor_mobile  = sgs_resolve_tier( $anchor_attr_raw, 'mobile', 'full-screen' )['value'];
+
+	$sgs_nd_anchor_desktop = in_array( $sgs_nd_anchor_desktop, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_desktop : 'full-screen';
+	$sgs_nd_anchor_tablet  = in_array( $sgs_nd_anchor_tablet, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_tablet : 'full-screen';
+	$sgs_nd_anchor_mobile  = in_array( $sgs_nd_anchor_mobile, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_mobile : 'full-screen';
+
+	// panelSize is a free-text CSS length expression (calc()/clamp() are valid
+	// operator input, e.g. 'calc(100% - 40px)') — the strict digits/dot/%/unit-
+	// letters-only $sgs_nd_css_length sanitiser would mangle it (Fix 6, multi-
+	// rater pre-commit review): 'calc(100% - 40px)' → 'calc10040px'. Use the
+	// shared free-text CSS-value sanitiser instead (permits the math-function
+	// character set while still stripping anything that could break out of the
+	// declaration).
+	$sgs_nd_panel_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'desktop', '' )['value'] );
+	$sgs_nd_panel_tablet   = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
+	$sgs_nd_panel_mobile   = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
+
+	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop );
+	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet );
+	$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile );
+
+	if ( '' !== $sgs_nd_geom_desktop ) {
+		$css .= $root_sel . '{' . $sgs_nd_geom_desktop . '}';
+	}
+	// Tier-diff: only emit a tier's @media rule when it genuinely differs from
+	// the tier above (mirrors sgs_emit_tier_rules()'s own convention).
+	if ( $sgs_nd_geom_tablet !== $sgs_nd_geom_desktop ) {
+		$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_tablet . '}}';
+	}
+	if ( $sgs_nd_geom_mobile !== $sgs_nd_geom_tablet ) {
+		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_mobile . '}}';
+	}
+}
+
+// ── Surface (opacity + blur on the panel itself — no separate scrim element;
+// 8/8 reference sites skip a dedicated scrim div). Opaque + unblurred (the
+// existing default) emits nothing extra so an untouched drawer is unaffected.
+$sgs_nd_surface_opacity = isset( $attributes['surfaceOpacity'] ) ? (float) $attributes['surfaceOpacity'] : 1.0;
+$sgs_nd_surface_opacity = max( 0.0, min( 1.0, $sgs_nd_surface_opacity ) );
+$sgs_nd_surface_blur    = $sgs_nd_css_length( $attributes['surfaceBlur'] ?? '' );
+
+if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
+	$sgs_nd_surface_decls = '';
+	if ( $sgs_nd_surface_opacity < 1.0 && '' !== $drawer_bg_slug ) {
+		// color-mix() keeps the resolved token as the SOURCE colour (a palette
+		// change still recolours the translucent panel) while expressing the
+		// operator's chosen opacity — no separate alpha-channel attribute needed.
+		$sgs_nd_pct             = rtrim( rtrim( number_format( $sgs_nd_surface_opacity * 100, 2 ), '0' ), '.' );
+		$sgs_nd_pct             = '' !== $sgs_nd_pct ? $sgs_nd_pct : '0';
+		$sgs_nd_surface_decls .= 'background-color:color-mix(in srgb, var(--wp--preset--color--' . $drawer_bg_slug . ') ' . $sgs_nd_pct . '%, transparent);';
+	}
+	if ( '' !== $sgs_nd_surface_blur ) {
+		$sgs_nd_surface_decls .= 'backdrop-filter:blur(' . $sgs_nd_surface_blur . ');-webkit-backdrop-filter:blur(' . $sgs_nd_surface_blur . ');';
+	}
+	if ( '' !== $sgs_nd_surface_decls ) {
+		$css .= $root_sel . '{' . $sgs_nd_surface_decls . '}';
 	}
 }
 
@@ -239,27 +359,78 @@ if ( '' !== $custom_css ) {
 // competing anchor id is emitted. The uid is added as a CLASS for the scoped CSS.
 
 /*
- * Entry-animation direction (animateFrom). `auto` emits NO class, so the CSS
- * default (the subtle vertical nudge) stands and no existing site changes
- * shape. An explicit value slides the panel in from that side; `fade` is
- * opacity-only. All directional rules live inside the CSS's
- * `prefers-reduced-motion: no-preference` block, so a reduced-motion user is
- * unaffected by whatever is chosen here.
+ * Entry-animation direction (animateFrom). `auto` (the default) resolves to a
+ * PER-ANCHOR default motion — the drawer's own DESKTOP anchor decides which
+ * animation class applies, since the anchor (not an independent direction)
+ * IS the design-defining choice now: full-screen keeps the pre-existing
+ * fade-drop (no class, so an untouched drawer is unaffected), header expands
+ * down, trigger scales/fades from its corner, centred scales up like a
+ * modal. `fade` is an explicit opacity-only override available at every
+ * anchor. `top`/`right`/`bottom`/`left` directional slides were RETIRED
+ * (design gate 2026-07-28) — zero stored instances carried anything but
+ * `auto`, verified via grep across theme/sgs-theme/patterns/, so this is a
+ * clean cut. All rules live inside the CSS's `prefers-reduced-motion:
+ * no-preference` block, so a reduced-motion user is unaffected regardless.
  */
-$allowed_anims = array( 'auto', 'fade', 'top', 'right', 'bottom', 'left' );
-$animate_from  = in_array( $attributes['animateFrom'] ?? 'auto', $allowed_anims, true )
+$sgs_nd_allowed_anims = array( 'auto', 'fade' );
+$sgs_nd_animate_from  = in_array( $attributes['animateFrom'] ?? 'auto', $sgs_nd_allowed_anims, true )
 	? (string) $attributes['animateFrom']
 	: 'auto';
+
+$sgs_nd_anim_class = '';
+if ( 'fade' === $sgs_nd_animate_from ) {
+	$sgs_nd_anim_class = 'sgs-nav-drawer--anim-fade';
+} else {
+	// auto → per-anchor default. Resolve the DESKTOP anchor only for the
+	// animation choice (the entry motion is a single per-instance decision,
+	// not itself per-device) — falls back to 'full-screen' (no class) when
+	// `anchor` is unset, byte-identical to the pre-Task-1 default.
+	$sgs_nd_anim_anchor = $sgs_nd_anchor_is_set
+		? sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value']
+		: 'full-screen';
+	$sgs_nd_anim_anchor = in_array( $sgs_nd_anim_anchor, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anim_anchor : 'full-screen';
+	$sgs_nd_anim_map    = array(
+		'header'  => 'sgs-nav-drawer--anim-expand-down',
+		'trigger' => 'sgs-nav-drawer--anim-corner-scale',
+		'centred' => 'sgs-nav-drawer--anim-modal-scale',
+	);
+	$sgs_nd_anim_class  = $sgs_nd_anim_map[ $sgs_nd_anim_anchor ] ?? '';
+}
+
+// ── Close-button style (closeStyle). `separate-x` (default) renders the
+// existing × icon, byte-identical to the pre-Task-1 output. `text-swap`
+// replaces the icon with a "Close" text label (3/8 reference sites use a
+// text-only close, no icon at all). `burger-morph` renders a 2-bar icon drawn
+// to already read as an X (an honest simplification: true cross-block
+// synchronisation with the HEADER burger's own morph would need new
+// Interactivity-store wiring between two independent block instances, which
+// is out of this task's scope — documented, not silently assumed). The ×
+// button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
+$sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph' );
+$sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-x', $sgs_nd_allowed_close_styles, true )
+	? (string) $attributes['closeStyle']
+	: 'separate-x';
 
 $classes = array(
 	'sgs-nav-drawer',
 	$uid,
-	'sgs-nav-drawer--edge-' . $edge,
 	'sgs-nav-drawer--submenu-' . $submenu_model,
+	'sgs-nav-drawer--close-' . $sgs_nd_close_style,
 );
 
-if ( 'auto' !== $animate_from ) {
-	$classes[] = 'sgs-nav-drawer--anim-' . $animate_from;
+if ( '' !== $sgs_nd_anim_class ) {
+	$classes[] = $sgs_nd_anim_class;
+}
+
+// ── variantPreset (Task-3 discriminator, design gate 2026-07-28) — the
+// variation slug this instance was inserted from. No CSS behaviour depends on
+// it (each variation's LOOK comes entirely from the attrs it sets, per the
+// binding variant principle), but rendering it as a class makes the attribute
+// non-dead (check-dead-controls.js) and gives per-preset CSS a hook should a
+// future need arise.
+$variant_preset_slug = isset( $attributes['variantPreset'] ) ? sanitize_html_class( (string) $attributes['variantPreset'] ) : '';
+if ( '' !== $variant_preset_slug ) {
+	$classes[] = 'sgs-nav-drawer--preset-' . $variant_preset_slug;
 }
 
 $wrapper_args       = array(
@@ -275,11 +446,17 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 // construction. data-sgs-nav-close is wired imperatively by the store on open.
 // 44px target + accessible name + visible focus (style.css). It is DOM-first so
 // the store's focus-into lands on a reliable close affordance.
-$close_icon = sgs_get_lucide_icon( 'x' );
+if ( 'text-swap' === $sgs_nd_close_style ) {
+	$sgs_nd_close_inner = '<span class="sgs-nav-drawer__close-text">' . esc_html__( 'Close', 'sgs-blocks' ) . '</span>';
+} elseif ( 'burger-morph' === $sgs_nd_close_style ) {
+	$sgs_nd_close_inner = '<span class="sgs-nav-drawer__close-bars" aria-hidden="true"><span></span><span></span></span>';
+} else {
+	$sgs_nd_close_inner = sgs_get_lucide_icon( 'x' ); // Trusted Lucide SVG markup.
+}
 $close_html = sprintf(
 	'<button type="button" class="sgs-nav-drawer__close" data-sgs-nav-close aria-label="%s">%s</button>',
 	esc_attr__( 'Close menu', 'sgs-blocks' ),
-	$close_icon // Trusted Lucide SVG markup.
+	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text-swap) or trusted static markup (burger-morph spans / Lucide SVG).
 );
 
 // ── Emit the scoped <style> then the dialog. wp_strip_all_tags (NOT esc_html)
