@@ -572,12 +572,100 @@ if ( ! function_exists( 'sgs_canonicalise_responsive_attrs' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_resolve_tier' ) ) {
+	/**
+	 * Canonical tier-resolver — generalised cascade for both tri-state enums and
+	 * scalar/null-marker values. Implements the contract: desktop coerces inherit→default,
+	 * tablet/mobile inherit upward (tablet→desktop, mobile→tablet).
+	 *
+	 * Supported value shapes:
+	 *   - Tri-state enum: { desktop: 'on'|'off', tablet: 'inherit'|'on'|'off', mobile: 'inherit'|'on'|'off' }
+	 *   - Scalar/null:    { desktop: <value>, tablet: <value|null>, mobile: <value|null> }
+	 *   - Non-object:     coerces to $default (D328 defence)
+	 *
+	 * @param mixed  $value   Responsive object with 'desktop', 'tablet', 'mobile' keys (or non-array).
+	 * @param string $tier    'desktop' | 'tablet' | 'mobile'.
+	 * @param mixed  $default Value to use when desktop inherits or is missing.
+	 * @return array{ value: mixed, inherited: bool } Effective value + inheritance flag.
+	 */
+	function sgs_resolve_tier( $value, $tier = 'desktop', $default = null ) {
+		// Defend against non-array/junk input (D328).
+		if ( ! is_array( $value ) ) {
+			return array(
+				'value'     => $default,
+				'inherited' => true,
+			);
+		}
+
+		// Determine if a value marks inheritance: 'inherit', null, or missing key.
+		$is_inherit = function ( $v ) {
+			return 'inherit' === $v || null === $v;
+		};
+
+		if ( 'desktop' === $tier ) {
+			// Desktop: coerce inherit to $default deterministically (§6b guard).
+			$own = $value['desktop'] ?? null;
+			if ( $is_inherit( $own ) ) {
+				return array(
+					'value'     => $default,
+					'inherited' => true,
+				);
+			}
+			return array(
+				'value'     => $own,
+				'inherited' => false,
+			);
+		}
+
+		if ( 'tablet' === $tier ) {
+			// Tablet: own value, or inherit from desktop.
+			$own = $value['tablet'] ?? null;
+			if ( $is_inherit( $own ) ) {
+				$desktop_result = sgs_resolve_tier( $value, 'desktop', $default );
+				return array(
+					'value'     => $desktop_result['value'],
+					'inherited' => true,
+				);
+			}
+			return array(
+				'value'     => $own,
+				'inherited' => false,
+			);
+		}
+
+		if ( 'mobile' === $tier ) {
+			// Mobile: own value, or inherit from tablet.
+			$own = $value['mobile'] ?? null;
+			if ( $is_inherit( $own ) ) {
+				$tablet_result = sgs_resolve_tier( $value, 'tablet', $default );
+				return array(
+					'value'     => $tablet_result['value'],
+					'inherited' => true,
+				);
+			}
+			return array(
+				'value'     => $own,
+				'inherited' => false,
+			);
+		}
+
+		// Unknown tier, fallback to $default with inherited.
+		return array(
+			'value'     => $default,
+			'inherited' => true,
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_resolve_tier_booleans' ) ) {
 	/**
 	 * Resolve a `{desktop,tablet,mobile}` BOOLEAN object into the list of tiers
 	 * where the effective value is TRUE, applying inherit-upward semantics
 	 * (mobile inherits tablet inherits desktop; an explicit `false` at a tier
 	 * means "off here", NOT "unset" — Phase-1 per-row behaviour must-fix 7).
+	 *
+	 * ⚠ Legacy function. New code should use sgs_resolve_tier() for canonical
+	 * tier resolution (supports tri-state enums, scalars, and null-markers).
 	 *
 	 * Used by sgs/site-header-row + sgs/site-footer-row to emit
 	 * `data-sgs-row-*` attrs listing only the tiers where a behaviour is ON

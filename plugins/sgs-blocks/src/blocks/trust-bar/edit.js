@@ -11,7 +11,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveControl, ShadowControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar } from '../../utils';
+import { colourVar, resolveShadowPreview } from '../../utils';
 // No-inline migration (2026-07-10): trust-bar no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // "Responsive spacing" panels write to LEGACY FLAT attrs (contentBandPaddingTop,
@@ -237,6 +237,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollPauseOnHover,
+		shadow,
 	} = attributes;
 
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
@@ -253,21 +254,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	const circleRadiusValue = ( iconCircleBorderRadius && iconCircleBorderRadius !== '50%' )
 		? iconCircleBorderRadius
 		: undefined;
-	const circleShadowValue = iconCircleShadow
-		? `var(--wp--preset--shadow--${ iconCircleShadow })`
-		: undefined;
+	const circleShadowValue = resolveShadowPreview( iconCircleShadow );
 
 	const blockProps = useBlockProps( {
 		className: blockClassName,
-		style: badgeStyle === 'icon-circle' ? {
-			'--sgs-trust-bar-gap': gapCssValue( gap ),
-			'--sgs-trust-badge-circle-size': iconCircleSize !== 44 ? `${ iconCircleSize }px` : undefined,
-			'--sgs-trust-badge-circle-bg': circleBgValue,
-			'--sgs-trust-badge-icon-colour': iconColorValue,
-			'--sgs-trust-badge-text-colour': textColorValue,
-			'--sgs-trust-badge-circle-radius': circleRadiusValue,
-			'--sgs-trust-badge-circle-shadow': circleShadowValue,
-		} : {},
+		style: {
+			...( shadow && { boxShadow: resolveShadowPreview( shadow ) } ),
+			...( badgeStyle === 'icon-circle' ? {
+				'--sgs-trust-bar-gap': gapCssValue( gap ),
+				'--sgs-trust-badge-circle-size': iconCircleSize !== 44 ? `${ iconCircleSize }px` : undefined,
+				'--sgs-trust-badge-circle-bg': circleBgValue,
+				'--sgs-trust-badge-icon-colour': iconColorValue,
+				'--sgs-trust-badge-text-colour': textColorValue,
+				'--sgs-trust-badge-circle-radius': circleRadiusValue,
+				'--sgs-trust-badge-circle-shadow': circleShadowValue,
+			} : {} ),
+		},
 	} );
 
 	const updateItem = ( index, updated ) => {
@@ -499,17 +501,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							help={ __( "CSS border-radius, e.g. '50%' (circle), '8px' (rounded square).", 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
 						/>
-						<SelectControl
+						<ShadowControl
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
 							value={ iconCircleShadow }
-							options={ [
-								{ label: __( 'None', 'sgs-blocks' ),   value: '' },
-								{ label: __( 'Small', 'sgs-blocks' ),  value: 'sm' },
-								{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
-								{ label: __( 'Large', 'sgs-blocks' ),  value: 'lg' },
-							] }
 							onChange={ ( val ) => setAttributes( { iconCircleShadow: val } ) }
-							__nextHasNoMarginBottom
 						/>
 						<DesignTokenPicker
 							label={ __( 'Icon colour', 'sgs-blocks' ) }
@@ -554,17 +549,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							help={ __( "CSS border-radius, e.g. '8px' (rounded), '50%' (circle). Leave blank for square corners.", 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
 						/>
-						<SelectControl
+						<ShadowControl
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }
 							value={ badgeImageShadow }
-							options={ [
-								{ label: __( 'None', 'sgs-blocks' ),   value: '' },
-								{ label: __( 'Small', 'sgs-blocks' ),  value: 'sm' },
-								{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
-								{ label: __( 'Large', 'sgs-blocks' ),  value: 'lg' },
-							] }
 							onChange={ ( val ) => setAttributes( { badgeImageShadow: val } ) }
-							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
 				) }
@@ -754,9 +742,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												height: `${ badgeImageSize }px`,
 												objectFit: badgeImageObjectFit === 'cover' ? 'cover' : 'contain',
 												borderRadius: badgeImageBorderRadius || undefined,
-												boxShadow: badgeImageShadow
-													? `var(--wp--preset--shadow--${ badgeImageShadow })`
-													: undefined,
+												boxShadow: resolveShadowPreview( badgeImageShadow ),
 											} }
 										/>
 									) }

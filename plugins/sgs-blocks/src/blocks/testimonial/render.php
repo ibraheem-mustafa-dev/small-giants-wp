@@ -463,7 +463,15 @@ if ( $hover_scale ) {
 	$wrapper_vars[] = '--sgs-hover-scale:' . esc_attr( (string) $hover_scale );
 }
 if ( $hover_shadow ) {
-	$wrapper_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) $hover_shadow ) ) ) . ')';
+	// FR-35-3 ShadowControl swap (2026-07-28) — shadowHover now stores either a
+	// raw box-shadow CSS string (the builder) or a bare theme shadow slug (the
+	// preset buttons), the same shape as sgs/team-member's cardShadow. The old
+	// keyword-only translation (`preg_replace` down to a slug, always wrapped
+	// in `var(--wp--preset--shadow--slug)`) is dead now that raw values are
+	// possible — sgs_shadow_value() (includes/helpers-tokens.php) already
+	// handles both shapes (raw passthrough with breakout/functional-colour
+	// sanitisation, or slug->preset-var wrap).
+	$wrapper_vars[] = '--sgs-hover-shadow:' . sgs_shadow_value( (string) $hover_shadow );
 }
 if ( $stagger_delay ) {
 	$wrapper_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';

@@ -1,0 +1,114 @@
+[
+  {
+    "name": "Case 1: tri-state enum, desktop tier, own value",
+    "value": { "desktop": "on", "tablet": "inherit", "mobile": "inherit" },
+    "tier": "desktop",
+    "default": "off",
+    "expect": { "value": "on", "inherited": false }
+  },
+  {
+    "name": "Case 2: tri-state enum, tablet tier, inherits from desktop",
+    "value": { "desktop": "on", "tablet": "inherit", "mobile": "inherit" },
+    "tier": "tablet",
+    "default": "off",
+    "expect": { "value": "on", "inherited": true }
+  },
+  {
+    "name": "Case 3: tri-state enum, mobile tier, cascades through tablet to desktop",
+    "value": { "desktop": "on", "tablet": "inherit", "mobile": "inherit" },
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "on", "inherited": true }
+  },
+  {
+    "name": "Case 4: tri-state enum, mobile tier, tablet has own value",
+    "value": { "desktop": "on", "tablet": "off", "mobile": "inherit" },
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "off", "inherited": true }
+  },
+  {
+    "name": "Case 5: tri-state enum, mobile tier, mobile has own value",
+    "value": { "desktop": "on", "tablet": "off", "mobile": "on" },
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "on", "inherited": false }
+  },
+  {
+    "name": "Case 6: tri-state enum, tablet tier, tablet has own value",
+    "value": { "desktop": "off", "tablet": "on", "mobile": "inherit" },
+    "tier": "tablet",
+    "default": "off",
+    "expect": { "value": "on", "inherited": false }
+  },
+  {
+    "name": "Case 7: tri-state enum, mobile tier, cascades through tablet",
+    "value": { "desktop": "off", "tablet": "on", "mobile": "inherit" },
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "on", "inherited": true }
+  },
+  {
+    "name": "Case 8: desktop inherit coerces to default (§6b guard)",
+    "value": { "desktop": "inherit", "tablet": "inherit", "mobile": "inherit" },
+    "tier": "desktop",
+    "default": "off",
+    "expect": { "value": "off", "inherited": true }
+  },
+  {
+    "name": "Case 9: mobile cascades through all inherits to default",
+    "value": { "desktop": "inherit", "tablet": "inherit", "mobile": "inherit" },
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "off", "inherited": true }
+  },
+  {
+    "name": "Case 10: missing desktop key coerces to default",
+    "value": { "tablet": "on", "mobile": "inherit" },
+    "tier": "desktop",
+    "default": "off",
+    "expect": { "value": "off", "inherited": true }
+  },
+  {
+    "name": "Case 11: empty object coerces to default",
+    "value": {},
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "off", "inherited": true }
+  },
+  {
+    "name": "Case 12: scalar value, mobile tier, inherits all the way",
+    "value": { "desktop": "24px", "tablet": null, "mobile": null },
+    "tier": "mobile",
+    "default": "0px",
+    "expect": { "value": "24px", "inherited": true }
+  },
+  {
+    "name": "Case 13: scalar value, mobile tier, tablet has own value",
+    "value": { "desktop": "24px", "tablet": "16px", "mobile": null },
+    "tier": "mobile",
+    "default": "0px",
+    "expect": { "value": "16px", "inherited": true }
+  },
+  {
+    "name": "Case 14: scalar value, mobile tier, mobile has own value",
+    "value": { "desktop": "24px", "tablet": null, "mobile": "8px" },
+    "tier": "mobile",
+    "default": "0px",
+    "expect": { "value": "8px", "inherited": false }
+  },
+  {
+    "name": "Case 15: scalar value, tablet tier, tablet inherits from desktop",
+    "value": { "desktop": "24px", "tablet": null, "mobile": "8px" },
+    "tier": "tablet",
+    "default": "0px",
+    "expect": { "value": "24px", "inherited": true }
+  },
+  {
+    "name": "Case 16: non-object junk input coerces to default (D328 defence)",
+    "value": "not an object",
+    "tier": "mobile",
+    "default": "off",
+    "expect": { "value": "off", "inherited": true }
+  }
+]

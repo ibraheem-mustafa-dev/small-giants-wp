@@ -13,7 +13,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsLinkControl } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 const SUBMIT_STYLE_OPTIONS = [
@@ -119,18 +119,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						rows={ 3 }
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
+					<SgsLinkControl
 						label={ __( 'Success Redirect URL', 'sgs-blocks' ) }
-						value={ successRedirect }
-						onChange={ ( value ) =>
-							setAttributes( { successRedirect: value } )
+						value={ { url: successRedirect } }
+						onChange={ ( url ) =>
+							setAttributes( { successRedirect: url } )
 						}
 						help={ __(
 							'Optional. Redirect to this URL after successful submission.',
 							'sgs-blocks'
 						) }
-						type="url"
-						__nextHasNoMarginBottom
+						searchOnly
 					/>
 					<p className="components-base-control__help">
 						{ __(

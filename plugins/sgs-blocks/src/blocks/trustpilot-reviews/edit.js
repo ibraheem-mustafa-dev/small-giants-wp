@@ -190,6 +190,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ businessUnitUrl }
 						onChange={ ( value ) => setAttributes( { businessUnitUrl: value } ) }
 						placeholder="https://uk.trustpilot.com/review/example.com"
+						type="url"
 					/>
 				</PanelBody>
 

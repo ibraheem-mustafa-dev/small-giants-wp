@@ -1,1 +1,12 @@
-{}
+{
+	"sgs/google-reviews": {
+		"raw-url-link": {
+			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable"
+		}
+	},
+	"sgs/trustpilot-reviews": {
+		"raw-url-link": {
+			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable; parsed for business ID"
+		}
+	}
+}

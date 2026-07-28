@@ -27,6 +27,7 @@ import {
 	ShadowControl,
 } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
+import { resolveShadowPreview } from '../../utils';
 // No-inline migration (2026-07-09): hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
 // per-grid-area panels write to LEGACY FLAT attrs, which would become dead
@@ -242,6 +243,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundVideo,
 		svgContent,
 		minHeight,
+		shadow,
 		badges,
 		headlineMarginBottom,
 		headlineMarginBottomMobile,
@@ -312,6 +314,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	if ( minHeight ) {
 		wrapperStyle.minHeight = minHeight;
+	}
+	if ( shadow ) {
+		wrapperStyle.boxShadow = resolveShadowPreview( shadow );
 	}
 	// HC2: desktop text-align preview for the content column.
 	// Also preview contentBackground when set.

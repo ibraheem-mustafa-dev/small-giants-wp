@@ -47,3 +47,25 @@ export function transitionVar( slug ) {
 	}
 	return `var(--wp--custom--transition--${ slug })`;
 }
+
+/**
+ * Resolve a wrapper-level `shadow` attribute to a CSS box-shadow value for
+ * editor canvas preview. Mirrors sgs_shadow_value() (includes/helpers-tokens.php):
+ * a raw CSS shadow string (built by ShadowControl) passes through unchanged;
+ * a bare theme slug (legacy sm/md/lg/glow) is wrapped in the preset var().
+ *
+ * Shared by every block whose wrapper mirrors sgs/container's `shadow`
+ * capability (R-31-9 composite-mirror rule) — container, hero, trust-bar,
+ * cta-section — so the editor canvas preview stays in sync across all of
+ * them rather than each block re-implementing (or omitting) the same logic.
+ *
+ * @param {string} value Stored `shadow` attribute value.
+ * @return {string|undefined} CSS box-shadow value, or undefined when empty.
+ */
+export function resolveShadowPreview( value ) {
+	if ( ! value ) {
+		return undefined;
+	}
+	const isRaw = /^var\(|^inset|^rgb|^0 |^\d/.test( value );
+	return isRaw ? value : `var(--wp--preset--shadow--${ value })`;
+}

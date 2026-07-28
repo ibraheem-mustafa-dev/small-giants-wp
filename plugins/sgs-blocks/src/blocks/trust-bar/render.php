@@ -114,8 +114,12 @@ if ( 'icon-circle' === $badge_style ) {
 		$styles[]    = '--sgs-trust-badge-circle-radius: ' . esc_attr( trim( $safe_radius ) );
 	}
 	// Shadow: only emit when non-empty (empty string = resets to CSS default).
-	if ( '' !== $icon_circle_shadow ) {
-		$styles[] = '--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--' . esc_attr( sanitize_html_class( $icon_circle_shadow ) ) . ')';
+	// sgs_shadow_value() accepts either a preset slug (sm/md/lg/glow) — wrapped
+	// in var(--wp--preset--shadow--{slug}) — or a raw CSS box-shadow string
+	// built by ShadowControl, which passes through (sanitised) unchanged.
+	$safe_icon_circle_shadow = sgs_shadow_value( $icon_circle_shadow );
+	if ( '' !== $safe_icon_circle_shadow ) {
+		$styles[] = '--sgs-trust-badge-circle-shadow: ' . $safe_icon_circle_shadow;
 	}
 }
 
@@ -290,11 +294,13 @@ if ( 'image-badge' === $badge_style ) {
 		$img_decls[]     = 'border-radius:' . esc_attr( trim( $safe_img_radius ) );
 	}
 
-	// Allowlist against the real preset roster the SelectControl offers (sm/md/lg),
-	// mirroring the object-fit fallback above — a stale/invalid stored value must fall
-	// back to "no shadow", never emit a dead --wp--preset--shadow--* var reference.
-	if ( in_array( $badge_image_shadow, array( 'sm', 'md', 'lg' ), true ) ) {
-		$img_decls[] = 'box-shadow:var(--wp--preset--shadow--' . esc_attr( $badge_image_shadow ) . ')';
+	// sgs_shadow_value() accepts either a preset slug (sm/md/lg/glow) — wrapped
+	// in var(--wp--preset--shadow--{slug}) — or a raw CSS box-shadow string
+	// built by ShadowControl, which passes through (sanitised) unchanged; an
+	// empty/invalid stored value resolves to '' so no declaration is emitted.
+	$safe_badge_image_shadow = sgs_shadow_value( $badge_image_shadow );
+	if ( '' !== $safe_badge_image_shadow ) {
+		$img_decls[] = 'box-shadow:' . $safe_badge_image_shadow;
 	}
 
 	$tb_extra_scoped_css .= $img_sel . '{' . implode( ';', $img_decls ) . '}';

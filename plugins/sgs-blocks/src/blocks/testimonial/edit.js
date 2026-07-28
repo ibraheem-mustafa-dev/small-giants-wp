@@ -25,7 +25,7 @@ import {
 	BaseControl,
 	__experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, ShadowControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
@@ -769,24 +769,12 @@ export default function Edit( { attributes, setAttributes, context } ) {
 							) }
 							__nextHasNoMarginBottom
 						/>
-						<SelectControl
+						<ShadowControl
 							label={ __( 'Hover shadow', 'sgs-blocks' ) }
 							value={ shadowHover }
-							options={ [
-								{ label: __( 'None', 'sgs-blocks' ), value: '' },
-								{ label: __( 'Small', 'sgs-blocks' ), value: 'sm' },
-								{ label: __( 'Medium', 'sgs-blocks' ), value: 'md' },
-								{ label: __( 'Large', 'sgs-blocks' ), value: 'lg' },
-								{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-							] }
 							onChange={ ( val ) =>
 								setAttributes( { shadowHover: val } )
 							}
-							help={ __(
-								'Shadow elevation applied on hover (theme shadow preset).',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
 						/>
 				</PanelBody>
 

@@ -83,12 +83,22 @@ function flagsToRel( { nofollow, sponsored, opensInNewTab } ) {
 
 /**
  * @param {Object}   props
- * @param {string}   props.label    Field label.
- * @param {string}   [props.help]   Help text (rendered via aria-describedby).
- * @param {Object}   props.value    Stored link value: { url, opensInNewTab, rel }.
- * @param {Function} props.onChange Receives the next { url, opensInNewTab, rel } object.
+ * @param {string}   props.label       Field label.
+ * @param {string}   [props.help]      Help text (rendered via aria-describedby).
+ * @param {Object}   props.value       Stored link value: { url, opensInNewTab, rel }.
+ *                                     In `searchOnly` mode, only `value.url` is read.
+ * @param {Function} props.onChange    Receives the next { url, opensInNewTab, rel }
+ *                                     object — or, in `searchOnly` mode, the next
+ *                                     url STRING directly.
+ * @param {boolean}  [props.searchOnly] Opt-in variant for plain string-URL attributes
+ *                                     that have no new-tab/rel concept (e.g. a form's
+ *                                     internal `successRedirect` target). Renders
+ *                                     LinkControl with `settings={ [] }` — no
+ *                                     open-in-new-tab / nofollow / sponsored toggles —
+ *                                     and `onChange` forwards only the url string, not
+ *                                     an object. The attribute stays a plain string.
  */
-export default function SgsLinkControl( { label, help, value, onChange } ) {
+export default function SgsLinkControl( { label, help, value, onChange, searchOnly = false } ) {
 	const relFlags = relToFlags( value?.rel );
 	const linkValue = {
 		url: value?.url || '',
@@ -98,6 +108,11 @@ export default function SgsLinkControl( { label, help, value, onChange } ) {
 	};
 
 	const handleChange = ( next ) => {
+		if ( searchOnly ) {
+			onChange( next.url || '' );
+			return;
+		}
+
 		const opensInNewTab = !! next.opensInNewTab;
 		const rel = flagsToRel( {
 			nofollow: !! next.nofollow,
@@ -117,7 +132,7 @@ export default function SgsLinkControl( { label, help, value, onChange } ) {
 			<LinkControl
 				searchInputPlaceholder={ __( 'Search or paste a URL', 'sgs-blocks' ) }
 				value={ linkValue }
-				settings={ LINK_SETTINGS }
+				settings={ searchOnly ? [] : LINK_SETTINGS }
 				onChange={ handleChange }
 				forceIsEditingLink={ ! linkValue.url }
 			/>

@@ -26,7 +26,7 @@ export const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
  * (FR-S9-6 canonicalisation contract, STOP-NO-KSORT). Always route object-model
  * writes through this helper so the order can never drift.
  *
- * @param {Object} obj  Partial or full tier object (any key order / missing tiers).
+ * @param {Object} obj Partial or full tier object (any key order / missing tiers).
  * @return {Object} New object with keys in desktop→tablet→mobile order.
  */
 export function makeResponsive( obj = {} ) {
@@ -57,33 +57,84 @@ export function makeBoxSides( sides = {} ) {
 }
 
 /**
- * Resolve the EFFECTIVE value of a responsive object at a tier (editor preview /
- * inherited-indicator). Mirrors the PHP cascade: `tier ?? tier_above ?? desktop`.
- * `desktop` is always concrete; a blank/absent tier inherits upward.
+ * Canonical tier-resolver for tri-state enums and scalar values.
  *
- * @param {Object} obj      Responsive object `{desktop,tablet,mobile}`.
- * @param {string} tier     'desktop' | 'tablet' | 'mobile'.
- * @return {{value: *, inherited: boolean}} Effective value + whether it is
- *         inherited (i.e. this tier has no own value).
+ * Implements the contract: desktop coerces inherit to default, tablet/mobile
+ * inherit upward (tablet from desktop, mobile from tablet).
+ *
+ * Supported value shapes:
+ *   - Tri-state enum: { desktop: 'on'|'off', tablet: 'inherit'|'on'|'off', mobile: 'inherit'|'on'|'off' }
+ *   - Scalar/null:    { desktop: <value>, tablet: <value|null>, mobile: <value|null> }
+ *   - Non-object:     coerces to defaultValue (D328 defence)
+ *
+ * @param {Object} value        Responsive object or non-object.
+ * @param {string} tier         'desktop' | 'tablet' | 'mobile'.
+ * @param {*}      defaultValue Value when desktop inherits or is missing.
+ * @return {{value: *, inherited: boolean}} Effective value + inheritance flag.
+ */
+export function resolveTier( value, tier = 'desktop', defaultValue ) {
+	// Defend against non-object/junk input (D328).
+	if ( typeof value !== 'object' || value === null ) {
+		return { value: defaultValue, inherited: true };
+	}
+
+	// Determine if a value marks inheritance: 'inherit', null, or undefined.
+	const isInherit = ( v ) => v === 'inherit' || v === null || v === undefined;
+
+	if ( tier === 'desktop' ) {
+		// Desktop: coerce inherit to defaultValue deterministically (§6b guard).
+		const own = value.desktop;
+		if ( isInherit( own ) ) {
+			return { value: defaultValue, inherited: true };
+		}
+		return { value: own, inherited: false };
+	}
+
+	if ( tier === 'tablet' ) {
+		// Tablet: own value, or inherit from desktop.
+		const own = value.tablet;
+		if ( isInherit( own ) ) {
+			const desktopResult = resolveTier( value, 'desktop', defaultValue );
+			return { value: desktopResult.value, inherited: true };
+		}
+		return { value: own, inherited: false };
+	}
+
+	if ( tier === 'mobile' ) {
+		// Mobile: own value, or inherit from tablet.
+		const own = value.mobile;
+		if ( isInherit( own ) ) {
+			const tabletResult = resolveTier( value, 'tablet', defaultValue );
+			return { value: tabletResult.value, inherited: true };
+		}
+		return { value: own, inherited: false };
+	}
+
+	// Unknown tier, fallback to defaultValue with inherited.
+	return { value: defaultValue, inherited: true };
+}
+
+/**
+ * Legacy wrapper over resolveTier (scalar/null-marker family).
+ *
+ * Maintains the original semantics: empty string marks absence and inherits
+ * upward. Resolves the EFFECTIVE value of a responsive object at a tier
+ * (editor preview / inherited-indicator).
+ *
+ * @param {Object} obj  Responsive object `{desktop,tablet,mobile}`.
+ * @param {string} tier 'desktop' | 'tablet' | 'mobile'.
+ * @return {{value: *, inherited: boolean}} Effective value + whether inherited.
  */
 export function resolveResponsiveTier( obj = {}, tier = 'desktop' ) {
-	const own = obj?.[ tier ];
-	const hasOwn = own !== undefined && own !== null && own !== '';
-	if ( tier === 'mobile' ) {
-		if ( hasOwn ) {
-			return { value: own, inherited: false };
-		}
-		const tab = resolveResponsiveTier( obj, 'tablet' );
-		return { value: tab.value, inherited: true };
-	}
-	if ( tier === 'tablet' ) {
-		if ( hasOwn ) {
-			return { value: own, inherited: false };
-		}
-		return { value: obj?.desktop ?? '', inherited: true };
-	}
-	// desktop — always concrete (its own value, never inherited).
-	return { value: hasOwn ? own : '', inherited: false };
+	// Map the legacy '' (empty-string) convention to null for the canonical resolver.
+	const normalized = {};
+	RESPONSIVE_TIERS.forEach( ( t ) => {
+		const val = obj[ t ];
+		normalized[ t ] = val === '' ? null : val;
+	} );
+
+	// Use the canonical resolver with '' as the default (preserving legacy behaviour).
+	return resolveTier( normalized, tier, '' );
 }
 
 export function responsiveClasses( attributes ) {

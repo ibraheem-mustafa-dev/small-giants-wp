@@ -9,6 +9,7 @@ import {
   SelectControl,
 } from "@wordpress/components";
 import { ResponsiveControl, ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from "../../components";
+import { resolveShadowPreview } from "../../utils";
 import {
   LayoutPanel,
   WidthPanel,
@@ -55,23 +56,6 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Footer", "sgs-blocks" ), value: "footer" },
   { label: __( "Figure", "sgs-blocks" ), value: "figure" },
 ];
-
-/**
- * Resolve the `shadow` attribute to a CSS box-shadow value for the editor
- * preview. Mirrors sgs_shadow_value() (includes/helpers-tokens.php): a raw
- * CSS shadow string (built by ShadowControl) passes through unchanged; a
- * bare theme slug (legacy sm/md/lg/glow) is wrapped in the preset var().
- *
- * @param {string} value Stored `shadow` attribute value.
- * @return {string|undefined} CSS box-shadow value, or undefined when empty.
- */
-function resolveShadowPreview( value ) {
-  if ( ! value ) {
-    return undefined;
-  }
-  const isRaw = /^var\(|^inset|^rgb|^0 |^\d/.test( value );
-  return isRaw ? value : `var(--wp--preset--shadow--${ value })`;
-}
 
 const TEMPLATE_MODE_OPTIONS = [
   { label: __("Free (no restrictions)", "sgs-blocks"), value: "free" },

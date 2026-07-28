@@ -223,26 +223,17 @@ to guaranteed pairings (surface bg / text headings / primary numbers / text-mute
 1.5.50. Live check at the next canary look. Archived 2026-07-28 to memory/parking-archive.md. -->
 
 
-> **P-HERO-TRUSTBAR-SHADOW-NO-EDITOR-PREVIEW** — NEW 2026-07-28 (surfaced by the T2.2b D388 pass;
-> PRE-EXISTING preview gap, not a T2.2b regression). `sgs/hero` + `sgs/trust-bar`: the wrapper-level
-> `shadow` attr saves correctly and **renders correctly on the frontend**, but the editor CANVAS
-> never shows it (computed `boxShadow: none` before and after save/reload) — an operator cannot see
-> the shadow while editing. `sgs/container`'s canvas DOES preview it because its edit.js paints its
-> own preview (`resolveShadowPreview()`, added at `fe20df4e`); hero/trust-bar edit.js never had
-> preview code for wrapper-level shadow (their canvas is JS-built and ignores it). **Bean context
-> (2026-07-28): almost certainly because DYNAMIC editor previews were deliberately turned OFF for
-> these blocks — the rendering settings produced errors when dynamic previews were on — leaving a
-> hand-built JS preview that never covered wrapper-delegated styles. The fix session should first
-> check whether re-enabling a server-rendered preview (ServerSideRender per the
-> `ssr-fixes-hand-built-preview-drift` memory) is now viable before extending the hand-built
-> preview.** Evidence:
-> `reports/visual-diff/shadow-hero-editor-canvas-2026-07-28.png` (attr set, no shadow) vs
-> `shadow-hero-frontend-2026-07-28.png` (correct). **To close:** apply the same
-> `resolveShadowPreview()` pattern to hero + trust-bar edit.js preview styles (or, better, a shared
-> editor-preview helper for wrapper-delegated styles — check which OTHER wrapper consumers have the
-> same gap before fixing two blocks; R-31-9). Client-experience relevance: Spec 35's "editor is the
-> product" principle makes this worth an early wave. **Status: OPEN** · **Bucket:** Blocks ·
-> **Trigger:** next Spec 35 wave session (T3/T4 window).
+<!-- P-HERO-TRUSTBAR-SHADOW-NO-EDITOR-PREVIEW — RESOLVED same day (2026-07-28, delegate-routed
+Sonnet dispatch). Root cause PROVEN (and Bean's dynamic-preview-was-disabled hypothesis DISPROVEN
+with evidence: no ServerSideRender remnants or history in either block — grep + git log clean):
+hero's wrapperStyle builder and trust-bar's blockProps style builder simply never read the
+`shadow` attr; frontend rendered it via the wrapper, canvas ignored it. Fix: container's
+resolveShadowPreview() extracted to the shared util src/utils/tokens.js and wired into hero,
+trust-bar AND cta-section (same gap found by the sweep, fixed inline the same session);
+trust-bar's two sub-shadow presets also swapped to ShadowControl with render-side
+sgs_shadow_value() routing. card-grid (native supports.shadow) + site-header (unrelated enum)
+confirmed unaffected. Canvas verification at the wave-close D388 round. Archived 2026-07-28 to
+memory/parking-archive.md. -->
 
 > **P-ROLE-AND-CSSPROP-ARE-PERPENDICULAR-AXES** — NEW 2026-07-21. **Investigation result that REVERSES a standing assumption — read before "fixing" `role`.** The handoff treated `role` as fuzzy/name-derived and therefore suspect. Measured on the 290 rows where `role` AND `css_property` are both populated: **exactly 2 genuine disagreements (0.7%)**, both `sgs/option-picker` `pillBorderRadius`/`pillSelectedBorderRadius` (`role='typography'`, truly `border-radius` — the known `pill*` name-collision; **css_property is correct, role is wrong, cheap 2-row fix**). Everything else agrees. **`role` is ~99% accurate wherever it can be checked.** Caveat that must travel with that number: coverage is only 290 of `role`'s 977 populated rows (30%), so this is 99% on the measurable third, not a clean bill of health.
 >

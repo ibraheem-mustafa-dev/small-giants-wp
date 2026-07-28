@@ -12,6 +12,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
+import { resolveShadowPreview } from '../../utils/tokens';
 import { ResponsiveBoxControl, DesignTokenPicker, ShadowControl } from '../../components';
 // No-inline migration (2026-07-09): cta-section no longer uses the default
 // <ContainerWrapperControls> aggregator wholesale — its ResponsiveSpacingPanel /
@@ -111,6 +112,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		wrapperStyle.backgroundImage = `url(${ activeMedia.url })`;
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
+	}
+	// Editor-canvas parity for the wrapper-level shadow — same gap class as
+	// hero/trust-bar (the hand-built preview never read `shadow`; frontend
+	// renders it via SGS_Container_Wrapper). Shared resolver handles preset
+	// slugs AND raw ShadowControl CSS.
+	const shadowPreview = resolveShadowPreview( attributes.shadow );
+	if ( shadowPreview ) {
+		wrapperStyle.boxShadow = shadowPreview;
 	}
 
 	const blockProps = useBlockProps( {
