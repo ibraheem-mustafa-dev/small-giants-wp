@@ -21,6 +21,7 @@
 		"sgs": {
 			"containerKind": "content",
 			"containerMirror": false,
+			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ],
 			"elements": {
 				"dialog": {
 					"label": "Drawer container",

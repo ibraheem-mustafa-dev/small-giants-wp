@@ -17,6 +17,7 @@
 		"sgs": {
 			"headerEssential": true,
 			"containerKind": "layout",
+			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ],
 			"elements": {
 				"wrapper": {
 					"label": "Nav wrapper",
