@@ -58,8 +58,31 @@ function inject_parallax_attributes( string $block_content, array $block ): stri
 	// Determine the CSS class to add.
 	$css_class = 'background' === $type ? 'sgs-parallax-background' : 'sgs-parallax-element';
 
-	// Use WP_HTML_Tag_Processor for safe, standards-compliant manipulation.
-	$processor = new \WP_HTML_Tag_Processor( $block_content );
+	// --- Locate the block's actual ROOT element. ---
+	// The no-inline styling contract (Spec 32, D293-D296) has every composite
+	// using SGS_Container_Wrapper — and several blocks directly — PREPEND a
+	// scoped `<style id="…">…</style>` tag before their real wrapper element.
+	// WP_HTML_Tag_Processor::next_tag() matches ANY tag, including <style>, so
+	// calling it on the raw $block_content lands on the leading <style> tag
+	// and writes the parallax class/vars onto it — inert, then stripped by the
+	// p99 CSS-lift filter (sgs_lift_block_css, class-sgs-css-registry.php).
+	// Same root cause + fix shape as hover-effects.php / device-visibility.php.
+	$sgs_root_offset = 0;
+	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $sgs_root_offset ), $sgs_lead_match ) ) {
+		$sgs_close_tag = '</' . strtolower( $sgs_lead_match[1] ) . '>';
+		$sgs_close_pos = stripos( $block_content, $sgs_close_tag, $sgs_root_offset );
+		if ( false === $sgs_close_pos ) {
+			break; // Malformed markup — bail out, treat the whole string as-is.
+		}
+		$sgs_root_offset = $sgs_close_pos + strlen( $sgs_close_tag );
+	}
+
+	$sgs_head = substr( $block_content, 0, $sgs_root_offset );
+	$sgs_root = substr( $block_content, $sgs_root_offset );
+
+	// Use WP_HTML_Tag_Processor for safe, standards-compliant manipulation,
+	// scoped to the substring starting at the real root tag.
+	$processor = new \WP_HTML_Tag_Processor( $sgs_root );
 
 	if ( ! $processor->next_tag() ) {
 		// Could not find a root tag — return unchanged.
@@ -84,5 +107,5 @@ function inject_parallax_attributes( string $block_content, array $block ): stri
 	// Add data attribute for the JS fallback to target.
 	$processor->set_attribute( 'data-sgs-parallax', $type );
 
-	return $processor->get_updated_html();
+	return $sgs_head . $processor->get_updated_html();
 }

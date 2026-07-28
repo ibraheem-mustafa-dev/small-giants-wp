@@ -391,7 +391,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									</div>
 								) }
 
-								{ plan.ribbonText && (
+								{ /* Single-choice marker semantics — mirrors render.php: the
+									 badge (highlighted) and ribbon (ribbonText) both render
+									 top-right on the card, so showing both at once looks like
+									 two "popular" labels stacked on the same plan. Badge wins;
+									 the ribbon is suppressed while highlighted is on. */ }
+								{ plan.ribbonText && ! plan.highlighted && (
 									<div
 										className="sgs-pricing-table__ribbon"
 										style={ {
@@ -521,6 +526,11 @@ export default function Edit( { attributes, setAttributes } ) {
 											updatePlan( planIndex, 'ribbonText', val )
 										}
 										placeholder={ __( 'e.g. Best value', 'sgs-blocks' ) }
+										help={
+											plan.highlighted
+												? __( 'Hidden while "Highlight this plan" is on — the popular badge already marks this card.', 'sgs-blocks' )
+												: undefined
+										}
 										__nextHasNoMarginBottom
 									/>
 									{ plan.ribbonText && (

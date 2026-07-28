@@ -81,8 +81,34 @@ function inject_animation_attributes( string $block_content, array $block ): str
 	$duration = $attrs['sgsAnimationDuration'] ?? 'medium';
 	$easing   = $attrs['sgsAnimationEasing'] ?? 'default';
 
-	// Use WP_HTML_Tag_Processor for safe attribute injection.
-	$processor = new \WP_HTML_Tag_Processor( $block_content );
+	// --- Locate the block's actual ROOT element. ---
+	// The no-inline styling contract (Spec 32, D293-D296) has every composite
+	// using SGS_Container_Wrapper — and several blocks directly — PREPEND a
+	// scoped `<style id="…">…</style>` tag before their real wrapper element.
+	// WP_HTML_Tag_Processor::next_tag() matches ANY tag, including <style>, so
+	// calling it on the raw $block_content lands on the leading <style> tag and
+	// writes data-sgs-animation* onto it — inert (style tags aren't visually
+	// targetable) and later stripped wholesale by the p99 CSS-lift filter
+	// (sgs_lift_block_css, class-sgs-css-registry.php), so the animation never
+	// fires. Same root cause + fix shape as the hover-effects.php overlay bug
+	// (device-visibility.php's skip-loop is the original proven pattern).
+	$sgs_root_offset = 0;
+	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $sgs_root_offset ), $sgs_lead_match ) ) {
+		$sgs_close_tag = '</' . strtolower( $sgs_lead_match[1] ) . '>';
+		$sgs_close_pos = stripos( $block_content, $sgs_close_tag, $sgs_root_offset );
+		if ( false === $sgs_close_pos ) {
+			break; // Malformed markup — bail out, treat the whole string as-is.
+		}
+		$sgs_root_offset = $sgs_close_pos + strlen( $sgs_close_tag );
+	}
+
+	// Use WP_HTML_Tag_Processor for safe attribute injection, scoped to the
+	// substring starting at the real root tag so <style>/<script> is never
+	// mistaken for it.
+	$sgs_head = substr( $block_content, 0, $sgs_root_offset );
+	$sgs_root = substr( $block_content, $sgs_root_offset );
+
+	$processor = new \WP_HTML_Tag_Processor( $sgs_root );
 
 	if ( $processor->next_tag() ) {
 		// Only add if not already present (static blocks may already have them).
@@ -93,7 +119,7 @@ function inject_animation_attributes( string $block_content, array $block ): str
 			$processor->set_attribute( 'data-sgs-animation-easing', esc_attr( $easing ) );
 		}
 
-		return $processor->get_updated_html();
+		return $sgs_head . $processor->get_updated_html();
 	}
 
 	return $block_content;

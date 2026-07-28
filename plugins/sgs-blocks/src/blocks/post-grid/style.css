@@ -40,8 +40,28 @@
 	gap: var( --sgs-gap );
 }
 
+/*
+ * Post Grid's item count comes from a live WP_Query, not operator-authored
+ * content — a QC/dev site (or a category filter) can legitimately return
+ * fewer posts than the declared column count. `repeat(N, 1fr)` always
+ * creates N tracks regardless of child count, so 1 post in a 3-column grid
+ * renders squished into the first 1/3-width track with 2/3 of the row left
+ * blank (#post-grid-squish, verified live on QC page 1849, block instance
+ * carries zero explicit attrs -> layout=grid/columns=3 defaults, only 1
+ * published post on the QC site).
+ *
+ * Fix: the "RAM" (Repeat/Auto/Minmax) pattern. The minmax lower bound is
+ * calculated to equal exactly the per-column width `repeat(N, 1fr)` would
+ * have produced, so with >= N items the rendered result is IDENTICAL to
+ * before (still exactly N equal columns). `auto-fit` collapses any tracks
+ * that have no content to fill them, so with < N items the existing tracks
+ * stretch (via `1fr`) to fill the row instead of leaving dead space.
+ */
 .sgs-post-grid--grid .sgs-post-grid__inner {
-	grid-template-columns: repeat( var( --sgs-columns ), 1fr );
+	grid-template-columns: repeat(
+		auto-fit,
+		minmax( calc( ( 100% - ( var( --sgs-columns ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns ) ), 1fr )
+	);
 }
 
 /* ==========================================================================

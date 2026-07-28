@@ -163,6 +163,32 @@ function inject_hover_effects( string $block_content, array $block ): string {
 
 	require_once __DIR__ . '/render-helpers.php';
 
+	// --- Locate the block's actual ROOT element. ---
+	// The no-inline styling contract (Spec 32, D293-D296) has every composite
+	// using SGS_Container_Wrapper — and several blocks directly — PREPEND a
+	// scoped `<style id="…">…</style>` tag before their real wrapper element
+	// (e.g. sgs/card-grid, sgs/hero). Every injection below used to assume
+	// $block_content's FIRST TAG is the block's root, which broke the moment
+	// a leading <style> tag existed: the class landed on the <style> tag
+	// (invisible — style tags aren't visually targetable), the CSS-var
+	// injection wrote a nonsense style="" ATTRIBUTE onto the <style> ELEMENT,
+	// and the block-link overlay got inserted as literal TEXT inside
+	// <style>…</style> — which Stage 99's CSS-lift filter (sgs_lift_block_css,
+	// class-sgs-css-registry.php) then strips wholesale, so the overlay never
+	// reached the DOM at all. Proven live on sandybrown page 1849, 2026-07-28.
+	// Mirrors the proven fix already shipped in device-visibility.php's
+	// inject_device_visibility_classes() — skip every leading <style>/<script>
+	// block to find the real wrapper tag, universally, for any block.
+	$sgs_root_offset = 0;
+	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $sgs_root_offset ), $sgs_lead_match ) ) {
+		$sgs_close_tag = '</' . strtolower( $sgs_lead_match[1] ) . '>';
+		$sgs_close_pos = stripos( $block_content, $sgs_close_tag, $sgs_root_offset );
+		if ( false === $sgs_close_pos ) {
+			break; // Malformed markup — bail out, treat the whole string as-is.
+		}
+		$sgs_root_offset = $sgs_close_pos + strlen( $sgs_close_tag );
+	}
+
 	// --- Build CSS custom properties. ---
 	$css_vars = array();
 
@@ -258,46 +284,55 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$add_classes[] = 'sgs-has-click-ripple';
 	}
 
-	// --- Inject classes into the first tag. ---
+	// --- Inject classes into the ROOT tag (never the leading <style>/<script>). ---
+	// Regexes below are anchored to $sgs_root (the substring starting at the
+	// real wrapper), not $block_content, so a prepended scoped <style> tag
+	// (see $sgs_root_offset above) is never mistaken for the root.
 	if ( $add_classes ) {
 		$classes_str = implode( ' ', $add_classes );
+		$sgs_head    = substr( $block_content, 0, $sgs_root_offset );
+		$sgs_root    = substr( $block_content, $sgs_root_offset );
 		// Append to existing class="..." attribute.
-		if ( preg_match( '/^(<\w+\b[^>]*\bclass=["\'])/', $block_content ) ) {
-			$block_content = preg_replace(
+		if ( preg_match( '/^(<\w+\b[^>]*\bclass=["\'])/', $sgs_root ) ) {
+			$sgs_root = preg_replace(
 				'/^(<\w+\b[^>]*\bclass=["\'])/',
 				'$1' . $classes_str . ' ',
-				$block_content,
+				$sgs_root,
 				1
 			);
 		} else {
 			// No class attribute yet; add one.
-			$block_content = preg_replace(
+			$sgs_root = preg_replace(
 				'/^(<\w+)(\b)/',
 				'$1 class="' . $classes_str . '"$2',
-				$block_content,
+				$sgs_root,
 				1
 			);
 		}
+		$block_content = $sgs_head . $sgs_root;
 	}
 
-	// --- Inject CSS custom properties into inline style. ---
+	// --- Inject CSS custom properties into inline style (ROOT tag only). ---
 	if ( $css_vars ) {
-		$css_str = implode( ';', $css_vars );
-		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $block_content ) ) {
-			$block_content = preg_replace(
+		$css_str  = implode( ';', $css_vars );
+		$sgs_head = substr( $block_content, 0, $sgs_root_offset );
+		$sgs_root = substr( $block_content, $sgs_root_offset );
+		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $sgs_root ) ) {
+			$sgs_root = preg_replace(
 				'/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/',
 				'$1style="$2;' . esc_attr( $css_str ) . '"',
-				$block_content,
+				$sgs_root,
 				1
 			);
 		} else {
-			$block_content = preg_replace(
+			$sgs_root = preg_replace(
 				'/^(<\w+)(\b)/',
 				'$1 style="' . esc_attr( $css_str ) . '"$2',
-				$block_content,
+				$sgs_root,
 				1
 			);
 		}
+		$block_content = $sgs_head . $sgs_root;
 	}
 
 	// --- Inject the block-link overlay as the block root's LAST CHILD. ---
@@ -330,16 +365,20 @@ function inject_hover_effects( string $block_content, array $block ): string {
 			$target_attr
 		);
 
-		// Locate the root element's own closing tag (the LAST occurrence of
-		// its tag name's closing tag in the markup — always correct for a
-		// single top-level root, since every child closes before it does)
-		// and insert the overlay immediately before it, making it the root's
-		// final child rather than a wrapper around the whole subtree.
-		if ( preg_match( '/^<([a-zA-Z][a-zA-Z0-9-]*)\b/', $block_content, $root_tag_match ) ) {
+		// Locate the ROOT element's own closing tag (the LAST occurrence of
+		// its tag name's closing tag WITHIN $sgs_root — never within a
+		// prepended <style>/<script> block, which would otherwise be
+		// mistaken for the root and swallow the overlay as inert CSS text,
+		// see $sgs_root_offset above) and insert the overlay immediately
+		// before it, making it the root's final child rather than a wrapper
+		// around the whole subtree.
+		$sgs_root = substr( $block_content, $sgs_root_offset );
+		if ( preg_match( '/^<([a-zA-Z][a-zA-Z0-9-]*)\b/', $sgs_root, $root_tag_match ) ) {
 			$root_close_tag = '</' . $root_tag_match[1] . '>';
-			$root_close_pos = strrpos( $block_content, $root_close_tag );
+			$root_close_pos = strrpos( $sgs_root, $root_close_tag );
 			if ( false !== $root_close_pos ) {
-				$block_content = substr_replace( $block_content, $overlay_html, $root_close_pos, 0 );
+				$sgs_root      = substr_replace( $sgs_root, $overlay_html, $root_close_pos, 0 );
+				$block_content = substr( $block_content, 0, $sgs_root_offset ) . $sgs_root;
 			}
 		}
 	}

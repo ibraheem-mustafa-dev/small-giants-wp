@@ -149,6 +149,17 @@
 	min-height: 2.5em;
 }
 
+/* [hidden] restores the browser's UA default (display:none) that
+   `.sgs-pricing-table__price{display:flex}` above (an author-origin rule)
+   otherwise silently wins over regardless of source order — an author
+   `display` declaration on the SAME element always beats the UA stylesheet's
+   `[hidden]{display:none}`, so the yearly price stayed visible even with the
+   `hidden` attribute set by render.php / toggled by view.js. Higher
+   specificity ([class][attr] = 0,2,0) restores hide-on-toggle. */
+.sgs-pricing-table__price[hidden] {
+	display: none;
+}
+
 .sgs-pricing-table__feature {
 	position: relative;
 	padding: 0.75rem 0 0.75rem 2rem;
@@ -335,6 +346,13 @@
 	color: var(--wp--preset--color--white, #fff);
 	background-color: var(--wp--preset--color--success, #2e7d4f);
 	letter-spacing: 0.01em;
+}
+
+/* Same [hidden]-vs-author-display override as .sgs-pricing-table__price
+   above — render.php always renders this `hidden` (view.js reveals it only
+   when the yearly period is active), so it must stay hidden until then. */
+.sgs-pricing-table__savings-badge[hidden] {
+	display: none;
 }
 
 /* ── Billing toggle ─────────────────────────────────────────────────────── */

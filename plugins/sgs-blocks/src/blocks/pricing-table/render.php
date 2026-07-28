@@ -205,8 +205,19 @@ foreach ( $plans as $plan ) {
 	// scoped rule. Contract §A allows a `--custom-property: value` VALUE
 	// inline (not a property declaration) — write the resolved colour as a CSS
 	// var; style.css/the scoped rule below reads `background-color:var(--sgs-pt-ribbon-bg)`.
+	//
+	// Single-choice marker semantics (P-PRICING-TABLE-DUAL-POPULAR-MARKER,
+	// 2026-07-28): the badge (driven by $plan_highlighted) and the ribbon
+	// (driven by $plan_ribbon_text) are BOTH absolutely-positioned top-right
+	// on the card (style.css .sgs-pricing-table__badge / __ribbon), so a plan
+	// that is highlighted AND carries ribbon text renders two overlapping
+	// markers — exactly the default "Professional" plan shipped both
+	// highlighted:true and ribbonText:"Most popular". Badge wins (it is the
+	// dedicated "this is the plan" signal); the ribbon is a general-purpose
+	// banner (e.g. "Best value") and is suppressed while the badge is showing
+	// so only one marker is ever visible per card.
 	$ribbon_html = '';
-	if ( $plan_ribbon_text ) {
+	if ( $plan_ribbon_text && ! $plan_highlighted ) {
 		$ribbon_style = $plan_ribbon_colour
 			? ' style="--sgs-pt-ribbon-bg:' . $colour_val( $plan_ribbon_colour ) . '"'
 			: '';

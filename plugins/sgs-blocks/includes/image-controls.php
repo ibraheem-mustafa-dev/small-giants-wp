@@ -141,46 +141,77 @@ function inject_image_controls( string $block_content, array $block ): string {
 		$css_vars[] = '--sgs-height-mobile:' . $height_mobile . $height_unit;
 	}
 
-	// --- Inject class sgs-has-image-controls into the first element. ---
+	// --- Locate the block's actual ROOT element. ---
+	// The no-inline styling contract (Spec 32, D293-D296) has every composite
+	// using SGS_Container_Wrapper — and several blocks directly — PREPEND a
+	// scoped `<style id="…">…</style>` tag before their real wrapper element.
+	// The regexes below used to be anchored at `^` against the RAW
+	// $block_content, assuming the first tag is the block's root — which broke
+	// the moment a leading <style> tag existed: the class landed on the
+	// <style> tag (invisible), and the CSS-var injection wrote a nonsense
+	// style="" attribute onto the <style> element, both then stripped by the
+	// p99 CSS-lift filter (sgs_lift_block_css, class-sgs-css-registry.php).
+	// Same root cause + fix shape as hover-effects.php / device-visibility.php
+	// / animation-attributes.php / parallax.php — skip every leading
+	// <style>/<script> block to find the real wrapper tag.
+	$sgs_root_offset = 0;
+	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $sgs_root_offset ), $sgs_lead_match ) ) {
+		$sgs_close_tag = '</' . strtolower( $sgs_lead_match[1] ) . '>';
+		$sgs_close_pos = stripos( $block_content, $sgs_close_tag, $sgs_root_offset );
+		if ( false === $sgs_close_pos ) {
+			break; // Malformed markup — bail out, treat the whole string as-is.
+		}
+		$sgs_root_offset = $sgs_close_pos + strlen( $sgs_close_tag );
+	}
+
+	// --- Inject class sgs-has-image-controls into the ROOT tag. ---
 	$class_to_add = 'sgs-has-image-controls';
 
+	$sgs_head = substr( $block_content, 0, $sgs_root_offset );
+	$sgs_root = substr( $block_content, $sgs_root_offset );
+
 	// Append to existing class attribute.
-	if ( preg_match( '/^(<\w+\b[^>]*\bclass=["\'])/', $block_content ) ) {
-		$block_content = preg_replace(
+	if ( preg_match( '/^(<\w+\b[^>]*\bclass=["\'])/', $sgs_root ) ) {
+		$sgs_root = preg_replace(
 			'/^(<\w+\b[^>]*\bclass=["\'])/',
 			'$1' . $class_to_add . ' ',
-			$block_content,
+			$sgs_root,
 			1
 		);
 	} else {
 		// No class attribute yet — add one.
-		$block_content = preg_replace(
+		$sgs_root = preg_replace(
 			'/^(<\w+)(\b)/',
 			'$1 class="' . $class_to_add . '"$2',
-			$block_content,
+			$sgs_root,
 			1
 		);
 	}
+	$block_content = $sgs_head . $sgs_root;
 
-	// --- Inject CSS custom properties into inline style. ---
+	// --- Inject CSS custom properties into inline style (ROOT tag only). ---
 	if ( ! empty( $css_vars ) ) {
 		$css_str = implode( ';', $css_vars );
 
-		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $block_content ) ) {
-			$block_content = preg_replace(
+		$sgs_head = substr( $block_content, 0, $sgs_root_offset );
+		$sgs_root = substr( $block_content, $sgs_root_offset );
+
+		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $sgs_root ) ) {
+			$sgs_root = preg_replace(
 				'/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/',
 				'$1style="$2;' . esc_attr( $css_str ) . '"',
-				$block_content,
+				$sgs_root,
 				1
 			);
 		} else {
-			$block_content = preg_replace(
+			$sgs_root = preg_replace(
 				'/^(<\w+)(\b)/',
 				'$1 style="' . esc_attr( $css_str ) . '"$2',
-				$block_content,
+				$sgs_root,
 				1
 			);
 		}
+		$block_content = $sgs_head . $sgs_root;
 	}
 
 	return $block_content;
