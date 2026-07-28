@@ -1,3 +1,8 @@
+> **ARCHIVED 2026-07-29** - this sat at the repo ROOT as a live path, dated 2026-05-09,
+> pointing at the since-archived `.claude/next-session-prompt.md`. `/handoff` Gate 4a had
+> been copying it to OpenClaw every session and reporting success - a green gate on
+> three-month-old data. Live status is `.claude/LEDGER.md`. Historical only; do not update.
+
 ---
 doc_type: handoff
 project: small-giants-wp
