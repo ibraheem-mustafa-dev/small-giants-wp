@@ -107,9 +107,32 @@ def _count_stops(text: str) -> int:
     return len({m.group(1) for m in STOP_RE.finditer(text)})
 
 
+def _strip_fenced_blocks(text: str) -> str:
+    """Blank out ``` fenced blocks, preserving offsets.
+
+    parking.md documents its own entry format in a fenced markdown example whose body
+    contains a literal `### P-SLUG` heading with a valid Status line. Without this, the
+    template is counted as a real entry — a phantom that inflates the count and would let a
+    malformed example pass as conforming data. Offsets are preserved (content replaced with
+    spaces, newlines kept) so every caller's slicing stays valid.
+    """
+    out, in_fence = [], False
+    for line in text.splitlines(keepends=True):
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            out.append(" " * (len(line) - 1) + "\n" if line.endswith("\n") else " " * len(line))
+            continue
+        if in_fence:
+            out.append(" " * (len(line) - 1) + "\n" if line.endswith("\n") else " " * len(line))
+        else:
+            out.append(line)
+    return "".join(out)
+
+
 def _parking_entries(text: str) -> list[tuple[str, int, int]]:
     """Return [(slug, start_offset, end_offset)] for every parking entry."""
-    matches = [(m.group(1) or m.group(2), m.start()) for m in ENTRY_RE.finditer(text)]
+    scan = _strip_fenced_blocks(text)
+    matches = [(m.group(1) or m.group(2), m.start()) for m in ENTRY_RE.finditer(scan)]
     out = []
     for i, (slug, start) in enumerate(matches):
         end = matches[i + 1][1] if i + 1 < len(matches) else len(text)
