@@ -219,11 +219,42 @@ other piece of SGS content: they **stack on mobile automatically**, with no seco
 configure. A per-device override exists for anyone who wants e.g. 2 on tablet, but it is never
 required to get sensible behaviour.
 
-⛔ **Not a ratio string.** An earlier draft of this spec, and a subsequent developer
+⛔ **Not a ratio STRING.** An earlier draft of this spec, and a subsequent developer
 recommendation, proposed exposing `gridTemplateColumns` (`2fr 1fr`) as an "Advanced ratio
-override" alongside the count. **Rejected:** a CSS grid template is a developer concept, and
-putting it in front of a non-coder client fails the operator-simplicity bar (FR-37-26) for a
-capability nobody has asked for. The count is the control.
+override" alongside the count. **That remains rejected:** a hand-typed CSS grid template is a
+developer concept, and putting a text field of `fr` units in front of a non-coder client fails
+the operator-simplicity bar (FR-37-26).
+
+✅ **A VISUAL column-shape picker IS approved — Bean, 2026-07-28. This AMENDS the clause above;
+do not read the rejection as covering it.** The rejection was of the *input control* (a typed
+string), never of the *capability*. A row of small column diagrams the operator clicks is not a
+developer concept — it is precisely how WordPress core's own Columns block has always presented
+this, and it is the standard every builder uses. So the shape stays reachable while the raw
+string stays hidden.
+
+**Why it was re-opened (evidence, not preference):** the 2026-07-28 reference teardown of an
+Awwwards-winning ecommerce footer (Cecilie Bahnsen) measured its legal strip at
+`grid-template-columns: 340px 680px 340px` — a deliberate **wide-centre** shape. A count can
+NEVER produce it. "Wide centre, narrow edges" and "wide brand column, narrow link columns" are
+common best-in-class footer shapes, so a count-only control silently rules out a whole class of
+good design. Per Bean's standing rule, a capability our controls cannot reach is a **build
+opportunity, not a reason to avoid the design**.
+
+**Binding constraints on the build:**
+- The picker writes the **EXISTING** `gridTemplateColumns` attribute (object, per-device) —
+  **no new stored shape**, so the converter round-trips unchanged (the FR-37-28 preset rule).
+- **The count remains the default control.** The shape picker is the second, optional step —
+  a client who just wants "4 columns" never meets it.
+- Per-device, like the count, and it **still stacks to 1 column on mobile automatically** —
+  an asymmetric desktop shape must never survive to a phone.
+- The active shape is **DERIVED** from the stored value, never separately stored, so a
+  hand-edited value shows no active shape rather than lying (the FR-37-28 rule).
+- Shapes are expressed in `fr`, not px, so they stay fluid (the reference's `340px 680px 340px`
+  is ≈ `1fr 2fr 1fr`).
+
+**Status:** `NOT-BUILT — approved 2026-07-28, carried as FR-37-42.` Recorded here rather than
+left in a plan file, because a rejection standing unamended in a governing spec is exactly the
+D358 failure: the next session reads "ratio rejected, do not re-litigate" and never builds it.
 
 A row declares `layoutMode`, defaulting per slot as in §3.1/§3.2, and an operator may change
 it. This replaces the raw `gridTemplateColumns` string with a control a non-coder can use,
@@ -1312,6 +1343,36 @@ it on a test site. **Do not re-open this as an "obvious gap"**: it would require
 model instead of a nonce (a nonce is bound to a logged-in user), which means a second access path,
 a token lifetime, and a URL that grants site content to whoever holds it. The capability + nonce
 model above stays the whole story. This is a decision, not an unbuilt requirement.
+
+#### FR-37-42 — Visual column-shape picker for rows (approved 2026-07-28, NOT built)
+A row set to **Columns** exposes, alongside its column **count**, a set of **column SHAPES
+presented as small visual diagrams** the operator clicks — equal, wide-centre, wide-first,
+wide-last, and the two-column 2:1 / 1:2 pair. Selecting one writes the **existing**
+`gridTemplateColumns` object attribute. This amends §3.3, which rejected a hand-typed ratio
+string; the string stays rejected, the capability becomes reachable. Applies to BOTH
+`sgs/site-header-row` and `sgs/site-footer-row` (one mechanism, R-31-9), and to `sgs/container`
+if it shares the control — decide at build time rather than assuming.
+
+**Why:** measured evidence, not preference. The 2026-07-28 teardown of an Awwwards-winning
+ecommerce footer found `grid-template-columns: 340px 680px 340px` — a wide-centre shape a
+**count can never produce**. A count-only control silently rules out a whole class of
+best-in-class footer design.
+
+**Binding:** count stays the default and the shape picker is optional (a client wanting "4
+columns" never meets it) · per-device like the count · **still stacks to 1 on mobile
+automatically** — an asymmetric desktop shape must never reach a phone · the active shape is
+**DERIVED** from the stored value, never separately stored, so a hand-edited value shows no
+active shape rather than lying (FR-37-28's rule) · shapes in `fr` not px, so they stay fluid ·
+**no new block.json attribute** — verified by diffing `site-footer-row/block.json` before and
+after, which must be unchanged.
+
+**⚠ Do NOT re-derive the shape list from taste.** It comes from the reference teardowns; any
+shape added later needs a measured reference behind it.
+**Status:** `NOT-BUILT` — approved, queued behind the B3 preset roster it was found by.
+**Done when:** an operator picks a wide-centre shape with no CSS and no typing; the row renders
+that shape on desktop and stacks to 1 on mobile with no further configuration; the stored value
+is `gridTemplateColumns` and nothing else; and the active-shape indicator is derived, verified
+by hand-editing the value and confirming NO shape shows as active.
 
 ---
 
