@@ -8,5 +8,10 @@
 		"raw-url-link": {
 			"reason": "external-service config URL; target/rel hardcoded server-side; page search inapplicable; parsed for business ID"
 		}
+	},
+	"sgs/media": {
+		"raw-url-link": {
+			"reason": "videoUrl is a media SOURCE (external YouTube/Vimeo/MP4 embed src), not an anchor href — no target/rel/page-search semantics apply; the block's separate image linkUrl/linkOpensNewTab/linkRel trio already migrated to SgsLinkControl (Spec 35 Part 2)"
+		}
 	}
 }
