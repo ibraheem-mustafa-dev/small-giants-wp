@@ -42,6 +42,29 @@ function sgs_attr_has_value( $val ): bool {
 }
 
 /**
+ * True when a CSS VALUE contains a declaration/rule-breakout or URL-fetch
+ * token and must not be emitted into a scoped `<style>` element.
+ *
+ * SECURITY (2026-07-28). `esc_attr()` alone blocks markup breakout
+ * (`</style>`, quotes) but leaves `;`, `{`, `}` intact — and the token
+ * helpers' raw-passthrough branches (`var(...)` colours, raw box-shadows,
+ * unrecognised functional colours falling through the normaliser unchanged)
+ * are concatenated into scoped `<style>` elements by dozens of render
+ * surfaces. A stored attr like `rgb(0,0,0);}body{position:fixed;...}`
+ * passed the prefix-only checks and injected arbitrary CSS site-wide.
+ * Mirrors the standard sgs_css_gradient_value() already documents ("a
+ * prefix-only check is NOT sufficient sanitisation"). A legitimate value
+ * (lengths, hex/named colours, `inset`, commas, `var()`, `calc()`) never
+ * contains any rejected token, so this fails closed with zero false drops.
+ *
+ * @param string $value Candidate CSS value (post-normalisation).
+ * @return bool True when the value must be REJECTED.
+ */
+function sgs_css_value_has_breakout( string $value ): bool {
+	return (bool) preg_match( '/[;{}<>"\'`\\\\]|url\s*\(|expression\s*\(|@/i', $value );
+}
+
+/**
  * Determine whether a value is a direct CSS colour rather than a design token slug.
  *
  * Handles all modern CSS colour formats:
@@ -570,7 +593,9 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 	// (proven live 2026-07-05 on the ghost button — a dark border where the draft
 	// wants the light `var(--border)`).
 	if ( str_starts_with( $value, 'var(' ) ) {
-		return esc_attr( $value );
+		// SECURITY: reject a declaration breakout riding the passthrough
+		// (`var(--x);}body{...}`) — see sgs_css_value_has_breakout().
+		return sgs_css_value_has_breakout( $value ) ? '' : esc_attr( $value );
 	}
 
 	if ( sgs_is_css_colour( $value ) ) {
@@ -580,7 +605,14 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 		// would be silently dropped. Hex + named keywords pass through unchanged.
 		// Universal: every SGS colour flows through here (see
 		// sgs_functional_colour_to_hex). Proven live 2026-07-10.
-		return esc_attr( sgs_functional_colour_to_hex( $value ) );
+		//
+		// SECURITY: sgs_is_css_colour()'s functional-notation test is
+		// PREFIX-ONLY (`^rgb\s*\(`, unanchored tail), and the normaliser's
+		// anchored patterns return an unrecognised value UNCHANGED — so
+		// `rgb(0,0,0);}body{...}` reached this return intact. Reject any
+		// breakout before emission (see sgs_css_value_has_breakout()).
+		$hex = sgs_functional_colour_to_hex( $value );
+		return sgs_css_value_has_breakout( $hex ) ? '' : esc_attr( $hex );
 	}
 
 	// Sanitise slug to valid WordPress preset characters only (prevents CSS injection).
@@ -624,7 +656,16 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
 		// (e.g. `0 2px 4px rgba(0,0,0,0.1)`) survives safecss_filter_attr() when it
 		// is emitted inline — proven live 2026-07-10 (safecss strips box-shadow with
 		// a functional-colour token). Non-colour tokens + hex + var() are untouched.
-		return esc_attr( sgs_normalise_css_functional_colours( $value ) );
+		//
+		// SECURITY (2026-07-28): this raw value reaches scoped <style>
+		// elements in every caller (container wrapper, cta-section,
+		// trust-bar, …); reject any declaration breakout before emission —
+		// see sgs_css_value_has_breakout().
+		$normalised = sgs_normalise_css_functional_colours( $value );
+		if ( sgs_css_value_has_breakout( $normalised ) ) {
+			return '';
+		}
+		return esc_attr( $normalised );
 	}
 
 	// Sanitise slug to valid WordPress preset characters only.
