@@ -671,18 +671,61 @@ $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger{background:none;border:0;font:i
 $css .= $uid_sel . ' .sgs-nav-menu__caret{display:inline-flex;transition:transform .3s var(--wp--custom--transition--medium, ease);}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-menu__caret{transform:rotate(180deg);}';
 $css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu__caret{transition:none;}}';
-// The mega container anchors the positioned panel.
-$css .= $uid_sel . ' .sgs-nav-menu__mega{position:relative;}';
 
 /*
- * Panel: a positioned dropdown, hidden until the (JS-bound) aria-expanded
- * flips true. display:none keeps it out of the a11y tree + off-screen when
- * closed, while the links remain in the server HTML for crawlers (FR-36-17).
- * No-JS: stays closed (progressive enhancement, FR-36-7). view.js's
- * reposition writes --sgs-mm-overflow-left/-right.
+ * Panel anchoring (fixed 2026-07-28, Bean design-gated — Gate-3 finding).
+ * The wrap previously anchored to `.sgs-nav-menu__mega` (the <li>-level
+ * hover bridge, position:relative), so the panel shrink-to-fit against the
+ * MENU ITEM's width and rendered as a ~100px vertical sliver on the live
+ * page. The draft designs (sites/Mega-menu design + Indus Foods Mega Menu
+ * Design, both at "position:absolute;top:100%;left:0;right:0" on the header
+ * container with an 1120px-capped centred panel) anchor a wide centred band
+ * instead. Our sanctioned anchor is the BAR (`.sgs-nav-menu__bar` is already
+ * position:relative in style.css for the indicator pill), so the wrap now
+ * centres on the bar and may exceed the bar's width up to the draft's
+ * 1120px cap with the draft's 28px side gutters. MEGA-ONLY by construction:
+ * plain (non-mega) dropdowns, when built, must anchor left-aligned under
+ * their own item — Bean explicitly rejected centring them (the Indus draft
+ * centres its "More" dropdown and it reads badly).
+ *
+ * Hover safety holds because the wrap stays a DOM child of the
+ * `.sgs-nav-menu__mega` bridge — mouseleave fires on DOM containment, not
+ * geometry — and the panel (>= bar width) always extends beneath its own
+ * trigger. Edge overflow: mega-disclosure.js repositionPanel() measures the
+ * centred rect and pins to the bar's right/left edge via the CSS vars below
+ * (--sgs-mm-tx neutralises the centring translate when pinned).
+ *
+ * Hidden-until-open via display:none keeps it out of the a11y tree while
+ * the links remain in the server HTML for crawlers (FR-36-17). No-JS: stays
+ * closed (progressive enhancement, FR-36-7).
  */
-$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);right:var(--sgs-mm-overflow-right, auto);z-index:100;display:none;}';
+$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));z-index:100;display:none;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
+
+/*
+ * In-drawer accordion (FR-36-5/-6: "the same panel renders inside the
+ * drawer, inline-expanded"). Measured 2026-07-28: the absolute wrap inside
+ * the open drawer OVERLAID the menu items below it (Recipes stayed at
+ * y=152 under a 1264px-tall panel) instead of pushing them down. Inside a
+ * drawer the wrap flows statically at full width so opening the panel
+ * pushes the following items down like an accordion.
+ */
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:static;transform:none;width:100%;}';
+
+/*
+ * Stacking escape for an IN-CONTENT nav (2026-07-28, Gate-3 finding). The
+ * page-content container (`.entry-content`) and the site-footer rows each
+ * carry `z-index:1`; at equal z the LATER context paints on top, so an open
+ * panel belonging to a nav placed inside page content was painted over by
+ * the footer — hit-testing then reached the footer, fired mouseleave on the
+ * hover bridge, and closed the panel 170ms later ("unhoverable"). While
+ * THIS instance's panel is open, lift its entry-content context above its
+ * sibling contexts. Fires only for an in-content nav (a header nav has no
+ * `.entry-content` ancestor — the header carries its own base z-index, see
+ * site-header/style.css), only while open, and is scoped by uid. Verified
+ * live by injection: 400ms diagonal hover survives with it, closes without.
+ */
+$css .= '.entry-content:has(' . $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"]){z-index:2;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:block;}';
 
 /*

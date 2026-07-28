@@ -12,7 +12,8 @@
  * of columns is simply the number of mega-group children an operator has
  * added; there is no separate `columnCount` attribute any more. Each
  * individual mega-group/mega-aside still locks its OWN internal template
- * (heading+icon-list / media+heading+text+button, `templateLock: 'all'` on
+ * (mega-group: heading+icon-list; mega-aside: media+LABEL+heading+text+button
+ * — five children, see `mega-aside/edit.js:37`; `templateLock: 'all'` on
  * their own edit.js) so an operator cannot break THEIR shape, but can freely
  * select and edit any nested block's own settings (e.g. sgs/icon-list's
  * link controls) — the previous `contentOnly` lock at the panel level

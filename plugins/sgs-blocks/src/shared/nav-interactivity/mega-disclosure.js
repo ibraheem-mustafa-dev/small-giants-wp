@@ -276,15 +276,26 @@ function repositionPanel( root ) {
 	}
 	panel.style.removeProperty( '--sgs-mm-overflow-left' );
 	panel.style.removeProperty( '--sgs-mm-overflow-right' );
+	panel.style.removeProperty( '--sgs-mm-tx' );
 	window.requestAnimationFrame( () => {
 		const rect = panel.getBoundingClientRect();
 		// Safe-triangle (FR-36-4): reuse this existing measurement as the
 		// snapshot other triggers check their pointer trajectory against —
 		// no second layout read.
 		activePanelRect = rect;
+		// The wrap is CENTRED on the bar by default (left:50% +
+		// translateX(-50%), 2026-07-28 anchor fix). When the centred rect
+		// overflows a viewport edge, pin to the bar's near edge instead —
+		// `--sgs-mm-tx: 0px` neutralises the centring translate so the
+		// left/right pin is exact. Right overflow wins if both would fire
+		// (a panel wider than the viewport is already width-clamped in CSS).
 		if ( rect.right - window.innerWidth > 0 ) {
 			panel.style.setProperty( '--sgs-mm-overflow-left', 'auto' );
 			panel.style.setProperty( '--sgs-mm-overflow-right', '0' );
+			panel.style.setProperty( '--sgs-mm-tx', '0px' );
+		} else if ( rect.left < 0 ) {
+			panel.style.setProperty( '--sgs-mm-overflow-left', '0' );
+			panel.style.setProperty( '--sgs-mm-tx', '0px' );
 		}
 	} );
 }

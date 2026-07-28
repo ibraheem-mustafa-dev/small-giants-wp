@@ -10,6 +10,23 @@
 .sgs-site-header {
 	width: 100%;
 	box-sizing: border-box;
+	/*
+	 * Site chrome paints ABOVE page content (2026-07-28, Gate-3 finding).
+	 * Without this, an at-rest header's open mega panel (z-index:100, trapped
+	 * inside the header rows' own z-index:1 stacking contexts) is painted
+	 * OVER by any later sgs-container context (.entry-content and footer
+	 * rows both carry z-index:1, and later-in-DOM wins at equal z) — the
+	 * panel became unhoverable because hit-testing reached the content
+	 * behind it, firing mouseleave on the nav's hover bridge. Proven live on
+	 * the canary (footer heading "T1TOP A" hit-tested above the open panel);
+	 * fix verified by injection before landing: a 400ms diagonal
+	 * trigger→panel hover survives with this rule, closes without it.
+	 * 100 matches the sticky/transparent behaviours' existing value
+	 * (header-behaviours.css:41,57 — the WP admin-bar-safe range) and the
+	 * draft designs' own header (position:sticky; z-index:200).
+	 */
+	position: relative;
+	z-index: 100;
 }
 
 .sgs-site-header,

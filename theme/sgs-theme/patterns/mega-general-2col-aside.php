@@ -26,6 +26,7 @@
 
 <!-- wp:sgs/mega-aside -->
 <!-- wp:sgs/media {"mediaType":"image","imageUrl":"https://placehold.co/400x300/0F7E80/FFFFFF?text=Featured","imageAlt":"Featured"} /-->
+<!-- wp:sgs/label {"text":"New in","textColour":"accent"} /-->
 <!-- wp:sgs/heading {"content":"New This Season","level":3} /-->
 <!-- wp:sgs/text {"text":"Discover our latest range, curated for you."} /-->
 <!-- wp:sgs/button {"label":"Shop Now","url":"#"} /-->
