@@ -3,7 +3,10 @@ tooling-map-drift-check.py — RETIRED 2026-05-21
 ================================================
 
 The .claude/tooling-map.md doc this hook enforces was ABSORBED into
-.claude/cloning-pipeline-flow.md "Script inventory" section on 2026-05-21.
+.claude/cloning-pipeline-flow.md "Script inventory" section on 2026-05-21 (that
+doc was itself archived to .claude/memory/archived-2026-07-28-cloning-pipeline-flow.md
+on 2026-07-28; the live stage index is now .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
+Appendix D).
 The doc this hook checks is now a 9-line redirect stub; the drift check
 returns false positives.
 
@@ -357,8 +360,8 @@ def format_report(result: DriftResult) -> str:
     )
     lines.append("")
     lines.append(
-        'See .claude/docs-registry.md update_trigger: '
-        '"Add a new script under plugins/sgs-blocks/scripts/..."'
+        "Convention: adding a script under plugins/sgs-blocks/scripts/ means adding "
+        "its inventory entry to .claude/tooling-map.md in the same commit."
     )
 
     return "\n".join(lines)

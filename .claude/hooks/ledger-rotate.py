@@ -37,7 +37,7 @@ _LEDGER = _REPO / ".claude" / "LEDGER.md"
 _MEMDIR = _REPO / ".claude" / "memory"
 _LOG = _MEMDIR / ".ledger-rotate.log"
 
-# The byte cap used repo-wide for state.md / MEMORY.md (docs-registry.yaml). Machine-
+# The byte cap used repo-wide for LEDGER.md / MEMORY.md (see .claude/CLAUDE.md). Machine-
 # measurable, consistent. Over this, LEDGER is trending toward the state.md balloon.
 _THRESHOLD_BYTES = 24576
 

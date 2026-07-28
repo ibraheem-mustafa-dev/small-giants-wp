@@ -422,6 +422,16 @@ extensions/
 
 **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias: `ssh hd`)
 
+### Project credentials (discoverable — every session can use these directly, without asking Bean)
+
+Gitignored; never committed. (Rehomed verbatim from the dissolved `docs-registry.yaml`, 2026-07-28.)
+
+| Path | What | Keys / loader |
+|---|---|---|
+| `.claude/secrets/sandybrown.env` | Staging/canary (sandybrown-nightingale-600381.hostingersite.com) logins — ALWAYS available | `WP_USER_SANDYBROWN` + `WP_PWD_SANDYBROWN` (browser/admin login); `WP_APP_PWD_SANDYBROWN` (REST + WC Store-API Basic auth); `WP_URL_SANDYBROWN`. Use for Playwright editor login + REST verification: `grep KEY .claude/secrets/sandybrown.env` |
+| `.claude/secrets/credentials.yml` | General project credentials (YAML) | `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))` |
+| `A:/.openclaw/.secrets/wp-app-passwords.env` | Cloning dev-site (palestine-lives.org) WP app passwords | env-file format |
+
 > **LiteSpeed note (updated 2026-07-13, D322):** LiteSpeed Cache **IS active on sandybrown** (v7.8.1 — re-installed at D312, re-confirmed live D322; the old "deleted 2026-05-05" claim is STALE). ALWAYS `wp litespeed-purge all` on sandybrown after a CSS/render deploy, in addition to OPcache reset + the Hostinger CDN clear (`hosting_clearWebsiteCacheV1`). Check `wp plugin list --status=active | grep -i litespeed` on any target before deciding.
 
 ### Full deployment (ALL targets) — always via `build-deploy.py`
@@ -678,7 +688,7 @@ python plugins/sgs-blocks/scripts/assign-canonical.py
 **New per-run artefacts:** `css-d1-assignments.json` (D1 sidecar), per-section `token_resolutions` + `essence_matches` in `extract.json`, `scaffold_quality_report` in `stage-9b.json`.
 
 **Cross-references:**
-- Full pipeline changes: `.claude/cloning-pipeline-flow.md` 2026-05-20 section
+- Full pipeline changes: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` Appendix D (stage index; the old `cloning-pipeline-flow.md` was archived 2026-07-28)
 - Spec compliance + known gaps: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §2-§3
 - Architectural decisions: `.claude/decisions.md` D1-D6
 - Honest-path council finding: `.claude/memory/reports-archive/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`
