@@ -391,8 +391,20 @@ the D338 trap §8.2 raised. The two are also not equivalent: the cascade HIDES a
 a tier, whereas `labelCollapse` keeps the element and its link target while collapsing its
 label to icon-only. Hiding is not collapsing.
 
+*(Status corrected 2026-07-28, D400/D405: the cascade MECHANISM — canonical `resolveTier()` +
+`ResponsiveTriStateControl` + scoped emission — is now BUILT and live-proven, `b9c5f6d1`/
+`ac0c30eb`/`eb255f06`. What remains open is the header-CONTENT-hiding FEATURE that would
+*consume* the mechanism to hide `labelCollapse`-equivalent elements per device — that feature
+is owned by this spec (§3.8) and has not been built. The two mechanisms stay non-interchangeable
+regardless: the cascade HIDES an element at a tier, `labelCollapse` KEEPS the element and its
+link while collapsing its label to icon-only.)*
+
 **Revisit condition (not left open-ended):** if and when Spec 35 ships the cascade, re-test
 whether `labelCollapse` still earns its place. Until then it is a live, supported control.
+
+*(D363's revisit condition is now ACTIONABLE, not merely stated: the cascade mechanism it
+names shipped 2026-07-28 — `b9c5f6d1`/`ac0c30eb`/`eb255f06`, D400/D405. The re-test is due
+whenever the §3.8 header-content-hiding feature above ships, not deferred indefinitely.)*
 
 ### 3.9 Header and footer content is per-site, never git-tracked
 
@@ -1581,7 +1593,11 @@ by hand-editing the value and confirming NO shape shows as active.
    first would strand the capability — and the two are not equivalent anyway (the cascade
    HIDES; `labelCollapse` COLLAPSES a label to icon-only while keeping the element and its
    link). Spec 36 FR-36-8/FR-36-23 amended in the same commit. Revisit if Spec 35 ships the
-   cascade. Full reasoning in §3.8.
+   cascade. Full reasoning in §3.8. *(Status corrected 2026-07-28, D400/D405: the cascade
+   MECHANISM — canonical `resolveTier()` + tri-state control + scoped emission — is now BUILT
+   and live-proven, `b9c5f6d1`/`ac0c30eb`/`eb255f06`; the §3.8 header-content-hiding FEATURE
+   that would consume it remains open and is owned by this spec. D363's revisit condition is
+   now ACTIONABLE whenever that feature ships.)*
 2. **`sgs/site-header` version.** Both containers are `v0.1.0`. Pre-production policy says no
    version bumps; confirm they stay at `0.1.0` through this work.
 3. **FR-37-20's rule-target limitation.** Rules can only target file-registered patterns, not

@@ -4,7 +4,7 @@ title: Spec 35 Phase 2 — optimal-control registry DESIGN SPINE (schema + gover
 status: DRAFT — the contract the per-category drafters fill against; Bean reviews the finished registry
 created: 2026-07-19
 spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts B / H / I = the optimal-control authority)
-plan: .claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md (UNIT A+ — Phase 2)
+plan: .claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md (UNIT A+ — Phase 2)
 produces: plugins/sgs-blocks/scripts/consistency/setting-registry.json (the golden master)
 ---
 

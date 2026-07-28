@@ -6,7 +6,7 @@ created: 2026-07-19
 governs: the universal block-inspector UX / control-completeness / capability rollout (Spec 35)
 spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Part L is the source — this doc is the enforceable transcription)
 sibling: .claude/plans/block-migration-DONE-checklist.md (governs RENDERED output / no-inline, Spec 32; this doc governs the EDITOR control surface)
-plan: .claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md (the HOW / wave sequencing)
+plan: .claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md (the HOW / wave sequencing)
 ---
 
 # Spec 35 inspector — DONE checklist
@@ -109,5 +109,5 @@ proven LIVE on the pilot (`sgs/media`) at Gate 0 before any wave. Every block in
 
 ## Reference
 - Spec: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (Part L source; Parts A–K rationale).
-- Plan / waves: `.claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md`.
+- Plan / waves: `.claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md`.
 - Sibling (rendered output): `.claude/plans/block-migration-DONE-checklist.md`.

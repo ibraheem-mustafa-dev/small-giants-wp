@@ -3,7 +3,7 @@ doc_type: phase-plan
 title: Spec 35 Phase 0 — foundations + sgs/media pilot (executable step plan)
 project: small-giants-wp
 spec: 35-BLOCK-INSPECTOR-UX-STANDARD.md
-parent_plan: .claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md
+parent_plan: .claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md
 created: 2026-07-19
 status: DRAFT — awaiting Bean sign-off on the pilot-block KJC + Gate C0
 ---
@@ -33,7 +33,7 @@ Sonnet builds the audits/components/scanner; Haiku handles residue). Critical pa
 
 **Entry context (read before starting):**
 - `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` — the standard (read in full; Part L = the checklist source).
-- `.claude/plans/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md` — the macro plan / wave map / tier map.
+- `.claude/plans/archive/2026-07-18-spec-35-block-inspector-ux-strategic-plan.md` — the macro plan / wave map / tier map.
 - `.claude/plans/spec-35-inspector-DONE-checklist.md` — the enforceable end-conditions (this session's first action).
 - `.claude/plans/block-migration-DONE-checklist.md` — sibling (rendered-output/no-inline); shows overlap items.
 - `plugins/sgs-blocks/src/components/{DesignTokenPicker,MediaPicker,StateToggleControl}.js` — components to upgrade/pattern-match.
