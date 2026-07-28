@@ -534,6 +534,38 @@ function openDrawerFor( ctx, trigger ) {
 		bookkeeping.cleanup.push( () =>
 			drawer.removeEventListener( 'cancel', onCancel )
 		);
+
+		/*
+		 * Backdrop click-to-close (FR-36-6 desktop variants). Under
+		 * `showModal()` the visible page is inert, so a partial-width panel
+		 * (trigger / centred / header anchors) with no click-away dismissal
+		 * reads as a broken site. A click on `::backdrop` is delivered with
+		 * `target === dialog` and coordinates OUTSIDE the dialog's content box
+		 * (the same idiom sgs/modal's view.js uses); a click inside the panel —
+		 * including its own padding — falls inside the rect and never closes.
+		 * The full-screen anchor is unaffected BY CONSTRUCTION: its dialog
+		 * covers the viewport, so no click can land outside its rect. The
+		 * `target` guard also excludes keyboard-synthesised clicks (their
+		 * 0,0 coordinates would otherwise read as outside on some anchors).
+		 */
+		const onBackdropClick = ( e ) => {
+			if ( e.target !== drawer ) {
+				return;
+			}
+			const rect = drawer.getBoundingClientRect();
+			const inDialog =
+				rect.top <= e.clientY &&
+				e.clientY <= rect.top + rect.height &&
+				rect.left <= e.clientX &&
+				e.clientX <= rect.left + rect.width;
+			if ( ! inDialog ) {
+				runClose( drawer, scrim );
+			}
+		};
+		drawer.addEventListener( 'click', onBackdropClick );
+		bookkeeping.cleanup.push( () =>
+			drawer.removeEventListener( 'click', onBackdropClick )
+		);
 	} else {
 		// Fallback: non-modal `.show()` (the Spec-34 model). A non-modal dialog
 		// does NOT inert the background or auto-close on ESC, so the selective
