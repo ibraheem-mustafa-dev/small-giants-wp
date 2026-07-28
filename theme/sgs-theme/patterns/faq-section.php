@@ -10,7 +10,6 @@
 ?>
 
 <!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface","contentWidth":"800px"} -->
-<div class="wp-block-group alignfull has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
 	<!-- wp:sgs/heading {"content":"Frequently Asked Questions","textAlign":"center","fontSize":"xx-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
 
@@ -32,5 +31,4 @@
 <!-- /wp:sgs/accordion-item -->
 <!-- /wp:sgs/accordion -->
 
-</div>
 <!-- /wp:sgs/container -->

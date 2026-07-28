@@ -11,11 +11,9 @@
 ?>
 
 <!-- wp:sgs/container {"tagName":"div","layout":"flex","justifyContent":"center","flexDirection":"column","flexWrap":"nowrap"} -->
-<div class="wp-block-group">
 
 	<!-- wp:sgs/heading {"headingRole":"heading","content":"A section heading that converts","level":"h2","fontSize":36} /-->
 
 	<!-- wp:sgs/heading {"headingRole":"subheading","content":"Optional supporting copy that gives context to the section above.","subTag":"p","fontSize":16} /-->
 
-</div>
 <!-- /wp:sgs/container -->

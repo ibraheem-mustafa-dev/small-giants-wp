@@ -203,8 +203,8 @@
 			"default": [
 				{
 					"name": "Starter",
-					"price": "Â£9",
-					"priceYearly": "Â£90",
+					"price": "£9",
+					"priceYearly": "£90",
 					"period": "monthly",
 					"description": "Everything you need to get started.",
 					"features": [
@@ -233,8 +233,8 @@
 				},
 				{
 					"name": "Professional",
-					"price": "Â£29",
-					"priceYearly": "Â£290",
+					"price": "£29",
+					"priceYearly": "£290",
 					"period": "monthly",
 					"description": "For growing teams who need more.",
 					"features": [
@@ -271,8 +271,8 @@
 				},
 				{
 					"name": "Enterprise",
-					"price": "Â£99",
-					"priceYearly": "Â£990",
+					"price": "£99",
+					"priceYearly": "£990",
 					"period": "monthly",
 					"description": "For large organisations with custom needs.",
 					"features": [

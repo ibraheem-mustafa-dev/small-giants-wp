@@ -11,7 +11,6 @@
 ?>
 
 <!-- wp:sgs/container {"tagName":"div","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","contentWidth":"600px"} -->
-<div class="wp-block-group alignfull has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40)">
 
 	<!-- wp:sgs/heading {"content":"Let’s Start a Conversation","textAlign":"center","fontSize":"xx-large"} /-->
 
@@ -22,5 +21,4 @@
 		<!-- wp:sgs/button {"label":"Call Us","inheritStyle":"outline","style":{"border":{"radius":"8px"}},"metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"phone"}}}}} /-->
 	<!-- /wp:sgs/multi-button -->
 
-</div>
 <!-- /wp:sgs/container -->
