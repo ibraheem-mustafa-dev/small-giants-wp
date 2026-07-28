@@ -1399,11 +1399,11 @@ _2 entries._
 
 **Captured:** 2026-05-07
 
-**Why deferred:** Requires GSAP MorphSVGPlugin — paid Club GSAP library. Misaligned with SGS open-source default.
+**Why deferred:** Requires GSAP MorphSVGPlugin — paid Club GSAP library. Misaligned with SGS open-source default. **⚠ PREMISE DEAD (2026-07-29): GSAP + all plugins incl. MorphSVG became 100% free for commercial use (Webflow acquisition, April 2025). Revival is spec'd as Spec 38 FR-38-16 (asset-gated MorphSVG, Tier G), scheduled for motion Wave C (`plans/2026-07-29-motion-wave-C-session-prompt.md`) — pending Bean's Spec 38 design-gate sign-off. Still DEFERRED until that wave runs; archive this entry when it ships.**
 
-**Resume trigger:** Only if a paid client specifically needs SVG morphing AND they're willing to fund Club GSAP licensing. Otherwise leave the uimax `animations` row flagged `is_gap_candidate=1` with a note pointing here.
+**Resume trigger:** ~~Only if a paid client specifically needs SVG morphing AND they're willing to fund Club GSAP licensing~~ → Spec 38 Wave C runs (gate: Spec 38 `status: active` + Wave A shipped).
 
-**Alternative path:** Anime.js morphing helpers, custom SMIL fallbacks, hand-coded path interpolation. None match GSAP MorphSVG's polish but all are licence-free.
+**Alternative path:** ~~Anime.js morphing helpers, custom SMIL fallbacks, hand-coded path interpolation~~ — superseded; MorphSVG itself is now licence-free (D406).
 
 ---
 

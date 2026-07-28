@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-07-28
+last_updated: 2026-07-29
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -24,6 +24,10 @@ at the bottom of this file.
 ---
 
 ## ⭐ CURRENT FRONTS
+
+### Track 3 (NEW 2026-07-29) — Spec 38 motion system: AUTHORED, awaiting Bean's design gate
+
+**Documents only, nothing built.** `specs/38-SGS-MOTION-SYSTEM.md` (two-tier V/G motion doctrine + GSAP Tier G roster; D406–D409) + wave prompts `plans/2026-07-29-motion-wave-{A,B,C}-session-prompt.md`. The vanilla-first rule was amended at its five written homes; parking P-10's paid-GSAP premise marked dead. **Every wave is GATED on Spec 38 `status: draft → active` (Bean's sign-off) — no implementation before it.**
 
 ### Track 2b — Spec 37 header/footer: B3 preset library (DESIGN-GATED, awaiting Bean's sign-off)
 
