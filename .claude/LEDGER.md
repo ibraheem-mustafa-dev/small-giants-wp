@@ -94,19 +94,28 @@ rollout and the 2026-07-17 orientation block are in the same sweep file.
   `esc_attr()`s) but the CSS-**declaration** breakout was real — and in **two more places the
   review never looked at**. Fixed at the choke point (`sgs_css_value_has_breakout()`); 13-case unit
   run, 7 legitimate values byte-identical, 6 attacks rejected.
-- **⭐ NEXT (Bean-scoped): the nav-drawer DESKTOP VARIANTS.** Research COMPLETE (3 rounds, ~30
-  sites) → **`.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md`**. Build DEFERRED
-  to next session. Headlines: **one block with variants, not two** (every production system does
-  this); the axis is **what the panel ATTACHES TO** — `full-screen` / `header-attached` /
-  `trigger-anchored` / `side-panel`; **Bean's correction verified** — lamalama's panel is
-  438×436 and its header pill is 438×50 at *identical edges*, so the header BECOMES the menu and
-  `header-attached` must DERIVE its width, never hardcode 438px; **2 of Bean's 4 named sites
-  measured full-screen** (dogstudio, resn); final tally **2 compact / 6 full-screen of 8 opened**;
-  clustering settled at exactly TWO compact mechanisms but each is **n=1**, so geometry numbers are
-  design anchors, not medians. Neither reference site is a real modal (no `<dialog>`, zero
-  `[inert]`, no focus trap) — our `showModal()` is spec-supported at any size and would be MORE
-  accessible than both. **Lateral:** `sgs/modal` already implements the centred-card model AND
-  hand-rolls its own `showModal()` — two `<dialog>` engines for one primitive.
+- **⭐ DRAWER DESKTOP VARIANTS — DESIGN APPROVED + BUILT + council-fixed, canary-deployed
+  (2026-07-28 session 2, D403).** Bean corrected the design axis TWICE (variant = the LOOK, a
+  complete-clone preset of defaults — never geometry buckets, never hardcoded values; geometry =
+  per-device attrs, killing the "full-screen below collapse point" toggle) and mandated a CODE
+  EXTRACTION before finalising: 15/15 cells of computed styles + cross-site diff at
+  `.claude/reports/2026-07-28-drawer-code-extraction/` (4 structural archetypes; link font-size
+  16–160px is the defining variable; NO reference uses a scrim element; resn = WebGL,
+  reference-only). Approved shape: `.claude/plans/2026-07-28-nav-drawer-variants-design-gate.md` —
+  per-device `anchor` (full-screen/header/trigger/**centred** — Bean's pause-menu addition) +
+  `panelSize` + surface opacity/blur + `closeStyle` + `variantPreset` discriminator
+  (variantAttr, FR-31-20) + nav-menu `listColumns`; `edge`/`width` retired; 7
+  `registerBlockVariation`s. Built (Sonnet), council-reviewed (2 Opus + 1 Haiku — 9 confirmed
+  findings incl. `surfaceOpacity:0` invisible panels, editor/frontend translucency divergence,
+  inert variant declaration, desktop-anchor cascading to phones), ALL FIXED + probe-verified live.
+  Default instances render property-identical (verified on page 1648). **§6 POC rule (Bean,
+  binding): POC fixtures are EXACT clones INCLUDING content** (per-fixture classic menus with the
+  reference's real labels) so differences are attributable to the block, never content; genericise
+  pre-production. **NEXT: commit → Task 4 backdrop-click-to-close in `store('sgs/nav')` → Task 5
+  live gate (openness-guarded axe per variant per width, ESC/focus-return, listColumns canvas
+  visibility, 7 exact-content fixtures, Bean's eye).** Known simplifications recorded in the
+  design doc: burger-morph is a static ×-reading icon (true cross-block morph = follow-on);
+  trigger anchor is CSS corner approximation.
 
 **Prior (2026-07-27, Track 2 mega) — SUPERSEDED by the Gate-3 close above; collapsed to a pointer
 2026-07-28. Full block archived VERBATIM in `memory/session-2026-07-27-4.md` (verified present:

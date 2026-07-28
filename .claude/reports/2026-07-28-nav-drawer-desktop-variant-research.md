@@ -295,9 +295,106 @@ when a desktop burger appears at all (6 of 8).** The compact panels are a real
 but minority pattern. Ship `full-screen` as the default; the compact variants
 are the differentiator, not the norm.
 
+---
+
+# TASK 1 APPEND (2026-07-28, session 2) — proper categorisation, 8 sites × 3 devices, every axis
+
+**Method.** Delegated Sonnet researcher, isolated superpowers-chrome browser (shared Playwright in
+use by a parallel session). Viewports: natural desktop / 800×1000 / 400×850. Desktop geometry
+reused from §1 (not re-measured). **Tally: 22 of 24 cells observed on a genuinely OPEN panel; 2
+UNCONFIRMED** (resn.co.nz at 800 + 400 — its WebGL loader never resolved past the loading screen
+across two attempts including a fresh tab; desktop WAS confirmed via the `#!/menu` route).
+**Grading:** main session re-measured the two load-bearing cells independently. lamalama@400
+CONFIRMED EXACT (panel 368×436 @ 16px insets, `fixed left-1/2 -translate-x-1/2`, body scroll
+locked). lusion@800 CORRECTED IN DETAIL: the agent called it "one full-width edge-to-edge sheet,
+radius 0" — measured + screenshot show it is still THREE stacked rounded cards (nav 750×264 r10 ·
+LET'S TALK row · black LABS row) at 25px margins, but on a now-OPAQUE blue takeover background.
+The structural verdict (compact character does not persist; it becomes a takeover) stands.
+
+## A. Per-site character (the categorisation geometry erased)
+
+| Site | Character (persists across devices unless noted) |
+|---|---|
+| **lamalama** | "The pill becomes the menu" — the 438×50 header pill itself expands downward into a 438×436 floating card; blur+dim click-through backdrop; light-dismiss. At 400: `calc(100vw−32px)` capped 438 → 368px card, 16px insets, never edge-to-edge. **Character fully persists.** |
+| **lusion** | NOT one panel — THREE independent stacked pill-cards (links / newsletter / black LABS promo) right-inset 72, no backdrop, background live, explicit close. **Desktop-only:** at ≤800 the cards go near-full-width (25px margins, radius kept) on an opaque blue takeover, and the newsletter FORM is dropped to a bare "LET'S TALK" row. |
+| **dogstudio** | Ghosted editorial takeover — translucent numbered serif list floats over the STILL-ANIMATING 3D scene (no opaque backdrop). Socials reformat text→icons at 800; nothing dropped. Persists. |
+| **fantasy** | Opaque black takeover, CENTRED bold type stack + secondary nav row + a genuine image+text PROMO CARD bottom-right + CTA bottom-left. The only one with a marketing promo card. NOT scroll-locked. Everything kept at all widths. Persists. |
+| **buck** | The only LIGHT takeover (lavender-grey); centred list + copyright/socials footer. At 400 the layout flips centred→left and a search icon surfaces. Nothing dropped. Persists. |
+| **resn** | Sparsest — 3 centred words over a rotating 3D gem, no secondary content, no close needed (own `#!/menu` route). Desktop confirmed; 800/400 UNCONFIRMED. |
+| **studionamma** | Opaque light-grey takeover, TWO-COLUMN bold link grid + live world-clock footer; "CLOSE" text-label swap (no icon). At 800 the 2 columns collapse to 1 AND per-link hover thumbnails appear; at 400 "Let's talk" is absorbed into the list, dark-mode text→icon. **Nothing dropped — reorganised.** The clean degrade-gracefully example. |
+| **wearecollins** | The richest — split 2-zone: serif editorial list + secondary CTA row LEFT, 3 image "Story" promo cards RIGHT, newsletter+socials footer. **The ONLY site of the 8 using a native `<dialog>`** (agent-verified, `querySelectorAll('dialog').length===1`). At 400 it collapses to one centred column and Team/Careers/Press are REMOVED from the DOM (a real content drop). |
+
+**The six "full-screen" sites are genuinely six different designs** — ghosted-over-media vs opaque
+black centred + promo vs light-mode vs minimal-3-words vs two-column+clock vs split editorial+media.
+Geometry was the one axis on which they were identical.
+
+## B. The 8×3 matrix (persist / change)
+
+| Site | Desktop | 800 | 400 |
+|---|---|---|---|
+| lamalama | 438×436 pill-card | Same card, re-centred | 368px card (fluid, capped) — **persists** |
+| lusion | 3 stacked 310px cards, no backdrop | Cards → near-full-width on opaque takeover; newsletter form dropped | Same as 800 — **changes at ≤800** |
+| dogstudio | Ghosted takeover over live 3D | Same; socials → icons | Same — persists |
+| fantasy | Opaque centred takeover + promo card | Same, scaled | Same, all kept — persists |
+| buck | Light takeover, centred | Same | Same but left-aligned + search icon — persists |
+| resn | Minimal 3-word takeover | UNCONFIRMED (loader) | UNCONFIRMED (loader) |
+| studionamma | 2-col takeover + clock | 1 col + hover thumbnails | 1 col, CTA absorbed — persists (reorganises) |
+| wearecollins | Split editorial+media, native `<dialog>` | Split kept (minor CTA clip) | 1 centred column; Team/Careers/Press dropped from DOM — persists w/ content drop |
+
+## C. The gating verdict (decides the `variant` attribute shape)
+
+**A flat per-site `variant` value holds for 6 of the 7 confirmed sites.** Five takeovers keep their
+character at every width (only internal reflow), and lamalama's compact card persists at every
+width BECAUSE its width is derived from the header (`min(438px, 100vw−32px)` in effect) — the §2
+prediction confirmed by measurement: the header pill itself goes near-full-width at 400, and the
+panel follows it. **No per-device `{desktop,tablet,mobile}` variant dimension is needed.**
+
+**The one counter-example is lusion:** its compact card system is deliberately desktop-only and
+swaps to a takeover below ~1024. That is best modelled NOT as a per-device variant object but as
+**one optional per-variant setting on the compact variant: "become full-screen below <breakpoint>"**
+— default OFF (lamalama-style fluid card is the default mechanic), opt-in for the lusion look.
+
+## D. Recommended optimal setup for `sgs/nav-drawer` (synthesis; DRAFT until Bean's Task-2 sign-off)
+
+**Three variants, flat `variant` string** (descriptive names, provenance in block.json `_note`):
+
+1. **`full-screen`** (default — today's behaviour, 6 of 8 references). One new sub-option earns its
+   place from the evidence: **surface treatment** = `opaque` (fantasy/buck/collins/namma) vs
+   `translucent` ("ghost over the page", dogstudio/resn — the page shows through; cheap for us: it
+   is a background-alpha + optional blur on the SAME dialog, NOT a structural change).
+2. **`header-attached`** (lamalama) — the panel derives width + left/right edges from the header
+   and expands downward; fluid-capped by construction, so mobile needs NO extra attribute.
+   Backdrop style configurable (dim+blur click-through / none).
+3. **`trigger-anchored`** (lusion) — compact panel hung off the burger corner, own width, optional
+   no-backdrop + background-stays-live contract, PLUS the opt-in **"full-screen below <collapse
+   breakpoint>"** toggle (the lusion mechanic, honest about how its own reference behaves).
+
+**Drop `side-panel` as a variant: zero reference evidence.** None of the 8 uses an edge-anchored
+partial-width slide-in at ANY width. Recommend the half-built `edge:left/right` CSS is retired or
+left dormant rather than promoted to a variant (Bean's call — it is a common e-commerce cart
+pattern, but that is FR-36-19's flyout territory, not this block's evidence base).
+
+**What stays constant per variant (not operator-configurable):** the a11y contract (our
+`<dialog showModal>` + `inert` + focus trap at every size — better than all 8 references; only
+wearecollins even uses `<dialog>`), the anchoring model, and the close chrome (×, undeletable).
+**What is configurable:** background/surface treatment, alignment, gap/padding (already responsive
+objects), content via InnerBlocks (the "secondary content zone" every rich takeover fills
+differently is ALREADY our InnerBlocks model — no new region needed), animation (fold `animateFrom`
+into per-variant defaults, keep `fade` override), and the two flagged toggles above.
+
+**Content-on-mobile rule (from the drops observed):** default = reflow/stack, never silently drop
+(studionamma's model; lusion + wearecollins read as bugs). Operators who want to hide something at
+a width already have the BUILT Responsive-Visibility extension — no new mechanism.
+
+**Bean judgement calls (flagged, not settled):** (1) ship the lusion breakpoint-collapse toggle
+day one, or defer? (2) is `translucent` full-screen worth shipping now? (3) retire vs keep-dormant
+the `edge:left/right` CSS? (4) close-affordance style variants (burger-morph / separate × /
+text-swap) — aesthetic only, no functional winner.
+
 ## Sources
 
-Measured live: lamalama.com, lusion.co, dogstudio.co, fantasy.co, buck.co.
+Measured live (round 1-3): lamalama.com, lusion.co, dogstudio.co, fantasy.co, buck.co. Task-1
+append: all 8 sites live via superpowers-chrome (22/24 cells; resn 800/400 unconfirmed).
 Primary: [MDN `<dialog>`], [web.dev building-a-dialog-component],
 [whatwg/html#7732](https://github.com/whatwg/html/issues/7732),
 [W3C ARIA APG Disclosure Navigation](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/),

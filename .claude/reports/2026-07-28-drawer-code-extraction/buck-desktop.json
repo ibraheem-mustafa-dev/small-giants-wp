@@ -1,0 +1,37 @@
+{
+  "site": "buck.co",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<div class=\"navigation-expanded\"><header>[logo]  [X close]</header><ul class=\"css-18zj4cg\"><li><a>WORK</a></li><li><a>ABOUT</a></li><li><a>CONTACT</a></li><li><a>CAREERS</a></li><li><a>GAMES</a></li><li><a>GOODS</a></li></ul><footer>© 2026 BUCK    LinkedIn  Instagram  Vimeo  Privacy Policy</footer></div>",
+    "computed": {
+      "position": "fixed", "top": "0px", "right": "0px (measured -15px w/ scrollbar-gutter)", "bottom": "0px", "left": "0px",
+      "width": "100vw (1352px)", "height": "100vh (713px)", "max-width": "none",
+      "background-color": "rgb(127,76,30) — solid brand-brown, fully opaque",
+      "z-index": "1300", "display": "block"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "opaque full-bleed panel, no separate scrim needed" },
+  "menu_list": {
+    "computed": { "display": "flex", "flex-direction": "row", "align-items": "center", "justify-content": "normal", "gap": "normal", "note": "the flex row wraps to a vertical stack visually (Chakra UI responsive list) — 6 items right-of-centre" },
+    "column_count_observed": 1,
+    "link_count": 6
+  },
+  "menu_link": {
+    "computed": { "font-family": "Mabry, system-ui, ...", "font-size": "47.3px", "font-weight": "100", "line-height": "22.1px", "letter-spacing": "normal", "text-transform": "uppercase", "color": "rgb(0,0,0)", "text-decoration": "none", "padding": "0px", "display": "block" },
+    "hover_effect_note": "very light font-weight (100) at large size (47px), all-caps, black-on-brown"
+  },
+  "secondary_blocks": [
+    { "kind": "footer-text", "position_in_panel": "bottom-left", "summary": "'© 2026 BUCK' copyright line" },
+    { "kind": "social-links", "position_in_panel": "bottom-right", "summary": "LinkedIn / Instagram / Vimeo / Privacy Policy inline text row" }
+  ],
+  "close": {
+    "kind": "separate-x",
+    "computed": { "position": "relative (top-right)", "top": "0px", "right": "0px", "left": "0px", "width": "50px", "height": "24px" },
+    "note": "explicit X glyph, swapped in place of hamburger icon"
+  },
+  "motion": { "panel_transition_or_animation": "not captured", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "auto scroll (NOT hard-locked — body remains scrollable with menu open)", "scroll_lock_method_note": "Chakra UI 'navigation-expanded' state class controls visibility; no scroll-lock detected on body" },
+  "notes": "STRUCTURAL: full-viewport OPAQUE solid-brand-colour panel (no blur/transparency), logo top-left / menu right-of-centre / footer utility row bottom — simplest, most 'plain HTML nav' feeling of the 8, closest to a traditional full-screen overlay menu with minimal secondary content (no promo cards, no forms)."
+}

@@ -1,0 +1,32 @@
+{
+  "site": "dogstudio.co",
+  "viewport": "mobile",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "same .site-menu DOM as desktop; the '01'..'05' index-number column is CSS-hidden at this width, and the footer social row switches from text links to 5 circular icon-only badges",
+    "computed": {
+      "position": "fixed", "top": "0px", "right": "0px", "bottom": "0px", "left": "0px",
+      "width": "400px (100vw)", "height": "850px (100vh)", "max-width": "none",
+      "background-color": "rgba(0,0,0,0)", "z-index": "995", "display": "block"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "same as desktop — no separate scrim" },
+  "menu_list": {
+    "computed": { "display": "block", "note": "same vertical stack; index-number prefix column removed at mobile" },
+    "column_count_observed": 1,
+    "link_count": 5
+  },
+  "menu_link": {
+    "computed": { "font-family": "Heebo, Helvetica, Arial, sans-serif", "font-size": "40px", "font-weight": "200", "line-height": "36.8px", "letter-spacing": "-0.8px", "color": "rgba(160,168,220,0.8)", "padding": "10px 0px" },
+    "hover_effect_note": "type scale drops 45px→40px desktop-to-mobile (small step, still oversized/editorial at mobile)"
+  },
+  "secondary_blocks": [
+    { "kind": "other", "position_in_panel": "bottom-left", "summary": "'Watch our Showreel' link, same as desktop" },
+    { "kind": "social-links", "position_in_panel": "bottom", "summary": "5 circular icon-only badges (Facebook/Instagram/Dribbble/Twitter/Newsletter) replacing the desktop's inline text row — the tagline 'We Make Good Shit' is dropped/pushed off-screen at mobile" }
+  ],
+  "close": { "kind": "separate-x", "computed": { "position": "top-right, red X glyph" }, "note": "same close pattern as desktop" },
+  "motion": { "panel_transition_or_animation": "not captured", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not confirmed", "scroll_lock_method_note": "not confirmed" },
+  "notes": "DEVICE-TIER CHANGE: numbered index column (01-05) is a DESKTOP-ONLY decorative element, removed at mobile; footer social block switches representation (text row -> icon badges) rather than just reflowing; type scale steps down slightly (45px->40px). The tagline block appears to be cut off/scrolled below the visible 850px mobile viewport."
+}

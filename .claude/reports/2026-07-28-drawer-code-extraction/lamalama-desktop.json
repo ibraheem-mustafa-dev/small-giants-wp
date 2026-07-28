@@ -1,0 +1,81 @@
+{
+  "site": "lamalama.com",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<header class=\"ll-header js-header\"><div class=\"fixed left-1/2 -translate-x-1/2 backdrop-blur-sm top-4 rounded z-20 js-menu\"><div class=\"header-row\">[logo]<span>YOU MADE IT</span>[minimize-btn]</div><div class=\"flex flex-col w-full js-items-inner-container\"><div class=\"flex flex-col w-full\"><a>Work</a></div><div><a>What we do</a>[icon]</div><div><a>About us</a></div><div><a>Careers</a>[icon]</div><div><a>Contact</a></div></div><a class=\"pitchdeck-cta\">OUR PITCHDECK</a><div class=\"cta-row flex\"><button>SCHEDULE A CALL</button><button>START A PROJECT</button></div></div></header>",
+    "computed": {
+      "position": "fixed",
+      "top": "16px",
+      "right": "auto (computed box right=238px at this viewport)",
+      "bottom": "auto (computed box bottom=261px)",
+      "left": "50% (translated; computed left=676px = viewport-centre)",
+      "width": "438px",
+      "height": "436px",
+      "max-width": "438px (calc(438/16*1rem))",
+      "margin": "0px",
+      "padding": "0px",
+      "background-color": "rgba(0,0,0,0) — background painted by a separate layered element, not the flex root",
+      "backdrop-filter": "blur(4px)",
+      "border-radius": "4px (rounded)",
+      "overflow": "visible",
+      "z-index": "20",
+      "display": "flex",
+      "pointer-events": "auto"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "No dedicated full-viewport scrim — page dims/blurs only via panel's own backdrop-blur; hero content stays visible/blurred behind the small centred card." },
+  "menu_list": {
+    "computed": {
+      "display": "block",
+      "grid-template-columns": "none",
+      "flex-direction": "row",
+      "flex-wrap": "nowrap",
+      "gap": "normal",
+      "align-items": "normal",
+      "justify-content": "normal",
+      "padding": "0px",
+      "column-count": "auto",
+      "note": "outer list wrapper is block (js-items-inner-container); each row is its own flex row (space-between) pairing the link with an optional decorative icon"
+    },
+    "column_count_observed": 1,
+    "link_count": 5
+  },
+  "menu_link": {
+    "computed": {
+      "font-family": "SuisseBPIntl, Helvetica, Arial, sans-serif",
+      "font-size": "16px",
+      "font-weight": "400",
+      "line-height": "22.4px",
+      "letter-spacing": "-0.32px",
+      "text-transform": "none",
+      "color": "rgb(249, 244, 235)",
+      "text-decoration": "none",
+      "padding": "0px",
+      "display": "flex"
+    },
+    "hover_effect_note": "not measured (cheap static extraction only)"
+  },
+  "secondary_blocks": [
+    { "kind": "search", "position_in_panel": "top", "summary": "header bar with logo, 'YOU MADE IT' label, minimise/close control (not a menu link)" },
+    { "kind": "other", "position_in_panel": "inline", "summary": "decorative spinner/asterisk icon glyph next to 2 of the 5 items (What we do, Careers)" },
+    { "kind": "contact/CTA", "position_in_panel": "bottom", "summary": "'OUR PITCHDECK' full-width outlined link button" },
+    { "kind": "contact/CTA", "position_in_panel": "bottom", "summary": "2-up button row: 'SCHEDULE A CALL' (light) + 'START A PROJECT' (light) — opens a multi-step contact form flow inside the same panel shell" }
+  ],
+  "close": {
+    "kind": "text-swap",
+    "computed": { "position": "static", "top": "auto", "right": "auto", "left": "auto", "width": "30px", "height": "36px" },
+    "note": "top-right control is a '—' minimise glyph inside the panel header row, not a separate fixed-position X"
+  },
+  "motion": {
+    "panel_transition_or_animation": "transition: all (panel animates position/opacity/blur as it expands from the collapsed toggle button into the full card)",
+    "item_stagger": "not cheaply observable via static computed-style read"
+  },
+  "mechanics": {
+    "dialog": false,
+    "inert_count": 0,
+    "body_overflow": "hidden",
+    "scroll_lock_method_note": "body overflow:hidden while panel open"
+  }
+}

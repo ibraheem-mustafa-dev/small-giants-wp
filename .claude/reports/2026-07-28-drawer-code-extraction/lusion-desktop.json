@@ -1,0 +1,54 @@
+{
+  "site": "lusion.co",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<div class=\"--opened\"><div class=\"menu-list-card\"><a>HOME</a><a>ABOUT US</a><a>PROJECTS</a><button>CONTACT</button></div><div class=\"newsletter-card\"><h3>Subscribe to our newsletter</h3><input placeholder='Your email'/><button aria-submit/></div><div class=\"hidden-cta\">Let's talk</div><div class=\"labs-card\"><a>LABS</a></div></div>",
+    "computed": {
+      "position": "absolute",
+      "top": "107.6px",
+      "right": "67.6px",
+      "bottom": "auto",
+      "left": "auto (right-anchored)",
+      "width": "310px",
+      "height": "613px (sum of the 4 stacked cards)",
+      "max-width": "none",
+      "margin": "0px",
+      "padding": "0px",
+      "background-color": "rgba(0,0,0,0) — outer is a transparent flex column; each stacked card paints its own background",
+      "backdrop-filter": "none",
+      "border-radius": "0px (radius lives per-card, not on the outer)",
+      "overflow": "visible",
+      "z-index": "auto",
+      "display": "flex",
+      "pointer-events": "auto"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "no scrim — page/3D canvas stays fully visible and interactive behind the dropdown; dropdown is a small anchored panel, not an overlay" },
+  "menu_list": {
+    "computed": { "display": "flex", "flex-direction": "column", "gap": "normal", "padding": "16px 5px", "background-color": "rgb(255,255,255)" },
+    "column_count_observed": 1,
+    "link_count": 4
+  },
+  "menu_link": {
+    "computed": { "font-family": "Aeonik", "font-size": "16px", "font-weight": "400", "line-height": "16px", "letter-spacing": "normal", "text-transform": "uppercase", "color": "rgb(0,0,0)", "text-decoration": "none", "padding": "16px 26px", "display": "block" },
+    "hover_effect_note": "active item (HOME) carries a filled-dot indicator to its right (seen in screenshot), a '--active' class modifier"
+  },
+  "secondary_blocks": [
+    { "kind": "newsletter-form", "position_in_panel": "inline (2nd card, below menu list)", "summary": "white card, heading 'Subscribe to our newsletter' + email input + circular arrow-submit button, own rounded-card background" },
+    { "kind": "contact/CTA", "position_in_panel": "inline (3rd, currently 0-height/hidden)", "summary": "collapsed 'Let's talk' CTA slot (present in DOM, h:0 — likely expands on some other state)" },
+    { "kind": "other", "position_in_panel": "bottom", "summary": "black 'LABS' promo card (R&D sub-brand link), own dark background, own card" }
+  ],
+  "close": {
+    "kind": "text-swap",
+    "computed": { "position": "static (in header bar, sibling of the trigger)", "top": null, "right": null, "left": null, "width": null, "height": null },
+    "note": "header shows 3 buttons when open: a small waveform icon, 'LET'S TALK' pill, and 'CLOSE' pill (label swapped from 'MENU' to 'CLOSE') — text-swap close, not a fixed X"
+  },
+  "motion": {
+    "panel_transition_or_animation": "not captured (static read only) — but each card is independently sized/positioned suggesting an accordion/stagger reveal",
+    "item_stagger": "not cheaply observable"
+  },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "hidden", "scroll_lock_method_note": "body overflow:hidden while open" },
+  "notes": "STRUCTURAL: this is a right-anchored DROPDOWN of independently-cardded stacked blocks (menu list card / newsletter card / labs promo card), not one continuous panel — each block has its own background/border-radius. Distinct archetype from both lamalama's single floating card and a true full-height side-drawer."
+}

@@ -1,0 +1,47 @@
+{
+  "site": "dogstudio.co",
+  "viewport": "desktop",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "<div class=\"site-menu\"><button class=\"site-header-button\">X close</button><ul class=\"site-menu-list\"><li>01 <a>The Studio</a></li><li>02 <a>Our Cases</a></li><li>03 <a>Careers</a></li><li>04 <a>Our Values</a></li><li>05 <a>Contact</a></li></ul><a class=\"site-menu-showreel\">Watch our Showreel</a><div class=\"tagline\">We Make Good Shit</div><div class=\"footer-social\">Facebook / Instagram / Dribbble / Twitter / Newsletter</div></div>",
+    "computed": {
+      "position": "fixed",
+      "top": "0px", "right": "0px", "bottom": "0px", "left": "0px",
+      "width": "100vw (1352px at this viewport)",
+      "height": "100vh (713px)",
+      "max-width": "none",
+      "margin": "0px",
+      "padding": "0px",
+      "background-color": "rgba(0,0,0,0) — transparent; darkening comes from the 3D creature/hero background itself, not an opaque panel fill",
+      "backdrop-filter": "none",
+      "border-radius": "0px",
+      "overflow": "visible",
+      "z-index": "995",
+      "display": "block"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "no separate scrim div — the full-viewport menu layer sits directly over the (still-animating) hero canvas which reads visually darker/dimmer" },
+  "menu_list": {
+    "computed": { "display": "block", "flex-direction": "row", "gap": "normal", "grid-template-columns": "none", "note": "vertical stack of <li>, left-anchored, each row prefixed with a 2-digit index (01..05)" },
+    "column_count_observed": 1,
+    "link_count": 5
+  },
+  "menu_link": {
+    "computed": { "font-family": "Heebo, Helvetica, Arial, sans-serif", "font-size": "45px", "font-weight": "200", "line-height": "41.4px", "letter-spacing": "-0.9px", "text-transform": "none", "color": "rgba(160,168,220,0.8)", "text-decoration": "none", "padding": "10px 0px", "display": "inline-block" },
+    "hover_effect_note": "large light-weight display serif/sans at 45px — clearly an editorial statement-typography menu, not a compact UI list"
+  },
+  "secondary_blocks": [
+    { "kind": "other", "position_in_panel": "bottom-left", "summary": "'Watch our Showreel' link with red chevron icon" },
+    { "kind": "other", "position_in_panel": "bottom-right", "summary": "large serif tagline 'We Make Good Shit' (brand statement, not navigational)" },
+    { "kind": "social-links", "position_in_panel": "bottom-right, below tagline", "summary": "inline text-separated row: Facebook / Instagram / Dribbble / Twitter / Newsletter" }
+  ],
+  "close": {
+    "kind": "separate-x",
+    "computed": { "position": "relative (sits in top-right of header bar)", "top": "0px", "right": "0px", "left": "0px", "width": "32px", "height": "30px" },
+    "note": "explicit X glyph, top-right, swaps from the hamburger toggle button"
+  },
+  "motion": { "panel_transition_or_animation": "not captured (static read)", "item_stagger": "numbered list (01-05) suggests a staged/staggered reveal by index, not confirmed by computed style" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not checked (hero canvas kept running behind menu, suggesting scroll may not be hard-locked the same way)", "scroll_lock_method_note": "not confirmed" },
+  "notes": "STRUCTURAL: true full-viewport (0/0/0/0 fixed) overlay drawer with oversized editorial typography (45px, weight 200) as the PRIMARY design signature — closer to an art-directed full-screen takeover than a compact list. Distinct third archetype vs lamalama's floating card and lusion's anchored dropdown-stack."
+}

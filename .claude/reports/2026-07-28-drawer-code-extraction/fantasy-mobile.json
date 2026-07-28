@@ -1,0 +1,32 @@
+{
+  "site": "fantasy.co",
+  "viewport": "mobile",
+  "opened": true,
+  "reason_if_not": "",
+  "panel": {
+    "html_outline": "same DOM as desktop; the inline sentence CTA ('Ready to launch an intelligent experience? Let's talk') is ABSENT at mobile (not merely hidden below fold — element not found via query), promo card becomes full-width",
+    "computed": {
+      "position": "fixed", "top": "-93px", "right": "0px", "bottom": "-93px", "left": "0px",
+      "width": "400px (100vw)", "height": "1036px (viewport+186px overshoot)",
+      "background-color": "rgb(0,0,0) opaque, same as desktop"
+    }
+  },
+  "backdrop": { "exists": false, "computed": null, "note": "same as desktop" },
+  "menu_list": {
+    "computed": { "note": "same centred vertical stack of 3 + tertiary row below, unchanged layout at mobile" },
+    "column_count_observed": 1,
+    "link_count": 3
+  },
+  "menu_link": {
+    "computed": { "font-size": "46.5px (fluid/vw-based scale down from 70px desktop)", "line-height": "46.5px", "letter-spacing": "-1.4px" },
+    "hover_effect_note": "type scales down proportionally (~66% of desktop) rather than a fixed breakpoint step — consistent with a clamp()/vw-based font-size"
+  },
+  "secondary_blocks": [
+    { "kind": "other", "position_in_panel": "centre, below primary 3", "summary": "tertiary row Contact/Latest/Careers — unchanged" },
+    { "kind": "promo-card", "position_in_panel": "bottom, full-width", "summary": "same LIV GOLF case-study promo card, now spans full viewport width" }
+  ],
+  "close": { "kind": "separate-x", "computed": { "note": "same dark rounded-square X, top-right" } },
+  "motion": { "panel_transition_or_animation": "same overshoot-inset pattern as desktop, scaled to viewport", "item_stagger": "not observable" },
+  "mechanics": { "dialog": false, "inert_count": 0, "body_overflow": "not confirmed", "scroll_lock_method_note": "not confirmed" },
+  "notes": "DEVICE-TIER CHANGE: the bottom-left inline CTA sentence is DROPPED entirely at mobile (not reflowed) — a content-priority decision, not a CSS media-query hide (would need live-DOM confirmation it isn't just off-screen). Type scale is fluid (vw/clamp-based), not stepped."
+}
