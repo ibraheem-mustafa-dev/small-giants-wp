@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "SGS Nav Drawer",
 	"category": "sgs-interactive",
-	"description": "The mobile off-canvas menu the burger opens. A full-screen native <dialog> modal (top layer — survives a transformed header ancestor). Its content is editable InnerBlocks (menu, logo, CTA); the × close button is fixed chrome the block always renders. Open/close/focus/scroll-lock/ESC are owned by the shared sgs/nav Interactivity store.",
+	"description": "The menu panel the burger opens — on any device (phones, tablets, and desktops when the nav's Burger Menu is set to Always). A full-screen native <dialog> modal (top layer — survives a transformed header ancestor). Its content is editable InnerBlocks (menu, logo, CTA); the × close button is fixed chrome the block always renders. Open/close/focus/scroll-lock/ESC are owned by the shared sgs/nav Interactivity store.",
 	"keywords": [
 		"nav",
 		"drawer",

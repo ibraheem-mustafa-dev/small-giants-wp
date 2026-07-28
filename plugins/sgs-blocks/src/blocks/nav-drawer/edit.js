@@ -47,21 +47,17 @@ import { colourVar } from '../../utils';
  * defaults, giving no signal it was theirs to change (Bean 2026-07-28).
  *
  * Seeding drawer-appropriate values makes the capability discoverable AND
- * gives a sane vertical starting point: items span the drawer's width with
- * comfortable touch targets, and a divider between them reads correctly in a
- * stacked list (render.php flips it from a right border to a bottom border
- * inside a drawer). Colours stay UNSET so the drawer's own background still
- * shows through until a client deliberately picks one.
+ * gives a sane vertical starting point (a tighter stacked gap). Colours stay
+ * UNSET so the drawer's own background shows through until a client picks
+ * one. NOTE: the item-divider seed that briefly lived here was removed the
+ * same day it was added — the divider attributes were dropped from
+ * sgs/nav-menu entirely (Bean ruling: border/divider work belongs at header
+ * level), and WP silently DISCARDS attrs a block.json no longer declares
+ * (D338), so leaving them here would have been dead weight that looked
+ * meaningful.
  */
 const TEMPLATE = [
-	[
-		'sgs/nav-menu',
-		{
-			gap: '4px',
-			itemSeparatorColour: 'border-subtle',
-			itemSeparatorWidth: '1px',
-		},
-	],
+	[ 'sgs/nav-menu', { gap: '4px' } ],
 	[ 'sgs/responsive-logo' ],
 	[ 'sgs/button' ],
 ];

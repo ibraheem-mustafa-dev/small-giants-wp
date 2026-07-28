@@ -140,16 +140,10 @@
 		"paddingTablet": { "type": "object", "default": {} },
 		"paddingMobile": { "type": "object", "default": {} },
 
-		"_note_nav_fill": "Nav CONTAINER appearance (2026-07-28). The block previously had NO fill controls at all — no background, no text colour, no border on the <nav> itself (only per-ITEM colours) — so a client could never sit the bar on its own surface. Every default is unset/0, so an untouched nav renders byte-identically to before. Because the drawer holds its OWN sgs/nav-menu instance, these also give fully independent drawer styling with no extra plumbing.",
+		"_note_nav_fill": "Nav CONTAINER surface (2026-07-28). The block previously had NO fill controls at all — only per-ITEM colours — so a client could never sit the bar on its own surface. Scope is deliberately SURFACE ONLY: border/radius/divider were built and then REMOVED the same day (Bean ruling) because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not re-add them here without a header-level reason. Defaults unset, so an untouched nav renders byte-identically. Because the drawer holds its OWN sgs/nav-menu instance, these also give fully independent drawer styling with no extra plumbing.",
 		"navBg": { "type": "string", "default": "" },
 		"navColour": { "type": "string", "default": "" },
-		"navBorderColour": { "type": "string", "default": "" },
-		"navBorderWidth": { "type": "string", "default": "0px" },
-		"navRadius": { "type": "number" },
 		"navBgHover": { "type": "string", "default": "" },
-		"navBorderColourHover": { "type": "string", "default": "" },
-		"itemSeparatorColour": { "type": "string", "default": "" },
-		"itemSeparatorWidth": { "type": "string", "default": "0px" },
 
 		"itemColour": { "type": "string", "default": "" },
 		"itemBg": { "type": "string", "default": "" },

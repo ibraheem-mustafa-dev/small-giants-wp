@@ -12,7 +12,7 @@
  * @package SGS\Blocks
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
+import { useMemo, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
 	useBlockProps,
@@ -30,7 +30,6 @@ import {
 	ButtonGroup,
 	Button,
 	Notice,
-	RangeControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
@@ -45,7 +44,38 @@ import {
 	ResponsiveBoxControl,
 } from '../../components';
 
-const COLLAPSE_PRESETS = [ 640, 768, 1024 ];
+/**
+ * Burger Menu scope presets (Bean 2026-07-28 — no bare px values in the UI).
+ * The stored attribute stays the numeric `collapsePoint` (render.php and the
+ * emitted @media rules are unchanged); these are the operator-facing names:
+ *
+ * - mobile (DEFAULT) — burger below 768px (the device-tier mobile boundary,
+ *   `~/.claude/rules/visual-standards.md`).
+ * - tablet — burger below 1024px (tablet + mobile collapse).
+ * - always — burger on EVERY device. 99999px comfortably exceeds any real
+ *   viewport; increasingly common on large sites (drawer-first navigation).
+ * - custom — any other stored value; picking it in the UI reveals the px box.
+ */
+const BURGER_SCOPE_PX = { mobile: 768, tablet: 1024, always: 99999 };
+
+/**
+ * Resolve a stored collapsePoint back to its scope name for the toggle.
+ *
+ * @param {number} px Stored collapse point.
+ * @return {string} 'mobile' | 'tablet' | 'always' | 'custom'.
+ */
+function burgerScopeOf( px ) {
+	if ( px === BURGER_SCOPE_PX.always ) {
+		return 'always';
+	}
+	if ( px === BURGER_SCOPE_PX.tablet ) {
+		return 'tablet';
+	}
+	if ( px === BURGER_SCOPE_PX.mobile ) {
+		return 'mobile';
+	}
+	return 'custom';
+}
 
 /**
  * Link-count threshold for informational notice (FR-36-8, FR-36-12).
@@ -111,13 +141,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		maxWidth,
 		navBg,
 		navColour,
-		navBorderColour,
-		navBorderWidth,
-		navRadius,
 		navBgHover,
-		navBorderColourHover,
-		itemSeparatorColour,
-		itemSeparatorWidth,
 		itemColour,
 		itemBg,
 		itemColourHover,
@@ -145,6 +169,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		indicatorColour,
 		itemMagnetEnabled,
 	} = attributes;
+
+	// Burger Menu 'Custom' reveal — UI-only state (the stored value is collapsePoint).
+	const [ showCustomCollapse, setShowCustomCollapse ] = useState( false );
 
 	// Classic menus (Appearance → Menus, `nav_menu` terms) are the PRIMARY source
 	// (Spec 36 FR-36-1); block-based wp_navigation menus are the Phase-3 extra.
@@ -354,7 +381,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<>
 								<p style={ { margin: '0 0 8px' } }>
 									{ __(
-										'On a phone this menu becomes a burger button — but there is no mobile menu panel for it to open, so tapping it will do nothing.',
+										'Below the collapse size this menu becomes a burger button — but there is no menu panel for it to open, so tapping it will do nothing.',
 										'sgs-blocks'
 									) }
 								</p>
@@ -365,7 +392,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										onClick={ addDrawer }
 									>
 										{ __(
-											'Add the mobile menu',
+											'Add the menu panel',
 											'sgs-blocks'
 										) }
 									</Button>
@@ -377,7 +404,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									{ sprintf(
 										/* translators: 1: drawer id this menu points at. 2: the drawer id that actually exists. */
 										__(
-											'This burger is set to open a mobile menu panel named “%1$s”, but no panel with that name is here. The panel that does exist is named “%2$s”.',
+											'This burger is set to open a menu panel named “%1$s”, but no panel with that name is here. The panel that does exist is named “%2$s”.',
 											'sgs-blocks'
 										),
 										effectiveDrawerRef,
@@ -431,49 +458,62 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Collapse point', 'sgs-blocks' ) }>
-					<UnitControl
-						label={ __( 'Switch to burger below', 'sgs-blocks' ) }
-						value={ `${ collapsePoint }px` }
-						units={ [ { value: 'px', label: 'px', default: 768 } ] }
-						onChange={ ( val ) => {
-							const n = parseInt( val, 10 );
-							if ( ! Number.isNaN( n ) && n > 0 ) {
-								setAttributes( { collapsePoint: n } );
-							}
-						} }
+				<PanelBody title={ __( 'Burger Menu', 'sgs-blocks' ) }>
+					<ToggleGroupControl
+						label={ __( 'Show the burger on', 'sgs-blocks' ) }
 						help={ __(
-							'A visual breakpoint (independent of the Tablet/Mobile style tiers) — the bar shows as links at or above this width, and as a burger below it.',
+							'Choose how far up the burger reaches. Always turns this into a burger-only menu on every device — increasingly common on large sites. Below the chosen size the links collapse into the burger; above it they show as a bar.',
 							'sgs-blocks'
 						) }
-					/>
-					<ButtonGroup style={ { marginTop: '8px' } }>
-						{ COLLAPSE_PRESETS.map( ( preset ) => (
-							<Button
-								key={ preset }
-								variant={
-									collapsePoint === preset
-										? 'primary'
-										: 'secondary'
-								}
-								size="small"
-								onClick={ () =>
-									setAttributes( { collapsePoint: preset } )
-								}
-							>
-								{ preset }px
-							</Button>
-						) ) }
-						<Button
-							variant="tertiary"
-							size="small"
-							onClick={ () =>
-								setAttributes( { collapsePoint: 768 } )
+						value={ burgerScopeOf( collapsePoint ) }
+						isBlock
+						__nextHasNoMarginBottom
+						onChange={ ( value ) => {
+							if ( value === 'custom' ) {
+								setAttributes( { collapsePoint: collapsePoint || 768 } );
+								setShowCustomCollapse( true );
+								return;
 							}
-						>
-							{ __( 'Reset', 'sgs-blocks' ) }
-						</Button>
-					</ButtonGroup>
+							setShowCustomCollapse( false );
+							setAttributes( {
+								collapsePoint: BURGER_SCOPE_PX[ value ],
+							} );
+						} }
+					>
+						<ToggleGroupControlOption
+							value="always"
+							label={ __( 'Always', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="tablet"
+							label={ __( 'Tablet', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="mobile"
+							label={ __( 'Mobile', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="custom"
+							label={ __( 'Custom', 'sgs-blocks' ) }
+						/>
+					</ToggleGroupControl>
+
+					{ ( showCustomCollapse ||
+						burgerScopeOf( collapsePoint ) === 'custom' ) && (
+						<UnitControl
+							label={ __( 'Switch to burger below', 'sgs-blocks' ) }
+							value={ `${ collapsePoint }px` }
+							units={ [ { value: 'px', label: 'px', default: 768 } ] }
+							onChange={ ( val ) => {
+								const n = parseInt( val, 10 );
+								if ( ! Number.isNaN( n ) && n > 0 ) {
+									setAttributes( { collapsePoint: n } );
+								}
+							} }
+							__next40pxDefaultSize
+						/>
+					) }
+
 				</PanelBody>
 
 				<PanelBody
@@ -530,10 +570,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Mobile menu', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Menu panel', 'sgs-blocks' ) } initialOpen={ false }>
 					<p style={ { marginTop: 0 } }>
 						{ __(
-							'On a phone this menu becomes a burger button that opens a full-screen mobile menu panel. To change what visitors see in it, select that panel and edit its contents like any other block.',
+							'Below the collapse size (see Burger Menu above) this menu becomes a burger button that opens a menu panel — on any device, including desktop if you choose Always. To change what visitors see in it, select that panel and edit its contents like any other block.',
 							'sgs-blocks'
 						) }
 					</p>
@@ -544,7 +584,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { drawerRef: val } )
 						}
 						help={ __(
-							'Only change this if the page has more than one mobile menu panel — it must match the name set on the panel you want to open.',
+							'Only change this if the page has more than one menu panel — it must match the name set on the panel you want to open.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
@@ -659,7 +699,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<p className="components-base-control__help">
 						{ __(
-							'The bar itself — its background, text colour and border. Leave anything blank to inherit from the header or drawer around it. The menu inside your mobile drawer is a separate copy: select it there to style the drawer on its own.',
+							'The bar itself — its background and text colour. Leave anything blank to inherit from the header or menu panel around it. The menu inside your menu panel is a separate copy: select it there to style the panel on its own. For a border or a pill look around the whole header, style the Site Header block instead.',
 							'sgs-blocks'
 						) }
 					</p>
@@ -678,18 +718,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										enableAlpha
 										clearable
 									/>
-									<DesignTokenPicker
-										label={ __( 'Border colour', 'sgs-blocks' ) }
-										value={ navBorderColourHover }
-										onChange={ ( value ) =>
-											setAttributes( {
-												navBorderColourHover: value || '',
-											} )
-										}
-										linked
-										clearable
-									/>
-								</>
+									</>
 							) : (
 								<>
 									<DesignTokenPicker
@@ -711,63 +740,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										linked
 										clearable
 									/>
-									<DesignTokenPicker
-										label={ __( 'Border colour', 'sgs-blocks' ) }
-										value={ navBorderColour }
-										onChange={ ( value ) =>
-											setAttributes( { navBorderColour: value || '' } )
-										}
-										linked
-										clearable
-									/>
-									<UnitControl
-										label={ __( 'Border width', 'sgs-blocks' ) }
-										value={ navBorderWidth || '0px' }
-										onChange={ ( value ) =>
-											setAttributes( { navBorderWidth: value || '0px' } )
-										}
-										__next40pxDefaultSize
-									/>
-									<RangeControl
-										label={ __( 'Corner radius', 'sgs-blocks' ) }
-										value={ navRadius ?? 0 }
-										onChange={ ( value ) =>
-											setAttributes( {
-												navRadius:
-													value === 0 ? undefined : value,
-											} )
-										}
-										min={ 0 }
-										max={ 60 }
-										__next40pxDefaultSize
-										__nextHasNoMarginBottom
-									/>
 								</>
 							)
 						}
 					</StateToggleControl>
 
-					<DesignTokenPicker
-						label={ __( 'Divider between items', 'sgs-blocks' ) }
-						help={ __(
-							'Draws a line between menu items. Runs down the side on a horizontal bar, and across the bottom inside the drawer.',
-							'sgs-blocks'
-						) }
-						value={ itemSeparatorColour }
-						onChange={ ( value ) =>
-							setAttributes( { itemSeparatorColour: value || '' } )
-						}
-						linked
-						clearable
-					/>
-					<UnitControl
-						label={ __( 'Divider thickness', 'sgs-blocks' ) }
-						value={ itemSeparatorWidth || '0px' }
-						onChange={ ( value ) =>
-							setAttributes( { itemSeparatorWidth: value || '0px' } )
-						}
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
