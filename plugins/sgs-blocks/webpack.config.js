@@ -20,6 +20,152 @@ const scriptConfig = configs.find(
 	( config ) => config.output?.module !== true
 );
 
+/* ==========================================================================
+ * Tier G (GSAP) module wiring — Spec 38 §4.4 / D409.
+ *
+ * This block touches the MODULE config, which everything above deliberately
+ * does not: `scriptConfig` above is selected as `output.module !== true`, so
+ * until now this file has only ever edited the classic-script half. Every
+ * `viewScriptModule` (38 blocks) builds through the OTHER config, and that is
+ * where GSAP has to be wired. Running wp-scripts with `--experimental-modules`
+ * makes the default export an array of TWO configs; index 1 is the module one
+ * (`output.module: true`, `experiments.outputModule: true`).
+ *
+ * Two jobs:
+ *
+ *  1. Build each GSAP piece ONCE, as a standalone module (the `src/vendor-
+ *     modules/*` shims), which PHP then registers via
+ *     `wp_register_script_module()`. That is what makes conditional loading
+ *     possible at all — a page using no Tier G effect enqueues none of them
+ *     and ships zero GSAP bytes.
+ *
+ *  2. Externalise the bare `gsap*` specifiers everywhere ELSE, so no effect
+ *     module or block chunk bundles its own copy. With `externalsType`
+ *     'module' the import survives into the output as a real
+ *     `import … from "@sgs/gsap"`, which the browser resolves through the
+ *     import map WordPress prints for registered script modules.
+ *
+ * The vendor shims themselves are EXEMPT from rule 2 — they are the modules
+ * everyone else externalises to, so they must bundle what they re-export.
+ * That exemption is keyed on the issuing directory, which is the only clause
+ * needed: verified against gsap 3.15.0, ScrollTrigger imports just
+ * `./Observer.js` and SplitText imports nothing, so there is no relative
+ * core-import path to intercept.
+ * ========================================================================== */
+
+const moduleConfig = configs.find( ( config ) => config.output?.module === true );
+
+if ( moduleConfig ) {
+	// Module ID ⇄ bare specifier. These IDs MUST match the
+	// wp_register_script_module() calls in includes/class-sgs-motion-registry.php
+	// — a mismatch produces an unresolved bare specifier and a hard module
+	// error in the browser, so they are asserted by the A1 canary check.
+	const GSAP_MODULE_IDS = {
+		gsap: '@sgs/gsap',
+		'gsap/ScrollTrigger': '@sgs/gsap-scrolltrigger',
+		'gsap/SplitText': '@sgs/gsap-splittext',
+		// The Tier G provider is externalised too, for the same reason as GSAP
+		// itself: it holds the plugin-registration set and the shared
+		// matchMedia context. Bundled per-effect, each effect would get its own
+		// private copy of that state and reduced-motion teardown would only
+		// ever revert one effect's tweens.
+		'@sgs/motion-provider': '@sgs/motion-provider',
+	};
+
+	const VENDOR_DIR = 'src/vendor-modules';
+
+	const existingModuleEntry = moduleConfig.entry;
+
+	moduleConfig.entry = () => {
+		const entries =
+			typeof existingModuleEntry === 'function'
+				? existingModuleEntry()
+				: existingModuleEntry;
+
+		const vendorEntries = {
+			'vendor-modules/gsap-core': path.resolve(
+				process.cwd(),
+				'src',
+				'vendor-modules',
+				'gsap-core.js'
+			),
+			'vendor-modules/gsap-scrolltrigger': path.resolve(
+				process.cwd(),
+				'src',
+				'vendor-modules',
+				'gsap-scrolltrigger.js'
+			),
+			'vendor-modules/gsap-splittext': path.resolve(
+				process.cwd(),
+				'src',
+				'vendor-modules',
+				'gsap-splittext.js'
+			),
+
+			/*
+			 * Tier G runtime. Each effect is its OWN module on purpose: a
+			 * single combined runtime would import every plugin, so a page
+			 * using one scrub would still download SplitText and the
+			 * "exactly core + ScrollTrigger" guarantee in FR-38-3 would be
+			 * unmeetable. One module per effect keeps loading honest.
+			 */
+			'shared/effects/gsap/provider': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'gsap',
+				'provider.js'
+			),
+			'shared/effects/gsap/fx-scrub': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'gsap',
+				'fx-scrub.js'
+			),
+		};
+
+		// Mirror the promise/sync handling the script entry above uses — which
+		// branch runs depends on the installed wp-scripts, and that is not a
+		// thing to guess.
+		if ( entries && typeof entries.then === 'function' ) {
+			return entries.then( ( resolved ) => ( {
+				...resolved,
+				...vendorEntries,
+			} ) );
+		}
+
+		return { ...entries, ...vendorEntries };
+	};
+
+	// Emit real `import` statements for externals rather than any runtime shim.
+	moduleConfig.externalsType = 'module';
+
+	const previousExternals = moduleConfig.externals;
+
+	moduleConfig.externals = [
+		// Preserve anything wp-scripts already declared — never clobber it.
+		...( Array.isArray( previousExternals )
+			? previousExternals
+			: previousExternals
+			? [ previousExternals ]
+			: [] ),
+		( { context, request }, callback ) => {
+			// The vendor shims BUNDLE gsap; everyone else imports it.
+			const from = ( context || '' ).replace( /\\/g, '/' );
+			if ( from.includes( VENDOR_DIR ) ) {
+				return callback();
+			}
+			if ( GSAP_MODULE_IDS[ request ] ) {
+				return callback( null, GSAP_MODULE_IDS[ request ] );
+			}
+			return callback();
+		},
+	];
+}
+
 if ( ! scriptConfig ) {
 	module.exports = defaultConfig;
 } else {

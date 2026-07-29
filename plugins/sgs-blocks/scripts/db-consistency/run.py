@@ -81,6 +81,7 @@ _check_variant_reseed_mod = _load_sibling("check_variant_reseed")
 _check_orphan_roles_mod = _load_sibling("check_orphan_roles")
 _check_tier_composition_mod = _load_sibling("check_tier_composition")
 _check_css_property_reseed_mod = _load_sibling("check_css_property_reseed")
+_check_motion_fx_reseed_mod = _load_sibling("check_motion_fx_reseed")
 
 Violation = _models_mod.Violation
 
@@ -124,6 +125,7 @@ _CHECK_LABELS = {
     "orphan_roles": "Check #6 — Role Referential Integrity",
     "tier_composition": "Check #7 — tier ↔ composition_role/container_kind",
     "css_property_reseed": "Check #8 — css_property/css_layer/css_element/css_state/css_tier Reseed-Survival",
+    "motion_fx_reseed": "Check #9 — Spec 38 fx_effects Reseed-Survival",
 }
 
 # Display order for the grouped report.
@@ -136,7 +138,7 @@ _CHECK_LABELS = {
 _CHECK_ORDER = (
     "routing", "composition", "variants",
     "overrides_drift", "variant_reseed", "orphan_roles", "tier_composition",
-    "css_property_reseed",
+    "css_property_reseed", "motion_fx_reseed",
 )
 
 
@@ -228,6 +230,7 @@ def main() -> int:
         violations.extend(_check_orphan_roles_mod.run(conn))
         violations.extend(_check_tier_composition_mod.run(conn))
         violations.extend(_check_css_property_reseed_mod.run(conn))
+        violations.extend(_check_motion_fx_reseed_mod.run(conn))
     finally:
         conn.close()
 

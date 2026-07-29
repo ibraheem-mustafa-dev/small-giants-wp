@@ -37,6 +37,13 @@ final class SGS_Blocks {
 		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
 		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
 
+		// Tier G motion registry (Spec 38 §4.4 / D409) — registers the GSAP
+		// script modules and enqueues them ONLY on pages whose rendered blocks
+		// actually carry an fx effect. A page with no Tier G effect serves zero
+		// GSAP bytes; registration alone costs nothing.
+		require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-registry.php';
+		SGS_Motion_Registry::register();
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

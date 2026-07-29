@@ -67,3 +67,8 @@ def tier_composition_key(block: str) -> str:
 def css_property_reseed_key(block: str, attr: str, kind: str) -> str:
     """Check #8 (css_property/css_layer reseed-survival) stable dedup key."""
     return f"cssprop:{kind}:{block}:{attr}"
+
+
+def motion_fx_reseed_key(effect: str, kind: str) -> str:
+    """Check #9 (Spec 38 fx_effects reseed-survival) stable dedup key."""
+    return f"fxreseed:{kind}:{effect}"
