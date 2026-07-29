@@ -9,6 +9,56 @@ status: MEASUREMENT COMPLETE — awaiting Bean's eye (R-31-13); gate does NOT cl
 
 # Task 5 — the pre-registered exit gate for the drawer variants
 
+> ## ⛔ CORRECTION (2026-07-29, same day, after Bean reviewed the pairs)
+>
+> **This report's "21/21 PASS" is TRUE ONLY OF THE CHECKS IT RAN, and those checks
+> had holes big enough to hide defects Bean spotted in seconds. Read this box
+> before believing anything below it.**
+>
+> 1. **The reference captures were NOT verified open.** `shoot-drawer-pairs.mjs`
+>    clicked a trigger and screenshotted; it never asserted a panel had opened. So
+>    "6/7 references captured" was false — `two-column-editorial`'s "reference" is
+>    just the studionamma homepage with no menu open. **This is the SAME vacuous-
+>    check class as the axe guard fixed earlier in this very session**, repeated on
+>    the reference side. Any pair whose reference was not verified open proves
+>    nothing.
+> 2. **The contrast check only looked at nav links.** It measured
+>    `.sgs-nav-menu__link-text` and nothing else, so it reported a healthy 13.14:1
+>    for `centred-statement` while that same drawer rendered **invisible text at
+>    1:1** in a child block. A full re-sweep of every text element in every drawer
+>    found **6 invisible elements across 2 variants** (see D1 below).
+> 3. **Nothing checked alignment.** `centred-statement` — the variant whose NAME is
+>    its alignment — renders its nav links flush left. Measured, not disputed.
+> 4. **Content fidelity was asserted, never measured.** "Exact content" was checked
+>    as *"the strings I planned are in the DOM"*, not as *"this looks like the
+>    reference"*. Bean's verdict on the built result is "night and day", and on the
+>    evidence below he is right.
+>
+> ### D1 — Invisible text: `sgs/icon-list` in a dark drawer (6 elements, 2 variants)
+> `sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of
+> `rgb(58,46,38)` — **identical colours, contrast 1:1**. Affected: every
+> `sgs/icon-list` inside a drawer using the dark `footer-bg`, i.e.
+> `centred-statement` (Contact/Latest/Careers) and `split-zone-serif`
+> (Team/Careers/Press). The other five variants are clean, so this is specifically
+> icon-list failing to resolve a contrast-safe colour against a dark drawer.
+>
+> ### D2 — `drawerAlign: 'center'` does not centre the menu
+> The drawer emits **no align class at all** (`drawerAlignAttrPresent: false`).
+> `drawerAlign` centres the drawer's direct children *as boxes*; the nav-menu then
+> stretches to the full 1376px with `text-align: start`, so the links stay at x=32.
+> Secondary blocks (narrow) do centre, which is why the panel looks half-centred.
+>
+> ### D3 — Fidelity is far below "clone" on every variant
+> Bean's review of the lamalama pair: text styling, panel background, border lines,
+> symbols and button styling all differ, and three whole behaviours are absent —
+> the cycling animated background imagery, the animated "THIS IS US" circle, and
+> the right-hand floating UI. The variants currently reproduce *structure and
+> copy*, not *design*.
+>
+> **Consequence: the gate is not merely un-signed-off, it is not passable in the
+> current form.** The next decision is architectural (block vs CPT — see the
+> session response), not another measurement pass.
+
 ## Plain English first
 
 Last session built seven "looks" for the burger menu, each modelled on a real

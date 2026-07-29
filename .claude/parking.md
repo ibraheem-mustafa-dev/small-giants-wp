@@ -1016,6 +1016,36 @@ measure-and-write pattern shipped at D404 is the template. Pure geometry, no ani
 **Trigger:** next nav-drawer session working on the `trigger` variant specifically, or when a
 client build surfaces a visible misalignment on a real header layout.
 
+### P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER — icon-list text renders 1:1 against a dark drawer
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+`sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` —
+identical, contrast **1:1**, text completely invisible. Measured across all 7 POC fixtures: it hits
+exactly the two variants whose drawer uses the dark `footer-bg` (`centred-statement`
+Contact/Latest/Careers, `split-zone-serif` Team/Careers/Press = 6 elements); the other five are
+clean. So `sgs/icon-list` does not resolve a contrast-safe colour against its drawer background the
+way nav links do.
+
+⚠ **This passed the Task-5 sweep** because the sweep's contrast check only measured
+`.sgs-nav-menu__link-text`. Any contrast gate must walk EVERY text element in the surface.
+
+**Trigger:** next nav-drawer or icon-list session; blocks any "drawer variants are visually done"
+claim.
+
+### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU — drawerAlign:center leaves nav links flush left
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+The drawer emits no align class (`drawerAlignAttrPresent: false` on the live element).
+`drawerAlign` centres the drawer's direct children as BOXES; the nav-menu then stretches to full
+width (1376px at 1440) with `text-align: start`, so its links stay at x=32 while the narrower
+secondary blocks do centre — the panel reads half-centred. Affects `centred-statement`, the variant
+whose name IS its alignment.
+
+Fix shape: propagate `drawerAlign` into the nav-menu's own item alignment (bar `align-items` +
+link `text-align`), not just the drawer body's box alignment. Shared-block change → design gate.
+
+**Trigger:** the block-vs-CPT architecture decision; do not patch before that lands.
+
 ### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
 

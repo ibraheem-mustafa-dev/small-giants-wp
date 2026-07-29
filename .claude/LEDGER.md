@@ -50,10 +50,26 @@ no.** Do NOT re-present these for review; every variant needs real work first. B
 these clone attempts need huge fixes to reach completion now."*
 
 **What he found, all verified:**
-- **Content is NOT an exact clone**, despite the §6 POC rule requiring exactly that. `centred-statement`
-  renders **3 menu items** (Work/Services/Impact) where the extraction recorded **7**.
+- **Content is NOT an exact clone**, despite the §6 POC rule requiring exactly that.
+  ⚠ **CORRECTION (measured 2026-07-29, after this entry was first written): the "3 items where the
+  extraction recorded 7" claim is WRONG and must not drive the rework.** The 7-item site is
+  studionamma (→ `two-column-editorial`). `centred-statement` clones **fantasy.co, which genuinely has
+  3 primary links** (Work/Services/Impact) plus a 3-item tertiary row — `labels-fantasy.json`
+  `counts.primary = 3`, matching the independent code-extraction count. Adding four items would be
+  building a defect. The real content gap is DESIGN fidelity (styling, imagery, motion), not item count.
 - **Alignment is wrong on several.** `centred-statement` — the variant whose NAME is "centred" —
-  renders **left-aligned**. Its three link arrows float detached mid-panel with no labels beside them.
+  renders **left-aligned**. **Root cause proven:** the drawer emits **no align class at all**
+  (`drawerAlignAttrPresent: false` live); `drawerAlign` centres the drawer's direct children as BOXES,
+  but the nav-menu then stretches to the full 1376px with `text-align: start`, so links stay at x=32
+  while narrower secondary blocks do centre — hence the half-centred look.
+  → `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`.
+- **The detached arrows have labels — they are INVISIBLE, not missing.** `sgs-icon-list__text`
+  computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` — **contrast 1:1**. A full
+  re-sweep of every text element in all 7 drawers found **6 such elements in exactly the 2 variants
+  using the dark `footer-bg`** (`centred-statement` Contact/Latest/Careers, `split-zone-serif`
+  Team/Careers/Press); the other five are clean. **The Task-5 contrast check missed it because it
+  only measured `.sgs-nav-menu__link-text`** — any contrast gate must walk EVERY text element in the
+  surface. → `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`.
 - **`solid-brand-light` has NO reference screenshot at all** (only `-ours`), so nothing was compared.
 - **`two-column-editorial`'s "reference" is the CLOSED homepage** with a cookie banner still up — the
   menu was never opened. Verified by opening the PNG.
