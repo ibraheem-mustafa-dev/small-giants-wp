@@ -127,8 +127,29 @@ export function initHorizontalPanel( el ) {
 			// last panel — recomputed on every ScrollTrigger refresh so a
 			// webfont swap or a client editing panel count never leaves a
 			// stale travel distance baked into the tween.
+			/*
+			 * Measure the track against ITS OWN visible width, not the host's.
+			 *
+			 * The owner reported the last panel never reaching the left edge
+			 * where the first panel's content had started, and measurement
+			 * agreed: at the end of the pin the last panel's left edge sat 231px
+			 * to the RIGHT of the host's content-left. The translate itself
+			 * completed (2989 of 2989) — the DISTANCE was short.
+			 *
+			 * Cause: `el.clientWidth` is the HOST section's width (1200), but the
+			 * track lives inside the container's content band, so its own visible
+			 * width is narrower (969 here — the band's max-width and padding).
+			 * Scrollable distance is always scrollWidth minus the scrolling
+			 * element's OWN client width; borrowing the parent's over-reports the
+			 * visible portion and therefore under-travels by exactly the
+			 * inset — 4189-969=3220 required vs 4189-1200=2989 used, a 231px
+			 * shortfall that matched the observed gap to the pixel.
+			 *
+			 * Recomputed per refresh, so a band max-width change or a webfont
+			 * reflow cannot leave a stale distance baked in.
+			 */
 			const getTravelDistance = () =>
-				Math.max( 0, track.scrollWidth - el.clientWidth );
+				Math.max( 0, track.scrollWidth - track.clientWidth );
 
 			const tween = gsap.to( track, {
 				x: () => -getTravelDistance(),
