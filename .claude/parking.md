@@ -682,11 +682,13 @@ Of 18 hand-traced disagreements, 15 showed the pre-existing STORED value was wro
 **Trigger:** a dedicated audit session — a strong candidate for the next framework-quality front.
 
 ### P-MAMAS-PRIMARY-CONTRAST — Mama's brand-primary token fails text contrast site-wide
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-23
+**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-23 · **Bean-ruled:** 2026-07-29
 
-The Mama's Munches theme primary token (`#e68a95`, a mid-luminance pink) measures 2.24:1 on the cream background — below WCAG for both normal and large/heading text. It's the theme's `--wp--preset--color--primary`, so it affects any link/heading using it, not just the block where it was first spotted. Must be fixed at the draft/theme source (never a per-block carve-out) — a mid-luminance accent fails as text on a light ground; either flip the element's ground to the accent colour, or darken the text token. Applies wherever the token is used, so needs a site-wide audit, not a single-instance fix.
+The Mama's Munches theme primary token (`#e68a95`, a mid-luminance pink) measures 2.24:1 on the cream background — below WCAG for both normal and large/heading text. It's the theme's `--wp--preset--color--primary`, so it affects any link/heading using it, not just the block where it was first spotted. If it is ever taken on, it must be fixed at the draft/theme source (never a per-block carve-out) — a mid-luminance accent fails as text on a light ground; either flip the element's ground to the accent colour, or darken the text token.
 
-**Trigger:** a Mama's palette/theme-snapshot pass; not a blocker for whatever surfaced it.
+**BEAN RULING 2026-07-29 — ACCEPTED, do not raise again as a finding.** Its trigger fired that day (the Gate-3 mega fixture on the canary is a Mama's-palette mega panel; `axe-run --open-via keyboard` returned 6 colour-contrast violations, all this token: `#e68a95`/`#c56a7a` on `#fbf3dc`, 2.24:1 and 3.31:1). Bean's call: *"the content is still distinguishable with those colours even though they fail WCAG"* — so the WCAG failure is knowingly accepted for this client's palette. This is the same ruling class as [[P-MEGA-CONTRAST-DEFERRED]]. **Consequence for gates:** an axe run over a Mama's-palette surface is expected to return these; a nav/header/footer gate closes on *zero violations attributable to the block*, and this token's violations are excluded by decision, not by a harness carve-out. Never silently suppress them in the harness — report them and cite this ruling.
+
+**Trigger:** only a deliberate Mama's palette/theme-snapshot revisit, or a client for whom the accepted-risk call does not hold (e.g. a public-sector build under a contractual WCAG obligation).
 
 ### P-MEGA-CONTRAST-DEFERRED — mega-menu drafts fail contrast against some client palettes, by design decision not defect
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-21
