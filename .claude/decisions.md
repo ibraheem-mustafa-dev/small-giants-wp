@@ -42,6 +42,25 @@ D-numbers not present in a range below (or below D117) were archived — search 
 | D410 | Doc-hygiene enforcement made mechanical (`handoff-preflight.py`) + the two docscore blind spots it exposed |
 | D411 | Task 5 drawer clones REJECTED on Bean's eye; green measurement ≠ fidelity; block-vs-CPT design gate is the next front |
 | D412 | Header track same day: FR-36-9a(2) burger-opens-nothing notice shipped; FR-37-42 approved; B3 reshaped into measured reference teardowns |
+| D413 | Merged 36+37 strategic plan lands (5 waves, 10-clone roster, Gate-2-before-destructive-steps); peer-reviewed + graded B |
+
+## D413 [ROUTINE] — The merged Spec 36+37 strategic plan lands: 5 waves, fixed 10-clone roster, harness-first Gate 2, 18–22-session forecast (2026-07-29)
+
+`plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` — the /strategic-plan the signed
+architecture gate named as its next step. Scope = the 2026-07-28 remaining-work inventory (every
+row mapped to a unit or a NAMED stage — STOP-29-clean); architecture = gate DP1–DP7 verbatim.
+Load-bearing shape decisions the peer review forced: **(1)** the clone roster is FIXED at 10
+(7 DP6 pairs + Away/ButcherBox/rabbit.tech; resn + Warm are named exclusions of Bean's "12" —
+Gate 5 counts 10/10, Bean to confirm at Gate 1); **(2)** W2-i harness honesty runs FIRST and
+Gate 2's CPT parity is measured OPEN-state, sitting BEFORE any destructive step (drawerRef
+re-type, variantPreset kill, pattern migration) so rollback stays single-commit; **(3)** W2-d
+sweeps ALL stored nav-menu instances (not just the 8 patterns) against the D338 silent-coercion
+class; **(4)** W4-c carries a termination rule — Tier-G/WebGL gaps route to Spec 38 or a Bean
+trim decision, never an unbounded loop-back; **(5)** effort re-quoted 18–22 taxed sessions after
+PERT recalibration (the rejected 7-variant drawer = direct evidence pattern/clone work runs 2–4×
+optimistic). Review provenance: risk pre-mortem (14 findings) + PERT calibration + cold hidden-work
+review; gap-analysis grade B (4.3 avg). Verification criteria: `verify/merged-spec36-37-track.md`.
+Supersedes `plans/2026-07-22-spec36-37-parallel-execution-plan.md` (DP1 rejected the parallel model).
 
 ## D412 [ROUTINE] — Header track: drawer notice shipped, FR-37-42 approved, B3 grounded in reference teardowns, floating UI stays in the Customiser (2026-07-28)
 

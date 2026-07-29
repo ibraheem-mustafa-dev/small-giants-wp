@@ -14,11 +14,13 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-29).** The doc system is finished and mechanically enforced — see the
-sweep record at the bottom. Two build fronts are live: **Spec 38 motion (signed off, Wave A next)**
-and the **MERGED Spec 36+37 nav/header/footer track**, whose architecture gate (drawer→CPT,
-clone-first POC, controllability contract) is written and **awaits your sign-off**. B3's standalone
-plan is subsumed into that gate; the drawer clones you rejected get NO rework until the gate lands.
+**Where things stand (2026-07-29, updated same day).** The doc system is finished and mechanically
+enforced — see the sweep record at the bottom. **Spec 38 motion Wave A is SHIPPED** (Waves B/C
+prompts ready). The **MERGED Spec 36+37 nav/header/footer track** now has everything it needs: you
+signed the architecture gate (drawer→CPT "Menu drawer", trigger controls, clone as final proof)
+AND the full strategic plan is written, peer-reviewed and graded B (D413). Next session executes
+Wave 1 (fixtures). The drawer clones you rejected get NO rework until Wave 2's CPT move lands —
+exactly as you decided.
 
 **On the drawers, plainly:** the checks all passed and the clones still look nothing like the real
 sites, because the checks measured whether the menu WORKS (keyboard, screen-reader, motion, no-JS),
@@ -33,13 +35,26 @@ wasted if the drawer stops being a block.
 
 ## ⭐ CURRENT FRONTS
 
-### Track 3 (NEW 2026-07-29) — Spec 38 motion system: SIGNED OFF — Wave A is next
+### Track 3 — Spec 38 motion system: **Wave A SHIPPED** — B ∥ C next
 
-**Documents only, nothing built yet.** `specs/38-SGS-MOTION-SYSTEM.md` is `active`: Bean approved 2026-07-29 after a same-day /qc-council — 0 architectural refutations, 9 precision amendments (record: spec banner + D406–D409). Vanilla-first rule amended at its 5 homes; P-10 archived (superseded by FR-38-16; Bean rule: parked means DEFERRED — planned work lives in its plan). **Next: run `plans/2026-07-29-motion-wave-A-session-prompt.md` (plan mode; B∥C after A).**
+`specs/38-SGS-MOTION-SYSTEM.md` is `active` (Bean approved 2026-07-29; D406–D409). **Wave A
+shipped on main**: `e991b8f6` (Tier G loader, provider, DB registry — A1-A3/A6) + `e779ea41`
+(fx grammar, entrance exclusivity, 3 effects, budget gate — A4/A5/A7/A9) + gap-close/determinism
+fixes `94a62175`/`954848d3`. **Next: run Waves B ∥ C per `plans/2026-07-29-motion-wave-B/C-session-prompt.md`.**
+(Live-verify status of Wave A: check the wave prompts / session memory before claiming — this
+LEDGER line records the commits, not an eye pass.)
 
-### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; architecture gate WRITTEN
+### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
-**The gate Bean asked for is authored and awaits his sign-off:**
+**⭐ THE PLAN EXISTS: `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`** — 5 waves
+(fixtures → capabilities incl. drawer CPT → polish → 10-clone proof gate → Spec 33 Part 2 walker),
+peer-reviewed (risk pre-mortem + PERT + cold hidden-work review), gap-graded B. Verification
+criteria: `verify/merged-spec36-37-track.md`. **Entry point = Wave 1 (W1-a: canary mega panel
+1745, confirm EMPTY, populate, Gate-3 live pass).** Two Bean touchpoints queued inside it: confirm
+the 10-clone roster (resn + Warm named exclusions of "all 12") at Gate 1; sign the font/imagery
+substitution policy (W4-a2) before the first clone. Effort forecast 18–22 taxed sessions.
+
+**The gate that produced it (SIGNED):**
 `plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. It locks: merged 36/37
 EXECUTION (specs stay separate docs, §1.2 cross-amend rule keeps them coupled) · drawer → CPT
 (`variantPreset` dies, 7 looks become CPT starter patterns; `drawerRef` becomes a post picker) ·
@@ -263,49 +278,21 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
-## NEXT SESSION — orchestration plan (the MERGED 36+37 track; Bean-directed, locked 2026-07-29)
+## NEXT SESSION — Wave 1 of the merged track (plan landed 2026-07-29, D413)
 
-**Where we are, plainly.** Doc work is done and enforced. The next session is the **merge of
-implementation**: one track for nav + header + footer + drawer, built in continuity so every piece
-matches its counterparts. Everything it needs is written: the architecture gate (the decisions),
-the remaining-work inventory (the scope), and the teardown findings (the design ground truth).
-**Nothing is built on the drawer block path until the gate is signed (D411).**
+**Where we are, plainly.** The gate is signed AND the strategic plan is written, reviewed and
+graded (this session). Motion Wave A shipped separately (commits `e991b8f6`…`16e4b00e`; Waves B/C
+prompts exist under `plans/`). The next session **executes, not plans**: open
+`plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`, hand Wave 1 to `/phase-planner`
+(the plan's Wave-1 handoff block names the entry context), then run the fixture wave —
+first action is ≤5 min and self-contained in the plan's "First action" section (canary mega
+panel 1745). Delegate per the plan's parallel-opportunities notes; `/qc` before any
+converter/pipeline/SGS-block commit.
 
-### Task 1 — Sign off the architecture gate, then /strategic-plan the merged track
+**Bean touchpoints queued:** confirm the 10-clone roster at Gate 1 · sign the W4-a2
+substitution policy before the first clone · W3-d blind-tester session (booked at Wave 3 close).
 
-**What:** Bean answers the 3 open questions in
-`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md` §3 (admin naming ·
-site-wide vs per-header drawer · first-clone site) and signs the gate. Then run `/strategic-plan`
-for the merged track. **Time:** ~15 min decisions; ~40 min plan.
-**Orchestration:** inline (Opus) — this is decision + planning, not delegable.
-**Scope inputs the planner MUST read (all verified this week, do not re-derive):**
-`reports/2026-07-28-spec36-37-remaining-work-inventory.md` (every remaining FR in both specs, with
-blockers — the 5-wave shape: fixtures → capabilities → polish → clone-proof gate → Part 2) ·
-the gate §0–§2 (Bean's locked decisions) · the teardown FINDINGS.md (design ground truth) ·
-D411 + D412. **Known dependency:** FR-37-14/36-24 wait on Spec 35's `resolveTier()` cascade.
-**Capability prerequisites for faithful clones, already approved:** FR-37-42 shape picker
-(`1fr auto 1fr` incl.) · the 2 open drawer defects (`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`,
-`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`) · 3 unmeasured references owed a teardown
-(Away, ButcherBox, rabbit.tech).
-**Depends on:** Bean. **Parallel with:** Task 2. **QC gate after:** the plan's own Hidden-Decisions
-peer review.
-**Acceptance:** gate `status` flips to signed; a strategic plan exists whose waves cover the
-inventory's items or map each deferral to a named stage (STOP-29 — never "out of scope").
-
-### Task 2 — Run motion Wave A (Spec 38, signed off — independent of the merge)
-
-**What:** run `plans/2026-07-29-motion-wave-A-session-prompt.md` verbatim (plan mode);
-orchestration = the prompt's own Phase-0 tier table. **Time:** ~45 min. **Depends on:** nothing.
-**Parallel with:** Task 1. **QC gate after:** `/qc-inline`. **Acceptance:** Wave A's FRs shipped
-*and* live-verified — not merely built (STOP-29: full spec scope for the surface).
-
-### Dependency graph
-
-```
-Task 1 (Bean signs gate → /strategic-plan, inline) ∥ Task 2 Wave A (per its prompt)
-   ↓ Hidden-Decisions review (Task 1) · /qc-inline (Task 2)
-Commit + push (Gate 2) → merged-track execution sessions follow the new plan
-```
+**Alternative front (independent):** motion Waves B ∥ C per their session prompts.
 
 ### Tooling for the next session (WordPress project — Gate 5)
 
