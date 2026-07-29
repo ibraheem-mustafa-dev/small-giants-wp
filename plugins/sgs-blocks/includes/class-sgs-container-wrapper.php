@@ -1715,6 +1715,30 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $object_model && ( 'grid' === $layout || 'flex' === $layout ) ) {
 				$do_wrap = true;
 			}
+
+			/*
+			 * Spec 38 FR-38-8 — the horizontal-panel effect needs a single child
+			 * element it can translate (the "track"). Force the __inner wrapper
+			 * so that element is GUARANTEED to exist.
+			 *
+			 * Why forcing, rather than letting the effect find whatever child
+			 * happens to be first: __inner is conditional on band props, so on a
+			 * container configured without them there is no inner wrapper and the
+			 * effect would silently translate the wrong element. Derivation
+			 * without a forcing mechanism is a guess.
+			 *
+			 * Why here and not in the fx layer: only the wrapper decides whether
+			 * __inner renders. The fx layer (includes/fx-attributes.php) does the
+			 * MARKING — it stamps data-sgs-fx-track onto this element — so the
+			 * two concerns stay split and this file gains no knowledge of the
+			 * effect beyond "it needs an inner wrapper".
+			 *
+			 * Deliberately narrow: gated on one exact attribute value that only
+			 * this effect sets, mirroring the $object_model force directly above.
+			 */
+			if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
+				$do_wrap = true;
+			}
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
 				// the uid stylesheet (band base rule before the @media tiers) — an

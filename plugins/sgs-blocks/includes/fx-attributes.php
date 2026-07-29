@@ -129,6 +129,37 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 		$processor->set_attribute( $data_attr, \esc_attr( (string) $value ) );
 	}
 
-	return $head . $processor->get_updated_html();
+	/*
+	 * Spec 38 FR-38-8 — mark the horizontal panel's TRACK.
+	 *
+	 * The effect translates one child element sideways. That element cannot be
+	 * hand-authored: `sgs/container` is a DYNAMIC block, so `render.php`
+	 * regenerates its markup on every render and any `data-sgs-fx-track` written
+	 * into the editor's HTML is discarded — and per D338 an attribute a
+	 * block.json doesn't declare is dropped silently, with no error and no gate.
+	 * The convention came from hand-written GSAP demos where the author owns the
+	 * HTML; here nobody does.
+	 *
+	 * So the two halves are split by ownership:
+	 *   · SGS_Container_Wrapper FORCES the `__inner` element to exist when
+	 *     fx === 'horizontal-panel' (only the wrapper can decide that), and
+	 *   · this marks that element as the track.
+	 *
+	 * The mark is applied server-side, so the effect module never has to guess.
+	 * If no `__inner` is found the mark is simply absent and the module bails to
+	 * the CSS scroll-snap fallback rather than translating the wrong element.
+	 */
+	$html = $head . $processor->get_updated_html();
+
+	if ( 'horizontal-panel' === $fx && false === \strpos( $html, 'data-sgs-fx-track' ) ) {
+		$marker = new \WP_HTML_Tag_Processor( $html );
+		while ( $marker->next_tag( array( 'class_name' => 'sgs-container__inner' ) ) ) {
+			$marker->set_attribute( 'data-sgs-fx-track', 'true' );
+			break; // The FIRST inner band is the track; nested ones are content.
+		}
+		$html = $marker->get_updated_html();
+	}
+
+	return $html;
 }
 \add_filter( 'render_block', __NAMESPACE__ . '\\sgs_inject_fx_attributes', 10, 2 );
