@@ -57,6 +57,25 @@
 
 [data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container > * {
 	scroll-snap-align: start;
+
+	/*
+	 * PANEL WIDTH IS A DEFAULT, NOT DECORATION — without it the effect cannot
+	 * work at all.
+	 *
+	 * Flex items shrink to their content, so four panels holding a heading and a
+	 * line of text measured 378px total against a 1200px container: the row never
+	 * overflowed, so travel distance was zero and the pinned translate had
+	 * nothing to travel. A client inserting the variation and typing normal
+	 * content would hit exactly that and conclude the feature is broken.
+	 *
+	 * `flex-basis` in viewport units makes each panel a screenful by default, so
+	 * a row of N panels is intrinsically N screens wide and always overflows.
+	 * `flex-shrink: 0` stops flex collapsing them back. Clamped so a very wide
+	 * monitor does not produce absurdly wide panels, and `--sgs-fx-panel-width`
+	 * lets a client override per instance without touching CSS.
+	 */
+	flex: 0 0 var( --sgs-fx-panel-width, clamp( 280px, 80vw, 1100px ) );
+
 	/* A flex item's default min-width:auto refuses to shrink below its content,
 	   which on a narrow viewport pushes panels wider than the screen. */
 	min-width: 0;
