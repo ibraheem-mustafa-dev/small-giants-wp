@@ -2,7 +2,7 @@
 doc_type: spec
 spec_id: 38
 spec_version: 1.0
-status: draft
+status: active
 title: SGS Motion System — the two-tier motion doctrine + the GSAP (Tier G) effects layer
 created: 2026-07-29
 depends_on: [31, 32, 35, 37, "02 §Animation", "src/shared/effects/ house runtime"]
@@ -11,9 +11,15 @@ decision_refs: [D406, D407, D408, D409]
 
 # Spec 38 — SGS Motion System: the two-tier motion doctrine + the GSAP (Tier G) effects layer
 
-> **Design-gate status: DRAFT — awaiting Bean's sign-off on the taxonomy (§2), the seven conflict
-> resolutions (§4), and the wave plan (§8). No implementation before explicit approval (R-31-13
-> spirit: the gate pack is co-authoritative with this text). Status flips to `active` at sign-off.**
+> **Design-gate status: SIGNED OFF — Bean approved 2026-07-29, conditional on a `/qc-council`
+> pass. The council ran same day (3 code-grounded raters: WP-mechanics / header-forensics /
+> spec-lawyer): zero architectural refutations; 9 precision amendments applied in-text, each
+> marked "(qc-council 2026-07-29)" at its site — headline ones: entrance×scrub needs STRIP not
+> just omit on the static-save path; webpack externals + the template wrapper-insertion are
+> NAMED Wave build tasks, not established patterns; the sticky edge rule now handles the
+> per-tier tri-state (outside if sticky on ANY tier); `smooth-scroll.js` suppressed under the
+> smoother; Wave B regression list gained row collapse + 2 sub-cases. Waves A/B/C are
+> unblocked; each wave prompt still runs its own plan-mode + Bean R-31-13 close.**
 
 ## 0. Plain English (what this is, why it exists)
 
@@ -88,7 +94,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | ScrambleText | **G** — vanilla-plausible but not worth a bespoke maintained implementation for a default-OFF niche toy | block (headings) | Inspector (fx ToolsPanel, behind "+") | Default OFF, shipped for the niche; reduced-motion = suppress (§10) | off | Headings → labels/countdown digits (permitted) |
 | Flip on filtered grids | **G** — same-document View Transitions snapshot the whole page (UI freeze on rapid re-filter) and give no per-item stagger/interrupt; Flip does | PAIRED block contract | Paired setting surfaced on BOTH `sgs/filter-search` and the filterable block (§3.3) | Pairing contract, not a one-off; VT crossfade is the no-GSAP fallback; Flip loads only when the pair opts in | off | filter-search × card-grid → any future filterable block implementing the contract |
 | Draggable + Inertia | **G** — pointer physics + momentum; CSS scroll-snap remains the Tier V default for carousels | block (curated roster) | Inspector toggle on roster blocks (§3.3 opt-in mechanism) | Roster-gated (`supports.sgs.fx.draggable`); touch-action discipline; keyboard alternative mandatory | off | gallery/testimonial-slider/before-after/hero decorations → any block that declares the support |
-| Physics2D / PhysicsProps / CustomBounce / CustomWiggle | **G** — no CSS equivalent for physics easings | (flavour, not standalone) | Easing/motion-flavour options INSIDE other G effects' controls | Never a standalone toggle; bundled into the consuming effect's chunk | n/a | Easing dropdown of G effects only |
+| Physics2D / PhysicsProps / CustomBounce / CustomWiggle | **G** — no CSS equivalent for physics easings | N/A (flavour — inherits its host effect's level) | N/A (flavour — appears as easing/motion options inside other G effects' controls, never its own surface) | Never a standalone toggle; bundled into the consuming effect's chunk | n/a | Easing dropdown of G effects only |
 | DrawSVG | **G** (scrubbed) — scroll-scrubbed draw needs ScrollTrigger; **load-triggered simple draw stays covered by Tier V `data-sgs-path-draw`** (not retired) | element (SVG-bearing) | Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator`, `sgs/decorative-image` | Retires **Vivus** (§3.4, D408); trigger = load OR scroll-scrub | off | Logo/icons/dividers → any SVG-bearing block |
 | MorphSVG | **G** — CSS `d:path()` needs identical point counts; point-matching IS the plugin | element | Inspector, ASSET-GATED (§3.4) | Requires prepared matched path pairs + authoring guidance; revives parking P-10 | off | Icons/logos → decorative SVG anywhere (asset-gated) |
 | MotionPath | **V default / G when scrubbed** — CSS `offset-path` handles autonomous path-follow cross-browser; the plugin is needed only for scroll-scrubbed path progress | element | Inspector on `sgs/decorative-image` | V variant ships without GSAP; G variant needs ScrollTrigger + MotionPathPlugin | off | decorative-image → other media blocks (permitted) |
@@ -186,7 +192,10 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   **Mandatory conditions:** (a) disabled in the editor and all of wp-admin; (b) disabled under
   `prefers-reduced-motion` (live-checked); (c) anchor links + `:target` + "skip to content"
   resolve to correct positions (ScrollTrigger-aware offset handling, incl. the published
-  `--sgs-header-height` scroll-padding — Spec 37 D391); (d) the **sticky-header resolution**
+  `--sgs-header-height` scroll-padding — Spec 37 D391), **and the theme's existing
+  `smooth-scroll.js` anchor-click handler (`window.scrollTo` on every `a[href^="#"]`) is
+  suppressed while the smoother is ON — two competing smooth-scroll drivers on one click is a
+  defect (qc-council 2026-07-29)**; (d) the **sticky-header resolution**
   (§4.2, D407); (e) keyboard/programmatic scrolling (find-in-page, focus scrolling) must remain
   functional — smoothing never intercepts input-driven scroll correctness, only presentation.
 - **FR-38-19 Page transitions — Tier V, cross-document View Transitions API.** SITE setting +
@@ -210,7 +219,8 @@ spec §1 is now its first consolidated written home.
 
 **Resolution:** each home is amended IN PLACE with a one-line pointer to §1 (the doctrine),
 keeping its performance intent ("no jQuery, no CDN" stay absolute). The amendment is the D406
-decision. After this session no track can truthfully say "GSAP isn't in the stack" (it is —
+decision. (The home amendments are documentation-only and landed ahead of the code gate — the
+gate governs IMPLEMENTATION; the doctrine text itself is what Bean's sign-off ratifies.) After this session no track can truthfully say "GSAP isn't in the stack" (it is —
 Tier G) or "everything should use GSAP" (it must not — Tier V is the default and nothing
 shipped migrates). **In-flight track work is UNAFFECTED:** Spec 36's burger-morph state wiring
 and trigger-anchor geometry are logic/geometry, not motion-system scope (Bean D404), and stay
@@ -231,9 +241,14 @@ via ScrollTrigger pinning and (b) blanket mutual exclusion:
   document retains its real scroll height), so a sticky header placed as a SIBLING of the
   wrapper — containing block still `<body>`, the exact FR-37-40 model — pins natively with
   **zero rework** of the shipped system. This is also GSAP's own documented guidance (fixed/
-  pinned elements outside the wrapper). In the block theme this is structurally cheap: the
-  header template part is already a sibling of the main content group; the smoothed wrapper
-  wraps main + footer, not the header.
+  pinned elements outside the wrapper). In the block theme the FACT is verified: all 9
+  templates share one flat top-level shape (header part / `<main>` container / footer part —
+  siblings, uniformly). **The insertion mechanism is a named Wave B build item** (qc-council
+  2026-07-29 — no shared wrapper filter exists today): ONE output filter that wraps everything
+  between the header and the end of the footer in `#smooth-wrapper > #smooth-content` when the
+  smoother setting is ON (the natural fit is a template-output buffer keyed on the
+  header/footer template-part boundaries, consistent with the house `render_block` chokepoint
+  style) — never 9 hand-edited template forks; setting OFF must leave templates byte-identical.
 - Under (c): `headerSticky` pins natively and the measured gate stays truthful;
   `headerShrink`/`headerHideOnScroll` keep working unchanged (their listeners fire on the
   still-native window scroll); `headerTransparent` unchanged (header z-index sits above the
@@ -244,12 +259,19 @@ via ScrollTrigger pinning and (b) blanket mutual exclusion:
   maintenance. Why not (b) alone: it forces clients to choose between the two most-requested
   premium features when they compose cleanly under (c).
 - **(b) survives as the runtime tripwire, not the primary:** if a custom template puts the
-  header inside the wrapper anyway, `findStickyBreakingAncestor()` (which fires today) disables
-  the **SMOOTHER** for that page and warns — never sticky. Failure degrades toward Tier V
+  header inside the wrapper anyway, the smoother is DISABLED for that page and a warning
+  names the element — never sticky. **Build note (qc-council 2026-07-29): the existing
+  `findStickyBreakingAncestor()` (`src/header-behaviours/view.js:127-152`) currently only
+  `console.warn`s ("advisory, never a gate") — Wave B EXTENDS it with the disable action;
+  the detection half exists, the enforcement half is new.** Failure degrades toward Tier V
   (R-31-9: the universal thing wins).
-- **Edge rule:** when the smoother is ON and the header has NO sticky-family behaviour, the
-  header stays INSIDE `#smooth-content` — a non-pinned header outside the wrapper scrolls at
-  native speed and visibly tears against the smoothed content below it.
+- **Edge rule (amended post qc-council — `headerSticky` is a per-tier TRI-STATE, not a
+  boolean, and the header's DOM position cannot flip per breakpoint):** the header sits
+  OUTSIDE the smoothed wrapper whenever `headerSticky` is truthy on **ANY tier**; on tiers
+  where sticky is off, the header then scrolls at native (unsmoothed) speed — a documented,
+  accepted trade-off, visually minor because an unpinned header leaves the viewport within
+  the first scroll. Only when sticky is off on EVERY tier does the header stay INSIDE
+  `#smooth-content` (outside it would tear against the smoothed content for the whole page).
 
 ### 4.3 Entrance (Tier V `sgsAnimation`) × scroll-scrub on the same block
 
@@ -257,10 +279,16 @@ via ScrollTrigger pinning and (b) blanket mutual exclusion:
 the element's transform/opacity for its whole scroll range; an IntersectionObserver entrance
 fighting it produces double-animation and broken initial states — precedence ordering cannot
 fix a shared-property conflict, only hide it. Rule: when a `data-sgs-fx` scrub effect is
-present on a block, the render layer **omits the `data-sgs-animation*` output** for that block
-(deterministic, content-independent). Enforcement is render-time because stored attributes
-bypass the editor constantly (converter clones, patterns, direct inserts — the D338 lesson:
-WP silently keeps whatever attrs are stored; an editor-only guard is a suggestion, not a gate).
+present on a block, the render layer suppresses the `data-sgs-animation*` attributes for that
+block — **two code paths, because the entrance attrs reach the frontend two ways** (qc-council
+2026-07-29): for DYNAMIC blocks the `animation-attributes.php` render_block injection simply
+**omits** them; for STATIC blocks they are already BAKED into stored `post_content` at save
+time (`animation.js` `blocks.getSaveContent.extraProps`, L209–233), so the render layer must
+actively **STRIP** them via `WP_HTML_Tag_Processor` (the same leading-`<style>`-skip technique
+`animation-attributes.php:95-111` already uses). Deterministic, content-independent.
+Enforcement is render-time because stored attributes bypass the editor constantly (converter
+clones, patterns, direct inserts — the D338 lesson: WP silently keeps whatever attrs are
+stored; an editor-only guard is a suggestion, not a gate).
 The editor mirrors it as UX: the Animation panel renders `Disabled` with a Notice ("A scroll
 effect controls this block's motion — entrance animation is off") when an fx scrub attr is set
 — consistent with Spec 35 Part A and the existing parallax live-site-only Notice. Non-scrub fx
@@ -277,8 +305,10 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
   self-serve via `viewScriptModule`) and **extension attributes on any block** (which have no
   per-block view module, so `viewScriptModule`-per-block cannot see them). `has_block()` has
   the known template-part blind spot. The `render_block` p99 chokepoint is the proven house
-  pattern (`class-sgs-css-registry.php` — reuse its editor-parity predicate
-  `! is_admin() && ! wp_is_serving_rest_request()`).
+  pattern (`class-sgs-css-registry.php:134` — reuse its editor-parity predicate
+  `sgs_is_frontend_render()`, which covers `is_admin()` + `wp_is_serving_rest_request()` +
+  the `REST_REQUEST` fallback). Mid-render `wp_enqueue_script_module()` is proven live by the
+  buybox proxy-enqueue (`buybox/render.php:328-346`).
 - **Mechanism:** `SGS_Motion_Registry` inspects each rendered block (attrs + `data-sgs-fx`
   presence in markup), maps effect → plugin set (from the DB effect registry, §6), and calls
   `wp_enqueue_script_module()` for exactly the needed bundles (the buybox
@@ -286,8 +316,15 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
   the settings check, same registry. WP's module registry dedups — ten blocks needing
   ScrollTrigger cost one enqueue.
 - **Bundling:** GSAP core + each plugin is a separately REGISTERED script module built from npm
-  (no CDN — D406). Webpack marks `gsap` and `gsap/*` as **externals** resolving to those module
-  IDs, so no block or effect module ever bundles its own copy.
+  (no CDN — D406). Webpack marks `gsap` and `gsap/*` as **externals** (`externalsType:
+  'module'`) resolving to those module IDs via the script-modules import map, so no block or
+  effect module ever bundles its own copy. **⚠ This externals wiring is a NAMED WAVE-A BUILD
+  TASK, not an established pattern** (qc-council 2026-07-29): the current
+  `webpack.config.js` only adds entry points, and `DependencyExtractionWebpackPlugin` handles
+  `@wordpress/*` globals only — nothing in the repo resolves a bare `gsap` specifier today
+  (the Vivus precedent is a per-block bundled chunk, the opposite shape). Wave A's done-check:
+  a canary page proves `gsap` resolves via the browser's native import map and appears in NO
+  consuming chunk's bundle.
 - **Size budget (min+gzip, ESTIMATES from GSAP 3.12/3.13 — verified + recorded at Wave A
   build; the build fails if a bundle exceeds its budget by >20%):**
 
@@ -364,9 +401,10 @@ FR-38-6 … FR-38-19 are defined in §3 (roster). The infrastructure FRs:
   `data-spotlight`, `data-stagger`, `data-animation`); attrs are attr-per-property (suffix
   grammar); the DB rows (§6) exist.
 - **FR-38-5 — entrance × scrub exclusivity (§4.3).**
-  *Done when:* render-time omission verified on a stored block carrying both attr families;
-  editor Disabled+Notice mirror present; exclusion driven by the registry flag, not a
-  hardcoded effect list.
+  *Done when:* render-time suppression verified on **both paths** — one DYNAMIC-block instance
+  (omit path) AND one STATIC-block instance with the attrs baked into stored markup (strip
+  path) — each carrying both attr families; editor Disabled+Notice mirror present; exclusion
+  driven by the registry flag, not a hardcoded effect list.
 - **FR-38-20 — per-effect reduced-motion contract (§10).**
   *Done when:* every roster effect has a row; each is live-verified with OS emulation where
   the harness allows, and reasoned-by-construction rows are explicitly flagged (the
@@ -385,7 +423,9 @@ FR-38-6 … FR-38-19 are defined in §3 (roster). The infrastructure FRs:
   animation-attributed instances); bundle-size budget check wired to prebuild; Wave C stretch:
   migrate Tier V motion assets onto the conditional registry.
   *Done when:* each shipped wave's effects have a canary URL the gates exercise; prebuild
-  fails on budget breach.
+  fails on budget breach — breach = **>20% over the §4.4 figures as verified + recorded at the
+  Wave A build** (the §4.4 numbers are estimates until then; the gate compares against the
+  recorded actuals, not the estimates).
 
 ## 6. DB seeding plan (R-31-8 — real tables, enumerated 2026-07-28)
 
@@ -409,8 +449,9 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
    justified because no existing table keys by effect; `animation_tokens` keys by keyframe
    preset and stays the Tier V preset store.
 2. **`block_attributes`** — fx param attrs seeded with `css_property` under a new **`fx:*`**
-   pseudo-namespace (sibling of `anim:*`; aligns with Spec 35's approved-unbuilt FR-35-6
-   `anim:*` settings-cluster — the `fx` cluster registers alongside it, never replacing it).
+   pseudo-namespace (sibling of `anim:*`; aligns with the approved-unbuilt FR-35-6 `anim:*`
+   settings-cluster — recorded in **decisions.md D354**, not in Spec 35's own text — the `fx`
+   cluster registers alongside it, never replacing it).
 3. **`block_capabilities`** — new capability values `fx-scrub`, `fx-draggable`, `fx-flip`,
    `fx-svg` seeded from `supports.sgs.fx.*` declarations by `/sgs-update` (source-derived, so
    this part lives in the update populator, not the editorial seeder).
@@ -467,8 +508,12 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   FR-38-18 incl. the §4.2 header relocation (the ONLY wave touching the Spec 37 header system
   and theme templates), FR-38-19 (View Transitions — also template-level).
   **Blast radius: header templates + theme template structure — the highest-risk surface,
-  deliberately quarantined here. Regression gate: re-run the FR-37-40 live verification
-  (pinned-gate, shrink, hide-on-scroll, transparent, scroll-padding) with smoother OFF and ON.**
+  deliberately quarantined here. Regression gate: re-run the FR-37-40 live verification with
+  smoother OFF and ON — pinned-gate, shrink, hide-on-scroll, transparent, **row collapse**
+  (it rides the same `isHeaderPinned()` gate the whole resolution rests on), scroll-padding,
+  plus two named sub-cases (qc-council 2026-07-29): sticky+transparent same-tier coexistence
+  (a proven-live past regression class) and the nav-drawer `<dialog>`-in-header offset (its
+  transformed-ancestor edge is already flagged untested in `header-behaviours.css:44-53`).**
 - **Wave C — interaction + SVG + toys.**
   Draggable roster (FR-38-13) incl. **NET-NEW `sgs/before-after`** (needs Draggable — cannot
   come earlier), Flip pairing (FR-38-12 — the one place Wave C edits shipped blocks:
@@ -491,6 +536,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Flip | Labelled no-preview (filter interaction doesn't exist in-canvas); Notice names the pairing |
 | Draggable | Static; Notice "Drag interactions are live-site only" |
 | DrawSVG / MorphSVG / MotionPath | End-state (fully drawn / final shape / resting position); optional replay toggle for load-triggered draw |
+| Physics/Custom easings | No standalone canvas story — a flavour; inherits its host effect's row |
 | ScrollSmoother / page transitions | **Never active in editor or wp-admin** (FR-38-18/19 condition) — settings-surface help text states it |
 
 ## 10. Reduced-motion contract (per effect)
@@ -524,7 +570,9 @@ deliberately leaves **`data-sgs-scroll-*` unclaimed**: scroll params are just fx
 second namespace would invent a V-vs-G boundary in markup that does not exist in the model.
 In-use namespaces this must not collide with (verified none prefix-overlap):
 `data-sgs-animation*`, `data-sgs-path-draw*`, `data-sgs-parallax`, `data-magnet`,
-`data-spotlight`, `data-stagger`, `data-animation` (responsive-logo), attr `sgsScrollProgress`.
+`data-spotlight`, `data-stagger`, `data-animation` (responsive-logo), and the global CSS
+custom property `--sgs-scroll-progress` (set by `assets/js/scroll-progress.js` — there is no
+`sgsScrollProgress` block attribute; corrected post qc-council).
 
 ### 11.2 Grammar (attr-per-property — converter-suffix-compatible)
 
@@ -570,7 +618,8 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
 - **Spec 31** — cloning contract extension point (§11.3); "Tier 1/2" naming collision avoided
   (§1.5). **Spec 32** — no-inline contract binds all fx CSS output. **Spec 35** — inspector
   standard (§7); `fx` settings-cluster registers alongside the approved-unbuilt FR-35-6
-  `anim:*` cluster. **Spec 37** — §4.2 resolution; FR-37-40 regression gate in Wave B.
+  `anim:*` cluster (recorded in decisions.md D354, not Spec 35 text). **Spec 37** — §4.2
+  resolution; FR-37-40 regression gate in Wave B.
   **Spec 02 §Animation** — the Tier V baseline this spec bounds (its performance budget
   unchanged; its "sgsParallax pending" line is stale — parallax shipped).
 - **Parking:** P-10 (revived by FR-38-16), P-TIMELINE-ADVANCED-VISUAL-EFFECTS (first

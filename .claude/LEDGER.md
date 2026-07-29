@@ -27,9 +27,9 @@ at the bottom of this file.
 
 ## ⭐ CURRENT FRONTS
 
-### Track 3 (NEW 2026-07-29) — Spec 38 motion system: AUTHORED, awaiting Bean's design gate
+### Track 3 (NEW 2026-07-29) — Spec 38 motion system: SIGNED OFF (qc-council-gated) — Wave A is next
 
-**Documents only, nothing built.** `specs/38-SGS-MOTION-SYSTEM.md` (two-tier V/G motion doctrine + GSAP Tier G roster; D406–D409) + wave prompts `plans/2026-07-29-motion-wave-{A,B,C}-session-prompt.md`. The vanilla-first rule was amended at its five written homes; parking P-10's paid-GSAP premise marked dead. **Every wave is GATED on Spec 38 `status: draft → active` (Bean's sign-off) — no implementation before it.**
+**Documents only, nothing built yet.** `specs/38-SGS-MOTION-SYSTEM.md` is `active`: Bean approved 2026-07-29 conditional on a /qc-council, which ran same day (3 code-grounded raters — WP-mechanics, header-forensics, spec-lawyer): **0 architectural refutations, 9 precision amendments applied in-spec** (headline: entrance×scrub needs STRIP on the static-save path; webpack gsap-externals + template wrapper-insertion are NAMED Wave build tasks; sticky edge rule now tri-state-aware "outside if sticky on ANY tier"; smooth-scroll.js suppressed under ScrollSmoother; Wave B regression list += row collapse + 2 sub-cases). D406–D409 logged; vanilla-first rule amended at its 5 homes; P-10 premise dead. **Next: run `plans/2026-07-29-motion-wave-A-session-prompt.md` (plan mode; Waves B/C after A — B∥C possible).**
 
 ### Track 2b — Spec 37 header/footer: B3 preset library (DESIGN-GATED, awaiting Bean's sign-off)
 
