@@ -8,7 +8,7 @@
  * scripts/seed-motion-fx-registry.py. To change these values, edit FX_EFFECTS
  * in seed-motion-fx-registry.py, re-run it, then re-run this generator.
  *
- * Effects: 11
+ * Effects: 13
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §4.4 + §6.1/§11.2.
  *
@@ -64,12 +64,20 @@ function sgs_get_motion_fx_effects() {
 				'plugin_set'            => array( 'MotionPath', 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
 			),
+			'page-transitions' => array(
+				'plugin_set'            => array(),
+				'owns_scroll_transform' => false,
+			),
 			'pin-scrub' => array(
 				'plugin_set'            => array( 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
 			),
 			'scramble' => array(
 				'plugin_set'            => array( 'ScrambleText' ),
+				'owns_scroll_transform' => false,
+			),
+			'scroll-smoother' => array(
+				'plugin_set'            => array( 'ScrollSmoother' ),
 				'owns_scroll_transform' => false,
 			),
 			'scrub' => array(

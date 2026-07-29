@@ -72,3 +72,8 @@ def css_property_reseed_key(block: str, attr: str, kind: str) -> str:
 def motion_fx_reseed_key(effect: str, kind: str) -> str:
     """Check #9 (Spec 38 fx_effects reseed-survival) stable dedup key."""
     return f"fxreseed:{kind}:{effect}"
+
+
+def motion_fx_qualifying_key(block: str, kind: str) -> str:
+    """Check #10 (Spec 38 fx qualifying-blocks map staleness) stable dedup key."""
+    return f"fxqualify:{kind}:{block}"

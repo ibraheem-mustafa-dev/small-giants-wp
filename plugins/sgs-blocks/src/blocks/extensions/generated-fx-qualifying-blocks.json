@@ -1,0 +1,118 @@
+{
+	"sgs/collapsible-text": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/container": [
+		"horizontal-panel",
+		"pin-scrub",
+		"scrub"
+	],
+	"sgs/counter": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/cta-section": [
+		"horizontal-panel",
+		"pin-scrub",
+		"scrub"
+	],
+	"sgs/decorative-image": [
+		"draw",
+		"morph",
+		"motion-path",
+		"scrub"
+	],
+	"sgs/heading": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/hero": [
+		"horizontal-panel",
+		"pin-scrub",
+		"scrub"
+	],
+	"sgs/icon": [
+		"draw",
+		"morph",
+		"motion-path",
+		"scrub"
+	],
+	"sgs/info-box": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/label": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/pricing-table": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/product-card": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/product-faq": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/quote": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/responsive-logo": [
+		"draw",
+		"morph",
+		"motion-path",
+		"scrub"
+	],
+	"sgs/separator": [
+		"draw",
+		"morph",
+		"motion-path",
+		"scrub"
+	],
+	"sgs/team-member": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/testimonial": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/text": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/timeline": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/trust-bar": [
+		"horizontal-panel",
+		"pin-scrub",
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
+	"sgs/whatsapp-cta": [
+		"scramble",
+		"scrub",
+		"split-reveal"
+	]
+}

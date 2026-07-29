@@ -36,13 +36,18 @@
 		},
 		"sgs": {
 			"hideExtensions": [
-				"animation"
+				"animation",
+				"fx"
 			],
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",

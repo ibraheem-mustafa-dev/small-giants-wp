@@ -109,8 +109,8 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
 
     expected_by_effect = {row["effect"]: row for row in FX_EFFECTS}
     db_rows = conn.execute(
-        "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story "
-        "FROM fx_effects"
+        "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
+        "scope, requires FROM fx_effects"
     ).fetchall()
     db_by_effect = {r[0]: r for r in db_rows}
 
@@ -127,7 +127,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             ))
             continue
 
-        _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor = db_row
+        _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor, db_scope, db_requires = db_row
         try:
             db_plugin_set = json.loads(db_plugin_set_json)
         except (TypeError, ValueError):
@@ -146,6 +146,10 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             mismatches.append(f"reduced_motion: db={db_reduced!r} expected={expected['reduced_motion']!r}")
         if db_editor != expected["editor_story"]:
             mismatches.append(f"editor_story: db={db_editor!r} expected={expected['editor_story']!r}")
+        if db_scope != expected["scope"]:
+            mismatches.append(f"scope: db={db_scope!r} expected={expected['scope']!r}")
+        if db_requires != expected["requires"]:
+            mismatches.append(f"requires: db={db_requires!r} expected={expected['requires']!r}")
 
         if mismatches:
             violations.append(Violation(

@@ -6,7 +6,13 @@
 	"title": "SGS Mega Panel",
 	"category": "sgs-interactive",
 	"description": "The content container of an SGS mega menu — lives inside a sgs_mega_menu post. Owns ALL variant + colour-scheme styling for its child sgs/mega-group and sgs/mega-aside blocks (parent-paints-child, CF-10): switching this block's style or colour scheme uniformly reshapes/recolours every group and aside inside it.",
-	"keywords": [ "mega", "menu", "panel", "navigation", "dropdown" ],
+	"keywords": [
+		"mega",
+		"menu",
+		"panel",
+		"navigation",
+		"dropdown"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "layout",
 	"supports": {
@@ -21,7 +27,10 @@
 					"label": "Panel",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "panelBg",
@@ -37,13 +46,18 @@
 					"label": "Aside slot",
 					"layer": "CONTENT",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:width": "asideWidth"
 					},
 					"_note": "The optional `.sgs-mega-aside` grid column, when a sgs/mega-aside child is present (asideSeparator's border-left divider is a compound value — colour+width+style — so it is documented here rather than mapped to a single css: key)."
 				}
-			}
+			},
+			"hideExtensions": [
+				"fx"
+			]
 		}
 	},
 	"selectors": {
@@ -72,7 +86,9 @@
 		},
 		"maxWidth": {
 			"type": "object",
-			"default": { "desktop": "1120px" }
+			"default": {
+				"desktop": "1120px"
+			}
 		},
 		"panelPadding": {
 			"type": "object",
@@ -88,7 +104,9 @@
 		},
 		"groupGap": {
 			"type": "object",
-			"default": { "desktop": "44px" }
+			"default": {
+				"desktop": "44px"
+			}
 		},
 		"panelBg": {
 			"type": "string",
@@ -112,11 +130,19 @@
 		},
 		"asideSeparator": {
 			"type": "object",
-			"default": { "style": "line" },
+			"default": {
+				"style": "line"
+			},
 			"properties": {
-				"style": { "type": "string" },
-				"colour": { "type": "string" },
-				"width": { "type": "string" }
+				"style": {
+					"type": "string"
+				},
+				"colour": {
+					"type": "string"
+				},
+				"width": {
+					"type": "string"
+				}
 			}
 		},
 		"brandsEyebrow": {

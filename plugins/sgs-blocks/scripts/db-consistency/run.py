@@ -82,6 +82,7 @@ _check_orphan_roles_mod = _load_sibling("check_orphan_roles")
 _check_tier_composition_mod = _load_sibling("check_tier_composition")
 _check_css_property_reseed_mod = _load_sibling("check_css_property_reseed")
 _check_motion_fx_reseed_mod = _load_sibling("check_motion_fx_reseed")
+_check_fx_qualifying_blocks_stale_mod = _load_sibling("check_fx_qualifying_blocks_stale")
 
 Violation = _models_mod.Violation
 
@@ -231,6 +232,7 @@ def main() -> int:
         violations.extend(_check_tier_composition_mod.run(conn))
         violations.extend(_check_css_property_reseed_mod.run(conn))
         violations.extend(_check_motion_fx_reseed_mod.run(conn))
+        violations.extend(_check_fx_qualifying_blocks_stale_mod.run(conn))
     finally:
         conn.close()
 

@@ -39,45 +39,52 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isExtensionHidden } from './hide-extensions';
+import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 
 /**
- * Blocks that get the fx panel (Spec 38 §7).
- *
- * Deliberately a SHORT roster, not every sgs/* block: §2 places these effects
- * at container/section and text-bearing levels, and Spec 35 Part A warns that
- * a panel appearing where it cannot do anything useful is itself a defect
- * (the "13 panels on a nav menu" failure). A block still opts out declaratively
- * via `supports.sgs.hideExtensions: ["fx"]` like every other universal
- * extension — no hardcoded per-block carve-outs in this file (R-31-1).
+ * Every runtime effect module that actually exists under
+ * src/shared/effects/gsap/ (fx-scrub.js, fx-pin-scrub.js,
+ * fx-horizontal-panel.js, fx-split-reveal.js). Hand-maintained deliberately —
+ * this is NOT the "which blocks qualify" roster (that is now fully derived,
+ * see generated-fx-qualifying-blocks.json below); it tracks which JS MODULES
+ * have actually been built. An effect whose module does not exist yet must
+ * NOT be offerable — a client could select it and get nothing, which reads
+ * as a broken product rather than an unshipped feature. Later waves add
+ * their effect name here as their module lands; the qualifying-blocks side
+ * needs no change (it already has all 11 grammar effects computed).
  */
-const FX_BLOCKS = [
-	'sgs/container',
-	'sgs/heading',
-	'sgs/text',
-	'sgs/quote',
-	'sgs/hero',
-];
+const SHIPPED_EFFECTS = [ 'scrub', 'pin-scrub', 'horizontal-panel', 'split-reveal' ];
+
+const FX_OPTION_LABELS = {
+	scrub: __( 'Scroll reveal (scrubbed)', 'sgs-blocks' ),
+	'pin-scrub': __( 'Pin section & scrub', 'sgs-blocks' ),
+	'horizontal-panel': __( 'Horizontal scroll section', 'sgs-blocks' ),
+	'split-reveal': __( 'Text reveal (split)', 'sgs-blocks' ),
+};
 
 /**
- * The effect roster exposed in the editor.
+ * Build the SelectControl options for one block: "None" plus every shipped
+ * effect this SPECIFIC block structurally qualifies for (Spec 38 §2 —
+ * derived via scripts/generate-fx-qualifying-blocks.py from block.json
+ * containerKind / RichText usage / the fx_effects DB's scope+requires
+ * columns, never hand-typed per block).
  *
- * Wave A ships four. The `data-sgs-fx` grammar (§11.2) defines more (flip,
- * draggable, draw, morph, motion-path, scramble, image-sequence) and the DB
- * registry already carries all eleven, but an effect whose runtime module does
- * not exist yet must NOT be offerable — a client could select it and get
- * nothing, which reads as a broken product rather than an unshipped feature.
- * Later waves add their entries here as their modules land.
+ * @param {string} name Block name.
+ * @return {Array<{label: string, value: string}>} SelectControl options.
  */
-const FX_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Scroll reveal (scrubbed)', 'sgs-blocks' ), value: 'scrub' },
-	{ label: __( 'Pin section & scrub', 'sgs-blocks' ), value: 'pin-scrub' },
-	{
-		label: __( 'Horizontal scroll section', 'sgs-blocks' ),
-		value: 'horizontal-panel',
-	},
-	{ label: __( 'Text reveal (split)', 'sgs-blocks' ), value: 'split-reveal' },
-];
+function fxOptionsForBlock( name ) {
+	const qualifying = qualifyingBlocks[ name ] || [];
+	const shippedQualifying = SHIPPED_EFFECTS.filter( ( effect ) =>
+		qualifying.includes( effect )
+	);
+	return [
+		{ label: __( 'None', 'sgs-blocks' ), value: '' },
+		...shippedQualifying.map( ( effect ) => ( {
+			label: FX_OPTION_LABELS[ effect ],
+			value: effect,
+		} ) ),
+	];
+}
 
 /**
  * Effects that own an element's transform/opacity across a scroll range.
@@ -94,11 +101,18 @@ const SCROLL_OWNING_FX = [ 'scrub', 'pin-scrub', 'horizontal-panel', 'split-reve
 /**
  * Which blocks the fx extension applies to at all.
  *
+ * A block qualifies when it has at least one SHIPPED effect available (per
+ * the derived qualifying-blocks map) — the exact same check
+ * `fxOptionsForBlock` uses to build the SelectControl, by construction
+ * (Hard constraint: attributes and panel must never diverge — a block
+ * carrying fx attributes with no control to set/clear them is a defect, and
+ * the reverse is too).
+ *
  * @param {string} name Block name.
  * @return {boolean} True when the block should carry fx attributes.
  */
 function shouldHaveFx( name ) {
-	return FX_BLOCKS.includes( name );
+	return fxOptionsForBlock( name ).length > 1;
 }
 
 /**
@@ -237,6 +251,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const { fx } = attributes;
 		const isSplit = 'split-reveal' === fx;
 		const ownsScroll = SCROLL_OWNING_FX.includes( fx );
+		const fxOptions = fxOptionsForBlock( name );
 
 		const resetAll = () =>
 			setAttributes( {
@@ -270,7 +285,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 								__nextHasNoMarginBottom
 								label={ __( 'Effect', 'sgs-blocks' ) }
 								value={ fx }
-								options={ FX_OPTIONS }
+								options={ fxOptions }
 								onChange={ ( value ) =>
 									setAttributes( { fx: value } )
 								}

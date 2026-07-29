@@ -108,6 +108,42 @@ DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.
 #                          §9's prose is more specific, e.g. Draggable's "Static" ->
 #                          'end-state', SplitText's "optional preview toggle" ->
 #                          'toggle').
+#   scope                  'block'|'element'|'site'|'paired'|'flavour' — collapsed
+#                          from the §2 taxonomy table's "Level" + "Exposure surface"
+#                          columns (added 2026-07-29, task: "derived block roster").
+#                          Mapping (documented once here, cited per-row below):
+#                            'block'   <- §2 Level "container/section" or "block/
+#                                         element" or "block (text-bearing)" or
+#                                         "block (headings)" or "block (curated
+#                                         roster)" or "block (dedicated, NET-NEW)"
+#                                         -- an inspector panel on a specific block.
+#                            'element' <- §2 Level "element" or "element (SVG-
+#                                         bearing)" -- inspector on a block but
+#                                         targeting a sub-element (an SVG path, a
+#                                         path-follow target), still a per-block
+#                                         panel surface.
+#                            'site'    <- §2 Level "SITE" or "SITE + per-template"
+#                                         -- theme settings / per-template override,
+#                                         NEVER a block inspector (ScrollSmoother's
+#                                         own row: "Site setting only -> per-
+#                                         template opt-out (never per-block)").
+#                            'paired'  <- §2 Exposure surface "PAIRED block
+#                                         contract" -- a setting surfaced on BOTH
+#                                         sides of a named pairing (filter-search x
+#                                         card-grid), not a standalone per-block
+#                                         toggle in the generic fx panel.
+#                            'flavour' <- §2 Level "N/A (flavour ...)" -- never a
+#                                         standalone surface; appears only inside
+#                                         another G effect's own controls. No
+#                                         `data-sgs-fx` grammar row exists for this
+#                                         category (Physics2D/CustomBounce/
+#                                         CustomWiggle), so it never gets a fx_effects
+#                                         row at all -- flagged, not silently
+#                                         dropped: there is nothing to seed here.
+#   requires                'text'|'svg'|'section'|'item-set'|'track'|'none' —
+#                          what the effect needs OF ITS TARGET, derived from each
+#                          §2 row's own qualifiers (Conditions/Exposure-surface
+#                          text). Closed vocabulary; per-row citation below.
 # ---------------------------------------------------------------------------
 FX_EFFECTS: list[dict] = [
     {
@@ -118,6 +154,12 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 1,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
+        # §2 row Level = "container/section" -> scope='block' (Inspector panel on
+        # sgs/container + section-KIND composites). requires='section': the row's
+        # own Exposure-surface text names the target directly ("Inspector panel
+        # on `sgs/container` + section-KIND composites").
+        "scope": "block",
+        "requires": "section",
     },
     {
         # FR-38-7, §2 row "Scroll-scrubbed element timeline", §9 row 1, §10 row 2.
@@ -127,6 +169,12 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 1,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
+        # §2 row Level = "block/element" -> scope='block' (Inspector panel, fx
+        # ToolsPanel). requires='none': the row names no target qualifier at all
+        # ("Any block -> any element with the fx panel exposed") — this is the
+        # deliberately generic scrub, offered wherever the fx panel itself is.
+        "scope": "block",
+        "requires": "none",
     },
     {
         # FR-38-8, §2 row "Horizontal scroll panel", §9 row 1, §10 row 3.
@@ -136,6 +184,12 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 1,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
+        # §2 row Level = "section" -> scope='block' (Block variation of
+        # sgs/container + inspector tuning). requires='section': "Pins
+        # (ScrollTrigger)" needs a pinnable section, same target shape as
+        # pin-scrub — "Top-level section -> nested container".
+        "scope": "block",
+        "requires": "section",
     },
     {
         # FR-38-10, §2 row "SplitText reveal" (explicitly "§4.3 exclusivity vs
@@ -156,6 +210,12 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 1,
         "reduced_motion": "simplify",
         "editor_story": "toggle",
+        # §2 row Level = "block (text-bearing)" -> scope='block' (Inspector panel
+        # on heading/text/quote (+ hero headline)). requires='text': the row's own
+        # Recommended->permitted column ("Headings first -> any text-bearing
+        # block") names the target qualifier directly.
+        "scope": "block",
+        "requires": "text",
     },
     {
         # FR-38-11, §2 row "ScrambleText" (no §4.3 mention; §4.3's own text names
@@ -166,6 +226,16 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "toggle",
+        # §2 row Level = "block (headings)" -> scope='block'. requires='text':
+        # REASONED, NOT SPEC-STATED — the closed vocabulary this task specifies
+        # has no finer "headings only" value than 'text'; the row's own
+        # Recommended->permitted column ("Headings -> labels/countdown digits")
+        # is narrower than plain text-bearing but the spec never separates
+        # "heading text" from "body text" as a target-qualifier concept anywhere
+        # else in §2/§3, so 'text' is used and this narrowing is flagged rather
+        # than inventing a new vocabulary value for one row.
+        "scope": "block",
+        "requires": "text",
     },
     {
         # FR-38-12, §2 row "Flip on filtered grids" (filter-event-triggered, not
@@ -176,6 +246,19 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "no-preview",
+        # §2 row Exposure surface = "PAIRED block contract" (Bean-cited text:
+        # "Paired setting surfaced on BOTH `sgs/filter-search` and the filterable
+        # block") -> scope='paired', NOT 'block' — this is deliberately
+        # structurally excluded from the generic per-block fx ToolsPanel (Hard
+        # constraint in the task brief); it needs its own paired-settings UI,
+        # never built here. requires='item-set': "a set of siblings to
+        # re-lay-out" (the task brief's own vocabulary definition for this
+        # effect) — the discriminating capability is the pairing contract itself
+        # (`supports.sgs.fx.pairedFilter`, not yet declared by any block —
+        # verified via grep, zero hits), so the qualifying-blocks roster for
+        # this effect is honestly EMPTY today.
+        "scope": "paired",
+        "requires": "item-set",
     },
     {
         # FR-38-13, §2 row "Draggable + Inertia", §9 row 5 ("Static; Notice"),
@@ -186,6 +269,16 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
+        # §2 row Level = "block (curated roster)" -> scope='block'. requires=
+        # 'track': §2's own Conditions column names the mechanism directly —
+        # "Roster-gated (`supports.sgs.fx.draggable`)" — an explicit per-block
+        # opt-in flag, not a detectable structural signal. Verified via grep:
+        # zero blocks currently declare `supports.sgs.fx.draggable`, so this
+        # effect's qualifying-blocks roster is honestly EMPTY today (the §2
+        # Recommended column names gallery/testimonial-slider/before-after/hero
+        # decorations as the intended future roster, once each opts in).
+        "scope": "block",
+        "requires": "track",
     },
     {
         # FR-38-15, §2 row "DrawSVG" (§4.3 text explicitly names "DrawSVG on load"
@@ -196,6 +289,17 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
+        # §2 row Level = "element (SVG-bearing)" -> scope='element'. requires=
+        # 'svg': the row's Exposure-surface column NAMES the exact roster —
+        # "Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator`,
+        # `sgs/decorative-image`" — a closed, spec-cited list, not a detectable
+        # structural pattern (verified: no shared block.json flag or DB role
+        # unifies these 4; `<svg` appears in a dozen unrelated blocks' markup
+        # for chevrons/star icons, so a "contains <svg>" heuristic would badly
+        # over-match). The qualifying-blocks generator therefore keys the 'svg'
+        # requirement off this literal spec citation, not an inferred rule.
+        "scope": "element",
+        "requires": "svg",
     },
     {
         # FR-38-16, §2 row "MorphSVG", §9 row 6, §10 row 11. Not named in §4.3 at
@@ -207,6 +311,15 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "end-state",
+        # §2 row Level = "element" -> scope='element'. requires='svg': the row's
+        # Recommended->permitted column ("Icons/logos -> decorative SVG anywhere
+        # (asset-gated)") targets the same SVG-bearing surface as DrawSVG, so
+        # this reuses the identical 4-block spec-cited roster. REASONED, NOT
+        # SPEC-STATED: the spec never lists MorphSVG's exact block names the
+        # way it does for DrawSVG's row — flagged as an extrapolation from
+        # "same target family, same requires value", not a literal citation.
+        "scope": "element",
+        "requires": "svg",
     },
     {
         # FR-38-17, §2 row "MotionPath" ("G variant needs ScrollTrigger +
@@ -223,6 +336,17 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 1,
         "reduced_motion": "suppress",
         "editor_story": "end-state",
+        # §2 row Level = "element" -> scope='element'. requires='svg': REASONED,
+        # NOT SPEC-STATED — the row's Exposure-surface column names exactly ONE
+        # block ("Inspector on `sgs/decorative-image`"), which already sits
+        # inside the DrawSVG/MorphSVG 4-block SVG-bearing roster. Reusing
+        # 'svg' means the other 3 roster blocks (responsive-logo/icon/
+        # separator) would ALSO qualify for MotionPath, which the spec never
+        # confirms — flagged honestly as an over-inclusion risk the spec leaves
+        # genuinely undetermined, rather than inventing a fifth requires value
+        # for a single named block.
+        "scope": "element",
+        "requires": "svg",
     },
     {
         # FR-38-9, §2 row "Scroll-scrubbed image sequence", §9 row 2
@@ -245,6 +369,63 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 0,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
+        # §2 row Level = "block (dedicated, NET-NEW)" -> scope='block'.
+        # requires='none': the row's own target IS the new block itself
+        # ("New block `sgs/image-sequence` inspector") — there is nothing
+        # further to qualify against; a future block declaring this fx would
+        # get it unconditionally, the same way scrub is unconditional. The
+        # block does not exist yet (verified: no `sgs/image-sequence` under
+        # src/blocks), so its qualifying-blocks roster is honestly EMPTY today
+        # — the row exists for when the block ships, not to hide the gap.
+        "scope": "block",
+        "requires": "none",
+    },
+    {
+        # NOT one of the original §11.2 grammar's 11 rows — ScrollSmoother has
+        # no `data-sgs-fx` value at all (it is never emitted as a per-element
+        # attribute; §2's own row calls it "Site setting only", a theme-level
+        # toggle, so there is no element to attach data-sgs-fx="scroll-smoother"
+        # to). Added here (task: "give fx_effects the two missing dimensions")
+        # specifically so the scope column can prove-by-construction that a
+        # SITE-scoped effect is structurally excluded from every block panel —
+        # the task's own acceptance test ("ScrollSmoother must never reach a
+        # block inspector"). FR-38-18, §2 row "ScrollSmoother", §9/§10 rows for
+        # ScrollSmoother (disabled in editor + wp-admin; disabled under
+        # reduced-motion).
+        "effect": "scroll-smoother",
+        "tier": "G",
+        "plugin_set": ["ScrollSmoother"],
+        "owns_scroll_transform": 0,
+        "reduced_motion": "suppress",
+        "editor_story": "no-preview",
+        # scope='site': §2 Level column literally says "SITE"; Recommended-
+        # >permitted column: "Site setting only -> per-template opt-out (never
+        # per-block)". requires='none': a site setting has no per-block target
+        # to qualify against — the whole point is that it never reaches a
+        # block-level qualification check at all.
+        "scope": "site",
+        "requires": "none",
+    },
+    {
+        # Same rationale as scroll-smoother above — Page transitions has no
+        # `data-sgs-fx` grammar value (cross-document View Transitions, a
+        # theme-settings toggle, not a per-element attribute). Included for the
+        # same scope-gating proof. §2 row "Page transitions".
+        #
+        # NOTE tier='V', not 'G' — this is the ONE row in the table that is not
+        # Tier G (the spec's own row: "V — cross-document View Transitions API
+        # is CSS-first, no GSAP, no router"). The seeder's original module
+        # docstring said "all 11 are 'G'"; that statement is now stale by
+        # construction (13 rows, 1 of them 'V') — flagged here rather than
+        # silently left wrong in the docstring above.
+        "effect": "page-transitions",
+        "tier": "V",
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        "reduced_motion": "suppress",
+        "editor_story": "no-preview",
+        "scope": "site",
+        "requires": "none",
     },
 ]
 
@@ -267,7 +448,7 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
 
 FX_EFFECTS_COLUMNS = (
     "effect", "tier", "plugin_set", "owns_scroll_transform",
-    "reduced_motion", "editor_story",
+    "reduced_motion", "editor_story", "scope", "requires",
 )
 
 
@@ -281,10 +462,23 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
             owns_scroll_transform   INTEGER NOT NULL DEFAULT 0,
             reduced_motion          TEXT NOT NULL,
             editor_story            TEXT NOT NULL,
+            scope                   TEXT NOT NULL DEFAULT 'block',
+            requires                TEXT NOT NULL DEFAULT 'none',
             created_at              TEXT DEFAULT (datetime('now'))
         )
         """
     )
+    # Reseed-safe migration for a table created before scope/requires existed
+    # (an install that ran the OLD seeder already has fx_effects with 6
+    # columns). ALTER TABLE ADD COLUMN is idempotent-safe here because it is
+    # gated on the column's actual absence, never run unconditionally.
+    existing_cols = {row[1] for row in cur.execute("PRAGMA table_info(fx_effects)").fetchall()}
+    if "scope" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN scope TEXT NOT NULL DEFAULT 'block'")
+        print("  [set]  fx_effects: added column 'scope' (migration)")
+    if "requires" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN requires TEXT NOT NULL DEFAULT 'none'")
+        print("  [set]  fx_effects: added column 'requires' (migration)")
 
 
 def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
@@ -292,31 +486,31 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
     for row in FX_EFFECTS:
         effect = row["effect"]
         existing = cur.execute(
-            "SELECT tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story "
-            "FROM fx_effects WHERE effect = ?",
+            "SELECT tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
+            "scope, requires FROM fx_effects WHERE effect = ?",
             (effect,),
         ).fetchone()
         plugin_set_json = json.dumps(row["plugin_set"])
         target = (
             row["tier"], plugin_set_json, row["owns_scroll_transform"],
-            row["reduced_motion"], row["editor_story"],
+            row["reduced_motion"], row["editor_story"], row["scope"], row["requires"],
         )
         if existing is None:
             cur.execute(
                 "INSERT INTO fx_effects "
-                "(effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story) "
-                "VALUES (?, ?, ?, ?, ?, ?)",
+                "(effect, tier, plugin_set, owns_scroll_transform, reduced_motion, "
+                "editor_story, scope, requires) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (effect, *target),
             )
             changed += 1
-            print(f"  [set]  fx_effects.{effect}: inserted ({row['tier']}, {plugin_set_json})")
+            print(f"  [set]  fx_effects.{effect}: inserted ({row['tier']}, {plugin_set_json}, scope={row['scope']}, requires={row['requires']})")
             continue
         if tuple(existing) == target:
             print(f"  [ok]   fx_effects.{effect}: already correct")
             continue
         cur.execute(
             "UPDATE fx_effects SET tier=?, plugin_set=?, owns_scroll_transform=?, "
-            "reduced_motion=?, editor_story=? WHERE effect=?",
+            "reduced_motion=?, editor_story=?, scope=?, requires=? WHERE effect=?",
             (*target, effect),
         )
         changed += 1

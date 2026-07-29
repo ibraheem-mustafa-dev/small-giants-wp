@@ -23,14 +23,20 @@
 				"trigger": {
 					"label": "Trigger button",
 					"order": 1,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "trigger",
 					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline."
 				},
 				"dialog": {
 					"label": "Dialog",
 					"order": 2,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "modalBackground"
@@ -40,7 +46,9 @@
 				"backdrop": {
 					"label": "Backdrop / overlay",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "overlay",
 					"attrMap": {
 						"css:background-color": "overlayColour",
@@ -48,7 +56,10 @@
 					},
 					"_note": "overlayColour/overlayOpacity drive `--sgs-modal-backdrop-colour`/`--sgs-modal-backdrop-opacity` custom-property VALUES on the wrapper (render.php:54-66), allowed inline per contract §A since they are variable values, not real property declarations. Mapped explicitly — overlayColour doesn't carry a Colour/BackgroundColour suffix match under the default convention."
 				}
-			}
+			},
+			"hideExtensions": [
+				"fx"
+			]
 		},
 		"align": false,
 		"anchor": true,

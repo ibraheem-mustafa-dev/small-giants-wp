@@ -1,114 +1,115 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "sgs/form-field-consent",
-    "version": "0.1.0",
-    "title": "SGS Consent Field",
-    "category": "sgs-forms",
-    "description": "Consent checkbox for GDPR, terms, and marketing.",
-    "keywords": [
-        "consent",
-        "gdpr",
-        "terms",
-        "checkbox",
-        "privacy"
-    ],
-    "textdomain": "sgs-blocks",
-    "icon": "privacy",
-    "parent": [
-        "sgs/form",
-        "sgs/form-step"
-    ],
-    "usesContext": [
-        "sgs/formId"
-    ],
-    "supports": {
-        "html": false,
-        "anchor": false,
-        "sgs": {
-            "hideExtensions": [
-                "animation",
-                "blockLink",
-                "clickEffects",
-                "hover",
-                "parallax"
-            ],
-            "elements": {
-                "consent": {
-                    "label": "Consent checkbox + text",
-                    "order": 1,
-                    "clusters": [],
-                    "_note": "Unlike its single-input siblings, this block has no separate <label> call — it renders one wrapping <label class=\"sgs-form-field__consent\"> containing the <input type=\"checkbox\"> and a <span class=\"sgs-form-field__consent-text\">. No per-instance colour/font-size/weight attribute exists for either; both are styled entirely by shared framework CSS. clusters: [] is a genuine gap, not hidden. The orphan scanner reports consentText/consentType as ORPHANs against this element's 'consent' prefix (element-key-as-fallback-prefix convention) — a known false-positive, not an unaccounted style control (both are content/behaviour attributes, not style)."
-                },
-                "help": {
-                    "label": "Help text",
-                    "order": 2,
-                    "clusters": [],
-                    "_note": "helpText itself is field-behaviour content, not a style property (Bean's non-cluster rule) — the rendered <p class=\"sgs-form-field__help\"> also carries no per-instance style attribute of its own. clusters: []. The conformance checker's orphan scanner reports helpText as an ORPHAN here (element-key-as-fallback-prefix convention coincidentally matches help+Text); this is a known false-positive of the checker, not evidence of an unaccounted style control."
-                },
-                "error": {
-                    "label": "Error message",
-                    "order": 3,
-                    "clusters": [],
-                    "_note": "Populated by client-side validation JS, not a block attribute; the <span class=\"sgs-form-field__error\"> has no per-instance style attribute. clusters: []."
-                }
-            }
-        }
-    },
-    "attributes": {
-        "fieldName": {
-            "type": "string",
-            "default": "consent"
-        },
-        "label": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "placeholder": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "helpText": {
-            "type": "string",
-            "default": "",
-            "role": "content"
-        },
-        "required": {
-            "type": "boolean",
-            "default": false
-        },
-        "width": {
-            "type": "string",
-            "default": "full"
-        },
-        "consentType": {
-            "type": "string",
-            "default": "terms"
-        },
-        "consentText": {
-            "type": "string",
-            "default": "I agree to the Terms & Conditions"
-        },
-        "conditionalField": {
-            "type": "string",
-            "default": ""
-        },
-        "conditionalOperator": {
-            "type": "string",
-            "default": "equals"
-        },
-        "conditionalValue": {
-            "type": "string",
-            "default": ""
-        }
-    },
-    "render": "file:./render.php",
-    "editorScript": "file:./index.js",
-    "example": {
-        "attributes": {
-            "label": "I agree to the terms and conditions and privacy policy."
-        }
-    }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-consent",
+	"version": "0.1.0",
+	"title": "SGS Consent Field",
+	"category": "sgs-forms",
+	"description": "Consent checkbox for GDPR, terms, and marketing.",
+	"keywords": [
+		"consent",
+		"gdpr",
+		"terms",
+		"checkbox",
+		"privacy"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "privacy",
+	"parent": [
+		"sgs/form",
+		"sgs/form-step"
+	],
+	"usesContext": [
+		"sgs/formId"
+	],
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"sgs": {
+			"hideExtensions": [
+				"animation",
+				"blockLink",
+				"clickEffects",
+				"fx",
+				"hover",
+				"parallax"
+			],
+			"elements": {
+				"consent": {
+					"label": "Consent checkbox + text",
+					"order": 1,
+					"clusters": [],
+					"_note": "Unlike its single-input siblings, this block has no separate <label> call — it renders one wrapping <label class=\"sgs-form-field__consent\"> containing the <input type=\"checkbox\"> and a <span class=\"sgs-form-field__consent-text\">. No per-instance colour/font-size/weight attribute exists for either; both are styled entirely by shared framework CSS. clusters: [] is a genuine gap, not hidden. The orphan scanner reports consentText/consentType as ORPHANs against this element's 'consent' prefix (element-key-as-fallback-prefix convention) — a known false-positive, not an unaccounted style control (both are content/behaviour attributes, not style)."
+				},
+				"help": {
+					"label": "Help text",
+					"order": 2,
+					"clusters": [],
+					"_note": "helpText itself is field-behaviour content, not a style property (Bean's non-cluster rule) — the rendered <p class=\"sgs-form-field__help\"> also carries no per-instance style attribute of its own. clusters: []. The conformance checker's orphan scanner reports helpText as an ORPHAN here (element-key-as-fallback-prefix convention coincidentally matches help+Text); this is a known false-positive of the checker, not evidence of an unaccounted style control."
+				},
+				"error": {
+					"label": "Error message",
+					"order": 3,
+					"clusters": [],
+					"_note": "Populated by client-side validation JS, not a block attribute; the <span class=\"sgs-form-field__error\"> has no per-instance style attribute. clusters: []."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": "consent"
+		},
+		"label": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"helpText": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"width": {
+			"type": "string",
+			"default": "full"
+		},
+		"consentType": {
+			"type": "string",
+			"default": "terms"
+		},
+		"consentText": {
+			"type": "string",
+			"default": "I agree to the Terms & Conditions"
+		},
+		"conditionalField": {
+			"type": "string",
+			"default": ""
+		},
+		"conditionalOperator": {
+			"type": "string",
+			"default": "equals"
+		},
+		"conditionalValue": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"example": {
+		"attributes": {
+			"label": "I agree to the terms and conditions and privacy policy."
+		}
+	}
 }

@@ -19,6 +19,7 @@
 		"sgs": {
 			"imageControls": false,
 			"is_section_root": true,
+			"containerKind": "section",
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [

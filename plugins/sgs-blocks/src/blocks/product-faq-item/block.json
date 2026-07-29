@@ -39,7 +39,10 @@
 				"item": {
 					"label": "FAQ item",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
@@ -51,7 +54,10 @@
 					},
 					"_note": "No `text` cluster declared — this block declares no `typography` support at all and no per-element font attrs (question/isOpen are content-only), so a text cluster would resolve zero members and violate ROLLOUT REQUIREMENT 1. Similarly no `spacing` support exists (padding/margin absent) — those layout members are honest gaps."
 				}
-			}
+			},
+			"hideExtensions": [
+				"fx"
+			]
 		}
 	},
 	"usesContext": [
