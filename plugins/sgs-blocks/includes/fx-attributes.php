@@ -130,36 +130,27 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 	}
 
 	/*
-	 * Spec 38 FR-38-8 — mark the horizontal panel's TRACK.
+	 * NO TRACK MARKING HERE — deliberate, and it was tried and removed.
 	 *
-	 * The effect translates one child element sideways. That element cannot be
-	 * hand-authored: `sgs/container` is a DYNAMIC block, so `render.php`
-	 * regenerates its markup on every render and any `data-sgs-fx-track` written
-	 * into the editor's HTML is discarded — and per D338 an attribute a
-	 * block.json doesn't declare is dropped silently, with no error and no gate.
-	 * The convention came from hand-written GSAP demos where the author owns the
-	 * HTML; here nobody does.
+	 * Spec 38 FR-38-8's horizontal panel needs one child element marked as the
+	 * track. That element cannot be hand-authored (`sgs/container` is dynamic, so
+	 * render.php regenerates its markup and an authored attribute is discarded —
+	 * silently, per D338). The obvious fix from here was to scan this rendered
+	 * HTML for the first `.sgs-container__inner` and mark it.
 	 *
-	 * So the two halves are split by ownership:
-	 *   · SGS_Container_Wrapper FORCES the `__inner` element to exist when
-	 *     fx === 'horizontal-panel' (only the wrapper can decide that), and
-	 *   · this marks that element as the track.
+	 * That shipped, and it marked the WRONG element: with nested containers the
+	 * first match belongs to a CHILD, so the effect measured a 96px inner instead
+	 * of the 1200px panel row, computed zero travel distance, and never pinned.
+	 * "Scan the output for the element I want" is a guess whenever more than one
+	 * candidate can exist.
 	 *
-	 * The mark is applied server-side, so the effect module never has to guess.
-	 * If no `__inner` is found the mark is simply absent and the module bails to
-	 * the CSS scroll-snap fallback rather than translating the wrong element.
+	 * The mark is now applied by `SGS_Container_Wrapper` at the point it EMITS
+	 * the `__inner` element — the only place that knows which one is its own.
+	 * Do not reintroduce a scan here as a "fallback": if the wrapper did not emit
+	 * an inner element, the only candidates left belong to children, so a
+	 * fallback would mark the wrong element by construction. Absent mark → the
+	 * effect module bails to the CSS scroll-snap fallback, which is correct.
 	 */
-	$html = $head . $processor->get_updated_html();
-
-	if ( 'horizontal-panel' === $fx && false === \strpos( $html, 'data-sgs-fx-track' ) ) {
-		$marker = new \WP_HTML_Tag_Processor( $html );
-		while ( $marker->next_tag( array( 'class_name' => 'sgs-container__inner' ) ) ) {
-			$marker->set_attribute( 'data-sgs-fx-track', 'true' );
-			break; // The FIRST inner band is the track; nested ones are content.
-		}
-		$html = $marker->get_updated_html();
-	}
-
-	return $html;
+	return $head . $processor->get_updated_html();
 }
 \add_filter( 'render_block', __NAMESPACE__ . '\\sgs_inject_fx_attributes', 10, 2 );
