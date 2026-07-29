@@ -66,7 +66,35 @@ function stringParam( el, name, fallback ) {
  *                            empty (nothing to pin against).
  */
 function resolveTrack( el ) {
-	return el.querySelector( ':scope > [data-sgs-fx-track]' ) || el.firstElementChild;
+	const marked = el.querySelector( ':scope > [data-sgs-fx-track]' );
+	if ( ! marked ) {
+		// No server-side mark: the wrapper did not emit an inner element, so
+		// every remaining candidate belongs to a child. Bail rather than
+		// translate the wrong thing — the CSS scroll-snap fallback still works.
+		return null;
+	}
+
+	/*
+	 * The element to translate is the marked element's CONTENT WRAPPER, not the
+	 * marked element itself. Verified against the rendered DOM:
+	 *
+	 *   <section data-sgs-fx="horizontal-panel">
+	 *     <div class="sgs-container__inner" data-sgs-fx-track>   <- marked
+	 *       <div class="wp-block-sgs-container">                 <- translate THIS
+	 *         <section> panel … </section>
+	 *
+	 * `__inner` wraps the block's InnerBlocks content wrapper, so it always has
+	 * exactly ONE child. Translating `__inner` moved a row containing a single
+	 * shrink-to-content item: measured 96px against a 1200px container, so
+	 * scrollWidth never exceeded clientWidth, travel distance was zero, and the
+	 * effect silently did nothing at all.
+	 *
+	 * Falls back to the marked element itself so a container whose content is
+	 * NOT wrapped still animates rather than dying.
+	 */
+	return (
+		marked.querySelector( ':scope > .wp-block-sgs-container' ) || marked
+	);
 }
 
 /**

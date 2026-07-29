@@ -33,12 +33,29 @@
 	-webkit-overflow-scrolling: touch;
 }
 
-[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] {
+/*
+ * The flex row is the marked element's CONTENT WRAPPER, not the marked element.
+ *
+ * Verified against the real rendered DOM (do not "simplify" this away):
+ *   <section data-sgs-fx="horizontal-panel">
+ *     <div class="sgs-container__inner" data-sgs-fx-track>   <- marked
+ *       <div class="wp-block-sgs-container">                 <- the flex row
+ *         <section> panel … </section>
+ *
+ * `__inner` wraps the block's InnerBlocks content wrapper, so it always has
+ * exactly ONE child. Making `__inner` itself the flex row produced a row with a
+ * single item that shrank to its content — measured 96px against a 1200px
+ * container, so nothing overflowed, travel distance computed as zero, and the
+ * pin never engaged. Both class names here are framework-owned and structurally
+ * guaranteed for sgs/container, so this is a deterministic path, not a
+ * positional guess.
+ */
+[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container {
 	display: flex;
 	width: max-content;
 }
 
-[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > * {
+[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > .wp-block-sgs-container > * {
 	scroll-snap-align: start;
 	/* A flex item's default min-width:auto refuses to shrink below its content,
 	   which on a narrow viewport pushes panels wider than the screen. */
