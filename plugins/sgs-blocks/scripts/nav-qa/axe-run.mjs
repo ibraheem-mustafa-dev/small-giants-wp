@@ -41,8 +41,19 @@
  *
  * Usage
  * -----
- *   node axe-run.mjs <url> [--open <selector>] [--scope <selector>] [--viewport <width>]
+ *   node axe-run.mjs <url> [--open <selector>] [--open-via click|keyboard]
+ *                          [--scope <selector>] [--viewport <width>]
  *                          [--require-open] [--allow-closed] [--json]
+ *
+ * --open-via (added 2026-07-29)
+ * ----------------------------
+ *   click    (default) — click the trigger, then park the pointer away from the
+ *                        opened surface. Correct for a `<dialog>` drawer.
+ *   keyboard           — focus the trigger and press Enter; the pointer never
+ *                        touches the surface. REQUIRED for the desktop mega,
+ *                        which is a hover-bridge component: parking the pointer
+ *                        fires its leave-bridge (170ms grace) and closes it, so
+ *                        the click path always ended VACUOUS.
  *
  * Examples
  * --------
@@ -53,10 +64,11 @@
  *   node axe-run.mjs https://sandybrown-nightingale-600381.hostingersite.com/ \
  *     --open ".sgs-nav-menu__burger" --scope ".sgs-nav-drawer"
  *
- *   # Open a desktop mega, scope to the mega panel, force a 1440 viewport
- *   node axe-run.mjs https://palestine-lives.org/ \
- *     --open ".sgs-nav-menu__item--has-mega .sgs-nav-menu__link" \
- *     --scope ".sgs-nav-menu__mega-panel" --viewport 1440
+ *   # Open a desktop mega (hover-bridge — MUST use the keyboard path), scope to
+ *   # the panel in the page content, force a 1440 viewport
+ *   node axe-run.mjs https://sandybrown-nightingale-600381.hostingersite.com/gate3-mega-nav/ \
+ *     --open ".entry-content .sgs-nav-menu__mega-trigger" --open-via keyboard \
+ *     --scope ".entry-content .sgs-nav-menu__mega-panel-wrap" --viewport 1440
  *
  * Exit codes
  * ----------
@@ -91,12 +103,14 @@ function parseArgs( argv ) {
 		json: false,
 		requireOpen: false,
 		allowClosed: false,
+		openVia: 'click',
 	};
 	const rest = [ ...argv ];
 	args.url = rest.shift();
 	while ( rest.length ) {
 		const flag = rest.shift();
 		if ( flag === '--open' ) args.open = rest.shift();
+		else if ( flag === '--open-via' ) args.openVia = rest.shift();
 		else if ( flag === '--scope' ) args.scope = rest.shift();
 		else if ( flag === '--viewport' ) args.viewport = parseInt( rest.shift(), 10 );
 		else if ( flag === '--json' ) args.json = true;
@@ -106,6 +120,10 @@ function parseArgs( argv ) {
 			process.stderr.write( `axe-run: unrecognised argument "${ flag }"\n` );
 			process.exit( 2 );
 		}
+	}
+	if ( ! [ 'click', 'keyboard' ].includes( args.openVia ) ) {
+		process.stderr.write( `axe-run: --open-via must be "click" or "keyboard", got "${ args.openVia }".\n` );
+		process.exit( 2 );
 	}
 	return args;
 }
@@ -145,7 +163,7 @@ async function main() {
 				process.stderr.write( `axe-run: --open selector "${ args.open }" matched 0 elements on the page.\n` );
 				process.exit( 2 );
 			}
-			// Scroll the trigger to mid-viewport before clicking. A STICKY site
+			// Scroll the trigger to mid-viewport before opening. A STICKY site
 			// header will otherwise intercept the click on a trigger that sits
 			// near the top of the page — the element reports visible+enabled and
 			// the click still never lands (measured 2026-07-29 at 375px).
@@ -156,26 +174,54 @@ async function main() {
 				window.scrollBy( 0, r.top - window.innerHeight / 2 );
 			}, args.open );
 			await page.waitForTimeout( 250 );
-			try {
-				await trigger.first().click( { timeout: 15000 } );
-			} catch ( e ) {
-				process.stderr.write(
-					`axe-run: the --open trigger "${ args.open }" could not be clicked — ${ e.message.split( '\n' )[ 0 ] }\n` +
-					'  Something is intercepting the click (commonly a sticky header). This is NOT a pass.\n'
-				);
-				process.exit( 2 );
+
+			if ( args.openVia === 'keyboard' ) {
+				// KEYBOARD PATH (added 2026-07-29). A HOVER-BRIDGE surface — the
+				// desktop mega panel — closes the moment the pointer leaves it
+				// (`actions.leaveBridge`, 170ms close-grace). The click path below
+				// therefore CANNOT hold it open: the click opens it and the
+				// pointer-park immediately closes it again, so the openness guard
+				// correctly reported VACUOUS and the mega could not be axe-tested
+				// at all. Measured on the Gate-3 fixture (canary page 1842):
+				// click-then-hold = open 1120x499; click-then-move-away = closed.
+				// Opening from the keyboard never puts the pointer on the surface,
+				// so nothing to park and no phantom :hover state to measure — and
+				// it is how a keyboard user reaches the panel anyway.
+				try {
+					await trigger.first().focus( { timeout: 15000 } );
+				} catch ( e ) {
+					process.stderr.write(
+						`axe-run: the --open trigger "${ args.open }" could not be focused — ${ e.message.split( '\n' )[ 0 ] }\n` +
+						'  A trigger that cannot take keyboard focus is itself a defect. This is NOT a pass.\n'
+					);
+					process.exit( 2 );
+				}
+				await page.keyboard.press( 'Enter' );
+			} else {
+				try {
+					await trigger.first().click( { timeout: 15000 } );
+				} catch ( e ) {
+					process.stderr.write(
+						`axe-run: the --open trigger "${ args.open }" could not be clicked — ${ e.message.split( '\n' )[ 0 ] }\n` +
+						'  Something is intercepting the click (commonly a sticky header). This is NOT a pass.\n'
+					);
+					process.exit( 2 );
+				}
+				// Park the pointer in the corner, away from the surface just opened.
+				// After a click the cursor STAYS where it clicked, and an opened
+				// panel frequently renders a link underneath it — that link then sits
+				// in :hover and axe measures its HOVER colour. Measured 2026-07-29:
+				// this produced a "serious color-contrast" violation on exactly one
+				// drawer link (2.14:1) which vanished the moment the pointer moved,
+				// i.e. a real-looking failure that described nothing a user would see
+				// at rest. Hover states still deserve their own contrast check — but
+				// as a deliberate, separate measurement, not a random by-product of
+				// where the trigger happened to be.
+				// NOTE: this park is safe for a `<dialog>` (its open state is not
+				// pointer-dependent) and fatal for a hover-bridge panel — use
+				// `--open-via keyboard` for the latter.
+				await page.mouse.move( 2, 2 );
 			}
-			// Park the pointer in the corner, away from the surface just opened.
-			// After a click the cursor STAYS where it clicked, and an opened
-			// panel frequently renders a link underneath it — that link then sits
-			// in :hover and axe measures its HOVER colour. Measured 2026-07-29:
-			// this produced a "serious color-contrast" violation on exactly one
-			// drawer link (2.14:1) which vanished the moment the pointer moved,
-			// i.e. a real-looking failure that described nothing a user would see
-			// at rest. Hover states still deserve their own contrast check — but
-			// as a deliberate, separate measurement, not a random by-product of
-			// where the trigger happened to be.
-			await page.mouse.move( 2, 2 );
 			// Let CSS/JS transitions (dialog animation, aria-expanded toggle) settle.
 			await page.waitForTimeout( 350 );
 		}
