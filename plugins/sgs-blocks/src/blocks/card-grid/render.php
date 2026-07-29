@@ -506,6 +506,27 @@ foreach ( $items as $index => $item ) :
 	// $item['image'] is set, synthesise a media object so the shared
 	// sgs_render_media() helper can emit the right tag for video too.
 	$item_media = $item['media'] ?? null;
+	// A BARE URL STRING is a first-class accepted shape (2026-07-29). block.json
+	// declares `items[].media` as `{"type":"string"}` while edit.js writes the
+	// object form, and `sgs_render_media()` bails on anything that is not an
+	// array (helpers-media.php:168) — so a string URL rendered NOTHING, silently,
+	// with an empty `.sgs-card-grid__image-wrap` left behind. That is exactly how
+	// both shipped mega starter patterns (sgs/mega-brands-1, sgs/mega-media-cards-1)
+	// lost all 8 of their card images through a green build. Normalising here
+	// fixes every caller at once — patterns, and any converter/clone output that
+	// emits the documented string shape — rather than patching the two patterns
+	// and leaving the trap armed for the next author.
+	// `alt` is deliberately '': these cards carry a visible title, so an alt that
+	// repeated it would double-announce to a screen reader.
+	if ( is_string( $item_media ) ) {
+		$item_media = '' !== trim( $item_media )
+			? array(
+				'url'  => trim( $item_media ),
+				'type' => 'image',
+				'alt'  => '',
+			)
+			: null;
+	}
 	if ( empty( $item_media ) && ! empty( $item['image']['url'] ) ) {
 		$item_media = array(
 			'url'  => $item['image']['url'],
