@@ -56,6 +56,11 @@ import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
+# The server-side mirror of every JS-registered extension attr, regenerated on
+# each build by scripts/generate-extension-attributes.js.
+GENERATED_EXT_ATTRS = (
+    REPO / 'plugins' / 'sgs-blocks' / 'includes' / 'extension-attributes.generated.php'
+)
 
 # Attrs WP accepts on ANY block via supports/global machinery.
 NATIVE = {
@@ -65,8 +70,44 @@ NATIVE = {
                   # declaring supports.typography.textAlign false-flag once content sets it.
 }
 # SGS universal extensions injected server-side.
+#
+# These two constants are the FALLBACK only. The authoritative list is read from
+# includes/extension-attributes.generated.php by _load_extension_attrs() below.
 EXT_PREFIXES = ('sgsHideOn', 'sgsAnim')
 EXT_EXACT = {'sgsCustomCss'}
+
+# Attr names in the generated server mirror, e.g. "\t'fxStart' => array( ... )".
+_GENERATED_ATTR_RE = re.compile(r"^\s*'([A-Za-z][A-Za-z0-9]*)'\s*=>", re.M)
+
+
+def _load_extension_attrs() -> set:
+    """Attr names the SGS extensions register on blocks, from the generated mirror.
+
+    WHY THIS IS READ RATHER THAN HARDCODED (fixed 2026-07-29, Spec 38 Wave A):
+    extension attrs are added by JS filters, so they are invisible to a
+    block.json-only scan and every one of them looks "undeclared" here. The
+    previous hardcoded ('sgsHideOn', 'sgsAnim') + {'sgsCustomCss'} list meant
+    each NEW extension silently began raising false HIGH findings against real,
+    correct stored content — Spec 38's `fx*` attrs did exactly that, and a HIGH
+    here aborts the deploy.
+
+    `includes/extension-attributes.generated.php` is regenerated from the
+    extension JS on every build and is already the single source of truth the
+    SERVER uses to mirror these attrs (it exists because ServerSideRender
+    rejects any attr missing from the server schema). Reading it makes this gate
+    self-updating: a new extension attr is recognised the moment it is
+    generated, with no list to remember to edit.
+
+    Falls back to the hardcoded constants if the file is absent, so the gate
+    keeps working on a fresh clone rather than silently accepting everything.
+    """
+    if not GENERATED_EXT_ATTRS.exists():
+        return set(EXT_EXACT)
+    try:
+        text = GENERATED_EXT_ATTRS.read_text(encoding='utf-8')
+    except OSError:
+        return set(EXT_EXACT)
+    return set(_GENERATED_ATTR_RE.findall(text)) | set(EXT_EXACT)
 
 OPEN_RE = re.compile(r'<!--\s*wp:(sgs/[\w-]+)(\s+\{)?')
 
@@ -171,9 +212,19 @@ def harvest_blocks(markup):
 
 
 def is_legit(key, declared):
-    if key in declared or key in NATIVE or key in EXT_EXACT:
+    if key in declared or key in NATIVE or key in _extension_attrs():
         return True
     return key.startswith(EXT_PREFIXES)
+
+
+def _extension_attrs():
+    """Cached extension-attr allowlist (see _load_extension_attrs)."""
+    if _extension_attrs.cache is None:
+        _extension_attrs.cache = _load_extension_attrs()
+    return _extension_attrs.cache
+
+
+_extension_attrs.cache = None
 
 
 def populated_content(attrs, schema):
