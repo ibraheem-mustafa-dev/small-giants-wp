@@ -1412,18 +1412,7 @@ A standing housekeeping intent from an earlier phase plan: periodically re-count
 
 ## Research + speculative
 
-*4 open entries.*
-
-### P-10 — svg-morph animation gap candidate (deferred until motion Wave C)
-**Status:** DEFERRED · **Bucket:** research · **Parked:** 2026-05-07
-
-⚠ Original premise DEAD (2026-07-29): MorphSVG (with all GSAP plugins) became 100% free for
-commercial use at the April 2025 Webflow acquisition. Revival is spec'd as **Spec 38 FR-38-16**
-(asset-gated MorphSVG, Tier G) — Bean signed Spec 38 off 2026-07-29 post qc-council. The old
-Anime.js/SMIL alternative paths are superseded.
-
-**Trigger:** motion Wave C runs (`plans/2026-07-29-motion-wave-C-session-prompt.md`); archive
-this entry when FR-38-16 ships.
+*3 open entries.*
 
 ### P-CP-1 — /sgs-emit cross-platform component emitter (dead gate)
 **Status:** DEFERRED · **Bucket:** research · **Parked:** unknown

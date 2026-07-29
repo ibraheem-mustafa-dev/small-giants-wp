@@ -2339,3 +2339,17 @@ Archived verbatim from parking.md on completion:
 > the R-31-9 sweep); trust-bar's icon-circle + badge-image shadow presets simultaneously upgraded
 > to the full ShadowControl (Bean: "builder + presets" = the existing component) with
 > `sgs_shadow_value()` render routing. **Completion date: 2026-07-28.**
+
+### P-10 — svg-morph animation gap candidate — SUPERSEDED 2026-07-29 (planned work, not parked)
+
+> Original (2026-05-07): "Requires GSAP MorphSVGPlugin, a paid Club GSAP library — misaligned
+> with SGS's open-source default. Trigger: only if a paid client specifically needs SVG morphing
+> and funds Club GSAP licensing. Alternative path: Anime.js morphing helpers, SMIL fallbacks, or
+> hand-coded path interpolation."
+>
+> SUPERSEDED by **Spec 38 FR-38-16** (asset-gated MorphSVG, Tier G): the licensing premise died
+> at the April 2025 Webflow acquisition (all GSAP plugins 100% free for commercial use), and
+> Bean signed Spec 38 off 2026-07-29 post qc-council. The work is now PLANNED — motion Wave C,
+> `plans/2026-07-29-motion-wave-C-session-prompt.md` — and Bean ruled (2026-07-29, /handoff):
+> planned-for-upcoming-sessions work does not live in parking; parked means deferred.
+> **Supersession date: 2026-07-29.**

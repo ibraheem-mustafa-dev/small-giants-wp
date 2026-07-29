@@ -23,9 +23,9 @@ which you REJECTED** — those clones need real rework before they come back to 
 
 ## ⭐ CURRENT FRONTS
 
-### Track 3 (NEW 2026-07-29) — Spec 38 motion system: SIGNED OFF (qc-council-gated) — Wave A is next
+### Track 3 (NEW 2026-07-29) — Spec 38 motion system: SIGNED OFF — Wave A is next
 
-**Documents only, nothing built yet.** `specs/38-SGS-MOTION-SYSTEM.md` is `active`: Bean approved 2026-07-29 conditional on a /qc-council, which ran same day (3 code-grounded raters — WP-mechanics, header-forensics, spec-lawyer): **0 architectural refutations, 9 precision amendments applied in-spec** (headline: entrance×scrub needs STRIP on the static-save path; webpack gsap-externals + template wrapper-insertion are NAMED Wave build tasks; sticky edge rule now tri-state-aware "outside if sticky on ANY tier"; smooth-scroll.js suppressed under ScrollSmoother; Wave B regression list += row collapse + 2 sub-cases). D406–D409 logged; vanilla-first rule amended at its 5 homes; P-10 premise dead. **Next: run `plans/2026-07-29-motion-wave-A-session-prompt.md` (plan mode; Waves B/C after A — B∥C possible).**
+**Documents only, nothing built yet.** `specs/38-SGS-MOTION-SYSTEM.md` is `active`: Bean approved 2026-07-29 after a same-day /qc-council — 0 architectural refutations, 9 precision amendments (record: spec banner + D406–D409). Vanilla-first rule amended at its 5 homes; P-10 archived (superseded by FR-38-16; Bean rule: parked means DEFERRED — planned work lives in its plan). **Next: run `plans/2026-07-29-motion-wave-A-session-prompt.md` (plan mode; B∥C after A).**
 
 ### Track 2b — Spec 37 header/footer: B3 preset library (DESIGN-GATED, awaiting Bean's sign-off)
 
@@ -186,8 +186,7 @@ audit `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 
 ## Product queue (the website-builder work — reconcile before acting, some is already live)
 
-**Indus "Our Brands" clone fidelity — DONE 2026-07-17 (D343, live-verified).** Detail: `decisions.md`
-D343. Remaining Indus tasks (Bean-directed 2026-07-17):
+**Indus "Our Brands" clone — DONE (D343).** Remaining Indus tasks (Bean-directed 2026-07-17):
 
 - **A — core→SGS migration.** (1) build the `sgs/separator` migration pairing
   (`migrate-core-blocks/pairings/separator_pairing.py` does NOT exist — follow
@@ -223,11 +222,9 @@ D343. Remaining Indus tasks (Bean-directed 2026-07-17):
 **Open reconciliation:** Track B (`feat/track-b-content-restore`, Indus page content) stayed
 unmerged/paused — check its branch state before touching its files.
 
-**Standing programmes (not the active front):** no-inline styling roster effectively COMPLETE
-(11-condition DONE audit 2026-07-26; real remaining = 5 block-fixes in that report) · WooCommerce
-layer (Spec 30) COMPLETE + merged (D220) · cloning L1–L4 cascade DONE (D290). Still parked and NOT
-ours: `P-CONFORMANCE-GOLDEN-DRIFT` (27 stale goldens — a blind re-seed is forbidden) +
-`P-ARCHIVE-PRODUCT-WC-VALIDATION`.
+**Standing programmes (closed — pointers only):** no-inline COMPLETE bar 5 block-fixes
+(`reports/2026-07-26-spec32-11-condition-done-audit.md`) · Spec 30 COMPLETE (D220) · L1–L4 DONE
+(D290). Parked, not ours: `P-CONFORMANCE-GOLDEN-DRIFT` · `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
 
 ---
 
@@ -283,18 +280,12 @@ vacuous-capture class the axe harness fixed).
 **Acceptance:** per variant, link count + labels match the extraction JSON exactly, alignment matches
 the reference, and a menu-OPEN reference exists for all 7. Then — and only then — back to Bean.
 
-### Task 2 — Sign off (or redirect) Spec 38, then run Wave A
+### Task 2 — Run motion Wave A (Spec 38 sign-off DONE 2026-07-29, Track 3)
 
-**What:** review `specs/38-SGS-MOTION-SYSTEM.md` and flip `status: draft → active`, or redirect.
-**Why:** three wave prompts are written and blocked behind it; nothing may be implemented first.
-**Time:** 20 min to review; Wave A ~45 min after.
-**Orchestration:** review inline (Opus). Wave A implementation → delegated, model via `/delegate`,
-dispatch pattern single-agent, brief = `plans/2026-07-29-motion-wave-A-session-prompt.md` verbatim.
-**Context the subagent will not have:** the stack is vanilla JS + CSS `transform`/`opacity` only;
-D406–D409 carry the doctrine; `prefers-reduced-motion` is non-negotiable on every effect.
-**Depends on:** your sign-off. **Parallel with:** Task 1. **QC gate after:** `/qc-inline`.
-**Acceptance:** Spec 38 `status: active` recorded with a D-number, and Wave A's FRs shipped *and*
-live-verified — not merely built (STOP-29: acceptance is the spec's full scope for the surface).
+**What:** run `plans/2026-07-29-motion-wave-A-session-prompt.md` verbatim (plan mode);
+orchestration = the prompt's own Phase-0 tier table. **Time:** ~45 min. **Depends on:** nothing.
+**Parallel with:** Tasks 1, 3. **QC gate after:** `/qc-inline`. **Acceptance:** Wave A's FRs
+shipped *and* live-verified — not merely built (STOP-29: full spec scope for the surface).
 
 ### Task 3 — B3 preset library: answer §7, then author the patterns
 
@@ -315,13 +306,9 @@ block, attribute, admin UI or React component**. Patterns go through the already
 ### Dependency graph
 
 ```
-Task 1 (inline — Bean's eye)          ┐
-Task 2 review (inline, Opus)          ├─ all three independent, run in any order
-Task 3 §7 answers (inline, Opus)      ┘
-        ↓ (each unblocks its own build)
-Task 2 Wave A (delegated)   ∥   Task 3 authoring (2 parallel agents)
-        ↓ /qc-inline                      ↓ /qc multi-rater
-                    Commit + push (Gate 2)
+Task 1 (inline) ∥ Task 2 Wave A (per its prompt) ∥ Task 3 (§7 answers → 2 parallel agents)
+   ↓ per-task QC gates (Task 2 /qc-inline · Task 3 /qc multi-rater)
+Commit + push (Gate 2)
 ```
 
 ### Tooling for the next session (WordPress project — Gate 5)

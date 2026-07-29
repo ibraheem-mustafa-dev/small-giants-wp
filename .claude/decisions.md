@@ -40,7 +40,6 @@ D-numbers not present in a range below (or below D117) were archived — search 
 | D393–D405 | Pattern templateLock bug, responsive-logo fatal, Spec 35 drawer variants + injection-class audit |
 | D406–D409 | Spec 38 motion system: two-tier V/G doctrine, ScrollSmoother×sticky, Vivus retirement, Tier-G conditional loading |
 | D410 | Doc-hygiene enforcement made mechanical (`handoff-preflight.py`) + the two docscore blind spots it exposed |
-| D406–D409 | Spec 38 motion system: two-tier V/G doctrine, ScrollSmoother×sticky, Vivus retirement, conditional loading |
 
 ## D410 [INCIDENT] — doc-hygiene rules become MECHANICAL: handoff-preflight.py replaces five prose gates that were enforced nowhere (2026-07-29)
 
