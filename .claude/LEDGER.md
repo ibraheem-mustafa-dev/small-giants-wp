@@ -17,7 +17,16 @@ gets ONE true answer instead of three drifting ones.
 **Where things stand (2026-07-29).** The doc system is finished and now mechanically enforced — see
 the sweep record at the bottom. Three build fronts are live: **Spec 38 motion (signed off, Wave A
 next)**, **B3 header/footer presets (awaiting your three §7 answers)**, and **Spec 36 nav Task 5,
-which you REJECTED** — those clones need real rework before they come back to you.
+which you REJECTED**.
+
+**On the drawers, plainly:** the checks all passed and the clones still look nothing like the real
+sites, because the checks measured whether the menu WORKS (keyboard, screen-reader, motion, no-JS),
+never whether it LOOKS right — and that was written up in a way that read as if it had. Two real
+faults were found afterwards and are still open: some menu text is painted the same colour as its
+own background, so it is invisible rather than missing; and the "centred" style never centres its
+links because the setting only centres boxes, not the menu inside them. **Nothing more gets built on
+the current setup until your CPT design decision lands** — rebuilding the test pages now would be
+wasted if the drawer stops being a block.
 
 ---
 
@@ -27,85 +36,76 @@ which you REJECTED** — those clones need real rework before they come back to 
 
 **Documents only, nothing built yet.** `specs/38-SGS-MOTION-SYSTEM.md` is `active`: Bean approved 2026-07-29 after a same-day /qc-council — 0 architectural refutations, 9 precision amendments (record: spec banner + D406–D409). Vanilla-first rule amended at its 5 homes; P-10 archived (superseded by FR-38-16; Bean rule: parked means DEFERRED — planned work lives in its plan). **Next: run `plans/2026-07-29-motion-wave-A-session-prompt.md` (plan mode; B∥C after A).**
 
-### Track 2b — Spec 37 header/footer: B3 preset library (DESIGN-GATED, awaiting Bean's sign-off)
+### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; architecture gate WRITTEN
 
-**Nothing built.** `plans/2026-07-28-B3-header-footer-style-preset-library-design-gate.md`.
-Bean's decisions (2026-07-28): a preset changes EVERYTHING ("exactly what a pattern selector would
-give them") · 8+ presets · header AND footer with SEPARATE rosters. **The finding that reshaped the
-job: B3 is an AUTHORING job, not a mechanism job** — the 7 existing header starters already carry
-colour, padding, rules and behaviours, so the picker already does what a preset control would; what
-is missing is VARIETY (every starter paints `surface` behind `primary`, so all seven look alike on
-any one site). So: 8 styled header + 8 styled footer patterns through the already-live native
-picker — no new block, attribute, admin UI or React component. Three open sign-off questions in §7.
+**The gate Bean asked for is authored and awaits his sign-off:**
+`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. It locks: merged 36/37
+EXECUTION (specs stay separate docs, §1.2 cross-amend rule keeps them coupled) · drawer → CPT
+(`variantPreset` dies, 7 looks become CPT starter patterns; `drawerRef` becomes a post picker) ·
+nav-menu stays a BLOCK (its content home is the classic menu; its edit surface is the header CPT)
+but its burger trigger becomes fully controllable (word/symbol/burger + open-state morph, DP4) ·
+per-property controllability contract (DP5) · **clone-first POC: studionamma 100% first — header +
+drawer + footer, content/imagery/colours/typography — then the other 6** · each accepted clone
+yields the B3 presets (7 cloned pairs + Utility/Overlay/Directory invented fills; Warm cut;
+Q3 = retire `centred/minimal/full` starters, keep scratch + 3 search) · DP7 harness honesty gates
+any re-present. **3 open questions in gate §3 (admin naming · site-wide vs per-header drawer ·
+first-clone site). Next session: sign-off → /strategic-plan for the merged track.**
+B3's old standalone plan (`2026-07-28-B3-…`) is subsumed — its §7 answers are recorded in the gate §0.
 
-The raw-insert drawer gap is FIXED (`6ddb9f48`, FR-36-9a clause 2, Specs 36+37 amended in the same
-commit). ⚠ **FR-37-26's FAIL verdict deliberately STANDS** — the test was not re-run and its
-authoritative arm is the blind tester. `P-HEADER-SIMPLICITY-FINDINGS` stays OPEN (findings 2 + 3).
+Header residue unchanged: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
+`P-HEADER-SIMPLICITY-FINDINGS` OPEN (findings 2 + 3).
 
-### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29 — the clones need major rework
+### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29 — CPT design gate is next
 
 **Bean reviewed the pairs and rejected them: "the difference between our version and theirs is night
-and day". This overrides the measurement result — R-31-13, the eye is co-authoritative and it said
-no.** Do NOT re-present these for review; every variant needs real work first. Bean's words: *"all of
-these clone attempts need huge fixes to reach completion now."*
+and day" — R-31-13, the eye is co-authoritative and it overrode a 21/21 mechanical pass.** Do NOT
+re-present these; every variant needs real work first. *"All of these clone attempts need huge fixes
+to reach completion now."* Full narrative + evidence:
+`memory/session-2026-07-29-task5-drawer-rejection.md`; decision record **D411**; measurement record
+`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (read its CORRECTION box first — the
+"21/21 PASS" headline is true only of the checks that ran).
 
-**What he found, all verified:**
-- **Content is NOT an exact clone**, despite the §6 POC rule requiring exactly that.
-  ⚠ **CORRECTION (measured 2026-07-29, after this entry was first written): the "3 items where the
-  extraction recorded 7" claim is WRONG and must not drive the rework.** The 7-item site is
-  studionamma (→ `two-column-editorial`). `centred-statement` clones **fantasy.co, which genuinely has
-  3 primary links** (Work/Services/Impact) plus a 3-item tertiary row — `labels-fantasy.json`
-  `counts.primary = 3`, matching the independent code-extraction count. Adding four items would be
-  building a defect. The real content gap is DESIGN fidelity (styling, imagery, motion), not item count.
-- **Alignment is wrong on several.** `centred-statement` — the variant whose NAME is "centred" —
-  renders **left-aligned**. **Root cause proven:** the drawer emits **no align class at all**
-  (`drawerAlignAttrPresent: false` live); `drawerAlign` centres the drawer's direct children as BOXES,
-  but the nav-menu then stretches to the full 1376px with `text-align: start`, so links stay at x=32
-  while narrower secondary blocks do centre — hence the half-centred look.
-  → `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`.
-- **The detached arrows have labels — they are INVISIBLE, not missing.** `sgs-icon-list__text`
-  computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)` — **contrast 1:1**. A full
-  re-sweep of every text element in all 7 drawers found **6 such elements in exactly the 2 variants
-  using the dark `footer-bg`** (`centred-statement` Contact/Latest/Careers, `split-zone-serif`
-  Team/Careers/Press); the other five are clean. **The Task-5 contrast check missed it because it
-  only measured `.sgs-nav-menu__link-text`** — any contrast gate must walk EVERY text element in the
-  surface. → `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`.
-- **`solid-brand-light` has NO reference screenshot at all** (only `-ours`), so nothing was compared.
-- **`two-column-editorial`'s "reference" is the CLOSED homepage** with a cookie banner still up — the
-  menu was never opened. Verified by opening the PNG.
+**⭐ THE CPT DESIGN GATE IS NOW WRITTEN (same day) — see the merged-track section above.** No
+block-path rework before Bean signs it. The counterweight it preserves: a CPT changes where a
+drawer LIVES, not how faithfully it PAINTS — the styling/imagery/motion gap is rendering-and-
+controls work either way.
 
-**The process failure, and it is the important part.** The exit-gate report claimed **"21/21 sweep
-cells PASS"** and **"7 exact-content fixtures live"**, and the LEDGER repeated it. Those cells
-measured axe / geometry / focus / reduced-motion / JS-off — **none of them measures whether the clone
-looks like the reference**, and the fixture claim was never checked against the extraction's own link
-counts. A green measurement was presented in a way that read as fidelity. That is exactly the
-completion theatre Gate 3.5 exists to stop, and it got through. **The "6/7 references" line was also
-generous — one of the six is unusable, so the real figure was 5/7 at best.**
+**Two defects PROVEN LIVE, both OPEN (neither fixed — they wait on the gate):**
+`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` — `sgs-icon-list__text` renders `rgb(58,46,38)` on a
+`rgb(58,46,38)` drawer, contrast **1:1**, invisible; 6 elements across exactly the 2 dark-`footer-bg`
+variants (this is what Bean saw as "arrows with no labels" — they are present, just unpainted).
+`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` — the drawer emits no align class at all; `drawerAlign`
+centres direct children as boxes while the nav-menu stretches full width with `text-align:start`, so
+`centred-statement` renders left-aligned.
 
-**Rework scope (not a re-review):** (1) rebuild every fixture to genuinely exact reference content —
-verify link COUNT and label TEXT against `reports/2026-07-28-drawer-code-extraction/*.json` per
-variant, and fail the build if they disagree; (2) fix per-variant alignment, starting with
-`centred-statement` actually centring and its arrows being attached to their labels; (3) capture a
-real menu-OPEN reference for `two-column-editorial`, `solid-brand-light` and `buck.co` — the capture
-script must assert the panel is open before it shoots, the same openness guard the axe harness now
-has; (4) only then re-present. Parked: `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`.
+**Rework scope, PARKED BEHIND the gate** (`P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`): rebuild fixtures
+to genuinely exact reference content (fail the build when label COUNT/TEXT disagree with
+`reports/2026-07-28-drawer-code-extraction/*.json`) · fix the two defects above · capture real
+menu-OPEN references for `two-column-editorial`, `solid-brand-light` and `buck.co` — **the capture
+script must assert the panel is open before it shoots** · close the design gap Bean named (text /
+border / symbol / button styling, cycling background imagery + its motion, the animated secondary
+media) · only then re-present.
 
 **Standing warnings (do not lose these):** the **axe openness guard did not exist until 2026-07-29** —
 a CLOSED drawer returned `0 violations` exactly like an open one, so **every scoped drawer/mega axe
 result from before that date proves nothing; re-run it** (it now reports `VACUOUS`, exit 3). Two more
-harness bugs manufactured false results, both fixed: the automation's cursor sat on a link so axe
-measured its `:hover` colour (a *serious* 2.14:1 contrast violation that vanished when the pointer
-moved), and the JS-off check compared raw text to HTML so `Arts & Culture` read as missing.
-**Open findings:** F1 `listColumns` uses `grid-auto-flow:row` so a 7-item menu interleaves across
-columns (keyboard/SR order is fine; reference splits 4+3) — parked
-`P-NAV-MENU-LISTCOLUMNS-READING-ORDER`, recommended to change. F2 (header track) at 375px the theme
-header is `position:absolute`, 251px tall, rendering the DESKTOP logo over content. F3
-`sgs/social-icons` has no Vimeo or Dribbble slug.
+harness bugs manufactured false results, both fixed: the automation's leftover cursor put a link in
+`:hover` so axe measured a phantom *serious* 2.14:1 violation, and the JS-off check compared raw text
+to HTML so `Arts & Culture` read as missing. **F1 `listColumns` `grid-auto-flow:row` is DOWNGRADED TO
+UNDECIDED** — the "reading order is wrong" claim assumed column-wise reading; Bean's counter stands
+(rows-of-2 reads correctly across rows), and there is no ground truth because the reference capture
+for that exact variant failed. **F2** (header track) at 375px the theme header is `position:absolute`,
+251px tall, rendering the DESKTOP logo over content. **F3** `sgs/social-icons` has no Vimeo/Dribbble slug.
 
-Parked follow-ons (not lost): `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
+**Re-runnable assets:** `plugins/sgs-blocks/scripts/nav-qa/` — `build-poc-fixtures.py`
+(+`poc-content-plan.json`; `--list`/`--delete-all`), `sweep-drawer-variants.mjs`,
+`shoot-drawer-pairs.mjs`, `axe-run.mjs` (guarded). Canary fixtures: pages
+1892/1897/1903/1907/1914/1922/1926, multi-instance 1930, anchor probes 1932; menus 102-109.
+
+Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
 `P-DRAWER-VARIANT-CONTENT-GENERICISE` · `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` ·
-`P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF`. None is GSAP — the
-stack is vanilla JS + CSS transform/opacity only.
+`P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
+`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
 
 ### Track 1b — Spec 35: BUILD SURFACE COMPLETE
 
