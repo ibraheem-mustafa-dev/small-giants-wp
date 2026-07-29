@@ -35,13 +35,16 @@ wasted if the drawer stops being a block.
 
 ## ⭐ CURRENT FRONTS
 
+> **QC-BYPASSED (2026-07-30):** handoff's independent `/qc` doc-reconcile subagent not
+> dispatched (context exhausted). Mechanical gate DID pass 6/6. Unverified: that every
+> progress marker matches what shipped — spot-check Track 3 vs `git log` before building.
+
 ### Track 3 — Spec 38 motion system: Wave A shipped + qc-council'd; **5 close-out items open**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active` (D406–D409). Wave A is on main and
-**live-verified on real SGS blocks**: `e991b8f6` + `e779ea41` (A1-A9), gap-close
-`94a62175`/`954848d3`, then a 2-rater cross-model **qc-council** against a GSAP gold standard
-(`reports/2026-07-29-gsap-scrolltrigger-splittext-gold-standard.md`, 32 items) →
-`666d62ed` `5163b951` `d239921a` `a8947d1f` `a27e6bda` `4596f36f` + inspector/roster commits.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active` (D406–D409). Wave A is on main (A1-A9), then a
+2-rater cross-model **qc-council** vs a GSAP gold standard
+(`reports/2026-07-29-gsap-scrolltrigger-splittext-gold-standard.md`, 32 items) closed several
+real defects — see D414/D415 and `git log --grep "fix(motion)"`.
 
 **Verified live on real SGS blocks** (all 3 arms): scrub, pin-scrub (pins at 93px, clears the
 sticky header), split-reveal (a11y intact), horizontal-panel (pins + mobile reachable).
@@ -61,13 +64,11 @@ cannot reach a block panel. Gate: `db-consistency/check_fx_qualifying_blocks_sta
 2. Apply the matchMedia consumer change to `fx-horizontal-panel.js` (provider side shipped).
 3. `fxEnd` has no control (semantics differ per effect — needs a design call); `fxTrigger` is
    registered + emitted + PHP-mirrored and read by **no** effect module.
-4. Confirm the desktop + reduced-motion arm of the panel (one probe showed overflow hidden +
-   last panel unreachable; may be an emulation artefact, never confirmed).
+4. Confirm the panel's desktop reduced-motion arm (one probe showed it unreachable; unconfirmed).
 5. Bean's eye on the 7 `/motion-canary-*` pages (each now states its own pass/fail criteria
    on the page — the first round asked for sign-off without saying what correct looked like).
 
-**Wave B ∥ C remain unblocked** (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`); the
-close-out above is independent of them.
+Wave B ∥ C unblocked (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`).
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
