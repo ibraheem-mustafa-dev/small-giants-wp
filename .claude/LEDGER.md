@@ -35,9 +35,11 @@ wasted if the drawer stops being a block.
 
 ## ⭐ CURRENT FRONTS
 
-> **QC-BYPASSED (2026-07-30):** handoff's independent `/qc` doc-reconcile subagent not
-> dispatched (context exhausted). Mechanical gate DID pass 6/6. Unverified: that every
-> progress marker matches what shipped — spot-check Track 3 vs `git log` before building.
+> **QC (2026-07-30): bypassed at write-time, independently reviewed same day → CLEAN.** Every
+> Track 3 claim checked vs git log + DB + live source: panel defect genuinely unresolved,
+> D414/D415 mechanisms match the code, 22/81 and D415 confirmed. **Caveat:** "verified live" rests
+> on commit-message narrative — no canary report/screenshot artefact in the repo. Treat it as a
+> carried-forward assertion, not reproducible proof; re-verify before relying on it.
 
 ### Track 3 — Spec 38 motion system: Wave A shipped + qc-council'd; **5 close-out items open**
 
@@ -57,16 +59,14 @@ cannot reach a block panel. Gate: `db-consistency/check_fx_qualifying_blocks_sta
 
 **OPEN — 5 items, see `plans/2026-07-30-motion-wave-A-closeout-prompt.md`:**
 1. **Horizontal panel travels ~264px short** (owner-reported, UNRESOLVED after 3 attempts).
-   Tween reaches its target; the TARGET is wrong. Full measurements + both failed formulas are
-   recorded in the block comment above `getTravelDistance()` in `fx-horizontal-panel.js` —
-   **read it before trying a 4th**. Two attempts were built on a band width INFERRED as 969px
-   (`1200-231`) and never measured; it is 1200.
+   The tween reaches its target; the TARGET is wrong. Measurements + both dead ends are in the
+   block comment above `getTravelDistance()` — **read it before trying a 4th.** Two attempts rested
+   on a band width INFERRED as 969px and never measured; it is 1200.
 2. Apply the matchMedia consumer change to `fx-horizontal-panel.js` (provider side shipped).
 3. `fxEnd` has no control (semantics differ per effect — needs a design call); `fxTrigger` is
    registered + emitted + PHP-mirrored and read by **no** effect module.
 4. Confirm the panel's desktop reduced-motion arm (one probe showed it unreachable; unconfirmed).
-5. Bean's eye on the 7 `/motion-canary-*` pages (each now states its own pass/fail criteria
-   on the page — the first round asked for sign-off without saying what correct looked like).
+5. Bean's eye on the 7 `/motion-canary-*` pages (each states its own pass/fail criteria on-page).
 
 Wave B ∥ C unblocked (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`).
 
