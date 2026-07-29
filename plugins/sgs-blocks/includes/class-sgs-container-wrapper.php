@@ -1736,8 +1736,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			 * Deliberately narrow: gated on one exact attribute value that only
 			 * this effect sets, mirroring the $object_model force directly above.
 			 */
+			$fx_track_attr = '';
 			if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
 				$do_wrap = true;
+
+				/*
+				 * Mark THIS element as the track, here at the point of emission.
+				 *
+				 * An earlier attempt marked it afterwards by scanning the rendered
+				 * HTML for the first `.sgs-container__inner`. That is a POSITIONAL
+				 * GUESS and it picked the wrong element: with nested containers the
+				 * first match belongs to a CHILD, so the effect measured a 96px
+				 * inner instead of the 1200px panel row, computed a travel distance
+				 * of zero, and never pinned at all. Only this function knows which
+				 * __inner is its own — so the mark belongs here, not in a later
+				 * scan of somebody else's markup.
+				 */
+				$fx_track_attr = ' data-sgs-fx-track="true"';
 			}
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into
@@ -1750,7 +1765,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$io_style    = ( $grid_on_inner && $inner_grid_decls )
 					? ' style="' . esc_attr( implode( ';', $inner_grid_decls ) ) . '"'
 					: '';
-				$inner_open  = '<div class="sgs-container__inner"' . $io_style . '>';
+				$inner_open  = '<div class="sgs-container__inner"' . $io_style . $fx_track_attr . '>';
 				$inner_close = '</div>';
 			} elseif ( $do_wrap ) {
 				// No-inline contract (Spec 32, D293): base band CSS (max-width /
@@ -1777,7 +1792,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// decls, rather than emitting a vacuous style="" (band props no longer
 				// land here — they are in the scoped .uid>.sgs-container__inner rule).
 				$io_style    = $inner_style_parts ? ' style="' . esc_attr( implode( ';', $inner_style_parts ) ) . '"' : '';
-				$inner_open  = '<div class="sgs-container__inner"' . $io_style . '>';
+				$inner_open  = '<div class="sgs-container__inner"' . $io_style . $fx_track_attr . '>';
 				$inner_close = '</div>';
 			}
 
