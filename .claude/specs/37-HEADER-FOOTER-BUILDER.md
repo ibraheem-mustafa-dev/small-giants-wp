@@ -501,6 +501,28 @@ the web-context admin action — `STOP-SET-ACTIVE-LAYOUT-IN-THE-WEB-CONTEXT-NOT-
 **Done when:** an operator can create a header in *SGS → Advanced Headers*, set it active, and
 see it on the frontend, with no Site Editor step anywhere in that flow. ✅ met.
 
+#### FR-37-43 — The "Menu drawer" CPT (`sgs_drawer`) — added 2026-07-29 (architecture gate, signed; Spec 36 amended in the same commit per §1.2)
+
+The off-canvas drawer joins the CPT family this spec owns. **Admin name: "Menu drawer"** (Bean;
+"Menu Panels" rejected as vague and mega-adjacent). Registration mirrors `sgs_header`/`sgs_footer`
+exactly — same class, same admin submenu shape, same "Set as active" row action (FR-37-2), same
+preview-before-active (FR-37-41), revisions for free. A drawer post's content is the existing
+`sgs/nav-drawer` block markup unchanged; the block becomes the render vehicle. **Scope model:
+site-wide Active default + per-burger override** via `sgs/nav-menu`'s re-typed `drawerRef` post
+picker (behaviour side: Spec 36 FR-36-9a). The drawer renders once per page from the
+active/referenced post — the duplicate-id class dies by construction.
+**Starters:** the 7 retired `variantPreset` looks become "Menu drawer" starter patterns served by
+the FR-37-7 native picker (≥2 patterns, no template seed — the D393 lesson applies: verify a
+chosen starter by its CHILDREN, not its `metadata.patternName`).
+**Migration (hard cut, no deprecations — D270/D293):** the 8 header starter patterns drop their
+embedded drawer; a seed step creates one default "Menu drawer" post per site; FR-36-9a's one-click
+fix changes from "insert sibling block" to "create a Menu drawer + set the reference".
+**Status:** `NOT-BUILT` — capability wave of the merged 36/37 track
+(`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`).
+**Done when:** a drawer authored in *SGS → Menu drawers* renders as the site default, a second
+drawer can be picked per-burger, the starter picker offers the 7 looks and a chosen starter's
+CHILD TREE survives save, and zero `variantPreset` attrs remain in shipped markup.
+
 #### FR-37-2 — "Set as active" action and stored pointer
 A row action + editor action on each CPT writes `wp_options['sgs_active_header_cpt_id']` /
 `['sgs_active_footer_cpt_id']`. Setting a new active post clears the previous one (single
@@ -1190,6 +1212,18 @@ This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR
 recorded per clause; the never-overflow gate (FR-37-12) passes on both sites at three widths;
 no inline `style=""` on either container; and **Bean's eye** signs off (R-31-13 — measurement
 and eye are co-authoritative, neither closes alone).
+**AMENDED 2026-07-29 (architecture gate, signed — reaffirming Bean's 2026-07-28 decision in
+`reports/2026-07-28-spec36-37-remaining-work-inventory.md`):** the acceptance PROOF is the
+**12-reference clone as the FINAL gate of the merged 36/37 track** — every reference built
+completely as SGS-native output (header + drawer + footer together, content/imagery/colours/
+typography), zero hardcoding; anything a reference needs that SGS cannot express is a defect in
+the earlier waves, never a reason to trim the reference. **studionamma is the first clone**, one
+site 100% before the rest. **Each accepted clone yields its B3 presets** — the B3 roster is now
+7 cloned pairs + invented fills only where the references leave a gap (Utility commerce, Overlay
+hero-contrast, Directory footer; the invented "Warm" is CUT as too close to Bold). On completion,
+retire the `header-centred/minimal/full` structural starters; keep `scratch` + the 3 search-bar
+variants (capability, not look). Spec 33 Part 2 (the clone WALKER) consumes the proven system and
+inherits the 12 references as regression fixtures.
 **Status:** `NOT-BUILT`.
 **Done when:** all of the above, each with evidence recorded, not asserted.
 

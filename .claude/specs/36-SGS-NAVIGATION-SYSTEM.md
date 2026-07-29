@@ -264,12 +264,48 @@ instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults
   dark-`footer-bg` variants) and `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` (the drawer emits no
   align class; `drawerAlign` centres direct children as boxes while the nav-menu stretches full
   width with `text-align:start`, so `centred-statement` renders left-aligned).
-- **⭐ NEXT IS AN ARCHITECTURE DECISION, NOT MORE REWORK (Bean, 2026-07-29 — he is running this
-  design in a separate session):** (a) every drawer capability must be a client-controllable
-  element/attribute, and (b) **consider replacing the block setup with a CPT**. Precedent already in
-  this codebase: header and footer are CPTs, mega PANELS are posts referenced from menu items, and
-  `drawerRef` is already a reference field. Honest counterweight: a CPT changes where a drawer LIVES,
-  not how faithfully it PAINTS. **Do not rebuild fixtures on the block path until that gate lands.**
+- **⭐ THE ARCHITECTURE DECISION IS MADE — gate SIGNED (Bean, 2026-07-29):**
+  `plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. Binding outcomes:
+  1. **The drawer moves to a CPT — admin name "Menu drawer"** (Bean's naming; "Menu Panels" rejected
+     as vague/mega-adjacent). Registration, Active/preview model and admin shape are owned by
+     **Spec 37 FR-37-43** (the CPT family is 37's); this spec keeps drawer BEHAVIOUR (modal a11y,
+     focus, motion, close model — FR-36-6/14/16 unchanged). The block markup survives unchanged as
+     the CPT's content; `sgs/nav-drawer` becomes the render vehicle. Scope: **site-wide Active
+     default + per-burger override** via the picker.
+  2. **`variantPreset` is RETIRED** (with `supports.sgs.variantAttr` seeding). The 7 looks become
+     **"Menu drawer" starter patterns** served by the same native FR-37-7 picker headers use — a
+     preset stops baking defaults and becomes an editable starting document. This resolves
+     `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` by dissolution and moots the `variant_slots`
+     fingerprinting limitation noted above (draft-side detection stays Spec 33 Part 2).
+  3. **`drawerRef` re-types from DOM-id string to a drawer-post reference** with a picker ("Which
+     menu panel does this burger open?" + inline create). FR-36-9a's dangling-ref warning survives,
+     now firing on a deleted/draft post instead of a typo'd string.
+  4. **nav-menu stays a BLOCK** — its content home is the classic menu, its edit surface is the
+     header CPT; a nav-menu CPT would triple-indirect. Its trigger presentation upgrades: FR-36-27.
+  5. **Controllability contract:** every reference-derived property has exactly one home — CPT
+     content/attrs, inspector attrs (Spec 35-manifested), or theme tokens. A value with no home is a
+     build defect (gate DP5).
+  6. **Cloning is the FINAL PROOF GATE, not the next task** (Bean 2026-07-29, matching his
+     2026-07-28 decision in `reports/2026-07-28-spec36-37-remaining-work-inventory.md`): fixture
+     wave → capability wave (CPT + FR-36-27 + FR-37-42 + harness fixes) → polish → the 12-reference
+     clone, studionamma first, each accepted clone yielding its B3 presets.
+  Spec 36+37 execution is MERGED into one track (specs stay separate documents; §1.2 same-commit
+  rule unchanged). **Do not rebuild fixtures on the block path** — the container is changing.
+
+### FR-36-27 — Burger trigger presentation (added 2026-07-29, gate DP4 — NOT-BUILT)
+
+The trigger the operator gets today is burger-glyph-only with colour/bg/hover/size attrs; the
+references make the trigger a designed element (studionamma renders the word "MENU", fantasy a
+symbol, lamalama a morphing glyph). New `sgs/nav-menu` attrs, all inspector-manifested:
+`triggerStyle` (`burger`|`word`|`word-burger`|`symbol`) · `triggerLabel` (default "Menu") ·
+`triggerSymbol` (shared `IconPicker`) · `triggerOpenStyle` (`morph-x`|`swap-label`|`unchanged`) ·
+`triggerOpenLabel` (default "Close"). Open-state sync is cross-block state in `store('sgs/nav')` —
+this PROMOTES `P-DRAWER-BURGER-MORPH-SYNC` from parked follow-on to a named build item (Bean's
+client-controllability rule makes it core). The drawer's own `closeStyle` stays on the drawer:
+trigger = nav-menu's, close chrome = the Menu drawer's.
+**Status:** `NOT-BUILT` — capability wave of the merged track.
+**Done when:** all five attrs render + round-trip in the editor, the open-state morph/swap is
+live-verified with focus-return intact, and each attr appears in the Spec 35 manifest.
 - Follow-ons parked: `P-DRAWER-BURGER-MORPH-SYNC` (true cross-block morph = store state-wiring,
   NOT a GSAP effect), `P-DRAWER-TRIGGER-ANCHOR-JS` (measure the burger's real rect at open — the
   `--sgs-drawer-header-offset` pattern), `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`,
@@ -369,7 +405,9 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   notched phones), active-state highlighted. The operator picks per site.
 - **Burger→drawer association:** `sgs/nav-menu` carries `drawerRef` (target drawer anchor/ID → `aria-controls`);
   unset → the single drawer; multiple → explicit pick; a dangling `drawerRef` → editor Notice + burger
-  no-op-with-warning (FR-36-9a).
+  no-op-with-warning (FR-36-9a). **⚠ AMENDED 2026-07-29 (gate, signed): `drawerRef` re-types to a
+  "Menu drawer" POST reference with a picker control once FR-37-43 lands** — the DOM-id string form
+  above is the pre-CPT shape; the Notice semantics carry over (fires on deleted/draft post).
 - **Link-count / column-count notice:** a link-count / column-count editor INFORMATIONAL notice past a
   directional threshold (Baymard ~50-link abandonment cliff — validate on our sites, do NOT hard-code a DB
   default; never a gate — FR-36-12).
