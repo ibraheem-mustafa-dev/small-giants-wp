@@ -1,0 +1,62 @@
+/**
+ * Tier G — horizontal scroll panel: the native fallback. Spec 38 FR-38-8 / §10.
+ *
+ * THE DEFAULT STATE HERE IS THE FALLBACK, NOT THE EFFECT. That inversion is
+ * deliberate and is what makes the feature fail open:
+ *
+ *   · no JS            — the row is swipeable, every panel reachable
+ *   · JS, below 768px  — same (the effect module registers no handler there)
+ *   · reduced motion   — same (§10 says SIMPLIFY: "content reachable, nothing
+ *                        moves by itself")
+ *   · JS + ≥768px + motion allowed — the pinned scroll effect takes over, and
+ *                        the override at the bottom stands the native scroller
+ *                        down so the two never fight
+ *
+ * Without this file the panels are laid out in a `width: max-content` row with
+ * no scroll container, so on a phone everything past the first panel is simply
+ * unreachable — content the visitor cannot get to at all. That is a defect, not
+ * a degraded experience, which is why the fallback lives in CSS rather than in
+ * the effect module: the module never runs under reduced motion, so a fallback
+ * implemented there could never apply in the case that needs it most.
+ *
+ * Conditionally enqueued by SGS_Motion_Registry only on pages that actually
+ * carry a horizontal-panel effect — Tier G ships zero bytes otherwise (§4.4).
+ *
+ * @package SGS\Blocks
+ */
+
+[data-sgs-fx="horizontal-panel"] {
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	/* Momentum scrolling on iOS; harmless elsewhere. */
+	-webkit-overflow-scrolling: touch;
+}
+
+[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] {
+	display: flex;
+	width: max-content;
+}
+
+[data-sgs-fx="horizontal-panel"] > [data-sgs-fx-track] > * {
+	scroll-snap-align: start;
+	/* A flex item's default min-width:auto refuses to shrink below its content,
+	   which on a narrow viewport pushes panels wider than the screen. */
+	min-width: 0;
+}
+
+/*
+ * Hand over to the JS effect ONLY where it actually runs: JS confirmed
+ * (`.sgs-js` on <html>, set by animation-observer.js), viewport ≥768px, and
+ * motion not reduced. These are exactly the conditions the effect module's own
+ * `gsap.matchMedia('(min-width: 768px)')` gate uses, inside `withMotionAllowed`.
+ * Keeping the two in step matters: if this override applied where the module
+ * does NOT run, the native scroller would be switched off with nothing
+ * replacing it and the content would be stranded.
+ */
+@media ( min-width: 768px ) and ( prefers-reduced-motion: no-preference ) {
+	.sgs-js [data-sgs-fx="horizontal-panel"] {
+		overflow-x: clip;
+		scroll-snap-type: none;
+	}
+}

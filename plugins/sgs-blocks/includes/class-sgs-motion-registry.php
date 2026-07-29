@@ -101,6 +101,25 @@ class SGS_Motion_Registry {
 	);
 
 	/**
+	 * Effects that ship a companion stylesheet, as effect => asset-relative path.
+	 *
+	 * Enqueued on the SAME conditional terms as the effect's script module: a
+	 * page with no horizontal panel gets no horizontal-panel CSS. The Tier V
+	 * anti-pattern this must not repeat (§4.4) is exactly an unconditional
+	 * enqueue that self-gates at runtime.
+	 *
+	 * Only the horizontal panel needs one, and it needs it for a reason worth
+	 * stating: its fallback is what makes the content REACHABLE on a phone or
+	 * under reduced motion. The effect module cannot own that fallback, because
+	 * the module never runs in either of those cases.
+	 *
+	 * @var array<string, string>
+	 */
+	private const EFFECT_STYLES = array(
+		'horizontal-panel' => 'assets/css/fx-horizontal-panel.css',
+	);
+
+	/**
 	 * Spec §6.1 `plugin_set` vocabulary => the script module that provides it.
 	 *
 	 * The DB stores GSAP's own plugin names because that is what the spec's
@@ -336,6 +355,19 @@ class SGS_Motion_Registry {
 		foreach ( $plugin_set as $plugin ) {
 			if ( isset( self::PLUGIN_MODULES[ $plugin ] ) ) {
 				\wp_enqueue_script_module( self::PLUGIN_MODULES[ $plugin ] );
+			}
+		}
+
+		// Companion stylesheet, on the same conditional terms as the script.
+		if ( isset( self::EFFECT_STYLES[ $effect ] ) ) {
+			$rel = self::EFFECT_STYLES[ $effect ];
+			if ( \file_exists( SGS_BLOCKS_PATH . $rel ) ) {
+				\wp_enqueue_style(
+					'sgs-fx-' . $effect,
+					SGS_BLOCKS_URL . $rel,
+					array(),
+					SGS_BLOCKS_VERSION
+				);
 			}
 		}
 
