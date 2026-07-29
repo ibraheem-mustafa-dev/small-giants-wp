@@ -128,9 +128,27 @@ function addFxAttributes( settings, name ) {
 			fxTrigger: { type: 'string', default: '' },
 			fxStart: { type: 'string', default: '' },
 			fxEnd: { type: 'string', default: '' },
-			fxScrub: { type: 'number', default: 1 },
-			fxStagger: { type: 'number', default: 0 },
-			fxDuration: { type: 'number', default: 0 },
+			/*
+			 * No defaults on the numeric params — deliberate.
+			 *
+			 * With `default: 1` (scrub) / `default: 0` (stagger, duration) there
+			 * was no way to tell "the client never touched this" from "the
+			 * client deliberately chose 0", so the save filter below treated 0
+			 * as unset and dropped it. Net effect: dragging Scrub smoothing to
+			 * 0 — asking for instant, no-lag scrubbing — silently produced 1
+			 * SECOND of smoothing, because the attribute was never emitted and
+			 * the effect module fell back to its own default. The whole extreme
+			 * end of that control was a no-op that snapped back to default with
+			 * no feedback.
+			 *
+			 * Undefined-when-untouched makes the distinction real: unset emits
+			 * nothing (module default applies), an explicit 0 emits "0" and is
+			 * honoured. 0 is a legitimate scrub value — GSAP treats no-smoothing
+			 * scrub as `true`, which the modules now map explicitly.
+			 */
+			fxScrub: { type: 'number' },
+			fxStagger: { type: 'number' },
+			fxDuration: { type: 'number' },
 			fxEase: { type: 'string', default: '' },
 			fxSplit: { type: 'string', default: '' },
 			fxMask: { type: 'string', default: '' },
@@ -185,8 +203,10 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-stagger': attributes.fxStagger,
 		'data-sgs-fx-duration': attributes.fxDuration,
 	};
+	// Emit any finite number INCLUDING zero. The old `value > 0` test silently
+	// discarded a deliberate 0 — see the attribute declarations above.
 	Object.entries( numeric ).forEach( ( [ key, value ] ) => {
-		if ( 'number' === typeof value && value > 0 ) {
+		if ( 'number' === typeof value && Number.isFinite( value ) ) {
 			data[ key ] = String( value );
 		}
 	} );
@@ -224,9 +244,9 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 				fxTrigger: '',
 				fxStart: '',
 				fxEnd: '',
-				fxScrub: 1,
-				fxStagger: 0,
-				fxDuration: 0,
+				fxScrub: undefined,
+				fxStagger: undefined,
+				fxDuration: undefined,
 				fxEase: '',
 				fxSplit: '',
 				fxMask: '',
@@ -299,12 +319,12 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 							</ToolsPanelItem>
 						) }
 
-						{ !! fx && (
+						{ ownsScroll && ! isSplit && (
 							<ToolsPanelItem
-								hasValue={ () => 1 !== attributes.fxScrub }
+								hasValue={ () => undefined !== attributes.fxScrub }
 								label={ __( 'Scrub smoothing', 'sgs-blocks' ) }
 								onDeselect={ () =>
-									setAttributes( { fxScrub: 1 } )
+									setAttributes( { fxScrub: undefined } )
 								}
 							>
 								<RangeControl
@@ -376,7 +396,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 								hasValue={ () => !! attributes.fxStagger }
 								label={ __( 'Stagger', 'sgs-blocks' ) }
 								onDeselect={ () =>
-									setAttributes( { fxStagger: 0 } )
+									setAttributes( { fxStagger: undefined } )
 								}
 							>
 								<RangeControl

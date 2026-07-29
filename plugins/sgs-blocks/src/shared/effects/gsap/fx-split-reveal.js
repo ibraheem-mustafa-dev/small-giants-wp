@@ -111,26 +111,69 @@ export function initSplitReveal( el ) {
 		const maskParam = el.getAttribute( 'data-sgs-fx-mask' );
 		const mask = maskParam === splitType ? splitType : undefined;
 
+		let tween;
+
+		/*
+		 * `autoSplit: true` + creating the tween INSIDE onSplit is one fix, not
+		 * two — half of it is worse than neither.
+		 *
+		 * THE BUG IT FIXES (confirmed in installed source, gsap 3.15.0):
+		 * SplitText.js:289 gates the webfont re-split on autoSplit —
+		 *   `_fonts && splitLines && autoSplit && _fonts.addEventListener(...)`
+		 * and :293 gates the width-change ResizeObserver identically. Without
+		 * autoSplit there is NO re-split path at all. So a `lines` split
+		 * computed before the webfont swaps keeps the FALLBACK font's line
+		 * boundaries: after the swap the text reflows, fragments straddle the
+		 * visible lines, and the stagger reveals groupings that match nothing
+		 * on screen. The width half is font-independent and hits anyone who
+		 * rotates a phone.
+		 *
+		 * ⚠ There is NO console warning for this in 3.15.0 (grep: zero
+		 * console.warn in dist/SplitText.js), so it fails completely silently —
+		 * which is why it survived a passing build and a live check.
+		 *
+		 * WHY THE TWEEN MUST LIVE IN onSplit: SplitText.js:290-291 assigns the
+		 * callback's returned animation to `this._data.anim` and resumes it
+		 * across re-splits. A tween created outside would keep animating the
+		 * fragment nodes from the PREVIOUS split, which the re-split has already
+		 * removed from the DOM — trading wrong line boundaries for an animation
+		 * driving detached nodes.
+		 *
+		 * autoSplit is inert unless `type` includes 'lines', so passing it
+		 * unconditionally costs nothing for words/chars.
+		 */
 		const split = SplitText.create( el, {
 			type: splitType,
 			mask,
 			// Load-bearing for a11y — see file doc-block above. Passed
 			// explicitly rather than relied on as SplitText's own default.
 			aria: 'auto',
-		} );
+			autoSplit: true,
+			onSplit( self ) {
+				// Read `self`, never the outer `split` — it is still undefined
+				// on the first call.
+				const targets = self[ splitType ] || self.words;
 
-		const targets = split[ splitType ] || split.words;
+				tween = gsap.from( targets, {
+					opacity: 0,
+					y: '0.6em',
+					duration: numericParam( el, 'duration', 0.6 ),
+					stagger: numericParam( el, 'stagger', 0.03 ),
+					ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.out',
+					scrollTrigger: {
+						trigger: el,
+						// `data-sgs-fx-start` — the attribute the inspector's
+						// "Start position" control actually writes. This read
+						// was previously `-trigger`, which nothing writes, so
+						// the control silently did nothing and every instance
+						// used the hardcoded default below.
+						start: el.getAttribute( 'data-sgs-fx-start' ) || 'top 85%',
+					},
+				} );
 
-		const tween = gsap.from( targets, {
-			opacity: 0,
-			y: '0.6em',
-			duration: numericParam( el, 'duration', 0.6 ),
-			stagger: numericParam( el, 'stagger', 0.03 ),
-			ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.out',
-			scrollTrigger: {
-				trigger: el,
-				start: el.getAttribute( 'data-sgs-fx-trigger' ) || 'top 85%',
-				once: true,
+				// Returned so SplitText can carry it across a re-split
+				// (SplitText.js:290-291).
+				return tween;
 			},
 		} );
 
@@ -138,8 +181,8 @@ export function initSplitReveal( el ) {
 		// first would let GSAP's tween keep a dangling reference to nodes
 		// SplitText has already removed from the DOM.
 		return () => {
-			tween.scrollTrigger?.kill();
-			tween.kill();
+			tween?.scrollTrigger?.kill();
+			tween?.kill();
 			split.revert();
 		};
 	} );

@@ -86,6 +86,133 @@ export function tierG( ...plugins ) {
  *                         cleanup function, run when the context reverts.
  * @return {Function} Cleanup — reverts the context and detaches listeners.
  */
+/**
+ * Height of the persistent chrome occupying the top of the viewport, in px.
+ *
+ * WHY PINNING EFFECTS MUST KNOW THIS
+ * ScrollTrigger's `pin` holds an element wherever it sat when the trigger
+ * fired. With the default `start: 'top top'` that is viewport y=0 — space the
+ * sticky site header already owns. Measured on the canary: header 93px at
+ * `z-index: 100`, pinned element `position: fixed` at `z-index: auto`, so the
+ * header wins the paint contest and the top 93px of the pinned section is
+ * invisible for the entire pin. A heading in that band is simply gone.
+ *
+ * ⚠ RAISING THE PINNED ELEMENT'S z-index IS THE WRONG FIX. It inverts the
+ * problem: the section then covers the header, so navigation disappears for the
+ * duration of the pin and any focusable header control stays in the tab order
+ * while being visually obscured — a WCAG 2.4.11 focus-obscured failure. Trading
+ * a hidden heading for hidden navigation is strictly worse. The defect is
+ * GEOMETRY, not stacking: move the pin below the chrome and nothing competes
+ * for those pixels at all.
+ *
+ * WHY THE CSS CUSTOM PROPERTY, RATHER THAN MEASURING HERE
+ * `--sgs-header-height` is not a static guess. `src/header-behaviours/view.js`
+ * measures the header with a ResizeObserver and publishes the rounded px value
+ * to `:root` and `body`, so it tracks shrink-on-scroll and per-breakpoint
+ * heights. (The `80px` literal in `theme/.../utilities.css` is only the pre-JS
+ * fallback; verified live, the published value reads 93px and matches the
+ * measured header exactly.) Critically, that module publishes an explicit `0`
+ * when the header is NOT pinned — it gates on the COMPUTED position, which is
+ * the only reliable signal here: a header set both sticky and transparent
+ * computes `absolute` and is not pinned despite still carrying the sticky body
+ * class. So conditionality comes free, and a non-sticky header self-disables
+ * the offset.
+ *
+ * Re-measuring the header in this file would recreate the duplicate
+ * `--sgs-header-height` publisher the project deliberately deleted (D330,
+ * 2026-07-14) and would have to re-derive that sticky-vs-transparent rule —
+ * a known trap. Consuming the published value inherits the reasoning instead.
+ *
+ * @return {number} Offset in px; 0 when nothing persistent occupies the top.
+ */
+export function chromeOffsetPx() {
+	let offset = 0;
+
+	const published = getComputedStyle( document.documentElement )
+		.getPropertyValue( '--sgs-header-height' )
+		.trim();
+	const parsed = parseFloat( published );
+
+	if ( Number.isFinite( parsed ) ) {
+		offset = parsed;
+	} else {
+		// Fallback for a page where header-behaviours/view.js is not enqueued:
+		// measure, but gate on the same COMPUTED-position test that module uses
+		// so a non-pinned header still yields 0.
+		const header = document.querySelector( 'header' );
+		if ( header ) {
+			const position = getComputedStyle( header ).position;
+			if ( 'sticky' === position || 'fixed' === position ) {
+				offset = header.getBoundingClientRect().height;
+			}
+		}
+	}
+
+	// The admin bar is a SEPARATE term — `--sgs-header-height` deliberately
+	// excludes it (utilities.css composes them with calc() for scroll-padding).
+	// It is fixed to the very top for logged-in users only, so it is measured
+	// from the live element rather than assumed: reading the CSS var with a
+	// 32px default would wrongly add 32px for every logged-OUT visitor.
+	// Worth knowing when triaging: this term makes the defect look worse when
+	// signed in and can vanish entirely in a logged-out check.
+	const adminBar = document.getElementById( 'wpadminbar' );
+	if ( adminBar && 'fixed' === getComputedStyle( adminBar ).position ) {
+		offset += adminBar.getBoundingClientRect().height;
+	}
+
+	return offset;
+}
+
+/**
+ * Resolve a pinning effect's ScrollTrigger `start`, clearing persistent chrome.
+ *
+ * ⚠ Only the module's DEFAULT is offset. An author-set `data-sgs-fx-start` is
+ * returned untouched: silently appending an offset to a deliberately authored
+ * value would be the "injected default overrides the faithful value" pattern
+ * this project treats as a cheat to remove, not a feature to add.
+ *
+ * @param {HTMLElement} el       Element carrying the fx attributes.
+ * @param {string}      fallback The module's own default (e.g. 'top top').
+ * @return {string} A ScrollTrigger `start` string.
+ */
+export function resolveStart( el, fallback = 'top top' ) {
+	const authored = el.getAttribute( 'data-sgs-fx-start' );
+	if ( null !== authored && '' !== authored.trim() ) {
+		return authored;
+	}
+
+	const offset = Math.round( chromeOffsetPx() );
+	return offset > 0 ? `top top+=${ offset }` : fallback;
+}
+
+/**
+ * Resolve a scrub setting from `data-sgs-fx-scrub`.
+ *
+ * GSAP semantics: `scrub: true` ties progress directly to the scrollbar with no
+ * lag; `scrub: <number>` adds that many seconds of catch-up smoothing. So a
+ * client-chosen **0 means "no smoothing" and must map to `true`**, not to a
+ * falsy value.
+ *
+ * ⚠ This must be an EXPLICIT mapping, not `numericParam(...) || true`. That
+ * older form only worked by accident: 0 is falsy, so it fell through to `true`.
+ * The accident was invisible and one tidy-up away from becoming a real bug —
+ * remove the `|| true` as redundant and a deliberate 0 silently becomes a falsy
+ * `scrub`, disabling scrubbing altogether. Stating the intent removes the trap.
+ *
+ * (The other half of this fix lives in the save/render layers, which used to
+ * drop a zero before it ever reached this function.)
+ *
+ * @param {HTMLElement} el       Element carrying the fx attributes.
+ * @param {number}      fallback Smoothing to use when unset.
+ * @return {number|boolean} Seconds of smoothing, or `true` for none.
+ */
+export function resolveScrub( el, fallback = 1 ) {
+	const raw = el.getAttribute( 'data-sgs-fx-scrub' );
+	const parsed = null === raw ? NaN : parseFloat( raw );
+	const seconds = Number.isFinite( parsed ) ? parsed : fallback;
+	return seconds > 0 ? seconds : true;
+}
+
 export function withMotionAllowed( setup ) {
 	const context = gsap.matchMedia();
 
@@ -108,8 +235,37 @@ export function withMotionAllowed( setup ) {
 	};
 	window.addEventListener( 'pageshow', onPageShow );
 
+	/*
+	 * Late-loading content: ScrollTrigger resolves `start`/`end` to PIXEL
+	 * positions when it initialises. An image without width/height attributes
+	 * finishing later pushes everything below it down, so those pixel positions
+	 * no longer describe where the element actually is — the scroll window
+	 * lands somewhere else entirely and the effect appears not to fire, or
+	 * fires off-screen.
+	 *
+	 * Silent, intermittent, and worst on slow connections — i.e. worst for the
+	 * visitors least able to tolerate it, on exactly the image-heavy marketing
+	 * pages these effects are built for. One refresh after `load` re-resolves
+	 * every trigger against final layout.
+	 *
+	 * Once only: `load` fires a single time, and the listener is detached on
+	 * cleanup so a reduced-motion revert does not leave it attached.
+	 */
+	const onLoad = () => {
+		const ScrollTrigger = gsap.core?.globals?.().ScrollTrigger;
+		if ( ScrollTrigger?.refresh ) {
+			ScrollTrigger.refresh();
+		}
+	};
+	if ( 'complete' === document.readyState ) {
+		onLoad();
+	} else {
+		window.addEventListener( 'load', onLoad, { once: true } );
+	}
+
 	return () => {
 		window.removeEventListener( 'pageshow', onPageShow );
+		window.removeEventListener( 'load', onLoad );
 		context.revert();
 	};
 }

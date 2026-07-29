@@ -111,12 +111,18 @@ function sgs_inject_fx_attributes( string $block_content, array $block ): string
 		}
 		$value = $attrs[ $attr ];
 
-		// Skip empty strings and zeroes: an emitted empty value would override
-		// the effect module's own considered default with nothing.
+		/*
+		 * Skip only genuinely ABSENT values. An emitted empty string would
+		 * override the effect module's considered default with nothing.
+		 *
+		 * A numeric ZERO is NOT absent and must survive: `fxScrub => 0` means
+		 * "no smoothing lag", a legitimate setting. The previous rule dropped
+		 * every zero here, which is the same defect the JS save filter had —
+		 * the client's choice vanished and the module's default silently took
+		 * over. The two paths must agree, or the same block behaves differently
+		 * depending on whether it was server-rendered or saved as static markup.
+		 */
 		if ( '' === $value || null === $value ) {
-			continue;
-		}
-		if ( \is_numeric( $value ) && 0.0 === (float) $value ) {
 			continue;
 		}
 

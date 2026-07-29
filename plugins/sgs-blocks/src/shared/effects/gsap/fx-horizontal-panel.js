@@ -36,7 +36,12 @@
  */
 
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { tierG, withMotionAllowed, bootEffect } from '@sgs/motion-provider';
+import {
+	tierG,
+	withMotionAllowed,
+	bootEffect,
+	resolveStart,
+} from '@sgs/motion-provider';
 
 /**
  * Read a string fx parameter, falling back when absent/blank. Mirrors the
@@ -102,7 +107,10 @@ export function initHorizontalPanel( el ) {
 				ease: 'none',
 				scrollTrigger: {
 					trigger: el,
-					start: stringParam( el, 'start', 'top top' ),
+					// Same chrome-clearing rule as fx-pin-scrub: this effect
+					// pins too, so it had the identical (currently unobservable,
+					// because the effect is inert) occlusion defect.
+					start: resolveStart( el, 'top top' ),
 					// Pin length tracks the travel distance by default so
 					// scroll speed feels consistent regardless of panel
 					// count; a client-set `data-sgs-fx-end` overrides it for

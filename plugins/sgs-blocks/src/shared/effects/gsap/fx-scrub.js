@@ -21,7 +21,12 @@
  */
 
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { tierG, withMotionAllowed, bootEffect } from '@sgs/motion-provider';
+import {
+	tierG,
+	withMotionAllowed,
+	bootEffect,
+	resolveScrub,
+} from '@sgs/motion-provider';
 
 /**
  * Read a numeric fx parameter, falling back when absent or unparseable.
@@ -61,7 +66,7 @@ export function initScrub( el ) {
 					end: el.getAttribute( 'data-sgs-fx-end' ) || 'top 40%',
 					// `scrub: true` locks progress to the scrollbar; a number
 					// adds that many seconds of catch-up smoothing.
-					scrub: numericParam( el, 'scrub', 1 ) || true,
+					scrub: resolveScrub( el ),
 				},
 			}
 		);

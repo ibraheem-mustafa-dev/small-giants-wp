@@ -35,7 +35,13 @@
  */
 
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { tierG, withMotionAllowed, bootEffect } from '@sgs/motion-provider';
+import {
+	tierG,
+	withMotionAllowed,
+	bootEffect,
+	resolveStart,
+	resolveScrub,
+} from '@sgs/motion-provider';
 
 /**
  * Read a numeric fx parameter, falling back when absent or unparseable.
@@ -113,7 +119,11 @@ export function initPinScrub( el ) {
 		const timeline = gsap.timeline( {
 			scrollTrigger: {
 				trigger: el,
-				start: stringParam( el, 'start', 'top top' ),
+				// Clears persistent sticky chrome — see resolveStart() in
+				// provider.js. Pinning at a bare 'top top' parks the section
+				// under the site header, hiding its top for the whole pin.
+				// An author-set data-sgs-fx-start still wins untouched.
+				start: resolveStart( el, 'top top' ),
 				// Pin length: how many viewport-heights the section holds
 				// still while its children's timeline plays out.
 				end: stringParam( el, 'end', '+=100%' ),
@@ -121,7 +131,7 @@ export function initPinScrub( el ) {
 				// `scrub: true` locks progress to the scrollbar; a number
 				// adds that many seconds of catch-up smoothing (matches the
 				// convention in fx-scrub.js).
-				scrub: numericParam( el, 'scrub', 1 ) || true,
+				scrub: resolveScrub( el ),
 				// Pinning changes document height; a resize (orientation
 				// change, dev-tools toggle, webfont swap reflow) must
 				// re-measure or the pin range drifts from the real layout.
