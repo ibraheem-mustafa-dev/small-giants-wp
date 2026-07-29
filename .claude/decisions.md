@@ -38,7 +38,19 @@ D-numbers not present in a range below (or below D117) were archived — search 
 | D363–D378 | Nav landmark/aria fixes, Spec 33 Part 2, mega-menu foundation + core build |
 | D379–D392 | Mega-menu live-verify + sticky/shrink header behaviours + editor-crash incidents |
 | D393–D405 | Pattern templateLock bug, responsive-logo fatal, Spec 35 drawer variants + injection-class audit |
+| D406–D409 | Spec 38 motion system: two-tier V/G doctrine, ScrollSmoother×sticky, Vivus retirement, Tier-G conditional loading |
+| D410 | Doc-hygiene enforcement made mechanical (`handoff-preflight.py`) + the two docscore blind spots it exposed |
 | D406–D409 | Spec 38 motion system: two-tier V/G doctrine, ScrollSmoother×sticky, Vivus retirement, conditional loading |
+
+## D410 [INCIDENT] — doc-hygiene rules become MECHANICAL: handoff-preflight.py replaces five prose gates that were enforced nowhere (2026-07-29)
+
+**The incident.** Five rules were documented as "enforced every `/handoff`" and enforced by nothing. `.claude/CLAUDE.md` asserted "Enforce every /handoff" for the parking archive-on-resolve rule against a command containing no such gate; the LEDGER byte cap existed only as a sentence in `handoff.md`. The costs were live and measurable: **LEDGER.md reached 38,799 bytes** against a 24,576 cap, and a **2026-05-09 `CONVERSATION-HANDOFF.md` sat at the repo root** being copied to OpenClaw every session while Gate 4a reported `1/1 copied` — a green gate on three-month-old data. `parking.md` also carried TWO `Status:` syntaxes (`**Status:** X` / `**Status: X**`), so any regex written against one silently passed the other ~68% of entries.
+
+**The fix (structural, per ADHD Rule 10 — a validator, not "I'll try harder").** `.claude/hooks/handoff-preflight.py`: six machine checks — LEDGER byte cap · D101 STOP carry-forward vs `git HEAD` · parking Status present-and-legal (BOTH syntaxes) · parking archive-on-resolve · tombstones at live paths · dangling links out of the session-start docs. `--check` gates `/handoff`; report mode is non-blocking. Wired into the `/handoff` LEDGER-MODE block and named in `.claude/CLAUDE.md`, making that doc's enforcement claim true for the first time.
+
+**`--self-test` is the load-bearing part and it earned its keep immediately.** On first run it caught that `STOP_RE` was compiled without `re.M`, so the pattern anchored to the start of the STRING and counted **0 STOPs on any real file** — the check would have reported "no defence dropped" forever while measuring nothing. A gate that cannot fail is worse than no gate: it reads green. A second bug surfaced the same way — the parser counted the entry TEMPLATE inside `parking.md`'s own fenced markdown example as a real entry (151 vs the true 150).
+
+**Two `docscore.py` blind spots fixed alongside** (`~/.agents`, unversioned — `.bak-2026-07-29-ledger-mode` copies written): the size check generalised to a `SIZE_CAPS` table so `LEDGER.md` is covered at all; and the D101 carry-forward audit taught to see `STOP-CATALOGUE.md` — it was gated on `doc_type` (that file declares `doc_type: reference`, and frontmatter beats the filename map) and its counter only recognised markdown TABLE rows while the catalogue uses bullets. **The audit protecting the STOP catalogue had been blind to the STOP catalogue since it was split out.** Both proven by injecting a real 5-STOP drop; both gates caught it, both went clean on revert.
 
 ## D409 [ROUTINE] — Tier G conditional loading = render_block p99 motion registry + WP script modules + gsap webpack externals (2026-07-29)
 

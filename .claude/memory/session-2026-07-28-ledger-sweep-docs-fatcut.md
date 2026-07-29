@@ -163,3 +163,61 @@ per-phase detail in `memory/session-2026-07-17-p5-skills-lean-ruler.md`.
 repo, so the skillscore script + 5 grafted skills + `nextjs-testing` are LIVE but UNVERSIONED
 (recovery = per-file `.bak-2026-07-17-*`); and the `lifecycle-gate-stop.py` unwire is done locally
 but NOT committed to the `~/.claude` repo.
+
+---
+
+# Appended 2026-07-29 — swept from LEDGER at handoff
+
+---
+
+# Appended 2026-07-29 — Track 2 Task-5 block, condensed out of the LEDGER at handoff
+
+### Track 2 — Spec 36 nav: TASK 5 MEASUREMENT COMPLETE (2026-07-29) — ⛔ awaiting Bean's eye
+
+Gate 3 CLOSED (D401); the 7 drawer variants are BUILT + canary-deployed (D403). **Task 5's parts 1
+and 2 are DONE and part 3 is delivered but not judged.** Full record:
+`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
+
+- **21/21 sweep cells PASS** (7 variants × 375/768/1440): openness-guarded axe · resting contrast
+  (8.43–19.29:1) · focus containment · ESC-closes-and-returns-focus · reduced-motion end state ·
+  JS-off crawl. Geometry corroborates the references — `floating-capped-card` measures 438px at
+  768/1440 and **343px at 375** = `min(438px, 100vw−32px)`, the exact recorded fluid cap.
+- **Also PASS:** D374 multi-instance (unique ids, each burger opens its own panel, no fatals) ·
+  `header` anchor DERIVES from the header (top 93 = header height) verified in a genuinely PINNED
+  state · `centred` anchor exactly centred (420px at left=510 on 1440) · **`listColumns` IS visible
+  in the editor canvas** (`display:grid`, two 318.9px columns) — the design gate's one open question,
+  now answered by measurement, not reasoning.
+- **7 exact-content fixtures live** (§6 rule) — pages 1892/1897/1903/1907/1914/1922/1926,
+  multi-instance 1930, anchor probes 1932; menus 102–109. All 7 link counts independently match last
+  session's extraction. Rebuild/inventory/delete:
+  `plugins/sgs-blocks/scripts/nav-qa/build-poc-fixtures.py` + `poc-content-plan.json`.
+- ⛔ **THE GATE DOES NOT CLOSE ON THIS. Bean's eye (R-31-13) is outstanding** — pairs at
+  `reports/visual-diff/drawer-variants-2026-07-29/` (**7/7 ours, 6/7 references**; buck.co UNCAPTURED,
+  recorded not hidden). Named judgement call: the lamalama reference floats its panel TOP-CENTRE, our
+  `trigger` anchor pins it TOP-RIGHT. Palette differences are expected and correct (variants set
+  defaults; the site's own tokens supply colour).
+- **⚠ METHOD — the axe openness guard DID NOT EXIST until 2026-07-29.** `axe-run.mjs` only checked
+  that the scope selector MATCHED, so a CLOSED drawer returned `0 violations` exactly like an open
+  one. **Every scoped drawer/mega axe result recorded before this date proves nothing — re-run it.**
+  The guard now asserts `dialog[open]` + non-zero box + not hidden + ≥1 visible focusable, reporting
+  `VACUOUS` (exit 3), never a pass. Negative control proven live on `/t1-nav/`: closed +
+  `--allow-closed` → 0 violations exit 0 · closed + guard → VACUOUS exit 3 · open → PASS.
+- **⚠ Two further harness bugs that manufactured false results, both fixed:** the automation's own
+  cursor stayed on a link after clicking the burger, so axe measured its **:hover** colour and
+  reported a *serious* 2.14:1 contrast violation that vanished the moment the pointer moved (pointer
+  now parked; a DELIBERATE resting-contrast check added in its place); and the JS-off check compared
+  raw text against HTML, so `Arts & Culture` (served `Arts &amp; Culture`) was reported missing when
+  it was present twice.
+- **Findings (report §4):** **F1** `listColumns` uses `grid-auto-flow:row`, so a 7-item menu
+  interleaves across columns (column 1 reads Home·Services·Studio·News; menu order is
+  Home·Work·Services·Approach·Studio·Plans·News). Keyboard/SR order is correct; the reference splits
+  4+3. Shared-block change → needs sign-off; parked `P-NAV-MENU-LISTCOLUMNS-READING-ORDER`,
+  recommended to change. **F2 (belongs to the header track)** at 375px the theme header is
+  `position:absolute`, 251px tall, rendering the **desktop** logo (305×102) over page content —
+  matches the known-open "logo mobile-tier switch" item; proven via `elementFromPoint`. **F3**
+  `sgs/social-icons` has no Vimeo or Dribbble slug.
+
+Parked follow-ons (not lost): `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
+`P-DRAWER-VARIANT-CONTENT-GENERICISE` · `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` ·
+`P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF`. None is GSAP — the
+stack is vanilla JS + CSS transform/opacity only.

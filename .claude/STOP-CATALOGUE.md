@@ -23,6 +23,51 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-FLAG-NAMED-CHECK-IS-NOT-ALWAYS-A-DRY-RUN** — NEW 2026-07-29 (parking cull). A subagent
+  under an explicit READ-ONLY brief ran `seed_conformance_goldens.py --check` to inspect state; the
+  flag does **not** mean dry-run on that script — it **re-seeds**, and it rewrote **28 golden
+  fixture files** before being reverted. `--check`, `--dry-run`, `--report`, `--verbose` and
+  `--status` are conventions, not guarantees; a repo's own scripts are free to define them however
+  they like. **Before running any project script for INSPECTION — especially inside a read-only
+  brief or from a subagent — read its argparse block or docstring and confirm the flag is
+  non-mutating.** Prefer `git status` immediately afterwards as a cheap tripwire, and never accept
+  an agent's "I reverted it" without verifying the tree yourself. Known non-dry-run flags in this
+  repo: `seed_conformance_goldens.py --check`.
+
+- **STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER** — NEW 2026-07-29 (enforcement build). A
+  broken check and a passing check emit the identical signal: silence. **Every new gate ships with a
+  negative control (`--self-test`) that injects a synthetic violation per check and asserts the
+  check REJECTS it** — and the fix for any gate bug must be tested BOTH ways (that it now ignores
+  the false positive AND still catches the true one). Proven on first run: `handoff-preflight.py`'s
+  STOP-count regex was compiled without `re.M`, so `^` anchored to the start of the STRING and
+  counted **0 STOPs on any real file** — the D101 carry-forward check would have reported "no
+  defence dropped" forever while measuring nothing. The same script counted a fenced markdown
+  TEMPLATE as a live data entry. **Corollary: a suspiciously clean number (0 violations, 0 findings,
+  "no drift") is a prompt to prove the gate sees anything at all** — same class as
+  `STOP-A-SCOPED-AXE-RUN-ON-A-CLOSED-SURFACE-PASSES-VACUOUSLY`.
+
+- **STOP-A-GATE-CAN-BE-BLIND-TO-THE-FILE-IT-PROTECTS** — NEW 2026-07-29. An audit can run cleanly
+  for months while never once looking at the file it exists to protect, because gates bind to a
+  doc's NAME, TYPE or SHAPE and any reorganisation severs that binding **with no diff to show it**.
+  Proven: the D101 carry-forward audit in `docscore.py` was written when the STOP catalogue lived
+  inside `next-session-prompt.md`; after the P4 split to `STOP-CATALOGUE.md` it kept passing on a
+  file containing no catalogue. Two independent mismatches — it gated on `doc_type` (this file
+  declares `doc_type: reference`, and **frontmatter beats the filename map**), and its row detector
+  matched markdown TABLE rows while this file uses bullets. **After moving, splitting, renaming or
+  re-typing any doc, grep for its old name AND its doc-type string across hooks, scripts and skill
+  definitions — then verify by INJECTION, not by reading.** Treat a "not applicable" verdict on a
+  file you believe IS applicable as a bug, never a pass.
+
+- **STOP-A-SUBAGENT-ABSENCE-CLAIM-IS-A-HYPOTHESIS** — NEW 2026-07-29 (parking cull). "It doesn't
+  exist" / "zero hits" / "I found nothing" from a subagent is an **unproven negative** — a failed
+  search and a true negative look identical. Map it to UNVERIFIABLE, never to absence, and say so in
+  the brief so the agent has an honest option that costs it nothing. Proven twice the same day: one
+  agent reported two parking entries as "absent from parking.md entirely" (both present, both open);
+  and a rewrite agent's own output manifest **listed three slugs it never wrote** while its prose
+  report read as complete — across two agents 18 slugs were dropped, 5 of them cited from live docs.
+  **NEVER let a subagent's own manifest be the completeness check**: diff its output against an
+  independently-derived expected set. Re-run any absence claim yourself — it is usually one grep.
+
 - **STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE** — NEW 2026-07-28 (docs fat-cut).
   Two or more sessions commit to `main` in the SAME worktree at the same time. The rules, all
   earned by real incidents: (1) **commit by EXACT PATH, never `git add -A`** — a blanket add
@@ -783,6 +828,20 @@ for real before claiming done?
   own `layout` vocabulary and double-gridded the block; and an `&&`-chained build-then-push
   command's overall exit 0 masked a failed intermediate build stage at commit `07c67642`, caught
   only by re-checking the individual stage output rather than the chain's aggregate result.
+- **2026-07-29 (parking normalise + cull + enforcement layer) re-run:** previous unique `STOP-*` =
+  **86**; ADDED 4 (`STOP-A-FLAG-NAMED-CHECK-IS-NOT-ALWAYS-A-DRY-RUN`,
+  `STOP-A-GATE-THAT-CANNOT-FAIL-READS-GREEN-FOREVER`,
+  `STOP-A-GATE-CAN-BE-BLIND-TO-THE-FILE-IT-PROTECTS`,
+  `STOP-A-SUBAGENT-ABSENCE-CLAIM-IS-A-HYPOTHESIS`), SUBTRACTED **none** → **90**. Same command as
+  above → **90**. 90 >= 86. PASS. Ritual questions unchanged at 10. All four are earned by something
+  that actually happened this session: a `--check` flag that re-seeded 28 golden fixtures under a
+  read-only brief; a STOP-count regex missing `re.M` that measured 0 on every real file and would
+  have passed forever; the D101 audit itself being blind to `STOP-CATALOGUE.md` since the P4 split
+  (gated on `doc_type`, and its counter only saw table rows); and two subagents whose negative
+  findings and self-reported manifests were both false, costing 18 dropped slugs before an
+  independent diff caught them.
+  ⚠ **Note for the next carry-forward run:** this catalogue is now the file the docscore D101 audit
+  actually reads (fixed 2026-07-29) — a DECREASE here will now fail a gate, not just a prose rule.
 - **2026-07-28 (docs fat-cut / truth sweep) re-run:** previous unique `STOP-*` = **85**; ADDED 1
   (`STOP-CO-ACTIVE-TRACK-ETIQUETTE-ON-A-SHARED-WORKTREE`), SUBTRACTED **none** → **86**. Same
   command as above → **86**. 86 >= 85. PASS. Earned + rehomed: the per-track next-session prompts

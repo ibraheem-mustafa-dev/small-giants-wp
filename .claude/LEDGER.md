@@ -7,7 +7,9 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 
 # small-giants-wp — LEDGER (the one living status)
 
-## ⭐ FOR BEAN — plain English (read this first)
+## Human Summary
+
+### ⭐ FOR BEAN — plain English (read this first)
 
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
@@ -46,48 +48,32 @@ authoritative arm is the blind tester. `P-HEADER-SIMPLICITY-FINDINGS` stays OPEN
 
 ### Track 2 — Spec 36 nav: TASK 5 MEASUREMENT COMPLETE (2026-07-29) — ⛔ awaiting Bean's eye
 
-Gate 3 CLOSED (D401); the 7 drawer variants are BUILT + canary-deployed (D403). **Task 5's parts 1
-and 2 are DONE and part 3 is delivered but not judged.** Full record:
-`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
+Gate 3 CLOSED (D401); the 7 drawer variants are BUILT + canary-deployed (D403). Parts 1 and 2 of
+Task 5 are DONE; part 3 is delivered but not judged. **21/21 sweep cells PASS** (7 variants ×
+375/768/1440) plus multi-instance, header/centred anchors, and `listColumns` editor-canvas
+visibility. 7 exact-content fixtures live (pages 1892–1932, menus 102–109).
+**Full record — read this rather than duplicating it here:**
+`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
 
-- **21/21 sweep cells PASS** (7 variants × 375/768/1440): openness-guarded axe · resting contrast
-  (8.43–19.29:1) · focus containment · ESC-closes-and-returns-focus · reduced-motion end state ·
-  JS-off crawl. Geometry corroborates the references — `floating-capped-card` measures 438px at
-  768/1440 and **343px at 375** = `min(438px, 100vw−32px)`, the exact recorded fluid cap.
-- **Also PASS:** D374 multi-instance (unique ids, each burger opens its own panel, no fatals) ·
-  `header` anchor DERIVES from the header (top 93 = header height) verified in a genuinely PINNED
-  state · `centred` anchor exactly centred (420px at left=510 on 1440) · **`listColumns` IS visible
-  in the editor canvas** (`display:grid`, two 318.9px columns) — the design gate's one open question,
-  now answered by measurement, not reasoning.
-- **7 exact-content fixtures live** (§6 rule) — pages 1892/1897/1903/1907/1914/1922/1926,
-  multi-instance 1930, anchor probes 1932; menus 102–109. All 7 link counts independently match last
-  session's extraction. Rebuild/inventory/delete:
-  `plugins/sgs-blocks/scripts/nav-qa/build-poc-fixtures.py` + `poc-content-plan.json`.
-- ⛔ **THE GATE DOES NOT CLOSE ON THIS. Bean's eye (R-31-13) is outstanding** — pairs at
-  `reports/visual-diff/drawer-variants-2026-07-29/` (**7/7 ours, 6/7 references**; buck.co UNCAPTURED,
-  recorded not hidden). Named judgement call: the lamalama reference floats its panel TOP-CENTRE, our
-  `trigger` anchor pins it TOP-RIGHT. Palette differences are expected and correct (variants set
-  defaults; the site's own tokens supply colour).
-- **⚠ METHOD — the axe openness guard DID NOT EXIST until 2026-07-29.** `axe-run.mjs` only checked
-  that the scope selector MATCHED, so a CLOSED drawer returned `0 violations` exactly like an open
-  one. **Every scoped drawer/mega axe result recorded before this date proves nothing — re-run it.**
-  The guard now asserts `dialog[open]` + non-zero box + not hidden + ≥1 visible focusable, reporting
-  `VACUOUS` (exit 3), never a pass. Negative control proven live on `/t1-nav/`: closed +
-  `--allow-closed` → 0 violations exit 0 · closed + guard → VACUOUS exit 3 · open → PASS.
-- **⚠ Two further harness bugs that manufactured false results, both fixed:** the automation's own
-  cursor stayed on a link after clicking the burger, so axe measured its **:hover** colour and
-  reported a *serious* 2.14:1 contrast violation that vanished the moment the pointer moved (pointer
-  now parked; a DELIBERATE resting-contrast check added in its place); and the JS-off check compared
-  raw text against HTML, so `Arts & Culture` (served `Arts &amp; Culture`) was reported missing when
-  it was present twice.
-- **Findings (report §4):** **F1** `listColumns` uses `grid-auto-flow:row`, so a 7-item menu
-  interleaves across columns (column 1 reads Home·Services·Studio·News; menu order is
-  Home·Work·Services·Approach·Studio·Plans·News). Keyboard/SR order is correct; the reference splits
-  4+3. Shared-block change → needs sign-off; parked `P-NAV-MENU-LISTCOLUMNS-READING-ORDER`,
-  recommended to change. **F2 (belongs to the header track)** at 375px the theme header is
-  `position:absolute`, 251px tall, rendering the **desktop** logo (305×102) over page content —
-  matches the known-open "logo mobile-tier switch" item; proven via `elementFromPoint`. **F3**
-  `sgs/social-icons` has no Vimeo or Dribbble slug.
+⛔ **THE GATE DOES NOT CLOSE ON MEASUREMENT. Bean's eye (R-31-13) is outstanding** — pairs at
+`reports/visual-diff/drawer-variants-2026-07-29/` (7/7 ours, 6/7 references; buck.co UNCAPTURED,
+recorded not hidden). Named judgement call: the lamalama reference floats its panel TOP-CENTRE, our
+`trigger` anchor pins TOP-RIGHT. Palette differences are expected and correct.
+
+**Standing warnings from this work (do not lose these):**
+- **The axe openness guard DID NOT EXIST until 2026-07-29** — `axe-run.mjs` only checked that the
+  scope selector matched, so a CLOSED drawer returned `0 violations` exactly like an open one.
+  **Every scoped drawer/mega axe result recorded before that date proves nothing — re-run it.** The
+  guard now reports `VACUOUS` (exit 3) rather than a pass; negative control proven live.
+- **Two further harness bugs manufactured false results, both fixed:** the automation's own cursor
+  sat on a link, so axe measured its `:hover` colour and reported a *serious* 2.14:1 contrast
+  violation that vanished when the pointer moved; and the JS-off check compared raw text against
+  HTML, so `Arts & Culture` (served `Arts &amp; Culture`) read as missing when present twice.
+- **Open findings:** F1 `listColumns` uses `grid-auto-flow:row`, so a 7-item menu interleaves across
+  columns (keyboard/SR order is correct; reference splits 4+3) — shared-block change, needs sign-off,
+  parked `P-NAV-MENU-LISTCOLUMNS-READING-ORDER`, recommended to change. F2 (header track) at 375px
+  the theme header is `position:absolute`, 251px tall, rendering the DESKTOP logo over page content.
+  F3 `sgs/social-icons` has no Vimeo or Dribbble slug.
 
 Parked follow-ons (not lost): `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
 `P-DRAWER-VARIANT-CONTENT-GENERICISE` · `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` ·
@@ -144,7 +130,9 @@ audit `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
 
 ---
 
-## Live status (machine-checkable — verify, don't trust the cache)
+## State Snapshot
+
+### Live status (machine-checkable — verify, don't trust the cache)
 
 - **Branch:** `main`. ⚠ **Shared worktree** — a co-active track commits between handoffs and holds
   uncommitted WIP. **Commit by EXACT PATH, never `git add -A`; never touch their uncommitted files**
@@ -236,73 +224,104 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
-## Sweep record — 2026-07-29 parking normalise + enforcement
+## NEXT SESSION — orchestration plan
 
-**The doc rules are now machine-enforced, not asserted.** `.claude/hooks/handoff-preflight.py`
-(6 checks: LEDGER byte cap · D101 STOP carry-forward · parking Status conformance · parking
-archive-on-resolve · tombstones at live paths · dangling links). `--check` gates `/handoff`;
-`--self-test` proves each check can still fail. Built because five rules were documented as
-"enforced every /handoff" and enforced nowhere — which is why the LEDGER reached 38,799 bytes
-against a prose-only cap, and why a 2026-05-09 `CONVERSATION-HANDOFF.md` sat at the repo root
-being copied to OpenClaw every session under a passing gate (now archived).
+**Where we are, plainly.** The doc system is finished and enforced: one spec roster, no registry, no
+code-mirrors, a normalised parking register, and a hook that mechanically fails a handoff if any of
+it drifts. **No doc work is outstanding.** The next session goes back to building, and there are
+three fronts, ALL of which are waiting on *you*, not on more engineering:
 
-- **The negative control earned its keep on first run:** it caught that the STOP-count regex was
-  compiled without `re.M`, so it anchored to the start of the *string* and counted 0 on any real
-  file — the check would have reported "no defence dropped" forever while measuring nothing.
-- **`docscore.py` fixed twice, both caught by testing not assumption:** the size check now covers
-  `LEDGER.md` via a `SIZE_CAPS` table; the D101 carry-forward audit now sees `STOP-CATALOGUE.md`
-  (it was gated on `doc_type`, but that file declares `doc_type: reference` and frontmatter beats
-  the filename map — and its counter only recognised markdown *table* rows while the catalogue uses
-  bullets). Proven by injecting a real 5-STOP drop; both gates caught it.
+1. **Spec 38 motion system** — authored, `status: draft`. Every wave is gated on your sign-off.
+2. **B3 header/footer preset library** — design-gated, nothing built. Three open questions in its §7.
+3. **Spec 36 nav Task 5** — all measurement PASSES (21/21 cells). Only **your eye** (R-31-13) is
+   outstanding; the pairs are rendered and waiting at
+   `reports/visual-diff/drawer-variants-2026-07-29/`.
 
-**`parking.md` normalised: 296,456 → 124,641 bytes, 151 entries.** Verbatim pre-normalise copy at
-`memory/archived-2026-07-28-parking-pre-normalise.md`. The bloat was never closed entries (there
-were none) — it was **shipped history trapped inside still-open entries**. The convention moves a
-CLOSED *entry* to the archive but never addressed a closed *clause* inside an OPEN one, so every
-partially-completed programme accreted forever. One layout, one `**Status:**` syntax (the two
-variants were why any regex gate silently passed ~68% of entries), six real buckets, every entry
-dated. **Slug conservation caught real losses:** the delegated batches dropped 18 slugs, 5 of them
-cited from live docs — and one agent listed three slugs in its own manifest that it never wrote.
-All recovered by hand.
+The honest read: engineering is ahead of decision-making. The highest-value next session is you
+looking at three things, not an agent writing more code.
 
-**Then a full staleness CULL (2026-07-29): all 151 entries verified against LIVE code** by four
-parallel agents, under one rule — a DONE verdict needs positive evidence from the code, never the
-entry's own prose and never the absence of evidence. **Only 8 closed** (5 already-done, 3 moot);
-three of four batches returned ZERO archivable entries. **The register was overwhelmingly honest** —
-the long file was real work buried in narrative, not phantom work. The pass's actual value was
-**four FALSE CLAIMS in entries that stay open**, now corrected in place: `P-DECISIONS-BACKTAG`
-understated its scale ~12x (≈124 untagged headings, not 10) · `P-SPEC35-STATE-AUTOSUGGEST` said one
-block carries a `states` key when 16 do · `P-TESTIMONIAL-CONVERTER-FR2220`'s residual is narrower
-(`reviewDate` is wired) · `P-DRAFT-TOKEN-EXTRACTION-SETUP-PIPELINE` listed the already-shipped
-FR-33-12 freshness gate as remaining. Full record + why the other ~140 stayed open:
-`memory/parking-archive.md` (sixth pass). **P-17 closed as ALREADY-DONE — the shared `IconPicker`
-component exists (`src/components/IconPicker/`, 6 files) and is adopted in 12 blocks**, so the
-design doc extracted from it earlier that day was deleted rather than left at a live path.
-⚠ **`seed_conformance_goldens.py --check` is NOT a dry run — it re-seeds.** It rewrote 28 goldens
-during the pass before being reverted; tree independently confirmed clean.
+### Task 1 — Bean's eye on the 7 drawer variants (UNBLOCKS Spec 36 Task 5)
 
-**Skills repaired for LEDGER mode** (10 files): `/handoff` (single hoisted `## LEDGER MODE` block;
-Gate 4a copies LEDGER not the archived root handoff; Gates 6/6.5 no longer recreate the deleted
-`next-session-prompt.md`; `HANDOFF_GATE_OFF` now requires a recorded `QC-BYPASSED:` reason),
-autopilot SKILL + `living-docs-protocol.md` (which still routed phase-change → `state.md` and would
-have recreated it), the three doc templates that re-seed archived filenames into new projects,
-`/where-am-i`, `/mark-step-done`, the handoff rubric (it demanded a field `/handoff` forbids), and
-`/doc-audit`. Autopilot Stage 0 also lightened: it no longer swallows a 58KB correction ledger and a
-195KB spec before intent is classified.
+**What:** open the side-by-side pairs and judge them. **Why:** measurement cannot close this gate by
+rule (R-31-13 — numbers and eye are co-authoritative). **Time:** 15 min.
+**Orchestration:** inline, no subagent — this is a human judgement, not work to dispatch.
+**Named call to make:** the lamalama reference floats its panel TOP-CENTRE; our `trigger` anchor
+pins TOP-RIGHT. Accept or change. Palette differences are expected and correct.
+**Depends on:** nothing. **Parallel with:** Tasks 2, 3. **QC gate after:** no — it IS the gate.
+**Acceptance:** each of the 7 variants marked accept / change-this. `buck.co` is UNCAPTURED, recorded
+not hidden — decide whether it needs capturing before sign-off.
 
-**Follow-up, deliberately NOT done:** the staleness review of the ~96 parking entries that no live
-doc references. With the file readable, that pass is now cheap.
+### Task 2 — Sign off (or redirect) Spec 38, then run Wave A
+
+**What:** review `specs/38-SGS-MOTION-SYSTEM.md` and flip `status: draft → active`, or redirect.
+**Why:** three wave prompts are written and blocked behind it; nothing may be implemented first.
+**Time:** 20 min to review; Wave A ~45 min after.
+**Orchestration:** review inline (Opus). Wave A implementation → delegated, model via `/delegate`,
+dispatch pattern single-agent, brief = `plans/2026-07-29-motion-wave-A-session-prompt.md` verbatim.
+**Context the subagent will not have:** the stack is vanilla JS + CSS `transform`/`opacity` only;
+D406–D409 carry the doctrine; `prefers-reduced-motion` is non-negotiable on every effect.
+**Depends on:** your sign-off. **Parallel with:** Task 1. **QC gate after:** `/qc-inline`.
+**Acceptance:** Spec 38 `status: active` recorded with a D-number, and Wave A's FRs shipped *and*
+live-verified — not merely built (STOP-29: acceptance is the spec's full scope for the surface).
+
+### Task 3 — B3 preset library: answer §7, then author the patterns
+
+**What:** answer the three sign-off questions in
+`plans/2026-07-28-B3-header-footer-style-preset-library-design-gate.md` §7, then author 8 header +
+8 footer patterns. **Why:** the picker mechanism already exists; what is missing is VARIETY (all 7
+current starters paint `surface` behind `primary`, so they look alike on any one site).
+**Time:** 15 min to decide; ~90 min to author.
+**Orchestration:** decisions inline. Authoring → delegated, `/delegate` for model, dispatch pattern
+**parallel** (header roster ∥ footer roster) via `/dispatching-parallel-agents`.
+**Context the subagents will not have:** this is an AUTHORING job, not a mechanism job — **no new
+block, attribute, admin UI or React component**. Patterns go through the already-live native picker.
+**Depends on:** your §7 answers. **Parallel with:** Tasks 1, 2. **QC gate after:** `/qc` multi-rater
+(it touches shared theme patterns).
+**Acceptance:** 16 patterns render distinctly on one site without editing tokens, and
+`check-no-core-blocks.py` passes.
+
+### Dependency graph
+
+```
+Task 1 (inline — Bean's eye)          ┐
+Task 2 review (inline, Opus)          ├─ all three independent, run in any order
+Task 3 §7 answers (inline, Opus)      ┘
+        ↓ (each unblocks its own build)
+Task 2 Wave A (delegated)   ∥   Task 3 authoring (2 parallel agents)
+        ↓ /qc-inline                      ↓ /qc multi-rater
+                    Commit + push (Gate 2)
+```
+
+### Methodology guardrails (do not skip)
+
+- **Run `python .claude/hooks/handoff-preflight.py --check` before committing.** Six checks; a
+  failure is a hard gate. `--self-test` proves it can still fail.
+- **Deploy before measure** — any change that should be visible on a URL needs build + deploy +
+  OPcache reset BEFORE any browser test, or the test measures stale output.
+- **A scoped axe run on a CLOSED surface passes vacuously.** The openness guard only exists from
+  2026-07-29; any earlier scoped drawer/mega axe result proves nothing — re-run it.
+- **`seed_conformance_goldens.py --check` is NOT a dry run — it re-seeds.** It rewrote 28 goldens
+  during the 2026-07-29 cull.
+- **After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor** (D388 —
+  two editor-killing crashes shipped past all-green gates).
+- **Outcome vs completion** — code shipped ≠ outcome achieved. Map every deferral to a named spec
+  STAGE, never "out of scope" (STOP-29).
+- **Shared worktree** — commit by EXACT PATH, never `git add -A`; never touch the co-active track's
+  uncommitted files; re-check the branch in the same command as the commit.
+- **`/qc` multi-rater before every commit** touching converter / pipeline / SGS-block logic.
 
 ---
 
-## Sweep record — 2026-07-28 docs fat-cut (condensed 2026-07-29)
+## Sweep record — doc-system programme (2026-07-28 → 29), CLOSED
 
-`.claude/` root cut 18 files to 10. One spec roster (`specs/README.md`); the doc registry dissolved
-(it listed deleted specs as live and omitted the newest three) with its credentials rehomed to
-`dev-setup.md` and its run-artefact inventory to Spec 31 Appendix C; the two hand-maintained
-pipeline code-mirrors archived and replaced by Spec 31 Appendix D; the `plan.md` tombstone and both
-per-track next-session prompts retired to LEDGER-only; Specs 29 and 06 folded/archived; Specs 32
-and 35 deliberately KEPT SEPARATE and cross-labelled (202 live code citations made the proposed
-fold a net loss); `decisions.md` swept 877KB→714KB and indexed; `plans/` root 37→14.
-**Full detail: `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md` + the commits
-`b922290a`…`9d44d929`.**
+Two sessions cut the `.claude/` doc set to what can stay true, then made the rules mechanical.
+**Headlines:** `.claude/` root 18 files → 10 · one spec roster (`specs/README.md`) · registry
+DISSOLVED · pipeline code-mirrors archived (→ Spec 31 Appendices C/D) · per-track prompts retired
+(LEDGER-only) · `decisions.md` 877KB → 714KB · `plans/` root 37 → 14 · **`parking.md` 296KB → 123KB,
+151 entries normalised then culled** (8 archived, 4 FALSE CLAIMS corrected in place; the register
+proved overwhelmingly honest — three of four verification batches found nothing archivable) ·
+**`handoff-preflight.py` now enforces six doc-hygiene rules that were previously prose only.**
+
+Full detail: `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md` (includes the 2026-07-29
+appendix) · `memory/parking-archive.md` (sixth pass) · **D410** · commits `b922290a`…`7fe4126e`.
+

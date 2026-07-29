@@ -180,7 +180,7 @@ def check_stop_carry_forward(now_text: str | None = None) -> Result:
         return Result("stop-carry-forward", True, f"{now} STOPs (no committed baseline)")
     prev = _count_stops(prev_text)
     if now >= prev:
-        return Result("stop-carry-forward", True, f"{now} STOPs (was {prev}) — no defence dropped")
+        return Result("stop-carry-forward", True, f"{now} STOPs (was {prev}) - no defence dropped")
     return Result(
         "stop-carry-forward",
         False,
@@ -332,9 +332,9 @@ def self_test() -> int:
             failures += 1
     print()
     if failures:
-        print(f"SELF-TEST FAILED — {failures} check(s) cannot detect their own violation.")
+        print(f"SELF-TEST FAILED - {failures} check(s) cannot detect their own violation.")
         return 1
-    print("SELF-TEST PASSED — all 6 checks reject their violation. The gate is not vacuous.")
+    print("SELF-TEST PASSED - all 6 checks reject their violation. The gate is not vacuous.")
     return 0
 
 
@@ -359,7 +359,7 @@ def main() -> int:
     failed = [r for r in results if not r.ok]
 
     print("=" * 70)
-    print("  handoff-preflight — doc-hygiene gate")
+    print("  handoff-preflight - doc-hygiene gate")
     print("=" * 70)
     for r in results:
         print(f"  [{'PASS' if r.ok else 'FAIL'}] {r.name}: {r.detail}")
