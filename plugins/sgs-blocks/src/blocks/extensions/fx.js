@@ -32,9 +32,9 @@ import { InspectorControls } from '@wordpress/block-editor';
 import {
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
-	__experimentalUnitControl as UnitControl,
 	SelectControl,
 	RangeControl,
+	ToggleControl,
 	Notice,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -85,6 +85,48 @@ function fxOptionsForBlock( name ) {
 		} ) ),
 	];
 }
+
+/**
+ * GSAP easing presets offered in the "Feel" control.
+ *
+ * Verified against the installed GSAP core (`node_modules/gsap/src/gsap-core.js`,
+ * v3.15.0) rather than invented: `Power0`-`Power4`, `Back`, `Elastic`, `Bounce`,
+ * `Sine`, `Expo`, `Circ` are all registered eases (`_insertEase` calls
+ * ~lines 1071-1083, exported ~line 3253). `none` (aliased to `Power0`/linear) is
+ * GSAP's own "no easing" value, used elsewhere in this codebase as the scrub
+ * default (`fx-scrub.js`, `fx-horizontal-panel.js`). Labels are plain English —
+ * a non-technical client picks a FEEL, not a GSAP ease-family name.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_EASE_OPTIONS = [
+	{ label: __( 'Standard (default)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Constant speed, no easing', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Gentle start', 'sgs-blocks' ), value: 'power1.out' },
+	{ label: __( 'Smooth start and finish', 'sgs-blocks' ), value: 'power2.inOut' },
+	{ label: __( 'Strong finish', 'sgs-blocks' ), value: 'power3.out' },
+	{ label: __( 'Overshoot and settle', 'sgs-blocks' ), value: 'back.out' },
+	{ label: __( 'Bounce', 'sgs-blocks' ), value: 'bounce.out' },
+	{ label: __( 'Elastic wobble', 'sgs-blocks' ), value: 'elastic.out(1,0.5)' },
+];
+
+/**
+ * Documented ScrollTrigger `start` presets (gold-standard item 8 — the value
+ * is always `"<trigger-position> <scroller-position>"`, two space-separated
+ * tokens). A `UnitControl` parses to a single number+unit and cannot express
+ * this shape, so the inspector offers a closed set of real, working values
+ * instead of free text a non-technical client could easily mistype.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_START_OPTIONS = [
+	{ label: __( 'Default for this effect', 'sgs-blocks' ), value: '' },
+	{ label: __( 'As soon as it enters view', 'sgs-blocks' ), value: 'top bottom' },
+	{ label: __( 'Just after it enters view', 'sgs-blocks' ), value: 'top 85%' },
+	{ label: __( 'A little into view', 'sgs-blocks' ), value: 'top 70%' },
+	{ label: __( 'Halfway up the screen', 'sgs-blocks' ), value: 'top center' },
+	{ label: __( 'At the very top of the screen', 'sgs-blocks' ), value: 'top top' },
+];
 
 /**
  * Effects that own an element's transform/opacity across a scroll range.
@@ -319,15 +361,69 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									setAttributes( { fxStart: '' } )
 								}
 							>
-								<UnitControl
-									__next40pxDefaultSize
+								<SelectControl
+									__nextHasNoMarginBottom
 									label={ __( 'Start position', 'sgs-blocks' ) }
 									value={ attributes.fxStart }
+									options={ FX_START_OPTIONS }
 									onChange={ ( value ) =>
 										setAttributes( { fxStart: value } )
 									}
 									help={ __(
-										'Where the effect begins, e.g. “top 85%”.',
+										'How far the visitor needs to scroll before the effect begins.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ ( 'scrub' === fx || isSplit ) && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxEase }
+								label={ __( 'Feel', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxEase: '' } )
+								}
+							>
+								<SelectControl
+									__nextHasNoMarginBottom
+									label={ __( 'Feel', 'sgs-blocks' ) }
+									value={ attributes.fxEase }
+									options={ FX_EASE_OPTIONS }
+									onChange={ ( value ) =>
+										setAttributes( { fxEase: value } )
+									}
+									help={ __(
+										'How the motion speeds up and slows down.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ isSplit && (
+							<ToolsPanelItem
+								hasValue={ () =>
+									undefined !== attributes.fxDuration
+								}
+								label={ __( 'Speed', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxDuration: undefined } )
+								}
+							>
+								<RangeControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									label={ __( 'Speed (seconds)', 'sgs-blocks' ) }
+									value={ attributes.fxDuration }
+									onChange={ ( value ) =>
+										setAttributes( { fxDuration: value } )
+									}
+									min={ 0.1 }
+									max={ 3 }
+									step={ 0.1 }
+									help={ __(
+										'How long each piece of text takes to reveal.',
 										'sgs-blocks'
 									) }
 								/>
@@ -402,6 +498,44 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 												: '',
 										} )
 									}
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ isSplit && !! attributes.fxSplit && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxMask }
+								label={ __( 'Mask reveal', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxMask: '' } )
+								}
+							>
+								<ToggleControl
+									__nextHasNoMarginBottom
+									label={ __( 'Mask reveal', 'sgs-blocks' ) }
+									checked={
+										!! attributes.fxMask &&
+										attributes.fxMask === attributes.fxSplit
+									}
+									onChange={ ( checked ) =>
+										// Masking a granularity SplitText isn't
+										// splitting on is a silent no-op
+										// (gold-standard item 20) — so the mask
+										// value must always equal the CURRENT
+										// split granularity, never an
+										// independently settable value, or
+										// changing "Split by" after enabling
+										// this could leave the two mismatched.
+										setAttributes( {
+											fxMask: checked
+												? attributes.fxSplit
+												: '',
+										} )
+									}
+									help={ __(
+										'Reveals the text from behind a hard edge instead of fading up.',
+										'sgs-blocks'
+									) }
 								/>
 							</ToolsPanelItem>
 						) }

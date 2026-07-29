@@ -71,11 +71,29 @@ export function initScrub( el ) {
 			}
 		);
 
-		// Returned to the matchMedia context, so a mid-session switch to
-		// reduced motion reverts the element to its rendered end state rather
-		// than stranding it at whatever opacity the scroll had reached.
+		/*
+		 * Returned to the matchMedia context, so a mid-session switch to
+		 * reduced motion reverts the element to its rendered end state rather
+		 * than stranding it at whatever opacity the scroll had reached.
+		 *
+		 * ⚠ The end-state restore does NOT come from this .kill() call.
+		 * Verified against the installed source (gsap 3.15.0):
+		 * ScrollTrigger.js:2508 skips animation.revert() inside kill() when
+		 * its `revert` argument is undefined, which an argument-less call
+		 * always is. The actual restore comes from Context.kill()'s own
+		 * tween-revert pass (gsap.js:3722), which context.revert() (in
+		 * withMotionAllowed, above) runs BEFORE any cleanup this function
+		 * returns is invoked (gsap.js:3742). This function's job is only to
+		 * release the ScrollTrigger's scroll listener and pin state so the
+		 * instance is garbage-collectable (gold-standard item 13) — not to
+		 * revert anything. Passing explicit args makes that honest: true
+		 * for revert costs nothing (the context already reverted the tween)
+		 * and removes the dependency on kill()'s undocumented no-arg
+		 * default; false for allowAnimation matches the explicit
+		 * tween.kill() call below it, so the tween is killed exactly once.
+		 */
 		return () => {
-			tween.scrollTrigger?.kill();
+			tween.scrollTrigger?.kill( true, false );
 			tween.kill();
 		};
 	} );

@@ -82,8 +82,20 @@ export function tierG( ...plugins ) {
  * part-way through an animation. That revert-on-change behaviour is why this
  * wraps matchMedia rather than doing a one-time boolean check.
  *
- * @param {Function} setup Receives the shared gsap instance; may return its own
- *                         cleanup function, run when the context reverts.
+ * `setup` also receives the matchMedia CONTEXT as its second argument
+ * (gold-standard item 14, [MUST]). A `gsap.matchMedia()` call already creates
+ * a `gsap.context()` internally, so a consumer that needs its OWN breakpoint
+ * (e.g. `fx-horizontal-panel.js`'s desktop-only `min-width:768px` split) must
+ * register it on THIS context via `context.add(query, handler)` rather than
+ * minting a second, nested `gsap.matchMedia()`/`gsap.context()` inside the
+ * `setup` callback — nesting reverts the same trigger twice and is documented
+ * as redundant. `setup( gsap )` — one argument — keeps working unchanged for
+ * every consumer that has no breakpoint of its own (`fx-scrub.js`,
+ * `fx-pin-scrub.js`, `fx-split-reveal.js`); the second parameter is additive.
+ *
+ * @param {Function} setup Receives the shared gsap instance and this call's
+ *                         matchMedia context; may return its own cleanup
+ *                         function, run when the context reverts.
  * @return {Function} Cleanup — reverts the context and detaches listeners.
  */
 /**
@@ -217,7 +229,7 @@ export function withMotionAllowed( setup ) {
 	const context = gsap.matchMedia();
 
 	context.add( '(prefers-reduced-motion: no-preference)', () => {
-		const teardown = setup( gsap );
+		const teardown = setup( gsap, context );
 		return typeof teardown === 'function' ? teardown : undefined;
 	} );
 

@@ -148,8 +148,39 @@ export function initHorizontalPanel( el ) {
 			 * Recomputed per refresh, so a band max-width change or a webfont
 			 * reflow cannot leave a stale distance baked in.
 			 */
+			/*
+			 * ⚠ KNOWN OPEN DEFECT — do not "tidy" this without reading below.
+			 *
+			 * Owner-reported and reproduced: at the end of the pin the LAST panel
+			 * does not reach the position where the FIRST panel's content started.
+			 * Measured at 1440x900 with four panels:
+			 *   track.scrollWidth        4189
+			 *   host el.clientWidth      1200
+			 *   track.parentElement      1200   (the __inner band — NOT narrower)
+			 *   travel actually applied  2989  (completes; the tween is not short)
+			 *   first panel left @start  -111  (relative to the band)
+			 *   last panel left @end     +153  (relative to the band)
+			 *   => residual gap          ~264px
+			 *
+			 * So the tween reaches its target; the TARGET is what is wrong. Two
+			 * fixes were attempted and both failed, recorded so they are not
+			 * retried: using `track.clientWidth` computes 0 (the track is
+			 * `width: max-content`, so client === scroll width) and kills the
+			 * effect outright; using `track.parentElement.clientWidth` is
+			 * identical to the host width here, so it changes nothing. Both were
+			 * built on a band width of 969px that was INFERRED from 1200-231 and
+			 * never measured — it is wrong.
+			 *
+			 * Still unaccounted for: the ~264px residual, the -111 start offset
+			 * (panel 1 begins LEFT of the band edge, so the row is already offset
+			 * before any travel), and the flex `gap` the container contributes
+			 * between panels. The next attempt should measure each panel's
+			 * offsetLeft plus the computed `gap` and `padding-inline` on both the
+			 * band and the track, and derive the target from where panel N must
+			 * land — not from a scrollWidth-minus-a-width subtraction.
+			 */
 			const getTravelDistance = () =>
-				Math.max( 0, track.scrollWidth - track.clientWidth );
+				Math.max( 0, track.scrollWidth - el.clientWidth );
 
 			const tween = gsap.to( track, {
 				x: () => -getTravelDistance(),
