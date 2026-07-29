@@ -14,14 +14,10 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Doc system fat-cut — 2026-07-28.** The `.claude/` doc set was audited and cut down to what can
-actually stay true. What changed, in plain terms: there is now **one spec roster**
-(`specs/README.md`) instead of four competing ones; the **doc registry is gone** (it listed deleted
-specs as live and missed the three newest); the **two hand-written pipeline maps are archived** (they
-described code and were three weeks behind it — the code plus Spec 31 is the truth); the **per-track
-next-session prompts are retired** (LEDGER-only, one truth per track). Nothing was deleted from git
-history — everything moved to `memory/` or `*/archive/` verbatim with a dated note. Full sweep record
-at the bottom of this file.
+**Where things stand (2026-07-29).** The doc system is finished and now mechanically enforced — see
+the sweep record at the bottom. Three build fronts are live: **Spec 38 motion (signed off, Wave A
+next)**, **B3 header/footer presets (awaiting your three §7 answers)**, and **Spec 36 nav Task 5,
+which you REJECTED** — those clones need real rework before they come back to you.
 
 ---
 
@@ -46,34 +42,49 @@ The raw-insert drawer gap is FIXED (`6ddb9f48`, FR-36-9a clause 2, Specs 36+37 a
 commit). ⚠ **FR-37-26's FAIL verdict deliberately STANDS** — the test was not re-run and its
 authoritative arm is the blind tester. `P-HEADER-SIMPLICITY-FINDINGS` stays OPEN (findings 2 + 3).
 
-### Track 2 — Spec 36 nav: TASK 5 MEASUREMENT COMPLETE (2026-07-29) — ⛔ awaiting Bean's eye
+### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29 — the clones need major rework
 
-Gate 3 CLOSED (D401); the 7 drawer variants are BUILT + canary-deployed (D403). Parts 1 and 2 of
-Task 5 are DONE; part 3 is delivered but not judged. **21/21 sweep cells PASS** (7 variants ×
-375/768/1440) plus multi-instance, header/centred anchors, and `listColumns` editor-canvas
-visibility. 7 exact-content fixtures live (pages 1892–1932, menus 102–109).
-**Full record — read this rather than duplicating it here:**
-`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
+**Bean reviewed the pairs and rejected them: "the difference between our version and theirs is night
+and day". This overrides the measurement result — R-31-13, the eye is co-authoritative and it said
+no.** Do NOT re-present these for review; every variant needs real work first. Bean's words: *"all of
+these clone attempts need huge fixes to reach completion now."*
 
-⛔ **THE GATE DOES NOT CLOSE ON MEASUREMENT. Bean's eye (R-31-13) is outstanding** — pairs at
-`reports/visual-diff/drawer-variants-2026-07-29/` (7/7 ours, 6/7 references; buck.co UNCAPTURED,
-recorded not hidden). Named judgement call: the lamalama reference floats its panel TOP-CENTRE, our
-`trigger` anchor pins TOP-RIGHT. Palette differences are expected and correct.
+**What he found, all verified:**
+- **Content is NOT an exact clone**, despite the §6 POC rule requiring exactly that. `centred-statement`
+  renders **3 menu items** (Work/Services/Impact) where the extraction recorded **7**.
+- **Alignment is wrong on several.** `centred-statement` — the variant whose NAME is "centred" —
+  renders **left-aligned**. Its three link arrows float detached mid-panel with no labels beside them.
+- **`solid-brand-light` has NO reference screenshot at all** (only `-ours`), so nothing was compared.
+- **`two-column-editorial`'s "reference" is the CLOSED homepage** with a cookie banner still up — the
+  menu was never opened. Verified by opening the PNG.
 
-**Standing warnings from this work (do not lose these):**
-- **The axe openness guard DID NOT EXIST until 2026-07-29** — `axe-run.mjs` only checked that the
-  scope selector matched, so a CLOSED drawer returned `0 violations` exactly like an open one.
-  **Every scoped drawer/mega axe result recorded before that date proves nothing — re-run it.** The
-  guard now reports `VACUOUS` (exit 3) rather than a pass; negative control proven live.
-- **Two further harness bugs manufactured false results, both fixed:** the automation's own cursor
-  sat on a link, so axe measured its `:hover` colour and reported a *serious* 2.14:1 contrast
-  violation that vanished when the pointer moved; and the JS-off check compared raw text against
-  HTML, so `Arts & Culture` (served `Arts &amp; Culture`) read as missing when present twice.
-- **Open findings:** F1 `listColumns` uses `grid-auto-flow:row`, so a 7-item menu interleaves across
-  columns (keyboard/SR order is correct; reference splits 4+3) — shared-block change, needs sign-off,
-  parked `P-NAV-MENU-LISTCOLUMNS-READING-ORDER`, recommended to change. F2 (header track) at 375px
-  the theme header is `position:absolute`, 251px tall, rendering the DESKTOP logo over page content.
-  F3 `sgs/social-icons` has no Vimeo or Dribbble slug.
+**The process failure, and it is the important part.** The exit-gate report claimed **"21/21 sweep
+cells PASS"** and **"7 exact-content fixtures live"**, and the LEDGER repeated it. Those cells
+measured axe / geometry / focus / reduced-motion / JS-off — **none of them measures whether the clone
+looks like the reference**, and the fixture claim was never checked against the extraction's own link
+counts. A green measurement was presented in a way that read as fidelity. That is exactly the
+completion theatre Gate 3.5 exists to stop, and it got through. **The "6/7 references" line was also
+generous — one of the six is unusable, so the real figure was 5/7 at best.**
+
+**Rework scope (not a re-review):** (1) rebuild every fixture to genuinely exact reference content —
+verify link COUNT and label TEXT against `reports/2026-07-28-drawer-code-extraction/*.json` per
+variant, and fail the build if they disagree; (2) fix per-variant alignment, starting with
+`centred-statement` actually centring and its arrows being attached to their labels; (3) capture a
+real menu-OPEN reference for `two-column-editorial`, `solid-brand-light` and `buck.co` — the capture
+script must assert the panel is open before it shoots, the same openness guard the axe harness now
+has; (4) only then re-present. Parked: `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`.
+
+**Standing warnings (do not lose these):** the **axe openness guard did not exist until 2026-07-29** —
+a CLOSED drawer returned `0 violations` exactly like an open one, so **every scoped drawer/mega axe
+result from before that date proves nothing; re-run it** (it now reports `VACUOUS`, exit 3). Two more
+harness bugs manufactured false results, both fixed: the automation's cursor sat on a link so axe
+measured its `:hover` colour (a *serious* 2.14:1 contrast violation that vanished when the pointer
+moved), and the JS-off check compared raw text to HTML so `Arts & Culture` read as missing.
+**Open findings:** F1 `listColumns` uses `grid-auto-flow:row` so a 7-item menu interleaves across
+columns (keyboard/SR order is fine; reference splits 4+3) — parked
+`P-NAV-MENU-LISTCOLUMNS-READING-ORDER`, recommended to change. F2 (header track) at 375px the theme
+header is `position:absolute`, 251px tall, rendering the DESKTOP logo over content. F3
+`sgs/social-icons` has no Vimeo or Dribbble slug.
 
 Parked follow-ons (not lost): `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
 `P-DRAWER-VARIANT-CONTENT-GENERICISE` · `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` ·
@@ -240,16 +251,21 @@ three fronts, ALL of which are waiting on *you*, not on more engineering:
 The honest read: engineering is ahead of decision-making. The highest-value next session is you
 looking at three things, not an agent writing more code.
 
-### Task 1 — Bean's eye on the 7 drawer variants (UNBLOCKS Spec 36 Task 5)
+### Task 1 — REWORK the 7 drawer POC fixtures (Bean REJECTED them; do not re-present as-is)
 
-**What:** open the side-by-side pairs and judge them. **Why:** measurement cannot close this gate by
-rule (R-31-13 — numbers and eye are co-authoritative). **Time:** 15 min.
-**Orchestration:** inline, no subagent — this is a human judgement, not work to dispatch.
-**Named call to make:** the lamalama reference floats its panel TOP-CENTRE; our `trigger` anchor
-pins TOP-RIGHT. Accept or change. Palette differences are expected and correct.
-**Depends on:** nothing. **Parallel with:** Tasks 2, 3. **QC gate after:** no — it IS the gate.
-**Acceptance:** each of the 7 variants marked accept / change-this. `buck.co` is UNCAPTURED, recorded
-not hidden — decide whether it needs capturing before sign-off.
+**What:** fix the four defects in `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES` — exact-clone content
+(link count + labels verified against `reports/2026-07-28-drawer-code-extraction/*.json`), per-variant
+alignment (`centred-statement` must actually centre, arrows attached to labels), an openness
+assertion in the screenshot capture, and real menu-open references for `two-column-editorial`,
+`solid-brand-light` and `buck.co`. **Why:** the gate was rejected on sight; measurement said PASS
+while the clone was nowhere near. **Time:** ~2h.
+**Orchestration:** delegated, model via `/delegate`, single agent, brief = the parking entry verbatim.
+**Context the subagent will not have:** the §6 POC rule means EXACT content including labels — a
+generic menu is a fail; and the capture harness must refuse to save a closed-panel shot (same
+vacuous-capture class the axe harness fixed).
+**Depends on:** none. **Parallel with:** Tasks 2, 3. **QC gate after:** `/visual-qa`.
+**Acceptance:** per variant, link count + labels match the extraction JSON exactly, alignment matches
+the reference, and a menu-OPEN reference exists for all 7. Then — and only then — back to Bean.
 
 ### Task 2 — Sign off (or redirect) Spec 38, then run Wave A
 
@@ -294,31 +310,17 @@ Task 2 Wave A (delegated)   ∥   Task 3 authoring (2 parallel agents)
 
 ### Tooling for the next session (WordPress project — Gate 5)
 
-| Skill | When to use |
-|---|---|
-| `/brainstorming` | Any architectural or design decision — all three tasks start with one |
-| `/strategic-plan` | Before writing code for Wave A or the B3 pattern roster |
-| `/research` | Auto-routes to the right tier; use before any unfamiliar choice |
-| `/gap-analysis` | Grade the B3 patterns before calling them done |
-| `/lifecycle` | Only if a skill/agent/pipeline itself changes |
-| `/sgs-wp-engine` | The framework skill — block/theme/pattern work |
-| `/wp-block-development` | Core WP block-API questions |
-| `/delegate` | Pick the model for every dispatched task |
-| `/qc` · `/qc-inline` | Per the per-task QC gates above |
-| `/visual-qa` · `/a11y-audit` | Verifying the B3 patterns and any motion work |
-
-| MCP / tool | For |
-|---|---|
-| Playwright MCP | Live DOM + computed-style verification on the canary (the only way to close Task 1-adjacent checks) |
-| `/sgs-db` | Block/attr/slot ground truth — never trust a count in prose |
-| `/wp-blocks` | Block schema dump |
-| Chrome DevTools MCP | Motion/perf tracing if Wave A needs it |
-
-| Agent | When |
-|---|---|
-| `wp-sgs-developer` | Wave A implementation + B3 pattern authoring |
-| `design-reviewer` | B3 preset variety — does each of the 16 actually look different |
-| `code-reviewer` | Before committing shared-theme or motion changes |
+**Skills:** `/brainstorming` + `/strategic-plan` before any build · `/research` (auto-tiers) ·
+`/gap-analysis` to grade the B3 patterns · `/sgs-wp-engine` (the framework skill) ·
+`/wp-block-development` for core-WP block-API questions · `/delegate` to pick every model ·
+`/qc` + `/qc-inline` per the per-task gates · `/visual-qa` + `/a11y-audit` for the drawer rework
+and the presets.
+**MCP / tools:** Playwright MCP (live DOM + computed style on the canary — the only way to close the
+drawer rework) · `/sgs-db` and `/wp-blocks` for block ground truth, never a prose count ·
+Chrome DevTools MCP if Wave A needs motion tracing.
+**Agents:** `wp-sgs-developer` (Wave A + B3 authoring + drawer rework) · `design-reviewer` (do the 16
+presets actually look different; does the drawer match its reference) · `code-reviewer` before any
+shared-theme or motion commit.
 
 ### Methodology guardrails (do not skip)
 
@@ -342,14 +344,9 @@ Task 2 Wave A (delegated)   ∥   Task 3 authoring (2 parallel agents)
 
 ## Sweep record — doc-system programme (2026-07-28 → 29), CLOSED
 
-Two sessions cut the `.claude/` doc set to what can stay true, then made the rules mechanical.
-**Headlines:** `.claude/` root 18 files → 10 · one spec roster (`specs/README.md`) · registry
-DISSOLVED · pipeline code-mirrors archived (→ Spec 31 Appendices C/D) · per-track prompts retired
-(LEDGER-only) · `decisions.md` 877KB → 714KB · `plans/` root 37 → 14 · **`parking.md` 296KB → 123KB,
-151 entries normalised then culled** (8 archived, 4 FALSE CLAIMS corrected in place; the register
-proved overwhelmingly honest — three of four verification batches found nothing archivable) ·
-**`handoff-preflight.py` now enforces six doc-hygiene rules that were previously prose only.**
-
-Full detail: `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md` (includes the 2026-07-29
-appendix) · `memory/parking-archive.md` (sixth pass) · **D410** · commits `b922290a`…`7fe4126e`.
-
+`.claude/` root 18→10 files · one spec roster · registry dissolved · pipeline code-mirrors archived
+(→ Spec 31 Appendices C/D) · per-track prompts retired · decisions.md 877KB→714KB · plans/ 37→14 ·
+**parking.md 296KB→123KB, normalised then culled** (8 archived, 4 false claims corrected; the
+register proved overwhelmingly honest) · **`handoff-preflight.py` now mechanically enforces six
+doc-hygiene rules that were prose only.** Detail: `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md`
+· `memory/parking-archive.md` (sixth pass) · **D410** · commits `b922290a`…`7d8ec094`.

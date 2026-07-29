@@ -970,6 +970,30 @@ Blocks declaring `__experimentalBorder` with skip-serialization (site-header-row
 **Trigger:** a block-quality pass, or when a client build needs a visible header/footer divider.
 
 
+### P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES — the 7 drawer POC fixtures are not exact clones and their reference captures are unreliable
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+
+Bean rejected the Task-5 exit gate on sight (R-31-13): *"the difference between our version and
+theirs is night and day"*. Four verified defects. (1) **Content is not an exact clone** despite the
+§6 POC rule mandating it — `centred-statement` renders 3 menu items where the extraction recorded 7.
+(2) **Alignment is wrong on several variants**; `centred-statement` renders LEFT-aligned, and its
+three link arrows float detached mid-panel with no labels. (3) **`solid-brand-light` has no reference
+capture at all.** (4) **`two-column-editorial`'s "reference" is the closed homepage with a cookie
+banner** — the menu was never opened.
+
+**Root cause of the false green:** the capture script never asserted the panel was OPEN before
+shooting (the same vacuous-capture class the axe harness fixed on 2026-07-29 but the screenshot
+harness did not), and nothing compared fixture link counts against the extraction JSON. The exit
+report then presented 21/21 axe/geometry/focus cells as though they evidenced visual fidelity.
+
+**To close:** rebuild every fixture to genuinely exact reference content, verifying link COUNT and
+label TEXT against `reports/2026-07-28-drawer-code-extraction/*.json` per variant and failing the
+build on mismatch; fix per-variant alignment; add an openness assertion to the screenshot capture
+so a closed-panel shot is reported VACUOUS rather than saved; capture real menu-open references for
+`two-column-editorial`, `solid-brand-light` and `buck.co`.
+
+**Trigger:** before Spec 36 Task 5 is re-presented to Bean — it must not be re-reviewed until all four are fixed.
+
 ### P-DRAWER-BURGER-MORPH-SYNC — true burger-to-X morph needs cross-block state
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-28
 
