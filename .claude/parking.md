@@ -1000,7 +1000,12 @@ build on mismatch; fix per-variant alignment; add an openness assertion to the s
 so a closed-panel shot is reported VACUOUS rather than saved; capture real menu-open references for
 `two-column-editorial`, `solid-brand-light` and `buck.co`.
 
-**Trigger:** before Spec 36 Task 5 is re-presented to Bean — it must not be re-reviewed until all four are fixed.
+**Trigger:** the merged 36/37 track's FINAL proof gate. Bean signed the architecture gate on
+2026-07-29 and **re-sequenced the clone to the END** — a faithful clone depends on FR-37-42
+(asymmetric 3-col grids), the DP4 burger-trigger controls and the drawer CPT, all unbuilt, so
+clone-first would only reproduce the rejected half-clone with more steps. This entry is therefore
+NOT queued work; it is the standard the clone must meet when the system is complete. Task 5 must
+not be re-presented to Bean until every defect above is fixed.
 
 ### P-DRAWER-BURGER-MORPH-SYNC — true burger-to-X morph needs cross-block state
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-28
@@ -1075,10 +1080,9 @@ from the item count in `nav-menu/render.php`. That changes rendering semantics o
 it needs Bean's sign-off (project rule 7) rather than an inline change.
 
 **Trigger:** a verified menu-OPEN capture of the studionamma reference showing which reading model
-it uses. Do not change the block before that exists.
-
-**Trigger:** Bean's decision on finding F1 of
-`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
+it actually uses — then Bean's decision on finding F1 of
+`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`. Do not change the block before
+that capture exists.
 
 ### P-NAV-DRAWER-DUPLICATE-DEFAULT-REF — two default drawers on one page share a DOM id
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
