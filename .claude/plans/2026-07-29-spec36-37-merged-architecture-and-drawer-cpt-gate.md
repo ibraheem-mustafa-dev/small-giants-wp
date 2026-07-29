@@ -2,7 +2,10 @@
 doc_type: design-gate
 project: small-giants-wp
 date: 2026-07-29
-status: AWAITING BEAN SIGN-OFF — nothing built. Rule-7 gate (shared-mechanism change).
+status: SIGNED OFF (Bean, 2026-07-29) — §3 answers recorded in §0; DP6 RE-SEQUENCED same day
+  (clone = final proof gate per Bean's own 2026-07-28 decision in the remaining-work inventory,
+  NOT the first task). Next step = /strategic-plan for the merged track over
+  reports/2026-07-28-spec36-37-remaining-work-inventory.md. Nothing built yet.
 governs: the merged Spec 36 + Spec 37 execution track — drawer CPT move, nav-menu controllability,
   clone-first POC sequencing, harness honesty. Supersedes the per-track sequencing in both specs'
   build sections once signed.
@@ -28,6 +31,28 @@ inputs: Bean's decisions 2026-07-29 (drawer rejection review + Q1-Q3 answers + m
 - **CPT:** Bean raised drawer-as-CPT independently; the drawer track concurred and design-gated it
   here rather than building. Bean's read on nav-menu: probably NOT its own CPT; more control in the
   header CPT instead; the nav-menu↔drawer relation needs overhauling to match.
+
+**§3 answers (Bean, 2026-07-29 — the gate is signed):**
+1. **CPT admin name = "Menu drawer"** — "Menu Panels" rejected as vague and colliding with
+   mega-menu language.
+2. **Site-wide Active default + per-burger override via the picker** — agreed.
+3. **studionamma is the first clone** — agreed, but see the re-sequencing below for WHEN.
+
+**DP6 RE-SEQUENCED (Bean, 2026-07-29 — supersedes "clone-first" as written below):** Bean asked
+whether cloning is truly the next work given everything left in both specs, and the answer is no —
+he had in fact already decided this on 2026-07-28 (recorded in
+`reports/2026-07-28-spec36-37-remaining-work-inventory.md`: *"the 12-reference clone moves to the
+END as the proof the header/footer system is complete"*). The clone-first framing in DP6 was
+written without that inventory and is corrected: **cloning is the FINAL PROOF GATE (the inventory's
+wave 4), not the opening task.** It cannot succeed earlier — the inventory names FR-37-42 (the
+column-shape picker) as a prerequisite for faithfully cloning the asymmetric-3-col references, the
+burger-trigger controls (DP4) don't exist yet, and the drawer CPT (DP2) changes the container the
+fixtures would be built on. Everything else in DP6 stands: studionamma is the FIRST clone *within*
+the proof wave, one site 100% before the other six, and each accepted clone yields its B3 presets.
+**Next session = the full `/strategic-plan` for the merged track**, scope-sourced from the
+remaining-work inventory, with this gate's DP1–DP7 as binding architecture: the drawer CPT +
+DP4 trigger controls + DP7 harness fixes slot into the inventory's capability wave; the fixture
+wave (mega Gate 3, cart/search/social exercise) is untouched by the CPT move and can run first.
 
 ## 1. The decisions (DP-numbered; each with recommendation + the honest counterweight)
 

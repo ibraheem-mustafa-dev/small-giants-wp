@@ -49,8 +49,13 @@ per-property controllability contract (DP5) · **clone-first POC: studionamma 10
 drawer + footer, content/imagery/colours/typography — then the other 6** · each accepted clone
 yields the B3 presets (7 cloned pairs + Utility/Overlay/Directory invented fills; Warm cut;
 Q3 = retire `centred/minimal/full` starters, keep scratch + 3 search) · DP7 harness honesty gates
-any re-present. **3 open questions in gate §3 (admin naming · site-wide vs per-header drawer ·
-first-clone site). Next session: sign-off → /strategic-plan for the merged track.**
+any re-present. **GATE SIGNED (Bean, 2026-07-29): CPT admin name = "Menu drawer" · site-wide Active
+default + per-burger picker override · studionamma first. DP6 RE-SEQUENCED same day: cloning is the
+FINAL PROOF GATE (inventory wave 4), NOT the opening task — matching Bean's own 2026-07-28 decision
+in the inventory; FR-37-42 + DP4 trigger controls + the CPT move are prerequisites a faithful clone
+needs anyway. NEXT SESSION = the full `/strategic-plan` for the merged track, scope =
+`reports/2026-07-28-spec36-37-remaining-work-inventory.md`, architecture = this gate's DP1–DP7
+(CPT + trigger controls + harness fixes → capability wave; mega/cart/search fixture wave first).**
 B3's old standalone plan (`2026-07-28-B3-…`) is subsumed — its §7 answers are recorded in the gate §0.
 
 **Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) burger-opens-nothing notice +
