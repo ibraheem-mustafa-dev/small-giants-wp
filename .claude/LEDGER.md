@@ -35,14 +35,39 @@ wasted if the drawer stops being a block.
 
 ## ⭐ CURRENT FRONTS
 
-### Track 3 — Spec 38 motion system: **Wave A SHIPPED** — B ∥ C next
+### Track 3 — Spec 38 motion system: Wave A shipped + qc-council'd; **5 close-out items open**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active` (Bean approved 2026-07-29; D406–D409). **Wave A
-shipped on main**: `e991b8f6` (Tier G loader, provider, DB registry — A1-A3/A6) + `e779ea41`
-(fx grammar, entrance exclusivity, 3 effects, budget gate — A4/A5/A7/A9) + gap-close/determinism
-fixes `94a62175`/`954848d3`. **Next: run Waves B ∥ C per `plans/2026-07-29-motion-wave-B/C-session-prompt.md`.**
-(Live-verify status of Wave A: check the wave prompts / session memory before claiming — this
-LEDGER line records the commits, not an eye pass.)
+`specs/38-SGS-MOTION-SYSTEM.md` is `active` (D406–D409). Wave A is on main and
+**live-verified on real SGS blocks**: `e991b8f6` + `e779ea41` (A1-A9), gap-close
+`94a62175`/`954848d3`, then a 2-rater cross-model **qc-council** against a GSAP gold standard
+(`reports/2026-07-29-gsap-scrolltrigger-splittext-gold-standard.md`, 32 items) →
+`666d62ed` `5163b951` `d239921a` `a8947d1f` `a27e6bda` `4596f36f` + inspector/roster commits.
+
+**Verified live on real SGS blocks** (all 3 arms): scrub, pin-scrub (pins at 93px, clears the
+sticky header), split-reveal (a11y intact), horizontal-panel (pins + mobile reachable).
+Zero GSAP bytes on a no-fx page.
+
+**fx roster is DERIVED, not hardcoded (D414)** — `fx_effects.scope` + `.requires` seeded from
+spec §2; a block qualifies when it provides what an effect requires. cta-section + trust-bar now
+qualify automatically; 22 of 81 blocks carry the panel; ScrollSmoother is `scope=site` so it
+cannot reach a block panel. Gate: `db-consistency/check_fx_qualifying_blocks_stale.py`.
+
+**OPEN — 5 items, see `plans/2026-07-30-motion-wave-A-closeout-prompt.md`:**
+1. **Horizontal panel travels ~264px short** (owner-reported, UNRESOLVED after 3 attempts).
+   Tween reaches its target; the TARGET is wrong. Full measurements + both failed formulas are
+   recorded in the block comment above `getTravelDistance()` in `fx-horizontal-panel.js` —
+   **read it before trying a 4th**. Two attempts were built on a band width INFERRED as 969px
+   (`1200-231`) and never measured; it is 1200.
+2. Apply the matchMedia consumer change to `fx-horizontal-panel.js` (provider side shipped).
+3. `fxEnd` has no control (semantics differ per effect — needs a design call); `fxTrigger` is
+   registered + emitted + PHP-mirrored and read by **no** effect module.
+4. Confirm the desktop + reduced-motion arm of the panel (one probe showed overflow hidden +
+   last panel unreachable; may be an emulation artefact, never confirmed).
+5. Bean's eye on the 7 `/motion-canary-*` pages (each now states its own pass/fail criteria
+   on the page — the first round asked for sign-off without saying what correct looked like).
+
+**Wave B ∥ C remain unblocked** (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`); the
+close-out above is independent of them.
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
@@ -326,12 +351,3 @@ before any shared-theme or motion commit.
 - **`/qc` multi-rater before every commit** touching converter / pipeline / SGS-block logic.
 
 ---
-
-## Sweep record — doc-system programme (2026-07-28 → 29), CLOSED
-
-`.claude/` root 18→10 files · one spec roster · registry dissolved · pipeline code-mirrors archived
-(→ Spec 31 Appendices C/D) · per-track prompts retired · decisions.md 877KB→714KB · plans/ 37→14 ·
-**parking.md 296KB→123KB, normalised then culled** (8 archived, 4 false claims corrected; the
-register proved overwhelmingly honest) · **`handoff-preflight.py` now mechanically enforces six
-doc-hygiene rules that were prose only.** Detail: `memory/session-2026-07-28-ledger-sweep-docs-fatcut.md`
-· `memory/parking-archive.md` (sixth pass) · **D410** · commits `b922290a`…`7d8ec094`.

@@ -15,6 +15,61 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D414 — fx roster is DERIVED from effect scope + target requirement, not a hardcoded list [ROUTINE]
+
+**2026-07-30, Spec 38 §2/§6.1, FR-38-4.** `FX_BLOCKS` was a hardcoded 5-block array in
+`src/blocks/extensions/fx.js` — an R-31-1 violation, and the only one of four universal
+extensions using an allowlist rather than the declarative opt-out. It went stale within hours of
+being written (omitting `sgs/cta-section` and `sgs/trust-bar`, which mirror `sgs/hero`).
+
+`fx_effects` gains **`scope`** (`block|element|site|paired|flavour`) and **`requires`**
+(`text|svg|section|item-set|track|none`), seeded from Spec 38 §2's own table. Qualification is
+computed: a block qualifies when it provides what an effect requires, derived from block.json
+(`containerKind`, RichText usage, declared `supports.sgs.fx.*`). Generated to
+`includes/generated-fx-qualifying-blocks.php` + a JSON twin for the editor — **the SQLite DB is
+never deployed**, so the DB is the authoring source and block.json/generated artefacts ship.
+Result: cta-section + trust-bar qualify automatically; 22 of 81 blocks carry the panel.
+
+**ScrollSmoother is `scope=site`** ("site setting only → per-template opt-out, never per-block"),
+so it is structurally incapable of reaching a block inspector rather than merely told not to in
+prose. Two site-scope rows exist so that can be proven.
+
+Guards: `check_fx_qualifying_blocks_stale.py` (prebuild, `--self-test`) + the reseed guard
+extended to both columns. Exceptions (site chrome, overlays, form fields, inner child blocks)
+declare `supports.sgs.hideExtensions: ["fx"]` in their own block.json — the route `animation.js`
+took when `ANIMATION_DENYLIST` was retired.
+
+**Corrected before shipping:** the first cut read §2's "Recommended → permitted" column as a
+requirement and put the panel on all 81 blocks. That column is a TRAJECTORY; the authoritative
+Level column says `block/element`, and "any block WITH THE FX PANEL EXPOSED" is conditional on
+the panel existing, so it cannot justify creating it. A `requires='none'` effect now adds no
+block of its own.
+
+## D415 — pinning effects must clear persistent sticky chrome (shared seam in provider.js) [INCIDENT]
+
+**2026-07-30, Spec 38 FR-38-6/FR-38-8, §10.** Bean reported a pinned section sitting *behind* the
+sticky site header. Measured: header sticky, `z-index:100`, 93px tall; pinned element
+`position:fixed`, `z-index:auto`, `top:0` — the header won the paint contest, so the top 93px of
+every pinned section was invisible for the entire pin.
+
+Fixed by **geometry, not stacking**. Raising the pinned element's z-index was rejected: it inverts
+the problem so the section covers the header, navigation disappears for the pin's duration, and
+focusable header controls stay in the tab order while visually obscured — a WCAG 2.4.11
+focus-obscured failure. Hidden nav is worse than a hidden heading.
+
+`provider.js` gains `resolveStart()` / `chromeOffsetPx()`, offsetting only the module's DEFAULT
+start (an author-set `data-sgs-fx-start` is untouched — appending to a deliberate value would be
+the injected-default-overrides-faithful-value cheat). The offset reads `--sgs-header-height`,
+which `header-behaviours/view.js` MEASURES and publishes; re-measuring here would recreate the
+duplicate publisher deleted at D330 and re-derive its sticky-vs-transparent trap. A non-pinned
+header publishes 0, so the offset self-disables.
+
+**`start` must be a FUNCTION.** Resolving it eagerly captured the pre-JS fallback (80px) instead
+of the published 93px, leaving 13px still hidden — a race, not a wrong formula. ScrollTrigger
+re-evaluates a function `start` on every refresh.
+
+Shared seam, not per-effect: `fx-horizontal-panel` pins too and had the identical defect.
+
 ## D-range index (grep-navigation aid, added 2026-07-28 fat-cut F8)
 
 D-numbers not present in a range below (or below D117) were archived — search `memory/decisions-archive.md`.
