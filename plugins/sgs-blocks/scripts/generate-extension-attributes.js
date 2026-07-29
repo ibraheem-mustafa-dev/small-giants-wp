@@ -46,7 +46,28 @@ const OUT_FILE = path.join(
 // `prettier` quote-style change or a `{ default: '', type: 'string' }` ordering
 // cannot silently drop an attribute (qc-council Rater C, 2026-06-08). Attribute
 // objects never contain nested braces, so `[^}]*` safely captures the body.
-const ATTR_RE = /(sgs[A-Za-z0-9]+)\s*:\s*\{([^}]*)\}/g;
+/*
+ * Matches an extension attribute definition.
+ *
+ * Two prefixes are recognised:
+ *   · `sgs*` — the original cross-block extension convention.
+ *   · `fx*`  — the Spec 38 motion attributes (`fx`, `fxTrigger`, `fxStart`, …).
+ *
+ * The `fx` prefix was added 2026-07-29 with Spec 38 Wave A. Those names are
+ * FIXED by spec §11.3 and already seeded into `block_attributes` under the
+ * `fx:*` namespace (§6.2), so they could not simply be renamed to fit the
+ * `sgs*` convention without de-coupling the code from its own registry.
+ *
+ * This is not cosmetic. Without the `fx` alternative these attributes would
+ * never be mirrored onto the server, and any block previewing through
+ * `ServerSideRender` while carrying one would have its ENTIRE render request
+ * rejected by the core block-renderer route ("Invalid parameter(s):
+ * attributes") — a dead editor canvas on a frontend that works perfectly.
+ *
+ * `\b` anchors the match to an identifier start so a longer word merely
+ * ENDING in these letters is not mistaken for a definition.
+ */
+const ATTR_RE = /\b((?:sgs|fx)[A-Za-z0-9]*)\s*:\s*\{([^}]*)\}/g;
 const TYPE_RE = /\btype\s*:\s*["'](string|number|boolean|array|object)["']/;
 
 function collectAttributes() {

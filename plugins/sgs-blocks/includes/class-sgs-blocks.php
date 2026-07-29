@@ -44,6 +44,11 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-registry.php';
 		SGS_Motion_Registry::register();
 
+		// Tier G fx data-attribute injection for DYNAMIC blocks (Spec 38
+		// §11.2). Runs at render_block p10, before the registry's p99 sniff —
+		// that ordering is what lets a dynamic block's effect be detected.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-attributes.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

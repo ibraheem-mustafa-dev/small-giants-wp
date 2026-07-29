@@ -142,7 +142,17 @@ FX_EFFECTS: list[dict] = [
         # entrance" in its Conditions column), §9 row 3, §10 row 5.
         "effect": "split-reveal",
         "tier": "G",
-        "plugin_set": ["SplitText"],
+        # ScrollTrigger added 2026-07-29 during the Wave A build. The spec's §4.4
+        # budget table lists SplitText against "text reveals present" and does not
+        # spell out a second plugin, but the built effect reveals ON SCROLL (a
+        # `scrollTrigger` config), and §4.4 loads ScrollTrigger for "any
+        # scroll-driven G effect" — which this is. Corroborated by the row's own
+        # owns_scroll_transform=1, which asserts it owns transform/opacity across
+        # a SCROLL RANGE; that is only true with ScrollTrigger present.
+        # Declaring only SplitText would under-enqueue: the module imports
+        # ScrollTrigger regardless, so the browser would fetch it via the import
+        # map with no WP dependency declared and no modulepreload.
+        "plugin_set": ["SplitText", "ScrollTrigger"],
         "owns_scroll_transform": 1,
         "reduced_motion": "simplify",
         "editor_story": "toggle",

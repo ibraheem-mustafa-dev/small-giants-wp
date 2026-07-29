@@ -8,7 +8,7 @@
  * scripts/seed-motion-fx-registry.py. To change these values, edit FX_EFFECTS
  * in seed-motion-fx-registry.py, re-run it, then re-run this generator.
  *
- * Last generated: 2026-07-29T02:35:24.458931+00:00
+ * Last generated: 2026-07-29T02:54:39.550118+00:00
  * Effects: 11
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §4.4 + §6.1/§11.2.
@@ -78,7 +78,7 @@ function sgs_get_motion_fx_effects() {
 				'owns_scroll_transform' => true,
 			),
 			'split-reveal' => array(
-				'plugin_set'            => array( 'SplitText' ),
+				'plugin_set'            => array( 'SplitText', 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
 			),
 		);

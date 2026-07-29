@@ -1,0 +1,403 @@
+/**
+ * Tier G "Scroll & effects" extension — Spec 38 FR-38-4 / §7 / §11.2.
+ *
+ * Adds the fx attribute surface to sgs/* blocks and renders the one collapsed
+ * "Scroll & effects" ToolsPanel in the Styles tab. The attributes are emitted
+ * onto saved markup as `data-sgs-fx*`, which is what `SGS_Motion_Registry`
+ * sniffs at render time to decide whether a page needs any GSAP at all.
+ *
+ * WHY THE ATTRIBUTES ARE NAMED `fx*` AND NOT `sgsFx*`
+ * Spec 38 §11.3 fixes the block-attribute names as `fx`, `fxTrigger`,
+ * `fxStart`, … and §6.2 seeds those exact names into `block_attributes` under
+ * the `fx:*` pseudo-namespace. The DB rows already exist under these names, so
+ * renaming them here to fit the older `sgs*` convention would silently
+ * de-couple the code from its own registry. `generate-extension-attributes.js`
+ * was extended to recognise the `fx*` prefix instead — see the note there.
+ *
+ * ⚠ WHY THE SERVER MIRROR MATTERS (the failure this would otherwise cause):
+ * blocks that preview through `ServerSideRender` post their attributes to the
+ * core block-renderer REST route, which validates against the SERVER-registered
+ * schema with `additionalProperties => false`. An attribute registered only in
+ * JS makes that route reject the WHOLE request with "Invalid parameter(s):
+ * attributes" — the block's editor canvas dies while the frontend stays
+ * perfectly fine. `generate-extension-attributes.js` mirrors these onto the
+ * server at build time precisely to stop that.
+ *
+ * @package SGS\Blocks
+ */
+
+import { addFilter } from '@wordpress/hooks';
+import { createHigherOrderComponent } from '@wordpress/compose';
+import { InspectorControls } from '@wordpress/block-editor';
+import {
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem,
+	__experimentalUnitControl as UnitControl,
+	SelectControl,
+	RangeControl,
+	Notice,
+} from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import { isExtensionHidden } from './hide-extensions';
+
+/**
+ * Blocks that get the fx panel (Spec 38 §7).
+ *
+ * Deliberately a SHORT roster, not every sgs/* block: §2 places these effects
+ * at container/section and text-bearing levels, and Spec 35 Part A warns that
+ * a panel appearing where it cannot do anything useful is itself a defect
+ * (the "13 panels on a nav menu" failure). A block still opts out declaratively
+ * via `supports.sgs.hideExtensions: ["fx"]` like every other universal
+ * extension — no hardcoded per-block carve-outs in this file (R-31-1).
+ */
+const FX_BLOCKS = [
+	'sgs/container',
+	'sgs/heading',
+	'sgs/text',
+	'sgs/quote',
+	'sgs/hero',
+];
+
+/**
+ * The effect roster exposed in the editor.
+ *
+ * Wave A ships four. The `data-sgs-fx` grammar (§11.2) defines more (flip,
+ * draggable, draw, morph, motion-path, scramble, image-sequence) and the DB
+ * registry already carries all eleven, but an effect whose runtime module does
+ * not exist yet must NOT be offerable — a client could select it and get
+ * nothing, which reads as a broken product rather than an unshipped feature.
+ * Later waves add their entries here as their modules land.
+ */
+const FX_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Scroll reveal (scrubbed)', 'sgs-blocks' ), value: 'scrub' },
+	{ label: __( 'Pin section & scrub', 'sgs-blocks' ), value: 'pin-scrub' },
+	{
+		label: __( 'Horizontal scroll section', 'sgs-blocks' ),
+		value: 'horizontal-panel',
+	},
+	{ label: __( 'Text reveal (split)', 'sgs-blocks' ), value: 'split-reveal' },
+];
+
+/**
+ * Effects that own an element's transform/opacity across a scroll range.
+ *
+ * Mirrors `fx_effects.owns_scroll_transform` in the DB (§6.1) and drives the
+ * §4.3 editor-side Notice. The authoritative copy is the DB, projected into
+ * PHP by the generator; this list exists only so the EDITOR can explain the
+ * exclusion without a REST round-trip. The render layer never trusts it — it
+ * reads the generated PHP map. If the two disagree the render layer wins, and
+ * the disagreement is a bug to fix at the DB, never here.
+ */
+const SCROLL_OWNING_FX = [ 'scrub', 'pin-scrub', 'horizontal-panel', 'split-reveal' ];
+
+/**
+ * Which blocks the fx extension applies to at all.
+ *
+ * @param {string} name Block name.
+ * @return {boolean} True when the block should carry fx attributes.
+ */
+function shouldHaveFx( name ) {
+	return FX_BLOCKS.includes( name );
+}
+
+/**
+ * Register the fx attributes on qualifying blocks.
+ *
+ * @param {Object} settings Block settings.
+ * @param {string} name     Block name.
+ * @return {Object} Settings, with fx attributes added.
+ */
+function addFxAttributes( settings, name ) {
+	if ( ! shouldHaveFx( name ) ) {
+		return settings;
+	}
+
+	// Declarative per-block opt-out, checked against the settings object
+	// because the block is not registered yet at this filter — mirrors
+	// animation.js and hover-effects.js.
+	if ( isExtensionHidden( settings, 'fx' ) ) {
+		return settings;
+	}
+
+	return {
+		...settings,
+		attributes: {
+			...settings.attributes,
+			fx: { type: 'string', default: '' },
+			fxTrigger: { type: 'string', default: '' },
+			fxStart: { type: 'string', default: '' },
+			fxEnd: { type: 'string', default: '' },
+			fxScrub: { type: 'number', default: 1 },
+			fxStagger: { type: 'number', default: 0 },
+			fxDuration: { type: 'number', default: 0 },
+			fxEase: { type: 'string', default: '' },
+			fxSplit: { type: 'string', default: '' },
+			fxMask: { type: 'string', default: '' },
+		},
+	};
+}
+
+addFilter( 'blocks.registerBlockType', 'sgs/fx-attributes', addFxAttributes );
+
+/**
+ * Emit the fx attributes as `data-sgs-fx*` on STATIC blocks' saved markup.
+ *
+ * Dynamic blocks bypass this entirely (their save returns null) and are handled
+ * server-side by `includes/fx-attributes.php`. Both paths must exist — this is
+ * the same two-path shape the animation extension has, and missing either one
+ * produces an effect that works on some blocks and silently not on others.
+ *
+ * @param {Object} props      Save-element props.
+ * @param {Object} blockType  Block type.
+ * @param {Object} attributes Block attributes.
+ * @return {Object} Props, with data attributes added when an effect is set.
+ */
+function addFxSaveProps( props, blockType, attributes ) {
+	if ( ! shouldHaveFx( blockType.name ) ) {
+		return props;
+	}
+	if ( ! attributes.fx ) {
+		return props;
+	}
+
+	const data = { 'data-sgs-fx': attributes.fx };
+
+	// Only emit params the client actually set. Emitting empty attributes
+	// would make the markup noisier and, worse, would let an empty string
+	// override the effect module's own considered default.
+	const optional = {
+		'data-sgs-fx-trigger': attributes.fxTrigger,
+		'data-sgs-fx-start': attributes.fxStart,
+		'data-sgs-fx-end': attributes.fxEnd,
+		'data-sgs-fx-ease': attributes.fxEase,
+		'data-sgs-fx-split': attributes.fxSplit,
+		'data-sgs-fx-mask': attributes.fxMask,
+	};
+	Object.entries( optional ).forEach( ( [ key, value ] ) => {
+		if ( value ) {
+			data[ key ] = value;
+		}
+	} );
+
+	const numeric = {
+		'data-sgs-fx-scrub': attributes.fxScrub,
+		'data-sgs-fx-stagger': attributes.fxStagger,
+		'data-sgs-fx-duration': attributes.fxDuration,
+	};
+	Object.entries( numeric ).forEach( ( [ key, value ] ) => {
+		if ( 'number' === typeof value && value > 0 ) {
+			data[ key ] = String( value );
+		}
+	} );
+
+	return { ...props, ...data };
+}
+
+addFilter(
+	'blocks.getSaveContent.extraProps',
+	'sgs/fx-save-props',
+	addFxSaveProps
+);
+
+/**
+ * The "Scroll & effects" inspector panel (Spec 38 §7).
+ */
+const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
+	return ( props ) => {
+		const { name, attributes, setAttributes, isSelected } = props;
+
+		if ( ! shouldHaveFx( name ) || isExtensionHidden( name, 'fx' ) ) {
+			return <BlockEdit { ...props } />;
+		}
+		if ( ! isSelected ) {
+			return <BlockEdit { ...props } />;
+		}
+
+		const { fx } = attributes;
+		const isSplit = 'split-reveal' === fx;
+		const ownsScroll = SCROLL_OWNING_FX.includes( fx );
+
+		const resetAll = () =>
+			setAttributes( {
+				fx: '',
+				fxTrigger: '',
+				fxStart: '',
+				fxEnd: '',
+				fxScrub: 1,
+				fxStagger: 0,
+				fxDuration: 0,
+				fxEase: '',
+				fxSplit: '',
+				fxMask: '',
+			} );
+
+		return (
+			<>
+				<BlockEdit { ...props } />
+				<InspectorControls group="styles">
+					<ToolsPanel
+						label={ __( 'Scroll & effects', 'sgs-blocks' ) }
+						resetAll={ resetAll }
+					>
+						<ToolsPanelItem
+							hasValue={ () => !! fx }
+							label={ __( 'Effect', 'sgs-blocks' ) }
+							onDeselect={ () => setAttributes( { fx: '' } ) }
+							isShownByDefault
+						>
+							<SelectControl
+								__nextHasNoMarginBottom
+								label={ __( 'Effect', 'sgs-blocks' ) }
+								value={ fx }
+								options={ FX_OPTIONS }
+								onChange={ ( value ) =>
+									setAttributes( { fx: value } )
+								}
+								help={ __(
+									'Scroll effects preview on the live site, not in the editor.',
+									'sgs-blocks'
+								) }
+							/>
+						</ToolsPanelItem>
+
+						{ ownsScroll && (
+							<ToolsPanelItem
+								hasValue={ () => false }
+								label={ __( 'Entrance animation', 'sgs-blocks' ) }
+								isShownByDefault
+							>
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'A scroll effect controls this block’s motion — entrance animation is off.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							</ToolsPanelItem>
+						) }
+
+						{ !! fx && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxStart }
+								label={ __( 'Start position', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxStart: '' } )
+								}
+							>
+								<UnitControl
+									__next40pxDefaultSize
+									label={ __( 'Start position', 'sgs-blocks' ) }
+									value={ attributes.fxStart }
+									onChange={ ( value ) =>
+										setAttributes( { fxStart: value } )
+									}
+									help={ __(
+										'Where the effect begins, e.g. “top 85%”.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ !! fx && (
+							<ToolsPanelItem
+								hasValue={ () => 1 !== attributes.fxScrub }
+								label={ __( 'Scrub smoothing', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxScrub: 1 } )
+								}
+							>
+								<RangeControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									label={ __( 'Scrub smoothing', 'sgs-blocks' ) }
+									value={ attributes.fxScrub }
+									onChange={ ( value ) =>
+										setAttributes( { fxScrub: value } )
+									}
+									min={ 0 }
+									max={ 3 }
+									step={ 0.1 }
+									help={ __(
+										'Seconds the animation takes to catch up with the scrollbar.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ isSplit && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxSplit }
+								label={ __( 'Split by', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxSplit: '', fxMask: '' } )
+								}
+								isShownByDefault
+							>
+								<SelectControl
+									__nextHasNoMarginBottom
+									label={ __( 'Split by', 'sgs-blocks' ) }
+									value={ attributes.fxSplit }
+									options={ [
+										{
+											label: __( 'Words', 'sgs-blocks' ),
+											value: 'words',
+										},
+										{
+											label: __( 'Characters', 'sgs-blocks' ),
+											value: 'chars',
+										},
+										{
+											label: __( 'Lines', 'sgs-blocks' ),
+											value: 'lines',
+										},
+									] }
+									onChange={ ( value ) =>
+										// Masking is only meaningful on the
+										// granularity being split — SplitText
+										// silently no-ops otherwise — so the
+										// mask value tracks the split value
+										// rather than being independently
+										// settable into a contradiction.
+										setAttributes( {
+											fxSplit: value,
+											fxMask: attributes.fxMask
+												? value
+												: '',
+										} )
+									}
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ isSplit && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxStagger }
+								label={ __( 'Stagger', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxStagger: 0 } )
+								}
+							>
+								<RangeControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									label={ __( 'Stagger (seconds)', 'sgs-blocks' ) }
+									value={ attributes.fxStagger }
+									onChange={ ( value ) =>
+										setAttributes( { fxStagger: value } )
+									}
+									min={ 0 }
+									max={ 0.3 }
+									step={ 0.01 }
+								/>
+							</ToolsPanelItem>
+						) }
+					</ToolsPanel>
+				</InspectorControls>
+			</>
+		);
+	};
+}, 'withFxControls' );
+
+addFilter( 'editor.BlockEdit', 'sgs/fx-controls', withFxControls );

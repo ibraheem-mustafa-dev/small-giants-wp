@@ -19,3 +19,4 @@ import './custom-css';
 import './block-defaults';
 import './parallax';
 import './image-controls';
+import './fx';

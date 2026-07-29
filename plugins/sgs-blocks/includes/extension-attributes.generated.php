@@ -8,6 +8,16 @@
  */
 
 return array(
+	'fx' => array( 'type' => 'string' ),
+	'fxDuration' => array( 'type' => 'number' ),
+	'fxEase' => array( 'type' => 'string' ),
+	'fxEnd' => array( 'type' => 'string' ),
+	'fxMask' => array( 'type' => 'string' ),
+	'fxScrub' => array( 'type' => 'number' ),
+	'fxSplit' => array( 'type' => 'string' ),
+	'fxStagger' => array( 'type' => 'number' ),
+	'fxStart' => array( 'type' => 'string' ),
+	'fxTrigger' => array( 'type' => 'string' ),
 	'sgsAnimation' => array( 'type' => 'string' ),
 	'sgsAnimationDelay' => array( 'type' => 'string' ),
 	'sgsAnimationDuration' => array( 'type' => 'string' ),

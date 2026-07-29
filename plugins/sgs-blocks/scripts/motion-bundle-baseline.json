@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "Spec 38 (Motion System) FR-38-24 bundle-size budget baseline.",
+    "These are MEASURED (gzip, bytes) build actuals recorded via --update-baseline \u2014 NOT the Spec 38 section 4.4 table (which is an ESTIMATE, see script docstring).",
+    "Last updated: 2026-07-29."
+  ],
+  "recorded_date": "2026-07-29",
+  "unit": "gzip-bytes",
+  "modules": {
+    "shared/effects/gsap/fx-horizontal-panel.js": 583,
+    "shared/effects/gsap/fx-pin-scrub.js": 682,
+    "shared/effects/gsap/fx-scrub.js": 481,
+    "shared/effects/gsap/fx-split-reveal.js": 616,
+    "shared/effects/gsap/provider.js": 494,
+    "vendor-modules/gsap-core.js": 27017,
+    "vendor-modules/gsap-scrolltrigger.js": 17420,
+    "vendor-modules/gsap-splittext.js": 3271
+  }
+}

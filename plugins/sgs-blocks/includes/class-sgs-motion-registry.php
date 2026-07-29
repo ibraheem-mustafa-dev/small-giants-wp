@@ -73,6 +73,31 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/gsap/fx-scrub.js',
 			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
 		),
+		'@sgs/fx-pin-scrub'       => array(
+			'path' => 'build/shared/effects/gsap/fx-pin-scrub.js',
+			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
+		),
+		'@sgs/fx-horizontal-panel' => array(
+			'path' => 'build/shared/effects/gsap/fx-horizontal-panel.js',
+			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
+		),
+
+		/*
+		 * split-reveal depends on BOTH plugins: SplitText does the DOM split,
+		 * ScrollTrigger drives the reveal on scroll. Declaring only SplitText
+		 * would still "work" (the import map resolves the bare specifier
+		 * either way) but WP would emit no dependency and no modulepreload for
+		 * ScrollTrigger — a slower, undeclared fetch. The DB row was corrected
+		 * to match on 2026-07-29; the two must stay in step.
+		 */
+		'@sgs/fx-split-reveal'    => array(
+			'path' => 'build/shared/effects/gsap/fx-split-reveal.js',
+			'deps' => array(
+				'@sgs/motion-provider',
+				'@sgs/gsap-splittext',
+				'@sgs/gsap-scrolltrigger',
+			),
+		),
 	);
 
 	/**

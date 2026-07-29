@@ -117,13 +117,23 @@ if ( moduleConfig ) {
 				'gsap',
 				'provider.js'
 			),
-			'shared/effects/gsap/fx-scrub': path.resolve(
-				process.cwd(),
-				'src',
-				'shared',
-				'effects',
-				'gsap',
-				'fx-scrub.js'
+			...Object.fromEntries(
+				[
+					'fx-scrub',
+					'fx-pin-scrub',
+					'fx-horizontal-panel',
+					'fx-split-reveal',
+				].map( ( name ) => [
+					`shared/effects/gsap/${ name }`,
+					path.resolve(
+						process.cwd(),
+						'src',
+						'shared',
+						'effects',
+						'gsap',
+						`${ name }.js`
+					),
+				] )
 			),
 		};
 
