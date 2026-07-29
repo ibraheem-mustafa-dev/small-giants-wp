@@ -37,7 +37,6 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -90,8 +89,20 @@ def main() -> int:
         )
         return 1
 
-    generated_at = datetime.now(timezone.utc).isoformat()
-
+    # NO TIMESTAMP IN THE OUTPUT — deliberate, and load-bearing.
+    #
+    # This generator runs on every build. A "Last generated:" header would
+    # rewrite the file each time, leaving it near-permanently dirty in git while
+    # its actual PHP was unchanged. That matters because build-deploy.py gates
+    # on dirty DEPLOYED files: a file that is always dirty makes --allow-dirty
+    # reflexive, and a reflexive override is how that gate died before (D336 —
+    # two client sites down ~2.5h with all three safety mechanisms inert).
+    #
+    # The alternative was adding this file to build-deploy's
+    # DEPLOY_SKIP_BASENAMES, as lucide-icons.php had to be. That is strictly
+    # worse: it would also hide a REAL change to the effect map from the gate.
+    # Deterministic output keeps the file's dirtiness meaningful — if it differs
+    # from HEAD, the DATA genuinely changed and someone should look.
     lines = [
         "<?php",
         "/**",
@@ -103,7 +114,6 @@ def main() -> int:
         " * scripts/seed-motion-fx-registry.py. To change these values, edit FX_EFFECTS",
         " * in seed-motion-fx-registry.py, re-run it, then re-run this generator.",
         " *",
-        f" * Last generated: {generated_at}",
         f" * Effects: {len(rows)}",
         " *",
         " * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §4.4 + §6.1/§11.2.",
