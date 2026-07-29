@@ -110,7 +110,13 @@ export function initHorizontalPanel( el ) {
 					// Same chrome-clearing rule as fx-pin-scrub: this effect
 					// pins too, so it had the identical (currently unobservable,
 					// because the effect is inert) occlusion defect.
-					start: resolveStart( el, 'top top' ),
+					// FUNCTION-based, not a resolved string — load-bearing. ScrollTrigger
+					// re-evaluates a function `start` on every refresh, so the
+					// offset picks up the header's MEASURED height once
+					// header-behaviours/view.js publishes it. Resolving it eagerly
+					// captured the pre-JS fallback (80px) instead of the real 93px
+					// and left 13px of the section still behind the header.
+					start: () => resolveStart( el, 'top top' ),
 					// Pin length tracks the travel distance by default so
 					// scroll speed feels consistent regardless of panel
 					// count; a client-set `data-sgs-fx-end` overrides it for

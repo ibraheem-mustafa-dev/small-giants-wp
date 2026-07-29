@@ -123,7 +123,13 @@ export function initPinScrub( el ) {
 				// provider.js. Pinning at a bare 'top top' parks the section
 				// under the site header, hiding its top for the whole pin.
 				// An author-set data-sgs-fx-start still wins untouched.
-				start: resolveStart( el, 'top top' ),
+				// FUNCTION-based, not a resolved string — load-bearing. ScrollTrigger
+				// re-evaluates a function `start` on every refresh, so the
+				// offset picks up the header's MEASURED height once
+				// header-behaviours/view.js publishes it. Resolving it eagerly
+				// captured the pre-JS fallback (80px) instead of the real 93px
+				// and left 13px of the section still behind the header.
+				start: () => resolveStart( el, 'top top' ),
 				// Pin length: how many viewport-heights the section holds
 				// still while its children's timeline plays out.
 				end: stringParam( el, 'end', '+=100%' ),
