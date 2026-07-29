@@ -14,10 +14,11 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-29).** The doc system is finished and now mechanically enforced — see
-the sweep record at the bottom. Three build fronts are live: **Spec 38 motion (signed off, Wave A
-next)**, **B3 header/footer presets (awaiting your three §7 answers)**, and **Spec 36 nav Task 5,
-which you REJECTED**.
+**Where things stand (2026-07-29).** The doc system is finished and mechanically enforced — see the
+sweep record at the bottom. Two build fronts are live: **Spec 38 motion (signed off, Wave A next)**
+and the **MERGED Spec 36+37 nav/header/footer track**, whose architecture gate (drawer→CPT,
+clone-first POC, controllability contract) is written and **awaits your sign-off**. B3's standalone
+plan is subsumed into that gate; the drawer clones you rejected get NO rework until the gate lands.
 
 **On the drawers, plainly:** the checks all passed and the clones still look nothing like the real
 sites, because the checks measured whether the menu WORKS (keyboard, screen-reader, motion, no-JS),
@@ -51,6 +52,15 @@ Q3 = retire `centred/minimal/full` starters, keep scratch + 3 search) · DP7 har
 any re-present. **3 open questions in gate §3 (admin naming · site-wide vs per-header drawer ·
 first-clone site). Next session: sign-off → /strategic-plan for the merged track.**
 B3's old standalone plan (`2026-07-28-B3-…`) is subsumed — its §7 answers are recorded in the gate §0.
+
+**Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) burger-opens-nothing notice +
+one-click fix LIVE on the canary (`6ddb9f48`, negative-controlled) · **FR-37-42** visual
+column-shape picker APPROVED not built (`7ff5a184` — needs `1fr auto 1fr`; prerequisite for
+faithful header clones) · measured reference teardowns 9/12
+(`~/.claude/pipeline-state/sgs-discover/20260728-112649-7bc4a8/FINDINGS.md`; Away/ButcherBox/
+rabbit.tech owed; Lama Lama sticky by Bean's eye — probe-unmeasured ≠ non-sticky) · **the merged
+track's SCOPE SOURCE: `reports/2026-07-28-spec36-37-remaining-work-inventory.md`** (both specs'
+remaining work verified against their own status lines) · floating UI STAYS in the Customiser.
 
 Header residue unchanged: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
 `P-HEADER-SIMPLICITY-FINDINGS` OPEN (findings 2 + 3).
@@ -248,82 +258,62 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
-## NEXT SESSION — orchestration plan
+## NEXT SESSION — orchestration plan (the MERGED 36+37 track; Bean-directed, locked 2026-07-29)
 
-**Where we are, plainly.** The doc system is finished and enforced: one spec roster, no registry, no
-code-mirrors, a normalised parking register, and a hook that mechanically fails a handoff if any of
-it drifts. **No doc work is outstanding.** The next session goes back to building, and there are
-three fronts, ALL of which are waiting on *you*, not on more engineering:
+**Where we are, plainly.** Doc work is done and enforced. The next session is the **merge of
+implementation**: one track for nav + header + footer + drawer, built in continuity so every piece
+matches its counterparts. Everything it needs is written: the architecture gate (the decisions),
+the remaining-work inventory (the scope), and the teardown findings (the design ground truth).
+**Nothing is built on the drawer block path until the gate is signed (D411).**
 
-1. **Spec 38 motion system** — authored, `status: draft`. Every wave is gated on your sign-off.
-2. **B3 header/footer preset library** — design-gated, nothing built. Three open questions in its §7.
-3. **Spec 36 nav Task 5** — all measurement PASSES (21/21 cells). Only **your eye** (R-31-13) is
-   outstanding; the pairs are rendered and waiting at
-   `reports/visual-diff/drawer-variants-2026-07-29/`.
+### Task 1 — Sign off the architecture gate, then /strategic-plan the merged track
 
-The honest read: engineering is ahead of decision-making. The highest-value next session is you
-looking at three things, not an agent writing more code.
+**What:** Bean answers the 3 open questions in
+`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md` §3 (admin naming ·
+site-wide vs per-header drawer · first-clone site) and signs the gate. Then run `/strategic-plan`
+for the merged track. **Time:** ~15 min decisions; ~40 min plan.
+**Orchestration:** inline (Opus) — this is decision + planning, not delegable.
+**Scope inputs the planner MUST read (all verified this week, do not re-derive):**
+`reports/2026-07-28-spec36-37-remaining-work-inventory.md` (every remaining FR in both specs, with
+blockers — the 5-wave shape: fixtures → capabilities → polish → clone-proof gate → Part 2) ·
+the gate §0–§2 (Bean's locked decisions) · the teardown FINDINGS.md (design ground truth) ·
+D411 + D412. **Known dependency:** FR-37-14/36-24 wait on Spec 35's `resolveTier()` cascade.
+**Capability prerequisites for faithful clones, already approved:** FR-37-42 shape picker
+(`1fr auto 1fr` incl.) · the 2 open drawer defects (`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`,
+`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`) · 3 unmeasured references owed a teardown
+(Away, ButcherBox, rabbit.tech).
+**Depends on:** Bean. **Parallel with:** Task 2. **QC gate after:** the plan's own Hidden-Decisions
+peer review.
+**Acceptance:** gate `status` flips to signed; a strategic plan exists whose waves cover the
+inventory's items or map each deferral to a named stage (STOP-29 — never "out of scope").
 
-### Task 1 — REWORK the 7 drawer POC fixtures (Bean REJECTED them; do not re-present as-is)
-
-**What:** fix the four defects in `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES` — exact-clone content
-(link count + labels verified against `reports/2026-07-28-drawer-code-extraction/*.json`), per-variant
-alignment (`centred-statement` must actually centre, arrows attached to labels), an openness
-assertion in the screenshot capture, and real menu-open references for `two-column-editorial`,
-`solid-brand-light` and `buck.co`. **Why:** the gate was rejected on sight; measurement said PASS
-while the clone was nowhere near. **Time:** ~2h.
-**Orchestration:** delegated, model via `/delegate`, single agent, brief = the parking entry verbatim.
-**Context the subagent will not have:** the §6 POC rule means EXACT content including labels — a
-generic menu is a fail; and the capture harness must refuse to save a closed-panel shot (same
-vacuous-capture class the axe harness fixed).
-**Depends on:** none. **Parallel with:** Tasks 2, 3. **QC gate after:** `/visual-qa`.
-**Acceptance:** per variant, link count + labels match the extraction JSON exactly, alignment matches
-the reference, and a menu-OPEN reference exists for all 7. Then — and only then — back to Bean.
-
-### Task 2 — Run motion Wave A (Spec 38 sign-off DONE 2026-07-29, Track 3)
+### Task 2 — Run motion Wave A (Spec 38, signed off — independent of the merge)
 
 **What:** run `plans/2026-07-29-motion-wave-A-session-prompt.md` verbatim (plan mode);
 orchestration = the prompt's own Phase-0 tier table. **Time:** ~45 min. **Depends on:** nothing.
-**Parallel with:** Tasks 1, 3. **QC gate after:** `/qc-inline`. **Acceptance:** Wave A's FRs
-shipped *and* live-verified — not merely built (STOP-29: full spec scope for the surface).
-
-### Task 3 — B3 preset library: answer §7, then author the patterns
-
-**What:** answer the three sign-off questions in
-`plans/2026-07-28-B3-header-footer-style-preset-library-design-gate.md` §7, then author 8 header +
-8 footer patterns. **Why:** the picker mechanism already exists; what is missing is VARIETY (all 7
-current starters paint `surface` behind `primary`, so they look alike on any one site).
-**Time:** 15 min to decide; ~90 min to author.
-**Orchestration:** decisions inline. Authoring → delegated, `/delegate` for model, dispatch pattern
-**parallel** (header roster ∥ footer roster) via `/dispatching-parallel-agents`.
-**Context the subagents will not have:** this is an AUTHORING job, not a mechanism job — **no new
-block, attribute, admin UI or React component**. Patterns go through the already-live native picker.
-**Depends on:** your §7 answers. **Parallel with:** Tasks 1, 2. **QC gate after:** `/qc` multi-rater
-(it touches shared theme patterns).
-**Acceptance:** 16 patterns render distinctly on one site without editing tokens, and
-`check-no-core-blocks.py` passes.
+**Parallel with:** Task 1. **QC gate after:** `/qc-inline`. **Acceptance:** Wave A's FRs shipped
+*and* live-verified — not merely built (STOP-29: full spec scope for the surface).
 
 ### Dependency graph
 
 ```
-Task 1 (inline) ∥ Task 2 Wave A (per its prompt) ∥ Task 3 (§7 answers → 2 parallel agents)
-   ↓ per-task QC gates (Task 2 /qc-inline · Task 3 /qc multi-rater)
-Commit + push (Gate 2)
+Task 1 (Bean signs gate → /strategic-plan, inline) ∥ Task 2 Wave A (per its prompt)
+   ↓ Hidden-Decisions review (Task 1) · /qc-inline (Task 2)
+Commit + push (Gate 2) → merged-track execution sessions follow the new plan
 ```
 
 ### Tooling for the next session (WordPress project — Gate 5)
 
-**Skills:** `/brainstorming` + `/strategic-plan` before any build · `/research` (auto-tiers) ·
-`/gap-analysis` to grade the B3 patterns · `/sgs-wp-engine` (the framework skill) ·
-`/wp-block-development` for core-WP block-API questions · `/delegate` to pick every model ·
-`/qc` + `/qc-inline` per the per-task gates · `/visual-qa` + `/a11y-audit` for the drawer rework
-and the presets.
-**MCP / tools:** Playwright MCP (live DOM + computed style on the canary — the only way to close the
-drawer rework) · `/sgs-db` and `/wp-blocks` for block ground truth, never a prose count ·
-Chrome DevTools MCP if Wave A needs motion tracing.
-**Agents:** `wp-sgs-developer` (Wave A + B3 authoring + drawer rework) · `design-reviewer` (do the 16
-presets actually look different; does the drawer match its reference) · `code-reviewer` before any
-shared-theme or motion commit.
+**Skills:** `/strategic-plan` (Task 1's deliverable) + `/brainstorming` for any open design point ·
+`/research` (auto-tiers) · `/sgs-wp-engine` (the framework skill) · `/wp-block-development` for
+core-WP block-API questions · `/delegate` to pick every model · `/qc` + `/qc-inline` per the
+per-task gates · `/gap-analysis` to grade the strategic plan before Bean reads it.
+**MCP / tools:** Playwright MCP (live DOM + computed style on the canary) · `/sgs-db` and
+`/wp-blocks` for block ground truth, never a prose count · Chrome DevTools MCP if Wave A needs
+motion tracing.
+**Agents:** `wp-sgs-developer` (Wave A execution) · `design-reviewer` (only once the merged plan's
+clone work starts — no drawer/preset build happens before the gate is signed) · `code-reviewer`
+before any shared-theme or motion commit.
 
 ### Methodology guardrails (do not skip)
 

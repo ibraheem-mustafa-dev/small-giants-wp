@@ -40,6 +40,54 @@ D-numbers not present in a range below (or below D117) were archived — search 
 | D393–D405 | Pattern templateLock bug, responsive-logo fatal, Spec 35 drawer variants + injection-class audit |
 | D406–D409 | Spec 38 motion system: two-tier V/G doctrine, ScrollSmoother×sticky, Vivus retirement, Tier-G conditional loading |
 | D410 | Doc-hygiene enforcement made mechanical (`handoff-preflight.py`) + the two docscore blind spots it exposed |
+| D411 | Task 5 drawer clones REJECTED on Bean's eye; green measurement ≠ fidelity; block-vs-CPT design gate is the next front |
+| D412 | Header track same day: FR-36-9a(2) burger-opens-nothing notice shipped; FR-37-42 approved; B3 reshaped into measured reference teardowns |
+
+## D412 [ROUTINE] — Header track: drawer notice shipped, FR-37-42 approved, B3 grounded in reference teardowns, floating UI stays in the Customiser (2026-07-28)
+
+Commits `6ddb9f48` + `7ff5a184` + `87c6aeea`; session narrative
+`memory/session-2026-07-28-spec37-drawer-notice-b3-teardowns.md`. **(1) FR-36-9a(2) BUILT +
+LIVE-VERIFIED** — `sgs/nav-menu` warns when no `sgs/nav-drawer` matches its EFFECTIVE `drawerRef`
+(both sides fall back to `sgs-nav-drawer`, so blank-vs-default is a MATCH) and one-click-fixes both
+cases: no-drawer → insert one as a ROOT SIBLING seeded with the same menu; dangling ref → re-point.
+Closes the only hard FAIL in the FR-37-26 simplicity test on the raw-insert path (a drawer cannot be
+seeded from the container's `templateLock:'all'` TEMPLATE, D393 — a notice on the nav block is the
+only mechanism that reaches it). Negative controls run: starter-with-drawer silent; nav-menu inside
+a drawer suppressed. Specs 36+37 same-commit per §1.2; the FAIL verdict deliberately STANDS
+(blind-tester arm authoritative). **(2) FR-37-42 approved (Bean)** — §3.3's ratio rejection bound the
+hand-typed STRING, not the capability; a visual column-shape picker (WP-core-Columns-style diagrams)
+writing the EXISTING `gridTemplateColumns` is approved; evidence = measured asymmetric grids
+(Gymshark `630/83/630`, ColourPop `580/264/580`, CB footer `340/680/340`) and the required
+`1fr auto 1fr` true-centred-logo shape neither flex nor a count can express. Lesson captured
+(blub 411, `an-unreachable-capability-is-a-control-surface-problem`). **(3) B3 reshaped by Bean:
+no invented roster — measured reference teardowns instead** (probe twice-corrected: cookie-overlay
+junk filter; scroll-verification negative control; 9/12 sites measured, artefacts at
+`~/.claude/pipeline-state/sgs-discover/20260728-112649-7bc4a8/`). Bean corrected the "sticky is
+rare" claim by eye: Lama Lama IS sticky; the probe's unmeasured ≠ non-sticky. Evolved same-day into
+the merged gate's clone-first POC (D411 aftermath). **(4) Floating UI STAYS in the Customiser**
+(Bean weighed moving it into the header builder; live-preview-while-editing won). **(5)**
+Remaining-work inventory for both specs written against their own status lines:
+`reports/2026-07-28-spec36-37-remaining-work-inventory.md` — the scope source for the merged-track
+strategic plan.
+
+## D411 [INCIDENT] — Task 5 REJECTED on Bean's eye; the measurement was green because it measured the wrong things; next front is a block-vs-CPT design gate (2026-07-29)
+
+**The verdict.** Bean reviewed the drawer variant pairs and rejected them outright: *"the difference between our version and theirs is night and day"*, *"all of these clone attempts need huge fixes to reach completion now"*. R-31-13 holds — the eye is co-authoritative and it said no, overriding a 21/21 measurement pass. Do NOT re-present these for review; every variant needs real work first.
+
+**The process failure, which is the load-bearing part.** The exit-gate report claimed **21/21 sweep cells PASS** and the LEDGER repeated it. Those cells measured axe / geometry / focus / reduced-motion / JS-off — **none of which measures whether a clone looks like its reference** — and the result was presented in a way that read as fidelity. Three specific holes:
+1. **The reference captures were never asserted OPEN.** `shoot-drawer-pairs.mjs` clicked a trigger and screenshotted. So `two-column-editorial`'s "reference" is the studionamma homepage with the menu shut, and `solid-brand-light` had no reference at all — "6/7 captured" was false. **This is the identical vacuous-check class as the axe openness guard fixed EARLIER THE SAME SESSION**, repeated on the reference side within hours. Fixing an instance of a failure class does not immunise the next instance; the class has to be applied everywhere the pattern appears.
+2. **The contrast check only walked `.sgs-nav-menu__link-text`.** It reported a healthy 13.14:1 for `centred-statement` while that same drawer rendered text at **1:1**.
+3. **Content fidelity was asserted, never measured** — verified as "the strings I planned are in the DOM", never as "this resembles the reference".
+
+**Two root causes proven live (both now parked, neither fixed):**
+- **`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`** — `sgs-icon-list__text` computes `rgb(58,46,38)` on a drawer background of `rgb(58,46,38)`. Contrast **1:1**, invisible. A re-sweep of every text element in all 7 drawers found **6 elements in exactly the 2 variants using the dark `footer-bg`**; the other five are clean. This is what Bean saw as "arrows floating detached with no labels" — the labels are present and laid out, just unpainted.
+- **`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`** — the drawer emits **no align class at all** (`drawerAlignAttrPresent: false` live). `drawerAlign` centres the drawer's direct children as BOXES; the nav-menu then stretches to the full 1376px with `text-align:start`, so links stay at x=32 while narrower secondary blocks do centre. Hence `centred-statement` reading half-centred.
+
+**A wrong diagnosis corrected before it drove rework.** The first rejection record claimed `centred-statement` "renders 3 menu items where the extraction recorded 7". False: the 7-item site is studionamma (`two-column-editorial`); `centred-statement` clones fantasy.co, which genuinely has 3 primary links (`labels-fantasy.json` `counts.primary = 3`, matching the independent code-extraction count). Acting on it would have added four items that should not exist. **A rejection record is a hypothesis too — fact-check it before it becomes the rework brief.**
+
+**Also corrected: the F1 "reading order" finding was over-claimed.** The report recommended changing `listColumns` from `grid-auto-flow:row` because column-wise reading interleaves the menu. Bean's counter stands: with a row-wise grid, reading ACROSS rows already gives the correct order, and authoring the menu as rows of 2 yields a correct pattern either way. The claim assumed a column-reading model without a verified reference to check against — and the reference capture for that very variant had failed. Downgraded from "recommended to change" to **open, undecided, blocked on a real open-menu capture**.
+
+**Bean's direction for the next session (both his words, 2026-07-29):** (a) *"everything we code into these nav-drawers has to be made into a controllable element/attribute that can be set up by clients in the future"*; (b) *"might also make sense to scrap the block set up and go with a CPT, imo it's worth considering rn"*. **Bean is doing the CPT design in a separate session.** Precedent supporting it already exists in this codebase: header and footer are CPTs, mega PANELS are already posts referenced from menu items, and `drawerRef` is already a reference field pointing at a DOM id. Honest counterweight recorded: a CPT changes where a drawer LIVES, not how faithfully it PAINTS — the styling/imagery/motion gap Bean described is block-rendering-and-controls work either way. **No further rework on the block path until that gate lands** (rebuilding fixtures is wasted if the container changes).
 
 ## D410 [INCIDENT] — doc-hygiene rules become MECHANICAL: handoff-preflight.py replaces five prose gates that were enforced nowhere (2026-07-29)
 

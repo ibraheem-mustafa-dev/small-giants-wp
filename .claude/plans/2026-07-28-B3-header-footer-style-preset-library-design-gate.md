@@ -2,7 +2,12 @@
 doc_type: design-gate
 topic: B3 — header/footer style-preset library
 date: 2026-07-28
-status: AWAITING BEAN SIGN-OFF — nothing built
+status: SUPERSEDED 2026-07-29 by plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md
+  — its §0 records Bean's final answers (7 cloned pairs + Utility/Overlay/Directory invented fills,
+  Warm cut; retire centred/minimal/full starters, keep scratch + 3 search; clone-first POC =
+  studionamma 100% first). The research (§2), teardown findings and binding rules (§4) remain valid
+  inputs; the ROSTER and sequencing in §3/§6/§7 are dead — do not build from them. Archive to
+  plans/archive/ when the merged-track strategic plan lands.
 governs: amends Spec 37 FR-37-8 (starter library) + FR-37-28 (presets are permitted); no Spec 36 change
 decisions_taken: Bean, 2026-07-28 — (1) a preset changes EVERYTHING, "exactly what a pattern
   selector would give them"; (2) 8+ presets, a fuller library; (3) header AND footer, but each with

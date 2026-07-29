@@ -350,6 +350,38 @@ points here. Neither ever silently drops a STOP.
   text contrast, or read an unsettled transition value; Grep can render `/*` as `\*`.
   Verify the probe before the conclusion. (`~/.claude/rules/measurement-vs-eye.md`.)
 
+- **STOP-FIXING-ONE-INSTANCE-OF-A-FAILURE-CLASS-DOES-NOT-IMMUNISE-THE-NEXT** — NEW 2026-07-29
+  (D411). The axe openness guard was built, negative-controlled and written up as a STOP entry —
+  and then, **within the same session**, the reference-screenshot capture shipped with the
+  IDENTICAL flaw: it clicked a trigger and photographed, never asserting a panel had opened. Result:
+  a closed homepage recorded as a "captured reference", and a "6/7 captured" tally that was false.
+  When you fix a vacuous-check, immediately grep the session's OTHER harnesses for the same shape
+  ("does this check assert the state it claims to measure?") and fix them in the same pass. The
+  class is the finding; the instance is not.
+- **STOP-A-CONTRAST-CHECK-MUST-WALK-EVERY-TEXT-ELEMENT-IN-THE-SURFACE** — NEW 2026-07-29 (D411).
+  A contrast check scoped to ONE selector reports the health of that selector, not the surface.
+  The Task-5 sweep measured `.sgs-nav-menu__link-text` only and returned 13.14:1 for a drawer that
+  was simultaneously rendering child-block text at **1:1** (`rgb(58,46,38)` on `rgb(58,46,38)` —
+  invisible). Walk every element with its own text node, resolve the first painted ancestor
+  background, and report the WORST ratio in the surface.
+- **STOP-A-GREEN-MEASUREMENT-IS-NOT-FIDELITY-AND-MUST-NOT-BE-PRESENTED-AS-IT** — NEW 2026-07-29
+  (D411). "21/21 cells PASS" covering axe / geometry / focus / reduced-motion / JS-off says nothing
+  about whether a clone RESEMBLES its reference, yet it was written — and repeated into the LEDGER —
+  in a way that read as fidelity. Bean rejected the result in seconds. When reporting a visual
+  surface, state plainly which dimension each number covers and name what was NOT measured, before
+  any pass tally.
+- **STOP-A-REJECTION-RECORD-IS-A-HYPOTHESIS-TOO** — NEW 2026-07-29 (D411). The first write-up of
+  Bean's rejection asserted `centred-statement` "renders 3 menu items where the extraction recorded
+  7". False — the 7-item site is studionamma; fantasy.co genuinely has 3. Left standing it would
+  have driven a rework that ADDED four items that should not exist. Fact-check a rejection/critique
+  record against the source data before it becomes the rework brief, exactly as you would a council
+  finding.
+- **STOP-THE-AUTOMATIONS-OWN-CURSOR-CONTAMINATES-THE-MEASUREMENT** — NEW 2026-07-29 (D411). After a
+  click the pointer STAYS there, so an opened full-screen panel routinely renders a link underneath
+  it in `:hover`. axe then measured that link's hover colour and reported a *serious* 2.14:1 contrast
+  violation that vanished the moment the pointer moved. Park the pointer (e.g. `mouse.move(2,2)`)
+  after any open step, and measure hover states DELIBERATELY rather than by accident.
+
 - **STOP-RENDER-INJECTORS-MUST-ANCHOR-PAST-THE-LEADING-SCOPED-STYLE** — NEW 2026-07-28
   (Spec 35 build-surface close-out). A `render_block` injector that assumes "the first tag in
   the markup is the block root" and writes its payload there will land it INSIDE the Spec-32
@@ -848,3 +880,18 @@ for real before claiming done?
   that carried this etiquette were retired this session (a private per-track "truth" file went
   stale on 2026-07-27 and nearly cost a session rebuilding working code), so the defence moves
   HERE rather than dying with them — the D101 rule is carry-forward, never subtract.
+- **2026-07-29 (Task-5 drawer rejection / D411) re-run:** previous unique `STOP-*` = **90** (measured
+  with this file's own canonical command at the start of the handoff — NOT carried from the 86 in the
+  entry above, which had already been overtaken by a co-active track; the receipt-arithmetic race rule
+  applies); this session ADDED **5**
+  (`STOP-FIXING-ONE-INSTANCE-OF-A-FAILURE-CLASS-DOES-NOT-IMMUNISE-THE-NEXT`,
+  `STOP-A-CONTRAST-CHECK-MUST-WALK-EVERY-TEXT-ELEMENT-IN-THE-SURFACE`,
+  `STOP-A-GREEN-MEASUREMENT-IS-NOT-FIDELITY-AND-MUST-NOT-BE-PRESENTED-AS-IT`,
+  `STOP-A-REJECTION-RECORD-IS-A-HYPOTHESIS-TOO`,
+  `STOP-THE-AUTOMATIONS-OWN-CURSOR-CONTAMINATES-THE-MEASUREMENT`), SUBTRACTED **none** → **95**.
+  95 >= 90. PASS. All five are earned by failures that actually occurred this session: a vacuous
+  reference capture shipped hours after the identical vacuous-axe class was fixed and written up; a
+  selector-scoped contrast check that returned 13.14:1 while the same drawer painted text at 1:1; a
+  green cell-count presented as fidelity and rejected by Bean on sight; a rejection record whose own
+  diagnosis was wrong and would have driven a defect into the rework; and an axe run contaminated by
+  the automation's leftover pointer.

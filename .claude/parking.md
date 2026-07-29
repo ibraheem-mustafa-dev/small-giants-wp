@@ -974,12 +974,20 @@ Blocks declaring `__experimentalBorder` with skip-serialization (site-header-row
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
 
 Bean rejected the Task-5 exit gate on sight (R-31-13): *"the difference between our version and
-theirs is night and day"*. Four verified defects. (1) **Content is not an exact clone** despite the
-§6 POC rule mandating it — `centred-statement` renders 3 menu items where the extraction recorded 7.
-(2) **Alignment is wrong on several variants**; `centred-statement` renders LEFT-aligned, and its
-three link arrows float detached mid-panel with no labels. (3) **`solid-brand-light` has no reference
-capture at all.** (4) **`two-column-editorial`'s "reference" is the closed homepage with a cookie
-banner** — the menu was never opened.
+theirs is night and day"*. Verified defects. (1) **Content is not an exact clone** despite the §6
+POC rule mandating it — the gap is DESIGN fidelity (text/border/symbol/button styling, cycling
+background imagery + its motion, the animated secondary media), **not item count**.
+⚠ **An earlier version of this entry claimed `centred-statement` "renders 3 menu items where the
+extraction recorded 7" — that is FALSE and is struck (D411).** The 7-item site is studionamma
+(`two-column-editorial`); `centred-statement` clones fantasy.co, which genuinely has 3 primary links
+(`labels-fantasy.json` `counts.primary = 3`, matching the independent extraction count). Acting on
+it would ADD four items that should not exist.
+(2) **Alignment is wrong on several variants**; `centred-statement` renders LEFT-aligned — root
+cause proven, see `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. Its link arrows are **not** label-less:
+the labels are present and laid out but painted at **1:1 contrast** — see
+`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` for the measured cause. (3) **`solid-brand-light` has no
+reference capture at all.** (4) **`two-column-editorial`'s "reference" is the closed homepage with a
+cookie banner** — the menu was never opened.
 
 **Root cause of the false green:** the capture script never asserted the panel was OPEN before
 shooting (the same vacuous-capture class the axe harness fixed on 2026-07-29 but the screenshot
@@ -1032,7 +1040,7 @@ way nav links do.
 **Trigger:** next nav-drawer or icon-list session; blocks any "drawer variants are visually done"
 claim.
 
-### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU — drawerAlign:center leaves nav links flush left
+### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU — the centred drawerAlign value leaves nav links flush left
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
 
 The drawer emits no align class (`drawerAlignAttrPresent: false` on the live element).
@@ -1056,10 +1064,18 @@ Studio · News and column 2 reads Work · Approach · Plans. Keyboard and screen
 correct (they follow the DOM) — it is the VISUAL reading order that diverges, and the reference
 design (studionamma) splits sequentially 4+3.
 
-Fix shape: `grid-auto-flow: column` plus an explicit row count derived from the item count in
-`nav-menu/render.php`. That changes rendering semantics of a shared block, so it needs Bean's
-sign-off (project rule 7) rather than an inline change. Recommended: change it — a menu whose
-visual order differs from its real order is a usability defect as well as a fidelity gap.
+⚠ **DOWNGRADED TO UNDECIDED (2026-07-29, D411) — this is NOT a live recommendation to change a
+shared block.** The finding assumed readers scan DOWN columns. **Bean's counter stands:** with a
+row-wise grid, reading ACROSS rows already yields the menu order, and authoring the menu as rows of
+2 gives a correct pattern either way. There is also **no ground truth** — the reference capture for
+this exact variant (studionamma) failed, so what the reference actually does is unverified.
+
+Fix shape IF it is ever confirmed wrong: `grid-auto-flow: column` plus an explicit row count derived
+from the item count in `nav-menu/render.php`. That changes rendering semantics of a shared block, so
+it needs Bean's sign-off (project rule 7) rather than an inline change.
+
+**Trigger:** a verified menu-OPEN capture of the studionamma reference showing which reading model
+it uses. Do not change the block before that exists.
 
 **Trigger:** Bean's decision on finding F1 of
 `.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
