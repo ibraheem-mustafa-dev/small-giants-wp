@@ -292,6 +292,34 @@ Task 2 Wave A (delegated)   ∥   Task 3 authoring (2 parallel agents)
                     Commit + push (Gate 2)
 ```
 
+### Tooling for the next session (WordPress project — Gate 5)
+
+| Skill | When to use |
+|---|---|
+| `/brainstorming` | Any architectural or design decision — all three tasks start with one |
+| `/strategic-plan` | Before writing code for Wave A or the B3 pattern roster |
+| `/research` | Auto-routes to the right tier; use before any unfamiliar choice |
+| `/gap-analysis` | Grade the B3 patterns before calling them done |
+| `/lifecycle` | Only if a skill/agent/pipeline itself changes |
+| `/sgs-wp-engine` | The framework skill — block/theme/pattern work |
+| `/wp-block-development` | Core WP block-API questions |
+| `/delegate` | Pick the model for every dispatched task |
+| `/qc` · `/qc-inline` | Per the per-task QC gates above |
+| `/visual-qa` · `/a11y-audit` | Verifying the B3 patterns and any motion work |
+
+| MCP / tool | For |
+|---|---|
+| Playwright MCP | Live DOM + computed-style verification on the canary (the only way to close Task 1-adjacent checks) |
+| `/sgs-db` | Block/attr/slot ground truth — never trust a count in prose |
+| `/wp-blocks` | Block schema dump |
+| Chrome DevTools MCP | Motion/perf tracing if Wave A needs it |
+
+| Agent | When |
+|---|---|
+| `wp-sgs-developer` | Wave A implementation + B3 pattern authoring |
+| `design-reviewer` | B3 preset variety — does each of the 16 actually look different |
+| `code-reviewer` | Before committing shared-theme or motion changes |
+
 ### Methodology guardrails (do not skip)
 
 - **Run `python .claude/hooks/handoff-preflight.py --check` before committing.** Six checks; a
