@@ -78,10 +78,24 @@ try:
 except Exception:
     pass
 
-# The canary pages verified zero-inline at D346 (both live client homepages).
+# The canary pages verified zero-inline at D346 (both client homepages) PLUS the two
+# seeded gate-canary pages added 2026-07-30.
+#
+# WHY THE SEEDED PAGES ARE LOAD-BEARING (P-NO-INLINE-GATE-COVERAGE-GAPS item 1):
+# with the two homepages alone this gate reported
+#   "PASS - 0 inline styles across 0 sgs block type(s)"
+# i.e. it found NO sgs blocks to inspect and passed vacuously. A gate that cannot
+# see a violation cannot fail, and this one had been reading green on that basis.
+# The seeded pages carry one instance of each var-driven feature (per-item stagger
+# and fill, SVG background opacity, shape dividers, post-grid card vars, countdown
+# colours, gallery aspect, form progress, review breakdown, plan ribbon, badge fg),
+# so the gate now has real subjects. If these pages are ever deleted the gate
+# silently returns to proving nothing - re-seed them rather than dropping them.
 CANARY_URLS = [
-    "https://palestine-lives.org/",                             # Indus (page 13 front)
-    "https://sandybrown-nightingale-600381.hostingersite.com/", # Mama's (staging canary)
+    "https://palestine-lives.org/",                                            # Indus (page 13 front)
+    "https://sandybrown-nightingale-600381.hostingersite.com/",                # Mama's (staging canary)
+    "https://sandybrown-nightingale-600381.hostingersite.com/sgs-gate-canary/",   # seeded, page 2064
+    "https://sandybrown-nightingale-600381.hostingersite.com/sgs-gate-canary-2/", # seeded, page 2071
 ]
 
 
@@ -339,15 +353,20 @@ def main() -> int:
     ap.add_argument("--live-default", action="store_true", help="use the built-in canary set (default)")
     ap.add_argument("--selftest", action="store_true", help="network-free detector proof")
     ap.add_argument(
-        "--deep",
+        "--no-deep",
         action="store_true",
         help=(
-            "nesting-aware scan: also inspect BEM SUB-elements inside an sgs/* "
-            "block (FR-32-1 governs every rendered element, not just the root). "
-            "A nested CORE block root shadows its SGS ancestor, so core's own "
-            "inline supports are never false-flagged. Opt-in until a deploy "
-            "proves it green — see scan_html_deep()'s docstring."
+            "DISABLE the nesting-aware scan (root-only, the pre-2026-07-30 "
+            "behaviour). The deep scan is the DEFAULT: FR-32-1 governs every "
+            "rendered element, not just the block root, and the root-only scan "
+            "structurally cannot see a per-instance --var on a BEM sub-element. "
+            "Only pass this to reproduce a historical root-only result."
         ),
+    )
+    ap.add_argument(
+        "--deep",
+        action="store_true",
+        help="No-op, retained for compatibility — the deep scan is now the default.",
     )
     args = ap.parse_args()
 
@@ -355,7 +374,14 @@ def main() -> int:
         return run_selftest()
 
     urls = args.live if args.live else list(CANARY_URLS)
-    return run_live(urls, deep=args.deep)
+    # PROMOTED TO DEFAULT 2026-07-30. The three preconditions scan_html_deep()'s
+    # docstring set for arming it are met: (1) the FR-32 source fixes are DEPLOYED,
+    # so the live canaries carry the fixed markup; (2) this scan is GREEN against
+    # that fresh deploy; (3) `--selftest` proves it can still FAIL — it detects an
+    # injected sub-element violation that the root-only scan demonstrably MISSES.
+    # That third point is the load-bearing one: a gate that has never failed is not
+    # known to work.
+    return run_live(urls, deep=not args.no_deep)
 
 
 if __name__ == "__main__":
