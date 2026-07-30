@@ -15,11 +15,32 @@
  *
  * MODES
  *   (default)  extract + diff a named section, original vs clone, per breakpoint
+ *   --scope    diff an element located by SELECTOR instead of by heading text,
+ *              optionally OPENING it first (--open / --open-via). Added 2026-07-30
+ *              for the Spec 36+37 drawer-CPT Gate 2, whose subject is a
+ *              `dialog.sgs-nav-drawer` — a surface with no heading to walk up from
+ *              and no meaning at all while closed.
+ *
+ *              Openness is GUARDED via scripts/nav-qa/lib/openness-guard.mjs, and
+ *              the guard self-arms on a `<dialog>` scope even without --open, so
+ *              a caller who forgets to open the surface gets VACUOUS (exit 3)
+ *              rather than a cheerful "identical" from two display:none dialogs.
+ *
+ *              NOTE this is deliberately NOT `computed-parity.js`. That script is
+ *              the CLONER's instrument (Stage 11.6, Spec 20, council-gated at
+ *              D315) and its HEADER/FOOTER/NAV exclusion is correct for its job —
+ *              it measures page BODIES. It is left untouched.
  *   --why      provenance: which CSS RULE (selector/stylesheet) sets a property
  *              on an element — via a raw CDP session (CSS.getMatchedStylesForNode),
  *              the one thing neither the Playwright nor chrome-devtools MCP/CLI
  *              exposes. Answers "where does this value come from?" in one call
  *              (e.g. the WP `[style*="border-width"]` phantom-border hunt).
+ *
+ * EXIT CODES
+ *   0 — ran; see the report for whether anything differs
+ *   1 — bad arguments or an unexpected failure
+ *   3 — VACUOUS: a --scope surface was not genuinely open, so the comparison
+ *       proves nothing. Shares the nav-qa harness vocabulary deliberately.
  *
  * USAGE
  *   node extract-css-diff.js \
@@ -65,6 +86,15 @@ function parseArgs( argv ) {
 		else if ( k === '--json' ) a.json = true;
 		else if ( k === '--why' ) a.why = next();
 		else if ( k === '--prop' ) a.prop = next();
+		// --- INTERACTIVE-SURFACE MODE (added 2026-07-30 for Gate 2) --------------
+		// --scope replaces --section: locate the subject by SELECTOR rather than by
+		// heading text. A nav drawer has no heading, so the heading-walk cannot find
+		// it. --open/--open-via open the surface first, guarded by the shared
+		// openness guard, because a closed-vs-closed comparison is vacuous: two
+		// display:none dialogs are always "identical".
+		else if ( k === '--scope' ) a.scope = next();
+		else if ( k === '--open' ) a.open = next();
+		else if ( k === '--open-via' ) a.openVia = next();
 	}
 	return a;
 }
@@ -101,24 +131,33 @@ const CAPTURE_PROPS = [
 // element records for the named section, keyed by normalised text (or tag#n).
 // ---------------------------------------------------------------------------
 
-function pageExtract( { sectionText, props } ) {
+function pageExtract( { sectionText, scopeSelector, props } ) {
 	const norm = ( s ) => ( s || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase().slice( 0, 60 );
 
-	// Find the section: a heading whose text matches, then walk up to the LARGEST
-	// ancestor that still contains ONLY this heading (no other section's heading).
-	// This bounds the section to its own band instead of the whole page.
-	const all = [ ...document.querySelectorAll( 'h1,h2,h3,h4' ) ];
-	const heading = all.find( ( e ) => norm( e.textContent ).includes( norm( sectionText ) ) );
-	if ( !heading ) return { error: 'section heading not found: ' + sectionText };
-	let section = heading;
-	while ( section.parentElement && section.parentElement !== document.documentElement ) {
-		const parent = section.parentElement;
-		const bringsOtherHeading = [ ...parent.querySelectorAll( 'h1,h2,h3,h4' ) ].some(
-			( x ) => x !== heading && !section.contains( x )
-		);
-		if ( bringsOtherHeading ) break; // stepping up would swallow another section
-		section = parent;
-		if ( parent === document.body ) break;
+	let section;
+	if ( scopeSelector ) {
+		// SELECTOR MODE (2026-07-30). Used for surfaces with no heading to walk up
+		// from — a nav drawer being the case that forced it. Takes the element
+		// verbatim: no ancestor walk, because the scope IS the subject.
+		section = document.querySelector( scopeSelector );
+		if ( !section ) return { error: 'scope selector matched nothing: ' + scopeSelector };
+	} else {
+		// Find the section: a heading whose text matches, then walk up to the LARGEST
+		// ancestor that still contains ONLY this heading (no other section's heading).
+		// This bounds the section to its own band instead of the whole page.
+		const all = [ ...document.querySelectorAll( 'h1,h2,h3,h4' ) ];
+		const heading = all.find( ( e ) => norm( e.textContent ).includes( norm( sectionText ) ) );
+		if ( !heading ) return { error: 'section heading not found: ' + sectionText };
+		section = heading;
+		while ( section.parentElement && section.parentElement !== document.documentElement ) {
+			const parent = section.parentElement;
+			const bringsOtherHeading = [ ...parent.querySelectorAll( 'h1,h2,h3,h4' ) ].some(
+				( x ) => x !== heading && !section.contains( x )
+			);
+			if ( bringsOtherHeading ) break; // stepping up would swallow another section
+			section = parent;
+			if ( parent === document.body ) break;
+		}
 	}
 
 	const sectionRect = section.getBoundingClientRect();
@@ -299,6 +338,7 @@ function toMarkdown( section, byBreakpoint ) {
 	const browser = await chromium.launch();
 	const ctx = await browser.newContext( { viewport: { width: 1440, height: 900 } } );
 	const page = await ctx.newPage();
+	let exitCode = 0;
 
 	try {
 		// --why provenance mode (clone by default; original if only that is given)
@@ -311,21 +351,66 @@ function toMarkdown( section, byBreakpoint ) {
 			return;
 		}
 
-		if ( !args.original || !args.clone || !args.section ) {
-			console.error( 'Required: --original <url> --clone <url> --section "<heading>"' );
+		if ( !args.original || !args.clone || ( !args.section && !args.scope ) ) {
+			console.error( 'Required: --original <url> --clone <url> and either --section "<heading>" or --scope "<selector>"' );
 			process.exit( 1 );
 		}
 
+		// The openness guard is ESM and this file is CJS, so load it dynamically.
+		// Only needed when --open is in play; a plain section diff is unaffected.
+		// Loaded whenever a --scope is in play, not only when --open is: the guard
+		// self-arms on a <dialog> scope, so a caller who forgets --open still gets
+		// VACUOUS rather than a cheerful "identical" from two closed dialogs.
+		let guardLib = null;
+		if ( args.scope || args.open ) {
+			guardLib = await import( '../nav-qa/lib/openness-guard.mjs' );
+		}
+
+		/**
+		 * Navigate, optionally open an interactive surface, and refuse to measure a
+		 * surface that is not genuinely open. A closed-vs-closed diff reports
+		 * "identical" for two display:none dialogs — the exact vacuous pass this
+		 * whole harness pass exists to eliminate.
+		 */
+		const loadAndExtract = async ( url, label ) => {
+			await page.goto( url, { waitUntil: 'networkidle' } );
+			if ( args.open ) {
+				try {
+					await guardLib.openSurface( page, { open: args.open, openVia: args.openVia || 'click' } );
+				} catch ( e ) {
+					return { error: `${ label }: could not open "${ args.open }" — ${ e.message }` };
+				}
+			}
+			if ( args.scope && guardLib ) {
+				const verdict = await guardLib.guardScope( page, {
+					scope: args.scope,
+					open: args.open || null,
+					// Armed by --open, or self-armed by a <dialog> scope. A non-dialog
+					// static scope with no --open stays NOT_ARMED, so an ordinary
+					// section diff is unaffected.
+					requireOpen: Boolean( args.open ),
+				} );
+				if ( verdict.status === 'VACUOUS' ) {
+					return { error: `${ label }: VACUOUS — ${ verdict.reason }`, vacuous: true };
+				}
+			}
+			return page.evaluate( pageExtract, {
+				sectionText: args.section,
+				scopeSelector: args.scope,
+				props: CAPTURE_PROPS,
+			} );
+		};
+
 		const byBreakpoint = [];
+		let vacuousAny = false;
 		for ( const width of args.breakpoints ) {
 			await page.setViewportSize( { width, height: 1000 } );
 
-			await page.goto( args.original, { waitUntil: 'networkidle' } );
-			const orig = await page.evaluate( pageExtract, { sectionText: args.section, props: CAPTURE_PROPS } );
-			await page.goto( args.clone, { waitUntil: 'networkidle' } );
-			const clone = await page.evaluate( pageExtract, { sectionText: args.section, props: CAPTURE_PROPS } );
+			const orig = await loadAndExtract( args.original, 'original' );
+			const clone = await loadAndExtract( args.clone, 'clone' );
 
 			if ( orig.error || clone.error ) {
+				if ( orig.vacuous || clone.vacuous ) vacuousAny = true;
 				byBreakpoint.push( { width, error: ( orig.error || '' ) + ' ' + ( clone.error || '' ) } );
 				continue;
 			}
@@ -338,10 +423,14 @@ function toMarkdown( section, byBreakpoint ) {
 			byBreakpoint.push( { width, diff: d, origSection: orig.section, cloneSection: clone.section, hoverNote } );
 		}
 
+		const subject = args.scope || args.section;
 		if ( args.json ) {
-			console.log( JSON.stringify( { section: args.section, byBreakpoint }, null, 2 ) );
+			console.log( JSON.stringify( {
+				section: args.section, scope: args.scope, opened: args.open || null,
+				vacuous: vacuousAny, byBreakpoint,
+			}, null, 2 ) );
 		} else {
-			const md = toMarkdown( args.section, byBreakpoint );
+			const md = toMarkdown( subject, byBreakpoint );
 			if ( args.out ) {
 				require( 'fs' ).writeFileSync( args.out, md );
 				console.log( 'Wrote ' + args.out );
@@ -349,9 +438,21 @@ function toMarkdown( section, byBreakpoint ) {
 				console.log( md );
 			}
 		}
+
+		// Exit 3 on vacuity, matching the nav-qa harness vocabulary: a run that
+		// could not open the surface it was asked to measure is neither a pass nor
+		// a difference report, and must not be readable as "identical".
+		if ( vacuousAny ) {
+			console.error(
+				'\nextract-css-diff: VACUOUS — the surface was not genuinely open at one or more\n' +
+				'  breakpoints, so this comparison proves nothing. Not a pass, not a diff.\n'
+			);
+			exitCode = 3;
+		}
 	} finally {
 		await browser.close();
 	}
+	if ( exitCode ) process.exit( exitCode );
 } )().catch( ( e ) => {
 	console.error( e );
 	process.exit( 1 );
