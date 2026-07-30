@@ -136,6 +136,77 @@ concern.
 
 ---
 
+---
+
+## 3. `fxEnd` + `fxTrigger` controls — SHIPPED, verified in the real editor
+
+`fxTrigger` was **not** deleted. An earlier plan proposed removing it because it "needs a CSS
+selector no client could type" — that was wrong. Spec 38 §11.2:583 defines it as
+`load | scroll | hover`, and it is named in the §11.3 converter mapping, so deleting it without a
+spec amendment would have put the code out of conformance with FR-38-4 and FR-38-22.
+
+Both controls read two new `fx_effects` columns rather than new hand-maintained arrays in `fx.js`
+(which already carries two that no gate cross-checks):
+
+| Column | Drives | Source of the values |
+|---|---|---|
+| `pins` | the `fxEnd` control's wording | VERIFIED from source — `fx-pin-scrub.js:136` and `fx-horizontal-panel.js:207` are the only modules setting `pin: true`. `owns_scroll_transform` is not a proxy: 5 effects set it, 2 pin. |
+| `triggers` | which "When it starts" options appear | The per-effect enum §11.2 already specifies. |
+
+### Verified live in the block editor (D388 — an edit.js change is not verified until the editor opens)
+
+| Effect | Controls rendered |
+|---|---|
+| `horizontal-panel` (pins, `triggers=[scroll]`) | **How long it stays stuck** — Automatic / Short / Standard / Long. **No "When it starts"** — correctly suppressed, a one-value control is a dead control. |
+| `scrub` (no pin, `triggers=[scroll,load,hover]`) | **When it starts** — the three options, `hover` set and honoured. **Where it finishes** — scroll-position options. |
+
+Zero console errors; the editor loaded and the panel worked.
+
+### The self-test was extended, because it could not have caught this
+
+`check_motion_fx_reseed.py --self-test` injected only `owns_scroll_transform`. Adding two guarded
+columns would have left it reading green while proving nothing about them — the same shape as
+fixing one vacuous check and shipping another hours later. It now injects **every** guarded column
+in turn and names any that go uncaught. All five verified catchable:
+
+```
+pin-scrub.owns_scroll_transform: 1 -> 0 — caught
+pin-scrub.scope: 'block' -> '__selftest_block' — caught
+pin-scrub.requires: 'section' -> '__selftest_section' — caught
+pin-scrub.pins: 1 -> 0 — caught
+pin-scrub.triggers: 'scroll' -> '__selftest_scroll' — caught
+```
+
+### The hover arm cannot strand content — by construction, not by device sniffing
+
+`fx-scrub` and `fx-split-reveal` are `fromTo`/`from` tweens whose from-state is `opacity: 0`, and
+both render that state immediately by default. A paused tween has therefore ALREADY hidden its
+element, so a trigger that never arrives — touch screen, a visitor who never points at it, nothing
+focusable inside — would leave the content invisible permanently. That is unreachable content.
+
+`immediateRender: false` removes the failure mode entirely: the element stays exactly as the server
+rendered it and hover REPLAYS the reveal. No `(hover: none)` branch, no assumption about how the
+visitor is browsing. `focusin` is bound alongside `mouseenter` for keyboard parity — that is
+parity, not the safety mechanism.
+
+---
+
+## Findings surfaced while verifying (parked, neither caused by this work)
+
+1. **`P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR`** — every `sgs/container` on the canary pages
+   is `isValid: false` in the editor (7 of 21 blocks on page 2024). Stored markup carries
+   `<div class="wp-block-sgs-container"></div>`; `save.js` emits `<InnerBlocks.Content />` and no
+   wrapper. Frontend unaffected and measured green. Confirmed pre-existing before recording:
+   `container/save.js` last changed at `e1459e6d`, and no commit in this session touched a
+   container file.
+2. **`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`** — `check-dead-controls.js:514`,
+   `check-control-ux.js:455` and `audit-inspector-conformance.js:270` all exclude or never reach
+   `src/blocks/extensions/`. The fx panel has never been linted, which is exactly how `fxTrigger`
+   sat rendered-by-nothing unnoticed. Spec 38 §7:472-473's claim that the gate "covers every new
+   panel automatically" is false for this panel.
+
+---
+
 ## Method notes earned this session
 
 - **A measurement that contradicts the code it describes is stale until proven otherwise.** Check

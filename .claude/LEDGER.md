@@ -42,32 +42,32 @@ the "centred" style never centring) — both are scheduled inside Wave 2.
 > on commit-message narrative — no canary report/screenshot artefact in the repo. Treat it as a
 > carried-forward assertion, not reproducible proof; re-verify before relying on it.
 
-### Track 3 — Spec 38 motion system: Wave A shipped + qc-council'd; **5 close-out items open**
+### Track 3 — Spec 38 motion system: Wave A CLOSED bar Bean's eye
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active` (D406–D409). Wave A is on main (A1-A9), then a
-2-rater cross-model **qc-council** vs a GSAP gold standard
-(`reports/2026-07-29-gsap-scrolltrigger-splittext-gold-standard.md`, 32 items) closed several
-real defects — see D414/D415 and `git log --grep "fix(motion)"`.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active` (D406–D409). Wave A (A1–A9) + its qc-council pass are
+shipped and live-verified on real SGS blocks, all 3 arms, zero GSAP bytes on a no-fx page; the fx
+roster is DERIVED not hardcoded. Closed history → D414/D415/D416 + `git log --grep "fix(motion)"`.
 
-**Verified live on real SGS blocks** (all 3 arms): scrub, pin-scrub (pins at 93px, clears the
-sticky header), split-reveal (a11y intact), horizontal-panel (pins + mobile reachable).
-Zero GSAP bytes on a no-fx page.
+**CLOSE-OUT: 4 of 5 SHIPPED 2026-07-30 (D416). Only item 5 — Bean's eye — remains.**
+Full evidence + method notes: `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`.
 
-**fx roster is DERIVED, not hardcoded (D414)** — `fx_effects.scope` + `.requires` seeded from
-spec §2; a block qualifies when it provides what an effect requires. cta-section + trust-bar now
-qualify automatically; 22 of 81 blocks carry the panel; ScrollSmoother is `scope=site` so it
-cannot reach a block panel. Gate: `db-consistency/check_fx_qualifying_blocks_stale.py`.
+1. **Panel travel FIXED, live-verified** (`810a15f9`). Real error was **100px, not 264px** — the
+   recorded figures were stale and impossible under the current CSS; the `-111` was a
+   `scroll-behavior:smooth` probe artefact. Probe `landingErrorPx` 100 → **0**.
+2. **matchMedia change REVERSED, not applied** (`f3303c85`). Its citation does not hold, and
+   sibling conditions would have run the pin **under reduced motion**. Item 14 + `provider.js`
+   amended so the claim stops spreading.
+3. **`fxEnd` + `fxTrigger` have real controls** (`c164368e`), driven by new DB columns
+   `fx_effects.pins`/`.triggers`. `fxTrigger` NOT deleted — §11.2 defines it, so removal would
+   have broken FR-38-4/FR-38-22. Verified in the real editor.
+4. **Reduced-motion arm PASS** — the earlier "unreachable" report is FALSE (it measured the
+   motion-allowed branch). Probe carries a negative-control arm.
+5. **OPEN — Bean's eye on the 7 `/motion-canary-*` pages** (frontend; each states its criteria
+   on-page).
 
-**OPEN — 5 items, see `plans/2026-07-30-motion-wave-A-closeout-prompt.md`:**
-1. **Horizontal panel travels ~264px short** (owner-reported, UNRESOLVED after 3 attempts).
-   The tween reaches its target; the TARGET is wrong. Measurements + both dead ends are in the
-   block comment above `getTravelDistance()` — **read it before trying a 4th.** Two attempts rested
-   on a band width INFERRED as 969px and never measured; it is 1200.
-2. Apply the matchMedia consumer change to `fx-horizontal-panel.js` (provider side shipped).
-3. `fxEnd` has no control (semantics differ per effect — needs a design call); `fxTrigger` is
-   registered + emitted + PHP-mirrored and read by **no** effect module.
-4. Confirm the panel's desktop reduced-motion arm (one probe showed it unreachable; unconfirmed).
-5. Bean's eye on the 7 `/motion-canary-*` pages (each states its own pass/fail criteria on-page).
+⚠ Parked, neither caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` (canary
+containers invalid in the EDITOR; frontend fine) · `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`
+(all 3 control gates exclude `src/blocks/extensions/`).
 
 Wave B ∥ C unblocked (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`).
 
