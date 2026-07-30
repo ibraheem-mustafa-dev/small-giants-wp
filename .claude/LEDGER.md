@@ -120,16 +120,12 @@ unassertable reference returns UNVERIFIED.
 
 **Standing warnings (do not lose these):** **every scoped drawer/mega axe result from before
 2026-07-29 proves nothing — re-run it** (no openness guard existed; a CLOSED drawer returned
-`0 violations` identically to an open one). **And axe can NEVER measure contrast inside an open
-`<dialog>`** — top-layer `::backdrop` defeats its background resolution, so all text lands in its
-INCOMPLETE bucket; use `checkRestContrast()` in `sweep-drawer-variants.mjs` (D418). Two further
-harness bugs manufactured false results, both fixed (phantom `:hover` 2.14:1 reading; JS-off check
-comparing raw text to HTML so `Arts & Culture` read as missing). **F1 `listColumns`
-`grid-auto-flow:row` is DOWNGRADED TO UNDECIDED** — the "reading order is wrong" claim assumed
-column-wise reading; Bean's counter stands
-(rows-of-2 reads correctly across rows), and there is no ground truth because the reference capture
-for that exact variant failed. **F2** (header track) at 375px the theme header is `position:absolute`,
-251px tall, rendering the DESKTOP logo over content. **F3** `sgs/social-icons` has no Vimeo/Dribbble slug.
+`0 violations` identically to an open one). **axe can NEVER measure contrast inside an open
+`<dialog>`** — use `checkRestContrast()` in `sweep-drawer-variants.mjs` (D418). Two further harness
+bugs manufactured false results, both fixed. **F1 `listColumns` `grid-auto-flow:row` is UNDECIDED**
+(Bean's rows-of-2 counter stands; no ground truth — the reference capture failed). **F2** at 375px
+the theme header is `position:absolute`, 251px tall, showing the DESKTOP logo over content.
+**F3** `sgs/social-icons` has no Vimeo/Dribbble slug.
 
 **Re-runnable assets:** `plugins/sgs-blocks/scripts/nav-qa/` — all guarded + self-testing since
 D418; **read its `README.md` §1b/§1c before trusting or extending any of them.** Canary fixtures:
@@ -145,25 +141,21 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 > content lost; the LEDGER was over its byte cap).** Read before calling any Track-1 item done:
 > `reports/2026-07-30-track1-verification-audit.md` (3 findings WITHDRAWN there — don't re-raise).
 
-### Track 1b — Spec 35: COMPONENT LAYER + Part-K gate complete; ROLLOUT is not
+### Track 1b — Spec 35: component layer + Part-K gate complete; **editor verification CLOSED 2026-07-30**
 
-Components + the fail-closed gate ARE done (D400/D402/D405). **"No remaining build items"
-RETRACTED 2026-07-30**: Part I lists 2 open (Spacing token, Dynamic content), Part-L rollout is
-4–32%, T1 parity 140 unexplained gaps, and **no Spec 35 work has ever been opened in the real
-editor** (Part M's own words; D388). Register: the Track 1 audit above. Next = Spec 37 Group B.
+Components + the fail-closed gate are done (D400/D402/D405). **The editor gap is CLOSED (D425)** —
+22 wave blocks opened in the real block editor, inspector rendering 7–23 panels each, zero crashes;
+D372's BoxControl check discharged. Evidence:
+`reports/2026-07-30-spec35-editor-canvas-verification.md`. Still open: Part I's 2 items (Spacing token, Dynamic content),
+Part-L rollout at 4–32%, and T1 parity (**157 gaps / 23 blocks in scope** — the old 140/22 is
+stale). Register: `reports/2026-07-30-track1-verification-audit.md`.
 
 ### Track 1c — Spec 31 converter completion
 
-Completion wave + declarative CSS-routing shipped (D372/D373). **The three "NEXT" items this cell
-carried until 2026-07-30 were ALL ALREADY DONE** — phase-f canaries deployed 2026-07-23
-(`oracle/fixture-canary-urls.json`, 35 URLs), `check_landed()` wired
-(`ledger/coverage_check.py:386`, called `:857`), live verify ran 2026-07-24/25. **The real open
-item is PROOF, not build:** the C2 "0 WRITTEN-not-LANDED" claim in Spec 31's v0.6 front-matter is
-backed only by a prose note inside the same commit that made the fix, while the committed
-artefact (`batch-report.json`, last written `1669a785`) still shows 2 WRITTEN-not-LANDED + 36
-UNVERIFIED — and Spec 31 §5 defines completion as **zero UNVERIFIED cells**. Re-run the batch +
-`coverage_check.py --with-landed --check` and COMMIT the artefacts. Full register:
-`reports/2026-07-30-track1-verification-audit.md`. Plan:
+Completion wave + declarative CSS-routing shipped (D372/D373); the three "NEXT" items this cell
+once carried were all already done. **The real open item is PROOF, not build** — `batch-report.json`
+now reads WRITTEN-not-LANDED 0 but **33 UNVERIFIED**, and §5 defines completion as ZERO UNVERIFIED
+(the "logged with a reason" escape covers GAP cells only). Triage = next session Task 1. Plan:
 `plans/2026-07-22-spec31-completion-to-100.md`.
 
 ---
@@ -279,33 +271,112 @@ WITHDRAWN; do not re-raise them).
   still fail. Two defects IN the banked patch were caught pre-commit and proven fixed on the live
   DOM (card-grid + trust-bar `:nth-child` offsets) — now specified as **Spec 32 FR-32-4a**.
 
-### STILL OPEN
+### STILL OPEN — orchestration plan
 
-| # | Work | State |
-|---|---|---|
-| 3 | Spec 31 C2 triage — 33 UNVERIFIED / 33 GUARD-FAIL / 393 unattributed | not started; §5 demands **zero** UNVERIFIED (the "logged with a reason" escape is scoped to GAP cells ONLY) |
-| 4 | Feature parity — **157 gaps / 23 blocks in scope** (the old "140 across 22" is stale) | gaps classified by agents; `feature-parity-exceptions.json` still has ZERO block entries, and the audit is `sys.exit(0)` warn-only — **make it fail-closed with a `--self-test` BEFORE wiring it into prebuild** |
-| 5 | Nav submenu/dropdown build | design written + owner-signed: `plans/2026-07-30-nav-submenu-dropdown-design.md` |
-| 6 | Phase D doc sweep + the owed citation guard | see below |
+**You are the SGS framework engineer.** Points 1+2 of the Track-1 debt are closed and banked; what
+remains is two verification points, one build, and one owed guard. Plan the order yourself — the
+only fixed constraint is that Task 2 must not be wired into prebuild before it can fail.
 
-### Owed guard (cheapest durable fix, still unbuilt)
+#### Task 1 — Spec 31 C2 triage (Track-1 point 3)
+**What:** triage the non-LANDED cells in `.../phase-f/_render-oracle/batch-report.json` —
+33 UNVERIFIED, 33 GUARD-FAIL, 8 NOT-RENDERED, 393 unattributed.
+**Why:** Spec 31 §5 defines completion as **zero UNVERIFIED**. The "logged with a reason" escape is
+scoped to GAP cells ONLY — it does NOT apply to UNVERIFIED. Either drive it to zero or state
+plainly that C2 is NOT closed and file the residual.
+**Estimated:** 30 min.
+**Orchestration:** delegated · sonnet via `/delegate` · single agent.
+**Brief:** expect ~30 of the 33 GUARD-FAILs to be the five `rt-*` red-team fixtures behaving as
+designed (they encode known-broken behaviour). The real question is the 393 unattributed — declared
+cells whose selector could not be matched to any probed BEM-root section.
+**Context it won't have:** `batch_runner.py` probes DEPLOYED pages; `--with-landed` is passed by
+nothing (neither `package.json:7` nor `f5-commit-gate.py`), so the LANDED leg only ever runs
+manually.
+**Depends on:** none. **Parallel with:** Tasks 2, 4.
+**/qc gate after:** no — it produces an artefact + a verdict, not code.
+**Acceptance:** UNVERIFIED is zero, OR C2 is explicitly declared not-closed with each residual cell
+carrying a named reason and a spec STAGE.
 
-`handoff-preflight.py` needs a citation-resolution check covering **`STOP-N` as well as `P-` slugs**.
-`STOP-29` and `STOP-6` are cited in this file and in `decisions.md` but exist in NO catalogue (only
-16, 19, 21, 44, 57, 64, 66, 67, 68 do) — a fifth phantom citation, of a new kind. Ship it with a
-`--self-test`.
+#### Task 2 — Feature parity (Track-1 point 4)
+**What:** **157 gaps across 23 blocks in scope** (the old "140 across 22" is stale — re-measured).
+Agents have already classified most; what remains is writing `feature-parity-exceptions.json`,
+making the audit fail-closed, and wiring it into prebuild.
+**Why:** every gap must be REAL-and-fixed or an exception with a named wave. Today the file has
+ZERO block entries, so not one gap is explained.
+**Estimated:** 45 min.
+**Orchestration:** delegated · sonnet · single agent.
+**Brief:** classify REAL vs OVER-REPORT before fixing anything — `norm()` only normalises case,
+`colour`→`color`, hyphens and underscores, so genuine renames read as gaps.
+**⛔ Order matters:** `audit-feature-parity.py:117,140` is `warn_only: True` / unconditional
+`sys.exit(0)`. **Make it fail-closed with a `--self-test` BEFORE wiring it into prebuild** — a gate
+that cannot fail reads green forever, which is exactly what this session had to fix in the
+no-inline gate.
+**Depends on:** none. **Parallel with:** Tasks 1, 4.
+**/qc gate after:** yes — `/qc-inline` on the fail-closed behaviour (prove it fails).
+**Acceptance:** every gap fixed or recorded as an exception with a wave; the audit exits non-zero on
+an unexplained gap; `--self-test` proves it.
 
-### Carry-forward rules earned this session
+#### Task 3 — Nav submenu / dropdown build
+**What:** plain dropdowns on desktop + real accordion/drill-down submenus in the drawer.
+**Why:** a menu item with children currently renders as a bare link and its children vanish
+(`nav-menu/render.php:103-109`). The drawer's `submenuModel` control is live in the inspector and
+does nothing. Also closes 5 REAL parity gaps on `sgs/nav-menu` in one go.
+**Estimated:** 2–3 h.
+**Orchestration:** INLINE, Opus — this is design-sensitive, spec-bound work.
+**Design (owner-signed):** `plans/2026-07-30-nav-submenu-dropdown-design.md`.
+**Two facts that shape it:** (a) `shared/nav-interactivity/mega-disclosure.js` is **markup-agnostic**
+— emit its three data hooks and a plain dropdown inherits hover-intent, tap, keyboard, ESC,
+close-grace and WCAG 1.4.13 with NO new JS; (b) the children are already preserved in
+`innerBlocks` — the walker simply never reads them.
+**Owner rulings:** current-page becomes its own state on **submenu AND top-level bar** items;
+hover effects are **block-native** (nav opts out of the universal extension per FR-36-14);
+controls clustered by ELEMENT then grouped per Spec 35 (colours / effects / typography), using
+toggles, per-device overrides and opacity in the colour picker; **default global colours need to be
+clearly legible and harmonious rather than strictly AA** — apply that to shipped DEFAULTS only,
+leave `sgs_wcag_preferred_text_colour_for_bg()` (the operator-override safety net) alone.
+**Depends on:** none. **Parallel with:** nothing (inline).
+**/qc gate after:** yes — `/qc-council` before any commit touching nav render.
+**Acceptance:** a classic parent-with-children menu renders a working dropdown (disclosure, not
+`role="menu"`), left-aligned under its own item; the drawer accordion actually accordions;
+keyboard + ESC + focus-return verified live; axe run on an OPEN panel via `checkRestContrast()`.
 
-- **A grep's blind spot is the shape of the grep.** Sweeps for inline styles must search attribute
-  ASSEMBLY (`sprintf( ' style="…%s"' )`), not just literal `style="`. That miss hid trust-bar from
-  both the audit and its own verification. Residual: `reports/2026-07-30-fr32-residual-inline-sites.md`.
-- **A comment that justifies a breach is a dated opinion, not evidence** — the same pre-D345
-  stale-comment pattern appeared FOUR times in one sweep.
-- **Confirm build identity by md5 AT THE MOMENT OF CAPTURE.** A concurrent deploy overwrote this
-  build 17 minutes after it landed; two contradictory observations were both correct about
-  different moments.
-- **Nav submenu context:** the disclosure engine (`shared/nav-interactivity/mega-disclosure.js`) is
-  markup-agnostic — emit its three data hooks and a plain dropdown inherits hover-intent, keyboard,
-  ESC and WCAG 1.4.13 free. Menu children are already preserved in `innerBlocks`; the walker just
-  never reads them (`nav-menu/render.php:103-109`).
+#### Task 4 — The owed citation guard
+**What:** add a citation-resolution check to `handoff-preflight.py` covering **`STOP-N` as well as
+`P-` slugs**, with a `--self-test`.
+**Why:** `STOP-29` and `STOP-6` are cited in `LEDGER.md` and `decisions.md` but exist in NO
+catalogue (only 16, 19, 21, 44, 57, 64, 66, 67, 68 do). That is the fifth phantom citation found in
+two sessions, and the first of a new kind. D423 named this as the cheapest durable fix; it is still
+unbuilt.
+**Estimated:** 20 min.
+**Orchestration:** delegated · haiku · single agent (mechanical).
+**Depends on:** none. **Parallel with:** Tasks 1, 2.
+**/qc gate after:** no — the `--self-test` IS the gate.
+**Acceptance:** the check fails on a planted phantom `P-`/`STOP-N` citation and passes on the real
+tree; wired into the existing six checks.
+
+#### Dependency graph
+
+```
+Task 1 (sonnet)  ┐
+Task 2 (sonnet)  ├─ all parallel, none depends on another
+Task 4 (haiku)   ┘
+Task 3 (INLINE, Opus) — run alongside or after; touches disjoint files
+        ↓ /qc-council before any nav commit
+Commit + push (main)
+```
+
+
+#### Methodology guardrails (do not skip)
+
+- **Deploy before measure** — `batch_runner.py` and `check-no-inline.py` both probe DEPLOYED pages.
+- **Confirm build identity by md5 AT THE MOMENT OF CAPTURE** — the canary is shared and races.
+- **A gate that cannot fail reads green forever** — arm nothing before its `--self-test` proves it
+  fails. Applies directly to Task 2.
+- **A grep's blind spot is the shape of the grep** — search attribute ASSEMBLY, not just literals.
+- **A comment justifying a breach is a dated opinion** — check it against the CURRENT contract.
+- **Outcome vs completion** — code shipped is not outcome achieved; map every deferral to a named
+  spec STAGE, never "out of scope".
+- **Shared worktree/main** — commit by EXACT PATH (a hook enforces the pathspec), never `git add -A`.
+- **`/qc-council` before any commit** touching converter, pipeline or SGS-block render logic.
+- **`python .claude/hooks/handoff-preflight.py --check` must pass before a handoff completes.**
+
+Full structural defences (107 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.

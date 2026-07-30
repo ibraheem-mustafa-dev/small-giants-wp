@@ -388,16 +388,64 @@ D403 shipped 7 nav-drawer `variantPreset` variations, but the `supports.sgs.vari
 **Trigger:** next nav/Spec-36 session — before any drawer-variant cloning is attempted.
 
 ### P-NO-INLINE-GATE-COVERAGE-GAPS — the inline-zero gate can pass vacuously
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
+**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-28 · **Advanced:** 2026-07-30 (D425)
 
-Two structural gaps in inline-zero enforcement, both proven live. (1) **`check-no-inline.py`'s CANARY_URLS never exercise hover/animation-attributed instances** — the team-member inline-var class passed the gate vacuously for weeks because no gate-covered page carried the attrs; it surfaced only via a QC draft page. Fix: a permanent published gate-canary page seeded with one instance of each var-driven feature (hover scale, animation, parallax, image-controls, block-link), added to CANARY_URLS. (2) **Three NON-injector inline-style writers remain un-triaged** by the injector sweep — `class-sgs-container-wrapper.php`, `class-post-grid-rest.php`, `shape-dividers.php`. They build markup render-side rather than via `render_block` injectors; the wrapper is known D345-fixed for `extra_styles`, but no per-file classification (inline property declarations vs scoped/lifted) has been done.
+**Item (2) CLOSED 2026-07-30** — all three non-injector writers were triaged AND fixed
+(`class-sgs-container-wrapper.php` SVG-background opacity, `class-post-grid-rest.php` card vars,
+`shape-dividers.php` inline `height`/`color` — the last being real PROPERTY declarations, the more
+serious breach). Commit `4d3b598e`.
 
-**Trigger:** next Spec-32/gate session. Item (1) is cheap and high-value — it converts a vacuous pass into a real one.
+**Item (1) PARTIAL.** Two gate-canary pages are now seeded and wired into `CANARY_URLS`
+(`sgs-gate-canary` 2064, `sgs-gate-canary-2` 2071), which converted a genuinely vacuous pass into a
+real one: before them the deep scan reported *"PASS — 0 inline styles across 0 sgs block type(s)"* —
+it saw NO blocks at all.
+
+**RESIDUAL SCOPE — what those pages still do NOT carry.** They cover var-driven RENDER features
+(per-item stagger + fill, SVG opacity, shape dividers, post-grid card vars, countdown colours,
+gallery aspect, form progress, review breakdown, plan ribbon, badge fg). They do NOT carry the
+EXTENSION-driven instances this entry originally named: **hover scale, animation, parallax,
+image-controls, block-link** — which is the exact class that let the team-member inline-var pass
+vacuously for weeks. Until one instance of each is seeded, that class is still unexercised.
+
+**Trigger:** next Spec-32/gate session. ⚠ If the seeded pages are ever deleted the gate silently
+returns to proving nothing — re-seed rather than drop (a warning to that effect is in
+`check-no-inline.py`'s `CANARY_URLS` comment).
+
+### P-FR32-WRAPPER-INNER-INLINE — 2 dynamic inline builds on `.sgs-container__inner`
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30 (D425)
+
+`class-sgs-container-wrapper.php:1800` and `:1828` assemble a `style="…"` attribute at runtime
+(`' style="' . esc_attr( implode( ';', $decls ) ) . '"'`) on `.sgs-container__inner`, carrying base
+gap + `--sgs-gi-*` per-grid-item custom properties. Both comments declare the remaining decls
+"inline-safe" — reasoning under the PRE-D345 contract, which FR-32-4 as amended forbids.
+
+**Why not fixed with the other 14 (2026-07-30):** it is the SHARED wrapper — a Rule-7
+design-gate surface — and closing it needs the `--sgs-gi-*` values routed to the FR-32-4a
+positional shape (they vary per grid item, so one root-scoped rule cannot carry them), honouring
+FR-32-4a's positional-integrity requirement. That deserves its own verification pass, not the tail
+of a long session (STOP-19).
+
+**Measured mitigation, not proof of death:** both are conditional (`$grid_on_inner &&
+$inner_grid_decls` / `$inner_style_parts`) and did NOT fire on gate-canary 2064 — six inline
+`[style]` attributes were present and none was `.sgs-container__inner`. That is one page, not a
+proof they never fire.
+
+Full write-up + the detection lesson: `reports/2026-07-30-fr32-residual-inline-sites.md`.
+
+**Trigger:** next shared-wrapper / Spec-32 session, with a design gate.
 
 ### P-NO-INLINE-LAND-ROSTER — no-inline rollout: full-roster per-block LANDED accounting still owed
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-10
 
 The split-edit/serial-land integration merged ~35 blocks' no-inline work (code-complete, build-green, DB reseeded) but only spot-verified a subset. The prebuild gates (`audit-inline-styling.js --check`, `check-box-family-guard.py --check`) are already wired into `package.json` (confirmed done — do not re-add). What remains: run the full-roster verify script across the remaining blocks and write a `reports/visual-diff/<block>-<date>.md` per block with `verdict: PASS` + `first_paint_capture_passed: true` for every block, not just the ones already spot-checked.
+
+**ADVANCED 2026-07-30 (D425), NOT closed.** Ten blocks gained genuine reports with real Playwright
+captures against canary pages 2064/2071 — `card-grid`, `countdown-timer`, `cta-section`, `form`,
+`gallery`, `google-reviews`, `post-grid`, `pricing-table`, `product-card`, `trust-bar` (commit
+`4d3b598e`). Six of those needed canary content authored before they could be evidenced at all —
+the conditional markup each fix touches (background overlay, multi-step progress, gallery items,
+rating breakdown, plan ribbon, discount badge) existed on no page. Residual = the rest of the
+roster; also still owed are `product-faq` and `product-faq-item` (audit finding 1a-7).
 
 **Trigger:** the LAND-completion session — the main remaining work of the no-inline rollout.
 

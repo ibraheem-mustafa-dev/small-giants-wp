@@ -746,6 +746,38 @@ points here. Neither ever silently drops a STOP.
   HYPOTHESIS, exactly like a subagent's finding or a council's fix-shape. Verify against the
   primary source (the commit, the code, the DB) before editing. Applies with full force to
   your OWN diagnostic claims — this is the `prove-the-cause-before-fix` rule turned inward.
+- **STOP-A-GREPS-BLIND-SPOT-IS-THE-SHAPE-OF-THE-GREP (2026-07-30, D425)** — a sweep's
+  "zero remaining" is bounded by the pattern it used. Searching the literal `style="--`
+  cannot see `sprintf( ' style="…%s"' )` or `' style="' . implode(…) . '"'`. That single
+  blind spot defeated THREE independent checks in one session — the audit's inventory, my own
+  "ZERO — all sites fixed" verification, AND the earlier sweep's "team-member is the last
+  render-level inline writer" claim — while the deployed page served the violation. Widening
+  to attribute ASSEMBLY immediately found 2 more sites. **A negative search result is a
+  statement about the SEARCH, not the codebase.** Report the pattern alongside the result;
+  before claiming none remain, name the shapes the pattern structurally cannot match. Also:
+  when a prior claim says "the last one", check the SCOPE of the sweep that produced it.
+- **STOP-A-COMMENT-THAT-JUSTIFIES-A-BREACH-IS-A-DATED-OPINION (2026-07-30, D425)** — an
+  in-code comment explaining why a rule does not apply *here* was written under the contract
+  of its day, and is the most effective thing at stopping re-investigation. The SAME
+  pre-D345 comment ("only the custom-property VALUE rides inline — permitted") shielded FOUR
+  separate FR-32 breaches in one sweep (`cta-section:333`, `countdown-timer`,
+  `class-post-grid-rest.php:323`, `class-sgs-container-wrapper.php:1800,1828`). A sibling
+  failure: post-grid's comment asserted AJAX cards land "outside the block's scoped `<style>`"
+  — they land INSIDE the block root, so a descendant rule reaches them; a confidently-worded
+  mechanism claim in a comment can simply be wrong. **When you amend a contract, grep for
+  comments citing the OLD reasoning. When you fix such a site, DELETE the stale comment** —
+  leaving it re-arms the trap for the next sweep.
+- **STOP-CONFIRM-BUILD-IDENTITY-AT-THE-MOMENT-OF-CAPTURE (2026-07-30, D425)** — on a shared
+  deploy target, "I deployed it" and "it is deployed now" are DIFFERENT CLAIMS. A co-active
+  track redeployed from committed `main` 17 minutes after a verified build, reverting it and
+  resurrecting the inline emits; a later independent check correctly reported the fix as not
+  landed. **Both observations were correct about different moments.** Proven by mtimes, not
+  inferred — `.bak` stamped 20:58 UTC (my deploy) vs the live dir 21:15 UTC — which only
+  reads correctly after normalising server UTC against local UTC+1. Rule: capture
+  `md5sum` of the deployed artefact AND the local build **in the same step as the
+  measurement**, and record both in the evidence. Prefer COMMITTING over holding fixes
+  uncommitted on a shared target — once committed, the other track's next build carries them
+  and the race ends.
 
 ### Standing architectural STOPs (always-on, not D-numbered)
 - **Composite-mirror (R-31-9 / D294)** — no per-block CSS hack that diverges from the

@@ -24,7 +24,9 @@ Register: `reports/2026-07-30-track1-verification-audit.md` (D423). Plan + counc
 **Point 1 CLOSED — the Spec 35 wave has now been opened in the real block editor.** 22 blocks
 inserted into a live editor, inspector rendering 7–23 panels each, zero crashes, zero error
 boundaries, zero console errors. This retires audit finding 1b-1 ("nothing in Spec 35 has ever
-been opened in the real block editor"). ⚠ **The FIRST run was a vacuous pass** — `inspector: 0`
+been opened in the real block editor"). **Evidence banked:**
+`reports/2026-07-30-spec35-editor-canvas-verification.md` (per-block panel counts, the D372
+BoxControl measurements, and the vacuous first run recorded deliberately). ⚠ **The FIRST run was a vacuous pass** — `inspector: 0`
 for all 26 blocks because the settings sidebar was closed; it proved only "did not crash", not
 "inspector renders". Re-run with `openGeneralSidebar` forced. D372's owed BoxControl check
 discharged: BoxControl renders, `innerPadding` retired, per-instance `cardPadding` emits scoped
