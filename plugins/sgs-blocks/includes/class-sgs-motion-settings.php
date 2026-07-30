@@ -89,6 +89,8 @@ final class Sgs_Motion_Settings {
 				'default'           => array(
 					'smooth_scroll'          => false,
 					'smooth_scroll_strength' => 3,
+					'page_transitions'       => false,
+					'page_transition_style'  => 'fade',
 				),
 			)
 		);
@@ -125,12 +127,103 @@ final class Sgs_Motion_Settings {
 			$touch_strength = 1;
 		}
 
+		// Page transitions (FR-38-19). The style names reach a CSS
+		// animation-name, so an unknown value is replaced rather than stored.
+		$style = isset( $value['page_transition_style'] )
+			? (string) $value['page_transition_style']
+			: 'fade';
+
+		if ( ! \in_array( $style, SGS_Motion_Registry::transition_styles(), true ) ) {
+			$style = 'fade';
+		}
+
 		return array(
-			'smooth_scroll'          => ! empty( $value['smooth_scroll'] ),
-			'smooth_scroll_strength' => $strength,
-			'smooth_touch'           => ! empty( $value['smooth_touch'] ),
-			'smooth_touch_strength'  => $touch_strength,
+			'smooth_scroll'             => ! empty( $value['smooth_scroll'] ),
+			'smooth_scroll_strength'    => $strength,
+			'smooth_touch'              => ! empty( $value['smooth_touch'] ),
+			'smooth_touch_strength'     => $touch_strength,
+			'page_transitions'          => ! empty( $value['page_transitions'] ),
+			'page_transition_style'     => $style,
+			// Shared with the read side rather than duplicated: one definition
+			// of what a valid override is, so the two can never disagree.
+			'page_transition_templates' => SGS_Motion_Registry::sanitise_template_styles(
+				$value['page_transition_templates'] ?? array()
+			),
 		);
+	}
+
+	/**
+	 * The style menu, as value => human label, in menu order.
+	 *
+	 * The VALUES come from SGS_Motion_Registry::transition_styles() — the one
+	 * source of truth — rather than a second list maintained here. A style
+	 * present in the admin's list but absent from the registry's would be
+	 * accepted, stored, and then silently coerced back to the default on every
+	 * frontend read: a setting that looks saved and does nothing.
+	 *
+	 * A style with no label falls back to its own key, so adding one to the
+	 * registry surfaces it here immediately (unlabelled, but functional and
+	 * visible) instead of vanishing from the menu.
+	 *
+	 * `none` is a real choice at both levels: site-wide it means the feature is
+	 * configured but currently silent; per template it means this one template
+	 * opts out while the rest transition.
+	 *
+	 * @return array<string, string>
+	 */
+	private static function style_labels(): array {
+		$labels = array(
+			'fade'  => \__( 'Fade', 'sgs-blocks' ),
+			'slide' => \__( 'Slide', 'sgs-blocks' ),
+			'none'  => \__( 'No transition', 'sgs-blocks' ),
+		);
+
+		$menu = array();
+		foreach ( SGS_Motion_Registry::transition_styles() as $style ) {
+			$menu[ $style ] = $labels[ $style ] ?? $style;
+		}
+
+		return $menu;
+	}
+
+	/**
+	 * The theme's page templates, as slug => title.
+	 *
+	 * Enumerated from the theme rather than hard-coded, so this page is correct
+	 * on any client site without an edit — the same DB/source-first discipline
+	 * the rest of the framework follows. Template PARTS are excluded: a header
+	 * or footer is not a navigable destination and has no transition of its own.
+	 *
+	 * @return array<string, string>
+	 */
+	private static function templates(): array {
+		if ( ! \function_exists( 'get_block_templates' ) ) {
+			return array();
+		}
+
+		$templates = \get_block_templates( array(), 'wp_template' );
+		$out       = array();
+
+		foreach ( (array) $templates as $template ) {
+			if ( empty( $template->slug ) ) {
+				continue;
+			}
+
+			$title = '';
+			if ( ! empty( $template->title ) ) {
+				$title = \is_string( $template->title )
+					? $template->title
+					: (string) ( $template->title->rendered ?? '' );
+			}
+
+			$out[ (string) $template->slug ] = '' !== $title
+				? $title
+				: (string) $template->slug;
+		}
+
+		\ksort( $out );
+
+		return $out;
 	}
 
 	/**
@@ -256,6 +349,101 @@ final class Sgs_Motion_Settings {
 				<h2><?php \esc_html_e( 'Who does not get this', 'sgs-blocks' ); ?></h2>
 				<p style="max-width:46rem">
 					<?php \esc_html_e( 'Smooth scrolling is switched off automatically, with no action needed from you, for: visitors whose device asks for reduced motion (a health setting people use for motion sickness and migraine); and the block editor and all admin screens. Touch devices keep their own native scrolling unless you switch on the touch setting above. Your header, anchor links and in-page search are unaffected either way.', 'sgs-blocks' ); ?>
+				</p>
+
+				<h2><?php \esc_html_e( 'Page transitions', 'sgs-blocks' ); ?></h2>
+				<p style="max-width:46rem">
+					<?php \esc_html_e( 'Softens the jump between pages: instead of the next page appearing instantly, the browser blends from one to the other as the visitor clicks through. It is done entirely by the browser itself — no extra code is downloaded to make it work, and a browser that does not support it simply loads the next page as normal. Off by default.', 'sgs-blocks' ); ?>
+				</p>
+
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row"><?php \esc_html_e( 'Page transitions', 'sgs-blocks' ); ?></th>
+							<td>
+								<label>
+									<input
+										type="checkbox"
+										id="sgs-page-transitions-toggle"
+										name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[page_transitions]"
+										value="1"
+										<?php \checked( true, $settings['page_transitions'] ); ?>
+									/>
+									<?php \esc_html_e( 'Turn on page transitions for this site', 'sgs-blocks' ); ?>
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label for="sgs-page-transition-style"><?php \esc_html_e( 'Style', 'sgs-blocks' ); ?></label>
+							</th>
+							<td>
+								<select
+									id="sgs-page-transition-style"
+									class="sgs-page-transition-style"
+									name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[page_transition_style]"
+								>
+									<?php foreach ( self::style_labels() as $value => $label ) : ?>
+										<option
+											value="<?php echo \esc_attr( $value ); ?>"
+											<?php \selected( $value, $settings['page_transition_style'] ); ?>
+										>
+											<?php echo \esc_html( $label ); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( 'Fade is the recommended choice — it signals that a new page has arrived without moving anything across the screen, which is the part that can make people feel unwell. Slide adds a small sideways shift as well; it is more noticeable, and better kept for one or two templates than used everywhere.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<?php $templates = self::templates(); ?>
+				<?php if ( ! empty( $templates ) ) : ?>
+					<h3><?php \esc_html_e( 'Per page type', 'sgs-blocks' ); ?></h3>
+					<p style="max-width:46rem">
+						<?php \esc_html_e( 'Optional. Each of your page types can use a different style, or none at all. Leave them on "Use site style" unless you want a specific one to behave differently.', 'sgs-blocks' ); ?>
+						<br />
+						<?php \esc_html_e( 'One thing worth knowing: a transition needs BOTH the page being left and the page being opened to have one. So if you set a page type to "No transition", clicking into it or out of it will be an ordinary instant load.', 'sgs-blocks' ); ?>
+					</p>
+
+					<table class="form-table" role="presentation">
+						<tbody>
+							<?php foreach ( $templates as $slug => $title ) : ?>
+								<?php $field_id = 'sgs-vt-template-' . $slug; ?>
+								<tr>
+									<th scope="row">
+										<label for="<?php echo \esc_attr( $field_id ); ?>">
+											<?php echo \esc_html( $title ); ?>
+										</label>
+									</th>
+									<td>
+										<select
+											id="<?php echo \esc_attr( $field_id ); ?>"
+											class="sgs-page-transition-style"
+											name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[page_transition_templates][<?php echo \esc_attr( $slug ); ?>]"
+										>
+											<option value=""><?php \esc_html_e( 'Use site style', 'sgs-blocks' ); ?></option>
+											<?php foreach ( self::style_labels() as $value => $label ) : ?>
+												<option
+													value="<?php echo \esc_attr( $value ); ?>"
+													<?php \selected( $value, $settings['page_transition_templates'][ $slug ] ?? '' ); ?>
+												>
+													<?php echo \esc_html( $label ); ?>
+												</option>
+											<?php endforeach; ?>
+										</select>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
+
+				<p style="max-width:46rem">
+					<?php \esc_html_e( 'Page transitions are switched off automatically for visitors whose device asks for reduced motion, and they never run in the block editor or admin screens.', 'sgs-blocks' ); ?>
 				</p>
 
 				<?php \submit_button(); ?>

@@ -140,6 +140,54 @@ class SGS_Motion_Registry {
 	);
 
 	/**
+	 * Page-transition styles (FR-38-19) => the keyframe pair + duration.
+	 *
+	 * `none` is deliberately NOT a member: it is the absence of a transition,
+	 * so it enqueues nothing at all rather than enqueuing a no-op style. That is
+	 * what makes "a template set to none ships zero bytes" true per template and
+	 * not merely site-wide.
+	 *
+	 * Durations differ because the styles do different amounts of work: the
+	 * slide has distance to cover and reads as clipped at the fade's timing.
+	 *
+	 * @var array<string, int> style => duration in ms.
+	 */
+	private const TRANSITION_STYLES = array(
+		'fade'  => 220,
+		'slide' => 260,
+	);
+
+	/**
+	 * Upper bound on stored per-template overrides.
+	 *
+	 * Overrides are keyed by template slug and no real theme has anywhere near
+	 * this many templates, so the cap can only ever bite on a bad caller. It
+	 * matters because this option is autoloaded on every request: unbounded
+	 * growth here is a cost paid site-wide, on the frontend, forever.
+	 */
+	private const MAX_TEMPLATE_OVERRIDES = 100;
+
+	/**
+	 * Every style an operator may choose, including `none`.
+	 *
+	 * THE SINGLE SOURCE OF TRUTH for what a valid style is. The admin class
+	 * builds its menu and its sanitiser from this rather than keeping its own
+	 * list — because two hand-maintained lists diverge silently and in the
+	 * worst possible direction: the admin would accept and store a style the
+	 * frontend then coerces back to the default on every read, so the setting
+	 * would appear saved and simply not work.
+	 *
+	 * `none` lives here rather than in TRANSITION_STYLES because it has no
+	 * duration and enqueues nothing — it is the absence of a transition, not
+	 * one of them.
+	 *
+	 * @return string[]
+	 */
+	public static function transition_styles(): array {
+		return \array_merge( \array_keys( self::TRANSITION_STYLES ), array( 'none' ) );
+	}
+
+	/**
 	 * Spec §6.1 `plugin_set` vocabulary => the script module that provides it.
 	 *
 	 * The DB stores GSAP's own plugin names because that is what the spec's
@@ -177,6 +225,14 @@ class SGS_Motion_Registry {
 			'script_module_data_@sgs/smooth-scroll',
 			array( __CLASS__, 'smooth_scroll_module_data' )
 		);
+
+		/*
+		 * Page transitions (FR-38-19). Also setting-driven rather than
+		 * block-sniffed, and deliberately on the SAME hook as the smoother:
+		 * `wp_enqueue_scripts` does not fire in wp-admin at all, which is half
+		 * of the "never in the editor or admin" condition for free.
+		 */
+		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'maybe_enqueue_page_transitions' ) );
 	}
 
 	/**
@@ -186,7 +242,7 @@ class SGS_Motion_Registry {
 	 * before a key existed (or hand-edited via WP-CLI) must not be able to put
 	 * an out-of-range value into the frontend.
 	 *
-	 * @return array{smooth_scroll: bool, smooth_scroll_strength: int}
+	 * @return array{smooth_scroll: bool, smooth_scroll_strength: int, page_transitions: bool, page_transition_style: string, page_transition_templates: array<string, string>}
 	 */
 	public static function settings(): array {
 		$raw = \get_option( self::SETTINGS_OPTION, array() );
@@ -210,11 +266,193 @@ class SGS_Motion_Registry {
 			$touch_strength = 1;
 		}
 
+		/*
+		 * Page transitions (FR-38-19). An unrecognised style falls back to the
+		 * default rather than being honoured — the value reaches a CSS
+		 * animation-name, so it is validated against the known set here as well
+		 * as at save time. Same reasoning as the strength clamp above.
+		 */
+		$style = isset( $raw['page_transition_style'] )
+			? (string) $raw['page_transition_style']
+			: 'fade';
+
+		if ( ! isset( self::TRANSITION_STYLES[ $style ] ) && 'none' !== $style ) {
+			$style = 'fade';
+		}
+
 		return array(
-			'smooth_scroll'          => ! empty( $raw['smooth_scroll'] ),
-			'smooth_scroll_strength' => $strength,
-			'smooth_touch'           => ! empty( $raw['smooth_touch'] ),
-			'smooth_touch_strength'  => $touch_strength,
+			'smooth_scroll'             => ! empty( $raw['smooth_scroll'] ),
+			'smooth_scroll_strength'    => $strength,
+			'smooth_touch'              => ! empty( $raw['smooth_touch'] ),
+			'smooth_touch_strength'     => $touch_strength,
+			'page_transitions'          => ! empty( $raw['page_transitions'] ),
+			'page_transition_style'     => $style,
+			'page_transition_templates' => self::sanitise_template_styles(
+				$raw['page_transition_templates'] ?? array()
+			),
+		);
+	}
+
+	/**
+	 * Normalise the per-template style overrides.
+	 *
+	 * Shape is `template slug => style`. An empty string means "use the site
+	 * default" and is DROPPED rather than stored, so the option never
+	 * accumulates a row per template that says nothing — the absence of a key
+	 * is the inheritance.
+	 *
+	 * @param mixed $raw Stored or submitted overrides.
+	 * @return array<string, string>
+	 */
+	public static function sanitise_template_styles( $raw ): array {
+		if ( ! \is_array( $raw ) ) {
+			return array();
+		}
+
+		$out = array();
+
+		foreach ( $raw as $slug => $style ) {
+			/*
+			 * Fail closed on a non-scalar value rather than casting it.
+			 * `(string) $array` is a PHP warning, and `(string) $object` with
+			 * no __toString() is an uncaught Error — a fatal. Neither can come
+			 * from the settings form ($_POST yields no objects), but this
+			 * method is public and static, and the option can be written
+			 * directly by WP-CLI or another plugin. A skipped row is always a
+			 * better outcome than a fatal on a front-end request.
+			 */
+			if ( ! \is_scalar( $style ) ) {
+				continue;
+			}
+
+			$slug  = \sanitize_key( (string) $slug );
+			$style = (string) $style;
+
+			if ( '' === $slug || '' === $style ) {
+				continue;
+			}
+
+			/*
+			 * Bound the stored map. Overrides are keyed by template slug, and
+			 * no real theme has hundreds of templates — an unbounded map would
+			 * only ever come from a bad caller, and this option is autoloaded
+			 * on every request, so bloat here is a site-wide cost.
+			 */
+			if ( \count( $out ) >= self::MAX_TEMPLATE_OVERRIDES ) {
+				break;
+			}
+
+			// `none` is a real choice (suppress on this template), so it is
+			// admitted alongside the animating styles — but nothing else is.
+			if ( ! isset( self::TRANSITION_STYLES[ $style ] ) && 'none' !== $style ) {
+				continue;
+			}
+
+			$out[ $slug ] = $style;
+		}
+
+		return $out;
+	}
+
+	/**
+	 * The style that applies to the template currently rendering.
+	 *
+	 * WordPress records the resolved block template in `$_wp_current_template_id`
+	 * as `theme//slug` (core global since 6.3, set by `locate_block_template()`
+	 * from `get_query_template()`). That runs during template loading, which is
+	 * BEFORE `wp_head` — and `wp_enqueue_scripts` fires from `wp_head` at
+	 * priority 1 — so the value is populated by the time this is called.
+	 *
+	 * If it is empty (a non-block theme, or a request that never resolved a
+	 * template), there is no override to look up and the site default applies.
+	 *
+	 * @param array $settings Resolved settings.
+	 * @return string One of the TRANSITION_STYLES keys, or `none`.
+	 */
+	private static function template_style( array $settings ): string {
+		$template_id = $GLOBALS['_wp_current_template_id'] ?? '';
+		$template_id = \is_string( $template_id ) ? $template_id : '';
+
+		if ( '' === $template_id ) {
+			return (string) $settings['page_transition_style'];
+		}
+
+		$separator = \strpos( $template_id, '//' );
+		$slug      = false === $separator
+			? $template_id
+			: \substr( $template_id, $separator + 2 );
+
+		$overrides = (array) $settings['page_transition_templates'];
+
+		return isset( $overrides[ $slug ] )
+			? (string) $overrides[ $slug ]
+			: (string) $settings['page_transition_style'];
+	}
+
+	/**
+	 * Enqueue the page-transition CSS when this template asks for one.
+	 *
+	 * FR-38-19 is presentation-only and CSS-only: the browser owns the
+	 * transition, so there is nothing to enqueue but a stylesheet, and a browser
+	 * without support ignores it and navigates normally. That absence of support
+	 * IS the specified fallback — there is no JS path to fall back to.
+	 *
+	 * Reduced motion is handled in the stylesheet, not here, for the same reason
+	 * the smoother handles it at runtime: it is a per-visitor preference and
+	 * gating it server-side would bake one visitor's setting into a cached page
+	 * for everyone.
+	 *
+	 * @return void
+	 */
+	public static function maybe_enqueue_page_transitions(): void {
+		if ( \is_admin() ) {
+			return;
+		}
+
+		$settings = self::settings();
+		if ( empty( $settings['page_transitions'] ) ) {
+			return;
+		}
+
+		$style = self::template_style( $settings );
+
+		// `none` on this template means exactly that: no opt-in rule, no
+		// keyframes, no bytes. Not a stylesheet that animates nothing.
+		if ( ! isset( self::TRANSITION_STYLES[ $style ] ) ) {
+			return;
+		}
+
+		$rel = 'assets/css/view-transitions.css';
+		if ( ! \file_exists( SGS_BLOCKS_PATH . $rel ) ) {
+			return;
+		}
+
+		\wp_enqueue_style(
+			'sgs-view-transitions',
+			SGS_BLOCKS_URL . $rel,
+			array(),
+			SGS_BLOCKS_VERSION
+		);
+
+		/*
+		 * The style SELECTION is per-template, so it cannot live in the shared
+		 * file. It targets the `root` snapshot pair, which is the whole page —
+		 * the UA's default cross-fade is replaced rather than layered on.
+		 *
+		 * `both` fill mode matters: without it the old snapshot pops back to
+		 * full opacity for the frame between the animation ending and the
+		 * snapshot being discarded.
+		 */
+		$duration = self::TRANSITION_STYLES[ $style ];
+
+		\wp_add_inline_style(
+			'sgs-view-transitions',
+			\sprintf(
+				'::view-transition-old(root){animation:%1$dms cubic-bezier(0.4,0,0.2,1) both sgs-vt-%2$s-out}'
+					. '::view-transition-new(root){animation:%1$dms cubic-bezier(0.4,0,0.2,1) both sgs-vt-%2$s-in}',
+				$duration,
+				$style
+			)
 		);
 	}
 

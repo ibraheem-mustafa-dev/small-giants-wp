@@ -1,0 +1,121 @@
+/**
+ * Page transitions — cross-document View Transitions (Spec 38 FR-38-19, Tier V).
+ *
+ * Enqueued ONLY on a page whose resolved template has a transition style other
+ * than `none`, on the same conditional terms every other motion asset uses: a
+ * site with the setting off, or a template set to `none`, receives none of this.
+ *
+ * THIS FILE SHIPS NO JAVASCRIPT AND NEEDS NONE. `@view-transition` is the
+ * browser's own opt-in: the UA snapshots the outgoing document, snapshots the
+ * incoming one, and animates between them during an ordinary same-origin
+ * navigation. There is no router, no interception of link clicks, and nothing
+ * to tear down. A browser without support simply navigates — which IS the
+ * defined fallback (FR-38-19), not a degraded path we have to build.
+ *
+ * The per-style animation rules are NOT here. They are added as inline style
+ * against this handle by SGS_Motion_Registry, because the style is resolved
+ * per template at render time. This file owns the opt-in and the keyframes
+ * those rules reference.
+ */
+
+/*
+ * REDUCED MOTION — the opt-in ITSELF is inside the media query, rather than
+ * cancelling the animations afterwards with `::view-transition-*{animation:none}`.
+ *
+ * Two reasons, both load-bearing:
+ *
+ *   · Cancelling the animation still runs the transition machinery — the
+ *     browser has already snapshotted both documents. Never opting in means
+ *     the work never happens, so a visitor who asked for reduced motion gets a
+ *     plain navigation with no rendering cost, not a zero-length animation.
+ *   · `animation: none` on the old/new pseudo-elements leaves BOTH snapshots
+ *     painted with no transition between them, which can flash. Not opting in
+ *     has no such edge.
+ *
+ * This is `no-preference`, not `reduce`: a browser that does not support the
+ * media feature at all evaluates `no-preference` as false and gets no
+ * transition. Failing toward LESS motion when we cannot read the preference is
+ * the correct direction — the same fail-safe posture the smoother takes.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	@view-transition {
+		navigation: auto;
+	}
+}
+
+/*
+ * BLEND MODE — explicit, not incidental.
+ *
+ * The UA stylesheet animates the old/new snapshots with TWO animation names:
+ * its own cross-fade, and a second one that applies `mix-blend-mode:
+ * plus-lighter`. Because the per-style rules use the `animation` SHORTHAND
+ * with a single name, they replace that whole list — so `plus-lighter` stops
+ * applying as a side effect of how the shorthand resets.
+ *
+ * That accident is currently doing real work. `plus-lighter` sums colour
+ * values additively, which looks correct only while the two snapshots overlap
+ * exactly. The slide style deliberately breaks that overlap (it translates
+ * them apart), and additive blending over a partial overlap produces visible
+ * bright banding — a failure mode the CSS working group has discussed against
+ * exactly this translate-based customisation.
+ *
+ * Stating it here makes the safety deliberate. Without this rule, someone
+ * later "restoring the platform default" by re-adding a mix-blend-mode
+ * animation would silently reintroduce the banding on the slide style, and it
+ * would look like a mystery rendering bug rather than a reverted decision.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+	mix-blend-mode: normal;
+}
+
+/*
+ * FADE — the default, and the one recommended to operators.
+ *
+ * A cross-fade expresses "a new page arrived" without moving anything across
+ * the screen, which is the property that matters for vestibular disorders. It
+ * is also the style that survives being seen a hundred times in a session.
+ *
+ * 220ms rather than the UA default 250ms: a page transition is pure overhead
+ * on the visitor's intent (they already clicked; they want the next page), so
+ * it is tuned to be felt rather than waited for.
+ */
+@keyframes sgs-vt-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes sgs-vt-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+/*
+ * SLIDE — offered per template, never the site default.
+ *
+ * The movement is deliberately SMALL (2rem, not a full viewport width). A
+ * full-width slide reads as an app screen pushing sideways, which is wrong for
+ * a content site and is exactly the horizontal travel most likely to bother a
+ * motion-sensitive visitor. Paired with the fade so it reads as a shift in
+ * depth rather than a wipe.
+ *
+ * `translateX` is physical, not logical — CSS transforms have no logical
+ * equivalent, so on an RTL site the direction is mirrored relative to reading
+ * order. Documented rather than silently wrong: an RTL client should choose
+ * fade, or this needs a `:dir(rtl)` variant added at that point.
+ */
+@keyframes sgs-vt-slide-out {
+	to {
+		opacity: 0;
+		transform: translateX(-2rem);
+	}
+}
+
+@keyframes sgs-vt-slide-in {
+	from {
+		opacity: 0;
+		transform: translateX(2rem);
+	}
+}
