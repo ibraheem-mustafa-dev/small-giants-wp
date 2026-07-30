@@ -139,6 +139,11 @@ Screenshot: `reports/visual-diff/w2a-cpt-drawer-open-390.png`.
 
 ## Residuals found while running this gate
 
+> **Both were FIXED the same session (`29f732a8`), not parked.** The two `→ parking` pointers
+> below were accurate when this report was written at `779a2beb`; the entries now live in
+> `memory/parking-archive.md` as RESOLVED. Left in place because this is a dated point-in-time
+> evidence artefact — do not chase them into `parking.md` and conclude they were lost.
+
 1. **`extract-css-diff.js` exits 0 when a trigger cannot be clicked.** The report
    text says *"This is NOT a pass"*, but the process still returns 0 — only the
    VACUOUS path sets exit 3. Two of three tiers measured nothing and the run looked

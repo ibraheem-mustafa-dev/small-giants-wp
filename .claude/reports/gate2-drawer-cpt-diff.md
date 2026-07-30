@@ -1,13 +1,5 @@
 # CSS extract-and-diff — "dialog.sgs-nav-drawer"
 
-## 1440px
-
-> original: could not open ".sgs-nav-menu__burger" — the trigger ".sgs-nav-menu__burger" could not be clicked — locator.click: Timeout 15000ms exceeded.. Something is intercepting the click (commonly a sticky header). This is NOT a pass. clone: could not open ".sgs-nav-menu__burger" — the trigger ".sgs-nav-menu__burger" could not be clicked — locator.click: Timeout 15000ms exceeded.. Something is intercepting the click (commonly a sticky header). This is NOT a pass.
-
-## 768px
-
-> original: could not open ".sgs-nav-menu__burger" — the trigger ".sgs-nav-menu__burger" could not be clicked — locator.click: Timeout 15000ms exceeded.. Something is intercepting the click (commonly a sticky header). This is NOT a pass. clone: could not open ".sgs-nav-menu__burger" — the trigger ".sgs-nav-menu__burger" could not be clicked — locator.click: Timeout 15000ms exceeded.. Something is intercepting the click (commonly a sticky header). This is NOT a pass.
-
 ## 375px
 
 Section: original 375×1000 vs clone 375×1000

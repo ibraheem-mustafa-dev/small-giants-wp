@@ -1335,7 +1335,7 @@ Inline-zero rollout track, Step 1 (of `plans/2026-07-17-phase-inline-zero-rollou
 
 ## 2026-07-18 — [ROUTINE] D344: Track 2 P1 — header/footer/nav architecture decision (BUILD, full clean rebuild)
 
-Track 2 (header/footer/nav full rebuild) Phase 1 = Research → Architecture. Full record: `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`; council record: `.claude/reports/2026-07-18-P1-adversarial-council-gate1.md`; roadmap `.claude/plans/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md`.
+Track 2 (header/footer/nav full rebuild) Phase 1 = Research → Architecture. Full record: `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md`; council record: `.claude/reports/2026-07-18-P1-adversarial-council-gate1.md`; roadmap `.claude/plans/archive/2026-07-17-header-footer-nav-full-rebuild-strategic-plan.md`.
 
 **Verdict: BUILD (not adopt), full clean rebuild, lean-rich.** Fork disqualified on ARCHITECTURE not cost — a forked competitor block's private schema can't be a cloning-converter emit target (Bean's 3rd requirement, §0a.3). Method: Gate 0 (plan validated — gap-analysis B + cold reviewer B) → 3-round research council (5 gather + 4 adversarial personas + 4 rebuttal) → Gate 1 6-persona adversarial council (GO-conditional) → Bean steers → /qc-inline.
 

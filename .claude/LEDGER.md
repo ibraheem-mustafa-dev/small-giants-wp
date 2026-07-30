@@ -51,7 +51,7 @@ green. Its plan files were deleted at his instruction. **Full record + carry-for
 
 ⚠ Parked, not caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
 `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`. Also open: `/sgs-update` Stage 11 warns on the
-mega-* container roster (nav track's blocks — left alone, not ours to reconcile).
+mega-* container roster (nav track's blocks — not ours to reconcile).
 
 Next motion front = Waves B ∥ C.
 
@@ -80,7 +80,7 @@ rabbit.tech owed = W4-a; Lama Lama sticky by Bean's eye — probe-unmeasured ≠
 SOURCE: `reports/2026-07-28-spec36-37-remaining-work-inventory.md`** · floating UI STAYS in the
 Customiser.
 
-Header residue unchanged: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
+Header residue: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
 `P-HEADER-SIMPLICITY-FINDINGS` OPEN (findings 2 + 3).
 
 ### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29; W2-a CPT SHIPPED 2026-07-30
@@ -135,9 +135,9 @@ Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit
 ### Track 1c — Spec 31 converter completion
 
 Completion wave + declarative CSS-routing shipped (D372/D373). **NEXT: (1) deploy phase-f fixtures
-as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on
-the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`). NB the isolated-worktree deploy
-used 2026-07-30 routes around that block.** Plan: `plans/2026-07-22-spec31-completion-to-100.md`.
+as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — was BLOCKED
+on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`); the isolated-worktree deploy
+proven 2026-07-30 routes around it.** Plan: `plans/2026-07-22-spec31-completion-to-100.md`.
 
 ---
 
@@ -203,45 +203,42 @@ used 2026-07-30 routes around that block.** Plan: `plans/2026-07-22-spec31-compl
 
 ## Product queue (the website-builder work — reconcile before acting, some is already live)
 
-**Indus "Our Brands" clone — DONE (D343).** Remaining Indus tasks (Bean-directed 2026-07-17):
+**Indus "Our Brands" clone — DONE (D343).** Remaining Indus tasks (Bean-directed):
 
-- **A — core→SGS migration.** (1) build the `sgs/separator` migration pairing
-  (`migrate-core-blocks/pairings/separator_pairing.py` does NOT exist — follow
-  `heading_pairing.py`/`image_pairing.py`); (2) **re-add** `sgs/separator`→`core/separator` to
-  `block-replacements.json` + `/sgs-update` (reverted at `49e6fc4f` because it build-blocked with no
-  pairing); (3) migrate the 4 theme patterns still using `core/separator` (`footer-centred`,
-  `footer-columns`, `mega-menu-split-info-cta`, `pricing-columns`); (4) **page 13**: convert the "Our
-  Brands" band `core/group` → `sgs/container` (`verticalAlign:center`, drop the padding fudge) +
-  audit page 13 for all remaining replaceable core blocks.
-- **B — wire `lint-theme-css-hardcodes.py` into prebuild** (runnable but not gated).
-- **C — deferred:** Services-section 768 overflow (hardcoded `139/250/123/187=771px` columns →
+- **A — core→SGS migration.** (1) build `migrate-core-blocks/pairings/separator_pairing.py` (does
+  NOT exist — follow `heading_pairing.py`); (2) **re-add** `sgs/separator`→`core/separator` to
+  `block-replacements.json` + `/sgs-update` (reverted `49e6fc4f`: build-blocked with no pairing);
+  (3) migrate the 4 theme patterns still on `core/separator` (`footer-centred`, `footer-columns`,
+  `mega-menu-split-info-cta`, `pricing-columns`); (4) **page 13**: "Our Brands" band `core/group` →
+  `sgs/container` (`verticalAlign:center`, drop the padding fudge) + audit for remaining core blocks.
+- **B — wire `lint-theme-css-hardcodes.py` into prebuild** (runnable, not gated).
+- **C — deferred:** Services 768 overflow (hardcoded `139/250/123/187=771px` columns →
   responsive `fr`); Services button-border decision; Task-2 detection-method brainstorm.
 
 **Header/footer goals (sequenced):**
 1. **Step 1 — SPLIT framework vs per-site header/footer.** `footer-indus-foods.php` DELETED
-   2026-07-22 (`94ab240f`). Still to do: decide the per-site channel (JSON snapshot vs REST);
-   gitignore per-site files. Do this BEFORE goals 4/1 so they write to the per-site channel.
-2. **Goal 4 — match the Mama's draft** (`sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md`): fix its
-   2 liabilities first (cites non-existent `header/footer-mamas-munches` patterns; maps the hamburger
-   to the deleted `sgs/mobile-nav-toggle` → re-point at `sgs/nav-menu` + `sgs/nav-drawer`;
-   `sgs/adaptive-nav` is also deleted, D362). Bean's heading-specific eye pass (R-31-13) lands here.
-3. **Goal 1 — replicate the Indus header/footer.** BASELINE = the preserved hand-built Astra/Spectra
-   site https://lightsalmon-tarsier-683012.hostingersite.com/ (NOT the `mockups/*.html`). Capture it
-   AS A FILE FIRST (`reports/visual-diff/header-footer-baseline-indus.json`). Open defects: logo
-   mobile-tier switch; buttons/rows/bg not preserved; sticky+shrinking header; mega-menu shows on
-   mobile+desktop. NEW: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
-4. **Goal 3 — de-hardcode base blocks.** `site-header/edit.js` + `site-footer/edit.js` TEMPLATEs + row
-   blocks — remove the hardcoded content (NOT "empty containers"). REMOVE the
-   `Quick Links`/`Contact`/`Opening Hours` heading blocks from `framework-footer-default` (rich
-   versions exist as opt-in patterns). Register:
-   `plans/2026-07-15-header-footer-hardcoding-register.md`.
+   (`94ab240f`). To do: decide the per-site channel (JSON snapshot vs REST); gitignore per-site
+   files. Do this BEFORE goals 4/1 so they write to the per-site channel.
+2. **Goal 4 — match the Mama's draft** (`sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md`): fix
+   its 2 liabilities first (cites non-existent `header/footer-mamas-munches` patterns; maps the
+   hamburger to the deleted `sgs/mobile-nav-toggle` → re-point at `sgs/nav-menu` + `sgs/nav-drawer`;
+   `sgs/adaptive-nav` also deleted, D362). Bean's heading eye pass (R-31-13) lands here.
+3. **Goal 1 — replicate the Indus header/footer.** BASELINE = the preserved hand-built Astra site
+   https://lightsalmon-tarsier-683012.hostingersite.com/ (NOT `mockups/*.html`). Capture AS A FILE
+   FIRST (`reports/visual-diff/header-footer-baseline-indus.json`). Open defects: logo mobile-tier
+   switch; buttons/rows/bg not preserved; sticky+shrinking header; mega-menu on mobile+desktop.
+   NEW: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
+4. **Goal 3 — de-hardcode base blocks.** `site-header/edit.js` + `site-footer/edit.js` TEMPLATEs +
+   row blocks — remove hardcoded content (NOT "empty containers"). REMOVE the `Quick Links`/
+   `Contact`/`Opening Hours` headings from `framework-footer-default` (rich versions are opt-in
+   patterns). Register: `plans/strategy/2026-07-15-header-footer-hardcoding-register.md`.
 
-**Open reconciliation:** Track B (`feat/track-b-content-restore`, Indus page content) stayed
-unmerged/paused — check its branch state before touching its files.
+**Open reconciliation:** Track B (`feat/track-b-content-restore`, Indus page content) unmerged/
+paused — check its branch state before touching its files.
 
 **Standing programmes (closed — pointers only):** no-inline COMPLETE bar 5 block-fixes
 (`reports/2026-07-26-spec32-11-condition-done-audit.md`) · Spec 30 COMPLETE (D220) · L1–L4 DONE
-(D290). Parked, not ours: `P-CONFORMANCE-GOLDEN-DRIFT` · `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
+(D290). Parked, not ours: `P-CONFORMANCE-GOLDEN-DRIFT`, `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
 
 ---
 
@@ -267,17 +264,13 @@ None block the next session, except Track 1c's deploy step
 
 ## NEXT SESSION — Wave 2 unit `W2-b` (per-burger `drawerRef` picker). `W2-a` + GATE 2 CLOSED 2026-07-30
 
-**Wave 1 CLOSED** · **`W2-i` CLOSED** (`4f9dc0ba` `66084dc9` `4effc395`) · **`W2-a` CLOSED —
-commit `bd67a641`, DEPLOYED to sandybrown, GATE 2 PASSED on the mechanism.** Read
-**`reports/2026-07-30-w2a-gate2-drawer-cpt.md`** (the evidence, incl. every negative control) +
-**D419** before starting. Plan: `~/.claude/plans/spec-36-37-iterative-kahn.md`.
-
-**⚠ GATE 2 passed on the MECHANISM, not fidelity** (uid-identical attrs; 375px zero mismatches,
-both sides guard-verified open). Says nothing about how the drawer LOOKS — still the rejected D411
-design; **Bean's eye (R-31-13) not yet given** on `reports/visual-diff/w2a-cpt-drawer-open-390.png`.
-All four council fixes landed; the blocker is negative-control proven: guard off → **2**
-`<dialog id="sgs-nav-drawer">`, guard on → **1**.
-
+**Wave 1 · `W2-i` · `W2-a` all CLOSED.** W2-a = `bd67a641`, deployed to sandybrown, **GATE 2 PASSED
+on the MECHANISM, not fidelity** — evidence + every negative control in
+**`reports/2026-07-30-w2a-gate2-drawer-cpt.md`** + **D419**; read before starting. Plan:
+`~/.claude/plans/spec-36-37-iterative-kahn.md`. Gate 2 says nothing about how the drawer LOOKS —
+still the rejected D411 design; **Bean's eye (R-31-13) not yet given** on
+`reports/visual-diff/w2a-cpt-drawer-open-390.png`. Landmark blocker negative-control proven: guard
+off → **2** `<dialog id="sgs-nav-drawer">`, guard on → **1**.
 **Canary fixtures:** `sgs_drawer` **2056** published + **ACTIVE** · page **2058**
 `/w2a-gate2-precpt-drawer/` = pre-CPT parity subject, keep for W2-b/W2-d.
 
@@ -295,25 +288,33 @@ type-derived defaults + inspector override; fluid `clamp()` with a MANDATORY `re
 **⚠ Verify with a width SWEEP, never 3 fixed tiers — this defect lived BETWEEN the tiers** — plus a
 negative control that re-injects the rule and proves the sweep fails.
 
-**Then `W2-b`:** re-type `drawerRef` from DOM-id string to a drawer-POST reference with a
-picker (Spec 36 clause 3). The per-request burger registry in `class-sgs-drawer-render.php` was
-built to carry requested post ids with no re-architecture — that is its intended next use. Then
-W2-c (7 starter looks), W2-d (8 patterns drop their embedded drawer + `variantPreset` retires).
-**W2-d is the first DESTRUCTIVE step — re-run Gate 2 before it.**
+**Orchestration — Task 1 (header fit cascade).** Execution: **inline, Opus** (shared mechanism on
+every header; R-31-9 universality judgement + the device-tier-vs-visual-breakpoint call are exactly
+the "a mechanical agent CANNOT make this judgment" class). Depends on: none. Parallel with: none.
+`/qc-council` gate BEFORE commit (shared mechanism). **Acceptance:** the 766px cliff is gone on a
+continuous width SWEEP 1400→320px — row height constant, `scrollWidth ≤ clientWidth` throughout —
+AND the negative control (re-inject the rule) makes that sweep FAIL, AND 200% zoom still reaches
+full text size, AND every interactive child ≥44px at every swept width, AND Bean's eye at 390/1440.
+Code shipped ≠ done here: stage 4 (JS More-menu) stays named and deferred, never "out of scope".
 
-**Both Gate-2 harness residuals are FIXED, not parked** (`29f732a8`): `extract-css-diff.js` now
-prints a MEASURED n/N tally and fails closed when a requested breakpoint went unmeasured
-(`--allow-unmeasured` to accept knowingly; `measured==0` always exits 3), with `openSurface()`
-separating "trigger hidden here" (UNMEASURED) from "visible and won't open" (VACUOUS) — guard
-self-test 10/10. And `check-markup-neutral.py` (self-test 6/6) gives the visual-diff gate a
-deterministic path for PHP-only no-output changes, so `--no-verify` is no longer the escape.
-**Its hook wiring lives in the UNTRACKED `.git/hooks/pre-commit` — local only; the checker itself
-is tracked and re-wiring is six lines.**
+**Then `W2-b`** (execution: inline, Opus; depends on Task 1 only for tree-cleanliness): re-type
+`drawerRef` from DOM-id string to a drawer-POST reference with a picker (Spec 36 clause 3). The
+per-request burger registry in `class-sgs-drawer-render.php` was built to carry requested post ids
+with no re-architecture — its intended next use. Then W2-c (7 starter looks), W2-d (8 patterns drop
+their embedded drawer + `variantPreset` retires). **W2-d is the first DESTRUCTIVE step — re-run
+Gate 2 before it.**
 
-**Gate 2 instrument:** `scripts/parity/extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open
-'.sgs-nav-menu__burger'` — `--open` takes the **TRIGGER**, not the surface, and only 375px has an
-open state (the burger is CSS-hidden at/above `collapsePoint` 768). **The cloner's
-`computed-parity.js` stays untouched.**
+**Both Gate-2 harness residuals are FIXED, not parked** (`29f732a8`): `extract-css-diff.js` prints a
+MEASURED n/N tally and fails closed when a requested breakpoint went unmeasured
+(`--allow-unmeasured` accepts knowingly; `measured==0` always exits 3); `openSurface()` separates
+"trigger hidden here" (UNMEASURED) from "visible and won't open" (VACUOUS) — guard self-test 10/10.
+`check-markup-neutral.py` (self-test 6/6) gives the visual-diff gate a deterministic path for
+PHP-only no-output changes, so `--no-verify` is no longer the escape. **Its hook wiring lives in the
+UNTRACKED `.git/hooks/pre-commit` — local only; the checker is tracked, re-wiring is six lines.**
+
+**Gate 2 instrument:** `extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open
+'.sgs-nav-menu__burger'` — `--open` takes the **TRIGGER**, not the surface; only 375px has an open
+state (burger CSS-hidden at/above `collapsePoint` 768). **Cloner's `computed-parity.js` untouched.**
 
 **Design gates SIGNED — builds deferred, both edit `site-header/render.php`:** `W2-j` = **A1-lite**
 (any-tier auto-scrim + relabel "Text shadow" decorative-only; **NO reshape — D402**) · new **`W2-v`**
@@ -321,26 +322,23 @@ open state (the burger is CSS-hidden at/above `collapsePoint` 768). **The cloner
 zero-when-unpinned**) · `W2-p` = B2 pill, after `W2-v`, **pill persists at mobile**.
 
 **Bean touchpoints:** roster **10, or 11 if resn's FX prove reachable** — assess at W4-a teardown,
-do NOT decide early · W4-a2 substitution policy before the first clone · W3-d blind-tester at Wave 3.
+not early · W4-a2 substitution policy before the first clone · W3-d blind-tester at Wave 3.
 
-**Alternative front (independent): motion Waves B ∥ C** — prompts unchanged under `plans/`. Wave A
-is CLOSED (D416/D417); its two plan files were deleted at Bean's instruction. Session record +
+**Alternative front (independent): motion Waves B ∥ C** — prompts unchanged under `plans/`. Session
+record +
 carry-forward rules: `memory/session-2026-07-30-motion-waveA-closeout.md`. **Before Wave B ships an
 effect, prove its `data-sgs-fx-*` writer on a live page** — two Wave A defects were attribute
 contracts read by code and written by nothing.
 
 ### Tooling for the next session (WordPress project — Gate 5)
 
-**Skills:** `/strategic-plan` (Task 1's deliverable) + `/brainstorming` for any open design point ·
-`/research` (auto-tiers) · `/sgs-wp-engine` (the framework skill) · `/wp-block-development` for
-core-WP block-API questions · `/delegate` to pick every model · `/qc` + `/qc-inline` per the
-per-task gates · `/gap-analysis` to grade the strategic plan before Bean reads it.
-**MCP / tools:** Playwright MCP (live DOM + computed style on the canary) · `/sgs-db` and
-`/wp-blocks` for block ground truth, never a prose count · Chrome DevTools MCP if Wave A needs
-motion tracing.
-**Agents:** `wp-sgs-developer` (Wave A execution) · `design-reviewer` (only once the merged plan's
-clone work starts — no drawer/preset build happens before the gate is signed) · `code-reviewer`
-before any shared-theme or motion commit.
+**Skills:** `/brainstorming` · `/gap-analysis` · `/lifecycle` · `/research` (auto-tiers) ·
+`/strategic-plan` · `/sgs-wp-engine` · `/wp-block-development` · `/delegate` · `/qc-council`
+(Task 1's pre-commit gate — shared mechanism).
+**MCP / tools:** Playwright MCP (live DOM + computed style on the canary — the width sweep needs it)
+· `/sgs-db` + `/wp-blocks` for block ground truth, never a prose count.
+**Agents:** `wp-sgs-developer` (build execution) · `code-reviewer` before any shared-theme commit ·
+`design-reviewer` once clone work starts.
 
 ### Methodology guardrails (do not skip)
 
