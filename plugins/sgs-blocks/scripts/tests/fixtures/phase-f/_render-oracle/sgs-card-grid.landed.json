@@ -9,8 +9,8 @@
       "section_id": "section-1-card-grid@Base",
       "block_slug": "sgs/card-grid",
       "guards": {
-        "empty": false,
-        "element": false,
+        "empty": true,
+        "element": true,
         "height": true,
         "non_default": true
       },
@@ -20,14 +20,14 @@
           "property": "padding",
           "tier": "Base",
           "draft_value": "48px 24px",
-          "computed_value": null,
+          "computed_value": "0px",
           "expected_default": null,
-          "verdict": "GUARD-FAIL"
+          "verdict": "UNVERIFIED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-card-grid@Base' (card-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
+  "plain_summary": "Section 'section-1-card-grid@Base' (card-grid): 0 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 9,
   "golden_expectation": {
@@ -36,5 +36,8 @@
     "reason": "golden emits no child blocks, no raw text and no content-role attrs"
   },
   "height_comparable": false,
+  "ambiguous_selector_matches": {
+    ".wp-block-sgs-card-grid": 4
+  },
   "live_url": "https://sandybrown-nightingale-600381.hostingersite.com/f3-oracle-sgs-card-grid/"
 }

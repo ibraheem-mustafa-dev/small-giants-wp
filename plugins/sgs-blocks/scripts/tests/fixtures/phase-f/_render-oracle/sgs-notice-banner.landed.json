@@ -44,14 +44,14 @@
           "property": "text-align",
           "tier": "Base",
           "draft_value": "center",
-          "computed_value": "start",
+          "computed_value": "center",
           "expected_default": null,
-          "verdict": "WRITTEN-not-LANDED"
+          "verdict": "LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 2 LANDED, 1 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: text-align [Base] written 'center' but rendered 'start' (not landed).",
+  "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 3 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 3,
   "golden_expectation": {

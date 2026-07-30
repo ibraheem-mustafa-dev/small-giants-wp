@@ -374,7 +374,7 @@ Per the standing rule (memory `fix-a11y-at-draft-source-not-the-clone`): a draft
 - Both drafts carry `.sgs-footer__credit`; Mama's has a credit at all; Mama's tagline maps to `description`, NOT attribution (the exact false-positive a positional rule would produce).
 - A draft with the classifier but no matching text → R1 fires. A legacy draft with the text but no classifier → R2 fires. Neither double-emits.
 - The emitted block renders `.sgs-business-attribution` with the framework URL — never the draft's stale LinkedIn href.
-- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a legacy path rather than the norm (parked: `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`).
+- `/ui-ux-pro-max` enforces the classifier on every NEW draft it generates, so R2 stays a legacy path rather than the norm. *(This previously cited a parking slug `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER` that existed in NEITHER `parking.md` nor `memory/parking-archive.md` — a phantom citation, the same class as `P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`, removed 2026-07-30. The pointer is struck rather than re-homed; if this becomes real deferred work it needs a genuine parking entry.)*
 
 ## Open questions — RESOLVED (baked into the FRs above; recorded here for the audit trail)
 1. **Full snapshot vs Spec-26 delta → FULL now** (matches the deploy path; delta is a clean downstream transform diffing the full output against baseline, not an extractor re-plumb). FR-33-4/7.

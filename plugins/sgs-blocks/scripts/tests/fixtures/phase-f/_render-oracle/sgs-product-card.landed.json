@@ -47,19 +47,11 @@
           "computed_value": "hidden",
           "expected_default": null,
           "verdict": "LANDED"
-        },
-        {
-          "property": "padding",
-          "tier": "Base",
-          "draft_value": "16px",
-          "computed_value": "0px",
-          "expected_default": "24",
-          "verdict": "WRITTEN-not-LANDED"
         }
       ]
     }
   ],
-  "plain_summary": "Section 'section-1-product-card@Base' (product-card): 2 LANDED, 2 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: padding [Base] written '16px' but rendered '0px' (not landed).",
+  "plain_summary": "Section 'section-1-product-card@Base' (product-card): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
   "oracle_status": "LIVE-PROBED",
   "unattributed_cell_count": 11,
   "golden_expectation": {

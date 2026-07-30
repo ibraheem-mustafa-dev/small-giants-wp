@@ -47,19 +47,22 @@
     "COMPOSITION-INVALID": 4
   },
   "cell_verdict_counts": {
-    "LANDED": 37,
-    "UNVERIFIED": 36,
-    "WRITTEN-not-LANDED": 2,
-    "GUARD-FAIL": 23,
+    "LANDED": 31,
+    "UNVERIFIED": 33,
+    "WRITTEN-not-LANDED": 0,
+    "GUARD-FAIL": 33,
     "NOT-RENDERED": 8
   },
   "total_unattributed_cells": 393,
   "warnings": {
     "rt-centred-maxwidth": [
-      "AMBIGUOUS SELECTOR: '.wp-block-sgs-container' matched 2 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
+      "AMBIGUOUS SELECTOR: '.wp-block-sgs-container' matched 6 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
     ],
     "sgs-accordion-item": [
       "COMPOSITION-INVALID: sgs/accordion-item (requires sgs/accordion). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
+    ],
+    "sgs-card-grid": [
+      "AMBIGUOUS SELECTOR: '.wp-block-sgs-card-grid' matched 4 elements on the live page — used the LAST (innermost) match; verify this is genuinely this fixture's own instance, not a page-level wrapper."
     ],
     "sgs-form-field-tiles": [
       "COMPOSITION-INVALID: sgs/form-field-tiles (requires sgs/form). This fixture clones a parent-constrained block as a standalone top-level section, so parent-provided CSS + block context can never apply. Any 'missing' style here is the fixture's composition, not a converter defect — cells are reported UNVERIFIED, never scored. Fix by nesting the child inside its parent in the fixture."
@@ -79,7 +82,7 @@
     },
     "rt-centred-maxwidth": {
       "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-container@Base' (container): 5 LANDED, 3 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL. Section 'section-1-container@Mobile' (container): 2 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
+      "plain_summary": "Section 'section-1-container@Base' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 8 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True. Section 'section-1-container@Mobile' (container): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 3 GUARD-FAIL. FAIL: guards — empty=False, element=True, height=True.",
       "unattributed_cell_count": 16
     },
     "rt-media-600": {
@@ -124,7 +127,7 @@
     },
     "sgs-card-grid": {
       "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-card-grid@Base' (card-grid): 0 LANDED, 0 UNVERIFIED, 0 WRITTEN-not-LANDED, 1 GUARD-FAIL. FAIL: guards — empty=False, element=False, height=True.",
+      "plain_summary": "Section 'section-1-card-grid@Base' (card-grid): 0 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
       "unattributed_cell_count": 9
     },
     "sgs-content-collection": {
@@ -189,7 +192,7 @@
     },
     "sgs-notice-banner": {
       "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 2 LANDED, 1 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: text-align [Base] written 'center' but rendered 'start' (not landed).",
+      "plain_summary": "Section 'section-1-notice-banner@Base' (notice-banner): 3 LANDED, 1 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
       "unattributed_cell_count": 3
     },
     "sgs-option-picker": {
@@ -209,7 +212,7 @@
     },
     "sgs-product-card": {
       "oracle_status": "LIVE-PROBED",
-      "plain_summary": "Section 'section-1-product-card@Base' (product-card): 2 LANDED, 2 UNVERIFIED, 1 WRITTEN-not-LANDED, 0 GUARD-FAIL. FAIL: padding [Base] written '16px' but rendered '0px' (not landed).",
+      "plain_summary": "Section 'section-1-product-card@Base' (product-card): 2 LANDED, 2 UNVERIFIED, 0 WRITTEN-not-LANDED, 0 GUARD-FAIL.",
       "unattributed_cell_count": 11
     },
     "sgs-quote": {
