@@ -14,54 +14,56 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-30, end of Wave 2 session 1).** Wave 1 is finished. **Wave 2 has
-started: the measuring equipment is now honest, and the drawer's own edit screen is next.**
+**Where things stand (2026-07-30, end of Wave 2 session 2).** Wave 1 is finished, the measuring
+equipment is honest (session 1), and **the slide-out menu now has its own edit screen** — Wave 2's
+main job. It is live on the test site.
 
-**The headline: our tools were lying, and fixing them found something bigger.** Four separate
-checking scripts could report "all clear" while actually looking at a menu that was shut — so they
-were testing nothing. That's fixed, and each one is now *proven* able to fail rather than assumed to.
+**What changed for you.** Before today, the slide-out menu that opens when you tap the burger only
+existed *inside* a header layout — eight header designs each carrying their own private copy. To
+change it you had to go find it buried in a header template. Now there is a **"Menu drawers"** screen
+under SGS, exactly like Advanced Headers and Advanced Footers: you pick one, mark it Active, and it
+appears site-wide. It came with the "Set as active" button, the Preview-on-site link and the
+starter-design picker for free, because it plugs into machinery that already existed.
 
-**And the invisible menu text is real.** Six items — Contact, Latest, Careers, Team, Press — are
-painted the exact same brown as the panel behind them. Completely unreadable. This is what you saw
-as "arrows with no labels". Nothing could detect it before; the new check catches all six and
-correctly leaves the light-coloured menus alone. **It is detectable now, not yet fixed** — the fix
-is scheduled next.
+**Nothing was taken away.** The old way still works, untouched, side by side. That is deliberate:
+this half is *additive only*, so if anything is wrong we lose nothing. Proof, not assurance — with
+no drawer marked Active, the homepage came back **byte-for-byte identical** to before the deploy.
 
-**A warning worth keeping:** standard accessibility tools **cannot** check colour contrast inside a
-slide-out panel at all — not misconfigured, structurally unable. So the tool was confidently
-reporting "no problems" over eight items it had quietly given up on. This also killed a fix I had
-proposed and you had approved: it would have made the checking worse while looking like progress.
-Caught before building, by the review panel you asked for.
+**The thing that would have broken it, caught before it shipped.** The review panel warned that a
+page could end up with **two** slide-out panels sharing one name — invisible to you, but it breaks
+the button. I fixed it and then *proved the fix matters*: I switched the guard off on the live test
+site and the second panel duly appeared; switched it back on and it went away. Near-miss worth
+knowing: my first attempt to switch it off silently didn't apply, and had I trusted it I'd have
+"proved" a guard that was never actually tested.
 
-**Next up:** moving the slide-out menu onto its own edit screen (Wave 2's main job). Nothing was
-deployed this session — the work was all to the checking tools, so your sites are unchanged.
+**And a lie I had to head off.** There's a warning that tells you "this burger opens nothing". Once
+the menu lives on its own screen, an ordinary page correctly contains no panel — so that warning
+would have fired on *every working burger on the site*. It now says where to go and edit the panel
+instead, and I checked it still shows the real warning when there genuinely is no panel.
 
-**On the drawers, unchanged:** the clones you rejected get no rework until the CPT move lands. Both
-real faults found then are still open and scheduled inside Wave 2.
+**Honest limit:** while you're editing a page, the panel won't show in the editing canvas. That is a
+WordPress limitation, not a bug — you now get a note on screen saying so.
+
+**Next up:** the per-burger picker, then the seven drawer looks, then moving the eight headers over.
+**Not yet judged: how the drawer LOOKS.** Today proves the mechanism, not the design — the looks are
+still the rejected ones, and both faults you spotted remain open and scheduled.
 
 ---
 
 ## ⭐ CURRENT FRONTS
 
-> **QC (2026-07-30, second pass — independent subagent, D414–D417): CLEAN on code, decisions and
-> numbers.** The prior note here — "panel defect genuinely unresolved… no canary artefact in the
-> repo… carried-forward assertion, not reproducible proof" — is **SUPERSEDED and was false by the
-> time it was read**: the panel defect closed at `810a15f9`, and the evidence artefact
-> (`reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`, 281 lines, pre/post probe
-> tables) plus two re-runnable probes under `plugins/sgs-blocks/scripts/motion-qa/` are committed.
-> **Standing caveat, stated honestly:** the probes are re-runnable and committed, but their JSON
-> output is not — the tables are transcribed readings. Call it re-runnable evidence, not
-> reproducible proof.
+> **Standing caveat on motion Wave A evidence:** its probes are re-runnable and committed, but their
+> JSON output is not — the tables in
+> `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` are transcribed readings. Call
+> it re-runnable evidence, not reproducible proof. (The 2026-07-30 second-pass QC came back CLEAN;
+> narrative in `memory/session-2026-07-30-motion-waveA-closeout.md`.)
 
 ### Track 3 — Spec 38 motion system: **WAVE A CLOSED 2026-07-30** (D414–D417)
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. Wave A + its close-out are shipped, live-verified on
-real SGS blocks and **owner-confirmed** — including two defects Bean's eye caught that every
-mechanical check had called green. Wave A's plan files were deleted at his instruction.
-
-**Full record, commits, and the carry-forward rules:**
-`memory/session-2026-07-30-motion-waveA-closeout.md` · evidence
-`reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. Wave A + close-out shipped, live-verified and
+**owner-confirmed** — including two defects Bean's eye caught after every mechanical check read
+green. Its plan files were deleted at his instruction. **Full record + carry-forward rules:**
+`memory/session-2026-07-30-motion-waveA-closeout.md`.
 
 ⚠ Parked, not caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
 `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`. Also open: `/sgs-update` Stage 11 warns on the
@@ -71,26 +73,20 @@ Next motion front = Waves B ∥ C.
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
-**⭐ THE PLAN EXISTS: `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`** — 5 waves
-(fixtures → capabilities incl. drawer CPT → polish → 10-clone proof gate → Spec 33 Part 2 walker),
-peer-reviewed (risk pre-mortem + PERT + cold hidden-work review), gap-graded B. Verification
-criteria: `verify/merged-spec36-37-track.md`. **Entry point = Wave 1 (W1-a: canary mega panel
-1745, confirm EMPTY, populate, Gate-3 live pass).** Two Bean touchpoints queued inside it: confirm
-the 10-clone roster (resn + Warm named exclusions of "all 12") at Gate 1; sign the font/imagery
-substitution policy (W4-a2) before the first clone. Effort forecast 18–22 taxed sessions.
+**⭐ THE PLAN: `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`** — 5 waves (fixtures →
+capabilities incl. drawer CPT → polish → 10-clone proof gate → Spec 33 Part 2 walker), peer-reviewed,
+gap-graded B. Criteria: `verify/merged-spec36-37-track.md`. **Wave 1 CLOSED; Wave 2 in progress
+(W2-i + W2-a done).** Effort forecast 18–22 taxed sessions.
 
-**The gate that produced it (SIGNED):**
-`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. It locks: merged 36/37
-EXECUTION (specs stay separate docs, §1.2 cross-amend rule keeps them coupled) · drawer → CPT
-(`variantPreset` dies, 7 looks become CPT starter patterns; `drawerRef` becomes a post picker) ·
-nav-menu stays a BLOCK (its content home is the classic menu; its edit surface is the header CPT)
-but its burger trigger becomes fully controllable (DP4) · per-property controllability contract
-(DP5) · each accepted clone yields the B3 presets (Q3 = retire `centred/minimal/full`, keep scratch
-+ 3 search) · DP7 harness honesty gates any re-present. **GATE SIGNED (Bean, 2026-07-29): CPT admin
-name = "Menu drawer" · site-wide Active default + per-burger picker override · studionamma first.
-DP6 RE-SEQUENCED: cloning is the FINAL PROOF GATE (wave 4), NOT the opening task — FR-37-42 + DP4 +
-the CPT move are prerequisites a faithful clone needs anyway.** B3's old standalone plan is
-subsumed — its §7 answers live in the gate §0.
+**The SIGNED gate that produced it:**
+`plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. Binding locks: merged 36/37
+EXECUTION (specs stay separate docs; §1.2 cross-amend keeps them coupled) · drawer → CPT
+(`variantPreset` dies, 7 looks become starter patterns, `drawerRef` becomes a post picker) ·
+nav-menu stays a BLOCK with a fully controllable burger trigger (DP4) · per-property
+controllability contract (DP5) · each accepted clone yields the B3 presets · DP7 harness honesty
+gates any re-present. **Bean-signed: CPT admin name "Menu drawer" · site-wide Active default +
+per-burger override · studionamma first. DP6 RE-SEQUENCED — cloning is the FINAL PROOF GATE
+(wave 4), NOT the opening task.**
 
 **Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) burger-opens-nothing notice live
 (`6ddb9f48`) · **FR-37-42** column-shape picker APPROVED not built (`7ff5a184` — needs
@@ -103,16 +99,15 @@ Customiser.
 Header residue unchanged: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
 `P-HEADER-SIMPLICITY-FINDINGS` OPEN (findings 2 + 3).
 
-### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29 — CPT design gate is next
+### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29; W2-a CPT SHIPPED 2026-07-30
 
-**Bean rejected the pairs: "the difference between our version and theirs is night and day" —
-R-31-13, the eye is co-authoritative and it overrode a 21/21 mechanical pass.** Do NOT re-present
-these; every variant needs real work first. Narrative + evidence:
-`memory/session-2026-07-29-task5-drawer-rejection.md`; **D411**;
+**Bean rejected the pairs: "night and day" — R-31-13, the eye is co-authoritative and it overrode a
+21/21 mechanical pass. Do NOT re-present these; every variant needs real work first.** Narrative:
+`memory/session-2026-07-29-task5-drawer-rejection.md` · **D411** ·
 `reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (read its CORRECTION box first — the
-"21/21 PASS" headline is true only of the checks that ran). The CPT gate is signed (merged-track
-section above); the counterweight it preserves: a CPT changes where a drawer LIVES, not how
-faithfully it PAINTS.
+"21/21 PASS" headline is true only of the checks that ran). **The counterweight, still binding: a
+CPT changes where a drawer LIVES, not how faithfully it PAINTS** — W2-a (D419) proved the mechanism
+and claims nothing about the look.
 
 **Two defects PROVEN LIVE, both OPEN, fixes scheduled W2-g/W2-h** (details in their parking
 entries): `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (6 elements at **1:1** contrast on the 2
@@ -120,9 +115,9 @@ dark-`footer-bg` variants — Bean's "arrows with no labels"; **now harness-dete
 `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` (no align class emitted, so `centred-statement` renders
 left-aligned).
 
-**Rework scope, PARKED BEHIND the gate:** parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`. **The
-capture script must assert the panel is OPEN before it shoots** — enforced since D418 on BOTH sides,
-with a non-zero exit; an unassertable reference now returns UNVERIFIED.
+**Rework scope:** parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`. **The capture script must assert
+the panel is OPEN before it shoots** — enforced since D418 on BOTH sides with a non-zero exit; an
+unassertable reference returns UNVERIFIED.
 
 **Standing warnings (do not lose these):** **every scoped drawer/mega axe result from before
 2026-07-29 proves nothing — re-run it** (no openness guard existed; a CLOSED drawer returned
@@ -286,27 +281,40 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
-## NEXT SESSION — Wave 2 unit `W2-a` (the drawer CPT). `W2-i` CLOSED 2026-07-30
+## NEXT SESSION — Wave 2 unit `W2-b` (per-burger `drawerRef` picker). `W2-a` + GATE 2 CLOSED 2026-07-30
 
-**Wave 1 CLOSED** (`memory/session-2026-07-30-wave1.md`). **`W2-i` CLOSED** — commits `4f9dc0ba`
-`66084dc9` `4effc395`, pushed. Read **`memory/session-2026-07-30-wave2-harness.md`** + **D418**
-before starting; the plan is **`~/.claude/plans/spec-36-37-iterative-kahn.md`** (Part 2 = W2-a,
-Part 5 = the council findings). Nothing was deployed; the canary is unchanged.
+**Wave 1 CLOSED** · **`W2-i` CLOSED** (`4f9dc0ba` `66084dc9` `4effc395`) · **`W2-a` CLOSED —
+commit `bd67a641`, DEPLOYED to sandybrown, GATE 2 PASSED on the mechanism.** Read
+**`reports/2026-07-30-w2a-gate2-drawer-cpt.md`** (the evidence, incl. every negative control) +
+**D419** before starting. Plan: `~/.claude/plans/spec-36-37-iterative-kahn.md`.
 
-**START HERE — `W2-a`, then GATE 2 before ANY destructive step.** Four council fixes MUST land in
-the same commit as the render path (plan Part 2 §2c):
-1. **BLOCKER — `src/blocks/nav-drawer/render.php` has ZERO refs to `Sgs_Active_Layout`** (verified by
-   grep), so the planned landmark guard has no input and **two `<dialog id="sgs-nav-drawer">` would
-   ship**. Call `Sgs_Active_Layout::mark_served( AREA_DRAWER )` on the ordinary block path —
-   precedent `class-sgs-header-rules.php:253-258`. Gate 2 step 8 fails without it.
-2. Give the new "a burger asked" static registry a reset seam like `reset_request_state()` (`:94-98`).
-3. Write that registry **before** `do_blocks()`, mirroring `render_active()` (`:157-165`) — the
-   drawer's own content contains a `sgs/nav-menu` with no nesting check.
-4. `wp_footer` never fires in the editor (`class-sgs-css-registry.php:32-36`) — **Bean-decided:**
-   declare it AND add an editor-only notice on the burger (reuse the FR-36-9a pattern, `6ddb9f48`).
+**⚠ GATE 2 passed on the MECHANISM, not on fidelity.** It proves the CPT path paints what the
+block path painted (uid-identical attributes; 375px zero property mismatches, both sides guard-
+verified open). It says nothing about how the drawer LOOKS — that is still the rejected D411
+design, and **Bean's eye (R-31-13) has not been given** on
+`reports/visual-diff/w2a-cpt-drawer-open-390.png`.
 
-**Gate 2 uses `scripts/parity/extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open …`**
-(text-keyed per rule 4a; exit 3 = VACUOUS). **The cloner's `computed-parity.js` stays untouched.**
+**All four council fixes landed** and the blocker is proven load-bearing by negative control:
+guard off → **2** `<dialog id="sgs-nav-drawer">`; guard on → **1**.
+
+**Canary state (fixtures, do not assume clean):** `sgs_drawer` **2056** published + **ACTIVE** ·
+page **2058** `/w2a-gate2-precpt-drawer/` = the pre-CPT parity subject, keep for W2-b/W2-d re-runs.
+
+**START HERE — `W2-b`:** re-type `drawerRef` from DOM-id string to a drawer-POST reference with a
+picker (Spec 36 clause 3). The per-request burger registry in `class-sgs-drawer-render.php` was
+built to carry requested post ids with no re-architecture — that is its intended next use. Then
+W2-c (7 starter looks), W2-d (8 patterns drop their embedded drawer + `variantPreset` retires).
+**W2-d is the first DESTRUCTIVE step — re-run Gate 2 before it.**
+
+**Two harness residuals found BY Gate 2, fix before re-running it:**
+`P-EXTRACT-CSS-DIFF-UNOPENABLE-TRIGGER-EXITS-0` (a run that measured 1 of 3 tiers still exited 0 —
+the same class W2-i existed to kill) · `P-VISUAL-DIFF-GATE-NO-MARKUP-NEUTRAL-PATH` (its only
+escape hatch, `--no-verify`, discards every other gate).
+
+**Gate 2 instrument:** `scripts/parity/extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open
+'.sgs-nav-menu__burger'` — `--open` takes the **TRIGGER**, not the surface, and only 375px has an
+open state (the burger is CSS-hidden at/above `collapsePoint` 768). **The cloner's
+`computed-parity.js` stays untouched.**
 
 **Design gates SIGNED — builds deferred, both edit `site-header/render.php`:** `W2-j` = **A1-lite**
 (any-tier auto-scrim + relabel "Text shadow" decorative-only; **NO reshape — D402**) · new **`W2-v`**
