@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-07-29
+last_updated: 2026-07-30
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -36,40 +36,31 @@ the "centred" style never centring) — both are scheduled inside Wave 2.
 
 ## ⭐ CURRENT FRONTS
 
-> **QC (2026-07-30): bypassed at write-time, independently reviewed same day → CLEAN.** Every
-> Track 3 claim checked vs git log + DB + live source: panel defect genuinely unresolved,
-> D414/D415 mechanisms match the code, 22/81 and D415 confirmed. **Caveat:** "verified live" rests
-> on commit-message narrative — no canary report/screenshot artefact in the repo. Treat it as a
-> carried-forward assertion, not reproducible proof; re-verify before relying on it.
+> **QC (2026-07-30, second pass — independent subagent, D414–D417): CLEAN on code, decisions and
+> numbers.** The prior note here — "panel defect genuinely unresolved… no canary artefact in the
+> repo… carried-forward assertion, not reproducible proof" — is **SUPERSEDED and was false by the
+> time it was read**: the panel defect closed at `810a15f9`, and the evidence artefact
+> (`reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`, 281 lines, pre/post probe
+> tables) plus two re-runnable probes under `plugins/sgs-blocks/scripts/motion-qa/` are committed.
+> **Standing caveat, stated honestly:** the probes are re-runnable and committed, but their JSON
+> output is not — the tables are transcribed readings. Call it re-runnable evidence, not
+> reproducible proof.
 
-### Track 3 — Spec 38 motion system: Wave A CLOSED bar Bean's eye
+### Track 3 — Spec 38 motion system: **WAVE A CLOSED 2026-07-30** (D414–D417)
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active` (D406–D409). Wave A (A1–A9) + its qc-council pass are
-shipped and live-verified on real SGS blocks, all 3 arms, zero GSAP bytes on a no-fx page; the fx
-roster is DERIVED not hardcoded. Closed history → D414/D415/D416 + `git log --grep "fix(motion)"`.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. Wave A + its close-out are shipped, live-verified on
+real SGS blocks and **owner-confirmed** — including two defects Bean's eye caught that every
+mechanical check had called green. Wave A's plan files were deleted at his instruction.
 
-**CLOSE-OUT COMPLETE 2026-07-30 (D416) — all 5 items shipped.** Evidence + method notes:
+**Full record, commits, and the carry-forward rules:**
+`memory/session-2026-07-30-motion-waveA-closeout.md` · evidence
 `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`.
 
-1. **Panel travel FIXED, live-verified** (`810a15f9`). Real error **100px, not 264px** — the
-   recorded figures were stale + impossible under the CSS; `-111` was a `scroll-behavior:smooth`
-   artefact. `landingErrorPx` 100 → **0**.
-2. **matchMedia change REVERSED, not applied** (`f3303c85`). Citation does not hold; sibling
-   conditions would have run the pin **under reduced motion**. Item 14 + `provider.js` amended.
-3. **`fxEnd` + `fxTrigger` have real controls** (`c164368e`), driven by new DB columns
-   `fx_effects.pins`/`.triggers`. `fxTrigger` NOT deleted — §11.2 defines it. Editor-verified.
-4. **Reduced-motion arm PASS** — the earlier "unreachable" report is FALSE (it measured the
-   motion-allowed branch). Probe carries a negative-control arm.
-5. **Bean's eye: 6 of 7 pass.** He rejected pin-scrub — pin worked, children never animated.
-   **FIXED + verified** (`4ae10dd9`): participants 0 → 3, all tween, stagger intact. Two faults,
-   either fatal — nothing ever wrote `data-sgs-fx-child` (read with no writer, like `fxTrigger`),
-   and it read DIRECT children when content sits a level deeper (the `5830985e` depth mistake).
-   Empty participants now bail loudly. **Re-check next pass.**
-
 ⚠ Parked, not caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
-`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`.
+`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`. Also open: `/sgs-update` Stage 11 warns on the
+mega-* container roster (nav track's blocks — left alone, not ours to reconcile).
 
-Wave B ∥ C unblocked (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`).
+Next motion front = Waves B ∥ C.
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
@@ -320,7 +311,11 @@ Sign the W4-a2 substitution policy before the first clone · W3-d blind-tester a
 
 **New canary fixtures** (do not assume clean) are listed in the session file.
 
-**Alternative front (independent):** motion Waves B ∥ C per their session prompts.
+**Alternative front (independent): motion Waves B ∥ C** — prompts unchanged under `plans/`. Wave A
+is CLOSED (D416/D417); its two plan files were deleted at Bean's instruction. Session record +
+carry-forward rules: `memory/session-2026-07-30-motion-waveA-closeout.md`. **Before Wave B ships an
+effect, prove its `data-sgs-fx-*` writer on a live page** — two Wave A defects were attribute
+contracts read by code and written by nothing.
 
 ### Tooling for the next session (WordPress project — Gate 5)
 

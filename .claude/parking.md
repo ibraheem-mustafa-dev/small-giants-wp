@@ -33,6 +33,29 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 *53 open entries.*
 
+### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 2,634 lines against a 600 cap
+**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
+
+`docscore` grades `decisions.md` at 67.3% (C), and the only genuine failure is length: 2,634 lines
+against the 600-line cap for the doc type. The project already has the remedy — archive-on-resolve
+into `memory/decisions-archive.md` for retired/superseded/non-load-bearing entries — it just has
+not been run recently enough to keep pace.
+
+**The other three docscore failures on this file are SCORER FALSE POSITIVES — do not "fix" them:**
+- `organization` ×10 flagged as US spelling. These are Schema.org type identifiers
+  (`Organization`, `LocalBusiness`) inside JSON-LD discussion. `~/.claude/rules/uk-english.md`
+  exempts third-party/fixed identifiers, and renaming them would break the emitted schema.
+- `TBD` flagged as a stub. It appears in a historical note recording that a bug's cause *was* TBD
+  at the time of writing — prose in a dated record, not an unfilled placeholder.
+- `Maybe` flagged as hedging. It is part of an article title: Roselli, *"Maybe Don't Name That
+  Landmark"* (2024).
+
+Same class applies to `parking.md`'s own 80% (B): its `TODO`/`TBD` markers are quoted inside
+parked-work descriptions, which is what a parking file is for.
+
+**Trigger:** next decisions.md sweep, or when the D-range index is next rebuilt. Archive by
+D-range; do not delete.
+
 ### P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR — canary fixture pages carry unopenable blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
 

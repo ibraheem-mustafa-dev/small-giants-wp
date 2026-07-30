@@ -15,6 +15,46 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D417 — a pinned section HOLDS its finished state before releasing; `fxHold` added to the §11.2 grammar [ROUTINE]
+
+**2026-07-30, Spec 38 FR-38-6 / §11.2 / §11.3.** Two owner-reported defects on
+`/motion-canary-pin-scrub/`, both found by Bean's eye after every mechanical check read green
+(R-31-13).
+
+**(a) The children never animated at all.** Two independent faults, either alone sufficient:
+`data-sgs-fx-child` was required on every participant and **written by nothing anywhere** (grep
+across `src/`/`includes/`/`theme/` found the string only in the module that reads it; live DOM
+returned zero markers) — the same read-with-no-writer shape as `fxTrigger`; and it read DIRECT
+children when `sgs/container` renders content a level deeper (`el.children` = 1 wrapper holding 3
+content blocks), the same wrong-DEPTH mistake as `5830985e`. **It failed silently because an empty
+participant list still builds a valid timeline** — the pin engages, so the effect looks wired.
+Contract rewritten to FR-38-6's own wording ("while its CHILDREN'S tweens play"); marker kept as an
+optional NARROWING filter. Unwrap steps through framework-owned wrapper classes only (a first draft
+descending through any single child would have unwrapped past a lone heading into its `<span>`).
+Zero participants now BAILS with a warning. Participants 0 → 3, verified live.
+
+**(b) No hold before release.** The pin let go the instant the last child landed — ~100px of
+scrolling (one wheel notch) with the composition assembled, so the finished state was only visible
+by stopping at an exact point. **GSAP has no dwell and there is no industry-standard figure:** a
+pin lasts exactly as long as `end`, and `scrub` stretches whatever timeline it is given across all
+of it, so a hold exists only where the timeline deliberately leaves room.
+
+Implemented as trailing DEAD TIME on the timeline, **not** a longer `end` — lengthening the pin
+would also slow every child's entrance (scrub maps the whole timeline across the whole pin), i.e.
+changing the choreography's feel to fix its ending. Expressed as a FRACTION of the pin so it scales
+with the client's chosen pin length. Default `standard` = 33% (Bean). Unset takes the default, not
+0 — a missing attribute must not silently mean "no pause", which is the behaviour reported wrong.
+
+**Control: "Pause after the animation"** (Bean rejected mechanism-named wording), gated on
+`fx_effects.pins` so it never appears where there is no "afterwards" to hold.
+
+**SPEC AMENDED IN THE SAME COMMIT** (`48f34e9e`). §11.2's grammar table is the authority on which
+`data-sgs-fx-*` attributes exist; adding one without amending it would leave the code out of
+conformance with FR-38-4 — precisely the trap `fxTrigger` set the same day, where a spec-defined
+attribute was nearly deleted for looking undocumented.
+
+Record: `memory/session-2026-07-30-motion-waveA-closeout.md`.
+
 ## D416 — the horizontal panel's nested matchMedia STAYS; travel is derived from where the last panel must land [INCIDENT]
 
 **2026-07-30, Spec 38 FR-38-8 / §10.** Two reversals, both from claims that were asserted

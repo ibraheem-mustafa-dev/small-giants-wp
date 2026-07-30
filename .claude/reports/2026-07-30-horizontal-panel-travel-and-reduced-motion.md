@@ -150,7 +150,7 @@ Both controls read two new `fx_effects` columns rather than new hand-maintained 
 
 | Column | Drives | Source of the values |
 |---|---|---|
-| `pins` | the `fxEnd` control's wording | VERIFIED from source — `fx-pin-scrub.js:136` and `fx-horizontal-panel.js:207` are the only modules setting `pin: true`. `owns_scroll_transform` is not a proxy: 5 effects set it, 2 pin. |
+| `pins` | the `fxEnd` control's wording | VERIFIED from source — `fx-pin-scrub.js` and `fx-horizontal-panel.js` are the only two modules setting `pin: true` (`grep -rn "pin: true"` returns exactly 2 hits; line numbers deliberately omitted — they drifted to `:291`/`:266` when `48f34e9e` landed, and a stale line cite is worse than none). `owns_scroll_transform` is not a proxy: 5 effects set it, 2 pin. |
 | `triggers` | which "When it starts" options appear | The per-effect enum §11.2 already specifies. |
 
 ### Verified live in the block editor (D388 — an edit.js change is not verified until the editor opens)
