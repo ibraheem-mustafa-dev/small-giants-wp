@@ -1,110 +1,169 @@
 Invoke /autopilot before doing anything else.
 
 > ⚠ THIS FILE IS A POINTER, NOT THE TRUTH. Live status = `.claude/LEDGER.md` — if it contradicts this prompt, the LEDGER wins.
-> ⚠ **GATE 1: Spec 38 must read `status: active` (Bean signed the design gate). GATE 2: Wave A must be SHIPPED + live-verified (check the LEDGER) — this wave consumes its registry, provider, and ScrollTrigger module.** If either gate fails, STOP.
-> Co-active tracks may share this worktree — path-scope every commit; `git branch --show-current` in the same command as each commit.
-> **This session runs in PLAN MODE first** — investigate, present the plan, get approval, then build.
-> ⚠ **HIGHEST-RISK WAVE: it touches the Spec 37 header system and theme templates. The FR-37-40 regression gate below is NOT optional.**
+> ⚠ **REWRITTEN 2026-07-30 (D422).** The original prompt was for GSAP ScrollSmoother + the D407 header-sticky resolution + a template restructure. **All of that is CANCELLED** — smooth scrolling shipped via Lenis instead, which needs no wrapper and no template change. Do not resurrect it from git history.
+> Co-active tracks share this worktree — path-scope every commit; `git branch --show-current` in the same command as each commit.
+> **Start in PLAN MODE** — investigate, present the plan, get approval, then build.
 
-# Next session — Motion Wave B: ScrollSmoother + the sticky resolution + page transitions
-
-You are the engineer for the SGS Motion System (Spec 38) site-level wave. Wave A shipped the Tier G foundation. This wave adds the two SITE-level capabilities: GSAP ScrollSmoother (with the D407 header-sticky resolution) and cross-document View Transitions page transitions (Tier V — no GSAP).
+# Motion Wave B — CLOSE THE WAVE: page transitions (FR-38-19)
 
 ## State recap (plain English — no assumed pretext)
 
-ScrollSmoother gives the whole site buttery, slightly-lagged scrolling — but it works by putting the page content inside a wrapper it moves with `transform`, and a CSS sticky header inside a transformed wrapper silently stops sticking (Spec 37's own `findStickyBreakingAncestor()` guard already detects exactly this). Bean approved resolution D407: **the header lives OUTSIDE the smoothed wrapper** (scroll stays native, so the shipped header system — sticky, shrink, hide-on-scroll, transparent, row collapse — keeps working untouched), and the existing guard becomes a tripwire that disables the SMOOTHER (never sticky) if a custom template traps the header inside. Page transitions are pure CSS (`@view-transition`) — no GSAP, no router; unsupported browsers just navigate normally.
+Wave B had two halves. **Half one is DONE:** site-level smooth scrolling is shipped, live-verified
+and owner-tuned — it uses **Lenis** (a small library that eases the browser's real scroll), NOT GSAP
+ScrollSmoother. That swap happened because ScrollSmoother wraps page content in a moving box, and a
+sticky header inside a transformed box silently stops sticking; Lenis needs no box at all. It sits
+in a new doctrine tier — **Tier H (helper/utility)**, a closed list containing only Lenis.
+
+**Half two is UNTOUCHED: page transitions (FR-38-19).** These are pure CSS — the cross-document
+View Transitions API (`@view-transition`). No GSAP, no Lenis, no JavaScript router. A browser that
+doesn't support it simply navigates normally, which IS the fallback.
+
+## ⛔ READ THIS BEFORE PLANNING — what NOT to build
+
+- **D407 / Spec 38 §4.2 is SUPERSEDED.** No wrapper-insertion output filter. No header relocation.
+  No per-tier "outside if sticky on ANY tier" edge rule. No `findStickyBreakingAncestor()` tripwire
+  extension — the shipped warn-only guard stays exactly as it is.
+- **Spec 37 FR-37-40 is NOT to be modified.** It was re-verified under smoothing and passed,
+  including the row-collapse leg (gap 0.01px).
+- **Do not re-propose touch smoothing.** Built at Bean's request, tested by him on a real phone at
+  the lightest setting, rejected as "abrupt and janky". Default OFF, labelled tested-and-rejected.
 
 ## First action (<5 min, zero deps)
 
 ```bash
 git log -1 --stat && git status && git branch --show-current
-grep -m1 "^status" .claude/specs/38-SGS-MOTION-SYSTEM.md          # MUST be: active
-grep -n "Wave A" .claude/LEDGER.md                                 # MUST show shipped/verified
+grep -m1 "^status" .claude/specs/38-SGS-MOTION-SYSTEM.md   # MUST be: active
+python .claude/hooks/handoff-preflight.py --check           # must pass before you commit later
 ```
 
-## Mandatory READING — before any Write/Edit or dispatch
+## Mandatory READING — before any Write/Edit
 
-1. `.claude/specs/38-SGS-MOTION-SYSTEM.md` **IN FULL** — especially §3.5 (FR-38-18/19 conditions), §4.2 (D407 resolution incl. the edge rule), §9/§10 rows for both features.
+1. `.claude/specs/38-SGS-MOTION-SYSTEM.md` **IN FULL** — especially §3.5 FR-38-19, the §9 and §10
+   rows for page transitions, and §4.2's SUPERSEDED box so you know what not to build.
 2. Root `CLAUDE.md` IN FULL.
-3. `.claude/specs/37-HEADER-FOOTER-BUILDER.md` **FR-37-40 IN FULL** (sticky model, measured pinned-gate, `findStickyBreakingAncestor()`, row collapse) + FR-37-14 (tri-state emission) — you are about to move this system's element in the template tree; you must know every behaviour you could break.
-4. The shipped header-behaviour code: `theme/sgs-theme` header templates/parts + the pinned-gate/observer JS (locate via `grep -rn "findStickyBreakingAncestor\|sgs-header-height" theme/ plugins/`).
-5. `.claude/LEDGER.md` — track collisions on theme templates.
-6. Wave A's registry/provider (as shipped — read the code, not the plan).
+3. `.claude/memory/session-2026-07-30-motion-waveB-commit1.md` — what shipped, why the library
+   changed, and the errors made getting there.
+4. `.claude/reports/2026-07-30-motion-waveB-commit1-live-verification.md` — the evidence bar this
+   wave is held to, and the named gaps still owed.
+5. `.claude/STOP-CATALOGUE.md` §A + the §C pre-flight ritual.
 
-## Why this matters (Rule 7)
+## The work
 
-ScrollSmoother + page transitions are the two most site-wide "feels expensive" signals a client site can send. Top USP: they compose with the shipped header system instead of breaking it (the thing every naive GSAP integration gets wrong). Impact: closes the site-level half of Spec 38; Wave C is independent.
+### Task 1 — Page transitions (FR-38-19)
 
-## Phase 0 — work breakdown (tier = DETERMINISM routing)
+**What:** cross-document View Transitions as a site setting, with a per-template style
+(fade / slide / none), suppressed under reduced motion.
+**Why:** closes Wave B — the last spec'd item in it.
+**Estimated time:** 45m build, plus live verification.
 
-| ID | Item | Tier | Est | QC |
-|---|---|---|---|---|
-| B1 | Wrapper insertion — **ONE shared output filter** (qc-council 2026-07-29: all 9 templates are flat header/main/footer siblings, but NO shared wrapper filter exists today — build one, keyed on the header/footer template-part boundaries, house render_block-chokepoint style; NEVER 9 hand-edited template forks): `#smooth-wrapper`/`#smooth-content` wraps main+footer; header placement per the tri-state edge rule — OUTSIDE the wrapper when `headerSticky` is truthy on ANY tier (native-speed header scroll on off tiers = documented trade-off), INSIDE only when sticky is off on every tier; markup only changes when the site setting is ON | SONNET | 1h | setting OFF = byte-identical page HTML (diff); setting ON = header position matches the any-tier rule (DOM check on a sticky-desktop-only fixture AND an all-off fixture) |
-| B2 | ScrollSmoother site setting (theme settings surface, default OFF) + registry enqueue (smoother module only when ON) + strength control | SONNET | 30m | OFF page = zero smoother bytes; ON = enqueued once |
-| B3 | FR-38-18 conditions: disabled in editor/wp-admin; reduced-motion live-kill; anchor/`:target`/skip-link offsets honour `--sgs-header-height`; **suppress the theme's `smooth-scroll.js` anchor-click handler while the smoother is ON** (qc-council: two smooth-scroll drivers fighting one click is a defect); keyboard/find-in-page scroll correctness | SONNET | 1h | each condition = one named observable check (see ritual Q21); anchor click under smoother = exactly ONE driver animates |
-| B4 | D407 tripwire: **EXTEND** the existing warn-only `findStickyBreakingAncestor()` (`src/header-behaviours/view.js:127-152` — today it only console.warns) so its detection also DISABLES the smoother when a sticky header is trapped inside the wrapper | SONNET | 30m | plant a trapped-header fixture → smoother off + warning fires; sticky never sacrificed; untrapped page → smoother unaffected |
-| B5 | Page transitions (FR-38-19): `@view-transition` CSS + site setting + per-template style (fade/slide/none) + reduced-motion suppress | SONNET | 45m | transition fires on supported browser; unsupported = normal nav; reduced-motion = instant |
-| B6 | **FR-37-40 REGRESSION GATE:** re-run the full Spec 37 live verification (pinned gate, shrink, hide-on-scroll, transparent, **row collapse** — it rides the same `isHeaderPinned()` gate this whole resolution rests on, scroll-padding) with smoother OFF **and** ON, plus two named sub-cases (qc-council): **sticky+transparent same-tier coexistence** (a proven-live past regression class) and the **nav-drawer `<dialog>`-in-header offset** (its transformed-ancestor edge is already flagged untested in `header-behaviours.css:44-53`) | LIVE | 1h | every behaviour + both sub-cases green in BOTH states; any regression = STOP #19 |
-| B7 | Live verification + Bean's eye | LIVE + BEAN | 30m | see Task 4 |
+**Orchestration:**
+- Execution: **inline (main thread, Opus).** It is small, and it edits the same settings surface
+  (`class-sgs-motion-settings.php` + `class-sgs-motion-registry.php`) that smooth scrolling owns —
+  a parallel agent would collide there.
+- Depends on: none. Parallel with: none (see collision note).
+- `/qc-council` gate after: **yes** — it touches SGS-block PHP (project rule + blub.db 255).
 
-## Tasks
+**Build notes already settled — do not re-derive:**
+- Settings live on the existing **SGS → Motion** page, in the same `sgs_motion_settings` option
+  (add keys; do NOT create a second option or a second sanitiser).
+- The dependent-control script `assets/admin/motion-settings.js` already greys out inapplicable
+  controls and sets the `disabled` PROPERTY (not just opacity) — extend its `sync()` for new rows.
+- Read-side defaulting belongs on `SGS_Motion_Registry::settings()`, NOT the admin class: the
+  frontend must never depend on the settings class being loaded.
+- Reduced motion: **suppress**. This one is CSS-side, so `@media (prefers-reduced-motion: reduce)`
+  is the right mechanism (unlike the smoother, which needed a live JS check because it is a
+  long-lived instance).
 
-### Task 1 — Template restructure + setting (B1–B2). **Commit 1** (R-31-5).
-### Task 2 — Conditions + tripwire (B3–B4). **Commit 2.**
-### Task 3 — Page transitions (B5). **Commit 3.**
-### Task 4 — Regression gate + live verification + Bean's eye (B6–B7, R-31-13). NO further commit until green.
-**What:** Deploy to sandybrown. Two evidence sources per claim: (a) DOM/network measurement, (b) computed behaviour on the live page (e.g. smoother ON: `#smooth-content` carries a changing `transform` while `getComputedStyle(header).position === 'sticky'` AND the header's `getBoundingClientRect().top === 0` mid-scroll — the pinned gate stays truthful). Bean scrolls the canary personally — smoothness is an eye judgment (R-31-13).
-**Acceptance:** every FR-38-18 condition + every FR-37-40 behaviour has a recorded result in both smoother states.
+**Acceptance (measurable, not "code shipped"):**
+1. Setting OFF → no `@view-transition` rule in the served HTML (grep it).
+2. Setting ON → rule present, and a same-origin navigation visibly transitions in a supporting
+   browser.
+3. Unsupported browser / reduced motion → navigation still works, instantly.
+4. Editor + wp-admin unaffected (§9 row) — assert with an **authenticated** fetch PLUS a positive
+   control that the page really is an admin page. A zero from a logged-out fetch proves nothing.
+5. Spec 38 §3.5 / §9 / §10 updated to match what shipped; a D-number recorded.
 
-## Stop-and-snapshot (STOP #19)
+### Task 2 — The two owed qc-council sub-cases
 
-Any FR-37-40 regression that survives one fix attempt: STOP, revert the wave's template commits (`git revert`, path-scoped), snapshot the evidence to the LEDGER, end the session. The header system is BUILT + LIVE-VERIFIED property of Spec 37 — Wave B adapts around it, never degrades it.
+**What:** (a) sticky + transparent on the SAME tier coexisting under smoothing (a proven-live past
+regression class); (b) the nav-drawer `<dialog>`-in-header offset — its transformed-ancestor edge is
+flagged untested in `header-behaviours.css:44-53`.
+**Why:** both named in Spec 38 §8's Wave B regression gate; owed from commit 1.
+**Estimated time:** 20m. **Execution:** inline, Playwright/devtools on the canary.
+**Acceptance:** both observed with smoothing ON and OFF, recorded in the verification report.
+
+### Task 3 — Long-distance anchor test
+
+**What:** the canary homepage's only anchor target is the skip link (24px), so the header offset is
+proven but a long smoothed anchor journey is not.
+**Why:** FR-38-18(c). **Estimated time:** 10m. **Execution:** inline.
+**Acceptance:** an anchor to a far target lands clear of the sticky header with smoothing ON.
 
 ## Dependency graph
 
 ```
-B1 → B2 → B3 → B4 → B6 ┐
-        B5 ─────────────┴→ Task 4 (live + Bean) → push (verify git log -1)
+Task 1 (inline, Opus) ──/qc-council──┐
+Task 2 (inline)  ────────────────────┼──→ live verify + Bean's eye ──→ path-scoped commit ──→ WAVE B CLOSED
+Task 3 (inline)  ────────────────────┘
 ```
-
-## Pre-flight self-attestation ritual (answer inline before first Write/Edit)
-
-1. Spec 38 `status: active`? Wave A shipped? (Both gates — else STOP.)
-2. Have I read Spec 38 §4.2 AND Spec 37 FR-37-40 in full this session?
-3. Q21 — named observable signal per condition (smoother lag, pin, anchor offset, transition)?
-4. Q25 — for the sticky header, did I MEASURE the rendered box and confirm which ancestor is the containing block in BOTH smoother states? (This is the exact Q25 case.)
-5. Did I diff the OFF-state templates for byte-identity before touching anything else?
-6. Is every new setting surfaced where Spec 38 §7 says (settings surface, NOT block inspectors)?
-7. Branch check in the same command as each commit?
+Tasks 2 and 3 are independent of Task 1 and of each other — run them while Task 1's QC is out.
 
 ## Methodology guardrails (do not skip)
 
-- `/qc-council` before the template-restructure commit (shared wrapper = design-gated surface class; R-31-12).
-- Measure the STATE, don't read the flag that requests it (the pinned gate measures computed position — keep it that way).
-- Verify BOTH surfaces: the editor must be completely unaffected (smoother disabled there by construction — prove it, don't assume it).
-- `git log -1` after every commit.
-
-## Known-open, NOT blockers
-
-- P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING (cosmetic, pre-existing) — do not fold its fix into this wave; note interaction if observed.
-- P-ROW-COLLAPSE-RESIDUALS reduced-motion arm — pre-existing honesty flag.
+- **Deploy before measure.** Anything that should be visible on a URL needs build + deploy + OPcache
+  reset FIRST, or the test measures stale output. The shared tree carries a co-active track's
+  uncommitted work — deploy from an **isolated worktree pinned to your commit**, never
+  `--allow-dirty`.
+- **A gate that cannot see your file cannot fail on it.** After adding a file a gate should cover,
+  run the gate and confirm the file appears BY NAME in its output.
+- **An absence-check needs a positive control.** Prove you were looking in the right place before
+  trusting a zero.
+- **A grep count is not a measurement.** Block markup emits an opening AND a closing comment per
+  block; a self-closing empty block emits one.
+- **Verify library option names against the INSTALLED version's types/source.** An option that does
+  not exist is discarded in silence and reads as an enforced guarantee.
+- **Outcome vs completion** — Wave B closes when FR-38-19 is live-verified, not when it compiles.
+  Map any deferral to a named spec STAGE (STOP-29), never "out of scope".
+- `python .claude/hooks/handoff-preflight.py --check` must pass before the handoff completes.
 
 ## Skills / tools
 
 | Skill | When |
 |---|---|
 | `/autopilot` | FIRST |
+| `/brainstorming` | Design the per-template transition surface before building |
+| `/strategic-plan` | If the work widens beyond the settings surface |
+| `/research` | Only if View Transitions support is unclear — verify, don't assume |
+| `/gap-analysis` | Grade the result before calling the wave closed |
+| `/lifecycle` | If any skill/agent changes fall out of this |
+| `/qc-council` | Before the commit (SGS-block PHP) |
 | `/sgs-wp-engine` | Theme/template work |
-| `/qc-council` | Before template-restructure commit |
-| `/verify-loop` | Two-attestation on the regression gate |
 | `/handoff` | Session close |
+
+| Tool / agent | When |
+|---|---|
+| Playwright or chrome-devtools MCP | Live DOM + transition observation on the canary — use an isolated browser context, another track may hold one |
+| `wp-sgs-developer` agent | If the build widens beyond the settings surface |
+| `code-reviewer` agent | Before any shared-theme commit |
+| `/sgs-db` · `/wp-blocks` | Block ground truth — never a prose count |
+
+## Tool bindings
 
 | Operation | Command |
 |---|---|
-| Build | `cd plugins/sgs-blocks && npm run build` (PowerShell) |
-| Deploy | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` (add `--theme-only`/full as needed) |
-| Live DOM | Playwright MCP (own isolated browser if another track is active) |
+| Build | `cd plugins/sgs-blocks && npm run build` (run Node/npm via **PowerShell** — the nvm shim is broken in Git Bash) |
+| Lint JS | `npx wp-scripts lint-js <paths> --fix` |
+| Lint PHP | `phpcs --standard=WordPress <file>` · `php -l <file>` |
+| Isolated deploy (shared dirty tree) | `git worktree add -q /c/tmp/<name> <commit>` → `cp -r plugins/sgs-blocks/build /c/tmp/<name>/plugins/sgs-blocks/` → `cd /c/tmp/<name> && python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --skip-build` → `git worktree remove --force /c/tmp/<name>` |
+| Motion budget gate | `python plugins/sgs-blocks/scripts/check-motion-bundle-budget.py --check` (and `--update-baseline` when a new module is deliberate) |
+| Doc-hygiene gate | `python .claude/hooks/handoff-preflight.py --check` |
+| Toggle the site setting on the canary | `ssh hd` → `wp option update sgs_motion_settings '{...}' --format=json` |
+| Read the module's live settings blob | grep the served HTML for `wp-script-module-data-@sgs/smooth-scroll` |
+| Block ground truth | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` · `python ~/.claude/hooks/wp-blocks.py dump` |
+| Canary credentials | `.claude/secrets/sandybrown.env` (gitignored). **Parse it in Python, not `source`** — the password contains shell metacharacters and broke a verification run this way. |
 
 ## Guardrails
 
-Path-scoped commits. No hand-rolled tar/scp (D336). No deprecated.js (D270). No CDN. UK English. `/handoff` at close.
+Path-scoped commits. No hand-rolled tar/scp (D336). No CDN. No `deprecated.js` (D270). UK English.
+`/handoff` at close.

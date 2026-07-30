@@ -14,47 +14,63 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-30, end of Wave 2 session 2).** Wave 1 is finished, the measuring
-equipment is honest (session 1), and **the slide-out menu now has its own edit screen** — Wave 2's
-main job. It is live on the test site.
+**Where things stand (2026-07-30, close of the motion Wave B session).** Three tracks are live and
+independent — pick one, they do not block each other.
 
-**What changed for you.** The slide-out menu now has its own **"Menu drawers"** screen under SGS,
-like Advanced Headers/Footers: pick one, mark it Active, it appears site-wide. Nothing was taken
-away — the old way still works alongside it, and with no drawer Active the homepage came back
-**byte-for-byte identical**. Record: `reports/2026-07-30-w2a-gate2-drawer-cpt.md` · D419.
+**What changed for you today. Smooth scrolling is built and live on the test site** — off by
+default, zero cost when unused, its own **SGS → Motion** screen, set to strength 3 after 4 felt
+sluggish. The touch version you asked for was built, you tried it on your phone and rejected it; it
+is off and labelled "tested and rejected" so nobody suggests it again. Built with a **different
+library than planned** — the planned one puts the page in a moving box, which silently breaks your
+sticky header, so it and all the work that existed only to dodge that were dropped. Your header was
+not touched, and was re-tested afterwards. Record:
+`memory/session-2026-07-30-motion-waveB-commit1.md` · D422.
 
-**Three things you raised are diagnosed and waiting, none built.**
-1. **Header wrapping** — never a space problem. A rule tells the row to stack below 767px and fires
-   even when everything fits (at 766px the contents need 733px of 766px). Hits desktop too because
-   it measures the row, not the screen. Designed + signed: D420.
-2. **Drawer architecture** — you rejected my shared-header-row idea and were right; **the spec
-   agrees with you**, not me. Held over as next session's FIRST task with your objections recorded
-   in full: `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` · D421.
-3. **The drawer's ugly scrollbar is not the drawer's** — it paints none. It is the page's permanent
-   14px scrollbar strip sitting beside it, doing nothing.
+**Still waiting, none built:**
+1. **Page transitions** — the last piece of this motion wave. Next session.
+2. **Header stacking on mobile** — you raised this again today. It is **diagnosed and signed off but
+   never built** (D420): a rule stacks the header below 767px even when everything fits. Still a
+   visible defect on every header.
+3. **Drawer architecture gate** — your objections recorded in full;
+   `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` · D421.
+4. **Track 1 verification debt** — code exists, proof does not (D423).
 
 ---
 
 ## ⭐ CURRENT FRONTS
 
-> **Standing caveat on motion Wave A evidence:** its probes are re-runnable and committed, but their
-> JSON output is not — the tables in
-> `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` are transcribed readings. Call
-> it re-runnable evidence, not reproducible proof. (The 2026-07-30 second-pass QC came back CLEAN;
-> narrative in `memory/session-2026-07-30-motion-waveA-closeout.md`.)
+> **Standing caveat (motion Wave A evidence):** probes are re-runnable and committed, their JSON
+> output is not — `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds
+> transcribed readings. Re-runnable evidence, not reproducible proof.
 
-### Track 3 — Spec 38 motion system: **WAVE A CLOSED 2026-07-30** (D414–D417)
+### Track 3 — Spec 38 motion: **WAVE A CLOSED** (D414–D417) · **WAVE B HALF-CLOSED 2026-07-30 (D422)**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. Wave A + close-out shipped, live-verified and
-**owner-confirmed** — including two defects Bean's eye caught after every mechanical check read
-green. Its plan files were deleted at his instruction. **Full record + carry-forward rules:**
-`memory/session-2026-07-30-motion-waveA-closeout.md`.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. Wave A shipped + owner-confirmed
+(`memory/session-2026-07-30-motion-waveA-closeout.md`). **Wave B commit 1 SHIPPED +
+LIVE-VERIFIED + OWNER-TUNED** — site-level smooth scrolling **via Lenis, NOT ScrollSmoother**.
+Record: `memory/session-2026-07-30-motion-waveB-commit1.md` · evidence
+`reports/2026-07-30-motion-waveB-commit1-live-verification.md` · **D422**.
 
-⚠ Parked, not caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
-`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`. Also open: `/sgs-update` Stage 11 warns on the
-mega-* container roster (nav track's blocks — not ours to reconcile).
+- **⛔ D407 / Spec 38 §4.2 SUPERSEDED — its build items are CANCELLED, not deferred.** The
+  wrapper filter, header relocation, per-tier edge rule and `findStickyBreakingAncestor()`
+  tripwire existed ONLY to dodge ScrollSmoother's content transform. Lenis has none (measured:
+  header ancestor chain `transform:none`, `top 0.00` incl. mid-flight, `--sgs-header-height`
+  93px). **Spec 37 FR-37-40 NOT modified; the warn-only guard stays. Do not build any of it.**
+- **New tier: Tier H (helper/utility)** — CLOSED list (Lenis alone), §1.2a admission test, one D
+  per member. Homes amended: 3× `CLAUDE.md`, Spec 01, Spec 02.
+- **Touch smoothing REJECTED by Bean on a real phone at strength 1** ("abrupt and janky", worse
+  than off). Default OFF, labelled tested-and-rejected in the UI + FR-38-18(d). **Do not
+  re-propose without new real-device evidence.** Desktop strength 4→**3**.
+- **FR-37-40 gate PASSED under smoothing**, incl. the owed **row-collapse** leg (gap 0.01px).
 
-Next motion front = Waves B ∥ C.
+**⚠ WAVE B IS NOT CLOSED.** `FR-38-19 page transitions` NOT STARTED — the named remaining stage
+(Bean: "page transitions next session to wrap up wave B"). Orchestration:
+`plans/2026-07-29-motion-wave-B-session-prompt.md`. Also owed: 2 qc-council sub-cases
+(sticky+transparent same tier; nav-drawer `<dialog>`-in-header offset) + a long-distance anchor test.
+
+⚠ Parked, not ours: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
+`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE` · `/sgs-update` Stage 11 mega-* warnings.
+Next motion front = **Wave B close (page transitions)**, then Wave C.
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
@@ -123,19 +139,10 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
 `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
 
-> **⭐⭐ NEXT SESSION — ONE DEPLOY UNBLOCKS FOUR THINGS (2026-07-30).** The FR-32 inline fixes (10 of the 11
-> sites; **`cta-section:333` is the 11th and is NOT fixed**) are WRITTEN, in the working tree, and banked as `.claude/reports/2026-07-30-fr32-inline-fixes.patch`
-> — but **uncommittable**: the visual-diff gate correctly blocked them (markup changes,
-> `check-markup-neutral.py` NOT-neutral on all 7 blocks, no deploy to evidence it; a PASS report
-> was NOT fabricated). Sequence: isolated-worktree build → deploy sandybrown → **open the REAL
-> editor** (never done for Spec 35) → 7 visual-diff reports → commit blocks → promote
-> `check-no-inline.py --deep` to default (today it correctly flags the 16 stale card-grid hits the
-> patch fixes). ⚠ 5 of the 8 blocks sit on NO canary page — needs a seeded canary, not code.
->
-> **⭐ TRACK 1 AUDIT — read before calling any Track-1 item done:**
-> `reports/2026-07-30-track1-verification-audit.md`. Specs 31/32/35 read end-to-end; 3 findings
-> WITHDRAWN there (don't re-raise). Almost nothing is unbuilt; what's missing is **verification**.
-> No parking entries created — that report is the record.
+> **⭐ The Track-1 "one deploy unblocks four things" plan lives in the `## NEXT SESSION` section
+> below — it was duplicated here verbatim and the copy was removed 2026-07-30 (de-dup only, no
+> content lost; the LEDGER was over its byte cap).** Read before calling any Track-1 item done:
+> `reports/2026-07-30-track1-verification-audit.md` (3 findings WITHDRAWN there — don't re-raise).
 
 ### Track 1b — Spec 35: COMPONENT LAYER + Part-K gate complete; ROLLOUT is not
 

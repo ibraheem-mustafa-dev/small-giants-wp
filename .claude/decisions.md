@@ -116,8 +116,8 @@ divs on `wp_body_open`/`wp_footer`; zero block-theme hits. WordPress core closes
 header+main+footer output. We would have been writing something original on the surface Spec 38
 itself calls "the highest-risk".
 
-**3. What replaces it, and the evidence it is safe.** **Lenis 1.3.25**, npm-bundled, **5.7 KB
-gzip measured** (not estimated). It eases the REAL document scroll — `wrapper` defaults to
+**3. What replaces it, and the evidence it is safe.** **Lenis 1.3.25**, npm-bundled, **5,777 bytes
+gzip measured — ~5.6 KiB** (not estimated; it is the recorded budget baseline). It eases the REAL document scroll — `wrapper` defaults to
 `window`, `content` to `document.documentElement` — so there is no wrapper and no transform.
 **Measured live on the sandybrown canary BEFORE any code was written**, against the real header:
 no wrapper element created; the header's entire ancestor chain (`div.wp-site-blocks` → `body`)

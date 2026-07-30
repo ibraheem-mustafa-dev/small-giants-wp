@@ -210,6 +210,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 ### 3.5 Site level
 
 - **FR-38-18 Site-level smooth scrolling — Tier H, Lenis (D422; was GSAP ScrollSmoother).**
+  `✅ BUILT + LIVE-VERIFIED 2026-07-30` (`4776b73f` + `4b317b75` + `f9d2c213` + `659ff6f7` +
+  `6c204981` — the last closed the row-collapse verification leg).
+  Evidence: `reports/2026-07-30-motion-waveB-commit1-live-verification.md`; narrative:
+  `memory/session-2026-07-30-motion-waveB-commit1.md`. Owner-tuned to strength 3.
+  **Owed on this FR:** a long-distance anchor test (the canary's only anchor target is the skip
+  link, so the offset is proven over 24px only), and reduced motion was proven via a STUBBED media
+  query because the harness cannot emulate `prefers-reduced-motion` — our branch logic is verified,
+  Chrome's matching is not.
   SITE setting on the **SGS → Motion** page, default OFF. Lenis eases the REAL document scroll
   rather than transforming a wrapper, so there is no `#smooth-wrapper`/`#smooth-content` markup,
   no template change, and no interaction with the Spec 37 header (§4.2, superseded).
@@ -404,7 +412,7 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
 |---|---|---|
 | gsap core | ~26 KB | any Tier G effect on the page |
 | ScrollTrigger | ~14 KB | any scroll-driven G effect |
-| ~~ScrollSmoother~~ → **Lenis** (Tier H, D422) | **5.7 KB — MEASURED, not an estimate** (`shared/effects/smooth-scroll.js`, gzip, includes the bundled library) | site setting ON |
+| ~~ScrollSmoother~~ → **Lenis** (Tier H, D422) | **5,777 bytes gzip (~5.6 KiB) — MEASURED, not an estimate** (`shared/effects/smooth-scroll.js`, includes the bundled library; the figure is the budget baseline in `scripts/motion-bundle-baseline.json`) | site setting ON |
 | SplitText | ~9 KB | text reveals present |
 | Flip | ~7 KB | filtered-grid pairing ON |
 | Draggable + Inertia | ~15 + 6 KB | drag roster block opted in |

@@ -389,6 +389,37 @@ points here. Neither ever silently drops a STOP.
   When you fix a vacuous-check, immediately grep the session's OTHER harnesses for the same shape
   ("does this check assert the state it claims to measure?") and fix them in the same pass. The
   class is the finding; the instance is not.
+- **STOP-A-GATE-THAT-GLOBS-A-DIRECTORY-IS-BLIND-TO-EVERYTHING-OUTSIDE-IT** — NEW 2026-07-30 (D422).
+  `check-motion-bundle-budget.py` globbed exactly two directories (`vendor-modules`,
+  `shared/effects/gsap`). A new module landed at `shared/effects/smooth-scroll.js` — one level up —
+  and **built, shipped and enqueued while the gate printed GATE PASSED, having never measured it**.
+  A directory-scoped gate silently narrows every time the codebase grows a sibling. When you add a
+  file a gate is supposed to cover, RUN the gate and confirm the new file appears BY NAME in its
+  output; "the gate passed" is not evidence it looked. Sibling of
+  `a-gate-that-cannot-fail-reads-green-forever`.
+- **STOP-A-ZERO-FROM-AN-UNAUTHENTICATED-FETCH-PROVES-NOTHING** — NEW 2026-07-30 (D422). Checking
+  that wp-admin ships no frontend bytes, the credential env failed to source (the password contains
+  shell metacharacters), so three requests went out LOGGED OUT, were redirected to the login page,
+  and dutifully reported "0 references" — a clean-looking PASS for a test that never ran. Any
+  absence-check MUST carry a positive control asserting the fetched thing is what you think it is
+  (auth cookie present AND the page contains an admin-only marker). A zero is only evidence when
+  you have proved you were looking in the right place.
+- **STOP-A-GREP-COUNT-IS-NOT-A-MEASUREMENT** — NEW 2026-07-30 (D422). `grep -c
+  'wp:sgs/site-header-row'` returned 5 and was reported as "the header has 5 rows". Block markup
+  emits an OPENING and a CLOSING comment per block (and one comment for a self-closing empty
+  block), so 3 rows = 5 matches. The header is `templateLock: 'all'` at 3 rows — had 5 been true it
+  would have meant the lock was BREACHED, a phantom bug someone could have chased. Bean caught it.
+  Before quoting a count from a regex, state what a single unit looks like in the text and confirm
+  the pattern matches it exactly once. Second instance in the same session (a "missing" settings
+  blob was present; the pattern broke on the tag). Sibling of `confirm-what-your-output-describes`.
+- **STOP-AN-OPTION-NAME-THAT-DOES-NOT-EXIST-IS-DISCARDED-IN-SILENCE** — NEW 2026-07-30 (D422). The
+  smoother shipped `smoothTouch: false` to keep phone scrolling native. That option does not exist
+  in Lenis 1.3.25 (zero occurrences in `lenis.mjs` AND `lenis.d.ts`); an unknown key on an options
+  object is destructured past with no warning, no error, no console notice. The stated guarantee
+  was being delivered ENTIRELY by the vendor's own default and would have flipped the day upstream
+  changed it. When passing options to any third-party library, verify each key against the
+  INSTALLED version's types/source — not memory, not the docs of another major version — and pass
+  values you depend on EXPLICITLY rather than relying on a default that agrees today.
 - **STOP-A-CONTRAST-CHECK-MUST-WALK-EVERY-TEXT-ELEMENT-IN-THE-SURFACE** — NEW 2026-07-29 (D411).
   A contrast check scoped to ONE selector reports the health of that selector, not the surface.
   The Task-5 sweep measured `.sgs-nav-menu__link-text` only and returned 13.14:1 for a drawer that
@@ -930,3 +961,16 @@ for real before claiming done?
   green cell-count presented as fidelity and rejected by Bean on sight; a rejection record whose own
   diagnosis was wrong and would have driven a defect into the rework; and an axe run contaminated by
   the automation's leftover pointer.
+- **2026-07-30 (motion Wave B commit 1 / D422) re-run:** previous count = **98** (this file's own
+  gate reading at handoff start); this session ADDED **4**
+  (`STOP-A-GATE-THAT-GLOBS-A-DIRECTORY-IS-BLIND-TO-EVERYTHING-OUTSIDE-IT`,
+  `STOP-A-ZERO-FROM-AN-UNAUTHENTICATED-FETCH-PROVES-NOTHING`,
+  `STOP-A-GREP-COUNT-IS-NOT-A-MEASUREMENT`,
+  `STOP-AN-OPTION-NAME-THAT-DOES-NOT-EXIST-IS-DISCARDED-IN-SILENCE`), SUBTRACTED **none** →
+  **102**. 102 >= 98. PASS (verified by `handoff-preflight.py --check`, not by hand-arithmetic).
+  All four are earned by failures that actually occurred this session: a budget gate that printed
+  PASS having never measured the module it was meant to govern; three admin absence-checks that ran
+  logged-out and returned a clean-looking zero; a "5 rows" count off a regex that matched opening
+  AND closing block delimiters, against a header locked at 3 (Bean caught it); and a library option
+  that does not exist in the installed version being discarded in silence while reading as an
+  enforced safety guarantee.
