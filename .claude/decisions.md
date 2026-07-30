@@ -15,6 +15,87 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D418 — axe CANNOT measure contrast inside an open `<dialog>`; W2-i harness honesty; A1 re-decided against D402 [INCIDENT]
+
+**2026-07-30, merged Spec 36+37 Wave 2 session 1.** Commits `4f9dc0ba` · `66084dc9` ·
+`4effc395` (pushed). Full narrative: `memory/session-2026-07-30-wave2-harness.md`.
+Plan: `~/.claude/plans/spec-36-37-iterative-kahn.md`.
+
+**1. THE ROOT CAUSE (load-bearing, do not truncate).** `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`
+is live and measured: **6 elements at exactly 1:1 contrast**, `rgb(58,46,38)` on an
+identical background, 3 each on the two dark `footer-bg` POC variants. axe reported
+**0 violations** with the openness guard PASSING. **Why: axe places EVERY text element
+inside an open `<dialog>` into its INCOMPLETE bucket** — *"Element's background color
+could not be determined because it is overlapped by another element"* — because a dialog
+renders in the **top layer** above a `::backdrop`. 8 of 8 elements. **axe's
+`color-contrast` rule can therefore NEVER return a violation inside a drawer.**
+Consequences: (a) `axe-run.mjs` passed `resultTypes:['violations']`, discarding that
+bucket, printing a confident "0 violations" over 8 unresolved elements — now reported,
+never hidden; (b) **the plan's own fix ("delegate contrast to axe") was WRONG** and would
+have swapped a check missing 6 elements for one missing all 8. Drawer contrast is measured
+by `checkRestContrast()` in `sweep-drawer-variants.mjs` — every element owning a text node,
+each against its OWN effective background (ancestor-walk to the first non-transparent
+`backgroundColor`, alpha composited down), WCAG large-text relaxation per element. Control
+pair verified: dark variants 3+3 real failures, light variants 0 — catches the real thing
+without inventing false positives. **Do not re-propose the axe delegation.**
+
+**2. Harness honesty (W2-i).** The openness guard lived INLINE in `axe-run.mjs`'s `main()`,
+which is why 3 sibling scripts never got it. Now `scripts/nav-qa/lib/openness-guard.mjs`,
+shared by all four; exit vocabulary `0/1/2/3` with **3 = VACUOUS**. `shoot-drawer-pairs`
+had **no open check on the reference side at all** (how a closed homepage became "the
+reference") and `main()` could not exit non-zero; `sweep-drawer-variants` folded vacuity
+into exit 1 so an unopened drawer read as 4 product defects; `elementfrompoint-sweep`
+clicked and hoped (now asserts a new `openScope` key, and both shipped probes configs set
+it). `axe-run` behaviour unchanged, **proven** HEAD-vs-rewired on a live fixture (identical
+box 358×517, 9 focusables, 0 violations). Proof is now `--self-test` (7 cases, 6 negative
+controls), not the prose note it replaced.
+
+**3. Gate 2's instrument — rule 4a upheld.** My planned Gate 2 diff matched by **DOM
+position**, violating Bean-locked rule 4a (compare by normalised TEXT CONTENT), a rule the
+same plan cited elsewhere. `scripts/parity/extract-css-diff.js` already keyed by text with
+a shape-role fallback, so it was EXTENDED (`--scope`, `--open`/`--open-via`, guard
+self-arming on a `<dialog>` scope) rather than duplicated. **The cloner's
+`computed-parity.js` is deliberately UNTOUCHED** — its HEADER/FOOTER/NAV exclusion is
+correct for measuring page BODIES, and it is council-gated (Spec 20 v1.1.0, D315). A
+session claim that it had been "abandoned" was FALSE; it is live and Bean-signed.
+
+**4. A1 RE-DECIDED against D402 (Bean, 2026-07-30).** Bean signed "per-device
+`contrastSafe`" without being shown **D402** (`decisions.md:352-353`, his own, two days
+earlier): *"contrastSafe (4-value enum) … KEEP their shapes (tri-state would be a category
+error)."* Surfaced by `/qc-council`. D402 stands — tri-state is genuinely a category error
+for a 4-value enum. **And the reshape was never needed:** the WCAG hole is that the
+auto-upgrade reads the DESKTOP tier only (`class-sgs-header-behaviours.php:226-236`).
+**A1-lite: fire the auto-upgrade when ANY tier is transparent + relabel "Text shadow"
+decorative-only** (`header-behaviours.css:62-64` already documents it as non-conformant).
+No reshape, no stored-value migration, D402 honoured. A per-device enum object is a
+SEPARATE future decision that must cite D402.
+
+**5. B1 validated; double-correction risk absent.** All four consumers of
+`--sgs-header-height` audited (`header-behaviours.css:34-36`, `utilities.css:26-35`,
+`gsap/provider.js:160-196`, `store.js:486-509`) — **none compensates** for the current
+height-not-bottom-edge semantic; they consume raw or bypass it. **D391 must be preserved**
+(publishing `0` when unpinned is a deliberate WCAG 2.4.11 fix, `decisions.md:446`); B1
+changes what the *pinned* value means, not that gate.
+
+**6. Q4 mobile pill — MEASURED.** shadcn's "Floating Pill Navbar" has **no responsive
+behaviour**: at 390px it keeps `width: 480.3px` and **overflows ~45px each side**, no
+burger, zero `sm:`/`md:`/`lg:` classes (its source is paywalled; classes read from the
+rendered DOM). **Not an authority on this axis.** Our measured teardowns stand: lamalama at
+400px = a 368px pill at 16px insets, radius kept. **Default = pill persists**, width
+`min(cap, calc(100% − 2×inset))` + `env(safe-area-inset-*)`. Recommended shape control =
+flat value + one opt-in "collapse to full-width below `<breakpoint>`" toggle, NOT three
+per-tier controls (§C of `reports/2026-07-28-nav-drawer-desktop-variant-research.md`).
+
+**7. OPEN BLOCKER carried into W2-a.** `src/blocks/nav-drawer/render.php` has **zero**
+references to `Sgs_Active_Layout` (verified by grep), so the planned one-per-request
+landmark guard has no input and **two `<dialog id="sgs-nav-drawer">` would ship**. Fix:
+call `Sgs_Active_Layout::mark_served( AREA_DRAWER )` on the ordinary block render path,
+precedent `class-sgs-header-rules.php:253-258`. **Same commit as the render path.**
+
+**Bean also decided:** the editor-canvas drawer limitation is ACCEPTED and gets an
+editor-only notice on the burger (`wp_footer` never fires in ServerSideRender —
+`class-sgs-css-registry.php:32-36`).
+
 ## D417 — a pinned section HOLDS its finished state before releasing; `fxHold` added to the §11.2 grammar [ROUTINE]
 
 **2026-07-30, Spec 38 FR-38-6 / §11.2 / §11.3.** Two owner-reported defects on

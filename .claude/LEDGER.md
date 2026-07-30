@@ -14,23 +14,30 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-30).** The **MERGED Spec 36+37 nav/header/footer track** is under way
-and **Wave 1 is finished** — the menu system was checked properly on the real site and works:
-opens by mouse, tap and keyboard, closes on Escape, and the motion is genuinely running (that had
-never actually been confirmed before). **Next up is Wave 2**, which moves the slide-out menu onto
-its own edit screen. Spec 38 motion Wave A shipped separately.
+**Where things stand (2026-07-30, end of Wave 2 session 1).** Wave 1 is finished. **Wave 2 has
+started: the measuring equipment is now honest, and the drawer's own edit screen is next.**
 
-**Three things were broken and are now fixed.** (1) The accessibility checker could never test the
-big dropdown menu at all — it closed the menu before looking at it, then reported nothing wrong.
-(2) Every picture in two of the ready-made menu layouts was silently missing — 8 images that were
-described correctly but never drawn. (3) **Your shop's basket counter could never work on this
-hosting** — the server was handing back a saved, empty answer, so the little number stayed at zero
-forever. The same fault was also switching off the safety limits on the product search. Fixed in
-the code so every client site gets it automatically, rather than a setting someone must remember.
+**The headline: our tools were lying, and fixing them found something bigger.** Four separate
+checking scripts could report "all clear" while actually looking at a menu that was shut — so they
+were testing nothing. That's fixed, and each one is now *proven* able to fail rather than assumed to.
 
-**On the drawers, unchanged:** the clones you rejected get no rework until Wave 2's CPT move lands.
-The two real faults found then are still open (menu text painted the same colour as its background;
-the "centred" style never centring) — both are scheduled inside Wave 2.
+**And the invisible menu text is real.** Six items — Contact, Latest, Careers, Team, Press — are
+painted the exact same brown as the panel behind them. Completely unreadable. This is what you saw
+as "arrows with no labels". Nothing could detect it before; the new check catches all six and
+correctly leaves the light-coloured menus alone. **It is detectable now, not yet fixed** — the fix
+is scheduled next.
+
+**A warning worth keeping:** standard accessibility tools **cannot** check colour contrast inside a
+slide-out panel at all — not misconfigured, structurally unable. So the tool was confidently
+reporting "no problems" over eight items it had quietly given up on. This also killed a fix I had
+proposed and you had approved: it would have made the checking worse while looking like progress.
+Caught before building, by the review panel you asked for.
+
+**Next up:** moving the slide-out menu onto its own edit screen (Wave 2's main job). Nothing was
+deployed this session — the work was all to the checking tools, so your sites are unchanged.
+
+**On the drawers, unchanged:** the clones you rejected get no rework until the CPT move lands. Both
+real faults found then are still open and scheduled inside Wave 2.
 
 ---
 
@@ -107,34 +114,32 @@ these; every variant needs real work first. Narrative + evidence:
 section above); the counterweight it preserves: a CPT changes where a drawer LIVES, not how
 faithfully it PAINTS.
 
-**Two defects PROVEN LIVE, both OPEN (neither fixed — they wait on the gate):**
-`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` — `sgs-icon-list__text` renders `rgb(58,46,38)` on a
-`rgb(58,46,38)` drawer, contrast **1:1**, invisible; 6 elements across exactly the 2 dark-`footer-bg`
-variants (this is what Bean saw as "arrows with no labels" — they are present, just unpainted).
-`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` — the drawer emits no align class at all; `drawerAlign`
-centres direct children as boxes while the nav-menu stretches full width with `text-align:start`, so
-`centred-statement` renders left-aligned.
+**Two defects PROVEN LIVE, both OPEN, fixes scheduled W2-g/W2-h** (details in their parking
+entries): `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (6 elements at **1:1** contrast on the 2
+dark-`footer-bg` variants — Bean's "arrows with no labels"; **now harness-detectable**, D418) ·
+`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` (no align class emitted, so `centred-statement` renders
+left-aligned).
 
-**Rework scope, PARKED BEHIND the gate:** full list in parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`
-(exact-content fixtures, the two defects above, real menu-OPEN reference captures, the design gap
-Bean named). **The capture script must assert the panel is OPEN before it shoots** — that clause is
-the load-bearing one and is now also enforced by `axe-run.mjs`'s guard + `--open-via keyboard`.
+**Rework scope, PARKED BEHIND the gate:** parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`. **The
+capture script must assert the panel is OPEN before it shoots** — enforced since D418 on BOTH sides,
+with a non-zero exit; an unassertable reference now returns UNVERIFIED.
 
-**Standing warnings (do not lose these):** the **axe openness guard did not exist until 2026-07-29** —
-a CLOSED drawer returned `0 violations` exactly like an open one, so **every scoped drawer/mega axe
-result from before that date proves nothing; re-run it** (it now reports `VACUOUS`, exit 3). Two more
-harness bugs manufactured false results, both fixed: the automation's leftover cursor put a link in
-`:hover` so axe measured a phantom *serious* 2.14:1 violation, and the JS-off check compared raw text
-to HTML so `Arts & Culture` read as missing. **F1 `listColumns` `grid-auto-flow:row` is DOWNGRADED TO
-UNDECIDED** — the "reading order is wrong" claim assumed column-wise reading; Bean's counter stands
+**Standing warnings (do not lose these):** **every scoped drawer/mega axe result from before
+2026-07-29 proves nothing — re-run it** (no openness guard existed; a CLOSED drawer returned
+`0 violations` identically to an open one). **And axe can NEVER measure contrast inside an open
+`<dialog>`** — top-layer `::backdrop` defeats its background resolution, so all text lands in its
+INCOMPLETE bucket; use `checkRestContrast()` in `sweep-drawer-variants.mjs` (D418). Two further
+harness bugs manufactured false results, both fixed (phantom `:hover` 2.14:1 reading; JS-off check
+comparing raw text to HTML so `Arts & Culture` read as missing). **F1 `listColumns`
+`grid-auto-flow:row` is DOWNGRADED TO UNDECIDED** — the "reading order is wrong" claim assumed
+column-wise reading; Bean's counter stands
 (rows-of-2 reads correctly across rows), and there is no ground truth because the reference capture
 for that exact variant failed. **F2** (header track) at 375px the theme header is `position:absolute`,
 251px tall, rendering the DESKTOP logo over content. **F3** `sgs/social-icons` has no Vimeo/Dribbble slug.
 
-**Re-runnable assets:** `plugins/sgs-blocks/scripts/nav-qa/` — `build-poc-fixtures.py`
-(+`poc-content-plan.json`; `--list`/`--delete-all`), `sweep-drawer-variants.mjs`,
-`shoot-drawer-pairs.mjs`, `axe-run.mjs` (guarded). Canary fixtures: pages
-1892/1897/1903/1907/1914/1922/1926, multi-instance 1930, anchor probes 1932; menus 102-109.
+**Re-runnable assets:** `plugins/sgs-blocks/scripts/nav-qa/` — all guarded + self-testing since
+D418; **read its `README.md` §1b/§1c before trusting or extending any of them.** Canary fixtures:
+pages 1892/1897/1903/1907/1914/1922/1926, multi-instance 1930, anchor probes 1932; menus 102-109.
 
 Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` ·
 `P-DRAWER-VARIANT-CONTENT-GENERICISE` · `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS` ·
@@ -281,35 +286,35 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
-## NEXT SESSION — Wave 2 of the merged track (Wave 1 CLOSED 2026-07-30)
+## NEXT SESSION — Wave 2 unit `W2-a` (the drawer CPT). `W2-i` CLOSED 2026-07-30
 
-**WAVE 1 IS DONE — all six units live-verified. Do not re-run it.** Narrative, evidence, fixtures
-list and my own five corrected probe-errors: **`memory/session-2026-07-30-wave1.md`** (read it
-before Wave 2). D396's "motion NOT live-verified" is CLEARED; recursion guard proven against a real
-cycle; FR-37-7 starter-picker arm DONE; search price-absence CONFIRMED from live data.
+**Wave 1 CLOSED** (`memory/session-2026-07-30-wave1.md`). **`W2-i` CLOSED** — commits `4f9dc0ba`
+`66084dc9` `4effc395`, pushed. Read **`memory/session-2026-07-30-wave2-harness.md`** + **D418**
+before starting; the plan is **`~/.claude/plans/spec-36-37-iterative-kahn.md`** (Part 2 = W2-a,
+Part 5 = the council findings). Nothing was deployed; the canary is unchanged.
 
-**Three defects found and FIXED, all live-verified — the two carry-forward rules:**
-- `7e11e60c` — the axe harness could never test the mega at all (it parks the pointer, closing a
-  hover-bridge panel), so every mega run was VACUOUS. **Use `--open-via keyboard` for any mega axe
-  run.** Remaining violations are all `P-MAMAS-PRIMARY-CONTRAST`, **Bean-ACCEPTED 2026-07-30**
-  ("still distinguishable… even though they fail WCAG") — report and cite it, never suppress.
-- `e2d4f101` — **LiteSpeed served `/wc/store/v1/cart` AND `/sgs/v1/product-search` from cache**,
-  pinning the badge at 0 and bypassing product-search's rate limit + fail-closed visibility filter.
-  Fixed in CODE so it travels to every client site; negative-controlled. **Any new personalised REST
-  route must be added to `class-litespeed-compat.php`.** Record: `memory/parking-archive.md`.
-- (`72004a5e` card-grid bare-URL media, 8 images restored — detail in the session file.)
+**START HERE — `W2-a`, then GATE 2 before ANY destructive step.** Four council fixes MUST land in
+the same commit as the render path (plan Part 2 §2c):
+1. **BLOCKER — `src/blocks/nav-drawer/render.php` has ZERO refs to `Sgs_Active_Layout`** (verified by
+   grep), so the planned landmark guard has no input and **two `<dialog id="sgs-nav-drawer">` would
+   ship**. Call `Sgs_Active_Layout::mark_served( AREA_DRAWER )` on the ordinary block path —
+   precedent `class-sgs-header-rules.php:253-258`. Gate 2 step 8 fails without it.
+2. Give the new "a burger asked" static registry a reset seam like `reset_request_state()` (`:94-98`).
+3. Write that registry **before** `do_blocks()`, mirroring `render_active()` (`:157-165`) — the
+   drawer's own content contains a `sgs/nav-menu` with no nesting check.
+4. `wp_footer` never fires in the editor (`class-sgs-css-registry.php:32-36`) — **Bean-decided:**
+   declare it AND add an editor-only notice on the burger (reuse the FR-36-9a pattern, `6ddb9f48`).
 
-**START HERE — Wave 2, in this order (the plan's own dependency chain):** `W2-i` DP7 harness fixes
-FIRST (Gate 2's parity evidence depends on an honest harness), then `W2-a` drawer CPT `sgs_drawer`,
-then **GATE 2** (OPEN-state computed-parity, default CPT drawer vs pre-CPT default) before ANY
-destructive step. `W2-e`/`W2-f` float beside the CPT chain. Raise the two design-gates (`W2-j`,
-`W2-p`) at wave start so Bean-approval latency overlaps build.
+**Gate 2 uses `scripts/parity/extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open …`**
+(text-keyed per rule 4a; exit 3 = VACUOUS). **The cloner's `computed-parity.js` stays untouched.**
 
-**Bean touchpoints:** roster is **10, or 11 if resn's FX prove reachable with Tier V + the full GSAP
-set — Bean's condition, 2026-07-30. Assess it during W4-a's teardown; do NOT decide it early.**
-Sign the W4-a2 substitution policy before the first clone · W3-d blind-tester at Wave 3 close.
+**Design gates SIGNED — builds deferred, both edit `site-header/render.php`:** `W2-j` = **A1-lite**
+(any-tier auto-scrim + relabel "Text shadow" decorative-only; **NO reshape — D402**) · new **`W2-v`**
+= B1 header-offset primitive (double-correction risk audited and ABSENT; **preserve D391's
+zero-when-unpinned**) · `W2-p` = B2 pill, after `W2-v`, **pill persists at mobile**.
 
-**New canary fixtures** (do not assume clean) are listed in the session file.
+**Bean touchpoints:** roster **10, or 11 if resn's FX prove reachable** — assess at W4-a teardown,
+do NOT decide early · W4-a2 substitution policy before the first clone · W3-d blind-tester at Wave 3.
 
 **Alternative front (independent): motion Waves B ∥ C** — prompts unchanged under `plans/`. Wave A
 is CLOSED (D416/D417); its two plan files were deleted at Bean's instruction. Session record +

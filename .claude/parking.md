@@ -1109,8 +1109,28 @@ way nav links do.
 ⚠ **This passed the Task-5 sweep** because the sweep's contrast check only measured
 `.sgs-nav-menu__link-text`. Any contrast gate must walk EVERY text element in the surface.
 
+**NOW DETECTABLE, still unfixed (2026-07-30, D418).** `checkRestContrast()` in
+`sweep-drawer-variants.mjs` walks every text element against its own effective background and
+catches all 6 (3 + 3), with the two light variants clean — so the defect can no longer hide. The
+FIX is still owed: scheduled **W2-g**. Also learned here: **axe can never catch this** — every text
+element in an open `<dialog>` lands in axe's INCOMPLETE bucket (top-layer `::backdrop` defeats its
+background resolution), so do not "just add an axe gate" for drawer contrast.
+
 **Trigger:** next nav-drawer or icon-list session; blocks any "drawer variants are visually done"
 claim.
+
+### P-NAV-QA-RESIDUAL-WEAK-CHECKS — two nav-qa checks deliberately not hardened in W2-i
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
+
+Named rather than silently left, when the W2-i harness pass (D418) hardened the openness/contrast
+checks. Neither is one of DP7's three clauses, so both were out of that unit's scope:
+
+1. **`crawl-assert.mjs:161` auto-mode passes on ≥1 anchor anywhere** in the nav roots. A nav that
+   renders one working link and drops the other nine passes the JS-off crawlability assertion.
+2. **`logical-props-lint.py` always exits 0** (WARN-only by construction). It can therefore never
+   fail a build, so its findings depend on a human reading stdout.
+
+**Trigger:** next nav-qa harness session, or the first time either check is cited as evidence.
 
 ### P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU — the centred drawerAlign value leaves nav links flush left
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
