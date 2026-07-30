@@ -41,10 +41,17 @@
  *
  *   Per-viewport:
  *   {
- *     "375":  { "openSelector": "...", "probes": [ ... ] },
- *     "768":  { "openSelector": "...", "probes": [ ... ] },
- *     "1440": { "openSelector": "...", "probes": [ ... ] }
+ *     "375":  { "openSelector": "...", "openScope": "...", "probes": [ ... ] },
+ *     "768":  { "openSelector": "...", "openScope": "...", "probes": [ ... ] },
+ *     "1440": { "openSelector": "...", "openScope": "...", "probes": [ ... ] }
  *   }
+ *
+ * "openScope" (added 2026-07-30, DP7) names the surface the trigger OPENS —
+ * e.g. `dialog.sgs-nav-drawer`. It is what lets this script ASSERT the panel is
+ * genuinely open before probing, instead of clicking and hoping as it used to.
+ * Without it, a closed drawer yields a page of "selector matched no element"
+ * probe failures that read like real occlusion defects. Omit it and the run is
+ * stamped `openness: UNASSERTED` with a loud warning — never silently trusted.
  *
  * Each probe is one of two kinds:
  *
@@ -82,6 +89,8 @@
  *   0 — every probe at every requested viewport passed
  *   1 — one or more probes failed (see printed report, "N/M" summary line)
  *   2 — bad/missing arguments, navigation failure, or an unreadable probes file
+ *   3 — VACUOUS: the surface named by "openScope" was not genuinely open, so the
+ *       probe results prove nothing (they are not evidence of a defect either)
  *
  * Spec 36 coverage: FR-36-16 elementFromPoint occlusion sweep (baseline 10/10 Mama's, 18/18 Indus).
  */
@@ -90,6 +99,7 @@
 import { chromium } from 'playwright';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import { EXIT, guardScope, formatVacuous } from './lib/openness-guard.mjs';
 
 function parseArgs( argv ) {
 	const args = { url: null, probesPath: null, viewports: [ 375, 768, 1440 ], openTarget: null, json: false };
@@ -210,6 +220,8 @@ async function sweepViewport( browser, url, vpWidth, cfg ) {
 		throw new Error( `navigation to "${ url }" failed at viewport ${ vpWidth }: ${ e.message }` );
 	}
 
+	let guard = { status: 'NOT_APPLICABLE', reason: 'no openSelector for this viewport' };
+
 	if ( cfg.openSelector ) {
 		const trigger = page.locator( cfg.openSelector );
 		const count = await trigger.count();
@@ -219,11 +231,42 @@ async function sweepViewport( browser, url, vpWidth, cfg ) {
 		}
 		await trigger.first().click();
 		await page.waitForTimeout( 350 );
+
+		// OPENNESS GUARD (2026-07-30, DP7). This used to click and go straight to
+		// the probe sweep. A drawer that never opened then produced a page of
+		// "selector matched no element" probe failures — which reads as a stack of
+		// real occlusion defects rather than "nothing was measured".
+		if ( cfg.openScope ) {
+			guard = await guardScope( page, {
+				scope: cfg.openScope,
+				open: cfg.openSelector,
+				requireOpen: true,
+			} );
+			if ( guard.status === 'VACUOUS' ) {
+				await page.close();
+				const err = new Error(
+					`viewport ${ vpWidth }: ${ formatVacuous( cfg.openScope, guard ) }`
+				);
+				err.vacuous = true;
+				throw err;
+			}
+		} else {
+			// No scope named — openness is UNASSERTABLE. Say so loudly and stamp the
+			// result, rather than quietly proceeding as the old code did.
+			guard = {
+				status: 'UNASSERTED',
+				reason: 'the probes config sets openSelector but no "openScope", so this run could not ' +
+					'verify anything actually opened. Add "openScope" to make it guarded.',
+			};
+			process.stderr.write(
+				`elementfrompoint-sweep: WARNING viewport ${ vpWidth } — ${ guard.reason }\n`
+			);
+		}
 	}
 
 	const results = await page.evaluate( SWEEP, cfg.probes );
 	await page.close();
-	return results;
+	return { results, guard };
 }
 
 async function main() {
@@ -240,17 +283,22 @@ async function main() {
 	let totalPass = 0;
 	let totalCount = 0;
 	const byViewport = {};
+	const guards = {};
 
 	try {
 		for ( const vp of args.viewports ) {
-			let results;
+			let swept;
 			try {
-				results = await sweepViewport( browser, args.url, vp, perViewport[ vp ] );
+				swept = await sweepViewport( browser, args.url, vp, perViewport[ vp ] );
 			} catch ( e ) {
 				process.stderr.write( `elementfrompoint-sweep: ${ e.message }\n` );
-				process.exit( 2 );
+				// A vacuous open is NOT the same class of problem as a bad argument
+				// or a dead selector — exit 3 so a caller can tell them apart.
+				process.exit( e.vacuous ? EXIT.VACUOUS : EXIT.USAGE );
 			}
+			const { results, guard } = swept;
 			byViewport[ vp ] = results;
+			guards[ vp ] = guard;
 			totalCount += results.length;
 			totalPass += results.filter( ( r ) => r.pass ).length;
 		}
@@ -259,13 +307,17 @@ async function main() {
 	}
 
 	if ( args.json ) {
-		process.stdout.write( JSON.stringify( { url: args.url, openTarget: args.openTarget, byViewport, summary: `${ totalPass }/${ totalCount }` }, null, 2 ) + '\n' );
+		process.stdout.write( JSON.stringify( { url: args.url, openTarget: args.openTarget, guards, byViewport, summary: `${ totalPass }/${ totalCount }` }, null, 2 ) + '\n' );
 	} else {
 		process.stdout.write( `elementfrompoint-sweep: ${ args.url }${ args.openTarget ? ` (${ args.openTarget })` : '' }\n\n` );
 		for ( const vp of args.viewports ) {
 			const results = byViewport[ vp ];
 			const pass = results.filter( ( r ) => r.pass ).length;
-			process.stdout.write( `  viewport ${ vp }px — ${ pass }/${ results.length }\n` );
+			const g = guards[ vp ];
+			process.stdout.write(
+				`  viewport ${ vp }px — ${ pass }/${ results.length }` +
+				( g && g.status !== 'NOT_APPLICABLE' ? `  [openness: ${ g.status }]` : '' ) + '\n'
+			);
 			for ( const r of results ) {
 				const mark = r.pass ? 'PASS' : 'FAIL';
 				process.stdout.write( `    [${ mark }] ${ r.name } (${ r.kind })\n` );

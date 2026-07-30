@@ -41,6 +41,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { EXIT, guardScope, scrollTriggerIntoView } from './lib/openness-guard.mjs';
 
 const __dirname = path.dirname( fileURLToPath( import.meta.url ) );
 
@@ -88,18 +89,40 @@ function parseArgs( argv ) {
  * rather than the fixture's stacking accident.
  */
 async function openDrawer( page ) {
+	// These pre-click failures are VACUOUS too, not ordinary FAILs: in every one
+	// of them nothing was measured. Flagging only the post-click guard would have
+	// left "the burger isn't even visible at this width" reporting as a product
+	// defect (exit 1) when it is a fixture/width mismatch (exit 3). Same class of
+	// mistake this whole pass exists to remove.
 	const burger = page.locator( OPEN_SEL ).first();
-	if ( await burger.count() === 0 ) throw new Error( `open selector "${ OPEN_SEL }" matched 0 elements` );
-	if ( ! await burger.isVisible() ) throw new Error( 'the fixture burger is not visible at this width' );
-	await page.evaluate( ( sel ) => {
-		const node = document.querySelector( sel );
-		if ( ! node ) return;
-		const r = node.getBoundingClientRect();
-		window.scrollBy( 0, r.top - window.innerHeight / 2 );
-	}, OPEN_SEL );
-	await page.waitForTimeout( 350 );
+	if ( await burger.count() === 0 ) {
+		const err = new Error( `open selector "${ OPEN_SEL }" matched 0 elements` );
+		err.vacuous = true;
+		throw err;
+	}
+	if ( ! await burger.isVisible() ) {
+		const err = new Error( 'the fixture burger is not visible at this width' );
+		err.vacuous = true;
+		throw err;
+	}
+	await scrollTriggerIntoView( page, OPEN_SEL );
 	await burger.click( { timeout: 15000 } );
 	await page.waitForTimeout( 600 );
+
+	// ASSERT, don't assume (2026-07-30, DP7). This used to click and return the
+	// burger with no check at all, so every downstream measurement in this sweep
+	// ran against whatever state the page happened to be in. A closed drawer then
+	// produced a tidy row of failures that looked like real defects.
+	const verdict = await guardScope( page, {
+		scope: DRAWER_SEL,
+		open: OPEN_SEL,
+		requireOpen: true,
+	} );
+	if ( verdict.status !== 'PASS' ) {
+		const err = new Error( `drawer did not open — ${ verdict.reason }` );
+		err.vacuous = true;
+		throw err;
+	}
 	return burger;
 }
 
@@ -347,6 +370,7 @@ async function main() {
 	const browser = await chromium.launch( { headless: true } );
 	const results = [];
 	let failures = 0;
+	let vacuousCells = 0;
 
 	try {
 		for ( const variant of plan.variants ) {
@@ -370,7 +394,12 @@ async function main() {
 					cell.checks.focusContained = await checkFocusContainment( page );
 					cell.checks.keyboard = await checkKeyboard( page );
 				} catch ( e ) {
-					cell.checks.geometry = { ok: false, why: e.message };
+					// Preserve VACUITY as its own state (2026-07-30, DP7). A drawer
+					// that never opened is not "a cell with some failed checks" — it
+					// is a cell that measured NOTHING, and the difference decides
+					// whether a red result is a product defect or a harness defect.
+					cell.checks.geometry = { ok: false, why: e.message, vacuous: Boolean( e.vacuous ) };
+					if ( e.vacuous ) cell.vacuous = true;
 				} finally {
 					await context.close();
 				}
@@ -383,7 +412,16 @@ async function main() {
 
 				const bad = Object.entries( cell.checks ).filter( ( [ , v ] ) => v && v.ok === false );
 				failures += bad.length;
-				cell.verdict = bad.length === 0 ? 'PASS' : 'FAIL';
+				// A cell is VACUOUS if the drawer never opened, or if any individual
+				// check reported vacuity (focusContained / runAxe already set this
+				// flag but nothing ever read it before 2026-07-30).
+				if ( Object.values( cell.checks ).some( ( v ) => v && v.vacuous ) ) cell.vacuous = true;
+				if ( cell.vacuous ) vacuousCells += 1;
+				if ( cell.vacuous ) {
+					cell.verdict = 'VACUOUS';
+				} else {
+					cell.verdict = bad.length === 0 ? 'PASS' : 'FAIL';
+				}
 				process.stdout.write(
 					`  ${ String( width ).padStart( 4 ) }px  ${ cell.verdict }` +
 					( bad.length ? `  → ${ bad.map( ( [ k, v ] ) => `${ k }: ${ v.why }` ).join( ' | ' ) }` : '' ) +
@@ -402,14 +440,29 @@ async function main() {
 		widths: args.widths,
 		cells: results.length,
 		failedChecks: failures,
+		vacuousCells,
 		results,
 	};
 	if ( args.out ) {
 		writeFileSync( args.out, JSON.stringify( summary, null, 2 ) );
 		process.stdout.write( `\nwrote ${ args.out }\n` );
 	}
-	process.stdout.write( `\n${ results.length } cell(s); ${ failures } failed check(s)\n` );
-	process.exit( failures === 0 ? 0 : 1 );
+	process.stdout.write(
+		`\n${ results.length } cell(s); ${ failures } failed check(s); ${ vacuousCells } VACUOUS cell(s)\n`
+	);
+
+	// Exit 3 when ANY cell was vacuous, even if other cells passed. A run that
+	// silently measured nothing for part of its matrix must not report the same
+	// code as a run that measured everything and found problems.
+	if ( vacuousCells > 0 ) {
+		process.stderr.write(
+			`sweep: ${ vacuousCells } cell(s) VACUOUS — the drawer was never genuinely open, so those\n` +
+			'  rows prove NOTHING (they are not evidence of a defect either). Fix the fixture or the\n' +
+			'  open step and re-run. This is NOT a pass and NOT a normal failure.\n'
+		);
+		process.exit( EXIT.VACUOUS );
+	}
+	process.exit( failures === 0 ? EXIT.OK : EXIT.FAILURES );
 }
 
 main().catch( ( e ) => {

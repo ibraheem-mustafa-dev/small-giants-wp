@@ -4,6 +4,7 @@
   "375": {
     "_comment": "Mobile: burger toggle opens the full-screen drawer. Baseline target: 10/10 on Mama's.",
     "openSelector": ".sgs-nav-menu__toggle",
+    "openScope": "dialog.sgs-nav-drawer",
     "probes": [
       {
         "name": "header-row-returns-toggle",
@@ -35,6 +36,7 @@
   "768": {
     "_comment": "Tablet: same drawer pattern as mobile, geometry differs.",
     "openSelector": ".sgs-nav-menu__toggle",
+    "openScope": "dialog.sgs-nav-drawer",
     "probes": [
       {
         "name": "header-row-returns-toggle",
@@ -54,6 +56,7 @@
   "1440": {
     "_comment": "Desktop: no drawer — probe an OPEN mega panel instead. openSelector targets the mega trigger, not the burger.",
     "openSelector": ".sgs-nav-menu__item--has-mega .sgs-nav-menu__link",
+    "openScope": ".sgs-nav-menu__mega-panel-wrap",
     "probes": [
       {
         "name": "mega-panel-link-1-returns-self",

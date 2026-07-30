@@ -22,6 +22,7 @@
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { EXIT, FOCUSABLE_SELECTOR, guardScope } from './lib/openness-guard.mjs';
 
 const OURS_OPEN = '.entry-content > nav.sgs-nav-menu .sgs-nav-menu__burger';
 const PAGE_PREFIX = 'poc-drawer-';
@@ -51,7 +52,10 @@ const REFERENCE_TRIGGERS = {
 };
 
 function parseArgs( argv ) {
-	const args = { plan: null, base: null, out: null, widths: [ 1440, 375 ], only: null, oursOnly: false };
+	const args = {
+		plan: null, base: null, out: null, widths: [ 1440, 375 ], only: null,
+		oursOnly: false, allowUnverifiedReference: false,
+	};
 	const rest = [ ...argv ];
 	while ( rest.length ) {
 		const f = rest.shift();
@@ -61,7 +65,8 @@ function parseArgs( argv ) {
 		else if ( f === '--widths' ) args.widths = rest.shift().split( ',' ).map( Number );
 		else if ( f === '--only' ) args.only = rest.shift();
 		else if ( f === '--ours-only' ) args.oursOnly = true;
-		else { process.stderr.write( `shoot: bad arg "${ f }"\n` ); process.exit( 2 ); }
+		else if ( f === '--allow-unverified-reference' ) args.allowUnverifiedReference = true;
+		else { process.stderr.write( `shoot: bad arg "${ f }"\n` ); process.exit( EXIT.USAGE ); }
 	}
 	if ( ! args.plan || ! args.base || ! args.out ) {
 		process.stderr.write( 'shoot: --plan, --base and --out are required.\n' );
@@ -118,36 +123,124 @@ async function clickClear( page, selector ) {
 	throw new Error( `no clickable trigger — tried ${ tried.join( ' | ' ) }` );
 }
 
+/**
+ * Corroborating signals, recorded either side of the click.
+ *
+ * These are NOT a substitute for an openness assertion — they cannot prove a
+ * panel opened. They exist so an UNVERIFIED capture carries something a human
+ * can sanity-check, instead of nothing at all. Labelled `signals` in the
+ * manifest for exactly that reason: evidence-adjacent, never evidence.
+ *
+ * @param {import('playwright').Page} page
+ * @return {Promise<Object>}
+ */
+async function readSignals( page ) {
+	return page.evaluate( ( focusableSelector ) => {
+		const inViewport = Array.from( document.querySelectorAll( focusableSelector ) ).filter( ( f ) => {
+			const r = f.getBoundingClientRect();
+			return r.width > 0 && r.height > 0 && r.top < window.innerHeight && r.bottom > 0;
+		} ).length;
+		return {
+			focusablesInViewport: inViewport,
+			bodyOverflow: window.getComputedStyle( document.body ).overflow,
+			openDialogs: document.querySelectorAll( 'dialog[open]' ).length,
+		};
+	}, FOCUSABLE_SELECTOR );
+}
+
 async function shootOurs( browser, url, width, file ) {
 	const context = await browser.newContext( { viewport: { width, height: 1000 } } );
 	const page = await context.newPage();
 	try {
 		await page.goto( url, { waitUntil: 'networkidle', timeout: 45000 } );
 		await clickClear( page, OURS_OPEN );
-		const open = await page.evaluate( () => !! document.querySelector( 'dialog.sgs-nav-drawer[open]' ) );
-		if ( ! open ) return { ok: false, why: 'our drawer did not open' };
+
+		// FULL openness guard, not the `[open]`-property spot-check this used to
+		// do (2026-07-30, DP7). `dialog[open]` alone passes on a drawer that is
+		// open-but-zero-size, open-but-display:none, or open with nothing
+		// focusable in it — three states that photograph as an empty page.
+		const verdict = await guardScope( page, {
+			scope: 'dialog.sgs-nav-drawer',
+			open: OURS_OPEN,
+			requireOpen: true,
+		} );
+		if ( verdict.status !== 'PASS' ) {
+			return { ok: false, status: verdict.status, why: `our drawer: ${ verdict.reason }` };
+		}
+
 		await page.screenshot( { path: file } );
-		return { ok: true, file: path.basename( file ) };
+		return { ok: true, status: 'PASS', file: path.basename( file ), guard: verdict.reason };
 	} catch ( e ) {
-		return { ok: false, why: e.message.split( '\n' )[ 0 ] };
+		return { ok: false, status: 'ERROR', why: e.message.split( '\n' )[ 0 ] };
 	} finally {
 		await context.close();
 	}
 }
 
-async function shootReference( browser, reference, width, file ) {
+/**
+ * Capture a reference site's opened panel.
+ *
+ * WHY THIS IS STRICTER THAN IT LOOKS (2026-07-30, DP7 clause 1)
+ * ------------------------------------------------------------
+ * This function previously clicked the trigger and screenshotted immediately,
+ * with NO check that anything opened. That is how two-column-editorial's
+ * "reference" came to be the site's CLOSED homepage, and how solid-brand-light
+ * ended up with no reference at all while the run still reported success.
+ *
+ * A third-party panel has no selector we can know a priori, so openness cannot
+ * be asserted generically. Rather than guess, the recipe must NAME its panel
+ * selector. Without one the capture is returned as **UNVERIFIED** (`ok:false`)
+ * — a screenshot we cannot prove is open must never be presentable as a
+ * reference. `--allow-unverified-reference` opts in for exploratory runs and
+ * stamps every such cell so it can never be mistaken for a verified one.
+ */
+async function shootReference( browser, reference, width, file, allowUnverified ) {
 	const recipe = REFERENCE_TRIGGERS[ reference ];
-	if ( ! recipe ) return { ok: false, why: `no trigger recipe for ${ reference }` };
+	if ( ! recipe ) return { ok: false, status: 'NO_RECIPE', why: `no trigger recipe for ${ reference }` };
 	const context = await browser.newContext( { viewport: { width, height: 1000 } } );
 	const page = await context.newPage();
 	try {
 		await page.goto( recipe.url, { waitUntil: 'domcontentloaded', timeout: 60000 } );
 		await page.waitForTimeout( 3500 ); // heavy agency sites: let the loader settle
+		const before = await readSignals( page );
 		await clickClear( page, recipe.click );
+		const after = await readSignals( page );
+		const signals = { before, after };
+
+		if ( recipe.panel ) {
+			const verdict = await guardScope( page, {
+				scope: recipe.panel,
+				open: recipe.click,
+				requireOpen: true,
+			} );
+			if ( verdict.status !== 'PASS' ) {
+				return { ok: false, status: verdict.status, why: `reference panel: ${ verdict.reason }`, signals };
+			}
+			await page.screenshot( { path: file } );
+			return { ok: true, status: 'PASS', file: path.basename( file ), guard: verdict.reason, signals };
+		}
+
+		// No panel selector — openness is UNASSERTABLE for this site.
+		if ( ! allowUnverified ) {
+			return {
+				ok: false,
+				status: 'UNVERIFIED',
+				why: `no "panel" selector in the recipe for ${ reference } — openness cannot be asserted, ` +
+					'so this capture is not usable as a reference. Add a panel selector, or pass ' +
+					'--allow-unverified-reference for an exploratory run.',
+				signals,
+			};
+		}
 		await page.screenshot( { path: file } );
-		return { ok: true, file: path.basename( file ) };
+		return {
+			ok: false,
+			status: 'UNVERIFIED_CAPTURED',
+			why: 'captured WITHOUT an openness assertion (--allow-unverified-reference). NOT evidence.',
+			file: path.basename( file ),
+			signals,
+		};
 	} catch ( e ) {
-		return { ok: false, why: e.message.split( '\n' )[ 0 ] };
+		return { ok: false, status: 'ERROR', why: e.message.split( '\n' )[ 0 ] };
 	} finally {
 		await context.close();
 	}
@@ -169,8 +262,10 @@ async function main() {
 				const refFile = path.join( args.out, `${ variant.name }-reference-${ width }.png` );
 				const ours = await shootOurs( browser, `${ base }/${ PAGE_PREFIX }${ variant.name }/`, width, oursFile );
 				const reference = args.oursOnly
-					? { ok: false, why: 'skipped (--ours-only)' }
-					: await shootReference( browser, variant.reference, width, refFile );
+					? { ok: false, status: 'SKIPPED', why: 'skipped (--ours-only)' }
+					: await shootReference(
+						browser, variant.reference, width, refFile, args.allowUnverifiedReference
+					);
 				manifest.push( { variant: variant.name, reference: variant.reference, width, ours, referenceShot: reference } );
 				process.stdout.write(
 					`${ variant.name.padEnd( 24 ) } ${ String( width ).padStart( 5 ) }px  ` +
@@ -187,6 +282,35 @@ async function main() {
 	const oursOk = manifest.filter( ( m ) => m.ours.ok ).length;
 	const refOk = manifest.filter( ( m ) => m.referenceShot.ok ).length;
 	process.stdout.write( `\n${ oursOk }/${ manifest.length } ours captured; ${ refOk }/${ manifest.length } references captured\n` );
+
+	// EXIT CODE (added 2026-07-30, DP7). This used to fall off the end of main()
+	// and exit 0 no matter what — a run where ZERO drawers opened reported
+	// "0/14 ours captured" in stdout text and still told the shell it succeeded.
+	// A capture harness that cannot fail is how a closed homepage became a
+	// reference screenshot nobody questioned.
+	const vacuous = manifest.filter(
+		( m ) => m.ours.status === 'VACUOUS' || m.referenceShot.status === 'VACUOUS'
+	).length;
+	const oursFailed = manifest.length - oursOk;
+
+	if ( oursFailed > 0 ) {
+		process.stderr.write(
+			`\nshoot: ${ oursFailed } of ${ manifest.length } of OUR captures did not produce a ` +
+			'genuinely-open drawer. Those screenshots prove nothing.\n'
+		);
+		process.exit( vacuous > 0 ? EXIT.VACUOUS : EXIT.FAILURES );
+	}
+	if ( ! args.oursOnly && refOk < manifest.length ) {
+		process.stderr.write(
+			`\nshoot: ${ manifest.length - refOk } reference capture(s) are UNVERIFIED or failed — ` +
+			'see manifest.json `status`. An unverified reference is not a reference.\n'
+		);
+		process.exit( EXIT.FAILURES );
+	}
+	process.exit( EXIT.OK );
 }
 
-main().catch( ( e ) => { process.stderr.write( `shoot: ${ e.stack || e.message }\n` ); process.exit( 2 ); } );
+main().catch( ( e ) => {
+	process.stderr.write( `shoot: ${ e.stack || e.message }\n` );
+	process.exit( EXIT.USAGE );
+} );

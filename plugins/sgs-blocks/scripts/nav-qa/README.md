@@ -144,6 +144,63 @@ closed + `--allow-closed` → `0 violations`, exit 0 (the old, vacuous pass);
 closed + guard → `VACUOUS`, exit 3; opened via `.sgs-nav-menu__burger` →
 `guard PASS — 375x1200, 5 focusable element(s)`, `0 violations`, exit 0.
 
+## 1b. The guard is SHARED, and its proof is RE-RUNNABLE (2026-07-30)
+
+The guard used to live inline inside `axe-run.mjs`'s `main()`, which is exactly
+why three sibling scripts never got it. It now lives once in
+**`lib/openness-guard.mjs`** and is imported by `axe-run.mjs`,
+`sweep-drawer-variants.mjs`, `shoot-drawer-pairs.mjs` and
+`elementfrompoint-sweep.mjs`.
+
+**Shared exit-code vocabulary** (`EXIT` in the lib): `0` ok · `1` real failures ·
+`2` usage/navigation · **`3` VACUOUS — nothing was measured, so the run is
+neither a pass nor evidence of a defect.**
+
+⚠ **The paragraph above this one is a manual record from 2026-07-29 and is NOT
+re-runnable — that is precisely the weakness this section fixes.** The guard's
+proof is now a command:
+
+```bash
+# 7 cases, 6 of them NEGATIVE CONTROLS that MUST be caught (closed dialog,
+# nothing focusable, zero-size, aria-hidden, opacity:0, allow-closed stamping).
+# Exits non-zero if the guard ever stops catching an injected violation.
+node scripts/nav-qa/lib/openness-guard.mjs --self-test
+node scripts/nav-qa/axe-run.mjs --self-test          # same suite, via the consumer
+```
+
+**Per-script negative controls** (verified 2026-07-30; re-run any time — each
+MUST exit non-zero, and a `0` from any of them means the wiring has rotted):
+
+```bash
+CANARY=https://sandybrown-nightingale-600381.hostingersite.com
+
+# axe-run — same page, drawer left closed → exit 3
+node scripts/nav-qa/axe-run.mjs $CANARY/poc-drawer-floating-capped-card/ \
+  --scope 'dialog.sgs-nav-drawer' --viewport 390            # → VACUOUS, exit 3
+
+# sweep-drawer-variants — a host with no fixture → exit 3 (NOT exit 1)
+node scripts/nav-qa/sweep-drawer-variants.mjs --plan scripts/nav-qa/poc-content-plan.json \
+  --base https://example.com --only floating-capped-card --widths 375   # → exit 3
+
+# shoot-drawer-pairs — no fixture → non-zero (this ALWAYS exited 0 before)
+node scripts/nav-qa/shoot-drawer-pairs.mjs --plan scripts/nav-qa/poc-content-plan.json \
+  --base https://example.com --out /tmp/x --only floating-capped-card \
+  --widths 375 --ours-only                                             # → exit 1
+```
+
+**A trap worth knowing:** pointing `--base` at a bogus *path* on the canary does
+NOT work as a negative control — WordPress's canonical-URL guessing silently
+redirects `/nonexistent-xyz/poc-drawer-<v>/` to the real fixture and the run
+passes. Verified with `curl -L` 2026-07-30. Use a different HOST.
+
+**What changed in each script:**
+
+| Script | Before | Now |
+|---|---|---|
+| `shoot-drawer-pairs.mjs` | reference captured with **no** open check (a closed homepage became "the reference"); a failed cell never affected the exit code | both sides guarded; a reference with no `panel` selector in its recipe is returned **UNVERIFIED** and is not presentable as a reference (`--allow-unverified-reference` opts in and stamps it); non-zero exit on any failed cell |
+| `sweep-drawer-variants.mjs` | `openDrawer()` clicked and assumed; vacuity recorded but folded into exit 1 | asserts via the shared guard; **exit 3** for any vacuous cell, so "4 failed checks" on an unopened drawer no longer reads as 4 product defects |
+| `elementfrompoint-sweep.mjs` | clicked, waited 350ms, hoped | asserts against the new `openScope` config key; exit 3 on vacuity; a config without `openScope` is stamped `UNASSERTED` with a loud warning instead of being silently trusted |
+
 ## 2. `elementfrompoint-sweep.mjs` — occlusion sweep
 
 **Covers:** FR-36-16's `elementFromPoint` occlusion sweep (methodology

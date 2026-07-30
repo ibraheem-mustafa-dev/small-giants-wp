@@ -86,6 +86,19 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
+// The openness guard + opener were EXTRACTED to a shared module 2026-07-30
+// (DP7). They used to live inline in main() below, which is exactly why three
+// other nav-qa scripts never got them. This script's behaviour is unchanged —
+// verified by re-running it against the same fixture before and after the move.
+import {
+	EXIT,
+	OpenError,
+	openSurface,
+	guardScope,
+	formatVacuous,
+	selfTest,
+} from './lib/openness-guard.mjs';
+
 const __dirname = path.dirname( fileURLToPath( import.meta.url ) );
 
 // Local axe-core build. Falls back to the CDN only if the local copy is
@@ -136,7 +149,37 @@ function usageAndExit( message ) {
 	process.exit( 2 );
 }
 
+/**
+ * Negative controls for the openness guard — the single most load-bearing check
+ * in this script. Before 2026-07-30 its only proof of function was a prose note
+ * in README.md recording a manual run, which is not re-runnable and therefore
+ * not evidence. Delegates to the shared module so the guard and its proof can
+ * never drift apart.
+ */
+async function runSelfTest() {
+	const { ok, results } = await selfTest( { chromium } );
+	for ( const r of results ) {
+		process.stdout.write(
+			`${ r.ok ? 'PASS' : 'FAIL' }  ${ r.name }\n` +
+			`      expected ${ r.expected }, got ${ r.actual }${ r.ok ? '' : ` — ${ r.reason }` }\n`
+		);
+	}
+	const failed = results.filter( ( r ) => ! r.ok ).length;
+	process.stdout.write(
+		`\n${ results.length - failed }/${ results.length } openness-guard self-tests passed.\n` +
+		( ok
+			? 'The guard can still FAIL when it should — axe results from this script mean something.\n'
+			: 'THE GUARD IS BROKEN — an injected violation went undetected. Do not trust any run.\n' )
+	);
+	process.exit( ok ? EXIT.OK : EXIT.FAILURES );
+}
+
 async function main() {
+	if ( process.argv.includes( '--self-test' ) ) {
+		await runSelfTest();
+		return;
+	}
+
 	const args = parseArgs( process.argv.slice( 2 ) );
 	if ( ! args.url ) usageAndExit( 'missing required <url> argument.' );
 	if ( ! Number.isFinite( args.viewport ) || args.viewport <= 0 ) {
@@ -157,73 +200,18 @@ async function main() {
 		}
 
 		if ( args.open ) {
-			const trigger = page.locator( args.open );
-			const count = await trigger.count();
-			if ( count === 0 ) {
-				process.stderr.write( `axe-run: --open selector "${ args.open }" matched 0 elements on the page.\n` );
-				process.exit( 2 );
-			}
-			// Scroll the trigger to mid-viewport before opening. A STICKY site
-			// header will otherwise intercept the click on a trigger that sits
-			// near the top of the page — the element reports visible+enabled and
-			// the click still never lands (measured 2026-07-29 at 375px).
-			await page.evaluate( ( sel ) => {
-				const node = document.querySelector( sel );
-				if ( ! node ) return;
-				const r = node.getBoundingClientRect();
-				window.scrollBy( 0, r.top - window.innerHeight / 2 );
-			}, args.open );
-			await page.waitForTimeout( 250 );
-
-			if ( args.openVia === 'keyboard' ) {
-				// KEYBOARD PATH (added 2026-07-29). A HOVER-BRIDGE surface — the
-				// desktop mega panel — closes the moment the pointer leaves it
-				// (`actions.leaveBridge`, 170ms close-grace). The click path below
-				// therefore CANNOT hold it open: the click opens it and the
-				// pointer-park immediately closes it again, so the openness guard
-				// correctly reported VACUOUS and the mega could not be axe-tested
-				// at all. Measured on the Gate-3 fixture (canary page 1842):
-				// click-then-hold = open 1120x499; click-then-move-away = closed.
-				// Opening from the keyboard never puts the pointer on the surface,
-				// so nothing to park and no phantom :hover state to measure — and
-				// it is how a keyboard user reaches the panel anyway.
-				try {
-					await trigger.first().focus( { timeout: 15000 } );
-				} catch ( e ) {
-					process.stderr.write(
-						`axe-run: the --open trigger "${ args.open }" could not be focused — ${ e.message.split( '\n' )[ 0 ] }\n` +
-						'  A trigger that cannot take keyboard focus is itself a defect. This is NOT a pass.\n'
-					);
-					process.exit( 2 );
+			// Opener (click / keyboard park semantics, sticky-header scroll fix)
+			// now lives in lib/openness-guard.mjs — see its docblock for WHY the
+			// keyboard path is mandatory on a hover-bridge panel.
+			try {
+				await openSurface( page, { open: args.open, openVia: args.openVia } );
+			} catch ( e ) {
+				if ( e instanceof OpenError ) {
+					process.stderr.write( `axe-run: ${ e.message }\n` );
+					process.exit( EXIT.USAGE );
 				}
-				await page.keyboard.press( 'Enter' );
-			} else {
-				try {
-					await trigger.first().click( { timeout: 15000 } );
-				} catch ( e ) {
-					process.stderr.write(
-						`axe-run: the --open trigger "${ args.open }" could not be clicked — ${ e.message.split( '\n' )[ 0 ] }\n` +
-						'  Something is intercepting the click (commonly a sticky header). This is NOT a pass.\n'
-					);
-					process.exit( 2 );
-				}
-				// Park the pointer in the corner, away from the surface just opened.
-				// After a click the cursor STAYS where it clicked, and an opened
-				// panel frequently renders a link underneath it — that link then sits
-				// in :hover and axe measures its HOVER colour. Measured 2026-07-29:
-				// this produced a "serious color-contrast" violation on exactly one
-				// drawer link (2.14:1) which vanished the moment the pointer moved,
-				// i.e. a real-looking failure that described nothing a user would see
-				// at rest. Hover states still deserve their own contrast check — but
-				// as a deliberate, separate measurement, not a random by-product of
-				// where the trigger happened to be.
-				// NOTE: this park is safe for a `<dialog>` (its open state is not
-				// pointer-dependent) and fatal for a hover-bridge panel — use
-				// `--open-via keyboard` for the latter.
-				await page.mouse.move( 2, 2 );
+				throw e;
 			}
-			// Let CSS/JS transitions (dialog animation, aria-expanded toggle) settle.
-			await page.waitForTimeout( 350 );
 		}
 
 		if ( args.scope ) {
@@ -239,99 +227,27 @@ async function main() {
 		}
 
 		// --- Openness guard -------------------------------------------------
-		// Measure the scope's RENDERED state. A closed <dialog> is present in
-		// the DOM and axe skips its hidden subtree, so an unguarded scoped run
-		// on a closed surface returns a meaningless 0.
-		let guard = { status: 'NOT_APPLICABLE', reason: 'no --scope given', measured: null };
+		// Measurement + judgement now live in lib/openness-guard.mjs (shared with
+		// sweep-drawer-variants, shoot-drawer-pairs and elementfrompoint-sweep).
+		// Formatting + the exit code stay HERE deliberately — the old inline
+		// version printed from inside the guard, which is what made it unreusable.
+		const guard = await guardScope( page, {
+			scope: args.scope,
+			open: args.open,
+			requireOpen: args.requireOpen,
+			allowClosed: args.allowClosed,
+		} );
 
-		if ( args.scope ) {
-			const measured = await page.evaluate( ( scopeSelector ) => {
-				const el = document.querySelector( scopeSelector );
-				if ( ! el ) return null;
-				const FOCUSABLE = [
-					'a[href]', 'button:not([disabled])', 'input:not([disabled])',
-					'select:not([disabled])', 'textarea:not([disabled])',
-					'details > summary', '[tabindex]:not([tabindex="-1"])',
-				].join( ',' );
-				const rect = el.getBoundingClientRect();
-				const style = window.getComputedStyle( el );
-				const focusables = Array.from( el.querySelectorAll( FOCUSABLE ) ).filter( ( f ) => {
-					const r = f.getBoundingClientRect();
-					const s = window.getComputedStyle( f );
-					return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
-				} );
-				return {
-					tag: el.tagName,
-					isDialog: el.tagName === 'DIALOG',
-					dialogOpen: el.tagName === 'DIALOG' ? !! el.open : null,
-					width: Math.round( rect.width ),
-					height: Math.round( rect.height ),
-					display: style.display,
-					visibility: style.visibility,
-					opacity: style.opacity,
-					ariaHidden: el.getAttribute( 'aria-hidden' ),
-					hiddenAttr: el.hasAttribute( 'hidden' ),
-					focusableCount: focusables.length,
-				};
-			}, args.scope );
-
-			// Arm the guard when the run implies an opened surface, or on demand.
-			const armed = ! args.allowClosed && ( args.requireOpen || !! args.open || !! measured?.isDialog );
-
-			if ( args.allowClosed ) {
-				guard = { status: 'SKIPPED', reason: '--allow-closed passed; this result is UNGUARDED', measured };
-			} else if ( ! armed ) {
-				guard = {
-					status: 'NOT_ARMED',
-					reason: 'static scope, no --open and not a <dialog>; pass --require-open to enforce',
-					measured,
-				};
+		if ( guard.status === 'VACUOUS' ) {
+			if ( args.json ) {
+				process.stdout.write( JSON.stringify( {
+					url: args.url, scope: args.scope, open: args.open,
+					viewport: args.viewport, guard, violations: null,
+				}, null, 2 ) + '\n' );
 			} else {
-				const failures = [];
-				if ( ! measured ) {
-					failures.push( 'scope element vanished before measurement' );
-				} else {
-					if ( measured.isDialog && ! measured.dialogOpen ) {
-						failures.push( '<dialog> has no open property — it is CLOSED' );
-					}
-					if ( measured.width === 0 || measured.height === 0 ) {
-						failures.push( `rendered box is ${ measured.width }x${ measured.height } (zero-size)` );
-					}
-					if ( measured.display === 'none' ) failures.push( 'computed display:none' );
-					if ( measured.visibility === 'hidden' ) failures.push( 'computed visibility:hidden' );
-					if ( parseFloat( measured.opacity ) === 0 ) failures.push( 'computed opacity:0' );
-					if ( measured.ariaHidden === 'true' ) failures.push( 'aria-hidden="true"' );
-					if ( measured.hiddenAttr ) failures.push( 'the [hidden] attribute is present' );
-					if ( measured.focusableCount === 0 ) {
-						failures.push( 'contains 0 visible focusable elements — nothing to Tab into' );
-					}
-				}
-
-				if ( failures.length ) {
-					guard = { status: 'VACUOUS', reason: failures.join( '; ' ), measured };
-					if ( args.json ) {
-						process.stdout.write( JSON.stringify( {
-							url: args.url, scope: args.scope, open: args.open,
-							viewport: args.viewport, guard, violations: null,
-						}, null, 2 ) + '\n' );
-					} else {
-						process.stderr.write(
-							`axe-run: VACUOUS — the scoped surface "${ args.scope }" was NOT genuinely open, ` +
-							'so an axe result here would prove nothing.\n' +
-							`  Why: ${ failures.join( '\n  Why: ' ) }\n` +
-							'  Fix the --open step (or the selector) and re-run. This is NOT a pass.\n'
-						);
-					}
-					process.exit( 3 );
-				}
-
-				guard = {
-					status: 'PASS',
-					reason: `open and interactive: ${ measured.width }x${ measured.height }, ` +
-						`${ measured.focusableCount } focusable element(s)`,
-					measured,
-				};
+				process.stderr.write( `axe-run: ${ formatVacuous( args.scope, guard ) }` );
 			}
+			process.exit( EXIT.VACUOUS );
 		}
 
 		// Inject axe-core.

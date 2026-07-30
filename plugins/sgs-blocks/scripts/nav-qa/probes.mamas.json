@@ -8,6 +8,7 @@
   "375": {
     "_comment": "Mobile: burger opens the full-screen <dialog> drawer. 10 probes = the Spec 36 §8 Mama's baseline. Proves (a) the header row hit-tests to the close control, (b) every drawer link is reachable at its own centre, (c) everything below the header is unreachable — the modal owns the hit-test.",
     "openSelector": ".sgs-nav-menu__burger",
+    "openScope": "dialog.sgs-nav-drawer",
     "probes": [
       {
         "name": "header-row-returns-close-control",
