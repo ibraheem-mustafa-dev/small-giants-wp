@@ -15,6 +15,60 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D421 — drawer architecture: shared-header-row proposal REJECTED by Bean; the spec backs HIM; gate deferred to next session [INCIDENT]
+
+**2026-07-30, session close.** Brief (Bean's contentions recorded in full):
+`plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md`. **NOTHING DECIDED, NOTHING BUILT** —
+Bean judged there was insufficient context left for a proper gate (no research, no panel) and made
+it next session's Task 1.
+
+**1. What was proposed and rejected.** After Bean reported drawer defects (scrollbar, logo below the
+menu, pink-on-pink logo), I proposed the drawer share `sgs/site-header-row` so per-row backgrounds
+and the D420 fit cascade came free. **Bean rejected it** on four grounds, recorded verbatim in the
+brief §1C/D: apart from the top row's close button nothing in the drawer is fixed in place; the
+drawer covers the full screen height on mobile and is far taller than the header on desktop (a
+strip); restricting it to 3 rows matches a structure they have "very little in common" with; and
+header rows carry heavy unique controls the drawer does not need, "especially on the functionality
+side". His model: rows are **not a block** — either CPT architecture, or "just adding another
+container so its layout is similar to a normal page", because "the drawer is literally just a
+specialised modal".
+
+**2. THE SPEC BACKS BEAN, and I was wrong in an instructive way.** FR-36-6 defines the drawer as
+*"One InnerBlocks container for the drawer's editable CONTENT … `templateLock:false`"* + *"Full-screen
+`<dialog showModal>` modal"*. The only appearance of header rows is the OPTIONAL "Show header"
+toggle, which *inserts* chosen header rows as content — an opt-in import, never the structural unit.
+**The failure mode was invoking R-31-9 and picking the WRONG universal:** the shared primitive for
+"a band of content with its own background" is `sgs/container` (every page uses it), not
+`sgs/site-header-row` (a header-specific specialisation). Bean's model is MORE R-31-9-compliant.
+Sibling of `the-instance-a-finding-came-from-decides-its-blast-radius`: universality must be argued
+from the right primitive, not from the nearest one already in hand.
+
+**3. The spec is right on architecture and WRONG on one default.** FR-36-6's default template is
+`[ nav-menu, (optional) logo, (optional) cta ]` — logo AFTER menu. **That ordering IS the defect Bean
+reported.** Amend it WITH the gate's decision (Spec 37 §1.2 same-commit rule), not before.
+
+**4. Seven of Bean's eight named controls ALREADY EXIST** (block.json read 2026-07-30): `drawerBg`,
+`__experimentalBorder` (outline width/colour/style/radius, skip-serialised), `closeStyle`,
+`toggleCloseColour`, `drawerPadding`, `drawerGap`, and a nav-menu in both W2-a starter patterns.
+**Only the top row (logo LEFT + close RIGHT sharing one full-width background) is missing.** If rows
+are containers, per-row background may need NO new attribute — the container already has background
+support. Do not re-litigate the control set at the gate.
+
+**5. Two measurements taken so the gate does not re-derive them.** (a) **The ugly scrollbar is NOT
+the drawer's** — drawer `scrollHeight == clientHeight` (767) and scrollbar width **0px**; the page is
+scroll-locked (`body position:fixed`) yet `html{overflow-y:scroll}` reserves a permanent **14px**
+gutter painted beside the drawer and **inert**. "Style the drawer's scrollbar" would have fixed
+nothing. (b) **Bean's mega-menu worry does not occur** — a mega panel opened inside the drawer
+measured 285px in a 340px drawer, `panelOverflowsX:false`, **zero** elements wider than the drawer;
+it reflows and the drawer scrolls VERTICALLY (1090/767). Recorded honestly: this removes a
+constraint but does NOT rescue the rejected proposal, which fails on (1) regardless.
+
+**6. The hard part the gate must solve.** The × is chrome rendered OUTSIDE the editable InnerBlocks
+so it can never be deleted (Bean 2026-07-19) — load-bearing because on a full-screen touch modal
+there is no ESC and no tap-outside, so it is the ONLY reliable close. Bean wants the logo beside it
+sharing one background. The gate must keep the × undeletable while the row containing it becomes
+authorable content. Three candidate shapes listed in the brief §4; none chosen.
+
 ## D420 — the header row's "wrap" is an AUTHORED stack, not a space failure; fit-cascade design SIGNED [INCIDENT]
 
 **2026-07-30.** Design: `plans/2026-07-30-header-row-fit-cascade-design.md` (APPROVED, not

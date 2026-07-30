@@ -18,19 +18,20 @@ gets ONE true answer instead of three drifting ones.
 equipment is honest (session 1), and **the slide-out menu now has its own edit screen** — Wave 2's
 main job. It is live on the test site.
 
-**What changed for you.** The slide-out menu used to exist only *inside* a header layout — eight
-header designs each carrying a private copy. Now there is a **"Menu drawers"** screen under SGS,
-like Advanced Headers/Footers: pick one, mark it Active, it appears site-wide. The "Set as active"
-button, Preview-on-site link and starter picker all came free from existing machinery. **Nothing was
-taken away** — the old way still works alongside it, and with no drawer Active the homepage came back
-**byte-for-byte identical**. Full record: `reports/2026-07-30-w2a-gate2-drawer-cpt.md` · D419.
-**Not yet judged: how the drawer LOOKS** — that is still the version you rejected.
+**What changed for you.** The slide-out menu now has its own **"Menu drawers"** screen under SGS,
+like Advanced Headers/Footers: pick one, mark it Active, it appears site-wide. Nothing was taken
+away — the old way still works alongside it, and with no drawer Active the homepage came back
+**byte-for-byte identical**. Record: `reports/2026-07-30-w2a-gate2-drawer-cpt.md` · D419.
 
-**Your header-wrapping report is diagnosed and the fix is designed + signed.** It was never a
-space problem: a rule tells the row to stack below 767px, and it fires even when everything fits
-(at 766px the contents need 733px and have 766px). It hits desktop too because the rule measures
-the row, not the screen. Design: `plans/2026-07-30-header-row-fit-cascade-design.md` · D420.
-**Built next session — nothing is built yet.**
+**Three things you raised are diagnosed and waiting, none built.**
+1. **Header wrapping** — never a space problem. A rule tells the row to stack below 767px and fires
+   even when everything fits (at 766px the contents need 733px of 766px). Hits desktop too because
+   it measures the row, not the screen. Designed + signed: D420.
+2. **Drawer architecture** — you rejected my shared-header-row idea and were right; **the spec
+   agrees with you**, not me. Held over as next session's FIRST task with your objections recorded
+   in full: `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` · D421.
+3. **The drawer's ugly scrollbar is not the drawer's** — it paints none. It is the page's permanent
+   14px scrollbar strip sitting beside it, doing nothing.
 
 ---
 
@@ -64,17 +65,16 @@ gap-graded B. Criteria: `verify/merged-spec36-37-track.md`. **Wave 1 CLOSED; Wav
 
 **The SIGNED gate that produced it:**
 `plans/2026-07-29-spec36-37-merged-architecture-and-drawer-cpt-gate.md`. Binding locks: merged 36/37
-EXECUTION (specs stay separate docs; §1.2 cross-amend keeps them coupled) · drawer → CPT
-(`variantPreset` dies, 7 looks become starter patterns, `drawerRef` becomes a post picker) ·
-nav-menu stays a BLOCK with a fully controllable burger trigger (DP4) · per-property
-controllability contract (DP5) · each accepted clone yields the B3 presets · DP7 harness honesty
-gates any re-present. **Bean-signed: CPT admin name "Menu drawer" · site-wide Active default +
-per-burger override · studionamma first. DP6 RE-SEQUENCED — cloning is the FINAL PROOF GATE
-(wave 4), NOT the opening task.**
+EXECUTION (§1.2 cross-amend couples the two specs) · drawer → CPT (`variantPreset` dies, 7 looks
+become starter patterns, `drawerRef` becomes a post picker) · nav-menu stays a BLOCK with a
+controllable burger trigger (DP4) · per-property controllability contract (DP5) · DP7 harness
+honesty gates any re-present. **Bean-signed: admin name "Menu drawer" · site-wide Active default +
+per-burger override · studionamma first. DP6 — cloning is the FINAL PROOF GATE (wave 4), NOT the
+opening task.**
 
-**Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) burger-opens-nothing notice live
-(`6ddb9f48`) · **FR-37-42** column-shape picker APPROVED not built (`7ff5a184` — needs
-`1fr auto 1fr`; a faithful-header-clone prerequisite) · teardowns 9/12
+**Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) notice live (`6ddb9f48`) ·
+**FR-37-42** column-shape picker APPROVED not built (`7ff5a184` — needs `1fr auto 1fr`; a
+faithful-header-clone prerequisite) · teardowns 9/12
 (`~/.claude/pipeline-state/sgs-discover/20260728-112649-7bc4a8/FINDINGS.md`; Away/ButcherBox/
 rabbit.tech owed = W4-a; Lama Lama sticky by Bean's eye — probe-unmeasured ≠ non-sticky) · **SCOPE
 SOURCE: `reports/2026-07-28-spec36-37-remaining-work-inventory.md`** · floating UI STAYS in the
@@ -88,16 +88,14 @@ Header residue: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
 **Bean rejected the pairs: "night and day" — R-31-13, the eye is co-authoritative and it overrode a
 21/21 mechanical pass. Do NOT re-present these; every variant needs real work first.** Narrative:
 `memory/session-2026-07-29-task5-drawer-rejection.md` · **D411** ·
-`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (read its CORRECTION box first — the
-"21/21 PASS" headline is true only of the checks that ran). **The counterweight, still binding: a
-CPT changes where a drawer LIVES, not how faithfully it PAINTS** — W2-a (D419) proved the mechanism
-and claims nothing about the look.
+`reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (read its CORRECTION box first). **Still
+binding: a CPT changes where a drawer LIVES, not how faithfully it PAINTS** — W2-a (D419) proved the
+mechanism, not the look.
 
 **Two defects PROVEN LIVE, both OPEN, fixes scheduled W2-g/W2-h** (details in their parking
 entries): `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (6 elements at **1:1** contrast on the 2
 dark-`footer-bg` variants — Bean's "arrows with no labels"; **now harness-detectable**, D418) ·
-`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` (no align class emitted, so `centred-statement` renders
-left-aligned).
+`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU` (no align class, so `centred-statement` renders left).
 
 **Rework scope:** parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`. **The capture script must assert
 the panel is OPEN before it shoots** — enforced since D418 on BOTH sides with a non-zero exit; an
@@ -201,40 +199,12 @@ proven 2026-07-30 routes around it.** Plan: `plans/2026-07-22-spec31-completion-
 
 ---
 
-## Product queue (the website-builder work — reconcile before acting, some is already live)
+## Product queue (the website-builder work)
 
-**Indus "Our Brands" clone — DONE (D343).** Remaining Indus tasks (Bean-directed):
-
-- **A — core→SGS migration.** (1) build `migrate-core-blocks/pairings/separator_pairing.py` (does
-  NOT exist — follow `heading_pairing.py`); (2) **re-add** `sgs/separator`→`core/separator` to
-  `block-replacements.json` + `/sgs-update` (reverted `49e6fc4f`: build-blocked with no pairing);
-  (3) migrate the 4 theme patterns still on `core/separator` (`footer-centred`, `footer-columns`,
-  `mega-menu-split-info-cta`, `pricing-columns`); (4) **page 13**: "Our Brands" band `core/group` →
-  `sgs/container` (`verticalAlign:center`, drop the padding fudge) + audit for remaining core blocks.
-- **B — wire `lint-theme-css-hardcodes.py` into prebuild** (runnable, not gated).
-- **C — deferred:** Services 768 overflow (hardcoded `139/250/123/187=771px` columns →
-  responsive `fr`); Services button-border decision; Task-2 detection-method brainstorm.
-
-**Header/footer goals (sequenced):**
-1. **Step 1 — SPLIT framework vs per-site header/footer.** `footer-indus-foods.php` DELETED
-   (`94ab240f`). To do: decide the per-site channel (JSON snapshot vs REST); gitignore per-site
-   files. Do this BEFORE goals 4/1 so they write to the per-site channel.
-2. **Goal 4 — match the Mama's draft** (`sites/mamas-munches/mockups/homepage/TRUTH-SPEC.md`): fix
-   its 2 liabilities first (cites non-existent `header/footer-mamas-munches` patterns; maps the
-   hamburger to the deleted `sgs/mobile-nav-toggle` → re-point at `sgs/nav-menu` + `sgs/nav-drawer`;
-   `sgs/adaptive-nav` also deleted, D362). Bean's heading eye pass (R-31-13) lands here.
-3. **Goal 1 — replicate the Indus header/footer.** BASELINE = the preserved hand-built Astra site
-   https://lightsalmon-tarsier-683012.hostingersite.com/ (NOT `mockups/*.html`). Capture AS A FILE
-   FIRST (`reports/visual-diff/header-footer-baseline-indus.json`). Open defects: logo mobile-tier
-   switch; buttons/rows/bg not preserved; sticky+shrinking header; mega-menu on mobile+desktop.
-   NEW: `P-INDUS-BRANDSTRIP-OVERFLOW-9PX`.
-4. **Goal 3 — de-hardcode base blocks.** `site-header/edit.js` + `site-footer/edit.js` TEMPLATEs +
-   row blocks — remove hardcoded content (NOT "empty containers"). REMOVE the `Quick Links`/
-   `Contact`/`Opening Hours` headings from `framework-footer-default` (rich versions are opt-in
-   patterns). Register: `plans/strategy/2026-07-15-header-footer-hardcoding-register.md`.
-
-**Open reconciliation:** Track B (`feat/track-b-content-restore`, Indus page content) unmerged/
-paused — check its branch state before touching its files.
+**LIVE backlog, split out 2026-07-30 to keep this file under its cap — not archived:**
+**`plans/strategy/product-queue.md`**. Holds the Indus core→SGS migration (A/B/C), the four
+sequenced header/footer goals, and the Track B reconciliation. Reconcile before acting — some of
+it is already live.
 
 **Standing programmes (closed — pointers only):** no-inline COMPLETE bar 5 block-fixes
 (`reports/2026-07-26-spec32-11-condition-done-audit.md`) · Spec 30 COMPLETE (D220) · L1–L4 DONE
@@ -274,43 +244,53 @@ off → **2** `<dialog id="sgs-nav-drawer">`, guard on → **1**.
 **Canary fixtures:** `sgs_drawer` **2056** published + **ACTIVE** · page **2058**
 `/w2a-gate2-precpt-drawer/` = pre-CPT parity subject, keep for W2-b/W2-d.
 
-**⭐ START HERE — the HEADER-ROW FIT CASCADE (Bean-raised 2026-07-30, design SIGNED, D420).**
-It jumps the queue ahead of W2-b: it is a live visible defect on every header, and Bean reported it.
-**Root cause PROVEN, not inferred:** `site-header-row/style.css`'s `@container (max-width:767px)`
-sets `flex-basis:100%` on every child, so the row STACKS — at 766px the children need 733px and
-have 766px, i.e. they FIT and it stacks anyway. Hits desktop too (the query reads the ROW's width,
-not the viewport). Design + build order + verification bar:
-**`plans/2026-07-30-header-row-fit-cascade-design.md`** · **D420**.
-Build stages 1-3 (CSS only): delete the `flex-basis` block + `nowrap`; `shrinkRole` attr with
-type-derived defaults + inspector override; fluid `clamp()` with a MANDATORY `rem` component
-(unit-only breaks browser zoom, WCAG 1.4.4) + 44px floor. Stage 4 (JS More-menu inside
-`sgs/nav-menu`) is deferred until Bean has seen stages 1-3 live.
+**⭐⭐ TASK 1 — HOLD THE DRAWER-ARCHITECTURE DESIGN GATE (Bean-directed, D421). Nothing decided,
+nothing built.** Bean REJECTED the shared-header-row proposal and judged there was too little
+context left for a proper gate, so he made it next session's opening task. **His contentions are
+recorded in full in `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` — read it and run
+the gate FROM his position; do not open by proposing a solution.** The spec (FR-36-6: "One
+InnerBlocks container … templateLock:false", full-screen `<dialog>` modal) **backs HIM, not the
+rejected proposal** — the right shared primitive is `sgs/container`, not `sgs/site-header-row`.
+Already measured so the gate need not re-derive: **7 of his 8 named controls exist** (only the
+top row logo+close sharing a background is missing) · **the ugly scrollbar is the PAGE's inert 14px
+gutter, not the drawer's** (drawer scrollbar width = 0) · **mega panels do NOT overflow the drawer**
+(285px in 340px). Gate needs `/brainstorming` + `/research-buddies` + `/gh-research` + a council,
+then amend FR-36-6 (its default template order IS the logo bug) in the same commit.
+
+**⭐ TASK 2 — the HEADER-ROW FIT CASCADE (design SIGNED, D420).** A live visible defect on every
+header, Bean-reported, ahead of W2-b. **Root cause PROVEN:** `site-header-row/style.css`'s
+`@container (max-width:767px)` sets `flex-basis:100%` on every child, so the row STACKS — at 766px
+the children need 733px of 766px available, i.e. they FIT and it stacks anyway. Hits desktop too
+(the query reads the ROW's width, not the viewport). Build order + verification bar:
+**`plans/2026-07-30-header-row-fit-cascade-design.md`** · **D420**. Stages 1-3 are CSS-only; stage 4
+(JS More-menu in `sgs/nav-menu`) waits until Bean has seen 1-3 live.
 **⚠ Verify with a width SWEEP, never 3 fixed tiers — this defect lived BETWEEN the tiers** — plus a
 negative control that re-injects the rule and proves the sweep fails.
 
-**Orchestration — Task 1 (header fit cascade).** Execution: **inline, Opus** (shared mechanism on
-every header; R-31-9 universality judgement + the device-tier-vs-visual-breakpoint call are exactly
-the "a mechanical agent CANNOT make this judgment" class). Depends on: none. Parallel with: none.
-`/qc-council` gate BEFORE commit (shared mechanism). **Acceptance:** the 766px cliff is gone on a
-continuous width SWEEP 1400→320px — row height constant, `scrollWidth ≤ clientWidth` throughout —
-AND the negative control (re-inject the rule) makes that sweep FAIL, AND 200% zoom still reaches
-full text size, AND every interactive child ≥44px at every swept width, AND Bean's eye at 390/1440.
-Code shipped ≠ done here: stage 4 (JS More-menu) stays named and deferred, never "out of scope".
+**Orchestration.** **Task 1 (drawer gate):** inline, Opus + research subagents + a council. Depends
+on: none. Deliverable = a SIGNED design + amended FR-36-6, **not code**. Acceptance = Bean picks
+from ranked options and the spec is amended in the same commit. **Task 2 (fit cascade):** inline,
+Opus (the R-31-9 and device-tier-vs-visual-breakpoint calls are the "a mechanical agent CANNOT make
+this judgment" class); `/qc-council` BEFORE commit. **Acceptance:** the 766px cliff is gone on a
+continuous SWEEP 1400→320px — row height constant, `scrollWidth ≤ clientWidth` throughout — AND the
+negative control (re-inject the rule) makes that sweep FAIL, AND 200% zoom still reaches full text,
+AND every interactive child ≥44px at every swept width, AND Bean's eye at 390/1440. Stage 4 stays
+named and deferred, never "out of scope".
 
-**Then `W2-b`** (execution: inline, Opus; depends on Task 1 only for tree-cleanliness): re-type
+**Then `W2-b`** (inline, Opus; after Tasks 1-2): re-type
 `drawerRef` from DOM-id string to a drawer-POST reference with a picker (Spec 36 clause 3). The
 per-request burger registry in `class-sgs-drawer-render.php` was built to carry requested post ids
 with no re-architecture — its intended next use. Then W2-c (7 starter looks), W2-d (8 patterns drop
 their embedded drawer + `variantPreset` retires). **W2-d is the first DESTRUCTIVE step — re-run
 Gate 2 before it.**
 
-**Both Gate-2 harness residuals are FIXED, not parked** (`29f732a8`): `extract-css-diff.js` prints a
-MEASURED n/N tally and fails closed when a requested breakpoint went unmeasured
-(`--allow-unmeasured` accepts knowingly; `measured==0` always exits 3); `openSurface()` separates
-"trigger hidden here" (UNMEASURED) from "visible and won't open" (VACUOUS) — guard self-test 10/10.
-`check-markup-neutral.py` (self-test 6/6) gives the visual-diff gate a deterministic path for
-PHP-only no-output changes, so `--no-verify` is no longer the escape. **Its hook wiring lives in the
-UNTRACKED `.git/hooks/pre-commit` — local only; the checker is tracked, re-wiring is six lines.**
+**Both Gate-2 harness residuals FIXED, not parked** (`29f732a8`): `extract-css-diff.js` prints a
+MEASURED n/N tally and fails closed on any unmeasured requested breakpoint (`--allow-unmeasured`
+accepts knowingly; `measured==0` always exits 3); `openSurface()` separates "trigger hidden here"
+(UNMEASURED) from "visible and won't open" (VACUOUS) — self-test 10/10. `check-markup-neutral.py`
+(6/6) gives the visual-diff gate a deterministic path for PHP-only no-output changes, retiring
+`--no-verify`. **Hook wiring is in the UNTRACKED `.git/hooks/pre-commit` — local only; the checker
+is tracked, re-wiring is six lines.**
 
 **Gate 2 instrument:** `extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open
 '.sgs-nav-menu__burger'` — `--open` takes the **TRIGGER**, not the surface; only 375px has an open
