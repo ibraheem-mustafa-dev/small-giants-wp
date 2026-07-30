@@ -122,65 +122,124 @@ export function initHorizontalPanel( el ) {
 		const mm = gsap.matchMedia();
 
 		mm.add( '(min-width: 768px)', () => {
-			// `flex: 0 0 auto` panel widths mean the track's scrollWidth
-			// already encodes exactly how far it must travel to reveal the
-			// last panel — recomputed on every ScrollTrigger refresh so a
-			// webfont swap or a client editing panel count never leaves a
-			// stale travel distance baked into the tween.
+			// Recomputed on every ScrollTrigger refresh, so a webfont swap or a
+			// client editing the panel count never leaves a stale travel
+			// distance baked into the tween.
 			/*
-			 * Measure the track against ITS OWN visible width, not the host's.
+			 * NEVER DERIVE THIS BY SUBTRACTING ONE WIDTH FROM ANOTHER.
 			 *
-			 * The owner reported the last panel never reaching the left edge
-			 * where the first panel's content had started, and measurement
-			 * agreed: at the end of the pin the last panel's left edge sat 231px
-			 * to the RIGHT of the host's content-left. The translate itself
-			 * completed (2989 of 2989) — the DISTANCE was short.
+			 * That is the trap this defect kept falling into. Every candidate
+			 * width (host, band, track, scrollWidth) silently carries padding,
+			 * gaps or a content band inside it, so every subtraction landed
+			 * short by however much was hidden in the operand.
 			 *
-			 * Cause: `el.clientWidth` is the HOST section's width (1200), but the
-			 * track lives inside the container's content band, so its own visible
-			 * width is narrower (969 here — the band's max-width and padding).
-			 * Scrollable distance is always scrollWidth minus the scrolling
-			 * element's OWN client width; borrowing the parent's over-reports the
-			 * visible portion and therefore under-travels by exactly the
-			 * inset — 4189-969=3220 required vs 4189-1200=2989 used, a 231px
-			 * shortfall that matched the observed gap to the pixel.
+			 * THE REQUIREMENT (Bean, 2026-07-30): at the end of the pin the LAST
+			 * panel's left edge sits where the FIRST panel's left edge sat before
+			 * any travel — so the last panel's text lands where the first
+			 * panel's text was. Empty band to the right of the last panel at the
+			 * end is the accepted, intended consequence.
 			 *
-			 * Recomputed per refresh, so a band max-width change or a webfont
-			 * reflow cannot leave a stale distance baked in.
+			 * THE DERIVATION. Translating the track by -T moves every panel left
+			 * by T, so the last panel finishes at `last.left - T`. Setting that
+			 * equal to `first.left` gives T = last.offsetLeft - first.offsetLeft.
+			 * Both terms are measured in the SAME offsetParent, so band padding,
+			 * flex gap, and any whole-row offset cancel instead of needing to be
+			 * discovered. `offsetLeft` is defined over layout boxes and ignores
+			 * the GSAP transform on the track, so it stays correct on every
+			 * `invalidateOnRefresh` recompute mid-pin — unlike
+			 * `getBoundingClientRect()`, which earlier probes used.
+			 *
+			 * MEASURED LIVE 2026-07-30, canary /motion-canary-horizontal-panel/
+			 * at 1440x900, four panels (this replaces the earlier figures in
+			 * this comment, which were stale — taken before `1ca8d465` gave
+			 * panels a default width, and internally impossible under the
+			 * current CSS):
+			 *   panel offsetLeft   0 / 1100 / 2200 / 3300   (each 1100 wide)
+			 *   track.scrollWidth  4400          host el.clientWidth 1200
+			 *   required travel    3300          old formula gave      3200
+			 *   => landing error   exactly 100px = host 1200 - panel 1100
+			 * The 100px is the signature of "stop when the row is flush right"
+			 * instead of "stop when panel N reaches panel 1's start".
+			 *
+			 * FAILED APPROACHES — do not retry:
+			 *  · `track.clientWidth` computes 0 (the track is `width: max-content`,
+			 *    so client === scroll width) and kills the effect outright.
+			 *    Shipped in 6914cb8f, reverted in 69fe0929.
+			 *  · `track.parentElement.clientWidth` — equals the host width here,
+			 *    so it changes nothing. NOTE: an earlier version of this comment
+			 *    claimed this was tried and failed; `git log -S parentElement`
+			 *    shows it was never committed. Recorded accurately now so the
+			 *    history stops misleading.
+			 *
+			 * THE `max()` IS A REACHABILITY FLOOR, NOT A CAP. A council review
+			 * proposed clamping with `Math.min( ideal, scrollWidth - clientWidth )`
+			 * as a safety net; that evaluates to 3200 here — precisely the broken
+			 * value — and would have silently undone the fix. The over-travel IS
+			 * the fix. What genuinely needs guarding is the opposite end: if a
+			 * client sets `--sgs-fx-panel-width` WIDER than the host, the ideal
+			 * travel would leave part of the last panel off-screen to the right,
+			 * and at >=768px the CSS sets `overflow-x: clip`, which is not
+			 * programmatically scrollable — that content would be unreachable,
+			 * which this feature treats as a defect rather than a degradation.
+			 * Taking the MAX of the ideal and the flush-right distance means the
+			 * row always travels at least far enough to bring the last panel's
+			 * right edge to the host's right edge, so every panel is fully
+			 * visible at some point in the scroll. With the shipped default
+			 * (panel 1100 < host 1200) the ideal wins and Bean's requirement
+			 * holds; the floor only binds in the oversized-panel case.
 			 */
-			/*
-			 * ⚠ KNOWN OPEN DEFECT — do not "tidy" this without reading below.
-			 *
-			 * Owner-reported and reproduced: at the end of the pin the LAST panel
-			 * does not reach the position where the FIRST panel's content started.
-			 * Measured at 1440x900 with four panels:
-			 *   track.scrollWidth        4189
-			 *   host el.clientWidth      1200
-			 *   track.parentElement      1200   (the __inner band — NOT narrower)
-			 *   travel actually applied  2989  (completes; the tween is not short)
-			 *   first panel left @start  -111  (relative to the band)
-			 *   last panel left @end     +153  (relative to the band)
-			 *   => residual gap          ~264px
-			 *
-			 * So the tween reaches its target; the TARGET is what is wrong. Two
-			 * fixes were attempted and both failed, recorded so they are not
-			 * retried: using `track.clientWidth` computes 0 (the track is
-			 * `width: max-content`, so client === scroll width) and kills the
-			 * effect outright; using `track.parentElement.clientWidth` is
-			 * identical to the host width here, so it changes nothing. Both were
-			 * built on a band width of 969px that was INFERRED from 1200-231 and
-			 * never measured — it is wrong.
-			 *
-			 * Still unaccounted for: the ~264px residual, the -111 start offset
-			 * (panel 1 begins LEFT of the band edge, so the row is already offset
-			 * before any travel), and the flex `gap` the container contributes
-			 * between panels. The next attempt should measure each panel's
-			 * offsetLeft plus the computed `gap` and `padding-inline` on both the
-			 * band and the track, and derive the target from where panel N must
-			 * land — not from a scrollWidth-minus-a-width subtraction.
-			 */
-			const getTravelDistance = () =>
-				Math.max( 0, track.scrollWidth - el.clientWidth );
+			const getTravelDistance = () => {
+				/*
+				 * Laid-out ELEMENTS only. Spec 32's no-inline contract has each
+				 * styled container PREPEND a scoped `<style>` as a preceding
+				 * SIBLING (`class-sgs-container-wrapper.php` — `return
+				 * $style_tag . $element;`), and every panel here is itself an
+				 * sgs/container. On the live frontend those tags are lifted out
+				 * to an external stylesheet at `render_block` p99, so they are
+				 * absent by the time this runs — verified live 2026-07-30,
+				 * `track.children` was 4 SECTIONs. This filter is therefore
+				 * DEFENCE, not the observed cause: it keeps the calculation
+				 * correct in any context where the lift has not run (the editor
+				 * canvas being the obvious one), where `panels[0]` would
+				 * otherwise be a `display:none` <style> whose offsetLeft is 0
+				 * and the row would over-travel by panel 1's offset.
+				 */
+				const panels = Array.from( track.children ).filter(
+					( node ) =>
+						node.nodeType === 1 &&
+						( node.offsetWidth > 0 || null !== node.offsetParent )
+				);
+
+				// Fewer than two panels means there is no "first to last"
+				// distance to measure. Returning 0 leaves the CSS scroll-snap
+				// fallback as the only behaviour, which is the correct outcome.
+				if ( panels.length < 2 ) {
+					return 0;
+				}
+
+				const first = panels[ 0 ];
+				const last = panels[ panels.length - 1 ];
+
+				/*
+				 * offsetLeft is only comparable between two elements sharing an
+				 * offsetParent. Today they always do, because
+				 * `container/style.css` gives every container child
+				 * `position: relative` — but that is a Z-INDEX STACKING rule
+				 * that nothing obliges anyone to preserve, and it lives in a
+				 * file with no connection to this effect. Assert rather than
+				 * inherit the assumption: on a mismatch, bail to the CSS
+				 * fallback instead of emitting a confidently wrong number.
+				 */
+				if ( first.offsetParent !== last.offsetParent ) {
+					return 0;
+				}
+
+				const ideal = last.offsetLeft - first.offsetLeft;
+				const flushRight =
+					last.offsetLeft + last.offsetWidth - el.clientWidth;
+
+				return Math.max( 0, ideal, flushRight );
+			};
 
 			const tween = gsap.to( track, {
 				x: () => -getTravelDistance(),
