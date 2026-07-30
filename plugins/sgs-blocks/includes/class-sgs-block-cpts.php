@@ -40,11 +40,25 @@ final class Sgs_Block_CPTs {
 	/** Post type slug for advanced footer entries. */
 	public const FOOTER_CPT = 'sgs_footer';
 
+	/**
+	 * Post type slug for menu-drawer entries (W2-a, merged Spec 36+37 Wave 2).
+	 *
+	 * The off-canvas panel the burger opens. Before this it existed ONLY as a
+	 * `sgs/nav-drawer` block pasted as a SIBLING of `sgs/site-header` inside a
+	 * header pattern (8 patterns each carry their own copy), which meant an
+	 * operator had to find it inside a header layout to change it. The CPT gives
+	 * it its own edit screen, exactly as headers and footers already have.
+	 */
+	public const DRAWER_CPT = 'sgs_drawer';
+
 	/** Block pattern category slug for header patterns. */
 	private const HEADER_CAT = 'sgs-headers';
 
 	/** Block pattern category slug for footer patterns. */
 	private const FOOTER_CAT = 'sgs-footers';
+
+	/** Block pattern category slug for menu-drawer starter patterns. */
+	public const DRAWER_CAT = 'sgs-drawers';
 
 	/**
 	 * Wire WordPress hooks. Call once from the plugin bootstrap, AFTER
@@ -164,6 +178,35 @@ final class Sgs_Block_CPTs {
 				)
 			)
 		);
+
+		\register_post_type(
+			self::DRAWER_CPT,
+			array_merge(
+				$shared,
+				array(
+					'label'       => \__( 'Menu drawers', 'sgs-blocks' ),
+					'labels'      => array(
+						'name'               => \__( 'Menu drawers', 'sgs-blocks' ),
+						'singular_name'      => \__( 'Menu drawer', 'sgs-blocks' ),
+						'add_new'            => \__( 'Add New', 'sgs-blocks' ),
+						'add_new_item'       => \__( 'Add New Menu Drawer', 'sgs-blocks' ),
+						'edit_item'          => \__( 'Edit Menu Drawer', 'sgs-blocks' ),
+						'new_item'           => \__( 'New Menu Drawer', 'sgs-blocks' ),
+						'view_item'          => \__( 'View Menu Drawer', 'sgs-blocks' ),
+						'search_items'       => \__( 'Search Menu Drawers', 'sgs-blocks' ),
+						'not_found'          => \__( 'No menu drawers found.', 'sgs-blocks' ),
+						'not_found_in_trash' => \__( 'No menu drawers found in Trash.', 'sgs-blocks' ),
+					),
+					'description' => \__( 'The slide-out panel a burger button opens, editable on its own screen.', 'sgs-blocks' ),
+					// NO `template` arg — deliberate, same reason as both CPTs above
+					// (FR-37-7, 2026-07-24). A registration template makes a new post
+					// non-empty, and WordPress's native "Choose a pattern" starter modal
+					// only fires on an EMPTY post. Seeding here would kill the starter
+					// picker the drawer starter patterns depend on, and would re-open the
+					// templateLock-reapplies-over-children class (D393).
+				)
+			)
+		);
 	}
 
 	/**
@@ -173,6 +216,16 @@ final class Sgs_Block_CPTs {
 	 * `get_posts()` overhead (Seat 1 finding). Draft posts are intentionally
 	 * excluded: `post_status => 'publish'` ensures unfinished layouts never
 	 * surface in the pattern inserter.
+	 *
+	 * DRAWER_CPT is deliberately NOT queried here (W2-a). A derived pattern's
+	 * whole purpose is a `blockTypes` target the Site Editor can swap a
+	 * template-part into — and a drawer HAS no template-part area: it is a
+	 * `<dialog>` bound by the Active-drawer pointer, not inserted into a slot.
+	 * Adding it to this query would also mis-file every drawer through the
+	 * `else` branch below and register it as a `core/template-part/footer`
+	 * pattern. Drawer STARTER patterns are ordinary theme pattern files scoped
+	 * `Post Types: sgs_drawer` (see theme/sgs-theme/patterns/drawer-scratch.php),
+	 * which is the mechanism the native starter-picker modal reads.
 	 */
 	public static function register_patterns_from_cpts(): void {
 		// numberposts=-1 is intentional: operators hold a tiny number of custom
@@ -233,6 +286,15 @@ final class Sgs_Block_CPTs {
 			\__( 'Advanced Footers', 'sgs-blocks' ),
 			'edit_theme_options',
 			'edit.php?post_type=' . self::FOOTER_CPT,
+			''
+		);
+
+		\add_submenu_page(
+			Sgs_Admin_Menu::MENU_SLUG,
+			\__( 'Menu drawers', 'sgs-blocks' ),
+			\__( 'Menu drawers', 'sgs-blocks' ),
+			'edit_theme_options',
+			'edit.php?post_type=' . self::DRAWER_CPT,
 			''
 		);
 	}

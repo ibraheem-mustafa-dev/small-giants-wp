@@ -523,6 +523,54 @@ fix changes from "insert sibling block" to "create a Menu drawer + set the refer
 drawer can be picked per-burger, the starter picker offers the 7 looks and a chosen starter's
 CHILD TREE survives save, and zero `variantPreset` attrs remain in shipped markup.
 
+**Status update 2026-07-30 (W2-a): `PARTIAL — the ADDITIVE half is BUILT`.** D419. The CPT, its
+Active pointer and its render path ship; nothing is removed, re-typed or migrated yet, so the
+"Done when" above is deliberately NOT yet met. What is live:
+
+- **Registration** — `Sgs_Block_CPTs::DRAWER_CPT` (`sgs_drawer`), registered from the same
+  `$shared` args array as the two siblings, admin labels "Menu drawers"/"Menu drawer" per Bean's
+  signed wording, `SGS → Menu drawers` submenu, REST gated through `Sgs_Cpt_Rest_Gate` via the
+  constant. **No `template` arg** — deliberate, so the FR-37-7 native starter picker fires.
+- **Active model** — `OPTION_DRAWER` / `AREA_DRAWER` added to `Sgs_Active_Layout`. Because the
+  admin, the validation, preview-before-active (FR-37-41) and the whole
+  `Sgs_Header_Footer_Cli_Commands` tree are area-parameterised, `wp sgs drawer
+  set-active|clear-active|list|seed-starter` and every list-table affordance came with **zero new
+  logic** — the single change was one row in `Sgs_Active_Layout_Admin::areas()`.
+- **Render path — the one genuinely new mechanism.** A drawer owns no `core/template-part` slot
+  (it is a `<dialog>` sibling of `sgs/site-header` in all 8 header patterns), so there is no
+  `pre_render_block` hook to mirror. `Sgs_Drawer_Render` renders it on **`wp_footer` priority 5**,
+  lazily: `sgs/nav-menu` records "a burger asked for a drawer" into a request registry, and only
+  then does the Active post render. Ordering is **proven, not assumed** — the CSS registry's
+  whole-page output buffer opens at `template_redirect` 0 and closes after all of `wp_footer`, so
+  the drawer's scoped CSS still reaches the `<head>`.
+- **The landmark guard, and the input it never had.** `nav-drawer/render.php` now calls
+  `Sgs_Active_Layout::mark_served( AREA_DRAWER )` on the ordinary block path, precedent
+  `class-sgs-header-rules.php:253-258`. Before this it held **zero** references to
+  `Sgs_Active_Layout`, so the planned one-per-request guard read `false` on a page that had
+  already painted a drawer — and since `nav-menu`'s and `nav-drawer`'s `drawerRef` defaults are
+  the same string, two `<dialog id="sgs-nav-drawer">` elements would have shipped. Guard and mark
+  are load-bearing only together and landed in one commit.
+- **Editor surface.** `wp_footer` never fires in the block editor, so a page being edited shows no
+  drawer in canvas. **Declared, not worked around** (Bean, 2026-07-30) — and the FR-36-9a burger
+  notice was taught about the Active drawer, because once the panel is site-wide, "no drawer block
+  in this post" is the CORRECT state and that warning would otherwise call every working burger
+  broken. Matched on the Active drawer's own `drawerRef`, not on its mere existence: a burger opens
+  by element id, so an Active drawer with a different ref genuinely opens nothing.
+- **Starters (minimum).** `sgs-drawers` category + `sgs/drawer-scratch` ("Start from scratch") and
+  `sgs/framework-drawer-default`, the latter byte-identical to the drawer embedded at
+  `framework-header-default.php:42-45` so it can serve as the Gate 2 parity subject. The 7 real
+  looks are W2-c.
+
+**Explicitly still open, each mapped to a named stage** (never "out of scope"): `drawerRef` re-typed
+to a post picker = **W2-b**; the 7 starter looks = **W2-c**; the 8 header patterns dropping their
+embedded drawer + the per-site seed = **W2-d**; `variantPreset` retirement = **W2-d**. Until W2-d,
+both paths coexist by design and the landmark guard is what keeps that safe.
+
+**Non-destructive property (the reason this half could ship alone):** with no Active drawer pointer
+set, `get_active_content()` returns `''` and `Sgs_Drawer_Render` emits nothing, so page output is
+unchanged and all 8 pattern-embedded drawers keep working. `wp sgs drawer clear-active` reverts the
+entire binding.
+
 #### FR-37-2 — "Set as active" action and stored pointer
 A row action + editor action on each CPT writes `wp_options['sgs_active_header_cpt_id']` /
 `['sgs_active_footer_cpt_id']`. Setting a new active post clears the previous one (single

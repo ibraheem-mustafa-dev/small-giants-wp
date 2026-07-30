@@ -272,6 +272,34 @@ instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults
      focus, motion, close model — FR-36-6/14/16 unchanged). The block markup survives unchanged as
      the CPT's content; `sgs/nav-drawer` becomes the render vehicle. Scope: **site-wide Active
      default + per-burger override** via the picker.
+
+     > **AMENDED 2026-07-30 (W2-a, D419) — the additive half is BUILT; amended here in the same
+     > commit as Spec 37 FR-37-43 per §1.2's both-specs rule.** Full record of what shipped lives in
+     > FR-37-43 (registration, Active model, `wp_footer` render path, starters). **What this spec
+     > owns and what changed on ITS side:**
+     >
+     > - **`sgs/nav-drawer`'s render path gained a one-per-request landmark mark.** It now calls
+     >   `Sgs_Active_Layout::mark_served( AREA_DRAWER )` after emitting its `<dialog>`. This is a
+     >   Spec 36 file change with a Spec 37 mechanism, and it is what makes both paths safe to
+     >   coexist: until W2-d strips the drawer from the 8 header patterns, a page can carry a
+     >   pattern-embedded drawer AND an Active CPT drawer. Both default their `drawerRef` to the
+     >   same string, so without this mark two `<dialog id="sgs-nav-drawer">` elements would ship —
+     >   a duplicate id, silently. The block behaviour (modal, focus, motion, close) is otherwise
+     >   **byte-identical**; nothing in FR-36-6/14/16 changed.
+     > - **`sgs/nav-menu` records which drawer id its burger controls** into a per-request registry,
+     >   so the Active drawer renders only on pages that actually have a burger. A page with no
+     >   burger keeps byte-identical output.
+     > - **FR-36-9a's warning was taught about the Active drawer.** Once the panel is site-wide, an
+     >   ordinary page holding no `sgs/nav-drawer` block is the CORRECT state — the unamended notice
+     >   would have told every operator their working burger opens nothing. It now matches on the
+     >   Active drawer's own `drawerRef` (a burger opens by element id, so an Active drawer with a
+     >   different ref genuinely opens nothing) and otherwise shows where to edit the panel, plus
+     >   the declared fact that the editor canvas cannot preview it (`wp_footer` never fires there).
+     >
+     > **NOT yet done, each mapped to a named stage:** `drawerRef` re-typing (clause 3 below) =
+     > **W2-b** · the 7 starter looks (clause 2) = **W2-c** · patterns dropping the embedded drawer
+     > + `variantPreset` retirement = **W2-d**. Clause 2's `variantPreset` is still live and still
+     > emitted; nothing was retired this session.
   2. **`variantPreset` is RETIRED** (with `supports.sgs.variantAttr` seeding). The 7 looks become
      **"Menu drawer" starter patterns** served by the same native FR-37-7 picker headers use — a
      preset stops baking defaults and becomes an editable starting document. This resolves

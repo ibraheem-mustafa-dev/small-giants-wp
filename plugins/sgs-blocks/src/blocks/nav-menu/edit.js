@@ -365,8 +365,40 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		);
 	};
 
+	// ── W2-a — the drawer moved to its own edit screen, so this notice had to
+	// learn about it or it would start LYING. ────────────────────────────────
+	//
+	// The warning above fires when the canvas holds no sgs/nav-drawer block with a
+	// matching id. Once the drawer lives in the `sgs_drawer` CPT, that is the
+	// NORMAL, CORRECT state of every ordinary page — the panel is site-wide, not in
+	// this post — and the notice would tell every operator their burger is broken
+	// when it works perfectly.
+	//
+	// `activeDrawer` is published by PHP onto the existing window.sgsBlocksData
+	// channel (class-sgs-blocks.php) and is null when no Active drawer RESOLVES
+	// (get_active_id fails closed on trashed/draft/wrong-type), so a broken pointer
+	// still produces the genuine warning rather than a false reassurance.
+	//
+	// Matched on `ref`, not on mere existence: the burger opens a drawer BY ELEMENT
+	// ID, so an Active drawer whose own drawerRef differs opens nothing. Claiming
+	// otherwise would be the same optimism this notice exists to prevent.
+	const activeDrawer =
+		( typeof window !== 'undefined' &&
+			window.sgsBlocksData &&
+			window.sgsBlocksData.activeDrawer ) ||
+		null;
+	const activeDrawerMatches =
+		!! activeDrawer && activeDrawer.ref === effectiveDrawerRef;
+
+	// The site-wide panel answers this burger: say where to edit it, and declare
+	// the canvas limitation (wp_footer never fires in the editor, so the panel
+	// cannot be previewed here) rather than leaving a non-coder to read its absence
+	// as a fault.
+	const showActiveDrawerNotice =
+		! drawerState.suppress && ! drawerState.matches && activeDrawerMatches;
+
 	const showDrawerNotice =
-		! drawerState.suppress && ! drawerState.matches;
+		! drawerState.suppress && ! drawerState.matches && ! activeDrawerMatches;
 
 	const blockProps = useBlockProps();
 
@@ -430,6 +462,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									) }
 								</Button>
 							</>
+						) }
+					</Notice>
+				) }
+
+				{ showActiveDrawerNotice && (
+					<Notice
+						status="info"
+						isDismissible={ false }
+						style={ { marginBottom: '16px' } }
+					>
+						<p style={ { margin: '0 0 8px' } }>
+							{ sprintf(
+								/* translators: %s: title of the site's active menu drawer post. */
+								__(
+									'This burger opens your site-wide menu panel, “%s”. It is not part of this page, so it will not appear in the editor here — it shows on the live site.',
+									'sgs-blocks'
+								),
+								activeDrawer.title
+							) }
+						</p>
+						{ !! activeDrawer.editUrl && (
+							<Button
+								variant="secondary"
+								size="small"
+								href={ activeDrawer.editUrl }
+							>
+								{ __( 'Edit the menu panel', 'sgs-blocks' ) }
+							</Button>
 						) }
 					</Notice>
 				) }

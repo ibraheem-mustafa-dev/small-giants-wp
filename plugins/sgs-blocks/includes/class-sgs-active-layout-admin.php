@@ -66,6 +66,10 @@ final class Sgs_Active_Layout_Admin {
 		return array(
 			Sgs_Active_Layout::AREA_HEADER => Sgs_Block_CPTs::HEADER_CPT,
 			Sgs_Active_Layout::AREA_FOOTER => Sgs_Block_CPTs::FOOTER_CPT,
+			// W2-a: the drawer joins the same map, which is the whole wiring — the
+			// Active column, "Set as active"/"Clear active" row actions, the post
+			// state and the admin notices all iterate this one array.
+			Sgs_Active_Layout::AREA_DRAWER => Sgs_Block_CPTs::DRAWER_CPT,
 		);
 	}
 

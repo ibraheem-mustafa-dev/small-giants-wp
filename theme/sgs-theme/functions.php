@@ -478,6 +478,15 @@ function register_pattern_categories(): void {
 			'label' => __( 'SGS Footers', 'sgs-theme' ),
 		)
 	);
+	// W2-a: starter patterns for the sgs_drawer CPT (the slide-out menu panel).
+	// The category is what groups them in WordPress's native "Choose a pattern"
+	// starter modal on a new Menu drawer.
+	register_block_pattern_category(
+		'sgs-drawers',
+		array(
+			'label' => __( 'SGS Menu Drawers', 'sgs-theme' ),
+		)
+	);
 }
 add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
 

@@ -332,6 +332,14 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout-admin.php';
 Sgs_Active_Layout_Admin::register();
 
+// SGS Active menu-drawer render path (W2-a, merged Spec 36+37 Wave 2) — the drawer
+// has no core/template-part slot to intercept, so it renders on wp_footer instead
+// of via pre_render_block. Loaded after Sgs_Active_Layout because every read
+// resolves through it. Emits NOTHING when no Active drawer pointer is set, so this
+// is additive: the 8 pattern-embedded drawers keep working untouched.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-drawer-render.php';
+Sgs_Drawer_Render::register();
+
 // SGS Mega Menu CPT (FR-36-3 / FR-36-5, Spec 36) — sgs_mega_menu, attached to a
 // classic nav menu item the native WordPress way (Appearance > Menus).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-mega-menu-cpt.php';
@@ -492,12 +500,17 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cli-commands.php';
 	\WP_CLI::add_command( 'sgs', Sgs_Cli_Commands::class );
 
-	// Header/footer LIFECYCLE command set (FR-37-30, Spec 37) — one class,
-	// two area-bound instances registered under separate `sgs header` /
-	// `sgs footer` namespaces alongside the existing `sgs` command tree.
+	// Header/footer/drawer LIFECYCLE command set (FR-37-30, Spec 37) — one class,
+	// three area-bound instances registered under separate `sgs header` /
+	// `sgs footer` / `sgs drawer` namespaces alongside the existing `sgs` command
+	// tree. The class is fully area-parameterised (it resolves the option key and
+	// post type through Sgs_Active_Layout), so the drawer instance needs ZERO new
+	// command logic — `set-active`, `clear-active`, `list` and `seed-starter` all
+	// work as soon as the area token maps (W2-a).
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-cli-commands.php';
 	\WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
 	\WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
+	\WP_CLI::add_command( 'sgs drawer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_DRAWER ) );
 }
 
 SGS_Blocks::instance();

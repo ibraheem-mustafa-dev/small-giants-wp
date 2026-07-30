@@ -43,11 +43,31 @@ final class Sgs_Active_Layout {
 	/** Option key holding the active footer post id. */
 	public const OPTION_FOOTER = 'sgs_active_footer_cpt_id';
 
+	/**
+	 * Option key holding the active menu-drawer post id (W2-a).
+	 *
+	 * Site-wide default, per Bean's signed gate decision 2026-07-29: ONE drawer is
+	 * Active for the site; a per-burger picker override lands with W2-b. The
+	 * single-pointer shape is what makes that override additive — the burger will
+	 * carry a post id and fall back to this pointer, with no second store.
+	 */
+	public const OPTION_DRAWER = 'sgs_active_drawer_cpt_id';
+
 	/** Canonical area token for the header. */
 	public const AREA_HEADER = 'header';
 
 	/** Canonical area token for the footer. */
 	public const AREA_FOOTER = 'footer';
+
+	/**
+	 * Canonical area token for the menu drawer.
+	 *
+	 * Unlike header/footer, this area has NO `core/template-part` slot to
+	 * intercept — the drawer is rendered on `wp_footer` by
+	 * {@see Sgs_Drawer_Render}, which reads this area's pointer through the same
+	 * validated `get_active_content()` path both other areas use.
+	 */
+	public const AREA_DRAWER = 'drawer';
 
 	/**
 	 * Per-request, per-area guard for the direct-render branch (FR-37-3 clause (a)).
@@ -193,7 +213,7 @@ final class Sgs_Active_Layout {
 	/**
 	 * Map an area token to its option key.
 	 *
-	 * @param string $area Area token — 'header' or 'footer'.
+	 * @param string $area Area token — 'header', 'footer' or 'drawer'.
 	 * @return string Option key, or '' for an unknown area.
 	 */
 	public static function option_key( string $area ): string {
@@ -203,13 +223,16 @@ final class Sgs_Active_Layout {
 		if ( self::AREA_FOOTER === $area ) {
 			return self::OPTION_FOOTER;
 		}
+		if ( self::AREA_DRAWER === $area ) {
+			return self::OPTION_DRAWER;
+		}
 		return '';
 	}
 
 	/**
 	 * Map an area token to its post type slug.
 	 *
-	 * @param string $area Area token — 'header' or 'footer'.
+	 * @param string $area Area token — 'header', 'footer' or 'drawer'.
 	 * @return string Post type slug, or '' for an unknown area.
 	 */
 	public static function post_type( string $area ): string {
@@ -218,6 +241,9 @@ final class Sgs_Active_Layout {
 		}
 		if ( self::AREA_FOOTER === $area ) {
 			return Sgs_Block_CPTs::FOOTER_CPT;
+		}
+		if ( self::AREA_DRAWER === $area ) {
+			return Sgs_Block_CPTs::DRAWER_CPT;
 		}
 		return '';
 	}

@@ -326,6 +326,24 @@ $drawer_ref = isset( $attributes['drawerRef'] ) && '' !== $attributes['drawerRef
 	? sanitize_html_class( (string) $attributes['drawerRef'] )
 	: 'sgs-nav-drawer';
 
+/*
+ * ── "A burger asked for a drawer" (W2-a). ────────────────────────────────────
+ *
+ * The burger below is always emitted — CSS at `collapsePoint` decides whether it
+ * is visible, so the button is in the DOM on every device tier. Record the id it
+ * controls so Sgs_Drawer_Render can render the site's Active menu drawer at
+ * `wp_footer` ONLY on pages that have something to open it. A page with no burger
+ * keeps byte-identical output.
+ *
+ * This runs on every nav-menu render, including the one INSIDE the drawer's own
+ * content. That re-entry is harmless: the wp_footer callback sets its attempt
+ * guard before `do_blocks()`, so a registry write arriving mid-render cannot cause
+ * a second drawer (see the write-ordering note in class-sgs-drawer-render.php).
+ */
+if ( class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
+	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_ref );
+}
+
 $burger_context = wp_json_encode(
 	array(
 		'isOpen'    => false,

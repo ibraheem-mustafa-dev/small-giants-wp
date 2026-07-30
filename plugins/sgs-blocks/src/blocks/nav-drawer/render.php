@@ -476,3 +476,37 @@ printf(
 	$content
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+
+/*
+ * ── ONE DRAWER PER REQUEST (W2-a, council BLOCKER 3). ────────────────────────
+ *
+ * Record that a drawer has now painted on this request, so the Active-drawer
+ * render path (Sgs_Drawer_Render, on wp_footer) does NOT add a second one.
+ *
+ * This is the ORDINARY block path — the 8 header patterns each embed a
+ * `sgs/nav-drawer` as a sibling of `sgs/site-header`, and until this line existed
+ * they rendered entirely outside the Active-Layout machinery: a grep of this file
+ * for `Sgs_Active_Layout` returned nothing. The consequence was concrete, not
+ * theoretical — this block's `drawerRef` default and `sgs/nav-menu`'s are the same
+ * string, so a page carrying BOTH a pattern-embedded drawer and an Active CPT
+ * drawer would have shipped two `<dialog id="sgs-nav-drawer">` elements: a
+ * duplicate id, a second modal the store can resolve by accident, and no error
+ * anywhere.
+ *
+ * Exact precedent, including the reasoning: class-sgs-header-rules.php:253-258,
+ * where the rules/default path records the same flag so a second header slot hits
+ * the one-header guard. `render_active()` sets it inline on its own success path;
+ * this is the other path that needed to.
+ *
+ * Set AFTER the printf, not before: the flag means "a drawer was SERVED", which is
+ * the distinction Sgs_Active_Layout draws between $render_attempted and
+ * $render_served (:52-74). Marking it before emitting would claim a drawer that
+ * might not exist.
+ *
+ * Guarded on class_exists because a block's render.php can be exercised outside a
+ * full plugin bootstrap (tests, the block-renderer REST route).
+ */
+if ( class_exists( '\\SGS\\Blocks\\Sgs_Active_Layout' ) ) {
+	\SGS\Blocks\Sgs_Active_Layout::mark_served( \SGS\Blocks\Sgs_Active_Layout::AREA_DRAWER );
+}
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

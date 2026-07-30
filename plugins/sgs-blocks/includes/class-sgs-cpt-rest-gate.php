@@ -35,6 +35,11 @@ final class Sgs_Cpt_Rest_Gate {
 	private const GATED_ROUTE_PREFIXES = array(
 		'/wp/v2/' . Sgs_Block_CPTs::HEADER_CPT,
 		'/wp/v2/' . Sgs_Block_CPTs::FOOTER_CPT,
+		// W2-a: the drawer CPT needs the SAME gate. The capability map alone is
+		// insufficient for exactly the reason the docblock above records — the REST
+		// controller treats a published post on a `show_in_rest` CPT as publicly
+		// readable and never consults the remapped `read` cap.
+		'/wp/v2/' . Sgs_Block_CPTs::DRAWER_CPT,
 	);
 
 	/**

@@ -178,6 +178,21 @@ final class SGS_Blocks {
 			'before'
 		);
 
+		// W2-a: tell the editor which menu drawer is Active site-wide, so
+		// sgs/nav-menu's FR-36-9a "the burger opens nothing" warning does not fire
+		// falsely. Once the drawer lives in its own CPT, an ordinary page holds no
+		// sgs/nav-drawer block — which is the CORRECT state, not a fault — and that
+		// warning would otherwise tell every operator their burger is broken.
+		// null when no Active drawer resolves, so the genuine warning still fires.
+		if ( class_exists( __NAMESPACE__ . '\\Sgs_Drawer_Render' ) ) {
+			wp_add_inline_script(
+				'wp-blocks',
+				'window.sgsBlocksData = window.sgsBlocksData || {};' .
+				'window.sgsBlocksData.activeDrawer = ' . wp_json_encode( Sgs_Drawer_Render::editor_data() ) . ';',
+				'before'
+			);
+		}
+
 		$asset_file = SGS_BLOCKS_PATH . 'build/extensions/index.asset.php';
 
 		if ( ! file_exists( $asset_file ) ) {

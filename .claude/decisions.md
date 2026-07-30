@@ -15,6 +15,71 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D419 — W2-a: the `sgs_drawer` CPT ships its ADDITIVE half; the landmark guard gets the input it never had; the FR-36-9a notice would have started lying [INCIDENT]
+
+**2026-07-30, merged Spec 36+37 Wave 2 session 2.** Specs amended in the same commit
+(Spec 37 FR-37-43 status update + Spec 36 clause 1 amendment, per §1.2's both-specs rule).
+Plan: `~/.claude/plans/spec-36-37-iterative-kahn.md` Part 2.
+
+**1. What shipped, and what deliberately did not.** The drawer now has its own edit screen
+(`sgs_drawer`, admin name "Menu drawer" per Bean's signed wording), an Active pointer, a render
+path, a REST gate and two starter patterns. **Nothing was removed, re-typed or migrated** —
+`variantPreset` is still live, `drawerRef` is still a DOM-id string, and all 8 header patterns
+still embed their own drawer. Those are W2-b/c/d, each named in both specs rather than called
+"out of scope" (STOP-29). **The non-destructive property is the reason this half could ship
+alone:** with no Active pointer set, `get_active_content()` returns `''` and the new render path
+emits nothing, so page output is unchanged.
+
+**2. THE BLOCKER, and why guard-and-mark are one commit (load-bearing, do not truncate).**
+A drawer owns no `core/template-part` slot — in all 8 header patterns it is a `<dialog>` SIBLING
+of `sgs/site-header` (its root must be a `<dialog>` for top-layer, and `sgs/site-header` is
+`templateLock:'all'` around three rows, D393). So there is no `pre_render_block` hook to mirror
+and the drawer renders on **`wp_footer` priority 5**. That design needs a one-per-request landmark
+guard, and **the guard had no input**: `nav-drawer/render.php` held ZERO references to
+`Sgs_Active_Layout` (grep-verified, carried from D418 §7), so the ordinary block path never marked
+the shared registry. The guard would have read `false` on a page that had already painted a
+drawer — and `nav-menu`'s and `nav-drawer`'s `drawerRef` defaults are the SAME string, so a page
+with both a pattern-embedded drawer and an Active CPT drawer would have shipped **two
+`<dialog id="sgs-nav-drawer">` elements**: duplicate id, a second modal the store can resolve by
+accident, no error anywhere. Fix = `Sgs_Active_Layout::mark_served( AREA_DRAWER )` on the block
+path, exact precedent `class-sgs-header-rules.php:253-258`. **The guard is inert without the mark
+and the mark is pointless without the guard — shipping either alone is the trap, so they landed
+together.**
+
+**3. The council's other three fixes, all landed.** (i) The new burger registry got the same
+`reset_request_state()` seam `Sgs_Active_Layout` exposes (`:94-98`) — a fresh static with no seam
+carries stale state through anything building two pages in one process. (ii) The attempt guard is
+set **before** `do_blocks()`, mirroring `render_active()` (`:159-165`): the drawer's own content
+contains a `sgs/nav-menu`, and nav-menu's drawer-awareness is EDITOR-only, so `do_blocks()`
+re-enters the registry mid-render. Stated in the code rather than left as a mirrored line doing
+invisible work. (iii) `wp_footer` never fires in the editor — **declared, not worked around**
+(Bean, 2026-07-30).
+
+**4. A defect the plan did not predict: the CPT move would have made FR-36-9a LIE.** That notice
+warns "there is no menu panel for it to open" whenever the canvas holds no `sgs/nav-drawer` block
+with a matching id. Once the panel is site-wide, that is the **correct** state of every ordinary
+page — so every working burger would have been reported broken to the operator, by a notice built
+specifically to prevent silent breakage. Fixed by publishing the Active drawer onto the existing
+`window.sgsBlocksData` channel. **Matched on the Active drawer's own `drawerRef`, not on its mere
+existence** — a burger opens by element id, so an Active drawer with a different ref genuinely
+opens nothing, and claiming otherwise would be the same optimism the notice exists to prevent.
+The ref is derived by parsing the post's block markup (the attribute IS the source of truth; a
+copy in meta could drift, the reasoning that keeps the Active pointer a single option).
+
+**5. Two deliberate deviations from the plan, both with reasons.** (a) Plan §2a said to add
+`sgs_drawer` to the CPT→pattern derivation query. **Not done:** that loop is `if HEADER … else
+FOOTER`, so every drawer would have registered as a `core/template-part/footer` pattern, and a
+drawer has no template-part target to swap into at all. (b) Plan §2e said ONE pattern file.
+**Two shipped:** `drawer-scratch` (the operator's blank card) plus `framework-drawer-default`,
+byte-identical to `framework-header-default.php:42-45` — without a starter matching the pre-CPT
+default there is no attribute-identical parity subject, and Gate 2's question becomes
+unanswerable.
+
+**6. Ordering proven, not assumed.** `wp_footer` priority 5 is safe for the drawer's scoped CSS
+because `class-sgs-css-registry.php` opens ONE whole-page output buffer at `template_redirect` 0
+and injects into the already-printed `<head>` when that buffer closes — after all of `wp_footer`.
+Core prints late block stylesheets at `wp_footer` 20 and script modules at 10, both after this.
+
 ## D418 — axe CANNOT measure contrast inside an open `<dialog>`; W2-i harness honesty; A1 re-decided against D402 [INCIDENT]
 
 **2026-07-30, merged Spec 36+37 Wave 2 session 1.** Commits `4f9dc0ba` · `66084dc9` ·
