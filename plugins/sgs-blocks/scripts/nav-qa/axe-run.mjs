@@ -266,23 +266,62 @@ async function main() {
 			}
 		}
 
+		// INCOMPLETE IS REPORTED, NOT DISCARDED (2026-07-30).
+		//
+		// This used to pass `resultTypes: [ 'violations' ]`, which threw away axe's
+		// INCOMPLETE ("needs review") bucket. That is not a cosmetic omission:
+		// measured on the canary POC drawers, axe places EVERY text element inside
+		// an open `<dialog>` into `incomplete` with "Element's background color
+		// could not be determined because it is overlapped by another element" —
+		// because a dialog renders in the top layer over a ::backdrop and axe
+		// cannot resolve the background stack.
+		//
+		// So axe's color-contrast rule CANNOT return a violation inside an open
+		// drawer, and this script was printing a confident "0 violations" while 8
+		// elements — including 3 rendering at 1:1 contrast, i.e. invisible — sat
+		// unresolved in a bucket nobody read. A clean 0 that hides 8 unknowns is
+		// the same class of falsehood as a vacuous pass.
 		const results = await page.evaluate( async ( scopeSelector ) => {
 			const context = scopeSelector ? document.querySelector( scopeSelector ) : document;
 			// eslint-disable-next-line no-undef
-			return await axe.run( context, {
-				resultTypes: [ 'violations' ],
-			} );
+			return await axe.run( context, {} );
 		}, args.scope );
 
 		const violations = results.violations || [];
+		const incomplete = results.incomplete || [];
+		const incompleteNodeCount = incomplete.reduce( ( n, r ) => n + r.nodes.length, 0 );
 
 		if ( args.json ) {
-			process.stdout.write( JSON.stringify( { url: args.url, scope: args.scope, open: args.open, viewport: args.viewport, guard, violations }, null, 2 ) + '\n' );
+			process.stdout.write( JSON.stringify( { url: args.url, scope: args.scope, open: args.open, viewport: args.viewport, guard, violations, incomplete }, null, 2 ) + '\n' );
 		} else {
 			process.stdout.write( `axe-run: ${ args.url } (viewport ${ args.viewport }px)${ args.open ? `, opened "${ args.open }"` : '' }${ args.scope ? `, scoped to "${ args.scope }"` : ' (whole page)' }\n` );
 			process.stdout.write( `axe-run: openness guard ${ guard.status } — ${ guard.reason }\n` );
+			if ( incompleteNodeCount > 0 ) {
+				process.stdout.write(
+					`axe-run: ⚠ ${ incompleteNodeCount } element(s) axe could NOT decide (${ incomplete.length } rule(s)) — ` +
+					'NOT counted as passing:\n'
+				);
+				for ( const r of incomplete ) {
+					process.stdout.write( `  [needs review] ${ r.id } — ${ r.help }\n` );
+					for ( const node of r.nodes ) {
+						const why = ( node.any?.[ 0 ]?.message || node.all?.[ 0 ]?.message || '' ).split( '\n' )[ 0 ];
+						process.stdout.write( `    - ${ node.target.join( ' ' ) }\n` );
+						if ( why ) process.stdout.write( `      ${ why }\n` );
+					}
+				}
+				if ( incomplete.some( ( r ) => r.id === 'color-contrast' ) ) {
+					process.stdout.write(
+						'  NOTE: colour-contrast inside an open <dialog> lands here by construction (top-layer\n' +
+						'  ::backdrop defeats axe\'s background resolution). Contrast on a drawer must be measured\n' +
+						'  by the per-element sweep in sweep-drawer-variants.mjs, NOT by this axe leg.\n'
+					);
+				}
+				process.stdout.write( '\n' );
+			}
 			if ( violations.length === 0 ) {
-				process.stdout.write( 'axe-run: 0 violations.\n' );
+				process.stdout.write(
+					`axe-run: 0 violations${ incompleteNodeCount > 0 ? ` (with ${ incompleteNodeCount } undecided — see above)` : '' }.\n`
+				);
 			} else {
 				process.stdout.write( `axe-run: ${ violations.length } violation type(s):\n\n` );
 				for ( const v of violations ) {

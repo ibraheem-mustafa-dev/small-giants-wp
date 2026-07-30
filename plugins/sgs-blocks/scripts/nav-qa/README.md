@@ -193,6 +193,57 @@ NOT work as a negative control — WordPress's canonical-URL guessing silently
 redirects `/nonexistent-xyz/poc-drawer-<v>/` to the real fixture and the run
 passes. Verified with `curl -L` 2026-07-30. Use a different HOST.
 
+## 1c. ⚠ axe CANNOT measure contrast inside an open `<dialog>` (measured 2026-07-30)
+
+**Do not "just let axe check the contrast" on a drawer. It cannot, and it will
+tell you everything is fine.**
+
+Measured on the canary POC drawers: axe places **every** text element inside an
+open `dialog.sgs-nav-drawer` into its **INCOMPLETE** bucket, each with
+*"Element's background color could not be determined because it is overlapped by
+another element"* — because a `<dialog>` renders in the browser's **top layer**
+above a `::backdrop` and axe cannot resolve a background through it.
+
+Two consequences, both real defects that were live until 2026-07-30:
+
+1. `axe-run.mjs` passed `resultTypes: [ 'violations' ]`, which **discarded the
+   incomplete bucket entirely**. It printed a confident `0 violations` on a
+   drawer containing 8 undecided elements — 3 of them rendering at **1:1
+   contrast, i.e. genuinely invisible** (`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`).
+   It now prints every undecided element and says plainly that they are NOT
+   counted as passing.
+2. The plan-of-record's own proposed fix — "delegate contrast to axe's
+   `color-contrast` rule scoped to the open surface" — **would not have worked**.
+   It would have swapped a check that missed 6 elements for one that misses all 8.
+
+**So drawer contrast is measured by `checkRestContrast()` in
+`sweep-drawer-variants.mjs`, not by the axe leg.** It walks every element owning
+a text node, resolves each one's OWN effective background by climbing ancestors
+to the first non-transparent `backgroundColor` (compositing alpha down to the page
+background), and applies the WCAG large-text relaxation per element
+(`>=24px`, or `>=18.66px` at weight `>=700` → 3:1).
+
+Verified control pair, 375px:
+
+| Variant | drawer bg | measured | real failures |
+|---|---|---|---|
+| `centred-statement` | dark `footer-bg` | 8 | **3** — icon-list text at 1:1 |
+| `split-zone-serif` | dark `footer-bg` | 11 | **3** — icon-list text at 1:1 |
+| `floating-capped-card` | `surface` | 9 | 0 |
+| `two-column-editorial` | `surface` | 10 | 0 |
+
+The 6 failures are exactly the recorded defect, caught for the first time; the two
+light variants confirm no false positives. The old check measured only
+`.sgs-nav-menu__link-text` (3 elements per page) and never hovered anything
+despite being called `checkHoverContrast`.
+
+**Owner-accepted failures are reported, never suppressed.**
+`ACCEPTED_CONTRAST_PAIRS` moves a known pair (`P-MAMAS-PRIMARY-CONTRAST`, Bean
+2026-07-30: *"still distinguishable … even though they fail WCAG"*) into its own
+`acceptedFailures` bucket in the JSON — still printed, just not failing the
+verdict. Adding a pair is a decision that needs Bean, not a way to quieten a red
+check.
+
 **What changed in each script:**
 
 | Script | Before | Now |

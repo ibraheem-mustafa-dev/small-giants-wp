@@ -52,6 +52,21 @@ const __dirname = path.dirname( fileURLToPath( import.meta.url ) );
 const OPEN_SEL = '.entry-content > nav.sgs-nav-menu .sgs-nav-menu__burger';
 // The drawer REPARENTS to <body> on open (D323), so it must be scoped alone.
 const DRAWER_SEL = 'dialog.sgs-nav-drawer';
+
+/**
+ * Contrast failures the OWNER has knowingly accepted, as `rgb(fg)-on-rgb(bg)`.
+ *
+ * P-MAMAS-PRIMARY-CONTRAST, Bean 2026-07-30: "the content is still
+ * distinguishable with those colours even though they fail WCAG". His ruling was
+ * explicit that these must be REPORTED and CITED, never suppressed — so entries
+ * here move a failure into its own `acceptedFailures` bucket in the report and
+ * out of the pass/fail verdict. They are still printed. Adding a pair here is a
+ * decision that needs Bean, not a way to quieten a red check.
+ */
+const ACCEPTED_CONTRAST_PAIRS = [
+	// The Mama's coral CTA (#e68a95) with the brand's dark brown label on it.
+	'rgb(58,46,38)-on-rgb(230,138,149)',
+];
 const PAGE_PREFIX = 'poc-drawer-';
 
 function parseArgs( argv ) {
@@ -271,61 +286,166 @@ async function checkNoJs( browser, url, labels ) {
 }
 
 /**
- * Deliberate hover-contrast check on the drawer's nav links.
+ * Rest-state contrast across EVERY text element in the open drawer.
  *
- * Hover colours are real UI states and deserve a contrast check — but as an
- * intentional measurement, not as a by-product of where the automation's cursor
- * happened to land (which is what produced a phantom axe violation on
- * 2026-07-29). Reports the measured ratio per link against the panel's own
- * background so a genuine hover-contrast problem is still caught.
+ * WHY THIS IS HAND-ROLLED AND NOT DELEGATED TO axe (measured 2026-07-30)
+ * ---------------------------------------------------------------------
+ * The obvious move is "let axe's color-contrast rule do it". It cannot. An open
+ * `<dialog>` renders in the browser's TOP LAYER above a `::backdrop`, and axe
+ * cannot resolve a background through that: measured on the canary POC drawers,
+ * axe places EVERY text element in the drawer into its INCOMPLETE bucket with
+ * "Element's background color could not be determined because it is overlapped
+ * by another element" — 8 of 8, including 3 rendering at 1:1 (invisible). Axe
+ * therefore CANNOT produce a contrast violation inside a drawer, so delegating
+ * to it would have replaced one blind check with a differently-blind one.
+ *
+ * WHAT THIS FIXES vs THE OLD VERSION
+ * ----------------------------------
+ * The previous implementation measured exactly one selector —
+ * `.sgs-nav-menu__link-text` — which is precisely why
+ * P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER (`.sgs-icon-list__text` at 1:1 on the two
+ * dark `footer-bg` variants, 6 elements) sailed through it. It also composited
+ * the panel over hardcoded white and applied that single background to every
+ * element, so any nested surface (a card, a button, an inner band) was measured
+ * against the wrong colour. And despite its name it never hovered anything.
+ *
+ * Now: every element carrying its own text node is measured, each against its
+ * OWN effective background — resolved by climbing ancestors to the first
+ * non-transparent backgroundColor, then compositing any alpha over that. WCAG
+ * large-text relaxation (>=24px, or >=18.66px at weight >=700 -> 3:1) applied
+ * per element rather than as a blanket rule.
+ *
+ * @param {import('playwright').Page} page
+ * @param {string[]}                  acceptedRatios Known + owner-accepted
+ *        "fg-on-bg" pairs (e.g. P-MAMAS-PRIMARY-CONTRAST). Reported in their own
+ *        bucket and never silently dropped — Bean's 2026-07-30 ruling was
+ *        "report and cite it, never suppress".
  */
-async function checkHoverContrast( page ) {
-	return page.evaluate( ( sel ) => {
+async function checkRestContrast( page, acceptedPairs = [] ) {
+	return page.evaluate( ( { sel, accepted } ) => {
 		const parse = ( c ) => {
+			if ( ! c ) return null;
 			const m = c.match( /-?[\d.]+/g );
-			return m ? m.slice( 0, 3 ).map( Number ) : null;
+			if ( ! m || m.length < 3 ) return null;
+			// `color(srgb 0 0 0)` reports 0-1 floats, not 0-255 — reading those as
+			// 0-255 once scored a near-white cream as luminance 0.00 (my own error,
+			// 2026-07-30 session notes).
+			const scale = /^color\(/.test( c ) ? 255 : 1;
+			return m.slice( 0, 3 ).map( ( v ) => Number( v ) * scale );
 		};
+		const alphaOf = ( c ) => {
+			if ( ! c ) return 1;
+			const m = c.match( /-?[\d.]+/g );
+			if ( ! m ) return 1;
+			if ( /^rgba|^color\(/.test( c ) && m.length >= 4 ) return Number( m[ 3 ] );
+			return 1;
+		};
+		const isTransparent = ( c ) => ! c || c === 'transparent' || alphaOf( c ) === 0;
+		const over = ( fg, fgA, bg ) => fg.map( ( v, i ) => Math.round( v * fgA + bg[ i ] * ( 1 - fgA ) ) );
 		const lum = ( [ r, g, b ] ) => {
-			const f = ( v ) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow( ( v + 0.055 ) / 1.055, 2.4 ); };
+			const f = ( v ) => {
+				const n = v / 255;
+				return n <= 0.03928 ? n / 12.92 : Math.pow( ( n + 0.055 ) / 1.055, 2.4 );
+			};
 			return 0.2126 * f( r ) + 0.7152 * f( g ) + 0.0722 * f( b );
 		};
 		const ratio = ( a, b ) => {
 			const [ hi, lo ] = [ lum( a ), lum( b ) ].sort( ( x, y ) => y - x );
 			return Math.round( ( ( hi + 0.05 ) / ( lo + 0.05 ) ) * 100 ) / 100;
 		};
-		const d = document.querySelector( sel );
-		if ( ! d || ! d.open ) return { ok: false, why: 'drawer not open' };
 
-		// Composite the panel over white — a translucent panel (surfaceOpacity)
-		// lightens toward whatever is behind it, which is what a reader sees.
-		const ds = getComputedStyle( d ).backgroundColor;
-		const bgRaw = parse( ds ) || [ 255, 255, 255 ];
-		const alphaMatch = ds.match( /[\d.]+\s*\)$/ );
-		const alpha = ds.includes( '/' ) || ds.startsWith( 'rgba' ) ? parseFloat( alphaMatch ) : 1;
-		const scale = ds.startsWith( 'color(' ) ? 255 : 1;
-		const bg = bgRaw.map( ( v ) => {
-			const c = v * scale;
-			return Math.round( c * ( isNaN( alpha ) ? 1 : alpha ) + 255 * ( 1 - ( isNaN( alpha ) ? 1 : alpha ) ) );
-		} );
+		const drawer = document.querySelector( sel );
+		if ( ! drawer ) return { ok: false, why: 'drawer element absent', vacuous: true };
+		if ( ! drawer.open ) return { ok: false, why: 'drawer not open', vacuous: true };
 
-		const links = Array.from( d.querySelectorAll( '.sgs-nav-menu__link-text' ) );
-		const results = links.map( ( t ) => {
-			const rest = parse( getComputedStyle( t ).color );
-			const size = parseFloat( getComputedStyle( t ).fontSize );
-			// Large text (>=24px, or >=18.66px bold) needs 3:1; else 4.5:1.
-			const threshold = size >= 24 ? 3 : 4.5;
-			return { text: t.textContent.trim(), restRatio: ratio( rest, bg ), threshold, fontSize: size };
-		} );
-		const failing = results.filter( ( r ) => r.restRatio < r.threshold );
-		return {
-			ok: failing.length === 0,
-			why: failing.length
-				? failing.map( ( f ) => `"${ f.text }" ${ f.restRatio }:1 (needs ${ f.threshold }:1)` ).join( '; ' )
-				: '',
-			panelBackgroundComposited: `rgb(${ bg.join( ',' ) })`,
-			links: results,
+		// The page behind the drawer is what a translucent surface composites over.
+		const pageBg = parse( getComputedStyle( document.body ).backgroundColor ) || [ 255, 255, 255 ];
+
+		/** First non-transparent ancestor background, composited down to opaque. */
+		const effectiveBg = ( el ) => {
+			const stack = [];
+			let node = el;
+			while ( node && node !== document.documentElement ) {
+				const c = getComputedStyle( node ).backgroundColor;
+				if ( ! isTransparent( c ) ) {
+					const rgb = parse( c );
+					if ( rgb ) {
+						stack.push( { rgb, a: alphaOf( c ) } );
+						if ( alphaOf( c ) === 1 ) break;
+					}
+				}
+				node = node.parentElement;
+			}
+			let base = pageBg;
+			for ( let i = stack.length - 1; i >= 0; i-- ) {
+				base = over( stack[ i ].rgb, stack[ i ].a, base );
+			}
+			return base;
 		};
-	}, DRAWER_SEL );
+
+		const measured = [];
+		drawer.querySelectorAll( '*' ).forEach( ( el ) => {
+			// Only elements that own their text. Measuring a wrapper would attribute
+			// a child's colour to the wrong element and double-count.
+			const ownText = Array.from( el.childNodes )
+				.filter( ( n ) => n.nodeType === Node.TEXT_NODE )
+				.map( ( n ) => n.textContent.trim() )
+				.join( ' ' )
+				.trim();
+			if ( ! ownText ) return;
+
+			const cs = getComputedStyle( el );
+			const rect = el.getBoundingClientRect();
+			const visible = rect.width > 0 && rect.height > 0 &&
+				cs.visibility !== 'hidden' && cs.display !== 'none' && parseFloat( cs.opacity ) !== 0;
+			if ( ! visible ) return;
+
+			const bg = effectiveBg( el );
+			const fgRaw = parse( cs.color );
+			if ( ! fgRaw ) return;
+			const fg = over( fgRaw, alphaOf( cs.color ), bg );
+
+			const size = parseFloat( cs.fontSize );
+			const weight = parseInt( cs.fontWeight, 10 ) || 400;
+			const large = size >= 24 || ( size >= 18.66 && weight >= 700 );
+			const threshold = large ? 3 : 4.5;
+			const r = ratio( fg, bg );
+
+			measured.push( {
+				text: ownText.slice( 0, 40 ),
+				selectorHint: el.tagName.toLowerCase() +
+					( typeof el.className === 'string' && el.className
+						? '.' + el.className.trim().split( /\s+/ )[ 0 ]
+						: '' ),
+				ratio: r,
+				threshold,
+				fontSize: size,
+				fontWeight: weight,
+				colour: `rgb(${ fg.join( ',' ) })`,
+				background: `rgb(${ bg.join( ',' ) })`,
+				pass: r >= threshold,
+			} );
+		} );
+
+		const acceptedSet = new Set( accepted );
+		const failing = measured.filter( ( m ) => ! m.pass );
+		const acceptedFails = failing.filter( ( m ) => acceptedSet.has( `${ m.colour }-on-${ m.background }` ) );
+		const realFails = failing.filter( ( m ) => ! acceptedSet.has( `${ m.colour }-on-${ m.background }` ) );
+
+		return {
+			ok: realFails.length === 0,
+			why: realFails.length
+				? realFails
+					.map( ( f ) => `${ f.selectorHint } "${ f.text }" ${ f.ratio }:1 (needs ${ f.threshold }:1, ${ f.colour } on ${ f.background })` )
+					.join( '; ' )
+				: '',
+			elementsMeasured: measured.length,
+			failing: realFails,
+			// Reported, never suppressed — Bean's ruling on P-MAMAS-PRIMARY-CONTRAST.
+			acceptedFailures: acceptedFails,
+			all: measured,
+		};
+	}, { sel: DRAWER_SEL, accepted: acceptedPairs } );
 }
 
 /** Shell out to the guard-owning axe runner. Exit 3 = VACUOUS, never a pass. */
@@ -390,7 +510,7 @@ async function main() {
 					await page.mouse.move( 2, 2 );
 					await page.waitForTimeout( 200 );
 					cell.checks.geometry = await measureGeometry( page );
-					cell.checks.restContrast = await checkHoverContrast( page );
+					cell.checks.restContrast = await checkRestContrast( page, ACCEPTED_CONTRAST_PAIRS );
 					cell.checks.focusContained = await checkFocusContainment( page );
 					cell.checks.keyboard = await checkKeyboard( page );
 				} catch ( e ) {
