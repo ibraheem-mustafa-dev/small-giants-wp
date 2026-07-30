@@ -681,6 +681,44 @@ Of 18 hand-traced disagreements, 15 showed the pre-existing STORED value was wro
 
 **Trigger:** a dedicated audit session — a strong candidate for the next framework-quality front.
 
+### P-STORE-API-CART-SERVED-FROM-CACHE — the mini-cart badge can never show a count on Hostinger/LiteSpeed
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
+
+`GET /wp-json/wc/store/v1/cart` is served from cache on the sandybrown canary, returning a stale
+empty cart forever. The SGS mini-cart badge (`sgs/cart`, FR-36-19) reads `items_count` from exactly
+that endpoint (`cart/view.js:55`), so **the badge is pinned at 0 no matter what is in the cart** —
+in all three `displayMode` values.
+
+**Cause PROVEN by discriminator, not inferred.** Two candidate causes existed (stale cache vs. the
+guest session not persisting). `/cart` is a LiteSpeed HIT; `/cart/items` is a MISS. Queried in the
+SAME browser session, one instant apart, immediately after `POST cart/add-item` returned `201
+items_count:3`:
+
+| endpoint | LiteSpeed | result |
+|---|---|---|
+| `/wc/store/v1/cart` | `hit` | `items_count: 0` |
+| `/wc/store/v1/cart/items` | `miss` | 1 item, qty 3, "Mamas Munches Zookies" |
+
+The session is healthy and holds the items; only the cached endpoint is blind. That rules the
+session cause out.
+
+**It is NOT a missing purge, and NOT a missing header.** The endpoint already sends the correct
+`Cache-Control: no-store` and the cache ignores it. `wp litespeed-purge all` ("Success: Purged
+All!") AND the Hostinger CDN clear (`hosting_clearWebsiteCacheV1`) were both run: the very next
+request was still `X-LiteSpeed-Cache: hit` with `items_count: 0`. So a purge is not the fix — the
+Store API needs an explicit cache EXCLUSION.
+
+**Why it matters beyond the canary:** every SGS client site is Hostinger/LiteSpeed, so any build
+shipping `sgs/cart` inherits a permanently-zero badge. Also note the latent risk (observed
+mechanism, NOT demonstrated): a cart response cached per-URL is a response that could be served to
+a different visitor. The body currently cached is empty, so no leak was reproduced — do not repeat
+this as a confirmed leak, but do treat it as a reason the exclusion is security-relevant, not just
+cosmetic.
+
+**Trigger:** before any client build ships `sgs/cart`, or the next WooCommerce work. Fix is a
+LiteSpeed cache exclusion for `/wp-json/wc/store/v1/*` (site config, not block code) — then re-run
+the discriminator above; the two rows must agree.
+
 ### P-MAMAS-PRIMARY-CONTRAST — Mama's brand-primary token fails text contrast site-wide
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-23 · **Bean-ruled:** 2026-07-29
 
