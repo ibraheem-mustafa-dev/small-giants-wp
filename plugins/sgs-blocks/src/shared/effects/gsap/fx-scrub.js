@@ -26,6 +26,8 @@ import {
 	withMotionAllowed,
 	bootEffect,
 	resolveScrub,
+	resolveTrigger,
+	bindHoverReplay,
 } from '@sgs/motion-provider';
 
 /**
@@ -53,13 +55,53 @@ function numericParam( el, name, fallback ) {
  */
 export function initScrub( el ) {
 	return withMotionAllowed( ( gsap ) => {
+		const trigger = resolveTrigger( el );
+		const ease = el.getAttribute( 'data-sgs-fx-ease' ) || 'none';
+
+		/*
+		 * `load` and `hover` drop the ScrollTrigger entirely — the tween PLAYS
+		 * rather than being scrubbed, so there is no scroll range to tie it to.
+		 * Both arms return early; the scroll arm below is unchanged.
+		 */
+		if ( 'scroll' !== trigger ) {
+			const isHover = 'hover' === trigger;
+			const played = gsap.fromTo(
+				el,
+				{ opacity: 0, y: 40 },
+				{
+					opacity: 1,
+					y: 0,
+					// A scrubbed tween takes its duration from the scroll
+					// distance; a played one needs a real duration. The house
+					// default (provider.js `gsap.defaults`) applies unless the
+					// client set one.
+					duration: numericParam( el, 'duration', 0.6 ),
+					ease: 'none' === ease ? 'power2.out' : ease,
+					paused: isHover,
+					// See bindHoverReplay: without this the from-state hides the
+					// element the moment the tween is created, and a hover that
+					// never comes leaves it hidden for good.
+					immediateRender: ! isHover,
+				}
+			);
+
+			const unbind = isHover ? bindHoverReplay( el, played ) : undefined;
+
+			return () => {
+				if ( unbind ) {
+					unbind();
+				}
+				played.kill();
+			};
+		}
+
 		const tween = gsap.fromTo(
 			el,
 			{ opacity: 0, y: 40 },
 			{
 				opacity: 1,
 				y: 0,
-				ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'none',
+				ease,
 				scrollTrigger: {
 					trigger: el,
 					start: el.getAttribute( 'data-sgs-fx-start' ) || 'top 85%',

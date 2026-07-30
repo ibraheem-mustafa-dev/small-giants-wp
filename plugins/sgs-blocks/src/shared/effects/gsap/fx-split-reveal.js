@@ -49,7 +49,13 @@
 
 import { SplitText } from 'gsap/SplitText';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { tierG, withMotionAllowed, bootEffect } from '@sgs/motion-provider';
+import {
+	tierG,
+	withMotionAllowed,
+	bootEffect,
+	resolveTrigger,
+	bindHoverReplay,
+} from '@sgs/motion-provider';
 
 /**
  * Read a numeric fx parameter, falling back when absent or unparseable.
@@ -100,6 +106,7 @@ function splitTypeParam( el ) {
 export function initSplitReveal( el ) {
 	return withMotionAllowed( ( gsap ) => {
 		const splitType = splitTypeParam( el );
+		const trigger = resolveTrigger( el );
 
 		// `mask` clips each fragment's overflow to its own line box, so a
 		// 'lines' reveal slides up out of a hairline mask instead of a full
@@ -154,12 +161,37 @@ export function initSplitReveal( el ) {
 				// on the first call.
 				const targets = self[ splitType ] || self.words;
 
-				tween = gsap.from( targets, {
+				const common = {
 					opacity: 0,
 					y: '0.6em',
 					duration: numericParam( el, 'duration', 0.6 ),
 					stagger: numericParam( el, 'stagger', 0.03 ),
 					ease: el.getAttribute( 'data-sgs-fx-ease' ) || 'power2.out',
+				};
+
+				/*
+				 * `load` and `hover` carry no ScrollTrigger — the reveal PLAYS
+				 * rather than waiting for a scroll position.
+				 *
+				 * `immediateRender: false` on the hover arm is load-bearing, not
+				 * tidiness: `gsap.from` renders its from-state at once, so a
+				 * paused hover tween would hide every fragment the instant it is
+				 * created, and a visitor who never hovers — or cannot, on a touch
+				 * screen — would be left looking at invisible text. With it, the
+				 * text stays exactly as the server rendered it and hover replays
+				 * the reveal. See `bindHoverReplay` in provider.js.
+				 */
+				if ( 'scroll' !== trigger ) {
+					tween = gsap.from( targets, {
+						...common,
+						paused: 'hover' === trigger,
+						immediateRender: 'hover' !== trigger,
+					} );
+					return tween;
+				}
+
+				tween = gsap.from( targets, {
+					...common,
 					scrollTrigger: {
 						trigger: el,
 						// `data-sgs-fx-start` — the attribute the inspector's
@@ -177,10 +209,27 @@ export function initSplitReveal( el ) {
 			},
 		} );
 
+		/*
+		 * Hover is bound OUTSIDE onSplit, against the element rather than the
+		 * fragments, so a re-split (webfont swap, resize) does not need to
+		 * rebind it. `tween` is read at event time, so the replay always drives
+		 * whichever tween the CURRENT split produced — binding the tween object
+		 * itself here would animate detached nodes after a re-split.
+		 */
+		const unbindHover =
+			'hover' === trigger
+				? bindHoverReplay( el, {
+						restart: () => tween?.restart(),
+				  } )
+				: undefined;
+
 		// Order matters: kill the tween BEFORE reverting the split. Reverting
 		// first would let GSAP's tween keep a dangling reference to nodes
 		// SplitText has already removed from the DOM.
 		return () => {
+			if ( unbindHover ) {
+				unbindHover();
+			}
 			tween?.scrollTrigger?.kill();
 			tween?.kill();
 			split.revert();

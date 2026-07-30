@@ -149,6 +149,9 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-6, §2 row "Pin + scrub section timeline", §9 row 1, §10 row 1.
         "effect": "pin-scrub",
+        # pins/triggers (D416). VERIFIED: fx-pin-scrub.js sets pin:true. Pin spans a scroll RANGE, so scroll is the only coherent trigger.
+        "pins": 1,
+        "triggers": "scroll",
         "tier": "G",
         "plugin_set": ["ScrollTrigger"],
         "owns_scroll_transform": 1,
@@ -164,6 +167,9 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-7, §2 row "Scroll-scrubbed element timeline", §9 row 1, §10 row 2.
         "effect": "scrub",
+        # pins/triggers (D416). VERIFIED not pinning. An entrance-style reveal: playing it on load or on hover are both coherent alternatives to scrubbing.
+        "pins": 0,
+        "triggers": "scroll,load,hover",
         "tier": "G",
         "plugin_set": ["ScrollTrigger"],
         "owns_scroll_transform": 1,
@@ -179,6 +185,9 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-8, §2 row "Horizontal scroll panel", §9 row 1, §10 row 3.
         "effect": "horizontal-panel",
+        # pins/triggers (D416). VERIFIED: fx-horizontal-panel.js sets pin:true. Scroll maps to horizontal travel, so scroll is intrinsic.
+        "pins": 1,
+        "triggers": "scroll",
         "tier": "G",
         "plugin_set": ["ScrollTrigger"],
         "owns_scroll_transform": 1,
@@ -195,6 +204,9 @@ FX_EFFECTS: list[dict] = [
         # FR-38-10, §2 row "SplitText reveal" (explicitly "§4.3 exclusivity vs
         # entrance" in its Conditions column), §9 row 3, §10 row 5.
         "effect": "split-reveal",
+        # pins/triggers (D416). VERIFIED not pinning. Text reveal works equally as an on-load or on-hover play.
+        "pins": 0,
+        "triggers": "scroll,load,hover",
         "tier": "G",
         # ScrollTrigger added 2026-07-29 during the Wave A build. The spec's §4.4
         # budget table lists SplitText against "text reveals present" and does not
@@ -221,6 +233,9 @@ FX_EFFECTS: list[dict] = [
         # FR-38-11, §2 row "ScrambleText" (no §4.3 mention; §4.3's own text names
         # ScrambleText as a non-excluding effect), §9 row 3, §10 row 6.
         "effect": "scramble",
+        # pins/triggers (D416). UNSHIPPED (Wave B/C) - placeholder. Text scramble is a natural hover/load effect.
+        "pins": 0,
+        "triggers": "scroll,load,hover",
         "tier": "G",
         "plugin_set": ["ScrambleText"],
         "owns_scroll_transform": 0,
@@ -241,6 +256,9 @@ FX_EFFECTS: list[dict] = [
         # FR-38-12, §2 row "Flip on filtered grids" (filter-event-triggered, not
         # scroll-driven), §9 row 4 ("Labelled no-preview"), §10 row 7.
         "effect": "flip",
+        # pins/triggers (D416). UNSHIPPED - placeholder. FLIP animates a layout change; scroll is the only trigger Wave A can reason about.
+        "pins": 0,
+        "triggers": "scroll",
         "tier": "G",
         "plugin_set": ["Flip"],
         "owns_scroll_transform": 0,
@@ -264,6 +282,9 @@ FX_EFFECTS: list[dict] = [
         # FR-38-13, §2 row "Draggable + Inertia", §9 row 5 ("Static; Notice"),
         # §10 row 8.
         "effect": "draggable",
+        # pins/triggers (D416). UNSHIPPED - placeholder. Draggable is user-initiated: it is ARMED on load, never scroll-triggered.
+        "pins": 0,
+        "triggers": "load",
         "tier": "G",
         "plugin_set": ["Draggable", "Inertia"],
         "owns_scroll_transform": 0,
@@ -284,6 +305,9 @@ FX_EFFECTS: list[dict] = [
         # FR-38-15, §2 row "DrawSVG" (§4.3 text explicitly names "DrawSVG on load"
         # as non-excluding), §9 row 6, §10 row 10.
         "effect": "draw",
+        # pins/triggers (D416). UNSHIPPED - placeholder. SVG line-draw is a common hover/load effect as well as scroll.
+        "pins": 0,
+        "triggers": "scroll,load,hover",
         "tier": "G",
         "plugin_set": ["DrawSVG"],
         "owns_scroll_transform": 0,
@@ -306,6 +330,9 @@ FX_EFFECTS: list[dict] = [
         # all (asset-gated instant/duration morph of the path 'd', not a
         # transform/opacity scroll-scrub) -> owns_scroll_transform=0.
         "effect": "morph",
+        # pins/triggers (D416). UNSHIPPED - placeholder. Same target family as draw.
+        "pins": 0,
+        "triggers": "scroll,load,hover",
         "tier": "G",
         "plugin_set": ["MorphSVG"],
         "owns_scroll_transform": 0,
@@ -331,6 +358,9 @@ FX_EFFECTS: list[dict] = [
         # discussion the way it names pin-scrub/scrub/SplitText/DrawSVG/
         # ScrambleText. Flagged in the final report; not guessed silently.
         "effect": "motion-path",
+        # pins/triggers (D416). UNSHIPPED - placeholder. Scroll-scrubbed path progress per its owns_scroll_transform=1 reasoning.
+        "pins": 0,
+        "triggers": "scroll",
         "tier": "G",
         "plugin_set": ["MotionPath", "ScrollTrigger"],
         "owns_scroll_transform": 1,
@@ -364,6 +394,9 @@ FX_EFFECTS: list[dict] = [
         #    pin-scrub does. Flagged as a judgement call, not a guess presented as
         #    fact.
         "effect": "image-sequence",
+        # pins/triggers (D416). UNSHIPPED - placeholder. pins is UNVERIFIABLE until the module exists; 0 is the safe default and is inert (see note above FX_EFFECTS).
+        "pins": 0,
+        "triggers": "scroll",
         "tier": "G",
         "plugin_set": ["ScrollTrigger"],
         "owns_scroll_transform": 0,
@@ -393,6 +426,9 @@ FX_EFFECTS: list[dict] = [
         # ScrollSmoother (disabled in editor + wp-admin; disabled under
         # reduced-motion).
         "effect": "scroll-smoother",
+        # pins/triggers (D416). UNSHIPPED - placeholder. scope=site, so it never reaches a block panel at all.
+        "pins": 0,
+        "triggers": "scroll",
         "tier": "G",
         "plugin_set": ["ScrollSmoother"],
         "owns_scroll_transform": 0,
@@ -419,6 +455,9 @@ FX_EFFECTS: list[dict] = [
         # construction (13 rows, 1 of them 'V') — flagged here rather than
         # silently left wrong in the docstring above.
         "effect": "page-transitions",
+        # pins/triggers (D416). UNSHIPPED - placeholder. scope=site; a page transition fires on navigation, not scroll.
+        "pins": 0,
+        "triggers": "load",
         "tier": "V",
         "plugin_set": [],
         "owns_scroll_transform": 0,
@@ -449,6 +488,7 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
 FX_EFFECTS_COLUMNS = (
     "effect", "tier", "plugin_set", "owns_scroll_transform",
     "reduced_motion", "editor_story", "scope", "requires",
+    "pins", "triggers",
 )
 
 
@@ -464,6 +504,8 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
             editor_story            TEXT NOT NULL,
             scope                   TEXT NOT NULL DEFAULT 'block',
             requires                TEXT NOT NULL DEFAULT 'none',
+            pins                    INTEGER NOT NULL DEFAULT 0,
+            triggers                TEXT NOT NULL DEFAULT 'scroll',
             created_at              TEXT DEFAULT (datetime('now'))
         )
         """
@@ -479,6 +521,23 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     if "requires" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN requires TEXT NOT NULL DEFAULT 'none'")
         print("  [set]  fx_effects: added column 'requires' (migration)")
+    # D416: pins + triggers. Same gated-on-absence migration shape as above.
+    #  - pins     drives the fxEnd control's WORDING ("how long it stays stuck"
+    #             for a pinning effect vs "where it finishes" for a scrubbed one).
+    #             owns_scroll_transform is NOT a usable proxy: 5 effects set it,
+    #             only 2 pin.
+    #  - triggers is the per-effect enum Spec 38 s11.2 already specifies
+    #             ("load | scroll | hover (per-effect enum)") and drives which
+    #             options the "When it starts" control offers, so a client is
+    #             never shown a value that effect cannot honour.
+    # Both live here rather than as hand-maintained arrays in fx.js, which
+    # already carries two such lists that no gate cross-checks.
+    if "pins" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN pins INTEGER NOT NULL DEFAULT 0")
+        print("  [set]  fx_effects: added column 'pins' (migration)")
+    if "triggers" not in existing_cols:
+        cur.execute("ALTER TABLE fx_effects ADD COLUMN triggers TEXT NOT NULL DEFAULT 'scroll'")
+        print("  [set]  fx_effects: added column 'triggers' (migration)")
 
 
 def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
@@ -487,19 +546,21 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
         effect = row["effect"]
         existing = cur.execute(
             "SELECT tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-            "scope, requires FROM fx_effects WHERE effect = ?",
+            "scope, requires, pins, triggers FROM fx_effects WHERE effect = ?",
             (effect,),
         ).fetchone()
         plugin_set_json = json.dumps(row["plugin_set"])
         target = (
             row["tier"], plugin_set_json, row["owns_scroll_transform"],
             row["reduced_motion"], row["editor_story"], row["scope"], row["requires"],
+            row["pins"], row["triggers"],
         )
         if existing is None:
             cur.execute(
                 "INSERT INTO fx_effects "
                 "(effect, tier, plugin_set, owns_scroll_transform, reduced_motion, "
-                "editor_story, scope, requires) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "editor_story, scope, requires, pins, triggers) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (effect, *target),
             )
             changed += 1
@@ -510,7 +571,8 @@ def _seed_fx_effects(cur: sqlite3.Cursor) -> int:
             continue
         cur.execute(
             "UPDATE fx_effects SET tier=?, plugin_set=?, owns_scroll_transform=?, "
-            "reduced_motion=?, editor_story=?, scope=?, requires=? WHERE effect=?",
+            "reduced_motion=?, editor_story=?, scope=?, requires=?, pins=?, triggers=? "
+            "WHERE effect=?",
             (*target, effect),
         )
         changed += 1

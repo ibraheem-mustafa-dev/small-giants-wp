@@ -110,7 +110,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     expected_by_effect = {row["effect"]: row for row in FX_EFFECTS}
     db_rows = conn.execute(
         "SELECT effect, tier, plugin_set, owns_scroll_transform, reduced_motion, editor_story, "
-        "scope, requires FROM fx_effects"
+        "scope, requires, pins, triggers FROM fx_effects"
     ).fetchall()
     db_by_effect = {r[0]: r for r in db_rows}
 
@@ -127,7 +127,10 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             ))
             continue
 
-        _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor, db_scope, db_requires = db_row
+        (
+            _, db_tier, db_plugin_set_json, db_owns, db_reduced, db_editor,
+            db_scope, db_requires, db_pins, db_triggers,
+        ) = db_row
         try:
             db_plugin_set = json.loads(db_plugin_set_json)
         except (TypeError, ValueError):
@@ -150,6 +153,14 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             mismatches.append(f"scope: db={db_scope!r} expected={expected['scope']!r}")
         if db_requires != expected["requires"]:
             mismatches.append(f"requires: db={db_requires!r} expected={expected['requires']!r}")
+        # D416 — pins drives the fxEnd control's wording, triggers drives which
+        # "When it starts" options a client is offered. Both are read by the
+        # editor via the generated map, so drift here silently changes the
+        # inspector rather than erroring anywhere.
+        if int(db_pins) != int(expected["pins"]):
+            mismatches.append(f"pins: db={db_pins!r} expected={expected['pins']!r}")
+        if db_triggers != expected["triggers"]:
+            mismatches.append(f"triggers: db={db_triggers!r} expected={expected['triggers']!r}")
 
         if mismatches:
             violations.append(Violation(
@@ -199,36 +210,68 @@ def _self_test() -> int:
             return 1
         print("[check_motion_fx_reseed --self-test] baseline: 0 violations (clean) — OK")
 
-        # Inject: corrupt one row's owns_scroll_transform (flip it).
+        # Inject: corrupt EACH guarded column in turn, one at a time.
+        #
+        # Injecting only ONE column would prove only that column is compared.
+        # When pins/triggers were added (D416) the single-column self-test kept
+        # passing while saying nothing about them — a guard is only proven for
+        # the fields its self-test actually perturbs, and "I added the
+        # comparison" is not evidence the comparison runs. Every column the
+        # gate claims to guard gets its own injection here; adding a column to
+        # the SELECT without adding it to this list leaves it unproven.
         cur = con.cursor()
         target_effect = "pin-scrub"
-        original = cur.execute(
-            "SELECT owns_scroll_transform FROM fx_effects WHERE effect = ?", (target_effect,)
-        ).fetchone()[0]
-        corrupted = 0 if int(original) == 1 else 1
-        cur.execute(
-            "UPDATE fx_effects SET owns_scroll_transform = ? WHERE effect = ?",
-            (corrupted, target_effect),
+        columns = (
+            "owns_scroll_transform",
+            "scope",
+            "requires",
+            "pins",
+            "triggers",
         )
-        con.commit()
-        print(f"[check_motion_fx_reseed --self-test] injected: {target_effect}.owns_scroll_transform {original} -> {corrupted}")
 
-        # Detect: run() must now report exactly this violation.
-        injected_violations = run(con)
-        caught = [v for v in injected_violations if v.block == target_effect and v.check == "motion_fx_reseed"]
+        unguarded: list[str] = []
+        for column in columns:
+            original = cur.execute(
+                f"SELECT {column} FROM fx_effects WHERE effect = ?", (target_effect,)
+            ).fetchone()[0]
+            if isinstance(original, int):
+                corrupted: object = 0 if int(original) == 1 else 1
+            else:
+                corrupted = f"__selftest_{original}"
 
-        # Revert BEFORE asserting, so a failed assertion never leaves the DB corrupted.
-        cur.execute(
-            "UPDATE fx_effects SET owns_scroll_transform = ? WHERE effect = ?",
-            (original, target_effect),
-        )
-        con.commit()
-        print(f"[check_motion_fx_reseed --self-test] reverted: {target_effect}.owns_scroll_transform -> {original}")
+            cur.execute(
+                f"UPDATE fx_effects SET {column} = ? WHERE effect = ?",
+                (corrupted, target_effect),
+            )
+            con.commit()
 
-        if not caught:
+            injected_violations = run(con)
+            caught = [
+                v for v in injected_violations
+                if v.block == target_effect and v.check == "motion_fx_reseed"
+            ]
+
+            # Revert BEFORE asserting, so a failed assertion never leaves the
+            # DB corrupted.
+            cur.execute(
+                f"UPDATE fx_effects SET {column} = ? WHERE effect = ?",
+                (original, target_effect),
+            )
+            con.commit()
+
+            verdict = "caught" if caught else "NOT CAUGHT"
             print(
-                "[check_motion_fx_reseed --self-test] FAIL — the guard did NOT detect the "
-                "injected violation. This gate would read green forever. Fix the check."
+                f"[check_motion_fx_reseed --self-test] {target_effect}.{column}: "
+                f"{original!r} -> {corrupted!r} — {verdict}; reverted"
+            )
+            if not caught:
+                unguarded.append(column)
+
+        if unguarded:
+            print(
+                "[check_motion_fx_reseed --self-test] FAIL — the guard did NOT detect an "
+                f"injected violation in: {', '.join(unguarded)}. Those columns read green "
+                "forever. Fix the check."
             )
             return 1
 

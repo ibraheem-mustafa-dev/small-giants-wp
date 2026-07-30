@@ -238,6 +238,66 @@ export function resolveStart( el, fallback = 'top top' ) {
  * @param {number}      fallback Smoothing to use when unset.
  * @return {number|boolean} Seconds of smoothing, or `true` for none.
  */
+/**
+ * Resolve WHEN an effect should fire — Spec 38 §11.2's `load | scroll | hover`.
+ *
+ * Unset, blank or unrecognised all resolve to `scroll`, the module default.
+ * Falling back rather than honouring an unknown string matters because the
+ * editor only ever offers the values an effect declares in `fx_effects.triggers`;
+ * anything else reaching here came from hand-edited markup, and guessing at it
+ * would be worse than doing the ordinary thing.
+ *
+ * @param {HTMLElement} el Element carrying the fx attributes.
+ * @return {'scroll'|'load'|'hover'} The resolved trigger.
+ */
+export function resolveTrigger( el ) {
+	const raw = el.getAttribute( 'data-sgs-fx-trigger' );
+	const value = raw && raw.trim() ? raw.trim() : 'scroll';
+	return 'load' === value || 'hover' === value ? value : 'scroll';
+}
+
+/**
+ * Bind a paused tween to hover, and to keyboard focus.
+ *
+ * ⚠ THE CALLER MUST CREATE THE TWEEN WITH `paused: true` AND
+ * `immediateRender: false`. That pairing is what makes this arm safe rather
+ * than merely convenient, and it is not a style preference:
+ *
+ * These effects are `fromTo` tweens whose FROM state is `opacity: 0`. `fromTo`
+ * renders its from-state immediately by default, so a tween that is waiting for
+ * a trigger has ALREADY hidden its element. If that trigger then never arrives
+ * — a touch device with no hover, a visitor who never points at the element,
+ * a section containing nothing focusable — the content stays invisible
+ * permanently. That is unreachable content, which Spec 38 treats as a defect
+ * rather than a degradation.
+ *
+ * With `immediateRender: false` the element simply stays as the server rendered
+ * it (visible, finished) until something plays the tween, and hover REPLAYS the
+ * reveal rather than releasing it. No hover capability means no replay and no
+ * harm — the safety needs no device sniffing, no `(hover: none)` branch, and no
+ * assumption about how the visitor is browsing.
+ *
+ * `focusin` is bound alongside `mouseenter` so a keyboard user reaching a
+ * focusable descendant gets the same effect a pointer user gets. It is parity,
+ * not the safety mechanism — the safety is the paragraph above, which holds
+ * even for an element with nothing focusable in it.
+ *
+ * @param {HTMLElement} el    Element to watch.
+ * @param {Object}      tween The paused tween to replay.
+ * @return {Function} Cleanup that detaches both listeners.
+ */
+export function bindHoverReplay( el, tween ) {
+	const replay = () => tween.restart();
+
+	el.addEventListener( 'mouseenter', replay );
+	el.addEventListener( 'focusin', replay );
+
+	return () => {
+		el.removeEventListener( 'mouseenter', replay );
+		el.removeEventListener( 'focusin', replay );
+	};
+}
+
 export function resolveScrub( el, fallback = 1 ) {
 	const raw = el.getAttribute( 'data-sgs-fx-scrub' );
 	const parsed = null === raw ? NaN : parseFloat( raw );

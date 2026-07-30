@@ -9,9 +9,9 @@
   "modules": {
     "shared/effects/gsap/fx-horizontal-panel.js": 691,
     "shared/effects/gsap/fx-pin-scrub.js": 644,
-    "shared/effects/gsap/fx-scrub.js": 418,
-    "shared/effects/gsap/fx-split-reveal.js": 631,
-    "shared/effects/gsap/provider.js": 906,
+    "shared/effects/gsap/fx-scrub.js": 616,
+    "shared/effects/gsap/fx-split-reveal.js": 733,
+    "shared/effects/gsap/provider.js": 1014,
     "vendor-modules/gsap-core.js": 27017,
     "vendor-modules/gsap-scrolltrigger.js": 17420,
     "vendor-modules/gsap-splittext.js": 3271

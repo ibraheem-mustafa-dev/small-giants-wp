@@ -43,6 +43,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 OUTPUT_FILE = Path(__file__).resolve().parent.parent / "includes" / "generated-fx-effects.php"
+# Editor-side mirror of the per-effect facts the inspector needs (D416).
+JSON_OUTPUT_FILE = (
+    Path(__file__).resolve().parent.parent
+    / "src" / "blocks" / "extensions" / "generated-fx-effect-meta.json"
+)
 
 
 def _php_string_literal(value: str) -> str:
@@ -77,7 +82,8 @@ def main() -> int:
         return 1
 
     rows = cur.execute(
-        "SELECT effect, plugin_set, owns_scroll_transform FROM fx_effects ORDER BY effect"
+        "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers "
+        "FROM fx_effects ORDER BY effect"
     ).fetchall()
     con.close()
 
@@ -144,12 +150,18 @@ def main() -> int:
         "\t\t$effects = array(",
     ]
 
-    for effect, plugin_set_json, owns_scroll_transform in rows:
+    for effect, plugin_set_json, owns_scroll_transform, pins, triggers in rows:
         plugin_set = json.loads(plugin_set_json)
         owns_bool = "true" if int(owns_scroll_transform) else "false"
+        pins_bool = "true" if int(pins) else "false"
         lines.append(f"\t\t\t{_php_string_literal(effect)} => array(")
         lines.append(f"\t\t\t\t'plugin_set'            => {_php_array_of_strings(plugin_set)},")
         lines.append(f"\t\t\t\t'owns_scroll_transform' => {owns_bool},")
+        lines.append(f"\t\t\t\t'pins'                  => {pins_bool},")
+        lines.append(
+            f"\t\t\t\t'triggers'              => "
+            f"{_php_array_of_strings([t for t in str(triggers).split(',') if t])},"
+        )
         lines.append("\t\t\t),")
 
     lines.extend([
@@ -163,6 +175,39 @@ def main() -> int:
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_FILE.write_text("\n".join(lines), encoding="utf-8")
     print(f"[generate-fx-effects-php] Generated {OUTPUT_FILE} with {len(rows)} effects.")
+
+    # ------------------------------------------------------------------
+    # Editor-side mirror (D416).
+    #
+    # The inspector needs two per-effect facts to build its controls:
+    #   · pins     — chooses the fxEnd control's WORDING ("how long it stays
+    #                stuck" vs "where it finishes")
+    #   · triggers — the per-effect enum (Spec 38 §11.2) deciding which "When it
+    #                starts" options a client is offered, so no dead option ever
+    #                renders
+    #
+    # Emitted as JSON rather than duplicated as hand-maintained arrays in fx.js.
+    # That file already carries two such lists (SHIPPED_EFFECTS, SCROLL_OWNING_FX)
+    # that no gate cross-checks; a third and fourth would be two more chances for
+    # the editor to disagree with the DB silently. webpack bundles .json imports
+    # natively, so this needs no codegen step — same route
+    # generated-fx-qualifying-blocks.json already uses.
+    #
+    # Deterministic, no timestamp — see the note above for why that is
+    # load-bearing for build-deploy's dirty gate.
+    # ------------------------------------------------------------------
+    meta = {
+        effect: {
+            "pins": bool(int(pins)),
+            "triggers": [t for t in str(triggers).split(",") if t],
+        }
+        for effect, _plugin_set_json, _owns, pins, triggers in rows
+    }
+    JSON_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    JSON_OUTPUT_FILE.write_text(
+        json.dumps(meta, indent="\t", sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(f"[generate-fx-effects-php] Generated {JSON_OUTPUT_FILE} with {len(meta)} effects.")
     return 0
 
 

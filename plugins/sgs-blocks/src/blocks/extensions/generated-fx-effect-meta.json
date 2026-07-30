@@ -1,0 +1,90 @@
+{
+	"draggable": {
+		"pins": false,
+		"triggers": [
+			"load"
+		]
+	},
+	"draw": {
+		"pins": false,
+		"triggers": [
+			"scroll",
+			"load",
+			"hover"
+		]
+	},
+	"flip": {
+		"pins": false,
+		"triggers": [
+			"scroll"
+		]
+	},
+	"horizontal-panel": {
+		"pins": true,
+		"triggers": [
+			"scroll"
+		]
+	},
+	"image-sequence": {
+		"pins": false,
+		"triggers": [
+			"scroll"
+		]
+	},
+	"morph": {
+		"pins": false,
+		"triggers": [
+			"scroll",
+			"load",
+			"hover"
+		]
+	},
+	"motion-path": {
+		"pins": false,
+		"triggers": [
+			"scroll"
+		]
+	},
+	"page-transitions": {
+		"pins": false,
+		"triggers": [
+			"load"
+		]
+	},
+	"pin-scrub": {
+		"pins": true,
+		"triggers": [
+			"scroll"
+		]
+	},
+	"scramble": {
+		"pins": false,
+		"triggers": [
+			"scroll",
+			"load",
+			"hover"
+		]
+	},
+	"scroll-smoother": {
+		"pins": false,
+		"triggers": [
+			"scroll"
+		]
+	},
+	"scrub": {
+		"pins": false,
+		"triggers": [
+			"scroll",
+			"load",
+			"hover"
+		]
+	},
+	"split-reveal": {
+		"pins": false,
+		"triggers": [
+			"scroll",
+			"load",
+			"hover"
+		]
+	}
+}

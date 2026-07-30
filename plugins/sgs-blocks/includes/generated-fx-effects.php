@@ -39,54 +39,80 @@ function sgs_get_motion_fx_effects() {
 			'draggable' => array(
 				'plugin_set'            => array( 'Draggable', 'Inertia' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'load' ),
 			),
 			'draw' => array(
 				'plugin_set'            => array( 'DrawSVG' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
 			'flip' => array(
 				'plugin_set'            => array( 'Flip' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll' ),
 			),
 			'horizontal-panel' => array(
 				'plugin_set'            => array( 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
+				'pins'                  => true,
+				'triggers'              => array( 'scroll' ),
 			),
 			'image-sequence' => array(
 				'plugin_set'            => array( 'ScrollTrigger' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll' ),
 			),
 			'morph' => array(
 				'plugin_set'            => array( 'MorphSVG' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
 			'motion-path' => array(
 				'plugin_set'            => array( 'MotionPath', 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll' ),
 			),
 			'page-transitions' => array(
 				'plugin_set'            => array(),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'load' ),
 			),
 			'pin-scrub' => array(
 				'plugin_set'            => array( 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
+				'pins'                  => true,
+				'triggers'              => array( 'scroll' ),
 			),
 			'scramble' => array(
 				'plugin_set'            => array( 'ScrambleText' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
 			'scroll-smoother' => array(
 				'plugin_set'            => array( 'ScrollSmoother' ),
 				'owns_scroll_transform' => false,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll' ),
 			),
 			'scrub' => array(
 				'plugin_set'            => array( 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
 			'split-reveal' => array(
 				'plugin_set'            => array( 'SplitText', 'ScrollTrigger' ),
 				'owns_scroll_transform' => true,
+				'pins'                  => false,
+				'triggers'              => array( 'scroll', 'load', 'hover' ),
 			),
 		);
 	}

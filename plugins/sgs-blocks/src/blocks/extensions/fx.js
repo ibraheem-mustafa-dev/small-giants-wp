@@ -40,6 +40,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { isExtensionHidden } from './hide-extensions';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
+import fxEffectMeta from './generated-fx-effect-meta.json';
 
 /**
  * Every runtime effect module that actually exists under
@@ -127,6 +128,94 @@ const FX_START_OPTIONS = [
 	{ label: __( 'Halfway up the screen', 'sgs-blocks' ), value: 'top center' },
 	{ label: __( 'At the very top of the screen', 'sgs-blocks' ), value: 'top top' },
 ];
+
+/**
+ * `fxEnd` when the selected effect PINS — the value is a pin LENGTH.
+ *
+ * `+=N%` is ScrollTrigger's relative-end syntax: "hold for N% of the viewport
+ * height beyond the start". Percentages of the viewport, not of the section, so
+ * the labels can honestly talk in screenfuls.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_END_PIN_OPTIONS = [
+	{ label: __( 'Automatic (default)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Short — about half a screen', 'sgs-blocks' ), value: '+=50%' },
+	{ label: __( 'Standard — about one screen', 'sgs-blocks' ), value: '+=100%' },
+	{ label: __( 'Long — about two screens', 'sgs-blocks' ), value: '+=200%' },
+];
+
+/**
+ * `fxEnd` when the selected effect does NOT pin — the value is a scroll
+ * POSITION, the same two-token grammar as `FX_START_OPTIONS`.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_END_POSITION_OPTIONS = [
+	{ label: __( 'Default for this effect', 'sgs-blocks' ), value: '' },
+	{ label: __( 'A little into view', 'sgs-blocks' ), value: 'top 70%' },
+	{ label: __( 'Halfway up the screen', 'sgs-blocks' ), value: 'top center' },
+	{ label: __( 'At the very top of the screen', 'sgs-blocks' ), value: 'top top' },
+	{ label: __( 'Once it has fully passed', 'sgs-blocks' ), value: 'bottom top' },
+];
+
+/**
+ * Labels for `fxTrigger` — WHEN the effect fires (Spec 38 §11.2's
+ * `load | scroll | hover` enum).
+ *
+ * Which of these a client is actually offered comes from the effect's own
+ * `triggers` list in the DB, never from this map: a pinning effect spans a
+ * scroll RANGE and cannot coherently fire on hover, so offering it the option
+ * would ship a dead control.
+ *
+ * @type {Object<string,string>}
+ */
+const FX_TRIGGER_LABELS = {
+	scroll: __( 'When it scrolls into view (default)', 'sgs-blocks' ),
+	load: __( 'As soon as the page loads', 'sgs-blocks' ),
+	hover: __( 'When the visitor hovers over it', 'sgs-blocks' ),
+};
+
+/**
+ * Does this effect pin the section while it plays?
+ *
+ * Read from the generated DB mirror, NOT a hand-kept list. `fx.js` already
+ * carries two hand-maintained effect lists that nothing cross-checks; a third
+ * would be one more way for the inspector to disagree with the registry in
+ * silence. `owns_scroll_transform` is not a usable stand-in — five effects set
+ * it and only two pin.
+ *
+ * @param {string} effect Effect slug.
+ * @return {boolean} True when the effect pins.
+ */
+function fxPins( effect ) {
+	return true === fxEffectMeta[ effect ]?.pins;
+}
+
+/**
+ * The trigger options this effect can honour, as SelectControl options.
+ *
+ * Returns an empty array when the effect offers only one trigger — a control
+ * with a single value is a dead control, so the caller renders nothing.
+ *
+ * @param {string} effect Effect slug.
+ * @return {Array<{label: string, value: string}>} Options, possibly empty.
+ */
+function fxTriggerOptions( effect ) {
+	const triggers = fxEffectMeta[ effect ]?.triggers || [];
+	if ( triggers.length < 2 ) {
+		return [];
+	}
+	return triggers
+		.filter( ( trigger ) => FX_TRIGGER_LABELS[ trigger ] )
+		.map( ( trigger ) => ( {
+			// 'scroll' is the module default, so it maps to the empty value —
+			// emitting "scroll" explicitly would write a redundant attribute
+			// into every block that never left the default.
+			value: 'scroll' === trigger ? '' : trigger,
+			label: FX_TRIGGER_LABELS[ trigger ],
+		} ) );
+}
 
 /**
  * Effects that own an element's transform/opacity across a scroll range.
@@ -373,6 +462,73 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 										'How far the visitor needs to scroll before the effect begins.',
 										'sgs-blocks'
 									) }
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ !! fx && fxTriggerOptions( fx ).length > 0 && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxTrigger }
+								label={ __( 'When it starts', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxTrigger: '' } )
+								}
+							>
+								<SelectControl
+									__nextHasNoMarginBottom
+									label={ __( 'When it starts', 'sgs-blocks' ) }
+									value={ attributes.fxTrigger }
+									options={ fxTriggerOptions( fx ) }
+									onChange={ ( value ) =>
+										setAttributes( { fxTrigger: value } )
+									}
+									help={ __(
+										'Hover also responds to keyboard focus, and plays automatically on touch screens where there is no hover.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ !! fx && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxEnd }
+								label={
+									fxPins( fx )
+										? __( 'How long it stays stuck', 'sgs-blocks' )
+										: __( 'Where it finishes', 'sgs-blocks' )
+								}
+								onDeselect={ () =>
+									setAttributes( { fxEnd: '' } )
+								}
+							>
+								<SelectControl
+									__nextHasNoMarginBottom
+									label={
+										fxPins( fx )
+											? __( 'How long it stays stuck', 'sgs-blocks' )
+											: __( 'Where it finishes', 'sgs-blocks' )
+									}
+									value={ attributes.fxEnd }
+									options={
+										fxPins( fx )
+											? FX_END_PIN_OPTIONS
+											: FX_END_POSITION_OPTIONS
+									}
+									onChange={ ( value ) =>
+										setAttributes( { fxEnd: value } )
+									}
+									help={
+										fxPins( fx )
+											? __(
+													'How far the visitor keeps scrolling while the section holds still.',
+													'sgs-blocks'
+											  )
+											: __(
+													'How far the visitor needs to scroll before the effect has finished.',
+													'sgs-blocks'
+											  )
+									}
 								/>
 							</ToolsPanelItem>
 						) }
