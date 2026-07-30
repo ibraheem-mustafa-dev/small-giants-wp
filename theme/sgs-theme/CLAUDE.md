@@ -88,7 +88,7 @@ Everything else is inherited.
 - < 100KB CSS total
 - < 5KB JS for a typical page without interactive blocks
 - Two font files maximum per site
-- No jQuery, no external CDN (Tier G motion — GSAP, npm-bundled + conditionally loaded per Spec 38 §1 / D406 — is the one sanctioned library exception; pages using no Tier G effect ship zero GSAP bytes)
+- No jQuery, no external CDN. Two sanctioned library exceptions, both npm-bundled + conditionally loaded per Spec 38 §1: **Tier G** (GSAP, D406) and **Tier H** (helper/utility — a CLOSED list, currently Lenis alone for site-level smooth scrolling, D422). A page using neither ships zero bytes of either.
 - Critical CSS inlined, block CSS loaded conditionally (WP 6.9 handles core blocks automatically)
 - Preload critical fonts via `<link rel="preload">`
 

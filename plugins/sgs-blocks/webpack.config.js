@@ -4,7 +4,7 @@
  * Extends the default @wordpress/scripts config to add
  * non-block entry points (extensions, shared utilities).
  *
- * @package SGS\Blocks
+ * @package
  */
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const path = require( 'path' );
@@ -53,7 +53,9 @@ const scriptConfig = configs.find(
  * core-import path to intercept.
  * ========================================================================== */
 
-const moduleConfig = configs.find( ( config ) => config.output?.module === true );
+const moduleConfig = configs.find(
+	( config ) => config.output?.module === true
+);
 
 if ( moduleConfig ) {
 	// Module ID ⇄ bare specifier. These IDs MUST match the
@@ -116,6 +118,25 @@ if ( moduleConfig ) {
 				'effects',
 				'gsap',
 				'provider.js'
+			),
+			/*
+			 * Site-level smoothed scrolling (FR-38-18, D422). Lenis is
+			 * BUNDLED into this module rather than externalised like GSAP,
+			 * because the reason for the vendor-shim/externals dance does
+			 * not apply: GSAP is shared by many effect modules that must
+			 * agree on one plugin-registration set and one matchMedia
+			 * context, whereas Lenis has exactly ONE consumer — this file.
+			 * A shim would add an import-map entry and a second network
+			 * request to share a module with nobody. If a Tier G effect
+			 * ever needs the Lenis instance (e.g. ScrollTrigger sync), that
+			 * is the point to promote it to a shim, not before.
+			 */
+			'shared/effects/smooth-scroll': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'smooth-scroll.js'
 			),
 			...Object.fromEntries(
 				[

@@ -57,21 +57,42 @@ apply, never completely walled off from areas of potential.
    — geometry) are Bean-ruled NOT motion-system scope (D404) and stay the house way, untouched.
 2. **Tier G (capability) — GSAP.** Reserved for what Tier V genuinely cannot reach:
    scroll-scrubbed pinned timelines, SplitText, Flip layout transitions, Draggable/physics,
-   ScrollSmoother, DrawSVG scrubbing, MorphSVG. **Conditionally loaded** (§4.4): a page using
+   DrawSVG scrubbing, MorphSVG. **Conditionally loaded** (§4.4): a page using
    zero Tier G effects ships zero GSAP bytes. GSAP + plugins are **npm-bundled, never CDN** —
    the rule the codebase already obeys (Vivus is bundled the same way; a CDN reference is still
    banned).
+2a. **Tier H (helper/utility) — a single-purpose library that is neither vanilla nor GSAP.**
+   Added **2026-07-30 (D422)**, Bean-decided, when site-level smoothing moved from GSAP
+   ScrollSmoother to **Lenis**. The doctrine was two-tier because GSAP was the only library in
+   the bounded set; filing a non-GSAP library under "Tier G" would have made that tier mean
+   "any library", which is precisely the unbounded state §1 exists to prevent. A third tier
+   states the exception instead of blurring the second one.
+   **Admission test — all four must hold, or it is not Tier H:** (i) the capability is real and
+   Tier V genuinely cannot reach it; (ii) GSAP either cannot do it, or can only do it by a
+   mechanism that damages a shipped SGS system — *the Lenis case: ScrollSmoother transforms a
+   wrapper around page content, and a transformed ancestor silently stops `position: sticky`
+   pinning, which is the shipped Spec 37 header*; (iii) it is single-purpose, npm-bundled, never
+   CDN, and conditionally loaded on the same registry as Tier G, so a site not using it ships
+   zero bytes of it; (iv) its admission is recorded as a D-numbered decision naming what it
+   replaces. Tier H is a named list, not a category anyone may extend by analogy — **current
+   membership: Lenis (site-level smooth scrolling) and nothing else.**
+   Tier H carries the identical house contracts as Tier V and G (§1.6): live reduced-motion,
+   `init → cleanup`, fail-open no-JS, bfcache teardown, Spec 32 no-inline styling.
 3. **The tier assignment is an engineering judgment recorded in the §2 taxonomy** — every G
    assignment carries a "why the lower tier can't do it" justification, and a G capability whose
    V equivalent later becomes universally supported in CSS is a candidate to DEMOTE to V (the
    doctrine is a ratchet toward cheap, not toward GSAP).
-4. **Answers to the two failure modes this doctrine kills:** "GSAP isn't in the stack" is now
+4. **Answers to the three failure modes this doctrine kills:** "GSAP isn't in the stack" is now
    false — it is in the stack, bounded to Tier G. "Everything should use GSAP" is also false —
-   Tier V is the default and nothing shipped migrates. Any track claiming either is misquoting
-   this section.
-5. **Naming.** The tiers are deliberately **V/G**, not 1/2 — "Tier 1/Tier 2" already mean the
+   Tier V is the default and nothing shipped migrates. **"Tier H means we can add libraries
+   freely" is false** — Tier H is a closed list with a four-part admission test (§1.2a) and a
+   D-numbered decision per member. Any track claiming any of the three is misquoting this
+   section.
+5. **Naming.** The tiers are deliberately **V/G/H**, not 1/2/3 — "Tier 1/Tier 2" already mean the
    `blocks.replaces` reverse-walk in Spec 31 Appendix B, and "tier" alone also means the
-   Mobile/Tablet/Desktop device system. In prose always write "Tier V" / "Tier G".
+   Mobile/Tablet/Desktop device system. In prose always write "Tier V" / "Tier G" / "Tier H".
+   H is for **helper** (Bean's framing, D422): a single-purpose utility admitted for one
+   capability, not a general-purpose engine like GSAP.
 6. **House contracts bind Tier G identically** (§5 FR-38-2): live-checked reduced motion,
    `init(el) → cleanup()`, one shared frame budget, fail-open no-JS rendering (SSR markup is the
    finished state; JS applies hidden/offset initial states only after it is confirmed running —
@@ -98,7 +119,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | DrawSVG | **G** (scrubbed) — scroll-scrubbed draw needs ScrollTrigger; **load-triggered simple draw stays covered by Tier V `data-sgs-path-draw`** (not retired) | element (SVG-bearing) | Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator`, `sgs/decorative-image` | Retires **Vivus** (§3.4, D408); trigger = load OR scroll-scrub | off | Logo/icons/dividers → any SVG-bearing block |
 | MorphSVG | **G** — CSS `d:path()` needs identical point counts; point-matching IS the plugin | element | Inspector, ASSET-GATED (§3.4) | Requires prepared matched path pairs + authoring guidance; revives parking P-10 | off | Icons/logos → decorative SVG anywhere (asset-gated) |
 | MotionPath | **V default / G when scrubbed** — CSS `offset-path` handles autonomous path-follow cross-browser; the plugin is needed only for scroll-scrubbed path progress | element | Inspector on `sgs/decorative-image` | V variant ships without GSAP; G variant needs ScrollTrigger + MotionPathPlugin | off | decorative-image → other media blocks (permitted) |
-| ScrollSmoother | **G** — no CSS mechanism for smoothed/lagged scroll | **SITE** | Theme settings (Site Editor / SGS settings page), per-template override | Default OFF; disabled in editor + wp-admin; disabled under reduced-motion; anchor-link handling; **sticky-header resolution §4.2** | OFF | Site setting only → per-template opt-out (never per-block) |
+| Smooth scrolling (**Lenis** — was ScrollSmoother, D422) | **H** — no CSS mechanism for smoothed/lagged scroll, and the Tier G option (ScrollSmoother) can only achieve it by transforming a wrapper around page content, which silently breaks the shipped Spec 37 sticky header (§4.2) | **SITE** | SGS → Motion settings page | Default OFF; disabled in editor + wp-admin; disabled under reduced-motion (live + reactive); touch left native; **no wrapper, no template change — §4.2 resolution SUPERSEDED, nothing to resolve** | OFF | Site setting only (never per-block) |
 | Page transitions | **V** — cross-document View Transitions API is CSS-first, no GSAP, no router | SITE + per-template | Theme settings + per-template override | Progressive enhancement; unsupported browsers = normal navigation (defined fallback §3.5); reduced-motion = suppress | OFF | Site-wide → per-template variants |
 | *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
 
@@ -188,16 +209,34 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 
 ### 3.5 Site level
 
-- **FR-38-18 ScrollSmoother.** SITE setting (SGS theme settings surface), default OFF.
-  **Mandatory conditions:** (a) disabled in the editor and all of wp-admin; (b) disabled under
-  `prefers-reduced-motion` (live-checked); (c) anchor links + `:target` + "skip to content"
-  resolve to correct positions (ScrollTrigger-aware offset handling, incl. the published
-  `--sgs-header-height` scroll-padding — Spec 37 D391), **and the theme's existing
-  `smooth-scroll.js` anchor-click handler (`window.scrollTo` on every `a[href^="#"]`) is
-  suppressed while the smoother is ON — two competing smooth-scroll drivers on one click is a
-  defect (qc-council 2026-07-29)**; (d) the **sticky-header resolution**
-  (§4.2, D407); (e) keyboard/programmatic scrolling (find-in-page, focus scrolling) must remain
-  functional — smoothing never intercepts input-driven scroll correctness, only presentation.
+- **FR-38-18 Site-level smooth scrolling — Tier H, Lenis (D422; was GSAP ScrollSmoother).**
+  SITE setting on the **SGS → Motion** page, default OFF. Lenis eases the REAL document scroll
+  rather than transforming a wrapper, so there is no `#smooth-wrapper`/`#smooth-content` markup,
+  no template change, and no interaction with the Spec 37 header (§4.2, superseded).
+  **Mandatory conditions:** (a) disabled in the editor and all of wp-admin — server-side by the
+  enqueue (`is_admin()`), plus a runtime gate for the editor's iframed canvas; (b) disabled under
+  `prefers-reduced-motion`, checked LIVE and **reactively** — a mid-session OS change tears the
+  instance down and a change back rebuilds it, without a reload; (c) anchor links + `:target` +
+  "skip to content" resolve to correct positions, honouring the published `--sgs-header-height`
+  scroll-padding (Spec 37 D391) — Lenis's own `anchors` option stays OFF so there is exactly one
+  driver on an anchor click; (d) **touch scrolling stays native** (`syncTouch: false`) — phone
+  momentum is what a visitor's muscle memory expects, and this must be set EXPLICITLY, never left
+  to the vendor default; (e) keyboard/programmatic scrolling (find-in-page, focus scrolling)
+  remains functional — smoothing never intercepts input-driven scroll correctness, only
+  presentation; (f) the companion stylesheet ships on the SAME conditional terms as the script —
+  without its `.lenis.lenis-smooth iframe { pointer-events: none }` rule, wheel events over a
+  cross-origin iframe are swallowed and the page stops scrolling wherever the pointer sits over
+  an `sgs/media` or `sgs/business-info` embed.
+
+  > **Condition (c)'s former clause about the theme's `smooth-scroll.js` is STRUCK (D422).** It
+  > required suppressing a file that **no longer exists in the enqueue path** —
+  > `theme/sgs-theme/functions.php` retired it ("Smooth scroll now handled by CSS… The JS file is
+  > no longer needed"), and nothing in the repo enqueues it. The live competing driver is instead
+  > `html { scroll-behavior: smooth }` (`core-blocks-critical.css`), and **that conflict did not
+  > reproduce when measured** on the canary with Lenis running: a long smooth scroll eased
+  > cleanly to target with zero reversals, and an anchor click landed exactly clear of the sticky
+  > header. No suppression is therefore specified — per `prove-the-cause-before-fix.md`, a fix for
+  > a cause that does not reproduce is not shipped. Re-open only with a reproduction.
 - **FR-38-19 Page transitions — Tier V, cross-document View Transitions API.** SITE setting +
   per-template overrides. CSS-first (`@view-transition`), progressive enhancement, **no GSAP,
   no router**. **Fallback where unsupported:** navigation behaves exactly as today (hard
@@ -226,7 +265,35 @@ shipped migrates). **In-flight track work is UNAFFECTED:** Spec 36's burger-morp
 and trigger-anchor geometry are logic/geometry, not motion-system scope (Bean D404), and stay
 the house way.
 
-### 4.2 ScrollSmoother × Spec 37 header sticky (D407)
+### 4.2 ScrollSmoother × Spec 37 header sticky (D407) — ⛔ SUPERSEDED BY D422 (2026-07-30)
+
+> **⛔ THIS CONFLICT NO LONGER EXISTS. DO NOT BUILD ANYTHING IN THIS SECTION.**
+>
+> D407 resolved a conflict created *entirely* by ScrollSmoother's mechanism: it wraps page
+> content in `#smooth-wrapper > #smooth-content` and **transforms** the content element, and a
+> transformed ancestor silently stops `position: sticky` from pinning. Every artefact below —
+> the header relocation, the output filter that was to insert the wrapper, the per-tier edge
+> rule, the `findStickyBreakingAncestor()` tripwire — exists only to work around that.
+>
+> **D422 replaced the smoother with Lenis (Tier H), which eases the real document scroll and
+> creates no wrapper and no transform.** There is nothing to sit outside of, nothing to trap the
+> header in, and no template to restructure. **Measured on the canary before the swap**, with
+> Lenis running: no wrapper element created; the header's entire ancestor chain
+> (`div.wp-site-blocks` → `body`) reported `transform: none`; the header held
+> `getBoundingClientRect().top === 0.00` at every scroll position **including mid-flight**;
+> `--sgs-header-height` unchanged at 93px; every header and row state class toggled identically
+> to baseline; `document.scrollHeight` unchanged; no inline height forced onto `<body>`.
+>
+> **Consequences, stated so they are not silently dropped (STOP-29):**
+> · The Wave B "output filter / wrapper insertion" build item is **CANCELLED**, not deferred.
+> · The `findStickyBreakingAncestor()` tripwire extension is **CANCELLED** — the existing
+>   warn-only guard in `src/header-behaviours/view.js` stays exactly as shipped, untouched.
+> · FR-38-18's former condition (d) (the sticky-header resolution) is **struck**; the header
+>   verification survives as a *regression check*, not an engineering task (§8 Wave B).
+> · Spec 37 FR-37-40 is **not modified by this spec in any way.**
+>
+> The text below is retained as the historical record of why the ScrollSmoother route was
+> rejected. It is not an instruction.
 
 **Ground truth correction:** Spec 37's per-row sticky was REJECTED (FR-37-40 short-parent
 trap); what shipped is HEADER-level `position:sticky` + row COLLAPSE, a measured pinned-gate
@@ -332,7 +399,7 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
 |---|---|---|
 | gsap core | ~26 KB | any Tier G effect on the page |
 | ScrollTrigger | ~14 KB | any scroll-driven G effect |
-| ScrollSmoother | ~8 KB | site setting ON |
+| ~~ScrollSmoother~~ → **Lenis** (Tier H, D422) | **5.7 KB — MEASURED, not an estimate** (`shared/effects/smooth-scroll.js`, gzip, includes the bundled library) | site setting ON |
 | SplitText | ~9 KB | text reveals present |
 | Flip | ~7 KB | filtered-grid pairing ON |
 | Draggable + Inertia | ~15 + 6 KB | drag roster block opted in |
@@ -504,16 +571,26 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   of the above (FR-38-24).
   **Blast radius: ADDITIVE ONLY** — no existing Tier V system, shipped block, or template is
   modified; the only shared-file touches are the new registry include + webpack externals.
-- **Wave B — site level: ScrollSmoother + sticky resolution + page transitions.**
-  FR-38-18 incl. the §4.2 header relocation (the ONLY wave touching the Spec 37 header system
-  and theme templates), FR-38-19 (View Transitions — also template-level).
-  **Blast radius: header templates + theme template structure — the highest-risk surface,
-  deliberately quarantined here. Regression gate: re-run the FR-37-40 live verification with
-  smoother OFF and ON — pinned-gate, shrink, hide-on-scroll, transparent, **row collapse**
-  (it rides the same `isHeaderPinned()` gate the whole resolution rests on), scroll-padding,
-  plus two named sub-cases (qc-council 2026-07-29): sticky+transparent same-tier coexistence
-  (a proven-live past regression class) and the nav-drawer `<dialog>`-in-header offset (its
-  transformed-ancestor edge is already flagged untested in `header-behaviours.css:44-53`).**
+- **Wave B — site level: smooth scrolling (Tier H) + page transitions.**
+  FR-38-18 (Lenis, D422), FR-38-19 (cross-document View Transitions).
+  **Blast radius REDUCED BY D422 — this wave no longer touches the Spec 37 header system or any
+  theme template.** The wrapper-insertion filter and the header relocation were the entire
+  reason this wave was "the highest-risk surface, deliberately quarantined"; with a smoother
+  that creates no wrapper, both are cancelled (§4.2). What remains is additive: one script
+  module + one stylesheet + one settings page, plus template-level `@view-transition` CSS for
+  FR-38-19.
+  **The FR-37-40 regression gate is RETAINED, deliberately, and reduced in scope.** It is now a
+  *regression check* rather than a verification of engineering this wave performed: smoothing
+  changes scroll TIMING, and shrink / hide-on-scroll / row-collapse / the transparent flip are
+  all driven by scroll listeners, so they must still be observed with the setting OFF **and**
+  ON — pinned-gate, shrink, hide-on-scroll, transparent, **row collapse** (it rides the same
+  `isHeaderPinned()` gate), scroll-padding, plus the two named sub-cases (qc-council
+  2026-07-29): sticky+transparent same-tier coexistence (a proven-live past regression class)
+  and the nav-drawer `<dialog>`-in-header offset. **Do not drop this gate on the grounds that
+  "nothing touches the header now" — that is the argument, not the evidence.**
+  Additional Wave B checks introduced by D422: iframe interactivity at rest and mid-scroll on a
+  page carrying an `sgs/media` embed (§3.5 condition f), and touch scrolling verified native on
+  a real narrow viewport (condition d).
 - **Wave C — interaction + SVG + toys.**
   Draggable roster (FR-38-13) incl. **NET-NEW `sgs/before-after`** (needs Draggable — cannot
   come earlier), Flip pairing (FR-38-12 — the one place Wave C edits shipped blocks:
@@ -537,7 +614,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 | Draggable | Static; Notice "Drag interactions are live-site only" |
 | DrawSVG / MorphSVG / MotionPath | End-state (fully drawn / final shape / resting position); optional replay toggle for load-triggered draw |
 | Physics/Custom easings | No standalone canvas story — a flavour; inherits its host effect's row |
-| ScrollSmoother / page transitions | **Never active in editor or wp-admin** (FR-38-18/19 condition) — settings-surface help text states it |
+| Smooth scrolling (Lenis) / page transitions | **Never active in editor or wp-admin** (FR-38-18/19 condition) — settings-surface help text states it |
 
 ## 10. Reduced-motion contract (per effect)
 
@@ -558,7 +635,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | DrawSVG | **Simplify:** rendered fully drawn (no animated stroke) — upgrades Vivus's non-canonical 1ms-draw arm |
 | MorphSVG | **Suppress:** final shape only |
 | MotionPath | **Suppress:** resting position (matches existing decorative-image reduced-motion arm) |
-| ScrollSmoother | **Suppress:** native scroll (FR-38-18 condition b) |
+| Smooth scrolling (Lenis, Tier H) | **Suppress:** native scroll. Live AND reactive — the instance is destroyed on a mid-session change to `reduce`, and rebuilt on a change back (FR-38-18 condition b) |
 | Page transitions | **Suppress:** instant navigation |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
@@ -632,8 +709,13 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
 - **Spec 31** — cloning contract extension point (§11.3); "Tier 1/2" naming collision avoided
   (§1.5). **Spec 32** — no-inline contract binds all fx CSS output. **Spec 35** — inspector
   standard (§7); `fx` settings-cluster registers alongside the approved-unbuilt FR-35-6
-  `anim:*` cluster (recorded in decisions.md D354, not Spec 35 text). **Spec 37** — §4.2
-  resolution; FR-37-40 regression gate in Wave B.
+  `anim:*` cluster (recorded in decisions.md D354, not Spec 35 text). **Spec 37** — §4.2 is
+  SUPERSEDED (D422): this spec no longer proposes any change to the header system, and Spec 37
+  FR-37-40 is untouched. The FR-37-40 live verification is retained in Wave B purely as a
+  regression check against changed scroll timing.
+- **npm dependencies introduced by this spec:** `gsap` (Tier G) and `lenis` (Tier H, D422).
+  Both npm-bundled, never CDN, both conditionally loaded so a page using neither ships zero
+  bytes of either.
   **Spec 02 §Animation** — the Tier V baseline this spec bounds (its performance budget
   unchanged; its "sgsParallax pending" line is stale — parallax shipped).
 - **Parking:** P-10 (revived by FR-38-16), P-TIMELINE-ADVANCED-VISUAL-EFFECTS (first

@@ -15,6 +15,89 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D422 — site-level smooth scrolling moves from GSAP ScrollSmoother to Lenis; **D407 is SUPERSEDED**; new **Tier H** admitted to the motion doctrine [INCIDENT]
+
+**2026-07-30, motion Wave B.** Bean-decided (library swap + the Tier H shape, "it's a
+helper/utility tier"). Amends Spec 38 §1/§2/§3.5/§4.2/§4.4/§8/§9/§10/§12, Spec 01, Spec 02 and
+the three CLAUDE.md written homes in the same commit. Research record:
+`~/.openclaw/workspace/memory/research/2026-07-30-scrollsmoother-vs-lenis-wordpress-block-theme-wrapper.md`.
+
+**1. What was rejected, and why — PROVEN, not inferred.** GSAP ScrollSmoother requires page
+content to sit inside `#smooth-wrapper > #smooth-content` and **transforms** the content
+element. Read from source (`gsap@3.15.0/src/ScrollSmoother.js`): `this.wrapper()` resolves
+`_toArray(el || "#smooth-wrapper")[0] || _wrap(content)`, and `_wrap()` creates a div and
+`appendChild`s the content into it; `this.content()` resolves
+`_toArray(el || "#smooth-content")[0] || console.warn(…) || _body.children[0]` — the wrapper
+auto-creates, **the content never does**. A transformed ancestor silently stops
+`position: sticky` pinning, which is the shipped Spec 37 header (FR-37-40).
+
+**2. Why the workaround was not worth building.** D407's resolution (header outside the wrapper)
+needed an output filter to insert the wrapper on a **block** theme. Research found **no
+block-theme precedent anywhere** — ~15 real WordPress ScrollSmoother integrations, ~830
+code-search hits, all CLASSIC themes editing `header.php`/`footer.php` or plugins echoing the
+divs on `wp_body_open`/`wp_footer`; zero block-theme hits. WordPress core closes the tidy route:
+`get_the_block_template_html()` is **private, core-only**, with no filter to wrap the balanced
+header+main+footer output. We would have been writing something original on the surface Spec 38
+itself calls "the highest-risk".
+
+**3. What replaces it, and the evidence it is safe.** **Lenis 1.3.25**, npm-bundled, **5.7 KB
+gzip measured** (not estimated). It eases the REAL document scroll — `wrapper` defaults to
+`window`, `content` to `document.documentElement` — so there is no wrapper and no transform.
+**Measured live on the sandybrown canary BEFORE any code was written**, against the real header:
+no wrapper element created; the header's entire ancestor chain (`div.wp-site-blocks` → `body`)
+reported `transform: none`; header `getBoundingClientRect().top === 0.00` at every scroll
+position **including mid-flight** (sampled at 1071px during a 1400px animated scroll);
+`--sgs-header-height` unchanged at 93px; all header + row state classes toggled identically to
+baseline; `document.scrollHeight` unchanged at 4435; no inline height forced onto `<body>`.
+So the "does Lenis need a wrapper / does it transform anything" question is **VERIFIED, not
+assumed** — the distinction `prove-the-cause-before-fix.md` requires.
+
+**4. D407 is SUPERSEDED, not amended — and its build items are CANCELLED, not deferred.** The
+header relocation, the wrapper-insertion output filter, the per-tier "outside if sticky on ANY
+tier" edge rule, and the `findStickyBreakingAncestor()` tripwire extension all existed solely to
+work around the transform. With no transform there is nothing to resolve. The existing warn-only
+guard in `src/header-behaviours/view.js` stays **exactly as shipped, untouched**, and Spec 37
+FR-37-40 is **not modified by this decision in any way**. FR-38-18's old condition (d) is struck.
+The FR-37-40 live verification is **retained** in Wave B as a regression check, because smoothing
+changes scroll TIMING and shrink / hide-on-scroll / row-collapse are scroll-driven — "nothing
+touches the header now" is the argument, not the evidence.
+
+**5. Tier H (Bean's call).** The doctrine was two-tier (V = vanilla, G = GSAP). Lenis is neither,
+and filing it under Tier G would have made that tier mean "any library" — the unbounded state
+§1 exists to prevent. Bean chose a third tier over widening Tier G: **Tier H, helper/utility.**
+It is a CLOSED list (currently Lenis alone) with a four-part admission test in Spec 38 §1.2a and
+a D-numbered decision required per member. Same house contracts as V and G.
+
+**6. Also struck: FR-38-18's `smooth-scroll.js` suppression clause.** The qc-council of
+2026-07-29 required suppressing the theme's `smooth-scroll.js` while the smoother runs. That file
+is **not enqueued anywhere** — `theme/sgs-theme/functions.php` retired it ("Smooth scroll now
+handled by CSS … The JS file is no longer needed"). The live competing driver is
+`html { scroll-behavior: smooth }`, and **that conflict did not reproduce when measured**: a long
+smooth scroll with Lenis running eased cleanly to target with zero reversals, and an anchor click
+landed exactly clear of the sticky header. No suppression shipped — a fix for a cause that does
+not reproduce is not a fix.
+
+**7. QC council findings (3 raters, all fact-checked before acting).** One **BLOCKER**: the module
+passed `smoothTouch: false` to keep phone scrolling native — that option **does not exist** in
+Lenis 1.3.25 (zero occurrences in `lenis.mjs` AND `lenis.d.ts`); unknown keys are destructured
+past in silence. The guarantee was being delivered entirely by the vendor default and would have
+flipped if upstream changed it. Real name `syncTouch`, now set explicitly. One **MAJOR**: Lenis's
+`.lenis.lenis-smooth iframe { pointer-events: none }` rule was not shipped — without it, wheel
+events over a cross-origin iframe are swallowed and the page stops scrolling wherever the pointer
+sits over an `sgs/media` or `sgs/business-info` embed. Now enqueued on the same conditional terms
+(`assets/css/smooth-scroll.css`); scope is `lenis-smooth` (active scroll only, verified
+`lenis.mjs:1027`), so embeds stay interactive at rest — widening it to `.lenis iframe` would make
+every embed permanently unclickable. **Two rater claims were REJECTED on fact-check:** "Rule 7
+violation in progress" (Bean approved the swap explicitly in session) and "first SGS submenu to
+deviate on capability" (`class-css-output-settings.php:75` already uses `manage_options`, and it
+is the settings-page exemplar).
+
+**8. Gate blindness found and fixed.** `check-motion-bundle-budget.py` globbed only
+`vendor-modules` and `shared/effects/gsap`, so the new module at `shared/effects/smooth-scroll.js`
+built, shipped and enqueued while the gate reported **PASS having never measured it**. Added
+`shared/effects` to `_WATCHED_SUBDIRS` and baselined at 5,777 bytes gzip. A budget gate that
+cannot see a module cannot fail on it.
+
 ## D421 — drawer architecture: shared-header-row proposal REJECTED by Bean; the spec backs HIM; gate deferred to next session [INCIDENT]
 
 **2026-07-30, session close.** Brief (Bean's contentions recorded in full):

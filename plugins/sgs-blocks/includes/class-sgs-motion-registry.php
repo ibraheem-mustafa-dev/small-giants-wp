@@ -98,7 +98,27 @@ class SGS_Motion_Registry {
 				'@sgs/gsap-scrolltrigger',
 			),
 		),
+
+		/*
+		 * Site-level smoothed scrolling (FR-38-18, D422). NO deps: Lenis is
+		 * bundled into this module, and it is deliberately NOT a GSAP effect —
+		 * see the class docblock and Spec 38 §3.5 for why the smoother moved
+		 * off ScrollSmoother. It is enqueued from the site SETTING rather than
+		 * from a block sniff, which is the second enqueue route §4.4 allows.
+		 */
+		'@sgs/smooth-scroll'      => array(
+			'path' => 'build/shared/effects/smooth-scroll.js',
+			'deps' => array(),
+		),
 	);
+
+	/**
+	 * Option key holding the site-level motion settings (FR-38-18).
+	 *
+	 * Read here rather than reaching into the settings class, so the registry
+	 * has no admin-side dependency on a frontend request.
+	 */
+	const SETTINGS_OPTION = 'sgs_motion_settings';
 
 	/**
 	 * Effects that ship a companion stylesheet, as effect => asset-relative path.
@@ -149,6 +169,116 @@ class SGS_Motion_Registry {
 	public static function register(): void {
 		\add_action( 'init', array( __CLASS__, 'register_modules' ) );
 		\add_filter( 'render_block', array( __CLASS__, 'sniff_block' ), 99, 2 );
+
+		// Site-level smoothing (FR-38-18). Enqueued from the SETTING, not from a
+		// block sniff — there is no block to sniff for a site-wide capability.
+		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'maybe_enqueue_smooth_scroll' ) );
+		\add_filter(
+			'script_module_data_@sgs/smooth-scroll',
+			array( __CLASS__, 'smooth_scroll_module_data' )
+		);
+	}
+
+	/**
+	 * The site-level motion settings, defaulted and sanitised on READ.
+	 *
+	 * Defaulting here as well as at save time is deliberate: an option written
+	 * before a key existed (or hand-edited via WP-CLI) must not be able to put
+	 * an out-of-range value into the frontend.
+	 *
+	 * @return array{smooth_scroll: bool, smooth_scroll_strength: int}
+	 */
+	public static function settings(): array {
+		$raw = \get_option( self::SETTINGS_OPTION, array() );
+		$raw = \is_array( $raw ) ? $raw : array();
+
+		$strength = isset( $raw['smooth_scroll_strength'] )
+			? (int) $raw['smooth_scroll_strength']
+			: 3;
+
+		if ( $strength < 1 || $strength > 5 ) {
+			$strength = 3;
+		}
+
+		return array(
+			'smooth_scroll'          => ! empty( $raw['smooth_scroll'] ),
+			'smooth_scroll_strength' => $strength,
+		);
+	}
+
+	/**
+	 * Enqueue the smoother when the site setting is ON.
+	 *
+	 * FR-38-18(a) — never in the editor or wp-admin. `wp_enqueue_scripts` does
+	 * not fire in wp-admin at all, and `is_admin()` additionally excludes the
+	 * contexts where it can (e.g. a front-end-rendered admin preview), so the
+	 * server never serves these bytes to an editing surface. The module carries
+	 * its own second gate for the editor's iframed canvas.
+	 *
+	 * Reduced motion is NOT gated here. It is a per-visitor, live-changeable
+	 * preference; gating server-side would bake one visitor's setting into a
+	 * cached page for everyone. The module honours it at runtime and reacts to
+	 * mid-session changes.
+	 *
+	 * @return void
+	 */
+	public static function maybe_enqueue_smooth_scroll(): void {
+		if ( \is_admin() ) {
+			return;
+		}
+
+		if ( ! \function_exists( 'wp_enqueue_script_module' ) ) {
+			return;
+		}
+
+		$settings = self::settings();
+		if ( empty( $settings['smooth_scroll'] ) ) {
+			// The whole point of FR-38-18's default-OFF: a site not using this
+			// serves zero bytes of it, not a self-gating runtime.
+			return;
+		}
+
+		\wp_enqueue_script_module( '@sgs/smooth-scroll' );
+
+		/*
+		 * Companion CSS, on the SAME conditional terms as the script. It is not
+		 * cosmetic: without it, wheel events over a cross-origin iframe are
+		 * swallowed by that iframe and the page stops responding to scroll
+		 * wherever the pointer sits over an embed. This framework ships iframes
+		 * from sgs/media and sgs/business-info, so that dead zone is reachable
+		 * on ordinary client pages. See the stylesheet for why the selector's
+		 * scope is load-bearing.
+		 */
+		$smooth_css = 'assets/css/smooth-scroll.css';
+		if ( \file_exists( SGS_BLOCKS_PATH . $smooth_css ) ) {
+			\wp_enqueue_style(
+				'sgs-smooth-scroll',
+				SGS_BLOCKS_URL . $smooth_css,
+				array(),
+				SGS_BLOCKS_VERSION
+			);
+		}
+	}
+
+	/**
+	 * Settings blob WordPress prints for the smoother module.
+	 *
+	 * Core emits this as `<script type="application/json"
+	 * id="wp-script-module-data-@sgs/smooth-scroll">` (verified against
+	 * `wp-includes/class-wp-script-modules.php` on WP 7.0.2), which the module
+	 * reads by that id. Passing settings this way rather than via an inline
+	 * script keeps the module a real ES module with no global side-channel.
+	 *
+	 * @param array $data Existing data (core passes an empty array).
+	 * @return array
+	 */
+	public static function smooth_scroll_module_data( $data ): array {
+		$data = \is_array( $data ) ? $data : array();
+		$settings = self::settings();
+
+		$data['strength'] = $settings['smooth_scroll_strength'];
+
+		return $data;
 	}
 
 	/**

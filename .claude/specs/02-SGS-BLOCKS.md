@@ -1339,7 +1339,7 @@ Global floating UI elements (Back to Top button, Reading Progress bar) live in `
 - **@wordpress/create-block** — used for scaffolding new blocks
 - **React** — editor UI components (WordPress block editor runs on React)
 - **No external CSS framework** — all styles use design tokens from theme.json
-- **No external JS libraries** — vanilla JS for frontend interactivity. **Amended 2026-07-29 (Spec 38 §1, D406): motion follows the two-tier doctrine — Tier V (vanilla/CSS, this spec's §Animation extension) stays the default and nothing shipped migrates; Tier G (GSAP, npm-bundled, conditionally loaded via the Spec 38 motion registry) is the bounded exception for scroll-scrubbed pinned timelines, SplitText, Flip, Draggable, ScrollSmoother and SVG draw/morph. No CDN ever.**
+- **No external JS libraries** — vanilla JS for frontend interactivity. **Amended 2026-07-29 (Spec 38 §1, D406), re-amended 2026-07-30 (D422): motion follows the THREE-tier doctrine — Tier V (vanilla/CSS, this spec's §Animation extension) stays the default and nothing shipped migrates; Tier G (GSAP, npm-bundled, conditionally loaded via the Spec 38 motion registry) is the bounded exception for scroll-scrubbed pinned timelines, SplitText, Flip, Draggable and SVG draw/morph; Tier H is a CLOSED list of single-purpose helpers, currently **Lenis** alone for site-level smooth scrolling, each admitted by a D-numbered decision per Spec 38 §1.2a. No CDN ever. (ScrollSmoother was struck from the Tier G list by D422 — it transforms a wrapper around page content, which silently breaks the shipped Spec 37 sticky header.)**
 
 ### Build Commands
 

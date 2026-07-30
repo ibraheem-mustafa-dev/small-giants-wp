@@ -38,6 +38,12 @@ Two directories, globbed (never hardcoded per-file) because new Tier G effect mo
 landing throughout Wave A/B/C and the gate must pick them up with zero edits:
   - build/vendor-modules/*.js        (GSAP core + plugin bundles, webpack externals output)
   - build/shared/effects/gsap/*.js   (house Tier G effect modules, e.g. fx-scrub.js)
+  - build/shared/effects/*.js        (site-level motion modules that are NOT GSAP-backed,
+                                      e.g. smooth-scroll.js — Lenis, D422. Added 2026-07-30
+                                      because the two globs above were blind to it: the
+                                      module built, shipped and was enqueued while the gate
+                                      reported PASS having never measured it. A budget gate
+                                      that cannot see a module cannot fail on it.)
 `.asset.php` sidecars and any `*.js.map` are skipped — only the shipped JS payload counts
 toward the byte budget actually downloaded by a browser.
 
@@ -77,7 +83,7 @@ _BASELINE_PATH = _SCRIPT_DIR / "motion-bundle-baseline.json"
 
 # Directories (relative to build/) globbed for Tier G modules. Never a hardcoded file
 # list — new effect modules land without needing this gate edited.
-_WATCHED_SUBDIRS = ("vendor-modules", "shared/effects/gsap")
+_WATCHED_SUBDIRS = ("vendor-modules", "shared/effects/gsap", "shared/effects")
 
 _BREACH_THRESHOLD_PCT = 20.0
 

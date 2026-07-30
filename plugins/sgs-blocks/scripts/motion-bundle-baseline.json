@@ -8,10 +8,11 @@
   "unit": "gzip-bytes",
   "modules": {
     "shared/effects/gsap/fx-horizontal-panel.js": 691,
-    "shared/effects/gsap/fx-pin-scrub.js": 927,
+    "shared/effects/gsap/fx-pin-scrub.js": 1033,
     "shared/effects/gsap/fx-scrub.js": 616,
     "shared/effects/gsap/fx-split-reveal.js": 733,
     "shared/effects/gsap/provider.js": 1014,
+    "shared/effects/smooth-scroll.js": 5777,
     "vendor-modules/gsap-core.js": 27017,
     "vendor-modules/gsap-scrolltrigger.js": 17420,
     "vendor-modules/gsap-splittext.js": 3271

@@ -44,6 +44,15 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-registry.php';
 		SGS_Motion_Registry::register();
 
+		// SGS → Motion settings page (Spec 38 §7 / FR-38-18, D422) — the
+		// site-LEVEL motion capabilities, which have no block to hang off.
+		// Admin-only: the registry above owns the frontend read, so the
+		// settings surface is never a frontend dependency.
+		if ( \is_admin() ) {
+			require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-settings.php';
+			Sgs_Motion_Settings::register();
+		}
+
 		// Tier G fx data-attribute injection for DYNAMIC blocks (Spec 38
 		// §11.2). Runs at render_block p10, before the registry's p99 sniff —
 		// that ordering is what lets a dynamic block's effect be detected.
