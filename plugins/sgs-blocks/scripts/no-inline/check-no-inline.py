@@ -61,7 +61,9 @@ Usage
 from __future__ import annotations
 
 import argparse
+import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 # Reuse the detector's validated regexes + fetch so the gate and the worklist
@@ -104,7 +106,85 @@ def scan_html(html: str) -> dict[str, dict]:
     return per_block
 
 
-def run_live(urls: list[str]) -> int:
+def scan_html_deep(html: str) -> dict[str, dict]:
+    """DEEP (nesting-aware) variant of :func:`scan_html` — opt-in via ``--deep``.
+
+    WHY THIS EXISTS. :func:`scan_html` inspects ONLY element opening-tags that
+    themselves carry a ``wp-block-sgs-*`` class, i.e. the block ROOT. FR-32-1
+    requires ZERO ``style=`` on the block's *rendered elements* — plural — so a
+    per-instance ``--var`` written onto a BEM SUB-element (``.sgs-gallery__item``,
+    ``.sgs-card-grid__item``) is invisible to the root-only scan. Measured
+    2026-07-30: 7 blocks / 8 sites were emitting exactly that, and the gate had
+    reported PASS throughout.
+
+    WHY IT IS NOT A NAIVE "ANY DESCENDANT" SCAN. Attributing every styled
+    descendant to its nearest SGS ancestor produces FALSE POSITIVES: a CORE
+    block nested inside an SGS block (``core/heading`` inside
+    ``sgs/site-footer-row``) carries WP core's OWN inline serialisation of its
+    native supports, which FR-32-1 does not govern. Measured on the
+    palestine-lives canary: a naive scan flagged 4 such core-block elements;
+    the core-aware rule below flags 0. So the ownership rule is: attribute an
+    element to the nearest enclosing block root of ANY kind, and flag ONLY when
+    that root is an SGS one — a core root SHADOWS its SGS ancestor.
+
+    STATUS: opt-in (``--deep``) rather than default, deliberately. The live
+    canaries are the DEPLOYED pages; source fixes only show up here after a
+    deploy. Flipping this default-on before that deploy would fail the build on
+    already-fixed code and block a co-active track. Promote it to the default
+    once a deploy has proven it green (the same "prove the break lands, then
+    arm" sequencing the rest of this gate uses).
+    """
+    void = {
+        "area", "base", "br", "col", "embed", "hr", "img", "input",
+        "link", "meta", "param", "source", "track", "wbr",
+    }
+    any_block = re.compile(r"wp-block-([a-z0-9-]+)")
+    sgs_block = re.compile(r"wp-block-sgs-([a-z0-9-]+)")
+    per_block: dict[str, dict] = {}
+
+    class _Scanner(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__(convert_charrefs=True)
+            self.stack: list[tuple[str, str | None]] = []
+
+        def handle_starttag(self, tag, attrs):  # noqa: D102
+            attr = dict(attrs)
+            cls = attr.get("class") or ""
+            sgs_hit = sgs_block.search(cls)
+            if sgs_hit:
+                owner: str | None = sgs_hit.group(1)
+            elif any_block.search(cls):
+                owner = None  # a CORE block root shadows any SGS ancestor
+            else:
+                owner = self.stack[-1][1] if self.stack else None
+
+            style = attr.get("style")
+            if owner and style is not None:
+                row = per_block.setdefault(
+                    owner, {"style_var": 0, "style_empty": 0}
+                )
+                if style.strip() == "":
+                    row["style_empty"] += 1
+                elif "--" in style:
+                    row["style_var"] += 1
+
+            if tag not in void:
+                self.stack.append((tag, owner))
+
+        def handle_startendtag(self, tag, attrs):  # noqa: D102
+            self.handle_starttag(tag, attrs)
+
+        def handle_endtag(self, tag):  # noqa: D102
+            for i in range(len(self.stack) - 1, -1, -1):
+                if self.stack[i][0] == tag:
+                    del self.stack[i:]
+                    return
+
+    _Scanner().feed(html)
+    return per_block
+
+
+def run_live(urls: list[str], deep: bool = False) -> int:
     """Fetch each URL, scan, and gate. Degrade-safe: unreachable != fail."""
     reachable = 0
     violations: list[str] = []
@@ -117,7 +197,7 @@ def run_live(urls: list[str]) -> int:
             print(f"  [check-no-inline] WARN: could not fetch {url}: {exc}")
             continue
         reachable += 1
-        per_block = scan_html(html)
+        per_block = scan_html_deep(html) if deep else scan_html(html)
         for slug, counts in per_block.items():
             seen_blocks.add(slug)
             if counts["style_var"]:
@@ -200,6 +280,52 @@ def run_selftest() -> int:
     else:
         print("  ok: clean markup + scoped <style> rule NOT flagged (sgsCustomCss safe)")
 
+    # ---- DEEP scanner (--deep) -------------------------------------------
+    # Four proofs: it CATCHES what the root-only scan structurally cannot,
+    # the root-only scan genuinely MISSES it (so --deep is load-bearing, not
+    # decorative), a nested CORE block is NOT false-flagged, and clean markup
+    # stays clean.
+    sub_element = (
+        '<div class="wp-block-sgs-gallery sgs-gallery">'
+        '<figure class="sgs-gallery__item" style="--sgs-item-index:2">z</figure>'
+        "</div>"
+    )
+    hit = scan_html_deep(sub_element)
+    if hit.get("gallery", {}).get("style_var", 0) != 1:
+        print("  X selftest[deep]: sub-element style=\"--\" NOT detected"); ok = False
+    else:
+        print("  ok[deep]: sub-element style=\"--var\" detected on sgs/gallery")
+
+    # Negative control for the ROOT-ONLY scan: it must MISS the same input.
+    # If this ever starts passing, --deep has become redundant — say so loudly
+    # rather than keeping a flag that no longer buys anything.
+    shallow = scan_html(sub_element)
+    if shallow.get("gallery", {}).get("style_var", 0) != 0:
+        print("  X selftest[deep]: root-only scan unexpectedly caught the sub-element "
+              "— --deep may now be redundant; re-check before trusting this flag"); ok = False
+    else:
+        print("  ok[deep]: root-only scan MISSES it (proves --deep is load-bearing)")
+
+    # A CORE block nested in an SGS block owns its own inline styling — WP core
+    # serialises native supports inline and FR-32-1 does not govern it. Measured
+    # live: a naive nearest-SGS-ancestor rule false-flagged 4 of these.
+    nested_core = (
+        '<div class="wp-block-sgs-site-footer-row sgs-site-footer-row">'
+        '<h2 class="wp-block-heading" style="margin-bottom:var(--wp--preset--spacing--20)">t</h2>'
+        "</div>"
+    )
+    hit = scan_html_deep(nested_core)
+    if any(c["style_var"] or c["style_empty"] for c in hit.values()):
+        print(f"  X selftest[deep]: nested CORE block false-flagged: {hit}"); ok = False
+    else:
+        print("  ok[deep]: nested core/heading NOT flagged (core root shadows SGS ancestor)")
+
+    hit = scan_html_deep(clean)
+    if any(c["style_var"] or c["style_empty"] for c in hit.values()):
+        print(f"  X selftest[deep]: clean markup false-flagged: {hit}"); ok = False
+    else:
+        print("  ok[deep]: clean markup NOT flagged")
+
     if ok:
         print("\n[check-no-inline --selftest] PASS — detector fires on inject, clears on remove.")
         return 0
@@ -212,13 +338,24 @@ def main() -> int:
     ap.add_argument("--live", nargs="*", metavar="URL", help="explicit canary URL(s)")
     ap.add_argument("--live-default", action="store_true", help="use the built-in canary set (default)")
     ap.add_argument("--selftest", action="store_true", help="network-free detector proof")
+    ap.add_argument(
+        "--deep",
+        action="store_true",
+        help=(
+            "nesting-aware scan: also inspect BEM SUB-elements inside an sgs/* "
+            "block (FR-32-1 governs every rendered element, not just the root). "
+            "A nested CORE block root shadows its SGS ancestor, so core's own "
+            "inline supports are never false-flagged. Opt-in until a deploy "
+            "proves it green — see scan_html_deep()'s docstring."
+        ),
+    )
     args = ap.parse_args()
 
     if args.selftest:
         return run_selftest()
 
     urls = args.live if args.live else list(CANARY_URLS)
-    return run_live(urls)
+    return run_live(urls, deep=args.deep)
 
 
 if __name__ == "__main__":

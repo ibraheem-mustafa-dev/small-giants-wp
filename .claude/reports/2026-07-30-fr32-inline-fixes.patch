@@ -1,0 +1,377 @@
+diff --git a/plugins/sgs-blocks/src/blocks/card-grid/render.php b/plugins/sgs-blocks/src/blocks/card-grid/render.php
+index 04281e75..c6e0768b 100644
+--- a/plugins/sgs-blocks/src/blocks/card-grid/render.php
++++ b/plugins/sgs-blocks/src/blocks/card-grid/render.php
+@@ -485,6 +485,14 @@ if ( $stagger_delay ) {
+ 	$grid_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
+ }
+ 
++// Per-item stagger-index custom-property VALUE (FR-32-4, D345) — varies per
++// item, so it cannot be a single scoped rule on the block root; emitted into a
++// `:nth-child(N)` scoped rule instead (same mechanism as sgs/social-icons' /
++// sgs/pricing-table's per-item colour), N = this item's 1-based position among
++// ALL rendered card items (every item renders `.sgs-card-grid__item`
++// unconditionally). Was previously an inline `style="--sgs-item-index:N"`.
++$card_grid_stagger_css = '';
++
+ // Build the interior HTML (card items).
+ ob_start();
+ foreach ( $items as $index => $item ) :
+@@ -500,7 +508,9 @@ foreach ( $items as $index => $item ) :
+ 	);
+ 	$has_link   = '' !== $link_attr;
+ 	$item_tag   = $has_link ? 'a' : 'div';
+-	$item_style = $stagger_delay ? ' style="--sgs-item-index:' . absint( $index ) . '"' : '';
++	if ( $stagger_delay ) {
++		$card_grid_stagger_css .= $root_sel . ' .sgs-card-grid__item:nth-child(' . ( absint( $index ) + 1 ) . '){--sgs-item-index:' . absint( $index ) . ';}';
++	}
+ 
+ 	// Unified media slot (added 2026-05-05). When only the legacy
+ 	// $item['image'] is set, synthesise a media object so the shared
+@@ -538,7 +548,7 @@ foreach ( $items as $index => $item ) :
+ 	}
+ 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
+ 	?>
+-	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?><?php echo $item_style; ?>>
++	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
+ 		<div class="sgs-card-grid__image-wrap">
+ 			<?php if ( '' !== $media_html ) : ?>
+ 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
+@@ -578,7 +588,8 @@ foreach ( $items as $index => $item ) :
+ 		<?php endif; ?>
+ 	</<?php echo esc_attr( $item_tag ); ?>>
+ <?php endforeach;
+-$inner_html = $card_grid_native_style_tag . $sgs_grid_typo_tag . ob_get_clean();
++$card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
++$inner_html            = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag . ob_get_clean();
+ 
+ echo SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
+ 	$attributes,
+diff --git a/plugins/sgs-blocks/src/blocks/countdown-timer/render.php b/plugins/sgs-blocks/src/blocks/countdown-timer/render.php
+index 75190609..f8b65658 100644
+--- a/plugins/sgs-blocks/src/blocks/countdown-timer/render.php
++++ b/plugins/sgs-blocks/src/blocks/countdown-timer/render.php
+@@ -11,9 +11,11 @@
+  * tag via the stable core `wp_style_engine_get_styles()` API — exactly how
+  * WP core outputs `layout` support (mirrors sgs/quote + sgs/media).
+  *
+- * The `--sgs-countdown-number-colour` / `--sgs-countdown-label-colour`
+- * declarations are CSS custom-property VALUES (not property declarations),
+- * so they stay as an inline `style="--x:y"` attribute per contract §A.
++ * The `--sgs-countdown-number-colour` / `--sgs-countdown-label-colour` custom-
++ * property VALUES are emitted into the same scoped `.{uid}` <style> tag above
++ * (FR-32-4, D345 — inline `style="--x:y"` on the frontend is forbidden; the
++ * pre-D345 "custom-property values may stay inline" reading of contract §A is
++ * superseded). No `style` key is ever passed to get_block_wrapper_attributes().
+  *
+  * BOX-GROUP (contract §B): base padding/margin/border-radius/border-width/
+  * border-style/border-colour are all WP-native `style.spacing.*` /
+@@ -213,6 +215,12 @@ if ( '' !== $text_align ) {
+ 	$scoped_css[] = "{$root_sel}{text-align:{$text_align};}";
+ }
+ 
++// --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
++// inline. Previously an inline `style="--x:y"` attribute on the root; the
++// values are sanitised via sgs_colour_value() exactly as before, just routed
++// into the same scoped <style> tag instead of get_block_wrapper_attributes(). ---
++$scoped_css[] = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
++
+ // --- Responsive tiers — padding/margin/border-radius, each routed through the
+ // same style-engine call, wrapped in the block's own scoped @media (contract
+ // §B2: tablet max-width:1023px, mobile max-width:767px). ---
+@@ -294,7 +302,6 @@ if ( '' !== $preset_size_slug ) {
+ 
+ $root_attr_args = array(
+ 	'class' => implode( ' ', $classes ),
+-	'style' => '--sgs-countdown-number-colour:' . esc_attr( sgs_colour_value( $number_colour ) ) . ';--sgs-countdown-label-colour:' . esc_attr( sgs_colour_value( $label_colour ) ) . ';',
+ );
+ if ( $anchor ) {
+ 	$root_attr_args['id'] = esc_attr( $anchor );
+diff --git a/plugins/sgs-blocks/src/blocks/form/render.php b/plugins/sgs-blocks/src/blocks/form/render.php
+index 89fb1885..7992d356 100644
+--- a/plugins/sgs-blocks/src/blocks/form/render.php
++++ b/plugins/sgs-blocks/src/blocks/form/render.php
+@@ -227,11 +227,17 @@ if ( $submit_colour || $submit_background ) {
+ 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
+ }
+ 
+-// Build progress bar colour style — a CSS custom-property VALUE (contract §A
+-// allows `--x:y`, not a real property declaration), so this stays inline.
+-$progress_style_attr = '';
++// Progress-bar colour custom-property VALUE (FR-32-4, D345) — scoped rule on
++// `.uid .sgs-form__progress`, NOT an inline `style="--x:y"` attribute. Uses the
++// SAME uid as the color/border/typography/submit-button supports above
++// (minted eagerly here when none of those already needed one) so everything
++// lands in ONE scoped <style>.
+ if ( $progress_colour ) {
+-	$progress_style_attr = ' style="--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . '"';
++	if ( empty( $sgs_form_uid ) ) {
++		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
++		$sgs_form_supports_classes[] = $sgs_form_uid;
++	}
++	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . ';}';
+ }
+ 
+ // Build focus ring CSS custom properties for :focus-visible on form inputs.
+@@ -259,7 +265,6 @@ if ( $is_multi_step ) :
+ 			aria-valuemin="0"
+ 			aria-valuemax="100"
+ 			data-wp-bind--aria-valuenow="state.progressPercent"
+-			<?php echo $progress_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with sgs_colour_value() ?>
+ 		>
+ 			<div class="sgs-form__progress-bar" data-wp-style--width="state.progressWidth" aria-hidden="true"></div>
+ 		</div>
+diff --git a/plugins/sgs-blocks/src/blocks/gallery/render.php b/plugins/sgs-blocks/src/blocks/gallery/render.php
+index f46641f3..9d67f0d9 100644
+--- a/plugins/sgs-blocks/src/blocks/gallery/render.php
++++ b/plugins/sgs-blocks/src/blocks/gallery/render.php
+@@ -306,17 +306,27 @@ ob_start();
+ 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
+ 
+ 				// Determine the aspect-ratio and stagger delay for this item. Both
+-				// values ride as CSS custom-PROPERTY VALUES (never a raw property
++				// are CSS custom-PROPERTY VALUES (never a raw property
+ 				// declaration) — style.css reads --sgs-item-aspect via a scoped
+-				// `aspect-ratio: var(...)` rule so nothing here is an inline
+-				// property declaration. $sgs_css_ratio allows digits, dot, and
+-				// the "/" the aspect-ratio grammar needs (e.g. "16/9").
+-				$item_style = '';
++				// `aspect-ratio: var(...)` rule. VARIES per item (FR-32-4, D345),
++				// so it cannot be a single scoped rule on the block root; emitted
++				// into a `:nth-child(N)` scoped rule instead (same mechanism as
++				// sgs/social-icons' / sgs/card-grid's per-item values) — every
++				// image renders `.sgs-gallery__item` unconditionally, so position
++				// is stable. $sgs_css_ratio allows digits, dot, and the "/" the
++				// aspect-ratio grammar needs (e.g. "16/9"). Previously an inline
++				// `style="…"` (also emitting a bare `style=""` when both were
++				// unset — itself an FR-32-1 breach); now no `style` attribute is
++				// ever written on the item.
++				$item_style_decls = array();
+ 				if ( $aspect_ratio ) {
+-					$item_style .= '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio ) . ';';
++					$item_style_decls[] = '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio );
+ 				}
+ 				if ( $stagger_delay > 0 ) {
+-					$item_style .= '--sgs-item-index:' . $index . ';';
++					$item_style_decls[] = '--sgs-item-index:' . absint( $index );
++				}
++				if ( ! empty( $item_style_decls ) ) {
++					$gallery_responsive_css .= $root_sel . ' .sgs-gallery__item:nth-child(' . ( absint( $index ) + 1 ) . '){' . implode( ';', $item_style_decls ) . ';}';
+ 				}
+ 
+ 				// Determine full-size URL for lightbox data attribute.
+@@ -334,7 +344,6 @@ ob_start();
+ 					?>
+ 					<figure
+ 						class="sgs-gallery__item"
+-						style="<?php echo esc_attr( $item_style ); ?>"
+ 					>
+ 						<button
+ 							type="button"
+@@ -386,7 +395,6 @@ ob_start();
+ 					?>
+ 					<figure
+ 						class="sgs-gallery__item"
+-						style="<?php echo esc_attr( $item_style ); ?>"
+ 					>
+ 						<div class="sgs-gallery__img-wrap">
+ 							<?php
+diff --git a/plugins/sgs-blocks/src/blocks/google-reviews/render.php b/plugins/sgs-blocks/src/blocks/google-reviews/render.php
+index 0e546454..e2c99881 100644
+--- a/plugins/sgs-blocks/src/blocks/google-reviews/render.php
++++ b/plugins/sgs-blocks/src/blocks/google-reviews/render.php
+@@ -433,9 +433,20 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
+ 	$gr_total = array_sum( $gr_star_counts );
+ 	if ( $gr_total > 0 ) :
+ 		?>
++		<?php $gr_star_position = 0; ?>
+ 		<div class="sgs-google-reviews__breakdown" role="table" aria-label="<?php echo esc_attr__( 'Rating breakdown by number of stars', 'sgs-blocks' ); ?>">
+ 			<?php foreach ( $gr_star_counts as $gr_stars => $gr_count ) : ?>
+-				<?php $gr_pct = $gr_total > 0 ? round( ( $gr_count / $gr_total ) * 100 ) : 0; ?>
++				<?php
++				$gr_pct = $gr_total > 0 ? round( ( $gr_count / $gr_total ) * 100 ) : 0;
++				++$gr_star_position;
++				// gr_pct VARIES per star row (FR-32-4, D345), so it cannot be a
++				// single scoped rule on the block root; emitted into a
++				// `:nth-child(N)` scoped rule instead (same mechanism as
++				// sgs/social-icons' / sgs/pricing-table's per-item values) — every
++				// row renders `.sgs-google-reviews__breakdown-row` unconditionally
++				// (all 5 star tiers), so position is stable.
++				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . $sgs_css_length( $gr_pct ) . '%;}';
++				?>
+ 				<div class="sgs-google-reviews__breakdown-row" role="row">
+ 					<span class="sgs-google-reviews__breakdown-label" role="cell">
+ 						<?php
+@@ -444,7 +455,7 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
+ 						?>
+ 					</span>
+ 					<span class="sgs-google-reviews__breakdown-bar" role="cell" aria-hidden="true">
+-						<span class="sgs-google-reviews__breakdown-fill" style="--sgs-gr-pct:<?php echo esc_attr( $sgs_css_length( $gr_pct ) ); ?>%"></span>
++						<span class="sgs-google-reviews__breakdown-fill"></span>
+ 					</span>
+ 					<span class="sgs-google-reviews__breakdown-count" role="cell">
+ 						<?php
+diff --git a/plugins/sgs-blocks/src/blocks/pricing-table/render.php b/plugins/sgs-blocks/src/blocks/pricing-table/render.php
+index 10786d88..84d9fef9 100644
+--- a/plugins/sgs-blocks/src/blocks/pricing-table/render.php
++++ b/plugins/sgs-blocks/src/blocks/pricing-table/render.php
+@@ -127,7 +127,7 @@ if ( $show_toggle ) {
+ 
+ // ── Build plan cards HTML ────────────────────────────────────────────────────
+ $plans_html = '';
+-foreach ( $plans as $plan ) {
++foreach ( $plans as $plan_index => $plan ) {
+ 	$plan_name          = wp_strip_all_tags( $plan['name'] ?? '' );
+ 	$plan_price         = wp_strip_all_tags( $plan['price'] ?? '' );
+ 	$plan_price_yr      = wp_strip_all_tags( $plan['priceYearly'] ?? '' );
+@@ -202,9 +202,16 @@ foreach ( $plans as $plan ) {
+ 
+ 	// ── Per-plan ribbon ───────────────────────────────────────────────────────
+ 	// ribbonColour VARIES per plan (plan-array data), so it cannot be a single
+-	// scoped rule. Contract §A allows a `--custom-property: value` VALUE
+-	// inline (not a property declaration) — write the resolved colour as a CSS
+-	// var; style.css/the scoped rule below reads `background-color:var(--sgs-pt-ribbon-bg)`.
++	// scoped rule on the block root. FR-32-4 (D345) forbids the inline
++	// `style="--x:y"` this used to write per plan card; instead the resolved
++	// colour is emitted into a `:nth-child(N)` scoped rule (same mechanism as
++	// sgs/social-icons' per-item brand colour, social-icons/render.php ~458) —
++	// N is this plan's 1-based position among ALL plan cards (every plan
++	// renders its `.sgs-pricing-table__plan` wrapper unconditionally, so the
++	// position is stable regardless of which plans show a ribbon). style.css /
++	// the static rule below still read `background-color:var(--sgs-pt-ribbon-bg)`
++	// — only the VALUE's delivery channel changed, not the value or the CSS
++	// that consumes it.
+ 	//
+ 	// Single-choice marker semantics (P-PRICING-TABLE-DUAL-POPULAR-MARKER,
+ 	// 2026-07-28): the badge (driven by $plan_highlighted) and the ribbon
+@@ -218,12 +225,11 @@ foreach ( $plans as $plan ) {
+ 	// so only one marker is ever visible per card.
+ 	$ribbon_html = '';
+ 	if ( $plan_ribbon_text && ! $plan_highlighted ) {
+-		$ribbon_style = $plan_ribbon_colour
+-			? ' style="--sgs-pt-ribbon-bg:' . $colour_val( $plan_ribbon_colour ) . '"'
+-			: '';
+-		$ribbon_html  = sprintf(
+-			'<div class="sgs-pricing-table__ribbon"%s>%s</div>',
+-			$ribbon_style,
++		if ( $plan_ribbon_colour ) {
++			$responsive_css .= $root_sel . ' .sgs-pricing-table__grid .sgs-pricing-table__plan:nth-child(' . ( (int) $plan_index + 1 ) . ') .sgs-pricing-table__ribbon{--sgs-pt-ribbon-bg:' . $colour_val( $plan_ribbon_colour ) . ';}';
++		}
++		$ribbon_html = sprintf(
++			'<div class="sgs-pricing-table__ribbon">%s</div>',
+ 			esc_html( $plan_ribbon_text )
+ 		);
+ 	}
+diff --git a/plugins/sgs-blocks/src/blocks/product-card/render.php b/plugins/sgs-blocks/src/blocks/product-card/render.php
+index 8600f473..034ff03c 100644
+--- a/plugins/sgs-blocks/src/blocks/product-card/render.php
++++ b/plugins/sgs-blocks/src/blocks/product-card/render.php
+@@ -128,17 +128,15 @@ if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width )
+ if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
+ 	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
+ }
+-// Inner padding (ContainerWrapperControls content-kind Spacing panel). Formatted
+-// through sgs_container_gap_value() — the canonical SpacingControl→CSS formatter
+-// the shared wrapper uses for gap / grid-item-padding: a bare numeric slug (e.g.
+-// "40") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. "24px"
+-// or "16px 12px") is emitted directly. The helper sanitises out every injection
+-// character, so the value is safe in the inline style. style.css reads the var on
+-// .product-card-body, overriding its default 20px.
+-$inner_padding_css = '' !== $inner_padding ? sgs_container_gap_value( $inner_padding ) : '';
+-if ( '' !== $inner_padding_css ) {
+-	$inline_styles[] = '--sgs-product-card-inner-padding:' . $inner_padding_css . ';';
+-}
++// NOTE (2026-07-30): the retired `innerPadding` emit block lived here. The
++// scalar `innerPadding` attr was migrated to the `cardPadding` box-object on
++// 2026-07-24 (FR-31-22) — see the cardPadding rendering further down — but the
++// old emit was left behind reading a `$inner_padding` variable whose assignment
++// had been deleted with the attribute. It was a READ WITH NO WRITER: harmless
++// in output (sgs_container_gap_value(null) casts to '' and returns '', so the
++// `if` never fired and no var was ever emitted) but it raised a PHP 8
++// "Undefined variable $inner_padding" warning on EVERY product-card render.
++// Deleted, not repaired — cardPadding is the live mechanism.
+ 
+ // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
+ // into the scoped <style> below (border width/radius = length; border style =
+@@ -655,10 +653,19 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
+ 		// --…--primary background (a CSS token whose hex isn't known in CSS), so
+ 		// pick a WCAG-safe black/white text colour at build time against the
+ 		// resolved primary — works on any client palette (a pale-pink primary
+-		// gets black text, a saturated/dark primary gets white). Emitted as an
+-		// inline style on the badge (static — the badge bg never swaps per combo).
++		// gets black text, a saturated/dark primary gets white). Value is IDENTICAL
++		// for every occurrence (the discount label + every "best value" ladder row),
++		// so it is emitted ONCE as a scoped rule on this card's uid (no-inline
++		// contract §A / FR-32-4, D345) rather than inline `style="--sgs-pc-badge-fg:…"`
++		// per element. $sgs_card_typo_tag is REBUILT so the addition is picked up by
++		// every `$inner = $sgs_card_typo_tag . ob_get_clean()` assembly point below
++		// (mirrors the typed-mode CTA/tag rebuild pattern above).
+ 		$primary_hex          = sgs_resolve_palette_hex( 'primary', '' );
+ 		$discount_text_colour = '' !== $primary_hex ? sgs_wcag_text_colour_for_bg( $primary_hex ) : '';
++		if ( '' !== $discount_text_colour ) {
++			$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__discount-label,.' . $sgs_card_uid . ' .product-card__best-value-badge{--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . ';}';
++			$sgs_card_typo_tag  = '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>';
++		}
+ 
+ 		// Lean per-combo seed for the M-C9 24 KB context cap. The FULL manifest
+ 		// (with the JSON-LD-only fields sku/gtin/incMinor/saleEndDate and a gallery
+@@ -1059,7 +1066,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
+ 					<?php // B3: cosmetic discount badge — reuses the sgs/label pill-wrap convention (wp-block-sgs-label / is-style-pill-wrap) so it matches the design-system badge component. Styled self-contained in style.css because the label block's own CSS only enqueues when a real sgs/label block renders on the page. ?>
+ 					<span
+ 						class="wp-block-sgs-label is-style-pill-wrap product-card__discount-label"
+-						<?php echo '' !== $discount_text_colour ? 'style="--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
+ 						data-wp-bind--hidden="context.discountHidden"
+ 						data-wp-text="context.discountLabel"
+ 					><?php echo esc_html( $discount_label ); ?></span>
+@@ -1116,7 +1122,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
+ 							?>
+ 						<span
+ 							class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"
+-							<?php echo '' !== $discount_text_colour ? 'style="--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
+ 						><?php echo esc_html( $badge_text ); ?></span>
+ 						<?php endif; ?>
+ 					</li>
+diff --git a/plugins/sgs-blocks/src/blocks/trust-bar/render.php b/plugins/sgs-blocks/src/blocks/trust-bar/render.php
+index 6b7d3a37..d8701159 100644
+--- a/plugins/sgs-blocks/src/blocks/trust-bar/render.php
++++ b/plugins/sgs-blocks/src/blocks/trust-bar/render.php
+@@ -309,7 +309,7 @@ if ( 'image-badge' === $badge_style ) {
+ // --- Build badge items HTML ---------------------------------------------------
+ $items_html = '';
+ 
+-foreach ( $items as $item ) {
++foreach ( $items as $tb_item_index => $item ) {
+ 	$item       = is_array( $item ) ? $item : array();
+ 	$is_pending = ! empty( $item['pending'] );
+ 	$item_label = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
+@@ -362,19 +362,24 @@ foreach ( $items as $item ) {
+ 		// can override the fill colour per badge via item.fillColour.
+ 		$is_filled     = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
+ 		$circle_class  = 'sgs-trust-bar__circle' . ( $is_filled ? ' sgs-trust-bar__circle--filled' : '' );
+-		$circle_style  = '';
+ 		if ( $is_filled && ! empty( $item['fillColour'] ) ) {
+ 			// sgs_colour_value() resolves a token slug → CSS var (or passes a raw
+-			// colour) and already escapes the value.
+-			$fill_colour  = sgs_colour_value( (string) $item['fillColour'] );
+-			$circle_style = $fill_colour ? sprintf( ' style="--sgs-trust-badge-icon-fill:%s"', $fill_colour ) : '';
++			// colour) and already escapes the value. fillColour VARIES per item, so
++			// (FR-32-4, D345) it cannot be a single scoped rule on the block root —
++			// emitted into a `:nth-child(N)` scoped rule instead (same mechanism as
++			// sgs/social-icons' per-item brand colour), N = this item's 1-based
++			// position among ALL rendered badges (every item renders its
++			// `.sgs-trust-bar__badge` wrapper unconditionally).
++			$fill_colour = sgs_colour_value( (string) $item['fillColour'] );
++			if ( $fill_colour ) {
++				$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge:nth-child(' . ( (int) $tb_item_index + 1 ) . ') .' . str_replace( ' ', '.', $circle_class ) . '{--sgs-trust-badge-icon-fill:' . esc_attr( $fill_colour ) . ';}';
++			}
+ 		}
+ 
+ 		$items_html .= sprintf(
+-			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true"%s>%s</span><span class="sgs-trust-bar__label">%s</span></div>',
++			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',
+ 			$item_attrs,
+ 			esc_attr( $circle_class ),
+-			$circle_style,
+ 			$svg,
+ 			esc_html( $item_label )
+ 		);
