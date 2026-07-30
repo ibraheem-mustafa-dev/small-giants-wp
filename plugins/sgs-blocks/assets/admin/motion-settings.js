@@ -1,9 +1,13 @@
 /**
  * SGS → Motion settings page — dependent-control state.
  *
- * Greys out (and genuinely DISABLES) the strength slider while smooth
- * scrolling is switched off, so the page never offers a control that does
- * nothing.
+ * Greys out (and genuinely DISABLES) any control that cannot currently do
+ * anything, so the page never offers a setting with no effect.
+ *
+ * There are TWO levels of dependency:
+ *   · smooth scrolling OFF  → strength, touch toggle AND touch strength are
+ *     all inert (the whole feature is off)
+ *   · smooth scrolling ON but touch OFF → touch strength alone is inert
  *
  * ⚠ It sets the `disabled` PROPERTY, not just an opacity. A visually-dimmed
  * but still-focusable control is worse than no dimming at all: a keyboard or
@@ -14,32 +18,63 @@
  *
  * Runs only on this settings screen (enqueued against its page hook).
  *
- * @package SGS\Blocks
+ * @package
  */
 
 ( function () {
 	'use strict';
 
 	function init() {
-		const toggle = document.getElementById( 'sgs-smooth-scroll-toggle' );
-		const slider = document.getElementById( 'sgs-smooth-strength' );
-		if ( ! toggle || ! slider ) {
+		const scrollToggle = document.getElementById(
+			'sgs-smooth-scroll-toggle'
+		);
+
+		// Nothing to wire if the master control is absent — bail before doing
+		// any further lookups.
+		if ( ! scrollToggle ) {
 			return;
 		}
 
-		// The whole row dims, not just the input — the label and help text are
-		// equally inapplicable while the feature is off.
-		const row = slider.closest( 'tr' );
+		const strength = document.getElementById( 'sgs-smooth-strength' );
+		const touchToggle = document.getElementById(
+			'sgs-smooth-touch-toggle'
+		);
+		const touchStrength = document.getElementById(
+			'sgs-smooth-touch-strength'
+		);
 
-		function sync() {
-			const on = toggle.checked;
-			slider.disabled = ! on;
+		/**
+		 * Apply enabled/disabled state to a control and dim its whole row —
+		 * the label and help text are equally inapplicable when the control is.
+		 *
+		 * @param {HTMLElement|null} el      Control to toggle.
+		 * @param {boolean}          enabled Whether it currently applies.
+		 */
+		function setEnabled( el, enabled ) {
+			if ( ! el ) {
+				return;
+			}
+			el.disabled = ! enabled;
+			const row = el.closest( 'tr' );
 			if ( row ) {
-				row.style.opacity = on ? '' : '0.5';
+				row.style.opacity = enabled ? '' : '0.5';
 			}
 		}
 
-		toggle.addEventListener( 'change', sync );
+		function sync() {
+			const smoothOn = scrollToggle.checked;
+			const touchOn = smoothOn && !! touchToggle && touchToggle.checked;
+
+			setEnabled( strength, smoothOn );
+			setEnabled( touchToggle, smoothOn );
+			// Touch strength needs BOTH: the feature on, and touch opted in.
+			setEnabled( touchStrength, touchOn );
+		}
+
+		scrollToggle.addEventListener( 'change', sync );
+		if ( touchToggle ) {
+			touchToggle.addEventListener( 'change', sync );
+		}
 		sync();
 	}
 

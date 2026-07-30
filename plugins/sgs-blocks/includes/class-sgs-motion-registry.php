@@ -200,9 +200,21 @@ class SGS_Motion_Registry {
 			$strength = 3;
 		}
 
+		// Touch smoothing defaults to 1 — the lightest setting — because it is
+		// the input where overriding the platform is most noticeable.
+		$touch_strength = isset( $raw['smooth_touch_strength'] )
+			? (int) $raw['smooth_touch_strength']
+			: 1;
+
+		if ( $touch_strength < 1 || $touch_strength > 5 ) {
+			$touch_strength = 1;
+		}
+
 		return array(
 			'smooth_scroll'          => ! empty( $raw['smooth_scroll'] ),
 			'smooth_scroll_strength' => $strength,
+			'smooth_touch'           => ! empty( $raw['smooth_touch'] ),
+			'smooth_touch_strength'  => $touch_strength,
 		);
 	}
 
@@ -276,7 +288,9 @@ class SGS_Motion_Registry {
 		$data = \is_array( $data ) ? $data : array();
 		$settings = self::settings();
 
-		$data['strength'] = $settings['smooth_scroll_strength'];
+		$data['strength']      = $settings['smooth_scroll_strength'];
+		$data['touch']         = $settings['smooth_touch'];
+		$data['touchStrength'] = $settings['smooth_touch_strength'];
 
 		return $data;
 	}

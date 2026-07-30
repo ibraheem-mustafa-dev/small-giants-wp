@@ -117,9 +117,19 @@ final class Sgs_Motion_Settings {
 			$strength = 3;
 		}
 
+		$touch_strength = isset( $value['smooth_touch_strength'] )
+			? (int) $value['smooth_touch_strength']
+			: 1;
+
+		if ( $touch_strength < 1 || $touch_strength > 5 ) {
+			$touch_strength = 1;
+		}
+
 		return array(
 			'smooth_scroll'          => ! empty( $value['smooth_scroll'] ),
 			'smooth_scroll_strength' => $strength,
+			'smooth_touch'           => ! empty( $value['smooth_touch'] ),
+			'smooth_touch_strength'  => $touch_strength,
 		);
 	}
 
@@ -202,12 +212,50 @@ final class Sgs_Motion_Settings {
 								</p>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php \esc_html_e( 'Touch devices', 'sgs-blocks' ); ?></th>
+							<td>
+								<label>
+									<input
+										type="checkbox"
+										id="sgs-smooth-touch-toggle"
+										name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[smooth_touch]"
+										value="1"
+										<?php \checked( true, $settings['smooth_touch'] ); ?>
+									/>
+									<?php \esc_html_e( 'Also smooth scrolling on phones and tablets', 'sgs-blocks' ); ?>
+								</label>
+								<p class="description" style="max-width:44rem">
+									<strong><?php \esc_html_e( 'Not recommended.', 'sgs-blocks' ); ?></strong>
+									<?php \esc_html_e( 'Phones already have their own scrolling, and visitors have years of muscle memory for how it feels. Replacing it is the single most common reason people describe a site as laggy — and it is felt most by anyone prone to motion sickness. Leave this off unless you have a specific reason. If you do switch it on, start at strength 1 and check it on a real phone, not a desktop browser at a narrow width.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label for="sgs-smooth-touch-strength"><?php \esc_html_e( 'Touch strength', 'sgs-blocks' ); ?></label>
+							</th>
+							<td>
+								<input
+									type="range"
+									id="sgs-smooth-touch-strength"
+									name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[smooth_touch_strength]"
+									min="1"
+									max="5"
+									step="1"
+									value="<?php echo \esc_attr( (string) $settings['smooth_touch_strength'] ); ?>"
+								/>
+								<p class="description" style="max-width:44rem">
+									<?php \esc_html_e( '1 is a light touch — smooth, but still close to how the phone normally feels. This is the recommended setting if you use it at all. Higher values increasingly override the phone\'s own scrolling; 5 is heavy and most people will not like it.', 'sgs-blocks' ); ?>
+								</p>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 
 				<h2><?php \esc_html_e( 'Who does not get this', 'sgs-blocks' ); ?></h2>
 				<p style="max-width:46rem">
-					<?php \esc_html_e( 'Smooth scrolling is switched off automatically, with no action needed from you, for: visitors whose device asks for reduced motion (a health setting people use for motion sickness and migraine); the block editor and all admin screens; and touch devices, which keep their own native scrolling because that is what phone users expect. Your header, anchor links and in-page search are unaffected.', 'sgs-blocks' ); ?>
+					<?php \esc_html_e( 'Smooth scrolling is switched off automatically, with no action needed from you, for: visitors whose device asks for reduced motion (a health setting people use for motion sickness and migraine); and the block editor and all admin screens. Touch devices keep their own native scrolling unless you switch on the touch setting above. Your header, anchor links and in-page search are unaffected either way.', 'sgs-blocks' ); ?>
 				</p>
 
 				<?php \submit_button(); ?>

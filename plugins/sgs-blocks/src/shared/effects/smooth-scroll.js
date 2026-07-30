@@ -75,6 +75,30 @@ const STRENGTH_LERP = {
 };
 
 /**
+ * Touch strength (1–5) → Lenis `syncTouchLerp`.
+ *
+ * A SEPARATE scale from the wheel, deliberately. Touch is the input where
+ * overriding the platform's own momentum is most noticeable and most
+ * complained about, so every step here sits LIGHTER than the wheel step of the
+ * same number: touch 5 (0.075) is Lenis's own touch default and is already
+ * heavier than most phone users expect, while touch 1 (0.3) is barely a
+ * departure from native — the "smooth but still natural" setting.
+ *
+ * Direction matches the wheel scale so the two controls read the same way to
+ * an operator: HIGHER number = heavier. (Mechanically that means a SMALLER
+ * lerp, because lerp is the fraction of remaining distance covered per frame.)
+ *
+ * @type {Object<number, number>}
+ */
+const TOUCH_STRENGTH_LERP = {
+	1: 0.3,
+	2: 0.2,
+	3: 0.15,
+	4: 0.1,
+	5: 0.075,
+};
+
+/**
  * Read the settings WordPress printed for this module.
  *
  * Absent, malformed, or empty all resolve to defaults rather than throwing —
@@ -85,7 +109,7 @@ const STRENGTH_LERP = {
  * @return {{strength: number}} Parsed settings, defaulted.
  */
 function readConfig() {
-	const fallback = { strength: 3 };
+	const fallback = { strength: 3, touch: false, touchStrength: 1 };
 	const node = document.getElementById(
 		`wp-script-module-data-${ MODULE_ID }`
 	);
@@ -107,12 +131,23 @@ function readConfig() {
 		 * wrong-test is the shape this codebase treats as debt, so it is
 		 * written the right way round from the start.
 		 */
+		const touchStrength = Number.parseInt( parsed?.touchStrength, 10 );
+
 		return {
 			strength:
 				Number.isFinite( strength ) &&
 				Object.prototype.hasOwnProperty.call( STRENGTH_LERP, strength )
 					? strength
 					: fallback.strength,
+			touch: true === parsed?.touch,
+			touchStrength:
+				Number.isFinite( touchStrength ) &&
+				Object.prototype.hasOwnProperty.call(
+					TOUCH_STRENGTH_LERP,
+					touchStrength
+				)
+					? touchStrength
+					: fallback.touchStrength,
 		};
 	} catch ( error ) {
 		// A malformed settings blob must degrade to "no smoothing preference",
@@ -165,8 +200,10 @@ export function initSmoothScroll() {
 		return () => {};
 	}
 
-	const { strength } = readConfig();
+	const { strength, touch, touchStrength } = readConfig();
 	const lerp = STRENGTH_LERP[ strength ] ?? STRENGTH_LERP[ 3 ];
+	const touchLerp =
+		TOUCH_STRENGTH_LERP[ touchStrength ] ?? TOUCH_STRENGTH_LERP[ 1 ];
 
 	let lenis = null;
 	let rafId = null;
@@ -197,8 +234,19 @@ export function initSmoothScroll() {
 			 * enforcing nothing — and would have flipped the moment upstream
 			 * changed that default. Naming the real option is what makes the
 			 * comment above true of the CODE rather than true by luck.
+			 *
+			 * OPERATOR-CONTROLLED since 2026-07-30 (owner request): touch
+			 * smoothing can be switched ON with its own strength from
+			 * SGS → Motion. It stays OFF by default, and the settings page
+			 * states plainly that it is not recommended and to start low.
+			 * Both values are passed EXPLICITLY in either state rather than
+			 * omitted when off — an option this module relies on must be
+			 * visible in the code, never inherited from a vendor default that
+			 * can change under us. That is the whole lesson of the
+			 * `smoothTouch` defect above.
 			 */
-			syncTouch: false,
+			syncTouch: touch,
+			syncTouchLerp: touchLerp,
 			/*
 			 * Lenis's anchor handling stays OFF. The theme already publishes
 			 * `--sgs-header-height` and consumes it via `scroll-padding-top`
