@@ -66,6 +66,17 @@ if ( moduleConfig ) {
 		gsap: '@sgs/gsap',
 		'gsap/ScrollTrigger': '@sgs/gsap-scrolltrigger',
 		'gsap/SplitText': '@sgs/gsap-splittext',
+		// Wave C plugins. Externalising each one is what stops an effect
+		// module from inlining its own private copy — without an entry here a
+		// bare `gsap/Draggable` import silently BUNDLES, and the page would
+		// then hold two unrelated GSAP instances with separate plugin
+		// registrations. That failure is invisible in the build output.
+		'gsap/Draggable': '@sgs/gsap-draggable',
+		'gsap/InertiaPlugin': '@sgs/gsap-inertia',
+		'gsap/DrawSVGPlugin': '@sgs/gsap-drawsvg',
+		'gsap/MorphSVGPlugin': '@sgs/gsap-morphsvg',
+		'gsap/MotionPathPlugin': '@sgs/gsap-motionpath',
+		'gsap/ScrambleTextPlugin': '@sgs/gsap-scramble',
 		// The Tier G provider is externalised too, for the same reason as GSAP
 		// itself: it holds the plugin-registration set and the shared
 		// matchMedia context. Bundled per-effect, each effect would get its own
@@ -85,23 +96,37 @@ if ( moduleConfig ) {
 				: existingModuleEntry;
 
 		const vendorEntries = {
-			'vendor-modules/gsap-core': path.resolve(
-				process.cwd(),
-				'src',
-				'vendor-modules',
-				'gsap-core.js'
-			),
-			'vendor-modules/gsap-scrolltrigger': path.resolve(
-				process.cwd(),
-				'src',
-				'vendor-modules',
-				'gsap-scrolltrigger.js'
-			),
-			'vendor-modules/gsap-splittext': path.resolve(
-				process.cwd(),
-				'src',
-				'vendor-modules',
-				'gsap-splittext.js'
+			/*
+			 * One entry per GSAP plugin, never a combined vendor bundle. The
+			 * whole point of §4.4 is that a page pays for the plugins it
+			 * actually uses: a drag carousel must not download MorphSVG (the
+			 * heaviest plugin at ~38 KB raw) to move a divider.
+			 */
+			...Object.fromEntries(
+				[
+					'gsap-core',
+					'gsap-scrolltrigger',
+					'gsap-splittext',
+					// Wave C (FR-38-11/13/15/16/17). All six ship inside the
+					// installed gsap 3.15.0 — the April 2025 Webflow
+					// acquisition made every former Club plugin free, which is
+					// what killed parking P-10's deferral premise. Verified as
+					// real implementations, not membership-gated stubs.
+					'gsap-draggable',
+					'gsap-inertia',
+					'gsap-drawsvg',
+					'gsap-morphsvg',
+					'gsap-motionpath',
+					'gsap-scrambletext',
+				].map( ( name ) => [
+					`vendor-modules/${ name }`,
+					path.resolve(
+						process.cwd(),
+						'src',
+						'vendor-modules',
+						`${ name }.js`
+					),
+				] )
 			),
 
 			/*
@@ -144,6 +169,15 @@ if ( moduleConfig ) {
 					'fx-pin-scrub',
 					'fx-horizontal-panel',
 					'fx-split-reveal',
+					// Wave C. Names are load-bearing: the PHP registry derives
+					// a module ID as '@sgs/fx-' . <fx_effects.effect>, so each
+					// filename must match its DB effect key exactly.
+					'fx-draggable',
+					'fx-draw',
+					'fx-morph',
+					'fx-motion-path',
+					'fx-scramble',
+					'fx-image-sequence',
 				].map( ( name ) => [
 					`shared/effects/gsap/${ name }`,
 					path.resolve(

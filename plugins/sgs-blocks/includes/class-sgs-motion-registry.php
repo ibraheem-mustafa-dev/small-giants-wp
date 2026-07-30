@@ -65,6 +65,42 @@ class SGS_Motion_Registry {
 			'path' => 'build/vendor-modules/gsap-splittext.js',
 			'deps' => array( '@sgs/gsap' ),
 		),
+
+		/*
+		 * Wave C plugins (FR-38-11/13/15/16/17). Every one declares `@sgs/gsap`
+		 * as its only dependency for the same reason ScrollTrigger does: the
+		 * plugin never imports core, it looks core up and registers against it,
+		 * so core must be in the graph before the plugin evaluates.
+		 *
+		 * Draggable and Inertia are SEPARATE modules on purpose — see
+		 * `src/vendor-modules/gsap-inertia.js`. Momentum must be droppable
+		 * without dropping drag, because Spec 38 §10 keeps drag working under
+		 * reduced motion while switching physics off.
+		 */
+		'@sgs/gsap-draggable'     => array(
+			'path' => 'build/vendor-modules/gsap-draggable.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-inertia'       => array(
+			'path' => 'build/vendor-modules/gsap-inertia.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-drawsvg'       => array(
+			'path' => 'build/vendor-modules/gsap-drawsvg.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-morphsvg'      => array(
+			'path' => 'build/vendor-modules/gsap-morphsvg.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-motionpath'    => array(
+			'path' => 'build/vendor-modules/gsap-motionpath.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
+		'@sgs/gsap-scramble'      => array(
+			'path' => 'build/vendor-modules/gsap-scrambletext.js',
+			'deps' => array( '@sgs/gsap' ),
+		),
 		'@sgs/motion-provider'    => array(
 			'path' => 'build/shared/effects/gsap/provider.js',
 			'deps' => array( '@sgs/gsap' ),
@@ -97,6 +133,72 @@ class SGS_Motion_Registry {
 				'@sgs/gsap-splittext',
 				'@sgs/gsap-scrolltrigger',
 			),
+		),
+
+		/*
+		 * Wave C effect modules. Each declares the provider plus exactly the
+		 * plugins it uses, so WP emits an accurate dependency graph and
+		 * modulepreloads them — an under-declared dep still *works* (the import
+		 * map resolves the specifier regardless) but costs an undeclared,
+		 * later, slower fetch. That silent-but-slower failure is why the
+		 * split-reveal row above was corrected rather than left alone.
+		 */
+		'@sgs/fx-draggable'       => array(
+			'path' => 'build/shared/effects/gsap/fx-draggable.js',
+			'deps' => array(
+				'@sgs/motion-provider',
+				'@sgs/gsap-draggable',
+				'@sgs/gsap-inertia',
+			),
+		),
+
+		/*
+		 * ScrollTrigger is real here too — `draw` serves the logo's
+		 * `scroll-trigger` animationStyle by scrubbing the stroke, and
+		 * `fx-draw.js:214` registers it. See the fx-scramble note below for why
+		 * an omission would be silent rather than fatal.
+		 */
+		'@sgs/fx-draw'            => array(
+			'path' => 'build/shared/effects/gsap/fx-draw.js',
+			'deps' => array(
+				'@sgs/motion-provider',
+				'@sgs/gsap-drawsvg',
+				'@sgs/gsap-scrolltrigger',
+			),
+		),
+		'@sgs/fx-morph'           => array(
+			'path' => 'build/shared/effects/gsap/fx-morph.js',
+			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-morphsvg' ),
+		),
+		'@sgs/fx-motion-path'     => array(
+			'path' => 'build/shared/effects/gsap/fx-motion-path.js',
+			'deps' => array(
+				'@sgs/motion-provider',
+				'@sgs/gsap-motionpath',
+				'@sgs/gsap-scrolltrigger',
+			),
+		),
+
+		/*
+		 * ScrollTrigger is a REAL dependency here, not a copy-paste: `scramble`
+		 * offers a `scroll` trigger (fx_effects.triggers = scroll,load,hover),
+		 * and `fx-scramble.js` registers ScrollTrigger to serve it. Omitting it
+		 * would not break the page — the import map resolves the specifier
+		 * regardless — it would just make the fetch undeclared, unpreloaded and
+		 * late. That is the same silent-but-slower defect the split-reveal row
+		 * above was corrected for on 2026-07-29.
+		 */
+		'@sgs/fx-scramble'        => array(
+			'path' => 'build/shared/effects/gsap/fx-scramble.js',
+			'deps' => array(
+				'@sgs/motion-provider',
+				'@sgs/gsap-scramble',
+				'@sgs/gsap-scrolltrigger',
+			),
+		),
+		'@sgs/fx-image-sequence'  => array(
+			'path' => 'build/shared/effects/gsap/fx-image-sequence.js',
+			'deps' => array( '@sgs/motion-provider', '@sgs/gsap-scrolltrigger' ),
 		),
 
 		/*
@@ -199,6 +301,16 @@ class SGS_Motion_Registry {
 		'core'          => '@sgs/gsap',
 		'ScrollTrigger' => '@sgs/gsap-scrolltrigger',
 		'SplitText'     => '@sgs/gsap-splittext',
+		// Wave C. The keys are GSAP's own plugin names because that is the
+		// vocabulary `fx_effects.plugin_set` is written in; a key that does not
+		// match a stored plugin_set value silently enqueues nothing, so these
+		// must track the DB rows exactly.
+		'Draggable'     => '@sgs/gsap-draggable',
+		'Inertia'       => '@sgs/gsap-inertia',
+		'DrawSVG'       => '@sgs/gsap-drawsvg',
+		'MorphSVG'      => '@sgs/gsap-morphsvg',
+		'MotionPath'    => '@sgs/gsap-motionpath',
+		'ScrambleText'  => '@sgs/gsap-scramble',
 	);
 
 	/**
