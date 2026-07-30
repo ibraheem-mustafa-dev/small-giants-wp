@@ -214,10 +214,17 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `6c204981` — the last closed the row-collapse verification leg).
   Evidence: `reports/2026-07-30-motion-waveB-commit1-live-verification.md`; narrative:
   `memory/session-2026-07-30-motion-waveB-commit1.md`. Owner-tuned to strength 3.
-  **Owed on this FR:** a long-distance anchor test (the canary's only anchor target is the skip
-  link, so the offset is proven over 24px only), and reduced motion was proven via a STUBBED media
-  query because the harness cannot emulate `prefers-reduced-motion` — our branch logic is verified,
-  Chrome's matching is not.
+  **Both previously-owed gaps on this FR are now CLOSED (2026-07-30, D424):**
+  · **Long-distance anchor — CLOSED.** Proven over **2,211px**, not the skip link's 24px: the
+  journey eased (269 → 1295 → 2009 → 2190, not a teleport), was **not** clamped at the document
+  end, and the target landed **0.21px clear** of the sticky header — the same offset the 24px
+  test produced, so distance does not degrade it.
+  · **Reduced motion — CLOSED with REAL emulation, superseding the stubbed-media-query caveat.**
+  Chrome's own media matching was emulated (not stubbed) and the browser's verdict read directly
+  from `pagereveal`'s `viewTransition`. Critically this carried a **negative control**: under
+  `no-preference` a transition genuinely RAN, so the suppression under `reduce` is a real result
+  rather than a test that could never fire either way. (The same harness capability applies to
+  the smoother; its own reduced-motion arm remains verified by the earlier branch-logic method.)
   SITE setting on the **SGS → Motion** page, default OFF. Lenis eases the REAL document scroll
   rather than transforming a wrapper, so there is no `#smooth-wrapper`/`#smooth-content` markup,
   no template change, and no interaction with the Spec 37 header (§4.2, superseded).
@@ -250,12 +257,47 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   > cleanly to target with zero reversals, and an anchor click landed exactly clear of the sticky
   > header. No suppression is therefore specified — per `prove-the-cause-before-fix.md`, a fix for
   > a cause that does not reproduce is not shipped. Re-open only with a reproduction.
-- **FR-38-19 Page transitions — Tier V, cross-document View Transitions API.** SITE setting +
-  per-template overrides. CSS-first (`@view-transition`), progressive enhancement, **no GSAP,
-  no router**. **Fallback where unsupported:** navigation behaves exactly as today (hard
-  navigation, no transition) — the feature is presentation-only, so absence of support is the
-  fallback, with zero JS shipped for it. Reduced motion suppresses the transition. Named
-  transition styles (fade / slide / none) per template via `view-transition-name` conventions.
+- **FR-38-19 Page transitions — Tier V, cross-document View Transitions API.**
+  `✅ BUILT + LIVE-VERIFIED 2026-07-30` (`984f2944`, D424). Evidence:
+  `reports/2026-07-30-motion-waveB-page-transitions-verification.md`.
+  SITE setting + per-template overrides on the **SGS → Motion** page, default OFF, sharing the
+  existing `sgs_motion_settings` option. CSS-first (`@view-transition`), progressive enhancement,
+  **no GSAP, no router, and zero frontend JS** (verified: the feature ships one stylesheet and
+  nothing else). **Fallback where unsupported:** navigation behaves exactly as today — the
+  feature is presentation-only, so absence of support IS the fallback, with nothing to build.
+  Named transition styles (fade / slide / none), site-wide and per template.
+  **Mandatory conditions, all live-verified:**
+  (a) OFF ships zero bytes, and this holds **per template** — a template set to `none` enqueues
+  no stylesheet and no rule, not a stylesheet that animates nothing;
+  (b) reduced motion SUPPRESSES by gating the **opt-in itself** inside
+  `@media (prefers-reduced-motion: no-preference)`, never by cancelling the animation afterwards
+  — so the browser never does the snapshot work for those visitors. This also fails in the safe
+  direction: a UA that cannot evaluate the media feature gets no transition;
+  (c) never active in the editor or wp-admin (`wp_enqueue_scripts` + `is_admin()`);
+  (d) the per-template list is enumerated from the theme via `get_block_templates()`, never a
+  hardcoded roster — on the canary it produced 15 templates including WooCommerce's, which the
+  theme directory does not contain.
+
+  > **Two implementation decisions recorded so they are not re-litigated (D424):**
+  >
+  > · **The transition targets the `root` snapshot pair, not per-element
+  > `view-transition-name`s.** This clause previously read "via `view-transition-name`
+  > conventions", which describes a *different capability* — element continuity across a
+  > navigation (a thumbnail growing into a hero). FR-38-19's actual scope is whole-page
+  > navigation styling, and `root` is the correct minimal mechanism for it. Per-element
+  > continuity is not built and is not claimed; it would be a new FR, not a bug in this one.
+  >
+  > · **`mix-blend-mode: normal` is set explicitly** on the old/new root snapshots. The UA
+  > animates them with a second, blend-mode animation (`plus-lighter`), which the `animation`
+  > shorthand happens to drop. `plus-lighter` sums colours additively and only looks right while
+  > the snapshots overlap exactly — which the slide style deliberately breaks, producing visible
+  > banding. The safety was therefore *accidental*; it is now stated, so restoring the "platform
+  > default" later cannot silently reintroduce the artefact.
+
+  **Independent corroboration of the reduced-motion shape:** WordPress 7.0.2 core ships the same
+  construction in its own admin CSS (`wp-view-transitions-admin-inline-css`:
+  `@media (prefers-reduced-motion:no-preference){@view-transition{navigation:auto}…}`), observed
+  on this canary. The pattern is core's, not an invention of this spec.
 
 ## 4. Named conflict resolutions (all seven; none deferred)
 
@@ -604,6 +646,27 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
   Additional Wave B checks introduced by D422: iframe interactivity at rest and mid-scroll on a
   page carrying an `sgs/media` embed (§3.5 condition f), and touch scrolling verified native on
   a real narrow viewport (condition d).
+
+  > **Wave B regression gate — RUN AND CLOSED 2026-07-30 (D424).** Both named sub-cases were
+  > executed with smoothing ON, on the canary:
+  > · **sticky + transparent on the SAME tier — PASS.** The live header is `position: sticky`
+  > *and* carries `is-row-transparent-active` at 1440, so the combination occurs without
+  > reconfiguration. Across 17 samples the header held `top: 0.00` and `sticky` — **including
+  > mid-flight** — while the transparent row's background ramped `alpha 0 → 0.408 → 0.847 → 1`
+  > and returned cleanly to transparent at the top. `--sgs-header-height` steady at 93px.
+  > Non-vacuous: `lenis-smooth` was confirmed active throughout.
+  > · **nav-drawer `<dialog>` × transformed ancestor — PASS, and the risk note was wrong about
+  > the DOM.** `header-behaviours.css` describes the drawer as opening *inside* a transformed
+  > `header.sgs-site-header`. On this build the drawer's parent chain is `BODY → HTML` — it is
+  > **not a header descendant at all**, so a header transform could never reach it, and a test
+  > using one is vacuous by construction. Re-run against a genuine ancestor (`body`) with a
+  > negative control: an ordinary `position: fixed` probe moved **−80px**, proving the detector
+  > works, while the open `<dialog>` moved **0**. Top-layer resolution against the viewport is
+  > therefore CONFIRMED empirically, not merely cited. **Caveat kept honest:** the transform was
+  > applied directly rather than by enabling hide-on-scroll, so the *setting* path is still
+  > unexercised end-to-end; and if a future build nests the drawer inside the header, the
+  > ancestry premise changes and this should be re-read (though the top-layer result would still
+  > hold). The `header-behaviours.css` comment should be corrected to match the real DOM.
 - **Wave C — interaction + SVG + toys.**
   Draggable roster (FR-38-13) incl. **NET-NEW `sgs/before-after`** (needs Draggable — cannot
   come earlier), Flip pairing (FR-38-12 — the one place Wave C edits shipped blocks:

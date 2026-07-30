@@ -26,14 +26,19 @@ sticky header, so it and all the work that existed only to dodge that were dropp
 not touched, and was re-tested afterwards. Record:
 `memory/session-2026-07-30-motion-waveB-commit1.md` · D422.
 
+**Also finished today: page transitions** — pages now blend into each other instead of jumping,
+when you switch it on. Off by default, and you can pick a different look per page type (or none).
+It costs **nothing extra to load** — the browser does it itself, so no code is downloaded for it.
+Anyone whose device asks for reduced motion never sees it. **That closes this motion wave.** The
+test site has it on so you can look: a soft fade everywhere, a slide on pages. D424.
+
 **Still waiting, none built:**
-1. **Page transitions** — the last piece of this motion wave. Next session.
-2. **Header stacking on mobile** — you raised this again today. It is **diagnosed and signed off but
+1. **Header stacking on mobile** — you raised this again today. It is **diagnosed and signed off but
    never built** (D420): a rule stacks the header below 767px even when everything fits. Still a
    visible defect on every header.
-3. **Drawer architecture gate** — your objections recorded in full;
+2. **Drawer architecture gate** — your objections recorded in full;
    `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` · D421.
-4. **Track 1 verification debt** — code exists, proof does not (D423).
+3. **Track 1 verification debt** — code exists, proof does not (D423).
 
 ---
 
@@ -43,34 +48,31 @@ not touched, and was re-tested afterwards. Record:
 > output is not — `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds
 > transcribed readings. Re-runnable evidence, not reproducible proof.
 
-### Track 3 — Spec 38 motion: **WAVE A CLOSED** (D414–D417) · **WAVE B HALF-CLOSED 2026-07-30 (D422)**
+### Track 3 — Spec 38 motion: **WAVE A CLOSED** (D414–D417) · **WAVE B CLOSED 2026-07-30 (D422 + D424)**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. Wave A shipped + owner-confirmed
-(`memory/session-2026-07-30-motion-waveA-closeout.md`). **Wave B commit 1 SHIPPED +
-LIVE-VERIFIED + OWNER-TUNED** — site-level smooth scrolling **via Lenis, NOT ScrollSmoother**.
-Record: `memory/session-2026-07-30-motion-waveB-commit1.md` · evidence
-`reports/2026-07-30-motion-waveB-commit1-live-verification.md` · **D422**.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. **Both waves CLOSED.** Wave A: D414–D417
+(`memory/session-2026-07-30-motion-waveA-closeout.md`). Wave B: smooth scrolling via **Lenis, NOT
+ScrollSmoother** (D422, `memory/…-waveB-commit1.md`) + **page transitions** (D424, `984f2944`,
+`memory/…-waveB-commit2.md`, evidence `reports/2026-07-30-motion-waveB-page-transitions-verification.md`).
 
-- **⛔ D407 / Spec 38 §4.2 SUPERSEDED — its build items are CANCELLED, not deferred.** The
-  wrapper filter, header relocation, per-tier edge rule and `findStickyBreakingAncestor()`
-  tripwire existed ONLY to dodge ScrollSmoother's content transform. Lenis has none (measured:
-  header ancestor chain `transform:none`, `top 0.00` incl. mid-flight, `--sgs-header-height`
-  93px). **Spec 37 FR-37-40 NOT modified; the warn-only guard stays. Do not build any of it.**
-- **New tier: Tier H (helper/utility)** — CLOSED list (Lenis alone), §1.2a admission test, one D
-  per member. Homes amended: 3× `CLAUDE.md`, Spec 01, Spec 02.
-- **Touch smoothing REJECTED by Bean on a real phone at strength 1** ("abrupt and janky", worse
-  than off). Default OFF, labelled tested-and-rejected in the UI + FR-38-18(d). **Do not
-  re-propose without new real-device evidence.** Desktop strength 4→**3**.
-- **FR-37-40 gate PASSED under smoothing**, incl. the owed **row-collapse** leg (gap 0.01px).
+**Standing constraints — read before touching motion:**
+- **⛔ D407 / Spec 38 §4.2 SUPERSEDED — build items CANCELLED, not deferred.** Wrapper filter,
+  header relocation, per-tier edge rule, `findStickyBreakingAncestor()` extension existed ONLY to
+  dodge ScrollSmoother's transform; Lenis has none. **Spec 37 FR-37-40 NOT modified; the warn-only
+  guard stays. Do not build any of it.**
+- **Tier H** = CLOSED list (Lenis alone), §1.2a admission test, one D per member.
+- **Touch smoothing REJECTED by Bean on a real phone.** Default OFF, labelled tested-and-rejected.
+  **Do not re-propose without new real-device evidence.**
+- Page transitions target the `root` pair, NOT per-element `view-transition-name`; reduced motion
+  gates the **opt-in itself** (as WP core does); `mix-blend-mode:normal` is deliberate, not spare.
 
-**⚠ WAVE B IS NOT CLOSED.** `FR-38-19 page transitions` NOT STARTED — the named remaining stage
-(Bean: "page transitions next session to wrap up wave B"). Orchestration:
-`plans/2026-07-29-motion-wave-B-session-prompt.md`. Also owed: 2 qc-council sub-cases
-(sticky+transparent same tier; nav-drawer `<dialog>`-in-header offset) + a long-distance anchor test.
+**Owed:** **Bean's eye (R-31-13)** — canary is ON (site `fade`, `page → slide`, smoothing on).
+Un-run: Firefox (no support — plain navigation IS the fallback), Safari, hide-on-scroll × drawer via
+the SETTING, the 2rem slide trailing edge.
 
 ⚠ Parked, not ours: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
 `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE` · `/sgs-update` Stage 11 mega-* warnings.
-Next motion front = **Wave B close (page transitions)**, then Wave C.
+Next motion front = **Wave C** (Draggable roster + before-after, Flip pairing, DrawSVG + Vivus retirement, MorphSVG, ScrambleText, image-sequence).
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 

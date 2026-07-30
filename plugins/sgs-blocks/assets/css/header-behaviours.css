@@ -41,16 +41,26 @@
  * (including the shrink @supports scroll-timeline pair and the hide-on-scroll
  * transform) is now emitted per-instance in sgs/site-header/render.php.
  *
- * ⚠ KNOWN RISK CARRIED FORWARD (unchanged by this migration — the mechanism
- * that risk describes, `transform: translateY(...)` on the header element,
- * still exists, just emitted per-instance instead of via this shared
- * stylesheet): a native `<dialog>` (sgs/nav-drawer) opened while
- * `header.sgs-site-header` carries a translateY transform (hide-on-scroll,
- * scrolled down) is very likely unaffected — per D323/D337 a `<dialog>` in
- * the top layer resolves against the INITIAL containing block (viewport),
- * not an ancestor's transformed containing block — but this has NOT been
- * live-tested for that specific combination. Verify on a live page before
- * shipping "Hide on scroll" + nav-drawer together to a client.
+ * ✅ RISK RESOLVED 2026-07-30 (D424) — and the risk as previously written was
+ * WRONG ABOUT THE DOM, which is why it is corrected here rather than deleted.
+ *
+ * It claimed a native `<dialog>` (sgs/nav-drawer) opens INSIDE
+ * `header.sgs-site-header`, and so might be trapped when that header carries a
+ * translateY transform (hide-on-scroll). Measured on the canary: the drawer's
+ * parent chain is `BODY → HTML`. It is **not a header descendant**, so a
+ * header transform could never affect it — and any test transforming the
+ * header to check would pass vacuously, for the wrong reason.
+ *
+ * The underlying top-layer question was then tested properly, against a REAL
+ * ancestor (`body`) and with a negative control: an ordinary `position: fixed`
+ * probe moved -80px (proving the measurement could detect the effect), while
+ * the open `<dialog>` moved 0. So D323/D337 holds empirically — a top-layer
+ * `<dialog>` resolves against the viewport, not a transformed ancestor.
+ *
+ * Still unexercised: the transform was applied directly rather than by turning
+ * ON "Hide on scroll", so that settings path has not been driven end-to-end.
+ * If a future build ever nests the drawer inside the header, re-read this —
+ * the ancestry premise changes, even though the top-layer result would stand.
  * ---------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------

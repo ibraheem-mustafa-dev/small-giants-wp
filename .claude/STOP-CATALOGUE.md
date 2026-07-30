@@ -23,6 +23,27 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-A-DOCUMENTED-RISK-CAN-BE-WRONG-ABOUT-ITS-OWN-DOM** — NEW 2026-07-30 (D424). Before
+  testing a risk a comment describes, **verify the structural premise the risk rests on**.
+  `header-behaviours.css` warned for months that the nav-drawer `<dialog>` opens INSIDE a
+  transformed `header.sgs-site-header`. It does not — its parent chain is `BODY → HTML`, so a
+  header transform could never reach it. Testing the risk as written (transform the header, check
+  the dialog) returns "unaffected" and **passes vacuously**, and would have been reported as the
+  risk being cleared. The real question (top-layer vs transformed ancestor) only becomes testable
+  once you transform a GENUINE ancestor and add a negative control — an ordinary `position:fixed`
+  probe that MUST move, proving the measurement can see the effect at all. It moved −80px; the
+  dialog moved 0. **An inherited risk note is a hypothesis about the code, including its claims
+  about structure — and a test inherited from a wrong premise inherits the wrongness silently.**
+
+- **STOP-A-THE-NAVIGATION-KIND-DECIDES-WHETHER-THE-FEATURE-IS-EVEN-ELIGIBLE** — NEW 2026-07-30
+  (D424). A feature can be correctly built, correctly served, and still never fire because the way
+  the TEST triggered it was ineligible. Cross-document view transitions do not run for
+  browser-initiated navigations (`page.goto`, address bar) — only for navigations initiated from
+  within the page. The first reduced-motion test used `goto` and returned "no transition" on BOTH
+  legs; the suppression leg looked like a PASS while proving nothing, because the control leg was
+  equally dead. **Whenever a test's result is "the thing didn't happen", prove the thing CAN
+  happen in that harness first — the negative control is not optional, it is the test.**
+
 - **STOP-A-GATES-SCOPE-MAY-BE-A-GUARD-NOT-A-BLIND-SPOT** — NEW 2026-07-30 (D423). Before widening
   a gate's scope because it "can't see" a violation class, ask what its narrowness was PROTECTING.
   `check-no-inline.py` inspected only block ROOTS, missing per-instance `--var` on BEM sub-elements

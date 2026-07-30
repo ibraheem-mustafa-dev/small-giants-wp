@@ -15,6 +15,54 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D424 — FR-38-19 page transitions shipped; Wave B CLOSED; a "risk" that was wrong about the DOM [ROUTINE]
+
+**2026-07-30, motion Wave B commit 2.** Cross-document View Transitions shipped as a site setting
++ per-template style (fade/slide/none) on the existing SGS → Motion page — `984f2944`, live-verified
+on the canary with smoothing simultaneously ON. Tier V: CSS-only, **zero frontend JS**, no router,
+no GSAP, no Lenis. Evidence: `reports/2026-07-30-motion-waveB-page-transitions-verification.md`.
+**Wave B is now CLOSED** — FR-38-18 and FR-38-19 both built, live-verified, owner-facing.
+
+**Decisions worth not re-litigating.**
+1. **Reduced motion gates the OPT-IN, not the animation.** `@media (prefers-reduced-motion:
+   no-preference){ @view-transition{navigation:auto} }` — so the browser never does the snapshot
+   work for those visitors, and a UA that cannot evaluate the feature fails toward *less* motion.
+   WP 7.0.2 core ships the identical construction in its own admin CSS, found incidentally during
+   verification: the pattern is core's, not ours.
+2. **`root` snapshot pair, not per-element `view-transition-name`.** The spec's old wording named
+   a *different capability* (element continuity across a navigation). Scope here is whole-page
+   navigation styling; the spec text was corrected rather than the code.
+3. **`mix-blend-mode: normal` made explicit.** The `animation` shorthand incidentally drops the
+   UA's `plus-lighter` blend animation; `plus-lighter` bands visibly where the snapshots do not
+   fully overlap, which the slide style deliberately causes. The safety was accidental and is now
+   stated, so "restoring the platform default" later cannot silently reintroduce it.
+
+**Three-rater pre-commit council; no blockers; every precision finding applied.** The one that
+mattered: the top-level style enum was **duplicated** across the settings and registry classes
+while a comment claimed it was shared. Divergence would have been silent and in the worst
+direction — the admin accepting and storing a style the frontend coerces back to default on every
+read, a setting that looks saved and does nothing. The registry is now the single source.
+
+**A risk note that was wrong about the DOM.** `header-behaviours.css` carried an untested warning
+that the nav-drawer `<dialog>` opens *inside* a transformed `header.sgs-site-header`. Measured: the
+drawer's parent chain is `BODY → HTML` — **not a header descendant**, so a header transform could
+never reach it and the obvious test passes vacuously. Re-run against a real ancestor (`body`) with
+a negative control: an ordinary fixed probe moved −80px (proving the detector worked) while the
+open dialog moved 0. D323/D337's top-layer claim is now empirical, and the comment is corrected.
+
+**Two commit-1 gaps CLOSED.** The long-distance anchor is proven over **2,211px** (was 24px),
+landing 0.21px clear of the sticky header; and reduced motion is now proven with **real** media
+emulation plus a negative control (a transition genuinely ran under `no-preference`), superseding
+the stubbed-media-query caveat.
+
+**Method failures caught in-session, all self-caught before reporting:** a suppression test that
+returned "no transition" on BOTH legs because `page.goto()` is ineligible for cross-document
+transitions (vacuous — no negative control); an anchor test whose target was inside a hidden mega
+panel (`offsetTop 0`, no journey) and then one clamped at the document end; an admin leak report
+that was core's own CSS; and two regex miscounts (a `-`-only character class missing
+`taxonomy-product_attribute`'s underscore). Same root cause each time and the same one as commit 1:
+**a count or a green result is not a measurement until you know what produced it.**
+
 ## D423 — Track 1 was not unbuilt, it was UNVERIFIED; four phantom parking slugs; a gate that could not see its own violations [INCIDENT]
 
 **2026-07-30, Track 1 verification audit.** Bean believed Track 1a–1c complete. Three parallel
