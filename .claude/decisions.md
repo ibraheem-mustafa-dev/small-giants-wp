@@ -15,6 +15,58 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D416 — the horizontal panel's nested matchMedia STAYS; travel is derived from where the last panel must land [INCIDENT]
+
+**2026-07-30, Spec 38 FR-38-8 / §10.** Two reversals, both from claims that were asserted
+confidently and turned out to be unsupported.
+
+**(a) The travel fix.** Owner-reported: the last panel never reaches the position the first
+panel's text started from. Three earlier passes each derived the distance by subtracting one
+width from another, and each landed short by whatever padding/gap/band was hidden inside the
+operand. The figures in the block comment (`scrollWidth 4189`, a `-111` start offset, a `~264px`
+gap) were **arithmetically impossible** under the shipped CSS — `flex-basis 1100` with
+`flex-shrink 0` floors a 4-panel row at 4400 — and proved to be stale (pre-`1ca8d465`) plus a
+probe artefact (`<html>` carries `scroll-behavior: smooth`, so scroll-and-sample probes read a
+page mid-flight). **Measured live: the real error is exactly 100px** = host 1200 − panel 1100,
+the signature of "stop flush right" vs "stop where panel 1 began".
+
+Fix: `T = last.offsetLeft − first.offsetLeft` over laid-out elements sharing an `offsetParent`,
+so every inset cancels instead of needing to be discovered; `offsetLeft` ignores the GSAP
+transform, so it survives `invalidateOnRefresh`. Verified 100px → **0px**, with the pre-fix run
+as negative control. Bean accepted the trade: ~100px of empty band right of the last panel.
+
+**A council-proposed `Math.min( ideal, scrollWidth − clientWidth )` "safety clamp" was REJECTED —
+it evaluates to 3200, the broken value, and would have silently reverted the fix.** The guard
+that was actually needed is the opposite: a `Math.max` floor against the flush-right distance,
+which binds only when a client sets `--sgs-fx-panel-width` wider than the host (where the ideal
+travel would strand content beyond an `overflow-x: clip` edge).
+
+**(b) The matchMedia change is NOT made — the premise does not exist.** A session brief called
+for moving the desktop breakpoint onto the context `withMotionAllowed` passes in, citing
+gold-standard item 14 ("nested matchMedia reverts the same trigger twice"). Item 14 says
+**redundant**, never harmful, and refers to a manual `gsap.context()` — not a second
+`gsap.matchMedia()`. GSAP's docs contain no double-revert claim at all. Compiled GSAP 3.15.0
+shows `MatchMedia`'s constructor running `s && s.data.push(this)`: a matchMedia created inside an
+active context self-registers for parent cleanup, so the current nesting is correct.
+
+Decisively, **conditions added to one MatchMedia are independent siblings** — each `.add()` builds
+its own Context and fires on its own query alone — so the change would have run the desktop pin
+for reduced-motion visitors while the CSS that disables the native scroller stayed gated on
+`no-preference`. An accessibility regression, inverting the file's own fail-open contract.
+Gold-standard item 14 and `provider.js`'s doc block are both amended to stop the claim
+propagating. The 2nd `setup` argument stays (harmless, additive).
+
+**(c) The reduced-motion "unreachable panel" report is FALSE.** Both arms measured: under
+`reduce` the effect does not run, `overflow-x: auto` and `scroll-snap-type: x mandatory` hold,
+every panel reachable. The reported `overflow-x: hidden` / `scroll-snap-type: none` are the
+**motion-allowed** branch's values — Chrome normalises the specified `clip` to `hidden` when the
+other axis is non-visible. That probe was measuring the wrong branch.
+
+Evidence + method notes: `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`.
+Probes: `scripts/motion-qa/probe-horizontal-panel.js`, `scripts/motion-qa/probe-reduced-motion.mjs`
+(the latter runs a no-preference negative-control arm and exits INCONCLUSIVE if the arms stop
+differing).
+
 ## D414 — fx roster is DERIVED from effect scope + target requirement, not a hardcoded list [ROUTINE]
 
 **2026-07-30, Spec 38 §2/§6.1, FR-38-4.** `FX_BLOCKS` was a hardcoded 5-block array in

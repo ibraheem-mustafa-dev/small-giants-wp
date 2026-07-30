@@ -82,16 +82,36 @@ export function tierG( ...plugins ) {
  * part-way through an animation. That revert-on-change behaviour is why this
  * wraps matchMedia rather than doing a one-time boolean check.
  *
- * `setup` also receives the matchMedia CONTEXT as its second argument
- * (gold-standard item 14, [MUST]). A `gsap.matchMedia()` call already creates
- * a `gsap.context()` internally, so a consumer that needs its OWN breakpoint
- * (e.g. `fx-horizontal-panel.js`'s desktop-only `min-width:768px` split) must
- * register it on THIS context via `context.add(query, handler)` rather than
- * minting a second, nested `gsap.matchMedia()`/`gsap.context()` inside the
- * `setup` callback — nesting reverts the same trigger twice and is documented
- * as redundant. `setup( gsap )` — one argument — keeps working unchanged for
- * every consumer that has no breakpoint of its own (`fx-scrub.js`,
- * `fx-pin-scrub.js`, `fx-split-reveal.js`); the second parameter is additive.
+ * `setup` also receives the matchMedia CONTEXT as its second argument. It is
+ * available for consumers that want it; `setup( gsap )` — one argument — keeps
+ * working unchanged for every consumer that has no breakpoint of its own
+ * (`fx-scrub.js`, `fx-pin-scrub.js`, `fx-split-reveal.js`).
+ *
+ * ⚠ DO NOT register a consumer's OWN breakpoint on this context (D416,
+ * 2026-07-30). An earlier note here instructed exactly that, on the grounds
+ * that nesting "reverts the same trigger twice and is documented as redundant".
+ * Both halves were wrong, and acting on it would have shipped an accessibility
+ * regression:
+ *
+ *   · GSAP's docs say nesting a manual `gsap.context()` inside a matchMedia is
+ *     REDUNDANT. They nowhere say it reverts anything twice, and they are not
+ *     talking about a nested `gsap.matchMedia()` at all.
+ *   · Verified against the compiled GSAP 3.15.0 in
+ *     `build/vendor-modules/gsap-core.js`: `MatchMedia`'s constructor runs
+ *     `s && s.data.push(this)`, so a matchMedia created inside an active
+ *     context self-registers with it and the parent cleans it up. Nesting is
+ *     supported, not a leak.
+ *   · Decisively: conditions added to ONE MatchMedia are INDEPENDENT SIBLINGS.
+ *     Each `.add()` constructs its own Context and fires purely on its own
+ *     query. So `context.add('(min-width: 768px)', …)` here would run for a
+ *     visitor who asked for reduced motion — while the CSS that stands the
+ *     native scroller down remains gated on `no-preference`, leaving a GSAP pin
+ *     and a native scroller fighting over the same element.
+ *
+ * A consumer needing its own breakpoint should keep nesting its own
+ * `gsap.matchMedia()` inside `setup` (as `fx-horizontal-panel.js` does). That
+ * nested instance is gated by reduced motion for free, because `setup` only
+ * ever runs inside the no-preference condition below.
  *
  * @param {Function} setup Receives the shared gsap instance and this call's
  *                         matchMedia context; may return its own cleanup
