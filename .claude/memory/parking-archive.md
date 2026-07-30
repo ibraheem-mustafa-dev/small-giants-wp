@@ -2353,3 +2353,65 @@ Archived verbatim from parking.md on completion:
 > `plans/2026-07-29-motion-wave-C-session-prompt.md` — and Bean ruled (2026-07-29, /handoff):
 > planned-for-upcoming-sessions work does not live in parking; parked means deferred.
 > **Supersession date: 2026-07-29.**
+
+---
+
+### P-STORE-API-CART-SERVED-FROM-CACHE — RESOLVED 2026-07-30 (fixed in code, same session it was filed)
+
+**Was:** OPEN · framework · filed 2026-07-30 during Wave-1's FR-36-19 exercise, resolved hours later
+the same session once Bean asked for the best-practice check. Commit `e2d4f101`.
+
+**The defect.** LiteSpeed's page cache was serving `GET /wp-json/wc/store/v1/cart`, so `sgs/cart`'s
+badge (which reads `items_count` from it, `cart/view.js:55`) was pinned at 0 in all three
+displayModes. A second, worse instance was then measured: `/sgs/v1/product-search` was also cached
+(req 1 miss, req 2 onward HIT). That endpoint's security chain carries a per-IP rate limit and a
+FAIL-CLOSED draft-product visibility filter; a cached response never wakes PHP, so both were
+silently bypassed. **A security control a cache can switch off is not a control.**
+
+**Cause, proven by discriminator not inference.** `/cart` was a LiteSpeed HIT, `/cart/items` a MISS.
+Queried in the SAME session one instant after `add-item` returned `201 items_count:3`: `/cart` said
+`items_count 0`, `/cart/items` said 1 item, qty 3, "Mamas Munches Zookies". The session was healthy;
+only the cached read was blind — which ruled out the competing "guest cart is not persisting"
+explanation.
+
+**Mechanism (corrected by research).** LiteSpeed does not simply "ignore `Cache-Control`". LSCWP
+emits its own `X-Litespeed-Cache-Control`, and LiteSpeed's developer docs state that when both are
+present the standard header is ignored and only theirs is used. Both endpoints already sent a
+correct `no-store`. WP's `nocache_headers()` does not help either — WooCommerce already merges those
+into Store API responses. LSCWP *does* honour `DONOTCACHEPAGE`, but WooCommerce does not define it
+on REST requests: that is the documented gap, confirmed by LiteSpeed support staff on the
+"WC Store API cart is cached" wordpress.org thread. LSCWP's WooCommerce integration auto-excludes
+the cart/checkout/my-account **pages**, never the Store API **routes**.
+
+**Fix shipped:** `includes/class-litespeed-compat.php` — `rest_pre_dispatch` fires
+`do_action('litespeed_control_set_nocache')` (LSCWP's documented API, a silent no-op off LiteSpeed)
+plus `DONOTCACHEPAGE` for other cache plugins, for the `/wc/store` and `/sgs/v1` route prefixes.
+Chosen over the per-site "Do Not Cache URI" panel entry — which LiteSpeed support recommends and
+which *did* work — because the panel entry does not travel with the plugin: every new client site
+would silently ship a broken badge and an unguarded search endpoint.
+
+**Verified with a negative control:** the site-level exclusion was REMOVED and `cache-exc` set empty
+before the final measurement, so only the code could be responsible. Both prefixes then reported
+`X-LiteSpeed-Cache-Control: no-cache` across three consecutive requests, while the homepage still
+cached normally (`miss → hit → hit`) — i.e. site caching was not collaterally disabled. Earlier, with
+the panel entry, the badge was also observed tracking `0 → 2 → 0` across all three displayModes.
+
+**Two claims I made during diagnosis and later had to correct — recorded so neither is inherited:**
+1. *"A purge does not clear it."* FALSE. The purge works; my test loaded the fixture page first and
+   the cart block's own on-load fetch re-filled the cache before my probe ran. Purging is a
+   momentary reset, not a fix — which is a different (and correct) reason to need the exclusion.
+2. *"Cross-visitor cart leak is only a theoretical risk."* UNDERSTATED. The mechanism is DOCUMENTED
+   to have caused real leaks in WooCommerce behind other shared caches — `woocommerce/woocommerce`
+   issues #30329 (mini-cart showing another visitor's contents behind Cloudflare) and #26359
+   (checkout PII cross-contamination). No LiteSpeed-specific case report was found and no leak was
+   reproduced here, so it is not a confirmed incident on our stack — but it is more than theoretical.
+
+**Rejected alternatives (do not re-litigate):** disabling `cache-rest` globally (per-site again, and
+community reports show it did not fix the staleness anyway); LiteSpeed ESI (needs Enterprise or
+QUIC.cloud, unsupported on OpenLiteSpeed, so it cannot be a universal default).
+
+**Residual, genuinely open:** the fix speaks LiteSpeed's dialect only. A client later placed behind
+Cloudflare/Varnish edge caching would need `/wp-json/wc/store/` excluded there too; that cannot be
+closed from PHP.
+
+**Resolution date: 2026-07-30.**
