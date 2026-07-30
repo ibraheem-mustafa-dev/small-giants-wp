@@ -14,22 +14,23 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-29, updated same day).** The doc system is finished and mechanically
-enforced — see the sweep record at the bottom. **Spec 38 motion Wave A is SHIPPED** (Waves B/C
-prompts ready). The **MERGED Spec 36+37 nav/header/footer track** now has everything it needs: you
-signed the architecture gate (drawer→CPT "Menu drawer", trigger controls, clone as final proof)
-AND the full strategic plan is written, peer-reviewed and graded B (D413). Next session executes
-Wave 1 (fixtures). The drawer clones you rejected get NO rework until Wave 2's CPT move lands —
-exactly as you decided.
+**Where things stand (2026-07-30).** The **MERGED Spec 36+37 nav/header/footer track** is under way
+and **Wave 1 is finished** — the menu system was checked properly on the real site and works:
+opens by mouse, tap and keyboard, closes on Escape, and the motion is genuinely running (that had
+never actually been confirmed before). **Next up is Wave 2**, which moves the slide-out menu onto
+its own edit screen. Spec 38 motion Wave A shipped separately.
 
-**On the drawers, plainly:** the checks all passed and the clones still look nothing like the real
-sites, because the checks measured whether the menu WORKS (keyboard, screen-reader, motion, no-JS),
-never whether it LOOKS right — and that was written up in a way that read as if it had. Two real
-faults were found afterwards and are still open: some menu text is painted the same colour as its
-own background, so it is invisible rather than missing; and the "centred" style never centres its
-links because the setting only centres boxes, not the menu inside them. **Nothing more gets built on
-the current setup until your CPT design decision lands** — rebuilding the test pages now would be
-wasted if the drawer stops being a block.
+**Three things were broken and are now fixed.** (1) The accessibility checker could never test the
+big dropdown menu at all — it closed the menu before looking at it, then reported nothing wrong.
+(2) Every picture in two of the ready-made menu layouts was silently missing — 8 images that were
+described correctly but never drawn. (3) **Your shop's basket counter could never work on this
+hosting** — the server was handing back a saved, empty answer, so the little number stayed at zero
+forever. The same fault was also switching off the safety limits on the product search. Fixed in
+the code so every client site gets it automatically, rather than a setting someone must remember.
+
+**On the drawers, unchanged:** the clones you rejected get no rework until Wave 2's CPT move lands.
+The two real faults found then are still open (menu text painted the same colour as its background;
+the "centred" style never centring) — both are scheduled inside Wave 2.
 
 ---
 
@@ -85,46 +86,35 @@ substitution policy (W4-a2) before the first clone. Effort forecast 18–22 taxe
 EXECUTION (specs stay separate docs, §1.2 cross-amend rule keeps them coupled) · drawer → CPT
 (`variantPreset` dies, 7 looks become CPT starter patterns; `drawerRef` becomes a post picker) ·
 nav-menu stays a BLOCK (its content home is the classic menu; its edit surface is the header CPT)
-but its burger trigger becomes fully controllable (word/symbol/burger + open-state morph, DP4) ·
-per-property controllability contract (DP5) · **clone-first POC: studionamma 100% first — header +
-drawer + footer, content/imagery/colours/typography — then the other 6** · each accepted clone
-yields the B3 presets (7 cloned pairs + Utility/Overlay/Directory invented fills; Warm cut;
-Q3 = retire `centred/minimal/full` starters, keep scratch + 3 search) · DP7 harness honesty gates
-any re-present. **GATE SIGNED (Bean, 2026-07-29): CPT admin name = "Menu drawer" · site-wide Active
-default + per-burger picker override · studionamma first. DP6 RE-SEQUENCED same day: cloning is the
-FINAL PROOF GATE (inventory wave 4), NOT the opening task — matching Bean's own 2026-07-28 decision
-in the inventory; FR-37-42 + DP4 trigger controls + the CPT move are prerequisites a faithful clone
-needs anyway. NEXT SESSION = the full `/strategic-plan` for the merged track, scope =
-`reports/2026-07-28-spec36-37-remaining-work-inventory.md`, architecture = this gate's DP1–DP7
-(CPT + trigger controls + harness fixes → capability wave; mega/cart/search fixture wave first).**
-B3's old standalone plan (`2026-07-28-B3-…`) is subsumed — its §7 answers are recorded in the gate §0.
+but its burger trigger becomes fully controllable (DP4) · per-property controllability contract
+(DP5) · each accepted clone yields the B3 presets (Q3 = retire `centred/minimal/full`, keep scratch
++ 3 search) · DP7 harness honesty gates any re-present. **GATE SIGNED (Bean, 2026-07-29): CPT admin
+name = "Menu drawer" · site-wide Active default + per-burger picker override · studionamma first.
+DP6 RE-SEQUENCED: cloning is the FINAL PROOF GATE (wave 4), NOT the opening task — FR-37-42 + DP4 +
+the CPT move are prerequisites a faithful clone needs anyway.** B3's old standalone plan is
+subsumed — its §7 answers live in the gate §0.
 
-**Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) burger-opens-nothing notice +
-one-click fix LIVE on the canary (`6ddb9f48`, negative-controlled) · **FR-37-42** visual
-column-shape picker APPROVED not built (`7ff5a184` — needs `1fr auto 1fr`; prerequisite for
-faithful header clones) · measured reference teardowns 9/12
+**Header-track inputs shipped 2026-07-28 (D412):** FR-36-9a(2) burger-opens-nothing notice live
+(`6ddb9f48`) · **FR-37-42** column-shape picker APPROVED not built (`7ff5a184` — needs
+`1fr auto 1fr`; a faithful-header-clone prerequisite) · teardowns 9/12
 (`~/.claude/pipeline-state/sgs-discover/20260728-112649-7bc4a8/FINDINGS.md`; Away/ButcherBox/
-rabbit.tech owed; Lama Lama sticky by Bean's eye — probe-unmeasured ≠ non-sticky) · **the merged
-track's SCOPE SOURCE: `reports/2026-07-28-spec36-37-remaining-work-inventory.md`** (both specs'
-remaining work verified against their own status lines) · floating UI STAYS in the Customiser.
+rabbit.tech owed = W4-a; Lama Lama sticky by Bean's eye — probe-unmeasured ≠ non-sticky) · **SCOPE
+SOURCE: `reports/2026-07-28-spec36-37-remaining-work-inventory.md`** · floating UI STAYS in the
+Customiser.
 
 Header residue unchanged: FR-37-26 FAIL verdict deliberately STANDS (blind-tester arm);
 `P-HEADER-SIMPLICITY-FINDINGS` OPEN (findings 2 + 3).
 
 ### Track 2 — Spec 36 nav: TASK 5 ⛔ REJECTED BY BEAN 2026-07-29 — CPT design gate is next
 
-**Bean reviewed the pairs and rejected them: "the difference between our version and theirs is night
-and day" — R-31-13, the eye is co-authoritative and it overrode a 21/21 mechanical pass.** Do NOT
-re-present these; every variant needs real work first. *"All of these clone attempts need huge fixes
-to reach completion now."* Full narrative + evidence:
-`memory/session-2026-07-29-task5-drawer-rejection.md`; decision record **D411**; measurement record
+**Bean rejected the pairs: "the difference between our version and theirs is night and day" —
+R-31-13, the eye is co-authoritative and it overrode a 21/21 mechanical pass.** Do NOT re-present
+these; every variant needs real work first. Narrative + evidence:
+`memory/session-2026-07-29-task5-drawer-rejection.md`; **D411**;
 `reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` (read its CORRECTION box first — the
-"21/21 PASS" headline is true only of the checks that ran).
-
-**⭐ THE CPT DESIGN GATE IS NOW WRITTEN (same day) — see the merged-track section above.** No
-block-path rework before Bean signs it. The counterweight it preserves: a CPT changes where a
-drawer LIVES, not how faithfully it PAINTS — the styling/imagery/motion gap is rendering-and-
-controls work either way.
+"21/21 PASS" headline is true only of the checks that ran). The CPT gate is signed (merged-track
+section above); the counterweight it preserves: a CPT changes where a drawer LIVES, not how
+faithfully it PAINTS.
 
 **Two defects PROVEN LIVE, both OPEN (neither fixed — they wait on the gate):**
 `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` — `sgs-icon-list__text` renders `rgb(58,46,38)` on a
@@ -134,13 +124,10 @@ variants (this is what Bean saw as "arrows with no labels" — they are present,
 centres direct children as boxes while the nav-menu stretches full width with `text-align:start`, so
 `centred-statement` renders left-aligned.
 
-**Rework scope, PARKED BEHIND the gate** (`P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`): rebuild fixtures
-to genuinely exact reference content (fail the build when label COUNT/TEXT disagree with
-`reports/2026-07-28-drawer-code-extraction/*.json`) · fix the two defects above · capture real
-menu-OPEN references for `two-column-editorial`, `solid-brand-light` and `buck.co` — **the capture
-script must assert the panel is open before it shoots** · close the design gap Bean named (text /
-border / symbol / button styling, cycling background imagery + its motion, the animated secondary
-media) · only then re-present.
+**Rework scope, PARKED BEHIND the gate:** full list in parking `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`
+(exact-content fixtures, the two defects above, real menu-OPEN reference captures, the design gap
+Bean named). **The capture script must assert the panel is OPEN before it shoots** — that clause is
+the load-bearing one and is now also enforced by `axe-run.mjs`'s guard + `--open-via keyboard`.
 
 **Standing warnings (do not lose these):** the **axe openness guard did not exist until 2026-07-29** —
 a CLOSED drawer returned `0 violations` exactly like an open one, so **every scoped drawer/mega axe
@@ -165,18 +152,17 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 
 ### Track 1b — Spec 35: BUILD SURFACE COMPLETE
 
-No remaining build items (closed late 2026-07-28 across ~18 delegate-routed packages; detail in the
-sweep file + D400/D402/D405). Next front for this branch of work = **Spec 37 Group B proper**
-(FR-37-14 is BUILT and live-proven, so Group B is UNBLOCKED) or the B3 preset library above.
-Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1;
-audit `.claude/reports/2026-07-26-spec32-11-condition-done-audit.md`.
+No remaining build items (closed 2026-07-28, ~18 packages; D400/D402/D405). Next front here =
+**Spec 37 Group B proper** (FR-37-14 BUILT + live-proven, so Group B is UNBLOCKED) or B3 presets.
+Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit
+`reports/2026-07-26-spec32-11-condition-done-audit.md`.
 
 ### Track 1c — Spec 31 converter completion
 
-2026-07-22 completion wave shipped (11 commits); 2026-07-23 declarative CSS-routing shipped
-(D372/D373). **NEXT: (1) deploy phase-f fixtures as canary pages [gating dep], (2) wire
-`check_landed()`, (3) live verify + Bean's eye — BLOCKED on the shared dirty tree
-(`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`).** Plan: `plans/2026-07-22-spec31-completion-to-100.md`.
+Completion wave + declarative CSS-routing shipped (D372/D373). **NEXT: (1) deploy phase-f fixtures
+as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — BLOCKED on
+the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`). NB the isolated-worktree deploy
+used 2026-07-30 routes around that block.** Plan: `plans/2026-07-22-spec31-completion-to-100.md`.
 
 ---
 
@@ -304,19 +290,35 @@ None block the next session, except Track 1c's deploy step
 
 ---
 
-## NEXT SESSION — Wave 1 of the merged track (plan landed 2026-07-29, D413)
+## NEXT SESSION — Wave 2 of the merged track (Wave 1 CLOSED 2026-07-30)
 
-**Where we are, plainly.** The gate is signed AND the strategic plan is written, reviewed and
-graded (this session). Motion Wave A shipped separately (commits `e991b8f6`…`16e4b00e`; Waves B/C
-prompts exist under `plans/`). The next session **executes, not plans**: open
-`plans/2026-07-29-merged-spec36-37-track-strategic-plan.md`, hand Wave 1 to `/phase-planner`
-(the plan's Wave-1 handoff block names the entry context), then run the fixture wave —
-first action is ≤5 min and self-contained in the plan's "First action" section (canary mega
-panel 1745). Delegate per the plan's parallel-opportunities notes; `/qc` before any
-converter/pipeline/SGS-block commit.
+**WAVE 1 IS DONE — all six units live-verified. Do not re-run it.** Narrative, evidence, fixtures
+list and my own five corrected probe-errors: **`memory/session-2026-07-30-wave1.md`** (read it
+before Wave 2). D396's "motion NOT live-verified" is CLEARED; recursion guard proven against a real
+cycle; FR-37-7 starter-picker arm DONE; search price-absence CONFIRMED from live data.
 
-**Bean touchpoints queued:** confirm the 10-clone roster at Gate 1 · sign the W4-a2
-substitution policy before the first clone · W3-d blind-tester session (booked at Wave 3 close).
+**Three defects found and FIXED, all live-verified — the two carry-forward rules:**
+- `7e11e60c` — the axe harness could never test the mega at all (it parks the pointer, closing a
+  hover-bridge panel), so every mega run was VACUOUS. **Use `--open-via keyboard` for any mega axe
+  run.** Remaining violations are all `P-MAMAS-PRIMARY-CONTRAST`, **Bean-ACCEPTED 2026-07-30**
+  ("still distinguishable… even though they fail WCAG") — report and cite it, never suppress.
+- `e2d4f101` — **LiteSpeed served `/wc/store/v1/cart` AND `/sgs/v1/product-search` from cache**,
+  pinning the badge at 0 and bypassing product-search's rate limit + fail-closed visibility filter.
+  Fixed in CODE so it travels to every client site; negative-controlled. **Any new personalised REST
+  route must be added to `class-litespeed-compat.php`.** Record: `memory/parking-archive.md`.
+- (`72004a5e` card-grid bare-URL media, 8 images restored — detail in the session file.)
+
+**START HERE — Wave 2, in this order (the plan's own dependency chain):** `W2-i` DP7 harness fixes
+FIRST (Gate 2's parity evidence depends on an honest harness), then `W2-a` drawer CPT `sgs_drawer`,
+then **GATE 2** (OPEN-state computed-parity, default CPT drawer vs pre-CPT default) before ANY
+destructive step. `W2-e`/`W2-f` float beside the CPT chain. Raise the two design-gates (`W2-j`,
+`W2-p`) at wave start so Bean-approval latency overlaps build.
+
+**Bean touchpoints:** roster is **10, or 11 if resn's FX prove reachable with Tier V + the full GSAP
+set — Bean's condition, 2026-07-30. Assess it during W4-a's teardown; do NOT decide it early.**
+Sign the W4-a2 substitution policy before the first clone · W3-d blind-tester at Wave 3 close.
+
+**New canary fixtures** (do not assume clean) are listed in the session file.
 
 **Alternative front (independent):** motion Waves B ∥ C per their session prompts.
 
