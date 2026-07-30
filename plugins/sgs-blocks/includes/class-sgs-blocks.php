@@ -77,6 +77,17 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-product-search-rest.php';
 		Product_Search_REST::register();
 
+		// LiteSpeed compatibility — keep personalised/rate-limited REST routes
+		// out of the server-side page cache. Measured 2026-07-30: LiteSpeed was
+		// serving BOTH /wc/store/v1/cart (stale empty cart -> sgs/cart badge
+		// pinned at 0) and /sgs/v1/product-search (request 2 onward a cache HIT,
+		// which bypasses the per-IP rate limit and the fail-closed visibility
+		// filter above — a security control a cache can switch off is not a
+		// control). Registered AFTER the REST controllers so the routes it
+		// protects are the ones just declared. No-ops on non-LiteSpeed hosts.
+		require_once SGS_BLOCKS_PATH . 'includes/class-litespeed-compat.php';
+		LiteSpeed_Compat::register();
+
 		// Smart Bulk Pricing P3 (Spec 28 FR-28-3/4/6/10/11) — PREVIEW: cascade
 		// site→category→product, WC settings tab, term/product fields, and POST
 		// /sgs/v1/pack-pricing/preview. The fields/settings files self-register
