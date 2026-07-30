@@ -1,8 +1,10 @@
 Invoke /autopilot before doing anything else.
 
 > ⚠ THIS FILE IS A POINTER, NOT THE TRUTH. Live status = `.claude/LEDGER.md` — if it contradicts this prompt, the LEDGER wins.
-> ⚠ **GATE 1: Spec 38 must read `status: active`. GATE 2: Wave A shipped + live-verified (this wave consumes its registry/provider/grammar). Wave B is NOT a dependency — C runs before, after, or parallel to B.** If a gate fails, STOP.
+> ⚠ **GATE 1: Spec 38 must read `status: active`. GATE 2: Wave A shipped + live-verified (this wave consumes its registry/provider/grammar).** If a gate fails, STOP.
+> **Waves A and B are both CLOSED (D414–D417, D422, D424).** C was never dependent on B and still isn't; the difference is that B is now finished rather than pending, so nothing in this prompt is waiting on it.
 > Co-active tracks may share this worktree — path-scope every commit; `git branch --show-current` in the same command as each commit.
+> ⛔ **DEPLOY HAZARD, PROVEN 2026-07-30 — read the Tool bindings section before you deploy anything.** The shared tree's compiled `build/` was found to ALREADY CONTAIN a co-active track's uncommitted `render.php` edits. A plain `build-deploy.py` run ships their unfinished work to the canary. The isolated-worktree recipe below is not ceremony.
 > **This session runs in PLAN MODE first** — investigate, present the plan, get approval, then build.
 > Size note: if the session sprawls, split along the pairing seam (Spec 38 §8): **C1** = Flip + Draggable + before-after; **C2** = SVG + text toys + image sequence. Each half closes independently.
 
@@ -19,8 +21,13 @@ These are the per-block premium effects: filtered grids that fluidly re-arrange 
 ```bash
 git log -1 --stat && git status && git branch --show-current
 grep -m1 "^status" .claude/specs/38-SGS-MOTION-SYSTEM.md          # MUST be: active
-grep -n "Wave A" .claude/LEDGER.md                                 # MUST show shipped/verified
+grep -n "Track 3" .claude/LEDGER.md                                # Waves A + B both CLOSED
+python .claude/hooks/handoff-preflight.py --check                  # must pass before you commit later
 ```
+
+Note `git status`: if the tree is dirty with another track's work, that is expected — path-scope
+your commits and use the isolated-worktree deploy below. Do NOT `git add .`, and do not reach for
+`--allow-dirty`.
 
 ## Mandatory READING — before any Write/Edit or dispatch
 
@@ -93,10 +100,24 @@ C8 ─────┘
 - A page with 2+ instances of any new block is a mandatory live-verify case (per-render PHP fatal class).
 - `git log -1` after every commit. Time estimates default LOW.
 
+**Verification traps that actually fired on 2026-07-30 — this wave is full of "did the effect run?" checks, which is exactly where they bite (STOP-A entries added same day):**
+
+- **A "didn't happen" result proves nothing without a negative control.** A reduced-motion test reported the effect correctly suppressed — while the control leg was *equally* dead, so the test could never have failed. Cause: the navigation kind used to trigger it was ineligible for the feature. **Before trusting any absence, prove the thing CAN happen in that harness.** For every C-effect ask: *would this check look identical if the effect were absent?* If yes, it is not a check.
+- **Verify the structural premise before testing the mechanism.** An inherited risk note said a `<dialog>` sat inside the header; it did not, so the obvious test passed vacuously. An inherited comment is a hypothesis about the code, including its claims about structure.
+- **A grep count is not a measurement.** Two miscounts in one session — one regex missed an underscore in a slug, another matched WordPress core's own CSS and read as our leak. Confirm *what* matched before building a story on the number.
+- **An absence-check in wp-admin must be authenticated AND carry a positive control** proving the page really is the admin page. A logged-out fetch returns the login page and a clean, meaningless zero.
+- **Prove the fix emits, not that the emit code exists** — and when a theory is refuted (e.g. "the heavy page drops frames"), drop it rather than dressing it up.
+
 ## Known-open, NOT blockers
 
 - P-TIMELINE-ADVANCED-VISUAL-EFFECTS — first client consumer of FR-38-7; build in its own session, not here.
-- Wave B independent — do not touch header/templates in this wave.
+- **Do not touch the header, templates, or the site-level motion settings in this wave.** Wave B is closed; its surfaces are finished, not fair game.
+
+## ⛔ Carried forward from Wave B — do NOT resurrect (D422 / D424)
+
+- **D407 / Spec 38 §4.2 is SUPERSEDED and its build items CANCELLED, not deferred** — no wrapper-insertion output filter, no header relocation, no per-tier sticky edge rule, no `findStickyBreakingAncestor()` extension. The shipped warn-only guard stays exactly as it is. If you find these described anywhere as pending work, that doc is stale.
+- **Touch smoothing was built, tested on a real phone, and REJECTED by Bean** ("abrupt and janky"). Do not re-propose it as an improvement without new real-device evidence.
+- **The doctrine is now THREE tiers, not two (D422).** Tier H is a **closed list containing Lenis alone**, with a four-part admission test (§1.2a) and a D-number required per member. Wave C is a Tier G wave: **it adds no libraries.** If an effect here seems to need one (a physics helper, a canvas library for image-sequence, a drag library), that is a §1.2a admission decision requiring Bean — not a package install.
 
 ## Skills / tools
 
@@ -109,12 +130,17 @@ C8 ─────┘
 | `/verify-loop` | Two-attestation |
 | `/handoff` | Session close |
 
+## Tool bindings
+
 | Operation | Command |
 |---|---|
-| Build | `cd plugins/sgs-blocks && npm run build` (PowerShell) |
-| Deploy | `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` |
+| Build | `cd plugins/sgs-blocks && npm run build` (run Node/npm via **PowerShell** — the nvm shim is broken in Git Bash) |
+| Lint | `npx wp-scripts lint-js <paths> --fix` · `phpcs --standard=WordPress <file>` · `php -l <file>` |
+| **Deploy (shared dirty tree — THE path)** | Commit first, then: `git worktree add -q /c/tmp/<name> <commit>` → `cp -r plugins/sgs-blocks/build /c/tmp/<name>/plugins/sgs-blocks/` → **overwrite any `build/blocks/*/render.php` belonging to another track's uncommitted edits with the worktree's own committed copies, and PROVE it by md5 (each must match HEAD and differ from the dirty tree) before shipping** → `cd /c/tmp/<name> && python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only --skip-build` → `git worktree remove --force /c/tmp/<name>` |
+| After removing a worktree | Check `ls plugins/sgs-blocks/node_modules \| wc -l` is still ~962 — a past `worktree remove --force` emptied it |
 | DB query/update | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "..."` / `/sgs-update` |
-| Live DOM | Playwright MCP (isolated browser if another track is active) |
+| Live DOM | Playwright MCP. **The chrome-devtools MCP browser is often already held by another track** (it was on 2026-07-30) — expect to fall back to Playwright rather than treating it as an error |
+| Doc-hygiene gate | `python .claude/hooks/handoff-preflight.py --check` — must pass before the handoff completes |
 
 ## Guardrails
 

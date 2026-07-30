@@ -17,20 +17,17 @@ gets ONE true answer instead of three drifting ones.
 **Where things stand (2026-07-30, close of the motion Wave B session).** Three tracks are live and
 independent — pick one, they do not block each other.
 
-**What changed for you today. Smooth scrolling is built and live on the test site** — off by
-default, zero cost when unused, its own **SGS → Motion** screen, set to strength 3 after 4 felt
-sluggish. The touch version you asked for was built, you tried it on your phone and rejected it; it
-is off and labelled "tested and rejected" so nobody suggests it again. Built with a **different
-library than planned** — the planned one puts the page in a moving box, which silently breaks your
-sticky header, so it and all the work that existed only to dodge that were dropped. Your header was
-not touched, and was re-tested afterwards. Record:
-`memory/session-2026-07-30-motion-waveB-commit1.md` · D422.
-
-**Also finished today: page transitions** — pages now blend into each other instead of jumping,
-when you switch it on. Off by default, and you can pick a different look per page type (or none).
-It costs **nothing extra to load** — the browser does it itself, so no code is downloaded for it.
-Anyone whose device asks for reduced motion never sees it. **That closes this motion wave.** The
-test site has it on so you can look: a soft fade everywhere, a slide on pages. D424.
+**What changed for you today — the motion wave is FINISHED, both halves, and you signed both off.**
+**Smooth scrolling:** live, off by default, its own **SGS → Motion** screen, strength 3. Touch
+smoothing was built at your request, you rejected it on a real phone, it is off and labelled so
+nobody re-suggests it. Built with a **different library than planned** (the planned one puts the
+page in a moving box, which silently breaks your sticky header — that and everything existing only
+to dodge it were dropped; your header was untouched and re-tested). D422.
+**Page transitions:** pages blend instead of jumping. Off by default, a different look per page type
+if you want, **nothing extra downloaded** (the browser does it), and never shown to anyone whose
+device asks for reduced motion. D424. You flagged the shop page feeling slower — measured, it is
+**not a bug**: that page is only three-quarters of a screen long, so you hit the bottom almost
+immediately and feel the soft ending. It sorts itself out as products are added.
 
 **Still waiting, none built:**
 1. **Header stacking on mobile** — you raised this again today. It is **diagnosed and signed off but
@@ -44,35 +41,37 @@ test site has it on so you can look: a soft fade everywhere, a slide on pages. D
 
 ## ⭐ CURRENT FRONTS
 
-> **Standing caveat (motion Wave A evidence):** probes are re-runnable and committed, their JSON
-> output is not — `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds
-> transcribed readings. Re-runnable evidence, not reproducible proof.
+> **Standing caveat (motion Wave A evidence):** probes are committed, their JSON output is not —
+> `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds transcribed readings.
+> Re-runnable, not reproducible.
 
 ### Track 3 — Spec 38 motion: **WAVE A CLOSED** (D414–D417) · **WAVE B CLOSED 2026-07-30 (D422 + D424)**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. **Both waves CLOSED.** Wave A: D414–D417
-(`memory/session-2026-07-30-motion-waveA-closeout.md`). Wave B: smooth scrolling via **Lenis, NOT
-ScrollSmoother** (D422, `memory/…-waveB-commit1.md`) + **page transitions** (D424, `984f2944`,
-`memory/…-waveB-commit2.md`, evidence `reports/2026-07-30-motion-waveB-page-transitions-verification.md`).
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. **Waves A + B CLOSED, owner-signed.** A: D414–D417. B:
+smooth scrolling via **Lenis, NOT ScrollSmoother** (D422) + **page transitions** (D424, `984f2944`).
+Records: `memory/session-2026-07-30-motion-wave{A-closeout,B-commit1,B-commit2}.md`.
 
-**Standing constraints — read before touching motion:**
-- **⛔ D407 / Spec 38 §4.2 SUPERSEDED — build items CANCELLED, not deferred.** Wrapper filter,
-  header relocation, per-tier edge rule, `findStickyBreakingAncestor()` extension existed ONLY to
-  dodge ScrollSmoother's transform; Lenis has none. **Spec 37 FR-37-40 NOT modified; the warn-only
-  guard stays. Do not build any of it.**
-- **Tier H** = CLOSED list (Lenis alone), §1.2a admission test, one D per member.
-- **Touch smoothing REJECTED by Bean on a real phone.** Default OFF, labelled tested-and-rejected.
-  **Do not re-propose without new real-device evidence.**
-- Page transitions target the `root` pair, NOT per-element `view-transition-name`; reduced motion
-  gates the **opt-in itself** (as WP core does); `mix-blend-mode:normal` is deliberate, not spare.
+**Standing constraints (full text carried verbatim in the Wave C prompt's "Carried forward from
+Wave B" section — read it there before touching motion):** D407 / Spec 38 §4.2 SUPERSEDED, its build
+items **CANCELLED not deferred** (no wrapper filter, no header relocation, no per-tier edge rule, no
+`findStickyBreakingAncestor()` extension; Spec 37 FR-37-40 untouched) · **Tier H = CLOSED list,
+Lenis alone**, §1.2a test + a D per member — Wave C adds NO libraries · touch smoothing
+**REJECTED on a real phone**, do not re-propose without new device evidence · page transitions
+target the `root` pair and gate the **opt-in itself** under reduced motion.
 
-**Owed:** **Bean's eye (R-31-13)** — canary is ON (site `fade`, `page → slide`, smoothing on).
-Un-run: Firefox (no support — plain navigation IS the fallback), Safari, hide-on-scroll × drawer via
-the SETTING, the 2rem slide trailing edge.
+**✅ OWNER SIGN-OFF 2026-07-30 (R-31-13) — fade + scroll confirmed.** His "shop page feels slower"
+report: measured, **no bug** — easing identical (500px/impulse both; 527 vs 514ms). Cause = 675px of
+scroll there vs 3,542px on the homepage, so you sit in the easing tail at once. **Do NOT lower the
+strength for it.** **Un-run:** Firefox (no support — plain navigation IS the fallback), Safari,
+hide-on-scroll × drawer via the SETTING, the 2rem slide edge.
+
+**➡ NEXT MOTION SESSION = Wave C** — orchestration plan ready at
+`plans/2026-07-29-motion-wave-C-session-prompt.md` (refreshed 2026-07-30: shared-tree deploy hazard,
+Tier-H no-new-libraries rule, this session's verification traps). The Wave B prompt was DELETED at
+close — done work, and a stale prompt misdirects. C never depended on B.
 
 ⚠ Parked, not ours: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
 `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE` · `/sgs-update` Stage 11 mega-* warnings.
-Next motion front = **Wave C** (Draggable roster + before-after, Flip pairing, DrawSVG + Vivus retirement, MorphSVG, ScrambleText, image-sequence).
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 

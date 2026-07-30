@@ -98,6 +98,26 @@ their 8 modified `render.php` files. Deployed from an isolated worktree pinned t
 those 8 reverted to the committed versions in the copied `build/`, and the reversion **proven by
 md5** (each matched HEAD and differed from the dirty tree) before shipping.
 
+## Owner sign-off + the "shop page feels slower" report
+
+Bean confirmed the fade and the scroll, and flagged that scrolling **felt** slower on the shop page,
+correctly noting it might be perception because that page is shorter. Per `measurement-vs-eye`, his
+report stood until measured. It is **not a bug**, and the reason is sharper than "shorter page":
+
+- **The easing is identical.** One identical wheel impulse moved **500px on both** pages; settle time
+  **527ms homepage vs 514ms shop** (shop marginally *quicker*); 100fps on both, zero frames >50ms.
+- **My first hypothesis was refuted and dropped:** I assumed a heavier WooCommerce page would drop
+  frames and slow the easing. It cannot — Lenis line 86 uses `damp(value, to, lerp*60, deltaTime)`,
+  the frame-rate-*independent* technique, so the maths is identical at 30fps or 120fps.
+- **The real cause:** the shop page has **675px of scrollable content** vs the homepage's **3,542px**
+  — 0.75 of one screen. At ~500px per wheel click you reach the bottom in **~1.4 clicks**. Smooth
+  scrolling eases *into* a stop by design; on a long page that tail is unnoticeable, on this page it
+  is nearly the whole journey. He is feeling the ending, not the speed.
+- Lazy-loading was ruled out as a cause: document height did not change during scroll on either page.
+
+**Do not "fix" this by lowering the strength** — it would degrade every longer page to suit a
+675px one. It resolves itself as products are added (10 products currently).
+
 ## Owed
 
 - **Bean's eye (R-31-13).** Canary is ON: site default `fade`, `page → slide`, smoothing also ON.
