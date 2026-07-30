@@ -479,6 +479,9 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     "fxTrigger": "fx:trigger",
     "fxStart": "fx:start",
     "fxEnd": "fx:end",
+    # D417 — how long a pinning effect holds its finished state before the pin
+    # releases. Spec 38 s11.2 amended in the same change that added this.
+    "fxHold": "fx:hold",
     "fxScrub": "fx:scrub",
     "fxStagger": "fx:stagger",
     "fxDuration": "fx:duration",

@@ -127,6 +127,43 @@ function resolveChildPreset( child ) {
 }
 
 /**
+ * How much of the pin is spent holding the finished state, per `data-sgs-fx-hold`.
+ *
+ * Expressed as a FRACTION OF THE PIN rather than a pixel figure, so it scales
+ * with whatever pin length the client chose: doubling "how long it stays stuck"
+ * doubles the pause too, instead of leaving a fixed dwell that feels
+ * proportionally shorter the longer the section holds.
+ *
+ * `0.33` is the default (Bean, 2026-07-30) — with the shipped one-screen pin
+ * that is ~270px of scrolling with everything settled, about three wheel
+ * notches. The previous behaviour was ~100px, which is where the report
+ * "you have to scroll to an exact point" came from.
+ *
+ * @type {Object<string, number>}
+ */
+const HOLD_FRACTIONS = {
+	none: 0,
+	short: 0.15,
+	standard: 0.33,
+	long: 0.5,
+};
+
+/**
+ * Resolve the hold fraction, defaulting to `standard`.
+ *
+ * @param {HTMLElement} el Element carrying the fx attributes.
+ * @return {number} Fraction of the pin spent holding, 0 to <1.
+ */
+function resolveHoldFraction( el ) {
+	const raw = ( el.getAttribute( 'data-sgs-fx-hold' ) || '' ).trim();
+	const fraction = HOLD_FRACTIONS[ raw ];
+	// An unset or unrecognised value takes the default rather than 0 — a
+	// missing attribute must not silently mean "no pause", which is the
+	// behaviour that was reported as wrong.
+	return undefined === fraction ? HOLD_FRACTIONS.standard : fraction;
+}
+
+/**
  * Keep only nodes that are elements AND actually occupy a layout box.
  *
  * Spec 32's no-inline contract has each styled container PREPEND a scoped
@@ -263,6 +300,35 @@ export function initPinScrub( el ) {
 			},
 		} );
 
+		/*
+		 * HOLD THE FINISHED STATE BEFORE RELEASING THE PIN.
+		 *
+		 * Owner-reported 2026-07-30: "it looks like the block unpins and scrolls
+		 * up as soon as the bottom line of content finishes its animation, so
+		 * we have to scroll to an exact point to see all of the content in
+		 * place." Measured on the canary and he was right — the last child
+		 * settled at 89% of the pin, leaving ~100px (about one wheel notch) of
+		 * scrolling in which the composition was fully assembled.
+		 *
+		 * There is no GSAP-provided dwell and no industry-standard figure: a
+		 * ScrollTrigger pin lasts exactly as long as `end` says, and `scrub`
+		 * stretches whatever timeline it is given across that whole distance.
+		 * So a hold exists only if the timeline deliberately leaves room for
+		 * one — otherwise the last tween finishing IS the pin ending, which is
+		 * precisely the defect reported.
+		 *
+		 * Implemented as trailing DEAD TIME on the timeline rather than by
+		 * lengthening `end`. Lengthening the pin would also slow every child's
+		 * entrance (scrub maps the whole timeline across the whole pin), which
+		 * changes the feel of the choreography to fix its ending. Dead time
+		 * leaves the entrances exactly as they were and spends the remainder of
+		 * the pin holding the finished state.
+		 *
+		 * The maths: children occupy D. To make them finish at fraction (1-h)
+		 * of the pin, total must be D/(1-h), so the tail is D*h/(1-h).
+		 */
+		const hold = resolveHoldFraction( el );
+
 		children.forEach( ( child, index ) => {
 			const preset = resolveChildPreset( child );
 			// `<` overlaps every child's entrance onto the same scrub range
@@ -272,6 +338,21 @@ export function initPinScrub( el ) {
 			// gives each child a slight stagger inside that shared range.
 			timeline.fromTo( child, preset.from, preset.to, index * 0.15 );
 		} );
+
+		/*
+		 * Trailing dead time — the hold. Appended AFTER the children so
+		 * `timeline.duration()` reads their real extent, and guarded on
+		 * `hold < 1` so a bad value can never divide by zero or demand an
+		 * infinite tail.
+		 *
+		 * `.to( {}, ... )` on a throwaway object is GSAP's idiom for empty
+		 * timeline time: it animates nothing, touches no DOM, and simply
+		 * extends the duration that `scrub` maps across the pin.
+		 */
+		const childrenDuration = timeline.duration();
+		if ( hold > 0 && hold < 1 && childrenDuration > 0 ) {
+			timeline.to( {}, { duration: ( childrenDuration * hold ) / ( 1 - hold ) } );
+		}
 
 		/*
 		 * Returned to the matchMedia context, so a mid-session switch to

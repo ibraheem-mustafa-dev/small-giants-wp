@@ -582,6 +582,9 @@ data-sgs-fx="<effect>"            e.g. pin-scrub | scrub | horizontal-panel | sp
                                        image-sequence
 data-sgs-fx-trigger="<value>"     load | scroll | hover (per-effect enum)
 data-sgs-fx-start / -end          scroll range (viewport-relative, e.g. "top 80%")
+data-sgs-fx-hold="<value>"        none | short | standard | long — PINNING effects only:
+                                  how much of the pin is spent holding the finished
+                                  state before releasing (fraction of the pin, not px)
 data-sgs-fx-scrub                 true | <smoothing number>
 data-sgs-fx-stagger               ms | s
 data-sgs-fx-duration / -ease      token or literal (easing may name a physics flavour)
@@ -595,8 +598,19 @@ cheap prefix scan; pattern authors can hand-write it.
 ### 11.3 Converter mapping (defined now, lifted later)
 
 Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
-`fxScrub`, `fxStagger`, `fxDuration`, `fxEase` — seeded in `block_attributes` under `fx:*`,
-§6.2). The lift is an extension of the Spec 31 §3.A dispatch (a routing-unit class alongside
+`fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase` — seeded in `block_attributes` under
+`fx:*`, §6.2).
+
+> **AMENDMENT 2026-07-30 (D417) — `data-sgs-fx-hold` / `fxHold` added to §11.2 and to the list
+> above.** Owner-reported against FR-38-6: a pinned section released the instant its last child
+> finished animating, so the assembled composition was only visible for ~100px of scrolling
+> (measured on the canary: last child settled at 89% of a 900px pin). GSAP provides no dwell — a
+> pin lasts exactly as long as `end` and `scrub` stretches the timeline across all of it — so a
+> hold exists only where the timeline deliberately leaves room. Implemented as trailing dead time
+> on the timeline rather than a longer `end`, because lengthening the pin would also slow every
+> child's entrance, changing the choreography's feel in order to fix its ending. Default
+> `standard` = 33% of the pin. Applies to PINNING effects only (`fx_effects.pins = 1`); a
+> non-pinning effect has no "afterwards" to hold. The lift is an extension of the Spec 31 §3.A dispatch (a routing-unit class alongside
 CSS decls + content), mapped to a named later stage — NOT built in Wave A (STOP-29: deferral
 mapped, not dropped). **Skip-with-reason (Rule 4):** an unrecognised `data-sgs-fx` value, an
 fx on an element whose resolved block declares no fx attrs, or a param outside its enum is

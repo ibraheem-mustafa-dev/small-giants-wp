@@ -36,6 +36,7 @@ const FX_ATTR_MAP = array(
 	'fxTrigger'  => 'data-sgs-fx-trigger',
 	'fxStart'    => 'data-sgs-fx-start',
 	'fxEnd'      => 'data-sgs-fx-end',
+	'fxHold'     => 'data-sgs-fx-hold',
 	'fxScrub'    => 'data-sgs-fx-scrub',
 	'fxStagger'  => 'data-sgs-fx-stagger',
 	'fxDuration' => 'data-sgs-fx-duration',

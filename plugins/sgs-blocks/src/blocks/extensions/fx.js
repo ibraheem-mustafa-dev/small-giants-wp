@@ -170,6 +170,27 @@ const FX_END_POSITION_OPTIONS = [
  *
  * @type {Object<string,string>}
  */
+/**
+ * `fxHold` — how long a PINNING effect keeps holding its finished state before
+ * the section releases and the page scrolls on.
+ *
+ * Named in plain terms rather than after the mechanism: a client is choosing
+ * "how long do I get to look at the finished thing", not configuring a
+ * timeline tail. Values are fractions of the pin, so this scales with whatever
+ * pin length they chose rather than being a fixed pixel dwell.
+ *
+ * Only meaningful where the effect pins — a non-pinning effect has no
+ * "afterwards" to hold, which is why the control is gated on `fxPins()`.
+ *
+ * @type {Array<{label: string, value: string}>}
+ */
+const FX_HOLD_OPTIONS = [
+	{ label: __( 'Standard — a moment to take it in', 'sgs-blocks' ), value: '' },
+	{ label: __( 'None — moves on as soon as it lands', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Brief', 'sgs-blocks' ), value: 'short' },
+	{ label: __( 'Long', 'sgs-blocks' ), value: 'long' },
+];
+
 const FX_TRIGGER_LABELS = {
 	scroll: __( 'When it scrolls into view (default)', 'sgs-blocks' ),
 	load: __( 'As soon as the page loads', 'sgs-blocks' ),
@@ -273,6 +294,7 @@ function addFxAttributes( settings, name ) {
 			fxTrigger: { type: 'string', default: '' },
 			fxStart: { type: 'string', default: '' },
 			fxEnd: { type: 'string', default: '' },
+			fxHold: { type: 'string', default: '' },
 			/*
 			 * No defaults on the numeric params — deliberate.
 			 *
@@ -333,6 +355,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-trigger': attributes.fxTrigger,
 		'data-sgs-fx-start': attributes.fxStart,
 		'data-sgs-fx-end': attributes.fxEnd,
+		'data-sgs-fx-hold': attributes.fxHold,
 		'data-sgs-fx-ease': attributes.fxEase,
 		'data-sgs-fx-split': attributes.fxSplit,
 		'data-sgs-fx-mask': attributes.fxMask,
@@ -390,6 +413,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 				fxTrigger: '',
 				fxStart: '',
 				fxEnd: '',
+				fxHold: '',
 				fxScrub: undefined,
 				fxStagger: undefined,
 				fxDuration: undefined,
@@ -529,6 +553,33 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 													'sgs-blocks'
 											  )
 									}
+								/>
+							</ToolsPanelItem>
+						) }
+
+						{ !! fx && fxPins( fx ) && (
+							<ToolsPanelItem
+								hasValue={ () => !! attributes.fxHold }
+								label={ __( 'Pause after the animation', 'sgs-blocks' ) }
+								onDeselect={ () =>
+									setAttributes( { fxHold: '' } )
+								}
+							>
+								<SelectControl
+									__nextHasNoMarginBottom
+									label={ __(
+										'Pause after the animation',
+										'sgs-blocks'
+									) }
+									value={ attributes.fxHold }
+									options={ FX_HOLD_OPTIONS }
+									onChange={ ( value ) =>
+										setAttributes( { fxHold: value } )
+									}
+									help={ __(
+										'How long the section keeps holding still after all its content has arrived, before the page scrolls on.',
+										'sgs-blocks'
+									) }
 								/>
 							</ToolsPanelItem>
 						) }

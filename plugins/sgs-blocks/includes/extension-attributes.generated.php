@@ -12,6 +12,7 @@ return array(
 	'fxDuration' => array( 'type' => 'number' ),
 	'fxEase' => array( 'type' => 'string' ),
 	'fxEnd' => array( 'type' => 'string' ),
+	'fxHold' => array( 'type' => 'string' ),
 	'fxMask' => array( 'type' => 'string' ),
 	'fxScrub' => array( 'type' => 'number' ),
 	'fxSplit' => array( 'type' => 'string' ),
