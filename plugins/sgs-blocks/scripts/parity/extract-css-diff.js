@@ -95,6 +95,11 @@ function parseArgs( argv ) {
 		else if ( k === '--scope' ) a.scope = next();
 		else if ( k === '--open' ) a.open = next();
 		else if ( k === '--open-via' ) a.openVia = next();
+		// Accept reduced breakpoint coverage KNOWINGLY. Without this the run fails
+		// closed when a requested breakpoint has no open state (e.g. a burger hidden
+		// above its collapse point) — deliberate, so reduced coverage is always a
+		// stated choice rather than a silent one.
+		else if ( k === '--allow-unmeasured' ) a.allowUnmeasured = true;
 	}
 	return a;
 }
@@ -378,7 +383,26 @@ function toMarkdown( section, byBreakpoint ) {
 				try {
 					await guardLib.openSurface( page, { open: args.open, openVia: args.openVia || 'click' } );
 				} catch ( e ) {
-					return { error: `${ label }: could not open "${ args.open }" — ${ e.message }` };
+					/*
+					 * An open-failure is NEVER a pass, so it must never leave the run
+					 * exiting 0 — that was the defect (found 2026-07-30, W2-a Gate 2:
+					 * this script measured 1 of 3 breakpoints, printed "This is NOT a
+					 * pass" in the report body, and still returned 0).
+					 *
+					 * Two kinds, deliberately kept apart:
+					 *   not-visible → UNMEASURED. The trigger is legitimately absent at
+					 *     this width (e.g. a burger CSS-hidden above `collapsePoint`).
+					 *     No open state exists to compare, so this is not a fault —
+					 *     but it is also not evidence, and the caller must not count it.
+					 *   anything else → VACUOUS. The trigger was there and visible and
+					 *     still would not open: a real fault in the harness or product.
+					 */
+					const unmeasured = e && e.kind === 'not-visible';
+					return {
+						error: `${ label }: could not open "${ args.open }" — ${ e.message }`,
+						vacuous: ! unmeasured,
+						unmeasured,
+					};
 				}
 			}
 			if ( args.scope && guardLib ) {
@@ -403,6 +427,8 @@ function toMarkdown( section, byBreakpoint ) {
 
 		const byBreakpoint = [];
 		let vacuousAny = false;
+		let measuredCount = 0;
+		const unmeasuredWidths = [];
 		for ( const width of args.breakpoints ) {
 			await page.setViewportSize( { width, height: 1000 } );
 
@@ -411,9 +437,11 @@ function toMarkdown( section, byBreakpoint ) {
 
 			if ( orig.error || clone.error ) {
 				if ( orig.vacuous || clone.vacuous ) vacuousAny = true;
+				if ( orig.unmeasured || clone.unmeasured ) unmeasuredWidths.push( width );
 				byBreakpoint.push( { width, error: ( orig.error || '' ) + ' ' + ( clone.error || '' ) } );
 				continue;
 			}
+			measuredCount++;
 			const d = diff( orig, clone );
 			// hover note: list original hover rules the clone lacks (by decl signature)
 			const cloneHover = new Set( clone.hoverRules.map( ( h ) => h.css ) );
@@ -439,6 +467,19 @@ function toMarkdown( section, byBreakpoint ) {
 			}
 		}
 
+		/*
+		 * ── COVERAGE TALLY — always printed, never inferable from silence. ──────
+		 * A reader must be able to see HOW MANY breakpoints actually produced a
+		 * comparison. Printing this unconditionally is the cheap half of the fix;
+		 * the exit codes below are the half that cannot be ignored.
+		 */
+		console.error(
+			`\nextract-css-diff: MEASURED ${ measuredCount }/${ args.breakpoints.length } breakpoint(s)` +
+			( unmeasuredWidths.length
+				? ` — UNMEASURED at ${ unmeasuredWidths.join( ', ' ) }px (trigger not visible: no open state exists at that width)`
+				: '' )
+		);
+
 		// Exit 3 on vacuity, matching the nav-qa harness vocabulary: a run that
 		// could not open the surface it was asked to measure is neither a pass nor
 		// a difference report, and must not be readable as "identical".
@@ -446,6 +487,40 @@ function toMarkdown( section, byBreakpoint ) {
 			console.error(
 				'\nextract-css-diff: VACUOUS — the surface was not genuinely open at one or more\n' +
 				'  breakpoints, so this comparison proves nothing. Not a pass, not a diff.\n'
+			);
+			exitCode = 3;
+		} else if ( unmeasuredWidths.length && ! args.allowUnmeasured ) {
+			/*
+			 * The caller NAMED these breakpoints, so silently returning success after
+			 * comparing fewer than all of them is the defect this branch closes: the
+			 * W2-a Gate 2 run measured 375px only, printed its warning to stderr, and
+			 * exited 0 — and an exit code is the one thing a CI job actually reads.
+			 *
+			 * Fail closed by default and make the knowledge explicit. There are
+			 * exactly two honest responses and both are cheap: stop asking for a
+			 * breakpoint where the surface cannot be reached, or pass
+			 * --allow-unmeasured to say "I know, and that is expected here".
+			 */
+			console.error(
+				`\nextract-css-diff: INCOMPLETE — ${ measuredCount }/${ args.breakpoints.length } breakpoints compared.\n` +
+				`  No open state at: ${ unmeasuredWidths.join( ', ' ) }px.\n` +
+				'  This is not a pass: you asked for breakpoints that were never measured.\n' +
+				'  Either drop them, or pass --allow-unmeasured to accept the reduced coverage.\n'
+			);
+			exitCode = 3;
+		} else if ( measuredCount === 0 ) {
+			/*
+			 * Every breakpoint was legitimately unmeasurable — no trigger visible at
+			 * any requested width. Each one individually is "not a fault", but the
+			 * RUN compared nothing at all, and a run that compared nothing must never
+			 * return success. This is the exact shape of the 2026-07-30 defect: each
+			 * skip was defensible, the aggregate was worthless, and the exit code
+			 * said "fine".
+			 */
+			console.error(
+				'\nextract-css-diff: VACUOUS — the trigger was not visible at ANY requested\n' +
+				'  breakpoint, so nothing was compared. Check --open, or pass breakpoints where\n' +
+				'  the surface is actually reachable.\n'
 			);
 			exitCode = 3;
 		}

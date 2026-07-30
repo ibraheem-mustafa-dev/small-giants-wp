@@ -128,6 +128,33 @@ export async function openSurface( page, { open, openVia = 'click', settleMs = 3
 		throw new OpenError( 'not-found', `--open selector "${ open }" matched 0 elements on the page.` );
 	}
 
+	/*
+	 * A trigger that is PRESENT but not VISIBLE is a different fact from one that
+	 * is visible and refuses to open, and conflating them makes the harness lie in
+	 * one direction or the other.
+	 *
+	 * The live case that forced this distinction (2026-07-30, W2-a Gate 2): a
+	 * burger is CSS-hidden at and above `collapsePoint`, so at 1440px and 768px it
+	 * cannot be clicked — by this probe or by a user. There is simply no open state
+	 * to measure at that width. Reporting that as a harness FAULT would cry wolf on
+	 * every desktop breakpoint forever, and the usual response to a check that
+	 * always complains is to stop believing it.
+	 *
+	 * But the opposite error is worse: silently treating it as fine let a run that
+	 * measured 1 of 3 breakpoints exit 0. So this is surfaced as its own kind —
+	 * `not-visible` — and the CALLER decides. The rule callers must honour: a
+	 * breakpoint with no open state is UNMEASURED, and a run where NOTHING was
+	 * measured is never a pass.
+	 */
+	const visible = await trigger.first().isVisible().catch( () => false );
+	if ( ! visible ) {
+		throw new OpenError(
+			'not-visible',
+			`the trigger "${ open }" exists but is not visible at this viewport, so there is ` +
+			'no open state to measure here. This is NOT a failure and NOT a pass — it is UNMEASURED.'
+		);
+	}
+
 	await scrollTriggerIntoView( page, open );
 
 	if ( openVia === 'keyboard' ) {
@@ -356,6 +383,38 @@ const SELF_TEST_CASES = [
 	},
 ];
 
+/*
+ * Cases for openSurface() specifically. The guardScope cases above judge a
+ * surface's STATE; these judge the ACT of opening it, which is a separate code
+ * path and was covered by nothing until 2026-07-30.
+ *
+ * The middle case is the one that matters. A trigger which is present but hidden
+ * (a burger above its `collapsePoint`) must be distinguishable from one that is
+ * visible and broken — because the consumer treats the first as UNMEASURED and
+ * the second as a fault, and it exits 3 either way if NOTHING was measured. Get
+ * this classification wrong and the harness either cries wolf on every desktop
+ * breakpoint or goes quiet on a run that compared nothing.
+ */
+const OPEN_TRIGGER_CASES = [
+	{
+		name: 'visible trigger opens the surface → no throw',
+		html: '<button id="t" onclick="document.getElementById(\'s\').showModal()">Open</button>' +
+			'<dialog id="s" style="width:300px;height:200px"><a href="#x">Link</a></dialog>',
+		expectKind: null,
+	},
+	{
+		name: 'NEGATIVE CONTROL — hidden trigger must throw kind "not-visible" (UNMEASURED, not a fault)',
+		html: '<button id="t" style="display:none">Open</button>' +
+			'<dialog id="s" style="width:300px;height:200px"><a href="#x">Link</a></dialog>',
+		expectKind: 'not-visible',
+	},
+	{
+		name: 'NEGATIVE CONTROL — absent trigger must throw kind "not-found"',
+		html: '<dialog id="s" style="width:300px;height:200px"><a href="#x">Link</a></dialog>',
+		expectKind: 'not-found',
+	},
+];
+
 /**
  * Run the negative controls. Returns a result object; the caller sets the exit
  * code (so this stays importable from a test runner as well as a CLI).
@@ -382,6 +441,25 @@ export async function selfTest( { chromium } ) {
 				actual: verdict.status,
 				ok: verdict.status === testCase.expect,
 				reason: verdict.reason,
+			} );
+		}
+
+		for ( const testCase of OPEN_TRIGGER_CASES ) {
+			await page.setContent( `<!doctype html><html><body>${ testCase.html }</body></html>` );
+			let actualKind = null;
+			let reason = 'opened without error';
+			try {
+				await openSurface( page, { open: '#t', openVia: 'click', settleMs: 50 } );
+			} catch ( e ) {
+				actualKind = e && e.kind ? e.kind : 'unknown-error';
+				reason = e.message;
+			}
+			results.push( {
+				name: testCase.name,
+				expected: testCase.expectKind === null ? 'no throw' : testCase.expectKind,
+				actual: actualKind === null ? 'no throw' : actualKind,
+				ok: actualKind === testCase.expectKind,
+				reason,
 			} );
 		}
 	} finally {

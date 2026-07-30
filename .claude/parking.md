@@ -98,50 +98,7 @@ attributes as the declared set (they are invisible to a `block.json`-only audit)
 
 **Trigger:** Next time an fx control is added, or the next conformance-gate pass.
 
-### P-EXTRACT-CSS-DIFF-UNOPENABLE-TRIGGER-EXITS-0 — a run that measured nothing still exits 0
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
 
-Found while running W2-a's Gate 2 (`reports/2026-07-30-w2a-gate2-drawer-cpt.md` §5).
-`scripts/parity/extract-css-diff.js` returns **exit 0** when the `--open` trigger cannot be
-clicked. The report body is honest — it prints *"This is NOT a pass"* — but only the VACUOUS
-path calls `process.exit(3)`; a trigger-open failure returns `{error}` and is not counted.
-
-Live consequence: the Gate 2 run measured **1 of 3 breakpoints** (1440 and 768 could not open,
-the burger being CSS-hidden at/above `collapsePoint`) and still exited 0. A caller trusting the
-exit code would bank a 3-tier pass on one tier of evidence.
-
-This is the same class D418/W2-i existed to remove — a check that cannot fail reads green
-forever — surviving in the sibling script the harness work extended.
-
-**Fix shape:** treat an open-failure as vacuity, not an error: return `{vacuous:true}` so it
-joins the exit-3 path, and print a per-breakpoint MEASURED/UNMEASURED tally. Ship with a
-`--self-test` case that points `--open` at an unclickable selector and asserts a non-zero exit.
-Consider distinguishing "trigger hidden at this width" (legitimately no open state) from
-"trigger present but blocked" — only the second is a harness fault, and conflating them will
-either hide real breakage or cry wolf on every desktop tier.
-
-**Trigger:** before Gate 2 is re-run for W2-b/W2-d, since those re-use this instrument.
-
-### P-VISUAL-DIFF-GATE-NO-MARKUP-NEUTRAL-PATH — the only escape hatch discards every other gate
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
-
-The pre-commit visual-diff gate blocks any commit touching a block directory until a
-`reports/visual-diff/<block>-<date>.md` exists carrying `verdict: PASS` +
-`first_paint_capture_passed: true`. Its own message offers `--no-verify` for
-*"non-visual changes (block.json meta, PHP logic only)"*.
-
-The problem: `--no-verify` is all-or-nothing. It discarded gitleaks, the wp-blocks/wp-hooks/
-wp-hook-graph pre-merge gate, cheat-gate, F5 and F6 — all of which had already run GREEN in the
-same invocation — to skip one inapplicable check. Used on `bd67a641`, where the two block files
-had **zero deletions** and only added two no-output registry calls, so a first-paint capture
-would have compared a page against itself.
-
-**Fix shape:** give the gate a markup-neutrality escape it can verify itself — e.g. skip when the
-staged diff for a block touches no output statement (`printf`/`echo`/`sprintf`/`$content`) and
-deletes nothing — or a scoped `SGS_SKIP_VISUAL_DIFF=1` that suppresses only this gate and prints
-what it skipped. Do NOT widen it into a general bypass.
-
-**Trigger:** next PHP-logic-only change inside a block directory.
 
 ### P-A1-PHASE2-SLOT-RESPONSIVE-TYPOGRAPHY — Slot-level responsive typography still dropped
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** unknown
