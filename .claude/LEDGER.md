@@ -48,26 +48,26 @@ the "centred" style never centring) — both are scheduled inside Wave 2.
 shipped and live-verified on real SGS blocks, all 3 arms, zero GSAP bytes on a no-fx page; the fx
 roster is DERIVED not hardcoded. Closed history → D414/D415/D416 + `git log --grep "fix(motion)"`.
 
-**CLOSE-OUT: 4 of 5 SHIPPED 2026-07-30 (D416). Only item 5 — Bean's eye — remains.**
-Full evidence + method notes: `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`.
+**CLOSE-OUT COMPLETE 2026-07-30 (D416) — all 5 items shipped.** Evidence + method notes:
+`reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md`.
 
-1. **Panel travel FIXED, live-verified** (`810a15f9`). Real error was **100px, not 264px** — the
-   recorded figures were stale and impossible under the current CSS; the `-111` was a
-   `scroll-behavior:smooth` probe artefact. Probe `landingErrorPx` 100 → **0**.
-2. **matchMedia change REVERSED, not applied** (`f3303c85`). Its citation does not hold, and
-   sibling conditions would have run the pin **under reduced motion**. Item 14 + `provider.js`
-   amended so the claim stops spreading.
+1. **Panel travel FIXED, live-verified** (`810a15f9`). Real error **100px, not 264px** — the
+   recorded figures were stale + impossible under the CSS; `-111` was a `scroll-behavior:smooth`
+   artefact. `landingErrorPx` 100 → **0**.
+2. **matchMedia change REVERSED, not applied** (`f3303c85`). Citation does not hold; sibling
+   conditions would have run the pin **under reduced motion**. Item 14 + `provider.js` amended.
 3. **`fxEnd` + `fxTrigger` have real controls** (`c164368e`), driven by new DB columns
-   `fx_effects.pins`/`.triggers`. `fxTrigger` NOT deleted — §11.2 defines it, so removal would
-   have broken FR-38-4/FR-38-22. Verified in the real editor.
+   `fx_effects.pins`/`.triggers`. `fxTrigger` NOT deleted — §11.2 defines it. Editor-verified.
 4. **Reduced-motion arm PASS** — the earlier "unreachable" report is FALSE (it measured the
    motion-allowed branch). Probe carries a negative-control arm.
-5. **OPEN — Bean's eye on the 7 `/motion-canary-*` pages** (frontend; each states its criteria
-   on-page).
+5. **Bean's eye: 6 of 7 pass.** He rejected pin-scrub — pin worked, children never animated.
+   **FIXED + verified** (`4ae10dd9`): participants 0 → 3, all tween, stagger intact. Two faults,
+   either fatal — nothing ever wrote `data-sgs-fx-child` (read with no writer, like `fxTrigger`),
+   and it read DIRECT children when content sits a level deeper (the `5830985e` depth mistake).
+   Empty participants now bail loudly. **Re-check next pass.**
 
-⚠ Parked, neither caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` (canary
-containers invalid in the EDITOR; frontend fine) · `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`
-(all 3 control gates exclude `src/blocks/extensions/`).
+⚠ Parked, not caused by this work: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
+`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`.
 
 Wave B ∥ C unblocked (`plans/2026-07-29-motion-wave-B/C-session-prompt.md`).
 

@@ -207,6 +207,55 @@ parity, not the safety mechanism.
 
 ---
 
+## 4. Pin-scrub children never animated — FIXED (`4ae10dd9`), owner-reported
+
+Bean's eye pass: 6 of 7 canaries passed. On `/motion-canary-pin-scrub/` the pin engaged but
+nothing inside it moved, against a page whose own stated pass condition is that the children
+animate. R-31-13 — the eye caught what every mechanical check had called green.
+
+### Two independent faults, either alone sufficient
+
+| Fault | Proof (source) | Proof (live DOM) |
+|---|---|---|
+| Nothing ever wrote `data-sgs-fx-child`, which the module required on every participant | grep across `src/`, `includes/`, `theme/`: the string appears only in `fx-pin-scrub.js` itself | `document.querySelectorAll('[data-sgs-fx-child]').length === 0` |
+| It read DIRECT children; `sgs/container` renders content one level deeper | — | `el.children` = 1 × `div.wp-block-sgs-container`, holding the 3 real content blocks |
+
+Both produce `MODULE_WOULD_ANIMATE: 0` with `pinEngaged: true` — a pin that holds a section still
+to animate nothing. **It failed silently because an empty participant list still builds a valid
+timeline**, so the effect looks wired from the outside. That is the same shape as `fxTrigger`: a
+read with no writer, invisible to every gate.
+
+The depth half is the same mistake that cost the horizontal panel two passes (`5830985e`:
+*"I twice fixed the element IDENTIFICATION while the actual fault was the element DEPTH"*).
+Identifying the right element and being at the right LEVEL are different questions.
+
+### The fix
+
+Follows FR-38-6's own wording — *"pins … while its CHILDREN'S tweens play"* — rather than an
+opt-in marker the spec never asks for. Participants are the element children of the section's
+content wrapper; `data-sgs-fx-child` survives as an optional NARROWING filter so deliberate
+authoring still wins where it exists.
+
+The unwrap steps through the two framework-owned wrapper classes only. A first draft descended
+through any single element child, which is subtly wrong: a section holding one heading would
+unwrap past the heading and animate the `<span>` inside it.
+
+Zero participants now bails with a console warning rather than pinning for nothing.
+
+### Verified live
+
+| Child | opacity start → end | y start → end |
+|---|---|---|
+| "Pinned section" | 0.383 → 1.0 | 24.7 → 0 |
+| "This child animates during the pin." | 0 → 1.0 | 40 → 0 |
+| "So does this one, slightly later." | 0 → 0.999 | 40 → 0 |
+
+Participants 0 → 3. Stagger confirmed real: at the pin midpoint the three read 1.0 / 0.997 / 0.94,
+so the third genuinely trails as its own copy claims. End state fully visible — fail-open intact.
+The probe asserts `participantCount >= 2` first, so a one-child section cannot pass it vacuously.
+
+---
+
 ## Method notes earned this session
 
 - **A measurement that contradicts the code it describes is stale until proven otherwise.** Check
@@ -221,3 +270,12 @@ parity, not the safety mechanism.
   invariant instead.
 - **A computed value can differ from the specified one by browser normalisation** (`clip` → `hidden`).
   Never treat a computed reading as proof of which CSS branch applied — check the media query.
+- **An effect that "engages" is not an effect that WORKS.** A pin with an empty timeline pins
+  perfectly and animates nothing, and looks identical to a working one from outside. Assert on the
+  thing the effect is supposed to MOVE, not on whether the machinery started.
+- **A read with no writer fails silently and no gate catches it.** Both `fxTrigger` and
+  `data-sgs-fx-child` were consumed by code and produced by nothing. When adding an attribute
+  contract, grep for the WRITER before assuming one exists.
+- **Identifying the right element ≠ being at the right depth.** Three separate defects this
+  session came from reading one DOM level above the content. When a wrapper is involved, resolve
+  by framework-owned class, never by position or by "the only child".
