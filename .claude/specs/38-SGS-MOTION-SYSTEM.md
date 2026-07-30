@@ -219,9 +219,14 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   instance down and a change back rebuilds it, without a reload; (c) anchor links + `:target` +
   "skip to content" resolve to correct positions, honouring the published `--sgs-header-height`
   scroll-padding (Spec 37 D391) — Lenis's own `anchors` option stays OFF so there is exactly one
-  driver on an anchor click; (d) **touch scrolling stays native** (`syncTouch: false`) — phone
+  driver on an anchor click; (d) **touch scrolling stays native by DEFAULT** (`syncTouch: false`) — phone
   momentum is what a visitor's muscle memory expects, and this must be set EXPLICITLY, never left
-  to the vendor default; (e) keyboard/programmatic scrolling (find-in-page, focus scrolling)
+  to the vendor default. An operator-facing opt-in with its own strength exists (D422 addendum,
+  owner-requested 2026-07-30) but is **default OFF and documented as not recommended**:
+  **tested on a real phone at the lightest setting (touch strength 1) and rejected by the owner as
+  "abrupt and janky" — worse than off, not better.** That is a measured device result, not a
+  preference; do not re-propose touch smoothing as an improvement without new evidence from a
+  real device; (e) keyboard/programmatic scrolling (find-in-page, focus scrolling)
   remains functional — smoothing never intercepts input-driven scroll correctness, only
   presentation; (f) the companion stylesheet ships on the SAME conditional terms as the script —
   without its `.lenis.lenis-smooth iframe { pointer-events: none }` rule, wheel events over a

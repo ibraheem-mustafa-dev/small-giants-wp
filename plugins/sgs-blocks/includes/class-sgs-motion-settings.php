@@ -226,8 +226,8 @@ final class Sgs_Motion_Settings {
 									<?php \esc_html_e( 'Also smooth scrolling on phones and tablets', 'sgs-blocks' ); ?>
 								</label>
 								<p class="description" style="max-width:44rem">
-									<strong><?php \esc_html_e( 'Not recommended.', 'sgs-blocks' ); ?></strong>
-									<?php \esc_html_e( 'Phones already have their own scrolling, and visitors have years of muscle memory for how it feels. Replacing it is the single most common reason people describe a site as laggy — and it is felt most by anyone prone to motion sickness. Leave this off unless you have a specific reason. If you do switch it on, start at strength 1 and check it on a real phone, not a desktop browser at a narrow width.', 'sgs-blocks' ); ?>
+									<strong><?php \esc_html_e( 'Not recommended — tested and rejected on a real device.', 'sgs-blocks' ); ?></strong>
+									<?php \esc_html_e( 'Phones already have their own scrolling, and visitors have years of muscle memory for how it feels. Replacing it is the single most common reason people describe a site as laggy, and it is felt most by anyone prone to motion sickness. This was tried on a real phone at the lightest setting (strength 1) on 30 July 2026 and judged abrupt and janky — worse than leaving it off, not better. It is kept here as a deliberate choice for the rare case that wants it, not as a suggestion. If you do switch it on, start at 1 and check it on an actual phone, never a desktop browser at a narrow width.', 'sgs-blocks' ); ?>
 								</p>
 							</td>
 						</tr>
