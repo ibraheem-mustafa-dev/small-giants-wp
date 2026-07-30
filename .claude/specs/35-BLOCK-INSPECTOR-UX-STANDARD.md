@@ -149,13 +149,16 @@ buttons — gap · schema → leave to `seo-schema` skill, don't duplicate in bl
     is a separate, still-open consumer owned by Spec 37.
     `src/blocks/extensions/responsive-visibility.js:68-70` is still three
     INDEPENDENT flat booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no
-    inheritance. Because this cascade and its shared `resolveTier()` are the SAME mechanism that
-    **Spec 37 FR-37-14** (behaviour tri-state — `headerSticky`/`headerTransparent`/`headerShrink`/
-    `headerHideOnScroll` are still flat `boolean`s in `site-header/block.json:73-76`) and **Spec 37
-    §3.8** consume, those Spec 37 Group-B items **cannot be built until this ships**. Build the ONE
-    `resolveTier()` cascade here first (per the "reuse the one cascade" bullet above), then Spec 37
-    FR-37-14 adopts it — do not fork a second mechanism in Spec 37. **Priority: raise this ahead of
-    the other Part-J waves whenever Spec 37 Group B is scheduled.**
+    inheritance — deliberately (D400 scope amendment, general block visibility keeps its own
+    per-device toggles).
+    **✅ RESOLVED (verified 2026-07-30): `headerSticky`/`headerTransparent`/`headerShrink`/
+    `headerHideOnScroll` are no longer flat `boolean`s.** They are now `{"type":"object",
+    "default":{}}` at `site-header/block.json:142-157` (line numbers shifted since this passage
+    was written). **Spec 37 FR-37-14** (behaviour tri-state) consumed the canonical
+    `resolveTier()` cascade and is built and live-proven — see the BUILD STATUS block below and
+    Part M, which already record this as shipped. The former blocking relationship ("Spec 37
+    Group-B items cannot be built until this ships") is historical: the cascade shipped same-day
+    (2026-07-28) and FR-37-14 now depends on it successfully, it is not still waiting on it.
 
 ## PART E — Accessibility (WCAG 2.1/2.2 AA)
 
@@ -176,6 +179,16 @@ panel · no reset · colour-only focus/selected · help not `aria-describedby`-l
 hover split from resting · everything in the Settings group · **raw URL field instead of LinkControl** ·
 **hand-rolling duotone/aspect-ratio/lightbox/sticky/dynamic-content when a native support exists** ·
 animation with no reduced-motion gate · raw-px spacing instead of the token scale.
+
+**⚠ EXEMPTION (added 2026-07-30, resolves a cross-spec conflict): `sgsCustomCss` is NOT the
+bespoke "Custom CSS" field this fail-list bans.** Spec 32 FR-32-4 names `sgsCustomCss` as **the
+only permitted non-attr, non-scoped-`<style>` styling output** framework-wide, and Spec 31
+FR-31-5.2 makes it **load-bearing** — it is the built D3 passthrough channel that carries arbitrary
+non-device-tier draft breakpoints (`ResidualBand`) onto a clone; removing it breaks clone fidelity.
+It is registered on all 81 blocks (`src/blocks/extensions/custom-css.js:25`) and tracked as a
+deliberate, framework-wide exception in `decisions.md` D401 ("flagged, NOT fixed"). The Part-F
+anti-pattern still stands for any OTHER bespoke per-block custom-CSS field — this exemption is not
+a licence to add a second, block-specific one.
 
 ## PART G — Prefer native, don't hand-roll (adopt these WP mechanisms)
 
@@ -240,7 +253,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | ToolsPanel disclosure | **BUILT + ROLLED OUT** — 23 panels converted across 19 blocks, 8 skip-reasoned in-code (`07c67642`+`f5fac495`) | DONE (Wave 2) |
 | **Client-safe editing** | `templateLock:"contentOnly"` resolved **PER-CLIENT OPT-IN ONLY** (D402 design gate, Part G) | Not a framework rollout — deliberate, not a gap |
 | **Dynamic content** | check for bespoke | still open — not part of the 2026-07-28 waves |
-| **Reduced-motion gate** | verify on animation ext | still open (1 known gap, unchanged) |
+| **Reduced-motion gate** | verify on animation ext | **RESOLVED 2026-07-30 — the "gap" was a measurement bug, not missing gates.** A DB roster regeneration briefly flagged 18 blocks (14× `form-field-*`, `form-review`, `form-step`, `accordion-item`, `tab`) as lacking `prefers-reduced-motion`. All 18 were FALSE POSITIVES: `build-roster.py` substring-matched `"animation"` against the raw `supports.sgs` JSON, so `hideExtensions:["animation"]` — an opt-**OUT** list — was read as *having* animation. None of the 18 even has a `style.css`. Fixed by stripping `hideExtensions` before matching (`animation` 36→18; gate PASS; the 18 retained are the genuinely-animating blocks, all passing). **A genuine framework-wide gate already covers every block:** `theme/sgs-theme/assets/css/core-blocks-critical.css:69-78` (`*`/`*::before`/`*::after` + `!important`), enqueued unconditionally (`functions.php:233`) — it explicitly "replaces piecemeal per-block reduced-motion rules". ⚠ Residual: the audit rule only inspects a block's OWN `style.css`/`view.js`, so it is still blind to that global gate — a future block that genuinely animates and correctly relies on the global rule WILL be falsely flagged. Teaching rule 5 about the global gate is the remaining work. |
 | **Whole-card link** | **BUILT** — stretched-link overlay (sibling overlay + aria-label + focus ring; nested-`<a>` impossible by construction) replaces the old whole-block `sgsBlockLink` wrap; team-member + info-box dead attrs deleted (`07c67642`) | DONE (Wave 2) |
 | Native duotone/aspectRatio/sticky | duotone + aspectRatio **ADOPTED native** on media/gallery (D402 verdict table, `ac0c30eb`); shadow/minHeight/sticky/gallery-lightbox **KEPT SGS** (deliberate) | DONE (Wave 3) |
 
@@ -288,10 +301,18 @@ use `templateLock:"contentOnly"` · [ ] no Part-F anti-patterns.
 ## PART M — Implementation status (living; updated 2026-07-28)
 
 **The STANDARD (Parts A–L) is COMPLETE as a written spec (v2.0). The BUILD SURFACE against it is
-now ALSO COMPLETE (`07c67642` → `64f5080e`, late 2026-07-28, ~18 delegate-routed packages across
-waves A+B + the Bean-eye/QC fix chain — see the dated completion block below). Spec 35 has no
-remaining build items; the standard is both written AND enforced (Part K gate promoted
-fail-closed, `51ff7c27`).**
+now SUBSTANTIALLY COMPLETE (`07c67642` → `64f5080e`, late 2026-07-28, ~18 delegate-routed packages
+across waves A+B + the Bean-eye/QC fix chain — see the dated completion block below); the component
+layer and the Part-K gate ARE complete and genuinely wired fail-closed (`51ff7c27`). ⚠ Reconciled
+2026-07-30: Spec 35 does still carry three named open items — Part I's own table lists them as
+"still open" in the same document — so "no remaining build items" (an earlier claim in this
+section) was a self-contradiction. The three: (1) **Spacing token control** — still raw units, not
+part of the 2026-07-28 waves; (2) **Dynamic content** (Block Bindings migration) — still open, not
+part of the 2026-07-28 waves. **(3) Reduced-motion gate — RESOLVED 2026-07-30, not a gap:** an
+18-block flag proved to be a `build-roster.py` opt-out-list substring bug, and a framework-wide
+gate already covers every block (see Part I). Its residual is that the audit rule cannot SEE that
+global gate. Neither of the two genuinely-open items blocks the Part-K structural gate or the
+shipped component layer.**
 
 **Measurement & enablement layer (makes Part L enforceable) — SUBSTANTIALLY BUILT:**
 - **Element-manifest conformance linter** (`plugins/sgs-blocks/scripts/check-element-manifest-

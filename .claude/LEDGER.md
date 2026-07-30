@@ -123,6 +123,13 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
 `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
 
+> **⭐ TRACK 1 VERIFICATION AUDIT (2026-07-30) — read before claiming any Track-1 item is done:**
+> **`reports/2026-07-30-track1-verification-audit.md`**. Specs 31/32/35 read end-to-end; three
+> earlier findings WITHDRAWN there (do not re-raise them). Headline: almost nothing is unbuilt —
+> what is missing is **verification**. Biggest open risk = **no Spec 35 work has ever been opened
+> in the real block editor** (Part M says so itself; D388 records two editor-killing crashes that
+> shipped past all-green gates). No parking entries were created; that report is the record.
+
 ### Track 1b — Spec 35: BUILD SURFACE COMPLETE
 
 No remaining build items (closed 2026-07-28, ~18 packages; D400/D402/D405). Next front here =
@@ -132,10 +139,17 @@ Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit
 
 ### Track 1c — Spec 31 converter completion
 
-Completion wave + declarative CSS-routing shipped (D372/D373). **NEXT: (1) deploy phase-f fixtures
-as canary pages [gating dep], (2) wire `check_landed()`, (3) live verify + Bean's eye — was BLOCKED
-on the shared dirty tree (`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`); the isolated-worktree deploy
-proven 2026-07-30 routes around it.** Plan: `plans/2026-07-22-spec31-completion-to-100.md`.
+Completion wave + declarative CSS-routing shipped (D372/D373). **The three "NEXT" items this cell
+carried until 2026-07-30 were ALL ALREADY DONE** — phase-f canaries deployed 2026-07-23
+(`oracle/fixture-canary-urls.json`, 35 URLs), `check_landed()` wired
+(`ledger/coverage_check.py:386`, called `:857`), live verify ran 2026-07-24/25. **The real open
+item is PROOF, not build:** the C2 "0 WRITTEN-not-LANDED" claim in Spec 31's v0.6 front-matter is
+backed only by a prose note inside the same commit that made the fix, while the committed
+artefact (`batch-report.json`, last written `1669a785`) still shows 2 WRITTEN-not-LANDED + 36
+UNVERIFIED — and Spec 31 §5 defines completion as **zero UNVERIFIED cells**. Re-run the batch +
+`coverage_check.py --with-landed --check` and COMMIT the artefacts. Full register:
+`reports/2026-07-30-track1-verification-audit.md`. Plan:
+`plans/2026-07-22-spec31-completion-to-100.md`.
 
 ---
 
@@ -227,8 +241,7 @@ it is already live.
 
 ## Blockers
 
-None block the next session, except Track 1c's deploy step
-(`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE`). Known-open items are the Product queue + `parking.md`.
+**None.** Known-open items are the Product queue + `parking.md`.
 
 ---
 

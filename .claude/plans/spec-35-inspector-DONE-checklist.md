@@ -22,19 +22,25 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
 
 - [ ] **1. Tab split via `group`.** Settings/Styles/Advanced controls are routed to the native
   tabs via the `group` prop (behaviour→Settings, appearance→Styles/sub-groups, CSS-class/anchor→
-  Advanced). *(Spec 35 A3.)* **[enforced by]** `audit-inspector-conformance.js` (group-prop presence).
+  Advanced). *(Spec 35 A3.)* **[enforced by]** UNENFORCED — no automated gate exists. (Verified
+  2026-07-30: `audit-inspector-conformance.js` contains the string `group` zero times; only 4 of
+  81 blocks emit any `group=` prop at all — brand-strip, nav-drawer, nav-menu, site-header — and
+  `group="advanced"` appears nowhere. The claimed "group-prop presence" check does not exist.)
 - [ ] **2. Element-first panels.** Composite blocks group panels by block PART, not property type.
-  *(Spec 35 A4.)* **[enforced by]** consistency-scanner dim 2 (group-name).
+  *(Spec 35 A4.)* **[enforced by]** UNENFORCED — no automated gate exists (`consistency-scanner`
+  is cited here but does not exist anywhere in the codebase; verified 2026-07-30, `grep -rl
+  "consistency-scanner"` returns only two plan docs, zero code).
 - [ ] **3. ToolsPanel on dense panels.** Any inspector panel with ~6+ controls uses `ToolsPanel`/
   `ToolsPanelItem` progressive disclosure (1–3 `isShownByDefault`, `resetAll`). *(Spec 35 A5.)*
   **[enforced by]** `audit-inspector-conformance.js` (control-count vs ToolsPanel).
 - [ ] **4. Alpha + clearable colour.** Every colour control has `enableAlpha` + `clearable`
   (alpha-0 ≠ unset). Native `supports.color` alpha is a theme.json concern and is exempt — this
   targets `DesignTokenPicker`/`ColorPalette` COMPONENT pickers. *(Spec 35 B/H, I.)* **[enforced by]**
-  `audit-inspector-conformance.js` + consistency-scanner dim 1; exceptions → `inspector-conformance-baseline.json`.
+  `audit-inspector-conformance.js`; exceptions → `inspector-conformance-baseline.json`. The
+  `consistency-scanner dim 1` half of this claim is UNENFORCED — that tool does not exist.
 - [ ] **5. Real units / token scale.** Every CSS-length uses `UnitControl` (real `units`) or the
   spacing-token scale — never a raw-px RangeControl that breaks the token system. *(Spec 35 B, C spacing.)*
-  **[enforced by]** consistency-scanner dim 5 (range/unit/step).
+  **[enforced by]** UNENFORCED — no automated gate exists (`consistency-scanner` does not exist).
 - [ ] **6. 4-value props are box-families.** Every 4-side/4-corner prop uses `box_family` (BoxControl,
   `{top,right,bottom,left}` / `{topLeft,…}`), INCLUDING Tablet/Mobile tiers. *(Spec 35 B, L.)*
   **Shared with** no-inline checklist item 3 — same object shape. **[enforced by]** `check-box-family-guard.py`.
@@ -43,19 +49,23 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
   None/Small/Medium selects. *(Spec 35 B, F.)* **[enforced by]** `audit-inspector-conformance.js` (preset-only shadow flag).
 - [ ] **8. LinkControl for links.** Every link/CTA uses `LinkControl` (internal-content search +
   new-tab + rel nofollow/sponsored) via `SgsLinkControl` — never a raw URL `TextControl`. *(Spec 35 B, C, F.)*
-  **[enforced by]** `audit-inspector-conformance.js` (raw URL TextControl flag) + consistency-scanner dim 1.
+  **[enforced by]** `audit-inspector-conformance.js` (raw URL TextControl flag). The `consistency-scanner
+  dim 1` half of this claim is UNENFORCED — that tool does not exist.
 - [ ] **9. Full image controls where relevant.** Image-rendering blocks expose size dropdown
   (attachment `sizes`) + aspect-ratio + object-fit + `FocalPointPicker` where relevant. *(Spec 35 B, C, I.)*
-  **[enforced by]** feature-parity audit (vs core/image) + consistency-scanner dim 7.
+  **[enforced by]** feature-parity audit (vs core/image). The `consistency-scanner dim 7` half of
+  this claim is UNENFORCED — that tool does not exist.
 - [ ] **10. Multi-item data is array-shaped.** Any repeated/multi-item media or content uses an
   array attr with `gallery`/`multiple="add"` (MediaGalleryPicker) or a repeater — never a scalar attr
-  added one-at-a-time. *(Spec 35 B, C, I.)* **[enforced by]** consistency-scanner (attr-shape) + feature-parity audit.
+  added one-at-a-time. *(Spec 35 B, C, I.)* **[enforced by]** feature-parity audit. The
+  `consistency-scanner (attr-shape)` half of this claim is UNENFORCED — that tool does not exist.
 - [ ] **11. 768/1024 device switcher on responsive props.** Responsive props expose the locked
   768/1024 device-tier switcher (`ResponsiveControl`), no bespoke third breakpoint. *(Spec 35 D1–D3.)*
-  **Shared with** no-inline checklist item 4 (device tiers). **[enforced by]** consistency-scanner dim 6 (responsive).
+  **Shared with** no-inline checklist item 4 (device tiers). **[enforced by]** UNENFORCED — no
+  automated gate exists (`consistency-scanner` does not exist).
 - [ ] **12. StateToggleControl for states.** Normal/Hover (and any stateful) controls use the shared
   `StateToggleControl`, not a bespoke duplicated hover panel. *(Spec 35 F, I.)* **[enforced by]**
-  consistency-scanner dim 8 (state/hover).
+  UNENFORCED — no automated gate exists (`consistency-scanner` does not exist).
 - [ ] **13. hideExtensions for irrelevant universals.** Irrelevant universal-extension panels are
   hidden via `supports.sgs.hideExtensions: [...]` (declarative). *(Spec 35 A7.)* **[enforced by]**
   `audit-inspector-conformance.js` (manual review flag — informational).
@@ -63,7 +73,8 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
   `MediaUploadCheck` (capability gate). *(Spec 35 B, L.)* **[enforced by]** `audit-inspector-conformance.js`.
 - [ ] **15. No duplicated native-supports panel.** No bespoke panel re-implements a control a native
   `supports` panel already provides (inspector-UX form of R-31-9). *(Spec 35 A6, F.)* **[enforced by]**
-  `audit-inspector-conformance.js` + consistency-scanner dim 2.
+  `audit-inspector-conformance.js`. The `consistency-scanner dim 2` half of this claim is
+  UNENFORCED — that tool does not exist.
 - [ ] **16. Native over hand-rolled.** Native supports are used over hand-rolled equivalents for
   aspect-ratio / duotone / sticky / lightbox (check native BEFORE building any of these). *(Spec 35 C, G.)*
   **[enforced by]** feature-parity audit + Wave-3 native-migration audit.
@@ -72,7 +83,7 @@ UNIT-A+ tool that will catch each item (WARN-only first, hard gate at Spec close
   **[enforced by]** `audit-inspector-conformance.js` (animation-without-gate flag).
 - [ ] **18. Decorative-image + ARIA-label where needed.** Decorative-image toggle (empty alt +
   `aria-hidden`) and general ARIA-label control are present where the markup needs them. *(Spec 35 C, E6.)*
-  **[enforced by]** consistency-scanner dim 7 (a11y).
+  **[enforced by]** UNENFORCED — no automated gate exists (`consistency-scanner` does not exist).
 - [ ] **19. A11y pass.** Keyboard-operable + 4.5:1 contrast on the block's own control UI +
   `help` linked via `aria-describedby`. *(Spec 35 E1–E4.)* **[enforced by]** manual a11y pass (informational,
   never a gate — `a11y-validation-feedback-informational-not-gate`).

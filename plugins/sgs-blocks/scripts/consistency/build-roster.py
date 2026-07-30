@@ -63,8 +63,25 @@ def main():
 
     def flags(slug: str) -> dict:
         sup = sup_by_block.get(slug, {})
-        sgs_val = sup.get("sgs", "") or ""
         blk_attrs = attrs_by_block.get(slug, [])
+
+        # `supports.sgs.hideExtensions` is an opt-OUT list: a block listing "animation"
+        # there is declaring it does NOT want the animation extension. A naive substring
+        # test over the raw JSON reads that exclusion as a capability and INVERTS the
+        # semantics — which is exactly what happened on 2026-07-30, when a roster
+        # regeneration flipped 18 form-field/accordion-item/tab blocks to animation=true
+        # and turned 18 false-positive WARNs on a fail-closed gate. Strip the opt-out
+        # list before any substring matching below.
+        raw_sgs = sup.get("sgs", "") or ""
+        try:
+            _parsed = json.loads(raw_sgs) if raw_sgs else {}
+            if isinstance(_parsed, dict) and "hideExtensions" in _parsed:
+                _parsed = {k: v for k, v in _parsed.items() if k != "hideExtensions"}
+                sgs_val = json.dumps(_parsed)
+            else:
+                sgs_val = raw_sgs
+        except (ValueError, TypeError):
+            sgs_val = raw_sgs  # not JSON — fall back to the raw string
 
         def attr_hit(*needles):
             for a in blk_attrs:

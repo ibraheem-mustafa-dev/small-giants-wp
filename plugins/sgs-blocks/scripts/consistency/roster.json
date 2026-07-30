@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 79,
+    "count": 81,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -37,21 +37,6 @@
       }
     },
     {
-      "slug": "sgs/adaptive-nav",
-      "title": "SGS Adaptive Navigation",
-      "category": "sgs-layout",
-      "tier": "block",
-      "replaces": null,
-      "has_render_php": true,
-      "surfaces": {
-        "styling": true,
-        "colour": true,
-        "link": true,
-        "media": false,
-        "animation": false
-      }
-    },
-    {
       "slug": "sgs/audio",
       "title": "SGS Audio",
       "category": "sgs-content",
@@ -62,7 +47,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": false,
+        "media": true,
         "animation": false
       }
     },
@@ -213,7 +198,7 @@
         "colour": true,
         "link": false,
         "media": false,
-        "animation": false
+        "animation": true
       }
     },
     {
@@ -616,7 +601,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": true
       }
@@ -661,7 +646,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": true,
         "animation": true
       }
@@ -697,16 +682,46 @@
       }
     },
     {
-      "slug": "sgs/mega-menu",
-      "title": "SGS Mega Menu",
+      "slug": "sgs/mega-aside",
+      "title": "SGS Mega Aside",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/mega-group",
+      "title": "SGS Mega Group",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "title": "SGS Mega Panel",
       "category": "sgs-interactive",
       "tier": "block",
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
-        "link": true,
+        "link": false,
         "media": false,
         "animation": false
       }
@@ -742,16 +757,31 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "title": "SGS Menu",
-      "category": "sgs-content",
+      "slug": "sgs/nav-drawer",
+      "title": "SGS Nav Drawer",
+      "category": "sgs-interactive",
       "tier": "block",
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "title": "SGS Nav Menu",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/navigation",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
         "media": false,
         "animation": false
       }
@@ -1007,7 +1037,7 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": false,
+        "media": true,
         "animation": false
       }
     },

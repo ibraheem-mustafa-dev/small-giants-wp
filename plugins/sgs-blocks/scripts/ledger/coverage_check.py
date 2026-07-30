@@ -368,7 +368,7 @@ def _load_excluded_properties(db_path: Path) -> set[str]:
 
 
 # ---------------------------------------------------------------------------
-# LANDED leg placeholder (DEFERRED — F3 runtime not yet landed)
+# LANDED leg (ARMED 2026-07-23 — opt-in via --with-landed; see check_landed() below)
 # ---------------------------------------------------------------------------
 
 # Directory holding the F3 oracle's per-fixture verdict artefacts, written by

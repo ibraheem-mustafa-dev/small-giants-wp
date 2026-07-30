@@ -13,8 +13,10 @@ WHY THIS EXISTS
 ``oracle/batch_runner.py`` can only produce a genuine LANDED verdict for a
 fixture that has a DEPLOYED canary page — every other fixture honestly reports
 SKIPPED-NO-LIVE-URL. Without those pages the LANDED leg of the Spec 31 closing
-gate cannot run at all, so ``ledger/coverage_check.py::check_landed()`` stays
-deliberately unwired. This script provisions those pages.
+gate cannot run at all. ``ledger/coverage_check.py::check_landed()`` IS wired
+(ARMED 2026-07-23) — it is gated behind the opt-in ``--with-landed`` flag, not
+unwired; that flag is what stays off by default until canary pages exist. This
+script provisions those pages.
 
 WHAT IT DOES (per fixture)
 --------------------------
