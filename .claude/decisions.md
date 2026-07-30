@@ -15,6 +15,62 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D420 — the header row's "wrap" is an AUTHORED stack, not a space failure; fit-cascade design SIGNED [INCIDENT]
+
+**2026-07-30.** Design: `plans/2026-07-30-header-row-fit-cascade-design.md` (APPROVED, not
+yet built). Harness residuals from D419's Gate 2 implemented in the same session
+(`29f732a8`) rather than parked.
+
+**1. ROOT CAUSE, PROVEN (do not truncate).** Bean reported header contents stacking —
+logo, burger and cart in 3 layers. Cause is a single authored rule in
+`src/blocks/site-header-row/style.css`: `@container (max-width:767px)` sets
+`flex-basis:100%` on every flex child, and the wrapper's `flex-wrap:wrap` then gives each
+its own line. Measured live with a forced-width sweep: at **770px** row width →
+`flex-basis:auto`, one line, 68px tall; at **766px** → `flex-basis:100%`, 229px tall,
+3 layers. A clean cliff at the boundary. **At 766px the children need 733px and have 766px
+— they FIT.** The stack is authored, never a space failure. It hits DESKTOP too because
+the query measures the ROW's own inline size, not the viewport: any header row under 767px
+stacks on a 27-inch monitor.
+
+**2. My own first hypothesis was half wrong, corrected before designing.** I reported two
+causes — this rule AND emergent `flex-wrap:wrap` overflow. Only the rule is proven; across
+the whole sweep content always fitted, so emergent wrap never fired. `flex-wrap:wrap` is a
+latent capability, not an observed cause. Also caught mid-diagnosis: my first line-counting
+metric (distinct child `top` values) was unsound — children on the SAME flex line have
+different tops — and was replaced with `innerHeight > tallestChild`, which cannot lie.
+
+**3. Research finding that shaped the design.** Nothing in production makes an ARBITRARY
+row fit automatically; every shipping mechanism knows something about its children.
+Bootstrap's `flex-wrap:wrap` navbar carries a decade of open wrap bugs; WP core's hardcoded
+Navigation breakpoint has a plugin ecosystem existing solely to change it — empirical
+confirmation of Bean's prediction that per-breakpoint authoring does not scale. **Priority+
+overflow menus are the WRONG shape at row level** — Primer/Spectrum/Material/Atlassian all
+apply them to a homogeneous rankable peer list, never a mixed app bar; there is no
+defensible answer to "logo or cart into More?". So priority+ belongs INSIDE `sgs/nav-menu`.
+
+**4. This REVERSES NO DECISION — checked first, deliberately** (the D402 near-miss of two
+days earlier is why). It APPLIES Bean's own **D339b corollary "prefer intrinsic over
+tiered"**; it restores **FR-S9-7**, whose docblock already calls this element "the intrinsic
+never-overflow cluster"; it KEEPS **FR-37-35**'s container-query half (reflow on the row's
+own width — correct, STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) and replaces only its chosen
+BEHAVIOUR; and it ships **§3.6's `clamp()` half**, recorded in-spec as "not shipped …
+optional, not a fail".
+
+**5. SIGNED (Bean, 2026-07-30):** fit cascade (row `nowrap` by construction + per-child
+`shrinkRole` + fluid `clamp` scaling) · role defaults derived from block type **with an
+inspector override** · **CSS stages 1-3 first, deploy, Bean's eye, then decide on the JS
+More menu**. Declined: minimal delete-the-rule (trades a stack for horizontal overflow —
+WCAG 1.4.10) and row-level horizontal scroll (right for tabs/chips, wrong for a header).
+
+**6. Two a11y constraints locked into the design, not left to discovery:** fluid clamps
+MUST keep a `rem` component (unit-only `cqi`/`vw` does not respond to browser zoom → WCAG
+1.4.4 failure), and touch targets floored at 44px. **`::scroll-button()` is NOT Baseline in
+2026** — nothing may depend on it.
+
+**7. Verification bar, stated now because it is the trap:** verify with a width SWEEP, not
+three fixed tiers — this defect lived BETWEEN the tiers and a 3-tier pass would have missed
+it entirely. Plus a negative control that re-injects the rule and proves the sweep fails.
+
 ## D419 — W2-a: the `sgs_drawer` CPT ships its ADDITIVE half; the landmark guard gets the input it never had; the FR-36-9a notice would have started lying [INCIDENT]
 
 **2026-07-30, merged Spec 36+37 Wave 2 session 2.** Specs amended in the same commit

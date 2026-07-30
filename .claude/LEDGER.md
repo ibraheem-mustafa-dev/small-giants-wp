@@ -18,35 +18,19 @@ gets ONE true answer instead of three drifting ones.
 equipment is honest (session 1), and **the slide-out menu now has its own edit screen** — Wave 2's
 main job. It is live on the test site.
 
-**What changed for you.** Before today, the slide-out menu that opens when you tap the burger only
-existed *inside* a header layout — eight header designs each carrying their own private copy. To
-change it you had to go find it buried in a header template. Now there is a **"Menu drawers"** screen
-under SGS, exactly like Advanced Headers and Advanced Footers: you pick one, mark it Active, and it
-appears site-wide. It came with the "Set as active" button, the Preview-on-site link and the
-starter-design picker for free, because it plugs into machinery that already existed.
+**What changed for you.** The slide-out menu used to exist only *inside* a header layout — eight
+header designs each carrying a private copy. Now there is a **"Menu drawers"** screen under SGS,
+like Advanced Headers/Footers: pick one, mark it Active, it appears site-wide. The "Set as active"
+button, Preview-on-site link and starter picker all came free from existing machinery. **Nothing was
+taken away** — the old way still works alongside it, and with no drawer Active the homepage came back
+**byte-for-byte identical**. Full record: `reports/2026-07-30-w2a-gate2-drawer-cpt.md` · D419.
+**Not yet judged: how the drawer LOOKS** — that is still the version you rejected.
 
-**Nothing was taken away.** The old way still works, untouched, side by side. That is deliberate:
-this half is *additive only*, so if anything is wrong we lose nothing. Proof, not assurance — with
-no drawer marked Active, the homepage came back **byte-for-byte identical** to before the deploy.
-
-**The thing that would have broken it, caught before it shipped.** The review panel warned that a
-page could end up with **two** slide-out panels sharing one name — invisible to you, but it breaks
-the button. I fixed it and then *proved the fix matters*: I switched the guard off on the live test
-site and the second panel duly appeared; switched it back on and it went away. Near-miss worth
-knowing: my first attempt to switch it off silently didn't apply, and had I trusted it I'd have
-"proved" a guard that was never actually tested.
-
-**And a lie I had to head off.** There's a warning that tells you "this burger opens nothing". Once
-the menu lives on its own screen, an ordinary page correctly contains no panel — so that warning
-would have fired on *every working burger on the site*. It now says where to go and edit the panel
-instead, and I checked it still shows the real warning when there genuinely is no panel.
-
-**Honest limit:** while you're editing a page, the panel won't show in the editing canvas. That is a
-WordPress limitation, not a bug — you now get a note on screen saying so.
-
-**Next up:** the per-burger picker, then the seven drawer looks, then moving the eight headers over.
-**Not yet judged: how the drawer LOOKS.** Today proves the mechanism, not the design — the looks are
-still the rejected ones, and both faults you spotted remain open and scheduled.
+**Your header-wrapping report is diagnosed and the fix is designed + signed.** It was never a
+space problem: a rule tells the row to stack below 767px, and it fires even when everything fits
+(at 766px the contents need 733px and have 766px). It hits desktop too because the rule measures
+the row, not the screen. Design: `plans/2026-07-30-header-row-fit-cascade-design.md` · D420.
+**Built next session — nothing is built yet.**
 
 ---
 
@@ -288,28 +272,43 @@ commit `bd67a641`, DEPLOYED to sandybrown, GATE 2 PASSED on the mechanism.** Rea
 **`reports/2026-07-30-w2a-gate2-drawer-cpt.md`** (the evidence, incl. every negative control) +
 **D419** before starting. Plan: `~/.claude/plans/spec-36-37-iterative-kahn.md`.
 
-**⚠ GATE 2 passed on the MECHANISM, not on fidelity.** It proves the CPT path paints what the
-block path painted (uid-identical attributes; 375px zero property mismatches, both sides guard-
-verified open). It says nothing about how the drawer LOOKS — that is still the rejected D411
-design, and **Bean's eye (R-31-13) has not been given** on
-`reports/visual-diff/w2a-cpt-drawer-open-390.png`.
+**⚠ GATE 2 passed on the MECHANISM, not fidelity** (uid-identical attrs; 375px zero mismatches,
+both sides guard-verified open). Says nothing about how the drawer LOOKS — still the rejected D411
+design; **Bean's eye (R-31-13) not yet given** on `reports/visual-diff/w2a-cpt-drawer-open-390.png`.
+All four council fixes landed; the blocker is negative-control proven: guard off → **2**
+`<dialog id="sgs-nav-drawer">`, guard on → **1**.
 
-**All four council fixes landed** and the blocker is proven load-bearing by negative control:
-guard off → **2** `<dialog id="sgs-nav-drawer">`; guard on → **1**.
+**Canary fixtures:** `sgs_drawer` **2056** published + **ACTIVE** · page **2058**
+`/w2a-gate2-precpt-drawer/` = pre-CPT parity subject, keep for W2-b/W2-d.
 
-**Canary state (fixtures, do not assume clean):** `sgs_drawer` **2056** published + **ACTIVE** ·
-page **2058** `/w2a-gate2-precpt-drawer/` = the pre-CPT parity subject, keep for W2-b/W2-d re-runs.
+**⭐ START HERE — the HEADER-ROW FIT CASCADE (Bean-raised 2026-07-30, design SIGNED, D420).**
+It jumps the queue ahead of W2-b: it is a live visible defect on every header, and Bean reported it.
+**Root cause PROVEN, not inferred:** `site-header-row/style.css`'s `@container (max-width:767px)`
+sets `flex-basis:100%` on every child, so the row STACKS — at 766px the children need 733px and
+have 766px, i.e. they FIT and it stacks anyway. Hits desktop too (the query reads the ROW's width,
+not the viewport). Design + build order + verification bar:
+**`plans/2026-07-30-header-row-fit-cascade-design.md`** · **D420**.
+Build stages 1-3 (CSS only): delete the `flex-basis` block + `nowrap`; `shrinkRole` attr with
+type-derived defaults + inspector override; fluid `clamp()` with a MANDATORY `rem` component
+(unit-only breaks browser zoom, WCAG 1.4.4) + 44px floor. Stage 4 (JS More-menu inside
+`sgs/nav-menu`) is deferred until Bean has seen stages 1-3 live.
+**⚠ Verify with a width SWEEP, never 3 fixed tiers — this defect lived BETWEEN the tiers** — plus a
+negative control that re-injects the rule and proves the sweep fails.
 
-**START HERE — `W2-b`:** re-type `drawerRef` from DOM-id string to a drawer-POST reference with a
+**Then `W2-b`:** re-type `drawerRef` from DOM-id string to a drawer-POST reference with a
 picker (Spec 36 clause 3). The per-request burger registry in `class-sgs-drawer-render.php` was
 built to carry requested post ids with no re-architecture — that is its intended next use. Then
 W2-c (7 starter looks), W2-d (8 patterns drop their embedded drawer + `variantPreset` retires).
 **W2-d is the first DESTRUCTIVE step — re-run Gate 2 before it.**
 
-**Two harness residuals found BY Gate 2, fix before re-running it:**
-`P-EXTRACT-CSS-DIFF-UNOPENABLE-TRIGGER-EXITS-0` (a run that measured 1 of 3 tiers still exited 0 —
-the same class W2-i existed to kill) · `P-VISUAL-DIFF-GATE-NO-MARKUP-NEUTRAL-PATH` (its only
-escape hatch, `--no-verify`, discards every other gate).
+**Both Gate-2 harness residuals are FIXED, not parked** (`29f732a8`): `extract-css-diff.js` now
+prints a MEASURED n/N tally and fails closed when a requested breakpoint went unmeasured
+(`--allow-unmeasured` to accept knowingly; `measured==0` always exits 3), with `openSurface()`
+separating "trigger hidden here" (UNMEASURED) from "visible and won't open" (VACUOUS) — guard
+self-test 10/10. And `check-markup-neutral.py` (self-test 6/6) gives the visual-diff gate a
+deterministic path for PHP-only no-output changes, so `--no-verify` is no longer the escape.
+**Its hook wiring lives in the UNTRACKED `.git/hooks/pre-commit` — local only; the checker itself
+is tracked and re-wiring is six lines.**
 
 **Gate 2 instrument:** `scripts/parity/extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open
 '.sgs-nav-menu__burger'` — `--open` takes the **TRIGGER**, not the surface, and only 375px has an
