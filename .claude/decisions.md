@@ -15,6 +15,74 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D425 — Track-1 points 1+2 CLOSED; a grep's blind spot is the shape of the grep; 2 defects caught pre-commit [INCIDENT]
+
+**2026-07-30, Track 1 verification debt.** Commits `4d3b598e`, `9cedd022`, `0224173c`.
+Register: `reports/2026-07-30-track1-verification-audit.md` (D423). Plan + council:
+`~/.claude/plans/track-1-cheeky-storm.md`.
+
+**Point 1 CLOSED — the Spec 35 wave has now been opened in the real block editor.** 22 blocks
+inserted into a live editor, inspector rendering 7–23 panels each, zero crashes, zero error
+boundaries, zero console errors. This retires audit finding 1b-1 ("nothing in Spec 35 has ever
+been opened in the real block editor"). ⚠ **The FIRST run was a vacuous pass** — `inspector: 0`
+for all 26 blocks because the settings sidebar was closed; it proved only "did not crash", not
+"inspector renders". Re-run with `openGeneralSidebar` forced. D372's owed BoxControl check
+discharged: BoxControl renders, `innerPadding` retired, per-instance `cardPadding` emits scoped
+with all four sides — with the honest limit that the 20px EMPTY-default path was not exercised
+(the fixture sets 16px explicitly).
+
+**Point 2 CLOSED — 14 inline sites purged, not the 11 the audit found.** An UNSCOPED sweep of all
+plugin PHP found 3 the `render.php`-scoped grep could not see: `class-sgs-container-wrapper.php`
+(SVG-background opacity), `class-post-grid-rest.php` (card vars on every REST card), and
+`shape-dividers.php` (inline `height`/`color` — real PROPERTY declarations, the worse breach).
+
+**⭐ THE HEADLINE — a pre-commit council caught two defects in the banked patch, both invisible to
+every static gate.** The patch replaced inline `--var` with `:nth-child(N)` scoped rules on five
+blocks. `:nth-child` counts EVERY element sibling: **card-grid** emitted its `<style>` tags INTO
+the items' own parent (offset ≥1 whenever the feature was active, up to 3), and **trust-bar**
+addressed badges sharing a parent with the block title — firing on the block's DEFAULT config
+(`autoScroll:false`). `php -l`, `phpcs` and all 24 prebuild gates passed on both. Proven on the
+live DOM with a **discriminating fixture** — each badge's LABEL names its expected colour, so an
+off-by-one is self-evident rather than interpretable. Now specified as **Spec 32 FR-32-4a**
+(positional per-item shape + a positional-integrity requirement).
+
+**⭐ THE DURABLE LESSON — a grep's blind spot is the shape of the grep.** Every sweep to date
+searched the literal `style="--`, which cannot see `sprintf( ' style="…%s"' )`. That is exactly how
+trust-bar's real emit escaped BOTH the original audit and my own "ZERO — all sites fixed"
+verification. Widening the pattern to attribute ASSEMBLY immediately surfaced 2 more sites
+(`class-sgs-container-wrapper.php:1800,1828`), recorded as a named residual in
+`reports/2026-07-30-fr32-residual-inline-sites.md`. **Corollary:** the SAME stale-comment pattern
+appeared FOUR times in one sweep (`cta-section`, `countdown-timer`, `post-grid-rest`, both wrapper
+sites) — a comment written under the pre-D345 contract vouching for the breach and stopping
+re-investigation. A comment that justifies a breach is a dated opinion, not evidence.
+
+**post-grid's documented rationale was wrong.** It claimed AJAX cards land "outside the block's
+scoped `<style>`". They land inside `.sgs-post-grid__inner`, within the block root — a descendant
+rule reaches them, because CSS applies to DOM added after parse. One scoped rule now serves initial
+and paginated cards.
+
+**Gate armed honestly.** `check-no-inline.py --deep` is now the DEFAULT. Before arming it, the deep
+scan reported *"PASS — 0 inline styles across 0 sgs block type(s)"* — it saw NO blocks and passed
+**vacuously**. Fixed by seeding two gate-canary pages (2064, 2071) carrying one instance of each
+var-driven feature and adding them to `CANARY_URLS` — which is `P-NO-INLINE-GATE-COVERAGE-GAPS`
+item 1, closed by a page not a code change. Armed only because `--selftest` proves it can still
+FAIL (it catches a sub-element violation the root-only scan demonstrably misses).
+
+**Operational finding — the shared canary races.** A concurrent deploy by the co-active motion
+track overwrote this build 17 minutes after it landed (`.bak` stamped 20:58 UTC, live dir 21:15),
+reverting the canary to committed `main` and resurrecting the inline emits. My verification and an
+independent later check were BOTH correct, about different moments. **Rule: confirm build identity
+by server/local md5 AT THE MOMENT OF CAPTURE — "I deployed it" and "it is deployed now" are
+different claims.** The visual-diff gate behaved correctly throughout: it refused to certify what
+could not be evidenced, which is the only reason this did not ship twice unverified.
+
+**Still open:** points 3 (Spec 31 C2 triage) and 4 (feature parity — gaps classified by agents, but
+`feature-parity-exceptions.json` unwritten and the audit still `sys.exit(0)` warn-only), the Phase-D
+doc sweep, and the owed `handoff-preflight` citation guard — which must now cover **`STOP-N` as well
+as `P-` slugs**: `STOP-29` and `STOP-6` are cited in `LEDGER.md` and `decisions.md` but exist in no
+catalogue (only 16, 19, 21, 44, 57, 64, 66, 67, 68 do). That is a fifth phantom citation, of a new
+kind.
+
 ## D424 — FR-38-19 page transitions shipped; Wave B CLOSED; a "risk" that was wrong about the DOM [ROUTINE]
 
 **2026-07-30, motion Wave B commit 2.** Cross-document View Transitions shipped as a site setting

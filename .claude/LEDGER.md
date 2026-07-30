@@ -262,109 +262,50 @@ live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERS
 
 ---
 
-## NEXT SESSION — CLOSE ALL FOUR TRACK-1 POINTS. **Start in PLAN MODE; decompose it yourself.**
+## NEXT SESSION — Track 1 points 3 + 4, then the nav submenu build
 
-**Read FIRST:** `reports/2026-07-30-track1-verification-audit.md` (the register — it records three
-findings as WITHDRAWN; do not re-raise them) + **D423**. Narrative + the swept nav/drawer front:
-`memory/session-2026-07-30-track1-verification.md`.
+**Read FIRST:** **D425** (what closed and the two durable lessons) +
+`reports/2026-07-30-track1-verification-audit.md` (the register — records three findings as
+WITHDRAWN; do not re-raise them).
 
-**You are the SGS framework engineer closing a verification debt.** Almost nothing here is
-unbuilt — what is missing is PROOF. Plan the order yourself, optimising for delegation and
-parallel agents; the constraint below is the only fixed one.
+### CLOSED 2026-07-30 (`4d3b598e`, `9cedd022`, `0224173c`)
 
-**⛔ THE LOAD-BEARING CONSTRAINT: ONE DEPLOY UNBLOCKS POINTS 1 + 2 — they are COUPLED.** Last
-session assumed they were separable and was proven wrong by a gate: the FR-32 fixes change
-markup, so the visual-diff gate demands visual evidence, which needs a build + deploy. Points 3
-and 4 are genuinely separable and can run in PARALLEL with the deploy work.
+- **Point 1 — the editor.** 22 Spec-35-wave blocks opened in the REAL block editor: inspector
+  renders 7–23 panels each, zero crashes. Retires audit finding 1b-1. D372's BoxControl check
+  discharged (limit: the 20px empty-default path was not exercised).
+- **Point 2 — FR-32 inline.** **14** sites purged (not the 11 the audit found — an unscoped sweep
+  found 3 more), all 10 blocks carry honest visual-diff reports with real captures, and
+  `check-no-inline.py --deep` is now the DEFAULT, armed only because `--selftest` proves it can
+  still fail. Two defects IN the banked patch were caught pre-commit and proven fixed on the live
+  DOM (card-grid + trust-bar `:nth-child` offsets) — now specified as **Spec 32 FR-32-4a**.
 
-**Point 2's code already exists** — live in the working tree AND banked at
-`.claude/reports/2026-07-30-fr32-inline-fixes.patch` (8 files, **10 sites — NOT all 11**). `php -l` clean, `phpcs`
-no new violations. It is UNVERIFIED visually — that is the whole remaining job.
+### STILL OPEN
 
-### The four points
+| # | Work | State |
+|---|---|---|
+| 3 | Spec 31 C2 triage — 33 UNVERIFIED / 33 GUARD-FAIL / 393 unattributed | not started; §5 demands **zero** UNVERIFIED (the "logged with a reason" escape is scoped to GAP cells ONLY) |
+| 4 | Feature parity — **157 gaps / 23 blocks in scope** (the old "140 across 22" is stale) | gaps classified by agents; `feature-parity-exceptions.json` still has ZERO block entries, and the audit is `sys.exit(0)` warn-only — **make it fail-closed with a `--self-test` BEFORE wiring it into prebuild** |
+| 5 | Nav submenu/dropdown build | design written + owner-signed: `plans/2026-07-30-nav-submenu-dropdown-design.md` |
+| 6 | Phase D doc sweep + the owed citation guard | see below |
 
-| # | Work | State | Coupling |
-|---|---|---|---|
-| 1 | Open the REAL block editor on the ~18-package Spec 35 wave + D372's owed BoxControl check | NOT STARTED | needs deploy |
-| 2 | Fix `cta-section:333` (MISSED — see below), then commit all 11 FR-32 sites + promote `--deep` | code written, gate-blocked | needs the SAME deploy |
-| 3 | Triage Spec 31 C2's 33 UNVERIFIED / 33 GUARD-FAIL / 393 unattributed cells | measurement banked (`aa45737d`) | independent |
-| 4 | 140 unexplained feature-parity gaps across 22 blocks + wire the audit into prebuild | NOT STARTED | independent |
+### Owed guard (cheapest durable fix, still unbuilt)
 
-### Orchestration (suggested — improve it if you can justify it)
+`handoff-preflight.py` needs a citation-resolution check covering **`STOP-N` as well as `P-` slugs**.
+`STOP-29` and `STOP-6` are cited in this file and in `decisions.md` but exist in NO catalogue (only
+16, 19, 21, 44, 57, 64, 66, 67, 68 do) — a fifth phantom citation, of a new kind. Ship it with a
+`--self-test`.
 
-- **Deploy chain (1+2), INLINE + Opus, sequential:** isolated worktree (the tree is SHARED and the
-  motion track holds WIP) → `build-deploy.py --target sandybrown` → **open the real editor** →
-  7 visual-diff reports → commit the blocks → flip `--deep` to default + re-baseline.
-  **Delegate the visual-diff report generation** (mechanical, per-block, parallel-safe).
-  ⚠ **NEVER fabricate a PASS report** — that is exactly what this gate exists to stop, and the
-  reason point 2 is still open.
-- **Point 3, DELEGATED (sonnet), parallel with the deploy:** triage the non-LANDED cells. Expect
-  ~30 of 33 GUARD-FAILs to be the five `rt-*` red-team fixtures behaving as designed — the real
-  question is the 393 unattributed. Spec 31 §5 defines completion as ZERO UNVERIFIED.
-- **Point 4, DELEGATED (sonnet), parallel:** classify the 140 gaps as REAL vs OVER-REPORT before
-  fixing anything. Several look like naming artefacts (`sgs/quote: citation/value`, `sgs/text:
-  content` are core's content attrs that SGS models differently). Record every verdict in
-  `feature-parity-exceptions.json`, which currently has ZERO block entries.
-- **`/qc` multi-rater before any commit** touching block render or converter logic.
+### Carry-forward rules earned this session
 
-### Acceptance (measurable — not "code shipped")
-
-1. The editor opens clean on every block touched by the Spec 35 wave; any crash is fixed or parked
-   with a named cause. 2. `check-no-inline.py --live-default --deep` exits 0 against the FRESH
-deploy, and `--deep` is the default. 3. Every one of the 7 blocks has an HONEST visual-diff report.
-4. Spec 31's UNVERIFIED count is either ZERO or each residual cell has a named reason.
-5. Each of the 140 parity gaps is REAL-and-fixed, or recorded as an exception with a wave.
-
-### Guardrails (do not skip)
-
-- **Deploy before measure.** `batch_runner.py` and `check-no-inline.py` both probe DEPLOYED pages.
-  Measuring before deploying measures stale output — that is why `--deep` reports 16 stale
-  card-grid hits today.
-- **Shared worktree.** Commit by EXACT PATH, never `git add -A`; never touch the motion track's
-  files; re-check the branch in the SAME command as the commit. Use an isolated worktree to build.
-- **5 of the 8 fixed blocks are on NO canary page** — no scan mode can verify them. That needs a
-  seeded canary page, not a code change (`P-NO-INLINE-GATE-COVERAGE-GAPS` item 1).
-- **After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor** (D388 —
-  two editor-killing crashes shipped past ALL-GREEN gates).
-- **`python .claude/hooks/handoff-preflight.py --check` must pass before committing.**
-- **Four phantom parking slugs were found last session.** Before citing any `P-` slug, confirm it
-  resolves in `parking.md` or `memory/parking-archive.md`. Adding that check to
-  `handoff-preflight` is the cheapest durable fix and is still OWED.
-
-**Alternative front (independent, was the previous front): the nav/drawer Track 2 work** — the
-D421 drawer-architecture design gate + the D420 header-row fit cascade. Full detail preserved in
-`memory/session-2026-07-30-track1-verification.md` + D419/D420/D421 +
-`plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md`.
-
-### Tooling for the next session (WordPress project — Gate 5)
-
-**Skills:** `/strategic-plan` (decompose the 4 points — the session OPENS in plan mode) ·
-`/dispatching-parallel-agents` (points 3 + 4 run parallel to the deploy chain) · `/delegate` (pick
-a model per branch) · `/brainstorming` · `/gap-analysis` · `/lifecycle` · `/research` (auto-tiers) ·
-`/sgs-wp-engine` · `/wp-block-development` · `/wp-sgs-deploy` (the deploy ceremony) · `/qc-council`
-(before any block-render or converter commit) · `/visual-qa` (the 7 owed reports).
-**MCP / tools:** **Playwright MCP** — the editor-canvas check (point 1) is a browser job, not a
-static one · `/sgs-db` + `/wp-blocks` for block ground truth, never a prose count ·
-`build-deploy.py --target sandybrown` is the ONE deploy path (never hand-roll tar/scp — D336).
-**Agents:** `wp-sgs-developer` (deploy + block execution) · `code-reviewer` before any shared
-commit · `design-reviewer` for the visual-diff reports · `general-purpose` ×2 for points 3 and 4.
-
-### Methodology guardrails (do not skip)
-
-- **Run `python .claude/hooks/handoff-preflight.py --check` before committing.** Six checks; a
-  failure is a hard gate. `--self-test` proves it can still fail.
-- **Deploy before measure** — any change that should be visible on a URL needs build + deploy +
-  OPcache reset BEFORE any browser test, or the test measures stale output.
-- **A scoped axe run on a CLOSED surface passes vacuously.** The openness guard only exists from
-  2026-07-29; any earlier scoped drawer/mega axe result proves nothing — re-run it.
-- **`seed_conformance_goldens.py --check` is NOT a dry run — it re-seeds.** It rewrote 28 goldens
-  during the 2026-07-29 cull.
-- **After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor** (D388 —
-  two editor-killing crashes shipped past all-green gates).
-- **Outcome vs completion** — code shipped ≠ outcome achieved. Map every deferral to a named spec
-  STAGE, never "out of scope" (STOP-29).
-- **Shared worktree** — commit by EXACT PATH, never `git add -A`; never touch the co-active track's
-  uncommitted files; re-check the branch in the same command as the commit.
-- **`/qc` multi-rater before every commit** touching converter / pipeline / SGS-block logic.
-
----
+- **A grep's blind spot is the shape of the grep.** Sweeps for inline styles must search attribute
+  ASSEMBLY (`sprintf( ' style="…%s"' )`), not just literal `style="`. That miss hid trust-bar from
+  both the audit and its own verification. Residual: `reports/2026-07-30-fr32-residual-inline-sites.md`.
+- **A comment that justifies a breach is a dated opinion, not evidence** — the same pre-D345
+  stale-comment pattern appeared FOUR times in one sweep.
+- **Confirm build identity by md5 AT THE MOMENT OF CAPTURE.** A concurrent deploy overwrote this
+  build 17 minutes after it landed; two contradictory observations were both correct about
+  different moments.
+- **Nav submenu context:** the disclosure engine (`shared/nav-interactivity/mega-disclosure.js`) is
+  markup-agnostic — emit its three data hooks and a plain dropdown inherits hover-intent, keyboard,
+  ESC and WCAG 1.4.13 free. Menu children are already preserved in `innerBlocks`; the walker just
+  never reads them (`nav-menu/render.php:103-109`).
