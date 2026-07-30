@@ -143,9 +143,16 @@ wired (`ledger/coverage_check.py:386`, called `:857`); a live verify ran 2026-07
   contradicting itself two cells earlier. It described an environmental condition (dirty shared
   worktree), not deferred work, and that condition is long gone. **Removed this session, not
   re-homed** (Bean-directed).
+- **FOUR phantom slugs found this session — a CLASS, not a coincidence.** Beyond the one above:
+  `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER` (Spec 33, struck) and — caught only by an adversarial THIRD
+  pass, after two sweeps had already declared the file clean — `P-F5-REMAINING` (D238) and
+  `P-UNIVERSAL-RESPONSIVE-ROUTING` (D288). Both of the last two are benign once traced: F5's five
+  named gates all SHIPPED (verified — they run on every commit), and the other was RENAMED to the
+  still-open `P-RESPONSIVE-ROUTER-ROBUSTNESS` (`parking.md:467`). Annotated in place, not re-homed.
 - `handoff-preflight.py --check` passes 6/6 including `no-dangling-links` — but that check
-  inspects markdown *links*, not parking-slug citations, so the above slipped through. A
-  coverage gap, not a broken check.
+  inspects markdown *links*, **not parking-slug citations**, which is exactly how four of these
+  survived. **A `P-[A-Z0-9-]+` resolution check belongs in that gate** — the cheapest durable fix
+  for a failure mode that has now recurred four times in one session.
 
 ---
 
@@ -159,6 +166,27 @@ wired (`ledger/coverage_check.py:386`, called `:857`); a live verify ran 2026-07
 | Spec 35 Part F / Part M / Part D4 + DONE-checklist enforcement claims | see git log for this date |
 | Spec 31 §12.6 stale passages + v0.6 claim marked artefact-pending; 2 stale code comments | see git log |
 | `CLAUDE.md` "7/59" roster line + `#uid` → `.{uid}.{block}` (D303) | `CLAUDE.md` |
+
+## Second pass (same day) — what was attempted after the audit
+
+| Item | Outcome |
+|---|---|
+| **1c-1/1c-2 — Spec 31 C2 proof** | **RESOLVED-IN-PART (`aa45737d`).** Re-ran `oracle.batch_runner` against the live canaries and COMMITTED the artefacts. **`WRITTEN-not-LANDED: 2 → 0`** — the v0.6 claim was CORRECT, just unbanked. C2 still NOT closed on §5's terms (33 UNVERIFIED). The apparent LANDED 37→31 / GUARD-FAIL 23→33 shift is not a regression: **30 of 33 GUARD-FAILs are on the five `rt-*` red-team fixtures** built to exercise the known HIGH gaps. Method caveat: `batch_runner` only PROBES deployed pages. |
+| **1a-2/1a-3 — the 9 inline breaches** | **CODE WRITTEN, NOT COMMITTED.** All 9 fixed (8 blocks); `php -l` passes, `phpcs` shows no new violations. **The SGS visual-diff gate correctly BLOCKED the commit** — the changes alter markup (removing `style` attributes), `check-markup-neutral.py` returns NOT-neutral for all 7 named blocks, and no build/deploy was available to produce honest visual-diff evidence. A passing report was NOT fabricated. Work banked as **`.claude/reports/2026-07-30-fr32-inline-fixes.patch`** and left in the working tree. |
+| **1a-4 — the root-only gate** | **INSTRUMENT SHIPPED (`fefa3c4a`)** — opt-in `--deep` nesting-aware scan, 7/7 selftests incl. a negative control proving the root-only scan genuinely misses the same input. Left opt-in: the canaries are DEPLOYED pages, so arming it before the deploy would fail the build on already-fixed code and block a co-active track. |
+| **Doc retirement** | **Nothing to archive** — verified. Archiving the five "LANDED proof owed" entries would contradict the audit that surfaced them; the four no-inline/box-object plan docs are contracts still being built against. One **second phantom slug** found and struck: Spec 33 cited `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`, present in neither parking file. |
+
+### Two findings that only emerged by doing the work
+
+1. **⭐ Fixing the inline breaches is NOT independently completable — it is COUPLED to the deploy.** The audit ranked it as separable from editor-verification. The visual-diff gate disproved that: any change to a block's rendered markup needs visual evidence, which needs a build + deploy. Points "fix the inline breaches" and "open the editor" are one session, not two.
+2. **A naive widening of the no-inline gate manufactures false positives.** Attributing every styled descendant to its nearest SGS ancestor flagged 4 elements on palestine-lives that turned out to be **core WordPress blocks** (`core/heading`, `core/site-logo`) carrying WP's own inline serialisation — which FR-32-1 does not govern. The correct rule (shipped): attribute to the nearest enclosing block root of ANY kind; a core root shadows its SGS ancestor. The old root-only scope was not purely a blind spot — it was also a false-positive guard.
+3. **Measured gate blindness:** 5 of the 8 blocks needing fixes (`countdown-timer`, `form`, `pricing-table`, `google-reviews`, `gallery`) appear on **no canary page**, so neither scan mode can verify them regardless of depth. That is `P-NO-INLINE-GATE-COVERAGE-GAPS` item 1 and needs a seeded canary page, not code.
+
+### Also fixed this pass
+
+- **`product-card` dead read** (pre-existing, found via IDE diagnostics): `render.php` read `$inner_padding` with **zero assignments** — leftover from the `innerPadding`→`cardPadding` migration (FR-31-22). Harmless in output (`sgs_container_gap_value(null)` → `''`) but raised a **PHP 8 "Undefined variable" warning on every render**. Deleted (in the patch).
+
+---
 
 ## What is still OPEN (no parking entries created — this report is the record)
 

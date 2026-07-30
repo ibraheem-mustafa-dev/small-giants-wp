@@ -123,19 +123,26 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
 `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
 
-> **⭐ TRACK 1 VERIFICATION AUDIT (2026-07-30) — read before claiming any Track-1 item is done:**
-> **`reports/2026-07-30-track1-verification-audit.md`**. Specs 31/32/35 read end-to-end; three
-> earlier findings WITHDRAWN there (do not re-raise them). Headline: almost nothing is unbuilt —
-> what is missing is **verification**. Biggest open risk = **no Spec 35 work has ever been opened
-> in the real block editor** (Part M says so itself; D388 records two editor-killing crashes that
-> shipped past all-green gates). No parking entries were created; that report is the record.
+> **⭐⭐ NEXT SESSION — ONE DEPLOY UNBLOCKS FOUR THINGS (2026-07-30).** The 9 FR-32 inline fixes
+> are WRITTEN, in the working tree, and banked as `.claude/reports/2026-07-30-fr32-inline-fixes.patch`
+> — but **uncommittable**: the visual-diff gate correctly blocked them (markup changes,
+> `check-markup-neutral.py` NOT-neutral on all 7 blocks, no deploy to evidence it; a PASS report
+> was NOT fabricated). Sequence: isolated-worktree build → deploy sandybrown → **open the REAL
+> editor** (never done for Spec 35) → 7 visual-diff reports → commit blocks → promote
+> `check-no-inline.py --deep` to default (today it correctly flags the 16 stale card-grid hits the
+> patch fixes). ⚠ 5 of the 8 blocks sit on NO canary page — needs a seeded canary, not code.
+>
+> **⭐ TRACK 1 AUDIT — read before calling any Track-1 item done:**
+> `reports/2026-07-30-track1-verification-audit.md`. Specs 31/32/35 read end-to-end; 3 findings
+> WITHDRAWN there (don't re-raise). Almost nothing is unbuilt; what's missing is **verification**.
+> No parking entries created — that report is the record.
 
-### Track 1b — Spec 35: BUILD SURFACE COMPLETE
+### Track 1b — Spec 35: COMPONENT LAYER + Part-K gate complete; ROLLOUT is not
 
-No remaining build items (closed 2026-07-28, ~18 packages; D400/D402/D405). Next front here =
-**Spec 37 Group B proper** (FR-37-14 BUILT + live-proven, so Group B is UNBLOCKED) or B3 presets.
-Canonical: `plans/block-migration-DONE-checklist.md` + Spec 32 §6.1; audit
-`reports/2026-07-26-spec32-11-condition-done-audit.md`.
+Components + the fail-closed gate ARE done (D400/D402/D405). **"No remaining build items"
+RETRACTED 2026-07-30**: Part I lists 2 open (Spacing token, Dynamic content), Part-L rollout is
+4–32%, T1 parity 140 unexplained gaps, and **no Spec 35 work has ever been opened in the real
+editor** (Part M's own words; D388). Register: the Track 1 audit above. Next = Spec 37 Group B.
 
 ### Track 1c — Spec 31 converter completion
 
