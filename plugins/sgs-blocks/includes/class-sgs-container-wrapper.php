@@ -932,30 +932,40 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// ----------------------------------------------------------------
 			$shape_top_html    = '';
 			$shape_bottom_html = '';
+			// FR-32-1 / D345: the dividers' height + colour used to ride inline on
+			// the divider div as REAL property declarations. They are captured here
+			// as declarations and emitted as scoped `.$uid .sgs-shape-divider--*`
+			// rules once $uid exists (see the shape-divider block after $uid is
+			// minted) — $uid is not known this early, hence the two-step.
+			$shape_divider_decls = array();
 
 			if ( $is_section ) {
 				$shape_top    = $attributes['shapeDividerTop'] ?? '';
 				$shape_bottom = $attributes['shapeDividerBottom'] ?? '';
 
 				if ( $shape_top ) {
-					$shape_top_html = sgs_render_shape_divider(
+					$shape_top_html               = sgs_render_shape_divider(
 						$shape_top,
-						sgs_colour_value( $attributes['shapeDividerTopColour'] ?? 'surface' ),
-						(int) ( $attributes['shapeDividerTopHeight'] ?? 60 ),
 						! empty( $attributes['shapeDividerTopFlip'] ),
 						! empty( $attributes['shapeDividerTopInvert'] ),
 						'top'
 					);
+					$shape_divider_decls['top']   = sgs_shape_divider_decls(
+						sgs_colour_value( $attributes['shapeDividerTopColour'] ?? 'surface' ),
+						(int) ( $attributes['shapeDividerTopHeight'] ?? 60 )
+					);
 				}
 
 				if ( $shape_bottom ) {
-					$shape_bottom_html = sgs_render_shape_divider(
+					$shape_bottom_html             = sgs_render_shape_divider(
 						$shape_bottom,
-						sgs_colour_value( $attributes['shapeDividerBottomColour'] ?? 'surface' ),
-						(int) ( $attributes['shapeDividerBottomHeight'] ?? 60 ),
 						! empty( $attributes['shapeDividerBottomFlip'] ),
 						! empty( $attributes['shapeDividerBottomInvert'] ),
 						'bottom'
+					);
+					$shape_divider_decls['bottom'] = sgs_shape_divider_decls(
+						sgs_colour_value( $attributes['shapeDividerBottomColour'] ?? 'surface' ),
+						(int) ( $attributes['shapeDividerBottomHeight'] ?? 60 )
 					);
 				}
 
@@ -1058,6 +1068,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| '' !== $overlay_decls
 				|| ( $is_section && ( $bg_parallax || $bg_ken_burns ) )
 				|| ( $is_section && $has_bg_video && ! empty( $bg_video_mobile['url'] ) )
+				// An SVG background emits `--sgs-svg-opacity` as a scoped rule on the
+				// `.sgs-container__svg-bg` layer (FR-32-4 / D345 — it used to ride inline
+				// on that div). Without a uid there is nowhere to scope it, so the SVG
+				// background alone must be enough to mint one. Same for a shape
+				// divider's height/colour (FR-32-1 — those were inline PROPERTY
+				// declarations, the more serious breach).
+				|| $has_bg_svg
+				|| ! empty( $shape_divider_decls )
 				// D345 Facet B: any remaining custom-property VALUES ($styles — the
 				// composite's extra_styles + ken-burns/svg/grid-item vars) also need a
 				// scoped .$uid home, because they are no longer emitted inline (Spec 32
@@ -1080,6 +1098,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// guaranteed set here whenever $styles is non-empty (see $needs_uid above).
 			if ( ! empty( $styles ) && $uid ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $styles ) . ';}';
+			}
+
+			// FR-32-1 / D345 — shape-divider height + colour, captured as declarations
+			// further up (before $uid existed) and scoped here. They were previously
+			// inline property declarations on the divider div itself.
+			if ( $shape_divider_decls && $uid ) {
+				foreach ( $shape_divider_decls as $sd_position => $sd_decls ) {
+					$responsive_css .= '.' . $uid . ' .sgs-shape-divider--' . $sd_position . '{' . $sd_decls . '}';
+				}
 			}
 
 			// Grid/flex scoped-CSS selector — the __inner content band when
@@ -1593,9 +1620,16 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					),
 				);
 
+				// FR-32-4 / D345: the opacity custom-property VALUE is scoped to the
+				// instance, never inline on the layer div. $uid is guaranteed here —
+				// $has_bg_svg is one of the $needs_uid conditions above. style.css
+				// consumes it via var(--sgs-svg-opacity, 1) on the same element, so
+				// behaviour is identical to the old inline declaration.
+				if ( $uid ) {
+					$responsive_css .= '.' . $uid . ' .sgs-container__svg-bg{--sgs-svg-opacity:' . esc_attr( $bg_svg_opacity / 100 ) . ';}';
+				}
 				$svg_html = sprintf(
-					'<div class="sgs-container__svg-bg" style="--sgs-svg-opacity:%s;" aria-hidden="true">%s</div>',
-					esc_attr( $bg_svg_opacity / 100 ),
+					'<div class="sgs-container__svg-bg" aria-hidden="true">%s</div>',
 					wp_kses( $bg_svg_content, $allowed_svg_tags )
 				);
 			}

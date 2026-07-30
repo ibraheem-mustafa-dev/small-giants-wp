@@ -83,15 +83,21 @@ function sgs_get_shape_dividers(): array {
 /**
  * Get a single shape divider SVG.
  *
- * @param string $shape   Shape key.
- * @param string $colour  CSS colour value.
- * @param int    $height  Height in pixels.
- * @param bool   $flip    Flip horizontally.
- * @param bool   $invert  Invert vertically (mirror).
+ * MARKUP ONLY — no `style` attribute (FR-32-1 / FR-32-4, D345). This used to
+ * emit `style="height:…px;color:…"`, which are real CSS PROPERTY declarations
+ * and the most serious form of the no-inline breach. The caller now owns those
+ * two values and emits them as a scoped `.{uid} .sgs-shape-divider--{position}`
+ * rule; `$colour`/`$height` were therefore removed from this signature rather
+ * than left as dead parameters. `sgs_render_shape_divider_decls()` builds the
+ * matching declarations so the two cannot drift apart.
+ *
+ * @param string $shape    Shape key.
+ * @param bool   $flip     Flip horizontally.
+ * @param bool   $invert   Invert vertically (mirror).
  * @param string $position 'top' or 'bottom'.
  * @return string SVG HTML or empty string.
  */
-function sgs_render_shape_divider( string $shape, string $colour, int $height, bool $flip, bool $invert, string $position ): string {
+function sgs_render_shape_divider( string $shape, bool $flip, bool $invert, string $position ): string {
 	$shapes = sgs_get_shape_dividers();
 
 	if ( ! isset( $shapes[ $shape ] ) ) {
@@ -112,19 +118,32 @@ function sgs_render_shape_divider( string $shape, string $colour, int $height, b
 
 	$position_class = 'sgs-shape-divider--' . esc_attr( $position );
 
-	$safe_colour = sgs_sanitise_colour( $colour );
-
 	return sprintf(
-		'<div class="sgs-shape-divider %s" style="height:%dpx;color:%s" aria-hidden="true">' .
+		'<div class="sgs-shape-divider %s" aria-hidden="true">' .
 		'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
 		'<path d="%s" fill="currentColor"%s/>' .
 		'</svg></div>',
 		$position_class,
-		absint( $height ),
-		esc_attr( $safe_colour ),
 		esc_attr( $path ),
 		$transform
 	);
+}
+
+/**
+ * Build the scoped-CSS declarations for one shape divider.
+ *
+ * Companion to sgs_render_shape_divider(), which emits markup only (FR-32-1 /
+ * FR-32-4, D345). The caller wraps these declarations in a per-instance
+ * selector — `.{uid} .sgs-shape-divider--{position}` — so the values land in a
+ * scoped stylesheet rule instead of an inline `style` attribute. `color` is set
+ * (not `fill`) because the SVG path paints with `fill="currentColor"`.
+ *
+ * @param string $colour CSS colour value (validated here, as it was inline).
+ * @param int    $height Height in pixels.
+ * @return string Declarations without braces, e.g. `height:60px;color:#fff`.
+ */
+function sgs_shape_divider_decls( string $colour, int $height ): string {
+	return 'height:' . absint( $height ) . 'px;color:' . sgs_sanitise_colour( $colour );
 }
 
 /**

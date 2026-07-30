@@ -11,9 +11,11 @@
  * tag via the stable core `wp_style_engine_get_styles()` API — exactly how
  * WP core outputs `layout` support (mirrors sgs/quote + sgs/media).
  *
- * The `--sgs-countdown-number-colour` / `--sgs-countdown-label-colour`
- * declarations are CSS custom-property VALUES (not property declarations),
- * so they stay as an inline `style="--x:y"` attribute per contract §A.
+ * The `--sgs-countdown-number-colour` / `--sgs-countdown-label-colour` custom-
+ * property VALUES are emitted into the same scoped `.{uid}` <style> tag above
+ * (FR-32-4, D345 — inline `style="--x:y"` on the frontend is forbidden; the
+ * pre-D345 "custom-property values may stay inline" reading of contract §A is
+ * superseded). No `style` key is ever passed to get_block_wrapper_attributes().
  *
  * BOX-GROUP (contract §B): base padding/margin/border-radius/border-width/
  * border-style/border-colour are all WP-native `style.spacing.*` /
@@ -213,6 +215,12 @@ if ( '' !== $text_align ) {
 	$scoped_css[] = "{$root_sel}{text-align:{$text_align};}";
 }
 
+// --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
+// inline. Previously an inline `style="--x:y"` attribute on the root; the
+// values are sanitised via sgs_colour_value() exactly as before, just routed
+// into the same scoped <style> tag instead of get_block_wrapper_attributes(). ---
+$scoped_css[] = "{$root_sel}{--sgs-countdown-number-colour:" . sgs_colour_value( $number_colour ) . ';--sgs-countdown-label-colour:' . sgs_colour_value( $label_colour ) . ';}';
+
 // --- Responsive tiers — padding/margin/border-radius, each routed through the
 // same style-engine call, wrapped in the block's own scoped @media (contract
 // §B2: tablet max-width:1023px, mobile max-width:767px). ---
@@ -294,7 +302,6 @@ if ( '' !== $preset_size_slug ) {
 
 $root_attr_args = array(
 	'class' => implode( ' ', $classes ),
-	'style' => '--sgs-countdown-number-colour:' . esc_attr( sgs_colour_value( $number_colour ) ) . ';--sgs-countdown-label-colour:' . esc_attr( sgs_colour_value( $label_colour ) ) . ';',
 );
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );

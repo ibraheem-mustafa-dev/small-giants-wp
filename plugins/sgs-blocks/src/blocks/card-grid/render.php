@@ -485,22 +485,32 @@ if ( $stagger_delay ) {
 	$grid_style_parts[] = '--sgs-stagger: ' . absint( $stagger_delay ) . 'ms';
 }
 
+// Per-item stagger-index custom-property VALUE (FR-32-4, D345) — varies per
+// item, so it cannot be a single scoped rule on the block root; emitted into a
+// `:nth-child(N)` scoped rule instead (same mechanism as sgs/social-icons' /
+// sgs/pricing-table's per-item colour), N = this item's 1-based position among
+// ALL rendered card items (every item renders `.sgs-card-grid__item`
+// unconditionally). Was previously an inline `style="--sgs-item-index:N"`.
+$card_grid_stagger_css = '';
+
 // Build the interior HTML (card items).
 ob_start();
 foreach ( $items as $index => $item ) :
 	// Task 2.1) resolved via sgs_link_attributes() — link/linkTarget/linkRel
 	// are the existing per-item storage keys, mapped to the shared
 	// SgsLinkControl object shape { url, opensInNewTab, rel } at render time.
-	$link_attr  = sgs_link_attributes(
+	$link_attr = sgs_link_attributes(
 		array(
 			'url'           => $item['link'] ?? '',
 			'opensInNewTab' => isset( $item['linkTarget'] ) && '_blank' === $item['linkTarget'],
 			'rel'           => $item['linkRel'] ?? '',
 		)
 	);
-	$has_link   = '' !== $link_attr;
-	$item_tag   = $has_link ? 'a' : 'div';
-	$item_style = $stagger_delay ? ' style="--sgs-item-index:' . absint( $index ) . '"' : '';
+	$has_link  = '' !== $link_attr;
+	$item_tag  = $has_link ? 'a' : 'div';
+	if ( $stagger_delay ) {
+		$card_grid_stagger_css .= $root_sel . ' .sgs-card-grid__item:nth-child(' . ( absint( $index ) + 1 ) . '){--sgs-item-index:' . absint( $index ) . ';}';
+	}
 
 	// Unified media slot (added 2026-05-05). When only the legacy
 	// $item['image'] is set, synthesise a media object so the shared
@@ -538,7 +548,7 @@ foreach ( $items as $index => $item ) :
 	}
 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
 	?>
-	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?><?php echo $item_style; ?>>
+	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
 		<div class="sgs-card-grid__image-wrap">
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
@@ -578,9 +588,23 @@ foreach ( $items as $index => $item ) :
 		<?php endif; ?>
 	</<?php echo esc_attr( $item_tag ); ?>>
 <?php endforeach;
-$inner_html = $card_grid_native_style_tag . $sgs_grid_typo_tag . ob_get_clean();
+$card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
 
-echo SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() escapes internally.
+// FR-32-4a (no-inline contract): the per-item stagger rule addresses items by
+// `:nth-child(N)`, and `:nth-child` counts EVERY element sibling — including a
+// `<style>` tag. Emitting these tags inside $inner_html would put them in the
+// SAME parent as the card items and shift every index (by 1 to 3, depending on
+// which of the three tags is non-empty), so item 0 would never be nth-child(1).
+// They are therefore emitted BEFORE the wrapper — siblings of the block ROOT,
+// not of the items — exactly as sgs/gallery, sgs/google-reviews and
+// sgs/social-icons already do. $inner_html then holds ONLY the card items, so
+// item N really is nth-child(N+1). Relative order of the three tags is
+// preserved, and each is a `.{uid}`-scoped rule, so moving them earlier in the
+// document cannot change which rule wins.
+$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag;
+$inner_html           = ob_get_clean();
+
+echo $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_style_tags is CSS passed through wp_strip_all_tags(); SGS_Container_Wrapper::render() escapes internally.
 	$attributes,
 	$block,
 	$inner_html,

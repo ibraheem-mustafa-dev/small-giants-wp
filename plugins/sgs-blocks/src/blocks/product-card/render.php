@@ -128,17 +128,15 @@ if ( '' !== $card_max_width && preg_match( $sgs_css_length_re, $card_max_width )
 if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 	$inline_styles[] = '--sgs-product-card-image-height:' . esc_attr( $image_height ) . ';';
 }
-// Inner padding (ContainerWrapperControls content-kind Spacing panel). Formatted
-// through sgs_container_gap_value() — the canonical SpacingControl→CSS formatter
-// the shared wrapper uses for gap / grid-item-padding: a bare numeric slug (e.g.
-// "40") resolves to var(--wp--preset--spacing--40); a raw CSS length (e.g. "24px"
-// or "16px 12px") is emitted directly. The helper sanitises out every injection
-// character, so the value is safe in the inline style. style.css reads the var on
-// .product-card-body, overriding its default 20px.
-$inner_padding_css = '' !== $inner_padding ? sgs_container_gap_value( $inner_padding ) : '';
-if ( '' !== $inner_padding_css ) {
-	$inline_styles[] = '--sgs-product-card-inner-padding:' . $inner_padding_css . ';';
-}
+// NOTE (2026-07-30): the retired `innerPadding` emit block lived here. The
+// scalar `innerPadding` attr was migrated to the `cardPadding` box-object on
+// 2026-07-24 (FR-31-22) — see the cardPadding rendering further down — but the
+// old emit was left behind reading a `$inner_padding` variable whose assignment
+// had been deleted with the attribute. It was a READ WITH NO WRITER: harmless
+// in output (sgs_container_gap_value(null) casts to '' and returns '', so the
+// `if` never fired and no var was ever emitted) but it raised a PHP 8
+// "Undefined variable $inner_padding" warning on EVERY product-card render.
+// Deleted, not repaired — cardPadding is the live mechanism.
 
 // CSS-length + CSS-keyword sanitisers for any free-text style value concatenated
 // into the scoped <style> below (border width/radius = length; border style =
@@ -655,10 +653,19 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		// --…--primary background (a CSS token whose hex isn't known in CSS), so
 		// pick a WCAG-safe black/white text colour at build time against the
 		// resolved primary — works on any client palette (a pale-pink primary
-		// gets black text, a saturated/dark primary gets white). Emitted as an
-		// inline style on the badge (static — the badge bg never swaps per combo).
+		// gets black text, a saturated/dark primary gets white). Value is IDENTICAL
+		// for every occurrence (the discount label + every "best value" ladder row),
+		// so it is emitted ONCE as a scoped rule on this card's uid (no-inline
+		// contract §A / FR-32-4, D345) rather than inline `style="--sgs-pc-badge-fg:…"`
+		// per element. $sgs_card_typo_tag is REBUILT so the addition is picked up by
+		// every `$inner = $sgs_card_typo_tag . ob_get_clean()` assembly point below
+		// (mirrors the typed-mode CTA/tag rebuild pattern above).
 		$primary_hex          = sgs_resolve_palette_hex( 'primary', '' );
 		$discount_text_colour = '' !== $primary_hex ? sgs_wcag_text_colour_for_bg( $primary_hex ) : '';
+		if ( '' !== $discount_text_colour ) {
+			$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__discount-label,.' . $sgs_card_uid . ' .product-card__best-value-badge{--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . ';}';
+			$sgs_card_typo_tag  = '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>';
+		}
 
 		// Lean per-combo seed for the M-C9 24 KB context cap. The FULL manifest
 		// (with the JSON-LD-only fields sku/gtin/incMinor/saleEndDate and a gallery
@@ -1059,7 +1066,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<?php // B3: cosmetic discount badge — reuses the sgs/label pill-wrap convention (wp-block-sgs-label / is-style-pill-wrap) so it matches the design-system badge component. Styled self-contained in style.css because the label block's own CSS only enqueues when a real sgs/label block renders on the page. ?>
 					<span
 						class="wp-block-sgs-label is-style-pill-wrap product-card__discount-label"
-						<?php echo '' !== $discount_text_colour ? 'style="--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
 						data-wp-bind--hidden="context.discountHidden"
 						data-wp-text="context.discountLabel"
 					><?php echo esc_html( $discount_label ); ?></span>
@@ -1116,7 +1122,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 							?>
 						<span
 							class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"
-							<?php echo '' !== $discount_text_colour ? 'style="--sgs-pc-badge-fg:' . esc_attr( $discount_text_colour ) . '"' : ''; ?>
 						><?php echo esc_html( $badge_text ); ?></span>
 						<?php endif; ?>
 					</li>

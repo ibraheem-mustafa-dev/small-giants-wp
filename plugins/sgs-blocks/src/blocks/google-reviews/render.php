@@ -433,9 +433,20 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
 	$gr_total = array_sum( $gr_star_counts );
 	if ( $gr_total > 0 ) :
 		?>
+		<?php $gr_star_position = 0; ?>
 		<div class="sgs-google-reviews__breakdown" role="table" aria-label="<?php echo esc_attr__( 'Rating breakdown by number of stars', 'sgs-blocks' ); ?>">
 			<?php foreach ( $gr_star_counts as $gr_stars => $gr_count ) : ?>
-				<?php $gr_pct = $gr_total > 0 ? round( ( $gr_count / $gr_total ) * 100 ) : 0; ?>
+				<?php
+				$gr_pct = $gr_total > 0 ? round( ( $gr_count / $gr_total ) * 100 ) : 0;
+				++$gr_star_position;
+				// gr_pct VARIES per star row (FR-32-4, D345), so it cannot be a
+				// single scoped rule on the block root; emitted into a
+				// `:nth-child(N)` scoped rule instead (same mechanism as
+				// sgs/social-icons' / sgs/pricing-table's per-item values) — every
+				// row renders `.sgs-google-reviews__breakdown-row` unconditionally
+				// (all 5 star tiers), so position is stable.
+				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . $sgs_css_length( $gr_pct ) . '%;}';
+				?>
 				<div class="sgs-google-reviews__breakdown-row" role="row">
 					<span class="sgs-google-reviews__breakdown-label" role="cell">
 						<?php
@@ -444,7 +455,7 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
 						?>
 					</span>
 					<span class="sgs-google-reviews__breakdown-bar" role="cell" aria-hidden="true">
-						<span class="sgs-google-reviews__breakdown-fill" style="--sgs-gr-pct:<?php echo esc_attr( $sgs_css_length( $gr_pct ) ); ?>%"></span>
+						<span class="sgs-google-reviews__breakdown-fill"></span>
 					</span>
 					<span class="sgs-google-reviews__breakdown-count" role="cell">
 						<?php

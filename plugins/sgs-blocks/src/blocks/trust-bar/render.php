@@ -309,7 +309,26 @@ if ( 'image-badge' === $badge_style ) {
 // --- Build badge items HTML ---------------------------------------------------
 $items_html = '';
 
-foreach ( $items as $item ) {
+// Sibling offset for the per-badge `:nth-child(N)` scoped rules below.
+//
+// `:nth-child` counts EVERY element sibling, so N is only the badge's own
+// 1-based position when the badges are the sole children of their parent.
+// Two compositions exist, both decided further down (see the $badges_html
+// ternary and the SGS_Container_Wrapper::render() call):
+//   * auto-scroll ON  → badges are wrapped in `.sgs-trust-bar__track`, which
+//     therefore contains ONLY badges → offset 0.
+//   * auto-scroll OFF → badges are passed to the wrapper as
+//     `$title_html . $badges_html`, so a rendered title is an element sibling
+//     immediately before badge 1 → offset 1.
+// The block's `autoScroll` default is FALSE, so the offset case is the DEFAULT
+// rendering path, not an edge case.
+//
+// This is derived from the SAME two variables that compose the parent, so it
+// cannot silently drift. ⚠ If another element is ever added as a sibling of the
+// badges, extend this expression — do not add the element and leave this alone.
+$tb_badge_offset = ( ! $auto_scroll && '' !== $title_html ) ? 1 : 0;
+
+foreach ( $items as $tb_item_index => $item ) {
 	$item       = is_array( $item ) ? $item : array();
 	$is_pending = ! empty( $item['pending'] );
 	$item_label = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
@@ -362,19 +381,27 @@ foreach ( $items as $item ) {
 		// can override the fill colour per badge via item.fillColour.
 		$is_filled     = isset( $item['fillStyle'] ) && 'filled' === $item['fillStyle'];
 		$circle_class  = 'sgs-trust-bar__circle' . ( $is_filled ? ' sgs-trust-bar__circle--filled' : '' );
-		$circle_style  = '';
 		if ( $is_filled && ! empty( $item['fillColour'] ) ) {
 			// sgs_colour_value() resolves a token slug → CSS var (or passes a raw
-			// colour) and already escapes the value.
-			$fill_colour  = sgs_colour_value( (string) $item['fillColour'] );
-			$circle_style = $fill_colour ? sprintf( ' style="--sgs-trust-badge-icon-fill:%s"', $fill_colour ) : '';
+			// colour) and already escapes the value. fillColour VARIES per item, so
+			// (FR-32-4, D345) it cannot be a single scoped rule on the block root —
+			// emitted into a `:nth-child(N)` scoped rule instead (same mechanism as
+			// sgs/social-icons' per-item brand colour). Every item renders its
+			// `.sgs-trust-bar__badge` wrapper unconditionally, so the badge's own
+			// 1-based position is $tb_item_index + 1 — PLUS $tb_badge_offset, which
+			// accounts for any non-badge element sibling sharing the badges' parent
+			// (a rendered title, when auto-scroll is off). See where it is computed,
+			// just above the loop.
+			$fill_colour = sgs_colour_value( (string) $item['fillColour'] );
+			if ( $fill_colour ) {
+				$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__badge:nth-child(' . ( (int) $tb_item_index + 1 + $tb_badge_offset ) . ') .' . str_replace( ' ', '.', $circle_class ) . '{--sgs-trust-badge-icon-fill:' . esc_attr( $fill_colour ) . ';}';
+			}
 		}
 
 		$items_html .= sprintf(
-			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true"%s>%s</span><span class="sgs-trust-bar__label">%s</span></div>',
+			'<div class="sgs-trust-bar__badge"%s><span class="%s" aria-hidden="true">%s</span><span class="sgs-trust-bar__label">%s</span></div>',
 			$item_attrs,
 			esc_attr( $circle_class ),
-			$circle_style,
 			$svg,
 			esc_html( $item_label )
 		);

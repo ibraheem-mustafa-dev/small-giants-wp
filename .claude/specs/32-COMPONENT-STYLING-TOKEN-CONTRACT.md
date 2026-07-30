@@ -91,6 +91,11 @@ The correct design already existed pre-D283 (Spec 11 Decision 24, 2026-05-22): a
 ### Override Strategy
 - **FR-32-4** — A per-instance override (editor-set custom value, or a genuine per-block draft exception) MUST be emitted as a **CSS custom property VALUE** scoped to the instance (`--sgs-{block}-{role}: <value>`), consumed by the block's class rule via `var()`. It MUST NOT be an inline property declaration (`color: …`). **The custom property itself MUST NOT be emitted inline either (`style="--sgs-{block}-{role}: <value>"` is FORBIDDEN on the frontend, amended 2026-07-18 / D345):** the per-instance value MUST be written as a scoped `.{$uid}.{block-root-class}{ --sgs-{block}-{role}: <value>; }` rule in the block's own `<style>`, registered into the shared SGS collector (FR-32-11 / §6.2). *(Rationale: even a bare inline `--var` (a) leaves a `style` attribute on the rendered element, which the framework-wide gate treats as a violation, and (b) silently breaks any CSS rule that gates on an inline-attribute-presence selector `[style*="--var"]` the moment the value later moves scoped — the live gold-hover-border break on brand-strip, footprint GOTCHA F. It also loses nothing: the scoped custom-property VALUE still cannot beat `:hover` and applies identically. This aligns FR-32-4 with the already-newer §6.1(e) + Spec 31 FR-31-22.3, which the converter already follows — no converter path changes.)* The **only** permitted non-attr, non-scoped-`<style>` styling output anywhere in this contract is the documented `sgsCustomCss` residual (§6.1(e) / Spec 31 FR-31-5.2), and even that is a scoped stylesheet rule, never an inline `style=` attribute. *Done when:* an overridden instance shows the custom value in editor AND frontend, its `:hover` still works, AND the rendered element carries NO `style` attribute (grep the live DOM: 0 `style="--` on `sgs/*` elements).
 
+- **FR-32-4a** — **Per-ITEM override values in a repeater block** (added 2026-07-30). FR-32-4's shape — one `.{$uid}.{block-root-class}{ --var: <value>; }` rule — carries exactly ONE value per instance, so it cannot express N different values across N repeater items (per-item icon fill, per-item stagger index, per-item bar percentage). Such values MUST still never ride inline. They are emitted as **one positional scoped rule per item**: `.{$uid} .sgs-{block}__{item}:nth-child(N){ --var: <value>; }`, appended to the same block-owned `<style>` as every other scoped rule. Reference implementation: `sgs/social-icons` per-item brand colour (`social-icons/render.php:458`).
+  - **The positional-integrity requirement (load-bearing).** `:nth-child(N)` counts **every element sibling**, not only the addressed items. A rule is therefore correct only if, at the point it is written, N equals the item's real position among its parent's children. Two compositions satisfy this: (a) the items are the **sole** element children of their parent — no `<style>` tag, heading, toggle or caption shares it (the block's own `<style>` must be emitted OUTSIDE the items' parent, as `sgs/gallery`, `sgs/pricing-table`, `sgs/google-reviews` and `sgs/social-icons` all do); or (b) a **derived offset** is added to N, computed from the same variables that compose the parent so it cannot drift.
+  - *Rationale:* both failure modes were shipped and caught pre-commit on 2026-07-30. `sgs/card-grid` emitted its scoped `<style>` tags INTO the items' own parent, guaranteeing an offset of ≥1 whenever the staggered feature was active; `sgs/trust-bar` addressed badges that share their parent with the block title, breaking on the block's DEFAULT `autoScroll:false` configuration. Neither is visible to `php -l`, `phpcs`, or any static gate — only a live DOM check catches them.
+  - *Done when:* the rendered element carries no `style` attribute, AND a live-DOM check confirms each per-item value lands on the intended item (not its neighbour).
+
 ### Design Token Specification
 - **FR-32-5** — Per-client component tokens live in `sites/<client>/theme-snapshot.json` under `settings.custom.{component}Presets.{variant}.{role}` (values = theme-token references `var(--wp--preset--color--X)`, raw CSS lengths, or `transparent`). WordPress auto-emits these as `--wp--custom--{component}-presets--{variant}--{role}` at `:root` when the snapshot's `settings` are pushed to `wp_global_styles`. *Done when:* the vars resolve at `:root` on the live site (verified 2026-07-07 for buttonPresets).
 - **FR-32-6** — A block's `style.css` MUST provide a framework-default fallback (a `var(--wp--preset--color--X)` theme token, never a client hex) for every consumed token, so a freshly-inserted block on a client with no `{component}Presets` still looks correct. *Done when:* a block renders sensibly with the `{component}Presets` key absent from the snapshot.
@@ -221,17 +226,26 @@ Implemented as a **single `render_block` chokepoint**, NOT ~60 per-block emit-si
 > block. Completed properly with a new shared helper, `includes/helpers-scoped-instance-vars.php`
 > (reuse-or-mint a scope class + append a scoped `.{class}{--var:…}` rule to the collector, same
 > pattern as §6.1(e)), consumed by all three var-writing injectors; `parallax.js` swapped
-> `el.style` reads for `getComputedStyle` (cascade-aware). The last render-level inline writer,
-> `team-member` (block-private per D294, no wrapper), was migrated onto its own scoped rule in
-> `a367836b` — a roster sweep of all 8 `sgs_transition_vars()` consumers found the other 7 already
-> correct. Live-proven on the canary: root `style` attribute null, computed var still present via
-> the lifted CSS.
+> `el.style` reads for `getComputedStyle` (cascade-aware). `team-member` (block-private per D294,
+> no wrapper) was migrated onto its own scoped rule in `a367836b` — a roster sweep of all 8
+> `sgs_transition_vars()` consumers found the other 7 already correct. Live-proven on the canary:
+> root `style` attribute null, computed var still present via the lifted CSS.
+>
+> ⚠ **CORRECTED 2026-07-30 — `team-member` was NOT "the last render-level inline writer".** That
+> claim was true only of the sweep that produced it, which was scoped to one helper's 8 consumers.
+> A later unscoped sweep across ALL plugin PHP found **14 further sites**: 11 in block `render.php`
+> files (the 2026-07-30 audit, `reports/2026-07-30-track1-verification-audit.md`) plus **3 the
+> render.php-scoped grep structurally could not see** — `class-sgs-container-wrapper.php` (inline
+> `--sgs-svg-opacity` on the SVG-background layer), `class-post-grid-rest.php` (inline card vars on
+> every REST-rendered card), and `shape-dividers.php` (inline `height`/`color` — real PROPERTY
+> declarations, the more serious FR-32-1 breach). All 14 were migrated to scoped rules the same
+> day. **The lesson is the scope of the sweep, not the count:** a claim of "last one" is only as
+> wide as the grep that produced it, and the audit's own grep was `render.php`-only.
 > **Parked, not silently dropped — `P-NO-INLINE-GATE-COVERAGE-GAPS`:** (1) the live no-inline
 > gate's `CANARY_URLS` never exercised a hover/animation-attributed instance, so this whole defect
 > class passed the gate **vacuously** for the life of the D346 migration — fix is a permanent
-> seeded gate-canary page (not yet built). (2) three **non-injector** inline writers
-> (container-wrapper, post-grid-rest, shape-dividers) were flagged in the sweep but not yet
-> triaged/fixed.
+> seeded gate-canary page. (2) the three **non-injector** inline writers
+> (container-wrapper, post-grid-rest, shape-dividers) are the ones fixed 2026-07-30 above.
 
 ### (b) Head placement + output modes (operator-selectable; BUILT + LANDED 2026-07-12)
 Delivery is a **single output buffer** (`template_redirect`) that places the consolidated CSS into the `<head>` (right before `</head>`, so it follows the block `style.css` links → per-instance overrides win by source order) on EVERY front-end render. Placing it every render makes the output **self-consistent under full-page caching** — the cached HTML always carries the matching link/style — so there is **NO pointer, NO cold/warm transition, and NO cache-freeze** (an earlier generate-then-serve design was **reproduced failing live under the LiteSpeed page cache 2026-07-12** — it froze the cold inline response — and replaced by this unified buffer). Two modes, chosen on **SGS → CSS Output** (`sgs_css_output_mode` option, default `file`; still `apply_filters`-able):

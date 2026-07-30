@@ -27,7 +27,7 @@ Read-only detection instrument classifying how every SGS block emits its styling
 | sgs/decorative-image | (none) | 0 | no | 0 | 30 | — | none |
 | sgs/feature-grid | color+spacing+__experimentalBorder | 0 | yes | 20 | 7 | — | SGS_Container_Wrapper |
 | sgs/filter-search | spacing | 0 | no | 0 | 5 | — | none |
-| sgs/form | color+spacing+__experimentalBorder+typography | 0 | yes | 18 | 15 | — | SGS_Container_Wrapper |
+| sgs/form | color+spacing+__experimentalBorder+typography | 0 | yes | 18 | 16 | — | SGS_Container_Wrapper |
 | sgs/form-field-address | (none) | 0 | no | 0 | 11 | — | none |
 | sgs/form-field-checkbox | (none) | 0 | no | 0 | 9 | — | none |
 | sgs/form-field-consent | (none) | 0 | no | 0 | 11 | — | none |
@@ -680,11 +680,11 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - columns, columnsMobile, columnsTablet, gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile, gap, gapTablet, gapMobile, gridTemplateRows, gridTemplateRowsTablet, gridTemplateRowsMobile, gridAutoRows, justifyItems, alignContent, flexDirection, flexWrap, justifyContent
 
 **5. DROP-unrouted (declared, never reaches a CSS sink)**
-- formName, submitLabel, submitStyle, successMessage, successRedirect, honeypot, submitColour, submitBackground, requireLogin, rateLimit, formFocusRingColour, formFocusRingWidth, formFocusRingOpacity, formFocusRingOffset, templateMode
+- formName, submitLabel, submitStyle, successMessage, successRedirect, honeypot, submitColour, submitBackground, progressBarColour, requireLogin, rateLimit, formFocusRingColour, formFocusRingWidth, formFocusRingOpacity, formFocusRingOffset, templateMode
 
 **tier-without-base:** (none)
 
-**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":9,"render.php (block-private)":1})
+**dominant shared-helper:** SGS_Container_Wrapper ({"SGS_Container_Wrapper":9})
 
 ---
 
@@ -2459,8 +2459,8 @@ Read-only detection instrument classifying how every SGS block emits its styling
 - Blocks with INLINE-via-render sites: 0 (0 total sites)
 - Blocks routing through SGS_Container_Wrapper: 27
 - Blocks with DROP-conditional-inert grid/flex attrs: 14 (277 total attrs)
-- Blocks with DROP-unrouted attrs: 79 (1505 total attrs)
+- Blocks with DROP-unrouted attrs: 79 (1506 total attrs)
 - Blocks with tier-without-base defect: 12
   - sgs/brand-strip (borderRadius); sgs/button (borderRadius); sgs/countdown-timer (borderRadius); sgs/counter (borderRadius); sgs/icon-list (borderRadius); sgs/media (borderRadius); sgs/option-picker (borderRadius); sgs/site-footer (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/site-header (paddingTop, paddingRight, paddingBottom, paddingLeft, marginTop, marginRight, marginBottom, marginLeft); sgs/table-of-contents (borderRadius); sgs/timeline (borderRadius); sgs/whatsapp-cta (borderRadius)
-- Inline-styling surface routed via shared helpers: 511 sites (89.5%)
-- Inline-styling surface that is block-private: 60 sites (10.5%)
+- Inline-styling surface routed via shared helpers: 511 sites (89.6%)
+- Inline-styling surface that is block-private: 59 sites (10.4%)

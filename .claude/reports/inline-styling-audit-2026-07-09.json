@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-07-30T14:10:35.356Z",
+	"generatedAt": "2026-07-30T22:01:24.778Z",
 	"totalBlocks": 81,
 	"blocks": [
 		{
@@ -3417,6 +3417,7 @@
 				"honeypot",
 				"submitColour",
 				"submitBackground",
+				"progressBarColour",
 				"requireLogin",
 				"rateLimit",
 				"formFocusRingColour",
@@ -3468,8 +3469,8 @@
 					"via": null
 				},
 				"progressBarColour": {
-					"routed": true,
-					"via": "render.php (block-private)"
+					"routed": false,
+					"via": null
 				},
 				"requireLogin": {
 					"routed": false,
@@ -3529,8 +3530,7 @@
 				}
 			},
 			"helperCounts": {
-				"SGS_Container_Wrapper": 9,
-				"render.php (block-private)": 1
+				"SGS_Container_Wrapper": 9
 			},
 			"dominantHelper": "SGS_Container_Wrapper",
 			"scalarStylingLift": false

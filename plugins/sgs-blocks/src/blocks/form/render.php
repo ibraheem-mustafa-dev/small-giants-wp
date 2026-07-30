@@ -227,11 +227,17 @@ if ( $submit_colour || $submit_background ) {
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
 }
 
-// Build progress bar colour style — a CSS custom-property VALUE (contract §A
-// allows `--x:y`, not a real property declaration), so this stays inline.
-$progress_style_attr = '';
+// Progress-bar colour custom-property VALUE (FR-32-4, D345) — scoped rule on
+// `.uid .sgs-form__progress`, NOT an inline `style="--x:y"` attribute. Uses the
+// SAME uid as the color/border/typography/submit-button supports above
+// (minted eagerly here when none of those already needed one) so everything
+// lands in ONE scoped <style>.
 if ( $progress_colour ) {
-	$progress_style_attr = ' style="--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . '"';
+	if ( empty( $sgs_form_uid ) ) {
+		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . ';}';
 }
 
 // Build focus ring CSS custom properties for :focus-visible on form inputs.
@@ -259,7 +265,6 @@ if ( $is_multi_step ) :
 			aria-valuemin="0"
 			aria-valuemax="100"
 			data-wp-bind--aria-valuenow="state.progressPercent"
-			<?php echo $progress_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with sgs_colour_value() ?>
 		>
 			<div class="sgs-form__progress-bar" data-wp-style--width="state.progressWidth" aria-hidden="true"></div>
 		</div>

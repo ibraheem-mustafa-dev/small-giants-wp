@@ -267,6 +267,45 @@ class Post_Grid_REST {
 	}
 
 	/**
+	 * Build the per-instance card custom-property declarations.
+	 *
+	 * FR-32-4 as amended (D345): these VALUES used to ride inline on every card
+	 * root. They are per-BLOCK-INSTANCE (every card in one grid gets identical
+	 * values, all derived from block attributes), so they belong in a single
+	 * scoped rule emitted by render.php, not repeated inline on each card.
+	 *
+	 * That rule is a DESCENDANT selector on the block root, so it also styles
+	 * cards injected later by view.js AJAX pagination — those land inside
+	 * `.sgs-post-grid__inner`, within the block root, and CSS applies to DOM
+	 * added after the stylesheet was parsed.
+	 *
+	 * @param array $params Block attributes / REST parameters.
+	 * @return string Declarations without braces, or '' if none apply.
+	 */
+	public static function card_vars_decls( array $params ): string {
+		$map = [
+			'titleColour'           => '--sgs-pg-title-colour',
+			'excerptColour'         => '--sgs-pg-excerpt-colour',
+			'metaColour'            => '--sgs-pg-meta-colour',
+			'readMoreColour'        => '--sgs-pg-readmore-colour',
+			'categoryBadgeColour'   => '--sgs-pg-badge-colour',
+			'categoryBadgeBgColour' => '--sgs-pg-badge-bg',
+		];
+
+		$card_vars = [];
+		foreach ( $map as $param_key => $css_var ) {
+			if ( ! empty( $params[ $param_key ] ) ) {
+				$card_vars[] = $css_var . ':' . sgs_colour_value( $params[ $param_key ] );
+			}
+		}
+
+		$aspect_ratio = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
+		$card_vars[]  = '--sgs-pg-aspect:' . $aspect_ratio;
+
+		return implode( ';', $card_vars ) . ';';
+	}
+
+	/**
 	 * Render a single post card to HTML.
 	 *
 	 * Shared between render.php (initial server render) and the REST
@@ -293,34 +332,20 @@ class Post_Grid_REST {
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
 		$card_index    = isset( $params['_card_index'] ) ? absint( $params['_card_index'] ) : 1;
 
-		// Per-instance colour + aspect overrides flow as CSS custom-property
-		// VALUES on the card root (contract-allowed — a var value carries no
-		// property declaration and cannot beat :hover), consumed by style.css
-		// var() rules. AJAX-paginated cards are injected OUTSIDE the block's
-		// scoped <style>, so they must carry their own var values — hence the
-		// card root, not a #uid scoped rule. Zero inline property declarations
-		// anywhere in the card subtree (Spec 32 no-inline; R4, 2026-07-10).
-		$card_vars = [];
-		if ( ! empty( $params['titleColour'] ) ) {
-			$card_vars[] = '--sgs-pg-title-colour:' . sgs_colour_value( $params['titleColour'] );
-		}
-		if ( ! empty( $params['excerptColour'] ) ) {
-			$card_vars[] = '--sgs-pg-excerpt-colour:' . sgs_colour_value( $params['excerptColour'] );
-		}
-		if ( ! empty( $params['metaColour'] ) ) {
-			$card_vars[] = '--sgs-pg-meta-colour:' . sgs_colour_value( $params['metaColour'] );
-		}
-		if ( ! empty( $params['readMoreColour'] ) ) {
-			$card_vars[] = '--sgs-pg-readmore-colour:' . sgs_colour_value( $params['readMoreColour'] );
-		}
-		if ( ! empty( $params['categoryBadgeColour'] ) ) {
-			$card_vars[] = '--sgs-pg-badge-colour:' . sgs_colour_value( $params['categoryBadgeColour'] );
-		}
-		if ( ! empty( $params['categoryBadgeBgColour'] ) ) {
-			$card_vars[] = '--sgs-pg-badge-bg:' . sgs_colour_value( $params['categoryBadgeBgColour'] );
-		}
-		$card_vars[]     = '--sgs-pg-aspect:' . $aspect_ratio;
-		$card_style_attr = ! empty( $card_vars ) ? ' style="' . esc_attr( implode( ';', $card_vars ) ) . '"' : '';
+		// FR-32-4 as amended (D345): the per-instance colour + aspect custom
+		// property VALUES are NO LONGER emitted inline on the card root. They are
+		// emitted once, by render.php, as a scoped
+		// `.{uid}.wp-block-sgs-post-grid .sgs-post-grid__card{…}` rule — see
+		// card_vars_decls() below, which is the single source of both.
+		//
+		// The superseded comment here claimed the inline attribute was required
+		// because "AJAX-paginated cards are injected OUTSIDE the block's scoped
+		// <style>". That conflated two different things: a card injected into
+		// `.sgs-post-grid__inner` (view.js) is still a DESCENDANT of the block
+		// root, so the scoped descendant rule matches it. CSS rules apply to DOM
+		// added after the stylesheet was parsed — the element does not have to
+		// exist when the rule is read. Zero inline property declarations anywhere
+		// in the card subtree (Spec 32 no-inline; R4, 2026-07-10).
 
 		// Per-element inline style slots are now empty — colour comes from the
 		// card var() cascade in style.css (R4 no-inline).
@@ -338,7 +363,7 @@ class Post_Grid_REST {
 		$img_priority = 0 === $card_index ? ' fetchpriority="high"' : '';
 
 		// Build card HTML.
-		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '"' . $card_style_attr . '>';
+		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '">';
 
 		// --- Image section -----------------------------------------------
 		if ( $show_image ) {

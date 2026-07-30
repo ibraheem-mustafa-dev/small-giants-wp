@@ -323,16 +323,20 @@ if ( $has_video_bg ) {
 	}
 }
 
-// No-inline contract (§A): `opacity` is a real CSS property, so it is NOT set
-// via inline style="opacity:…" any more. Only the CUSTOM PROPERTY VALUE
-// (--sgs-cta-overlay-opacity) rides inline (permitted — custom-prop values are
-// not property declarations); style.css reads it via var(...,1).
+// No-inline contract (FR-32-1 / FR-32-4 as amended 2026-07-18, D345): `opacity`
+// is a real CSS property, so it is not set via inline style="opacity:…" — AND
+// the custom-property VALUE may not ride inline either. The superseded comment
+// that used to sit here vouched for `style="--sgs-cta-overlay-opacity:…"` under
+// the PRE-D345 reading ("custom-prop values are not property declarations"),
+// which is exactly why this site survived the 2026-07-30 audit's first pass.
+//
+// The overlay is a SINGLETON per block instance (one <span>, one value), so it
+// takes the plain root-scoped shape — not the `:nth-child(N)` per-item shape.
+// $responsive_css is printed into this block's own scoped <style> below.
 $overlay_html = '';
 if ( $resolved_media ) {
-	$overlay_html = sprintf(
-		'<span class="sgs-cta-section__overlay" style="--sgs-cta-overlay-opacity:%s" aria-hidden="true"></span>',
-		esc_attr( $background_image_opacity / 100 )
-	);
+	$responsive_css .= $root_sel . ' .sgs-cta-section__overlay{--sgs-cta-overlay-opacity:' . esc_attr( $background_image_opacity / 100 ) . ';}';
+	$overlay_html    = '<span class="sgs-cta-section__overlay" aria-hidden="true"></span>';
 }
 
 // Build stats HTML.

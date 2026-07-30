@@ -127,7 +127,7 @@ if ( $show_toggle ) {
 
 // ── Build plan cards HTML ────────────────────────────────────────────────────
 $plans_html = '';
-foreach ( $plans as $plan ) {
+foreach ( $plans as $plan_index => $plan ) {
 	$plan_name          = wp_strip_all_tags( $plan['name'] ?? '' );
 	$plan_price         = wp_strip_all_tags( $plan['price'] ?? '' );
 	$plan_price_yr      = wp_strip_all_tags( $plan['priceYearly'] ?? '' );
@@ -202,9 +202,16 @@ foreach ( $plans as $plan ) {
 
 	// ── Per-plan ribbon ───────────────────────────────────────────────────────
 	// ribbonColour VARIES per plan (plan-array data), so it cannot be a single
-	// scoped rule. Contract §A allows a `--custom-property: value` VALUE
-	// inline (not a property declaration) — write the resolved colour as a CSS
-	// var; style.css/the scoped rule below reads `background-color:var(--sgs-pt-ribbon-bg)`.
+	// scoped rule on the block root. FR-32-4 (D345) forbids the inline
+	// `style="--x:y"` this used to write per plan card; instead the resolved
+	// colour is emitted into a `:nth-child(N)` scoped rule (same mechanism as
+	// sgs/social-icons' per-item brand colour, social-icons/render.php ~458) —
+	// N is this plan's 1-based position among ALL plan cards (every plan
+	// renders its `.sgs-pricing-table__plan` wrapper unconditionally, so the
+	// position is stable regardless of which plans show a ribbon). style.css /
+	// the static rule below still read `background-color:var(--sgs-pt-ribbon-bg)`
+	// — only the VALUE's delivery channel changed, not the value or the CSS
+	// that consumes it.
 	//
 	// Single-choice marker semantics (P-PRICING-TABLE-DUAL-POPULAR-MARKER,
 	// 2026-07-28): the badge (driven by $plan_highlighted) and the ribbon
@@ -218,12 +225,11 @@ foreach ( $plans as $plan ) {
 	// so only one marker is ever visible per card.
 	$ribbon_html = '';
 	if ( $plan_ribbon_text && ! $plan_highlighted ) {
-		$ribbon_style = $plan_ribbon_colour
-			? ' style="--sgs-pt-ribbon-bg:' . $colour_val( $plan_ribbon_colour ) . '"'
-			: '';
-		$ribbon_html  = sprintf(
-			'<div class="sgs-pricing-table__ribbon"%s>%s</div>',
-			$ribbon_style,
+		if ( $plan_ribbon_colour ) {
+			$responsive_css .= $root_sel . ' .sgs-pricing-table__grid .sgs-pricing-table__plan:nth-child(' . ( (int) $plan_index + 1 ) . ') .sgs-pricing-table__ribbon{--sgs-pt-ribbon-bg:' . $colour_val( $plan_ribbon_colour ) . ';}';
+		}
+		$ribbon_html = sprintf(
+			'<div class="sgs-pricing-table__ribbon">%s</div>',
 			esc_html( $plan_ribbon_text )
 		);
 	}

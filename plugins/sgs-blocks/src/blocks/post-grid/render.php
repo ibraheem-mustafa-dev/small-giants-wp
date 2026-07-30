@@ -447,6 +447,16 @@ if ( '' !== $post_grid_preset_bg_slug ) {
 	$post_grid_classes[] = 'has-' . $post_grid_preset_bg_slug . '-background-color';
 }
 
+// FR-32-4 as amended (D345): the per-instance card custom-property VALUES used
+// to ride inline on EVERY card root (class-post-grid-rest.php). They are
+// per-block-instance, not per-card, so they emit once here as a scoped
+// descendant rule. Being a descendant selector on the block root, it also
+// styles cards injected later by view.js AJAX pagination — those land inside
+// `.sgs-post-grid__inner`, still within the root, and CSS applies to DOM added
+// after the stylesheet was parsed. Built by the same helper the card renderer
+// documents, so the two cannot drift apart.
+$responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_vars_decls( $card_params ) . '}';
+
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote + sgs/button).

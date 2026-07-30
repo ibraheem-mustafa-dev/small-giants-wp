@@ -306,17 +306,27 @@ ob_start();
 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
 
 				// Determine the aspect-ratio and stagger delay for this item. Both
-				// values ride as CSS custom-PROPERTY VALUES (never a raw property
+				// are CSS custom-PROPERTY VALUES (never a raw property
 				// declaration) — style.css reads --sgs-item-aspect via a scoped
-				// `aspect-ratio: var(...)` rule so nothing here is an inline
-				// property declaration. $sgs_css_ratio allows digits, dot, and
-				// the "/" the aspect-ratio grammar needs (e.g. "16/9").
-				$item_style = '';
+				// `aspect-ratio: var(...)` rule. VARIES per item (FR-32-4, D345),
+				// so it cannot be a single scoped rule on the block root; emitted
+				// into a `:nth-child(N)` scoped rule instead (same mechanism as
+				// sgs/social-icons' / sgs/card-grid's per-item values) — every
+				// image renders `.sgs-gallery__item` unconditionally, so position
+				// is stable. $sgs_css_ratio allows digits, dot, and the "/" the
+				// aspect-ratio grammar needs (e.g. "16/9"). Previously an inline
+				// `style="…"` (also emitting a bare `style=""` when both were
+				// unset — itself an FR-32-1 breach); now no `style` attribute is
+				// ever written on the item.
+				$item_style_decls = array();
 				if ( $aspect_ratio ) {
-					$item_style .= '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio ) . ';';
+					$item_style_decls[] = '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio );
 				}
 				if ( $stagger_delay > 0 ) {
-					$item_style .= '--sgs-item-index:' . $index . ';';
+					$item_style_decls[] = '--sgs-item-index:' . absint( $index );
+				}
+				if ( ! empty( $item_style_decls ) ) {
+					$gallery_responsive_css .= $root_sel . ' .sgs-gallery__item:nth-child(' . ( absint( $index ) + 1 ) . '){' . implode( ';', $item_style_decls ) . ';}';
 				}
 
 				// Determine full-size URL for lightbox data attribute.
@@ -334,7 +344,6 @@ ob_start();
 					?>
 					<figure
 						class="sgs-gallery__item"
-						style="<?php echo esc_attr( $item_style ); ?>"
 					>
 						<button
 							type="button"
@@ -386,7 +395,6 @@ ob_start();
 					?>
 					<figure
 						class="sgs-gallery__item"
-						style="<?php echo esc_attr( $item_style ); ?>"
 					>
 						<div class="sgs-gallery__img-wrap">
 							<?php
