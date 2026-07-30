@@ -23,6 +23,37 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-GATES-SCOPE-MAY-BE-A-GUARD-NOT-A-BLIND-SPOT** — NEW 2026-07-30 (D423). Before widening
+  a gate's scope because it "can't see" a violation class, ask what its narrowness was PROTECTING.
+  `check-no-inline.py` inspected only block ROOTS, missing per-instance `--var` on BEM sub-elements
+  (7 blocks / 8 sites passed for weeks). The obvious widening — attribute every styled descendant
+  to its nearest SGS ancestor — **manufactured 4 false positives on the first live page**: they
+  were CORE WordPress blocks (`core/heading`, `core/site-logo`) carrying WP's own inline
+  serialisation of native supports, which FR-32-1 does not govern. The root-only scope was
+  simultaneously a blind spot AND a false-positive guard. **Correct rule:** attribute to the
+  nearest enclosing block root of ANY kind; a core root SHADOWS its SGS ancestor. **And measure the
+  widened gate's output BEFORE arming it** — on a shared worktree an unannounced red build blocks a
+  co-active track. Ship it opt-in, prove it green post-deploy, then promote.
+
+- **STOP-A-PROSE-IS-NOT-AN-ARTEFACT** — NEW 2026-07-30 (D423). A completion claim whose only
+  backing is a sentence — especially a sentence written in the SAME commit that made the fix — is
+  unbacked, however confident it sounds. Spec 31 v0.6 claimed "0 WRITTEN-not-LANDED"; the committed
+  oracle artefact predated its own fix commit and still read 2, and `git status` proved it had
+  never been regenerated. (Re-running it showed the claim was TRUE — which is the point: it cost
+  one command to convert an assertion into evidence, and nobody had spent it.) **Before accepting
+  any "gate MET / 0 failures / complete" claim, find the machine artefact and check its commit date
+  against the fix it depends on.**
+
+- **STOP-A-A-CITED-SLUG-MAY-NOT-EXIST** — NEW 2026-07-30 (D423). **Four** phantom parking slugs
+  were found in one session — `P-CLONING-DEPLOY-BLOCKED-SHARED-TREE` (cited twice in the LEDGER as
+  *the only blocker*), `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`, `P-F5-REMAINING`,
+  `P-UNIVERSAL-RESPONSIVE-ROUTING` — none resolving in `parking.md` or `memory/parking-archive.md`.
+  Two survived TWO sweeps and fell only to an adversarial third pass. **Cause:**
+  `handoff-preflight.py`'s `no-dangling-links` validates markdown LINKS, not `P-` slug citations,
+  so the whole class is invisible to the gate that appears to cover it. **Before citing a `P-` slug
+  anywhere, grep BOTH parking files. Adding a `P-[A-Z0-9-]+` resolution check to
+  `handoff-preflight.py` is OWED** — it is the cheapest durable fix.
+
 - **STOP-A-FLAG-NAMED-CHECK-IS-NOT-ALWAYS-A-DRY-RUN** — NEW 2026-07-29 (parking cull). A subagent
   under an explicit READ-ONLY brief ran `seed_conformance_goldens.py --check` to inspect state; the
   flag does **not** mean dry-run on that script — it **re-seeds**, and it rewrote **28 golden
@@ -718,6 +749,10 @@ for real before claiming done?
   process STOPs (§A) + standing architectural STOPs (§B tail). New count > old. PASS.
 - Every future `/handoff` re-runs this check: new unique-STOP count >= previous, or record
   the justification inline. Bare deletion = regression.
+- **2026-07-30 (Track 1 verification audit / D423) re-run:** previous unique `STOP-*` tokens =
+  **95** (per `handoff-preflight.py --check`); this session ADDED 3
+  (`STOP-A-GATES-SCOPE-MAY-BE-A-GUARD-NOT-A-BLIND-SPOT`, `STOP-A-PROSE-IS-NOT-AN-ARTEFACT`,
+  `STOP-A-A-CITED-SLUG-MAY-NOT-EXIST`) and SUBTRACTED none → **98**. 98 >= 95. PASS.
 - **2026-07-20 (Spec 36 Wave 4 / D351) re-run:** previous unique `STOP-*` tokens = **51**;
   this session ADDED 4 (`STOP-VERIFY-DEPLOY-BY-CHECKSUM`,
   `STOP-READ-DRAFT-BEFORE-DESIGNING-A-CLONE-FIX`,

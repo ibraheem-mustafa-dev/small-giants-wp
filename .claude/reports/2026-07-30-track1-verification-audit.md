@@ -65,7 +65,7 @@ NOR a custom-property value NOR an empty `style=""`"*. FR-32-4 forbids inline `-
 |---|---|---|
 | 1a-1 | **The "last render-level inline writer" claim rests on a narrowly-scoped sweep.** §6.2's 2026-07-28 amendment declares team-member the last one, found by *"a roster sweep of all 8 `sgs_transition_vars()` consumers"* — scoped to one helper's consumers. Outside that scope: **9 more**. | see 1a-2 / 1a-3 |
 | 1a-2 | `countdown-timer` emits inline `--var` **on the block root**. Its own header comment vouches for it under the *superseded* pre-D345 contract — which is what stopped re-investigation. | `countdown-timer/render.php:297` → `get_block_wrapper_attributes()` |
-| 1a-3 | 7 blocks / 8 sites emit inline `--var` on sub-elements: `card-grid:503`, `cta-section:333`, `form:234`, `google-reviews:447`, `pricing-table:222`, `product-card:1062`+`:1119`, `trust-bar:370`. Plus `gallery` emits an unguarded `style=""` (`render.php:337`,`:389`). | non-comment grep |
+| 1a-3 | 7 blocks / 8 sites emit inline `--var` on sub-elements (⚠ **`cta-section:333` was later LOST — see 'still OPEN' item 2; it is the one site still live**): `card-grid:503`, `cta-section:333`, `form:234`, `google-reviews:447`, `pricing-table:222`, `product-card:1062`+`:1119`, `trust-bar:370`. Plus `gallery` emits an unguarded `style=""` (`render.php:337`,`:389`). | non-comment grep |
 | 1a-4 | **The gate is root-only and fail-open** — which is *why* the above read green. `check-no-inline.py:88` inspects only tags carrying a `wp-block-sgs-*` class; unreachable canary → WARN + exit 0. Spec 32 §6.2 already concedes D346's inline-zero win was **"partly vacuous"**. | `P-NO-INLINE-GATE-COVERAGE-GAPS` OPEN |
 | 1a-5 | Spec's own un-triaged list: 3 non-injector inline writers. `class-sgs-container-wrapper.php` verified **clean** (`:1081-1083` scopes into `.{uid}`); `post-grid-rest` + `shape-dividers` remain untriaged. | §6.2 amendment |
 | 1a-6 | Per-block LANDED accounting never done for most blocks (condition 10 of 11). | `P-NO-INLINE-LAND-ROSTER` OPEN — self-described as *"the main remaining work"* |
@@ -77,7 +77,7 @@ NOR a custom-property value NOR an empty `style=""`"*. FR-32-4 forbids inline `-
 (FR-32-2 styles `.sgs-{block}--{variant}` from tokens); FR-32-8 requires the variant class *"and
 NO inline colour/geometry style"*. Nothing flagged above is a variant.
 
-The 9 sites split two ways, **both breaches**:
+The 11 sites (across 9 blocks) split two ways, **both breaches**:
 - **6 = per-instance styling values** (colours). Plain FR-32-4; fix is the standard scoped
   `.{uid}` rule.
 - **3 = per-ITEM repeater data** (`--sgs-item-index` stagger, `--sgs-gr-pct` bar fill,
@@ -172,7 +172,7 @@ wired (`ledger/coverage_check.py:386`, called `:857`); a live verify ran 2026-07
 | Item | Outcome |
 |---|---|
 | **1c-1/1c-2 — Spec 31 C2 proof** | **RESOLVED-IN-PART (`aa45737d`).** Re-ran `oracle.batch_runner` against the live canaries and COMMITTED the artefacts. **`WRITTEN-not-LANDED: 2 → 0`** — the v0.6 claim was CORRECT, just unbanked. C2 still NOT closed on §5's terms (33 UNVERIFIED). The apparent LANDED 37→31 / GUARD-FAIL 23→33 shift is not a regression: **30 of 33 GUARD-FAILs are on the five `rt-*` red-team fixtures** built to exercise the known HIGH gaps. Method caveat: `batch_runner` only PROBES deployed pages. |
-| **1a-2/1a-3 — the 9 inline breaches** | **CODE WRITTEN, NOT COMMITTED.** All 9 fixed (8 blocks); `php -l` passes, `phpcs` shows no new violations. **The SGS visual-diff gate correctly BLOCKED the commit** — the changes alter markup (removing `style` attributes), `check-markup-neutral.py` returns NOT-neutral for all 7 named blocks, and no build/deploy was available to produce honest visual-diff evidence. A passing report was NOT fabricated. Work banked as **`.claude/reports/2026-07-30-fr32-inline-fixes.patch`** and left in the working tree. |
+| **1a-2/1a-3 — the 11 inline breaches (9 blocks)** | **CODE WRITTEN FOR 10 OF 11, NOT COMMITTED; 1 STILL UNFIXED.** 10 sites across 8 blocks fixed; `php -l` passes, `phpcs` shows no new violations. **The SGS visual-diff gate correctly BLOCKED the commit** — the changes alter markup (removing `style` attributes), `check-markup-neutral.py` returns NOT-neutral for all 7 named blocks, and no build/deploy was available to produce honest visual-diff evidence. A passing report was NOT fabricated. Work banked as **`.claude/reports/2026-07-30-fr32-inline-fixes.patch`** and left in the working tree. |
 | **1a-4 — the root-only gate** | **INSTRUMENT SHIPPED (`fefa3c4a`)** — opt-in `--deep` nesting-aware scan, 7/7 selftests incl. a negative control proving the root-only scan genuinely misses the same input. Left opt-in: the canaries are DEPLOYED pages, so arming it before the deploy would fail the build on already-fixed code and block a co-active track. |
 | **Doc retirement** | **Nothing to archive** — verified. Archiving the five "LANDED proof owed" entries would contradict the audit that surfaced them; the four no-inline/box-object plan docs are contracts still being built against. One **second phantom slug** found and struck: Spec 33 cited `P-UIMAX-ENFORCE-CREDIT-CLASSIFIER`, present in neither parking file. |
 
@@ -195,11 +195,18 @@ Ranked by risk:
 1. **1b-1 / 1c-7 — open the editor.** An ~18-package inspector wave plus the owed BoxControl
    check, never verified in the block editor, against a project history of two editor-killing
    crashes that passed all-green gates.
-2. **1b-9 — triage the 18 reduced-motion findings.** The gate currently exits 1.
-3. **1a-2/1a-3 — 9 live FR-32 inline violations**, plus widening `check-no-inline.py` past
-   root-only (1a-4) and triaging the 2 remaining non-injector writers (1a-5).
-4. **1c-1/1c-2 — re-run the oracle batch + `--with-landed --check` and COMMIT the artefacts**,
-   then triage the 36 UNVERIFIED / 23 GUARD-FAIL cells.
+2. **⚠ `cta-section/render.php:333` — a violation this audit FOUND (1a-3) and then LOST.** It is
+   NOT in the patch, was NOT fixed, and went unmentioned in D423, the LEDGER and this report's own
+   "second pass" table until an independent QC caught it. Root cause of the miss: the verification
+   grep enumerated the 8 files the fixing agent TOUCHED rather than the 9 blocks the audit had
+   IDENTIFIED — i.e. it verified the agent's scope, not the finding's. **This is the only live
+   FR-32 inline site left in the tree** (`grep -rnE 'style="--' …/*/render.php` → 1 hit).
+3. **1a-2/1a-3 — the other 10 sites across 8 blocks** are FIXED but UNCOMMITTED (visual-diff gate);
+   plus widening `check-no-inline.py` past root-only (1a-4 — `--deep` now exists, promote it to
+   default post-deploy) and triaging the 2 remaining non-injector writers (1a-5).
+4. **1c-1/1c-2 — DONE-IN-PART:** the batch was re-run and the artefacts committed (`aa45737d`,
+   WRITTEN-not-LANDED 2 → 0). Still owed: triage the 33 UNVERIFIED / 33 GUARD-FAIL / 393
+   unattributed cells.
 5. **1b-5 — 140 unexplained feature-parity gaps**; wire the audit into prebuild.
 6. **1b-3 — Part L per-block rollout** (4–32%).
 7. **1c-6 — three spec-declared converter follow-ups**; **1c-4** FR-31-2.1a closure (inert).

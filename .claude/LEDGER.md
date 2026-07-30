@@ -123,8 +123,8 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
 `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
 
-> **⭐⭐ NEXT SESSION — ONE DEPLOY UNBLOCKS FOUR THINGS (2026-07-30).** The 9 FR-32 inline fixes
-> are WRITTEN, in the working tree, and banked as `.claude/reports/2026-07-30-fr32-inline-fixes.patch`
+> **⭐⭐ NEXT SESSION — ONE DEPLOY UNBLOCKS FOUR THINGS (2026-07-30).** The FR-32 inline fixes (10 of the 11
+> sites; **`cta-section:333` is the 11th and is NOT fixed**) are WRITTEN, in the working tree, and banked as `.claude/reports/2026-07-30-fr32-inline-fixes.patch`
 > — but **uncommittable**: the visual-diff gate correctly blocked them (markup changes,
 > `check-markup-neutral.py` NOT-neutral on all 7 blocks, no deploy to evidence it; a PASS report
 > was NOT fabricated). Sequence: isolated-worktree build → deploy sandybrown → **open the REAL
@@ -227,8 +227,10 @@ UNVERIFIED — and Spec 31 §5 defines completion as **zero UNVERIFIED cells**. 
 sequenced header/footer goals, and the Track B reconciliation. Reconcile before acting — some of
 it is already live.
 
-**Standing programmes (closed — pointers only):** no-inline COMPLETE bar 5 block-fixes
-(`reports/2026-07-26-spec32-11-condition-done-audit.md`) · Spec 30 COMPLETE (D220) · L1–L4 DONE
+**Standing programmes (pointers only):** no-inline — the SUPPORTS migration is complete, but
+**11 inline FR-32 sites across 9 blocks were found 2026-07-30** (10 fixed-not-committed, 1 still
+live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERSEDED by
+`reports/2026-07-30-track1-verification-audit.md` · Spec 30 COMPLETE (D220) · L1–L4 DONE
 (D290). Parked, not ours: `P-CONFORMANCE-GOLDEN-DRIFT`, `P-ARCHIVE-PRODUCT-WC-VALIDATION`.
 
 ---
@@ -252,93 +254,92 @@ it is already live.
 
 ---
 
-## NEXT SESSION — Wave 2 unit `W2-b` (per-burger `drawerRef` picker). `W2-a` + GATE 2 CLOSED 2026-07-30
+## NEXT SESSION — CLOSE ALL FOUR TRACK-1 POINTS. **Start in PLAN MODE; decompose it yourself.**
 
-**Wave 1 · `W2-i` · `W2-a` all CLOSED.** W2-a = `bd67a641`, deployed to sandybrown, **GATE 2 PASSED
-on the MECHANISM, not fidelity** — evidence + every negative control in
-**`reports/2026-07-30-w2a-gate2-drawer-cpt.md`** + **D419**; read before starting. Plan:
-`~/.claude/plans/spec-36-37-iterative-kahn.md`. Gate 2 says nothing about how the drawer LOOKS —
-still the rejected D411 design; **Bean's eye (R-31-13) not yet given** on
-`reports/visual-diff/w2a-cpt-drawer-open-390.png`. Landmark blocker negative-control proven: guard
-off → **2** `<dialog id="sgs-nav-drawer">`, guard on → **1**.
-**Canary fixtures:** `sgs_drawer` **2056** published + **ACTIVE** · page **2058**
-`/w2a-gate2-precpt-drawer/` = pre-CPT parity subject, keep for W2-b/W2-d.
+**Read FIRST:** `reports/2026-07-30-track1-verification-audit.md` (the register — it records three
+findings as WITHDRAWN; do not re-raise them) + **D423**. Narrative + the swept nav/drawer front:
+`memory/session-2026-07-30-track1-verification.md`.
 
-**⭐⭐ TASK 1 — HOLD THE DRAWER-ARCHITECTURE DESIGN GATE (Bean-directed, D421). Nothing decided,
-nothing built.** Bean REJECTED the shared-header-row proposal and judged there was too little
-context left for a proper gate, so he made it next session's opening task. **His contentions are
-recorded in full in `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` — read it and run
-the gate FROM his position; do not open by proposing a solution.** The spec (FR-36-6: "One
-InnerBlocks container … templateLock:false", full-screen `<dialog>` modal) **backs HIM, not the
-rejected proposal** — the right shared primitive is `sgs/container`, not `sgs/site-header-row`.
-Already measured so the gate need not re-derive: **7 of his 8 named controls exist** (only the
-top row logo+close sharing a background is missing) · **the ugly scrollbar is the PAGE's inert 14px
-gutter, not the drawer's** (drawer scrollbar width = 0) · **mega panels do NOT overflow the drawer**
-(285px in 340px). Gate needs `/brainstorming` + `/research-buddies` + `/gh-research` + a council,
-then amend FR-36-6 (its default template order IS the logo bug) in the same commit.
+**You are the SGS framework engineer closing a verification debt.** Almost nothing here is
+unbuilt — what is missing is PROOF. Plan the order yourself, optimising for delegation and
+parallel agents; the constraint below is the only fixed one.
 
-**⭐ TASK 2 — the HEADER-ROW FIT CASCADE (design SIGNED, D420).** A live visible defect on every
-header, Bean-reported, ahead of W2-b. **Root cause PROVEN:** `site-header-row/style.css`'s
-`@container (max-width:767px)` sets `flex-basis:100%` on every child, so the row STACKS — at 766px
-the children need 733px of 766px available, i.e. they FIT and it stacks anyway. Hits desktop too
-(the query reads the ROW's width, not the viewport). Build order + verification bar:
-**`plans/2026-07-30-header-row-fit-cascade-design.md`** · **D420**. Stages 1-3 are CSS-only; stage 4
-(JS More-menu in `sgs/nav-menu`) waits until Bean has seen 1-3 live.
-**⚠ Verify with a width SWEEP, never 3 fixed tiers — this defect lived BETWEEN the tiers** — plus a
-negative control that re-injects the rule and proves the sweep fails.
+**⛔ THE LOAD-BEARING CONSTRAINT: ONE DEPLOY UNBLOCKS POINTS 1 + 2 — they are COUPLED.** Last
+session assumed they were separable and was proven wrong by a gate: the FR-32 fixes change
+markup, so the visual-diff gate demands visual evidence, which needs a build + deploy. Points 3
+and 4 are genuinely separable and can run in PARALLEL with the deploy work.
 
-**Orchestration.** **Task 1 (drawer gate):** inline, Opus + research subagents + a council. Depends
-on: none. Deliverable = a SIGNED design + amended FR-36-6, **not code**. Acceptance = Bean picks
-from ranked options and the spec is amended in the same commit. **Task 2 (fit cascade):** inline,
-Opus (the R-31-9 and device-tier-vs-visual-breakpoint calls are the "a mechanical agent CANNOT make
-this judgment" class); `/qc-council` BEFORE commit. **Acceptance:** the 766px cliff is gone on a
-continuous SWEEP 1400→320px — row height constant, `scrollWidth ≤ clientWidth` throughout — AND the
-negative control (re-inject the rule) makes that sweep FAIL, AND 200% zoom still reaches full text,
-AND every interactive child ≥44px at every swept width, AND Bean's eye at 390/1440. Stage 4 stays
-named and deferred, never "out of scope".
+**Point 2's code already exists** — live in the working tree AND banked at
+`.claude/reports/2026-07-30-fr32-inline-fixes.patch` (8 files, **10 sites — NOT all 11**). `php -l` clean, `phpcs`
+no new violations. It is UNVERIFIED visually — that is the whole remaining job.
 
-**Then `W2-b`** (inline, Opus; after Tasks 1-2): re-type
-`drawerRef` from DOM-id string to a drawer-POST reference with a picker (Spec 36 clause 3). The
-per-request burger registry in `class-sgs-drawer-render.php` was built to carry requested post ids
-with no re-architecture — its intended next use. Then W2-c (7 starter looks), W2-d (8 patterns drop
-their embedded drawer + `variantPreset` retires). **W2-d is the first DESTRUCTIVE step — re-run
-Gate 2 before it.**
+### The four points
 
-**Both Gate-2 harness residuals FIXED, not parked** (`29f732a8`): `extract-css-diff.js` prints a
-MEASURED n/N tally and fails closed on any unmeasured requested breakpoint (`--allow-unmeasured`
-accepts knowingly; `measured==0` always exits 3); `openSurface()` separates "trigger hidden here"
-(UNMEASURED) from "visible and won't open" (VACUOUS) — self-test 10/10. `check-markup-neutral.py`
-(6/6) gives the visual-diff gate a deterministic path for PHP-only no-output changes, retiring
-`--no-verify`. **Hook wiring is in the UNTRACKED `.git/hooks/pre-commit` — local only; the checker
-is tracked, re-wiring is six lines.**
+| # | Work | State | Coupling |
+|---|---|---|---|
+| 1 | Open the REAL block editor on the ~18-package Spec 35 wave + D372's owed BoxControl check | NOT STARTED | needs deploy |
+| 2 | Fix `cta-section:333` (MISSED — see below), then commit all 11 FR-32 sites + promote `--deep` | code written, gate-blocked | needs the SAME deploy |
+| 3 | Triage Spec 31 C2's 33 UNVERIFIED / 33 GUARD-FAIL / 393 unattributed cells | measurement banked (`aa45737d`) | independent |
+| 4 | 140 unexplained feature-parity gaps across 22 blocks + wire the audit into prebuild | NOT STARTED | independent |
 
-**Gate 2 instrument:** `extract-css-diff.js --scope 'dialog.sgs-nav-drawer' --open
-'.sgs-nav-menu__burger'` — `--open` takes the **TRIGGER**, not the surface; only 375px has an open
-state (burger CSS-hidden at/above `collapsePoint` 768). **Cloner's `computed-parity.js` untouched.**
+### Orchestration (suggested — improve it if you can justify it)
 
-**Design gates SIGNED — builds deferred, both edit `site-header/render.php`:** `W2-j` = **A1-lite**
-(any-tier auto-scrim + relabel "Text shadow" decorative-only; **NO reshape — D402**) · new **`W2-v`**
-= B1 header-offset primitive (double-correction risk audited and ABSENT; **preserve D391's
-zero-when-unpinned**) · `W2-p` = B2 pill, after `W2-v`, **pill persists at mobile**.
+- **Deploy chain (1+2), INLINE + Opus, sequential:** isolated worktree (the tree is SHARED and the
+  motion track holds WIP) → `build-deploy.py --target sandybrown` → **open the real editor** →
+  7 visual-diff reports → commit the blocks → flip `--deep` to default + re-baseline.
+  **Delegate the visual-diff report generation** (mechanical, per-block, parallel-safe).
+  ⚠ **NEVER fabricate a PASS report** — that is exactly what this gate exists to stop, and the
+  reason point 2 is still open.
+- **Point 3, DELEGATED (sonnet), parallel with the deploy:** triage the non-LANDED cells. Expect
+  ~30 of 33 GUARD-FAILs to be the five `rt-*` red-team fixtures behaving as designed — the real
+  question is the 393 unattributed. Spec 31 §5 defines completion as ZERO UNVERIFIED.
+- **Point 4, DELEGATED (sonnet), parallel:** classify the 140 gaps as REAL vs OVER-REPORT before
+  fixing anything. Several look like naming artefacts (`sgs/quote: citation/value`, `sgs/text:
+  content` are core's content attrs that SGS models differently). Record every verdict in
+  `feature-parity-exceptions.json`, which currently has ZERO block entries.
+- **`/qc` multi-rater before any commit** touching block render or converter logic.
 
-**Bean touchpoints:** roster **10, or 11 if resn's FX prove reachable** — assess at W4-a teardown,
-not early · W4-a2 substitution policy before the first clone · W3-d blind-tester at Wave 3.
+### Acceptance (measurable — not "code shipped")
 
-**Alternative front (independent): motion Waves B ∥ C** — prompts unchanged under `plans/`. Session
-record +
-carry-forward rules: `memory/session-2026-07-30-motion-waveA-closeout.md`. **Before Wave B ships an
-effect, prove its `data-sgs-fx-*` writer on a live page** — two Wave A defects were attribute
-contracts read by code and written by nothing.
+1. The editor opens clean on every block touched by the Spec 35 wave; any crash is fixed or parked
+   with a named cause. 2. `check-no-inline.py --live-default --deep` exits 0 against the FRESH
+deploy, and `--deep` is the default. 3. Every one of the 7 blocks has an HONEST visual-diff report.
+4. Spec 31's UNVERIFIED count is either ZERO or each residual cell has a named reason.
+5. Each of the 140 parity gaps is REAL-and-fixed, or recorded as an exception with a wave.
+
+### Guardrails (do not skip)
+
+- **Deploy before measure.** `batch_runner.py` and `check-no-inline.py` both probe DEPLOYED pages.
+  Measuring before deploying measures stale output — that is why `--deep` reports 16 stale
+  card-grid hits today.
+- **Shared worktree.** Commit by EXACT PATH, never `git add -A`; never touch the motion track's
+  files; re-check the branch in the SAME command as the commit. Use an isolated worktree to build.
+- **5 of the 8 fixed blocks are on NO canary page** — no scan mode can verify them. That needs a
+  seeded canary page, not a code change (`P-NO-INLINE-GATE-COVERAGE-GAPS` item 1).
+- **After any `edit.js` / shared `src/components` change: deploy and OPEN the real editor** (D388 —
+  two editor-killing crashes shipped past ALL-GREEN gates).
+- **`python .claude/hooks/handoff-preflight.py --check` must pass before committing.**
+- **Four phantom parking slugs were found last session.** Before citing any `P-` slug, confirm it
+  resolves in `parking.md` or `memory/parking-archive.md`. Adding that check to
+  `handoff-preflight` is the cheapest durable fix and is still OWED.
+
+**Alternative front (independent, was the previous front): the nav/drawer Track 2 work** — the
+D421 drawer-architecture design gate + the D420 header-row fit cascade. Full detail preserved in
+`memory/session-2026-07-30-track1-verification.md` + D419/D420/D421 +
+`plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md`.
 
 ### Tooling for the next session (WordPress project — Gate 5)
 
-**Skills:** `/brainstorming` · `/gap-analysis` · `/lifecycle` · `/research` (auto-tiers) ·
-`/strategic-plan` · `/sgs-wp-engine` · `/wp-block-development` · `/delegate` · `/qc-council`
-(Task 1's pre-commit gate — shared mechanism).
-**MCP / tools:** Playwright MCP (live DOM + computed style on the canary — the width sweep needs it)
-· `/sgs-db` + `/wp-blocks` for block ground truth, never a prose count.
-**Agents:** `wp-sgs-developer` (build execution) · `code-reviewer` before any shared-theme commit ·
-`design-reviewer` once clone work starts.
+**Skills:** `/strategic-plan` (decompose the 4 points — the session OPENS in plan mode) ·
+`/dispatching-parallel-agents` (points 3 + 4 run parallel to the deploy chain) · `/delegate` (pick
+a model per branch) · `/brainstorming` · `/gap-analysis` · `/lifecycle` · `/research` (auto-tiers) ·
+`/sgs-wp-engine` · `/wp-block-development` · `/wp-sgs-deploy` (the deploy ceremony) · `/qc-council`
+(before any block-render or converter commit) · `/visual-qa` (the 7 owed reports).
+**MCP / tools:** **Playwright MCP** — the editor-canvas check (point 1) is a browser job, not a
+static one · `/sgs-db` + `/wp-blocks` for block ground truth, never a prose count ·
+`build-deploy.py --target sandybrown` is the ONE deploy path (never hand-roll tar/scp — D336).
+**Agents:** `wp-sgs-developer` (deploy + block execution) · `code-reviewer` before any shared
+commit · `design-reviewer` for the visual-diff reports · `general-purpose` ×2 for points 3 and 4.
 
 ### Methodology guardrails (do not skip)
 

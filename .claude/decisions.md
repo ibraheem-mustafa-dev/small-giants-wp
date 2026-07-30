@@ -15,6 +15,82 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D423 — Track 1 was not unbuilt, it was UNVERIFIED; four phantom parking slugs; a gate that could not see its own violations [INCIDENT]
+
+**2026-07-30, Track 1 verification audit.** Bean believed Track 1a–1c complete. Three parallel
+read-only investigators audited Specs 32/35/31, every load-bearing claim was fact-checked inline,
+then all three specs were read END TO END and the findings reassessed. Register:
+`reports/2026-07-30-track1-verification-audit.md`. Commits `5791be12`, `aa45737d`, `fefa3c4a`,
+`9bfce330`.
+
+**The headline: almost nothing was unbuilt. What was missing was VERIFICATION** — three named
+mechanisms account for nearly every finding: (a) a gate that passes because it structurally cannot
+see the violation, (b) a completion claim backed by prose rather than a committed artefact, (c) an
+entire inspector wave never opened in the editor it targets.
+
+**Reading the specs in full RETRACTED three findings** — recorded so they are not re-raised:
+(1) "the Spec 35 gate covers only 6 of 21 items" was the WRONG BAR — Part K specifies FOUR rules,
+the script implements six, so **Part K is MET**; the 21-item checklist is a plan doc, not the spec.
+(2) The Custom-CSS "anti-pattern on 81/81 blocks" is a **cross-spec conflict**, not neglect — Spec
+32 FR-32-4 calls `sgsCustomCss` "the only permitted" non-attr styling output and Spec 31 FR-31-5.2
+makes it LOAD-BEARING for clone fidelity; D401's "flagged, NOT fixed" was correct. Part F now
+exempts it. (3) Two gaps found in Spec 31 (`status:'failed'` unbranched; resolvers missing) were
+both STALE SPEC TEXT — the code does branch (`sgs-clone-orchestrator.py:1478-1518`) and the
+resolvers exist (`outer_box.py:37-47`).
+
+**Shipped:** Spec 31 C2 proof re-run + artefacts COMMITTED — **WRITTEN-not-LANDED 2 → 0**, the v0.6
+claim was true but unbanked (C2 still open on §5's "zero UNVERIFIED": 33 remain, but 30 of 33
+GUARD-FAILs sit on the five `rt-*` red-team fixtures built to fail). Gate roster regenerated 79→81
+(a GENERATED artefact never re-run; the DB was already correct), which exposed a latent
+`build-roster.py` bug: `"animation" in sgs_val` matched `hideExtensions:["animation"]` — an
+opt-**OUT** list read as a capability, inverting the semantics and reddening the gate with 18 false
+positives. Fixed at the class (the `media` flag shared the flaw); negative control 36→18, 0 added.
+
+**Doc corrections:** `CLAUDE.md` told every session "7/59 blocks migrated" (measured: complete) and
+to emit at `#uid` — the exact defect D303 fixed. Spec 35 Part M/I/D4 self-contradictions and the
+DONE-checklist's ten citations of a **"consistency-scanner" that exists nowhere in the repo**.
+
+**FOUR phantom parking slugs — a class, not a coincidence:**
+`P-CLONING-DEPLOY-BLOCKED-SHARED-TREE` (LEDGER ×2 + D372, cited as *the only blocker*),
+`P-UIMAX-ENFORCE-CREDIT-CLASSIFIER` (Spec 33), and — caught only by an adversarial THIRD pass after
+two sweeps declared the file clean — `P-F5-REMAINING` (D238) and `P-UNIVERSAL-RESPONSIVE-ROUTING`
+(D288). All traced; none re-homed (Bean: no new parking). **Root cause recorded:**
+`handoff-preflight.py`'s `no-dangling-links` inspects markdown LINKS, not parking-slug citations.
+**A `P-[A-Z0-9-]+` resolution check belongs in that gate.**
+
+**A GATE STOPPED THE WORK, CORRECTLY — the most important outcome.** The FR-32 inline fixes
+(8 blocks; countdown-timer emitted a root-level `--var`, gallery an unguarded `style=""`) are
+WRITTEN and statically verified but **UNCOMMITTABLE**: the visual-diff gate blocked them because
+they change markup, `check-markup-neutral.py` returns NOT-neutral for all 7 blocks, and no deploy
+existed to evidence them. **A passing report was NOT fabricated.** Banked as
+`.claude/reports/2026-07-30-fr32-inline-fixes.patch`. **This disproved the session's own plan:
+fixing the inline breaches is NOT independently completable — it is COUPLED to the deploy that
+editor-verification needs.**
+
+**Instrument shipped:** `check-no-inline.py --deep` (opt-in), nesting-aware. Its design lesson is
+load-bearing: a naive "nearest SGS ancestor" rule FALSE-FLAGGED 4 core WordPress blocks carrying
+WP's own inline supports — so a nested CORE root SHADOWS its SGS ancestor. **The old root-only
+scope was not purely a blind spot; it was also a false-positive guard.** 7/7 selftests incl. a
+negative control proving the root-only scan misses what `--deep` catches. Left opt-in: the canaries
+are DEPLOYED pages, so arming it pre-deploy would fail the build on already-fixed code and block a
+co-active track. **Measured blindness: 5 of the 8 fixed blocks appear on NO canary page.**
+
+Also: `product-card` read `$inner_padding` with ZERO assignments (dead read from the
+innerPadding→cardPadding migration, FR-31-22) — harmless in output, but a PHP 8 warning on every
+render. Deleted (in the patch).
+
+**⚠ THE SESSION'S OWN MISS — caught by the handoff QC gate, recorded because the mechanism is the
+lesson.** The audit FOUND `cta-section/render.php:333` (listed in its own 1a-3 row) and then LOST
+it: the fixing agent's patch covers 8 blocks, not 9, and `cta-section` went unmentioned in the
+patch, in this entry, in the LEDGER and in the audit's own "still OPEN" list. **It is now the only
+live FR-32 inline site in the tree.** Root cause: the verification grep enumerated *the 8 files the
+agent TOUCHED* rather than *the 9 blocks the audit had IDENTIFIED* — verifying the agent's scope
+instead of the finding's, which is precisely the `verify-wider-than-the-agent-did` failure. The
+site/block counts were wrong with it (claimed "9 sites / 8 blocks"; actual **11 sites / 9 blocks**,
+of which 10/8 are fixed-but-uncommitted) and the wrong figure propagated into three documents
+before an independent QC recomputed it from the patch. **Two adversarial passes missed this; the
+third caught it.** Corrected across D423, the LEDGER and the audit report.
+
 ## D422 — site-level smooth scrolling moves from GSAP ScrollSmoother to Lenis; **D407 is SUPERSEDED**; new **Tier H** admitted to the motion doctrine [INCIDENT]
 
 **2026-07-30, motion Wave B.** Bean-decided (library swap + the Tier H shape, "it's a
