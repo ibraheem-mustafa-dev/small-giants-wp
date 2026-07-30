@@ -8,7 +8,7 @@
   "unit": "gzip-bytes",
   "modules": {
     "shared/effects/gsap/fx-horizontal-panel.js": 691,
-    "shared/effects/gsap/fx-pin-scrub.js": 644,
+    "shared/effects/gsap/fx-pin-scrub.js": 927,
     "shared/effects/gsap/fx-scrub.js": 616,
     "shared/effects/gsap/fx-split-reveal.js": 733,
     "shared/effects/gsap/provider.js": 1014,

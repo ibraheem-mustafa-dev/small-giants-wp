@@ -14,12 +14,35 @@
  * the block author wiring this module in) writes that attribute from a
  * dropdown, not free text.
  *
- * Child markup contract (REASONED, not spec-literal — flag for the caller):
- * §3.1 says "per-child timeline position (simple from/to presets)" but does
- * not define the DOM convention for identifying which children participate.
- * This module treats any DIRECT child of the pinned element carrying
- * `data-sgs-fx-child` as a timeline participant, animated in DOM order. A
- * child with no preset attribute (or an unrecognised one) gets the default
+ * Child markup contract — REWRITTEN 2026-07-30 after the owner reported the
+ * pin working with NOTHING animating inside it. Both halves of the original
+ * contract were broken, and either alone was enough to produce that symptom:
+ *
+ *   1. It required each participant to carry `data-sgs-fx-child`. NOTHING EVER
+ *      WROTE THAT ATTRIBUTE — no render.php, no save path, no block attribute,
+ *      no inspector control. Verified by grep across src/, includes/ and
+ *      theme/ (only this file mentioned it) and on the live canary
+ *      (`document.querySelectorAll('[data-sgs-fx-child]').length === 0`). A
+ *      read with no writer is the same defect class as `fxTrigger`, and it
+ *      failed silently because an empty participant list still builds a valid
+ *      timeline — the pin engages, so the effect LOOKS wired.
+ *   2. It looked at DIRECT children of the pinned element. `sgs/container`
+ *      renders its content inside a wrapper, so `el.children` is a single
+ *      `div.wp-block-sgs-container` and every real content block is a
+ *      GRANDchild. Measured live: 1 direct child, 3 content blocks inside it.
+ *      This is the same wrong-depth mistake that cost the horizontal panel two
+ *      passes (`5830985e`) — identifying the right element is not the same
+ *      question as being at the right LEVEL.
+ *
+ * The contract now follows FR-38-6's own wording — "pins ... while its
+ * CHILDREN'S tweens play" — rather than an opt-in marker the spec never asks
+ * for: participants are the element children of the pinned section's CONTENT
+ * WRAPPER. `data-sgs-fx-child` is kept as an optional NARROWING filter: if any
+ * descendant carries it, only those participate, so deliberate authoring still
+ * wins. Absent (the normal case), everything in the section choreographs,
+ * which is what a pin is for.
+ *
+ * A child with no preset attribute (or an unrecognised one) gets the default
  * `fade-up` preset rather than being silently skipped — the timeline should
  * never render a child that never enters.
  *
@@ -104,6 +127,86 @@ function resolveChildPreset( child ) {
 }
 
 /**
+ * Keep only nodes that are elements AND actually occupy a layout box.
+ *
+ * Spec 32's no-inline contract has each styled container PREPEND a scoped
+ * `<style>` as a preceding SIBLING of its element, and the content of a pinned
+ * section is typically a stack of such blocks. On the live frontend those tags
+ * are lifted out to an external stylesheet at `render_block` p99, so they are
+ * usually gone by the time this runs — but not in the editor canvas, and not on
+ * any page where the lift has not run. A `<style>` node is `display: none`, so
+ * tweening it animates nothing while still consuming a stagger slot and
+ * shifting every following child's timing.
+ *
+ * @param {Iterable<Node>} nodes Candidate nodes.
+ * @return {HTMLElement[]} Laid-out elements only.
+ */
+function laidOutElements( nodes ) {
+	return Array.from( nodes ).filter(
+		( node ) =>
+			node.nodeType === 1 &&
+			( node.offsetWidth > 0 ||
+				node.offsetHeight > 0 ||
+				null !== node.offsetParent )
+	);
+}
+
+/**
+ * Resolve which elements play on the pinned section's timeline.
+ *
+ * Order of preference, and why:
+ *
+ *  1. Anything carrying `data-sgs-fx-child`, ANYWHERE inside the section. This
+ *     is the deliberate-authoring escape hatch — if someone has explicitly
+ *     marked participants, honour exactly those. Searched by descendant rather
+ *     than direct child because the wrapper depth is not stable (see 2).
+ *  2. Otherwise, the element children of the section's CONTENT WRAPPER.
+ *     `sgs/container` renders content inside `div.wp-block-sgs-container`,
+ *     optionally within a `.sgs-container__inner` band, so the pinned element's
+ *     own `children` is that wrapper and never the content.
+ *
+ *     The unwrap steps through those two FRAMEWORK-OWNED class names only. An
+ *     earlier draft of this function descended through any single element child
+ *     instead — which is subtly wrong: a section holding one heading would
+ *     unwrap past the heading and animate the `<span>` inside it. Matching on
+ *     the wrapper classes makes the descent deterministic and stops exactly
+ *     where content begins, the same rule `fx-horizontal-panel.js` uses to find
+ *     its track.
+ *  3. If unwrapping finds nothing, fall back to the section's own laid-out
+ *     children rather than returning empty, so a hand-authored section with no
+ *     SGS wrapper still animates.
+ *
+ * @param {HTMLElement} el The pinned section.
+ * @return {HTMLElement[]} Participants in DOM order.
+ */
+function resolveParticipants( el ) {
+	const marked = laidOutElements( el.querySelectorAll( '[data-sgs-fx-child]' ) );
+	if ( marked.length > 0 ) {
+		return marked;
+	}
+
+	const WRAPPER_CLASSES = [ 'sgs-container__inner', 'wp-block-sgs-container' ];
+
+	let node = el;
+	// Bounded: the two wrapper classes can nest at most a couple of levels, and
+	// a bound means malformed markup cannot spin here.
+	for ( let depth = 0; depth < 4; depth++ ) {
+		const inner = Array.from( node.children ).find(
+			( child ) =>
+				child.nodeType === 1 &&
+				WRAPPER_CLASSES.some( ( cls ) => child.classList.contains( cls ) )
+		);
+		if ( ! inner ) {
+			break;
+		}
+		node = inner;
+	}
+
+	const candidates = laidOutElements( node.children );
+	return candidates.length > 0 ? candidates : laidOutElements( el.children );
+}
+
+/**
  * Initialise one pinned section.
  *
  * @param {HTMLElement} el The element carrying `data-sgs-fx="pin-scrub"`.
@@ -112,9 +215,24 @@ function resolveChildPreset( child ) {
  */
 export function initPinScrub( el ) {
 	return withMotionAllowed( ( gsap ) => {
-		const children = Array.from( el.children ).filter( ( child ) =>
-			child.hasAttribute( 'data-sgs-fx-child' )
-		);
+		const children = resolveParticipants( el );
+
+		/*
+		 * No participants means the timeline would pin the section and animate
+		 * nothing — which is exactly the defect this module shipped with, and
+		 * it is invisible because a pin with an empty timeline still looks
+		 * wired. Bail instead, leaving the section in its server-rendered
+		 * state, and say why once in the console so the next person sees the
+		 * cause rather than a section that mysteriously holds still.
+		 */
+		if ( 0 === children.length ) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'[sgs/fx-pin-scrub] No animatable children found — skipping the pin so the section is not held still for nothing.',
+				el
+			);
+			return undefined;
+		}
 
 		const timeline = gsap.timeline( {
 			scrollTrigger: {
