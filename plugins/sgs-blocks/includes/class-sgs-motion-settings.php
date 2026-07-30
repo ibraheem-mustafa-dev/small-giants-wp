@@ -38,6 +38,40 @@ final class Sgs_Motion_Settings {
 	public static function register(): void {
 		\add_action( 'admin_init', array( __CLASS__, 'register_setting' ) );
 		\add_action( 'admin_menu', array( __CLASS__, 'add_page' ), 20 );
+		\add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_assets' ) );
+	}
+
+	/**
+	 * Page hook returned by add_submenu_page(), so the dependent-control script
+	 * loads on THIS screen only rather than across wp-admin.
+	 *
+	 * @var string
+	 */
+	private static $page_hook = '';
+
+	/**
+	 * Enqueue the dependent-control script on this settings screen only.
+	 *
+	 * @param string $hook Current admin page hook.
+	 * @return void
+	 */
+	public static function enqueue_admin_assets( string $hook ): void {
+		if ( '' === self::$page_hook || $hook !== self::$page_hook ) {
+			return;
+		}
+
+		$rel = 'assets/admin/motion-settings.js';
+		if ( ! \file_exists( SGS_BLOCKS_PATH . $rel ) ) {
+			return;
+		}
+
+		\wp_enqueue_script(
+			'sgs-motion-settings',
+			SGS_BLOCKS_URL . $rel,
+			array(),
+			SGS_BLOCKS_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -95,7 +129,7 @@ final class Sgs_Motion_Settings {
 	 * @return void
 	 */
 	public static function add_page(): void {
-		\add_submenu_page(
+		self::$page_hook = (string) \add_submenu_page(
 			'sgs',
 			\__( 'Motion', 'sgs-blocks' ),
 			\__( 'Motion', 'sgs-blocks' ),
@@ -140,6 +174,7 @@ final class Sgs_Motion_Settings {
 								<label>
 									<input
 										type="checkbox"
+										id="sgs-smooth-scroll-toggle"
 										name="<?php echo \esc_attr( self::OPTION_KEY ); ?>[smooth_scroll]"
 										value="1"
 										<?php \checked( true, $settings['smooth_scroll'] ); ?>
