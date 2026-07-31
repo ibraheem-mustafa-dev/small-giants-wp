@@ -19,6 +19,9 @@
 		"sgs": {
 			"imageControls": true,
 			"containerKind": "layout",
+			"fx": {
+				"draggable": true
+			},
 			"elements": {
 				"slider": {
 					"label": "Slider",
@@ -318,6 +321,14 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"dragToScroll": {
+			"type": "boolean",
+			"default": false
+		},
+		"dragMomentum": {
+			"type": "boolean",
+			"default": true
 		}
 	},
 	"editorScript": "file:./index.js",

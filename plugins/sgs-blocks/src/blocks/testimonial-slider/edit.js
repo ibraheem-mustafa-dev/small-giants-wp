@@ -47,9 +47,15 @@ const LAYOUT_OPTIONS = [
 const STYLE_OPTIONS = [
 	{ label: __( 'Per-card (no default)', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Classic card', 'sgs-blocks' ), value: 'classic-card' },
-	{ label: __( 'Editorial pull-quote', 'sgs-blocks' ), value: 'pull-quote-editorial' },
+	{
+		label: __( 'Editorial pull-quote', 'sgs-blocks' ),
+		value: 'pull-quote-editorial',
+	},
 	{ label: __( 'Rating-led', 'sgs-blocks' ), value: 'rating-led' },
-	{ label: __( 'Avatar spotlight', 'sgs-blocks' ), value: 'avatar-spotlight' },
+	{
+		label: __( 'Avatar spotlight', 'sgs-blocks' ),
+		value: 'avatar-spotlight',
+	},
 	{ label: __( 'Corporate logo', 'sgs-blocks' ), value: 'corporate-logo' },
 	{ label: __( 'Case study', 'sgs-blocks' ), value: 'case-study-media' },
 	{ label: __( 'Minimal quote', 'sgs-blocks' ), value: 'minimal-quote' },
@@ -83,6 +89,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		effectHover,
 		transitionDuration,
 		transitionEasing,
+		dragToScroll,
 	} = attributes;
 
 	const isSplit = layout === 'split';
@@ -90,15 +97,25 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-testimonial-slider',
 		isSplit ? 'sgs-testimonial-slider--split' : '',
-	].filter( Boolean ).join( ' ' );
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			'--sgs-hover-bg': backgroundColourHover ? colourVar( backgroundColourHover ) : undefined,
-			'--sgs-hover-text': textColourHover ? colourVar( textColourHover ) : undefined,
-			'--sgs-hover-border': borderColourHover ? colourVar( borderColourHover ) : undefined,
-			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+			'--sgs-hover-bg': backgroundColourHover
+				? colourVar( backgroundColourHover )
+				: undefined,
+			'--sgs-hover-text': textColourHover
+				? colourVar( textColourHover )
+				: undefined,
+			'--sgs-hover-border': borderColourHover
+				? colourVar( borderColourHover )
+				: undefined,
+			'--sgs-transition-duration': transitionDuration
+				? `${ transitionDuration }ms`
+				: undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 		},
 	} );
@@ -132,12 +149,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ isSplit && (
-					<PanelBody title={ __( 'Side Image', 'sgs-blocks' ) } initialOpen={ true }>
+					<PanelBody
+						title={ __( 'Side Image', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
 						<MediaUploadCheck>
 							<MediaUpload
 								onSelect={ ( media ) =>
 									setAttributes( {
-										sideImage: { id: media.id, url: media.url, alt: media.alt },
+										sideImage: {
+											id: media.id,
+											url: media.url,
+											alt: media.alt,
+										},
 									} )
 								}
 								allowedTypes={ [ 'image' ] }
@@ -149,19 +173,37 @@ export default function Edit( { attributes, setAttributes } ) {
 												<img
 													src={ sideImage.url }
 													alt=""
-													style={ { maxWidth: '100%', marginBottom: '8px', borderRadius: '4px' } }
+													style={ {
+														maxWidth: '100%',
+														marginBottom: '8px',
+														borderRadius: '4px',
+													} }
 												/>
 												<Button
 													variant="secondary"
-													onClick={ () => setAttributes( { sideImage: undefined } ) }
+													onClick={ () =>
+														setAttributes( {
+															sideImage:
+																undefined,
+														} )
+													}
 													isDestructive
 												>
-													{ __( 'Remove image', 'sgs-blocks' ) }
+													{ __(
+														'Remove image',
+														'sgs-blocks'
+													) }
 												</Button>
 											</>
 										) : (
-											<Button variant="secondary" onClick={ open }>
-												{ __( 'Select side image', 'sgs-blocks' ) }
+											<Button
+												variant="secondary"
+												onClick={ open }
+											>
+												{ __(
+													'Select side image',
+													'sgs-blocks'
+												) }
 											</Button>
 										) }
 									</div>
@@ -184,95 +226,165 @@ export default function Edit( { attributes, setAttributes } ) {
 								showDots: true,
 								autoplay: true,
 								autoplaySpeed: 5000,
+								dragToScroll: false,
+								dragMomentum: true,
 							} )
 						}
 					>
 						<ToolsPanelItem
 							label={ __( 'Default card style', 'sgs-blocks' ) }
 							hasValue={ () => !! cardStyle }
-							onDeselect={ () => setAttributes( { cardStyle: '' } ) }
+							onDeselect={ () =>
+								setAttributes( { cardStyle: '' } )
+							}
 							isShownByDefault
 						>
 							<SelectControl
-								label={ __( 'Default card style', 'sgs-blocks' ) }
-								help={ __( 'Sets the layout variant every card in this slider uses unless it picks its own. Leave as "Per-card" to let each testimonial choose independently.', 'sgs-blocks' ) }
+								label={ __(
+									'Default card style',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Sets the layout variant every card in this slider uses unless it picks its own. Leave as "Per-card" to let each testimonial choose independently.',
+									'sgs-blocks'
+								) }
 								value={ cardStyle }
 								options={ STYLE_OPTIONS }
-								onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { cardStyle: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							label={ __(
+								'Transition duration (ms)',
+								'sgs-blocks'
+							) }
 							hasValue={ () => transitionDuration !== '300' }
 							onDeselect={ () =>
 								setAttributes( { transitionDuration: '300' } )
 							}
 						>
 							<TextControl
-								label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+								label={ __(
+									'Transition duration (ms)',
+									'sgs-blocks'
+								) }
 								value={ transitionDuration }
-								onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
-								help={ __( 'Duration of arrow and dot hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
+								onChange={ ( val ) =>
+									setAttributes( { transitionDuration: val } )
+								}
+								help={ __(
+									'Duration of arrow and dot hover transitions in milliseconds. Default: 300.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Transition easing', 'sgs-blocks' ) }
-							hasValue={ () => transitionEasing !== 'ease-in-out' }
+							hasValue={ () =>
+								transitionEasing !== 'ease-in-out'
+							}
 							onDeselect={ () =>
-								setAttributes( { transitionEasing: 'ease-in-out' } )
+								setAttributes( {
+									transitionEasing: 'ease-in-out',
+								} )
 							}
 						>
 							<SelectControl
-								label={ __( 'Transition easing', 'sgs-blocks' ) }
+								label={ __(
+									'Transition easing',
+									'sgs-blocks'
+								) }
 								value={ transitionEasing }
 								options={ [
-									{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-									{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-									{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-									{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-									{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+									{
+										label: __( 'Ease', 'sgs-blocks' ),
+										value: 'ease',
+									},
+									{
+										label: __( 'Ease in', 'sgs-blocks' ),
+										value: 'ease-in',
+									},
+									{
+										label: __( 'Ease out', 'sgs-blocks' ),
+										value: 'ease-out',
+									},
+									{
+										label: __(
+											'Ease in–out',
+											'sgs-blocks'
+										),
+										value: 'ease-in-out',
+									},
+									{
+										label: __( 'Linear', 'sgs-blocks' ),
+										value: 'linear',
+									},
 								] }
-								onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { transitionEasing: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Slides visible (desktop)', 'sgs-blocks' ) }
+							label={ __(
+								'Slides visible (desktop)',
+								'sgs-blocks'
+							) }
 							hasValue={ () => slidesVisible !== 3 }
-							onDeselect={ () => setAttributes( { slidesVisible: 3 } ) }
+							onDeselect={ () =>
+								setAttributes( { slidesVisible: 3 } )
+							}
 							isShownByDefault
 						>
 							<SelectControl
-								label={ __( 'Slides visible (desktop)', 'sgs-blocks' ) }
+								label={ __(
+									'Slides visible (desktop)',
+									'sgs-blocks'
+								) }
 								value={ slidesVisible }
 								options={ SLIDES_VISIBLE_OPTIONS }
-								onChange={ ( val ) => setAttributes( { slidesVisible: parseInt( val, 10 ) } ) }
+								onChange={ ( val ) =>
+									setAttributes( {
+										slidesVisible: parseInt( val, 10 ),
+									} )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Show arrows', 'sgs-blocks' ) }
 							hasValue={ () => showArrows !== true }
-							onDeselect={ () => setAttributes( { showArrows: true } ) }
+							onDeselect={ () =>
+								setAttributes( { showArrows: true } )
+							}
 						>
 							<ToggleControl
 								label={ __( 'Show arrows', 'sgs-blocks' ) }
 								checked={ showArrows }
-								onChange={ ( val ) => setAttributes( { showArrows: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { showArrows: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Show dots', 'sgs-blocks' ) }
 							hasValue={ () => showDots !== true }
-							onDeselect={ () => setAttributes( { showDots: true } ) }
+							onDeselect={ () =>
+								setAttributes( { showDots: true } )
+							}
 						>
 							<ToggleControl
 								label={ __( 'Show dots', 'sgs-blocks' ) }
 								checked={ showDots }
-								onChange={ ( val ) => setAttributes( { showDots: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { showDots: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
@@ -292,14 +404,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							<ToggleControl
 								label={ __( 'Autoplay', 'sgs-blocks' ) }
 								checked={ autoplay }
-								onChange={ ( val ) => setAttributes( { autoplay: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { autoplay: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 							{ autoplay && (
 								<RangeControl
-									label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
+									label={ __(
+										'Autoplay speed (ms)',
+										'sgs-blocks'
+									) }
 									value={ autoplaySpeed }
-									onChange={ ( val ) => setAttributes( { autoplaySpeed: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( { autoplaySpeed: val } )
+									}
 									min={ 2000 }
 									max={ 10000 }
 									step={ 500 }
@@ -307,31 +426,69 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							) }
 						</ToolsPanelItem>
+						{ /*
+						 * Draggable + Inertia roster opt-in (Spec 38 FR-38-13).
+						 * This slider already supports click-and-drag (its
+						 * own view.js) — this toggle upgrades the RELEASE
+						 * feel with real momentum via GSAP's InertiaPlugin,
+						 * it does not add dragging that wasn't there before.
+						 */ }
+						<ToolsPanelItem
+							label={ __( 'Drag momentum', 'sgs-blocks' ) }
+							hasValue={ () => dragToScroll !== false }
+							onDeselect={ () =>
+								setAttributes( { dragToScroll: false } )
+							}
+						>
+							<ToggleControl
+								label={ __( 'Drag momentum', 'sgs-blocks' ) }
+								checked={ dragToScroll }
+								onChange={ ( val ) =>
+									setAttributes( { dragToScroll: val } )
+								}
+								help={ __(
+									'A fast flick advances the slide with a real momentum feel instead of always needing the same drag distance.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Hover States', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody
+					title={ __( 'Hover States', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
 						label={ __( 'Hover effect', 'sgs-blocks' ) }
 						value={ effectHover }
 						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { effectHover: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { effectHover: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover background colour', 'sgs-blocks' ) }
 						value={ backgroundColourHover }
-						onChange={ ( val ) => setAttributes( { backgroundColourHover: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { backgroundColourHover: val } )
+						}
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover text colour', 'sgs-blocks' ) }
 						value={ textColourHover }
-						onChange={ ( val ) => setAttributes( { textColourHover: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { textColourHover: val } )
+						}
 					/>
 					<DesignTokenPicker
 						label={ __( 'Hover border colour', 'sgs-blocks' ) }
 						value={ borderColourHover }
-						onChange={ ( val ) => setAttributes( { borderColourHover: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { borderColourHover: val } )
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>

@@ -8,7 +8,7 @@
  * change these values, edit the relevant block.json / seed-motion-fx-
  * registry.py, then re-run this generator.
  *
- * Blocks with at least one qualifying effect: 22
+ * Blocks with at least one qualifying effect: 25
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 + §7.
  *
@@ -36,11 +36,13 @@ function sgs_get_fx_qualifying_blocks() {
 	static $map = null;
 	if ( null === $map ) {
 		$map = array(
+			'sgs/before-after' => array( 'draggable', 'scrub' ),
 			'sgs/collapsible-text' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/container' => array( 'horizontal-panel', 'pin-scrub', 'scrub' ),
 			'sgs/counter' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/cta-section' => array( 'horizontal-panel', 'pin-scrub', 'scrub' ),
 			'sgs/decorative-image' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
+			'sgs/gallery' => array( 'draggable', 'scrub' ),
 			'sgs/heading' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/hero' => array( 'horizontal-panel', 'pin-scrub', 'scrub' ),
 			'sgs/icon' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
@@ -54,6 +56,7 @@ function sgs_get_fx_qualifying_blocks() {
 			'sgs/separator' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
 			'sgs/team-member' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/testimonial' => array( 'scramble', 'scrub', 'split-reveal' ),
+			'sgs/testimonial-slider' => array( 'draggable', 'scrub' ),
 			'sgs/text' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/timeline' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/trust-bar' => array( 'horizontal-panel', 'pin-scrub', 'scramble', 'scrub', 'split-reveal' ),

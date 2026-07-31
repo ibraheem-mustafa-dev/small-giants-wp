@@ -30,39 +30,96 @@
  * declarations, keyed off the var + class (D298 mobile-nav pattern).
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
+ *
+ * DRAGGABLE + INERTIA ROSTER OPT-IN (Spec 38 FR-38-13, added 2026-07-31):
+ * this block declares `supports.sgs.fx.draggable` and render.php emits
+ * `data-sgs-fx="draggable"` on `.sgs-testimonial-slider__track` when the
+ * operator turns the inspector toggle on — BUT the shared Tier G runtime
+ * (`shared/effects/gsap/fx-draggable.js`) only ever attaches to a genuine
+ * native `overflow-x: auto|scroll` element, and this track is not one (it is
+ * `overflow: hidden` with the transform-based clone-loop mechanism described
+ * above). That runtime correctly finds nothing to attach to and no-ops here —
+ * see its own docblock for why re-deriving this file's clone-zone math inside
+ * a block-agnostic module would be exactly the per-block hyperfocus R-31-9
+ * forbids. Instead, the momentum upgrade lives HERE, additively, on top of
+ * the pointer-drag that already existed: `InertiaPlugin.track()`/`getVelocity()`
+ * (dynamically imported, ONLY when an instance opts in — a page with the
+ * toggle off never fetches GSAP) measures how fast the pointer was moving at
+ * release, and a genuine flick — even over a short distance — registers as a
+ * deliberate slide change, same as any native momentum scroll. See the
+ * "Draggable + Inertia opt-in" block below `endDrag()` for the implementation
+ * and its own reduced-motion note.
  */
+
+/**
+ * Are we running inside wp-admin (the block editor) rather than the frontend?
+ *
+ * WordPress loads a block's `viewScriptModule` in the EDITOR as well as on the
+ * frontend, but `SGS_Motion_Registry` deliberately registers/enqueues the Tier G
+ * modules on the frontend only (`is_admin()` gate) — so in the editor the
+ * import map contains no `@sgs/gsap-*` entries and any dynamic import of one
+ * throws. Verified live 2026-07-31: the editor's import map held exactly
+ * `@wordpress/route`, `@wordpress/latex-to-mathml`, `@wordpress/interactivity`
+ * and `@sgs/gsap` — none of the plugin modules.
+ *
+ * Rather than register frontend motion modules into wp-admin (which would ship
+ * animation machinery into an editing surface that must never animate — Spec 38
+ * §9 "never active in editor or wp-admin"), the view module simply declines to
+ * boot its motion layer there.
+ *
+ * @return {boolean} True when running in wp-admin.
+ */
+function isEditorSurface() {
+	return (
+		document.body?.classList.contains( 'wp-admin' ) ||
+		!! document.getElementById( 'wpwrap' ) ||
+		// The editor CANVAS is a same-origin iframe whose body carries neither
+		// `wp-admin` nor `#wpwrap`, so those two checks alone miss it. These are
+		// the canvas's own markers. Checked 2026-07-31 because the editor loads
+		// block view modules INTO that iframe, which is exactly where an
+		// unguarded motion boot would run.
+		!! document.querySelector( '.block-editor-iframe__body, .editor-styles-wrapper' ) ||
+		document.body?.classList.contains( 'block-editor-iframe__body' )
+	);
+}
 
 const sliders = document.querySelectorAll( '.sgs-testimonial-slider' );
 
 sliders.forEach( ( slider ) => {
-	const track          = slider.querySelector( '.sgs-testimonial-slider__track' );
+	const track = slider.querySelector( '.sgs-testimonial-slider__track' );
 	const originalSlides = Array.from(
 		slider.querySelectorAll( '.sgs-testimonial-slider__slide' )
 	);
-	const prevBtn  = slider.querySelector( '.sgs-testimonial-slider__arrow--prev' );
-	const nextBtn  = slider.querySelector( '.sgs-testimonial-slider__arrow--next' );
-	const dots     = slider.querySelectorAll( '.sgs-testimonial-slider__dot' );
-	const controls = slider.querySelector( '.sgs-testimonial-slider__controls' );
+	const prevBtn = slider.querySelector(
+		'.sgs-testimonial-slider__arrow--prev'
+	);
+	const nextBtn = slider.querySelector(
+		'.sgs-testimonial-slider__arrow--next'
+	);
+	const dots = slider.querySelectorAll( '.sgs-testimonial-slider__dot' );
+	const controls = slider.querySelector(
+		'.sgs-testimonial-slider__controls'
+	);
 
 	if ( ! track || originalSlides.length === 0 ) {
 		return;
 	}
 
-	const shouldAutoplay       = slider.dataset.autoplay === 'true';
-	const speed                = Number.parseInt( slider.dataset.speed || '5000', 10 );
-	const visibleRaw           = Number.parseInt( slider.dataset.slides || '1', 10 ) || 1;
+	const shouldAutoplay = slider.dataset.autoplay === 'true';
+	const speed = Number.parseInt( slider.dataset.speed || '5000', 10 );
+	const visibleRaw = Number.parseInt( slider.dataset.slides || '1', 10 ) || 1;
 	const prefersReducedMotion = globalThis.matchMedia(
 		'(prefers-reduced-motion: reduce)'
 	).matches;
 
-	const total      = originalSlides.length;
+	const total = originalSlides.length;
 	const cloneCount = total > 1 ? Math.min( visibleRaw, total ) : 0;
 
-	let currentIndex  = 0;
-	let visualIndex   = cloneCount; // position inside the padded list
-	let slideStep     = 0;          // px — one slide's width + gap
+	let currentIndex = 0;
+	let visualIndex = cloneCount; // position inside the padded list
+	let slideStep = 0; // px — one slide's width + gap
 	let autoplayTimer = null;
-	let isPaused      = false;
+	let isPaused = false;
 
 	/**
 	 * Wrap an index to [0, total) — enables infinite looping.
@@ -86,9 +143,9 @@ sliders.forEach( ( slider ) => {
 		clone.setAttribute( 'aria-hidden', 'true' );
 		clone.setAttribute( 'inert', '' );
 		clone.dataset.clone = 'true';
-		clone.querySelectorAll( 'a, button, input, select, textarea' ).forEach(
-			( el ) => el.setAttribute( 'tabindex', '-1' )
-		);
+		clone
+			.querySelectorAll( 'a, button, input, select, textarea' )
+			.forEach( ( el ) => el.setAttribute( 'tabindex', '-1' ) );
 		return clone;
 	}
 
@@ -101,7 +158,9 @@ sliders.forEach( ( slider ) => {
 	if ( cloneCount > 0 ) {
 		originalSlides
 			.slice( -cloneCount )
-			.forEach( ( slide ) => list.insertBefore( cloneSlide( slide ), list.firstChild ) );
+			.forEach( ( slide ) =>
+				list.insertBefore( cloneSlide( slide ), list.firstChild )
+			);
 		originalSlides
 			.slice( 0, cloneCount )
 			.forEach( ( slide ) => list.appendChild( cloneSlide( slide ) ) );
@@ -121,7 +180,7 @@ sliders.forEach( ( slider ) => {
 			return;
 		}
 		const gapPx = Number.parseFloat( getComputedStyle( list ).gap ) || 0;
-		slideStep   = sample.getBoundingClientRect().width + gapPx;
+		slideStep = sample.getBoundingClientRect().width + gapPx;
 	}
 
 	/**
@@ -145,7 +204,10 @@ sliders.forEach( ( slider ) => {
 		}
 		visualIndex = cloneCount + wrapIndex( visualIndex - cloneCount );
 		list.classList.add( 'no-transition' );
-		list.style.setProperty( '--sgs-slider-offset', `${ -( visualIndex * slideStep ) }px` );
+		list.style.setProperty(
+			'--sgs-slider-offset',
+			`${ -( visualIndex * slideStep ) }px`
+		);
 		void list.offsetWidth; // force reflow before re-enabling the transition
 		list.classList.remove( 'no-transition' );
 	}
@@ -158,7 +220,10 @@ sliders.forEach( ( slider ) => {
 	function render( animate ) {
 		const useTransition = animate && ! prefersReducedMotion;
 		list.classList.toggle( 'no-transition', ! useTransition );
-		list.style.setProperty( '--sgs-slider-offset', `${ -( visualIndex * slideStep ) }px` );
+		list.style.setProperty(
+			'--sgs-slider-offset',
+			`${ -( visualIndex * slideStep ) }px`
+		);
 		updateDots();
 		if ( ! useTransition ) {
 			resetIfInCloneZone();
@@ -182,13 +247,13 @@ sliders.forEach( ( slider ) => {
 
 		if ( cloneCount > 0 ) {
 			const base = cloneCount + currentIndex;
-			let best     = base;
+			let best = base;
 			let bestDist = Math.abs( base - visualIndex );
 			[ base - total, base + total ].forEach( ( candidate ) => {
 				const dist = Math.abs( candidate - visualIndex );
 				if ( dist < bestDist ) {
 					bestDist = dist;
-					best     = candidate;
+					best = candidate;
 				}
 			} );
 			visualIndex = best;
@@ -244,7 +309,9 @@ sliders.forEach( ( slider ) => {
 		dot.addEventListener( 'keydown', ( e ) => {
 			if ( e.key === 'ArrowLeft' || e.key === 'ArrowRight' ) {
 				e.preventDefault();
-				const next = wrapIndex( e.key === 'ArrowRight' ? i + 1 : i - 1 );
+				const next = wrapIndex(
+					e.key === 'ArrowRight' ? i + 1 : i - 1
+				);
 				dots[ next ].focus();
 				goToSlide( next );
 				pausePermanently();
@@ -253,9 +320,52 @@ sliders.forEach( ( slider ) => {
 	} );
 
 	/* Touch/pointer swipe — native scroll no longer provides this. */
-	let isDragging  = false;
-	let dragStartX  = 0;
-	let dragDelta   = 0;
+	let isDragging = false;
+	let dragStartX = 0;
+	let dragDelta = 0;
+
+	/*
+	 * Draggable + Inertia opt-in (Spec 38 FR-38-13) — see the file docblock
+	 * for why this lives here rather than in the shared fx-draggable.js
+	 * runtime. `wantsDragMomentum` reads the SAME `data-sgs-fx*` grammar
+	 * every Tier G effect uses; nothing below fires for an instance that
+	 * left the inspector toggle off, so a page with no opted-in slider never
+	 * even attempts the dynamic import (fail-open + zero-byte-when-unused,
+	 * Spec 38 §4.4).
+	 */
+	const wantsDragMomentum =
+		'draggable' === track.dataset.sgsFx &&
+		'false' !== track.dataset.sgsFxMomentum;
+	// A plain tracked object, not a DOM property — InertiaPlugin.track() can
+	// observe any numeric property on any object; there is nothing here that
+	// needs to be an actual CSS value or element attribute.
+	const velocityTracker = { x: 0 };
+	let inertiaPlugin = null;
+
+	if ( wantsDragMomentum && ! isEditorSurface() ) {
+		Promise.all( [
+			import( 'gsap/InertiaPlugin' ),
+			import( '@sgs/motion-provider' ),
+		] )
+			.then( ( [ { InertiaPlugin }, { tierG } ] ) => {
+				// tierG() is idempotent (provider.js tracks registration in a
+				// Set) — safe to call here even if fx-draggable.js has already
+				// registered the same plugin elsewhere on the page, in either
+				// order.
+				tierG( InertiaPlugin );
+				InertiaPlugin.track( velocityTracker, 'x' );
+				inertiaPlugin = InertiaPlugin;
+			} )
+			.catch( () => {
+				// Momentum is an ENHANCEMENT: the pointer-drag above already
+				// works without it, so a failed module load must degrade
+				// silently rather than reject unhandled. Added 2026-07-31 after
+				// the real editor threw an uncaught
+				// `Failed to resolve module specifier "@sgs/gsap-inertia"` —
+				// the rejection had nowhere to go because this chain had no
+				// catch at all.
+			} );
+	}
 
 	function endDrag() {
 		if ( ! isDragging ) {
@@ -267,7 +377,33 @@ sliders.forEach( ( slider ) => {
 		// call below (via goToSlide or directly) always sets the class to match
 		// its own `animate` argument, overriding whatever drag left behind.
 
-		const threshold = slideStep / 4;
+		let threshold = slideStep / 4;
+
+		/*
+		 * REDUCED MOTION (§10) — checked LIVE here, not cached, per the
+		 * house contract (provider.js): momentum is autonomous-feeling
+		 * follow-through, so §10 classifies it as the part that switches
+		 * off under reduced motion. The drag itself (this whole function)
+		 * is unaffected either way — dragging is user-driven input, never
+		 * gated. Only the flick-sensitivity upgrade below is skipped, which
+		 * is exactly the pre-existing fixed slideStep/4 threshold this
+		 * block already used, honoured for a reduced-motion visitor.
+		 */
+		const reducedMotion = window.matchMedia(
+			'(prefers-reduced-motion: reduce)'
+		).matches;
+
+		if ( inertiaPlugin && ! reducedMotion ) {
+			const velocity = Math.abs(
+				inertiaPlugin.getVelocity( velocityTracker, 'x' )
+			);
+			// A deliberate flick registers even over a short drag distance —
+			// real momentum feel, not just "did they drag far enough".
+			if ( velocity > 800 ) {
+				threshold = Math.min( threshold, slideStep / 10 );
+			}
+		}
+
 		if ( dragDelta > threshold ) {
 			goToSlide( currentIndex - 1 );
 		} else if ( dragDelta < -threshold ) {
@@ -281,9 +417,9 @@ sliders.forEach( ( slider ) => {
 
 	if ( total > 1 ) {
 		track.addEventListener( 'pointerdown', ( e ) => {
-			isDragging  = true;
-			dragStartX  = e.clientX;
-			dragDelta   = 0;
+			isDragging = true;
+			dragStartX = e.clientX;
+			dragDelta = 0;
 			list.classList.add( 'no-transition' );
 			track.classList.add( 'is-dragging' );
 			track.setPointerCapture?.( e.pointerId );
@@ -294,7 +430,14 @@ sliders.forEach( ( slider ) => {
 				return;
 			}
 			dragDelta = e.clientX - dragStartX;
-			list.style.setProperty( '--sgs-slider-offset', `${ -( visualIndex * slideStep ) + dragDelta }px` );
+			list.style.setProperty(
+				'--sgs-slider-offset',
+				`${ -( visualIndex * slideStep ) + dragDelta }px`
+			);
+			// Feeds InertiaPlugin.track() above — a no-op object write when
+			// the draggable opt-in is off (inertiaPlugin stays null, nothing
+			// ever reads this value).
+			velocityTracker.x = dragDelta;
 		} );
 
 		track.addEventListener( 'pointerup', endDrag );
@@ -341,7 +484,9 @@ sliders.forEach( ( slider ) => {
 		if ( pauseBtn ) {
 			pauseBtn.setAttribute( 'aria-label', 'Play testimonials' );
 			pauseBtn.setAttribute( 'aria-pressed', 'false' );
-			pauseBtn.querySelector( '.sgs-testimonial-slider__pause-icon' ).textContent = '▶';
+			pauseBtn.querySelector(
+				'.sgs-testimonial-slider__pause-icon'
+			).textContent = '▶';
 		}
 	}
 
@@ -351,7 +496,9 @@ sliders.forEach( ( slider ) => {
 		if ( pauseBtn ) {
 			pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
 			pauseBtn.setAttribute( 'aria-pressed', 'true' );
-			pauseBtn.querySelector( '.sgs-testimonial-slider__pause-icon' ).textContent = '⏸';
+			pauseBtn.querySelector(
+				'.sgs-testimonial-slider__pause-icon'
+			).textContent = '⏸';
 		}
 	}
 
@@ -389,7 +536,7 @@ sliders.forEach( ( slider ) => {
 	let pauseBtn = null;
 
 	if ( shouldAutoplay && ! prefersReducedMotion ) {
-		pauseBtn      = document.createElement( 'button' );
+		pauseBtn = document.createElement( 'button' );
 		pauseBtn.type = 'button';
 		pauseBtn.className = 'sgs-testimonial-slider__pause-btn';
 		pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );

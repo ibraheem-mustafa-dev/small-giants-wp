@@ -237,7 +237,16 @@ FX_EFFECTS: list[dict] = [
         "pins": 0,
         "triggers": "scroll,load,hover",
         "tier": "G",
-        "plugin_set": ["ScrambleText"],
+        # ScrollTrigger is NOT decorative here: fx-scramble.js imports it and
+        # its `scroll` trigger arm (the DEFAULT — provider.js `resolveTrigger`
+        # returns 'scroll' when the attribute is absent) builds a real
+        # `scrollTrigger` config. Declared 2026-07-31 after reading the BUILT
+        # module's bare imports; the 2026-07-30 deploy report said this row had
+        # been corrected, but the correction had never reached the seeder, so
+        # the row still read ["ScrambleText"]. Undeclared it does not crash —
+        # the import map still resolves the specifier — but WP emits no
+        # dependency and no modulepreload, so the plugin arrives late.
+        "plugin_set": ["ScrambleText", "ScrollTrigger"],
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "toggle",
@@ -286,7 +295,16 @@ FX_EFFECTS: list[dict] = [
         "pins": 0,
         "triggers": "load",
         "tier": "G",
-        "plugin_set": ["Draggable", "Inertia"],
+        # Inertia ONLY — `Draggable` was dropped 2026-07-31. The effect name
+        # still reads "Draggable + Inertia" in Spec 38 §2 because that names the
+        # CAPABILITY, not the import list. fx-draggable.js no longer uses the
+        # Draggable class: its `type: 'scroll'` mode re-parents the scroller's
+        # children into a wrapper div (GSAP's own `Draggable.js:536`), which
+        # destroys a grid/flex carousel track — measured live, an 8-slide track
+        # collapsed to one column. The module now drives `scrollLeft` from
+        # pointer events and uses InertiaPlugin purely as the release physics.
+        # Enqueuing Draggable here would ship ~13KB gzip nothing imports.
+        "plugin_set": ["Inertia"],
         "owns_scroll_transform": 0,
         "reduced_motion": "simplify",
         "editor_story": "end-state",
@@ -309,7 +327,11 @@ FX_EFFECTS: list[dict] = [
         "pins": 0,
         "triggers": "scroll,load,hover",
         "tier": "G",
-        "plugin_set": ["DrawSVG"],
+        # ScrollTrigger declared 2026-07-31 for the same reason as `scramble`
+        # above: fx-draw.js imports it and its scroll arm is a real scrubbed
+        # `scrollTrigger` config, verified live on the Wave C canary (8 distinct
+        # stroke-dash states across one scroll sweep).
+        "plugin_set": ["DrawSVG", "ScrollTrigger"],
         "owns_scroll_transform": 0,
         "reduced_motion": "simplify",
         "editor_story": "end-state",

@@ -54,13 +54,39 @@ import fxEffectMeta from './generated-fx-effect-meta.json';
  * their effect name here as their module lands; the qualifying-blocks side
  * needs no change (it already has all 11 grammar effects computed).
  */
-const SHIPPED_EFFECTS = [ 'scrub', 'pin-scrub', 'horizontal-panel', 'split-reveal' ];
+const SHIPPED_EFFECTS = [
+	'scrub',
+	'pin-scrub',
+	'horizontal-panel',
+	'split-reveal',
+	// Wave C. `scramble` is added because its module landed AND it is driven
+	// entirely by grammar params this panel already emits, so selecting it here
+	// genuinely works end to end.
+	//
+	// Deliberately NOT added, and each for a stated reason — an effect listed
+	// here that a client cannot actually operate is worse than an unshipped
+	// one, which is the whole point of this gate:
+	//   · `draw`   — module landed, but `sgs/responsive-logo` already exposes
+	//                the same capability through its own `animationStyle` enum
+	//                (FR-38-15 keeps that enum byte-identical). Listing it here
+	//                would put TWO controls for one capability on that block,
+	//                which this codebase bans. The other SVG-bearing blocks
+	//                (icon/separator/decorative-image) genuinely want it, so
+	//                the fix is a data-driven exclusion in the qualifying-blocks
+	//                generator, not a code carve-out here.
+	//   · `morph`, `motion-path` — modules landed, but each needs a
+	//                target-asset param that exists in no grammar, no DB row
+	//                and no control. Offering them would be a control that
+	//                cannot be configured.
+	'scramble',
+];
 
 const FX_OPTION_LABELS = {
 	scrub: __( 'Scroll reveal (scrubbed)', 'sgs-blocks' ),
 	'pin-scrub': __( 'Pin section & scrub', 'sgs-blocks' ),
 	'horizontal-panel': __( 'Horizontal scroll section', 'sgs-blocks' ),
 	'split-reveal': __( 'Text reveal (split)', 'sgs-blocks' ),
+	scramble: __( 'Text scramble', 'sgs-blocks' ),
 };
 
 /**

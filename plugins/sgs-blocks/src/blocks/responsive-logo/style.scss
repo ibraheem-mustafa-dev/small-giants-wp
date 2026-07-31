@@ -9,8 +9,14 @@
  *   .sgs-responsive-logo__svg         Inline SVG wrapper (animation mode)
  *   .sgs-responsive-logo__picture--fallback  Static images in animation mode
  *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
- *   .sgs-responsive-logo.is-animating  JS state: animation in progress
- *   .sgs-responsive-logo.is-animated   JS state: animation complete
+ *
+ * The Tier G DrawSVG runtime (Spec 38 FR-38-15 / D408) animates
+ * `stroke-dasharray`/`stroke-dashoffset` directly via GSAP tweening, not via a
+ * CSS transition — so there is no `.is-animating`/`.is-animated` state class
+ * and no reduced-motion CSS override here. GSAP's own
+ * `(prefers-reduced-motion: no-preference)` matchMedia gate
+ * (`shared/effects/gsap/provider.js` `withMotionAllowed`) is the single check;
+ * a duplicate CSS-side kill-switch would be dead weight this block never sets.
  */
 
 .sgs-responsive-logo {
@@ -85,18 +91,4 @@
 		}
 	}
 
-	// ── Animation state classes ───────────────────────────────────────────────
-	&.is-animating {
-		.sgs-responsive-logo__svg svg * {
-			// Vivus uses stroke-dashoffset; ensure transitions are smooth
-			transition: stroke-dashoffset var( --vivus-duration, 1s ) ease-out;
-		}
-	}
-
-	// ── Reduced-motion override ───────────────────────────────────────────────
-	@media ( prefers-reduced-motion: reduce ) {
-		&.is-animating .sgs-responsive-logo__svg svg * {
-			transition-duration: 0.01ms !important; // stylelint-disable-line declaration-no-important
-		}
-	}
 }

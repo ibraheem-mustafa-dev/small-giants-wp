@@ -86,6 +86,23 @@ $carousel_speed       = absint( $attributes['carouselSpeed'] ?? 5000 );
 $carousel_show_dots   = (bool) ( $attributes['carouselShowDots'] ?? true );
 $carousel_show_arrows = (bool) ( $attributes['carouselShowArrows'] ?? true );
 
+// Draggable + Inertia roster opt-in (Spec 38 FR-38-13). Carousel-only — the
+// grid/masonry layouts have nothing to drag-scroll. `data-sgs-fx="draggable"`
+// is the same grammar every Tier G effect uses (§11.2); the shared runtime
+// (shared/effects/gsap/fx-draggable.js) structurally verifies the element is
+// a real native horizontal scroller before doing anything with it, so this
+// is safe to emit even if a future layout change made carousel non-scrolling.
+$drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
+$drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
+
+$grid_fx_attr = '';
+if ( 'carousel' === $layout && $drag_to_scroll ) {
+	$grid_fx_attr = ' data-sgs-fx="draggable"';
+	if ( ! $drag_momentum ) {
+		$grid_fx_attr .= ' data-sgs-fx-momentum="false"';
+	}
+}
+
 // Colour attributes — fallbacks match block.json defaults so inline CSS vars
 // are always emitted even when the attribute is absent from stored post content.
 $caption_colour       = $attributes['captionColour']      ?? 'text-inverse';
@@ -273,7 +290,7 @@ ob_start();
 	<?php /* ----------------------------------------------------------------
 	       Gallery grid / masonry / carousel inner track
 	       ---------------------------------------------------------------- */ ?>
-	<div class="sgs-gallery__grid">
+	<div class="sgs-gallery__grid"<?php echo $grid_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $grid_fx_attr is built entirely from literal strings above, no dynamic value. ?>>
 
 		<?php
 		if ( empty( $images ) ) :

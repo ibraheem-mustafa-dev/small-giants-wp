@@ -312,7 +312,34 @@ if ( $link_to_home ) {
 
 if ( $has_svg_animation && $svg_html ) {
 	// Animation mode: inline SVG for desktop; static images for tablet + mobile.
-	echo '<span class="sgs-responsive-logo__svg" aria-hidden="true">';
+	//
+	// Tier G DrawSVG wiring (Spec 38 FR-38-15 / D408 — Vivus retirement). The
+	// `data-sgs-fx="draw"` + `data-sgs-fx-trigger` pair sits on THIS wrapper
+	// span, not on the inlined <svg> itself: the wrapper is markup this file
+	// fully controls, while the <svg> comes from a sanitised media-library
+	// upload whose internal shape this file must not assume. `fx-draw.js`'s
+	// `collectDrawTargets()` searches an fx element's OWN descendants for
+	// drawable shapes, so anchoring the attribute here still reaches every
+	// path/line/polyline/polygon/rect/ellipse/circle inside. `SGS_Motion_Registry`
+	// sniffs this exact `data-sgs-fx="draw"` string out of the rendered block
+	// content (render_block filter, priority 99) to enqueue DrawSVG + this
+	// effect module — no separate JS wiring is needed on this block.
+	//
+	// animationStyle's three animated values map 1:1 onto Spec 38 §11.2's
+	// `load | scroll | hover` trigger grammar; the stored attribute enum is
+	// unchanged (only the runtime swapped), so a stored instance renders
+	// identically post-migration.
+	$fx_trigger_by_style = array(
+		'draw-on-load'   => 'load',
+		'scroll-trigger' => 'scroll',
+		'hover-redraw'   => 'hover',
+	);
+	$fx_trigger = $fx_trigger_by_style[ $animation_style ] ?? 'load';
+
+	printf(
+		'<span class="sgs-responsive-logo__svg" aria-hidden="true" data-sgs-fx="draw" data-sgs-fx-trigger="%s">',
+		esc_attr( $fx_trigger )
+	);
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above via wp_kses.
 	echo $svg_html;
 	echo '</span>';

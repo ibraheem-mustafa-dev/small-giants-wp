@@ -1,4 +1,8 @@
 {
+	"sgs/before-after": [
+		"draggable",
+		"scrub"
+	],
 	"sgs/collapsible-text": [
 		"scramble",
 		"scrub",
@@ -23,6 +27,10 @@
 		"draw",
 		"morph",
 		"motion-path",
+		"scrub"
+	],
+	"sgs/gallery": [
+		"draggable",
 		"scrub"
 	],
 	"sgs/heading": [
@@ -92,6 +100,10 @@
 		"scramble",
 		"scrub",
 		"split-reveal"
+	],
+	"sgs/testimonial-slider": [
+		"draggable",
+		"scrub"
 	],
 	"sgs/text": [
 		"scramble",

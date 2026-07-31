@@ -74,9 +74,28 @@
 	position: relative;
 }
 
+/*
+ * `grid-auto-flow: column` is load-bearing, not tidying (fixed 2026-07-31,
+ * proven live on the Wave C canary). Without it the default `row` flow wraps
+ * item 4 onto a SECOND ROW once there are more images than `--sgs-columns`, so
+ * the track's `scrollWidth` equals its `clientWidth` and this "carousel" can
+ * never scroll horizontally at all — measured 1200 === 1200 with 8 items at 3
+ * columns; the same track with `grid-auto-flow: column` measured 3227 vs 1200.
+ * Everything downstream of that was silently inert: `goToItem()`'s
+ * `scrollIntoView({ inline: 'start' })`, the prev/next arrows, the dots, and
+ * (Spec 38 FR-38-13) the Draggable upgrade — `fx-draggable.js` asks the
+ * STRUCTURAL question "is this a genuine native horizontal scroller?" and was
+ * correctly answering no, so drag-to-scroll could never attach.
+ *
+ * `grid-auto-columns` repeats the explicit column width onto the implicit
+ * columns items 4+ now create, so every item keeps the width
+ * `grid-template-columns` already gives the first `--sgs-columns` of them.
+ */
 .sgs-gallery--carousel .sgs-gallery__grid {
 	display:                grid;
+	grid-auto-flow:         column;
 	grid-template-columns:  repeat( var( --sgs-columns ), calc( ( 100% - ( var( --sgs-columns ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns ) ) );
+	grid-auto-columns:      calc( ( 100% - ( var( --sgs-columns ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns ) );
 	overflow-x:             auto;
 	scroll-snap-type:       x mandatory;
 	-webkit-overflow-scrolling: touch;

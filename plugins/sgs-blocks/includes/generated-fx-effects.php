@@ -37,13 +37,13 @@ function sgs_get_motion_fx_effects() {
 	if ( null === $effects ) {
 		$effects = array(
 			'draggable' => array(
-				'plugin_set'            => array( 'Draggable', 'Inertia' ),
+				'plugin_set'            => array( 'Inertia' ),
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'load' ),
 			),
 			'draw' => array(
-				'plugin_set'            => array( 'DrawSVG' ),
+				'plugin_set'            => array( 'DrawSVG', 'ScrollTrigger' ),
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'scroll', 'load', 'hover' ),
@@ -91,7 +91,7 @@ function sgs_get_motion_fx_effects() {
 				'triggers'              => array( 'scroll' ),
 			),
 			'scramble' => array(
-				'plugin_set'            => array( 'ScrambleText' ),
+				'plugin_set'            => array( 'ScrambleText', 'ScrollTrigger' ),
 				'owns_scroll_transform' => false,
 				'pins'                  => false,
 				'triggers'              => array( 'scroll', 'load', 'hover' ),

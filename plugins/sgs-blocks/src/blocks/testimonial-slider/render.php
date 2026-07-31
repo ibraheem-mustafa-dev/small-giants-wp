@@ -73,6 +73,25 @@ $hover_effect        = $attributes['effectHover'] ?? 'none';
 $transition_duration = $attributes['transitionDuration'] ?? '300';
 $transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
 
+// Draggable + Inertia roster opt-in (Spec 38 FR-38-13). `data-sgs-fx="draggable"`
+// is emitted on the __track element carrying the exact same grammar every Tier
+// G effect uses (§11.2). NOTE: this block's carousel is a transform-driven
+// infinite-loop track, not a native CSS scroll-snap container, so the shared
+// runtime's `type:'scroll'` mechanism (shared/effects/gsap/fx-draggable.js)
+// structurally cannot attach here and correctly no-ops. The real momentum
+// upgrade for THIS block's own pointer-drag lives in view.js — see its
+// docblock for why that split is the safe, universal-respecting choice.
+$drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
+$drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
+
+$track_fx_attr = '';
+if ( $drag_to_scroll ) {
+	$track_fx_attr = ' data-sgs-fx="draggable"';
+	if ( ! $drag_momentum ) {
+		$track_fx_attr .= ' data-sgs-fx-momentum="false"';
+	}
+}
+
 // Derive total slide count from actual inner blocks.
 $inner_blocks       = $block->inner_blocks ?? array();
 $total_testimonials = count( $inner_blocks );
@@ -423,9 +442,10 @@ if ( ! empty( $schema_items ) ) {
  * Controls bar sits beneath the full-width card row, centred.
  */
 $slider_inner = sprintf(
-	'<div class="sgs-testimonial-slider__stage">%s<div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s',
+	'<div class="sgs-testimonial-slider__stage">%s<div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s%s>%s</div>%s</div>%s',
 	$arrow_prev_html,
 	$track_style_attr,
+	$track_fx_attr,
 	$slides_html,
 	$arrow_next_html,
 	$controls_html

@@ -48,6 +48,9 @@
 		"interactivity": true,
 		"sgs": {
 			"imageControls": true,
+			"fx": {
+				"draggable": true
+			},
 			"elements": {
 				"grid": {
 					"label": "Grid",
@@ -320,6 +323,14 @@
 		"gapTablet": {
 			"type": "string",
 			"default": ""
+		},
+		"dragToScroll": {
+			"type": "boolean",
+			"default": false
+		},
+		"dragMomentum": {
+			"type": "boolean",
+			"default": true
 		}
 	},
 	"editorScript": "file:./index.js",
