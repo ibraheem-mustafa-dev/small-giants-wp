@@ -6,10 +6,25 @@ import {
 	SelectControl,
 	RangeControl,
 	Notice,
+	Button,
+	Spinner,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
 import MediaPicker from '../../components/MediaPicker';
+
+/**
+ * Hard cap on frames per tier (Step 16, Motion Wave D, Route B). Must stay
+ * in sync with $sgs_max_frame_count in render.php — THAT is the
+ * authoritative enforcement point (every render path goes through
+ * render.php; this block has no static save output). This constant only
+ * drives the editor-side slider limit + the over-cap warning below, so an
+ * operator sees the cap coming rather than discovering it as a silent
+ * frontend truncation.
+ */
+const MAX_FRAME_COUNT = 200;
 
 const ASPECT_RATIO_OPTIONS = [
 	{ label: __( 'Widescreen (16:9)', 'sgs-blocks' ), value: '16 / 9' },
@@ -28,6 +43,75 @@ const EXTENSION_OPTIONS = [
 ];
 
 /**
+ * "Verify frames" button — HEAD-checks the first and last expected frame
+ * file over REST (server-side, so no CORS issue and no client-side SSRF
+ * surface) and reports back by exact filename. Catches the four free-text
+ * fields (url/count/pad/ext) being wrong in a way that otherwise fails
+ * silently to poster-only with no explanation.
+ *
+ * @param {Object} props       Component props.
+ * @param {string} props.url   Frames-folder URL to check.
+ * @param {number} props.count Frame count to check.
+ * @param {number} props.pad   Zero-pad digit count.
+ * @param {string} props.ext   File extension.
+ */
+function VerifyFramesButton( { url, count, pad, ext } ) {
+	const [ status, setStatus ] = useState( 'idle' ); // idle | checking | ok | error
+	const [ result, setResult ] = useState( null );
+
+	const canVerify = Boolean( url ) && count > 0;
+
+	const onVerify = () => {
+		setStatus( 'checking' );
+		setResult( null );
+		apiFetch( {
+			path: '/sgs/v1/image-sequence/verify-frames',
+			method: 'POST',
+			data: { url, count, pad, ext },
+		} )
+			.then( ( response ) => {
+				setStatus( response.ok ? 'ok' : 'error' );
+				setResult( response );
+			} )
+			.catch( ( error ) => {
+				setStatus( 'error' );
+				setResult( {
+					message:
+						error?.message ||
+						__(
+							'The verification request failed unexpectedly.',
+							'sgs-blocks'
+						),
+				} );
+			} );
+	};
+
+	return (
+		<div className="sgs-image-sequence-editor__verify">
+			<Button
+				variant="secondary"
+				onClick={ onVerify }
+				disabled={ ! canVerify || 'checking' === status }
+				__next40pxDefaultSize
+			>
+				{ __( 'Verify frames', 'sgs-blocks' ) }
+			</Button>
+			{ 'checking' === status && <Spinner /> }
+			{ 'ok' === status && result && (
+				<Notice status="success" isDismissible={ false }>
+					{ result.message }
+				</Notice>
+			) }
+			{ 'error' === status && result && (
+				<Notice status="error" isDismissible={ false }>
+					{ result.message }
+				</Notice>
+			) }
+		</div>
+	);
+}
+
+/**
  * One tier's "Frame source" fields, reused for desktop (always shown) and
  * tablet/mobile (behind the responsive-overrides ToolsPanel below).
  *
@@ -41,6 +125,8 @@ const EXTENSION_OPTIONS = [
  * @param {Function} props.onChange Called with a partial `{ url, count, pad, ext }` patch.
  */
 function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
+	const overCap = count > MAX_FRAME_COUNT;
+
 	return (
 		<>
 			<TextControl
@@ -58,10 +144,23 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 						value={ count }
 						onChange={ ( value ) => onChange( { count: value } ) }
 						min={ 0 }
-						max={ 600 }
+						max={ MAX_FRAME_COUNT }
 						step={ 1 }
 						__nextHasNoMarginBottom
 					/>
+					{ overCap && (
+						<Notice status="warning" isDismissible={ false }>
+							{ sprintf(
+								/* translators: 1: stored frame count, 2: enforced maximum */
+								__(
+									'This tier is set to %1$d frames, above the %2$d-frame maximum. The site will only ever load the first %2$d — reduce the count above so the editor matches what visitors actually see.',
+									'sgs-blocks'
+								),
+								count,
+								MAX_FRAME_COUNT
+							) }
+						</Notice>
+					) }
 					<SelectControl
 						label={ __( 'File type', 'sgs-blocks' ) }
 						value={ ext }
@@ -81,6 +180,12 @@ function FrameSourceFields( { label, help, url, count, pad, ext, onChange } ) {
 						max={ 8 }
 						step={ 1 }
 						__nextHasNoMarginBottom
+					/>
+					<VerifyFramesButton
+						url={ url }
+						count={ count }
+						pad={ pad }
+						ext={ ext }
 					/>
 				</>
 			) }
@@ -136,6 +241,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={ __( 'Agency-managed block', 'sgs-blocks' ) }>
+					<Notice status="warning" isDismissible={ false }>
+						{ __(
+							'This block is hidden from the block inserter (agency-only) because setting it up needs a command-line tool with ffmpeg installed — not something a client is expected to do. This existing instance still works normally; you can still edit its settings here. To add this effect to a NEW section, ask Small Giants Studio to prepare the frames and place the block.',
+							'sgs-blocks'
+						) }
+					</Notice>
+				</PanelBody>
+
 				<PanelBody title={ __( 'Poster frame', 'sgs-blocks' ) }>
 					<p>
 						{ __(

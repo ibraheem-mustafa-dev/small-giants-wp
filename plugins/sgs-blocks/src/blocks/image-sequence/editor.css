@@ -31,3 +31,11 @@
 	font-size: 0.8125rem;
 	color: var( --wp--preset--color--contrast-3, #666 );
 }
+
+.sgs-image-sequence-editor__verify {
+	margin-top: 0.75rem;
+}
+
+.sgs-image-sequence-editor__verify .components-notice {
+	margin-top: 0.5rem;
+}

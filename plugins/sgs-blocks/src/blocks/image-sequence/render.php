@@ -56,6 +56,21 @@ if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 
 $allowed_ext = array( 'jpg', 'jpeg', 'png', 'webp', 'avif' );
 
+// Hard cap on frames per tier (Step 16, Motion Wave D, Route B). Uncapped
+// before this — an operator (or a pattern/clone bringing in a stale
+// attribute value from before the cap existed) could set an arbitrary
+// frame count. 200/tier is comfortably above the prep tool's own
+// recommended 60-150 range (IMAGE-SEQUENCE-PREP-README.md Step 2) while
+// still rejecting runaway values (e.g. 500) that would push a three-tier
+// instance's page-weight well past the realistic ~8 MB ballpark. This is
+// the ONE authoritative enforcement point: the block is dynamic
+// (`save: () => null`), so every render surface — direct page view,
+// pattern insertion, /sgs-clone output, the converter — executes THIS
+// render.php; there is no static-markup path that bypasses it. Keep this
+// value in sync with MAX_FRAME_COUNT in edit.js (editor-side warning only,
+// not an enforcement point on its own).
+$sgs_max_frame_count = 200;
+
 /**
  * Build one tier's frame config, or null when the operator has not run the
  * asset pipeline for it yet. `desktopFramesUrl`/`desktopFrameCount` etc. are
@@ -67,13 +82,16 @@ $allowed_ext = array( 'jpg', 'jpeg', 'png', 'webp', 'avif' );
  * @param string $ext_attr   Attribute key holding the file extension.
  * @return array{base:string,count:int,pad:int,ext:string}|null
  */
-$sgs_frame_tier = static function ( string $url_attr, string $count_attr, string $pad_attr, string $ext_attr ) use ( $attributes, $allowed_ext ) {
+$sgs_frame_tier = static function ( string $url_attr, string $count_attr, string $pad_attr, string $ext_attr ) use ( $attributes, $allowed_ext, $sgs_max_frame_count ) {
 	$url   = trim( (string) ( $attributes[ $url_attr ] ?? '' ) );
 	$count = absint( $attributes[ $count_attr ] ?? 0 );
 
 	if ( '' === $url || $count < 1 ) {
 		return null;
 	}
+
+	// Enforce the cap regardless of what the stored attribute says.
+	$count = min( $count, $sgs_max_frame_count );
 
 	$pad = absint( $attributes[ $pad_attr ] ?? 4 );
 	$pad = $pad > 0 && $pad <= 8 ? $pad : 4;

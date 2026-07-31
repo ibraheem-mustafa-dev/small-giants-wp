@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "title": "SGS Image Sequence",
     "category": "sgs-content",
-    "description": "Scroll-scrubbed canvas frame sequence (Apple-style product reveal). Requires frames produced by the Image Sequence Prep tool — see scripts/image-sequence-prep.py.",
+    "description": "AGENCY-ONLY — hidden from the block inserter. Scroll-scrubbed canvas frame sequence (Apple-style product reveal). Setting one up requires running a Python command-line tool (scripts/image-sequence-prep.py) that needs ffmpeg installed — not something a client should be asked to do. If a client build genuinely needs this effect, Small Giants Studio sets it up. See scripts/IMAGE-SEQUENCE-PREP-README.md for the full agency-side process.",
     "keywords": [
         "scroll",
         "canvas",
@@ -20,6 +20,7 @@
         "anchor": false,
         "html": false,
         "align": [ "wide", "full" ],
+        "inserter": false,
         "sgs": {
             "imageControls": true
         }

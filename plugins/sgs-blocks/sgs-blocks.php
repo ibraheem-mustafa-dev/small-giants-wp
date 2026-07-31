@@ -223,6 +223,10 @@ Trustpilot\Trustpilot_REST::register();
 Trustpilot\Trustpilot_Cron::register();
 Trustpilot\Trustpilot_Settings::register();
 
+// Image Sequence block — "Verify frames" REST endpoint (Step 16, Motion Wave D).
+require_once SGS_BLOCKS_PATH . 'includes/class-image-sequence-verify.php';
+Image_Sequence_Verify::register();
+
 // Stripe payment settings and PaymentIntent AJAX handler.
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();
