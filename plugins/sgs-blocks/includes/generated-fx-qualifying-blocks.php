@@ -52,7 +52,7 @@ function sgs_get_fx_qualifying_blocks() {
 			'sgs/product-card' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/product-faq' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/quote' => array( 'scramble', 'scrub', 'split-reveal' ),
-			'sgs/responsive-logo' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
+			'sgs/responsive-logo' => array( 'morph', 'motion-path', 'scrub' ),
 			'sgs/separator' => array( 'draw', 'morph', 'motion-path', 'scrub' ),
 			'sgs/team-member' => array( 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/testimonial' => array( 'scramble', 'scrub', 'split-reveal' ),

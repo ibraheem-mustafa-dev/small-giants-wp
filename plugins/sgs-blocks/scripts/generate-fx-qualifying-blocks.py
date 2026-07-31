@@ -311,7 +311,42 @@ def compute_map() -> dict[str, list[str]]:
         # effect's availability is CONDITIONAL on the panel existing, so it
         # cannot be the thing that justifies the panel.
         if specific:
-            result[block_slug] = sorted(specific + permissive)
+            offered = sorted(specific + permissive)
+
+            # NATIVE-CAPABILITY EXCLUSION (added 2026-07-31, Wave C).
+            #
+            # A block may ALREADY expose an fx capability through its own
+            # dedicated control, in which case offering the same capability
+            # again in the generic "Scroll & effects" picker would put TWO
+            # controls for ONE capability on that block — which this codebase
+            # bans (HC2 / the duplicate-control gate).
+            #
+            # The live case: `sgs/responsive-logo` owns stroke-draw through its
+            # `animationStyle` enum (draw-on-load | hover-redraw |
+            # scroll-trigger), which FR-38-15 keeps byte-identical across the
+            # Vivus -> DrawSVG runtime swap. The other three SVG-bearing blocks
+            # (icon / separator / decorative-image) genuinely DO want `draw`
+            # from the picker, so a blanket "drop draw" would be wrong too.
+            #
+            # This is expressed as a DECLARATION THE BLOCK OWNS
+            # (`supports.sgs.fx.providesNatively`), not a slug carve-out here —
+            # `fx.js`'s own comment named that as the required shape of the fix,
+            # and R-31-1 forbids a hardcoded per-block dict in a pipeline
+            # script. Any future block that natively owns an fx capability
+            # declares it the same way and needs no change to this generator.
+            natively_provided = set(
+                block_json.get("supports", {})
+                .get("sgs", {})
+                .get("fx", {})
+                .get("providesNatively", [])
+            )
+            if natively_provided:
+                offered = [e for e in offered if e not in natively_provided]
+
+            # Guard: if the exclusion emptied the roster, the block should not
+            # get an fx panel at all rather than an empty picker.
+            if offered:
+                result[block_slug] = offered
 
     return result
 

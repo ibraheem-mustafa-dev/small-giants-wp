@@ -63,22 +63,33 @@ const SHIPPED_EFFECTS = [
 	// entirely by grammar params this panel already emits, so selecting it here
 	// genuinely works end to end.
 	//
-	// Deliberately NOT added, and each for a stated reason — an effect listed
-	// here that a client cannot actually operate is worse than an unshipped
-	// one, which is the whole point of this gate:
-	//   · `draw`   — module landed, but `sgs/responsive-logo` already exposes
-	//                the same capability through its own `animationStyle` enum
-	//                (FR-38-15 keeps that enum byte-identical). Listing it here
-	//                would put TWO controls for one capability on that block,
-	//                which this codebase bans. The other SVG-bearing blocks
-	//                (icon/separator/decorative-image) genuinely want it, so
-	//                the fix is a data-driven exclusion in the qualifying-blocks
-	//                generator, not a code carve-out here.
-	//   · `morph`, `motion-path` — modules landed, but each needs a
-	//                target-asset param that exists in no grammar, no DB row
-	//                and no control. Offering them would be a control that
-	//                cannot be configured.
 	'scramble',
+	// `draw` ADDED 2026-07-31. The blocker was never the module — it landed in
+	// Wave C and is live-verified (8 distinct stroke-dash states across one
+	// scroll sweep on the canary). The blocker was that `sgs/responsive-logo`
+	// already owns this capability through its own `animationStyle` enum, so
+	// offering it here too would put TWO controls for ONE capability on that
+	// block. That is now solved where it belongs: responsive-logo declares
+	// `supports.sgs.fx.providesNatively: [ "draw" ]` and
+	// generate-fx-qualifying-blocks.py subtracts it from that block's derived
+	// roster — the exact "data-driven exclusion in the qualifying-blocks
+	// generator, not a code carve-out here" this comment previously called for.
+	// icon / separator / decorative-image now offer it, responsive-logo does
+	// not, and no slug is named in either file.
+	//
+	// Fully operable end to end: the trigger picker is driven from
+	// `fxEffectMeta.draw.triggers` (scroll,load,hover) rather than a hardcoded
+	// list, so selecting `draw` yields a real, configurable control.
+	'draw',
+	// Deliberately STILL NOT added — an effect listed here that a client cannot
+	// actually operate is worse than an unshipped one, which is the whole point
+	// of this gate:
+	//   · `morph`, `motion-path` — modules landed, but each needs a target
+	//                param that exists in no §11.2 grammar, no `block_attributes`
+	//                row and no control. Offering them would be a control that
+	//                cannot be configured. Spec 38 §7 requires an ASSET-GATED
+	//                surface with authoring guidance for morph; that is a
+	//                Bean-owned design decision, not a line in this array.
 ];
 
 const FX_OPTION_LABELS = {
@@ -87,6 +98,7 @@ const FX_OPTION_LABELS = {
 	'horizontal-panel': __( 'Horizontal scroll section', 'sgs-blocks' ),
 	'split-reveal': __( 'Text reveal (split)', 'sgs-blocks' ),
 	scramble: __( 'Text scramble', 'sgs-blocks' ),
+	draw: __( 'Draw SVG lines', 'sgs-blocks' ),
 };
 
 /**

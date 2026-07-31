@@ -80,7 +80,6 @@
 		"split-reveal"
 	],
 	"sgs/responsive-logo": [
-		"draw",
 		"morph",
 		"motion-path",
 		"scrub"
