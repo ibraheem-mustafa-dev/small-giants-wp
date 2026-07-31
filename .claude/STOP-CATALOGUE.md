@@ -23,6 +23,47 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-A-TEST-CAN-PASS-THE-VERY-DEFECT-IT-WAS-WRITTEN-TO-CATCH** — NEW 2026-07-31 (D430).
+  The image-sequence probe's pass criterion was "luminance spread >= 5". The recorded defect had a
+  spread of **63** and sailed through, because 60% of the scroll produced no change at all and the
+  criterion never looked at DISTRIBUTION. Worse: the replacement I first briefed to a subagent
+  ("at least 3 of 5 samples distinct") would ALSO have passed it — the failure
+  `86.14, 86.14, 86.14, 128.60, 149.39` has exactly **three** distinct values. The agent caught it
+  and used strictly-increasing-at-every-step instead, negative-controlled against the recorded
+  defect, reversed frames and a blank canvas. **Before trusting a gate, run the KNOWN FAILURE
+  through it and confirm it goes red.** A criterion that has never been shown to fail is a
+  decoration. Sibling of `negative-control-or-the-test-is-vacuous`, but sharper: here the test
+  existed, ran, and reported PASS on the bug.
+
+- **STOP-A-A-PROBE-THAT-NEVER-REACHES-THE-EFFECT-IS-MEASURING-THE-PROBE** — NEW 2026-07-31 (D430).
+  Four of my own probe results were false before any code was. (1) A sampler installed at page load
+  reported DrawSVG and ScrambleText as "never fired" — both default to `trigger: scroll` and were
+  below the fold, correctly waiting. (2) `scrollIntoViewIfNeeded` scrolls the MINIMUM distance, so
+  it parked a scrubbed element short of its trigger's start and the scrub read as dead. (3) Two
+  adjacent scramble headings entered view together, so the first one's sampling window consumed
+  BOTH tweens and the second read as inert. (4) A before/after drag whose endpoints coincidentally
+  matched its start point read as "never moved" while having passed through twelve intermediate
+  values. **Every one of these looked like a product defect and was a measurement defect.** Fact-
+  check your own diagnostic before you fact-check the code — and for a scroll-triggered effect,
+  sweep THROUGH its range rather than merely bringing it on screen.
+
+- **STOP-A-A-DEPLOY-COPY-MUST-INCLUDE-ASSETS** — NEW 2026-07-31 (D430). Building an isolated deploy
+  worktree, I copied `src`, `includes`, `scripts` and `build` — and not `assets/`. The new
+  `fx-motion-path.css` therefore 404'd on the canary, and the hidden route `<svg>` it was supposed
+  to hide rendered as a **1200x1200 black shape** on the page. Nothing in the build or deploy output
+  said a word; the verify step passed because the HOMEPAGE was fine. **A partial worktree copy is a
+  silent-omission machine.** Copy the whole plugin directory, or diff the copy against the source
+  tree before shipping. Found only by loading the page as a visitor would.
+
+- **STOP-A-A-PROSE-CLAIM-IN-A-REPORT-IS-NOT-A-COMMITTED-ARTEFACT** — NEW 2026-07-31 (D430). The
+  2026-07-30 deploy report stated that `fx_effects.draw` and `.scramble` had been corrected to
+  declare ScrollTrigger, "corrected against the built output rather than against intent". The
+  correction had never reached `seed-motion-fx-registry.py` — both rows still read without it a day
+  later. A report sentence describing a fix is not the fix. **When a prior session's doc claims a
+  change landed, grep the artefact before building on it.** Extends the existing
+  `a-prose-claim-is-not-a-committed-artefact` entry with a same-family recurrence.
+
+
 - **STOP-A-A-CHECKSUM-ACROSS-A-GIT-BOUNDARY-ON-WINDOWS-IS-NOT-A-MEASUREMENT** — NEW 2026-07-31
   (D426). Checking whether the shared `build/` carried a co-active track's uncommitted work, I
   compared each `build/blocks/*/render.php` against `git show HEAD:<src>` and got three hits
