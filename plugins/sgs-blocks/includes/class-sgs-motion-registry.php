@@ -353,66 +353,16 @@ class SGS_Motion_Registry {
 		 */
 		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'maybe_enqueue_page_transitions' ) );
 
-		/*
-		 * Editor-surface import-map shim (Spec 38 §9, D388 follow-up,
-		 * confirmed live 2026-07-31). `sgs/before-after` and
-		 * `sgs/testimonial-slider` each declare their OWN `viewScriptModule`,
-		 * which WordPress core auto-enqueues whenever that block type appears
-		 * anywhere in the post — including on the wp-admin edit screen, a
-		 * genuine WP-core behaviour this plugin cannot change (WP's own docs
-		 * say "frontend only"; live testing on this WP 7.0.2 install proved
-		 * otherwise, twice). Both files gate their OWN drag/momentum
-		 * behaviour correctly behind `isEditorSurface()` — but webpack's
-		 * `externalsType: 'module'` (webpack.config.js, Spec 38 §4.4/D409)
-		 * cannot preserve a genuine dynamic `import()` for an externalised
-		 * bare specifier: it compiles the source's gated
-		 * `import('gsap/Draggable')` / `import('gsap/InertiaPlugin')` into an
-		 * UNCONDITIONAL STATIC top-level `import` in the built file. A static
-		 * import resolves at module-LINK time, before `isEditorSurface()` or
-		 * any `.catch()` in the file ever runs, so no JS-level gate can stop
-		 * it — only an import-map entry can. Fixing the webpack collapse
-		 * itself is out of scope here (shared, high-blast-radius build file,
-		 * root CLAUDE.md Rule 7 — needs its own design-gate).
-		 *
-		 * This enqueues the three specifiers those two files' static imports
-		 * need, ADMIN ONLY, so the browser's import map carries them and the
-		 * static import resolves instead of throwing "Failed to resolve
-		 * module specifier". Enqueuing (not just registering) is what makes
-		 * WordPress print the import-map entry — mere registration in
-		 * `register_modules()` above does not (confirmed live: registration
-		 * is unconditional, yet the admin import map lacked these keys until
-		 * something enqueued them).
-		 *
-		 * This does NOT make motion run in wp-admin (Spec 38 §9). Verified
-		 * live: executing these three files causes zero DOM mutations, zero
-		 * extra requestAnimationFrame/setInterval/setTimeout calls beyond the
-		 * page's own ambient activity, an empty `gsap.globalTimeline`, and no
-		 * `ScrollTrigger` — they only export plugin classes / utility
-		 * functions. `isEditorSurface()` still correctly blocks the actual
-		 * drag/momentum call sites once the import succeeds; this shim only
-		 * removes the resolution failure that happened before that gate ever
-		 * ran.
-		 */
-		\add_action( 'admin_enqueue_scripts', array( __CLASS__, 'maybe_enqueue_editor_map_shim' ) );
-	}
-
-	/**
-	 * Admin-only import-map shim for `sgs/before-after` + `sgs/testimonial-
-	 * slider`'s own auto-enqueued `viewScriptModule`s. See the docblock on
-	 * `register()` above for the full mechanism and evidence.
-	 *
-	 * @return void
-	 */
-	public static function maybe_enqueue_editor_map_shim(): void {
-		if ( ! \function_exists( 'wp_enqueue_script_module' ) ) {
-			return;
-		}
-
-		foreach ( array( '@sgs/motion-provider', '@sgs/gsap-draggable', '@sgs/gsap-inertia' ) as $module_id ) {
-			if ( isset( self::MODULES[ $module_id ] ) ) {
-				\wp_enqueue_script_module( $module_id );
-			}
-		}
+		// REMOVED (2026-07-31 D#### follow-up): `maybe_enqueue_editor_map_shim()`
+		// was deleted because webpack's `/* webpackIgnore: true */` pragma
+		// (commits d1e164c9, 82a08b8a) now prevents the webpack collapse that
+		// created bare static imports needing the shim. The built files
+		// (`before-after/view.js`, `testimonial-slider/view.js`) now use
+		// genuine deferred imports; a static import cannot surface. Before
+		// re-adding shim logic, verify: (1) no bare static imports in src/blocks/*/view.js
+		// (except under `webpackIgnore` comments), (2) both built view files
+		// start with runtime code, not an import statement. The shim was
+		// load-bearing only while the webpack collapse was unfixed.
 	}
 
 	/**
