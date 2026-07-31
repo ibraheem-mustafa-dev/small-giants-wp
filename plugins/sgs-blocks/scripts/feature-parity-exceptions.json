@@ -1,20 +1,793 @@
 {
   "_schema": {
-    "purpose": "Spec 35 feature-parity exceptions. Covers BOTH (a) audit over-reports (a core capability that has a genuine SGS equivalent under a different name / is not meaningful for SGS) AND (b) legitimately-deferred core capabilities mapped to a Wave. A gap is CLOSED or recorded here with a reason+wave — NEVER silently baselined.",
-    "shape": "{ \"sgs/block\": { \"coreCapabilityName\": { \"reason\": \"...\", \"wave\": \"Wave-N | over-report | native\" } } }",
-    "framework_universal_note": "`_framework_universal` suppresses core capabilities that SGS provides FRAMEWORK-WIDE by architecture (not a per-block functional gap). These are (1) styling supports expressed via SGS's no-inline scoped contract + universal extensions, and (2) WP inline-colour / serialisation attrs SGS deliberately rejects (Spec 32 no-inline). This is POLICY-AS-DATA (reviewable here), not a hardcoded dict in the audit logic (R-31-1)."
+    "purpose": "Spec 35 feature-parity exceptions. Covers BOTH (a) audit over-reports (a core capability that has a genuine SGS equivalent under a different name/shape, or is not meaningful for SGS) AND (b) legitimately-deferred core capabilities mapped to a Wave, AND (c) SOURCE-MISSING findings (a replaced core block has no native_wp rows in the DB) recorded against the sentinel capability \"(none)\". A gap is CLOSED or recorded here with a reason+wave -- NEVER silently baselined.",
+    "shape": "{ \"sgs/block\": { \"core/replaces-slug\": { \"capabilityName\": { \"reason\": \"...\", \"wave\": \"Wave-N | over-report | native\" } } } } -- keyed on the 3-tuple (block, replaces, capability), NOT a flat (block, capability) 2-tuple. This matters because a block can replace MULTIPLE core blocks (e.g. sgs/media replaces BOTH core/image and core/video) -- a 2-tuple key would silence a capability against every replaced core block at once even when it only applies to one of them.",
+    "wave_values_note": "\"over-report\" = the audit false-flagged a genuine SGS equivalent under a different name/shape (norm() only folds case/colour/hyphen/underscore, not semantic renames) -- human-verified against the block's real attribute list, not a hardcoded alias dict (R-31-1). \"native\" = a WP-core-internal editor/plumbing attribute that is not a client-facing functional capability, OR the replaced core block has zero native_wp rows in the DB (SOURCE-MISSING -- an audit data-source gap, not a functional one; capability key \"(none)\" in that case). \"Wave-N\" (e.g. \"Wave-parity-1\", \"W-nav-surface\") = a genuine deferred functional gap, tracked for a future build wave.",
+    "framework_universal_note": "`_framework_universal` suppresses core capabilities that SGS provides FRAMEWORK-WIDE by architecture (not a per-block functional gap). These are (1) styling supports expressed via SGS's no-inline scoped contract + universal extensions, and (2) WP inline-colour / serialisation attrs SGS deliberately rejects (Spec 32 no-inline). This is POLICY-AS-DATA (reviewable here), not a hardcoded dict in the audit logic (R-31-1).",
+    "measured_at": "SHA 231ecbd4 (2026-07-31) -- 157 unexplained GAPs + 3 SOURCE-MISSING across 23 in-scope blocks, classified in full this session. See .claude/reports/2026-07-31-feature-parity-measurement.md."
   },
   "_framework_universal": {
     "capabilities": [
-      "border", "spacing", "typography", "dimensions", "color", "align", "alignWide",
-      "anchor", "layout", "shadow", "position", "background", "className", "customClassName",
-      "backgroundColor", "textColor", "customBackgroundColor", "customTextColor",
-      "customGradient", "gradient", "customFontSize", "fontSize", "customColor",
-      "customMainColor", "mainColor", "customIconColor", "customIconBackgroundColor",
-      "iconColorValue", "iconBackgroundColorValue",
-      "interactivity", "reusable", "blob", "lock", "metadata",
-      "id", "src", "placeholder", "splitting", "tagName"
+      "border",
+      "spacing",
+      "typography",
+      "dimensions",
+      "color",
+      "align",
+      "alignWide",
+      "anchor",
+      "layout",
+      "shadow",
+      "position",
+      "background",
+      "className",
+      "customClassName",
+      "backgroundColor",
+      "textColor",
+      "customBackgroundColor",
+      "customTextColor",
+      "customGradient",
+      "gradient",
+      "customFontSize",
+      "fontSize",
+      "customColor",
+      "customMainColor",
+      "mainColor",
+      "customIconColor",
+      "customIconBackgroundColor",
+      "iconColorValue",
+      "iconBackgroundColorValue",
+      "interactivity",
+      "reusable",
+      "blob",
+      "lock",
+      "metadata",
+      "id",
+      "src",
+      "placeholder",
+      "splitting",
+      "tagName"
     ],
     "reason": "Provided framework-wide by SGS architecture: styling via the no-inline scoped contract + universal extensions (Spec 32); WP inline-colour/serialisation attrs deliberately rejected (no-inline); plus pure editor/WP plumbing attrs (id/src/blob/placeholder/splitting/tagName/lock/metadata) that are never client-facing functional controls. Not a per-block functional parity gap. Reviewed 2026-07-19."
+  },
+  "sgs/accordion": {
+    "core/accordion": {
+      "ariaLabel": {
+        "reason": "No group-level ariaLabel control on the accordion wrapper; deferred a11y control.",
+        "wave": "Wave-parity-1"
+      },
+      "autoclose": {
+        "reason": "Inverse-polarity equivalent of `allowMultiple` (allowMultiple=false == autoclose=true).",
+        "wave": "over-report"
+      },
+      "headingLevel": {
+        "reason": "No control to set the heading level used for each item's summary; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "levelOptions": {
+        "reason": "WP-internal allowed-heading-levels list paired with headingLevel; editor plumbing, not a standalone capability.",
+        "wave": "native"
+      },
+      "showIcon": {
+        "reason": "openIcon/closeIcon customise WHICH icon shows, but there's no boolean to hide the icon entirely; deferred.",
+        "wave": "Wave-parity-1"
+      }
+    }
+  },
+  "sgs/accordion-item": {
+    "core/accordion-item": {
+      "openByDefault": {
+        "reason": "Equivalent to `isOpen` attr.",
+        "wave": "over-report"
+      }
+    },
+    "core/details": {
+      "name": {
+        "reason": "HTML5 <details name> exclusive-group mechanism; SGS achieves exclusivity via accordion-level `allowMultiple` instead \u2014 architectural, not a per-item attr.",
+        "wave": "native"
+      },
+      "showContent": {
+        "reason": "Same open/closed state family as `isOpen`.",
+        "wave": "over-report"
+      },
+      "summary": {
+        "reason": "Equivalent to `title` attr.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/audio": {
+    "core/audio": {
+      "autoplay": {
+        "reason": "Equivalent to `audioAutoplay` (prefixed rename `norm()` doesn't fold).",
+        "wave": "over-report"
+      },
+      "caption": {
+        "reason": "No caption/description text control on sgs/audio; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "loop": {
+        "reason": "Equivalent to `audioLoop`.",
+        "wave": "over-report"
+      },
+      "preload": {
+        "reason": "Equivalent to `audioPreload`.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/breadcrumbs": {
+    "core/breadcrumbs": {
+      "prefersTaxonomy": {
+        "reason": "No control to prefer a taxonomy archive over the post type archive in the trail; deferred, niche.",
+        "wave": "Wave-parity-1"
+      },
+      "showCurrentItem": {
+        "reason": "No toggle to hide the current (non-linked) page from the trail; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "showHomeItem": {
+        "reason": "Equivalent to `showHome`.",
+        "wave": "over-report"
+      },
+      "showOnHomePage": {
+        "reason": "No toggle to suppress the whole breadcrumb trail on the homepage; deferred.",
+        "wave": "Wave-parity-1"
+      }
+    }
+  },
+  "sgs/button": {
+    "core/button": {
+      "borderRadius": {
+        "reason": "Provided by the native `__experimentalBorder` support (framework-universal styling contract).",
+        "wave": "over-report"
+      },
+      "title": {
+        "reason": "No HTML `title` tooltip-text control; deferred (ariaLabel covers accessible name, not the visual tooltip).",
+        "wave": "Wave-parity-1"
+      },
+      "type": {
+        "reason": "Equivalent to `isSubmit` (boolean covers the submit/button distinction).",
+        "wave": "over-report"
+      },
+      "text": {
+        "reason": "Equivalent to `label`.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/container": {
+    "core/column": {
+      "templateLock": {
+        "reason": "WP InnerBlocks editor-lock mechanism; internal editor plumbing, not a client-facing capability.",
+        "wave": "native"
+      },
+      "verticalAlignment": {
+        "reason": "Equivalent to `verticalAlign`.",
+        "wave": "over-report"
+      },
+      "width": {
+        "reason": "core/column's per-child percentage width has no direct sgs/container equivalent (grid-ratio columns via gridTemplateColumns are the nearest analogue but not a literal per-child width control); deferred.",
+        "wave": "Wave-parity-1"
+      }
+    },
+    "core/columns": {
+      "isStackedOnMobile": {
+        "reason": "Achieved via responsive `gridTemplateColumnsMobile`/`gridTemplateColumnsTablet` \u2014 mobile stacking is the default responsive behaviour, not a separate toggle.",
+        "wave": "over-report"
+      },
+      "templateLock": {
+        "reason": "See core/column templateLock.",
+        "wave": "native"
+      },
+      "verticalAlignment": {
+        "reason": "Equivalent to `verticalAlign`.",
+        "wave": "over-report"
+      }
+    },
+    "core/group": {
+      "ariaLabel": {
+        "reason": "No landmark aria-label control on the container wrapper; deferred a11y control.",
+        "wave": "Wave-parity-1"
+      },
+      "templateLock": {
+        "reason": "See core/column templateLock.",
+        "wave": "native"
+      }
+    },
+    "core/row": {
+      "(none)": {
+        "reason": "core/row has no native_wp rows in the DB (newer WP core block not yet ingested) \u2014 re-run /sgs-update; not a functional gap, an audit data-source gap.",
+        "wave": "native"
+      }
+    },
+    "core/stack": {
+      "(none)": {
+        "reason": "core/stack has no native_wp rows in the DB (newer WP core block not yet ingested) \u2014 re-run /sgs-update; not a functional gap, an audit data-source gap.",
+        "wave": "native"
+      }
+    }
+  },
+  "sgs/form": {
+    "core/form": {
+      "action": {
+        "reason": "SGS forms submit exclusively via the plugin's own secured REST endpoint (nonce + rate-limit + honeypot) \u2014 an external action URL is deliberately not exposed; see plugin CLAUDE.md forms architecture.",
+        "wave": "over-report"
+      },
+      "email": {
+        "reason": "SGS forms notify via N8N webhooks, not wp_mail/a per-block email attr \u2014 documented plugin architecture (plugins/sgs-blocks/CLAUDE.md).",
+        "wave": "over-report"
+      },
+      "method": {
+        "reason": "SGS forms always POST to the REST endpoint by design (GET forms are a security anti-pattern); not a configurable capability.",
+        "wave": "over-report"
+      },
+      "submissionMethod": {
+        "reason": "Same fixed-pipeline architecture as `action`/`method` \u2014 one secure server-side processing path, no mode selector needed.",
+        "wave": "over-report"
+      }
+    },
+    "core/form-submit-button": {
+      "(none)": {
+        "reason": "core/form-submit-button has no native_wp rows in the DB \u2014 re-run /sgs-update once WP re-ingests this sub-block; not a functional gap, an audit data-source gap.",
+        "wave": "native"
+      }
+    }
+  },
+  "sgs/gallery": {
+    "core/gallery": {
+      "allowResize": {
+        "reason": "Editor-only per-image manual-resize handle; internal editor UI, not a functional capability.",
+        "wave": "native"
+      },
+      "caption": {
+        "reason": "Per-image captions are supported inside the `mediaItems` repeater (gated by `showCaptions`) \u2014 a nested object field, invisible to the DB's flat attr-name scan.",
+        "wave": "over-report"
+      },
+      "fixedHeight": {
+        "reason": "Achieved via `aspectRatio`, which locks uniform image dimensions across the grid.",
+        "wave": "over-report"
+      },
+      "ids": {
+        "reason": "Attachment IDs live inside the `mediaItems`/`images` repeater objects \u2014 nested, invisible to the flat attr-name scan.",
+        "wave": "over-report"
+      },
+      "imageCrop": {
+        "reason": "No cover/contain crop toggle for gallery images; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "linkTarget": {
+        "reason": "Gallery images only support the lightbox interaction model (`enableLightbox`); no click-through-to-URL + new-tab option. Deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "linkTo": {
+        "reason": "Same click-through-destination gap as `linkTarget`; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "navigationButtonType": {
+        "reason": "Editor-only crop-navigation UI control; internal plumbing.",
+        "wave": "native"
+      },
+      "randomOrder": {
+        "reason": "No shuffle/random-order toggle; deferred, low priority.",
+        "wave": "Wave-parity-1"
+      },
+      "shortCodeTransforms": {
+        "reason": "WP core [gallery]-shortcode back-compat migration plumbing; not a functional capability.",
+        "wave": "native"
+      },
+      "sizeSlug": {
+        "reason": "Equivalent to `imageSize`.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/heading": {
+    "core/heading": {
+      "levelOptions": {
+        "reason": "WP-internal allowed-heading-levels restriction list; editor plumbing paired with `level`.",
+        "wave": "native"
+      }
+    }
+  },
+  "sgs/hero": {
+    "core/cover": {
+      "alt": {
+        "reason": "Hero background images are decorative CSS backgrounds (WCAG permits omitting alt text for purely decorative backgrounds); not a content image needing alt text.",
+        "wave": "over-report"
+      },
+      "backgroundType": {
+        "reason": "Determined implicitly by which of `backgroundImage`/`bgVideo` is populated \u2014 functionally equivalent, just not an explicit enum toggle.",
+        "wave": "over-report"
+      },
+      "contentPosition": {
+        "reason": "Achieved by combining `verticalAlign` + `textAlignDesktop`/`Tablet`/`Mobile` \u2014 together they cover the same 9-point content-position grid.",
+        "wave": "over-report"
+      },
+      "customOverlayColor": {
+        "reason": "Equivalent to `overlayColour`.",
+        "wave": "over-report"
+      },
+      "dimRatio": {
+        "reason": "Equivalent to `overlayOpacity`/`backgroundOverlayOpacity`.",
+        "wave": "over-report"
+      },
+      "focalPoint": {
+        "reason": "No precise x/y focal-point picker for the background image \u2014 only preset `backgroundPosition` keywords (center/top/etc.); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "hasParallax": {
+        "reason": "Equivalent to `bgParallax`.",
+        "wave": "over-report"
+      },
+      "isDark": {
+        "reason": "WP-internal computed readability flag (auto light/dark text-over-image); not a user-facing control.",
+        "wave": "native"
+      },
+      "isRepeated": {
+        "reason": "No tiled/repeated-background-pattern mode; hero backgrounds are always cover/no-repeat. Deferred, niche.",
+        "wave": "Wave-parity-1"
+      },
+      "isUserOverlayColor": {
+        "reason": "WP-internal flag marking whether the overlay colour was explicitly user-set vs default; plumbing.",
+        "wave": "native"
+      },
+      "minHeightUnit": {
+        "reason": "`minHeight`/`minHeightMobile`/`minHeightTablet` have no accompanying unit attr (px assumed); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "poster": {
+        "reason": "No poster-image control for the background video; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "sizeSlug": {
+        "reason": "Hero backgrounds are always rendered full-bleed/full-resolution \u2014 a thumbnail-size preset is not a meaningful use case for a full-viewport background.",
+        "wave": "over-report"
+      },
+      "templateLock": {
+        "reason": "See core/column templateLock.",
+        "wave": "native"
+      },
+      "url": {
+        "reason": "Equivalent to `backgroundImage`.",
+        "wave": "over-report"
+      },
+      "useFeaturedImage": {
+        "reason": "No dynamic binding to the current post's featured image as the hero background; deferred.",
+        "wave": "Wave-parity-1"
+      }
+    },
+    "core/media-text": {
+      "focalPoint": {
+        "reason": "Same focal-point gap as core/cover \u2014 only preset position keywords, no x/y picker; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "href": {
+        "reason": "No click-through link on the split-layout media panel itself; deferred, niche.",
+        "wave": "Wave-parity-1"
+      },
+      "imageFill": {
+        "reason": "Equivalent to `imageObjectFit`.",
+        "wave": "over-report"
+      },
+      "isStackedOnMobile": {
+        "reason": "Split hero layout always stacks to a single column at the mobile breakpoint (`splitImageMobile`/`splitContentOrderMobile`) \u2014 built-in responsive behaviour, not a separate toggle.",
+        "wave": "over-report"
+      },
+      "linkClass": {
+        "reason": "Plumbing attr tied to the same deferred `href` capability above; no standalone need until href ships.",
+        "wave": "Wave-parity-1"
+      },
+      "linkDestination": {
+        "reason": "Same deferred link-the-media-panel feature as `href`.",
+        "wave": "Wave-parity-1"
+      },
+      "linkTarget": {
+        "reason": "Same deferred link-the-media-panel feature as `href`.",
+        "wave": "Wave-parity-1"
+      },
+      "mediaAlt": {
+        "reason": "No alt-text control for the hero's split/media image \u2014 genuine accessibility gap, worth prioritising over the other hero deferrals.",
+        "wave": "Wave-parity-1"
+      },
+      "mediaId": {
+        "reason": "No attachment-ID reference stored for the split image (URL-only); deferred \u2014 verify whether this blocks any WP media-library re-selection workflow.",
+        "wave": "Wave-parity-1"
+      },
+      "mediaLink": {
+        "reason": "Same deferred link-the-media-panel feature as `href`.",
+        "wave": "Wave-parity-1"
+      },
+      "mediaPosition": {
+        "reason": "Equivalent to the hero `variant`/split-layout attrs (`splitImage`, layout direction) which already control left/right media placement.",
+        "wave": "over-report"
+      },
+      "mediaSizeSlug": {
+        "reason": "No image-size preset for the split media image; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "mediaType": {
+        "reason": "Implicit from which media attrs are populated (image vs video), same pattern as `backgroundType` on core/cover.",
+        "wave": "over-report"
+      },
+      "mediaUrl": {
+        "reason": "Equivalent to `splitImage`/`splitMedia`.",
+        "wave": "over-report"
+      },
+      "mediaWidth": {
+        "reason": "Equivalent to `imageWidth`/`imageWidthMobile`/`imageWidthTablet`.",
+        "wave": "over-report"
+      },
+      "rel": {
+        "reason": "Same deferred link-the-media-panel feature as `href`.",
+        "wave": "Wave-parity-1"
+      },
+      "useFeaturedImage": {
+        "reason": "Same deferred dynamic-featured-image binding as core/cover.",
+        "wave": "Wave-parity-1"
+      }
+    }
+  },
+  "sgs/icon": {
+    "core/icon": {
+      "icon": {
+        "reason": "Covered by the richer `iconName`/`iconSource`/`dashiconName`/`wpIconName`/`emojiChar` multi-source icon-picker family.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/media": {
+    "core/image": {
+      "alt": {
+        "reason": "Equivalent to `imageAlt`.",
+        "wave": "over-report"
+      },
+      "aspectRatio": {
+        "reason": "No aspect-ratio-lock control for a single media image (height/width/max-* are absolute, not ratio-based); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "focalPoint": {
+        "reason": "Covered functionally by `objectPosition` (preset position keywords achieve the same crop-focus outcome as a free x/y focal point).",
+        "wave": "over-report"
+      },
+      "href": {
+        "reason": "Equivalent to `linkUrl`.",
+        "wave": "over-report"
+      },
+      "lightbox": {
+        "reason": "No click-to-enlarge lightbox on a single sgs/media image (lightbox exists on sgs/gallery only); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "linkClass": {
+        "reason": "Plumbing/niche \u2014 no custom CSS class control specifically for the generated link wrapper; deferred, low priority.",
+        "wave": "Wave-parity-1"
+      },
+      "linkDestination": {
+        "reason": "`linkUrl` covers the common custom-URL case; the WP-specific 'attachment page' destination is not applicable outside wp-admin media workflows.",
+        "wave": "over-report"
+      },
+      "linkTarget": {
+        "reason": "Equivalent to `linkOpensNewTab`.",
+        "wave": "over-report"
+      },
+      "rel": {
+        "reason": "Equivalent to `linkRel`.",
+        "wave": "over-report"
+      },
+      "scale": {
+        "reason": "Equivalent to `objectFit`.",
+        "wave": "over-report"
+      },
+      "sizeSlug": {
+        "reason": "No image-size preset selector on sgs/media (unlike sgs/gallery's `imageSize`); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "title": {
+        "reason": "No HTML `title` tooltip-text control; deferred (same pattern as sgs/button `title`).",
+        "wave": "Wave-parity-1"
+      },
+      "url": {
+        "reason": "Equivalent to `imageUrl`.",
+        "wave": "over-report"
+      },
+      "width": {
+        "reason": "Equivalent to `imageWidth`.",
+        "wave": "over-report"
+      }
+    },
+    "core/video": {
+      "autoplay": {
+        "reason": "Equivalent to `videoAutoplay`.",
+        "wave": "over-report"
+      },
+      "controls": {
+        "reason": "Equivalent to `videoControls`.",
+        "wave": "over-report"
+      },
+      "loop": {
+        "reason": "Equivalent to `videoLoop`.",
+        "wave": "over-report"
+      },
+      "muted": {
+        "reason": "Equivalent to `videoMuted`.",
+        "wave": "over-report"
+      },
+      "playsInline": {
+        "reason": "Equivalent to `videoPlaysInline`.",
+        "wave": "over-report"
+      },
+      "poster": {
+        "reason": "Equivalent to `videoPoster`.",
+        "wave": "over-report"
+      },
+      "preload": {
+        "reason": "No preload-strategy control for direct video (audio has `audioPreload`, video does not); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "tracks": {
+        "reason": "No captions/subtitles-track support for direct video \u2014 genuine accessibility gap, worth prioritising.",
+        "wave": "Wave-parity-1"
+      }
+    }
+  },
+  "sgs/nav-menu": {
+    "core/navigation": {
+      "__unstableLocation": {
+        "reason": "WP core experimental/unstable internal attr; explicitly marked unstable by WP itself, not a capability to match.",
+        "wave": "native"
+      },
+      "ariaLabel": {
+        "reason": "Equivalent to `navLabel`.",
+        "wave": "over-report"
+      },
+      "customOverlayBackgroundColor": {
+        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream, tracked separately; do not duplicate.",
+        "wave": "W-nav-surface"
+      },
+      "customOverlayTextColor": {
+        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream.",
+        "wave": "W-nav-surface"
+      },
+      "hasIcon": {
+        "reason": "No site-icon-in-nav toggle; deferred, niche.",
+        "wave": "Wave-parity-1"
+      },
+      "icon": {
+        "reason": "Paired with `hasIcon`; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "inserter": {
+        "reason": "WP-internal InnerBlocks-inserter-visibility flag; editor plumbing.",
+        "wave": "native"
+      },
+      "maxNestingLevel": {
+        "reason": "No configurable submenu-depth limit; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "overlay": {
+        "reason": "Mobile-drawer surface presentation \u2014 closing under the nav-menu drawer-surface workstream.",
+        "wave": "W-nav-surface"
+      },
+      "overlayBackgroundColor": {
+        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream.",
+        "wave": "W-nav-surface"
+      },
+      "overlayMenu": {
+        "reason": "Distinct from the 5 surface-colour attrs above: this is the on/off mode toggle for whether mobile uses the overlay/drawer presentation at all (sgs/nav-menu's `<dialog>` drawer is always the mobile mode \u2014 no alternate 'default' mobile mode to toggle between). Deferred if an alternate mode is ever wanted.",
+        "wave": "Wave-parity-1"
+      },
+      "overlayTextColor": {
+        "reason": "Mobile-drawer surface colour \u2014 closing under the nav-menu drawer-surface workstream.",
+        "wave": "W-nav-surface"
+      },
+      "rgbBackgroundColor": {
+        "reason": "WP-internal computed RGB value (contrast-calculation helper) derived from the chosen colour; not a user-facing control.",
+        "wave": "native"
+      },
+      "rgbTextColor": {
+        "reason": "Same computed-RGB plumbing as `rgbBackgroundColor`.",
+        "wave": "native"
+      },
+      "showSubmenuIcon": {
+        "reason": "Covered by `indicatorStyle` (default `'none'`) \u2014 setting it to `'none'` is the equivalent of hiding the submenu indicator.",
+        "wave": "over-report"
+      },
+      "submenuVisibility": {
+        "reason": "No explicit click-vs-hover submenu-open-trigger control; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "templateLock": {
+        "reason": "See core/column templateLock.",
+        "wave": "native"
+      }
+    }
+  },
+  "sgs/post-grid": {
+    "core/latest-posts": {
+      "addLinkToFeaturedImage": {
+        "reason": "Each post card is already a single whole-card link (cardStyle) \u2014 the featured image is inherently linked, no separate toggle needed.",
+        "wave": "over-report"
+      },
+      "displayAuthor": {
+        "reason": "Equivalent to `showAuthor`.",
+        "wave": "over-report"
+      },
+      "displayFeaturedImage": {
+        "reason": "Equivalent to `showImage`.",
+        "wave": "over-report"
+      },
+      "displayPostContent": {
+        "reason": "Equivalent to `showExcerpt`.",
+        "wave": "over-report"
+      },
+      "displayPostContentRadio": {
+        "reason": "Paired enum plumbing for `displayPostContent`/`showExcerpt` \u2014 excerpt-vs-full-content choice; bundled with that capability.",
+        "wave": "over-report"
+      },
+      "displayPostDate": {
+        "reason": "Equivalent to `showDate`.",
+        "wave": "over-report"
+      },
+      "featuredImageAlign": {
+        "reason": "No control for the featured-image position within the card (left/right/top); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "featuredImageSizeHeight": {
+        "reason": "Covered by the `imageSize` preset selector (fixed numeric height not exposed, but preset sizing achieves the same practical outcome).",
+        "wave": "over-report"
+      },
+      "featuredImageSizeSlug": {
+        "reason": "Equivalent to `imageSize`.",
+        "wave": "over-report"
+      },
+      "featuredImageSizeWidth": {
+        "reason": "Same `imageSize` preset family as Height/SizeSlug.",
+        "wave": "over-report"
+      },
+      "postLayout": {
+        "reason": "Grid/list presentation is controlled by sgs/post-grid's own `layout`/`gridTemplateColumns`/column attrs \u2014 a richer, more general layout engine than core's grid/list enum.",
+        "wave": "over-report"
+      },
+      "postsToShow": {
+        "reason": "Equivalent to `postsPerPage`.",
+        "wave": "over-report"
+      },
+      "selectedAuthor": {
+        "reason": "No filter-by-specific-author control; deferred.",
+        "wave": "Wave-parity-1"
+      }
+    }
+  },
+  "sgs/quote": {
+    "core/pullquote": {
+      "citation": {
+        "reason": "Equivalent to `attribution`.",
+        "wave": "over-report"
+      },
+      "textAlign": {
+        "reason": "No text-alignment control on sgs/quote; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "value": {
+        "reason": "Quote text is child-owned via InnerBlocks (sgs/text child), per the project's HC2 parent-owns-layout/child-owns-content pattern \u2014 not a scalar attr on the parent.",
+        "wave": "over-report"
+      }
+    },
+    "core/quote": {
+      "citation": {
+        "reason": "Equivalent to `attribution`.",
+        "wave": "over-report"
+      },
+      "textAlign": {
+        "reason": "No text-alignment control on sgs/quote; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "value": {
+        "reason": "Same InnerBlocks child-owned-content architecture as core/pullquote `value`.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/responsive-logo": {
+    "core/site-logo": {
+      "isLink": {
+        "reason": "Equivalent to `linkToHome`.",
+        "wave": "over-report"
+      },
+      "linkTarget": {
+        "reason": "Logo link always opens in the same tab; no new-tab toggle. Deferred, niche.",
+        "wave": "Wave-parity-1"
+      },
+      "shouldSyncIcon": {
+        "reason": "WP-native Site Icon sync toggle \u2014 internal plumbing tied to a separate WP Customizer setting, not an SGS block capability.",
+        "wave": "native"
+      }
+    }
+  },
+  "sgs/social-icons": {
+    "core/social-link": {
+      "label": {
+        "reason": "Per-icon label lives inside the `icons` repeater objects \u2014 nested, invisible to the flat attr-name scan.",
+        "wave": "over-report"
+      },
+      "rel": {
+        "reason": "No explicit per-icon rel control; deferred (verify whether rel=noopener is auto-applied at render).",
+        "wave": "Wave-parity-1"
+      },
+      "service": {
+        "reason": "Per-icon service/platform lives inside the `icons` repeater objects \u2014 nested.",
+        "wave": "over-report"
+      },
+      "url": {
+        "reason": "Per-icon URL lives inside the `icons` repeater objects \u2014 nested.",
+        "wave": "over-report"
+      }
+    },
+    "core/social-links": {
+      "iconBackgroundColor": {
+        "reason": "No separate icon-shape background-colour control distinct from `iconColour` (foreground); deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "openInNewTab": {
+        "reason": "No global open-all-links-in-new-tab toggle; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "showLabels": {
+        "reason": "No global toggle to show text labels alongside icons; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "size": {
+        "reason": "Equivalent to `iconSize`.",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/table-of-contents": {
+    "core/table-of-contents": {
+      "ariaLabel": {
+        "reason": "No landmark aria-label control on the TOC wrapper; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "headings": {
+        "reason": "sgs/table-of-contents is a dynamic block that recomputes headings live server-side each render, rather than caching a `headings` array attr \u2014 an architectural equivalent, arguably more robust (always current).",
+        "wave": "over-report"
+      },
+      "maxLevel": {
+        "reason": "Equivalent to `headingLevels` (array of included levels covers min/max level selection).",
+        "wave": "over-report"
+      },
+      "onlyIncludeCurrentPage": {
+        "reason": "No pagination-aware scoping control; deferred, niche (relevant only to paginated posts).",
+        "wave": "Wave-parity-1"
+      },
+      "ordered": {
+        "reason": "Covered by `listStyle` (ordered vs unordered is one of its style options).",
+        "wave": "over-report"
+      }
+    }
+  },
+  "sgs/tabs": {
+    "core/tabs": {
+      "activeTabIndex": {
+        "reason": "core/tabs is itself an experimental WP core block; this is its internal default-active-tab state attr \u2014 SGS's own tabs interactivity handles active-tab state client-side instead.",
+        "wave": "native"
+      },
+      "editorActiveTabIndex": {
+        "reason": "Explicitly editor-only internal state attr per its own name; pure editor plumbing.",
+        "wave": "native"
+      }
+    }
+  },
+  "sgs/text": {
+    "core/paragraph": {
+      "content": {
+        "reason": "Equivalent to `text`.",
+        "wave": "over-report"
+      },
+      "direction": {
+        "reason": "No RTL/LTR text-direction control; deferred (i18n/a11y relevant).",
+        "wave": "Wave-parity-1"
+      }
+    }
   }
 }
