@@ -54,7 +54,7 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > 20/81; roster 81); 43 of 78 blocks are legitimately exempt from `StateToggleControl` → ~35 real.
 > **Owed:** Bean's eye; in-drawer accordion at 375 INDICATIVE; touch + keyboard unmeasured.
 >
-> **QC-BYPASSED** — doc reconciliation is verified-by-author, NOT independently; detail in the record.
+> **Handoff QC: independent subagent returned CLEAN**, re-deriving every figure from source.
 >
 > **Process:** a `/sgs-update` reseed is CROSS-TRACK on the shared DB — mine created attr rows the
 > motion track lacked and broke both builds until 7 `fx:*` markers were declared in

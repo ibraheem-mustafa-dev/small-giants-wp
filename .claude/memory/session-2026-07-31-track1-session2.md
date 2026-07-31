@@ -152,25 +152,34 @@ deliberately.** On a shared DB, treat a routine reseed as touching another track
 
 ## Owed
 
-`/qc-council` ran (this is it) · Bean's eye on the final state · in-drawer accordion at 375 is
+`/qc-council` ran on the Task-1 ORACLE change only — the nav commit got a 3-rater ad-hoc council,
+NOT a `/qc-council` invocation (`reports/visual-diff/nav-menu-2026-07-31.md` says so explicitly; do
+not read the two as the same thing) · Bean's eye on the final state · in-drawer accordion at 375 is
 INDICATIVE not proven · touch + real keyboard tabbing unmeasured · `submenuAlign` center/end
 live-unverified · Task 4 residuals · Task 5 (Part L) baselined but not executed.
 
-## QC-BYPASSED at handoff (recorded, not silent)
+## Handoff QC — INDEPENDENT, returned CLEAN
 
-The handoff gate requires an INDEPENDENT `/qc` subagent to verify the doc reconciliation. It was
-dispatched and never returned before session end, so I re-verified its criteria myself. Self-review is
-exactly what that gate exists to avoid — treat the reconciliation as **verified-by-author, not
-verified-independently**, and re-run the check next session if anything below looks off.
+The independent `/qc` subagent was slow to return, so I began recording a QC-BYPASSED note and
+verified its criteria myself. **It then returned CLEAN**, so the bypass label was withdrawn — it was
+briefly committed at `7b73c138` and is corrected here and in the LEDGER. The reconciliation IS
+independently verified.
 
-What I checked against ground truth (not against my own prose):
+It reproduced every figure from source rather than trusting the docs: harness 32 PASS / 0 FAIL;
+`attribution_ground_truth.py --check` 0 mismatches; `decompose_unattributed.py --json` 499 declared /
+497 attributed / **231 measurable (46.3%)** / 266 unmeasurable — exact matches to D429, this record
+and the report. `wc -l .claude/decisions.md` = 3604, matching the parking entry. D-ceiling 432.
 
-| Claim | Verified how | Result |
-|---|---|---|
-| D-ceiling | `grep -oE '^## D[0-9]+' decisions.md \| sort -n \| tail -1` | 432 |
-| Harness "32/32" | ran it, counted PASS/FAIL lines | 32 |
-| Control "73→0" | `attribution_ground_truth.py --check` | 0 mismatches, 96 probe-checked |
-| `decisions.md` 3,604 lines | `wc -l` vs the parking entry's figure | match |
-| Oracle 46.3% / 231 / LANDED 31→55 | grepped the report, cross-checked the LEDGER | match |
-| 6 D432 code claims | grepped each in source (DOM-read kind, `$item['identifier']`, sublink selector, `[data-sgs-mega-trigger]` ×5, primary token) | all present |
-| "mega path untouched" | `git diff` removed non-comment lines in `mega-disclosure.js` | ZERO |
+It also spot-checked five code claims against the diff and confirmed each: `repositionPanel` reads
+the kind from the DOM with all five call sites passing only `root`; `flatten()` passes
+`$item['identifier']` past the depth cap; `markCurrentPage` includes `.sgs-nav-menu__sublink`; the
+`:has()` rules are keyed on `[data-sgs-mega-trigger]`; and the submenu colour was changed FROM the
+`text` token TO `primary` in `7940d709` — i.e. the code matches Bean's ruling and no path
+re-introduces AA gating.
+
+**One finding, fixed above:** the "Owed" list's `/qc-council` bullet sat under the nav section and
+read as if the nav commit had one. It did not — that was a 3-rater ad-hoc council. Reworded.
+
+**Known, benign drift it caught:** regenerating `roster.json` live now yields 83 blocks, not the 81
+this record cites. The committed roster says 81 and was correct when measured; the DB has grown via
+other tracks since. Re-measure before relying on the Part-L figures.
