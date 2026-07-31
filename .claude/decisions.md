@@ -1,5 +1,77 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D430 — Adversarial council on the whole motion surface; 7 of its convergent items shipped same-session [INCIDENT]
+
+**2026-07-31, Spec 38 motion.** Commit `6c8d78ca`. Plan carrying everything unclosed:
+`plans/2026-07-31-motion-wave-D-client-readiness.md`. Reports:
+`reports/visual-diff/*-2026-07-31.md` (eight blocks).
+
+**Bean asked why a genuinely novel surface had shipped four commits with `/qc-council` skipped.
+Fair. A six-persona `/adversarial-council` was run** (cynic · competitor · ship-PM · spec-lawyer ·
+a11y auditor · support realist), blind and in parallel. Grades: shippability B− · accessibility
+B− · competitive defensibility C+ · specification rigour C+ · maintainability C− ·
+**supportability D+**.
+
+**Its three most serious claims were FACT-CHECKED before any action, and all three held:**
+· `resolveStart()` discards its caller's fallback whenever a sticky header exists, so THREE
+non-pinning modules silently got a pinning module's scroll range — the proven root cause of
+BOTH owner findings (draw finishing under the header, image-sequence playing out of view).
+**This corrected my own earlier diagnosis**: I had said the defaults "mix edges" and was about
+to retune the END anchor, which would not have fixed it because the START was being overwritten.
+· The build reads a 13.9 MB SQLite DB that is not in the repo while **two 0-byte files of the
+same name ARE committed** — anyone "fixing" the path to those gets an empty registry and every
+motion control silently vanishing.
+· `sgs_get_fx_qualifying_blocks()` has **zero callers** while the generator's docstring states
+the render layer consumes it. The danger is the doc asserting a check that does not exist.
+
+**Shipped same session (council items 1–7):** the `resolveStart` fix + a probe criterion that
+can actually fail (**the old one, and the replacement I briefed, BOTH passed the recorded
+defect** — `86.14, 86.14, 86.14, 128.60, 149.39` has exactly 3 distinct values, so "3 of 5
+distinct" was no gate at all) · `track` and `svg` rosters DERIVED from block CSS and
+`bgSvgContent` rather than hand-declared (3→7 and 4→8 blocks) · the inert `draggable`
+declaration removed from `sgs/testimonial-slider`, which had been shipping ~35KB gzip to run a
+function returning `undefined` · `providesNatively` suppressing dud picker entries on five
+blocks whose scroller is a descendant · a Subtle/Standard/Dramatic preset layer · the D427-signed
+motion-path route picker, with **`getTotalLength()` = 121 proven from a `visibility: hidden`
+SVG** (the build's riskiest unverified assumption) · `motion-path` corrected from `requires:svg`
+to `none` (4 blocks → 28; it moves `el`, only the PATH needs geometry) · `SCROLL_OWNING_FX`
+derived instead of hand-typed · the 0-byte DB decoys deleted and the motion generators made
+clean-clone-safe.
+
+**Verified live AFTER deploy, not merely built:** image-sequence luminance went from
+`86.14/86.14/86.14/128.60/149.39` (60% of the scroll dead) to
+`86.14/98.46/117.29/134.40/149.39`. DrawSVG 8 → 11 distinct dash states. Both still collapse to
+1 under `reduce`.
+
+**Two gates earned their keep.** The deploy's `oldshape-audit` BLOCKED the first attempt because
+the canary fixture still carried the retired `dragMomentum` attr (WP discards an undeclared attr
+and the next editor save deletes it — the D338 class); the fixture was fixed, not the gate. The
+visual-diff gate blocked four blocks until real captures existed — which surfaced that
+`post-grid` and `google-reviews` do NOT overflow on this site, so their drag is **unproven and
+recorded as such**, and that `sgs/buybox` needs a WooCommerce product IN CONTEXT, so its toggle
+was **not shipped at all** rather than shipped unverified.
+
+**My own integration error, caught only by testing like a visitor:** I copied `src`/`includes`/
+`scripts`/`build` into the deploy worktree but not `assets`, so the route stylesheet 404'd and
+the hidden path SVG rendered as a **1200×1200 black shape**. Deploy copies must include `assets`.
+
+**Bean rulings recorded:** `parking.md` is strictly BLOCKED/POSTPONED work, never a reminder
+list — council findings go in the wave plan instead · before/after VIDEO is kept (the ship-PM
+wanted it cut; the competitor persona and Bean both wanted it) · the physics sandbox is a design
+gate, not a cut — **and the record is corrected: GSAP CAN do it** (InertiaPlugin + Physics2D +
+Draggable, both bundled and free); the objection is FR-38-14's "never standalone toggles" plus
+the a11y auditor's point that a thrown object has no discrete single-pointer equivalent under
+WCAG 2.5.7 and keeps moving after release, which the drag-survives-reduced-motion reasoning does
+not cover · background cursor-follow effects are a new FR, with `data-spotlight` in `nav-menu`/
+`mega-panel` as existing in-house prior art.
+
+**Still open, stated rather than buried:** at least a dozen OTHER prebuild scripts hard-depend on
+the absent DB, so a clean clone still cannot finish a build · preset/param normalisation lives in
+the editor's handlers, so a clone or pattern bypasses it · the `svg` provision conflates "is a
+shape" with "contains SVG", latently over-offering `morph` · two editor console errors survive the
+boot guards, cause unresolved · touch is unmeasured on every drag surface · the §11.3 cloning
+lift has zero lines of code, which two personas independently called the product's whole point.
+
 ## D429 — Oracle measures each cell on ITS OWN element; two false-LANDED paths closed [INCIDENT]
 
 **The fidelity oracle only ever measured the SECTION ROOT.** A draft rule declared on a descendant

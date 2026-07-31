@@ -75,61 +75,57 @@ header) · drawer architecture gate (D421) · the two motion design gates above.
 > `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds transcribed readings.
 > Re-runnable, not reproducible.
 
-### Track 3 — Spec 38 motion: **A + B CLOSED** · **WAVE C BUILT, VERIFIED LIVE + COMMITTED 2026-07-31 (D427)**
+### Track 3 — Spec 38 motion: **A + B + C CLOSED** · **WAVE D PLANNED 2026-07-31 (D430)**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. A: D414–D417. B: Lenis + page transitions (D422/D424).
-**C: verified moving on the canary, both surfaces, and pushed.** Commits `88c2be1a` (shared infra)
-· `a06bba92` (deploy evidence) · **`8da30b13`** (shipped blocks) · **`8172d8f4`** (net-new blocks)
-· **`02e87ee9`** (draw in the fx picker). Evidence: five per-block reports at
-`reports/visual-diff/*-2026-07-31.md`; re-runnable harness
-`plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`
-(both self-verdicting, exit 1 on fail, 2 on inconclusive). Canary page **2075**
-`/motion-canary-wave-c/` — two instances of every block on ONE page.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. A: D414–D417. B: D422/D424. C: D426 (built) → D427
+(verified live) → **D430 (adversarial council + 7 of its convergent items shipped same session)**.
+Commits `88c2be1a` · `a06bba92` · `8da30b13` · `8172d8f4` · `02e87ee9` · `f7f61ebf` · **`6c8d78ca`**.
 
-**Shipped + PROVEN MOVING, each with a discriminating negative control:** Draggable roster
-(gallery + testimonial-slider) · NET-NEW `sgs/before-after` · DrawSVG + **Vivus retired**
-(D408 discharged) · ScrambleText · NET-NEW `sgs/image-sequence` + `scripts/image-sequence-prep.py`.
-**`draw` now reaches the fx picker** on icon/separator/decorative-image, excluded from
-responsive-logo by its own `supports.sgs.fx.providesNatively` declaration.
+**⭐ THE PLAN FOR EVERYTHING REMAINING: `plans/2026-07-31-motion-wave-D-client-readiness.md`**
+— 21 steps, 4 QA gates, carrying every unclosed council finding plus Bean's four new asks.
+It replaces the wave-C prompt (archived). **Council findings are NOT in parking.md** — Bean-ruled
+2026-07-31 that parking is strictly BLOCKED/POSTPONED work, never a reminder list.
 
-**Three real defects found by verifying (all fixed, causes proven — full text in D427):**
-gallery's "carousel" was never a horizontal scroller · `fx-draggable.js` could never have worked
-(GSAP `type:'scroll'` re-parents children into a wrapper div, `gsap/Draggable.js:536`) ·
-`sgs/before-after` returned HTTP 400 from its block-renderer, so its editor preview was dead
-while the frontend was perfect. Plus a registry correction D426's report claimed as done that
-had never reached the seeder.
+**Council grades (six blind personas):** shippability B− · accessibility B− · competitive
+defensibility C+ · specification rigour C+ · maintainability C− · **supportability D+**.
 
-**⛔ STILL OWED on this track — do not read the PASS verdicts as wider than they are:**
-1. **Momentum on `sgs/testimonial-slider` is UNPROVEN** — all four arms identical; the slider
-   snaps to slide boundaries either way and the short-flick gesture was not isolated.
-2. **Two editor console errors persist**, cause unresolved: `Failed to resolve module specifier
-   "@sgs/gsap-inertia"` / `"@sgs/gsap-draggable"`. They survive the boot guards, so they are NOT
-   thrown by our boot code. Nothing crashes.
-3. **Bean's eye (R-31-13) not yet given on any effect.** `/qc-council` not run on any commit.
-4. Unmeasured: touch drag anywhere · before-after vertical orientation · responsive-logo's
-   `hover-redraw` arm · image-sequence tablet/mobile tiers (desktop only).
+**Shipped in C, all live-verified with discriminating negative controls:** draggable roster
+(derived, not declared) · NET-NEW `sgs/before-after` · DrawSVG + Vivus retired · ScrambleText ·
+NET-NEW `sgs/image-sequence` + prep tooling · `draw` in the fx picker · Subtle/Standard/Dramatic
+presets · the D427-signed motion-path route picker · motion-path made universal (4 blocks → 28).
 
-**⛔ FR-38-12 (Flip) CANNOT BE BUILT AS SPECIFIED — premise verified FALSE (D426).** Bean ruled:
-NOT parked — live design gate + research point. **Not researched this session.**
+**⛔ STILL OWED — the PASS verdicts are narrower than they look:**
+1. **Touch is unmeasured on every drag surface** (the module gates itself off on coarse pointers
+   by design, but that is a code reading, not a measurement).
+2. **`post-grid` + `google-reviews` drag is UNPROVEN** — neither overflows on this site, so the
+   runtime correctly declined; `sgs/buybox`'s toggle was NOT shipped (needs a WooCommerce product
+   in context). All three recorded in their visual-diff reports.
+3. **A clean clone still cannot finish `npm run build`** — the motion generators are fixed, but a
+   dozen other prebuild scripts hard-depend on the same unversioned 13.9MB DB.
+4. **Motion does not clone.** §11.3's lift has ZERO lines of code; two personas independently
+   called it the product's whole point.
+5. Preset/param normalisation lives in the editor's handlers, so a clone or pattern bypasses it ·
+   the `svg` provision conflates "is a shape" with "contains SVG" (latent `morph` over-offer) ·
+   two editor console errors survive the boot guards, cause unresolved · **Bean's eye given on
+   Wave C, but not on anything shipped after it**.
 
-**MORPH + MOTION-PATH — control surface BEAN-SIGNED 2026-07-31, DESIGN ONLY, NOT BUILT (D427).**
-Presets-first (curated shape pairs + routes as thumbnails), `custom` → media-library SVG picker,
-panel disabled until one is chosen. **Needs NO runtime change** — both modules already accept
-"an element whose geometry is the target", so the render layer expands a preset into a hidden
-`<svg>` and emits the existing `-target` selector. Spec 38 §11.2 amended same session.
-**Owed:** preset data file · render-layer expansion · `block_attributes` rows under `fx:*` ·
-thumbnail picker in the fx panel · then `morph`/`motion-path` join `SHIPPED_EFFECTS` — and NOT
-before, since that array exists to keep an unreachable effect out of the picker.
+**Bean rulings (do NOT re-litigate):** before/after VIDEO is KEPT · the physics sandbox is a
+DESIGN GATE, not a cut — **GSAP can do it** (InertiaPlugin + Physics2D + Draggable, both bundled);
+the objection is FR-38-14 plus WCAG 2.5.7 having no discrete equivalent for a thrown object ·
+background cursor-follow is a new FR (`data-spotlight` in nav-menu/mega-panel is prior art) ·
+morph should eventually reach any block via its CONTAINED svg.
 
-**NO NEW LIBRARY — Tier H closed list (§1.2a) untouched.** Parking P-10's deferral premise is dead.
-
-**Carried from B (do NOT resurrect):** D407/§4.2 SUPERSEDED, build items CANCELLED · Tier H =
-Lenis alone · touch smoothing REJECTED on a real phone · transitions gate the opt-in itself.
+**FR-38-12 (Flip) premise remains verified FALSE (D426)** — a live design gate, not parked, not
+researched.
 
 ⚠ Parked, not ours: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
-`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE` · `/sgs-update` Stage 11 mega-* warnings.
-⚠ Stale DB row (Wave B residue, inert): `fx_effects.scroll-smoother` still says tier G /
-ScrollSmoother; D422 made it Tier H / Lenis. Nothing reads it for that purpose.
+`P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE`.
+⚠ Stale DB row (inert): `fx_effects.scroll-smoother` still says tier G / ScrollSmoother; D422 made
+it Tier H / Lenis. Step 20 of the Wave D plan retires it.
+
+**Canaries:** `/motion-canary-wave-c/` (page 2083, effects) · `/motion-roster-canary/` (page 2085,
+roster first-paint). Harnesses: `scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`,
+both self-verdicting (exit 1 fail, 2 inconclusive) and cache-busting.
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
@@ -313,67 +309,40 @@ live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERS
 
 ---
 
-## NEXT SESSION — build the signed morph/motion-path control, then Bean's eye
+## NEXT SESSION — execute Motion Wave D
 
-**Read FIRST:** **D427** + the five `reports/visual-diff/*-2026-07-31.md`. Spec 38 IN FULL
-(its §11.2 carries the signed D427 amendment) before any motion edit.
+**Read FIRST:** **`plans/2026-07-31-motion-wave-D-client-readiness.md`** (the whole thing — it is
+the register), then **D426 → D427 → D430** in that order, then Spec 38 IN FULL.
 
-**Wave C is verified, committed and pushed.** What remains is one signed-but-unbuilt control
-surface, one unproven claim, and Bean's eye.
+**The plan is the plan.** It has 21 steps, four QA gates, per-step models, tests and on-fail
+instructions. Do not re-derive it. Its own Honesty notes list what it lacks (no cold peer review,
+no docscore, no `/qc-council` on its fix-shapes yet).
 
-#### Task 1 — BUILD the morph + motion-path control surface (Bean-signed, D427)
-**What:** presets-first picker + `custom` media-library fallback. **Needs NO runtime change** —
-`fx-morph.js` / `fx-motion-path.js` already accept "an element whose geometry is the target",
-so the render layer expands a preset key into a hidden `<svg>` and emits the EXISTING
-`-target` selector.
-**Owed parts:** preset data file (morph pairs circle↔square / plus↔cross / play↔pause /
-logo↔icon; paths arc / S-curve / orbit / figure-8) · render-layer expansion · `block_attributes`
-rows under `fx:*` · thumbnail picker in the fx ToolsPanel · panel DISABLED until a preset or
-asset is chosen (§7 asset gate) · only THEN add `morph`/`motion-path` to `SHIPPED_EFFECTS`.
-**⛔ Do not add them to `SHIPPED_EFFECTS` first** — that array exists to keep an effect a client
-cannot operate out of the picker. **Estimated:** 60 min. **Orchestration:** INLINE.
+**Smallest first action, ≤20 min, zero deps:** Step 1 — measure touch on the drag surfaces. It
+replaces a "by construction" claim in four reports with a real result, and if drag DOES bind on
+touch that is a defect worth finding before anything else is built.
 
-#### Task 2 — Isolate testimonial-slider momentum (the one UNPROVEN claim)
-**What:** a SHORT, FAST flick that does not cross the distance threshold. With momentum it
-should still advance a slide; without it, it should snap back. Today all four arms read
-identically because a long drag advances either way. **Acceptance:** the two arms diverge, or
-the feature is honestly recorded as doing nothing on this block. **Estimated:** 20 min.
+**Sequencing note from the council's delivery lead:** Bean's eye outranks new capability. He has
+seen Wave C but nothing shipped after it — the presets, the route picker, the derived rosters and
+the retimed scroll ranges are all unjudged. Twenty minutes of his attention on
+`/motion-canary-wave-c/` and `/motion-roster-canary/` can invalidate tuning across six effects,
+so it is cheapest first.
 
-#### Task 3 — Bean's eye (R-31-13), co-authoritative
-**What:** open `/motion-canary-wave-c/` (page 2075) and judge the FEEL — gallery momentum
-curve, draw timing, scramble speed, image-sequence smoothness. Numbers say they move; only
-Bean says they are right. **This is the gate, not a formality.**
+#### Methodology guardrails (earned 2026-07-31, not inherited)
 
-#### Task 4 — DESIGN GATE: Flip (FR-38-12), Bean-owned, NOT researched yet
-**What:** research + present options; do NOT build. Premise verified false (D426). Establish
-whether WooCommerce's Product Filter → Product Collection re-renders client-side before
-proposing anything; animating a CORE block's re-render is a different blast radius needing its
-own gate. **Estimated:** 30 min research, delegated · sonnet.
-
-#### Also open (small, named so they are not lost)
-- Two editor console errors, cause unresolved: `Failed to resolve module specifier
-  "@sgs/gsap-inertia"` / `"@sgs/gsap-draggable"`. They survive the boot guards, so they are NOT
-  from our boot code. Nothing crashes.
-- `/qc-council` was not run on any Wave C commit.
-- Unmeasured: touch drag · before-after vertical orientation · responsive-logo `hover-redraw` ·
-  image-sequence tablet/mobile tiers.
-
-#### Methodology guardrails (earned this session, not inherited)
-
-- **A probe that never reaches the effect is measuring the probe.** Four of my own probe
-  results were false before any code was: a sampler that never scrolled to a scroll-triggered
-  effect; `scrollIntoViewIfNeeded` stopping short of a scrubbed range's start; two adjacent
-  headings firing inside one window; a drag whose endpoints coincidentally matched its start.
-  Fact-check your own diagnostic before believing it found a defect.
+- **A probe that never reaches the effect is measuring the probe.** Four of my own probe results
+  were false before any code was.
+- **A test can pass the very defect it was written to catch.** The image-sequence criterion was
+  `spread >= 5`; the failure had a spread of 63. The replacement I first briefed ("3 of 5
+  distinct") would ALSO have passed it — the failure has exactly 3 distinct values.
+- **Fact-check every council finding before acting.** Three of three held on 2026-07-31, but each
+  was checked; do not inherit that as a prior.
+- **Deploy copies must include `assets/`** — omitting it 404'd a stylesheet and rendered a hidden
+  SVG as a 1200×1200 black shape.
 - **Cache-bust every canary measurement.** A LiteSpeed-cached page made a working fix read as
   broken twice.
-- **A prose claim in a report is not a committed artefact** — D426's report said two registry
+- **A prose claim in a report is not a committed artefact** — a 2026-07-30 report said two registry
   rows had been corrected; the change had never reached the seeder.
-- **Deploy from an isolated worktree.** The co-active track's uncommitted `lucide-icons.php`
-  changed again mid-session; isolation kept it off the live site.
-- **Negative control or the test is vacuous** — especially for every "it correctly did NOT
-  animate" claim.
-- **Verify BOTH surfaces.** The `before-after` HTTP 400 was invisible to every frontend check.
 - **`python .claude/hooks/handoff-preflight.py --check` must pass before a handoff completes.**
 
 Full structural defences (109 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.
