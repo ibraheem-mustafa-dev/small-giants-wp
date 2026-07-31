@@ -31,7 +31,7 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 ## Cloning pipeline + converter
 
-*53 open entries.*
+*52 open entries (re-derived 2026-07-31 from a `**Bucket:** pipeline` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 3,097 lines against a 600 cap
 **Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
@@ -172,14 +172,64 @@ shape with correct wrapper classes. A full 12-step build plan with 5 locked KJCs
 
 **Trigger:** Before the next multi-page clone run.
 
-### P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE — the height gap is an environment artefact, not a fidelity gap
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-22
+### P-CONVERTER-LIVE-CLONE-VERIFY-BATCH — four converter changes are code-complete/merged but share one unmet closure condition: a real live-clone verification run
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-31 (merged)
 
-The "244px vs 327px height gap" is an ENVIRONMENT ARTEFACT: the oracle renders the DRAFT as a bare `file://` fragment (no WP theme) and the CLONE as a full themed WP page, and `oracle/batch_runner.py:221` hardcodes `_HEIGHT_COMPARABLE = False`, so guard 4 returns passed+measured=False by design and can never pass. The once-parked box-model theory is physically wrong — info-box transfers the draft's padding/background/radius faithfully, and its diverging defaults (`cardStyle:elevated`, `effectHover:lift`) change no RESTING height.
+**Why merged.** Four separately-parked entries all reduce to the same residual — the code shipped
+and unit tests pass, but nobody has run the converter against a real client draft/clone and read
+the live result. Merging them into one entry means the eventual verification session opens ONE
+item, not four, and can knock all four residuals out in the same pass since they sit on
+overlapping converter surfaces (css_pass.py / variant detection / conformance goldens). Named
+`P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` rather than after any one sub-case, since no single original
+slug should read as more important than the others — this is an index, not a rename.
 
-**⚠ Its trigger has FIRED (verified 2026-07-27):** the entry defers to "once the preset fix lands", and the preset-absence mechanism has SHIPPED (`converter/resolvers/preset_absence.py`, wired at `css_pass.py:42/253`). The owed action is now simply the computed-parity Stage 11.6 re-check on team-member — **verify via Stage 11.6 content-keyed parity, NOT the cross-environment height number.** Remove this entry if the box-layout tier matches.
+**Original entries folded in (verbatim residual scope, nothing dropped):**
 
-**Trigger:** a clone-fidelity session. See `P-INFOBOX-PRESET-ABSENCE-TRANSFER`.
+1. **P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED** — the converter's `attr_for_property(block_slug,
+   css_property)` resolver was widened (`_base_domain_attrs_for_css_property`, `db_lookup.py:782`)
+   to key on element/state/tier and fail loud (`AmbiguousCssPropAttrError`) on a genuine tie
+   instead of rowid-first. Converter unit suite is green (449 pass). Residual: the widening was
+   never verified against a live clone — whether the keyed data actually IMPROVES cloning fidelity
+   is an R-31-11/R-31-13 claim that was deferred.
+
+2. **P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL** — nav-drawer/trust-bar variant discrimination
+   must be BEM-structural, not styling-attr-based (design-gated + Bean-approved 2026-07-21).
+   Trust-bar's own case is fixed (structural image controls double as its recogniser; the F6 gate
+   is now a universal ambiguity rule — 2+ variants sharing an identical/empty signature =
+   violation, one zero-signature fallback allowed) and unit-verified, but live-clone verification
+   was never done. The universal audit of other blocks' `variant_slots` rows for the same
+   styling-attr-discriminator defect is also still owed (see `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS`,
+   the same defect class recurring on nav-drawer).
+
+3. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
+   resolving to its own parent block's slug, letting a block self-nest) is CODE RESOLVED and
+   merged into `main`. Three universal defences shipped: a recognition self-nest guard (FR-31-11),
+   a transparent-wrapper dissolve fixing a silent content-drop class on tab/feature-grid/form-step/
+   modal, and a `content_band` fill-width fix. Residual: 4 conformance goldens (tab / feature-grid /
+   form-step / modal) are FOSSILS encoding the old dropped/self-nested content and now correctly
+   fail. They need a LANDED-proof full-corpus re-seed — `tests/seed_conformance_goldens.py`
+   re-seeds all 40 from local emit and its provenance gate mandates a canary deploy + computed-parity
+   proof FIRST, never a bare local emit. This is the SAME task as `P-CONFORMANCE-GOLDEN-DRIFT`
+   (one 27-failure re-baseline; these 4 are a subset, not extra work).
+
+4. **P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE** — the "244px vs 327px height gap" is an
+   ENVIRONMENT ARTEFACT: the oracle renders the DRAFT as a bare `file://` fragment (no WP theme)
+   and the CLONE as a full themed WP page, and `oracle/batch_runner.py:221` hardcodes
+   `_HEIGHT_COMPARABLE = False`, so guard 4 returns passed+measured=False by design and can never
+   pass. The once-parked box-model theory is physically wrong — info-box transfers the draft's
+   padding/background/radius faithfully, and its diverging defaults (`cardStyle:elevated`,
+   `effectHover:lift`) change no RESTING height. Its trigger fired (verified 2026-07-27): the
+   preset-absence mechanism it deferred to has SHIPPED (`converter/resolvers/preset_absence.py`,
+   wired at `css_pass.py:42/253`). Residual: the computed-parity Stage 11.6 re-check on
+   team-member — verify via Stage 11.6 content-keyed parity, NOT the cross-environment height
+   number. Remove this residual once the box-layout tier matches.
+
+**Trigger:** one dedicated converter live-clone-verification session covering all four: (1) run
+the keyed css_property resolver against a real draft and confirm it improves fidelity; (2) same run,
+confirm trust-bar/nav-drawer variant detection resolves correctly and audit the remaining
+`variant_slots` rows; (3) after a canary deploy, re-seed the 4 self-nesting goldens per
+`P-CONFORMANCE-GOLDEN-DRIFT`'s discipline; (4) check team-member's Stage 11.6 content-keyed parity
+and strike that residual if it matches.
 
 ### P-CONTAINER-WRAPPER-STANDARDISATION — container/wrapper standardisation programme: converter Method-2 residual
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-02
@@ -198,13 +248,6 @@ The block-side mirror (every composite/wrapper block mirroring `sgs/container`'s
 **⚠ Its own numbers are materially stale (re-measured 2026-07-27):** `css_layer` is now populated on **323 rows across 4 distinct values** (`OUTER`/`GRID`/`GRID_AREA`/`CONTENT`), not "6 of 2,817, all one value". The cited example is also resolved — `sgs/hero`'s 9 `padding` attrs each carry a distinct `css_element`, so that collision group is closed. **RE-MEASURE before treating the "small tail" framing as current.**
 
 **Trigger:** a converter session that needs the layer tail (padding-family collisions).
-
-### P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED — css_property resolver still 2-argument-keyed; 312 attrs ambiguous
-**Status:** OPEN (fix shipped, verify live) · **Bucket:** pipeline · **Parked:** 2026-07-21
-
-The converter's `attr_for_property(block_slug, css_property)` resolver was widened (`_base_domain_attrs_for_css_property`, `db_lookup.py:782`) to key on element/state/tier and fail loud (`AmbiguousCssPropAttrError`) on a genuine tie instead of rowid-first. Converter unit suite is green (449 pass). The residual keeping this open is that the widening was never verified against a live clone — whether the keyed data actually IMPROVES cloning fidelity is an R-31-11/R-31-13 claim that was deferred.
-
-**Trigger:** a dedicated converter session; gates any claim that the keyed data improves cloning. Pair with `P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL`'s live-verify residual (same converter surface, same verification run).
 
 ### P-DB-PARTIAL-RESEED-RESIDUE — sgs-framework.db partial-reseed regression; 26 converter tests still red
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-16
@@ -251,22 +294,12 @@ dead — the function now has exactly one production call site
 (`converter/services/css_pass.py:151`). Any residual double-lift risk must be re-diagnosed against
 the current single-call-site architecture before building a regression test.
 
+**Re-confirmed 2026-07-31:** `grep -rn "lift_root_supports_to_style(" converter/ --include="*.py"`
+(excluding its own `def`) still returns exactly one production call site — `services/css_pass.py:151`
+— against 15 non-production hits, all inside `tests/test_root_supports.py`. Premise stays dead;
+nothing to re-diagnose until a second production call site actually appears.
+
 **Trigger:** Before shipping any further changes to that lift function.
-
-### P-FR2220-VARIANT-DETECTION — Confirm variant_slots populated for stylistic blocks
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-06-01 (D133)
-
-Hero slot-fingerprint variant detection shipped and is live-DOM verified. The complementary
-modifier-class variant detection needed for the stylistic-block majority (gallery layout,
-heading/label/text `variantStyle`, divider/mobile-nav) is now built at
-`converter/services/variant_detect.py:42`, superseding rather than complementing the
-slot-fingerprint approach. The one open question is whether `variant_slots` is actually
-populated for those named stylistic blocks.
-
-**Verify:** possibly already complete — the detection mechanism itself is confirmed live; only the
-DB population for gallery/divider/heading-label-text is unconfirmed.
-
-**Trigger:** Next pipeline session — confirm `variant_slots` population for the named blocks.
 
 ### P-FR226-NULL-SAVE-MIGRATION — Old-post scalar content silently drops on FR-22-6 blocks
 **Status:** DEFERRED · **Bucket:** pipeline · **Parked:** 2026-06-01
@@ -489,15 +522,6 @@ edited live styles that a push would overwrite.
 
 **Trigger:** Next theme-snapshot tooling session.
 
-### P-QUOTE-PATH2-SELF-NESTING — golden re-seed residual only; the code fix is merged
-**Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-25
-
-The Path-2 self-nesting bug (an unrecognised child element resolving to its own parent block's slug, letting a block self-nest) is **CODE RESOLVED and merged into `main`** — do not go looking for an unmerged branch. Three universal defences shipped: a recognition self-nest guard (FR-31-11), a transparent-wrapper dissolve that fixed a silent content-drop class on tab/feature-grid/form-step/modal, and a `content_band` fill-width fix.
-
-**Residual:** 4 conformance goldens (tab / feature-grid / form-step / modal) are FOSSILS encoding the old dropped/self-nested content and now correctly fail. They need a LANDED-proof full-corpus re-seed — `tests/seed_conformance_goldens.py` re-seeds all 40 from local emit and its provenance gate mandates a canary deploy + computed-parity proof FIRST, never a bare local emit. **This is the SAME task as `P-CONFORMANCE-GOLDEN-DRIFT`** (one 27-failure re-baseline; these 4 are a subset, not extra work).
-
-**Trigger:** the next LANDED-deploy / oracle re-seed session.
-
 ### P-RAWSVG-FILLED-VS-OUTLINE — trust-bar per-icon fill-style control: LANDED verification owed
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-02
 
@@ -589,27 +613,19 @@ The core empty-slide bug (a stale composition flag causing the converter to emit
 **⚠ Residual is NARROWER than stated (re-measured 2026-07-29):** `reviewDate` is now wired (`role='text-content'` in `block_attributes`). Only `summaryPhrase` and `orgName` remain unwired (both `role=NULL`).
 **Trigger:** the cloning Stage-2 routing wave; also the broader FR-22-20 variant-detection generalisation past hero+testimonial.
 
-### P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL — nav-drawer/trust-bar variant discrimination must be BEM-structural, not styling-attr-based
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-21
-
-Design-gated and Bean-approved 2026-07-21; ready to build, deliberately deferred. `sgs/trust-bar`'s `icon-circle` variant is discriminated by FIVE **styling** attrs (`iconCircleSize`, `iconCircleBackground`, `iconColour`, `iconCircleBorderRadius`, `iconCircleShadow`) while `text-only` and `image-badge` have **zero** discriminators. Styling attrs are exactly what the CSS lift populates, so once `css_property` exists they become lift-producible and `detect_variant` can mis-score — every trust-bar risks reading as `icon-circle`. `css_element` cannot fix this: an attr is lift-producible merely by HAVING a `css_property`, so this is lift-producibility, not ambiguity.
-
-**THE FIX, concrete and already evidenced — discriminate on BEM STRUCTURE, per R-31-2 ("BEM is the only recognition signal"), which the current styling-attr model sits outside.** The lift can fabricate attribute VALUES; it cannot fabricate an ELEMENT absent from the draft. `trust-bar/render.php` already emits structurally distinct markup per variant: **`image-badge`** → `<img class="sgs-trust-bar__badge-img">`; **`text-only`** → `.sgs-trust-bar__badge-label` only, no image and no icon; **`icon-circle`** → `.sgs-trust-bar__badge` + icon `<span>` + `.sgs-trust-bar__label`. Bean's framing: *"shouldn't trust-bar be able to tell between image-badge and text-only because text-only has no image?"* — yes, and that is why the two currently have no discriminators at all: what separates them is structural. **Scope is UNIVERSAL (R-31-9), not trust-bar-only** — styling attrs are unsafe discriminators for EVERY block with variants; audit all `variant_slots` rows, not just this one.
-
-**Residual after D362/Front-2 shipped work:** trust-bar's own case is fixed (structural image controls double as its recogniser; the F6 gate is now a universal ambiguity rule — 2+ variants sharing an identical/empty signature = violation, one zero-signature fallback allowed) and unit-verified, but **live-clone verification was never done**.
-
-**Trigger:** live-verify alongside `P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED` (same converter surface, same verification run); the universal audit of other blocks' `variant_slots` rows is still to be done (see also `P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS`, which is the same defect class recurring on nav-drawer).
-
-### P-VERIFY-WAVE2-A1 — Re-diagnose hero duplicate-wrapper claim if still observed
+### P-VERIFY-WAVE2-A1 — tripwire only: act if a duplicate hero wrapper is actually observed live
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-05-31
 
 Wave-2/A1 structural migration verified (~6/7 sections correct); trust-bar-hybrid half is closed.
-The remaining "hero duplicate-wrapper" root cause no longer exists in the current engine —
-`hero/render.php` emits exactly one wrapper by design, and the converter's dual-emission was
-pre-D274 behaviour. If a duplicate wrapper is still visible on a rendered page, it needs
-re-diagnosing from scratch rather than carrying this stale root cause forward.
+The remaining "hero duplicate-wrapper" root cause is DEAD — `hero/render.php` emits exactly one
+wrapper by design, and the converter's dual-emission was pre-D274 behaviour that no longer exists.
 
-**Trigger:** Only if a duplicate hero wrapper is actually observed live.
+**Re-confirmed 2026-07-31: nothing left to do proactively.** This entry is a pure tripwire, not
+open work — do not schedule a session against it. If a duplicate hero wrapper is ever actually
+seen on a rendered page, treat it as a fresh regression and re-diagnose from scratch; do not carry
+the old (dead) root cause forward as a starting hypothesis.
+
+**Trigger:** only if a duplicate hero wrapper is actually observed live — never speculatively.
 
 ### P-W3-ARCHIVE-RESIDUALS — Plans-archive sweep residuals (3 items)
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-04
@@ -675,7 +691,7 @@ boolean-from-modifier mechanism the array resolver does not have. Low value (sel
 
 ## Framework: blocks, theme, specs
 
-*57 open entries.*
+*61 open entries (re-derived 2026-07-31 from a `**Bucket:** framework` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-19 — Migrate remaining blocks off the saved-defaults system
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-08
@@ -893,33 +909,12 @@ When one item in an array block (e.g. one card in a grid) has CSS that genuinely
 
 **Trigger:** capability-gap work on array blocks.
 
-### P-PHASE2-VISUAL-DIFF-REPORTS-DEFERRED — responsive-logo visual-diff report owed
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-16
-
-The responsive-logo `custom` logo-switch mode shipped and was live-verified project-wide, but without its per-block visual-diff report (STOP-67 discipline). A later-dated report exists (`responsive-logo-2026-07-18.md`) that may already cover this work — check before re-running. The paired adaptive-nav report is moot (that block has since been deleted).
-
-**Verify:** possibly already satisfied — check whether `reports/visual-diff/responsive-logo-2026-07-18.md` already covers this work before redoing it.
-
-**Trigger:** next visual-diff/reporting pass, or before the block is touched again.
-
 ### P-PRODUCT-CARD-BOUND-CTA-LANDED — product-card bound-mode CTA editability needs a real live exercise
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-06
 
 The bound-mode CTA editability (preset-as-seed styling) is code-reviewed and gate-green, but only applies to WooCommerce-BOUND product cards and has never been exercised on a real one live — the page-8 cards are typed-mode and confirmed unregressed. Needs a real bound card set up, a preset applied, and the restyle confirmed live. Also worth extending the shared button-style helper to the other built-in-button blocks (buybox/whatsapp-cta).
 
 **Trigger:** next bound-product session — needs a browser + a real WooCommerce product, per the LIVE-BROWSER-GATED index.
-
-### P-PRODUCT-CARD-FULL-DUAL-MODE — Full product-card build (pill block + variation sets + dual-mode)
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-05-31
-
-Three-part build: (1) a separate atomic "pill" selector block (not `sgs/button` — no link,
-different behaviour); (2) variation-sets logic reading a product's declared variations +
-content-impact map from the `sgs_product` CPT — a new Spec 24 requirement, write it into the spec
-first; (3) Spec 24 dual-mode (typed clone InnerBlocks / bound CPT block-bindings).
-
-
-**Verify:** likely STALE (flagged 2026-07-29). All three sub-tasks appear to have shipped separately under different names since this was parked on 2026-05-31 — the pill selector as `sgs/option-picker`, variation-sets as `read_variation_sets()` reading `_sgs_variation_sets` (`includes/class-product-bindings.php:244-338`), and Typed/Bound dual-mode per the block's own CLAUDE.md. Re-read against current code before doing any work here.
-**Trigger:** Plan next session, after the atomic pill block exists and Spec 24 is amended.
 
 ### P-PRODUCT-CARD-NAMED-PICKERS — product-card: named + multiple option-pickers per card
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-06
@@ -1282,7 +1277,7 @@ speculatively now.
 
 ## Tooling, scripts, skills + docs
 
-*21 open entries.*
+*22 open entries (re-derived 2026-07-31 from a `**Bucket:** tooling` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-2 — Phase 2.5 / G2.5 deferred work (false blocker)
 **Status:** OPEN · **Bucket:** tooling · **Parked:** unknown
@@ -1408,13 +1403,6 @@ All 8 emitters that were bypassing the project's safe JSON-LD encoder have since
 **Trigger:** next security/gates-hygiene session — this is the one remaining piece of an otherwise-closed vulnerability class.
 
 ## content
-
-### P-LOG-ACCURACY-DOUBT — pipeline input-side drop logs are not a fidelity signal (narrowed)
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-03
-
-Bean's original doubt is correct: `attribute_gap_candidates` is a cumulative ledger across all runs, and the input-side logs measure converter non-routing, not rendered fidelity. The underlying need — a dependable per-clone fidelity signal — has since been met by `computed-parity.js` (Stage 11.6), and project rule 4a now explicitly forbids using the drop-logs as a fidelity signal, so this entry's original trigger has already fired.
-
-**Trigger:** either close this entry, or narrow it to the much smaller open question — is a debug-only, per-run, input-side drop log still worth building at all.
 
 ### P-OLDSHAPE-AUDIT-EXTENSION-ATTRS — post-content audit doesn't know about universal-extension-registered attrs
 **Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-28

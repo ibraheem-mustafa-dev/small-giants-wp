@@ -7,6 +7,51 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-07-31 (seventh pass) — doc-reconciliation: 4 closed on verified evidence, 3 superseded by a merge
+
+**Method.** Bean-ruled session: nothing new added to parking.md, existing entries only archived or
+edited. Each of the 4 closures below was independently verified against live code/files before
+moving (not taken on the entry's own prose). The 3 SUPERSEDED-BY-MERGE entries are not closed —
+their residual scope survives verbatim inside the surviving merged entry,
+`P-CONVERTER-LIVE-CLONE-VERIFY-BATCH`, still open in `parking.md`.
+
+### Closed — ALREADY-DONE (verified 2026-07-31)
+
+> **P-PHASE2-VISUAL-DIFF-REPORTS-DEFERRED** — responsive-logo visual-diff report owed
+> **Status: DONE — verified 2026-07-31.** `reports/visual-diff/responsive-logo-2026-07-18.md` exists (912 bytes, dated 2026-07-18), confirming the entry's own "Verify" hedge. · **Bucket:** framework
+>
+> Original body: The responsive-logo `custom` logo-switch mode shipped and was live-verified project-wide, but without its per-block visual-diff report (STOP-67 discipline). A later-dated report exists (`responsive-logo-2026-07-18.md`) that may already cover this work — check before re-running. The paired adaptive-nav report is moot (that block has since been deleted).
+
+> **P-PRODUCT-CARD-FULL-DUAL-MODE** — Full product-card build (pill block + variation sets + dual-mode)
+> **Status: DONE — verified 2026-07-31.** All three sub-tasks confirmed shipped under different names: `plugins/sgs-blocks/src/blocks/option-picker/` exists (the atomic pill selector), and `read_variation_sets()` is defined at `includes/class-product-bindings.php:252` (called at `:338` and `:393`) — matching the entry's own 2026-07-29 STALE flag exactly. · **Bucket:** framework
+>
+> Original body: Three-part build: (1) a separate atomic "pill" selector block (not `sgs/button` — no link, different behaviour); (2) variation-sets logic reading a product's declared variations + content-impact map from the `sgs_product` CPT — a new Spec 24 requirement; (3) Spec 24 dual-mode (typed clone InnerBlocks / bound CPT block-bindings).
+
+> **P-FR2220-VARIANT-DETECTION** — Confirm variant_slots populated for stylistic blocks
+> **Status: DONE — verified 2026-07-31.** `plugins/sgs-blocks/scripts/converter/services/variant_detect.py` exists (2,960 bytes, dated 2026-07-04) — the detection mechanism the entry asked to confirm is live. · **Bucket:** pipeline
+>
+> Original body: Hero slot-fingerprint variant detection shipped and is live-DOM verified. The complementary modifier-class variant detection needed for the stylistic-block majority (gallery layout, heading/label/text `variantStyle`, divider/mobile-nav) is now built at `converter/services/variant_detect.py:42`, superseding rather than complementing the slot-fingerprint approach.
+
+> **P-LOG-ACCURACY-DOUBT** — pipeline input-side drop logs are not a fidelity signal (narrowed)
+> **Status: DONE — verified 2026-07-31.** The entry's own text states its trigger already fired: *"The underlying need — a dependable per-clone fidelity signal — has since been met by `computed-parity.js` (Stage 11.6), and project rule 4a now explicitly forbids using the drop-logs as a fidelity signal, so this entry's original trigger has already fired."* Closing rather than narrowing per the entry's own offered closure path. · **Bucket:** tooling
+>
+> Original body: Bean's original doubt is correct: `attribute_gap_candidates` is a cumulative ledger across all runs, and the input-side logs measure converter non-routing, not rendered fidelity.
+
+### Superseded by merge (2026-07-31) — residual scope moved verbatim into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` (parking.md, pipeline bucket)
+
+All four entries below reduced to the same unmet closure condition (code shipped/merged, needs one
+live-clone verification run) and were consolidated into one surviving entry so the eventual
+verification session opens one item, not four. No residual scope was dropped — see the merged
+entry for the full text of each.
+
+> **P-CSSPROP-RUNTIME-RESOLVER-UNDER-KEYED** — css_property resolver still 2-argument-keyed; 312 attrs ambiguous. **Status: SUPERSEDED-BY-MERGE 2026-07-31** → folded into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` item 1.
+
+> **P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL** — nav-drawer/trust-bar variant discrimination must be BEM-structural, not styling-attr-based. **Status: SUPERSEDED-BY-MERGE 2026-07-31** → folded into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` item 2.
+
+> **P-QUOTE-PATH2-SELF-NESTING** — golden re-seed residual only; the code fix is merged. **Status: SUPERSEDED-BY-MERGE 2026-07-31** → folded into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` item 3.
+
+> **P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE** — the height gap is an environment artefact, not a fidelity gap. **Status: SUPERSEDED-BY-MERGE 2026-07-31** → folded into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` item 4.
+
 ## 2026-07-29 (sixth pass) — eight closed after a full 151-entry live-code verification; the pass's real value was four FALSE CLAIMS found in entries that stay OPEN
 
 **Method.** Every one of the 151 entries was verified against live code, the DB, or a runnable

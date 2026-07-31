@@ -5,7 +5,7 @@ project: small-giants-wp
 title: SGS Mega-Menu Architectural Foundation
 spec: 36-SGS-NAVIGATION-SYSTEM.md (FR-36-2/3/4/5/7/8/10/13/17)
 date: 2026-07-24
-status: DRAFT — awaiting Bean go-to-execute
+status: EXECUTED-IN-PART — the re-scoped core build shipped and Gate 3 closed live (D399/D401, 2026-07-28); this plan is not archived because the declared follow-ons (P-MEGA-FOLLOWON-DEFERRALS) are still pending
 owner: framework
 ---
 

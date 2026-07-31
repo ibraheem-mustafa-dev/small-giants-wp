@@ -5,7 +5,7 @@ project: small-giants-wp
 thread: cloning-pipeline (Track 1)
 created: 2026-07-22
 status: active
-progress: "2026-07-22 — A1-A6 DONE, B1 DONE (5a7466cc), B3 DONE (f8a4388e, the Bean-caught transform/filter un-exclude + hover-lift), C1a DONE (51629e37, F3 LANDED runtime + batch runner). C1b DONE (321293a6 — UNACCOUNTED 14->0: three proven ACCOUNTING bugs in the D1 bucketing/join, not converter drops; baseline regenerated 14->0). REMAINING = C2 only (the LANDED leg): deploy the phase-f fixtures as canary pages (the gating dependency), wire check_landed(), then live verify + Bean's eye. NOTE the UNACCOUNTED leg is CLOSED (0) — do not re-open it as a task."
+progress: "2026-07-22 — A1-A6 DONE, B1 DONE (5a7466cc), B3 DONE (f8a4388e, the Bean-caught transform/filter un-exclude + hover-lift), C1a DONE (51629e37, F3 LANDED runtime + batch runner). C1b DONE (321293a6 — UNACCOUNTED 14->0: three proven ACCOUNTING bugs in the D1 bucketing/join, not converter drops; baseline regenerated 14->0). C2 open item is triage of the non-LANDED cells; decomposition + ground-truth control committed 2026-07-31 (see reports/ and scripts/oracle/attribution_ground_truth.py); remaining = the attribution + probe-target fix. NOTE the UNACCOUNTED leg is CLOSED (0) — do not re-open it as a task. NOTE deploy-fixtures-as-canary-pages and wire-check_landed() are BOTH already done (`oracle/provision_fixture_canaries.py` + `ledger/coverage_check.py:386` `check_landed()`, confirmed 2026-07-31) — do not re-list them as remaining work."
 governing_spec: specs/31-UNIVERSAL-CLONING-PIPELINE.md (§5 completion matrix + §12.6 remaining scope)
 goal: Drive Spec 31 to provable 100% fulfilment so Track 1 can close it before moving to Spec 35.
 ---
