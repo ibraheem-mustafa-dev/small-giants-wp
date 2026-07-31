@@ -762,10 +762,18 @@ if ( '' !== $item_bg_hex ) {
 // 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set
 // by view.js at mount (client-side), so the same treatment doubles as the
 // current-page indicator — which is why an operator-chosen style matters.
+
+/*
+ * CURRENT-PAGE IS NO LONGER IN THIS LIST (Bean, 2026-07-31 — he opened the drawer
+ * and found "the menu item that matches the current page has the exact same
+ * styling as the hover/click"). Reusing the hover treatment as the current-page
+ * indicator was deliberate once, but it means a visitor cannot tell WHERE THEY
+ * ARE from WHAT THEY ARE POINTING AT. Different questions, different answers.
+ * Hover/focus keeps the operator's chosen style; current-page gets its own.
+ */
 $hover_targets = array(
 	$link_sel . ':hover',
 	$link_sel . ':focus-visible',
-	$link_sel . '[aria-current="page"]',
 );
 $hover_sel     = implode( ',', $hover_targets );
 
@@ -1246,8 +1254,60 @@ $css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid cu
  * panel does below — an absolutely-positioned panel inside the drawer overlays
  * the items beneath it instead of pushing them down.
  */
+
+/*
+ * IN-DRAWER SUBMENU — rebuilt 2026-07-31 after Bean opened the real drawer.
+ *
+ * Two regressions I shipped, both from rules that are right for a FLOATING
+ * header panel and wrong the moment the panel joins the normal flow:
+ *
+ *  1. OPENED TO THE RIGHT. `.sgs-nav-menu__submenu-root{display:flex}` makes the
+ *     root a flex ROW. In the header the wrap is `position:absolute`, out of
+ *     flow, so the row never applied to it; in the drawer the wrap is
+ *     `position:static`, so it became a flex SIBLING and sat beside the trigger.
+ *  2. INVISIBLE TEXT. The old rule forced `background:transparent`, deleting the
+ *     surface the link colour was chosen against — pink text on a pink drawer.
+ *     In the drawer, colour must come from the DRAWER's own cascade: its
+ *     background is operator-chosen per variant and unknowable from here.
+ *
+ * Everything below derives from `currentColor` so it works on ANY drawer
+ * background — light, dark or brand — instead of assuming one.
+ */
+
+/*
+ * FLEX-WRAP, not block (Bean's eye, second pass): `display:block` stacked the
+ * caret onto its own line under the label. The row must stay a row — label
+ * left, toggle right — with the panel WRAPPING to the next line beneath it,
+ * which is what `flex-wrap:wrap` + a full-width wrap gives. The link takes the
+ * free space so the toggle sits at the drawer's right edge, the standard
+ * accordion affordance and a bigger touch target than a caret hugging the text.
+ */
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-root'
+	. '{display:flex;flex-wrap:wrap;align-items:center;width:100%;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-root > .sgs-nav-menu__link{flex:1 1 auto;}';
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:static;width:100%;}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;background:transparent;min-width:0;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;border:0;min-width:0;'
+	. 'background:color-mix(in srgb, currentColor 6%, transparent);border-radius:0;padding:0;margin:0;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{color:inherit;padding:0 16px 0 32px;'
+	. 'border-left:2px solid color-mix(in srgb, currentColor 25%, transparent);}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle{color:inherit;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__item + .sgs-nav-menu__item,'
+	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subitem'
+	. '{border-top:1px solid color-mix(in srgb, currentColor 15%, transparent);}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link:hover,'
+	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink:hover'
+	. '{background:color-mix(in srgb, currentColor 12%, transparent);}';
+
+/*
+ * CURRENT-PAGE gets its OWN persistent treatment, distinct from hover — see the
+ * $hover_targets note above. Weight plus a solid left rule reads as "you are
+ * here" whether or not the pointer is near it.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__link[aria-current="page"],'
+	. $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{font-weight:600;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link[aria-current="page"],'
+	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]'
+	. '{border-left:3px solid currentColor;background:color-mix(in srgb, currentColor 8%, transparent);}';
 
 /*
  * In-drawer accordion (FR-36-5/-6: "the same panel renders inside the
