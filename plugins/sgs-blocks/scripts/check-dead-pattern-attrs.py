@@ -44,9 +44,39 @@ NATIVE = {
 }
 
 # SGS universal extensions injected server-side (device-visibility, animation,
-# custom CSS) — real, just not per-block declarations.
+# custom CSS) — real, just not per-block declarations. Genuinely universal:
+# applied identically to every block, so a blanket prefix match is sound.
 EXT_PREFIXES = ('sgsHideOn', 'sgsAnim')
 EXT_EXACT = {'sgsCustomCss'}
+
+# `fx` (Spec 38 FR-38-4/§11.2, Motion Wave D) is the Tier G motion-preset
+# extension — but unlike EXT_PREFIXES above it is NOT universal: `fx.js`
+# `addFxAttributes()` registers the `fx*` attribute family via a
+# `blocks.registerBlockType` filter gated on `shouldHaveFx()`, which is
+# `fxOptionsForBlock(name).length > 1` — true only for blocks listed in
+# `generated-fx-qualifying-blocks.json`. A block absent from that roster
+# never gets the filter, so `fx*` on it is exactly the D338 trap: WordPress
+# discards it silently. A bare prefix match here would blind the gate to the
+# one failure mode it exists to catch — so the fx branch is block-aware
+# (`load_fx_qualifying_blocks()`, reading that same generated artefact) as
+# well as name-aware (`FX_ATTR_NAMES`).
+#
+# FX_ATTR_NAMES is hardcoded, not generated: `generated-fx-qualifying-blocks
+# .json` enumerates which BLOCKS qualify and for which EFFECTS, not the
+# attribute names themselves. Those are defined once in `fx.js`'s own
+# `addFxAttributes()` attribute-registration block and mirrored in
+# `includes/fx-attributes.php`'s `FX_ATTR_MAP` — there is no generated/DB
+# artefact naming them, so R-31-1 (DB-first, but only where a source exists)
+# permits hardcoding here with the source cited.
+FX_QUALIFYING_BLOCKS_PATH = (
+    REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks' / 'extensions'
+    / 'generated-fx-qualifying-blocks.json'
+)
+FX_ATTR_NAMES = {
+    'fx', 'fxTrigger', 'fxStart', 'fxEnd', 'fxHold', 'fxScrub', 'fxStagger',
+    'fxDuration', 'fxEase', 'fxSplit', 'fxMask', 'fxPath', 'fxPathAsset',
+    'fxPathRotate', 'fxPreset',
+}
 
 BLOCK_RE = re.compile(r'<!--\s*wp:(sgs/[a-z0-9-]+)\s*(\{.*?\})?\s*/?-->', re.S)
 
@@ -63,14 +93,28 @@ def load_schemas() -> dict:
     return out
 
 
-def is_legit(key: str, declared: set) -> bool:
+def load_fx_qualifying_blocks() -> dict:
+    try:
+        return json.loads(FX_QUALIFYING_BLOCKS_PATH.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        # Missing/unreadable artefact fails CLOSED: no block is treated as
+        # fx-qualifying, so a real fx attr would be flagged as a false
+        # positive (loud, fixable) rather than a gap swallowing a true
+        # discard (silent, the exact failure this gate exists to catch).
+        return {}
+
+
+def is_legit(key: str, declared: set, block_name: str, fx_qualifying: dict) -> bool:
     if key in declared or key in NATIVE or key in EXT_EXACT:
         return True
+    if key in FX_ATTR_NAMES:
+        return block_name in fx_qualifying
     return key.startswith(EXT_PREFIXES)
 
 
 def scan() -> list:
     schemas = load_schemas()
+    fx_qualifying = load_fx_qualifying_blocks()
     findings = []
     for path in sorted(THEME_DIR.rglob('*')):
         if path.suffix not in ('.php', '.html') or not path.is_file():
@@ -85,7 +129,7 @@ def scan() -> list:
             except json.JSONDecodeError:
                 continue
             for key in attrs:
-                if is_legit(key, schemas[name]):
+                if is_legit(key, schemas[name], name, fx_qualifying):
                     continue
                 line = src[: m.start()].count('\n') + 1
                 rel = path.relative_to(REPO).as_posix()

@@ -14,7 +14,7 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":"65% 35%","gridTemplateColumnsMobile":"1fr","verticalAlign":"center","gap":"var:preset|spacing|40"} -->
 
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}"} -->
-			<!-- wp:sgs/heading {"content":"Ready to Transform Your Business?","textColour":"surface","fontSize":"x-large"} /-->
+			<!-- wp:sgs/heading {"content":"Ready to Transform Your Business?","textColour":"surface","fontSize":"x-large","fx":"split-reveal","fxStart":"top 70%","fxDuration":0.8,"fxStagger":0.05,"fxSplit":"words"} /-->
 			<!-- wp:sgs/text {"text":"Get a free consultation and discover how we can help you grow.","textColour":"text-inverse"} /-->
 		<!-- /wp:sgs/container -->
 

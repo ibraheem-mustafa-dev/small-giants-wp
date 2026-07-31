@@ -10,7 +10,7 @@
 ?>
 
 <!-- wp:sgs/hero {"variant":"standard","alignment":"centre","minHeight":"520px"} -->
-	<!-- wp:sgs/heading {"content":"Your Compelling Headline Goes Here","level":"h1","className":"sgs-hero__headline"} /-->
+	<!-- wp:sgs/heading {"content":"Your Compelling Headline Goes Here","level":"h1","className":"sgs-hero__headline","fx":"split-reveal","fxTrigger":"load","fxStart":"top 85%","fxDuration":0.5,"fxStagger":0.02,"fxEase":"power1.out","fxSplit":"words"} /-->
 
 	<!-- wp:sgs/text {"text":"A brief supporting statement that explains your value proposition and encourages visitors to take action.","className":"sgs-hero__subheadline"} /-->
 
