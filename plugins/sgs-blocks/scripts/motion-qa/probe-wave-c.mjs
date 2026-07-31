@@ -53,6 +53,53 @@
  * Usage:  node scripts/motion-qa/probe-wave-c.mjs [url]
  * Output: JSON on stdout. Exit 0 pass · 1 fail · 2 inconclusive.
  *
+ * EXTENSION 2026-07-31 (register Steps 1 + 14) — WHAT WAS ADDED AND WHY
+ *
+ *  · TOUCH ARM (Step 1). Draggable's whole module is gated behind
+ *    `window.matchMedia('(pointer: fine)')` (`fx-draggable.js` line ~319) —
+ *    that is a code READING, never measured live. This run adds a real
+ *    coarse-pointer context (`hasTouch: true, isMobile: true, 390×844`) and
+ *    drives a GENUINE native swipe via CDP `Input.dispatchTouchEvent` (not a
+ *    synthetic `scrollLeft` write, which would prove nothing about whether
+ *    the BROWSER's own touch-scroll path still works) plus an unrelated
+ *    hybrid-pointer context (`hasTouch: true` with NO mobile emulation) to
+ *    settle the register's Edge case empirically. Confirmed via an
+ *    independent instrument (Chrome DevTools MCP, not this Playwright
+ *    process) before being encoded here: `(pointer: fine)` reflects the
+ *    PRIMARY pointer, so a hybrid device with both touch and a mouse reads
+ *    `pointer: fine === true` — the FINE-POINTER branch wins and Draggable
+ *    DOES bind (cursor became `grab`, matched live). A pure-touch device
+ *    (`isMobile: true`) reads `pointer: fine === false` and the module
+ *    never binds.
+ *  · REDUCED-MOTION ARMS for `scrub`, `pin-scrub`, `split-reveal` and
+ *    `motion-path` (Step 14). These four (plus `horizontal-panel`, already
+ *    covered by the sibling `probe-reduced-motion.mjs` and ported in here so
+ *    every §10 row lives in ONE re-runnable harness) were "reasoned by
+ *    construction" only — Spec 38 FR-38-20 itself says that must be flagged
+ *    as the lesser standard. `scrub`, `pin-scrub` and `horizontal-panel` are
+ *    genuinely SCRUBBED (continuous — `scrub: true` in their ScrollTrigger
+ *    config), so they are measured in place via a scroll sweep, like DrawSVG
+ *    above. `split-reveal` fires ONCE on crossing its start line (plain
+ *    `gsap.from` + `scrollTrigger`, no `scrub`), so — exactly like
+ *    ScrambleText — it needs its own fresh page, parked above the fold
+ *    before the trigger line is crossed.
+ *  · `morph` is NOT measured and is reported `NOT-BUILT`, not
+ *    `INCONCLUSIVE`. Verified two ways before writing this: (1)
+ *    `src/blocks/extensions/fx.js`'s `SHIPPED_EFFECTS` array explicitly
+ *    excludes it with a comment — "the module landed, but its asset half is
+ *    deliberately deferred (D427)" — so no client can select it from any
+ *    inspector; (2) every plausible canary slug
+ *    (`motion-canary-morph`/`motion-canary-morphsvg`) 404s live. A selector
+ *    that structurally cannot match anything is a documented non-build, not
+ *    an unmeasured claim — see the per-effect verdict block at the bottom.
+ *  · Each new assertion runs through a `selfTest()` BEFORE the browser
+ *    opens: known-good and known-BAD fixtures are fed to the same pure
+ *    helper functions (`varied()`/`allNear()`) the real measurements use,
+ *    and the script refuses to run (`exit 2`) if either helper cannot tell
+ *    them apart. This is the "construct the KNOWN FAILURE and prove the
+ *    assertion rejects it" discipline this file's own docblock already
+ *    demands of every other measurement here.
+ *
  * @package SGS\Blocks
  */
 
@@ -74,8 +121,100 @@ const BASE_URL =
  * probe that cannot tell "the fix does not work" from "I was served yesterday's
  * HTML" is not a measurement.
  */
+const RUN_TS = Date.now();
 const URL =
-	BASE_URL + ( BASE_URL.includes( '?' ) ? '&' : '?' ) + 'sgsprobe=' + Date.now();
+	BASE_URL + ( BASE_URL.includes( '?' ) ? '&' : '?' ) + 'sgsprobe=' + RUN_TS;
+
+/**
+ * Dedicated one-effect canary pages (Step 14). Each is a separate WP page —
+ * confirmed live 2026-07-31 (`sgsprobe`-cache-busted `curl` + grep for the
+ * effect's `data-sgs-fx` attribute, 200 OK, non-empty match) — because these
+ * four effects do NOT appear anywhere on `/motion-canary-wave-c/` itself.
+ * Same cache-busting discipline as `URL` above and for the same reason
+ * (LiteSpeed served stale HTML earlier this session).
+ */
+const HOST = 'https://sandybrown-nightingale-600381.hostingersite.com';
+const SCRUB_URL = `${ HOST }/motion-canary-scrub/?sgsprobe=${ RUN_TS }`;
+const PIN_SCRUB_URL = `${ HOST }/motion-canary-pin-scrub/?sgsprobe=${ RUN_TS }`;
+const SPLIT_REVEAL_URL = `${ HOST }/motion-canary-split-reveal/?sgsprobe=${ RUN_TS }`;
+const HORIZONTAL_PANEL_URL = `${ HOST }/motion-canary-horizontal-panel/?sgsprobe=${ RUN_TS }`;
+
+/**
+ * True when every value in `nums` differs from at least one other by more
+ * than `tol` — i.e. the series genuinely moved. Used for the no-preference
+ * arm of a scrubbed effect: it must show a range, not a flat line.
+ *
+ * @param {number[]} nums Sampled numbers (nulls/NaN filtered out).
+ * @param {number}   tol  Minimum spread to count as "varied".
+ * @return {boolean} True if spread > tol.
+ */
+function varied( nums, tol ) {
+	const clean = nums.filter( ( n ) => Number.isFinite( n ) );
+	if ( clean.length < 2 ) {
+		return false;
+	}
+	return Math.max( ...clean ) - Math.min( ...clean ) > tol;
+}
+
+/**
+ * True when every value in `nums` sits within `tol` of `target`. Used for
+ * the reduced-motion arm of a SIMPLIFY effect: it must sit at its end state
+ * throughout, regardless of scroll position.
+ *
+ * @param {number[]} nums   Sampled numbers.
+ * @param {number}   target The static value the arm should sit at.
+ * @param {number}   tol    Allowed deviation.
+ * @return {boolean} True if every sample is within tolerance of target.
+ */
+function allNear( nums, target, tol ) {
+	const clean = nums.filter( ( n ) => Number.isFinite( n ) );
+	if ( ! clean.length ) {
+		return false;
+	}
+	return clean.every( ( n ) => Math.abs( n - target ) <= tol );
+}
+
+/**
+ * Prove `varied()`/`allNear()` can actually fail before trusting them on
+ * live data. Each fixture pair is a KNOWN-GOOD and a KNOWN-BAD case; if
+ * either helper cannot tell them apart, every downstream Step 14 assertion
+ * built on it would be checking nothing. Runs before the browser opens.
+ */
+function selfTest() {
+	const problems = [];
+
+	// A genuinely scrubbed opacity arc vs. the flat line a broken/never-firing
+	// scrub would produce (the exact shape the DrawSVG defect above once had).
+	if ( ! varied( [ 0.02, 0.4, 0.97 ], 0.05 ) ) {
+		problems.push( 'varied() rejected a genuinely varying fixture' );
+	}
+	if ( varied( [ 1, 1, 1, 1 ], 0.05 ) ) {
+		problems.push(
+			'varied() PASSED a flat known-failure fixture — this is the exact shape a scrub that never ran would produce'
+		);
+	}
+
+	// A genuinely static SIMPLIFY end-state vs. a leaked scrub still moving
+	// under reduced motion (the real defect this arm exists to catch).
+	if ( ! allNear( [ 1, 0.99, 1, 1 ], 1, 0.05 ) ) {
+		problems.push( 'allNear() rejected a genuinely static fixture' );
+	}
+	if ( allNear( [ 0.05, 0.5, 1 ], 1, 0.05 ) ) {
+		problems.push(
+			'allNear() PASSED a known-failure fixture where the effect clearly still scrubbed under reduced motion'
+		);
+	}
+
+	if ( problems.length ) {
+		console.error(
+			'SELF-TEST FAILED — refusing to run the Step 14 arms on unproven assertions:\n - ' +
+				problems.join( '\n - ' )
+		);
+		process.exit( 2 );
+	}
+}
+
+selfTest();
 
 /**
  * Scroll an element to the middle of the viewport and settle.
@@ -249,6 +388,389 @@ const readDraw = () =>
 			};
 		}
 	);
+
+/**
+ * `scrub` (element scrub timeline, Step 14). Scrubbed = continuous, so
+ * unlike ScrambleText/split-reveal it can be measured in place with a
+ * scroll sweep rather than needing a fresh page — there is no one-shot
+ * trigger to "spend".
+ *
+ * @param {import('playwright').BrowserContext} context Context (carries the
+ *                                                        arm's reducedMotion).
+ * @param {string}                              url     Page URL.
+ * @return {Promise<Object>} `{ arc, opacities, translateYs }` or `{ error }`.
+ */
+async function measureScrubElement( context, url ) {
+	const page = await context.newPage();
+	await page.goto( url, { waitUntil: 'load' } );
+	await page.waitForTimeout( 900 );
+
+	const count = await page.locator( '[data-sgs-fx="scrub"]' ).count();
+	if ( ! count ) {
+		await page.close();
+		return { error: 'NO_HOST' };
+	}
+
+	const geo = await page.evaluate( () => {
+		const el = document.querySelector( '[data-sgs-fx="scrub"]' );
+		const r = el.getBoundingClientRect();
+		return { docTop: r.top + window.scrollY, vh: window.innerHeight };
+	} );
+
+	const arc = [];
+	for (
+		let y = Math.max( 0, geo.docTop - geo.vh );
+		y <= geo.docTop + geo.vh * 0.6;
+		y += 80
+	) {
+		// eslint-disable-next-line no-await-in-loop
+		await page.evaluate( ( yy ) => window.scrollTo( 0, yy ), y );
+		// eslint-disable-next-line no-await-in-loop
+		await page.waitForTimeout( 90 );
+		// eslint-disable-next-line no-await-in-loop
+		const sample = await page.evaluate( () => {
+			const el = document.querySelector( '[data-sgs-fx="scrub"]' );
+			const cs = getComputedStyle( el );
+			const m = new DOMMatrixReadOnly( cs.transform );
+			return {
+				opacity: parseFloat( cs.opacity ),
+				translateY: Math.round( m.m42 * 10 ) / 10,
+			};
+		} );
+		arc.push( sample );
+	}
+
+	await page.close();
+	return {
+		arc,
+		opacities: arc.map( ( s ) => s.opacity ),
+		translateYs: arc.map( ( s ) => s.translateY ),
+	};
+}
+
+/**
+ * `pin-scrub` (Step 14). Also continuous — measured in place via a scroll
+ * sweep through the pin range, reading `.pin-spacer` presence (the pin
+ * engagement signal every other pin/scrub probe in this house uses) plus a
+ * participating child's opacity.
+ *
+ * @param {import('playwright').BrowserContext} context Context.
+ * @param {string}                              url     Page URL.
+ * @return {Promise<Object>} `{ pinSpacerPresent, arc, opacities }` or `{ error }`.
+ */
+async function measurePinScrub( context, url ) {
+	const page = await context.newPage();
+	await page.goto( url, { waitUntil: 'load' } );
+	await page.waitForTimeout( 900 );
+
+	const count = await page.locator( '[data-sgs-fx="pin-scrub"]' ).count();
+	if ( ! count ) {
+		await page.close();
+		return { error: 'NO_HOST' };
+	}
+
+	const pinSpacerPresent = await page.evaluate(
+		() =>
+			!! document
+				.querySelector( '[data-sgs-fx="pin-scrub"]' )
+				.closest( '.pin-spacer' )
+	);
+
+	const geo = await page.evaluate( () => {
+		const el = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+		const r = el.getBoundingClientRect();
+		return { docTop: r.top + window.scrollY, vh: window.innerHeight };
+	} );
+
+	const arc = [];
+	for (
+		let y = Math.max( 0, geo.docTop - geo.vh * 0.5 );
+		y <= geo.docTop + geo.vh * 1.5;
+		y += 100
+	) {
+		// eslint-disable-next-line no-await-in-loop
+		await page.evaluate( ( yy ) => window.scrollTo( 0, yy ), y );
+		// eslint-disable-next-line no-await-in-loop
+		await page.waitForTimeout( 90 );
+		// eslint-disable-next-line no-await-in-loop
+		const sample = await page.evaluate( () => {
+			const host = document.querySelector( '[data-sgs-fx="pin-scrub"]' );
+			const wrapper =
+				host.querySelector( ':scope > .wp-block-sgs-container' ) || host;
+			const kids = Array.from( wrapper.children ).filter(
+				( n ) => n.nodeType === 1
+			);
+			// Index 1: the first PARAGRAPH participant ("This child animates
+			// during the pin.") — index 0 is the section's own heading, which
+			// also animates but is a noisier readout of the same signal.
+			const child = kids[ 1 ] || kids[ 0 ];
+			if ( ! child ) {
+				return null;
+			}
+			return { opacity: parseFloat( getComputedStyle( child ).opacity ) };
+		} );
+		arc.push( sample );
+	}
+
+	await page.close();
+	return {
+		pinSpacerPresent,
+		arc,
+		opacities: arc.filter( Boolean ).map( ( s ) => s.opacity ),
+	};
+}
+
+/**
+ * `split-reveal` (Step 14). ONE-SHOT — `gsap.from()` + plain `scrollTrigger`,
+ * no `scrub`, so exactly like ScrambleText it must run on its own fresh page,
+ * parked above the fold before the start line is crossed, or an earlier
+ * measurement's scrolling would have already spent it (see the file-level
+ * note on `measureScramble` for why this class of bug is real, not
+ * theoretical, on this page set).
+ *
+ * @param {import('playwright').BrowserContext} context Context.
+ * @param {string}                              url     Page URL.
+ * @return {Promise<Object>} Pre/post split-fragment readings, or `{ error }`.
+ */
+async function measureSplitReveal( context, url ) {
+	const page = await context.newPage();
+	await page.goto( url, { waitUntil: 'load' } );
+	await page.waitForTimeout( 900 );
+
+	const count = await page.locator( '[data-sgs-fx="split-reveal"]' ).count();
+	if ( ! count ) {
+		await page.close();
+		return { error: 'NO_HOST' };
+	}
+
+	const originalText = await page.evaluate( () =>
+		document.querySelector( '[data-sgs-fx="split-reveal"]' ).textContent.trim()
+	);
+
+	// Park a full viewport above the heading — its start line ('top 85%',
+	// unauthored default on this canary) has not been crossed yet.
+	await page.evaluate( () => {
+		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const top = el.getBoundingClientRect().top + window.scrollY;
+		window.scrollTo( 0, Math.max( 0, top - window.innerHeight * 1.5 ) );
+	} );
+	await page.waitForTimeout( 500 );
+
+	const pre = await page.evaluate( () => {
+		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		// ⚠ NOT `querySelectorAll('span')` — a first cut of this probe hardcoded
+		// `span` and read 0 fragments on this exact canary, reporting a false
+		// DEFECT. Cross-checked live via Chrome DevTools MCP (independent
+		// instrument, 2026-07-31): GSAP 3.15's SplitText wraps each `words`
+		// fragment in a `<div aria-hidden="true">` here, not a `<span>` — the
+		// wrapper tag is SplitText's own implementation detail, not part of
+		// the contract this probe should assume. DIRECT CHILDREN of the split
+		// host is the tag-agnostic, correct signal: SplitText's split targets
+		// are always the element's own children, regardless of which tag it
+		// picks.
+		const fragments = el.children;
+		return {
+			spanCount: fragments.length,
+			firstOpacity: fragments.length
+				? parseFloat( getComputedStyle( fragments[ 0 ] ).opacity )
+				: null,
+		};
+	} );
+
+	await page.evaluate( () => {
+		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const top = el.getBoundingClientRect().top + window.scrollY;
+		window.scrollTo( 0, Math.max( 0, top - window.innerHeight * 0.3 ) );
+	} );
+	// The tween is a one-shot with a real duration (house default), not a
+	// scrub — give it time to actually finish before sampling "settled".
+	await page.waitForTimeout( 1600 );
+
+	const post = await page.evaluate( () => {
+		const el = document.querySelector( '[data-sgs-fx="split-reveal"]' );
+		const fragments = el.children; // see the `pre` reader above for why
+		return {
+			spanCount: fragments.length,
+			opacities: Array.from( fragments ).map( ( s ) =>
+				parseFloat( getComputedStyle( s ).opacity )
+			),
+			text: el.textContent.trim(),
+			ariaLabel: el.getAttribute( 'aria-label' ),
+		};
+	} );
+
+	await page.close();
+	return { originalText, pre, post };
+}
+
+/**
+ * `horizontal-panel` (Step 14). Ported into this harness so every §10 row
+ * lives in one re-runnable file (register's own instruction). The
+ * reachability + `effectRan` logic mirrors the already-proven
+ * `probe-reduced-motion.mjs` (same house, same signals — `.pin-spacer`
+ * presence for engagement, last-panel-visible for reachability); this adds
+ * a translate-sweep on top so the no-preference arm proves genuine SLIDING,
+ * not merely "pinned and static".
+ *
+ * @param {import('playwright').BrowserContext} context Context.
+ * @param {string}                              url     Page URL.
+ * @return {Promise<Object>} State object, `error`/`VACUOUS` reachability, or `{ error }`.
+ */
+async function measureHorizontalPanel( context, url ) {
+	const page = await context.newPage();
+	await page.goto( url, { waitUntil: 'load' } );
+	await page.waitForTimeout( 1000 );
+
+	const count = await page.locator( '[data-sgs-fx="horizontal-panel"]' ).count();
+	if ( ! count ) {
+		await page.close();
+		return { error: 'NO_HOST' };
+	}
+
+	const state = await page.evaluate( async () => {
+		const host = document.querySelector( '[data-sgs-fx="horizontal-panel"]' );
+		const marked = host.querySelector( ':scope > [data-sgs-fx-track]' );
+		const track = marked
+			? marked.querySelector( ':scope > .wp-block-sgs-container' ) || marked
+			: null;
+		const panels = track
+			? Array.from( track.children ).filter(
+					( n ) =>
+						n.nodeType === 1 &&
+						( n.offsetWidth > 0 || null !== n.offsetParent )
+			  )
+			: [];
+		const cs = getComputedStyle( host );
+		const out = {
+			overflowX: cs.overflowX,
+			scrollSnapType: cs.scrollSnapType,
+			effectRan: !! host.closest( '.pin-spacer' ),
+			panelCount: panels.length,
+		};
+		if ( panels.length < 2 ) {
+			out.reachability = 'VACUOUS';
+			return out;
+		}
+		host.scrollLeft = host.scrollWidth;
+		await new Promise( ( r ) => requestAnimationFrame( r ) );
+		await new Promise( ( r ) => setTimeout( r, 100 ) );
+		const last = panels[ panels.length - 1 ].getBoundingClientRect();
+		const hostRect = host.getBoundingClientRect();
+		out.lastPanelFullyVisible =
+			last.left >= hostRect.left - 1 && last.right <= hostRect.right + 1;
+		out.reachability = out.lastPanelFullyVisible ? 'REACHABLE' : 'UNREACHABLE';
+		return out;
+	} );
+
+	// Movement sweep — only meaningful when the pin actually engaged.
+	if ( state.effectRan ) {
+		const spacerTop = await page.evaluate( () => {
+			const spacer = document
+				.querySelector( '[data-sgs-fx="horizontal-panel"]' )
+				.closest( '.pin-spacer' );
+			return spacer.getBoundingClientRect().top + window.scrollY;
+		} );
+		const reads = [];
+		for ( const frac of [ 0, 0.5, 1 ] ) {
+			// eslint-disable-next-line no-await-in-loop
+			await page.evaluate(
+				( y ) => window.scrollTo( 0, y ),
+				spacerTop + frac * 500
+			);
+			// eslint-disable-next-line no-await-in-loop
+			await page.waitForTimeout( 150 );
+			// eslint-disable-next-line no-await-in-loop
+			const x = await page.evaluate( () => {
+				const host = document.querySelector(
+					'[data-sgs-fx="horizontal-panel"]'
+				);
+				const marked = host.querySelector( ':scope > [data-sgs-fx-track]' );
+				const track = marked
+					? marked.querySelector( ':scope > .wp-block-sgs-container' ) ||
+					  marked
+					: host;
+				const m = new DOMMatrixReadOnly( getComputedStyle( track ).transform );
+				return Math.round( m.m41 * 10 ) / 10;
+			} );
+			reads.push( x );
+		}
+		state.translateSweep = reads;
+	}
+
+	await page.close();
+	return state;
+}
+
+/**
+ * Native, CDP-driven touch swipe (Step 1). Deliberately NOT a synthetic
+ * `el.scrollLeft = X` write — that would prove nothing about whether the
+ * BROWSER's own touch-scroll path still works, which is the actual claim
+ * under test ("native scroll still moves the track"). `Input.dispatchTouchEvent`
+ * drives Chromium's real touch/compositor scroll path.
+ *
+ * @param {import('playwright').Page} page     Page (context must have `hasTouch: true`).
+ * @param {string}                    selector Scroller selector.
+ * @param {number}                    nth      0-based index.
+ * @return {Promise<Object>} Before/after scrollLeft + cursor, or `{ error }`.
+ */
+async function nativeTouchSwipe( page, selector, nth ) {
+	const loc = page.locator( selector ).nth( nth );
+	await loc.scrollIntoViewIfNeeded();
+	await page.waitForTimeout( 300 );
+	const box = await loc.boundingBox();
+	if ( ! box ) {
+		return { error: 'NO_BOX' };
+	}
+
+	const before = await loc.evaluate( ( e ) => Math.round( e.scrollLeft ) );
+	const cursorBefore = await loc.evaluate( ( e ) => getComputedStyle( e ).cursor );
+
+	const client = await page.context().newCDPSession( page );
+	const y = box.y + box.height / 2;
+	const startX = box.x + box.width * 0.85;
+
+	await client.send( 'Input.dispatchTouchEvent', {
+		type: 'touchStart',
+		touchPoints: [ { x: startX, y } ],
+	} );
+	/*
+	 * ⚠ STEP COUNT / SPACING / DISTANCE ARE LOAD-BEARING, NOT ARBITRARY
+	 * (2026-07-31). The first version (10 steps, 20ms apart, 0.5×width total
+	 * distance) reproducibly FAILED to trigger Chromium's native touch-scroll
+	 * recognition on this run: measured live via 8 fresh-context repeats —
+	 * 2 read `moved: false` (scrollLeft stuck at 0) and 6 read `moved: true`,
+	 * same page, same geometry, only the RNG of CDP touch-gesture timing
+	 * differing. A flaky negative is exactly as false as a flaky positive: it
+	 * would have reported "native scroll is broken" on a coin-flip. 15 steps
+	 * at 30ms with 0.6×width of total travel (more distance covered more
+	 * slowly) reproduced `moved: true` 5/5 in the same fresh-context repeat
+	 * harness — Chromium's touch-scroll gesture recogniser apparently needs
+	 * more cumulative distance/time before it commits to a scroll rather than
+	 * treating the sequence as a tap-and-hold. This is a probe reliability
+	 * fix, not a change to what is being asserted.
+	 */
+	const steps = 15;
+	for ( let i = 1; i <= steps; i++ ) {
+		const x = startX - ( i * box.width * 0.6 ) / steps;
+		// eslint-disable-next-line no-await-in-loop
+		await client.send( 'Input.dispatchTouchEvent', {
+			type: 'touchMove',
+			touchPoints: [ { x, y } ],
+		} );
+		// eslint-disable-next-line no-await-in-loop
+		await page.waitForTimeout( 30 );
+	}
+	await client.send( 'Input.dispatchTouchEvent', {
+		type: 'touchEnd',
+		touchPoints: [],
+	} );
+	await page.waitForTimeout( 600 );
+
+	const after = await loc.evaluate( ( e ) => Math.round( e.scrollLeft ) );
+	const cursorAfter = await loc.evaluate( ( e ) => getComputedStyle( e ).cursor );
+
+	return { before, after, moved: after !== before, cursorBefore, cursorAfter };
+}
 
 /**
  * Measure ScrambleText on its OWN FRESH PAGE.
@@ -444,6 +966,77 @@ async function runArm( browser, reducedMotion ) {
 
 	out.scramble = await measureScramble( context );
 
+	// ── Step 14: the four "reasoned by construction" effects ──
+	out.scrub = await measureScrubElement( context, SCRUB_URL );
+	out.pinScrub = await measurePinScrub( context, PIN_SCRUB_URL );
+	out.splitReveal = await measureSplitReveal( context, SPLIT_REVEAL_URL );
+	out.horizontalPanel = await measureHorizontalPanel(
+		context,
+		HORIZONTAL_PANEL_URL
+	);
+
+	// ── MotionPath — lives on THIS page (wave-c), continuous scrub, so it is
+	// swept in place exactly like DrawSVG above rather than needing its own
+	// page. `morph` is NOT measured here — see file docblock: no shipped
+	// selector exists anywhere on the site (verified against
+	// `SHIPPED_EFFECTS` + two 404'd canary slugs), so a probe for it would
+	// only ever read NO_HOST. That absence is reported once, at the verdict,
+	// as NOT-BUILT rather than being silently retried per arm.
+	//
+	// ⚠ SWEEP WINDOW WIDTH — GOT THIS WRONG FIRST, CAUGHT BY CROSS-CHECKING
+	// A SECOND INSTRUMENT (2026-07-31). A first cut swept `docTop ± vh` (the
+	// same window DrawSVG's arc uses) and it "passed": 18 of 19 samples were
+	// bit-for-bit flat and only the LAST sample differed. That is the exact
+	// shape the DrawSVG false-pass this file's docblock already warns about
+	// had — a spread that clears the tolerance while the actual movement is
+	// bunched into a sliver of the sweep. Measured live via Chrome DevTools
+	// MCP before trusting it: this element's ScrollTrigger range (`top
+	// bottom` → `bottom top` against an element with a large rendered height
+	// due to its `align: path` repositioning) does not become active until
+	// roughly `docTop + 1.9·vh`, and does not fully settle until roughly
+	// `docTop + 3.5·vh` — nearly FOUR viewport-heights of scroll, not two.
+	// The window below was widened to cover that measured range with margin
+	// on both sides, and the assertion (see verdict section) checks that the
+	// movement is spread across multiple samples, not just the first/last.
+	const mpCount = await page
+		.locator( '[data-sgs-fx="motion-path"]' )
+		.count();
+	if ( mpCount ) {
+		const mpGeo = await page.evaluate( () => {
+			const el = document.querySelector( '[data-sgs-fx="motion-path"]' );
+			const r = el.getBoundingClientRect();
+			return { docTop: r.top + window.scrollY, vh: window.innerHeight };
+		} );
+		const mpArc = [];
+		for (
+			let y = Math.max( 0, mpGeo.docTop - mpGeo.vh * 0.5 );
+			y <= mpGeo.docTop + mpGeo.vh * 4.2;
+			y += mpGeo.vh * 0.15
+		) {
+			// eslint-disable-next-line no-await-in-loop
+			await page.evaluate( ( yy ) => window.scrollTo( 0, yy ), y );
+			// eslint-disable-next-line no-await-in-loop
+			await page.waitForTimeout( 90 );
+			// eslint-disable-next-line no-await-in-loop
+			const pos = await page.evaluate( () => {
+				const el = document.querySelector( '[data-sgs-fx="motion-path"]' );
+				const m = new DOMMatrixReadOnly( getComputedStyle( el ).transform );
+				return {
+					x: Math.round( m.m41 * 10 ) / 10,
+					y: Math.round( m.m42 * 10 ) / 10,
+				};
+			} );
+			mpArc.push( pos );
+		}
+		out.motionPath = { count: mpCount, arc: mpArc };
+	} else {
+		out.motionPath = { count: 0 };
+	}
+
+	out.morphCount = await page
+		.locator( '[data-sgs-fx="morph"]' )
+		.count();
+
 	// ── gallery: momentum ON (instance 0) vs OFF (instance 1) ──
 	out.galleryMomentumOn = await dragAndMeasure(
 		page,
@@ -571,13 +1164,110 @@ async function runArm( browser, reducedMotion ) {
 	return out;
 }
 
+/**
+ * Step 1 touch arm — a real coarse-pointer context (`hasTouch: true,
+ * isMobile: true`, 390×844) against the same cache-busted URL. Also
+ * satisfies the register's Integration test ("reduced-motion × touch
+ * together") by taking `reducedMotion` as a parameter, so it is run once per
+ * motion arm rather than being a third orthogonal dimension bolted on.
+ *
+ * @param {import('playwright').Browser} browser       Browser.
+ * @param {string}                       reducedMotion 'reduce' | 'no-preference'.
+ * @return {Promise<Object>} Touch-arm readings for this motion preference.
+ */
+async function runTouchArm( browser, reducedMotion ) {
+	const context = await browser.newContext( {
+		viewport: { width: 390, height: 844 },
+		hasTouch: true,
+		isMobile: true,
+		reducedMotion,
+	} );
+	const page = await context.newPage();
+	await page.goto( URL, { waitUntil: 'load' } );
+	await page.waitForTimeout( 1000 );
+
+	const pointerFine = await page.evaluate(
+		() => matchMedia( '(pointer: fine)' ).matches
+	);
+	const pointerCoarse = await page.evaluate(
+		() => matchMedia( '(pointer: coarse)' ).matches
+	);
+	const galleryScrollerCount = await page
+		.locator( '.sgs-gallery__grid' )
+		.count();
+	const swipe = galleryScrollerCount
+		? await nativeTouchSwipe( page, '.sgs-gallery__grid', 0 )
+		: { error: 'NO_GALLERY' };
+
+	await context.close();
+	return { pointerFine, pointerCoarse, swipe };
+}
+
+/**
+ * Step 1 Edge case — a device with BOTH touch and a fine pointer
+ * (`hasTouch: true`, no mobile emulation, desktop viewport).
+ *
+ * ⚠ TOOLING LIMIT, FOUND BY CROSS-CHECKING TWO INDEPENDENT INSTRUMENTS
+ * (2026-07-31). This function's FIRST version, and an initial hand-driven
+ * Chrome DevTools MCP check, both read `pointerFine: true` on this context
+ * shape and the docblock said so. Re-verified deliberately, twice, on a
+ * clean MCP page with no other agent's navigation interleaved (the shared
+ * browser this session had multiple concurrent agents re-selecting tabs
+ * mid-check, which is the likely source of the first, wrong reading) — and
+ * BOTH the Playwright harness below and a fresh MCP check now agree:
+ * `pointerFine: false, pointerCoarse: true, cursor: 'auto'`. Chromium's CDP
+ * touch emulation (which is what `hasTouch` and the DevTools "touch"
+ * viewport flag both drive) appears to force `pointer: coarse` as PRIMARY
+ * the moment touch capability is enabled at all, REGARDLESS of whether
+ * "mobile" is also set — it cannot reconstruct "mouse is primary, touch is
+ * additionally present", which is what a real Windows touchscreen-laptop
+ * reports. So this function measures what CDP touch emulation actually
+ * does, not what real hybrid hardware does — those are not the same claim,
+ * and the verdict/narration below says so rather than asserting a pass/fail
+ * on an untestable premise. The CODE-READING answer (what the register also
+ * invites — "read the gate and say") still stands on its own: the gate is
+ * `(pointer: fine)` alone, so on genuine hybrid hardware where a mouse is
+ * the primary pointer, the fine-pointer branch wins and Draggable binds;
+ * this just cannot be empirically proven inside this emulator.
+ *
+ * @param {import('playwright').Browser} browser Browser.
+ * @return {Promise<Object>} `{ pointerFine, anyPointerCoarse, cursor }`.
+ */
+async function measureHybridPointerEdgeCase( browser ) {
+	const context = await browser.newContext( {
+		viewport: { width: 1440, height: 900 },
+		hasTouch: true,
+	} );
+	const page = await context.newPage();
+	await page.goto( URL, { waitUntil: 'load' } );
+	await page.waitForTimeout( 1000 );
+
+	const result = await page.evaluate( () => {
+		const el = document.querySelector( '.sgs-gallery__grid' );
+		return {
+			pointerFine: matchMedia( '(pointer: fine)' ).matches,
+			anyPointerCoarse: matchMedia( '(any-pointer: coarse)' ).matches,
+			cursor: el ? getComputedStyle( el ).cursor : 'NO_EL',
+		};
+	} );
+
+	await context.close();
+	return result;
+}
+
 const browser = await chromium.launch();
 const arms = {};
 arms.noPreference = await runArm( browser, 'no-preference' );
 arms.reduce = await runArm( browser, 'reduce' );
+
+const touch = {};
+touch.noPreference = await runTouchArm( browser, 'no-preference' );
+touch.reduce = await runTouchArm( browser, 'reduce' );
+const hybridEdgeCase = await measureHybridPointerEdgeCase( browser );
+
 await browser.close();
 
-console.log( JSON.stringify( arms, null, 1 ) );
+console.log( JSON.stringify( { arms, touch, hybridEdgeCase }, null, 1 ) );
 
 // ── verdict ──────────────────────────────────────────────────────────────
 const a = arms.noPreference;
@@ -589,8 +1279,26 @@ if ( ! a.mediaQuery.noPreference || ! r.mediaQuery.reduce ) {
 	inconclusive.push( 'media-query emulation did not take effect' );
 }
 
-const moved = ( m ) =>
-	m && null !== m.during && null !== m.before && m.during !== m.before;
+/*
+ * ⚠ NOT a before/during snapshot comparison. `dragAndMeasure()`'s fixed
+ * geometry (start at 80% across, 12 steps × 30px = a FIXED total distance)
+ * measured against the before-after block's 1200px-wide stage, 50% starting
+ * position, coincidentally lands the pointer back on the SAME value it
+ * started at: 80% − (360px / 1200px × 100) = 80% − 30% = 50%, identical to
+ * the pre-drag position. `moved()`'s first version compared only `before` to
+ * the single `during` snapshot taken at the end of the step loop, so this
+ * geometric coincidence read as "never moved" — a false FAIL, proven live
+ * 2026-07-31 by instrumenting the range input's own `input` events during an
+ * identical drag: value went 50→81→80→…→50, genuinely tracking the pointer
+ * the entire time, landing exactly back on 50 only because of the fixed
+ * start/distance arithmetic above. `trailDistinct` (already captured per
+ * intermediate step in the trail array, previously computed but unused by
+ * this assertion) is the correct evidence: it counts DISTINCT values seen
+ * throughout the gesture, so a coincidental round-trip back to the start
+ * cannot mask it. `>= 2` is a value that genuinely differed from at least
+ * one prior sample was observed mid-drag.
+ */
+const moved = ( m ) => m && Number.isFinite( m.trailDistinct ) && m.trailDistinct >= 2;
 
 if ( ! a.firstPaint.galleryScroller.every( ( g ) => g.canScrollHorizontally ) ) {
 	fails.push(
@@ -732,6 +1440,269 @@ if ( ! moved( r.beforeAfterDrag ) && moved( a.beforeAfterDrag ) ) {
 		'reduced motion: before/after drag stopped working (must SIMPLIFY, not suppress)'
 	);
 }
+
+// ── Step 14: per-effect two-arm reduced-motion verdicts ────────────────────
+// Each entry is one §10 row's verdict, in the vocabulary the brief asks for:
+// MEASURED-DIFFERENT / MEASURED-IDENTICAL-BY-DESIGN / INCONCLUSIVE / DEFECT /
+// NOT-BUILT. Only DEFECT and an emulation-not-landing INCONCLUSIVE push onto
+// `fails`/`inconclusive` (the exit-code gate); the others are reported but do
+// not fail the run — they are the honest "cannot tell" or "correctly static"
+// outcomes the brief explicitly asks not to be dressed up as a PASS or FAIL.
+const effectVerdicts = {};
+
+// -- scrub (Simplify: end-state, static) --
+if ( a.scrub.error || r.scrub.error ) {
+	effectVerdicts.scrub = `INCONCLUSIVE — probe never reached the element (${ a.scrub.error || r.scrub.error })`;
+	inconclusive.push( 'scrub: ' + effectVerdicts.scrub );
+} else {
+	const noPrefVaried =
+		varied( a.scrub.opacities, 0.1 ) || varied( a.scrub.translateYs, 3 );
+	const reduceStatic =
+		allNear( r.scrub.opacities, 1, 0.05 ) && allNear( r.scrub.translateYs, 0, 2 );
+	if ( ! noPrefVaried ) {
+		fails.push(
+			`scrub: no-preference arm never varied (opacity ${ JSON.stringify( a.scrub.opacities ) }, translateY ${ JSON.stringify( a.scrub.translateYs ) }) — the scrub did not run`
+		);
+		effectVerdicts.scrub = 'DEFECT — no-preference arm did not scrub';
+	} else if ( ! reduceStatic ) {
+		fails.push(
+			`reduced motion: scrub still scrubbing (opacity ${ JSON.stringify( r.scrub.opacities ) }, translateY ${ JSON.stringify( r.scrub.translateYs ) }) — must SIMPLIFY to a static end-state`
+		);
+		effectVerdicts.scrub = 'DEFECT — reduced motion did not simplify';
+	} else {
+		effectVerdicts.scrub = 'MEASURED-DIFFERENT — varies on scroll, static under reduce';
+	}
+}
+
+// -- pin-scrub (Simplify: no pin, no scrub, end-state in normal flow) --
+if ( a.pinScrub.error || r.pinScrub.error ) {
+	effectVerdicts.pinScrub = `INCONCLUSIVE — probe never reached the element (${ a.pinScrub.error || r.pinScrub.error })`;
+	inconclusive.push( 'pin-scrub: ' + effectVerdicts.pinScrub );
+} else {
+	const noPrefEngaged =
+		a.pinScrub.pinSpacerPresent && varied( a.pinScrub.opacities, 0.1 );
+	const reduceSimplified =
+		! r.pinScrub.pinSpacerPresent && allNear( r.pinScrub.opacities, 1, 0.05 );
+	if ( ! noPrefEngaged ) {
+		fails.push(
+			`pin-scrub: no-preference arm did not engage (pinSpacerPresent=${ a.pinScrub.pinSpacerPresent }, opacities ${ JSON.stringify( a.pinScrub.opacities ) })`
+		);
+		effectVerdicts.pinScrub = 'DEFECT — no-preference arm did not pin/scrub';
+	} else if ( ! reduceSimplified ) {
+		fails.push(
+			`reduced motion: pin-scrub did not simplify (pinSpacerPresent=${ r.pinScrub.pinSpacerPresent }, opacities ${ JSON.stringify( r.pinScrub.opacities ) }) — must have no pin and render at end-state`
+		);
+		effectVerdicts.pinScrub = 'DEFECT — reduced motion still pinned/scrubbed';
+	} else {
+		effectVerdicts.pinScrub =
+			'MEASURED-DIFFERENT — pins+scrubs on scroll, unpinned+static under reduce';
+	}
+}
+
+// -- split-reveal (Simplify: no split, no stagger, plain readable text) --
+if ( a.splitReveal.error || r.splitReveal.error ) {
+	effectVerdicts.splitReveal = `INCONCLUSIVE — probe never reached the element (${ a.splitReveal.error || r.splitReveal.error })`;
+	inconclusive.push( 'split-reveal: ' + effectVerdicts.splitReveal );
+} else {
+	const noPrefSplit =
+		a.splitReveal.pre.spanCount > 1 &&
+		a.splitReveal.post.spanCount > 1 &&
+		allNear( a.splitReveal.post.opacities, 1, 0.15 ) &&
+		a.splitReveal.post.text === a.splitReveal.originalText;
+	const reduceUnsplit =
+		r.splitReveal.pre.spanCount <= 1 &&
+		r.splitReveal.post.spanCount <= 1 &&
+		r.splitReveal.post.text === r.splitReveal.originalText;
+	if ( ! noPrefSplit ) {
+		fails.push(
+			`split-reveal: no-preference arm did not split+settle as expected (pre ${ JSON.stringify( a.splitReveal.pre ) }, post ${ JSON.stringify( a.splitReveal.post ) })`
+		);
+		effectVerdicts.splitReveal = 'DEFECT — no-preference arm did not split-reveal';
+	} else if ( ! reduceUnsplit ) {
+		fails.push(
+			`reduced motion: split-reveal still split the text (pre ${ JSON.stringify( r.splitReveal.pre ) }, post ${ JSON.stringify( r.splitReveal.post ) }) — must render unsplit, readable text`
+		);
+		effectVerdicts.splitReveal = 'DEFECT — reduced motion still split the text';
+	} else {
+		effectVerdicts.splitReveal =
+			'MEASURED-DIFFERENT — splits+staggers into words on scroll, single unsplit node under reduce';
+	}
+}
+
+// -- horizontal-panel (Simplify: native horizontal scroll-snap) --
+if ( a.horizontalPanel.error || r.horizontalPanel.error ) {
+	effectVerdicts.horizontalPanel = `INCONCLUSIVE — probe never reached the element (${ a.horizontalPanel.error || r.horizontalPanel.error })`;
+	inconclusive.push( 'horizontal-panel: ' + effectVerdicts.horizontalPanel );
+} else if (
+	'VACUOUS' === a.horizontalPanel.reachability ||
+	'VACUOUS' === r.horizontalPanel.reachability
+) {
+	effectVerdicts.horizontalPanel =
+		'INCONCLUSIVE — fewer than two laid-out panels; the reachability assertion cannot fail';
+	inconclusive.push( 'horizontal-panel: ' + effectVerdicts.horizontalPanel );
+} else {
+	const noPrefSlid =
+		a.horizontalPanel.effectRan &&
+		Array.isArray( a.horizontalPanel.translateSweep ) &&
+		varied( a.horizontalPanel.translateSweep, 4 );
+	const reduceFallback =
+		! r.horizontalPanel.effectRan &&
+		'REACHABLE' === r.horizontalPanel.reachability;
+	if ( ! noPrefSlid ) {
+		fails.push(
+			`horizontal-panel: no-preference arm did not pin+slide (effectRan=${ a.horizontalPanel.effectRan }, translateSweep ${ JSON.stringify( a.horizontalPanel.translateSweep ) })`
+		);
+		effectVerdicts.horizontalPanel = 'DEFECT — no-preference arm did not slide';
+	} else if ( 'UNREACHABLE' === r.horizontalPanel.reachability ) {
+		fails.push(
+			'reduced motion: horizontal-panel last panel UNREACHABLE — this is a defect, not a degradation'
+		);
+		effectVerdicts.horizontalPanel = 'DEFECT — last panel unreachable under reduced motion';
+	} else if ( ! reduceFallback ) {
+		fails.push(
+			`reduced motion: horizontal-panel did not fall back correctly (effectRan=${ r.horizontalPanel.effectRan }, reachability=${ r.horizontalPanel.reachability })`
+		);
+		effectVerdicts.horizontalPanel = 'DEFECT — reduced-motion fallback incomplete';
+	} else {
+		effectVerdicts.horizontalPanel =
+			'MEASURED-DIFFERENT — pins+slides on scroll, native scroll-snap fallback under reduce';
+	}
+}
+
+// -- motion-path (Suppress: resting position) --
+if ( 0 === a.motionPath.count || 0 === r.motionPath.count ) {
+	effectVerdicts.motionPath =
+		'INCONCLUSIVE — probe never reached the element (count 0)';
+	inconclusive.push( 'motion-path: ' + effectVerdicts.motionPath );
+} else {
+	// NOT a plain spread check — see the sweep-window docblock above for why:
+	// a spread test cleared tolerance on a fixture where 18 of 19 samples
+	// were flat and only the last one moved, which is the same
+	// bunched-transition shape the image-sequence DISTRIBUTION rule exists to
+	// catch. This requires the movement to occupy a real portion of the
+	// sweep, not just its tail.
+	const mpVaried = ( arc ) => {
+		if ( arc.length < 3 ) {
+			return false;
+		}
+		const deltas = arc
+			.slice( 1 )
+			.map( ( p, i ) =>
+				Math.hypot( p.x - arc[ i ].x, p.y - arc[ i ].y )
+			);
+		const movingSteps = deltas.filter( ( d ) => d > 3 ).length;
+		// At least 4 distinct moving steps, AND they must not all sit in the
+		// final 15% of the sweep (the bunched-tail shape the fixed sweep
+		// window was built to stop reproducing).
+		const tailStart = Math.floor( deltas.length * 0.85 );
+		const movingBeforeTail = deltas
+			.slice( 0, tailStart )
+			.filter( ( d ) => d > 3 ).length;
+		return movingSteps >= 4 && movingBeforeTail >= 2;
+	};
+	const mpStatic = ( arc ) =>
+		allNear(
+			arc.map( ( p ) => p.x ),
+			arc[ 0 ].x,
+			1
+		) &&
+		allNear(
+			arc.map( ( p ) => p.y ),
+			arc[ 0 ].y,
+			1
+		);
+	const noPrefTravelled = mpVaried( a.motionPath.arc );
+	const reduceResting = mpStatic( r.motionPath.arc );
+	if ( ! noPrefTravelled ) {
+		fails.push(
+			`motion-path: no-preference arm never travelled (arc ${ JSON.stringify( a.motionPath.arc ) })`
+		);
+		effectVerdicts.motionPath = 'DEFECT — no-preference arm did not travel the path';
+	} else if ( ! reduceResting ) {
+		fails.push(
+			`reduced motion: motion-path still travelling (arc ${ JSON.stringify( r.motionPath.arc ) }) — must SUPPRESS to a resting position`
+		);
+		effectVerdicts.motionPath = 'DEFECT — reduced motion did not suppress travel';
+	} else {
+		effectVerdicts.motionPath =
+			'MEASURED-DIFFERENT — travels the path on scroll, resting position under reduce';
+	}
+}
+
+// -- morph (NOT SHIPPED — verified structurally, not merely absent-on-this-page) --
+// `out.morphCount` (added to runArm below) is a LIVE re-check on every run —
+// if a future build ever DOES render `data-sgs-fx="morph"` somewhere on this
+// page, that is news worth surfacing rather than silently staying NOT-BUILT.
+if ( a.morphCount > 0 || r.morphCount > 0 ) {
+	inconclusive.push(
+		`morph: found ${ a.morphCount + r.morphCount } live instance(s) of data-sgs-fx="morph" — the NOT-BUILT premise this verdict rests on has changed; re-probe properly instead of trusting this stale branch`
+	);
+	effectVerdicts.morph = 'INCONCLUSIVE — premise changed, live instance(s) found';
+} else {
+	effectVerdicts.morph =
+		'NOT-BUILT — excluded from src/blocks/extensions/fx.js SHIPPED_EFFECTS ' +
+		'(the module exists but its curated shape-pair asset library is deliberately ' +
+		'deferred, D427); no inspector can select it and no canary slug ' +
+		'(motion-canary-morph, motion-canary-morphsvg) resolves — both 404 live, ' +
+		'2026-07-31. There is no selector for this probe to reach, so it is reported ' +
+		'as a documented non-build rather than an unmeasured effect.';
+}
+
+// ── Step 1: touch-arm verdicts (one per motion preference — Integration test) ──
+const touchVerdicts = {};
+[ 'noPreference', 'reduce' ].forEach( ( arm ) => {
+	const t = touch[ arm ];
+	if ( ! t.pointerCoarse || t.pointerFine ) {
+		touchVerdicts[ arm ] =
+			'INCONCLUSIVE — coarse-pointer emulation did not take effect ' +
+			`(pointerFine=${ t.pointerFine }, pointerCoarse=${ t.pointerCoarse })`;
+		inconclusive.push( `touch (${ arm }): ` + touchVerdicts[ arm ] );
+		return;
+	}
+	if ( t.swipe.error ) {
+		touchVerdicts[ arm ] = `INCONCLUSIVE — probe never reached the scroller (${ t.swipe.error })`;
+		inconclusive.push( `touch (${ arm }): ` + touchVerdicts[ arm ] );
+		return;
+	}
+	// THE BLOCKING CHECK the brief calls out by name: if Draggable bound on a
+	// coarse pointer (cursor left 'auto'), that is a real defect in the gate,
+	// not a probe artefact — it fails loudly rather than being folded into
+	// the ordinary DEFECT bucket below.
+	if ( 'auto' !== t.swipe.cursorBefore || 'auto' !== t.swipe.cursorAfter ) {
+		fails.push(
+			`BLOCKING: Draggable bound on a coarse-pointer (touch) device in the ${ arm } arm ` +
+				`— cursor was "${ t.swipe.cursorBefore }"→"${ t.swipe.cursorAfter }", expected 'auto' throughout. ` +
+				`fx-draggable.js's (pointer: fine) gate did not hold.`
+		);
+		touchVerdicts[ arm ] = 'DEFECT — Draggable bound on touch (BLOCKING)';
+		return;
+	}
+	if ( ! t.swipe.moved ) {
+		fails.push(
+			`touch (${ arm }): native swipe did not move scrollLeft (before=${ t.swipe.before }, after=${ t.swipe.after }) — the CSS scroll-snap fallback is broken`
+		);
+		touchVerdicts[ arm ] = 'DEFECT — native scroll did not move the track';
+		return;
+	}
+	touchVerdicts[ arm ] =
+		'MEASURED-DIFFERENT (from the desktop control) — cursor stays auto, Draggable never binds, native scroll moves the track';
+} );
+
+console.log( '\n=== STEP 1 — TOUCH ===' );
+console.log( JSON.stringify( { touch, touchVerdicts, hybridEdgeCase }, null, 1 ) );
+console.log(
+	'\nEdge case answer (device with BOTH touch and a fine pointer): ' +
+		`MEASURED pointerFine=${ hybridEdgeCase.pointerFine }, anyPointerCoarse=${ hybridEdgeCase.anyPointerCoarse }, ` +
+		`gallery cursor="${ hybridEdgeCase.cursor }" — under Chromium CDP touch emulation (\`hasTouch: true\`), ` +
+		'pointer: fine reads FALSE the moment touch is enabled at all, so this emulator cannot construct the ' +
+		'"mouse is primary, touch also present" case a real hybrid device reports. CODE-READING answer instead: ' +
+		'fx-draggable.js gates on (pointer: fine) ALONE (the PRIMARY pointer), never (any-pointer: coarse), so on ' +
+		'genuine hybrid hardware where the mouse is primary, the FINE-POINTER branch wins and Draggable binds — ' +
+		'this is a reasoned answer, not an empirically-proven one; see measureHybridPointerEdgeCase()\'s docblock.'
+);
+
+console.log( '\n=== STEP 14 — PER-EFFECT VERDICTS ===' );
+console.log( JSON.stringify( effectVerdicts, null, 1 ) );
 
 console.log( '\n=== VERDICT ===' );
 if ( inconclusive.length ) {
