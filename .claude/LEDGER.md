@@ -31,11 +31,24 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > `block_attributes.derived_selector` — Bean caught this); `underlineOffset` is `bottom`, never a
 > mis-seed; the BEM-regex diagnosis was wrong (13 cells, not 380).
 >
-> **⛔ `src/blocks/nav-menu/render.php` holds UNCOMMITTED work** — the submenu walker, written +
-> tested, held back because the visual-diff gate correctly wants a deploy first. Do not revert it.
+> #### ⭐ SECOND Track-1 session, same day (D429) — full record: **`memory/session-2026-07-31-track1-session2.md`**
+> `98ff88df` feature-parity gate ARMED · **`e8c72f7a` the oracle fix** · `2f471678` triage.
+> Report: `reports/2026-07-31-oracle-attribution-and-probe-target.md`.
 >
-> **Final Track-1 task: Spec 35 Part L rollout** (4–32% applied). Bean's ruling: stays in living
-> status, NOT `parking.md`. Brief = Task 5 in that record.
+> **Task 1 DONE** — cells measured on their OWN element, not the section root. Control **73 → 0**
+> against an artefact deliberately NOT regenerated. LANDED 31→55 (floor 31). 11 failures surfaced +
+> TRIAGED: **8 GAPs, 1 genuine routing defect (`sgs-card-grid` `cardRadius` 12→18px), 1 probe artefact
+> of my own.** ⛔ **Do NOT arm `--with-landed`.** **Quote `measurable_rate_pct` 46.3%, never
+> `attribution_rate_pct` 99.6%.** Follow-up owed: the probe matches by BEM class, so a draft/clone TAG
+> divergence makes a CORRECT clone read as a defect.
+>
+> **Task 2 BUILT, harness-green (25/25), deliberately NOT COMMITTED** — the visual-diff gate wants a
+> deploy first. **Do not revert `nav-menu/{render.php,edit.js,block.json}` or `mega-disclosure.js`.**
+>
+> **⛔ Task 3 BLOCKED, not by Track 1** — `P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS` stops
+> EVERY deploy by EVERY track (canary post 2085, `sgs/buybox` + `sgs/google-reviews`). Track 1 has
+> zero findings of its own.
+>
 
 **What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
 three things that were quietly broken are fixed.** Every effect was watched moving in a browser,
