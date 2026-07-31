@@ -33,11 +33,12 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 *52 open entries (re-derived 2026-07-31 from a `**Bucket:** pipeline` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
-### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 3,097 lines against a 600 cap
+### P-DECISIONS-MD-OVER-LINE-CAP — decisions.md is 3,604 lines against a 600 cap
 **Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-30
 
-`docscore` grades `decisions.md` at 67.3% (C), and the only genuine failure is length: 3,097 lines
-against the 600-line cap for the doc type (2,634 when parked 2026-07-30; 3,097 after D424 — it is still growing). The project already has the remedy — archive-on-resolve
+`docscore` grades `decisions.md` at 67.3% (C), and the only genuine failure is length: 3,604 lines
+against the 600-line cap for the doc type (2,634 when parked 2026-07-30; 3,097 after D424; 3,604
+after D432 — it is still growing, ~1 doc-grade point lost per session). The project already has the remedy — archive-on-resolve
 into `memory/decisions-archive.md` for retired/superseded/non-load-bearing entries — it just has
 not been run recently enough to keep pace.
 

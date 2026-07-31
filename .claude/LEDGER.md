@@ -31,25 +31,34 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > `block_attributes.derived_selector` — Bean caught this); `underlineOffset` is `bottom`, never a
 > mis-seed; the BEM-regex diagnosis was wrong (13 cells, not 380).
 >
-> #### ⭐ SECOND Track-1 session, same day (D429) — full record: **`memory/session-2026-07-31-track1-session2.md`**
-> `98ff88df` feature-parity gate ARMED · **`e8c72f7a` the oracle fix** · `2f471678` triage.
-> Report: `reports/2026-07-31-oracle-attribution-and-probe-target.md`.
+> #### ⭐ TRACK 1, session 2 (D429 + D432) — record: **`memory/session-2026-07-31-track1-session2.md`**
+> `98ff88df` parity gate · `e8c72f7a` oracle fix · `2f471678` triage · **`fc021a34`+`7940d709` nav
+> DROPDOWNS**. Reports: `reports/2026-07-31-oracle-attribution-and-probe-target.md` ·
+> `reports/visual-diff/nav-menu-2026-07-31.md`.
 >
-> **Task 1 DONE** — cells measured on their OWN element, not the section root. Control **73 → 0**
-> against an artefact deliberately NOT regenerated. LANDED 31→55 (floor 31). 11 failures surfaced +
-> TRIAGED: **8 GAPs, 1 genuine routing defect (`sgs-card-grid` `cardRadius` 12→18px), 1 probe artefact
-> of my own.** ⛔ **Do NOT arm `--with-landed`.** **Quote `measurable_rate_pct` 46.3%, never
-> `attribution_rate_pct` 99.6%.** Follow-up owed: the probe matches by BEM class, so a draft/clone TAG
-> divergence makes a CORRECT clone read as a defect.
+> **Tasks 6, 1, 2, 3 CLOSED.** Oracle measures each cell on its OWN element (control 73→0 vs a NOT-
+> regenerated artefact; LANDED 31→55). 11 failures triaged: **8 GAPs, 1 real routing defect
+> (`sgs-card-grid` `cardRadius` 12→18px), 1 probe artefact of mine.** ⛔ **Do NOT arm
+> `--with-landed`.** **Quote `measurable_rate_pct` 46.3%, never `attribution_rate_pct` 99.6%.**
 >
-> **Task 2 BUILT, harness-green (25/25), deliberately NOT COMMITTED** — the visual-diff gate wants a
-> deploy first. **Do not revert `nav-menu/{render.php,edit.js,block.json}` or `mega-disclosure.js`.**
+> **Nav dropdowns ship.** **5 defects found LIVE that every offline gate passed** (89px offset,
+> hardcoded white, palette override, black focus ring, children never current-page). Harness 32/32.
 >
-> **✅ RESOLVED 2026-07-31 (D431) — was: Task 3 BLOCKED, not by Track 1.** The all-deploy blocker
-> `P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS` was the MOTION track's own fixture (4 invented
-> attrs). Rebuilt, page now **2086**, gate `0 NEW HIGH`. Archived. Track 1 has
-> zero findings of its own.
+> **⭐ BEAN-RULED: WCAG AA does NOT gate the submenu link colour.** Pink-on-cream (2.25:1) is legible
+> and intended. A `text`-token version was REVERTED to obey this — do not "fix" it back.
 >
+> **⛔ `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** — a nav in PAGE CONTENT has its dropdown
+> overlapped; HEADER placement verified correct. **Canary left:** menu 112, page 2091.
+>
+> **Open:** Task 4 residuals · Task 5 (Part L) baselined only — all 4 figures HELD (4/81, 3/81, 26/81,
+> 20/81; roster 81); 43 of 78 blocks are legitimately exempt from `StateToggleControl` → ~35 real.
+> **Owed:** Bean's eye; in-drawer accordion at 375 INDICATIVE; touch + keyboard unmeasured.
+>
+> **QC-BYPASSED** — doc reconciliation is verified-by-author, NOT independently; detail in the record.
+>
+> **Process:** a `/sgs-update` reseed is CROSS-TRACK on the shared DB — mine created attr rows the
+> motion track lacked and broke both builds until 7 `fx:*` markers were declared in
+> `attr-classification-overrides.json`.
 
 **What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
 three things that were quietly broken are fixed.** Every effect was watched moving in a browser,

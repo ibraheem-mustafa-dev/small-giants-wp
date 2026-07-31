@@ -1,5 +1,60 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D432 — Nav submenu dropdowns ship; five defects only a live check could find [INCIDENT]
+
+**`sgs/nav-menu` renders dropdowns.** A menu item with nested children rendered as a bare link and
+its children were silently discarded, so no client could build an ordinary dropdown. Commits
+`fc021a34` (build) + `7940d709` (council round). Evidence:
+`reports/visual-diff/nav-menu-2026-07-31.md`; harness `scripts/nav-qa/submenu-harness.php` (32/32).
+
+**Reuses the `sgs/mega` store wholesale** — the same three hooks buy hover-intent, keyboard, ESC,
+focus-return, single-open and WCAG 1.4.13 with no new JS, because `mega-disclosure.js` carries zero
+BEM selectors. `repositionPanel` reads its kind from the DOM (`data-sgs-nav-disclosure`) rather than
+taking a parameter, so all FIVE call sites stay byte-identical and cannot diverge — a rater verified
+the mega path unchanged.
+
+**FIVE defects found LIVE that every offline gate passed:** panel opened 89px right of its item
+(anchored on the caret BUTTON, not the item) · hardcoded `#fff` + black shadow, ignoring the palette
+in every style variation · the submenu rule out-specified the theme's global link rule and forced
+inherited body text · the "black underline" was a focus ring set to `currentColor` · dropdown
+children could NEVER be marked current-page (`markCurrentPage` selected `.sgs-nav-menu__link` only,
+while children emitted a `data-sgs-nav-path` nothing read).
+
+**⭐ BEAN-RULED: WCAG AA contrast does NOT gate the submenu link colour.** Link pink `#e68a95` on
+surface measures 2.25:1. Bean judged the pairing legible, intended, and the AA floor not applicable
+to it — the owner's call on his own palette. A ratio measures luminance distance, not legibility, and
+the framework must honour the palette the client chose rather than substituting a different colour.
+An earlier `text`-token version (11.86:1) was REVERTED to obey this. Do not "fix" it back.
+`P-MAMAS-PRIMARY-CONTRAST` stands separately and is unaffected.
+
+**Council (3 raters, contrast excluded by instruction) found 4 valid items, all fixed:**
+1. HIGH, reproduced before fixing — `flatten()` collided sibling grandchildren past the depth cap by
+   passing the CALLER's `$parent_path`; `L1>L2a>About` and `L1>L2b>About` both became
+   `label:L1>label:About`. Would have mis-targeted `featuredItemIds` and, at a 4th level, given two
+   panels one DOM id.
+2. HIGH — the featured CHILD was CODE-ONLY: `render.php` marked one, but the editor checklist listed
+   TOP-LEVEL items only (`flattenMenuItems` never recursed; the classic branch did
+   `.filter(item => !item.parent)`). By this project's own rule a setting needing code is NOT DONE.
+   Both paths now walk children, path-qualified exactly as render.php does.
+3. MEDIUM — the three z-index lifts keyed on a bare `[aria-expanded="true"]`, which the BURGER also
+   carries, so opening the drawer lifted the whole nav. Now keyed on `[data-sgs-mega-trigger]`.
+4. MEDIUM — report overclaimed "single-open behaviour" on evidence that only showed self-toggle.
+
+**⛔ KNOWN LIMIT, parked not bodged — `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`.** A nav placed in
+PAGE CONTENT still has its dropdown overlapped: `.entry-content{position:relative;z-index:1}` creates
+a stacking context the block cannot escape, and raising it would put all page content above the
+sticky header. **HEADER placement — the normal one — is verified correct at all five sampled points.**
+
+**Process lesson, mine:** seeding `box_family` for nav-menu (a real pre-existing gap — object-shaped
+`paddingTablet`/`paddingMobile` with no `boxFamilies` declaration, so ZERO rows) required
+`/sgs-update`, which created attribute rows the motion track's blocks were missing and let their
+seeder populate `css_property='fx:*'`. That broke the build for BOTH tracks by surfacing a genuine
+pre-existing inconsistency (nothing declares those fx markers, so they vanish on any reseed).
+Declared all 7 in `attr-classification-overrides.json` with reasons rather than baselining blind or
+nulling another track's data. **I first mis-diagnosed them as my own rogue seeds** —
+`seed-motion-fx-registry.py:511-537` writes them deliberately. A shared DB means a routine reseed is
+a cross-track action.
+
 ## D431 — The eye pass found what every number missed: before/after was labelling the wrong image [INCIDENT]
 
 **2026-07-31.** Commits `3c89d9bc` (fix + evidence), plus the fixture repair that unblocked the
