@@ -17,6 +17,9 @@ you) gets ONE true answer instead of three drifting ones.
 **Where things stand (2026-07-31, evening).** Today's motion "Wave D" register — the 24-step
 list of everything left before the motion system is client-ready — got its first pass. Six
 steps are genuinely finished, one pair is correctly on hold, and the rest haven't started yet.
+**Corrected 2026-08-01 (D435): it is EIGHT, not six.** Steps 1 and 14 closed in commit `0628800a`,
+four minutes after this file was last written, so the table below said "not started" about finished
+work. A `/qc-council` caught it. Nothing was lost — the docs were behind the code, not ahead of it.
 Two things need your decision before work continues, and one honest limitation was found in the
 testing tools themselves (recorded below so nobody re-discovers it the hard way).
 
@@ -73,9 +76,13 @@ alone is touched by 5 steps).
 
 | Status | Steps |
 |---|---|
-| **CLOSED** | 4 (svg/svg-subtree split), 9 (presets in real patterns), 11 (clean-clone build), 13 (pin/keyboard — proven by mechanism, see parking), 16 (image-sequence agency-only), 17 (editor console errors) |
+| **CLOSED (8)** | **1 (touch measured on every drag surface)**, 4 (svg/svg-subtree split), 9 (presets in real patterns), 11 (clean-clone build), 13 (pin/keyboard contract — now in Spec 38 §3.1; the *observed* case is Step 22), **14 (reduced-motion measured for all six reasoned-only effects)**, 16 (image-sequence agency-only), 17 (editor console errors) |
 | **HELD** (correctly) | 2/3 — buybox drag toggle. The visual-diff gate refused it: verdict `PARTIAL — CODE-COMPLETE-UNVERIFIED`, gate requires `PASS`. No `--no-verify`, no `--allow-dirty`. Buybox patched-and-reverted, saved for next session. |
-| **NOT STARTED** | 5, 10, 12, 15, 18, 19, 20, 21 |
+| **NOT STARTED (14)** | 3, 5, 6, 6b, 7, 8, 10, 12, 15, 18, 19, 20, 21, **22, 23** (22/23 moved in from parking by Bean 2026-07-31) |
+
+⚠ **Read this table's silence carefully.** It previously omitted Steps 1, 3, 6, 6b, 7, 8, 14, 22 and 23
+entirely, and that silence is what made two FINISHED steps look unstarted. Check a step against
+`git log` before trusting its absence here.
 
 **Two design gates open for Bean — do not build past them:**
 1. **Step 7, cursor-follow background** — `plans/2026-07-31-step7-cursor-follow-background-design-gate.md`, routes A/B/C. The register's own premise was wrong (claimed `data-spotlight` prior art in `nav-menu` — nav-menu has none; the real prior art is a single-consumer `src/shared/effects/spotlight.js`), so nothing was built pending this gate.

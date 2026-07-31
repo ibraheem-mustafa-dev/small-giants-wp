@@ -1,5 +1,7 @@
 ---
 verdict: PASS
+superseded_on: 2026-08-01
+superseded_reason: "STALE — written by 8172d8f4 (02:40) and never updated. Commit 3a0bf4e5 (17:05, Wave D Step 16) materially changed this block: supports.inserter:false, a 200/tier frame cap enforced in render.php, and a new Verify-frames REST endpoint. The luminance table, editor-panel count and asset-pipeline narrative below all describe the PRE-Step-16 block. Do not read this verdict as current status."
 first_paint_capture_passed: true
 block: sgs/image-sequence
 date: 2026-07-31

@@ -1,5 +1,61 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D435 — Closing three loops D434 left open, and Bean's rulings on the Wave D council [ROUTINE]
+
+**D434 is stale on its own headline and this entry supersedes that paragraph.** D434 recorded
+`FORCED_PANEL_HOSTS` as "DEVIATION RECORDED … Accepted" against R-31-1/R-31-9. **Bean rejected it,
+and he was right.** The very next commit (`4a5cb764`) removed it entirely and replaced it with a
+block-owned `supports.sgs.fx.motionSurface: true` declaration on `sgs/decorative-image`, read at
+`generate-fx-qualifying-blocks.py`'s existing `fx_supports` site — the same idiom as `draggable`,
+`pairedFilter` and `providesNatively`. **There is no live R-31-1 deviation in the code.** The full
+roster diff before vs after that swap was ZERO differences: fixing it properly changed *how*, not
+*what*, which is the tell that the hack bought nothing.
+
+His second objection was drift, and it was answered by checking rather than asserting:
+`block_capabilities` holds zero `fx-*` rows, and this generator reads block.json directly for
+block-provision facts per its own docstring, so the declaration route IS the whole chain. **19 blocks
+rest on a single provision category (13 `text`, 6 `track`)** and would zero the same way if it were
+removed — recorded as known, deliberately not pre-patched.
+
+**Also stale in D434 + the LEDGER:** both said Steps 1 and 14 were not started. Commit `0628800a`
+closed them **four minutes after the LEDGER was last written**. True status is **8 of 24 steps
+closed, not 6**.
+
+**A `/qc-council` over the whole session (3 cross-model raters) found no code regression.** Every
+technical claim was verified against source and a live re-run of the ~22-gate prebuild. The only
+defects found were documentary — the two above plus a stale `image-sequence` visual-diff report
+(the ONLY one of nine with that problem; my suspicion of a wider pattern was refuted).
+
+**BEAN'S RULINGS, 2026-08-01 — these close or redirect four council items:**
+
+1. **The slider defect is TWO unrelated things and I conflated them.** The disproportionate arrows
+   (a bare `‹` glyph, 8×27px inside a 44px circle) have nothing to do with the invisible dots
+   (a 1.29:1 contrast failure). Reported as one item; they are not one item.
+2. **The real colour finding is bigger than the dots.** `border-subtle` is set to a *saturated brand
+   accent* in 7 of 8 client snapshots — orange, green, gold, plum, blue. Bean's ruling: this is a
+   **palette-integrity problem**, not a testimonial-slider problem. Find where `border-subtle` is
+   actually set, audit EVERY preset slot across every palette for colours that do not match the slot
+   they occupy, and check for missing or duplicated entries. Right colours in the right slots.
+3. **D2 (scramble headings "static") is CLOSED — not a defect.** Bean rechecked at his PC: both
+   headings animate correctly. The investigation's INCONCLUSIVE was right not to close it as
+   "working as intended", and right not to close it as broken either.
+4. **D4's pin composition is REJECTED as the answer.** `fx-image-sequence.js`'s own docblock says to
+   compose the block inside an `sgs/container` with pin+scrub. Bean: it is janky, it does not help
+   anyone who does not want pinning, and it is patchwork. **The scrub must run only while the canvas
+   is FULLY on screen** — never counting a sliver as visible, which is what it does today — and
+   **pin must become a first-class, customisable option inside the block itself**, even if that means
+   the block emits its own pin wrapper internally. Client-facing simplicity over ad-hoc composition.
+5. **ScrambleText's ~2.25:1 contrast is ACCEPTED as-is** — legible, on-brand, and only worth changing
+   if an equally attractive brand-colour combination exists.
+6. **NEW DEFECT, found by Bean on the preset canary (page 2103):** the three scramble presets are
+   wrong. Subtle and Dramatic animate at very similar times, and Balanced fires only after scrolling
+   further down the page. The measured *parameter* differences were real; the *timing* behaviour is
+   not what those parameters imply.
+7. **Motion seeding must become a stage of `/sgs-update`,** not an independent competing script.
+   D432 is the evidence: an unrelated track running the pipeline swept up 7 `fx:*` rows the motion
+   seeder owns and broke both tracks at once.
+
+
 ## D434 — Motion Wave D, wave 1: the register was wrong four times, and two gates caught what review did not [ROUTINE]
 
 Nine commits. Steps 4, 9, 11, 13, 16, 17 closed; Steps 2/3 held; Steps 5, 10, 12, 15, 18-21 not started.
