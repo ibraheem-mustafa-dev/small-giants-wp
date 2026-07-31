@@ -267,6 +267,20 @@ function scheduleIntentOpen( ctx, root, delay ) {
  * direct `.style.left/.style.right` assignment (Spec 32 no-inline). style.css
  * reads this pair, so clearing the vars restores the default alignment.
  *
+ * TWO KINDS, ONE FUNCTION (2026-07-31). A MEGA panel centres on the viewport;
+ * a DROPDOWN aligns to its own trigger. The kind is read from the disclosure
+ * root's `data-sgs-nav-disclosure` attribute rather than passed in as an
+ * argument, and that is deliberate: this function is called from FIVE separate
+ * open paths, and a parameter would have to be set correctly at every one of
+ * them or three would centre while two did not. Reading it from the DOM makes
+ * the five call sites byte-identical to before and removes the divergence risk
+ * entirely — the element itself carries what it is.
+ *
+ * `activePanelRect` is captured BEFORE either branch and re-captured after the
+ * geometry write, on both paths. The safe-triangle (FR-36-4) depends on that
+ * snapshot, so a branch that skipped it would silently disable hover-intent
+ * rather than fail visibly.
+ *
  * @param {HTMLElement} root The disclosure root.
  */
 function repositionPanel( root ) {
@@ -304,6 +318,59 @@ function repositionPanel( root ) {
 		const parentRect = parent.getBoundingClientRect();
 		const gutter = 28;
 		const width = rect.width;
+
+		if ( root.dataset.sgsNavDisclosure === 'dropdown' ) {
+			/*
+			 * DROPDOWN geometry — aligned to its own TRIGGER, not the viewport.
+			 * Fitts's Law: the most-clicked entry should sit nearest the launch
+			 * point, so `start` is the default and matches what Bootstrap,
+			 * Elementor, GenerateBlocks and Kadence all ship for nav bars.
+			 * (Mega panels stay viewport-centred — a deliberate, different
+			 * choice for a full-width band, not evidence about dropdowns.)
+			 */
+			/*
+			 * Anchor on the whole MENU ITEM (the disclosure root, which wraps
+			 * the link and the toggle together), NOT on `[data-sgs-mega-trigger]`.
+			 *
+			 * Measured live 2026-07-31: anchoring on the trigger put the panel
+			 * 89px right of the item (panel.left 362 vs item.left 273), because
+			 * when a parent has its own URL the trigger is the small caret
+			 * BUTTON sitting after the link, not the item itself. Visually a
+			 * dropdown belongs under its menu entry, which is what every
+			 * comparable builder does. Caught only by opening it on a real page
+			 * — the markup and every offline check were already green.
+			 */
+			const anchor = root.getBoundingClientRect();
+			const align = root.dataset.sgsNavSubmenuAlign || 'start';
+			let desired;
+			if ( 'center' === align ) {
+				desired = anchor.left + ( anchor.width - width ) / 2;
+			} else if ( 'end' === align ) {
+				desired = anchor.right - width;
+			} else {
+				desired = anchor.left;
+			}
+			/*
+			 * Collision handling is ALWAYS ON and structural — never a client
+			 * toggle. The operator's alignment is a preference; the framework
+			 * overrides it only where the panel would actually be clipped, which
+			 * is exactly the right-most "Contact"/"Book Now" case. Same name in
+			 * every library: Floating UI flip()+shift(), Radix avoidCollisions
+			 * (default true), Popper under Bootstrap. Note Bootstrap disables
+			 * Popper INSIDE navbars — we deliberately do not; WordPress core's
+			 * Navigation block has no auto-flip either, which is a real gap.
+			 */
+			const maxLeft = window.innerWidth - gutter - width;
+			desired = Math.min( desired, maxLeft );
+			desired = Math.max( desired, gutter );
+			panel.style.setProperty( '--sgs-mm-tx', '0px' );
+			panel.style.setProperty(
+				'--sgs-mm-overflow-left',
+				`${ ( desired - parentRect.left ).toFixed( 2 ) }px`
+			);
+			activePanelRect = panel.getBoundingClientRect();
+			return;
+		}
 		/*
 		 * Centre on the VIEWPORT, not the bar (Bean's eye, round 2): the bar
 		 * shrink-wraps its items and sits wherever the header row puts it, so

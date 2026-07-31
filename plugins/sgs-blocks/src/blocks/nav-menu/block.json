@@ -1,200 +1,409 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/nav-menu",
-	"version": "0.1.0",
-	"title": "SGS Nav Menu",
-	"category": "sgs-content",
-	"icon": "menu",
-	"description": "The site's primary navigation bar. A flat horizontal row of real links on desktop; below the collapse point it becomes a burger that opens the sgs/nav-drawer via the shared sgs/nav Interactivity store. Menu content comes from a native WordPress menu.",
-	"keywords": [ "navigation", "nav", "menu", "links", "bar", "burger" ],
-	"textdomain": "sgs-blocks",
-	"supports": {
-		"anchor": true,
-		"customClassName": true,
-		"html": false,
-		"reusable": false,
-		"sgs": {
-			"headerEssential": true,
-			"containerKind": "layout",
-			"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ],
-			"elements": {
-				"wrapper": {
-					"label": "Nav wrapper",
-					"layer": "OUTER",
-					"order": 1,
-					"clusters": [ "layout" ],
-					"isWrapper": true,
-					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:max-width": "maxWidth"
-					},
-					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
-				},
-				"bar": {
-					"label": "Item bar (flex row)",
-					"layer": "GRID",
-					"order": 2,
-					"clusters": [ "layout" ],
-					"prefix": "",
-					"attrMap": {
-						"css:gap": "gap"
-					},
-					"_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute)."
-				},
-				"item": {
-					"label": "Nav item (resting)",
-					"order": 3,
-					"clusters": [ "text", "fill", "layout" ],
-					"prefix": "item",
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:color": "itemColourHover",
-								"css:background-color": "itemBgHover",
-								"css:border-radius": "itemRadiusHover"
-							}
-						},
-						"selected": {
-							"attrMap": {
-								"css:color": "itemColourHover",
-								"css:background-color": "itemBgHover",
-								"css:border-radius": "itemRadiusHover"
-							}
-						}
-					},
-					"_note": "render.php:304-309 groups `:hover`, `:focus-visible` AND `[aria-current=\"page\"]` into ONE selector list (`$hover_targets`) sharing the SAME itemColourHover/itemBgHover/itemRadiusHover attributes — so `selected` (the current-page indicator, view.js-computed) is declared with the identical attrMap as `hover`, not derived from the name (FR-35-5). underlineThickness/underlineOffset/underlineColour(Hover) belong to the separate `underline` element, not this one — they only apply under hoverStyle='underline'."
-				},
-				"underline": {
-					"label": "Hover / current-page underline bar",
-					"order": 4,
-					"clusters": [ "fill", "layout", "position" ],
-					"prefix": "underline",
-					"attrMap": {
-						"css:background-color": "underlineColour",
-						"css:height": "underlineThickness",
-						"css:bottom": "underlineOffset"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:background-color": "underlineColourHover"
-							}
-						}
-					},
-					"_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding."
-				},
-				"featured": {
-					"label": "Featured item",
-					"order": 5,
-					"clusters": [ "text", "fill", "layout" ],
-					"prefix": "featured",
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:color": "featuredColourHover",
-								"css:background-color": "featuredBgHover",
-								"css:border-radius": "featuredRadiusHover",
-								"css:font-weight": "featuredFontWeightHover"
-							}
-						}
-					},
-					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member."
-				},
-				"burger": {
-					"label": "Burger toggle",
-					"order": 6,
-					"clusters": [ "text", "fill", "layout" ],
-					"prefix": "burger",
-					"attrMap": {
-						"css:width": "burgerSize",
-						"css:height": "burgerSize"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:background-color": "burgerHoverColour"
-							}
-						}
-					},
-					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default)."
-				}
-			}
-		},
-		"spacing": {
-			"padding": true,
-			"margin": true,
-			"__experimentalSkipSerialization": true
-		}
-	},
-	"attributes": {
-		"ref": { "type": "number", "default": 0 },
-		"collapsePoint": { "type": "number", "default": 768 },
-		"drawerRef": { "type": "string", "default": "sgs-nav-drawer" },
-		"featuredItemIds": { "type": "array", "default": [], "items": { "type": "string" } },
-		"navLabel": { "type": "string", "default": "" },
-
-		"layout": { "type": "string", "default": "flex" },
-		"gap": { "type": "string", "default": "8px" },
-		"maxWidth": { "type": "string", "default": "" },
-		"listColumns": { "type": "object", "default": {} },
-		"paddingTablet": { "type": "object", "default": {} },
-		"paddingMobile": { "type": "object", "default": {} },
-
-		"_note_nav_fill": "Nav CONTAINER surface (2026-07-28). The block previously had NO fill controls at all — only per-ITEM colours — so a client could never sit the bar on its own surface. Scope is deliberately SURFACE ONLY: border/radius/divider were built and then REMOVED the same day (Bean ruling) because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not re-add them here without a header-level reason. Defaults unset, so an untouched nav renders byte-identically. Because the drawer holds its OWN sgs/nav-menu instance, these also give fully independent drawer styling with no extra plumbing.",
-		"navBg": { "type": "string", "default": "" },
-		"navColour": { "type": "string", "default": "" },
-		"navBgHover": { "type": "string", "default": "" },
-
-		"itemColour": { "type": "string", "default": "" },
-		"itemBg": { "type": "string", "default": "" },
-		"itemColourHover": { "type": "string", "default": "" },
-		"itemBgHover": { "type": "string", "default": "" },
-		"itemRadius": { "type": "number", "default": 8 },
-		"itemRadiusHover": { "type": "number" },
-		"hoverStyle": {
-			"type": "string",
-			"default": "pill"
-		},
-		"underlineColour": { "type": "string", "default": "" },
-		"underlineColourHover": { "type": "string", "default": "" },
-		"underlineThickness": { "type": "number", "default": 2 },
-		"underlineOffset": { "type": "number", "default": 6 },
-		"itemFontSize": { "type": "number" },
-		"itemFontSizeUnit": { "type": "string", "default": "" },
-		"itemFontSizeTablet": { "type": "number" },
-		"itemFontSizeMobile": { "type": "number" },
-		"itemFontWeight": { "type": "string", "default": "" },
-		"itemFontStyle": { "type": "string", "default": "" },
-		"itemLineHeight": { "type": "number" },
-		"itemLineHeightUnit": { "type": "string", "default": "" },
-
-		"featuredColour": { "type": "string", "default": "accent" },
-		"featuredBg": { "type": "string", "default": "" },
-		"featuredColourHover": { "type": "string", "default": "" },
-		"featuredBgHover": { "type": "string", "default": "" },
-		"featuredRadius": { "type": "number", "default": 8 },
-		"featuredRadiusHover": { "type": "number" },
-		"featuredFontWeight": { "type": "number", "default": 600 },
-		"featuredFontWeightHover": { "type": "number" },
-
-		"burgerColour": { "type": "string", "default": "" },
-		"burgerBg": { "type": "string", "default": "" },
-		"burgerHoverColour": { "type": "string", "default": "" },
-		"burgerSize": { "type": "string", "default": "44px" },
-
-		"indicatorStyle": {
-			"type": "string",
-			"default": "none"
-		},
-		"indicatorColour": { "type": "string", "default": "" },
-		"itemMagnetEnabled": { "type": "boolean", "default": false },
-
-		"sgsCustomCss": { "type": "string", "default": "" }
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"style": "file:./style-index.css",
-	"viewScriptModule": "file:./view.js"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/nav-menu",
+  "version": "0.1.0",
+  "title": "SGS Nav Menu",
+  "category": "sgs-content",
+  "icon": "menu",
+  "description": "The site's primary navigation bar. A flat horizontal row of real links on desktop; below the collapse point it becomes a burger that opens the sgs/nav-drawer via the shared sgs/nav Interactivity store. Menu content comes from a native WordPress menu.",
+  "keywords": [
+    "navigation",
+    "nav",
+    "menu",
+    "links",
+    "bar",
+    "burger"
+  ],
+  "textdomain": "sgs-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "reusable": false,
+    "sgs": {
+      "headerEssential": true,
+      "containerKind": "layout",
+      "hideExtensions": [
+        "hover",
+        "blockLink",
+        "clickEffects",
+        "parallax",
+        "spacing"
+      ],
+      "elements": {
+        "wrapper": {
+          "label": "Nav wrapper",
+          "layer": "OUTER",
+          "order": 1,
+          "clusters": [
+            "layout"
+          ],
+          "isWrapper": true,
+          "attrMap": {
+            "css:padding": "native:spacing.padding",
+            "css:margin": "native:spacing.margin",
+            "css:max-width": "maxWidth"
+          },
+          "_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
+        },
+        "bar": {
+          "label": "Item bar (flex row)",
+          "layer": "GRID",
+          "order": 2,
+          "clusters": [
+            "layout"
+          ],
+          "prefix": "",
+          "attrMap": {
+            "css:gap": "gap"
+          },
+          "_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute)."
+        },
+        "item": {
+          "label": "Nav item (resting)",
+          "order": 3,
+          "clusters": [
+            "text",
+            "fill",
+            "layout"
+          ],
+          "prefix": "item",
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "itemColourHover",
+                "css:background-color": "itemBgHover",
+                "css:border-radius": "itemRadiusHover"
+              }
+            },
+            "selected": {
+              "attrMap": {
+                "css:color": "itemColourHover",
+                "css:background-color": "itemBgHover",
+                "css:border-radius": "itemRadiusHover"
+              }
+            }
+          },
+          "_note": "render.php:304-309 groups `:hover`, `:focus-visible` AND `[aria-current=\"page\"]` into ONE selector list (`$hover_targets`) sharing the SAME itemColourHover/itemBgHover/itemRadiusHover attributes — so `selected` (the current-page indicator, view.js-computed) is declared with the identical attrMap as `hover`, not derived from the name (FR-35-5). underlineThickness/underlineOffset/underlineColour(Hover) belong to the separate `underline` element, not this one — they only apply under hoverStyle='underline'."
+        },
+        "underline": {
+          "label": "Hover / current-page underline bar",
+          "order": 4,
+          "clusters": [
+            "fill",
+            "layout",
+            "position"
+          ],
+          "prefix": "underline",
+          "attrMap": {
+            "css:background-color": "underlineColour",
+            "css:height": "underlineThickness",
+            "css:bottom": "underlineOffset"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:background-color": "underlineColourHover"
+              }
+            }
+          },
+          "_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding."
+        },
+        "featured": {
+          "label": "Featured item",
+          "order": 5,
+          "clusters": [
+            "text",
+            "fill",
+            "layout"
+          ],
+          "prefix": "featured",
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "featuredColourHover",
+                "css:background-color": "featuredBgHover",
+                "css:border-radius": "featuredRadiusHover",
+                "css:font-weight": "featuredFontWeightHover"
+              }
+            }
+          },
+          "_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member."
+        },
+        "burger": {
+          "label": "Burger toggle",
+          "order": 6,
+          "clusters": [
+            "text",
+            "fill",
+            "layout"
+          ],
+          "prefix": "burger",
+          "attrMap": {
+            "css:width": "burgerSize",
+            "css:height": "burgerSize"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:background-color": "burgerHoverColour"
+              }
+            }
+          },
+          "_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default)."
+        }
+      },
+      "boxFamilies": {
+        "padding": [
+          "paddingTablet",
+          "paddingMobile"
+        ],
+        "submenuPadding": [
+          "submenuPadding"
+        ]
+      }
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "__experimentalSkipSerialization": true
+    }
+  },
+  "attributes": {
+    "ref": {
+      "type": "number",
+      "default": 0
+    },
+    "collapsePoint": {
+      "type": "number",
+      "default": 768
+    },
+    "drawerRef": {
+      "type": "string",
+      "default": "sgs-nav-drawer"
+    },
+    "featuredItemIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
+    "navLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "layout": {
+      "type": "string",
+      "default": "flex"
+    },
+    "gap": {
+      "type": "string",
+      "default": "8px"
+    },
+    "maxWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "listColumns": {
+      "type": "object",
+      "default": {}
+    },
+    "paddingTablet": {
+      "type": "object",
+      "default": {}
+    },
+    "paddingMobile": {
+      "type": "object",
+      "default": {}
+    },
+    "_note_nav_fill": "Nav CONTAINER surface (2026-07-28). The block previously had NO fill controls at all — only per-ITEM colours — so a client could never sit the bar on its own surface. Scope is deliberately SURFACE ONLY: border/radius/divider were built and then REMOVED the same day (Bean ruling) because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not re-add them here without a header-level reason. Defaults unset, so an untouched nav renders byte-identically. Because the drawer holds its OWN sgs/nav-menu instance, these also give fully independent drawer styling with no extra plumbing.",
+    "navBg": {
+      "type": "string",
+      "default": ""
+    },
+    "navColour": {
+      "type": "string",
+      "default": ""
+    },
+    "navBgHover": {
+      "type": "string",
+      "default": ""
+    },
+    "itemColour": {
+      "type": "string",
+      "default": ""
+    },
+    "itemBg": {
+      "type": "string",
+      "default": ""
+    },
+    "itemColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "itemBgHover": {
+      "type": "string",
+      "default": ""
+    },
+    "itemRadius": {
+      "type": "number",
+      "default": 8
+    },
+    "itemRadiusHover": {
+      "type": "number"
+    },
+    "hoverStyle": {
+      "type": "string",
+      "default": "pill"
+    },
+    "underlineColour": {
+      "type": "string",
+      "default": ""
+    },
+    "underlineColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "underlineThickness": {
+      "type": "number",
+      "default": 2
+    },
+    "underlineOffset": {
+      "type": "number",
+      "default": 6
+    },
+    "itemFontSize": {
+      "type": "number"
+    },
+    "itemFontSizeUnit": {
+      "type": "string",
+      "default": ""
+    },
+    "itemFontSizeTablet": {
+      "type": "number"
+    },
+    "itemFontSizeMobile": {
+      "type": "number"
+    },
+    "itemFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "itemFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "itemLineHeight": {
+      "type": "number"
+    },
+    "itemLineHeightUnit": {
+      "type": "string",
+      "default": ""
+    },
+    "featuredColour": {
+      "type": "string",
+      "default": "accent"
+    },
+    "featuredBg": {
+      "type": "string",
+      "default": ""
+    },
+    "featuredColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "featuredBgHover": {
+      "type": "string",
+      "default": ""
+    },
+    "featuredRadius": {
+      "type": "number",
+      "default": 8
+    },
+    "featuredRadiusHover": {
+      "type": "number"
+    },
+    "featuredFontWeight": {
+      "type": "number",
+      "default": 600
+    },
+    "featuredFontWeightHover": {
+      "type": "number"
+    },
+    "burgerColour": {
+      "type": "string",
+      "default": ""
+    },
+    "burgerBg": {
+      "type": "string",
+      "default": ""
+    },
+    "burgerHoverColour": {
+      "type": "string",
+      "default": ""
+    },
+    "burgerSize": {
+      "type": "string",
+      "default": "44px"
+    },
+    "indicatorStyle": {
+      "type": "string",
+      "default": "none"
+    },
+    "indicatorColour": {
+      "type": "string",
+      "default": ""
+    },
+    "itemMagnetEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "sgsCustomCss": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuAlign": {
+      "type": "string",
+      "enum": [
+        "start",
+        "center",
+        "end"
+      ],
+      "default": "start"
+    },
+    "submenuCaret": {
+      "type": "boolean",
+      "default": true
+    },
+    "submenuCloseGrace": {
+      "type": "number",
+      "default": 170
+    },
+    "submenuBg": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuColour": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuMinWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuRadius": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuPadding": {
+      "type": "object",
+      "default": {}
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
 }

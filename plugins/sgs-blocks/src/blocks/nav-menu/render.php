@@ -68,14 +68,60 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		private string $uid;
 
 		/**
+		 * How many levels of submenu nesting render as real nested structure.
+		 *
+		 * 1 = a top-level item plus ONE level of children (a classic dropdown).
+		 * Anything deeper is flattened into that level rather than dropped —
+		 * see flatten(). Declared, not discovered: WordPress's Menus screen
+		 * permits arbitrary drag-nesting, so the deeper case is reachable and
+		 * needs a stated behaviour.
+		 *
+		 * @var int
+		 */
+		private const MAX_SUBMENU_DEPTH = 1;
+
+		/**
+		 * Operator-facing submenu settings, already validated by the caller.
+		 *
+		 * Only the values the MARKUP needs live here (alignment, caret, close
+		 * grace). Everything purely visual — background, colour, padding, radius,
+		 * min-width — is emitted as scoped CSS further down this file and never
+		 * reaches this class, so adding a colour control can never change the
+		 * rendered structure.
+		 *
+		 * @var array{align: string, caret: bool, close_grace: int}
+		 */
+		private array $submenu;
+
+		/**
 		 * Constructor.
 		 *
 		 * @param array  $featured_ids Featured item identifiers.
 		 * @param string $uid          This block instance's uid (CSS scope + id namespace).
+		 * @param array  $submenu      Submenu settings: align (start|center|end),
+		 *                             caret (bool), close_grace (int ms).
 		 */
-		public function __construct( array $featured_ids, string $uid = '' ) {
+		public function __construct( array $featured_ids, string $uid = '', array $submenu = array() ) {
 			$this->featured_ids = array_map( 'strval', $featured_ids );
 			$this->uid          = $uid;
+			$this->submenu      = array(
+				'align'       => in_array( $submenu['align'] ?? '', array( 'start', 'center', 'end' ), true )
+					? (string) $submenu['align']
+					// Fitts's Law + every comparable builder (Bootstrap, Kadence,
+					// Elementor, GenerateBlocks) ships start-aligned nav dropdowns:
+					// the most-clicked entry sits nearest the launch point.
+					: 'start',
+				'caret'       => ! isset( $submenu['caret'] ) || (bool) $submenu['caret'],
+
+				/*
+				 * 170ms, matching the mega panel's live deterministic value in this
+				 * same file. Deliberately NOT changed as a side effect of adding
+				 * dropdowns: this timing governs every existing nav on both live
+				 * sites, and a design doc asserting 500 was checked against the
+				 * code rather than believed.
+				 */
+				'close_grace' => isset( $submenu['close_grace'] ) ? max( 0, (int) $submenu['close_grace'] ) : 170,
+			);
 		}
 
 		/**
@@ -86,25 +132,42 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * server-rendered item: the underlying post/menu-item id when present,
 		 * else a stable 'label:<text>' fallback key.
 		 *
-		 * @param array $blocks Parsed nav blocks (from SGS_Nav_Menu_Source).
-		 * @return array<int, array{identifier: string, url: string, label: string}>
+		 * @param array  $blocks      Parsed nav blocks (from SGS_Nav_Menu_Source).
+		 * @param int    $depth       Current nesting depth (0 = top level). Internal.
+		 * @param string $parent_path Parent item's identifier, used to path-qualify
+		 *                            child identifiers so sibling submenus holding
+		 *                            the same label do not collide. Internal.
+		 * @return array<int, array{identifier: string, url: string, label: string, has_url: bool, children: array}>
 		 */
-		public function flatten( array $blocks ): array {
+		public function flatten( array $blocks, int $depth = 0, string $parent_path = '' ): array {
 			$items = array();
 			foreach ( $blocks as $block ) {
 				$name = $block['blockName'] ?? '';
 				switch ( $name ) {
 					case 'core/navigation-link':
-						$item = $this->from_link( $block['attrs'] ?? array() );
+						$item = $this->from_link( $block['attrs'] ?? array(), $parent_path );
 						if ( $item ) {
 							$items[] = $item;
 						}
 						break;
 					case 'core/navigation-submenu':
-						// Flatten to the PARENT's own link only — no children this phase.
-						$item = $this->from_link( $block['attrs'] ?? array() );
-						if ( $item ) {
+						$item = $this->from_link( $block['attrs'] ?? array(), $parent_path );
+						if ( ! $item ) {
+							break;
+						}
+						$inner = $block['innerBlocks'] ?? array();
+						if ( $depth < self::MAX_SUBMENU_DEPTH ) {
+							$item['children'] = $this->flatten( $inner, $depth + 1, $item['identifier'] );
+							$items[]          = $item;
+						} else {
+							// Depth cap reached. WordPress's own Menus screen lets an
+							// operator drag-nest to ANY depth, so this case is reachable
+							// from the UI. Emit the parent, then FLATTEN its descendants
+							// into this same level rather than dropping them — a silent
+							// truncation here is the D338 data-loss class. Declared
+							// behaviour, not discovered behaviour.
 							$items[] = $item;
+							$items   = array_merge( $items, $this->flatten( $inner, $depth, $parent_path ) );
 						}
 						break;
 					case 'core/home-link':
@@ -112,6 +175,8 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							'identifier' => 'special:home',
 							'url'        => home_url( '/' ),
 							'label'      => __( 'Home', 'sgs-blocks' ),
+							'has_url'    => true,
+							'children'   => array(),
 						);
 						break;
 					case 'core/page-list':
@@ -128,26 +193,44 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		/**
 		 * Build one flat item from a navigation-link/submenu/mega-menu's own attrs.
 		 *
-		 * @param array $attrs Block attrs (label, url, id).
-		 * @return array{identifier: string, url: string, label: string}|null
+		 * @param array  $attrs       Block attrs (label, url, id).
+		 * @param string $parent_path Parent identifier for path-qualifying children
+		 *                            ('' for a top-level item).
+		 * @return array{identifier: string, url: string, label: string, has_url: bool, children: array}|null
 		 */
-		private function from_link( array $attrs ): ?array {
+		private function from_link( array $attrs, string $parent_path = '' ): ?array {
 			$label = (string) ( $attrs['label'] ?? '' );
 			if ( '' === $label ) {
 				return null;
 			}
-			$url        = (string) ( $attrs['url'] ?? '' );
-			$url        = '' !== $url ? $url : '#';
-			$identifier = isset( $attrs['id'] ) && '' !== $attrs['id']
+			$raw_url = (string) ( $attrs['url'] ?? '' );
+			$has_url = '' !== $raw_url;
+			$url     = $has_url ? $raw_url : '#';
+			$own_key = isset( $attrs['id'] ) && '' !== $attrs['id']
 				? 'id:' . sanitize_key( (string) $attrs['id'] )
 				: 'label:' . $label;
+
+			/*
+			 * Path-qualify CHILD identifiers only. A flat menu could safely key on
+			 * 'label:<text>', but with children two sibling submenus that each hold
+			 * an "About" item collide on that key — which would mis-target
+			 * markCurrentPage() (view.js) and data-sgs-nav-path. Top-level keys are
+			 * deliberately left unchanged so existing featuredItemIds selections
+			 * keep matching.
+			 */
+			$identifier = '' === $parent_path ? $own_key : $parent_path . '>' . $own_key;
 
 			return array(
 				'identifier' => $identifier,
 				'url'        => $url,
+				// A parent that exists only to open its children has no URL of its
+				// own. Rendering it as <a href="#"> jumps the page to the top on
+				// click; render_items() uses this to emit a non-link trigger instead.
+				'has_url'    => $has_url,
 				'label'      => $label,
 				'type'       => (string) ( $attrs['type'] ?? '' ),
 				'object_id'  => (int) ( $attrs['id'] ?? 0 ),
+				'children'   => array(),
 			);
 		}
 
@@ -282,6 +365,138 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 					// Panel resolved null (trashed/missing/recursion) — fall through to plain link (FR-36-9a degrade).
 				}
 
+				/*
+				 * DROPDOWN — a menu item that has children and is not a mega menu.
+				 *
+				 * Reuses the sgs/mega interactivity store wholesale: the same three
+				 * hooks (interactive root, [data-sgs-mega-trigger],
+				 * [data-sgs-mega-panel]) buy hover-intent, keyboard, ESC,
+				 * focus-return, single-open and the WCAG 1.4.13 behaviours with no
+				 * new JS — mega-disclosure.js carries zero BEM selectors, so it is
+				 * genuinely markup-agnostic rather than mega-specific.
+				 *
+				 * The root element must PHYSICALLY WRAP both trigger and panel: the
+				 * hover bridge is DOM containment (mouseenter/mouseleave on the
+				 * root), not geometry, so a sibling panel would close the moment the
+				 * pointer left the trigger.
+				 */
+				$children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
+				if ( $children ) {
+					$child_html = '';
+					foreach ( $children as $child ) {
+						if ( '' === (string) ( $child['label'] ?? '' ) ) {
+							continue;
+						}
+
+						/*
+						 * data-sgs-nav-path is REQUIRED on child links, not
+						 * decorative: markCurrentPage() (view.js) keys the
+						 * current-page state off it, so a child without it can
+						 * never highlight as current.
+						 */
+
+						/*
+						 * A CHILD can be featured too (Bean, 2026-07-31 — the
+						 * "Send to ward"-style priority item). Same
+						 * featuredItemIds check the top-level branch uses, so
+						 * one mechanism covers both levels rather than a
+						 * parallel one for children.
+						 */
+						$child_featured = in_array( $child['identifier'], $this->featured_ids, true );
+						$child_html    .= sprintf(
+							'<li class="sgs-nav-menu__subitem%s"><a class="sgs-nav-menu__sublink" href="%s" data-sgs-nav-path="%s">%s</a></li>',
+							$child_featured ? ' sgs-nav-menu__subitem--featured' : '',
+							esc_url( $child['url'] ),
+							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
+							esc_html( $child['label'] )
+						);
+					}
+
+					/*
+					 * Every child had an empty label — degrade to a plain link,
+					 * mirroring the mega branch's own null-panel degrade above. A
+					 * trigger that opens an empty panel is worse than no trigger:
+					 * the client sees a caret that does nothing.
+					 */
+					if ( '' !== $child_html ) {
+						$sub_dom_id = $this->uid . '-sub-' . substr( md5( $item['identifier'] ), 0, 8 );
+						$sub_ctx    = function_exists( 'wp_interactivity_data_wp_context' )
+							? wp_interactivity_data_wp_context(
+								array(
+									'isOpen'      => false,
+									'megaId'      => $sub_dom_id,
+									'intentDelay' => 300,
+									'closeGrace'  => $this->submenu['close_grace'],
+								)
+							)
+							: sprintf(
+								"data-wp-context='%s'",
+								esc_attr(
+									wp_json_encode(
+										array(
+											'isOpen'      => false,
+											'megaId'      => $sub_dom_id,
+											'intentDelay' => 300,
+											'closeGrace'  => $this->submenu['close_grace'],
+										)
+									)
+								)
+							);
+						$sub_caret  = '';
+						if ( $this->submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) ) {
+							$sub_caret = '<span class="sgs-nav-menu__caret" aria-hidden="true">'
+								. sgs_get_lucide_icon( 'chevron-down' ) . '</span>';
+						}
+
+						/*
+						 * A parent with no URL of its own renders a <button>, not
+						 * <a href="#">. An href="#" trigger jumps the page to the
+						 * top on click and lies to assistive tech about being a
+						 * link. A parent WITH a URL keeps its link (so "Products"
+						 * still navigates) and gets a separate adjacent toggle.
+						 */
+						if ( ! empty( $item['has_url'] ) ) {
+							$trigger_html = sprintf(
+								'<a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span></a>'
+								. '<button type="button" class="sgs-nav-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								. '<span class="screen-reader-text">%s</span>%s</button>',
+								esc_url( $item['url'] ),
+								esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+								esc_html( $item['label'] ),
+								esc_attr( $sub_dom_id ),
+								/* translators: %s is the parent menu item's label. */
+								esc_html( sprintf( __( 'Show submenu for %s', 'sgs-blocks' ), $item['label'] ) ),
+								$sub_caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+							);
+						} else {
+							$trigger_html = sprintf(
+								'<button type="button" class="sgs-nav-menu__link sgs-nav-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								. '<span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span>%s</button>',
+								esc_attr( $sub_dom_id ),
+								esc_html( $item['label'] ),
+								$sub_caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+							);
+						}
+
+						$html .= sprintf(
+							'<li class="%1$s sgs-nav-menu__item--has-submenu">'
+							. '<div class="sgs-nav-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							. '%4$s'
+							. '<div id="%5$s" class="sgs-nav-menu__submenu-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">'
+							. '<ul class="sgs-nav-menu__submenu">%6$s</ul>'
+							. '</div>'
+							. '</div></li>',
+							esc_attr( $li_class ),
+							esc_attr( $this->submenu['align'] ),
+							$sub_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes; the fallback branch esc_attr()s the JSON.
+							$trigger_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
+							esc_attr( $sub_dom_id ),
+							$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
+						);
+						continue;
+					}
+				}
+
 				$html .= sprintf(
 					'<li class="%s"><a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span></a></li>',
 					esc_attr( $li_class ),
@@ -313,7 +528,15 @@ $uid_sel    = '.' . $uid;
 $ref          = isset( $attributes['ref'] ) ? absint( $attributes['ref'] ) : 0;
 $menu_blocks  = SGS_Nav_Menu_Source::get_menu_blocks( $ref, true );
 $featured_ids = is_array( $attributes['featuredItemIds'] ?? null ) ? $attributes['featuredItemIds'] : array();
-$bar_renderer = new SGS_Nav_Menu_Bar_Renderer( $featured_ids, $uid );
+$bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
+	$featured_ids,
+	$uid,
+	array(
+		'align'       => (string) ( $attributes['submenuAlign'] ?? 'start' ),
+		'caret'       => ! isset( $attributes['submenuCaret'] ) || (bool) $attributes['submenuCaret'],
+		'close_grace' => (int) ( $attributes['submenuCloseGrace'] ?? 170 ),
+	)
+);
 $flat_items   = $bar_renderer->flatten( $menu_blocks );
 $items_html   = $bar_renderer->render_items( $flat_items );
 
@@ -646,6 +869,7 @@ $featured_weight_hover = isset( $attributes['featuredFontWeightHover'] ) && null
 	? (int) $attributes['featuredFontWeightHover']
 	: $featured_weight;
 
+$featured_fg = '';
 if ( '' !== $featured_bg_hex ) {
 	$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
 	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
@@ -653,6 +877,32 @@ if ( '' !== $featured_bg_hex ) {
 } else {
 	$css .= $featured_sel . '{color:' . sgs_colour_value( $featured_colour ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';
 }
+
+/*
+ * Republish the RESOLVED featured values as custom properties so a featured
+ * SUBMENU item inherits exactly what the featured bar item uses (Bean,
+ * 2026-07-31 — the "Send to ward" priority item must look like itself wherever
+ * it appears, bar or burger drawer).
+ *
+ * Deliberately reuses the values computed ABOVE rather than re-reading the
+ * attributes: `$featured_fg` comes from sgs_wcag_preferred_text_colour_for_bg(),
+ * which picks a foreground that actually passes contrast against the chosen
+ * background. Re-deriving it here would risk a second, less accessible answer
+ * for the same setting.
+ */
+$sgs_nm_featured_vars = '--sgs-nm-featured-weight:' . (int) $featured_weight . ';';
+if ( '' !== $featured_bg_hex ) {
+	// PILL form — carry the WCAG-resolved foreground computed above, verbatim.
+	$sgs_nm_featured_vars .= '--sgs-nm-featured-bg:' . $featured_bg_hex . ';'
+		. '--sgs-nm-featured-colour:' . $featured_fg . ';'
+		. '--sgs-nm-featured-radius:' . (float) $featured_radius . 'px;';
+} elseif ( '' !== $featured_colour ) {
+	// LABEL form — no background was chosen, so the submenu row stays
+	// transparent rather than inventing a pill the bar itself does not have.
+	$sgs_nm_featured_vars .= '--sgs-nm-featured-colour:' . sgs_colour_value( $featured_colour ) . ';'
+		. '--sgs-nm-featured-bg:transparent;';
+}
+$css .= $uid_sel . '{' . $sgs_nm_featured_vars . '}';
 
 /*
  * 4d-ii. Featured HOVER state. The featured item is the one nav item an
@@ -782,6 +1032,201 @@ $css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu_
  */
 $css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));z-index:100;display:none;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
+
+/*
+ * ── DROPDOWN SUBMENU ────────────────────────────────────────────────────────
+ *
+ * Deliberately mirrors the mega panel's mechanism above rather than inventing a
+ * parallel one: same display:none-until-open (keeps it out of the a11y tree
+ * while the links stay in the server HTML for crawlers, FR-36-17), same
+ * sibling-of-an-expanded-trigger selector, same no-JS-stays-closed progressive
+ * enhancement (FR-36-7). Only the GEOMETRY differs — a dropdown aligns to its
+ * trigger, a mega panel centres on the viewport.
+ *
+ * `left` defaults to 0 (start-aligned under the trigger) and is overridden by
+ * mega-disclosure.js writing --sgs-mm-overflow-left as a custom-property VALUE.
+ * Spec 32: a custom-property value is permitted; a direct style.left write is
+ * not.
+ */
+
+/*
+ * Operator values arrive as custom-property VALUES on the block's own scope, so
+ * the rules below stay static and every override is one declaration deep
+ * (Spec 32: overrides are custom-property values, never inline declarations).
+ * Each is emitted ONLY when the operator actually set it — an unset control
+ * writes no property at all, so the rule's own fallback applies rather than a
+ * hardcoded value overriding it.
+ */
+$sgs_nm_submenu_vars = '';
+foreach (
+	array(
+		'--sgs-nm-submenu-bg'        => '' !== (string) ( $attributes['submenuBg'] ?? '' )
+			? sgs_colour_value( (string) $attributes['submenuBg'] )
+			: '',
+		'--sgs-nm-submenu-colour'    => '' !== (string) ( $attributes['submenuColour'] ?? '' )
+			? sgs_colour_value( (string) $attributes['submenuColour'] )
+			: '',
+		'--sgs-nm-submenu-min-width' => $sgs_nm_css_length( $attributes['submenuMinWidth'] ?? '' ),
+		'--sgs-nm-submenu-radius'    => $sgs_nm_css_length( $attributes['submenuRadius'] ?? '' ),
+		// Object-shaped {top,right,bottom,left} per the Spec 32 box contract —
+		// resolved by the shared helper, never a hand-rolled side regex (which
+		// is exactly what check-box-family-guard.py exists to reject).
+		'--sgs-nm-submenu-padding'   => is_array( $attributes['submenuPadding'] ?? null )
+			? (string) ( sgs_box_object_shorthand( $attributes['submenuPadding'] ) ?? '' )
+			: '',
+	) as $sgs_nm_var => $sgs_nm_val
+) {
+	if ( '' !== $sgs_nm_val ) {
+		$sgs_nm_submenu_vars .= $sgs_nm_var . ':' . $sgs_nm_val . ';';
+	}
+}
+if ( '' !== $sgs_nm_submenu_vars ) {
+	$css .= $uid_sel . '{' . $sgs_nm_submenu_vars . '}';
+}
+
+$css .= $uid_sel . ' .sgs-nav-menu__submenu-root{position:relative;display:flex;align-items:center;}';
+$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);z-index:100;display:none;}';
+
+/*
+ * LIFT THE WHOLE ITEM while its submenu is open (Bean, 2026-07-31 — live-caught:
+ * the site logo painted OVER the open dropdown; hit-testing the panel's centre
+ * returned `sgs-responsive-logo__image--desktop`, not the panel).
+ *
+ * `z-index:100` on the panel alone is not enough. The panel sits inside
+ * stacking contexts its own ancestors create — `.sgs-nav-menu__item{z-index:1}`,
+ * `.sgs-nav-menu__bar{z-index:1}`, `.entry-content{z-index:1}` — so its 100 only
+ * ranks it against its SIBLINGS, never against a later block that forms its own
+ * context. Raising the ancestor that actually competes is the fix. Scoped with
+ * `:has()` to the OPEN state so a closed menu leaves the page's stacking order
+ * exactly as it was. A mega panel never hit this because it lives in the sticky
+ * header, which already outranks page content.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__item--has-submenu:has([aria-expanded="true"]){z-index:101;}';
+
+/*
+ * Lift every level we own, not just the item: `.sgs-nav-menu__bar{z-index:1}`
+ * and the block root sit between the item and the page, so a 101 on the item
+ * alone only ordered it against its own siblings.
+ *
+ * WHAT THIS DOES AND DOES NOT FIX (measured 2026-07-31, five sample points):
+ *   HEADER placement — the normal one — is fully correct: the open panel is the
+ *   topmost element at every sampled point, because the header template part is
+ *   `position:sticky; z-index:100` and therefore outranks page content.
+ *   A nav placed inside PAGE CONTENT is NOT fully fixed and cannot be from here:
+ *   the theme's `.entry-content{position:relative;z-index:1}` creates a stacking
+ *   context the block cannot escape, so the sticky header (z-index 100) and the
+ *   footer's own positioned rows (z-index 1, later in document order) still
+ *   paint over the panel. Raising `.entry-content` would put ALL page content
+ *   above the sticky header, which is worse. Tracked as
+ *   P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT.
+ * These lifts are still correct and worth keeping: they order the open panel
+ * above rivals WITHIN the same content flow, and they revert the moment it closes.
+ */
+$css .= $uid_sel . ':has([aria-expanded="true"]){position:relative;z-index:101;}';
+$css .= $uid_sel . ' .sgs-nav-menu__bar:has([aria-expanded="true"]){z-index:101;}';
+$css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-menu__submenu-wrap{display:block;}';
+
+/*
+ * EVERY default here is a THEME TOKEN, never a literal (Bean, 2026-07-31 —
+ * live-caught: the first cut hardcoded `#fff` and `rgba(0,0,0,.12)`, so the
+ * panel painted white on a client whose surface token is `#fbf3dc` and ignored
+ * the palette completely, in every style variation). A literal cannot follow a
+ * per-client snapshot or a light/dark variation; a token does, for free. The
+ * short literal after each token is a last-resort safety net for a theme that
+ * defines no palette at all, NOT a design value.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:var(--sgs-nm-submenu-padding, 8px 0);'
+	. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
+	. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
+	. 'border:1px solid var(--wp--preset--color--border-subtle, transparent);'
+	. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
+	. 'box-shadow:var(--wp--preset--shadow--md, 0 4px 12px rgba(0,0,0,.1));}';
+$css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
+
+/*
+ * 44px min touch target (SGS baseline — beats WCAG 2.2's 24px) and a visible
+ * focus ring. Never remove the outline without replacing it.
+ */
+
+/*
+ * Submenu text defaults to the palette's TEXT token (Bean, 2026-07-31 —
+ * live-caught, then contrast-measured).
+ *
+ * Three positions were tried against the live canary, and only the third both
+ * follows the palette AND stays accessible:
+ *   1. `color:...,inherit` (the first cut) — out-specified the theme's global
+ *      link rule and forced inherited body text, so the palette never applied.
+ *      This is what Bean saw.
+ *   2. no declaration at all — the theme's link rule then wins, which IS
+ *      palette-driven, but a dropdown row is not an inline body link: measured
+ *      on this client, link pink `#e68a95` on surface `#fbf3dc` is **2.25:1**,
+ *      failing the WCAG 2.1 AA 4.5:1 floor (`primary-dark` on focus is 3.32:1,
+ *      also failing). Known issue `P-MAMAS-PRIMARY-CONTRAST` — pre-existing,
+ *      but not something to newly ship into.
+ *   3. the TEXT token — palette-driven, follows every style variation and
+ *      per-client snapshot, and measures **13.14:1** on the same surface.
+ * A dropdown item is navigation text on a panel, which is how every comparable
+ * builder treats it; the operator's own colour still overrides, below.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
+	. 'text-decoration:none;white-space:nowrap;'
+	. 'color:var(--wp--preset--color--text, currentColor);}';
+if ( '' !== (string) ( $attributes['submenuColour'] ?? '' ) ) {
+	$css .= $uid_sel . ' .sgs-nav-menu__sublink{color:var(--sgs-nm-submenu-colour);}';
+}
+
+/*
+ * Hover/focus read as DESIGN, not as a stray underline: a tinted row plus a
+ * brand-coloured ring. `currentColor` was wrong here — it resolves to the near
+ * black of body text, which is what Bean saw as a "black underline".
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__sublink:hover{background:var(--wp--preset--color--surface, rgba(0,0,0,.04));}';
+
+/*
+ * CURRENT-PAGE and FEATURED states for submenu items (Bean, 2026-07-31).
+ *
+ * Both reuse the SAME signals the top-level bar already uses — `aria-current`
+ * (set client-side by markCurrentPage, because the page cache would serve a
+ * stale server-baked value) and the `featuredItemIds` roster — rather than
+ * inventing a submenu-only mechanism. Both default from PALETTE TOKENS, and
+ * both fall back to the operator's own top-level choice when they have set one,
+ * so a submenu inherits the look of the bar it belongs to instead of drifting.
+ *
+ * Everything here is scoped to the block uid, NOT to the bar, so it applies
+ * identically to the drawer's own nav-menu instance — the burger menu holds a
+ * second instance and must not need its own rules.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{'
+	. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--primary-dark, currentColor));'
+	. 'font-weight:600;}';
+$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink{'
+	// Falls back to the operator's TOP-LEVEL featured colours before the token,
+	// so a featured child matches the featured bar item by default.
+	. 'color:var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor));'
+	. 'background:var(--sgs-nm-featured-bg, var(--wp--preset--color--primary, transparent));'
+	. 'font-weight:var(--sgs-nm-featured-weight, 600);'
+	. 'border-radius:var(--sgs-nm-featured-radius, 4px);'
+	. 'margin:4px 8px;}';
+$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink:hover{'
+	. 'color:var(--sgs-nm-featured-colour-hover, var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor)));'
+	. 'background:var(--sgs-nm-featured-bg-hover, var(--wp--preset--color--primary-dark, transparent));}';
+$css .= $uid_sel . ' .sgs-nav-menu__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);outline-offset:-2px;}';
+
+/*
+ * The toggle is a real button next to a real link when the parent has its own
+ * URL, so it needs its own hit area rather than inheriting the link's.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__subtoggle{display:inline-flex;align-items:center;justify-content:center;'
+	. 'min-width:44px;min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;}';
+$css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid currentColor;outline-offset:-2px;}';
+
+/*
+ * In-drawer: the dropdown becomes an inline accordion, exactly as the mega
+ * panel does below — an absolutely-positioned panel inside the drawer overlays
+ * the items beneath it instead of pushing them down.
+ */
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:static;width:100%;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;background:transparent;min-width:0;}';
 
 /*
  * In-drawer accordion (FR-36-5/-6: "the same panel renders inside the

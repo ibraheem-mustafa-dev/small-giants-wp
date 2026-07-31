@@ -32,6 +32,7 @@ import {
 	Notice,
 	RangeControl,
 	__experimentalUnitControl as UnitControl,
+	__experimentalBoxControl as BoxControl,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 	__experimentalToggleGroupControl as ToggleGroupControl,
@@ -171,6 +172,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		indicatorStyle,
 		indicatorColour,
 		itemMagnetEnabled,
+		submenuAlign,
+		submenuCaret,
+		submenuCloseGrace,
+		submenuBg,
+		submenuColour,
+		submenuMinWidth,
+		submenuRadius,
+		submenuPadding,
 	} = attributes;
 
 	// Burger Menu 'Custom' reveal — UI-only state (the stored value is collapsePoint).
@@ -676,6 +685,92 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveControl>
 				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Dropdown menus', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p style={ { marginTop: 0 } }>
+						{ __(
+							'These settings apply to any menu item that has items nested under it in Appearance → Menus. Nothing here needs changing for a flat menu.',
+							'sgs-blocks'
+						) }
+					</p>
+					<SelectControl
+						label={ __( 'Open from', 'sgs-blocks' ) }
+						value={ submenuAlign || 'start' }
+						options={ [
+							{
+								label: __(
+									'Left edge of the menu item',
+									'sgs-blocks'
+								),
+								value: 'start',
+							},
+							{
+								label: __(
+									'Centred under the menu item',
+									'sgs-blocks'
+								),
+								value: 'center',
+							},
+							{
+								label: __(
+									'Right edge of the menu item',
+									'sgs-blocks'
+								),
+								value: 'end',
+							},
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { submenuAlign: value } )
+						}
+						help={ __(
+							'Left is the usual choice — the first item sits closest to where the visitor clicked. If a dropdown would run off the edge of the screen it flips to the other side automatically, whichever option you pick.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ToggleControl
+						label={ __(
+							'Show a small arrow on items that open',
+							'sgs-blocks'
+						) }
+						checked={ submenuCaret !== false }
+						onChange={ ( value ) =>
+							setAttributes( { submenuCaret: value } )
+						}
+						help={ __(
+							'The arrow tells visitors the item has more beneath it. Turning it off hides that cue.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Close delay', 'sgs-blocks' ) }
+						value={
+							typeof submenuCloseGrace === 'number'
+								? submenuCloseGrace
+								: 170
+						}
+						min={ 0 }
+						max={ 600 }
+						step={ 10 }
+						onChange={ ( value ) =>
+							setAttributes( {
+								submenuCloseGrace:
+									typeof value === 'number' ? value : 170,
+							} )
+						}
+						help={ __(
+							'How long the dropdown waits before closing when the pointer leaves it, in milliseconds. A short delay stops it snapping shut while someone is moving towards it.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
@@ -763,6 +858,126 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									} );
 								}
 							} }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
+
+				{ /*
+				   Dropdown appearance. Every control is unset by default, so a
+				   menu with no nested items — and any existing nav — renders
+				   exactly as before. Unset writes NO custom property at all, so
+				   the stylesheet's own fallback applies rather than a value
+				   silently overriding the theme.
+				*/ }
+				<ToolsPanel
+					label={ __( 'Dropdown', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							submenuBg: '',
+							submenuColour: '',
+							submenuMinWidth: '',
+							submenuRadius: '',
+							submenuPadding: {},
+						} )
+					}
+				>
+					<ToolsPanelItem
+						hasValue={ () => !! submenuBg }
+						label={ __( 'Background', 'sgs-blocks' ) }
+						onDeselect={ () => setAttributes( { submenuBg: '' } ) }
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Background', 'sgs-blocks' ) }
+							value={ submenuBg }
+							onChange={ ( val ) =>
+								setAttributes( { submenuBg: val || '' } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						hasValue={ () => !! submenuColour }
+						label={ __( 'Link colour', 'sgs-blocks' ) }
+						onDeselect={ () =>
+							setAttributes( { submenuColour: '' } )
+						}
+						isShownByDefault
+					>
+						<DesignTokenPicker
+							label={ __( 'Link colour', 'sgs-blocks' ) }
+							value={ submenuColour }
+							onChange={ ( val ) =>
+								setAttributes( { submenuColour: val || '' } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						hasValue={ () => !! submenuMinWidth }
+						label={ __( 'Minimum width', 'sgs-blocks' ) }
+						onDeselect={ () =>
+							setAttributes( { submenuMinWidth: '' } )
+						}
+					>
+						<UnitControl
+							label={ __( 'Minimum width', 'sgs-blocks' ) }
+							value={ submenuMinWidth }
+							onChange={ ( val ) =>
+								setAttributes( { submenuMinWidth: val || '' } )
+							}
+							help={ __(
+								'Stops a dropdown shrinking to the width of its shortest link.',
+								'sgs-blocks'
+							) }
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						hasValue={ () => !! submenuRadius }
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						onDeselect={ () =>
+							setAttributes( { submenuRadius: '' } )
+						}
+					>
+						<UnitControl
+							label={ __( 'Corner radius', 'sgs-blocks' ) }
+							value={ submenuRadius }
+							onChange={ ( val ) =>
+								setAttributes( { submenuRadius: val || '' } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						hasValue={ () =>
+							!! submenuPadding &&
+							Object.keys( submenuPadding ).length > 0
+						}
+						label={ __( 'Inner spacing', 'sgs-blocks' ) }
+						onDeselect={ () =>
+							setAttributes( { submenuPadding: {} } )
+						}
+					>
+						{ /*
+						   WP's NATIVE BoxControl, not ResponsiveBoxControl.
+						   ResponsiveBoxControl stores a tier-shaped
+						   { base, tablet, mobile } object and calls
+						   onChange( tier, next ) — feeding that to a renderer
+						   expecting a flat { top, right, bottom, left } drops
+						   the whole value silently, with nothing to see in the
+						   editor or the markup. A dropdown's inner spacing is
+						   not device-tiered, so the flat shape is correct here
+						   and matches sgs_box_object_shorthand() in render.php.
+						*/ }
+						<BoxControl
+							label={ __( 'Inner spacing', 'sgs-blocks' ) }
+							values={ submenuPadding || {} }
+							units={ [
+								{ value: 'px', label: 'px', default: 0 },
+								{ value: 'rem', label: 'rem', default: 0 },
+								{ value: 'em', label: 'em', default: 0 },
+							] }
+							splitOnAxis={ false }
+							onChange={ ( val ) =>
+								setAttributes( { submenuPadding: val || {} } )
+							}
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

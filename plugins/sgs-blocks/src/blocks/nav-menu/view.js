@@ -58,7 +58,18 @@ function normalisePath( pathname ) {
  */
 function markCurrentPage( root ) {
 	const current = normalisePath( window.location.pathname );
-	root.querySelectorAll( '.sgs-nav-menu__link[data-sgs-nav-path]' ).forEach(
+	/*
+	 * Sublinks are included deliberately (Bean, 2026-07-31). This selector was
+	 * `.sgs-nav-menu__link[...]` only, so a DROPDOWN child could never be marked
+	 * as the current page — a visitor sitting on /services/web/ saw nothing
+	 * highlighted. `data-sgs-nav-path` was already emitted on children, which
+	 * made the omission easy to miss: the data was there, nothing read it.
+	 * Applies in the bar AND inside the burger drawer, since the drawer holds
+	 * its own nav-menu instance and this runs per root.
+	 */
+	root.querySelectorAll(
+		'.sgs-nav-menu__link[data-sgs-nav-path], .sgs-nav-menu__sublink[data-sgs-nav-path]'
+	).forEach(
 		( link ) => {
 			const path = normalisePath( link.dataset.sgsNavPath || '' );
 			if ( path !== '' && path === current ) {

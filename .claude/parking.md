@@ -56,6 +56,27 @@ parked-work descriptions, which is what a parking file is for.
 **Trigger:** next decisions.md sweep, or when the D-range index is next rebuilt. Archive by
 D-range; do not delete.
 
+### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
+
+**Status:** OPEN · **Bucket:** blocks · **Parked:** 2026-07-31
+
+An `sgs/nav-menu` placed inside PAGE CONTENT has its open dropdown painted over by the sticky header
+and by the footer. Measured on canary 2091, five sample points, every one returning a rival element.
+
+Cause proven, not inferred: the theme's `.entry-content{position:relative;z-index:1}` creates a
+stacking context the block cannot escape. The header template part is `z-index:100` and the footer's
+positioned rows are `z-index:1` but LATER in document order, so both outrank anything nested inside
+`.entry-content`. Lifting every level the block owns (item / bar / block root — all three confirmed
+applying at `z-index:101`) does not help, because the cap sits above all of them.
+
+**The normal HEADER placement is UNAFFECTED and verified correct** — all five points return the panel
+as topmost there, because the header itself outranks page content. This bites only the unusual
+placement.
+
+Not fixable from the block: raising `.entry-content` would put ALL page content above the sticky
+header. A real fix is theme-level (e.g. rendering the panel in the top layer), so it is parked rather
+than bodged. Evidence: `reports/visual-diff/nav-menu-2026-07-31.md`.
+
 ### P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR — canary fixture pages carry unopenable blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
 
