@@ -178,6 +178,50 @@ unresolvable descendant fall back to the section root) → `--check` exits 1 wit
 `[probe] … measured on the SECTION ROOT (a §7b false-win path)`. Restored and
 confirmed byte-identical by md5.
 
+## Triage of the 11 (2026-07-31, same session)
+
+They are NOT one list. Three classes, and only one is an actionable converter bug.
+
+**A — GAP: no attribute exists, so the draft's value can never be honoured (8).**
+The block hardcodes a value and declares no attr to override it, so transfer is
+impossible by construction. Spec 31 §5 GAP cells; the fix is to seed the attr,
+not to touch the converter.
+
+| Fixture | Property | Draft | Clone | Why |
+|---|---|---|---|---|
+| sgs-team-member | width / height | 80px | 150px | `style.css:39-40` hardcodes 150px on `.sgs-team-member__photo`; block.json has `photo`/`photoShape` but no size attr |
+| sgs-team-member | font-size / font-weight (`__name`) | 18px / 600 | 20px / 700 | only `nameColour`/`roleColour` exist — no typography attrs |
+| sgs-team-member | margin-top (`__role`) | 4px | 0px | no margin attr |
+| sgs-card-grid | padding (`__item`) | 24px | 0px | no item-padding attr |
+| sgs-product-card | aspect-ratio, margin-top | 1/1, 12px | auto, 0px | no matching attrs |
+| sgs-pricing-table | color | #2d5016 | rgb(58,46,38) | needs its own check |
+
+**B — ROUTING: the attribute EXISTS and the value still did not land (1).**
+`sgs-card-grid` `border-radius` draft `12px` → clone `18px`, and the block DOES
+declare `cardRadius`. This is the one genuine converter defect in the eleven and
+the only one worth converter time.
+
+**C — PROBE ARTEFACT, my own (1).** `sgs-team-member` `object-fit: cover` → `fill`.
+In the DRAFT `.sgs-team-member__photo` is the `<img>` itself
+(`conformance/sgs-team-member.html:9`); in the CLONE it is a wrapper `<div>`
+(`render.php:275,283`) and the real image is `.sgs-team-member__photo img`, which
+`style.css:46` correctly sets to `object-fit:cover`. So the rendered image is
+right; the probe compared the draft's `<img>` against the clone's `<div>`, where
+`object-fit` does not apply and reports its initial value `fill`.
+
+**The limitation this exposes in Task 1's own work:** matching by BEM class alone
+assumes the same token denotes the same KIND of element on both sides. When the
+draft's node and the clone's node carry the same class but different TAG names,
+the comparison can be structural rather than a transfer failure. **Follow-up: the
+probe should carry the draft's tag name and flag a tag mismatch rather than
+scoring it**, otherwise this class reads as a defect forever. Roughly 1 in 11
+here — not fatal, but it must not be quoted as fidelity.
+
+**Consequence for `--with-landed`:** still do NOT arm it. Of 11, eight are GAPs
+that no converter change can fix and one is a measurement artefact. Arming a hard
+fail on WRITTEN-not-LANDED today would block every build on work the converter
+cannot do.
+
 ## Known limits
 
 - `derived_selector` holds some non-element synthetic keys (`.sgs-hero__gap`,
