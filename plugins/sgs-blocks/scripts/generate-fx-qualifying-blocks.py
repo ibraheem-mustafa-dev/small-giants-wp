@@ -345,6 +345,61 @@ EXACT_MATCH_BLOCKS: dict[str, frozenset[str]] = {
     "image-sequence": frozenset(),
 }
 
+# A THIRD, ADDITIVE exception mechanism — added 2026-07-31 as a follow-up fix
+# after a QC pass caught a regression the split above introduced. Read this
+# alongside CONTAINER_BLOCK (same shape of problem) and EXACT_MATCH_BLOCKS
+# (a DIFFERENT shape — do not confuse the two, see the contrast note below).
+#
+# THE BUG THIS FIXES: `sgs/decorative-image` was correctly removed from
+# `SPEC_NAMED_SVG_BLOCKS` (2026-07-31 — it renders no inline SVG, so `draw`
+# and `morph` genuinely do not apply). But `compute_map()`'s panel-existence
+# gate is `if specific:` — a block enters the roster ONLY if at least one
+# effect with a real `requires` value (not 'none') matches its provisions.
+# `sgs/decorative-image` has NO other provision (no text/section/svg/
+# svg-subtree/track/item-set — verified: no RichText, no containerKind, no
+# bgSvgContent, no desktop-reachable overflow-x, no pairedFilter/draggable
+# support). So removing its ONLY specific provision didn't just drop `draw`/
+# `morph` (correct) — it zeroed `specific` entirely, which zeroed the WHOLE
+# roster entry, silently taking `motion-path` and `scrub` down with it even
+# though NEITHER requires an svg provision (motion-path requires='none';
+# scrub requires='none'). That is the general failure mode: a block's
+# membership in the overall roster was riding on ONE narrow provision instead
+# of being decided per-effect, so removing that provision looked like
+# removing the block.
+#
+# THE FIX: motion-path's own §2 "Exposure surface" column names
+# `sgs/decorative-image` explicitly as its Inspector target — this is the
+# SAME kind of spec-cited-but-structurally-undetectable fact CONTAINER_BLOCK
+# already solves for pin-scrub/sgs/container. `requires='none'` (D427) means
+# motion-path is broadly available WHEREVER a panel already exists (see the
+# "WHY" note on `if specific:` below) but, correctly, cannot by itself CREATE
+# a panel anywhere — that "never creates the panel" behaviour is exactly what
+# a naive fix (e.g. just adding motion-path to EXACT_MATCH_BLOCKS) would
+# break for the other ~26 blocks that already host it as a permissive rider.
+# A row here instead means "this named block's panel is ALSO justified by
+# this specific effect, on top of whatever it already does everywhere else"
+# — additive, not an override, and the ONLY thing it changes for every OTHER
+# block is nothing.
+#
+# CONTRAST WITH EXACT_MATCH_BLOCKS: that mechanism means "this effect's
+# ENTIRE roster is this exact list, full stop" (image-sequence must NEVER
+# appear on any other block, so its normal requires-based route is disabled
+# everywhere via the `continue` after the check). This mechanism means "this
+# effect ALSO always panel-justifies these blocks, in addition to its normal
+# broad availability" — the two are not interchangeable, and using the wrong
+# one for motion-path would either restrict it to one block (wrong — D427
+# says the traveller can be any element) or restrict it nowhere (the bug
+# being fixed here).
+#
+# GENERALISES to "the next block anyone removes" (the review's own framing):
+# any future effect whose spec citation names a block that has no other
+# derivable provision gets a row here, so removing that block from an
+# unrelated provision list can never again silently zero its whole roster
+# entry for effects that have nothing to do with the removed provision.
+FORCED_PANEL_HOSTS: dict[str, frozenset[str]] = {
+    "motion-path": frozenset({"sgs/decorative-image"}),
+}
+
 
 def _load_block_jsons() -> dict[str, dict]:
     """block_slug -> parsed block.json contents, for every src/blocks/* block."""
@@ -644,7 +699,15 @@ def compute_map() -> dict[str, list[str]]:
                     specific.append(effect)
                 continue
             if requires == "none":
-                permissive.append(effect)
+                # FORCED_PANEL_HOSTS (additive, see its own module-level
+                # comment) — a spec-cited exception, same shape as
+                # CONTAINER_BLOCK: this named block's panel is ALSO justified
+                # by this specific effect, without disabling the effect's
+                # normal permissive (rides-along) route on every other block.
+                if block_slug in FORCED_PANEL_HOSTS.get(effect, frozenset()):
+                    specific.append(effect)
+                else:
+                    permissive.append(effect)
             elif requires in provisions:
                 specific.append(effect)
 

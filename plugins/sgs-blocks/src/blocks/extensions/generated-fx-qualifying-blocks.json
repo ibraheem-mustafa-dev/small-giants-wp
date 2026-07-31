@@ -34,6 +34,10 @@
 		"pin-scrub",
 		"scrub"
 	],
+	"sgs/decorative-image": [
+		"motion-path",
+		"scrub"
+	],
 	"sgs/gallery": [
 		"motion-path",
 		"scrub"

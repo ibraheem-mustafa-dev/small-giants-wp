@@ -10,7 +10,7 @@
  * values, edit the relevant block.json / stylesheet / seed-motion-fx-
  * registry.py, then re-run this generator.
  *
- * Blocks with at least one qualifying effect: 27
+ * Blocks with at least one qualifying effect: 28
  *
  * Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 + §7.
  *
@@ -44,6 +44,7 @@ function sgs_get_fx_qualifying_blocks() {
 			'sgs/container' => array( 'draw', 'horizontal-panel', 'motion-path', 'pin-scrub', 'scrub' ),
 			'sgs/counter' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
 			'sgs/cta-section' => array( 'draw', 'horizontal-panel', 'motion-path', 'pin-scrub', 'scrub' ),
+			'sgs/decorative-image' => array( 'motion-path', 'scrub' ),
 			'sgs/gallery' => array( 'motion-path', 'scrub' ),
 			'sgs/google-reviews' => array( 'motion-path', 'scrub' ),
 			'sgs/heading' => array( 'motion-path', 'scramble', 'scrub', 'split-reveal' ),
