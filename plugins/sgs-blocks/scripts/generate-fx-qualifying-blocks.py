@@ -205,6 +205,54 @@ WHAT COUNTS AS "PROVIDING" A REQUIREMENT (ground truth, not invented)
                 generic map anyway — see below).
 - 'none'     <- always satisfied (scrub, image-sequence).
 
+A SEPARATE, NON-`requires` TOKEN: 'panel' (follow-up fix, 2026-07-31)
+----------------------------------------------------------------------------
+'panel' is NOT a `requires` value any `fx_effects` row can hold — it never
+appears in the `requires` column and is never matched against an effect's
+`requires`. It exists purely to satisfy `compute_map()`'s panel-existence
+gate (`if specific or panel_forced:`) on behalf of a block that has NO
+`requires`-derivable provision at all but is still a legitimate fx-panel
+host by its own declared fact: `supports.sgs.fx.motionSurface === true`
+(read in `_block_provisions()` alongside `draggable`/`pairedFilter`).
+
+THE PROBLEM IT SOLVES: `motion-path` and `scrub` both have `requires='none'`
+— broadly available WHEREVER a panel already exists, but (deliberately)
+unable to CREATE a panel by themselves, because that is exactly what stops
+scrub alone putting a panel on all ~80 sgs/* blocks (see the "WHY" comment
+on the gate). A block whose ONLY qualifying effects are 'none'-requires ones
+therefore gets NO panel under the normal rule — `sgs/decorative-image` is
+the block that surfaced this (Spec 38 §2's MotionPath row names it
+explicitly as that effect's Inspector target, and §10 cites it as the
+reduced-motion reference implementation, yet it has zero text/section/svg/
+svg-subtree/track/item-set signal of its own). 'panel' is the block-owned
+escape hatch: declare `motionSurface: true`, and the gate treats that
+exactly like a real specific-requires match, without adding a fake "panel"
+entry to the generated effects list (`panel_forced` is a bare bool, kept
+separate from `specific`).
+
+HOW MANY OTHER BLOCKS ARE IN THE SAME LATENT STATE (computed 2026-07-31, via
+`_block_provisions()` over every `_load_block_jsons()` entry — recomputable
+any time, not a cached figure): of the 83 block.json files under src/blocks,
+49 currently resolve ZERO `requires`-derivable provisions — form fields,
+nav-menu, tabs, button, etc. All 49 correctly get no panel today, and
+continue to unless they come to declare `motionSurface`. Of the blocks that
+DO currently have ≥1 provision (and so DO get a panel), **19** have EXACTLY
+ONE provision category feeding their `specific` list (13 from 'text':
+sgs/counter, sgs/collapsible-text, sgs/heading, sgs/info-box, sgs/label,
+sgs/pricing-table, sgs/product-card, sgs/product-faq, sgs/quote,
+sgs/team-member, sgs/testimonial, sgs/text, sgs/whatsapp-cta; 6 from 'track':
+sgs/before-after, sgs/buybox, sgs/gallery, sgs/google-reviews, sgs/post-grid,
+sgs/trustpilot-reviews) — meaning removing that one category (the same shape
+of edit that caused this bug) would zero their panel entirely, same as
+`sgs/decorative-image` before this fix, UNLESS they also come to declare
+`motionSurface` or gain a second provision first. This is NOT a defect to
+pre-emptively patch for all 19 — most of them (all 13 'text' blocks) have a
+provision that is extremely unlikely to be removed the way `svg` was here
+(RichText is core to what those blocks ARE), so treating this as 19 open
+bugs would be over-fixing an unproven risk. Read it as "which blocks are
+currently a single provision-removal away from this same class of
+regression" — a fact worth knowing, not a queue of 19 follow-up tickets.
+
 STRUCTURAL SCOPE GATE (the task's Hard Constraint)
 ----------------------------------------------------------------------------
 Only `fx_effects` rows with scope IN ('block', 'element') are even considered
@@ -345,60 +393,21 @@ EXACT_MATCH_BLOCKS: dict[str, frozenset[str]] = {
     "image-sequence": frozenset(),
 }
 
-# A THIRD, ADDITIVE exception mechanism — added 2026-07-31 as a follow-up fix
-# after a QC pass caught a regression the split above introduced. Read this
-# alongside CONTAINER_BLOCK (same shape of problem) and EXACT_MATCH_BLOCKS
-# (a DIFFERENT shape — do not confuse the two, see the contrast note below).
-#
-# THE BUG THIS FIXES: `sgs/decorative-image` was correctly removed from
-# `SPEC_NAMED_SVG_BLOCKS` (2026-07-31 — it renders no inline SVG, so `draw`
-# and `morph` genuinely do not apply). But `compute_map()`'s panel-existence
-# gate is `if specific:` — a block enters the roster ONLY if at least one
-# effect with a real `requires` value (not 'none') matches its provisions.
-# `sgs/decorative-image` has NO other provision (no text/section/svg/
-# svg-subtree/track/item-set — verified: no RichText, no containerKind, no
-# bgSvgContent, no desktop-reachable overflow-x, no pairedFilter/draggable
-# support). So removing its ONLY specific provision didn't just drop `draw`/
-# `morph` (correct) — it zeroed `specific` entirely, which zeroed the WHOLE
-# roster entry, silently taking `motion-path` and `scrub` down with it even
-# though NEITHER requires an svg provision (motion-path requires='none';
-# scrub requires='none'). That is the general failure mode: a block's
-# membership in the overall roster was riding on ONE narrow provision instead
-# of being decided per-effect, so removing that provision looked like
-# removing the block.
-#
-# THE FIX: motion-path's own §2 "Exposure surface" column names
-# `sgs/decorative-image` explicitly as its Inspector target — this is the
-# SAME kind of spec-cited-but-structurally-undetectable fact CONTAINER_BLOCK
-# already solves for pin-scrub/sgs/container. `requires='none'` (D427) means
-# motion-path is broadly available WHEREVER a panel already exists (see the
-# "WHY" note on `if specific:` below) but, correctly, cannot by itself CREATE
-# a panel anywhere — that "never creates the panel" behaviour is exactly what
-# a naive fix (e.g. just adding motion-path to EXACT_MATCH_BLOCKS) would
-# break for the other ~26 blocks that already host it as a permissive rider.
-# A row here instead means "this named block's panel is ALSO justified by
-# this specific effect, on top of whatever it already does everywhere else"
-# — additive, not an override, and the ONLY thing it changes for every OTHER
-# block is nothing.
-#
-# CONTRAST WITH EXACT_MATCH_BLOCKS: that mechanism means "this effect's
-# ENTIRE roster is this exact list, full stop" (image-sequence must NEVER
-# appear on any other block, so its normal requires-based route is disabled
-# everywhere via the `continue` after the check). This mechanism means "this
-# effect ALSO always panel-justifies these blocks, in addition to its normal
-# broad availability" — the two are not interchangeable, and using the wrong
-# one for motion-path would either restrict it to one block (wrong — D427
-# says the traveller can be any element) or restrict it nowhere (the bug
-# being fixed here).
-#
-# GENERALISES to "the next block anyone removes" (the review's own framing):
-# any future effect whose spec citation names a block that has no other
-# derivable provision gets a row here, so removing that block from an
-# unrelated provision list can never again silently zero its whole roster
-# entry for effects that have nothing to do with the removed provision.
-FORCED_PANEL_HOSTS: dict[str, frozenset[str]] = {
-    "motion-path": frozenset({"sgs/decorative-image"}),
-}
+# NOTE on a mechanism that was tried here and REJECTED (2026-07-31, same
+# day): a `FORCED_PANEL_HOSTS: dict[str, frozenset[str]]` hardcoded
+# effect->block map briefly lived at this exact spot as a follow-up fix for
+# the bug described at `_block_provisions()`'s `motionSurface` read (below)
+# and at `compute_map()`'s panel gate. It was correctly rejected: it was a
+# second hardcoded lookup a block author would never find (R-31-1), and it
+# directly contradicted the `providesNatively` precedent two paragraphs
+# below it in this same file — "a declaration the block OWNS", not a
+# per-block carve-out in the generator. The actual fix lives where every
+# other block-owned fx fact lives: `supports.sgs.fx.*` in the block's OWN
+# block.json, read by `_block_provisions()` alongside `draggable` and
+# `pairedFilter` (see `motionSurface` there), exactly like
+# `sgs/decorative-image`'s own declaration now does. Do not reintroduce a
+# script-side per-block map for this class of problem — extend the
+# `fx_supports` read instead.
 
 
 def _load_block_jsons() -> dict[str, dict]:
@@ -617,6 +626,32 @@ def _block_provisions(
     if fx_supports.get("pairedFilter") is True:
         provisions.add("item-set")
 
+    # 'panel' — supports.sgs.fx.motionSurface (2026-07-31, follow-up fix,
+    # same idiom as `draggable`/`pairedFilter` immediately above). MEANS: this
+    # block's own root is a legitimate target for broadly-available
+    # (`requires='none'`) element/block-scope fx effects, even though it has
+    # no text/section/svg/svg-subtree/track/item-set signal of its own —
+    # e.g. a purely positioned/decorative surface with no content shape.
+    #
+    # WHY THIS EXISTS (not a bespoke fix — read `compute_map()`'s `if
+    # specific or panel_forced:` gate for the mechanism this feeds): a block
+    # whose ONLY qualifying effects are `requires='none'` ones (motion-path,
+    # scrub) gets NO panel at all under the normal rule, because a 'none'
+    # effect is deliberately never allowed to CREATE a panel by itself (see
+    # that gate's own "WHY" comment — this is what stops all ~80 sgs/* blocks
+    # acquiring a panel from `scrub` alone). A block with a genuinely
+    # spec-cited reason to be a motion target regardless declares
+    # `motionSurface: true` itself, exactly the way `sgs/responsive-logo`
+    # declares `providesNatively` for the OPPOSITE direction (excluding an
+    # effect it already owns natively) — a fact the BLOCK owns, read here,
+    # never a slug carve-out in this script (R-31-1/R-31-9). A rejected
+    # earlier attempt at this fix (`FORCED_PANEL_HOSTS`, a hardcoded
+    # effect->block dict living in this script) is documented and removed at
+    # the `EXACT_MATCH_BLOCKS` constant above — read that note before
+    # reaching for a script-side map again.
+    if fx_supports.get("motionSurface") is True:
+        provisions.add("panel")
+
     return provisions
 
 
@@ -699,17 +734,20 @@ def compute_map() -> dict[str, list[str]]:
                     specific.append(effect)
                 continue
             if requires == "none":
-                # FORCED_PANEL_HOSTS (additive, see its own module-level
-                # comment) — a spec-cited exception, same shape as
-                # CONTAINER_BLOCK: this named block's panel is ALSO justified
-                # by this specific effect, without disabling the effect's
-                # normal permissive (rides-along) route on every other block.
-                if block_slug in FORCED_PANEL_HOSTS.get(effect, frozenset()):
-                    specific.append(effect)
-                else:
-                    permissive.append(effect)
+                permissive.append(effect)
             elif requires in provisions:
                 specific.append(effect)
+
+        # 'panel' — a BLOCK-OWNED opt-in (supports.sgs.fx.motionSurface, read
+        # in `_block_provisions()` alongside `draggable`/`pairedFilter`), NOT
+        # an effect name. It is deliberately kept OUT of `specific` (which is
+        # spread into `offered` below and would otherwise leak a fake "panel"
+        # entry into the generated roster as if it were a real effect) —
+        # instead it satisfies the panel-existence GATE on its own line,
+        # exactly like a real specific-requires match would, for a block that
+        # has no derivable structural provision at all but is still a
+        # legitimate host per its own declared fact.
+        panel_forced = "panel" in provisions
 
         # A `requires='none'` effect adds NO BLOCK OF ITS OWN — it is offered
         # wherever the panel already exists, and never creates the panel.
@@ -727,7 +765,16 @@ def compute_map() -> dict[str, list[str]]:
         # The qualifier "with the fx panel exposed" is the operative clause: the
         # effect's availability is CONDITIONAL on the panel existing, so it
         # cannot be the thing that justifies the panel.
-        if specific:
+        #
+        # `panel_forced` (see above) is the ONE other thing allowed to satisfy
+        # this gate: a block-owned declaration (`supports.sgs.fx.
+        # motionSurface`), not a 'none'-requires effect and not a script-side
+        # per-block list. It still only WIDENS which blocks get a panel; it
+        # never widens which EFFECTS a block with no specific match receives
+        # (`offered` below is still `specific + permissive`, and `specific`
+        # contains real effect names only — `panel_forced` is a bool, not an
+        # entry in that list).
+        if specific or panel_forced:
             offered = sorted(specific + permissive)
 
             # NATIVE-CAPABILITY EXCLUSION (added 2026-07-31, Wave C).
