@@ -1,0 +1,1245 @@
+{
+  "tool": "attribution_ground_truth",
+  "method": "soup.select() CSS resolution + DOM ancestry \u2014 deliberately NOT class-set membership, so it can falsify the code under test",
+  "fixtures_in_control": [
+    "mamas-trust-bar-real",
+    "rt-centred-maxwidth",
+    "rt-pseudo-before",
+    "sgs-team-member"
+  ],
+  "verdict_totals": {
+    "OWNED": 90,
+    "OWNED-PSEUDO": 6,
+    "STATE-CONDITIONAL": 2
+  },
+  "fixtures": {
+    "rt-centred-maxwidth": {
+      "section_count": 1,
+      "section_ids": [
+        "section-1-container"
+      ],
+      "section_collisions": [],
+      "row_count": 27,
+      "rows": [
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "align-items",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "gap",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "grid-template-columns",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "margin",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "max-width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "padding",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "gap",
+          "tier": "Mobile",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "grid-template-columns",
+          "tier": "Mobile",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid",
+          "property": "padding",
+          "tier": "Mobile",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member-grid__item",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]",
+            "[document]/section[0]/div[1]",
+            "[document]/section[0]/div[2]",
+            "[document]/section[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__item",
+          "property": "border-radius",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]",
+            "[document]/section[0]/div[1]",
+            "[document]/section[0]/div[2]",
+            "[document]/section[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__item",
+          "property": "padding",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]",
+            "[document]/section[0]/div[1]",
+            "[document]/section[0]/div[2]",
+            "[document]/section[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__item",
+          "property": "text-align",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]",
+            "[document]/section[0]/div[1]",
+            "[document]/section[0]/div[2]",
+            "[document]/section[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__name",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[0]",
+            "[document]/section[0]/div[1]/p[0]",
+            "[document]/section[0]/div[2]/p[0]",
+            "[document]/section[0]/div[3]/p[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__name",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[0]",
+            "[document]/section[0]/div[1]/p[0]",
+            "[document]/section[0]/div[2]/p[0]",
+            "[document]/section[0]/div[3]/p[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__name",
+          "property": "font-weight",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[0]",
+            "[document]/section[0]/div[1]/p[0]",
+            "[document]/section[0]/div[2]/p[0]",
+            "[document]/section[0]/div[3]/p[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__photo",
+          "property": "border-radius",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/img[0]",
+            "[document]/section[0]/div[1]/img[0]",
+            "[document]/section[0]/div[2]/img[0]",
+            "[document]/section[0]/div[3]/img[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__photo",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/img[0]",
+            "[document]/section[0]/div[1]/img[0]",
+            "[document]/section[0]/div[2]/img[0]",
+            "[document]/section[0]/div[3]/img[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__photo",
+          "property": "height",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/img[0]",
+            "[document]/section[0]/div[1]/img[0]",
+            "[document]/section[0]/div[2]/img[0]",
+            "[document]/section[0]/div[3]/img[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__photo",
+          "property": "margin",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/img[0]",
+            "[document]/section[0]/div[1]/img[0]",
+            "[document]/section[0]/div[2]/img[0]",
+            "[document]/section[0]/div[3]/img[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__photo",
+          "property": "object-fit",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/img[0]",
+            "[document]/section[0]/div[1]/img[0]",
+            "[document]/section[0]/div[2]/img[0]",
+            "[document]/section[0]/div[3]/img[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__photo",
+          "property": "width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/img[0]",
+            "[document]/section[0]/div[1]/img[0]",
+            "[document]/section[0]/div[2]/img[0]",
+            "[document]/section[0]/div[3]/img[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__role",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[1]",
+            "[document]/section[0]/div[1]/p[1]",
+            "[document]/section[0]/div[2]/p[1]",
+            "[document]/section[0]/div[3]/p[1]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__role",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[1]",
+            "[document]/section[0]/div[1]/p[1]",
+            "[document]/section[0]/div[2]/p[1]",
+            "[document]/section[0]/div[3]/p[1]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-team-member-grid__role",
+          "property": "margin-top",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-container",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[1]",
+            "[document]/section[0]/div[1]/p[1]",
+            "[document]/section[0]/div[2]/p[1]",
+            "[document]/section[0]/div[3]/p[1]"
+          ],
+          "match_count": 4
+        }
+      ]
+    },
+    "rt-pseudo-before": {
+      "section_count": 1,
+      "section_ids": [
+        "section-1-info-box"
+      ],
+      "section_collisions": [],
+      "row_count": 23,
+      "rows": [
+        {
+          "selector": ".sgs-info-box",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box",
+          "property": "overflow",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box",
+          "property": "padding",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box",
+          "property": "position",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box",
+          "property": "padding",
+          "tier": "Mobile",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box::before",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED-PSEUDO",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]::before"
+          ],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-info-box::before",
+          "property": "content",
+          "tier": "Base",
+          "verdict": "OWNED-PSEUDO",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]::before"
+          ],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-info-box::before",
+          "property": "inset",
+          "tier": "Base",
+          "verdict": "OWNED-PSEUDO",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]::before"
+          ],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-info-box::before",
+          "property": "pointer-events",
+          "tier": "Base",
+          "verdict": "OWNED-PSEUDO",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]::before"
+          ],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-info-box::before",
+          "property": "position",
+          "tier": "Base",
+          "verdict": "OWNED-PSEUDO",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]::before"
+          ],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-info-box::before",
+          "property": "z-index",
+          "tier": "Base",
+          "verdict": "OWNED-PSEUDO",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]::before"
+          ],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-info-box__heading",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/h2[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__heading",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/h2[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__heading",
+          "property": "font-weight",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/h2[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__heading",
+          "property": "line-height",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/h2[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__heading",
+          "property": "font-size",
+          "tier": "Mobile",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/h2[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__inner",
+          "property": "margin",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__inner",
+          "property": "max-width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__inner",
+          "property": "position",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__inner",
+          "property": "z-index",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__text",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__text",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-info-box__text",
+          "property": "margin-top",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-info-box",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/p[0]"
+          ],
+          "match_count": 1
+        }
+      ]
+    },
+    "mamas-trust-bar-real": {
+      "section_count": 1,
+      "section_ids": [
+        "section-1-trust-bar"
+      ],
+      "section_collisions": [],
+      "row_count": 32,
+      "rows": [
+        {
+          "selector": ".sgs-trust-bar",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar",
+          "property": "padding",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__badge",
+          "property": "align-items",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]",
+            "[document]/section[0]/div[0]/div[1]",
+            "[document]/section[0]/div[0]/div[2]",
+            "[document]/section[0]/div[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__badge",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]",
+            "[document]/section[0]/div[0]/div[1]",
+            "[document]/section[0]/div[0]/div[2]",
+            "[document]/section[0]/div[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__badge",
+          "property": "gap",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]",
+            "[document]/section[0]/div[0]/div[1]",
+            "[document]/section[0]/div[0]/div[2]",
+            "[document]/section[0]/div[0]/div[3]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__badge[data-pending=\"true\"]",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "STATE-CONDITIONAL",
+          "owning_section": null,
+          "probe_targets": [],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-trust-bar__badge[hidden]",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "STATE-CONDITIONAL",
+          "owning_section": null,
+          "probe_targets": [],
+          "match_count": 0
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "align-items",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "border-radius",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "box-shadow",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "flex-shrink",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "height",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "justify-content",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon",
+          "property": "width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon svg",
+          "property": "fill",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon svg",
+          "property": "height",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon svg",
+          "property": "stroke",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon svg",
+          "property": "stroke-width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__icon svg",
+          "property": "width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[1]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[2]/span[0]/svg[0]",
+            "[document]/section[0]/div[0]/div[3]/span[0]/svg[0]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__inner",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__inner",
+          "property": "gap",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__inner",
+          "property": "grid-template-columns",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__inner",
+          "property": "margin",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__inner",
+          "property": "max-width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__inner",
+          "property": "grid-template-columns",
+          "tier": "Other:(min-width: 600px)",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-trust-bar__text",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[1]",
+            "[document]/section[0]/div[0]/div[1]/span[1]",
+            "[document]/section[0]/div[0]/div[2]/span[1]",
+            "[document]/section[0]/div[0]/div[3]/span[1]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__text",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[1]",
+            "[document]/section[0]/div[0]/div[1]/span[1]",
+            "[document]/section[0]/div[0]/div[2]/span[1]",
+            "[document]/section[0]/div[0]/div[3]/span[1]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__text",
+          "property": "font-weight",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[1]",
+            "[document]/section[0]/div[0]/div[1]/span[1]",
+            "[document]/section[0]/div[0]/div[2]/span[1]",
+            "[document]/section[0]/div[0]/div[3]/span[1]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__text",
+          "property": "line-height",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[1]",
+            "[document]/section[0]/div[0]/div[1]/span[1]",
+            "[document]/section[0]/div[0]/div[2]/span[1]",
+            "[document]/section[0]/div[0]/div[3]/span[1]"
+          ],
+          "match_count": 4
+        },
+        {
+          "selector": ".sgs-trust-bar__text",
+          "property": "font-size",
+          "tier": "Desktop",
+          "verdict": "OWNED",
+          "owning_section": "section-1-trust-bar",
+          "probe_targets": [
+            "[document]/section[0]/div[0]/div[0]/span[1]",
+            "[document]/section[0]/div[0]/div[1]/span[1]",
+            "[document]/section[0]/div[0]/div[2]/span[1]",
+            "[document]/section[0]/div[0]/div[3]/span[1]"
+          ],
+          "match_count": 4
+        }
+      ]
+    },
+    "sgs-team-member": {
+      "section_count": 1,
+      "section_ids": [
+        "section-1-team-member"
+      ],
+      "section_collisions": [],
+      "row_count": 16,
+      "rows": [
+        {
+          "selector": ".sgs-team-member",
+          "property": "background",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member",
+          "property": "border-radius",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member",
+          "property": "padding",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member",
+          "property": "text-align",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__name",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/h3[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__name",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/h3[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__name",
+          "property": "font-weight",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/h3[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__photo",
+          "property": "border-radius",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/img[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__photo",
+          "property": "display",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/img[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__photo",
+          "property": "height",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/img[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__photo",
+          "property": "margin",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/img[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__photo",
+          "property": "object-fit",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/img[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__photo",
+          "property": "width",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/img[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__role",
+          "property": "color",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/p[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__role",
+          "property": "font-size",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/p[0]"
+          ],
+          "match_count": 1
+        },
+        {
+          "selector": ".sgs-team-member__role",
+          "property": "margin-top",
+          "tier": "Base",
+          "verdict": "OWNED",
+          "owning_section": "section-1-team-member",
+          "probe_targets": [
+            "[document]/section[0]/p[0]"
+          ],
+          "match_count": 1
+        }
+      ]
+    }
+  }
+}
