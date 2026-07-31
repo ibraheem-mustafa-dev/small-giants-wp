@@ -1,7 +1,7 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-07-30
+last_updated: 2026-07-31
 note: "THE single living-status doc. Status is REPLACED here each session, never appended. History → dated snapshots in memory/session-YYYY-MM-DD*.md (the ledger-rotate Stop hook snapshots automatically past the cap but NEVER edits this file — the sweep is manual). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep this file lean (< 24,576 bytes)."
 ---
 
@@ -45,8 +45,12 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > **Task 2 BUILT, harness-green (25/25), deliberately NOT COMMITTED** — the visual-diff gate wants a
 > deploy first. **Do not revert `nav-menu/{render.php,edit.js,block.json}` or `mega-disclosure.js`.**
 >
-> **⛔ Task 3 BLOCKED, not by Track 1** — `P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS` stops
-> EVERY deploy by EVERY track (canary post 2085, `sgs/buybox` + `sgs/google-reviews`). Track 1 has
+> **✅ RESOLVED SAME SESSION (2026-07-31, D431) — was: Task 3 BLOCKED, not by Track 1.**
+> `P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS` stopped EVERY deploy by EVERY track (canary
+> post 2085, `sgs/buybox` + `sgs/google-reviews`). **The cause was the motion track's own roster
+> fixture** — four attributes it invented, two of them reverted from buybox earlier the same
+> session. Fixture rebuilt, page recreated as **2086**, gate back to `0 NEW HIGH` /
+> `oldshape-audit PASS`. Deploys are open. Track 1 has
 > zero findings of its own.
 >
 
@@ -136,7 +140,7 @@ researched.
 ⚠ Stale DB row (inert): `fx_effects.scroll-smoother` still says tier G / ScrollSmoother; D422 made
 it Tier H / Lenis. Step 20 of the Wave D plan retires it.
 
-**Canaries:** `/motion-canary-wave-c/` (page 2083, effects) · `/motion-roster-canary/` (page 2085,
+**Canaries:** `/motion-canary-wave-c/` (page 2083, effects) · `/motion-roster-canary/` (page 2086,
 roster first-paint). Harnesses: `scripts/motion-qa/probe-wave-c.mjs` + `probe-wave-c-editor.mjs`,
 both self-verdicting (exit 1 fail, 2 inconclusive) and cache-busting.
 

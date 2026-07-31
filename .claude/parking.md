@@ -56,26 +56,6 @@ parked-work descriptions, which is what a parking file is for.
 **Trigger:** next decisions.md sweep, or when the D-range index is next rebuilt. Archive by
 D-range; do not delete.
 
-### P-CANARY-2085-UNDECLARED-ATTRS-BLOCK-ALL-DEPLOYS — stored content strands attrs; oldshape-audit refuses every deploy
-
-**Status:** OPEN · **Bucket:** tooling · **Parked:** 2026-07-31
-
-`build-deploy.py --target sandybrown` ABORTS at the `oldshape-audit` gate with 8 NEW HIGH findings,
-all on canary post **2085**, all on two blocks: `sgs/buybox` carrying `dataSource` / `dragToScroll` /
-`dragMomentum` (its block.json declares NONE of them) and `sgs/google-reviews` carrying `dataSource`
-(it declares the two drag attrs but not `dataSource`). WP silently discards an undeclared attr and
-the next editor save DELETES it from post_content — the D338 class — so the gate is RIGHT to refuse.
-
-**This blocks ANY deploy to the canary by ANY track, not just the one that created it.** Track 1's
-nav-dropdown work (Task 2, built + harness-green 2026-07-31) is stalled behind it with **zero**
-findings of its own — verified: `grep -c nav-menu` over the audit output returns 0, and the build
-altered no generated roster.
-
-Fix is one of: migrate the stored shape via `scripts/wp-migrate-oldshape-blocks.js` (dry-run by
-default), declare the attrs on the two blocks if they are genuinely intended, or baseline them WITH a
-register reference if accepted. Owned by whoever authored page 2085's content (the motion track —
-2085 sits beside the Wave C canary 2075), not by Track 1.
-
 ### P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR — canary fixture pages carry unopenable blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-30
 
