@@ -22,23 +22,19 @@ build (below, D426–D427) and a **Track-1 verification session (D428)**.
 > Kept there, not inline, because both sessions edited this file today. **Picking up Track 1? Read
 > that file first — it is the authority and carries the whole next-session orchestration plan.**
 >
-> **Headline:** 5 commits pushed. Two gates that could never fail now genuinely fail (feature-parity;
-> the D101 ratchet, which compared a count and now compares identifier sets). 30 lost STOPs recovered
-> from `memory/` — 123→169, additive only. Spec 31 C2 measurable at last: 499 declared / 21.2%
-> attributed, with a pre-image, a bucket decomposition, and a **failing ground-truth control**
-> (73 of 96 provably-owned rows unattributed).
+> **Headline:** 5 commits. Two gates that could never fail now do (feature-parity; the D101 ratchet
+> — compared a count, now compares identifier sets). 30 lost STOPs recovered, 123→169 additive only.
+> Spec 31 C2 measurable at last: 499 declared / 21.2% attributed, with a pre-image and a **failing
+> ground-truth control** (73 of 96 provably-owned rows unattributed).
 >
-> **Three corrections there overturn earlier claims — do not re-derive:** the Phase-2c "missing
-> resolver" does NOT exist (it is `block_attributes.derived_selector` — Bean caught this);
-> `underlineOffset` is `css_property='bottom'`, never a mis-seed; the BEM-regex diagnosis was wrong
-> (13 cells, not 380).
+> **Three corrections — do NOT re-derive:** the Phase-2c "missing resolver" does not exist (it is
+> `block_attributes.derived_selector` — Bean caught this); `underlineOffset` is `bottom`, never a
+> mis-seed; the BEM-regex diagnosis was wrong (13 cells, not 380).
 >
-> **⛔ `src/blocks/nav-menu/render.php` holds UNCOMMITTED Track-1 work** — the submenu walker,
-> written + tested, held back because the visual-diff gate correctly wants a deploy first. Do NOT
-> revert or stash it.
+> **⛔ `src/blocks/nav-menu/render.php` holds UNCOMMITTED work** — the submenu walker, written +
+> tested, held back because the visual-diff gate correctly wants a deploy first. Do not revert it.
 >
-> **Final Track-1 task (too large for that session): Spec 35 Part L rollout** — `group` 4/81,
-> `StateToggleControl` 3/81, `hideExtensions` 26/81, ToolsPanel 20/81. Bean's ruling: stays in living
+> **Final Track-1 task: Spec 35 Part L rollout** (4–32% applied). Bean's ruling: stays in living
 > status, NOT `parking.md`. Brief = Task 5 in that record.
 
 **What changed for you today — the motion toy box is now CHECKED WITH EYES ON A REAL PAGE, and
