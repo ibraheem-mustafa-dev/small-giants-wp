@@ -81,9 +81,35 @@ async function bootDraggableLayer( root, stage ) {
 		return;
 	}
 
+	// `webpackIgnore` is load-bearing, not decorative (proven against the
+	// installed webpack 5.105.2, `testimonial-slider/view.js` — same fix,
+	// same root cause). With `externalsType: 'module'` + real ESM output,
+	// webpack's `ExternalModule.build()` always marks an externalised module
+	// `buildMeta.async = false` regardless of whether the request came from a
+	// static `import` or a dynamic `import()` — the async/sync decision is
+	// keyed on `buildInfo.javascriptModule`, never on the call site. That
+	// collapses this call into a STATIC top-level import at compile time
+	// (wrapped in a `Promise.resolve().then()` that fakes async shape but
+	// resolves before any code runs), so module linking happens before
+	// `isEditorSurface()` or any `.catch()` can run — which is exactly why
+	// the editor threw an uncaught `Failed to resolve module specifier
+	// "@sgs/gsap-draggable"` even though this call sits behind the
+	// `isEditorSurface()` early-return above. Scoping the externals callback
+	// on `dependencyType` was investigated and disproved: both static and
+	// dynamic ESM imports report `dependency.category === 'esm'`, so there is
+	// no config-level fix. `webpackIgnore: true` is the one documented escape
+	// hatch — it tells webpack to leave this exact `import()` expression
+	// completely untouched, so the specifier survives verbatim to the
+	// browser, which resolves it natively (and asynchronously, catchably)
+	// via the import map WordPress prints for registered script modules. The
+	// specifiers here MUST already be the EXTERNALISED module IDs
+	// (`@sgs/gsap-draggable`, registered in `class-sgs-motion-registry.php`'s
+	// `GSAP_MODULE_IDS`/`GSAP_PLUGIN_MODULE_IDS` maps), not the bare `gsap/*`
+	// path — with webpackIgnore, webpack's `gsap/*` → `@sgs/gsap-*` externals
+	// rewrite never runs, so there is no translation step.
 	const [ { Draggable }, { tierG } ] = await Promise.all( [
-		import( 'gsap/Draggable' ),
-		import( '@sgs/motion-provider' ),
+		import( /* webpackIgnore: true */ '@sgs/gsap-draggable' ),
+		import( /* webpackIgnore: true */ '@sgs/motion-provider' ),
 	] );
 
 	// ⚠ Load-bearing (Spec 38 provider.js docblock): Draggable looks core up

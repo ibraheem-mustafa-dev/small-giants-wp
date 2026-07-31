@@ -11,6 +11,27 @@
 .wp-block-sgs-before-after {
 	position: relative;
 	overflow: hidden;
+	/*
+	 * `overflow: hidden` establishes a new block-formatting context (needed
+	 * so the clip-path'd `__after-wrap` never bleeds outside the frame). A
+	 * BFC-root box that lands vertically alongside an uncleared `float`
+	 * (e.g. a preceding `alignleft`/`alignright` image — a normal editorial
+	 * pattern) is SHRUNK to fit the remaining space beside the float instead
+	 * of flowing full-width below it, per CSS 2.1 §9.5. Proven live
+	 * 2026-07-31 on the Wave C canary (page 2083): two `alignleft`
+	 * `sgs-responsive-logo` blocks (240px each, 480px combined) sit just
+	 * above the first before-after instance; its BFC-root top edge landed
+	 * within a fraction of a pixel of the floats' bottom edge, and its width
+	 * measured exactly `content-area-width − 480px` at every viewport where
+	 * that vertical coincidence held (767–900px on this page's specific
+	 * copy) — a second instance of the SAME block, same attributes, a few
+	 * hundred pixels further down the page (below the float), rendered
+	 * full-width throughout. Not a media-query rule (none matched either
+	 * instance) and not a per-block override — `clear: both` makes every
+	 * instance always flow below any preceding float, which is what a
+	 * comparison slider should do regardless of viewport width.
+	 */
+	clear: both;
 	--sgs-before-after-position: 50%;
 }
 
