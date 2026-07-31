@@ -14,28 +14,28 @@ note: "THE single living-status doc. Status is REPLACED here each session, never
 **What this is.** One file that answers "where are we and what's next", so a fresh session (or you)
 gets ONE true answer instead of three drifting ones.
 
-**Where things stand (2026-07-30, close of the motion Wave B session).** Three tracks are live and
-independent — pick one, they do not block each other.
+**Where things stand (2026-07-31, close of the motion Wave C build session).** Three tracks are
+live and independent — pick one, they do not block each other.
 
-**What changed for you today — the motion wave is FINISHED, both halves, and you signed both off.**
-**Smooth scrolling:** live, off by default, its own **SGS → Motion** screen, strength 3. Touch
-smoothing was built at your request, you rejected it on a real phone, it is off and labelled so
-nobody re-suggests it. Built with a **different library than planned** (the planned one puts the
-page in a moving box, which silently breaks your sticky header — that and everything existing only
-to dodge it were dropped; your header was untouched and re-tested). D422.
-**Page transitions:** pages blend instead of jumping. Off by default, a different look per page type
-if you want, **nothing extra downloaded** (the browser does it), and never shown to anyone whose
-device asks for reduced motion. D424. You flagged the shop page feeling slower — measured, it is
-**not a bug**: that page is only three-quarters of a screen long, so you hit the bottom almost
-immediately and feel the soft ending. It sorts itself out as products are added.
+**What changed for you today — the motion "toy box" is BUILT and on the test site, but NOT yet
+checked with eyes.** Six premium effects now exist: draggable carousels with momentum, a
+brand-new drag-the-divider before/after image comparison block, SVG logos that draw themselves
+(replacing an old library — one dependency gone), shape-morphing, scrambling text, and a
+scroll-scrubbed image sequence with a tool that turns a video into the frames it needs. **None of
+it needed a new library** — they all came free inside the animation engine we already had, which
+also kills the "needs a paid membership" blocker that parked SVG morphing for months.
 
-**Still waiting, none built:**
-1. **Header stacking on mobile** — you raised this again today. It is **diagnosed and signed off but
-   never built** (D420): a rule stacks the header below 767px even when everything fits. Still a
-   visible defect on every header.
-2. **Drawer architecture gate** — your objections recorded in full;
-   `plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md` · D421.
-3. **Track 1 verification debt** — code exists, proof does not (D423).
+**Two honest limits, both deliberate:**
+1. **Built ≠ verified.** Nothing has been watched moving in a browser yet. A safety gate is
+   correctly refusing to let the block changes be committed until real before/after screenshots
+   exist. I did not switch that gate off — doing so would also have switched off five unrelated
+   ones that were passing.
+2. **One planned effect cannot be built as written.** "Grids that re-shuffle smoothly when
+   filtered" assumed a link between the filter box and the card grid that does not exist in the
+   code. You asked for it to stay live as a design question rather than be shelved.
+
+**Still waiting, none built:** header stacking on mobile (D420, still a visible defect on every
+header) · drawer architecture gate (D421) · the two motion design gates above.
 
 ---
 
@@ -45,33 +45,35 @@ immediately and feel the soft ending. It sorts itself out as products are added.
 > `reports/2026-07-30-horizontal-panel-travel-and-reduced-motion.md` holds transcribed readings.
 > Re-runnable, not reproducible.
 
-### Track 3 — Spec 38 motion: **WAVE A CLOSED** (D414–D417) · **WAVE B CLOSED 2026-07-30 (D422 + D424)**
+### Track 3 — Spec 38 motion: **A + B CLOSED** · **WAVE C BUILT + DEPLOYED 2026-07-31, NOT VERIFIED (D426)**
 
-`specs/38-SGS-MOTION-SYSTEM.md` is `active`. **Waves A + B CLOSED, owner-signed.** A: D414–D417. B:
-smooth scrolling via **Lenis, NOT ScrollSmoother** (D422) + **page transitions** (D424, `984f2944`).
-Records: `memory/session-2026-07-30-motion-wave{A-closeout,B-commit1,B-commit2}.md`.
+`specs/38-SGS-MOTION-SYSTEM.md` is `active`. A: D414–D417. B: Lenis + page transitions (D422/D424).
+**C: built, gate-green, deployed to sandybrown — browser verification NOT run.** Evidence:
+`reports/2026-07-31-motion-waveC-deploy-verification.md` (it states its own gaps up front).
+Commits `88c2be1a` (shared infra) + `a06bba92` (evidence). Block commits are **still blocked by the
+visual-diff gate, correctly** — `--no-verify` was NOT used and must not be.
 
-**Standing constraints (full text carried verbatim in the Wave C prompt's "Carried forward from
-Wave B" section — read it there before touching motion):** D407 / Spec 38 §4.2 SUPERSEDED, its build
-items **CANCELLED not deferred** (no wrapper filter, no header relocation, no per-tier edge rule, no
-`findStickyBreakingAncestor()` extension; Spec 37 FR-37-40 untouched) · **Tier H = CLOSED list,
-Lenis alone**, §1.2a test + a D per member — Wave C adds NO libraries · touch smoothing
-**REJECTED on a real phone**, do not re-propose without new device evidence · page transitions
-target the `root` pair and gate the **opt-in itself** under reduced motion.
+**Shipped in C:** Draggable roster (gallery + testimonial-slider) · NET-NEW `sgs/before-after` ·
+DrawSVG + **Vivus retired** (D408 discharged; `animationStyle` enum byte-identical, no
+`deprecated.js`) · ScrambleText · NET-NEW `sgs/image-sequence` + `scripts/image-sequence-prep.py`.
+**MorphSVG + MotionPath are RUNTIME-ONLY** — no client-reachable control (see gates below).
 
-**✅ OWNER SIGN-OFF 2026-07-30 (R-31-13) — fade + scroll confirmed.** His "shop page feels slower"
-report: measured, **no bug** — easing identical (500px/impulse both; 527 vs 514ms). Cause = 675px of
-scroll there vs 3,542px on the homepage, so you sit in the easing tail at once. **Do NOT lower the
-strength for it.** **Un-run:** Firefox (no support — plain navigation IS the fallback), Safari,
-hide-on-scroll × drawer via the SETTING, the 2rem slide edge.
+**NO NEW LIBRARY — Tier H closed list (§1.2a) untouched.** All six plugins ship inside the
+installed gsap 3.15.0 (Webflow acquisition freed the Club set); verified as real implementations,
+not membership stubs. **Parking P-10's deferral premise is dead.**
 
-**➡ NEXT MOTION SESSION = Wave C** — orchestration plan ready at
-`plans/2026-07-29-motion-wave-C-session-prompt.md` (refreshed 2026-07-30: shared-tree deploy hazard,
-Tier-H no-new-libraries rule, this session's verification traps). The Wave B prompt was DELETED at
-close — done work, and a stale prompt misdirects. C never depended on B.
+**⛔ FR-38-12 (Flip) CANNOT BE BUILT AS SPECIFIED — premise verified FALSE.** `sgs/filter-search`
+is `ancestor`-locked to a WooCommerce filter and narrows CHIP OPTIONS, emits no event;
+`sgs/card-grid` has no `view.js` and filters server-side. No client re-layout exists to animate.
+**Bean ruled: NOT parked — live design gate + research point.**
+
+**Carried from B (do NOT resurrect):** D407/§4.2 SUPERSEDED, build items CANCELLED · Tier H =
+Lenis alone · touch smoothing REJECTED on a real phone · transitions gate the opt-in itself.
 
 ⚠ Parked, not ours: `P-MOTION-CANARY-CONTAINERS-INVALID-IN-EDITOR` ·
 `P-FX-PANEL-UNGUARDED-BY-EVERY-CONTROL-GATE` · `/sgs-update` Stage 11 mega-* warnings.
+⚠ Stale DB row (Wave B residue, inert): `fx_effects.scroll-smoother` still says tier G /
+ScrollSmoother; D422 made it Tier H / Lenis. Nothing reads it for that purpose.
 
 ### Tracks 2 + 2b MERGE (Bean, 2026-07-29) — ONE nav/header/footer track; **STRATEGIC PLAN LANDED (D413)**
 
@@ -136,10 +138,11 @@ Parked follow-ons: `P-DRAWER-BURGER-MORPH-SYNC` · `P-DRAWER-TRIGGER-ANCHOR-JS` 
 `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` · `P-NAV-DRAWER-DUPLICATE-DEFAULT-REF` ·
 `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. None is GSAP.
 
-> **⭐ The Track-1 "one deploy unblocks four things" plan lives in the `## NEXT SESSION` section
-> below — it was duplicated here verbatim and the copy was removed 2026-07-30 (de-dup only, no
-> content lost; the LEDGER was over its byte cap).** Read before calling any Track-1 item done:
-> `reports/2026-07-30-track1-verification-audit.md` (3 findings WITHDRAWN there — don't re-raise).
+> **⭐ Track-1's open work is NOT in the NEXT SESSION section any more** — that section now holds
+> motion Wave C (2026-07-31). Track 1's remaining items live in the Track 1b / 1c cells directly
+> below, and the four-task plan they came from is recorded in **D425** plus
+> `reports/2026-07-30-track1-verification-audit.md` (which records three findings as WITHDRAWN —
+> do not re-raise them). Read that report before calling any Track-1 item done.
 
 ### Track 1b — Spec 35: component layer + Part-K gate complete; **editor verification CLOSED 2026-07-30**
 
@@ -254,129 +257,79 @@ live: `cta-section:333`) — the old "COMPLETE bar 5 block-fixes" line is SUPERS
 
 ---
 
-## NEXT SESSION — Track 1 points 3 + 4, then the nav submenu build
+## NEXT SESSION — finish verifying motion Wave C, then its two design gates
 
-**Read FIRST:** **D425** (what closed and the two durable lessons) +
-`reports/2026-07-30-track1-verification-audit.md` (the register — records three findings as
-WITHDRAWN; do not re-raise them).
+**Read FIRST:** **D426** + `reports/2026-07-31-motion-waveC-deploy-verification.md` (it states
+what it does NOT prove, at the top — trust that list). Spec 38 IN FULL before any motion edit.
 
-### CLOSED 2026-07-30 (`4d3b598e`, `9cedd022`, `0224173c`)
+**You are the SGS framework engineer.** Wave C is BUILT, gate-green and DEPLOYED to sandybrown;
+what remains is proving it works and closing two design questions Bean owns. The uncommitted block
+work is on disk and building green — do not rebuild it, verify it.
 
-- **Point 1 — the editor.** 22 Spec-35-wave blocks opened in the REAL block editor: inspector
-  renders 7–23 panels each, zero crashes. Retires audit finding 1b-1. D372's BoxControl check
-  discharged (limit: the 20px empty-default path was not exercised).
-- **Point 2 — FR-32 inline.** **14** sites purged (not the 11 the audit found — an unscoped sweep
-  found 3 more), all 10 blocks carry honest visual-diff reports with real captures, and
-  `check-no-inline.py --deep` is now the DEFAULT, armed only because `--selftest` proves it can
-  still fail. Two defects IN the banked patch were caught pre-commit and proven fixed on the live
-  DOM (card-grid + trust-bar `:nth-child` offsets) — now specified as **Spec 32 FR-32-4a**.
+#### Task 1 — Browser verification (unblocks every remaining commit)
+**What:** capture real first-paint evidence for `gallery`, `testimonial-slider`,
+`responsive-logo`, `before-after`, `image-sequence`, and watch each effect's named observable
+signal move: drag `transform` follows the pointer then decays (momentum); `stroke-dashoffset`
+animates then rests fully drawn; scramble settles to the ORIGINAL string; canvas frame index
+tracks scroll.
+**Why:** the pre-commit visual-diff gate requires `reports/visual-diff/<block>-<date>.md` with
+`verdict: PASS` + `first_paint_capture_passed: true`. It is the only thing blocking the commits.
+**⛔ NEVER `--no-verify`** — it also discards gitleaks, wp-* pre-merge, cheat-gate, F5 and F6, all
+passing. **NEVER fabricate a PASS** (`visual-diff-gate-editor-only-honest-report`).
+**Estimated:** 45 min. **Orchestration:** INLINE, Opus (judging motion is eye-work).
+**Also cover, same pass:** (a) **two instances of each NEW block on ONE page** — the per-render
+fatal class; `before-after`'s image helper is a closure precisely for this and it is UNPROVEN;
+(b) **open the REAL editor** (D388: two editor-killing crashes have shipped past all-green gates);
+(c) reduced-motion arms — **each needs a negative control**, or "it didn't animate" proves nothing.
+**Acceptance:** every block has an honest report; every effect recorded moving; "cannot tell" =
+FAIL, extend the measurement.
 
-### STILL OPEN — orchestration plan
+#### Task 2 — Commit the remaining Wave C work
+**What:** commit by EXACT PATH in the wave's split (draggable / before-after / SVG+scramble /
+image-sequence / derived generated+baselines). **Depends on:** Task 1.
+**Estimated:** 15 min. **Orchestration:** INLINE.
+**⛔ Shared worktree:** the co-active track holds uncommitted `includes/lucide-icons.php` — never
+`git add -A`; a hook enforces the pathspec. `git branch --show-current` in the same command.
+**/qc gate:** `/qc-council` before any commit touching SGS-block render logic.
 
-**You are the SGS framework engineer.** Points 1+2 of the Track-1 debt are closed and banked; what
-remains is two verification points, one build, and one owed guard. Plan the order yourself — the
-only fixed constraint is that Task 2 must not be wired into prebuild before it can fail.
+#### Task 3 — DESIGN GATE: Flip (FR-38-12), Bean-owned
+**What:** research + present options; do NOT build. Its premise is verified false (D426).
+**Brief:** the only real client-side re-filtering here is WooCommerce's Product Filter → Product
+Collection. Establish whether that re-renders client-side (Interactivity API router region) before
+proposing anything; animating a CORE block's re-render is a different blast radius and needs its
+own gate. **Estimated:** 30 min research. **Orchestration:** delegated · sonnet · single agent for
+the research; decision INLINE with Bean. **Acceptance:** Bean picks from a ranked menu.
 
-#### Task 1 — Spec 31 C2 triage (Track-1 point 3)
-**What:** triage the non-LANDED cells in `.../phase-f/_render-oracle/batch-report.json` —
-33 UNVERIFIED, 33 GUARD-FAIL, 8 NOT-RENDERED, 393 unattributed.
-**Why:** Spec 31 §5 defines completion as **zero UNVERIFIED**. The "logged with a reason" escape is
-scoped to GAP cells ONLY — it does NOT apply to UNVERIFIED. Either drive it to zero or state
-plainly that C2 is NOT closed and file the residual.
-**Estimated:** 30 min.
-**Orchestration:** delegated · sonnet via `/delegate` · single agent.
-**Brief:** expect ~30 of the 33 GUARD-FAILs to be the five `rt-*` red-team fixtures behaving as
-designed (they encode known-broken behaviour). The real question is the 393 unattributed — declared
-cells whose selector could not be matched to any probed BEM-root section.
-**Context it won't have:** `batch_runner.py` probes DEPLOYED pages; `--with-landed` is passed by
-nothing (neither `package.json:7` nor `f5-commit-gate.py`), so the LANDED leg only ever runs
-manually.
-**Depends on:** none. **Parallel with:** Tasks 2, 4.
-**/qc gate after:** no — it produces an artefact + a verdict, not code.
-**Acceptance:** UNVERIFIED is zero, OR C2 is explicitly declared not-closed with each residual cell
-carrying a named reason and a spec STAGE.
-
-#### Task 2 — Feature parity (Track-1 point 4)
-**What:** **157 gaps across 23 blocks in scope** (the old "140 across 22" is stale — re-measured).
-Agents have already classified most; what remains is writing `feature-parity-exceptions.json`,
-making the audit fail-closed, and wiring it into prebuild.
-**Why:** every gap must be REAL-and-fixed or an exception with a named wave. Today the file has
-ZERO block entries, so not one gap is explained.
-**Estimated:** 45 min.
-**Orchestration:** delegated · sonnet · single agent.
-**Brief:** classify REAL vs OVER-REPORT before fixing anything — `norm()` only normalises case,
-`colour`→`color`, hyphens and underscores, so genuine renames read as gaps.
-**⛔ Order matters:** `audit-feature-parity.py:117,140` is `warn_only: True` / unconditional
-`sys.exit(0)`. **Make it fail-closed with a `--self-test` BEFORE wiring it into prebuild** — a gate
-that cannot fail reads green forever, which is exactly what this session had to fix in the
-no-inline gate.
-**Depends on:** none. **Parallel with:** Tasks 1, 4.
-**/qc gate after:** yes — `/qc-inline` on the fail-closed behaviour (prove it fails).
-**Acceptance:** every gap fixed or recorded as an exception with a wave; the audit exits non-zero on
-an unexplained gap; `--self-test` proves it.
-
-#### Task 3 — Nav submenu / dropdown build
-**What:** plain dropdowns on desktop + real accordion/drill-down submenus in the drawer.
-**Why:** a menu item with children currently renders as a bare link and its children vanish
-(`nav-menu/render.php:103-109`). The drawer's `submenuModel` control is live in the inspector and
-does nothing. Also closes 5 REAL parity gaps on `sgs/nav-menu` in one go.
-**Estimated:** 2–3 h.
-**Orchestration:** INLINE, Opus — this is design-sensitive, spec-bound work.
-**Design (owner-signed):** `plans/2026-07-30-nav-submenu-dropdown-design.md`.
-**Two facts that shape it:** (a) `shared/nav-interactivity/mega-disclosure.js` is **markup-agnostic**
-— emit its three data hooks and a plain dropdown inherits hover-intent, tap, keyboard, ESC,
-close-grace and WCAG 1.4.13 with NO new JS; (b) the children are already preserved in
-`innerBlocks` — the walker simply never reads them.
-**Owner rulings:** current-page becomes its own state on **submenu AND top-level bar** items;
-hover effects are **block-native** (nav opts out of the universal extension per FR-36-14);
-controls clustered by ELEMENT then grouped per Spec 35 (colours / effects / typography), using
-toggles, per-device overrides and opacity in the colour picker; **default global colours need to be
-clearly legible and harmonious rather than strictly AA** — apply that to shipped DEFAULTS only,
-leave `sgs_wcag_preferred_text_colour_for_bg()` (the operator-override safety net) alone.
-**Depends on:** none. **Parallel with:** nothing (inline).
-**/qc gate after:** yes — `/qc-council` before any commit touching nav render.
-**Acceptance:** a classic parent-with-children menu renders a working dropdown (disclosure, not
-`role="menu"`), left-aligned under its own item; the drawer accordion actually accordions;
-keyboard + ESC + focus-return verified live; axe run on an OPEN panel via `checkRestContrast()`.
-
-#### Task 4 — The owed citation guard
-**What:** add a citation-resolution check to `handoff-preflight.py` covering **`STOP-N` as well as
-`P-` slugs**, with a `--self-test`.
-**Why:** `STOP-29` and `STOP-6` are cited in `LEDGER.md` and `decisions.md` but exist in NO
-catalogue (only 16, 19, 21, 44, 57, 64, 66, 67, 68 do). That is the fifth phantom citation found in
-two sessions, and the first of a new kind. D423 named this as the cheapest durable fix; it is still
-unbuilt.
-**Estimated:** 20 min.
-**Orchestration:** delegated · haiku · single agent (mechanical).
-**Depends on:** none. **Parallel with:** Tasks 1, 2.
-**/qc gate after:** no — the `--self-test` IS the gate.
-**Acceptance:** the check fails on a planted phantom `P-`/`STOP-N` citation and passes on the real
-tree; wired into the existing six checks.
+#### Task 4 — DESIGN GATE: morph + motion-path control surface, Bean-owned
+**What:** both engines work but no client can reach them — the agents invented
+`data-sgs-fx-morph-target` / `-motion-path-target`, which exist in no §11.2 grammar, no
+`block_attributes` row and no control. **Why it is a gate, not a task:** §7 requires an
+ASSET-GATED picker with authoring guidance; a CSS-selector textbox is unusable by a
+tech-illiterate client. Adding params has precedent (`fxSplit`/`fxMask` in `FX_ATTR_MAP`), so the
+mechanism is cheap — the UX is the decision. **Also decide** whether `draw` joins the fx picker
+via a data-driven exclusion in the qualifying-blocks GENERATOR (it is withheld today because
+`sgs/responsive-logo` would get two controls for one capability). **Estimated:** 30 min.
+**Acceptance:** Bean signs a shape; amend Spec 38 §11.2 SAME session (spec is the system).
 
 #### Dependency graph
 
 ```
-Task 1 (sonnet)  ┐
-Task 2 (sonnet)  ├─ all parallel, none depends on another
-Task 4 (haiku)   ┘
-Task 3 (INLINE, Opus) — run alongside or after; touches disjoint files
-        ↓ /qc-council before any nav commit
-Commit + push (main)
+Task 1 (INLINE, Opus) ──► Task 2 (commit; /qc-council first)
+Task 3 (sonnet research ─► Bean)  ┐ both independent of 1+2,
+Task 4 (INLINE ─► Bean)           ┘ but each ends with BEAN, not with code
 ```
-
 
 #### Methodology guardrails (do not skip)
 
-- **Deploy before measure** — `batch_runner.py` and `check-no-inline.py` both probe DEPLOYED pages.
-- **Confirm build identity by md5 AT THE MOMENT OF CAPTURE** — the canary is shared and races.
-- **A gate that cannot fail reads green forever** — arm nothing before its `--self-test` proves it
-  fails. Applies directly to Task 2.
-- **A grep's blind spot is the shape of the grep** — search attribute ASSEMBLY, not just literals.
-- **A comment justifying a breach is a dated opinion** — check it against the CURRENT contract.
-- **Outcome vs completion** — code shipped is not outcome achieved; map every deferral to a named
-  spec STAGE, never "out of scope".
-- **Shared worktree/main** — commit by EXACT PATH (a hook enforces the pathspec), never `git add -A`.
-- **`/qc-council` before any commit** touching converter, pipeline or SGS-block render logic.
+- **Deploy before measure** — the canary is shared and races; confirm build identity by md5 AT
+  THE MOMENT OF CAPTURE.
+- **A checksum across a git boundary on Windows is not a measurement** — CRLF vs LF gave three
+  false "foreign file" hits this session (STOP-A-A-CHECKSUM-ACROSS-A-GIT-BOUNDARY, D426).
+- **Negative control or the test is vacuous** — especially for every "it correctly did NOT
+  animate" claim.
+- **Verify BOTH surfaces** — editor canvas and frontend.
+- **Outcome vs completion** — code shipped is not outcome achieved; map deferrals to a named spec
+  STAGE, never "out of scope" (STOP-29).
 - **`python .claude/hooks/handoff-preflight.py --check` must pass before a handoff completes.**
 
-Full structural defences (107 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.
+Full structural defences (109 STOP entries + pre-flight ritual): **`.claude/STOP-CATALOGUE.md`**.

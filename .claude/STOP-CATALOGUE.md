@@ -23,6 +23,31 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-A-CHECKSUM-ACROSS-A-GIT-BOUNDARY-ON-WINDOWS-IS-NOT-A-MEASUREMENT** — NEW 2026-07-31
+  (D426). Checking whether the shared `build/` carried a co-active track's uncommitted work, I
+  compared each `build/blocks/*/render.php` against `git show HEAD:<src>` and got three hits
+  (`button`, `process-steps`, `quote`). **All three were FALSE.** `git show` streams the blob with
+  LF endings while the checked-out working files are CRLF on Windows, so the digests differed on
+  line endings alone; comparing build against the CURRENT WORKING FILE showed byte-identical
+  content, and `git status` showed all three clean. Acting on the first reading would have meant
+  "restoring" three files that were never wrong — on a deploy path whose documented failure mode
+  (D336) is taking client sites down. **Any md5/diff that crosses a git/worktree/index boundary on
+  Windows must normalise line endings before it means anything.** Compare working-file to
+  working-file, or pipe both through the same channel. The sibling isolation check that DID hold
+  (worktree `lucide-icons.php` vs dirty-tree, both working files) is the shape to copy.
+
+- **STOP-A-A-NEW-ATTRIBUTE-IS-A-VISUAL-CHANGE-EVEN-WHEN-NO-CSS-MOVED** — NEW 2026-07-31 (D426).
+  The pre-commit visual-diff gate blocked `gallery` / `testimonial-slider` and the instinct was
+  "this only adds an opt-in attribute, nothing paints differently". Wrong test. The gate's own
+  escape hatches are DETERMINISTIC and were consulted rather than argued with:
+  `check-blockjson-metadata-only.py` (is the block.json delta confined to `supports.sgs`?) and
+  `check-markup-neutral.py` (PHP-only, no added output construct?). Both correctly said NO —
+  the change adds real ATTRIBUTES plus editor controls plus render emission, which can move
+  pixels. **Run the gate's own checker to learn WHY it fired; never reason your way past it, and
+  never reach for `--no-verify`** — here that would also have discarded gitleaks, the wp-* pre-merge
+  gate, cheat-gate, F5 and F6, all of which were passing. A gate turned off to skip one check
+  turns off the six it was not aimed at.
+
 - **STOP-A-A-DOCUMENTED-RISK-CAN-BE-WRONG-ABOUT-ITS-OWN-DOM** — NEW 2026-07-30 (D424). Before
   testing a risk a comment describes, **verify the structural premise the risk rests on**.
   `header-behaviours.css` warned for months that the nav-drawer `<dialog>` opens INSIDE a

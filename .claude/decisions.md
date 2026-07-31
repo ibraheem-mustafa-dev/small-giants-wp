@@ -15,6 +15,82 @@ Append-only. Most-recent first.
      /handoff applies the tag on write going forward. Back-tagging the historical D114–D337
      set is a bounded follow-up (parking `P-DECISIONS-BACKTAG`), not this session. -->
 
+## D426 — Spec 38 Wave C built + deployed; FR-38-12's pairing premise is FALSE; a CRLF md5 nearly caused a bogus "restore" [INCIDENT]
+
+**2026-07-31, motion Wave C.** Commits `88c2be1a` (shared infra), `a06bba92` (deploy evidence).
+Evidence: `reports/2026-07-31-motion-waveC-deploy-verification.md`. Prompt:
+`plans/2026-07-29-motion-wave-C-session-prompt.md`.
+
+**FR-38-12 (Flip on filtered grids) CANNOT BE BUILT AS SPECIFIED — its premise is false.** The
+spec says a filter-emitting block "fires the existing filter event" and a filterable grid
+re-lays-out. Verified against code, none of that exists: `sgs/filter-search` declares
+`"ancestor": ["woocommerce/product-filter-attribute"]` and its `view.js` narrows the list of
+FILTER CHIP OPTIONS by toggling `hidden` — it never touches a product or a card; it emits no
+event (the only `CustomEvent`s in the plugin are `sgs:option-selected` and a WC cart one); and
+`sgs/card-grid` has NO `view.js` at all, resolving its filtering server-side in `render.php`.
+There is therefore no client-side re-layout for Flip to animate, and the two named blocks are
+not a filter-to-grid pair. This is a GAP IN THE SPEC, not an implementation bug — the layer
+rule says fix the spec, never patch code around it. **Bean ruled: NOT parked — it stays live as
+a design gate + research point.** The real client-side re-filtering on this stack belongs to
+WooCommerce's own Product Filter to Product Collection blocks, so any revived Flip would be a
+different pairing with a different blast radius (a core-block re-render path).
+
+**SHIPPED (built, gate-green, deployed to sandybrown, NOT yet browser-verified):** C2 Draggable
+roster + gallery/testimonial-slider; C3 NET-NEW `sgs/before-after`; C4 DrawSVG + the Vivus
+retirement (D408 discharged — `vivus` out of `package.json`, `animationStyle` enum byte-identical
+so no `deprecated.js`, D270 respected); C5 MorphSVG + C6 MotionPath RUNTIMES; C7 ScrambleText;
+C8 NET-NEW `sgs/image-sequence` + `scripts/image-sequence-prep.py`.
+
+**NO NEW LIBRARY — the Tier H closed list (§1.2a) is untouched.** All six Wave C plugins ship
+inside the already-installed gsap 3.15.0 (the April 2025 Webflow acquisition freed every former
+Club plugin). Verified as real 10–101 KB implementations, NOT membership-gated stubs, because
+the public package historically shipped exactly such stubs. **This also kills parking P-10's
+deferral premise for good.**
+
+**C5/C6 are RUNTIME-ONLY and must not be reported as done.** Both agents invented a
+target-selector attribute (`data-sgs-fx-morph-target` / `-motion-path-target`) that exists in no
+spec grammar (§11.2), no `block_attributes` row and no inspector control — so the effects have
+working engines a client cannot reach, and "if a setting requires touching code, it is not done".
+Designing that surface properly means an ASSET-GATED picker with guidance (§7), not a CSS-selector
+textbox. **Second design gate, alongside Flip.**
+
+**`draw` deliberately withheld from the fx inspector picker.** Its module landed, but
+`sgs/responsive-logo` already exposes the same capability via its own `animationStyle` enum
+(which FR-38-15 requires stay identical). Listing it would put TWO controls for one capability on
+that block. The other SVG blocks want it, so the fix is a data-driven exclusion in the
+qualifying-blocks GENERATOR, not a code carve-out. Only `scramble` was added to
+`SHIPPED_EFFECTS`, with each withholding reason recorded at the gate itself.
+
+**TWO REGISTRY DEFECTS FOUND BY READING THE BUILT OUTPUT, not intent.** `fx-draw` and
+`fx-scramble` both register ScrollTrigger for their scroll arms; I had declared neither.
+Undeclared, nothing breaks — the import map resolves it — WP simply emits no dependency and no
+modulepreload, so the plugin arrives late and unpreloaded. Silent, and invisible to every gate.
+
+**A CRLF/LF md5 nearly caused a bogus "restore" of three correct files.** Checking the shared
+`build/` for a co-active track's uncommitted work, I compared each `build/blocks/*/render.php`
+against `git show HEAD:<src>` and got three hits (`button`, `process-steps`, `quote`). All three
+were FALSE: `git show` emits LF while the working files are CRLF on Windows, so the digests
+differed on line endings alone. Comparing build against the current working file showed
+byte-identical content and `git status` showed them clean. **A checksum comparison that crosses a
+git/worktree boundary on Windows is not a measurement until line endings are normalised.** The
+genuine isolation check (worktree `lucide-icons.php` vs dirty-tree, different md5 -> excluded)
+did hold, and the deploy shipped no co-active work.
+
+**Deploy + verification.** Isolated-worktree deploy per the D336-hardened recipe; `node_modules`
+962 -> 962. Verified WITH CONTROLS: 5 blocks register (negative control: a fabricated slug 404s);
+FR-38-3 conditional loading holds — zero `@sgs/gsap*` and zero `@sgs/fx-*` on the homepage, with a
+positive control that the page really carries SGS blocks; externals hold (every effect module
+imports bare `@sgs/*`, zero inlined GSAP cores); `sgs/before-after` renders both images + alts +
+a native range input with ZERO inline style declarations, and its zero-JS split needed BOTH
+artefacts to see (HTML sets the position var, compiled CSS performs the `clip-path`) — the HTML
+alone reads as a failure.
+
+**OUTCOME NOT YET ACHIEVED — the wave is BUILT, not VERIFIED.** No browser first-paint capture
+was run, so the pre-commit visual-diff gate still legitimately blocks the block commits and
+`--no-verify` was NOT used (it would discard gitleaks, the wp-* pre-merge gate, cheat-gate, F5
+and F6, all passing). Also owed: two-instances-on-one-page (the per-render fatal class), each
+effect's named observable signal, the editor surface (D388), and Bean's eye (R-31-13).
+
 ## D425 — Track-1 points 1+2 CLOSED; a grep's blind spot is the shape of the grep; 2 defects caught pre-commit [INCIDENT]
 
 **2026-07-30, Track 1 verification debt.** Commits `4d3b598e`, `9cedd022`, `0224173c`.
