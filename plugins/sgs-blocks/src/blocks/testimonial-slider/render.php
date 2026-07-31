@@ -73,24 +73,35 @@ $hover_effect        = $attributes['effectHover'] ?? 'none';
 $transition_duration = $attributes['transitionDuration'] ?? '300';
 $transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
 
-// Draggable + Inertia roster opt-in (Spec 38 FR-38-13). `data-sgs-fx="draggable"`
-// is emitted on the __track element carrying the exact same grammar every Tier
-// G effect uses (§11.2). NOTE: this block's carousel is a transform-driven
-// infinite-loop track, not a native CSS scroll-snap container, so the shared
-// runtime's `type:'scroll'` mechanism (shared/effects/gsap/fx-draggable.js)
-// structurally cannot attach here and correctly no-ops. The real momentum
-// upgrade for THIS block's own pointer-drag lives in view.js — see its
-// docblock for why that split is the safe, universal-respecting choice.
+/*
+ * Drag momentum — BLOCK-PRIVATE, deliberately NOT the shared Tier G roster.
+ *
+ * This block used to declare `supports.sgs.fx.draggable` and emit
+ * `data-sgs-fx="draggable"` here. That was inert and expensive, and both
+ * halves were removed 2026-07-31:
+ *
+ *   · INERT — the shared runtime (shared/effects/gsap/fx-draggable.js) only
+ *     ever attaches to a genuine native `overflow-x: auto|scroll` element.
+ *     This carousel is `overflow: hidden` with a transform-based clone-loop
+ *     driven by `--sgs-slider-offset`, so `isNativeHorizontalScroller()`
+ *     returned false and `initDraggable()` returned `undefined`, every time.
+ *     Confirmed independently by the site owner: the effect did nothing here.
+ *   · EXPENSIVE — `SGS_Motion_Registry` sniffs the rendered markup for
+ *     `data-sgs-fx` and enqueues that effect's whole plugin set. Emitting the
+ *     marker therefore shipped GSAP core + InertiaPlugin + the effect module
+ *     (~35KB gzip) to run a function that returned `undefined`.
+ *
+ * What remains is this block's OWN, working mechanism: the pointer-drag in
+ * view.js plus its private InertiaPlugin momentum layer, which imports the
+ * plugin dynamically and only for an instance that opted in — so a page with
+ * the toggle off still fetches zero bytes of GSAP. The marker below is
+ * block-private grammar (`data-sgs-slider-momentum`), read only by this
+ * block's view.js, and is invisible to the shared registry's `data-sgs-fx`
+ * sniff by construction.
+ */
 $drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
-$drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 
-$track_fx_attr = '';
-if ( $drag_to_scroll ) {
-	$track_fx_attr = ' data-sgs-fx="draggable"';
-	if ( ! $drag_momentum ) {
-		$track_fx_attr .= ' data-sgs-fx-momentum="false"';
-	}
-}
+$track_momentum_attr = $drag_to_scroll ? ' data-sgs-slider-momentum="true"' : '';
 
 // Derive total slide count from actual inner blocks.
 $inner_blocks       = $block->inner_blocks ?? array();
@@ -445,7 +456,7 @@ $slider_inner = sprintf(
 	'<div class="sgs-testimonial-slider__stage">%s<div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s%s>%s</div>%s</div>%s',
 	$arrow_prev_html,
 	$track_style_attr,
-	$track_fx_attr,
+	$track_momentum_attr,
 	$slides_html,
 	$arrow_next_html,
 	$controls_html

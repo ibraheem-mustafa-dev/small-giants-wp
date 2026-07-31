@@ -216,11 +216,38 @@ export function initMotionPath( el ) {
 			ease,
 			scrollTrigger: {
 				trigger: el,
-				// No pinning chrome-offset concern here (motion-path never
-				// pins — `generated-fx-effect-meta.json`'s `pins: false`),
-				// but `resolveStart` still applies the same authored-value
-				// precedence: an explicit `data-sgs-fx-start` always wins,
-				// only the module default gets the persistent-chrome offset.
+				/*
+				 * NO `clearChrome` — this effect never pins
+				 * (`generated-fx-effect-meta.json`'s `pins: false`), so it keeps
+				 * its own default. The comment previously here reasoned that the
+				 * offset was harmless because there was "no pinning chrome-offset
+				 * concern"; that was wrong about the CODE, not just the concern.
+				 * `resolveStart` applied the offset to any unauthored default
+				 * whenever a sticky header existed, so `top bottom` silently
+				 * became `top top+=93` on every real site — see its docblock.
+				 *
+				 * `top bottom` → `bottom top` IS CORRECT HERE, and deliberately
+				 * NOT converted to the same-anchor shape used by fx-draw and
+				 * fx-image-sequence. Those two animate a fixed-length thing (a
+				 * stroke, a frame count) whose pacing should not depend on the
+				 * element's height, so pinning both ends to one edge is right. A
+				 * path traversal is the opposite case: the intent is "the
+				 * traveller rides the whole curve during the whole time it is on
+				 * screen". `top bottom` is the instant the element first appears
+				 * at the bottom edge and `bottom top` the instant its last pixel
+				 * leaves at the top, so the mixed anchors are not an accident —
+				 * they are the only pair that expresses the element's entire
+				 * visible life, and the height-dependence they carry is the
+				 * intended behaviour rather than the bug it is elsewhere. Making
+				 * it same-anchor would end the travel part-way up the screen and
+				 * leave the traveller parked at the end of its path for the rest
+				 * of the scroll past.
+				 *
+				 * The chrome offset was especially destructive for exactly this
+				 * reason: it deferred the start of a full-traversal effect until
+				 * the element was nearly at the top of the viewport, collapsing
+				 * a whole-screen journey into its last few pixels.
+				 */
 				start: resolveStart( el, 'top bottom' ),
 				end: el.getAttribute( 'data-sgs-fx-end' ) || 'bottom top',
 				// `scrub: true` locks progress to the scrollbar; a number

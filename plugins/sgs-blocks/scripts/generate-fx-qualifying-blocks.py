@@ -42,19 +42,72 @@ WHAT COUNTS AS "PROVIDING" A REQUIREMENT (ground truth, not invented)
                 string attrs also cover url/label/id-shaped values on ~40
                 unrelated blocks — verified via a throwaway scan before
                 settling on this test).
-- 'svg'      <- block_slug is one of the 4 blocks §2's DrawSVG row NAMES
-                explicitly: sgs/responsive-logo, sgs/icon, sgs/separator,
-                sgs/decorative-image. HONEST EXCEPTION to "derive, don't
-                hardcode": no structural block.json flag or DB role unifies
-                these 4 (verified — `<svg` literal markup appears in a dozen
-                unrelated blocks for chevrons/star icons, wildly over-
-                matching), and the spec itself gives a closed, named list
-                rather than a detectable rule. Citing the spec's own literal
-                roster is not the same failure mode as inventing one.
-- 'track'    <- block.json `supports.sgs.fx.draggable === true`. Zero blocks
-                declare this today (verified via grep) — the roster for
-                'draggable' is honestly EMPTY until a block opts in, per §2's
-                own "Roster-gated" language.
+- 'svg'      <- the block declares a `bgSvgContent` ATTRIBUTE in its own
+                block.json (it renders operator-supplied inline `<svg>` markup
+                through `SGS_Container_Wrapper`'s `.sgs-container__svg-bg`
+                layer — verified at includes/class-sgs-container-wrapper.php,
+                which emits `<div class="sgs-container__svg-bg" aria-hidden>
+                {svg}</div>`), OR block_slug is one of the 4 blocks §2's
+                DrawSVG row NAMES explicitly: sgs/responsive-logo, sgs/icon,
+                sgs/separator, sgs/decorative-image.
+
+                The `bgSvgContent` half is DERIVED (2026-07-31) and is the
+                primary route. The 4-name half is a RETAINED, documented
+                exception to "derive, don't hardcode": those blocks render
+                their SVG from their own render.php rather than through the
+                wrapper's bgSvg layer, no structural block.json flag or DB
+                role unifies them (verified — a `<svg` literal-markup scan
+                over-matches wildly, hitting a dozen unrelated blocks that
+                only ship chevron/star glyphs), and the spec itself gives a
+                closed, named list rather than a detectable rule. Citing the
+                spec's own literal roster is not the same failure mode as
+                inventing one. The two halves are a UNION: a block qualifies
+                on either.
+- 'track'    <- DERIVED (2026-07-31) from the block's OWN stylesheet
+                (style.css / style.scss): it declares `overflow-x: auto` or
+                `overflow-x: scroll` in a rule that is reachable at desktop
+                widths. This is the EXACT structural question the runtime
+                asks — `fx-draggable.js`'s `isNativeHorizontalScroller()`
+                tests `getComputedStyle(el).overflowX` for auto|scroll plus a
+                real `scrollWidth > clientWidth` overflow — so deriving the
+                roster from the same signal makes adoption automatic for
+                every block of that shape, instead of manual.
+
+                Why this replaced the old hand-declared route as the PRIMARY
+                one: the mechanism is purely structural and needs no per-block
+                code, yet a block only RECEIVED the capability if its
+                block.json hand-declared it. Three blocks did. Manual adoption
+                of a universal mechanism is precisely what R-31-9 ("universal
+                mechanisms, no per-block hyperfocus") forbids by construction.
+
+                PRECEDENCE — additive, declaration cannot subtract:
+                  derived-from-CSS  OR  `supports.sgs.fx.draggable === true`
+                The declaration is retained as an explicit OPT-IN OVERRIDE for
+                a block whose scroller this generator cannot see: built by JS
+                at runtime, inherited from a shared/parent stylesheet, or
+                composed from a block the file scan does not reach. It can
+                only ADD a block to the roster, never remove one — removal is
+                what `supports.sgs.fx.providesNatively` is for, and keeping
+                exactly one subtraction mechanism means a block's roster is
+                never the result of two flags cancelling out.
+
+                DESKTOP-REACHABILITY, and why it is not a tabs carve-out: a
+                declaration that lives ONLY inside a narrow-viewport-only
+                media query (a `max-width` bound below the 1024px desktop
+                breakpoint, with no `min-width` to re-open it) describes a
+                scroller that exists at phone widths and nowhere else.
+                `fx-draggable.js` is gated behind `(pointer: fine)` and binds
+                nothing on a coarse pointer — by design, so touch keeps the
+                browser's own momentum scrolling. So a mobile-only scroller
+                and a mouse-only effect have an intersection of very nearly
+                nothing, and offering the control would put a toggle in the
+                inspector that does nothing on the devices that see the
+                scroller. This test is a property of the DECLARATION's
+                context, applied identically to every block; today it happens
+                to exclude `sgs/tabs` (whose `.sgs-tabs__nav` scrolls only
+                under `@media (max-width: 599px)`, and only in the vertical
+                variant), and it would exclude any future block that grows the
+                same shape, with no change here.
 - 'item-set' <- block.json `supports.sgs.fx.pairedFilter === true`. Zero
                 blocks declare this today either — Flip's roster is honestly
                 EMPTY (and Flip's scope='paired' excludes it from this
@@ -124,14 +177,41 @@ BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 JSON_OUTPUT = BLOCKS_DIR / "extensions" / "generated-fx-qualifying-blocks.json"
 PHP_OUTPUT = PLUGIN_ROOT / "includes" / "generated-fx-qualifying-blocks.php"
 
-# The one honest hardcoded exception — see module docstring's 'svg' section.
-# Spec 38 §2 DrawSVG row, Exposure-surface column, cited verbatim.
-SVG_BEARING_BLOCKS = frozenset({
+# The retained, documented exception — see module docstring's 'svg' section.
+# Spec 38 §2 DrawSVG row, Exposure-surface column, cited verbatim. These four
+# render their SVG from their OWN render.php, not through the container
+# wrapper's `bgSvgContent` layer, so the derived test below cannot see them.
+# Every OTHER svg-provider is derived from `bgSvgContent`.
+SPEC_NAMED_SVG_BLOCKS = frozenset({
     "sgs/responsive-logo",
     "sgs/icon",
     "sgs/separator",
     "sgs/decorative-image",
 })
+
+# The block.json attribute that means "this block renders operator-supplied
+# inline <svg> through SGS_Container_Wrapper's `.sgs-container__svg-bg` layer".
+SVG_CONTENT_ATTRIBUTE = "bgSvgContent"
+
+# Stylesheet filenames a block may own. Both are read; a block having one, the
+# other, or neither is all normal.
+BLOCK_STYLESHEETS = ("style.css", "style.scss")
+
+# `overflow-x: auto|scroll` — the exact declaration whose computed value makes
+# `scrollLeft` a real, paintable property, which is what
+# fx-draggable.js's `isNativeHorizontalScroller()` tests at runtime.
+_OVERFLOW_X_SCROLLABLE = re.compile(
+    r"overflow-x\s*:\s*(auto|scroll)\b", re.IGNORECASE
+)
+
+# The device-tier desktop breakpoint (visual-standards: 1024px). A media query
+# capped BELOW this with no `min-width` floor can only ever match a narrow
+# viewport. See the module docstring's DESKTOP-REACHABILITY note for why that
+# makes a drag-to-scroll control pointless rather than merely rare.
+_DESKTOP_BREAKPOINT_PX = 1024
+
+_MEDIA_MAX_WIDTH = re.compile(r"max-width\s*:\s*(\d+(?:\.\d+)?)\s*px", re.IGNORECASE)
+_MEDIA_MIN_WIDTH = re.compile(r"min-width\s*:\s*(\d+(?:\.\d+)?)\s*px", re.IGNORECASE)
 
 # sgs/container never declares its own containerKind (nothing wraps it) but
 # is the explicit target of pin-scrub's §2 row. See module docstring.
@@ -190,7 +270,147 @@ def _richtext_blocks() -> set[str]:
     return found
 
 
-def _block_provisions(block_slug: str, block_json: dict, richtext_blocks: set[str]) -> set[str]:
+def _is_narrow_viewport_only(condition: str) -> bool:
+    """Can this `@media` condition ONLY match a viewport narrower than desktop?
+
+    True when the condition caps width below the 1024px desktop breakpoint and
+    sets no `min-width` floor that would re-open it at a wider viewport. A
+    condition with both bounds (e.g. `(min-width: 768px) and (max-width:
+    1023px)`) is a tablet WINDOW, not a narrow-only ceiling, and still counts
+    as reachable — a fine pointer at that width is an ordinary resized desktop
+    browser.
+
+    :param condition: The raw text between `@media` and its opening brace.
+    :return: True when no desktop-width viewport can match.
+    """
+    if _MEDIA_MIN_WIDTH.search(condition):
+        return False
+    return any(
+        float(m) < _DESKTOP_BREAKPOINT_PX
+        for m in _MEDIA_MAX_WIDTH.findall(condition)
+    )
+
+
+def _has_desktop_reachable_x_scroll(css: str) -> bool:
+    """Does this stylesheet declare `overflow-x: auto|scroll` somewhere a
+    desktop-width viewport can reach?
+
+    Walks the source once, maintaining a stack of the `@media` conditions
+    currently open, so a declaration is judged in the context that actually
+    governs it. Plain brace-nesting (including SCSS nesting) pushes a `None`
+    frame, which carries no condition and therefore never gates anything.
+
+    Comments are stripped first so a commented-out rule — or a docblock that
+    merely MENTIONS the property, which several of these stylesheets do at
+    length — can never qualify a block. `//` line comments are stripped only
+    for `.scss`; in plain CSS `//` is not a comment and a `url(//host/x)` must
+    survive intact.
+
+    :param css: Full stylesheet source, comments included.
+    :return: True when at least one qualifying declaration is desktop-reachable.
+    """
+    media_stack: list[str | None] = []
+    index = 0
+    length = len(css)
+
+    while index < length:
+        char = css[index]
+
+        if char == "@" and css.startswith("@media", index):
+            brace = css.find("{", index)
+            if brace == -1:
+                break
+            media_stack.append(css[index + len("@media") : brace])
+            index = brace + 1
+            continue
+
+        if char == "{":
+            media_stack.append(None)
+            index += 1
+            continue
+
+        if char == "}":
+            if media_stack:
+                media_stack.pop()
+            index += 1
+            continue
+
+        if char in "oO" and _OVERFLOW_X_SCROLLABLE.match(css, index):
+            reachable = not any(
+                _is_narrow_viewport_only(cond)
+                for cond in media_stack
+                if cond is not None
+            )
+            if reachable:
+                return True
+            index += 1
+            continue
+
+        index += 1
+
+    return False
+
+
+def _strip_css_comments(css: str, is_scss: bool) -> str:
+    """Remove `/* … */` (and, for SCSS only, `// …`) comments.
+
+    Replaces each comment with a single space rather than deleting it, so two
+    tokens separated only by a comment never fuse into one.
+
+    :param css:     Stylesheet source.
+    :param is_scss: True to also strip `//` line comments (invalid in plain CSS,
+                    where `//` legitimately appears inside `url()`).
+    :return: Source with comment bodies removed.
+    """
+    css = re.sub(r"/\*.*?\*/", " ", css, flags=re.DOTALL)
+    if is_scss:
+        css = re.sub(r"(?m)//.*$", " ", css)
+    return css
+
+
+def _x_scroll_track_blocks() -> set[str]:
+    """Blocks whose OWN stylesheet gives them a desktop-reachable native
+    horizontal scroller — the derived 'track' provision.
+
+    Mirrors `_richtext_blocks()`: a structural fact read straight out of the
+    files that ship, not a name-matching heuristic and not a hand-kept list.
+
+    :return: Set of block names (e.g. `sgs/gallery`).
+    """
+    found: set[str] = set()
+    for block_dir in sorted(BLOCKS_DIR.glob("*/")):
+        block_json_path = block_dir / "block.json"
+        if not block_json_path.exists():
+            continue
+        for stylesheet_name in BLOCK_STYLESHEETS:
+            stylesheet = block_dir / stylesheet_name
+            if not stylesheet.exists():
+                continue
+            try:
+                css = stylesheet.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            css = _strip_css_comments(css, stylesheet_name.endswith(".scss"))
+            if not _has_desktop_reachable_x_scroll(css):
+                continue
+            try:
+                name = json.loads(
+                    block_json_path.read_text(encoding="utf-8")
+                ).get("name")
+            except (OSError, json.JSONDecodeError):
+                break
+            if name:
+                found.add(name)
+            break
+    return found
+
+
+def _block_provisions(
+    block_slug: str,
+    block_json: dict,
+    richtext_blocks: set[str],
+    x_scroll_blocks: set[str],
+) -> set[str]:
     """The set of requirement tokens this block satisfies."""
     provisions: set[str] = set()
 
@@ -202,11 +422,18 @@ def _block_provisions(block_slug: str, block_json: dict, richtext_blocks: set[st
     if block_slug in richtext_blocks:
         provisions.add("text")
 
-    if block_slug in SVG_BEARING_BLOCKS:
+    # DERIVED (bgSvgContent attribute) UNION the spec's own named roster.
+    if (
+        SVG_CONTENT_ATTRIBUTE in (block_json.get("attributes") or {})
+        or block_slug in SPEC_NAMED_SVG_BLOCKS
+    ):
         provisions.add("svg")
 
     fx_supports = sgs_supports.get("fx") or {}
-    if fx_supports.get("draggable") is True:
+    # DERIVED (stylesheet declares a desktop-reachable `overflow-x: auto|scroll`)
+    # OR the explicit block.json opt-in override. Additive only — see the module
+    # docstring's PRECEDENCE note.
+    if block_slug in x_scroll_blocks or fx_supports.get("draggable") is True:
         provisions.add("track")
     if fx_supports.get("pairedFilter") is True:
         provisions.add("item-set")
@@ -250,6 +477,7 @@ def compute_map() -> dict[str, list[str]]:
     file-write path."""
     block_jsons = _load_block_jsons()
     richtext_blocks = _richtext_blocks()
+    x_scroll_blocks = _x_scroll_track_blocks()
     qualifying_effects = _load_qualifying_effects()
 
     result: dict[str, list[str]] = {}
@@ -276,7 +504,9 @@ def compute_map() -> dict[str, list[str]]:
         if "fx" in hidden:
             continue
 
-        provisions = _block_provisions(block_slug, block_json, richtext_blocks)
+        provisions = _block_provisions(
+            block_slug, block_json, richtext_blocks, x_scroll_blocks
+        )
 
         # PASS 1 — effects with a SPECIFIC target requirement. These are what
         # decide whether a block gets the fx panel at all.
@@ -374,10 +604,12 @@ def _write_php(fx_map: dict[str, list[str]]) -> None:
         "/**",
         " * Auto-generated Spec 38 motion-fx block -> qualifying-effects map — DO NOT EDIT.",
         " *",
-        " * Generated from block.json (containerKind / fx.draggable / fx.pairedFilter),",
-        " * each block's edit.js (RichText usage), and the `fx_effects` DB table's",
-        " * scope/requires columns by scripts/generate-fx-qualifying-blocks.py. To",
-        " * change these values, edit the relevant block.json / seed-motion-fx-",
+        " * Generated from block.json (containerKind / bgSvgContent / fx.draggable /",
+        " * fx.pairedFilter / fx.providesNatively), each block's edit.js (RichText",
+        " * usage), each block's style.css|style.scss (desktop-reachable",
+        " * `overflow-x: auto|scroll`), and the `fx_effects` DB table's scope/requires",
+        " * columns by scripts/generate-fx-qualifying-blocks.py. To change these",
+        " * values, edit the relevant block.json / stylesheet / seed-motion-fx-",
         " * registry.py, then re-run this generator.",
         " *",
         f" * Blocks with at least one qualifying effect: {total_blocks}",

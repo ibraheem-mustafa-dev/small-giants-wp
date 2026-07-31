@@ -31,24 +31,33 @@
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
  *
- * DRAGGABLE + INERTIA ROSTER OPT-IN (Spec 38 FR-38-13, added 2026-07-31):
- * this block declares `supports.sgs.fx.draggable` and render.php emits
- * `data-sgs-fx="draggable"` on `.sgs-testimonial-slider__track` when the
- * operator turns the inspector toggle on — BUT the shared Tier G runtime
- * (`shared/effects/gsap/fx-draggable.js`) only ever attaches to a genuine
- * native `overflow-x: auto|scroll` element, and this track is not one (it is
- * `overflow: hidden` with the transform-based clone-loop mechanism described
- * above). That runtime correctly finds nothing to attach to and no-ops here —
- * see its own docblock for why re-deriving this file's clone-zone math inside
- * a block-agnostic module would be exactly the per-block hyperfocus R-31-9
- * forbids. Instead, the momentum upgrade lives HERE, additively, on top of
- * the pointer-drag that already existed: `InertiaPlugin.track()`/`getVelocity()`
- * (dynamically imported, ONLY when an instance opts in — a page with the
- * toggle off never fetches GSAP) measures how fast the pointer was moving at
- * release, and a genuine flick — even over a short distance — registers as a
- * deliberate slide change, same as any native momentum scroll. See the
- * "Draggable + Inertia opt-in" block below `endDrag()` for the implementation
- * and its own reduced-motion note.
+ * DRAG MOMENTUM — BLOCK-PRIVATE, NOT THE SHARED Tier G ROSTER (Spec 38
+ * FR-38-13; rescoped 2026-07-31):
+ * this block briefly declared `supports.sgs.fx.draggable` and emitted
+ * `data-sgs-fx="draggable"` on `.sgs-testimonial-slider__track`. Both were
+ * removed, because the declaration was INERT here and not free: the shared
+ * runtime (`shared/effects/gsap/fx-draggable.js`) only ever attaches to a
+ * genuine native `overflow-x: auto|scroll` element, and this track is not one
+ * (it is `overflow: hidden` with the transform-based clone-loop above), so
+ * `initDraggable()` returned `undefined` every time — while the marker still
+ * made `SGS_Motion_Registry` enqueue GSAP core + InertiaPlugin + the effect
+ * module (~35KB gzip) to run it.
+ *
+ * Re-deriving this file's clone-zone wrap-around maths inside a block-agnostic
+ * module would be exactly the per-block hyperfocus R-31-9 forbids, so the
+ * momentum upgrade stays HERE, additively, on top of the pointer-drag that
+ * already existed: `InertiaPlugin.track()`/`getVelocity()` (dynamically
+ * imported, ONLY when an instance opts in — a page with the toggle off never
+ * fetches GSAP) measures how fast the pointer was moving at release, so a
+ * genuine flick, even over a short distance, registers as a deliberate slide
+ * change, same as any native momentum scroll.
+ *
+ * The opt-in marker is now block-private grammar —
+ * `data-sgs-slider-momentum="true"`, read only by this file. Deliberately NOT
+ * a `data-sgs-fx*` name: the registry sniffs rendered markup for `data-sgs-fx`
+ * to decide what to enqueue, so any name in that family would resurrect the
+ * dead-weight enqueue this change exists to remove. See the "Drag momentum"
+ * block below `endDrag()` for the implementation and its reduced-motion note.
  */
 
 /**
@@ -325,17 +334,15 @@ sliders.forEach( ( slider ) => {
 	let dragDelta = 0;
 
 	/*
-	 * Draggable + Inertia opt-in (Spec 38 FR-38-13) — see the file docblock
-	 * for why this lives here rather than in the shared fx-draggable.js
-	 * runtime. `wantsDragMomentum` reads the SAME `data-sgs-fx*` grammar
-	 * every Tier G effect uses; nothing below fires for an instance that
-	 * left the inspector toggle off, so a page with no opted-in slider never
-	 * even attempts the dynamic import (fail-open + zero-byte-when-unused,
+	 * Drag momentum (Spec 38 FR-38-13) — see the file docblock for why this
+	 * lives here rather than in the shared fx-draggable.js runtime, and why
+	 * the marker is block-private `data-sgs-slider-momentum` rather than a
+	 * `data-sgs-fx*` name. Nothing below fires for an instance that left the
+	 * inspector toggle off, so a page with no opted-in slider never even
+	 * attempts the dynamic import (fail-open + zero-byte-when-unused,
 	 * Spec 38 §4.4).
 	 */
-	const wantsDragMomentum =
-		'draggable' === track.dataset.sgsFx &&
-		'false' !== track.dataset.sgsFxMomentum;
+	const wantsDragMomentum = 'true' === track.dataset.sgsSliderMomentum;
 	// A plain tracked object, not a DOM property — InertiaPlugin.track() can
 	// observe any numeric property on any object; there is nothing here that
 	// needs to be an actual CSS value or element attribute.

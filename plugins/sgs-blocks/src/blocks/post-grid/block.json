@@ -56,7 +56,11 @@
 					"layer": "OUTER",
 					"_layer_note": "Block root and grid/list/masonry/carousel track combined. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid.",
 					"order": 1,
-					"clusters": [ "fill", "layout", "animation" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
@@ -87,7 +91,9 @@
 				"card": {
 					"label": "Post card",
 					"order": 2,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "card",
 					"attrMap": {
 						"css:background-color": "cardBgColour"
@@ -110,28 +116,37 @@
 				"title": {
 					"label": "Post title",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs."
 				},
 				"excerpt": {
 					"label": "Post excerpt",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "excerpt",
 					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member."
 				},
 				"meta": {
 					"label": "Meta (date/author)",
 					"order": 6,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "meta",
 					"_note": "css:color resolves via the default convention (metaColour)."
 				},
 				"category-badge": {
 					"label": "Category badge",
 					"order": 7,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "categoryBadge",
 					"attrMap": {
 						"css:background-color": "categoryBadgeBgColour"
@@ -141,10 +156,18 @@
 				"read-more": {
 					"label": "Read more link",
 					"order": 8,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "readMore",
 					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style."
 				}
+			},
+			"fx": {
+				"providesNatively": [
+					"draggable"
+				],
+				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
 			}
 		}
 	},
@@ -353,6 +376,14 @@
 			"default": true
 		},
 		"carouselShowArrows": {
+			"type": "boolean",
+			"default": true
+		},
+		"dragToScroll": {
+			"type": "boolean",
+			"default": false
+		},
+		"dragMomentum": {
 			"type": "boolean",
 			"default": true
 		},

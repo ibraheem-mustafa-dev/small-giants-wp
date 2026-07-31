@@ -255,7 +255,13 @@ export function initHorizontalPanel( el ) {
 					// header-behaviours/view.js publishes it. Resolving it eagerly
 					// captured the pre-JS fallback (80px) instead of the real 93px
 					// and left 13px of the section still behind the header.
-					start: () => resolveStart( el, 'top top' ),
+					//
+					// `clearChrome: true` is OPT-IN and this module is one of only
+					// two entitled to it (see resolveStart's docblock): it sets
+					// `pin: true` below, so the row is genuinely parked at the
+					// viewport top for the whole pin.
+					start: () =>
+						resolveStart( el, 'top top', { clearChrome: true } ),
 					// Pin length tracks the travel distance by default so
 					// scroll speed feels consistent regardless of panel
 					// count; a client-set `data-sgs-fx-end` overrides it for

@@ -1,0 +1,41 @@
+/**
+ * Motion-path route box — Spec 38 FR-38-17 / §11.2 (D427).
+ *
+ * The hidden <svg> that `includes/fx-path-routes.php` appends after a
+ * travelling block. It carries the geometry MotionPathPlugin reads and paints
+ * nothing itself.
+ *
+ * WHY `visibility: hidden` AND NOT `display: none`. A `display: none` element
+ * has no layout box, so `getBBox()`/`getBoundingClientRect()` return zeros and
+ * MotionPathPlugin resolves the route to a single point — the traveller would
+ * sit still and nothing would report an error. `visibility: hidden` keeps the
+ * full geometry while painting nothing, which is exactly what is wanted here.
+ * Do not "tidy" this to `display: none`.
+ *
+ * WHY `position: absolute; inset: 0`. The route is authored in a normalised
+ * 0..100 box and stretched (`preserveAspectRatio="none"`) across whatever this
+ * element covers — its nearest positioned ancestor. For an SGS section that is
+ * the container (`.sgs-container` is `position: relative`), so "arc" means an
+ * arc across the section the traveller sits in, at that section's real width
+ * and height. Being out of flow, it also costs the parent's layout nothing,
+ * which is what allows the render layer to append it as a sibling rather than
+ * wrapping the block.
+ *
+ * Enqueued conditionally by SGS_Motion_Registry on the same terms as the
+ * motion-path script module — a page with no travelling block gets neither.
+ */
+
+.sgs-fx-path-route {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.sgs-fx-path-route path {
+	fill: none;
+	stroke: none;
+}

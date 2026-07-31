@@ -32,17 +32,37 @@ defined( 'ABSPATH' ) || exit;
  * Block attribute name => rendered data-attribute suffix (Spec 38 §11.2).
  */
 const FX_ATTR_MAP = array(
-	'fx'         => 'data-sgs-fx',
-	'fxTrigger'  => 'data-sgs-fx-trigger',
-	'fxStart'    => 'data-sgs-fx-start',
-	'fxEnd'      => 'data-sgs-fx-end',
-	'fxHold'     => 'data-sgs-fx-hold',
-	'fxScrub'    => 'data-sgs-fx-scrub',
-	'fxStagger'  => 'data-sgs-fx-stagger',
-	'fxDuration' => 'data-sgs-fx-duration',
-	'fxEase'     => 'data-sgs-fx-ease',
-	'fxSplit'    => 'data-sgs-fx-split',
-	'fxMask'     => 'data-sgs-fx-mask',
+	'fx'           => 'data-sgs-fx',
+	'fxTrigger'    => 'data-sgs-fx-trigger',
+	'fxStart'      => 'data-sgs-fx-start',
+	'fxEnd'        => 'data-sgs-fx-end',
+	'fxHold'       => 'data-sgs-fx-hold',
+	'fxScrub'      => 'data-sgs-fx-scrub',
+	'fxStagger'    => 'data-sgs-fx-stagger',
+	'fxDuration'   => 'data-sgs-fx-duration',
+	'fxEase'       => 'data-sgs-fx-ease',
+	'fxSplit'      => 'data-sgs-fx-split',
+	'fxMask'       => 'data-sgs-fx-mask',
+
+	/*
+	 * Motion-path route (Spec 38 §11.2, D427). These two are the AUTHORING
+	 * surface; `includes/fx-path-routes.php` reads them back off the rendered
+	 * markup at p11 and expands them into the hidden route <svg> plus the
+	 * `data-sgs-fx-motion-path-target` selector the runtime resolves. That
+	 * target attribute is render-layer OUTPUT and deliberately has no row here
+	 * — nothing authors it.
+	 *
+	 * `fxPathRotate` maps to the runtime's own attribute name rather than a
+	 * name derived from the block attribute, because `fx-motion-path.js` reads
+	 * `data-sgs-fx-motion-path-rotate` and is untouched by this work.
+	 *
+	 * `fxPreset` is ABSENT on purpose: a preset writes its values into the
+	 * params above, so emitting the label too would ship a data attribute no
+	 * runtime reads.
+	 */
+	'fxPath'       => 'data-sgs-fx-path',
+	'fxPathAsset'  => 'data-sgs-fx-path-asset',
+	'fxPathRotate' => 'data-sgs-fx-motion-path-rotate',
 );
 
 /**
@@ -71,6 +91,55 @@ function sgs_fx_root_offset( string $block_content ): int {
 		$offset = $close_pos + \strlen( $close );
 	}
 	return $offset;
+}
+
+/**
+ * Build the `data-sgs-fx*` attribute string for a block's attributes.
+ *
+ * The same grammar `sgs_inject_fx_attributes()` writes onto a block ROOT, as a
+ * ready-to-echo string, for the case where the effect must land on an element
+ * DEEPER than the root and only the code emitting that element knows which one
+ * it is. `SGS_Container_Wrapper` uses it for the DrawSVG marker on
+ * `.sgs-container__svg-bg`.
+ *
+ * Sharing FX_ATTR_MAP is the point: a caller that hand-rolled its own
+ * `data-sgs-fx-*` list would silently stop honouring any parameter added to the
+ * grammar later, and the effect would behave differently depending on which
+ * element it was attached to.
+ *
+ * Emitting this string on a descendant deliberately SUPPRESSES the root
+ * injection — `sgs_inject_fx_attributes()` bails as soon as it sees
+ * `data-sgs-fx=` anywhere in the rendered block — which is exactly the intent:
+ * one effect, one target element, chosen by the code that knows the markup.
+ *
+ * @param array $attrs Parsed block attributes.
+ * @return string Leading-space-prefixed attribute string, or '' when no effect
+ *                is set. Every value is passed through `esc_attr()`.
+ */
+function sgs_fx_data_attr_string( array $attrs ): string {
+	$fx = $attrs['fx'] ?? '';
+	if ( ! \is_string( $fx ) || '' === $fx ) {
+		return '';
+	}
+
+	$out = '';
+	foreach ( FX_ATTR_MAP as $attr => $data_attr ) {
+		if ( ! isset( $attrs[ $attr ] ) ) {
+			continue;
+		}
+		$value = $attrs[ $attr ];
+
+		// Same rule as the root injector: skip only genuinely ABSENT values, so
+		// a legitimate numeric zero (`fxScrub => 0` means "no smoothing lag")
+		// survives instead of being replaced by the module's default.
+		if ( '' === $value || null === $value ) {
+			continue;
+		}
+
+		$out .= ' ' . $data_attr . '="' . \esc_attr( (string) $value ) . '"';
+	}
+
+	return $out;
 }
 
 /**

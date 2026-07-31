@@ -18,13 +18,20 @@
 	"supports": {
 		"sgs": {
 			"imageControls": false,
-			"presetSelectors": [ "cardStyle" ],
+			"presetSelectors": [
+				"cardStyle"
+			],
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
 					"layer": "OUTER",
-					"clusters": [ "text", "fill", "layout", "animation" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
@@ -40,6 +47,12 @@
 					},
 					"_note": "Root, rendered by SGS_Container_Wrapper (container_kind=layout, wraps sgs/container — WS-4). Empty-string prefix lets the default {suffix} convention resolve the bare universal-container attrs case-insensitively: maxWidth, gap(+Tablet/Mobile), gridTemplateColumns/Rows(+Tablet/Mobile), gridAutoRows, flexDirection, flexWrap, alignItems, alignContent, justifyContent, justifyItems all resolve this way — no attrMap needed for those. Honest gaps: no display/order/overflow/width/height/max-height/min-height/box-shadow/aspect-ratio attribute exists on this block; no padding/margin attribute or native support is declared (spacing support absent); opacity/overlay/background-attachment/-position/-repeat/object-fit/object-position have no control (this block has no image element); anim:stagger/parallax/trigger have no matching attrs (no staggerDelay/parallax/scroll-trigger control here) — honest gaps, not orphans. starColour/cardStyle/theme/variant are variant/preset selectors, not style-cluster members — deliberately undeclared (no prefix claims them, so they surface neither as gap nor orphan)."
 				}
+			},
+			"fx": {
+				"providesNatively": [
+					"draggable"
+				],
+				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
 			}
 		},
 		"align": [
@@ -180,6 +193,14 @@
 			"default": true
 		},
 		"showArrows": {
+			"type": "boolean",
+			"default": true
+		},
+		"dragToScroll": {
+			"type": "boolean",
+			"default": false
+		},
+		"dragMomentum": {
 			"type": "boolean",
 			"default": true
 		},

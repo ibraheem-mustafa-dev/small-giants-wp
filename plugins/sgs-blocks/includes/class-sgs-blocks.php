@@ -58,6 +58,14 @@ final class SGS_Blocks {
 		// that ordering is what lets a dynamic block's effect be detected.
 		require_once SGS_BLOCKS_PATH . 'includes/fx-attributes.php';
 
+		// Motion-path route expansion (Spec 38 §11.2, D427). Runs at
+		// render_block p11 — after the p10 injection above has put
+		// `data-sgs-fx-path` on dynamic blocks, and before the registry's p99
+		// sniff. Turns the client's chosen route preset into the hidden <svg>
+		// + `-motion-path-target` selector `fx-motion-path.js` already expects,
+		// so the runtime needs no change at all.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-path-routes.php';
+
 		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
 		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
 		Pattern_Slug_Shim::register();

@@ -284,7 +284,12 @@ export function initPinScrub( el ) {
 				// header-behaviours/view.js publishes it. Resolving it eagerly
 				// captured the pre-JS fallback (80px) instead of the real 93px
 				// and left 13px of the section still behind the header.
-				start: () => resolveStart( el, 'top top' ),
+				// `clearChrome: true` is OPT-IN and this module is one of only two
+				// entitled to it (see resolveStart's docblock): it sets `pin: true`
+				// below, so the section is genuinely parked at the viewport top and
+				// would otherwise sit behind the header for the whole pin.
+				start: () =>
+					resolveStart( el, 'top top', { clearChrome: true } ),
 				// Pin length: how many viewport-heights the section holds
 				// still while its children's timeline plays out.
 				end: stringParam( el, 'end', '+=100%' ),

@@ -182,8 +182,33 @@ export function initDraw( el ) {
 				...common,
 				scrollTrigger: {
 					trigger: el,
+					/*
+					 * NO `clearChrome` — this effect never pins, so it keeps its
+					 * own default. See resolveStart's docblock: the chrome offset
+					 * used to be applied unconditionally, rewriting `top 85%` to
+					 * `top top+=93` on any site with a sticky header, which is why
+					 * the owner saw the logo finish drawing only once it was
+					 * already tucked under the header.
+					 *
+					 * BOTH ENDS NOW ANCHOR TO THE SAME EDGE (`top`), matching
+					 * fx-scrub.js. With the old `bottom 40%` end, the scrub
+					 * distance was the element's OWN HEIGHT plus 45% of the
+					 * viewport — so the identical logo drew at a completely
+					 * different rate depending on how tall its container happened
+					 * to be, and a tall SVG's draw could not finish until it was
+					 * most of the way off the top of the screen. Anchoring both to
+					 * the element's top makes the distance a fixed 45% of the
+					 * viewport height regardless of the graphic's size.
+					 *
+					 * 85% → 40% is deliberately fx-scrub.js's shipped, proven
+					 * window rather than a new number: the draw begins as the SVG
+					 * clears the bottom edge and completes with it sitting in the
+					 * upper-middle of the viewport — well clear of a ~93px header
+					 * (~10% of a 900px viewport), so the finished graphic is fully
+					 * visible at the moment it finishes.
+					 */
 					start: resolveStart( el, 'top 85%' ),
-					end: el.getAttribute( 'data-sgs-fx-end' ) || 'bottom 40%',
+					end: el.getAttribute( 'data-sgs-fx-end' ) || 'top 40%',
 					scrub: resolveScrub( el ),
 				},
 			}

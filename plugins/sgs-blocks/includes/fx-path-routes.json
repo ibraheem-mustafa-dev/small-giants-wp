@@ -1,0 +1,26 @@
+{
+	"_readme": "Spec 38 §11.2 (D427 amendment) — the CURATED motion-path route presets. ONE file, read by BOTH sides on purpose: includes/fx-path-routes.php reads it for the render-layer expansion (it needs the `d`), and src/blocks/extensions/fx.js imports it for the thumbnail picker (it needs the same `d` to draw each thumbnail, plus the labels). A second copy would be a fifth hand-kept motion list that nothing cross-checks — the exact drift class D427 and Task 3 exist to close. It lives in includes/ rather than src/ because includes/ ships to the server; webpack imports .json natively, so the editor side needs no generator step.",
+	"_geometry": "Every route is authored in a 0 0 100 100 viewBox and rendered with preserveAspectRatio=\"none\", so the route stretches to fill its box rather than keeping its drawn proportions. The render layer sizes that box to the traveller's nearest positioned ancestor (see includes/fx-path-routes.php + assets/css/fx-motion-path.css), which for an SGS section is the container — so `arc` means \"an arc across this section\", at whatever width and height that section happens to be. Coordinates are inset from the edges (never 0..100 exactly) so a traveller aligned to the path by its centre is not half-clipped at the start or end.",
+	"routes": {
+		"arc": {
+			"label": "Arc",
+			"description": "Rises from the lower left, peaks in the middle, settles at the lower right.",
+			"d": "M 6 82 Q 50 6 94 82"
+		},
+		"s-curve": {
+			"label": "S-curve",
+			"description": "Sweeps right, doubles back left, then right again — a lazy S down the section.",
+			"d": "M 10 6 C 82 28, 18 72, 90 94"
+		},
+		"orbit": {
+			"label": "Orbit",
+			"description": "A full circle. The traveller ends where it started, so it reads as one continuous loop.",
+			"d": "M 50 6 A 44 44 0 0 1 50 94 A 44 44 0 0 1 50 6"
+		},
+		"figure-8": {
+			"label": "Figure of eight",
+			"description": "Two linked loops crossing at the centre — the busiest of the four.",
+			"d": "M 50 50 C 30 30, 8 38, 8 55 C 8 72, 32 72, 50 50 C 68 28, 92 28, 92 45 C 92 62, 70 70, 50 50 Z"
+		}
+	}
+}

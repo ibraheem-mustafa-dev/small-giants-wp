@@ -325,6 +325,29 @@ $shield_url    = sgs_trustpilot_asset_url( 'trustpilot-shield.svg' );
 
 $is_carousel = ( 'carousel' === $variant || 'mini-carousel' === $variant );
 
+/*
+ * Draggable + Inertia roster opt-in (Spec 38 FR-38-13), mirroring sgs/gallery.
+ *
+ * Emitted on `.sgs-trustpilot-reviews__track` — the element that actually
+ * scrolls (style.css: the `--carousel` / `--mini-carousel` track is the
+ * `overflow-x: auto` + `scroll-snap-type: x mandatory` flex row), NOT the block
+ * root, which never scrolls. Carousel variants only: the grid/list/mini
+ * variants render the same track as a plain CSS grid with nothing to
+ * drag-scroll. The shared runtime (shared/effects/gsap/fx-draggable.js)
+ * structurally re-verifies the element is a genuine native horizontal scroller
+ * before touching it, so this stays safe if the variant CSS ever changes.
+ */
+$sgs_tp_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
+$sgs_tp_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
+
+$sgs_tp_track_fx_attr = '';
+if ( $is_carousel && $sgs_tp_drag_to_scroll ) {
+	$sgs_tp_track_fx_attr = ' data-sgs-fx="draggable"';
+	if ( ! $sgs_tp_drag_momentum ) {
+		$sgs_tp_track_fx_attr .= ' data-sgs-fx-momentum="false"';
+	}
+}
+
 // ───────────────────────────────────────────────────────────────────────────
 // Build interior HTML
 // ───────────────────────────────────────────────────────────────────────────
@@ -421,6 +444,7 @@ endif;
 		tabindex="0"
 		role="group"
 		aria-label="<?php esc_attr_e( 'Customer reviews', 'sgs-blocks' ); ?>"
+		<?php echo $sgs_tp_track_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings, no dynamic value. ?>
 	>
 		<?php
 		foreach ( $reviews as $idx => $r ) :

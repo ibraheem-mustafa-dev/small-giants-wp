@@ -230,15 +230,22 @@ class SGS_Motion_Registry {
 	 * anti-pattern this must not repeat (§4.4) is exactly an unconditional
 	 * enqueue that self-gates at runtime.
 	 *
-	 * Only the horizontal panel needs one, and it needs it for a reason worth
-	 * stating: its fallback is what makes the content REACHABLE on a phone or
-	 * under reduced motion. The effect module cannot own that fallback, because
-	 * the module never runs in either of those cases.
+	 * The horizontal panel needs one for a reason worth stating: its fallback is
+	 * what makes the content REACHABLE on a phone or under reduced motion. The
+	 * effect module cannot own that fallback, because the module never runs in
+	 * either of those cases.
+	 *
+	 * Motion-path needs one for a different reason: the render layer appends a
+	 * hidden route `<svg>` (Spec 38 §11.2, D427) whose box IS its geometry, so
+	 * without this stylesheet the route resolves to a stray in-flow SVG of
+	 * intrinsic size. That is a Spec 32 obligation as much as a functional one
+	 * — the render layer must not inline those declarations onto the element.
 	 *
 	 * @var array<string, string>
 	 */
 	private const EFFECT_STYLES = array(
 		'horizontal-panel' => 'assets/css/fx-horizontal-panel.css',
+		'motion-path'      => 'assets/css/fx-motion-path.css',
 	);
 
 	/**

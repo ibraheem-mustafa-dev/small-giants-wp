@@ -1,11 +1,13 @@
 {
 	"draggable": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"load"
 		]
 	},
 	"draw": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -14,24 +16,28 @@
 		]
 	},
 	"flip": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"scroll"
 		]
 	},
 	"horizontal-panel": {
+		"owns_scroll_transform": true,
 		"pins": true,
 		"triggers": [
 			"scroll"
 		]
 	},
 	"image-sequence": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"scroll"
 		]
 	},
 	"morph": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -40,24 +46,28 @@
 		]
 	},
 	"motion-path": {
+		"owns_scroll_transform": true,
 		"pins": false,
 		"triggers": [
 			"scroll"
 		]
 	},
 	"page-transitions": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"load"
 		]
 	},
 	"pin-scrub": {
+		"owns_scroll_transform": true,
 		"pins": true,
 		"triggers": [
 			"scroll"
 		]
 	},
 	"scramble": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -66,12 +76,14 @@
 		]
 	},
 	"scroll-smoother": {
+		"owns_scroll_transform": false,
 		"pins": false,
 		"triggers": [
 			"scroll"
 		]
 	},
 	"scrub": {
+		"owns_scroll_transform": true,
 		"pins": false,
 		"triggers": [
 			"scroll",
@@ -80,6 +92,7 @@
 		]
 	},
 	"split-reveal": {
+		"owns_scroll_transform": true,
 		"pins": false,
 		"triggers": [
 			"scroll",

@@ -290,6 +290,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		carouselSpeed,
 		carouselShowDots,
 		carouselShowArrows,
+		dragToScroll,
+		dragMomentum,
 	} = attributes;
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
@@ -969,6 +971,35 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 1000 }
 								max={ 10000 }
 								step={ 500 }
+								__nextHasNoMarginBottom
+							/>
+						) }
+						{ /*
+						 * Draggable + Inertia opt-in (Spec 38 FR-38-13),
+						 * mirroring sgs/gallery. Desktop-only click-and-drag
+						 * layered over the CSS scroll-snap this layout already
+						 * renders — touch keeps its native scroll either way,
+						 * so no "touch" caveat belongs in the help text.
+						 */ }
+						<ToggleControl
+							label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
+							checked={ dragToScroll }
+							onChange={ set( 'dragToScroll' ) }
+							help={ __(
+								'Lets visitors click and drag with a mouse to scroll the carousel, on top of the usual arrows, dots, swipe and scrollbar.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+						{ dragToScroll && (
+							<ToggleControl
+								label={ __( 'Momentum', 'sgs-blocks' ) }
+								checked={ dragMomentum }
+								onChange={ set( 'dragMomentum' ) }
+								help={ __(
+									'Carousel keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+									'sgs-blocks'
+								) }
 								__nextHasNoMarginBottom
 							/>
 						) }

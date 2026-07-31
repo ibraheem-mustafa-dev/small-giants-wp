@@ -275,8 +275,32 @@ if ( $show_filters ) :
 	endif;
 endif;
 
+/*
+ * Draggable + Inertia roster opt-in (Spec 38 FR-38-13), mirroring sgs/gallery.
+ *
+ * Emitted on `.sgs-post-grid__inner` — the element that actually scrolls
+ * (style.css: `.sgs-post-grid--carousel .sgs-post-grid__inner` is the
+ * `overflow-x: auto` + `scroll-snap-type: x mandatory` flex row), NOT the block
+ * root, which never scrolls. Carousel-only: the grid/list/masonry layouts have
+ * nothing to drag-scroll. The shared runtime
+ * (shared/effects/gsap/fx-draggable.js) structurally re-verifies the element is
+ * a genuine native horizontal scroller before touching it, so this stays safe
+ * if a future layout change made the carousel non-scrolling.
+ */
+$sgs_pg_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
+$sgs_pg_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
+
+$sgs_pg_inner_fx_attr = '';
+if ( 'carousel' === $layout && $sgs_pg_drag_to_scroll ) {
+	$sgs_pg_inner_fx_attr = ' data-sgs-fx="draggable"';
+	if ( ! $sgs_pg_drag_momentum ) {
+		$sgs_pg_inner_fx_attr .= ' data-sgs-fx-momentum="false"';
+	}
+}
+
 // --- Post cards grid.
-echo '<div class="sgs-post-grid__inner">';
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_pg_inner_fx_attr is built entirely from literal strings above, no dynamic value.
+echo '<div class="sgs-post-grid__inner"' . $sgs_pg_inner_fx_attr . '>';
 if ( $query->have_posts() ) {
 	$card_index = 0;
 	while ( $query->have_posts() ) {

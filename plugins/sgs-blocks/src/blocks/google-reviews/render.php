@@ -30,6 +30,29 @@ $sgs_css_keyword = static function ( $value ) {
 };
 
 $variant            = $attributes['variant'] ?? 'grid';
+
+/*
+ * Draggable + Inertia roster opt-in (Spec 38 FR-38-13), mirroring sgs/gallery.
+ *
+ * Emitted on `.sgs-google-reviews__list` — the element that actually scrolls
+ * (style.css: `.sgs-google-reviews--slider .sgs-google-reviews__list` is the
+ * `overflow-x: auto` + `scroll-snap-type: x mandatory` flex row), NOT the block
+ * root, which never scrolls. Slider variant only: every other variant renders
+ * that same list element as a plain grid with nothing to drag-scroll. The
+ * shared runtime (shared/effects/gsap/fx-draggable.js) structurally re-verifies
+ * the element is a genuine native horizontal scroller before touching it, so
+ * this stays safe if the variant CSS ever changes.
+ */
+$sgs_gr_drag_to_scroll = (bool) ( $attributes['dragToScroll'] ?? false );
+$sgs_gr_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
+
+$sgs_gr_list_fx_attr = '';
+if ( 'slider' === $variant && $sgs_gr_drag_to_scroll ) {
+	$sgs_gr_list_fx_attr = ' data-sgs-fx="draggable"';
+	if ( ! $sgs_gr_drag_momentum ) {
+		$sgs_gr_list_fx_attr .= ' data-sgs-fx-momentum="false"';
+	}
+}
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
 $columns            = $attributes['columns'] ?? 3;
 $columns_tablet     = $attributes['columnsTablet'] ?? 2;
@@ -490,7 +513,7 @@ if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	<?php
 else :
 	?>
-	<div class="sgs-google-reviews__list">
+	<div class="sgs-google-reviews__list"<?php echo $sgs_gr_list_fx_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from literal strings, no dynamic value. ?>>
 		<?php foreach ( $reviews as $review ) : ?>
 			<?php
 			$author        = $review['authorAttribution']['displayName'] ?? __( 'Anonymous', 'sgs-blocks' );

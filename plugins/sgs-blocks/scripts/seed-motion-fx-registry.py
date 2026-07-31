@@ -388,17 +388,26 @@ FX_EFFECTS: list[dict] = [
         "owns_scroll_transform": 1,
         "reduced_motion": "suppress",
         "editor_story": "end-state",
-        # §2 row Level = "element" -> scope='element'. requires='svg': REASONED,
-        # NOT SPEC-STATED — the row's Exposure-surface column names exactly ONE
-        # block ("Inspector on `sgs/decorative-image`"), which already sits
-        # inside the DrawSVG/MorphSVG 4-block SVG-bearing roster. Reusing
-        # 'svg' means the other 3 roster blocks (responsive-logo/icon/
-        # separator) would ALSO qualify for MotionPath, which the spec never
-        # confirms — flagged honestly as an over-inclusion risk the spec leaves
-        # genuinely undetermined, rather than inventing a fifth requires value
-        # for a single named block.
+        # requires CORRECTED 'svg' -> 'none', 2026-07-31 (owner-directed, D427
+        # build). The old value was inherited from the DrawSVG/MorphSVG rows
+        # and was simply WRONG for this effect, which the code proves rather
+        # than the spec asserting: fx-motion-path.js:191 calls
+        # `gsap.to( el, { motionPath: { path, ... } } )` — `el` is the
+        # TRAVELLER and can be any element at all; only `path` needs shape
+        # geometry, and under D427 that path is a hidden <svg> the RENDER LAYER
+        # generates from a curated preset (includes/fx-path-routes.php). So the
+        # traveller has no SVG requirement to gate on, and 'svg' was restricting
+        # the control to four blocks for a constraint that belongs to the route,
+        # not to the thing travelling along it.
+        #
+        # Contrast `morph` above, which is left at 'svg' deliberately: MorphSVG
+        # rewrites the element's OWN `d`, so there the element genuinely must be
+        # a shape and the requirement is real.
+        #
+        # scope stays 'element' — it is still an inspector surface on a block,
+        # not a site setting; scope and requires are independent columns.
         "scope": "element",
-        "requires": "svg",
+        "requires": "none",
     },
     {
         # FR-38-9, §2 row "Scroll-scrubbed image sequence", §9 row 2
@@ -508,6 +517,46 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     "fxStagger": "fx:stagger",
     "fxDuration": "fx:duration",
     "fxEase": "fx:ease",
+    # ------------------------------------------------------------------
+    # Added 2026-07-31 — closing the gap between what the GRAMMAR claims and
+    # what the registry actually holds. Spec 38 s11.3 states a "1:1 attr
+    # mapping"; before these rows that sentence was aspirational for three
+    # attributes that were already emitted, already read by a runtime module,
+    # and already controlled in the editor, while appearing in no fx:* row.
+    # ------------------------------------------------------------------
+    #
+    # `dragMomentum` -> fx:momentum. THE DRIFT HAZARD, and note the attr name:
+    # unlike every other row here this is a BLOCK attribute, not an fx
+    # extension attribute. sgs/gallery and sgs/testimonial-slider both declare
+    # `dragMomentum` in their block.json and both emit `data-sgs-fx-momentum`
+    # from render.php; fx-draggable.js / testimonial-slider's view.js read it
+    # back off the DOM. So the whole loop existed EXCEPT the registry row, and
+    # the mapping is keyed on the real declared attr name rather than an
+    # invented `fxMomentum` that no block.json has - a row keyed on a name
+    # nothing declares would report [skip] forever and prove nothing.
+    "dragMomentum": "fx:momentum",
+    #
+    # `fxPath` -> fx:path. The curated motion-path route (s11.2, D427). This is
+    # the AUTHORING surface; `data-sgs-fx-motion-path-target` is render-layer
+    # OUTPUT and deliberately gets no row - a draft never writes it, and the
+    # converter maps the route, never the resolved selector.
+    "fxPath": "fx:path",
+    "fxPathAsset": "fx:path-asset",
+    "fxPathRotate": "fx:path-rotate",
+    #
+    # `fxShape` -> fx:shape. Seeded AHEAD of the morph control (s11.2 lists it
+    # beside fx:path). Reports [skip] until a block declares it, which is the
+    # documented no-op this step already has for every unshipped attr - the row
+    # exists so the grammar's own claim is true of the registry rather than
+    # true only of the effects that happen to have shipped.
+    "fxShape": "fx:shape",
+    #
+    # `fxPreset` -> fx:preset. The client-facing intensity layer (s7). It is
+    # deliberately NOT part of the data-attribute grammar: a preset writes its
+    # values into the params above, so emitting the label as well would put an
+    # attribute in the markup that no runtime reads. It IS a stored block
+    # attribute, so it gets a registry row.
+    "fxPreset": "fx:preset",
 }
 
 FX_EFFECTS_COLUMNS = (
@@ -692,8 +741,17 @@ def _reconcile_animation_tokens(cur: sqlite3.Cursor) -> int:
 
 def main() -> int:
     if not DB_PATH.exists():
-        print(f"[seed-motion-fx-registry] DB not found: {DB_PATH}", file=sys.stderr)
-        return 1
+        # Deliberately unversioned (13.9MB local dev knowledge base — see
+        # .claude/dev-setup.md "sgs-framework.db" section). A contributor
+        # without it builds off the already-committed generated artefacts
+        # (generated-fx-effects.php, generated-fx-qualifying-blocks.php/json,
+        # generated-fx-effect-meta.json) instead — this seeder has nothing to
+        # do in that case, so it skips cleanly rather than failing the build.
+        print(
+            f"[seed-motion-fx-registry] DB not found: {DB_PATH} — skipping "
+            "(building off committed generated artefacts; see .claude/dev-setup.md)."
+        )
+        return 0
 
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()

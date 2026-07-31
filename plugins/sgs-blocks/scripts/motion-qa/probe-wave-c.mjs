@@ -632,12 +632,93 @@ a.scramble.forEach( ( s ) => {
 	}
 } );
 
+/*
+ * ⚠ WHY THIS IS NOT A SPREAD CHECK ANY MORE (2026-07-31).
+ *
+ * The previous criterion was `max(luma) - min(luma) >= 5`, and it PASSED a real,
+ * owner-visible defect. `resolveStart` was rewriting this effect's `top 80%`
+ * default to `top top+=93` on any site with a sticky header, so the sequence did
+ * not begin until the block was nearly off the top of the screen. The recorded
+ * samples were 86.14 / 86.14 / 86.14 / 128.60 / 149.39 — FLAT across the first
+ * 60% of the scroll pass, then everything happening at the end. Spread was 63,
+ * comfortably over the threshold, so the probe said PASS.
+ *
+ * A spread test only asks "did the canvas ever change?". The thing that actually
+ * matters is "did it change ACROSS the scroll a visitor performs?" — so the
+ * criterion is now DISTRIBUTION, not magnitude:
+ *
+ *  1. All five samples must be readable. A null is a measurement failure, not a
+ *     pass — it must never be silently filtered out of the denominator, which is
+ *     how the old `.filter()` could have scored a 2-sample run as if it were 5.
+ *  2. Luminance must STRICTLY INCREASE at every step. This is a valid assertion
+ *     rather than an arbitrary one: the fixture frames are generated so mean
+ *     luminance ramps monotonically with frame index (see `canvasLuma` above), so
+ *     luminance IS frame index. Every sample sits at a different scroll position,
+ *     so every sample must be showing a later frame than the one before it. A
+ *     flat step means that stretch of scrolling produced no change; a falling step
+ *     means frames ran backwards.
+ *
+ * ⚠ "AT LEAST 3 OF 5 DISTINCT" WAS EVALUATED AND REJECTED AS THE CRITERION.
+ * It is the obvious strengthening of the spread test, and it is still vacuous
+ * against the exact defect above: 86.14 / 86.14 / 86.14 / 128.60 / 149.39 has
+ * EXACTLY 3 distinct values, so a "3 of 5" gate would have gone green on the
+ * failure it was written to catch. The distinct count is kept below for
+ * diagnostics — it is reported, never gated on.
+ *
+ * `STEP_MIN` is the smallest rise that counts as a real advance. The fixture
+ * ramps ~86 → ~149 across the pass, so genuine steps are tens of units, while
+ * sampling noise (every 97th pixel, plus the scrub's catch-up smoothing) is
+ * sub-unit. 1 separates them with two orders of magnitude to spare, and is
+ * deliberately NOT a tolerance that lets a flat step pass: a flat step is 0.
+ */
+const STEP_MIN = 1;
+
 a.imageSequence.forEach( ( seq ) => {
-	const lumas = seq.samples.map( ( s ) => s.luma ).filter( ( l ) => null !== l );
-	const spread = lumas.length ? Math.max( ...lumas ) - Math.min( ...lumas ) : 0;
-	if ( spread < 5 ) {
+	const lumas = seq.samples.map( ( s ) => s.luma );
+
+	const label = `image-sequence #${ seq.index }`;
+	const unreadable = lumas.filter( ( l ) => null === l ).length;
+
+	if ( unreadable > 0 ) {
 		fails.push(
-			`image-sequence #${ seq.index }: canvas luminance spread ${ spread } — frames did not track scroll`
+			`${ label }: canvas unreadable at ${ unreadable } of ` +
+				`${ lumas.length } scroll samples — cannot judge`
+		);
+		return;
+	}
+
+	// Reported for diagnostics, never gated on — see the note above for why a
+	// distinct-count threshold cannot catch the defect this replaced.
+	const distinct = new Set( lumas ).size;
+
+	const steps = lumas
+		.slice( 1 )
+		.map( ( l, i ) => ( { from: i, delta: l - lumas[ i ] } ) );
+
+	const flat = steps.filter( ( s ) => Math.abs( s.delta ) < STEP_MIN );
+	const falling = steps.filter( ( s ) => s.delta <= -STEP_MIN );
+
+	const series = lumas.join( ' ' );
+	const span = ( s ) =>
+		seq.samples[ s.from ].frac + '→' + seq.samples[ s.from + 1 ].frac;
+
+	if ( falling.length > 0 ) {
+		const s = falling[ 0 ];
+		fails.push(
+			`${ label }: luminance FELL ${ -s.delta } across scroll step ` +
+				`${ span( s ) } (${ series }) — frames are running backwards ` +
+				`against the scroll direction`
+		);
+	}
+
+	if ( flat.length > 0 ) {
+		const where = flat.map( span ).join( ' ' );
+		fails.push(
+			`${ label }: no frame advance across ${ flat.length } of ` +
+				`${ steps.length } scroll steps (${ where }) — lumas ` +
+				`${ series }, ${ distinct } distinct. The sequence is bunched ` +
+				`into part of the scroll pass instead of spread across it, so ` +
+				`most of the scroll a visitor performs produces no visible change`
 		);
 	}
 } );

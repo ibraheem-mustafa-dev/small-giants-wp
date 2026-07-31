@@ -227,7 +227,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								autoplay: true,
 								autoplaySpeed: 5000,
 								dragToScroll: false,
-								dragMomentum: true,
 							} )
 						}
 					>
@@ -427,11 +426,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 						</ToolsPanelItem>
 						{ /*
-						 * Draggable + Inertia roster opt-in (Spec 38 FR-38-13).
-						 * This slider already supports click-and-drag (its
-						 * own view.js) — this toggle upgrades the RELEASE
-						 * feel with real momentum via GSAP's InertiaPlugin,
-						 * it does not add dragging that wasn't there before.
+						 * Drag momentum (Spec 38 FR-38-13). This slider always
+						 * supports click-and-drag (its own view.js) — this
+						 * toggle upgrades the RELEASE feel with real momentum
+						 * via GSAP's InertiaPlugin, it does not add dragging
+						 * that wasn't there before.
+						 *
+						 * Wired to this block's OWN behaviour, NOT the shared
+						 * Tier G draggable roster: that roster's runtime only
+						 * attaches to native `overflow-x` scrollers and could
+						 * never do anything on this transform-driven track.
 						 */ }
 						<ToolsPanelItem
 							label={ __( 'Drag momentum', 'sgs-blocks' ) }

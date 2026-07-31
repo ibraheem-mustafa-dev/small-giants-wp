@@ -1,0 +1,60 @@
+{
+	"_readme": "Spec 38 §7 — the CLIENT-FACING preset layer over the raw fx parameters. A client picks an intensity; this file says what that intensity MEANS for the effect they chose. Data, not a switch statement in JSX: adding an intensity to a new effect is a JSON edit with no code change, and the whole vocabulary can be reviewed in one place instead of being reconstructed from conditionals.",
+	"_precedence": "The preset is a WRITER, never a filter. Choosing one immediately writes its whole governed set into the real attributes (including nulls, which CLEAR a param back to the effect module's own default) — so the stored state after applying a preset is fully determined, and switching Dramatic → Subtle cannot leave Dramatic's leftovers behind. Hand-editing any governed param afterwards clears `fxPreset` to '' (Custom) in the same interaction, so the selector can never claim a preset that is no longer what is applied. There is exactly one source of truth per parameter — the attribute itself — and `fxPreset` is only ever a truthful label for the last group applied.",
+	"_runtime": "Zero runtime involvement. `fxPreset` is deliberately NOT emitted as a data attribute: everything it does is already materialised in the fx params, so emitting it would put an attribute in the markup that nothing reads. Reduced motion is therefore untouched by preset choice by construction — the provider's `withMotionAllowed` gate sits below all of this and never sees a preset.",
+	"_governed": "Each effect's preset writes ONLY parameters that effect's panel actually exposes (verified against the control gates in fx.js). Writing a param with no control would strand a value the client can neither see nor reset. `fxTrigger` is deliberately ungoverned everywhere — WHEN an effect fires is a semantic choice, not an intensity, so a preset must not silently move it.",
+	"levels": [
+		{
+			"value": "subtle",
+			"label": "Subtle",
+			"description": "Understated — short travel, quick settle. Safe on text-heavy pages."
+		},
+		{
+			"value": "standard",
+			"label": "Standard",
+			"description": "The balanced default. Noticeable without taking over the section."
+		},
+		{
+			"value": "dramatic",
+			"label": "Dramatic",
+			"description": "Long travel, slow catch-up, high contrast. One per page at most."
+		}
+	],
+	"effects": {
+		"scrub": {
+			"subtle": { "fxStart": "top 85%", "fxEnd": "top center", "fxScrub": 0.3, "fxEase": "power1.out" },
+			"standard": { "fxStart": "top 70%", "fxEnd": "top center", "fxScrub": 0.8, "fxEase": null },
+			"dramatic": { "fxStart": "top bottom", "fxEnd": "top top", "fxScrub": 1.5, "fxEase": "power3.out" }
+		},
+		"pin-scrub": {
+			"subtle": { "fxStart": null, "fxEnd": "+=50%", "fxHold": "short", "fxScrub": 0.3 },
+			"standard": { "fxStart": null, "fxEnd": "+=100%", "fxHold": null, "fxScrub": 0.8 },
+			"dramatic": { "fxStart": null, "fxEnd": "+=200%", "fxHold": "long", "fxScrub": 1.5 }
+		},
+		"horizontal-panel": {
+			"subtle": { "fxStart": null, "fxEnd": "+=50%", "fxHold": "short", "fxScrub": 0.3 },
+			"standard": { "fxStart": null, "fxEnd": "+=100%", "fxHold": null, "fxScrub": 0.8 },
+			"dramatic": { "fxStart": null, "fxEnd": "+=200%", "fxHold": "long", "fxScrub": 1.5 }
+		},
+		"split-reveal": {
+			"subtle": { "fxStart": "top 85%", "fxEnd": null, "fxDuration": 0.5, "fxStagger": 0.02, "fxEase": "power1.out", "fxSplit": "words", "fxMask": null },
+			"standard": { "fxStart": "top 70%", "fxEnd": null, "fxDuration": 0.8, "fxStagger": 0.05, "fxEase": null, "fxSplit": "words", "fxMask": null },
+			"dramatic": { "fxStart": "top 85%", "fxEnd": null, "fxDuration": 1.2, "fxStagger": 0.03, "fxEase": "back.out", "fxSplit": "chars", "fxMask": "chars" }
+		},
+		"scramble": {
+			"subtle": { "fxStart": "top 85%", "fxEnd": "top center" },
+			"standard": { "fxStart": "top 70%", "fxEnd": "top center" },
+			"dramatic": { "fxStart": "top bottom", "fxEnd": "top top" }
+		},
+		"draw": {
+			"subtle": { "fxStart": "top 85%", "fxEnd": "top center" },
+			"standard": { "fxStart": "top 70%", "fxEnd": "top center" },
+			"dramatic": { "fxStart": "top bottom", "fxEnd": "top top" }
+		},
+		"motion-path": {
+			"subtle": { "fxStart": "top 85%", "fxEnd": "top center", "fxScrub": 0.3 },
+			"standard": { "fxStart": "top bottom", "fxEnd": "bottom top", "fxScrub": 0.8 },
+			"dramatic": { "fxStart": "top bottom", "fxEnd": "bottom top", "fxScrub": 1.5 }
+		}
+	}
+}

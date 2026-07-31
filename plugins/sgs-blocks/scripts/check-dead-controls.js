@@ -268,10 +268,43 @@ function readBlock( dir ) {
 	const dynamic = fs.existsSync( path.join( dir, 'render.php' ) );
 	const editJs = readIfExists( path.join( dir, 'edit.js' ) );
 	const usesWrapper = /ContainerWrapperControls/.test( editJs );
+	/*
+	 * The block's own RENDER corpus.
+	 *
+	 * Deliberately NOT the three literal filenames render.php / save.js /
+	 * view.js this used to read. A block's render layer is routinely split
+	 * across partials that render.php `require`s — `sgs/buybox` renders its
+	 * product gallery from `gallery-col.php` and its back-in-stock form from
+	 * `notify-form.php`, and ships a second view module as `notify-view.js`.
+	 * An attribute consumed only in one of those files was invisible here, so
+	 * a correctly-wired control got reported as dead: a false positive that
+	 * pushes the next person toward the baseline file, which is exactly the
+	 * escape hatch this gate exists to deny.
+	 *
+	 * So the corpus is derived from what the directory CONTAINS: every `.php`
+	 * file (all of them are render-side by construction — a block directory has
+	 * no other use for PHP), plus `save.js`, plus every `*view*.js` frontend
+	 * module.
+	 *
+	 * `edit.js` and `index.js` stay excluded, and that exclusion is
+	 * load-bearing: edit.js is where the CONTROL is declared, so folding it into
+	 * the corpus would make every attribute trivially "consumed" and this gate
+	 * could never fail again.
+	 */
 	const ownCorpus = stripComments(
-		readIfExists( path.join( dir, 'render.php' ) ) +
-			'\n' + readIfExists( path.join( dir, 'save.js' ) ) +
-			'\n' + readIfExists( path.join( dir, 'view.js' ) )
+		fs
+			.readdirSync( dir, { withFileTypes: true } )
+			.filter( ( entry ) => entry.isFile() )
+			.map( ( entry ) => entry.name )
+			.filter(
+				( name ) =>
+					name.endsWith( '.php' ) ||
+					'save.js' === name ||
+					( name.endsWith( '.js' ) && name.includes( 'view' ) )
+			)
+			.sort()
+			.map( ( name ) => readIfExists( path.join( dir, name ) ) )
+			.join( '\n' )
 	);
 	const providesContext = meta.providesContext || {}; // { contextKey: attrName }
 	const usesContext = Array.isArray( meta.usesContext ) ? meta.usesContext : [];
@@ -438,7 +471,7 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 				block: block.name,
 				attr,
 				reason:
-					'has an editor control in edit.js but its name appears in no render.php / save.js / view.js / shared includes — nothing renders it',
+					"has an editor control in edit.js but its name appears in none of the block's .php files / save.js / *view*.js / shared includes — nothing renders it",
 			} );
 		}
 	}

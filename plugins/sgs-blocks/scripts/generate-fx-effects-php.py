@@ -34,6 +34,7 @@ ownership split).
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sqlite3
 import sys
@@ -62,24 +63,25 @@ def _php_array_of_strings(values: list[str]) -> str:
     return f"array( {items} )"
 
 
-def main() -> int:
-    if not DB_PATH.exists():
-        print(f"[generate-fx-effects-php] DB not found: {DB_PATH}", file=sys.stderr)
-        return 1
-
+def _load_rows() -> list[tuple]:
+    """Read the fx_effects rows this generator needs. Raises SystemExit(1) with
+    a message naming DB_PATH on any failure mode — including the empty-table
+    case, which must never be mistaken for "nothing to generate" (an empty
+    read here would silently produce a PHP registry with zero effects and no
+    error at all — the exact failure this generator must never reproduce)."""
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()
 
     if not cur.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='fx_effects'"
     ).fetchone():
+        con.close()
         print(
-            "[generate-fx-effects-php] fx_effects table not found — run "
-            "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py first.",
+            f"[generate-fx-effects-php] fx_effects table not found in {DB_PATH} — "
+            "run plugins/sgs-blocks/scripts/seed-motion-fx-registry.py first.",
             file=sys.stderr,
         )
-        con.close()
-        return 1
+        raise SystemExit(1)
 
     rows = cur.execute(
         "SELECT effect, plugin_set, owns_scroll_transform, pins, triggers "
@@ -89,12 +91,21 @@ def main() -> int:
 
     if not rows:
         print(
-            "[generate-fx-effects-php] fx_effects table is empty — run "
-            "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py first.",
+            f"[generate-fx-effects-php] fx_effects table in {DB_PATH} is EMPTY — "
+            "this must never be treated as 'nothing to generate'. Run "
+            "plugins/sgs-blocks/scripts/seed-motion-fx-registry.py first, or "
+            "check the DB wasn't opened before seeding.",
             file=sys.stderr,
         )
-        return 1
+        raise SystemExit(1)
 
+    return rows
+
+
+def _render(rows: list[tuple]) -> tuple[str, str]:
+    """Pure function: rows -> (php_source, json_source). No I/O, so --check can
+    call this and diff the result against the committed files without ever
+    writing to disk."""
     # NO TIMESTAMP IN THE OUTPUT — deliberate, and load-bearing.
     #
     # This generator runs on every build. A "Last generated:" header would
@@ -172,9 +183,7 @@ def main() -> int:
         "",
     ])
 
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_FILE.write_text("\n".join(lines), encoding="utf-8")
-    print(f"[generate-fx-effects-php] Generated {OUTPUT_FILE} with {len(rows)} effects.")
+    php_source = "\n".join(lines)
 
     # ------------------------------------------------------------------
     # Editor-side mirror (D416).
@@ -185,13 +194,23 @@ def main() -> int:
     #   · triggers — the per-effect enum (Spec 38 §11.2) deciding which "When it
     #                starts" options a client is offered, so no dead option ever
     #                renders
+    #   · owns_scroll_transform — drives the §4.3 entrance-exclusion Notice and
+    #                the scrub-smoothing control's visibility. ADDED 2026-07-31:
+    #                fx.js carried this as a hand-typed array (SCROLL_OWNING_FX)
+    #                whose own comment conceded the DB was authoritative, which
+    #                meant the editor could tell a client entrance animation was
+    #                still on while the render layer had already suppressed it,
+    #                with no gate anywhere to catch the disagreement. Mirroring
+    #                it here makes the two sides read the same row. The PHP map
+    #                above has always carried it; this only closes the JS half.
     #
     # Emitted as JSON rather than duplicated as hand-maintained arrays in fx.js.
-    # That file already carries two such lists (SHIPPED_EFFECTS, SCROLL_OWNING_FX)
-    # that no gate cross-checks; a third and fourth would be two more chances for
-    # the editor to disagree with the DB silently. webpack bundles .json imports
-    # natively, so this needs no codegen step — same route
-    # generated-fx-qualifying-blocks.json already uses.
+    # That file used to carry two such lists (SHIPPED_EFFECTS, SCROLL_OWNING_FX)
+    # that no gate cross-checked; SCROLL_OWNING_FX is now derived from this file
+    # and gone, leaving SHIPPED_EFFECTS — which is deliberately hand-kept,
+    # because it records which JS MODULES exist and no DB column knows that.
+    # webpack bundles .json imports natively, so this needs no codegen step —
+    # same route generated-fx-qualifying-blocks.json already uses.
     #
     # Deterministic, no timestamp — see the note above for why that is
     # load-bearing for build-deploy's dirty gate.
@@ -200,15 +219,76 @@ def main() -> int:
         effect: {
             "pins": bool(int(pins)),
             "triggers": [t for t in str(triggers).split(",") if t],
+            "owns_scroll_transform": bool(int(owns)),
         }
-        for effect, _plugin_set_json, _owns, pins, triggers in rows
+        for effect, _plugin_set_json, owns, pins, triggers in rows
     }
-    JSON_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    JSON_OUTPUT_FILE.write_text(
-        json.dumps(meta, indent="\t", sort_keys=True) + "\n", encoding="utf-8"
+    json_source = json.dumps(meta, indent="\t", sort_keys=True) + "\n"
+
+    return php_source, json_source
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help=(
+            "Regenerate in memory and diff against the committed generated-"
+            "fx-effects.php / generated-fx-effect-meta.json instead of writing. "
+            "Exits 0 if they match, 1 (with a message naming both files) if "
+            "the committed artefacts are stale. Never writes to disk."
+        ),
     )
-    print(f"[generate-fx-effects-php] Generated {JSON_OUTPUT_FILE} with {len(meta)} effects.")
+    args = parser.parse_args()
+
+    if not DB_PATH.exists():
+        # Deliberately unversioned — see .claude/dev-setup.md "sgs-framework.db".
+        # Both the plain run and --check skip cleanly: with no DB there is
+        # nothing to regenerate FROM, so the committed artefacts (already in
+        # the repo) are simply left as the build input, exactly as intended.
+        print(
+            f"[generate-fx-effects-php] DB not found: {DB_PATH} — skipping "
+            "(building off committed generated artefacts; see .claude/dev-setup.md)."
+        )
+        return 0
+
+    rows = _load_rows()
+    php_source, json_source = _render(rows)
+
+    if args.check:
+        stale = []
+        if not OUTPUT_FILE.exists() or OUTPUT_FILE.read_text(encoding="utf-8") != php_source:
+            stale.append(str(OUTPUT_FILE))
+        if not JSON_OUTPUT_FILE.exists() or JSON_OUTPUT_FILE.read_text(encoding="utf-8") != json_source:
+            stale.append(str(JSON_OUTPUT_FILE))
+        if stale:
+            print(
+                "[generate-fx-effects-php] STALE — the committed generated "
+                f"artefact(s) below no longer match `fx_effects` in {DB_PATH}:\n  "
+                + "\n  ".join(stale)
+                + "\nRe-run without --check to regenerate, then commit the result: "
+                "python plugins/sgs-blocks/scripts/generate-fx-effects-php.py",
+                file=sys.stderr,
+            )
+            return 1
+        print(f"[generate-fx-effects-php] OK — committed artefacts match {DB_PATH} ({len(rows)} effects).")
+        return 0
+
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_FILE.write_text(php_source, encoding="utf-8")
+    print(f"[generate-fx-effects-php] Generated {OUTPUT_FILE} with {len(rows)} effects.")
+
+    JSON_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    JSON_OUTPUT_FILE.write_text(json_source, encoding="utf-8")
+    print(f"[generate-fx-effects-php] Generated {JSON_OUTPUT_FILE} with {len(meta_count(json_source))} effects.")
     return 0
+
+
+def meta_count(json_source: str) -> dict:
+    """Small helper so the final print line can report a count without
+    re-parsing the rows (keeps `main` readable)."""
+    return json.loads(json_source)
 
 
 if __name__ == "__main__":

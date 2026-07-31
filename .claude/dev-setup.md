@@ -19,6 +19,7 @@ Split from `.claude/architecture.md` on 2026-05-24 as part of Phase 10 D'-1. Con
 
 - [Project structure](#project-structure)
 - [Build process](#build-process)
+- [sgs-framework.db — the unversioned local dev DB](#sgs-frameworkdb--the-unversioned-local-dev-db)
 - [Creating a new block](#creating-a-new-block)
 - [Adding a style variation](#adding-a-style-variation)
 - [Shared components](#shared-components)
@@ -124,6 +125,27 @@ The same `prebuild` chain runs the **dead-control guard** (`scripts/check-dead-c
 **Dated migration pattern (D222, mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` beside the existing siblings — never a module-load side-effect in `db_lookup.py`. Example: `migrations/2026-06-13-property-suffixes-align-items.py`.
 
 **Output:** `build/blocks/{block-name}/` contains the compiled files. All files in `build/` are version-controlled and deployed directly to the server — Node.js is not available on the Hostinger host.
+
+---
+
+## sgs-framework.db — the unversioned local dev DB
+
+**Path:** `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (hard-linked to `~/.claude/skills/sgs-wp-engine/sgs-framework.db` — same physical file, same inode, either path reads/writes the same data). **~13.9MB. Deliberately NOT committed to git** — it is a local dev SQLite knowledge base (block schema, `fx_effects`, `block_attributes`, `slots`, `roles`, etc. — see project `CLAUDE.md` "DB-first, no hardcoded dicts"), not a build artefact, and it is far too large and too fast-moving to version sensibly.
+
+**What depends on it:** the Spec 38 motion-fx generator chain —
+- `plugins/sgs-blocks/scripts/seed-motion-fx-registry.py` (seeds `fx_effects` + related tables)
+- `plugins/sgs-blocks/scripts/generate-fx-effects-php.py` (writes `includes/generated-fx-effects.php` + `src/blocks/extensions/generated-fx-effect-meta.json`)
+- `plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py` (writes `includes/generated-fx-qualifying-blocks.php` + `src/blocks/extensions/generated-fx-qualifying-blocks.json`)
+
+— plus a long tail of one-off DB-authoring/consistency scripts under `plugins/sgs-blocks/scripts/` (migrations, `db-consistency/`, `cheat-gate/`, `excluded-gate/`, `ledger/`, the `converter/` DB lookups, etc.). All of them read the DB; none of them ship it.
+
+**Why a clean clone still builds:** the four files the fx generators above produce are themselves **committed as build inputs** (they are generated PHP/JSON the plugin actually loads at runtime — not throwaway output). `plugins/sgs-blocks/scripts/run-motion-fx-generators.js` (wired into `prebuild`/`prestart` in `package.json`) checks for the DB before doing anything:
+- **DB absent** — skips the whole chain cleanly (exit 0) and logs why. The build proceeds using the already-committed generated files untouched.
+- **DB present** — runs the chain for real (seed, then `generate-fx-effects-php.py --check` which diffs an in-memory regeneration against the committed files without writing, then `generate-fx-qualifying-blocks.py`, whose output the wrapper snapshots/diffs itself since that script has no `--check` mode of its own yet). Any drift between the DB and the committed generated files **fails the build loudly**, naming the stale file(s) — so the owner can never commit a generated artefact that doesn't match the DB.
+
+**A missing/empty DB must never produce a silently-empty roster.** `generate-fx-effects-php.py` and `generate-fx-qualifying-blocks.py` both fail loudly (naming the DB path) if the DB exists but a query returns zero rows — an empty `fx_effects` table is treated as a fatal misconfiguration, never as "nothing to generate". (Historically, two 0-byte decoy files were briefly committed at `scripts/sgs-framework.db` and `scripts/data/sgs-framework.db` — **deleted**; never recreate either path, and never point `DB_PATH` at a committed copy.)
+
+**Restoring/regenerating the DB (owner only):** the DB is not published or backed up anywhere else in this repo — if it is ever lost, it has to be rebuilt from the `/sgs-update` pipeline against the live block roster (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats` confirms whether it's present and healthy). This is a last-resort, hours-not-minutes recovery path — treat the DB as irreplaceable in day-to-day work (back it up before any destructive experiment).
 
 ---
 

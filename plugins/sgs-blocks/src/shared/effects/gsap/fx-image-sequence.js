@@ -371,8 +371,51 @@ export function initImageSequence( el ) {
 
 		const scrollTrigger = {
 			trigger: wrapper || el,
+			/*
+			 * NO `clearChrome` — this effect never pins, so it keeps its own
+			 * default. See resolveStart's docblock: the offset used to be applied
+			 * unconditionally, rewriting `top 80%` to `top top+=93` on any site
+			 * with a sticky header. That is what
+			 * `reports/visual-diff/image-sequence-2026-07-31.md` actually measured
+			 * — luminance FLAT at 86.14 for scroll fractions 0.00, 0.25 and 0.50,
+			 * because the sequence had not begun yet: the whole scrub was crammed
+			 * into the tail of the block's pass, by which point the block was
+			 * largely out of view.
+			 *
+			 * THE END IS NOW A FIXED DISTANCE, NOT AN ELEMENT EDGE. `bottom 20%`
+			 * made the scrub distance the canvas's OWN HEIGHT plus 60% of the
+			 * viewport, so a tall 16:9 hero sequence and a small inline one played
+			 * at wildly different rates from identical frames, and the tall one
+			 * could not reach its final frame until the block was already leaving
+			 * the screen. `+=150%` is 150% of the viewport height from wherever the
+			 * start resolved — the same height-independence fx-scrub.js gets by
+			 * anchoring both ends to `top`, stated directly instead of implied.
+			 *
+			 * ⚠ WHY NOT THE OBVIOUS SAME-ANCHOR `top 20%`. It was tried and
+			 * modelled against the probe's own sampling geometry before being
+			 * rejected. A same-anchor pair spans only (80-20) = 60% of the viewport
+			 * — but this block is 675px tall in a 900px viewport, so the sequence
+			 * would finish before the block was even fully on screen, and the whole
+			 * back half of its visible life would show a frozen last frame.
+			 * Modelled progress at the probe's five scroll samples:
+			 *
+			 *   shipped + chrome bug  0.000 0.000 0.000 0.636 1.000  ← the defect
+			 *   `top 20%`             0.000 0.396 1.000 1.000 1.000  ← mirror image
+			 *   `+=150%`              0.000 0.158 0.450 0.742 1.000  ← chosen
+			 *
+			 * The middle row is the same defect reflected: instead of nothing
+			 * happening until the end, everything happens at the start. Fixing a
+			 * bunched-at-the-end scrub by bunching it at the beginning is not a
+			 * fix. 150% was picked as the smallest multiple that keeps all five
+			 * samples distinct and well spread; 100% still clamps the last two.
+			 *
+			 * A sequence also genuinely wants a LONG window — dozens of frames
+			 * across too little scroll reads as a jerky flick-book. The START keeps
+			 * the module's existing 80% (the block is entering from the bottom
+			 * edge), so only the end changes.
+			 */
 			start: () => resolveStart( el, 'top 80%' ),
-			end: el.getAttribute( 'data-sgs-fx-end' ) || 'bottom 20%',
+			end: el.getAttribute( 'data-sgs-fx-end' ) || '+=150%',
 			scrub: resolveScrub( el ),
 			onUpdate: ( self ) => {
 				const index = Math.round( self.progress * ( count - 1 ) );

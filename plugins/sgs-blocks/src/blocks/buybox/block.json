@@ -41,13 +41,21 @@
 				"wrapper": {
 					"label": "Buybox wrapper",
 					"order": 1,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:margin": "native:spacing.margin"
 					},
 					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling). layout is scoped to margin only; every other layout member is an honest gap."
 				}
+			},
+			"fx": {
+				"providesNatively": [
+					"draggable"
+				],
+				"_comment_providesNatively": "Spec 38 FR-38-13. This block's horizontal scroller is `.product-card__thumbs`, a DESCENDANT, while the generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT — so a picker entry here would be a control that silently does nothing. The CSS-derived `track` provision (2026-07-31) correctly sees the scroller and would otherwise offer it. Declared here to suppress that entry. NOTE this block does NOT yet have its own drag toggle either: buybox requires a WooCommerce variable product IN CONTEXT (render.php header), so it renders nothing on an ordinary page and its first-paint capture could not be taken this session. Giving it the capability is owed work with a named prerequisite — a product-page fixture — not an oversight."
 			}
 		}
 	},

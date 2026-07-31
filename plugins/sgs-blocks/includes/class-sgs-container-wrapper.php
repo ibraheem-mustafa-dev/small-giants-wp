@@ -1628,8 +1628,50 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( $uid ) {
 					$responsive_css .= '.' . $uid . ' .sgs-container__svg-bg{--sgs-svg-opacity:' . esc_attr( $bg_svg_opacity / 100 ) . ';}';
 				}
+
+				/*
+				 * DrawSVG marker (Spec 38, `draw` effect) — placed HERE, on the
+				 * SVG layer, not on the block root.
+				 *
+				 * `fx-draw.js`'s `collectDrawTargets()` walks the fx element's
+				 * OWN descendants for drawable shapes. On the block root that
+				 * subtree is the whole section, so it would also collect every
+				 * chevron, star and icon glyph rendered by child blocks and
+				 * stroke-animate those too. This div's subtree is exactly the
+				 * operator's own background SVG and nothing else.
+				 *
+				 * Same reasoning, and the same placement rule, as the
+				 * `data-sgs-fx-track` mark below: only the code that emits an
+				 * element knows which element it is, so the mark belongs at the
+				 * point of emission rather than in a later scan of the output.
+				 *
+				 * Emitting `data-sgs-fx` here also stops
+				 * `sgs_inject_fx_attributes()` writing a second copy onto the
+				 * root (it bails on seeing the attribute anywhere in the block),
+				 * so the full parameter set is built here via the shared
+				 * `sgs_fx_data_attr_string()` rather than a hand-rolled subset.
+				 *
+				 * NO COLLISION WITH `bgSvgAnimation` — the two animate different
+				 * things and compose. `bgSvgAnimation` (pulse|float|wave) is a
+				 * CSS `animation` on THIS DIV, moving its `transform`/`opacity`
+				 * as an ambient loop. DrawSVG animates `stroke-dashoffset` on
+				 * the `<path>` elements INSIDE it, once, on scroll. Different
+				 * element, different property, different trigger; an operator
+				 * can legitimately run both, and `providesNatively` (the
+				 * subtract-an-effect declaration `sgs/responsive-logo` uses to
+				 * suppress `draw`, because its `animationStyle` enum IS
+				 * stroke-draw) would be wrong here — it would deny a capability
+				 * this block does not otherwise have.
+				 */
+				$svg_fx_attr = '';
+				if ( 'draw' === ( $attributes['fx'] ?? '' )
+					&& function_exists( '\\SGS\\Blocks\\sgs_fx_data_attr_string' ) ) {
+					$svg_fx_attr = \SGS\Blocks\sgs_fx_data_attr_string( $attributes );
+				}
+
 				$svg_html = sprintf(
-					'<div class="sgs-container__svg-bg" aria-hidden="true">%s</div>',
+					'<div class="sgs-container__svg-bg" aria-hidden="true"%s>%s</div>',
+					$svg_fx_attr,
 					wp_kses( $bg_svg_content, $allowed_svg_tags )
 				);
 			}

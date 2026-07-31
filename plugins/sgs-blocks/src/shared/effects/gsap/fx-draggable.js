@@ -32,24 +32,43 @@
  * thing ever written is the `scrollLeft` the element already had, plus a
  * `cursor`. That is what "layered on top" has to mean for it to be true.
  *
- * ROSTER MECHANISM (R-31-1 — DB-first, no hardcoded dicts): a block joins by
- * declaring `supports.sgs.fx.draggable` in its own block.json and rendering
+ * ROSTER MECHANISM (R-31-1 — DB-first, no hardcoded dicts): the roster is
+ * DERIVED, not declared. `scripts/generate-fx-qualifying-blocks.py` grants a
+ * block the `track` provision when its OWN stylesheet declares
+ * `overflow-x: auto|scroll` in a rule a desktop-width viewport can reach —
+ * the same structural fact this file measures at runtime. A block then renders
  * `data-sgs-fx="draggable"` on its scrollable element when the operator turns
- * the block's own inspector toggle on. This file never names a block — it only
- * ever asks the DOM "is this element a genuine native horizontal scroller?"
- * (`isNativeHorizontalScroller`). That is a STRUCTURAL question, not a
- * per-block branch, so the same code powers `sgs/gallery`'s carousel and any
- * future roster block of the same shape, with zero changes here.
+ * the block's own inspector toggle on. (`supports.sgs.fx.draggable` survives as
+ * an additive opt-in override for a scroller the file scan cannot see — built
+ * by JS, or inherited from a parent stylesheet — but it is no longer the only
+ * route in, which is what made adoption manual for a universal mechanism.)
  *
- * ⚠ WHY THIS MODULE DELIBERATELY DOES NOTHING ON A TRANSFORM-DRIVEN TRACK
- * `sgs/testimonial-slider` also declares the roster capability, but its
- * carousel is not this shape — it is `overflow: hidden` with a transform-based
- * clone-loop driven by `--sgs-slider-offset`, with its own pointer-drag
- * already wired. Re-deriving that block's clone-zone wrap-around maths inside
- * a block-agnostic module is exactly the per-block hyperfocus R-31-9 forbids,
- * so `isNativeHorizontalScroller` genuinely finds nothing to attach to and
- * this module no-ops there; the momentum upgrade for that block's OWN drag
- * lives in ITS OWN `view.js`.
+ * This file never names a block. It only ever asks the DOM "is this element a
+ * genuine native horizontal scroller?" (`isNativeHorizontalScroller`). That is
+ * a STRUCTURAL question, not a per-block branch, so the same code powers every
+ * roster block of that shape, with zero changes here.
+ *
+ * ⚠ THIS MODULE DOES NOTHING ON A TRANSFORM-DRIVEN TRACK — and a block must
+ * therefore never join the roster on one. `overflow: hidden` plus a
+ * `transform`/`translateX` mechanism is a DIFFERENT mechanism that this module
+ * has no business touching, and re-deriving such a block's own wrap-around
+ * maths inside a block-agnostic module is exactly the per-block hyperfocus
+ * R-31-9 forbids. So `isNativeHorizontalScroller` finds nothing to attach to
+ * and `initDraggable` returns `undefined`.
+ *
+ * That is a safe no-op but NOT a free one, which is the historical lesson
+ * worth keeping: `sgs/testimonial-slider` declared the roster capability and
+ * emitted the marker for exactly this shape of track. `SGS_Motion_Registry`
+ * sniffs rendered markup for `data-sgs-fx` and enqueues that effect's whole
+ * plugin set, so the inert declaration shipped GSAP core + InertiaPlugin +
+ * this module (~35KB gzip) on every page carrying that block, to run a
+ * function that returned `undefined`. Both the declaration and the emit were
+ * removed on 2026-07-31; that block's drag momentum is block-private and lives
+ * in ITS OWN `view.js` behind its own `data-sgs-slider-momentum` marker,
+ * deliberately outside the `data-sgs-fx` grammar so the registry never sees
+ * it. Before adding a block to this roster, confirm the element that carries
+ * the marker genuinely scrolls — a marker on a non-scroller costs real bytes
+ * and buys nothing.
  *
  * REDUCED MOTION (§10) — READ BEFORE EDITING THIS FILE'S GATES:
  * Dragging is USER-DRIVEN input, not autonomous motion, so §10 classifies this
