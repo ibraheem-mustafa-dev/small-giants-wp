@@ -116,7 +116,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Flip on filtered grids | **G** — same-document View Transitions snapshot the whole page (UI freeze on rapid re-filter) and give no per-item stagger/interrupt; Flip does | PAIRED block contract | Paired setting surfaced on BOTH `sgs/filter-search` and the filterable block (§3.3) | Pairing contract, not a one-off; VT crossfade is the no-GSAP fallback; Flip loads only when the pair opts in | off | filter-search × card-grid → any future filterable block implementing the contract |
 | Draggable + Inertia | **G** — pointer physics + momentum; CSS scroll-snap remains the Tier V default for carousels | block (curated roster) | Inspector toggle on roster blocks (§3.3 opt-in mechanism) | Roster-gated (`supports.sgs.fx.draggable`); touch-action discipline; keyboard alternative mandatory | off | gallery/testimonial-slider/before-after/hero decorations → any block that declares the support |
 | Physics2D / PhysicsProps / CustomBounce / CustomWiggle | **G** — no CSS equivalent for physics easings | N/A (flavour — inherits its host effect's level) | N/A (flavour — appears as easing/motion options inside other G effects' controls, never its own surface) | Never a standalone toggle; bundled into the consuming effect's chunk | n/a | Easing dropdown of G effects only |
-| DrawSVG | **G** (scrubbed) — scroll-scrubbed draw needs ScrollTrigger; **load-triggered simple draw stays covered by Tier V `data-sgs-path-draw`** (not retired) | element (SVG-bearing) | Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator`, `sgs/decorative-image` | Retires **Vivus** (§3.4, D408); trigger = load OR scroll-scrub | off | Logo/icons/dividers → any SVG-bearing block |
+| DrawSVG | **G** (scrubbed) — scroll-scrubbed draw needs ScrollTrigger; **load-triggered simple draw stays covered by Tier V `data-sgs-path-draw`** (not retired) | element (SVG-bearing) | Inspector on `sgs/responsive-logo`, `sgs/icon`, `sgs/separator` — each verified to render inline SVG shape geometry (`sgs/separator` conditionally, via the same `sgs_get_wp_icon()`/`sgs_get_lucide_icon()` helpers `sgs/icon` uses, when `contentMode === 'icon'`). **`sgs/decorative-image` REMOVED 2026-07-31 (D434):** it renders a raster `<img>`/video only, so no drawable geometry exists. An `<img src="*.svg">` is not drawable or morphable either — the file is an opaque image resource with no DOM access to its paths, which is precisely why `sgs/responsive-logo` inlines via `wp_kses` instead. | Retires **Vivus** (§3.4, D408); trigger = load OR scroll-scrub | off | Logo/icons/dividers → any SVG-bearing block (`decorative-image` excluded — raster/video only) |
 | MorphSVG | **G** — CSS `d:path()` needs identical point counts; point-matching IS the plugin | element | Inspector, ASSET-GATED (§3.4) | Requires prepared matched path pairs + authoring guidance; revives parking P-10 | off | Icons/logos → decorative SVG anywhere (asset-gated) |
 | MotionPath | **V default / G when scrubbed** — CSS `offset-path` handles autonomous path-follow cross-browser; the plugin is needed only for scroll-scrubbed path progress | element | Inspector on `sgs/decorative-image` | V variant ships without GSAP; G variant needs ScrollTrigger + MotionPathPlugin | off | decorative-image → other media blocks (permitted) |
 | Smooth scrolling (**Lenis** — was ScrollSmoother, D422) | **H** — no CSS mechanism for smoothed/lagged scroll, and the Tier G option (ScrollSmoother) can only achieve it by transforming a wrapper around page content, which silently breaks the shipped Spec 37 sticky header (§4.2) | **SITE** | SGS → Motion settings page | Default OFF; disabled in editor + wp-admin; disabled under reduced-motion (live + reactive); touch left native; **no wrapper, no template change — §4.2 resolution SUPERSEDED, nothing to resolve** | OFF | Site setting only (never per-block) |
@@ -142,6 +142,35 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   section"): vertical scroll maps to horizontal travel of a pinned row. Mobile (<768) falls back
   to native horizontal scroll-snap (the Tier V carousel pattern); keyboard users get normal
   sequential focus (no scroll-jacking of focus order).
+
+> **Keyboard focus contract (FR-38-6, FR-38-8) — LIVE-VERIFIED 2026-07-31 (D434).** Until this
+> date §2's "keyboard users get normal sequential focus" was an assertion with no test anywhere.
+> It is now measured, and it holds.
+>
+> Neither pinning effect intercepts `tabindex`, DOM order, or focus events; both rely entirely on
+> the browser's native "scroll the newly-focused element into view". When Tab reaches a focusable
+> element positioned after an active pin, that native focus-scroll carries the viewport past the
+> pinned section — which correctly un-pins as it goes — and settles with the focused element
+> visible. **Measurement caveat that produced a false failure first time round:** the site sets
+> `scroll-behavior: smooth`, so this settle takes several hundred milliseconds. A probe sampling at
+> a fixed short delay reads the element as off-viewport mid-flight and reports a spurious WCAG
+> 2.4.11 failure. Poll `scrollY` until it stops changing before measuring. This is not
+> scroll-jacking; it is the standard browser affordance working as intended.
+>
+> **Reduced motion:** `pin-scrub` creates no pin at all — no timeline, no `ScrollTrigger` — so
+> sequential focus is simply normal document flow. `horizontal-panel` falls back to native
+> `overflow-x: auto; scroll-snap-type: x mandatory`, and the panel `<section>` elements are
+> themselves valid Tab stops for keyboard-driven scrolling.
+>
+> **Content restriction: none required.** A block author placing links, buttons or form fields
+> inside a `pin-scrub` section or a horizontal panel needs no additional wiring — reachability is
+> inherited from the browser's native focus-scroll.
+>
+> **Owed:** the canary fixtures contain no focusable element INSIDE a pin, so the case the
+> accessibility audit actually worried about — Tab landing on a control within an active pin — is
+> proven by mechanism rather than by observation. Re-verify once a pinned composite with real
+> interactive content exists.
+
 - **FR-38-9 Scroll-scrubbed image sequence — NET-NEW block `sgs/image-sequence`.** Canvas-drawn
   frame sequence scrubbed by scroll. **Explicit sub-scope with its own tooling task:** the
   asset pipeline (frame export from video, compression, resolution ladder, lazy chunked

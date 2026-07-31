@@ -1,5 +1,79 @@
 # small-giants-wp — Architectural Decisions Log
 
+## D434 — Motion Wave D, wave 1: the register was wrong four times, and two gates caught what review did not [ROUTINE]
+
+Nine commits. Steps 4, 9, 11, 13, 16, 17 closed; Steps 2/3 held; Steps 5, 10, 12, 15, 18-21 not started.
+Orchestrated as file-disjoint lanes after a `/qc-council` on the plan itself found the lane map was
+wrong: it claimed exactly three collision points; the real set computed from every step's `Files:` line
+was seven. **Spec 38 alone is edited by five steps** (7, 8, 12, 13, 20), two of them `Deps: none` and
+parallel-eligible — a last-write-wins clobber waiting to happen. All spec edits were made orchestrator-
+only and applied serially.
+
+**The register carried four false claims, each caught by verification rather than by reading:**
+1. Cursor-follow prior art is "`data-spotlight` in `nav-menu` and `mega-panel`" — **nav-menu has none**,
+   and a shared `src/shared/effects/spotlight.js` already exists with one consumer. Step 7's fix-shape
+   ("generalise two block implementations") was wrong on its face.
+2. `sgs/google-reviews`'s "`dataSource` enum was never exercised" — the block **has no `dataSource`
+   attribute**; that vocabulary belongs to `sgs/trustpilot-reviews`.
+3. `sgs/before-after` "renders a plain `<img>`" — it is `wp_get_attachment_image()` with a url
+   fallback, inside a per-instance closure whose docblock warns that a top-level `function` there
+   fatals on a second instance.
+4. "This plan carries everything that was NOT closed" — **FR-38-12 (Flip) is absent entirely**, though
+   D426 ruled it a live design gate, explicitly not parked.
+
+**Two structural gates stopped defects prose review had already waved through:**
+- The **visual-diff gate refused the buybox commit**. Its report honestly read `verdict: PARTIAL —
+  toggle CODE-COMPLETE-UNVERIFIED`; the gate requires `PASS`. An unverified drag control was stopped
+  by a mechanism, not by anyone remembering to be careful. `--no-verify` was not used.
+- The **deploy dirty-tree gate refused the deploy** while buybox stayed uncommitted. `--allow-dirty`
+  was not used — an uncommitted edit was D336's trigger. Buybox was saved to a patch and reverted.
+
+**Near-miss worth keeping: a gate fix that would have blinded the gate.** Fixing 27 false positives in
+`check-dead-pattern-attrs.py` by adding `'fx'` to `EXT_PREFIXES` would have made the D338 silent-discard
+check permanently blind to the whole `fx*` family — `is_legit()` never receives the block name, so it
+cannot be roster-aware. `sgsHideOn*`/`sgsAnim*` are genuinely universal so a blanket prefix is sound for
+them; `fx*` is roster-gated, so it is not. **The existing precedent did not transfer.** Now block-aware,
+matching 15 exact names, failing closed on a missing roster artefact.
+
+**Architectural findings:**
+- **`externalsType: 'module'` collapses gated dynamic `import()` into static top-level imports** for
+  every externalised specifier. `ExternalModule.js:build()` keys async/sync on `buildInfo.javascriptModule`,
+  never on the call site, so module linking happens at parse time and NO runtime gate can prevent
+  resolution. Scoping the externals callback on `dependencyType` was **disproved** —
+  `NormalModuleFactory.js:980` sets it from `dependency.category`, and static and dynamic ESM imports
+  both report `"esm"`. There is no config-level fix. Solved with a `/* webpackIgnore: true */` pragma
+  per call site, so `webpack.config.js` was never touched and the Rule 7 gate Bean signed was not needed.
+  Verified live: editor `pageErrors: []`.
+- **`sgs/before-after`'s width collapse was never breakpoint-bound.** `overflow: hidden` makes it a BFC
+  root; a BFC root beside an uncleared float is shrunk to fit next to it (CSS 2.1 §9.5). Two `alignleft`
+  logos earlier on the page; instance 1 lands in their footprint, instance 2 is pushed clear by
+  instance 1's own height. Same block, same attributes, purely positional. The "767–900px band" was an
+  artefact of which widths were sampled — it persists at 1440px. Fixed with `clear: both`, not the
+  banned `min-width: 0` backstop.
+- **Membership of a provision was being used as membership of the roster.** Removing
+  `sgs/decorative-image` from the `svg` provision correctly withdrew `draw`/`morph` but zeroed
+  `compute_map()`'s `if specific:` panel gate, silently taking `motion-path` and `scrub` with it — on
+  the block Spec 38 line 121 names as MotionPath's exposure surface and line 713 cites as its
+  reduced-motion exemplar. **DEVIATION RECORDED:** the fix adds `FORCED_PANEL_HOSTS`, a hardcoded
+  effect→block map, in tension with R-31-1 (DB-first) and R-31-9 (no per-block carve-outs). Accepted
+  because the fact is spec-stated rather than derivable and a mid-session schema change carried more
+  risk; the DB-first home is OWED, not skipped.
+
+**§2's keyboard claim is now measured, not asserted** (see Spec 38 §3.1). A first pass produced a false
+WCAG 2.4.11 failure by sampling at a fixed 120ms while `scroll-behavior: smooth` was still animating.
+
+**Measurement limits established, both consequential:** Chrome DevTools MCP has **no
+`prefers-reduced-motion` parameter** on `emulate` (schema-checked) and **no trusted mouse
+down/move/up primitive** — synthetic `PointerEvent` throws `InvalidPointerId` at `setPointerCapture`.
+So the committed Playwright harness is the only instrument that can measure either the reduced-motion
+contract or gesture-level drag. Its browser session is also shared across concurrent agents; one tab
+was hijacked mid-measurement and produced a false reading.
+
+**Open for Bean:** Step 7 route A/B/C + the look · FR-38-12 (Flip) restored to the menu · ScrambleText
+at ~2.25:1 contrast (same pairing accepted for nav links, different context) · **the presets have NO
+canary instance at all**, which is why they have never been judgeable by anyone.
+
+
 ## D433 — The drawer submenu shipped broken; "INDICATIVE, not proven" is not a ship criterion [INCIDENT]
 
 **I shipped the drawer path unverified and Bean found it broken.** The visual-diff report recorded the
